@@ -20,3 +20,7 @@ Actualizar decisiones/código y secciones vinculadas de forma focalizada; preser
 - [supplied](supplied/INFORME_CARPETA.md)
 
 Estado: material preparado sin build, tests, validadores ni prueba física. Los hashes de fuentes copiadas están en [manifest](../provenance/files.json).
+
+## Ampliación 2026-10-23
+
+- [PCB_OLED_ENCODER.md](PCB_OLED_ENCODER.md)

@@ -17,3 +17,7 @@ Defaults fuente: muestreo 1 ms, debounce20 ms, largo800 ms, cuatro transiciones 
 En código inicial Afr2Ui_Apply da prioridad a menu, resetea selección del principal y no emite click a la vez. Principal: Sensores/Estado OLED/Volver a inicio. Sensores y Estado OLED: único ítem Volver al principal. No hay edición implementada todavía.
 
 Para nuevas ediciones: mantener borrador separado del estado confirmado; largo abre menú sin guardar ni ejecutar acciones. Definir si se conserva el borrador y cómo se descarta explícitamente. Volver no debe mover el robot ni reanudar una misión por efecto lateral. STOP/control de seguridad son independientes de navegación.
+
+## Árbol objetivo
+
+El [plan de menús](MENU_PLAN.md) extiende la navegación a Estado, Control, Modos/GOTO/línea, Pruebas, Sensores, Calibración, Wi-Fi, Pantalla y Sistema. Es diseño pendiente; no amplía las cuatro pantallas del prototipo por sí solo. Conservar Volver como única navegación al padre y largo SW como menú.

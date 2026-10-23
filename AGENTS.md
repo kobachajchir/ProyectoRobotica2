@@ -9,3 +9,6 @@ Los cambios de contrato van exclusivamente a AutoFinalRobo2-Contracts con ID AFR
 
 ## OLED y navegación
 Para pantallas usar la skill local AutoFinalRobo2-Contracts/.agents/skills/afr2-screen-authoring/SKILL.md (resolver desde D:/ProyectoRobotica2). No hay botón menú: largo SW abre menú, corto confirma; atrás solo por opción del submenú. Mantenerlo en firmware y Web.
+
+## Contexto ampliado
+Leer documentation/MENU_PLAN.md para el árbol objetivo (diseño, no implementado) y hardware/PCB_OLED_ENCODER.md para el trabajo CAD futuro. El usuario agregará el proyecto a Codex. No crear aún diseño KiCad/3D sin los planos e indicaciones que enviará. Conectores externos: señales 1x5 y VCC/GND común 1x2 de 2,54 mm; usar SDA/SCL expuestos por el shield.

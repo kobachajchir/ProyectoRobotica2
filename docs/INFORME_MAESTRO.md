@@ -54,7 +54,7 @@ La skill [afr2-screen-authoring](../../AutoFinalRobo2-Contracts/.agents/skills/a
 
 El [plan de recursos](../../AutoFinalRobo2-Contracts/hardware/RECURSOS_Y_TIEMPOS.md) contempla SRAM, interrupciones, PWM, UART, atomicidad y PROGMEM. Un framebuffer 128×64 ocupa 1024 bytes. Fuentes y tablas const del F4 no deben copiarse a SRAM AVR sin revisar su almacenamiento.
 
-El [pinout ampliado](../../AutoFinalRobo2-Contracts/hardware/PINOUT.md) propone SDA D20/SCL D21 y CLK D40/DT D41/SW D42. No afirma que ya estén conectados. VCC común solo si ambos módulos y pull-ups aceptan esa tensión; de otro modo separar alimentación y adaptar niveles.
+El [pinout ampliado](../../AutoFinalRobo2-Contracts/hardware/PINOUT.md) propone SDA D20/SCL D21 y CLK D40/DT D41/SW D42. No afirma que ya estén conectados. VCC y GND externos serán comunes; identificar la tensión compatible con ambos módulos y sus pull-ups antes de cerrar el esquema.
 
 El [procedimiento de carga](../../AutoFinalRobo2-Contracts/hardware/FLASHING.md) distingue UART0 del puente USB y UART1 operativa: mantener Mega en reset no conecta automáticamente USB con Serial1. Hay que conmutar al puente real con niveles compatibles. Jumpers del shield y flash ESP quedan pendientes de identificación física.
 
@@ -67,3 +67,7 @@ El [procedimiento de carga](../../AutoFinalRobo2-Contracts/hardware/FLASHING.md)
 5. Portar pantallas con la skill y verificar cuando se autorice.
 
 [Plan detallado](../../AutoFinalRobo2-Contracts/docs/ROADMAP.md). No se ejecutaron builds, tests, validadores, flasheos ni pruebas físicas por instrucción del usuario. Copias e informes no acreditan compatibilidad.
+
+## Actualización de contexto: interfaz física y menús
+
+El usuario confirma SDA/SCL disponibles con esos rótulos en el shield. La nueva PCB usa un conector 1x5 para CLK/DT/SW/SDA/SCL y otro 1x2 para VCC/GND comunes, paso 2,54 mm; VCC numérica por identificar. La especificación vigente está en [PCB OLED/encoder](../hardware/PCB_OLED_ENCODER.md), y el [árbol de menús](../documentation/MENU_PLAN.md) amplía el diseño futuro sin cambiar el prototipo. KiCad/soporte3D se abordarán al recibir planos; fijación con dos tornillos y tuercas.

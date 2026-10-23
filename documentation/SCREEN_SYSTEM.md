@@ -26,3 +26,7 @@ Framebuffer: 128x64, bit vertical LSB por página, 1024 bytes. Snapshot TX 129 b
 Falta implementar TWI y conectar main/GPIO/clock. Módulo supuesto SSD1306 128x64 a dirección confirmada, no SH1106. Bloques start/poll/abort no deben bloquear ni llamar callbacks desde ISR. Reconfiguración/reinicialización solo con bus y servicio inactivos.
 
 OSK, iconos, fuentes grandes, menús completos, canvas remoto, animaciones y réplicas Web quedan por portar mediante la skill. Los builders/SVG existentes son referencia y no acreditan igualdad pixel a pixel. Registrar capability/reporte nuevo en AFR2 antes de integrar consumidores.
+
+## Menús y placa de interfaz
+
+Ver [árbol objetivo](MENU_PLAN.md) y [requisitos de PCB/soporte](../hardware/PCB_OLED_ENCODER.md). La UI de producto y los conectores están especificados; su implementación y el diseño CAD siguen pendientes. Los IDs de screens.json describen únicamente las vistas iniciales en fuente.

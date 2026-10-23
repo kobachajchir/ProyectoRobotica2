@@ -19,3 +19,7 @@ Actualizar decisiones/código y secciones vinculadas de forma focalizada; preser
 - [review](review/INFORME_CARPETA.md)
 
 Estado: material preparado sin build, tests, validadores ni prueba física. Los hashes de fuentes copiadas están en [manifest](../provenance/files.json).
+
+## Ampliación 2026-10-23
+
+- [MENU_PLAN.md](MENU_PLAN.md)

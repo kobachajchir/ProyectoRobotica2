@@ -14,3 +14,7 @@ Atmega: base OLED/UI parcial y referencia; backend TWI/UART/control pendientes. 
 | contracts | Este documento forma parte del commit inicial; consultar git log local | no configurado |
 
 Se crearon 96 informes de carpeta. provenance/files.json conserva el detalle de 1113 archivos de referencia copiados; derived.json identifica la primera base C nueva. El registro de la entrega no certifica que todas las dependencias de los originales sean portables.
+
+## Ampliación documental AFR2-20261023-02
+
+Cabeceras SDA/SCL expuestas, dos conectores paso2,54mm, VCC/GND comunes, montaje con dos tornillos/tuercas y árbol de menús. Solo Contracts y maestro raíz actualizados; código de los tres consumidores intacto. CAD diferido. Commit local adicional sin remoto/push; sin tests/build/validadores.

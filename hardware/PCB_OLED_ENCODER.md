@@ -1,0 +1,27 @@
+# Placa OLED/encoder y soporte: requisitos para la próxima etapa
+
+Actualización del usuario 2026-10-23. [Pinout](PINOUT.md). Estado: requisitos; no esquemático/PCB/modelo mecánico creados.
+
+El shield Mega ya expone las cabeceras rotuladas SDA y SCL. Los cables I2C se conectarán allí; D20/PD1 y D21/PD0 son las equivalencias lógicas de Mega, no rótulos que deban estar impresos en el shield. No se necesita duplicar ni recablear sus puntos I2C.
+
+La PCB nueva monta OLED y encoder de interfaz. Debe exponer DOS conectores externos de paso 2,54 mm:
+
+| Conector | Pin propuesto | Red | Destino externo |
+| --- | --- | --- | --- |
+| J1 señales 1x5 | 1 | CLK | Mega D40 / PG1 |
+| J1 señales 1x5 | 2 | DT | Mega D41 / PG0 |
+| J1 señales 1x5 | 3 | SW | Mega D42 / PL7 |
+| J1 señales 1x5 | 4 | SDA | Cabecera SDA del shield (Mega D20 / PD1) |
+| J1 señales 1x5 | 5 | SCL | Cabecera SCL del shield (Mega D21 / PD0) |
+| J2 alimentación 1x2 | 1 | VCC | Alimentación común de OLED y encoder |
+| J2 alimentación 1x2 | 2 | GND | Masa común de OLED, encoder y Mega |
+
+El orden de pines anterior es la propuesta documental basada en el orden pedido; confirmar orientación/pin1 al dibujar huellas. Añadir serigrafía de todas las señales y polaridad. Cableado externo Dupont. VCC común es requisito; su valor numérico queda pendiente de identificar módulos y pull-ups. No asignar 5 V ni 3,3 V sin evidencia y no dividir los conectores de alimentación por iniciativa. Resolver compatibilidad eléctrica antes de cerrar esquema; no se presupone regulador o adaptación de nivel ya existente.
+
+## Montaje mecánico futuro
+
+La cubierta superior la aportará el usuario mediante planos/informe/idea. El objetivo es un conjunto con PCB, soporte impreso 3D y cubierta fijados por DOS tornillos y sus tuercas. No se ha elegido M2/M2.5/M3, longitud, posición de agujeros, altura ni espesor. Resolver la pila de piezas, acceso a tuercas/tornillos, mandos/conectores, visibilidad OLED y espacio bajo la cubierta desde los planos reales.
+
+Cuando el usuario continúe: leer la skill de ruteo que indique y los archivos mecánicos. Preparar esquema/PCB KiCad editables, plano acotado, ensamblaje de referencia y soporte 3D paramétrico editable con exportaciones de fabricación/impresión acordadas. Planear ERC/DRC y comprobación mecánica como actividades separadas que requieren pedido expreso según las reglas actuales; no afirmar manufacturabilidad por tener archivos.
+
+Datos para esa etapa: contorno y cotas/unidades de cubierta, agujeros y zonas disponibles, espesor/material, dimensiones/modelos/pines del OLED y encoder, altura del eje/perilla, tensión VCC, orientación de Dupont, tornillería y espacio inferior. No pedirlos ahora como bloqueo del trabajo documental. No crear aún un quinto repo de hardware: decidir ubicación cuando comience esa etapa.

@@ -11,3 +11,7 @@ Actualizar decisiones/código y secciones vinculadas de forma focalizada; preser
 - [2026-10-23-01-bootstrap.md](<2026-10-23-01-bootstrap.md>)
 
 Estado: material preparado sin build, tests, validadores ni prueba física. Los hashes de fuentes copiadas están en [manifest](../provenance/files.json).
+
+## Ampliación 2026-10-23
+
+- [2026-10-23-02-navigation-and-interface-board.md](2026-10-23-02-navigation-and-interface-board.md)
