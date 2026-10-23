@@ -1,0 +1,21 @@
+{
+  "schema": "afr2-module-1",
+  "id": "atmega:module/reference/f4/Core/Src/i2c_manager.c",
+  "title": "I2C Manager, SSD1306 y recursos",
+  "responsibility": "Preservar propiedad del bus, callback diferido a main, deadline/recovery, framebuffer por páginas y separación dibujo/transporte. El define SSD1306_USE_DMA existe, pero su rama 0 usa mem_write en bucle; no convierte a TWI asíncrono. AM_I2C_Hardware original conserva métodos DMA.",
+  "changes_required": "La base nueva reduce Manager a un cliente OLED y cambia la API (no es ABI drop-in). start/poll/abort no bloquean; dirección es 7 bits. Se incluye inicialización SSD1306 128x64, framebuffer 1024, snapshot TX de 129 y dirty pages. Falta backend TWI AVR y confirmación de controlador/voltaje/dirección OLED. Portar fuentes/iconos grandes a PROGMEM y revisar punteros/far. Mantener buffers hasta fin/abort; render y callbacks solo en main. No reinicializar un handle en vuelo. INVERT nuevo usa XOR, diferencia intencional del F4 histórico.",
+  "evidence": [
+    "reference/f4/Core/Src/i2c_manager.c",
+    "reference/f4/Core/Inc/i2c_port.h",
+    "reference/f4/Core/Src/ssd1306.c",
+    "reference/f4/Core/Src/fonts.c",
+    "src/services/afr2_i2c_manager.c",
+    "src/display/afr2_oled.c"
+  ],
+  "findings": [
+    "AFRDOC-001",
+    "AFRDOC-005",
+    "AFRDOC-009"
+  ],
+  "status": "source-documented-not-built"
+}

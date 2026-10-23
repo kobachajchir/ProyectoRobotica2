@@ -1,0 +1,23 @@
+# Wi-Fi, preferencias y composición AVR
+
+[Maestro](../../../INFORME_MAESTRO.md) · [Informe del repositorio](../../INFORME_ADAPTACION.md).
+
+## Utilidad
+
+Bridge UNER y estados de configuración muestran pedidos/respuestas y separación de dueño Wi-Fi. main/app_tasks/globals son mapa de integración, no código que se retargetea cambiando includes.
+
+## Adaptación
+
+Elegir solo backend UNER; retirar AT y modem sequences. ESP posee radio/credenciales. AVR conserva preferencias de control en EEPROM con versión/CRC, actualización acotada y desgaste; no copiar sectores flash STM32. Rehacer reloj/ISR/watchdog/arranque; no incluir HAL/Cube/USB/boot-mailbox. Revisar RAM de System/handles y evitar logs en UART ESP. Build solo cuando se solicite.
+
+## Evidencia y alcance
+
+- [reference/f4/Core/Src/wifi_bridge.c](../../reference/f4/Core/Src/wifi_bridge.c)
+- [reference/f4/Core/Src/wifi_bridge_uner.c](../../reference/f4/Core/Src/wifi_bridge_uner.c)
+- [reference/f4/Core/Src/wifi_bridge_at.c](../../reference/f4/Core/Src/wifi_bridge_at.c)
+- [reference/f4/Core/Src/app_tasks.c](../../reference/f4/Core/Src/app_tasks.c)
+- [reference/f4/Core/Src/app_preferences.c](../../reference/f4/Core/Src/app_preferences.c)
+
+Hallazgos: AFRDOC-005, AFRDOC-007. [Registro](../../../AutoFinalRobo2-Contracts/documentation/review/FINDINGS.md).
+
+Estado: lectura/copia o fuente parcial indicada; sin compilación, tests ni prueba física. La API detallada de origen está en el corpus AMDOC importado; no equivale a API AVR adaptada.

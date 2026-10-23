@@ -1,0 +1,58 @@
+import type { ReactNode } from "react";
+
+export type TransportActionTone = "cyan" | "emerald" | "rose" | "muted";
+
+type TransportActionButtonProps = {
+ label: string;
+ detail: string;
+ icon: ReactNode;
+ tone: TransportActionTone;
+ active?: boolean;
+ pressed?: boolean;
+ disabled?: boolean;
+ className?: string;
+ onClick: () => void;
+};
+
+export default function TransportActionButton({
+ label,
+ detail,
+ icon,
+ tone,
+ active = false,
+ pressed,
+ disabled = false,
+ className = "",
+ onClick,
+}: TransportActionButtonProps) {
+ const toneClass = {
+ cyan: active
+ ? "border-cyan-300/70 bg-cyan-500/24 text-cyan-50 shadow-[0_0_24px_rgba(34,211,238,0.16)]"
+ : "border-cyan-300/35 bg-cyan-500/10 text-cyan-100 hover:bg-cyan-500/16",
+ emerald: active
+ ? "border-emerald-300/70 bg-emerald-500/24 text-emerald-50 shadow-[0_0_24px_rgba(16,185,129,0.16)]"
+ : "border-emerald-300/35 bg-emerald-500/10 text-emerald-100 hover:bg-emerald-500/16",
+ rose: "border-rose-300/55 bg-rose-500/14 text-rose-100 hover:bg-rose-500/22",
+ muted: "border-[var(--ui-ring)] bg-white/[0.04] text-[var(--ui-text)] hover:bg-[var(--ui-panel-hover)]/[0.08]",
+ }[tone];
+
+ return (
+ <button
+ type="button"
+ aria-pressed={pressed}
+ data-tone={tone}
+ data-active={active}
+ disabled={disabled}
+ onClick={disabled ? undefined : onClick}
+ className={`transport-action-button flex min-h-[76px] items-center gap-3 rounded-md border px-4 py-4 text-left transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-45 ${toneClass} ${className}`}
+ >
+ <span className="transport-action-button__icon flex min-w-10 justify-center rounded-md border border-current/25 bg-[var(--ui-panel)] px-2 py-1 text-sm font-black" aria-hidden="true">
+ {icon}
+ </span>
+ <span className="transport-action-button__copy min-w-0">
+ <span className="transport-action-button__label block truncate text-sm font-black text-[var(--ui-text)]">{label}</span>
+ <span className="transport-action-button__detail mt-0.5 block truncate text-xs text-current/75">{detail}</span>
+ </span>
+ </button>
+ );
+}

@@ -1,0 +1,40 @@
+#ifndef SSD1306_DEFINES_H_
+#define SSD1306_DEFINES_H_
+
+#ifndef SSD1306_I2C_PORT
+#define SSD1306_I2C_PORT      hi2c1
+#endif
+#ifndef SSD1306_ADDRESS
+#define SSD1306_ADDRESS       0x3C
+#endif
+
+#if !defined(SSD1306_128X64) && !defined(SSD1306_128X32)
+#define SSD1306_128X64
+#endif
+#ifndef SSD1306_USE_DMA
+#define SSD1306_USE_DMA       1
+#endif
+
+// CON I2C MANAGER: NO USAR REFRESH CONTINUO
+#ifndef SSD1306_CONTUPDATE
+#define SSD1306_CONTUPDATE    0   // <- antes 1
+#endif
+
+// Habilita integración con I2C Manager
+#ifndef SSD1306_USE_I2C_MANAGER
+#define SSD1306_USE_I2C_MANAGER  1
+#endif
+
+#ifndef SSD1306_DEVICE_READY_TRIALS
+#define SSD1306_DEVICE_READY_TRIALS  5U
+#endif
+
+#ifndef SSD1306_DEVICE_READY_TIMEOUT_MS
+#define SSD1306_DEVICE_READY_TIMEOUT_MS  1000U
+#endif
+
+#ifndef SSD1306_POWER_ON_DELAY_MS
+#define SSD1306_POWER_ON_DELAY_MS  100U
+#endif
+
+#endif /* SSD1306_DEFINES_H_ */

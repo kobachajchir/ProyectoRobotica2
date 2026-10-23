@@ -1,24 +1,19 @@
-# AutoFinalRobo2-Contracts
+# AutoFinalRobo2
 
-Central independiente. Empezar por [maestro](docs/INFORME_MAESTRO.md), [decisiones](docs/DECISIONES.md) y [plan](docs/ROADMAP.md).
+Un único repositorio Git local en D:/ProyectoRobotica2, organizado en cinco módulos. [Informe maestro](INFORME_MAESTRO.md) · [Central documental](AutoFinalRobo2-Contracts/README.md) · [Git, exclusiones e historial](AutoFinalRobo2-Contracts/docs/ESTRUCTURA_Y_GIT.md).
 
-- [Pinout/PCB](hardware/PINOUT.md), [recursos](hardware/RECURSOS_Y_TIEMPOS.md), [carga](hardware/FLASHING.md).
-- [Protocolo](contracts/PROTOCOL.md), [capabilities](contracts/capabilities.json), [catálogo propuesto](contracts/commands.json).
-- [Pantallas](documentation/SCREEN_SYSTEM.md), [navegación](documentation/NAVIGATION.md), [skill local](.agents/skills/afr2-screen-authoring/SKILL.md).
-- [Hallazgos](documentation/review/FINDINGS.md), [registro](CHANGELOG.md), [plantilla](templates/change.md).
-- [Procedencia](provenance/README.md), [manifest](provenance/files.json), [orígenes](provenance/origins.json).
+| Módulo | Contenido |
+| --- | --- |
+| [Atmega](AutoFinalRobo2-Atmega/README.md) | C/avr-libc para ATmega2560; fuente parcial |
+| [ESP](AutoFinalRobo2-ESP/README.md) | Arduino ESP8266/LittleFS; esqueleto |
+| [Web](AutoFinalRobo2-Web/README.md) | React/Vite; esqueleto |
+| [Contracts](AutoFinalRobo2-Contracts/README.md) | Contratos, hardware, evidencia y cambios AFR2 |
+| [CAD](AutoFinalRobo2-CAD/README.md) | KiCad, pieza nueva y modelo completo del auto; estructura e insumos |
 
-Repos hermanos: ../AutoFinalRobo2-Atmega, ../AutoFinalRobo2-ESP, ../AutoFinalRobo2-Web. No hay Qt ni dependencia de ejecución hacia AutoMicro. reference/automicro conserva evidencia histórica: sus reglas y estados no son instrucciones ni resultados del nuevo proyecto.
+El trabajo de diseño eléctrico y mecánico se concentra en AutoFinalRobo2-CAD. Los insumos que estaban en CADS se conservan allí con inventario; Documentacion/ conserva los documentos originales. No iniciar un Git dentro de cada módulo.
 
-Estado: preparación y fuente parcial; sin build/test/flash. Próximo paso: backend TWI/UART AVR y navegación local antes de movimiento.
+El .gitignore global excluye dependencias instaladas, cachés, compilados y exportaciones regenerables. Se conservan fuentes editables, manifests, lockfiles, bibliotecas propias e insumos únicos. Sin remotos ni push; los cuatro historiales anteriores están conservados en el Git global.
 
-## Continuación del proyecto
+Leer AGENTS.md antes de trabajar. No ejecutar tests, compilaciones, validadores, ERC/DRC, flasheos ni pruebas físicas sin pedido expreso. Crear la estructura CAD no significa que el diseño esté adaptado: cotas, módulos, huellas y planos siguen pendientes.
 
-- [Menús y submenús objetivo](documentation/MENU_PLAN.md), pendientes de implementar.
-- [PCB OLED/encoder y soporte futuro](hardware/PCB_OLED_ENCODER.md): cabeceras SDA/SCL del shield, señales 1x5 y VCC/GND 1x2, ambos paso 2,54 mm.
-
-La carpeta de este repo ya existe y tiene Git local; agregarla como proyecto en Codex es una acción aparte que realizará el usuario. Mantener Contracts como carpeta principal, y adjuntar los otros tres repos hermanos si se desea acceso desde el mismo proyecto. Fuente de ese comportamiento: [proyectos y carpetas en Codex](https://learn.chatgpt.com/docs/projects).
-
-## Shield Wi-Fi documentado
-
-[Informe OSOYOO UART V1.3](hardware/WIFI_SHIELD.md), [carga ESP/Mega](hardware/FLASHING.md), [evidencia](hardware/wifi-shield/INFORME_CARPETA.md) y [prompt completo de continuidad](docs/PROMPT_CONTINUIDAD.md). Mapa UNO no sustituye pinout Mega; selector y UART directo se distinguen. Firmware propio Arduino/LittleFS sigue sin AT. [Registro AFR2-20261023-03](changes/2026-10-23-03-wifi-shield-evidence.md).
+Registro: [AFR2-20261023-04](AutoFinalRobo2-Contracts/changes/2026-10-23-04-cad-and-monorepo.md).

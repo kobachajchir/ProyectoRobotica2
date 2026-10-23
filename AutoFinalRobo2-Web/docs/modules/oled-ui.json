@@ -1,0 +1,18 @@
+{
+  "schema": "afr2-module-1",
+  "id": "web:module/reference/web/src/screens",
+  "title": "Visor OLED, pantallas y acciones",
+  "responsibility": "Identidades, builders, rasterizador/editor y controles permiten estudiar la biblioteca completa; SVG no es captura de pantalla física.",
+  "changes_required": "Portar motor/recursos/estado o transportar framebuffer si se requiere fidelidad. Distinguir acción/invocador/vista. Mismo esquema de navegación que encoder: menú explícito, atrás por ítem; no simular botón físico inexistente. Implementar estados nuevos solo si Mega los reporta. No mantener sensores falsos para rellenar una pantalla.",
+  "evidence": [
+    "reference/web/src/screens",
+    "reference/web/src/features/oledEditor",
+    "reference/web/src/components",
+    "../AutoFinalRobo2-Contracts/documentation/SCREEN_SYSTEM.md"
+  ],
+  "findings": [
+    "AFRDOC-009",
+    "AFRDOC-010"
+  ],
+  "status": "source-documented-not-built"
+}

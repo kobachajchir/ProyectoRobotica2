@@ -1,0 +1,21 @@
+﻿subsystem,parameter,value,unit,source,notes
+motor,model,GM25-370-24140-75-14.5D10,text,PDF motor p1,Especificado para variante; confirmar motor instalado
+motor,rated_voltage,9,V,PDF motor p1,No implica tensión real de batería
+motor,gear_ratio,75,input_rev/output_rev,PDF motor p1,Reducción nominal
+motor,no_load_rpm_output,150,rpm,PDF motor p1,±10%
+motor,rated_rpm_output,100,rpm,PDF motor p1,±10%
+motor,no_load_current_max,0.2,A,PDF motor p1,Motorreductor
+motor,rated_current_max,1.2,A,PDF motor p1,"Motorreductor, nominal bajo carga"
+motor,stall_current_max,4.5,A,PDF motor p1,No continuo
+motor,rated_torque_output,0.2941995,N*m,Derivado de PDF motor p1,3 kgf·cm
+motor,stall_torque_output,0.93163175,N*m,Derivado de PDF motor p1,9.5 kgf·cm
+encoder,encoder_hall_channels,2,A/B,Usuario; manual OSOYOO p5,"Dos señales de fase, sin especificación detallada en ficha"
+encoder,ppr_motor_shaft,11,cycles/rev/channel,Usuario (NO PDF motor),"Hipótesis H1, verificar significado PPR"
+encoder,encoder_supply_min,3.3,V,Usuario (NO PDF motor),Verificar salida real
+encoder,encoder_supply_max,5,V,Usuario (NO PDF motor),Verificar salida real
+encoder,counts_per_output_rev_x4,3300,count/rev,Derivado bajo H1,"11*75*4, supuesto de cuadratura x4"
+chassis,wheel_diameter_approx,80,mm,Manual OSOYOO p4,"Nominal visual, verificar real"
+chassis,ideal_forward_speed_no_load,0.628319,m/s,Derivado 150 rpm y D80,No es velocidad real
+chassis,ideal_forward_speed_rated,0.418879,m/s,Derivado 100 rpm y D80,No es velocidad real
+power,four_motor_rated_total_max,4.8,A,Derivado de PDF,Suma de cuatro máximos indicados
+power,four_motor_stall_total_max,18.0,A,Derivado de PDF,Condición teórica simultánea

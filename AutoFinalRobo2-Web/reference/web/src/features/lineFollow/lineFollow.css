@@ -1,0 +1,43 @@
+.line-device-panel { border: 1px solid var(--ui-ring); border-radius: var(--ui-radius, 8px); background: var(--ui-panel); color: var(--ui-text); padding: 1rem; display: grid; gap: .9rem; }
+.line-device-panel h2, .line-device-panel h3, .line-device-panel p { margin: 0; }
+.line-device-panel p { color: var(--ui-subtle); line-height: 1.5; }
+.line-device-actions { display: flex; flex-wrap: wrap; gap: .75rem; }
+.line-device-actions .transport-action-button { flex: 1 1 230px; min-width: 0; }
+.line-device-status { display: flex; flex-wrap: wrap; gap: .65rem 1.25rem; font-size: .875rem; }
+.line-device-status strong { font-variant-numeric: tabular-nums; color: var(--ui-text); }
+.line-device-instructions { display: grid; gap: .75rem; padding: .85rem; border: 1px solid var(--ui-ring); border-radius: var(--ui-radius, 8px); }
+.line-device-instructions progress { width: 100%; accent-color: var(--ui-accent); }
+.line-device-panel .line-device-warning { color: var(--ui-amber); }
+.line-device-modal { width: min(760px, calc(100vw - 2rem)); max-height: 85dvh; overflow-y: auto; padding: 1.25rem; color: var(--ui-text); background: var(--ui-bg-1, var(--ui-panel)); }
+.line-device-modal > .line-device-actions, .line-device-modal > .app-button { margin-top: 1rem; }
+.line-follow-panel { margin-bottom: 1rem; }
+.line-follow-panel__header { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+.line-follow-panel__header h2 { margin-top: .3rem; font-size: clamp(1.25rem, 2.5vw, 1.6rem); font-weight: 850; letter-spacing: -.025em; }
+.line-follow-panel .line-follow-panel__intro { margin-top: .45rem; max-width: 44rem; font-size: .85rem; }
+.line-follow-panel__mode { padding: .45rem .7rem; border: 1px solid var(--ui-ring); border-radius: var(--ui-radius); color: var(--ui-muted); background: var(--ui-field); font-size: .75rem; font-weight: 750; }
+.line-follow-panel__mode[data-ready="true"] { color: var(--ui-accent); border-color: var(--ui-accent-soft); background: var(--ui-accent-trace); }
+.line-follow-panel .line-follow-panel__footnote { padding-top: .75rem; border-top: 1px solid var(--ui-ring); font-size: .75rem; }
+@media (max-width: 640px) { .line-device-actions { flex-direction: column; } .line-device-actions .transport-action-button { flex: auto; width: 100%; } }
+
+/* D-20: references are hardware-confirmed conditions, not manual toggles. */
+.line-reference-calibration { padding:1.5rem; gap:1.5rem; }
+.line-reference-calibration > header { display:grid; gap:.7rem; }
+.line-reference-calibration > header h2 { font-size:1.35rem; line-height:1.25; }
+.line-reference-calibration > header p { font-size:.9rem; line-height:1.65; }
+.line-reference-checks { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:1rem; }
+.line-reference-checks .condition-status { padding:1.25rem; min-height:100px; align-items:flex-start; gap:.85rem; }
+.line-reference-checks .condition-status__label { font-size:1rem; }
+.line-reference-checks .condition-status__detail { font-size:.85rem; line-height:1.6; }
+.line-reference-calibration .line-device-instructions { padding:1.25rem; gap:1rem; background:var(--ui-field); }
+.line-reference-calibration .app-button { min-height:48px; padding:.85rem 1.25rem; font-size:.9rem; font-weight:650; justify-self:start; border:1px solid var(--ui-ring); border-radius:var(--ui-radius); }
+.line-reference-calibration .line-device-actions { gap:1rem; }
+.line-reference-calibration .line-device-actions .transport-action-button { min-height:80px; padding:1.1rem; }
+.line-reference-calibration > details { padding:1rem 1.25rem; border:1px solid var(--ui-ring); border-radius:var(--ui-radius); background:var(--ui-field); }
+.line-reference-calibration > details summary { cursor:pointer; min-height:32px; font-weight:650; }
+.line-reference-calibration > details p { margin-top:.7rem; overflow-wrap:anywhere; }
+.motor-dialog .line-reference-calibration { padding:0; border:0; background:transparent; }
+@media(max-width:700px) {
+ .line-reference-checks { grid-template-columns:1fr; }
+ .line-reference-calibration { padding:1.1rem; gap:1.25rem; }
+ .line-reference-calibration .app-button { width:100%; justify-self:stretch; }
+}

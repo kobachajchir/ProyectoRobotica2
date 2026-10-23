@@ -1,0 +1,6 @@
+# Contenedores CAD: conservar bytes originales y evitar diffs binarios ilegibles.
+*.FCStd binary
+*.FCBak binary
+
+# Mantener hashes de insumos originales también al clonar en otro sistema.
+/reference/supplied/** -text

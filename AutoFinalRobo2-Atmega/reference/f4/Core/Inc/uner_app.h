@@ -1,0 +1,195 @@
+/*
+ * uner_app.h - UNER v2 application wiring for ESP WEB backend.
+ */
+#ifndef INC_UNER_APP_H_
+#define INC_UNER_APP_H_
+
+#include <stdint.h>
+
+#include "uner_core.h"
+#include "uner_handle.h"
+#include "wifi_bridge_types.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+void UNER_App_OnAtBridgeEvent(const WifiBridge_Event *event);
+
+typedef struct __attribute__((packed))
+{
+    uint8_t asset_id;
+} BinaryAssetRequest_t;
+
+typedef struct __attribute__((packed))
+{
+    uint8_t status;
+    uint8_t asset_id;
+    uint8_t width;
+    uint8_t height;
+    uint16_t total_len;
+    uint16_t offset;
+    uint8_t data_len;
+} BinaryAssetChunkHeader_t;
+
+#include "binary_asset_types.h"
+
+typedef enum
+{
+    UNER_REMOTE_ACTION_ACCEPTED = 0u,
+    UNER_REMOTE_ACTION_SCREEN_MISMATCH = 2u,
+    UNER_REMOTE_ACTION_INVALID_STATE = 3u,
+    UNER_REMOTE_ACTION_NOT_CONSUMED = 4u
+} UNER_RemoteActionStatus_t;
+
+#define UNER_SELECTION_INDEX_INVALID             WIFI_BRIDGE_SELECTION_INDEX_INVALID
+#define UNER_SELECTION_PAYLOAD_SIZE              WIFI_BRIDGE_SELECTION_PAYLOAD_SIZE
+
+#define UNER_CMD_ID_SET_MODE_AP                  WIFI_BRIDGE_CMD_ID_SET_MODE_AP
+#define UNER_CMD_ID_SET_MODE_STA                 WIFI_BRIDGE_CMD_ID_SET_MODE_STA
+#define UNER_CMD_ID_SET_CREDENTIALS              WIFI_BRIDGE_CMD_ID_SET_CREDENTIALS
+#define UNER_CMD_ID_CLEAR_CREDENTIALS            WIFI_BRIDGE_CMD_ID_CLEAR_CREDENTIALS
+#define UNER_CMD_ID_START_SCAN                   WIFI_BRIDGE_CMD_ID_START_SCAN
+#define UNER_CMD_ID_GET_SCAN_RESULTS             WIFI_BRIDGE_CMD_ID_GET_SCAN_RESULTS
+#define UNER_CMD_ID_REBOOT_ESP                   WIFI_BRIDGE_CMD_ID_REBOOT_ESP
+#define UNER_CMD_ID_FACTORY_RESET                WIFI_BRIDGE_CMD_ID_FACTORY_RESET
+#define UNER_CMD_ID_STOP_SCAN                    WIFI_BRIDGE_CMD_ID_STOP_SCAN
+#define UNER_CMD_ID_RESET_MCU                    WIFI_BRIDGE_CMD_ID_RESET_MCU
+#define UNER_CMD_ID_SET_AP_FALLBACK               WIFI_BRIDGE_CMD_ID_SET_AP_FALLBACK
+#define UNER_CMD_ID_LINE_CALIBRATION_CONTROL WIFI_BRIDGE_CMD_ID_LINE_CALIBRATION_CONTROL
+#define UNER_CMD_ID_GET_LINE_STATE WIFI_BRIDGE_CMD_ID_GET_LINE_STATE
+#define UNER_CMD_ID_SET_LINE_FOLLOW WIFI_BRIDGE_CMD_ID_SET_LINE_FOLLOW
+#define UNER_CMD_ID_GET_AP_FALLBACK               WIFI_BRIDGE_CMD_ID_GET_AP_FALLBACK
+#define UNER_CMD_ID_WIFI_GET_DETAIL              WIFI_BRIDGE_CMD_ID_WIFI_GET_DETAIL
+#define UNER_CMD_ID_GET_STATUS                   WIFI_BRIDGE_CMD_ID_GET_STATUS
+#define UNER_CMD_ID_PING                         WIFI_BRIDGE_CMD_ID_PING
+#define UNER_CMD_ID_GET_PREFERENCES              WIFI_BRIDGE_CMD_ID_GET_PREFERENCES
+#define UNER_CMD_ID_REQUEST_FIRMWARE             WIFI_BRIDGE_CMD_ID_REQUEST_FIRMWARE
+#define UNER_CMD_ID_ECHO                         WIFI_BRIDGE_CMD_ID_ECHO
+#define UNER_CMD_ID_SET_ENCODER_FAST             WIFI_BRIDGE_CMD_ID_SET_ENCODER_FAST
+#define UNER_CMD_ID_GET_CONNECTED_USERS          WIFI_BRIDGE_CMD_ID_GET_CONNECTED_USERS
+#define UNER_CMD_ID_GET_USER_INFO                WIFI_BRIDGE_CMD_ID_GET_USER_INFO
+#define UNER_CMD_ID_GET_INTERFACES_CONNECTED     WIFI_BRIDGE_CMD_ID_GET_INTERFACES_CONNECTED
+#define UNER_CMD_ID_GET_CREDENTIALS              WIFI_BRIDGE_CMD_ID_GET_CREDENTIALS
+#define UNER_CMD_ID_CONNECT_WIFI                 WIFI_BRIDGE_CMD_ID_CONNECT_WIFI
+#define UNER_CMD_ID_DISCONNECT_WIFI              WIFI_BRIDGE_CMD_ID_DISCONNECT_WIFI
+#define UNER_CMD_ID_SET_AP_CONFIG                WIFI_BRIDGE_CMD_ID_SET_AP_CONFIG
+#define UNER_CMD_ID_START_AP                     WIFI_BRIDGE_CMD_ID_START_AP
+#define UNER_CMD_ID_STOP_AP                      WIFI_BRIDGE_CMD_ID_STOP_AP
+#define UNER_CMD_ID_GET_CONNECTED_USERS_MODE     WIFI_BRIDGE_CMD_ID_GET_CONNECTED_USERS_MODE
+#define UNER_CMD_ID_SET_AUTO_RECONNECT           WIFI_BRIDGE_CMD_ID_SET_AUTO_RECONNECT
+#define UNER_CMD_ID_AUTH_VALIDATE_PIN            WIFI_BRIDGE_CMD_ID_AUTH_VALIDATE_PIN
+#define UNER_CMD_ID_GET_CURRENT_SCREEN           WIFI_BRIDGE_CMD_ID_GET_CURRENT_SCREEN
+#define UNER_CMD_ID_MENU_ITEM_CLICK              WIFI_BRIDGE_CMD_ID_MENU_ITEM_CLICK
+#define UNER_CMD_ID_TRIGGER_ENCODER_BUTTON       WIFI_BRIDGE_CMD_ID_TRIGGER_ENCODER_BUTTON
+#define UNER_CMD_ID_TRIGGER_USER_BUTTON          WIFI_BRIDGE_CMD_ID_TRIGGER_USER_BUTTON
+#define UNER_CMD_ID_REQUEST_SCREEN_PAGE          WIFI_BRIDGE_CMD_ID_REQUEST_SCREEN_PAGE
+#define UNER_CMD_ID_TRIGGER_ENCODER_ROTATE_LEFT  WIFI_BRIDGE_CMD_ID_TRIGGER_ENCODER_ROTATE_LEFT
+#define UNER_CMD_ID_TRIGGER_ENCODER_ROTATE_RIGHT WIFI_BRIDGE_CMD_ID_TRIGGER_ENCODER_ROTATE_RIGHT
+#define UNER_CMD_ID_AUTH_PIN_GRANTED             WIFI_BRIDGE_CMD_ID_AUTH_PIN_GRANTED
+#define UNER_CMD_ID_BINARY_ASSET_STREAM          WIFI_BRIDGE_CMD_ID_BINARY_ASSET_STREAM
+#define UNER_CMD_ID_GET_CAR_MODE                 WIFI_BRIDGE_CMD_ID_GET_CAR_MODE
+#define UNER_CMD_ID_WIFI_CREDENTIALS_WEB_RESULT  WIFI_BRIDGE_CMD_ID_WIFI_CREDENTIALS_WEB_RESULT
+#define UNER_CMD_ID_AUTH_REMOTE_RESULT           WIFI_BRIDGE_CMD_ID_AUTH_REMOTE_RESULT
+#define UNER_CMD_ID_SET_I2C_POLICY               WIFI_BRIDGE_CMD_ID_SET_I2C_POLICY
+#define UNER_CMD_ID_GET_I2C_POLICY               WIFI_BRIDGE_CMD_ID_GET_I2C_POLICY
+#define UNER_CMD_ID_GET_MPU_SNAPSHOT             WIFI_BRIDGE_CMD_ID_GET_MPU_SNAPSHOT
+#define UNER_CMD_ID_SET_MPU_STREAM               WIFI_BRIDGE_CMD_ID_SET_MPU_STREAM
+#define UNER_CMD_ID_STOP_MPU_STREAM              WIFI_BRIDGE_CMD_ID_STOP_MPU_STREAM
+#define UNER_CMD_ID_SET_PREFERENCES              WIFI_BRIDGE_CMD_ID_SET_PREFERENCES
+#define UNER_CMD_ID_GET_TELEMETRY_SNAPSHOT       WIFI_BRIDGE_CMD_ID_GET_TELEMETRY_SNAPSHOT
+#define UNER_CMD_ID_GET_BALANCE_PID              WIFI_BRIDGE_CMD_ID_GET_BALANCE_PID
+#define UNER_CMD_ID_SET_BALANCE_PID              WIFI_BRIDGE_CMD_ID_SET_BALANCE_PID
+#define UNER_CMD_ID_GET_CONTROL_SNAPSHOT         WIFI_BRIDGE_CMD_ID_GET_CONTROL_SNAPSHOT
+#define UNER_CMD_ID_GET_FIRMWARE_INFO            WIFI_BRIDGE_CMD_ID_GET_FIRMWARE_INFO
+#define UNER_CMD_ID_GET_AP_CONFIG                WIFI_BRIDGE_CMD_ID_GET_AP_CONFIG
+#define UNER_CMD_ID_SET_AP_CONFIG_DESIRED             WIFI_BRIDGE_CMD_ID_SET_AP_CONFIG_DESIRED
+#define UNER_CMD_ID_GET_BUILD_INFO               WIFI_BRIDGE_CMD_ID_GET_BUILD_INFO
+#define UNER_CMD_ID_GET_BOOT_REPORT              WIFI_BRIDGE_CMD_ID_GET_BOOT_REPORT
+#define UNER_CMD_ID_GET_IR_SNAPSHOT              WIFI_BRIDGE_CMD_ID_GET_IR_SNAPSHOT
+#define UNER_CMD_ID_SET_IR_STREAM                WIFI_BRIDGE_CMD_ID_SET_IR_STREAM
+#define UNER_CMD_ID_STOP_IR_STREAM               WIFI_BRIDGE_CMD_ID_STOP_IR_STREAM
+#define UNER_CMD_ID_OLED_CANVAS_TRANSFER         WIFI_BRIDGE_CMD_ID_OLED_CANVAS_TRANSFER
+#define UNER_CMD_ID_WIFI_CREDENTIALS_FLOW        WIFI_BRIDGE_CMD_ID_WIFI_CREDENTIALS_FLOW
+#define UNER_CMD_ID_AP_CLIENTS_PAGE               WIFI_BRIDGE_CMD_ID_AP_CLIENTS_PAGE
+#define UNER_CMD_ID_AP_CLIENT_DISCONNECT          WIFI_BRIDGE_CMD_ID_AP_CLIENT_DISCONNECT
+#define UNER_CMD_ID_GET_EXTENSION_PROFILE         WIFI_BRIDGE_CMD_ID_GET_EXTENSION_PROFILE
+#define UNER_CMD_ID_SET_EXTENSION_PROFILE         WIFI_BRIDGE_CMD_ID_SET_EXTENSION_PROFILE
+#define UNER_CMD_ID_GET_EXTENSION_PIN_MAP         WIFI_BRIDGE_CMD_ID_GET_EXTENSION_PIN_MAP
+#define UNER_CMD_ID_REBOOT_INTO_PROFILE           WIFI_BRIDGE_CMD_ID_REBOOT_INTO_PROFILE
+#define UNER_CMD_ID_GET_IR_EMITTERS       WIFI_BRIDGE_CMD_ID_GET_IR_EMITTERS
+#define UNER_CMD_ID_SET_IR_EMITTERS       WIFI_BRIDGE_CMD_ID_SET_IR_EMITTERS
+#define UNER_CMD_ID_GET_MOTION_STATE WIFI_BRIDGE_CMD_ID_GET_MOTION_STATE
+#define UNER_CMD_ID_SET_BALANCE_ENABLED WIFI_BRIDGE_CMD_ID_SET_BALANCE_ENABLED
+#define UNER_CMD_ID_SET_MOTION WIFI_BRIDGE_CMD_ID_SET_MOTION
+#define UNER_CMD_ID_STOP_MOTION WIFI_BRIDGE_CMD_ID_STOP_MOTION
+#define UNER_CMD_ID_SET_MOTOR_TEST WIFI_BRIDGE_CMD_ID_SET_MOTOR_TEST
+
+#define UNER_WIFI_WEB_CREDENTIALS_STATUS_SUCCESS WIFI_BRIDGE_WIFI_WEB_CREDENTIALS_STATUS_SUCCESS
+#define UNER_WIFI_WEB_CREDENTIALS_STATUS_FAILED  WIFI_BRIDGE_WIFI_WEB_CREDENTIALS_STATUS_FAILED
+#define UNER_WIFI_WEB_CREDENTIALS_STATUS_TIMEOUT WIFI_BRIDGE_WIFI_WEB_CREDENTIALS_STATUS_TIMEOUT
+#define UNER_WIFI_WEB_CREDENTIALS_STATUS_CANCELED WIFI_BRIDGE_WIFI_WEB_CREDENTIALS_STATUS_CANCELED
+
+#define UNER_ESP_REBOOT_BOOT_MODE_NORMAL         WIFI_BRIDGE_ESP_REBOOT_BOOT_MODE_NORMAL
+#define UNER_ESP_REBOOT_BOOT_MODE_AP             WIFI_BRIDGE_ESP_REBOOT_BOOT_MODE_AP
+
+#define UNER_EVT_ID_SCREEN_CHANGED               WIFI_BRIDGE_EVT_ID_SCREEN_CHANGED
+#define UNER_EVT_ID_MENU_SELECTION_CHANGED       WIFI_BRIDGE_EVT_ID_MENU_SELECTION_CHANGED
+#define UNER_EVT_ID_CAR_MODE_CHANGED             WIFI_BRIDGE_EVT_ID_CAR_MODE_CHANGED
+#define UNER_EVT_ID_IR_EMITTERS_CHANGED   WIFI_BRIDGE_EVT_ID_IR_EMITTERS_CHANGED
+#define UNER_EVT_ID_MPU_STREAM                   WIFI_BRIDGE_EVT_ID_MPU_STREAM
+#define UNER_EVT_ID_IR_STREAM                    WIFI_BRIDGE_EVT_ID_IR_STREAM
+#define UNER_EVT_ID_MCU_BOOT_REPORT              WIFI_BRIDGE_EVT_ID_MCU_BOOT_REPORT
+
+#define UNER_BINARY_ASSET_ID_GITHUB_QR           WIFI_BRIDGE_BINARY_ASSET_ID_GITHUB_QR
+#define UNER_BINARY_ASSET_CHUNK_HEADER_SIZE      9u
+#define UNER_BINARY_ASSET_MAX_BYTES              WIFI_BRIDGE_BINARY_ASSET_MAX_BYTES
+
+UNER_Status UNER_App_Init(WifiBridge_Handle *bridge);
+void UNER_App_Poll(void);
+UNER_Status UNER_App_SendCommand(uint8_t cmd, const uint8_t *payload, uint8_t len);
+UNER_Status UNER_App_SendUsbAlive(uint32_t alive_count);
+void UNER_App_OnUsbDtrChanged(uint8_t connected);
+void UNER_App_OnNrfLinkChanged(uint8_t connected);
+UNER_Status UNER_App_SendWifiCredentialRequest(const char *ssid);
+UNER_Status UNER_App_RequestWifiNetworkDetail(const char *ssid);
+UNER_Status UNER_App_SendEspReboot(uint8_t boot_mode);
+UNER_Status UNER_App_SendStartupEspReboot(void);
+uint8_t UNER_App_IsWaitingValidation(void);
+uint8_t UNER_App_GetWaitingCommandId(void);
+uint8_t UNER_App_IsMcuResetPending(void);
+uint8_t UNER_App_GetBootloaderVersion(uint32_t *version);
+
+UNER_Status UNER_App_ReportScreenChanged(uint32_t screen_code, uint8_t source);
+UNER_Status UNER_App_ReportNotificationChanged(uint32_t screen_code,
+                                               uint8_t source,
+                                               uint16_t remaining_ms,
+                                               uint16_t total_ms);
+UNER_Status UNER_App_ReportMenuSelectionChanged(uint32_t screen_code,
+                                                uint8_t selected_index,
+                                                uint8_t item_count,
+                                                uint8_t source);
+UNER_Status UNER_App_ReportCarModeChanged(uint8_t mode);
+UNER_Status UNER_App_ReportUsbQtState(uint8_t connected);
+UNER_Status UNER_App_RequestBinaryAsset(uint8_t asset_id);
+uint8_t UNER_App_GetBinaryAsset(uint8_t asset_id, BinaryAssetView_t *asset);
+void UNER_App_SetRouterForwardingEnabled(uint8_t enabled);
+uint8_t UNER_App_IsRouterForwardingEnabled(void);
+void UNER_App_GetRouterSnapshot(UNER_RouterSnapshot *out);
+void UNER_App_GetRouterPacketSnapshot(uint8_t tx_view,
+                                      uint8_t transport_id,
+                                      UNER_RouterSnapshot *out);
+
+void UNER_App_OnUart1TxComplete(void);
+void UNER_App_NotifyUart1Rx(void);
+void UNER_App_FeedUart1Bytes(const uint8_t *data, uint16_t len);
+void UNER_App_OnAtNetworkDisconnected(void);
+uint16_t UNER_App_Uart1RxGetWritePos(void);
+void UNER_App_ResetUart1RxPos(void);
+
+void UNER_App_OnAtBridgeEvent(const WifiBridge_Event *event);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* INC_UNER_APP_H_ */

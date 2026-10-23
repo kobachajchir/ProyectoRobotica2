@@ -1,0 +1,17 @@
+{
+  "schema": "afr2-module-1",
+  "id": "web:module/reference/web/public",
+  "title": "Recursos, estilos y empaquetado",
+  "responsibility": "Se conservan recursos necesarios para leer/reutilizar la UI anterior; el GLB es el robot previo y no representa Mecanum.",
+  "changes_required": "Crear identidad/modelo del nuevo robot; retirar 3D pesado si excede LittleFS/bundle. El package activo es React/Vite mínimo, sin postbuild hacia otro repo. El empaquetador produce artifacts/littlefs/dist dentro de Web, no publica ni flashea. Versiones iniciales tomadas del manifest origen; falta instalar/fijar lock propio y revisar requisitos Node. No se ejecutó build/npm.",
+  "evidence": [
+    "reference/web/public",
+    "reference/web/src/assets",
+    "reference/web/package.json.upstream.txt",
+    "tools/package-web.mjs"
+  ],
+  "findings": [
+    "AFRDOC-005"
+  ],
+  "status": "source-documented-not-built"
+}
