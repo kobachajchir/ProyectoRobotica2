@@ -1,0 +1,313 @@
+
+
+--- PAGINA 1 ---
+ROBOTICA 2  /  OSOYOO MECANUM  /  ANEXO MOTOR GM25-370
+1
+ANEXO DE INGENIERÍA
+Motorreductor GM25-370
+y encoder Hall incremental
+Consolidación de la hoja de datos del modelo GM25-370-24140-75-14.5D10 y la
+información de encoder comunicada por el usuario. Aplicación: robot OSOYOO 4WD
+con ruedas Mecanum.
+ATENCIÓN: la ficha de dos páginas caracteriza un motorreductor de 9 V y relación
+75:1, pero NO especifica encoder, PPR ni un conector de seis posiciones. Es
+indispensable verificar que la variante instalada en el vehículo sea la misma.
+Síntesis para la integración
+Bloque
+Dato establecido
+Grado de evidencia
+Motorreductor
+9 V · 75:1 · 150 rpm sin carga · 100 rpm nominal bajo carga
+Ficha del modelo exacto,
+pág. 1
+Encoder
+Dos canales Hall A/B · 11 PPR · 3,3-5 V
+Información de familia
+aportada por usuario; sin
+confirmación en la ficha
+Hardware del auto
+4 motores · puente H Model Y · ruedas Mecanum
+Manual OSOYOO, págs. 4, 5 y
+14-17
+Firmware futuro
+Medición de velocidad, posición y control por rueda
+Propuesta de diseño, no
+implementada
+Jerarquía de evidencia: (1) hoja de datos para valores nominales del modelo; (2) manual OSOYOO para
+cableado del vehículo; (3) descripción complementaria del encoder para hipótesis inicial; (4) cálculos de
+ingeniería derivados, sujetos a validación.
+
+
+--- PAGINA 2 ---
+ROBOTICA 2  /  OSOYOO MECANUM  /  ANEXO MOTOR GM25-370
+2
+1. Especificaciones identificadas en el PDF
+Modelo declarado: GM25-370-24140-75-14.5D10. Valores de las tablas 1 a 4 de la página 1 del
+documento «GM25-370-motor specification.pdf».
+Magnitud
+Valor de ficha
+Interpretación
+Tensión nominal
+9,0 V DC
+Condición eléctrica de ensayo
+Relación de reducción
+1/75
+75 vueltas de rotor por una de salida (aprox.)
+RPM motor sin carga
+11.500 ±10 %
+Antes del reductor
+RPM salida sin carga
+150 ±10 %
+Después del reductor
+RPM salida nominal bajo carga
+100 ±10 %
+Punto operativo indicado
+Corriente motor sin carga
+180 mA máx.
+Solo motor
+Corriente conjunto sin carga
+200 mA máx.
+Motorreductor
+Corriente nominal bajo carga
+1.200 mA máx.
+Dato de ensayo del conjunto
+Corriente de bloqueo
+4.500 mA máx.
+No constituye un régimen continuo seguro
+Torque nominal salida
+3.000 gf·cm (3 kgf·cm)
+Equivalente a ≈0,294 N·m
+Torque bloqueo salida
+9,5 kgf·cm
+Equivalente a ≈0,932 N·m
+Ruido a 30 cm
+56 dB
+Condición de prueba de ficha
+Lectura del gráfico característico
+La página 2 incluye curvas de velocidad, corriente y eficiencia frente al torque. La curva de velocidad
+decrece hacia el bloqueo y la eficiencia tiene un máximo intermedio. La figura no es una tabla de puntos
+calibrados: no se extrajeron valores numéricos adicionales del gráfico.
+
+
+--- PAGINA 3 ---
+ROBOTICA 2  /  OSOYOO MECANUM  /  ANEXO MOTOR GM25-370
+3
+2. Geometría y consecuencias mecánicas
+Dimensión
+Valor declarado
+Diámetro exterior del cuerpo
+≈25 mm, familia GM25
+Eje de salida
+Ø4 mm, cara plana D3,5
+Eje exterior útil
+14,5 mm
+Juego axial
+0,05–0,50 mm
+Agujeros de montaje
+Rosca M3 (según dibujo)
+Plano dimensional de la ficha original, pág. 2:
+Relación reducción - velocidad
+n_salida ≈ n_motor / 75. Los 11.500 rpm del motor corresponden a 153,3 rpm teóricos de salida,
+coherentes con las 150 rpm declaradas (por redondeo y tolerancias).
+Velocidad traslacional ideal de la plataforma
+Para rueda de diámetro nominal aproximado D = 80 mm ilustrada en el manual OSOYOO (pág. 4), el
+perímetro teórico es πD ≈ 0,2513 m. Si no hay deslizamiento y las cuatro ruedas coordinan marcha recta:
+Punto
+Cálculo
+Resultado
+Sin carga (150 rpm)
+π × 0,080 × 150 / 60
+≈0,628 m/s
+Carga nominal (100 rpm)
+π × 0,080 × 100 / 60
+≈0,419 m/s
+Advertencia: son velocidades geométricas ideales, no velocidades medidas del robot. Las ruedas
+Mecanum tienen pérdidas y deslizamientos dependientes de la superficie, carga, rodillos y dirección de
+desplazamiento.
+
+
+--- PAGINA 4 ---
+ROBOTICA 2  /  OSOYOO MECANUM  /  ANEXO MOTOR GM25-370
+4
+3. Encoder incremental: datos y cálculo de resolución
+La cifra «11 PPR» y la alimentación «3,3-5 V» provienen de la descripción
+complementaria, NO de la hoja técnica adjunta. Hay que comprobar si 11 PPR
+significa ciclos de un canal por vuelta de rotor o cuentas cuadratura ya decodificadas.
+Hipótesis de trabajo H1: el encoder está en el eje del motor, entrega 11 ciclos por vuelta en cada canal A/B
+y se usa decodificación cuadratura x4. Entonces:
+Magnitud
+Fórmula
+Resultado
+Pulsos/canal y vuelta de salida
+11 × 75
+825 ciclos
+Cuentas x4 por vuelta de salida
+11 × 75 × 4
+3.300 cuentas
+Resolución angular ideal
+360° / 3.300
+0,1091° por cuenta
+Distancia ideal con D=80 mm
+π × 80 mm / 3.300
+0,0762 mm por cuenta
+Frecuencia de cuentas x4 a 150 rpm
+3.300 × 150 / 60
+8.250 eventos/s por rueda
+Eventos máximos teóricos en 4 ruedas
+4 × 8.250
+33.000 eventos/s
+Las cuentas representan resolución de detección y no equivalen a exactitud de desplazamiento. El
+juego del reductor, elasticidad, holguras y deslizamiento Mecanum pueden dominar el error de odometría.
+Obtención de velocidad y sentido
+En decodificación en cuadratura se observa la sucesión de estados (A,B). Un ciclo típico es 00 → 01 → 11 →
+10 → 00; la secuencia inversa indica el otro sentido, pero la asignación de signo debe calibrarse por rueda.
+A partir de cuentas ΔN durante Δt:
+rpm_salida = (ΔN / 3.300) × (60 / Δt[s]), bajo H1. Y ω_salida = (2π / 3.300) × (ΔN / Δt) en rad/s.
+Si el fabricante usa «11 PPR» para cuentas ya cuadruplicadas, las ecuaciones anteriores sobreestimarían la
+resolución por un factor de cuatro. Comprobar mediante una vuelta manual de eje de salida y un contador
+de transiciones.
+
+
+--- PAGINA 5 ---
+ROBOTICA 2  /  OSOYOO MECANUM  /  ANEXO MOTOR GM25-370
+5
+4. Pinout: dos versiones que no deben confundirse
+Comparación de dos fuentes no equivalentes. El manual de OSOYOO muestra un encabezado rotulado
+M+, M−, VCC, GND, S1, S2, mientras que la descripción genérica recibida propone M1, GND, C1, VCC, C2,
+M2.
+Orden mostrado
+Manual OSOYOO (pág. 5)
+Descripción complementaria
+1
+M+ / alimentación motor
+M1 / alimentación motor
+2
+M− / retorno/control motor
+GND / retorno encoder
+3
+VCC / alimentación Hall
+C1 / señal A
+4
+GND / retorno Hall
+VCC / alimentación Hall
+5
+S1 / señal Hall 1
+C2 / señal B
+6
+S2 / señal Hall 2
+M2 / alimentación motor
+NO conectar el arnés contando posiciones del listado genérico. Una asignación
+errónea puede inyectar la tensión de motor en entradas Hall o GPIO y dañar los
+circuitos. Verificar rotulado real, colores, continuidad y orden de referencia del
+conector.
+Qué aporta la fotografía del motor original
+La pág. 2 de la ficha muestra un motorreductor con terminales de motor y eje posterior visible, pero no un
+módulo Hall montado. El kit OSOYOO sí ilustra una pequeña placa Hall fijada en la parte posterior (manual,
+pág. 5). Esta diferencia impide asegurar, solo por la ficha, que su variante incluya el conjunto completo de
+encoder.
+Esquema funcional de conexión (no pinout eléctrico)
+Lógica de movimiento
+objetivos rueda
+Control de velocidad
+4 canales
+Driver Model Y
+H-bridge + PWM
+4 motores DC
+reductores 75:1
+4 encoders Hall A/B
+medición: n, dirección, posición
+Las entradas GPIO y el hardware de captura para A/B se elegirán en la nueva plataforma de control. No se
+presume que el antiguo driver o los GPIO del Mega 2560 vayan a mantenerse.
+
+
+--- PAGINA 6 ---
+ROBOTICA 2  /  OSOYOO MECANUM  /  ANEXO MOTOR GM25-370
+6
+5. Dimensionamiento eléctrico preliminar
+Situación
+Por motor
+Cuatro motores
+Sin carga, máximo declarado
+0,20 A
+0,80 A
+Carga nominal, máximo declarado
+1,20 A
+4,80 A
+Bloqueo, máximo declarado
+4,50 A
+18,00 A
+Potencia eléctrica a 9 V en carga nominal
+10,8 W
+43,2 W
+Potencia eléctrica a 9 V con I de bloqueo máxima
+40,5 W
+162 W
+La suma de las corrientes nominales es una referencia de diseño (no una medición de consumo real). El
+bloqueo es un evento transitorio crítico: considerar corriente de arranque, protección, disipación y caída de
+tensión de batería/driver. La potencia de bloqueo es solo el producto eléctrico U×I a 9 V; no una potencia
+mecánica disponible.
+Compatibilidad de la alimentación del automóvil
+El manual OSOYOO lista dos celdas 18650 de 3,7 V. Si están conectadas en serie: 7,4 V nominal y ≈8,4
+V con carga completa, por debajo de los 9 V nominales de esta ficha. El comportamiento, corriente y
+velocidad deben ensayarse a la tensión real en bornes del motor. La arquitectura exacta del portabaterías
+se confirmará con inspección física.
+Antes de adoptar o conservar la placa Model Y verificar sus límites de corriente continua/pico por
+canal, rango de alimentación, pérdidas, topología de potencia, disipación térmica y protección. La
+documentación suministrada no prueba que soporte 4,5 A de bloqueo por motor.
+Niveles lógicos del encoder
+La descripción del usuario afirma alimentación Hall entre 3,3 y 5 V, pero no determina el tipo de salida
+(push-pull, colector abierto), necesidad de pull-up ni nivel alto real. Para una nueva MCU de 3,3 V, verificar
+compatibilidad de señal con instrumentación antes del conexionado.
+
+
+--- PAGINA 7 ---
+ROBOTICA 2  /  OSOYOO MECANUM  /  ANEXO MOTOR GM25-370
+7
+6. Reutilización conceptual en firmware independiente
+El sketch Arduino del sistema de seguimiento anterior comandaba cada rueda por dos bits de dirección
+y un PWM, sin usar la lectura de los encoders. Con esta nueva información podemos definir interfaces
+independientes del fabricante y del framework.
+Componente lógico
+Entrada / salida
+Responsabilidad
+CapturaEncoder[4]
+A/B → posición y velocidad
+Decodificación, filtro y temporización
+ControlVelocidad[4]
+ω_ref, ω_med → control
+Control regulado por rueda
+ControlMotor[4]
+acción → dir/PWM
+Aplicación eléctrica al driver
+CinemáticaMecanum
+vx, vy, wz → 4 ω_ref
+Relación entre velocidades de chasis y ruedas
+Supervisión
+corriente/tiempo/comandos
+Parada, fallas y límites de seguridad
+Modelo inicial para pruebas
+Etapa 1: establecer polaridad y orden de canales; Etapa 2: obtener pulsos por revolución y calibrar
+sentidos; Etapa 3: medir curva PWM-RPM bajo tensión/carga conocidas; Etapa 4: implementar control de
+velocidad individual; Etapa 5: parametrizar cinemática inversa Mecanum y validar movimiento del chasis.
+Datos todavía pendientes
+Parámetro a confirmar
+Prueba / fuente recomendada
+La variante instalada coincide con esta ficha
+Etiqueta/modelo, dimensiones y ensayo de velocidad
+Resolución Hall (11 PPR) y semántica del dato
+Contar transiciones en 1-10 vueltas de salida
+Orden eléctrico real del arnés
+Placa y conector físicos; continuidad con sistema apagado
+Niveles A/B y tipo de salida
+Osciloscopio/analizador lógico con alimentación acotada
+Corriente máxima real del driver
+Ficha del IC, topología y mediciones térmicas
+Tensión efectiva durante arranque y carga
+Osciloscopio/multímetro a bornes; carga conocida
+Geometría L, W y radio rodante efectivo
+Medición física para cinemática Mecanum
+Torque/velocidad realmente disponible
+Ensayo con carga controlada; evitar bloqueo prolongado
+Fuentes: GM25-370-motor specification.pdf, págs. 1-2; ManualOsoyoo.pdf, págs. 4-5, 14-17; descripción complementaria de
+motor/encoder aportada en la conversación. Los cálculos de conversión y ejemplos de control se identifican como derivados de
+ingeniería.

@@ -1,0 +1,321 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "f4:module/Core/Inc/ui_event_router.h",
+  "slug": "ui-router",
+  "title": "Router de eventos de usuario",
+  "target": "f4",
+  "kind": "integración",
+  "status": "source-documented",
+  "verification": "not-run-user-instruction",
+  "snapshotDate": "2026-10-20",
+  "responsibility": "Decide qué flujo UI consume un evento de usuario antes del handler de la pantalla.",
+  "scope": "Prioridades de PIN, bloqueo, notificaciones, exploración Wi-Fi y navegación global.",
+  "state": "UiRouterHandle presta services, SystemHandle, MenuSystem y WifiBridge_Handle. UiRouter_Context selecciona contexto activo; no posee el estado de cada pantalla.",
+  "lifecycle": [
+    "La composición conecta contexto y tabla; HandleEvent consulta guardas y entrega el evento al consumidor correspondiente."
+  ],
+  "interactions": [
+    "Recibe eventos físicos desde app_tasks.c y eventos remotos desde UNER_App; comparten semántica lógica de UserEvent_t.",
+    "Cambiar prioridad de consumo puede alterar ambas interfaces sin cambiar números de comando."
+  ],
+  "limitations": [
+    "La rotación física del encoder y un comando lógico CW/CCW no son el mismo punto de entrada.",
+    "Un evento aceptado no implica que una acción restringida haya sido autorizada.",
+    "USER largo global retorna al dashboard antes del handler OSK y sin OnBack/cleanup explícito; ver AMDOC-F4-011 antes de asumir cancelación equivalente."
+  ],
+  "modularity": "Enrutador de aplicación con callbacks, pero dependiente de modelos concretos y contexto global.",
+  "files": [
+    {
+      "path": "Core/Inc/ui_event_router.h",
+      "rootId": "f4",
+      "sha256": "2310d621f15b6fff76ce3e499a0f9ff18f41827c91cc30d930a17f24623bf033",
+      "includes": [
+        "types/userEvent_type.h"
+      ]
+    },
+    {
+      "path": "Core/Inc/uirouter_context.h",
+      "rootId": "f4",
+      "sha256": "fdc8ff75cb85dfc3153cfa100e6912971f28c656dffa0ba9d6ac7e07b4a93822",
+      "includes": [
+        "types/menu_types.h",
+        "permissions_types.h",
+        "screen_lock.h",
+        "wifi_bridge_types.h",
+        "system.h",
+        "system_flags.h",
+        "ui_event_router.h"
+      ]
+    },
+    {
+      "path": "Core/Src/ui_event_router.c",
+      "rootId": "f4",
+      "sha256": "a7462a56c24382af9099432352b4382186e887201cf569ae635532b412e88e44",
+      "includes": [
+        "uirouter_context.h",
+        "ui_event_router.h",
+        "permissions.h",
+        "screen_lock.h"
+      ]
+    }
+  ],
+  "findings": [
+    "AMDOC-F4-007",
+    "AMDOC-F4-011"
+  ],
+  "types": [
+    {
+      "name": "UiRouterServices",
+      "fields": [
+        {
+          "name": "now_ms",
+          "declaration": "uint32_t (*now_ms)(void)",
+          "callback": true,
+          "ownerType": "UiRouterServices",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uirouter_context.h",
+            "line": 10
+          },
+          "description": "Entrega reloj monotónico modular en milisegundos para deadlines y períodos."
+        },
+        {
+          "name": "MenuSys_GetCurrentScreenCode",
+          "declaration": "ScreenCode_t (*MenuSys_GetCurrentScreenCode)(const MenuSystem *ms)",
+          "callback": true,
+          "ownerType": "UiRouterServices",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uirouter_context.h",
+            "line": 11
+          },
+          "description": "Consulta identidad de pantalla del MenuSystem recibido."
+        },
+        {
+          "name": "MenuSys_NotifyScreenContentChanged",
+          "declaration": "void (*MenuSys_NotifyScreenContentChanged)(MenuSystem *ms, ScreenReportSource_t source)",
+          "callback": true,
+          "ownerType": "UiRouterServices",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uirouter_context.h",
+            "line": 12
+          },
+          "description": "Solicita reportar cambio de contenido sin inventar un framebuffer remoto."
+        },
+        {
+          "name": "MenuSys_ResetMenu",
+          "declaration": "void (*MenuSys_ResetMenu)(MenuSystem *ms)",
+          "callback": true,
+          "ownerType": "UiRouterServices",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uirouter_context.h",
+            "line": 13
+          },
+          "description": "Restablece contexto de navegación del menú."
+        },
+        {
+          "name": "OledUtils_DismissNotification",
+          "declaration": "void (*OledUtils_DismissNotification)(void)",
+          "callback": true,
+          "ownerType": "UiRouterServices",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uirouter_context.h",
+            "line": 14
+          },
+          "description": "Descarta el aviso actual y avanza/restaura la vista correspondiente."
+        },
+        {
+          "name": "OledUtils_GetNotificationCount",
+          "declaration": "uint8_t (*OledUtils_GetNotificationCount)(void)",
+          "callback": true,
+          "ownerType": "UiRouterServices",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uirouter_context.h",
+            "line": 15
+          },
+          "description": "Consulta la cantidad de avisos conservados por la cola."
+        },
+        {
+          "name": "Permission_GetRequestedPermission",
+          "declaration": "PermissionId_t (*Permission_GetRequestedPermission)(void)",
+          "callback": true,
+          "ownerType": "UiRouterServices",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uirouter_context.h",
+            "line": 16
+          },
+          "description": "Consulta qué permiso solicita el flujo local actual."
+        },
+        {
+          "name": "Permission_GetState",
+          "declaration": "AuthState_t (*Permission_GetState)(void)",
+          "callback": true,
+          "ownerType": "UiRouterServices",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uirouter_context.h",
+            "line": 17
+          },
+          "description": "Consulta estado AUTH_* actual del gestor local."
+        },
+        {
+          "name": "Permission_HandleUserEvent",
+          "declaration": "void (*Permission_HandleUserEvent)(UserEvent_t ev)",
+          "callback": true,
+          "ownerType": "UiRouterServices",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uirouter_context.h",
+            "line": 18
+          },
+          "description": "Procesa entradas de PIN del flujo local activo."
+        },
+        {
+          "name": "ScreenLock_ProcessEvent",
+          "declaration": "ScreenLock_EventResult_t (*ScreenLock_ProcessEvent)(UserEvent_t ev)",
+          "callback": true,
+          "ownerType": "UiRouterServices",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uirouter_context.h",
+            "line": 19
+          },
+          "description": "Filtra un evento y devuelve si el bloqueo lo consumió."
+        },
+        {
+          "name": "WiFiScan_ClearResults",
+          "declaration": "void (*WiFiScan_ClearResults)(void)",
+          "callback": true,
+          "ownerType": "UiRouterServices",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uirouter_context.h",
+            "line": 20
+          },
+          "description": "Limpia resultados y estado de la sesión de exploración Wi-Fi."
+        },
+        {
+          "name": "WifiBridge_StopScan",
+          "declaration": "WifiBridge_Result (*WifiBridge_StopScan)(WifiBridge_Handle *h)",
+          "callback": true,
+          "ownerType": "UiRouterServices",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uirouter_context.h",
+            "line": 21
+          },
+          "description": "Operación Wifi Bridge Stop Scan de Router de eventos de usuario; semántica fina pendiente de ampliación."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uirouter_context.h",
+        "line": 10
+      }
+    },
+    {
+      "name": "UiRouterHandle",
+      "fields": [
+        {
+          "name": "services",
+          "declaration": "const UiRouterServices *services",
+          "callback": false,
+          "ownerType": "UiRouterHandle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uirouter_context.h",
+            "line": 24
+          },
+          "description": "Contrato de operaciones externo; conservar la tabla y su contexto durante el uso."
+        },
+        {
+          "name": "system",
+          "declaration": "SystemHandle *system",
+          "callback": false,
+          "ownerType": "UiRouterHandle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uirouter_context.h",
+            "line": 25
+          },
+          "description": "Referencia al estado compartido AutoMicro; introduce dependencia del modelo de aplicación."
+        },
+        {
+          "name": "menuSystem",
+          "declaration": "MenuSystem *menuSystem",
+          "callback": false,
+          "ownerType": "UiRouterHandle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uirouter_context.h",
+            "line": 26
+          },
+          "description": "Referencia al menú compuesto por la aplicación."
+        },
+        {
+          "name": "wifiBridge",
+          "declaration": "WifiBridge_Handle *wifiBridge",
+          "callback": false,
+          "ownerType": "UiRouterHandle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uirouter_context.h",
+            "line": 27
+          },
+          "description": "Referencia al bridge concreto AutoMicro; su acceso está mediado por servicios."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uirouter_context.h",
+        "line": 24
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "UiEventRouter_HandleEvent",
+      "signature": "UiEventRouterResult_t UiEventRouter_HandleEvent(UserEvent_t ev)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/ui_event_router.h",
+        "line": 22
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "CLEAR_FLAG",
+        "IS_FLAG_SET",
+        "MenuSys_GetCurrentScreenCode",
+        "MenuSys_NotifyScreenContentChanged",
+        "MenuSys_ResetMenu",
+        "OledUtils_DismissNotification",
+        "OledUtils_GetNotificationCount",
+        "Permission_GetRequestedPermission",
+        "Permission_GetState",
+        "Permission_HandleUserEvent",
+        "ScreenLock_ProcessEvent",
+        "WiFiScan_ClearResults",
+        "WifiBridge_StopScan",
+        "clearScreen",
+        "userEventManagerFn"
+      ],
+      "writes": [],
+      "description": "Aplica prioridad de flujos UI y despacha el evento al consumidor activo.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/ui_event_router.c",
+        "line": 31
+      },
+      "linkage": "header"
+    }
+  ],
+  "internalFunctions": []
+}

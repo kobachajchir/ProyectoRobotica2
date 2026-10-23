@@ -1,0 +1,1387 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "f4:module/Core/Inc/uner_handle.h",
+  "slug": "uner-router",
+  "title": "UNER Handle, rutas y despacho",
+  "target": "f4",
+  "kind": "núcleo",
+  "status": "source-documented",
+  "verification": "not-run-user-instruction",
+  "snapshotDate": "2026-10-20",
+  "responsibility": "Conecta parser, transportes, rutas, guardas y tabla de comandos para despachar o reenviar paquetes.",
+  "scope": "Registro de hasta cuatro transportes y seis rutas, control de forwarding, snapshots y callbacks de aplicación.",
+  "state": "UNER_Handle posee core, tablas/rutas, tx_buf, contadores y snapshots; presta transportes, command_table, execute_command/ctx y forward_guard/ctx. CommandSpec incluye ID, límites de longitud, flags, timeout y handler; los metadatos no reemplazan el comportamiento real del handler.",
+  "lifecycle": [
+    "Init envuelve on_packet; registrar transportes, rutas, comandos y guardas antes de operar.",
+    "Poll obtiene bytes y ProcessPending consume paquetes encolados.",
+    "Paquetes locales pasan por tabla/longitud; otros pueden reenviarse tras guarda y resolución de ruta."
+  ],
+  "interactions": [
+    "UNER_App conecta handlers y políticas del robot.",
+    "UNER_Send construye en tx_buf y llama try_send; la propiedad del buffer importa si el transporte difiere su uso."
+  ],
+  "limitations": [
+    "Un callback o macro con nombre de función no es una llamada directa resuelta.",
+    "Metadatos de respuesta y handler pueden divergir: ver registro de hallazgos.",
+    "La cola y buffers no ofrecen por sí mismos garantías para varios threads."
+  ],
+  "modularity": "Sin HAL, con relación interna legítima entre core/router/transport. El ejecutor de aplicación define el significado del comando.",
+  "files": [
+    {
+      "path": "Core/Inc/uner_handle.h",
+      "rootId": "f4",
+      "sha256": "cc82190fc0b816590d5f2827c106019c2186866454674b9693946bfe91b28aa1",
+      "includes": [
+        "uner_handle_types.h"
+      ]
+    },
+    {
+      "path": "Core/Inc/uner_handle_types.h",
+      "rootId": "f4",
+      "sha256": "fb11a5d2404fc456a4a48f1d43855a01a878c2bbe887dc485c0c9e298376de65",
+      "includes": [
+        "stdint.h",
+        "uner_transport.h"
+      ]
+    },
+    {
+      "path": "Core/Inc/uner_transport.h",
+      "rootId": "f4",
+      "sha256": "b746b135dea65c7daf3462844d69847d45e489623feae46b62557518f65ac975",
+      "includes": [
+        "stdint.h",
+        "uner_core.h"
+      ]
+    },
+    {
+      "path": "Core/Src/uner_handle.c",
+      "rootId": "f4",
+      "sha256": "9f28e9ea0a873f5bddbbce52a1777953e38697787f9720404720cac6b03d2174",
+      "includes": [
+        "uner_handle.h",
+        "string.h"
+      ]
+    }
+  ],
+  "findings": [
+    "AMDOC-F4-003",
+    "AMDOC-F4-004",
+    "AMDOC-F4-006"
+  ],
+  "types": [
+    {
+      "name": "UNER_CommandSpec",
+      "fields": [
+        {
+          "name": "id",
+          "declaration": "uint8_t id",
+          "callback": false,
+          "ownerType": "UNER_CommandSpec",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_handle_types.h",
+            "line": 24
+          },
+          "description": "ID de comando/evento al que aplica esta entrada."
+        },
+        {
+          "name": "min_args",
+          "declaration": "uint8_t min_args",
+          "callback": false,
+          "ownerType": "UNER_CommandSpec",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_handle_types.h",
+            "line": 25
+          },
+          "description": "Longitud mínima de solicitud declarada; ver excepción RESP en AMDOC-F4-003."
+        },
+        {
+          "name": "max_args",
+          "declaration": "uint8_t max_args",
+          "callback": false,
+          "ownerType": "UNER_CommandSpec",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_handle_types.h",
+            "line": 26
+          },
+          "description": "Longitud máxima de solicitud declarada; no sustituye guardas locales."
+        },
+        {
+          "name": "flags",
+          "declaration": "uint8_t flags",
+          "callback": false,
+          "ownerType": "UNER_CommandSpec",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_handle_types.h",
+            "line": 27
+          },
+          "description": "Bits de estado del módulo; conservar máscaras y distinguir estado de eventos pendientes."
+        },
+        {
+          "name": "timeout_ms",
+          "declaration": "uint16_t timeout_ms",
+          "callback": false,
+          "ownerType": "UNER_CommandSpec",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_handle_types.h",
+            "line": 28
+          },
+          "description": "Timeout declarado por la tabla F4; no equivale al timeout del cliente Web."
+        },
+        {
+          "name": "handler",
+          "declaration": "UNER_CommandHandler handler",
+          "callback": false,
+          "ownerType": "UNER_CommandSpec",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_handle_types.h",
+            "line": 29
+          },
+          "description": "Handler específico; si es nulo el handle usa execute_command registrado."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_handle_types.h",
+        "line": 24
+      }
+    },
+    {
+      "name": "UNER_RouteEntry",
+      "fields": [
+        {
+          "name": "node",
+          "declaration": "uint8_t node",
+          "callback": false,
+          "ownerType": "UNER_RouteEntry",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_handle_types.h",
+            "line": 38
+          },
+          "description": "Dato de estado/configuración `node`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "transport_id",
+          "declaration": "uint8_t transport_id",
+          "callback": false,
+          "ownerType": "UNER_RouteEntry",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_handle_types.h",
+            "line": 39
+          },
+          "description": "Transporte de entrada/salida; forma parte de la identidad del endpoint."
+        },
+        {
+          "name": "enabled",
+          "declaration": "uint8_t enabled",
+          "callback": false,
+          "ownerType": "UNER_RouteEntry",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_handle_types.h",
+            "line": 40
+          },
+          "description": "Dato de estado/configuración `enabled`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_handle_types.h",
+        "line": 38
+      }
+    },
+    {
+      "name": "UNER_RouterSnapshot",
+      "fields": [
+        {
+          "name": "valid",
+          "declaration": "uint8_t valid",
+          "callback": false,
+          "ownerType": "UNER_RouterSnapshot",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_handle_types.h",
+            "line": 62
+          },
+          "description": "Dato de estado/configuración `valid`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "forwarding_enabled",
+          "declaration": "uint8_t forwarding_enabled",
+          "callback": false,
+          "ownerType": "UNER_RouterSnapshot",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_handle_types.h",
+            "line": 63
+          },
+          "description": "Dato de estado/configuración `forwarding_enabled`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "direction",
+          "declaration": "uint8_t direction",
+          "callback": false,
+          "ownerType": "UNER_RouterSnapshot",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_handle_types.h",
+            "line": 64
+          },
+          "description": "Dato de estado/configuración `direction`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "src",
+          "declaration": "uint8_t src",
+          "callback": false,
+          "ownerType": "UNER_RouterSnapshot",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_handle_types.h",
+            "line": 65
+          },
+          "description": "Dato de estado/configuración `src`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "dst",
+          "declaration": "uint8_t dst",
+          "callback": false,
+          "ownerType": "UNER_RouterSnapshot",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_handle_types.h",
+            "line": 66
+          },
+          "description": "Dato de estado/configuración `dst`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "cmd",
+          "declaration": "uint8_t cmd",
+          "callback": false,
+          "ownerType": "UNER_RouterSnapshot",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_handle_types.h",
+            "line": 67
+          },
+          "description": "Dato de estado/configuración `cmd`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "len",
+          "declaration": "uint8_t len",
+          "callback": false,
+          "ownerType": "UNER_RouterSnapshot",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_handle_types.h",
+            "line": 68
+          },
+          "description": "Dato de estado/configuración `len`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "in_transport",
+          "declaration": "uint8_t in_transport",
+          "callback": false,
+          "ownerType": "UNER_RouterSnapshot",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_handle_types.h",
+            "line": 69
+          },
+          "description": "Dato de estado/configuración `in_transport`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "out_transport",
+          "declaration": "uint8_t out_transport",
+          "callback": false,
+          "ownerType": "UNER_RouterSnapshot",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_handle_types.h",
+            "line": 70
+          },
+          "description": "Dato de estado/configuración `out_transport`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "status",
+          "declaration": "uint8_t status",
+          "callback": false,
+          "ownerType": "UNER_RouterSnapshot",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_handle_types.h",
+            "line": 71
+          },
+          "description": "Último resultado y guardas del módulo; los getters pueden devolver una vista de este almacenamiento."
+        },
+        {
+          "name": "payload_preview_len",
+          "declaration": "uint8_t payload_preview_len",
+          "callback": false,
+          "ownerType": "UNER_RouterSnapshot",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_handle_types.h",
+            "line": 72
+          },
+          "description": "Dato de estado/configuración `payload_preview_len`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "payload_preview",
+          "declaration": "uint8_t payload_preview[UNER_ROUTER_PAYLOAD_PREVIEW_BYTES]",
+          "callback": false,
+          "ownerType": "UNER_RouterSnapshot",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_handle_types.h",
+            "line": 73
+          },
+          "description": "Dato de estado/configuración `payload_preview`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "sequence",
+          "declaration": "uint32_t sequence",
+          "callback": false,
+          "ownerType": "UNER_RouterSnapshot",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_handle_types.h",
+            "line": 74
+          },
+          "description": "Dato de estado/configuración `sequence`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "forwarded_frames",
+          "declaration": "uint32_t forwarded_frames",
+          "callback": false,
+          "ownerType": "UNER_RouterSnapshot",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_handle_types.h",
+            "line": 75
+          },
+          "description": "Dato de estado/configuración `forwarded_frames`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "route_miss",
+          "declaration": "uint32_t route_miss",
+          "callback": false,
+          "ownerType": "UNER_RouterSnapshot",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_handle_types.h",
+            "line": 76
+          },
+          "description": "Dato de estado/configuración `route_miss`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "route_tx_busy",
+          "declaration": "uint32_t route_tx_busy",
+          "callback": false,
+          "ownerType": "UNER_RouterSnapshot",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_handle_types.h",
+            "line": 77
+          },
+          "description": "Dato de estado/configuración `route_tx_busy`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_handle_types.h",
+        "line": 62
+      }
+    },
+    {
+      "name": "UNER_Handle",
+      "fields": [
+        {
+          "name": "core",
+          "declaration": "UNER_Core core",
+          "callback": false,
+          "ownerType": "UNER_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_handle_types.h",
+            "line": 81
+          },
+          "description": "Dato de estado/configuración `core`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "transports",
+          "declaration": "UNER_Transport *transports[UNER_MAX_TRANSPORTS]",
+          "callback": false,
+          "ownerType": "UNER_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_handle_types.h",
+            "line": 82
+          },
+          "description": "Dato de estado/configuración `transports`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "transport_count",
+          "declaration": "uint8_t transport_count",
+          "callback": false,
+          "ownerType": "UNER_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_handle_types.h",
+            "line": 83
+          },
+          "description": "Dato de estado/configuración `transport_count`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "routes",
+          "declaration": "UNER_RouteEntry routes[UNER_MAX_ROUTES]",
+          "callback": false,
+          "ownerType": "UNER_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_handle_types.h",
+            "line": 84
+          },
+          "description": "Dato de estado/configuración `routes`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "route_count",
+          "declaration": "uint8_t route_count",
+          "callback": false,
+          "ownerType": "UNER_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_handle_types.h",
+            "line": 85
+          },
+          "description": "Dato de estado/configuración `route_count`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "forward_guard",
+          "declaration": "UNER_ForwardGuardFn forward_guard",
+          "callback": false,
+          "ownerType": "UNER_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_handle_types.h",
+            "line": 86
+          },
+          "description": "Dato de estado/configuración `forward_guard`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "forward_guard_ctx",
+          "declaration": "void *forward_guard_ctx",
+          "callback": false,
+          "ownerType": "UNER_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_handle_types.h",
+            "line": 87
+          },
+          "description": "Contexto opaco prestado al callback; el integrador conserva su almacenamiento."
+        },
+        {
+          "name": "forwarding_enabled",
+          "declaration": "uint8_t forwarding_enabled",
+          "callback": false,
+          "ownerType": "UNER_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_handle_types.h",
+            "line": 88
+          },
+          "description": "Dato de estado/configuración `forwarding_enabled`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "router_snapshot",
+          "declaration": "UNER_RouterSnapshot router_snapshot",
+          "callback": false,
+          "ownerType": "UNER_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_handle_types.h",
+            "line": 89
+          },
+          "description": "Dato de estado/configuración `router_snapshot`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "rx_snapshot",
+          "declaration": "UNER_RouterSnapshot rx_snapshot",
+          "callback": false,
+          "ownerType": "UNER_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_handle_types.h",
+            "line": 90
+          },
+          "description": "Dato de estado/configuración `rx_snapshot`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "tx_snapshot",
+          "declaration": "UNER_RouterSnapshot tx_snapshot",
+          "callback": false,
+          "ownerType": "UNER_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_handle_types.h",
+            "line": 91
+          },
+          "description": "Dato de estado/configuración `tx_snapshot`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "rx_transport_snapshots",
+          "declaration": "UNER_RouterSnapshot rx_transport_snapshots[UNER_MAX_TRANSPORTS]",
+          "callback": false,
+          "ownerType": "UNER_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_handle_types.h",
+            "line": 92
+          },
+          "description": "Dato de estado/configuración `rx_transport_snapshots`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "tx_transport_snapshots",
+          "declaration": "UNER_RouterSnapshot tx_transport_snapshots[UNER_MAX_TRANSPORTS]",
+          "callback": false,
+          "ownerType": "UNER_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_handle_types.h",
+            "line": 93
+          },
+          "description": "Dato de estado/configuración `tx_transport_snapshots`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "packet_pending",
+          "declaration": "volatile uint8_t packet_pending",
+          "callback": false,
+          "ownerType": "UNER_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_handle_types.h",
+            "line": 94
+          },
+          "description": "Señal de que hay trabajo de parser para despachar; no almacena un paquete."
+        },
+        {
+          "name": "command_table",
+          "declaration": "const UNER_CommandSpec *command_table",
+          "callback": false,
+          "ownerType": "UNER_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_handle_types.h",
+            "line": 95
+          },
+          "description": "Tabla prestada de comandos que debe permanecer válida durante el uso."
+        },
+        {
+          "name": "command_count",
+          "declaration": "uint8_t command_count",
+          "callback": false,
+          "ownerType": "UNER_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_handle_types.h",
+            "line": 96
+          },
+          "description": "Dato de estado/configuración `command_count`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "execute_command",
+          "declaration": "UNER_ExecuteCommandFn execute_command",
+          "callback": false,
+          "ownerType": "UNER_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_handle_types.h",
+            "line": 97
+          },
+          "description": "Ejecutor de aplicación para comandos sin handler individual."
+        },
+        {
+          "name": "execute_ctx",
+          "declaration": "void *execute_ctx",
+          "callback": false,
+          "ownerType": "UNER_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_handle_types.h",
+            "line": 98
+          },
+          "description": "Contexto opaco prestado al callback; el integrador conserva su almacenamiento."
+        },
+        {
+          "name": "app_on_packet",
+          "declaration": "UNER_OnPacketCb app_on_packet",
+          "callback": false,
+          "ownerType": "UNER_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_handle_types.h",
+            "line": 99
+          },
+          "description": "Callback del consumidor conservado al instalar el wrapper interno de encolado."
+        },
+        {
+          "name": "app_on_packet_ctx",
+          "declaration": "void *app_on_packet_ctx",
+          "callback": false,
+          "ownerType": "UNER_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_handle_types.h",
+            "line": 100
+          },
+          "description": "Contexto opaco prestado al callback; el integrador conserva su almacenamiento."
+        },
+        {
+          "name": "tx_buf",
+          "declaration": "uint8_t tx_buf[UNER_OVERHEAD + 255u]",
+          "callback": false,
+          "ownerType": "UNER_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_handle_types.h",
+            "line": 101
+          },
+          "description": "Buffer de construcción de frames de esta instancia; no conservar una referencia tras el siguiente envío."
+        },
+        {
+          "name": "forwarded_frames",
+          "declaration": "uint32_t forwarded_frames",
+          "callback": false,
+          "ownerType": "UNER_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_handle_types.h",
+            "line": 102
+          },
+          "description": "Dato de estado/configuración `forwarded_frames`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "route_miss",
+          "declaration": "uint32_t route_miss",
+          "callback": false,
+          "ownerType": "UNER_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_handle_types.h",
+            "line": 103
+          },
+          "description": "Dato de estado/configuración `route_miss`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "route_tx_busy",
+          "declaration": "uint32_t route_tx_busy",
+          "callback": false,
+          "ownerType": "UNER_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_handle_types.h",
+            "line": 104
+          },
+          "description": "Dato de estado/configuración `route_tx_busy`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "packet_sequence",
+          "declaration": "uint32_t packet_sequence",
+          "callback": false,
+          "ownerType": "UNER_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_handle_types.h",
+            "line": 105
+          },
+          "description": "Dato de estado/configuración `packet_sequence`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_handle_types.h",
+        "line": 81
+      }
+    },
+    {
+      "name": "UNER_CommandHandler",
+      "callbackType": "void (*UNER_CommandHandler)(void *ctx, const UNER_Packet *packet)",
+      "fields": [],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_handle_types.h",
+        "line": 17
+      }
+    },
+    {
+      "name": "UNER_ExecuteCommandFn",
+      "callbackType": "void (*UNER_ExecuteCommandFn)(void *ctx, const UNER_Packet *packet)",
+      "fields": [],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_handle_types.h",
+        "line": 32
+      }
+    },
+    {
+      "name": "UNER_ForwardGuardFn",
+      "callbackType": "uint8_t (*UNER_ForwardGuardFn)(void *ctx, const UNER_Packet *packet, uint8_t out_transport_id)",
+      "fields": [],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_handle_types.h",
+        "line": 34
+      }
+    },
+    {
+      "name": "UNER_Transport",
+      "fields": [
+        {
+          "name": "id",
+          "declaration": "uint8_t id",
+          "callback": false,
+          "ownerType": "UNER_Transport",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_transport.h",
+            "line": 19
+          },
+          "description": "ID lógico del transporte, distinto del nodo UNER."
+        },
+        {
+          "name": "max_payload",
+          "declaration": "uint8_t max_payload",
+          "callback": false,
+          "ownerType": "UNER_Transport",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_transport.h",
+            "line": 20
+          },
+          "description": "Límite de payload admitido por este transporte."
+        },
+        {
+          "name": "poll_rx",
+          "declaration": "UNER_TransportPollRxFn poll_rx",
+          "callback": false,
+          "ownerType": "UNER_Transport",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_transport.h",
+            "line": 21
+          },
+          "description": "Dato de estado/configuración `poll_rx`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "try_send",
+          "declaration": "UNER_TransportTrySendFn try_send",
+          "callback": false,
+          "ownerType": "UNER_Transport",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_transport.h",
+            "line": 22
+          },
+          "description": "Dato de estado/configuración `try_send`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ctx",
+          "declaration": "void *ctx",
+          "callback": false,
+          "ownerType": "UNER_Transport",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_transport.h",
+            "line": 23
+          },
+          "description": "Contexto opaco prestado al callback; el integrador conserva su almacenamiento."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_transport.h",
+        "line": 19
+      }
+    },
+    {
+      "name": "UNER_TransportPollRxFn",
+      "callbackType": "UNER_Status (*UNER_TransportPollRxFn)(UNER_Transport *transport, UNER_Core *core)",
+      "fields": [],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_transport.h",
+        "line": 15
+      }
+    },
+    {
+      "name": "UNER_TransportTrySendFn",
+      "callbackType": "UNER_Status (*UNER_TransportTrySendFn)(UNER_Transport *transport, const uint8_t *buf, uint16_t len)",
+      "fields": [],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_transport.h",
+        "line": 17
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "UNER_Handle_GetRouterPacketSnapshot",
+      "signature": "void UNER_Handle_GetRouterPacketSnapshot(const UNER_Handle *handle, uint8_t tx_view, uint8_t transport_id, UNER_RouterSnapshot *out)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_handle.h",
+        "line": 23
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "memset"
+      ],
+      "writes": [
+        "forwarded_frames",
+        "forwarding_enabled",
+        "route_miss",
+        "route_tx_busy"
+      ],
+      "description": "Copia diagnóstico RX/TX del transporte solicitado.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_handle.c",
+        "line": 508
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "UNER_Handle_GetRouterSnapshot",
+      "signature": "void UNER_Handle_GetRouterSnapshot(const UNER_Handle *handle, UNER_RouterSnapshot *out)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_handle.h",
+        "line": 22
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "memset"
+      ],
+      "writes": [
+        "forwarded_frames",
+        "forwarding_enabled",
+        "route_miss",
+        "route_tx_busy"
+      ],
+      "description": "Copia el último estado resumido del router.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_handle.c",
+        "line": 492
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "UNER_Handle_Init",
+      "signature": "UNER_Status UNER_Handle_Init( UNER_Handle *handle, const UNER_CoreConfig *cfg, UNER_Packet *slots, uint8_t slot_count, uint8_t *payload_pool_bytes, uint16_t payload_pool_size)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_handle.h",
+        "line": 7
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "UNER_Core_Init",
+        "memset"
+      ],
+      "writes": [
+        "app_on_packet",
+        "app_on_packet_ctx",
+        "command_count",
+        "command_table",
+        "execute_command",
+        "execute_ctx",
+        "forward_guard",
+        "forward_guard_ctx",
+        "forwarded_frames",
+        "forwarding_enabled",
+        "packet_pending",
+        "packet_sequence",
+        "route_count",
+        "route_miss",
+        "route_tx_busy",
+        "transport_count"
+      ],
+      "description": "Inicializa router/core conservando callback de aplicación.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_handle.c",
+        "line": 370
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "UNER_Handle_IsForwardingEnabled",
+      "signature": "uint8_t UNER_Handle_IsForwardingEnabled(const UNER_Handle *handle)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_handle.h",
+        "line": 21
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Consulta si el reenvío está habilitado.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_handle.c",
+        "line": 487
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "UNER_Handle_Poll",
+      "signature": "void UNER_Handle_Poll(UNER_Handle *handle)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_handle.h",
+        "line": 33
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "UNER_Handle_ProcessPending",
+        "poll_rx"
+      ],
+      "writes": [],
+      "description": "Atiende transportes y procesa trabajo pendiente.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_handle.c",
+        "line": 551
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "UNER_Handle_ProcessPending",
+      "signature": "void UNER_Handle_ProcessPending(UNER_Handle *handle)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_handle.h",
+        "line": 34
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "UNER_Core_Dequeue",
+        "UNER_Core_ReleasePacket",
+        "UNER_Handle_FindCommandSpec",
+        "UNER_Handle_ForwardPacket",
+        "UNER_Handle_IsLengthValid",
+        "UNER_Handle_RecordPacketSnapshot",
+        "app_on_packet",
+        "execute_command",
+        "handler"
+      ],
+      "writes": [
+        "packet_pending"
+      ],
+      "description": "Despacha o reenvía paquetes consumidos de la cola.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_handle.c",
+        "line": 578
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "UNER_Handle_RegisterCommands",
+      "signature": "UNER_Status UNER_Handle_RegisterCommands( UNER_Handle *handle, const UNER_CommandSpec *table, uint8_t count, UNER_ExecuteCommandFn execute_command, void *execute_ctx)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_handle.h",
+        "line": 27
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [
+        "command_count",
+        "command_table",
+        "execute_command",
+        "execute_ctx"
+      ],
+      "description": "Conecta tabla de comandos y ejecutor con contexto.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_handle.c",
+        "line": 533
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "UNER_Handle_RegisterRoute",
+      "signature": "UNER_Status UNER_Handle_RegisterRoute(UNER_Handle *handle, uint8_t node, uint8_t transport_id)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_handle.h",
+        "line": 16
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "UNER_Handle_FindTransport"
+      ],
+      "writes": [
+        "route_count"
+      ],
+      "description": "Asocia un nodo destino a un transporte.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_handle.c",
+        "line": 434
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "UNER_Handle_RegisterTransport",
+      "signature": "UNER_Status UNER_Handle_RegisterTransport(UNER_Handle *handle, UNER_Transport *transport)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_handle.h",
+        "line": 15
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [
+        "transport_count"
+      ],
+      "description": "Agrega un transporte con ID, polling y envío.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_handle.c",
+        "line": 420
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "UNER_Handle_SetForwardGuard",
+      "signature": "void UNER_Handle_SetForwardGuard(UNER_Handle *handle, UNER_ForwardGuardFn guard, void *ctx)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_handle.h",
+        "line": 18
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [
+        "forward_guard",
+        "forward_guard_ctx"
+      ],
+      "description": "Registra guarda de forwarding y contexto.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_handle.c",
+        "line": 477
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "UNER_Handle_SetForwardingEnabled",
+      "signature": "void UNER_Handle_SetForwardingEnabled(UNER_Handle *handle, uint8_t enabled)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_handle.h",
+        "line": 17
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [
+        "forwarding_enabled"
+      ],
+      "description": "Habilita o bloquea reenvío de paquetes.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_handle.c",
+        "line": 463
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "UNER_Send",
+      "signature": "UNER_Status UNER_Send( UNER_Handle *handle, uint8_t transport_id, uint8_t src, uint8_t dst, uint8_t cmd, const uint8_t *payload, uint8_t len)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_handle.h",
+        "line": 36
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "UNER_BuildFrame",
+        "UNER_Handle_FindTransport",
+        "UNER_Handle_RecordPacketSnapshot",
+        "try_send"
+      ],
+      "writes": [],
+      "description": "Construye y ofrece un frame al transporte indicado.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_handle.c",
+        "line": 640
+      },
+      "linkage": "header"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "UNER_Handle_OnPacketQueued",
+      "signature": "static void UNER_Handle_OnPacketQueued(void *ctx, const UNER_Packet *p)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_handle.c",
+        "line": 8
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [
+        "packet_pending"
+      ],
+      "description": "Atiende la notificación de Packet Queued dentro de UNER Handle, rutas y despacho.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_Handle_IsRawAsyncPush",
+      "signature": "static uint8_t UNER_Handle_IsRawAsyncPush(const UNER_Packet *packet)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_handle.c",
+        "line": 20
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Indica si se cumple la condición Raw Async Push dentro de UNER Handle, rutas y despacho.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_Handle_IsLengthValid",
+      "signature": "static uint8_t UNER_Handle_IsLengthValid(const UNER_CommandSpec *spec, const UNER_Packet *packet)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_handle.c",
+        "line": 33
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_Handle_IsRawAsyncPush"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `UNER_Handle_IsRawAsyncPush` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_Handle_FindCommandSpec",
+      "signature": "static uint8_t UNER_Handle_FindCommandSpec( const UNER_CommandSpec *table, uint8_t count, uint8_t cmd, UNER_CommandSpec *out)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_handle.c",
+        "line": 54
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Find Command Spec de UNER Handle, rutas y despacho; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_Handle_FindTransport",
+      "signature": "static UNER_Transport *UNER_Handle_FindTransport(UNER_Handle *handle, uint8_t transport_id)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_handle.c",
+        "line": 73
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Find Transport de UNER Handle, rutas y despacho; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_Handle_FindRoute",
+      "signature": "static uint8_t UNER_Handle_FindRoute(UNER_Handle *handle, uint8_t node, uint8_t *transport_id)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_handle.c",
+        "line": 89
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Find Route de UNER Handle, rutas y despacho; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_Handle_NextPacketSequence",
+      "signature": "static uint32_t UNER_Handle_NextPacketSequence(UNER_Handle *handle)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_handle.c",
+        "line": 105
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [
+        "packet_sequence"
+      ],
+      "description": "Operación Next Packet Sequence de UNER Handle, rutas y despacho; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_Handle_FillPacketSnapshot",
+      "signature": "static void UNER_Handle_FillPacketSnapshot(UNER_Handle *handle, UNER_RouterSnapshot *snapshot, const UNER_Packet *packet, uint8_t direction, uint8_t out_transport, uint8_t status, uint32_t sequence)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_handle.c",
+        "line": 119
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "memcpy",
+        "memset"
+      ],
+      "writes": [
+        "cmd",
+        "direction",
+        "dst",
+        "forwarded_frames",
+        "forwarding_enabled",
+        "in_transport",
+        "len",
+        "out_transport",
+        "payload_preview_len",
+        "route_miss",
+        "route_tx_busy",
+        "sequence",
+        "src",
+        "status",
+        "valid"
+      ],
+      "description": "Coordina `memcpy`, `memset` para UNER Handle, rutas y despacho.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_Handle_RecordPacketSnapshot",
+      "signature": "static void UNER_Handle_RecordPacketSnapshot(UNER_Handle *handle, const UNER_Packet *packet, uint8_t direction, uint8_t out_transport, uint8_t status)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_handle.c",
+        "line": 159
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_Handle_FillPacketSnapshot",
+        "UNER_Handle_NextPacketSequence"
+      ],
+      "writes": [],
+      "description": "Coordina `UNER_Handle_FillPacketSnapshot`, `UNER_Handle_NextPacketSequence` para UNER Handle, rutas y despacho.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_Handle_RecordRouterPacket",
+      "signature": "static void UNER_Handle_RecordRouterPacket(UNER_Handle *handle, const UNER_Packet *packet, uint8_t out_transport, uint8_t status)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_handle.c",
+        "line": 205
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_Handle_FillPacketSnapshot"
+      ],
+      "writes": [],
+      "description": "Coordina `UNER_Handle_FillPacketSnapshot` para UNER Handle, rutas y despacho.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_Handle_ForwardToTransport",
+      "signature": "static UNER_Status UNER_Handle_ForwardToTransport(UNER_Handle *handle, const UNER_Packet *packet, uint8_t transport_id)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_handle.c",
+        "line": 223
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_BuildFrame",
+        "UNER_Handle_FindTransport",
+        "UNER_Handle_RecordPacketSnapshot",
+        "UNER_Handle_RecordRouterPacket",
+        "forward_guard",
+        "try_send"
+      ],
+      "writes": [
+        "forwarded_frames",
+        "route_miss",
+        "route_tx_busy"
+      ],
+      "description": "Coordina `UNER_BuildFrame`, `UNER_Handle_FindTransport`, `UNER_Handle_RecordPacketSnapshot` para UNER Handle, rutas y despacho.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_Handle_ForwardPacket",
+      "signature": "static void UNER_Handle_ForwardPacket(UNER_Handle *handle, const UNER_Packet *packet)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_handle.c",
+        "line": 331
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_Handle_FindRoute",
+        "UNER_Handle_ForwardToTransport",
+        "UNER_Handle_RecordRouterPacket"
+      ],
+      "writes": [
+        "route_miss"
+      ],
+      "description": "Coordina `UNER_Handle_FindRoute`, `UNER_Handle_ForwardToTransport`, `UNER_Handle_RecordRouterPacket` para UNER Handle, rutas y despacho.",
+      "descriptionOrigin": "structural"
+    }
+  ]
+}

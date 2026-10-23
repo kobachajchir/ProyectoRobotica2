@@ -1,0 +1,3576 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "f4:module/Core/Inc/app_stm32_ports.h",
+  "slug": "application-adapters",
+  "title": "Adaptadores de hardware y servicios",
+  "target": "f4",
+  "kind": "plataforma",
+  "status": "source-documented",
+  "verification": "not-run-user-instruction",
+  "snapshotDate": "2026-10-20",
+  "responsibility": "Empareja contratos neutrales con funciones y recursos concretos de AutoMicro/STM32.",
+  "scope": "Puertos GPIO/timer/PWM/ADC/I2C/UART/Flash y tablas de servicios UI, control, preferencias y Wi-Fi.",
+  "state": "AppI2cBinding conserva manager/id/port; los otros adaptadores usan recursos prestados o contexto activo. Las tablas static const declaradas en headers tienen copias por unidad de compilación que las incluya; su duración es estática.",
+  "lifecycle": [
+    "Construir bindings antes de Init/Bind de los núcleos.",
+    "App_I2cConnect empareja manager y device ID; los callbacks vuelven al mismo cliente.",
+    "BindStm32 fija geometría Flash y operaciones; las macros históricas eligen el handle suministrado por aplicación."
+  ],
+  "interactions": [
+    "app_control_ports conecta MPU → orientación y balance/PID/motores; no mueve esos objetos dentro del consumidor.",
+    "App_I2cUs usa HAL_GetTick()*1000: expresa microsegundos con resolución de ms.",
+    "Flash unlock/erase/program/lock permanece síncrono."
+  ],
+  "limitations": [
+    "No compartir contextos con tablas incompatibles: void* no tiene comprobación de tipo.",
+    "El puerto I2C de dispositivo expone también hardware/hardware_ctx; no impone por sí solo que todo acceso pase por arbitraje.",
+    "Campos públicos y macros permiten acoplamiento por estado aunque no haya llamada directa."
+  ],
+  "modularity": "Es la frontera de plataforma y composición; aquí las dependencias concretas son esperadas. Que una función sea inline no vuelve neutral su acceso HAL.",
+  "files": [
+    {
+      "path": "Core/Inc/app_stm32_ports.h",
+      "rootId": "f4",
+      "sha256": "a1f608b90d7d62a7633ce382ccbbd25b5ef3b2bdc014123b709dc4142fd7c40a",
+      "includes": [
+        "main.h",
+        "user_button.h",
+        "encoder.h",
+        "motor_control.h",
+        "tcrt5000.h"
+      ]
+    },
+    {
+      "path": "Core/Inc/app_i2c_ports.h",
+      "rootId": "f4",
+      "sha256": "e5da177f556cb2b59d16af68089800fb82b425901b322d7ad2d5b3200b694585",
+      "includes": [
+        "main.h",
+        "i2c_manager.h"
+      ]
+    },
+    {
+      "path": "Core/Inc/app_control_ports.h",
+      "rootId": "f4",
+      "sha256": "f81ecc18a357bf9ca15ba4d65263bd9632fde4b5806cb530dc54cc758feb5a04",
+      "includes": [
+        "pid_controller.h",
+        "mpu9250.h",
+        "motor_control.h",
+        "balance_control.h",
+        "motion_control.h",
+        "motion_estimator.h",
+        "tcrt5000.h"
+      ]
+    },
+    {
+      "path": "Core/Inc/app_auxiliary_ports.h",
+      "rootId": "f4",
+      "sha256": "6b596812bed81c90f777686bf35a523e397ed00f07b1b984155b833fed7cee88",
+      "includes": [
+        "globals.h",
+        "main.h",
+        "permissions.h",
+        "menu_favorites.h",
+        "menu_definitions.h",
+        "screenWrappers.h",
+        "oled_utils.h",
+        "app_display.h",
+        "app_preferences_binding.h",
+        "app_ap_config.h",
+        "app_wifi_binding.h",
+        "eventManagers.h",
+        "ui_event_router.h",
+        "string.h",
+        "permission_context.h",
+        "favorites_context.h",
+        "ap_context.h",
+        "uirouter_context.h"
+      ]
+    },
+    {
+      "path": "Core/Inc/app_display.h",
+      "rootId": "f4",
+      "sha256": "975fc1cd040f98256bbdc0bafd53ff443ff72b8b1342e0f2b835474fbed91003",
+      "includes": [
+        "ssd1306.h"
+      ]
+    },
+    {
+      "path": "Core/Inc/app_screens_ports.h",
+      "rootId": "f4",
+      "sha256": "3e09a7282056c78cbe1dcb9eed6fa67df454a3681b0cb7e92e65816ab080e1b2",
+      "includes": [
+        "globals.h",
+        "main.h",
+        "screen_context.h",
+        "osk.h",
+        "menu_definitions.h",
+        "string.h",
+        "eventManagers.h",
+        "app_tasks.h",
+        "app_wifi_binding.h",
+        "app_display.h",
+        "app_preferences_binding.h",
+        "app_ap_config.h",
+        "permissions.h",
+        "menu_favorites.h",
+        "uner_app.h"
+      ]
+    },
+    {
+      "path": "Core/Inc/app_menu_services.h",
+      "rootId": "f4",
+      "sha256": "72fd6893d18ef52a4727efffa36b46b82c070083e39723d201b97751cf02003b",
+      "includes": [
+        "app_menu_binding.h",
+        "app_preferences_binding.h",
+        "app_wifi_binding.h"
+      ]
+    },
+    {
+      "path": "Core/Inc/app_menu_binding.h",
+      "rootId": "f4",
+      "sha256": "df0ea66d4aea5beeae4c845728b1b90c761e24aefe7a32dc11ada93b77d21d25",
+      "includes": [
+        "menusystem.h"
+      ]
+    },
+    {
+      "path": "Core/Inc/app_preferences_binding.h",
+      "rootId": "f4",
+      "sha256": "7c94fc3c89c98d939a1d86a94735e31572944510813a68867a90e373f1db493d",
+      "includes": [
+        "app_preferences.h"
+      ]
+    },
+    {
+      "path": "Core/Inc/app_preferences_stm32.h",
+      "rootId": "f4",
+      "sha256": "831d835ff2cd470176b4e383255db3e2c9a07e598aae27e50e8d016005b098d9",
+      "includes": [
+        "main.h",
+        "app_preferences_binding.h",
+        "app_ap_config.h",
+        "automicro_boot_contract.h"
+      ]
+    },
+    {
+      "path": "Core/Inc/app_wifi_binding.h",
+      "rootId": "f4",
+      "sha256": "47c2a40f194236a3aa7bf6b93ead47d396bf50e28c59f389ef6ec1d9fcb2a08a",
+      "includes": [
+        "wifi_bridge.h"
+      ]
+    },
+    {
+      "path": "Core/Inc/app_wifi_ports.h",
+      "rootId": "f4",
+      "sha256": "8b3bf59e019775bf724ab29c13e18de5471db871c4fde71eff950130ee17ac93",
+      "includes": [
+        "main.h",
+        "wifi_bridge.h",
+        "uner_app.h",
+        "permissions.h",
+        "app_preferences_binding.h",
+        "app_ap_config.h",
+        "screenWrappers.h"
+      ]
+    }
+  ],
+  "findings": [
+    "AMDOC-F4-008"
+  ],
+  "types": [
+    {
+      "name": "AppGpioContext",
+      "fields": [
+        {
+          "name": "gpio",
+          "declaration": "GPIO_TypeDef *gpio",
+          "callback": false,
+          "ownerType": "AppGpioContext",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/app_stm32_ports.h",
+            "line": 8
+          },
+          "description": "Dato de estado/configuración `gpio`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "pin",
+          "declaration": "uint16_t pin",
+          "callback": false,
+          "ownerType": "AppGpioContext",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/app_stm32_ports.h",
+            "line": 8
+          },
+          "description": "Dato de estado/configuración `pin`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_stm32_ports.h",
+        "line": 8
+      }
+    },
+    {
+      "name": "AppEncoderContext",
+      "fields": [
+        {
+          "name": "timer",
+          "declaration": "TIM_HandleTypeDef *timer",
+          "callback": false,
+          "ownerType": "AppEncoderContext",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/app_stm32_ports.h",
+            "line": 9
+          },
+          "description": "Dato de estado/configuración `timer`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "button",
+          "declaration": "AppGpioContext button",
+          "callback": false,
+          "ownerType": "AppEncoderContext",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/app_stm32_ports.h",
+            "line": 9
+          },
+          "description": "Dato de estado/configuración `button`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_stm32_ports.h",
+        "line": 9
+      }
+    },
+    {
+      "name": "AppIrContext",
+      "fields": [
+        {
+          "name": "line",
+          "declaration": "AppGpioContext objects, line",
+          "callback": false,
+          "ownerType": "AppIrContext",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/app_stm32_ports.h",
+            "line": 32
+          },
+          "description": "Dato de estado/configuración `line`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "adc",
+          "declaration": "ADC_HandleTypeDef *adc",
+          "callback": false,
+          "ownerType": "AppIrContext",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/app_stm32_ports.h",
+            "line": 32
+          },
+          "description": "Dato de estado/configuración `adc`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "samples",
+          "declaration": "volatile uint16_t *samples",
+          "callback": false,
+          "ownerType": "AppIrContext",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/app_stm32_ports.h",
+            "line": 32
+          },
+          "description": "Dato de estado/configuración `samples`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "count",
+          "declaration": "uint32_t count",
+          "callback": false,
+          "ownerType": "AppIrContext",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/app_stm32_ports.h",
+            "line": 32
+          },
+          "description": "Dato de estado/configuración `count`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_stm32_ports.h",
+        "line": 32
+      }
+    },
+    {
+      "name": "AppI2cBinding",
+      "fields": [
+        {
+          "name": "manager",
+          "declaration": "I2C_ManagerHandle *manager",
+          "callback": false,
+          "ownerType": "AppI2cBinding",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/app_i2c_ports.h",
+            "line": 16
+          },
+          "description": "Dato de estado/configuración `manager`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "id",
+          "declaration": "I2C_DeviceID id",
+          "callback": false,
+          "ownerType": "AppI2cBinding",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/app_i2c_ports.h",
+            "line": 16
+          },
+          "description": "Dato de estado/configuración `id`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "port",
+          "declaration": "AM_I2C_DevicePort port",
+          "callback": false,
+          "ownerType": "AppI2cBinding",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/app_i2c_ports.h",
+            "line": 16
+          },
+          "description": "Contrato de operaciones externo; conservar la tabla y su contexto durante el uso."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_i2c_ports.h",
+        "line": 16
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "AppAp_AppPreferences_Get",
+      "signature": "static inline const AppPreferences_t * AppAp_AppPreferences_Get(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_auxiliary_ports.h",
+        "line": 60
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "AppPreferences_Get"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `AppPreferences_Get` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_auxiliary_ports.h",
+        "line": 60
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppAp_AppPreferences_GetWifiApConfig",
+      "signature": "static inline void AppAp_AppPreferences_GetWifiApConfig(AppApConfig_t *out)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_auxiliary_ports.h",
+        "line": 63
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "AppPreferences_GetWifiApConfig"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `AppPreferences_GetWifiApConfig` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_auxiliary_ports.h",
+        "line": 63
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppAp_AppPreferences_SetWifiApApplyPending",
+      "signature": "static inline AM_Result AppAp_AppPreferences_SetWifiApApplyPending(bool pending)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_auxiliary_ports.h",
+        "line": 61
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "AppPreferences_SetWifiApApplyPending"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `AppPreferences_SetWifiApApplyPending` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_auxiliary_ports.h",
+        "line": 61
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppAp_AppPreferences_SetWifiApConfig",
+      "signature": "static inline AM_Result AppAp_AppPreferences_SetWifiApConfig(const AppApConfig_t *config, bool applyPending)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_auxiliary_ports.h",
+        "line": 62
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "AppPreferences_SetWifiApConfig"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `AppPreferences_SetWifiApConfig` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_auxiliary_ports.h",
+        "line": 62
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppAuxiliaryBind",
+      "signature": "static inline void AppAuxiliaryBind(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_auxiliary_ports.h",
+        "line": 91
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Conecta contextos/servicios de favoritos, permisos, AP y router.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_auxiliary_ports.h",
+        "line": 91
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppFavorites_AppPreferences_ApplyPatch",
+      "signature": "static inline AM_Result AppFavorites_AppPreferences_ApplyPatch(const AppPreferencesPatch_t *patch, AppPreferencesFieldMask_t *changedFields)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_auxiliary_ports.h",
+        "line": 47
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "AppPreferences_ApplyPatch"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `AppPreferences_ApplyPatch` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_auxiliary_ports.h",
+        "line": 47
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppFavorites_AppPreferences_Get",
+      "signature": "static inline const AppPreferences_t * AppFavorites_AppPreferences_Get(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_auxiliary_ports.h",
+        "line": 46
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "AppPreferences_Get"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `AppPreferences_Get` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_auxiliary_ports.h",
+        "line": 46
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppMenuAvailable",
+      "signature": "static inline bool AppMenuAvailable(void *ctx, const MenuItem *item)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_menu_services.h",
+        "line": 6
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "AppPreferences_GetExtProfile",
+        "MENU_EXT_MASK"
+      ],
+      "writes": [],
+      "description": "Coordina `AppPreferences_GetExtProfile`, `MENU_EXT_MASK` para Adaptadores de hardware y servicios.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_menu_services.h",
+        "line": 6
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppMenuReport",
+      "signature": "static inline bool AppMenuReport(void *ctx, uint32_t code, uint8_t source)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_menu_services.h",
+        "line": 11
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "WifiBridge_ReportScreenChanged"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `WifiBridge_ReportScreenChanged` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_menu_services.h",
+        "line": 11
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppMenuSelection",
+      "signature": "static inline bool AppMenuSelection(void *ctx, uint32_t code, uint8_t index, uint8_t count, uint8_t source)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_menu_services.h",
+        "line": 14
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "WifiBridge_ReportMenuSelectionChanged"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `WifiBridge_ReportMenuSelectionChanged` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_menu_services.h",
+        "line": 14
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppPermissionNodeValid",
+      "signature": "static inline bool AppPermissionNodeValid(uint8_t node)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_auxiliary_ports.h",
+        "line": 27
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Aplica la política de aplicación sobre nodos remotos admitidos.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_auxiliary_ports.h",
+        "line": 27
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppPermission_AppPreferences_IsPinLockEnabled",
+      "signature": "static inline bool AppPermission_AppPreferences_IsPinLockEnabled(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_auxiliary_ports.h",
+        "line": 23
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "AppPreferences_IsPinLockEnabled"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `AppPreferences_IsPinLockEnabled` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_auxiliary_ports.h",
+        "line": 23
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppPermission_AppPreferences_VerifyAuthPin",
+      "signature": "static inline bool AppPermission_AppPreferences_VerifyAuthPin(const uint8_t pinDigits[APP_PREFS_AUTH_PIN_DIGITS])",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_auxiliary_ports.h",
+        "line": 25
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "AppPreferences_VerifyAuthPin"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `AppPreferences_VerifyAuthPin` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_auxiliary_ports.h",
+        "line": 25
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppPermission_ssd1306_Clear",
+      "signature": "static inline void AppPermission_ssd1306_Clear(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_auxiliary_ports.h",
+        "line": 26
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "ssd1306_Clear"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `ssd1306_Clear` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_auxiliary_ports.h",
+        "line": 26
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppPermission_ssd1306_DrawBitmap",
+      "signature": "static inline void AppPermission_ssd1306_DrawBitmap(uint8_t X, uint8_t Y, uint8_t W, uint8_t H, const uint8_t* pBMP)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_auxiliary_ports.h",
+        "line": 18
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "ssd1306_DrawBitmap"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `ssd1306_DrawBitmap` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_auxiliary_ports.h",
+        "line": 18
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppPermission_ssd1306_DrawRect",
+      "signature": "static inline void AppPermission_ssd1306_DrawRect(int16_t x, int16_t y, int16_t width, int16_t height)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_auxiliary_ports.h",
+        "line": 19
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "ssd1306_DrawRect"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `ssd1306_DrawRect` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_auxiliary_ports.h",
+        "line": 19
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppPermission_ssd1306_FillRect",
+      "signature": "static inline void AppPermission_ssd1306_FillRect(int16_t xMove, int16_t yMove, int16_t width, int16_t height)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_auxiliary_ports.h",
+        "line": 24
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "ssd1306_FillRect"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `ssd1306_FillRect` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_auxiliary_ports.h",
+        "line": 24
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppPermission_ssd1306_SetColor",
+      "signature": "static inline void AppPermission_ssd1306_SetColor(SSD1306_COLOR color)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_auxiliary_ports.h",
+        "line": 22
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "ssd1306_SetColor"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `ssd1306_SetColor` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_auxiliary_ports.h",
+        "line": 22
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppPermission_ssd1306_SetCursor",
+      "signature": "static inline void AppPermission_ssd1306_SetCursor(uint8_t x, uint8_t y)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_auxiliary_ports.h",
+        "line": 20
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "ssd1306_SetCursor"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `ssd1306_SetCursor` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_auxiliary_ports.h",
+        "line": 20
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppPermission_ssd1306_WriteString",
+      "signature": "static inline char AppPermission_ssd1306_WriteString(char* str, FontDef Font)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_auxiliary_ports.h",
+        "line": 21
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "ssd1306_WriteString"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `ssd1306_WriteString` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_auxiliary_ports.h",
+        "line": 21
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppPreferences_BindStm32",
+      "signature": "static inline void AppPreferences_BindStm32(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_preferences_stm32.h",
+        "line": 31
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "AppPreferences_LegacySectorIsOutsideImage"
+      ],
+      "writes": [],
+      "description": "Conecta geometría Flash activa/legado y operaciones de almacenamiento.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_preferences_stm32.h",
+        "line": 31
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppPreferences_LegacySectorIsOutsideImage",
+      "signature": "static inline bool AppPreferences_LegacySectorIsOutsideImage(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_preferences_stm32.h",
+        "line": 20
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Comprueba si el sector legado puede leerse sin invadir la imagen de aplicación.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_preferences_stm32.h",
+        "line": 20
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppScreensBind",
+      "signature": "static inline void AppScreensBind(Screens_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_screens_ports.h",
+        "line": 219
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Screens_Init_notificationWrappers",
+        "Screens_Init_oled_canvas",
+        "Screens_Init_oled_utils",
+        "Screens_Init_osk_integration",
+        "Screens_Init_screenWrappers",
+        "Screens_Init_screen_lock",
+        "memset"
+      ],
+      "writes": [
+        "balanceControl",
+        "buildDate",
+        "buildTime",
+        "encoder",
+        "irSensors",
+        "lineFollowControl",
+        "mainMenu",
+        "menuSystem",
+        "motionControl",
+        "motorTask",
+        "mpuTask",
+        "oledHandle",
+        "services",
+        "submenu1",
+        "submenuESP",
+        "submenuSensorsDisplay",
+        "system",
+        "wifiBridge",
+        "wifiResultsItems",
+        "wifiResultsMenu"
+      ],
+      "description": "Instala la tabla de servicios y contexto de pantallas.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_screens_ports.h",
+        "line": 219
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppScreensRouteLights",
+      "signature": "static inline bool AppScreensRouteLights(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_screens_ports.h",
+        "line": 18
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "HAL_GPIO_ReadPin"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `HAL_GPIO_ReadPin` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_screens_ports.h",
+        "line": 18
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppScreens_AppPreferences_ClampScreenLockTimeoutSec",
+      "signature": "static inline uint16_t AppScreens_AppPreferences_ClampScreenLockTimeoutSec(uint16_t timeoutSec)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_screens_ports.h",
+        "line": 19
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "AppPreferences_ClampScreenLockTimeoutSec"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `AppPreferences_ClampScreenLockTimeoutSec` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_screens_ports.h",
+        "line": 19
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppScreens_AppPreferences_GetEspNotifWatchdogLimit",
+      "signature": "static inline uint8_t AppScreens_AppPreferences_GetEspNotifWatchdogLimit(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_screens_ports.h",
+        "line": 20
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "AppPreferences_GetEspNotifWatchdogLimit"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `AppPreferences_GetEspNotifWatchdogLimit` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_screens_ports.h",
+        "line": 20
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppScreens_AppPreferences_GetScreenLockTimeoutSec",
+      "signature": "static inline uint16_t AppScreens_AppPreferences_GetScreenLockTimeoutSec(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_screens_ports.h",
+        "line": 21
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "AppPreferences_GetScreenLockTimeoutSec"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `AppPreferences_GetScreenLockTimeoutSec` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_screens_ports.h",
+        "line": 21
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppScreens_AppPreferences_IsScreenLockEnabled",
+      "signature": "static inline bool AppScreens_AppPreferences_IsScreenLockEnabled(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_screens_ports.h",
+        "line": 24
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "AppPreferences_IsScreenLockEnabled"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `AppPreferences_IsScreenLockEnabled` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_screens_ports.h",
+        "line": 24
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppScreens_AppPreferences_IsWifiApFallbackEnabled",
+      "signature": "static inline bool AppScreens_AppPreferences_IsWifiApFallbackEnabled(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_screens_ports.h",
+        "line": 25
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "AppPreferences_IsWifiApFallbackEnabled"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `AppPreferences_IsWifiApFallbackEnabled` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_screens_ports.h",
+        "line": 25
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppScreens_AppPreferences_SetScreenLockTimeoutSec",
+      "signature": "static inline AM_Result AppScreens_AppPreferences_SetScreenLockTimeoutSec(uint16_t timeoutSec)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_screens_ports.h",
+        "line": 26
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "AppPreferences_SetScreenLockTimeoutSec"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `AppPreferences_SetScreenLockTimeoutSec` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_screens_ports.h",
+        "line": 26
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppScreens_WifiBridge_GetRuntimeCredentials",
+      "signature": "static inline const WifiBridge_Credentials * AppScreens_WifiBridge_GetRuntimeCredentials(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_screens_ports.h",
+        "line": 27
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "WifiBridge_GetRuntimeCredentials"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `WifiBridge_GetRuntimeCredentials` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_screens_ports.h",
+        "line": 27
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppScreens_ssd1306_Clear",
+      "signature": "static inline void AppScreens_ssd1306_Clear(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_screens_ports.h",
+        "line": 28
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "ssd1306_Clear"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `ssd1306_Clear` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_screens_ports.h",
+        "line": 28
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppScreens_ssd1306_DrawBitmap",
+      "signature": "static inline void AppScreens_ssd1306_DrawBitmap(uint8_t X, uint8_t Y, uint8_t W, uint8_t H, const uint8_t* pBMP)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_screens_ports.h",
+        "line": 29
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "ssd1306_DrawBitmap"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `ssd1306_DrawBitmap` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_screens_ports.h",
+        "line": 29
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppScreens_ssd1306_DrawBitmap_MSB",
+      "signature": "static inline void AppScreens_ssd1306_DrawBitmap_MSB(uint8_t X, uint8_t Y, uint8_t W, uint8_t H, const uint8_t* pBMP)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_screens_ports.h",
+        "line": 30
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "ssd1306_DrawBitmap_MSB"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `ssd1306_DrawBitmap_MSB` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_screens_ports.h",
+        "line": 30
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppScreens_ssd1306_DrawHorizontalLine",
+      "signature": "static inline void AppScreens_ssd1306_DrawHorizontalLine(int16_t x, int16_t y, int16_t length)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_screens_ports.h",
+        "line": 31
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "ssd1306_DrawHorizontalLine"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `ssd1306_DrawHorizontalLine` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_screens_ports.h",
+        "line": 31
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppScreens_ssd1306_DrawLine",
+      "signature": "static inline void AppScreens_ssd1306_DrawLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_screens_ports.h",
+        "line": 32
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "ssd1306_DrawLine"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `ssd1306_DrawLine` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_screens_ports.h",
+        "line": 32
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppScreens_ssd1306_DrawLinearProgress",
+      "signature": "static inline void AppScreens_ssd1306_DrawLinearProgress(uint8_t x, uint8_t y, uint8_t width, uint8_t height, uint32_t elapsed, uint32_t total)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_screens_ports.h",
+        "line": 33
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "ssd1306_DrawLinearProgress"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `ssd1306_DrawLinearProgress` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_screens_ports.h",
+        "line": 33
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppScreens_ssd1306_DrawPixel",
+      "signature": "static inline void AppScreens_ssd1306_DrawPixel(uint8_t x, uint8_t y)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_screens_ports.h",
+        "line": 39
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "ssd1306_DrawPixel"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `ssd1306_DrawPixel` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_screens_ports.h",
+        "line": 39
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppScreens_ssd1306_DrawRect",
+      "signature": "static inline void AppScreens_ssd1306_DrawRect(int16_t x, int16_t y, int16_t width, int16_t height)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_screens_ports.h",
+        "line": 40
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "ssd1306_DrawRect"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `ssd1306_DrawRect` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_screens_ports.h",
+        "line": 40
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppScreens_ssd1306_DrawVerticalLine",
+      "signature": "static inline void AppScreens_ssd1306_DrawVerticalLine(int16_t x, int16_t y, int16_t length)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_screens_ports.h",
+        "line": 41
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "ssd1306_DrawVerticalLine"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `ssd1306_DrawVerticalLine` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_screens_ports.h",
+        "line": 41
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppScreens_ssd1306_FillRect",
+      "signature": "static inline void AppScreens_ssd1306_FillRect(int16_t xMove, int16_t yMove, int16_t width, int16_t height)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_screens_ports.h",
+        "line": 42
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "ssd1306_FillRect"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `ssd1306_FillRect` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_screens_ports.h",
+        "line": 42
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppScreens_ssd1306_GetDefaultContrast",
+      "signature": "static inline uint8_t AppScreens_ssd1306_GetDefaultContrast(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_screens_ports.h",
+        "line": 43
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "ssd1306_GetDefaultContrast"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `ssd1306_GetDefaultContrast` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_screens_ports.h",
+        "line": 43
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppScreens_ssd1306_GetErrorCount",
+      "signature": "static inline uint32_t AppScreens_ssd1306_GetErrorCount(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_screens_ports.h",
+        "line": 44
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "ssd1306_GetErrorCount"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `ssd1306_GetErrorCount` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_screens_ports.h",
+        "line": 44
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppScreens_ssd1306_PresentFramebuffer",
+      "signature": "static inline AM_Result AppScreens_ssd1306_PresentFramebuffer(const uint8_t *framebuffer, uint16_t len)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_screens_ports.h",
+        "line": 45
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "ssd1306_PresentFramebuffer"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `ssd1306_PresentFramebuffer` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_screens_ports.h",
+        "line": 45
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppScreens_ssd1306_RequestPageUpdate",
+      "signature": "static inline AM_Result AppScreens_ssd1306_RequestPageUpdate(uint8_t page, I2C_RequestPrio prio, uint8_t keep_bus)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_screens_ports.h",
+        "line": 47
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "ssd1306_RequestPageUpdate"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `ssd1306_RequestPageUpdate` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_screens_ports.h",
+        "line": 47
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppScreens_ssd1306_SetColor",
+      "signature": "static inline void AppScreens_ssd1306_SetColor(SSD1306_COLOR color)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_screens_ports.h",
+        "line": 50
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "ssd1306_SetColor"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `ssd1306_SetColor` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_screens_ports.h",
+        "line": 50
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppScreens_ssd1306_SetContrast",
+      "signature": "static inline AM_Result AppScreens_ssd1306_SetContrast(uint8_t contrast)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_screens_ports.h",
+        "line": 51
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "ssd1306_SetContrast"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `ssd1306_SetContrast` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_screens_ports.h",
+        "line": 51
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppScreens_ssd1306_SetCursor",
+      "signature": "static inline void AppScreens_ssd1306_SetCursor(uint8_t x, uint8_t y)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_screens_ports.h",
+        "line": 52
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "ssd1306_SetCursor"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `ssd1306_SetCursor` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_screens_ports.h",
+        "line": 52
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppScreens_ssd1306_SetRotation",
+      "signature": "static inline AM_Result AppScreens_ssd1306_SetRotation(OledRotation_t rotation)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_screens_ports.h",
+        "line": 53
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "ssd1306_SetRotation"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `ssd1306_SetRotation` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_screens_ports.h",
+        "line": 53
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppScreens_ssd1306_UpdateScreen",
+      "signature": "static inline void AppScreens_ssd1306_UpdateScreen(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_screens_ports.h",
+        "line": 54
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "ssd1306_UpdateScreen"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `ssd1306_UpdateScreen` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_screens_ports.h",
+        "line": 54
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppScreens_ssd1306_UpdateScreenCompleted",
+      "signature": "static inline char AppScreens_ssd1306_UpdateScreenCompleted(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_screens_ports.h",
+        "line": 55
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "ssd1306_UpdateScreenCompleted"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `ssd1306_UpdateScreenCompleted` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_screens_ports.h",
+        "line": 55
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppScreens_ssd1306_WriteChar",
+      "signature": "static inline char AppScreens_ssd1306_WriteChar(char ch, FontDef Font)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_screens_ports.h",
+        "line": 56
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "ssd1306_WriteChar"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `ssd1306_WriteChar` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_screens_ports.h",
+        "line": 56
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppScreens_ssd1306_WriteString",
+      "signature": "static inline char AppScreens_ssd1306_WriteString(char* str, FontDef Font)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_screens_ports.h",
+        "line": 57
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "ssd1306_WriteString"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `ssd1306_WriteString` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_screens_ports.h",
+        "line": 57
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppWifiIdle",
+      "signature": "static inline void AppWifiIdle(void *ctx)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_wifi_ports.h",
+        "line": 13
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "__HAL_UART_ENABLE_IT"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `__HAL_UART_ENABLE_IT` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_wifi_ports.h",
+        "line": 13
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppWifiReady",
+      "signature": "static inline bool AppWifiReady(void *ctx)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_wifi_ports.h",
+        "line": 14
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Consulta disponibilidad de recepción del recurso UART del bridge.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_wifi_ports.h",
+        "line": 14
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppWifiRemaining",
+      "signature": "static inline uint16_t AppWifiRemaining(void *ctx)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_wifi_ports.h",
+        "line": 15
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "__HAL_DMA_GET_COUNTER"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `__HAL_DMA_GET_COUNTER` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_wifi_ports.h",
+        "line": 15
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppWifiRx",
+      "signature": "static inline AM_Result AppWifiRx(void *ctx,uint8_t *data,uint16_t len)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_wifi_ports.h",
+        "line": 11
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "HAL_UART_Receive_DMA"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `HAL_UART_Receive_DMA` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_wifi_ports.h",
+        "line": 11
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppWifiTick",
+      "signature": "static inline uint32_t AppWifiTick(void *ctx)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_wifi_ports.h",
+        "line": 10
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "HAL_GetTick"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `HAL_GetTick` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_wifi_ports.h",
+        "line": 10
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppWifiTx",
+      "signature": "static inline AM_Result AppWifiTx(void *ctx,const uint8_t *data,uint16_t len)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_wifi_ports.h",
+        "line": 12
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "HAL_UART_Transmit_DMA"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `HAL_UART_Transmit_DMA` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_wifi_ports.h",
+        "line": 12
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppWifi_AppApConfig_Get",
+      "signature": "static inline void AppWifi_AppApConfig_Get(void *ctx, AppApConfig_t *out)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_wifi_ports.h",
+        "line": 17
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "AppApConfig_Get"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `AppApConfig_Get` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_wifi_ports.h",
+        "line": 17
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppWifi_AppApConfig_OnEspApplyResponse",
+      "signature": "static inline void AppWifi_AppApConfig_OnEspApplyResponse(void *ctx, uint8_t status)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_wifi_ports.h",
+        "line": 18
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "AppApConfig_OnEspApplyResponse"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `AppApConfig_OnEspApplyResponse` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_wifi_ports.h",
+        "line": 18
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppWifi_AppPreferences_GetWifiAtProtocol",
+      "signature": "static inline uint8_t AppWifi_AppPreferences_GetWifiAtProtocol(void *ctx)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_wifi_ports.h",
+        "line": 19
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "AppPreferences_GetWifiAtProtocol"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `AppPreferences_GetWifiAtProtocol` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_wifi_ports.h",
+        "line": 19
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppWifi_Permission_RevokeRemoteNode",
+      "signature": "static inline void AppWifi_Permission_RevokeRemoteNode(void *ctx, uint8_t source_node)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_wifi_ports.h",
+        "line": 20
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Permission_RevokeRemoteNode"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `Permission_RevokeRemoteNode` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_wifi_ports.h",
+        "line": 20
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppWifi_UNER_App_FeedUart1Bytes",
+      "signature": "static inline void AppWifi_UNER_App_FeedUart1Bytes(void *ctx, const uint8_t *data, uint16_t len)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_wifi_ports.h",
+        "line": 21
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_App_FeedUart1Bytes"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `UNER_App_FeedUart1Bytes` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_wifi_ports.h",
+        "line": 21
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppWifi_UNER_App_GetBinaryAsset",
+      "signature": "static inline uint8_t AppWifi_UNER_App_GetBinaryAsset(void *ctx, uint8_t asset_id, BinaryAssetView_t *asset)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_wifi_ports.h",
+        "line": 22
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_App_GetBinaryAsset"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `UNER_App_GetBinaryAsset` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_wifi_ports.h",
+        "line": 22
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppWifi_UNER_App_GetWaitingCommandId",
+      "signature": "static inline uint8_t AppWifi_UNER_App_GetWaitingCommandId(void *ctx)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_wifi_ports.h",
+        "line": 23
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_App_GetWaitingCommandId"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `UNER_App_GetWaitingCommandId` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_wifi_ports.h",
+        "line": 23
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppWifi_UNER_App_Init",
+      "signature": "static inline UNER_Status AppWifi_UNER_App_Init(void *ctx, WifiBridge_Handle *bridge)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_wifi_ports.h",
+        "line": 24
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_App_Init"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `UNER_App_Init` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_wifi_ports.h",
+        "line": 24
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppWifi_UNER_App_IsWaitingValidation",
+      "signature": "static inline uint8_t AppWifi_UNER_App_IsWaitingValidation(void *ctx)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_wifi_ports.h",
+        "line": 25
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_App_IsWaitingValidation"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `UNER_App_IsWaitingValidation` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_wifi_ports.h",
+        "line": 25
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppWifi_UNER_App_NotifyUart1Rx",
+      "signature": "static inline void AppWifi_UNER_App_NotifyUart1Rx(void *ctx)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_wifi_ports.h",
+        "line": 26
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_App_NotifyUart1Rx"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `UNER_App_NotifyUart1Rx` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_wifi_ports.h",
+        "line": 26
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppWifi_UNER_App_OnAtNetworkDisconnected",
+      "signature": "static inline void AppWifi_UNER_App_OnAtNetworkDisconnected(void *ctx)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_wifi_ports.h",
+        "line": 27
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_App_OnAtNetworkDisconnected"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `UNER_App_OnAtNetworkDisconnected` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_wifi_ports.h",
+        "line": 27
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppWifi_UNER_App_OnUart1TxComplete",
+      "signature": "static inline void AppWifi_UNER_App_OnUart1TxComplete(void *ctx)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_wifi_ports.h",
+        "line": 28
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_App_OnUart1TxComplete"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `UNER_App_OnUart1TxComplete` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_wifi_ports.h",
+        "line": 28
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppWifi_UNER_App_Poll",
+      "signature": "static inline void AppWifi_UNER_App_Poll(void *ctx)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_wifi_ports.h",
+        "line": 29
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_App_Poll"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `UNER_App_Poll` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_wifi_ports.h",
+        "line": 29
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppWifi_UNER_App_ReportCarModeChanged",
+      "signature": "static inline UNER_Status AppWifi_UNER_App_ReportCarModeChanged(void *ctx, uint8_t mode)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_wifi_ports.h",
+        "line": 30
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_App_ReportCarModeChanged"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `UNER_App_ReportCarModeChanged` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_wifi_ports.h",
+        "line": 30
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppWifi_UNER_App_ReportMenuSelectionChanged",
+      "signature": "static inline UNER_Status AppWifi_UNER_App_ReportMenuSelectionChanged(void *ctx, uint32_t screen_code, uint8_t selected_index, uint8_t item_count, uint8_t source)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_wifi_ports.h",
+        "line": 31
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_App_ReportMenuSelectionChanged"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `UNER_App_ReportMenuSelectionChanged` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_wifi_ports.h",
+        "line": 31
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppWifi_UNER_App_ReportScreenChanged",
+      "signature": "static inline UNER_Status AppWifi_UNER_App_ReportScreenChanged(void *ctx, uint32_t screen_code, uint8_t source)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_wifi_ports.h",
+        "line": 35
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_App_ReportScreenChanged"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `UNER_App_ReportScreenChanged` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_wifi_ports.h",
+        "line": 35
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppWifi_UNER_App_RequestBinaryAsset",
+      "signature": "static inline UNER_Status AppWifi_UNER_App_RequestBinaryAsset(void *ctx, uint8_t asset_id)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_wifi_ports.h",
+        "line": 36
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_App_RequestBinaryAsset"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `UNER_App_RequestBinaryAsset` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_wifi_ports.h",
+        "line": 36
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppWifi_UNER_App_RequestWifiNetworkDetail",
+      "signature": "static inline UNER_Status AppWifi_UNER_App_RequestWifiNetworkDetail(void *ctx, const char *ssid)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_wifi_ports.h",
+        "line": 37
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_App_RequestWifiNetworkDetail"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `UNER_App_RequestWifiNetworkDetail` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_wifi_ports.h",
+        "line": 37
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppWifi_UNER_App_ResetUart1RxPos",
+      "signature": "static inline void AppWifi_UNER_App_ResetUart1RxPos(void *ctx)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_wifi_ports.h",
+        "line": 38
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_App_ResetUart1RxPos"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `UNER_App_ResetUart1RxPos` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_wifi_ports.h",
+        "line": 38
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppWifi_UNER_App_SendCommand",
+      "signature": "static inline UNER_Status AppWifi_UNER_App_SendCommand(void *ctx, uint8_t cmd, const uint8_t *payload, uint8_t len)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_wifi_ports.h",
+        "line": 39
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_App_SendCommand"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `UNER_App_SendCommand` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_wifi_ports.h",
+        "line": 39
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppWifi_UNER_App_SendEspReboot",
+      "signature": "static inline UNER_Status AppWifi_UNER_App_SendEspReboot(void *ctx, uint8_t boot_mode)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_wifi_ports.h",
+        "line": 40
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_App_SendEspReboot"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `UNER_App_SendEspReboot` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_wifi_ports.h",
+        "line": 40
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppWifi_UNER_App_SendWifiCredentialRequest",
+      "signature": "static inline UNER_Status AppWifi_UNER_App_SendWifiCredentialRequest(void *ctx, const char *ssid)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_wifi_ports.h",
+        "line": 41
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_App_SendWifiCredentialRequest"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `UNER_App_SendWifiCredentialRequest` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_wifi_ports.h",
+        "line": 41
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "App_BalanceEnable",
+      "signature": "static inline void App_BalanceEnable(void *p,uint8_t v)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_control_ports.h",
+        "line": 28
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "BalanceControl_SetEnabled"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `BalanceControl_SetEnabled` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_control_ports.h",
+        "line": 28
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "App_BalanceOutput",
+      "signature": "static inline float App_BalanceOutput(const void *p)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_control_ports.h",
+        "line": 31
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "BalanceControl_GetOutputPercent"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `BalanceControl_GetOutputPercent` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_control_ports.h",
+        "line": 31
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "App_BalanceReset",
+      "signature": "static inline void App_BalanceReset(void *p)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_control_ports.h",
+        "line": 29
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "BalanceControl_Reset"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `BalanceControl_Reset` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_control_ports.h",
+        "line": 29
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "App_BalanceTarget",
+      "signature": "static inline void App_BalanceTarget(void *p,float v)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_control_ports.h",
+        "line": 27
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "BalanceControl_SetTargetPitchDeg"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `BalanceControl_SetTargetPitchDeg` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_control_ports.h",
+        "line": 27
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "App_BalanceUpdate",
+      "signature": "static inline AM_Result App_BalanceUpdate(void *p,float v,uint32_t ms)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_control_ports.h",
+        "line": 30
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "BalanceControl_Update"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `BalanceControl_Update` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_control_ports.h",
+        "line": 30
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "App_DriveApply",
+      "signature": "static inline void App_DriveApply(void *p,float l,float r)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_control_ports.h",
+        "line": 35
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "MotorDrive_SetSignedPercent"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `MotorDrive_SetSignedPercent` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_control_ports.h",
+        "line": 35
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "App_DriveBrake",
+      "signature": "static inline void App_DriveBrake(void *p)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_control_ports.h",
+        "line": 34
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Motor_Brake"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `Motor_Brake` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_control_ports.h",
+        "line": 34
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "App_DriveStop",
+      "signature": "static inline void App_DriveStop(void *p)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_control_ports.h",
+        "line": 33
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "MotorDrive_StopAll"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `MotorDrive_StopAll` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_control_ports.h",
+        "line": 33
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "App_EncoderButton",
+      "signature": "static inline bool App_EncoderButton(void *ctx)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_stm32_ports.h",
+        "line": 22
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "App_ReadLevel"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `App_ReadLevel` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_stm32_ports.h",
+        "line": 22
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "App_EncoderCount",
+      "signature": "static inline uint16_t App_EncoderCount(void *ctx)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_stm32_ports.h",
+        "line": 13
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "__HAL_TIM_GET_COUNTER"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `__HAL_TIM_GET_COUNTER` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_stm32_ports.h",
+        "line": 13
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "App_EncoderReset",
+      "signature": "static inline void App_EncoderReset(void *ctx)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_stm32_ports.h",
+        "line": 16
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "__HAL_TIM_SET_COUNTER"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `__HAL_TIM_SET_COUNTER` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_stm32_ports.h",
+        "line": 16
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "App_EncoderStart",
+      "signature": "static inline void App_EncoderStart(void *ctx)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_stm32_ports.h",
+        "line": 19
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "HAL_TIM_Encoder_Start"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `HAL_TIM_Encoder_Start` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_stm32_ports.h",
+        "line": 19
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "App_FlashErase",
+      "signature": "static inline AM_Result App_FlashErase(void *ctx)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_preferences_stm32.h",
+        "line": 10
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "HAL_FLASHEx_Erase"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `HAL_FLASHEx_Erase` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_preferences_stm32.h",
+        "line": 10
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "App_FlashLock",
+      "signature": "static inline AM_Result App_FlashLock(void *ctx)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_preferences_stm32.h",
+        "line": 9
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "HAL_FLASH_Lock"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `HAL_FLASH_Lock` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_preferences_stm32.h",
+        "line": 9
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "App_FlashProgram",
+      "signature": "static inline AM_Result App_FlashProgram(void *ctx,uint32_t address,uint32_t word)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_preferences_stm32.h",
+        "line": 16
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "HAL_FLASH_Program"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `HAL_FLASH_Program` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_preferences_stm32.h",
+        "line": 16
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "App_FlashUnlock",
+      "signature": "static inline AM_Result App_FlashUnlock(void *ctx)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_preferences_stm32.h",
+        "line": 8
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "HAL_FLASH_Unlock"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `HAL_FLASH_Unlock` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_preferences_stm32.h",
+        "line": 8
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "App_FlashView",
+      "signature": "static inline const void *App_FlashView(void *ctx,uint32_t address,size_t len)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_preferences_stm32.h",
+        "line": 7
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Devuelve vista de memoria Flash para el rango solicitado al adaptador.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_preferences_stm32.h",
+        "line": 7
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "App_I2cBind",
+      "signature": "static inline AM_Result App_I2cBind(void *ctx,uint16_t a,uint8_t p,void *c,I2C_OnGrantedCb g,I2C_OnTxDoneCb tx,I2C_OnRxDoneCb rx,I2C_OnErrorCb e)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_i2c_ports.h",
+        "line": 17
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "I2C_Manager_RegisterDevice"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `I2C_Manager_RegisterDevice` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_i2c_ports.h",
+        "line": 17
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "App_I2cConnect",
+      "signature": "static inline void App_I2cConnect(AppI2cBinding *b,I2C_ManagerHandle *m,I2C_DeviceID id)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_i2c_ports.h",
+        "line": 24
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [
+        "id",
+        "manager",
+        "port"
+      ],
+      "description": "Construye el puerto de un dispositivo enlazado al manager y a su ID lógico.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_i2c_ports.h",
+        "line": 24
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "App_I2cDelay",
+      "signature": "static inline void App_I2cDelay(void *ctx,uint32_t ms)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_i2c_ports.h",
+        "line": 7
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "HAL_Delay"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `HAL_Delay` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_i2c_ports.h",
+        "line": 7
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "App_I2cMs",
+      "signature": "static inline uint32_t App_I2cMs(void *ctx)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_i2c_ports.h",
+        "line": 5
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "HAL_GetTick"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `HAL_GetTick` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_i2c_ports.h",
+        "line": 5
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "App_I2cOwner",
+      "signature": "static inline bool App_I2cOwner(void *ctx)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_i2c_ports.h",
+        "line": 22
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "I2C_Manager_GetOwner"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `I2C_Manager_GetOwner` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_i2c_ports.h",
+        "line": 22
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "App_I2cPolicy",
+      "signature": "static inline I2C_PolicyMode App_I2cPolicy(void *ctx)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_i2c_ports.h",
+        "line": 23
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "I2C_Manager_GetPolicy"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `I2C_Manager_GetPolicy` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_i2c_ports.h",
+        "line": 23
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "App_I2cProbe",
+      "signature": "static inline AM_Result App_I2cProbe(void *ctx,uint16_t a,uint32_t n,uint32_t t)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_i2c_ports.h",
+        "line": 9
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "HAL_I2C_IsDeviceReady"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `HAL_I2C_IsDeviceReady` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_i2c_ports.h",
+        "line": 9
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "App_I2cRead",
+      "signature": "static inline AM_Result App_I2cRead(void *ctx,uint16_t a,uint16_t r,uint16_t rs,uint8_t *p,uint16_t n,uint32_t t)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_i2c_ports.h",
+        "line": 11
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "HAL_I2C_Mem_Read"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `HAL_I2C_Mem_Read` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_i2c_ports.h",
+        "line": 11
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "App_I2cReady",
+      "signature": "static inline bool App_I2cReady(void *ctx)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_i2c_ports.h",
+        "line": 8
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "HAL_I2C_GetState"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `HAL_I2C_GetState` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_i2c_ports.h",
+        "line": 8
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "App_I2cRelease",
+      "signature": "static inline AM_Result App_I2cRelease(void *ctx)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_i2c_ports.h",
+        "line": 21
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "I2C_Manager_ReleaseBus"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `I2C_Manager_ReleaseBus` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_i2c_ports.h",
+        "line": 21
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "App_I2cRequest",
+      "signature": "static inline AM_Result App_I2cRequest(void *ctx,I2C_RequestPrio p)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_i2c_ports.h",
+        "line": 20
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "I2C_Manager_RequestBusPrio"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `I2C_Manager_RequestBusPrio` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_i2c_ports.h",
+        "line": 20
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "App_I2cRx",
+      "signature": "static inline AM_Result App_I2cRx(void *ctx,uint16_t a,uint8_t *p,uint16_t n)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_i2c_ports.h",
+        "line": 14
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "HAL_I2C_Master_Receive_DMA"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `HAL_I2C_Master_Receive_DMA` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_i2c_ports.h",
+        "line": 14
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "App_I2cTx",
+      "signature": "static inline AM_Result App_I2cTx(void *ctx,uint16_t a,uint8_t *p,uint16_t n)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_i2c_ports.h",
+        "line": 13
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "HAL_I2C_Master_Transmit_DMA"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `HAL_I2C_Master_Transmit_DMA` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_i2c_ports.h",
+        "line": 13
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "App_I2cUs",
+      "signature": "static inline uint32_t App_I2cUs(void *ctx)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_i2c_ports.h",
+        "line": 6
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "App_I2cMs"
+      ],
+      "writes": [],
+      "description": "Entrega HAL_GetTick multiplicado por 1000, con resolución real de milisegundos.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_i2c_ports.h",
+        "line": 6
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "App_I2cWrite",
+      "signature": "static inline AM_Result App_I2cWrite(void *ctx,uint16_t a,uint16_t r,uint16_t rs,uint8_t *p,uint16_t n,uint32_t t)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_i2c_ports.h",
+        "line": 10
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "HAL_I2C_Mem_Write"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `HAL_I2C_Mem_Write` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_i2c_ports.h",
+        "line": 10
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "App_I2cWriteDma",
+      "signature": "static inline AM_Result App_I2cWriteDma(void *ctx,uint16_t a,uint16_t r,uint16_t rs,uint8_t *p,uint16_t n)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_i2c_ports.h",
+        "line": 12
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "HAL_I2C_Mem_Write_DMA"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `HAL_I2C_Mem_Write_DMA` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_i2c_ports.h",
+        "line": 12
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "App_IrEmitters",
+      "signature": "static inline void App_IrEmitters(void *ctx,uint8_t group,bool enabled)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_stm32_ports.h",
+        "line": 33
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "HAL_GPIO_WritePin"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `HAL_GPIO_WritePin` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_stm32_ports.h",
+        "line": 33
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "App_IrInitialize",
+      "signature": "static inline AM_Result App_IrInitialize(void *ctx)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_stm32_ports.h",
+        "line": 38
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "App_IrEmitters"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `App_IrEmitters` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_stm32_ports.h",
+        "line": 38
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "App_IrStartSampling",
+      "signature": "static inline AM_Result App_IrStartSampling(AppIrContext *p)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_stm32_ports.h",
+        "line": 42
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "HAL_ADC_Start_DMA"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `HAL_ADC_Start_DMA` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_stm32_ports.h",
+        "line": 42
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "App_LineArmed",
+      "signature": "static inline uint8_t App_LineArmed(const void *p)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_control_ports.h",
+        "line": 38
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "MotionControl_IsArmed"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `MotionControl_IsArmed` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_control_ports.h",
+        "line": 38
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "App_LineCommand",
+      "signature": "static inline AM_Result App_LineCommand(void *p,const MotionControl_Command_t *c,uint32_t ms)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_control_ports.h",
+        "line": 37
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "MotionControl_SetCommand"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `MotionControl_SetCommand` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_control_ports.h",
+        "line": 37
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "App_LineEmitters",
+      "signature": "static inline bool App_LineEmitters(void *p)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_control_ports.h",
+        "line": 40
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "TCRT5000_EmittersGroup3IsOn"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `TCRT5000_EmittersGroup3IsOn` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_control_ports.h",
+        "line": 40
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "App_LineEstimate",
+      "signature": "static inline const MotionEstimator_Status_t *App_LineEstimate(const void *p)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_control_ports.h",
+        "line": 39
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "MotionEstimator_GetStatus"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `MotionEstimator_GetStatus` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_control_ports.h",
+        "line": 39
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "App_MpuAttitudeMs",
+      "signature": "static inline uint32_t App_MpuAttitudeMs(const void *p)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_control_ports.h",
+        "line": 23
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Consulta la marca de última actitud calculada en la instancia MPU.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_control_ports.h",
+        "line": 23
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "App_MpuCalibrating",
+      "signature": "static inline uint8_t App_MpuCalibrating(const void *p)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_control_ports.h",
+        "line": 19
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "MPU9250_IsCalibrating"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `MPU9250_IsCalibrating` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_control_ports.h",
+        "line": 19
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "App_MpuFresh",
+      "signature": "static inline uint8_t App_MpuFresh(const void *p,uint32_t ms)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_control_ports.h",
+        "line": 20
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "MPU9250_IsSampleFresh"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `MPU9250_IsSampleFresh` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_control_ports.h",
+        "line": 20
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "App_MpuFront",
+      "signature": "static inline float App_MpuFront(const void *p)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_control_ports.h",
+        "line": 21
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "MPU9250_GetFrontTiltDeg"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `MPU9250_GetFrontTiltDeg` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_control_ports.h",
+        "line": 21
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "App_MpuNow",
+      "signature": "static inline uint32_t App_MpuNow(const void *p)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_control_ports.h",
+        "line": 25
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "now_ms"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `now_ms` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_control_ports.h",
+        "line": 25
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "App_MpuReady",
+      "signature": "static inline bool App_MpuReady(const void *p)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_control_ports.h",
+        "line": 18
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "MPU9250_IsCalibrated",
+        "MPU9250_IsCalibrating"
+      ],
+      "writes": [],
+      "description": "Coordina `MPU9250_IsCalibrated`, `MPU9250_IsCalibrating` para Adaptadores de hardware y servicios.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_control_ports.h",
+        "line": 18
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "App_MpuSequence",
+      "signature": "static inline uint16_t App_MpuSequence(const void *p)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_control_ports.h",
+        "line": 22
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Consulta la secuencia de muestra actual de la instancia MPU.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_control_ports.h",
+        "line": 22
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "App_MpuSnapshot",
+      "signature": "static inline AM_Result App_MpuSnapshot(void *p,MPU9250_Snapshot_t *s)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_control_ports.h",
+        "line": 24
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "MPU9250_GetLatest"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `MPU9250_GetLatest` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_control_ports.h",
+        "line": 24
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "App_PidGains",
+      "signature": "static inline void App_PidGains(void *p,float a,float b,float c)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_control_ports.h",
+        "line": 13
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "PidController_SetGains"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `PidController_SetGains` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_control_ports.h",
+        "line": 13
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "App_PidInit",
+      "signature": "static inline AM_Result App_PidInit(void *p,const PidController_Config_t *c)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_control_ports.h",
+        "line": 10
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "PidController_Init"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `PidController_Init` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_control_ports.h",
+        "line": 10
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "App_PidOutput",
+      "signature": "static inline float App_PidOutput(const void *p)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_control_ports.h",
+        "line": 15
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "PidController_GetOutput"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `PidController_GetOutput` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_control_ports.h",
+        "line": 15
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "App_PidReset",
+      "signature": "static inline void App_PidReset(void *p)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_control_ports.h",
+        "line": 11
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "PidController_Reset"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `PidController_Reset` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_control_ports.h",
+        "line": 11
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "App_PidSetpoint",
+      "signature": "static inline void App_PidSetpoint(void *p,float v)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_control_ports.h",
+        "line": 12
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "PidController_SetSetpoint"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `PidController_SetSetpoint` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_control_ports.h",
+        "line": 12
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "App_PidStatus",
+      "signature": "static inline const PidController_Status_t *App_PidStatus(const void *p)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_control_ports.h",
+        "line": 16
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "PidController_GetStatus"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `PidController_GetStatus` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_control_ports.h",
+        "line": 16
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "App_PidUpdate",
+      "signature": "static inline AM_Result App_PidUpdate(void *p,float a,float b,float c)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_control_ports.h",
+        "line": 14
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "PidController_Update"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `PidController_Update` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_control_ports.h",
+        "line": 14
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "App_PwmCompare",
+      "signature": "static inline void App_PwmCompare(void *ctx,uint32_t channel,uint16_t value)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_stm32_ports.h",
+        "line": 28
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "__HAL_TIM_SET_COMPARE"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `__HAL_TIM_SET_COMPARE` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_stm32_ports.h",
+        "line": 28
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "App_PwmStart",
+      "signature": "static inline AM_Result App_PwmStart(void *ctx,uint32_t channel)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_stm32_ports.h",
+        "line": 25
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "HAL_TIM_PWM_Start"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `HAL_TIM_PWM_Start` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_stm32_ports.h",
+        "line": 25
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "App_ReadLevel",
+      "signature": "static inline bool App_ReadLevel(void *ctx)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_stm32_ports.h",
+        "line": 10
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "HAL_GPIO_ReadPin"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `HAL_GPIO_ReadPin` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_stm32_ports.h",
+        "line": 10
+      },
+      "linkage": "header"
+    }
+  ],
+  "internalFunctions": []
+}

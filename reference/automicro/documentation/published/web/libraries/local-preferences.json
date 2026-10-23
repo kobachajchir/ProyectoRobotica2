@@ -1,0 +1,479 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "web:module/src/utils/theme.ts",
+  "slug": "local-preferences",
+  "title": "Preferencias locales, tema y utilidades",
+  "target": "web",
+  "kind": "servicio",
+  "status": "source-documented",
+  "snapshotDate": "2026-10-20",
+  "verification": "not-run-user-instruction",
+  "responsibility": "Gestiona preferencias y efectos locales del navegador, independientes de preferencias persistidas F4.",
+  "scope": "Tema, media query, sonido y bloqueo de scroll de modal.",
+  "state": "Storage/DOM/listeners/timers pertenecen a la sesión/página del navegador.",
+  "modularity": "Utilidades de plataforma navegador; no afectan el protocolo salvo acciones expresas de consumidores.",
+  "lifecycle": [
+    "Leer preferencia, instalar listeners y retirar/restaurar estado previo al desmontar."
+  ],
+  "interactions": [
+    "Los componentes comparten estas utilidades para mantener comportamiento consistente."
+  ],
+  "limitations": [
+    "Preferencia local no se sincroniza con el firmware por implicación."
+  ],
+  "relationships": [],
+  "findings": [],
+  "files": [
+    {
+      "rootId": "web",
+      "path": "src/components/ThemeModeToggleCard.tsx",
+      "sha256": "f9d3f39c11d2a25f77688496655985f8731186b91c431025ed7f024f9f6c15e5",
+      "imports": [
+        "../utils/theme",
+        "./ToggleButton",
+        "react",
+        "sonner"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/hooks/useMediaQuery.ts",
+      "sha256": "76d89b91b78056f758e4a8dfaa6a846fd050e34bb73787248cdb23498e618f55",
+      "imports": [
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/hooks/useModalScrollLock.ts",
+      "sha256": "58a04666c4d35938b1c07015a1f3ef017fc22555206a9283e6cd350c6186666f",
+      "imports": [
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/utils/theme.ts",
+      "sha256": "e1d9e9c524b2e9d21523203bab9fee0df7ed493bc13d05b5f9fa5a5d974116a1",
+      "imports": [],
+      "analysisLevel": "typescript-ast-static"
+    }
+  ],
+  "types": [
+    {
+      "name": "ThemeColors",
+      "kind": "TypeAliasDeclaration",
+      "fields": [
+        {
+          "name": "base",
+          "declaration": "base: string",
+          "callback": false,
+          "ownerType": "ThemeColors",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/utils/theme.ts",
+            "line": 2
+          },
+          "description": "Dato de estado/configuración `base`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "accent",
+          "declaration": "accent: string",
+          "callback": false,
+          "ownerType": "ThemeColors",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/utils/theme.ts",
+            "line": 3
+          },
+          "description": "Dato de estado/configuración `accent`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/utils/theme.ts",
+        "line": 1
+      }
+    },
+    {
+      "name": "ThemeMode",
+      "kind": "TypeAliasDeclaration",
+      "type": "\"dark\" | \"light\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/utils/theme.ts",
+        "line": 6
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "AppearanceIcon",
+      "displayName": "AppearanceIcon",
+      "signature": "AppearanceIcon(): inferred-by-TypeScript",
+      "line": 56,
+      "endLine": 63,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ThemeModeToggleCard.tsx",
+        "line": 56
+      },
+      "description": "Operación Appearance Icon de Preferencias locales, tema y utilidades; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "ThemeModeToggleCard",
+      "displayName": "ThemeModeToggleCard",
+      "signature": "ThemeModeToggleCard({\r\n  className = \"\",\r\n}: { className?: string; }): inferred-by-TypeScript",
+      "line": 11,
+      "endLine": 54,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "`settings-identity-card settings-appearance-card ${className}`.trim",
+        "useState"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ThemeModeToggleCard.tsx",
+        "line": 11
+      },
+      "description": "Coordina ``settings-identity-card settings-appearance-card ${className}`.trim`, `useState` para Preferencias locales, tema y utilidades.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "applyThemeColors",
+      "displayName": "applyThemeColors",
+      "signature": "applyThemeColors(mode: ThemeMode): inferred-by-TypeScript",
+      "line": 69,
+      "endLine": 94,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "getReadableInk",
+        "hexToRgbCss",
+        "root.style.setProperty"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/utils/theme.ts",
+        "line": 69
+      },
+      "description": "Coordina `getReadableInk`, `hexToRgbCss`, `root.style.setProperty` para Preferencias locales, tema y utilidades.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "applyThemeMode",
+      "displayName": "applyThemeMode",
+      "signature": "applyThemeMode(mode: ThemeMode): inferred-by-TypeScript",
+      "line": 62,
+      "endLine": 67,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "applyThemeColors"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/utils/theme.ts",
+        "line": 62
+      },
+      "description": "Adapta la llamada a `applyThemeColors` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildThemePayload",
+      "displayName": "buildThemePayload",
+      "signature": "buildThemePayload(colors: ThemeColors): inferred-by-TypeScript",
+      "line": 96,
+      "endLine": 100,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "hexToRgbTuple"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/utils/theme.ts",
+        "line": 96
+      },
+      "description": "Adapta la llamada a `hexToRgbTuple` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "getReadableInk",
+      "displayName": "getReadableInk",
+      "signature": "getReadableInk(hex: string): inferred-by-TypeScript",
+      "line": 102,
+      "endLine": 106,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "hexToRgbTuple"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/utils/theme.ts",
+        "line": 102
+      },
+      "description": "Adapta la llamada a `hexToRgbTuple` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "hexToRgbCss",
+      "displayName": "hexToRgbCss",
+      "signature": "hexToRgbCss(hex: string, alpha: inferred-by-TypeScript): inferred-by-TypeScript",
+      "line": 40,
+      "endLine": 43,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "hexToRgbTuple"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/utils/theme.ts",
+        "line": 40
+      },
+      "description": "Adapta la llamada a `hexToRgbTuple` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "hexToRgbTuple",
+      "displayName": "hexToRgbTuple",
+      "signature": "hexToRgbTuple(hex: string): [number, number, number]",
+      "line": 31,
+      "endLine": 38,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "normalizeHexColor",
+        "parseInt",
+        "safe.slice"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/utils/theme.ts",
+        "line": 31
+      },
+      "description": "Coordina `normalizeHexColor`, `parseInt`, `safe.slice` para Preferencias locales, tema y utilidades.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "isHexColor",
+      "displayName": "isHexColor",
+      "signature": "isHexColor(value: string): inferred-by-TypeScript",
+      "line": 27,
+      "endLine": 29,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "HEX_COLOR_RE.test",
+        "value.trim"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/utils/theme.ts",
+        "line": 27
+      },
+      "description": "Coordina `HEX_COLOR_RE.test`, `value.trim` para Preferencias locales, tema y utilidades.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "loadThemeMode",
+      "displayName": "loadThemeMode",
+      "signature": "loadThemeMode(): ThemeMode",
+      "line": 45,
+      "endLine": 52,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "localStorage.getItem"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/utils/theme.ts",
+        "line": 45
+      },
+      "description": "Adapta la llamada a `localStorage.getItem` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "normalizeHexColor",
+      "displayName": "normalizeHexColor",
+      "signature": "normalizeHexColor(value: string, fallback: inferred-by-TypeScript): inferred-by-TypeScript",
+      "line": 21,
+      "endLine": 25,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "HEX_COLOR_RE.test",
+        "trimmed.startsWith",
+        "value.trim",
+        "withHash.toLowerCase"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/utils/theme.ts",
+        "line": 21
+      },
+      "description": "Coordina `HEX_COLOR_RE.test`, `trimmed.startsWith`, `value.trim` para Preferencias locales, tema y utilidades.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "saveThemeMode",
+      "displayName": "saveThemeMode",
+      "signature": "saveThemeMode(mode: ThemeMode): inferred-by-TypeScript",
+      "line": 54,
+      "endLine": 60,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "localStorage.setItem"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/utils/theme.ts",
+        "line": 54
+      },
+      "description": "Adapta la llamada a `localStorage.setItem` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "useMediaQuery",
+      "displayName": "useMediaQuery",
+      "signature": "useMediaQuery(query: string): boolean",
+      "line": 3,
+      "endLine": 22,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useEffect",
+        "useState"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/hooks/useMediaQuery.ts",
+        "line": 3
+      },
+      "description": "Coordina `useEffect`, `useState` para Preferencias locales, tema y utilidades.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "useModalScrollLock",
+      "displayName": "useModalScrollLock",
+      "signature": "useModalScrollLock(isOpen: boolean): inferred-by-TypeScript",
+      "line": 7,
+      "endLine": 47,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useEffect"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/hooks/useModalScrollLock.ts",
+        "line": 7
+      },
+      "description": "Adapta la llamada a `useEffect` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "ThemeModeToggleCard.handleThemeModeToggle",
+      "displayName": "handleThemeModeToggle",
+      "signature": "ThemeModeToggleCard.handleThemeModeToggle(nextChecked: boolean): inferred-by-TypeScript",
+      "line": 18,
+      "endLine": 24,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "applyThemeMode",
+        "saveThemeMode",
+        "setThemeMode",
+        "toast.info"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ThemeModeToggleCard.tsx",
+        "line": 18
+      },
+      "description": "Coordina `applyThemeMode`, `saveThemeMode`, `setThemeMode` para Preferencias locales, tema y utilidades.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "useMediaQuery.listener",
+      "displayName": "listener",
+      "signature": "useMediaQuery.listener(): inferred-by-TypeScript",
+      "line": 16,
+      "endLine": 16,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "setMatches"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/hooks/useMediaQuery.ts",
+        "line": 16
+      },
+      "description": "Adapta la llamada a `setMatches` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    }
+  ],
+  "hooks": [
+    {
+      "callee": "useState",
+      "scope": "ThemeModeToggleCard",
+      "line": 16,
+      "arguments": 1,
+      "path": "src/components/ThemeModeToggleCard.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "useMediaQuery",
+      "line": 4,
+      "arguments": 1,
+      "path": "src/hooks/useMediaQuery.ts"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "useMediaQuery",
+      "line": 11,
+      "arguments": 2,
+      "path": "src/hooks/useMediaQuery.ts"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "useModalScrollLock",
+      "line": 8,
+      "arguments": 2,
+      "path": "src/hooks/useModalScrollLock.ts"
+    }
+  ]
+}

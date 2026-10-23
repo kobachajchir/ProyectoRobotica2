@@ -1,0 +1,352 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "web:module/src/hooks/useMockFirmware.ts",
+  "slug": "simulation",
+  "title": "Simulación y datos de desarrollo",
+  "target": "web",
+  "kind": "soporte",
+  "status": "source-documented",
+  "snapshotDate": "2026-10-20",
+  "verification": "not-run-user-instruction",
+  "responsibility": "Genera o suministra datos de desarrollo y fixtures para inspección del cliente.",
+  "scope": "Escenarios sintéticos; no son muestras ni resultados del robot real.",
+  "state": "Estado local de simulación/temporizadores y fixtures estáticos.",
+  "modularity": "Soporte del cliente; debe conservar separación/procedencia frente a telemetría recibida.",
+  "lifecycle": [
+    "Activar explícitamente simulación y limpiar timers al desactivar/desmontar."
+  ],
+  "interactions": [
+    "Consumidores de sensores pueden usar mismos tipos; el tipo compartido no convierte una muestra sintética en física."
+  ],
+  "limitations": [
+    "Esta entrega inventaría fixtures sin ejecutar tests ni generar otros."
+  ],
+  "relationships": [],
+  "findings": [],
+  "files": [
+    {
+      "rootId": "web",
+      "path": "src/components/MockEulerGenerator.tsx",
+      "sha256": "65b6c37228d0346795f81ee6070082890b9459bd0fd9a32da7c31347b1d6faba",
+      "imports": [
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/components/MockInjectButton.tsx",
+      "sha256": "0860aea879d61548f9b6ecb8f496d9044a531a2d93bd46b3b589994e7bab6ef1",
+      "imports": [
+        "../api/UnerProtocol",
+        "../hooks/useWebSocket"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/hooks/useMockFirmware.ts",
+      "sha256": "0889fcc3695ff019c747df9411a81a2aa631d9c111cde68aedc9b188d0fdc291",
+      "imports": [
+        "../types/UnerProtocolCMDTypes",
+        "./useWebSocket",
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/protocol/__fixtures__/f4-uner-golden-vectors.json",
+      "sha256": "eb4e811a9dfd9fc0330cf7faffb45a6756fee3e434e2122065fee763da802000",
+      "imports": [],
+      "analysisLevel": "support-inventory"
+    }
+  ],
+  "types": [
+    {
+      "name": "Euler",
+      "kind": "TypeAliasDeclaration",
+      "fields": [
+        {
+          "name": "yaw",
+          "declaration": "yaw: number",
+          "callback": false,
+          "ownerType": "Euler",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/MockEulerGenerator.tsx",
+            "line": 3
+          },
+          "description": "Dato de estado/configuración `yaw`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "pitch",
+          "declaration": "pitch: number",
+          "callback": false,
+          "ownerType": "Euler",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/MockEulerGenerator.tsx",
+            "line": 3
+          },
+          "description": "Dato de estado/configuración `pitch`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "roll",
+          "declaration": "roll: number",
+          "callback": false,
+          "ownerType": "Euler",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/MockEulerGenerator.tsx",
+            "line": 3
+          },
+          "description": "Dato de estado/configuración `roll`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/MockEulerGenerator.tsx",
+        "line": 3
+      }
+    },
+    {
+      "name": "MockEulerGeneratorProps",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "active",
+          "declaration": "active: boolean",
+          "callback": false,
+          "ownerType": "MockEulerGeneratorProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/MockEulerGenerator.tsx",
+            "line": 6
+          },
+          "description": "Dato de estado/configuración `active`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ms",
+          "declaration": "ms: number",
+          "callback": false,
+          "ownerType": "MockEulerGeneratorProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/MockEulerGenerator.tsx",
+            "line": 7
+          },
+          "description": "Dato de estado/configuración `ms`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "onMsChange",
+          "declaration": "onMsChange: (ms: number) => void",
+          "callback": true,
+          "ownerType": "MockEulerGeneratorProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/MockEulerGenerator.tsx",
+            "line": 8
+          },
+          "description": "Operación on Ms Change de Simulación y datos de desarrollo; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "onUpdate",
+          "declaration": "onUpdate: (e: Euler) => void",
+          "callback": true,
+          "ownerType": "MockEulerGeneratorProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/MockEulerGenerator.tsx",
+            "line": 9
+          },
+          "description": "Operación on Update de Simulación y datos de desarrollo; semántica fina pendiente de ampliación."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/MockEulerGenerator.tsx",
+        "line": 5
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "MockEulerGenerator",
+      "displayName": "MockEulerGenerator",
+      "signature": "MockEulerGenerator({\n  active,\n  ms,\n  onMsChange,\n  onUpdate,\n}: MockEulerGeneratorProps): inferred-by-TypeScript",
+      "line": 12,
+      "endLine": 123,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "clamp",
+        "performance.now",
+        "useEffect",
+        "useRef",
+        "useTransition"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/MockEulerGenerator.tsx",
+        "line": 12
+      },
+      "description": "Coordina `clamp`, `performance.now`, `useEffect` para Simulación y datos de desarrollo.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "MockInjectButton",
+      "displayName": "MockInjectButton",
+      "signature": "MockInjectButton(): inferred-by-TypeScript",
+      "line": 4,
+      "endLine": 22,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useWebSocket"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/MockInjectButton.tsx",
+        "line": 4
+      },
+      "description": "Adapta la llamada a `useWebSocket` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "clamp",
+      "displayName": "clamp",
+      "signature": "clamp(v: number, a: number, b: number): inferred-by-TypeScript",
+      "line": 125,
+      "endLine": 127,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.max",
+        "Math.min"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/MockEulerGenerator.tsx",
+        "line": 125
+      },
+      "description": "Coordina `Math.max`, `Math.min` para Simulación y datos de desarrollo.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "useMockFirmware",
+      "displayName": "useMockFirmware",
+      "signature": "useMockFirmware(mode: \"AP\" | \"STATION\", delay: number): inferred-by-TypeScript",
+      "line": 6,
+      "endLine": 26,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useEffect",
+        "useWebSocket"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/hooks/useMockFirmware.ts",
+        "line": 6
+      },
+      "description": "Coordina `useEffect`, `useWebSocket` para Simulación y datos de desarrollo.",
+      "descriptionOrigin": "structural"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "MockEulerGenerator.tick",
+      "displayName": "tick",
+      "signature": "MockEulerGenerator.tick(): inferred-by-TypeScript",
+      "line": 43,
+      "endLine": 60,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Math.sin",
+        "clamp",
+        "performance.now",
+        "startTransition"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/MockEulerGenerator.tsx",
+        "line": 43
+      },
+      "description": "Coordina `Math.sin`, `clamp`, `performance.now` para Simulación y datos de desarrollo.",
+      "descriptionOrigin": "structural"
+    }
+  ],
+  "hooks": [
+    {
+      "callee": "useRef",
+      "scope": "MockEulerGenerator",
+      "line": 18,
+      "arguments": 1,
+      "path": "src/components/MockEulerGenerator.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "MockEulerGenerator",
+      "line": 19,
+      "arguments": 1,
+      "path": "src/components/MockEulerGenerator.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "MockEulerGenerator",
+      "line": 20,
+      "arguments": 1,
+      "path": "src/components/MockEulerGenerator.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "MockEulerGenerator",
+      "line": 22,
+      "arguments": 2,
+      "path": "src/components/MockEulerGenerator.tsx"
+    },
+    {
+      "callee": "useTransition",
+      "scope": "MockEulerGenerator",
+      "line": 26,
+      "arguments": 0,
+      "path": "src/components/MockEulerGenerator.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "MockEulerGenerator",
+      "line": 28,
+      "arguments": 2,
+      "path": "src/components/MockEulerGenerator.tsx"
+    },
+    {
+      "callee": "useWebSocket",
+      "scope": "MockInjectButton",
+      "line": 5,
+      "arguments": 0,
+      "path": "src/components/MockInjectButton.tsx"
+    },
+    {
+      "callee": "useWebSocket",
+      "scope": "useMockFirmware",
+      "line": 10,
+      "arguments": 0,
+      "path": "src/hooks/useMockFirmware.ts"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "useMockFirmware",
+      "line": 12,
+      "arguments": 2,
+      "path": "src/hooks/useMockFirmware.ts"
+    }
+  ]
+}

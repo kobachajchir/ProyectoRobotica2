@@ -1,0 +1,1758 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "f4:module/Core/Inc/menusystem.h",
+  "slug": "menus",
+  "title": "Sistema de menús",
+  "target": "f4",
+  "kind": "núcleo",
+  "status": "source-documented",
+  "verification": "not-run-user-instruction",
+  "snapshotDate": "2026-10-20",
+  "responsibility": "Navega el árbol de menús, selecciona ítems y mantiene reportes de pantalla y selección.",
+  "scope": "Modelo MenuItem/SubMenu, visibilidad, disponibilidad, cursor, páginas y callbacks de render/acción. El catálogo concreto vive en menu_definition.c.",
+  "state": "MenuSystem presta root/currentMenu, MenuServices, fast_scroll_enabled e insideMenuFlag; posee flags de render y reportes pendientes. MenuItem presta texto, bitmap, acción, submenú y proveedores dinámicos. SubMenu guarda índices y padre: cambiarlo afecta la navegación de todas las referencias al mismo objeto.",
+  "lifecycle": [
+    "La aplicación conecta raíz, servicios y callbacks antes de navegar.",
+    "Se resuelve visibilidad y disponibilidad antes de seleccionar; no son la misma condición.",
+    "FlushScreenReport precede a FlushMenuSelectionReport; la selección espera mientras quede una pantalla pendiente."
+  ],
+  "interactions": [
+    "MenuServices.report_screen/report_selection delega a WiFi/UNER desde app_menu_services.h.",
+    "Favoritos conserva referencias a MenuItem y reconstruye un submenú; Screens dibuja usando los callbacks instalados."
+  ],
+  "limitations": [
+    "MAX_VISIBLE_ITEMS del header tiene valor histórico 2, pero la implementación usa max_visible_items o 3; consumidores no deben inferir filas desde esa macro.",
+    "0x96 transmite selección/cantidad, no buffer de teclado ni imagen física."
+  ],
+  "modularity": "No incluye HAL ni bridge concreto. Comparte screen_codes y UserEvent_t. Varias funciones de render/visibilidad son callbacks sin ctx, por lo que el contexto se obtiene externamente.",
+  "files": [
+    {
+      "path": "Core/Inc/menusystem.h",
+      "rootId": "f4",
+      "sha256": "8ff3d559f3a91228bc3b7ebd76eb21261bbd2b4da6d7742c5d0cd9d97b0cffc9",
+      "includes": [
+        "types/menu_types.h"
+      ]
+    },
+    {
+      "path": "Core/Inc/types/menu_types.h",
+      "rootId": "f4",
+      "sha256": "132cfeb31787cd870f4c0f0d8746062af3ab10c0c292e5a1aeb72042642626ca",
+      "includes": [
+        "stdbool.h",
+        "stdint.h",
+        "stddef.h",
+        "screen_codes.h",
+        "userEvent_type.h"
+      ]
+    },
+    {
+      "path": "Core/Src/menusystem.c",
+      "rootId": "f4",
+      "sha256": "305d434e463bd82700d50f6f2abff868e58facbc0a7b59bcc645b924ae7c1a96",
+      "includes": [
+        "stdbool.h",
+        "stdint.h",
+        "stddef.h",
+        "stdio.h",
+        "string.h",
+        "types/menu_types.h",
+        "menusystem.h"
+      ]
+    }
+  ],
+  "findings": [
+    "AMDOC-WEB-004",
+    "AMDOC-WEB-008"
+  ],
+  "types": [
+    {
+      "name": "MenuItem",
+      "fields": [
+        {
+          "name": "name",
+          "declaration": "const char *name",
+          "callback": false,
+          "ownerType": "MenuItem",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/menu_types.h",
+            "line": 35
+          },
+          "description": "Dato de estado/configuración `name`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "action",
+          "declaration": "MenuFunction action",
+          "callback": false,
+          "ownerType": "MenuItem",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/menu_types.h",
+            "line": 36
+          },
+          "description": "Acción invocada al seleccionar; callback histórico sin contexto explícito."
+        },
+        {
+          "name": "submenu",
+          "declaration": "struct SubMenu *submenu",
+          "callback": false,
+          "ownerType": "MenuItem",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/menu_types.h",
+            "line": 37
+          },
+          "description": "Submenú al que puede navegar este ítem."
+        },
+        {
+          "name": "icon",
+          "declaration": "const uint8_t *icon",
+          "callback": false,
+          "ownerType": "MenuItem",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/menu_types.h",
+            "line": 38
+          },
+          "description": "Dato de estado/configuración `icon`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "screenRenderFn",
+          "declaration": "RenderScreenFunction screenRenderFn",
+          "callback": false,
+          "ownerType": "MenuItem",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/menu_types.h",
+            "line": 39
+          },
+          "description": "Renderer asociado a la pantalla destino del ítem."
+        },
+        {
+          "name": "eventManagerFn",
+          "declaration": "UserEventManagerFn eventManagerFn",
+          "callback": false,
+          "ownerType": "MenuItem",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/menu_types.h",
+            "line": 40
+          },
+          "description": "Gestor de eventos instalado para la pantalla del ítem."
+        },
+        {
+          "name": "visibilityFn",
+          "declaration": "MenuVisibilityFn visibilityFn",
+          "callback": false,
+          "ownerType": "MenuItem",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/menu_types.h",
+            "line": 41
+          },
+          "description": "Condición dinámica de visibilidad; nula implica visible."
+        },
+        {
+          "name": "screen_code",
+          "declaration": "ScreenCode_t screen_code",
+          "callback": false,
+          "ownerType": "MenuItem",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/menu_types.h",
+            "line": 42
+          },
+          "description": "Dato de estado/configuración `screen_code`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "dynamicIconFn",
+          "declaration": "MenuIconProviderFn dynamicIconFn",
+          "callback": false,
+          "ownerType": "MenuItem",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/menu_types.h",
+            "line": 43
+          },
+          "description": "Proveedor opcional de bitmap según estado runtime."
+        },
+        {
+          "name": "dynamicNameFn",
+          "declaration": "MenuNameProviderFn dynamicNameFn",
+          "callback": false,
+          "ownerType": "MenuItem",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/menu_types.h",
+            "line": 44
+          },
+          "description": "Proveedor opcional de etiqueta según estado runtime."
+        },
+        {
+          "name": "required_ext_mask",
+          "declaration": "uint32_t required_ext_mask",
+          "callback": false,
+          "ownerType": "MenuItem",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/menu_types.h",
+            "line": 45
+          },
+          "description": "Máscara de perfiles/extensiones requeridos para disponibilidad."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/types/menu_types.h",
+        "line": 35
+      }
+    },
+    {
+      "name": "SubMenu",
+      "fields": [
+        {
+          "name": "name",
+          "declaration": "const char *name",
+          "callback": false,
+          "ownerType": "SubMenu",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/menu_types.h",
+            "line": 54
+          },
+          "description": "Dato de estado/configuración `name`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "items",
+          "declaration": "MenuItem *items",
+          "callback": false,
+          "ownerType": "SubMenu",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/menu_types.h",
+            "line": 55
+          },
+          "description": "Dato de estado/configuración `items`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "itemCount",
+          "declaration": "uint8_t itemCount",
+          "callback": false,
+          "ownerType": "SubMenu",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/menu_types.h",
+            "line": 56
+          },
+          "description": "Dato de estado/configuración `itemCount`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "currentItemIndex",
+          "declaration": "int8_t currentItemIndex",
+          "callback": false,
+          "ownerType": "SubMenu",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/menu_types.h",
+            "line": 57
+          },
+          "description": "Dato de estado/configuración `currentItemIndex`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "lastSelectedItemIndex",
+          "declaration": "int8_t lastSelectedItemIndex",
+          "callback": false,
+          "ownerType": "SubMenu",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/menu_types.h",
+            "line": 58
+          },
+          "description": "Dato de estado/configuración `lastSelectedItemIndex`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "firstVisibleItem",
+          "declaration": "int8_t firstVisibleItem",
+          "callback": false,
+          "ownerType": "SubMenu",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/menu_types.h",
+            "line": 59
+          },
+          "description": "Dato de estado/configuración `firstVisibleItem`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "lastVisibleItem",
+          "declaration": "int8_t lastVisibleItem",
+          "callback": false,
+          "ownerType": "SubMenu",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/menu_types.h",
+            "line": 60
+          },
+          "description": "Dato de estado/configuración `lastVisibleItem`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "parent",
+          "declaration": "struct SubMenu *parent",
+          "callback": false,
+          "ownerType": "SubMenu",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/menu_types.h",
+            "line": 61
+          },
+          "description": "Dato de estado/configuración `parent`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "icon",
+          "declaration": "const uint8_t *icon",
+          "callback": false,
+          "ownerType": "SubMenu",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/menu_types.h",
+            "line": 62
+          },
+          "description": "Dato de estado/configuración `icon`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "screen_code",
+          "declaration": "ScreenCode_t screen_code",
+          "callback": false,
+          "ownerType": "SubMenu",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/menu_types.h",
+            "line": 63
+          },
+          "description": "Dato de estado/configuración `screen_code`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "max_visible_items",
+          "declaration": "uint8_t max_visible_items",
+          "callback": false,
+          "ownerType": "SubMenu",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/menu_types.h",
+            "line": 64
+          },
+          "description": "Dato de estado/configuración `max_visible_items`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/types/menu_types.h",
+        "line": 54
+      }
+    },
+    {
+      "name": "MenuServices",
+      "fields": [
+        {
+          "name": "ctx",
+          "declaration": "void *ctx",
+          "callback": false,
+          "ownerType": "MenuServices",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/menu_types.h",
+            "line": 68
+          },
+          "description": "Contexto opaco prestado al callback; el integrador conserva su almacenamiento."
+        },
+        {
+          "name": "item_available",
+          "declaration": "bool (*item_available)(void *ctx, const MenuItem *item)",
+          "callback": true,
+          "ownerType": "MenuServices",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/menu_types.h",
+            "line": 69
+          },
+          "description": "Decide disponibilidad del ítem según política externa y contexto."
+        },
+        {
+          "name": "report_screen",
+          "declaration": "bool (*report_screen)(void *ctx, uint32_t code, uint8_t source)",
+          "callback": true,
+          "ownerType": "MenuServices",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/menu_types.h",
+            "line": 70
+          },
+          "description": "Intenta publicar identidad de pantalla y origen; false conserva el reporte pendiente."
+        },
+        {
+          "name": "report_selection",
+          "declaration": "bool (*report_selection)(void *ctx, uint32_t code, uint8_t index, uint8_t count, uint8_t source)",
+          "callback": true,
+          "ownerType": "MenuServices",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/menu_types.h",
+            "line": 71
+          },
+          "description": "Intenta publicar selección y cantidad; no contiene el framebuffer."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/types/menu_types.h",
+        "line": 68
+      }
+    },
+    {
+      "name": "MenuSystem",
+      "fields": [
+        {
+          "name": "root",
+          "declaration": "SubMenu *root",
+          "callback": false,
+          "ownerType": "MenuSystem",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/menu_types.h",
+            "line": 75
+          },
+          "description": "Dato de estado/configuración `root`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "services",
+          "declaration": "const MenuServices *services",
+          "callback": false,
+          "ownerType": "MenuSystem",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/menu_types.h",
+            "line": 76
+          },
+          "description": "Contrato de operaciones externo; conservar la tabla y su contexto durante el uso."
+        },
+        {
+          "name": "fast_scroll_enabled",
+          "declaration": "volatile uint8_t *fast_scroll_enabled",
+          "callback": false,
+          "ownerType": "MenuSystem",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/menu_types.h",
+            "line": 77
+          },
+          "description": "Dato de estado/configuración `fast_scroll_enabled`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "currentMenu",
+          "declaration": "SubMenu *currentMenu",
+          "callback": false,
+          "ownerType": "MenuSystem",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/menu_types.h",
+            "line": 78
+          },
+          "description": "Dato de estado/configuración `currentMenu`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "clearScreen",
+          "declaration": "ClearFunction clearScreen",
+          "callback": false,
+          "ownerType": "MenuSystem",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/menu_types.h",
+            "line": 79
+          },
+          "description": "Callback de limpieza de dibujo."
+        },
+        {
+          "name": "drawItem",
+          "declaration": "DrawItemFunction drawItem",
+          "callback": false,
+          "ownerType": "MenuSystem",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/menu_types.h",
+            "line": 80
+          },
+          "description": "Callback que dibuja ítem, coordenada Y y selección."
+        },
+        {
+          "name": "renderFn",
+          "declaration": "RenderFunction renderFn",
+          "callback": false,
+          "ownerType": "MenuSystem",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/menu_types.h",
+            "line": 81
+          },
+          "description": "Renderer activo, no necesariamente el renderer de lista de menú."
+        },
+        {
+          "name": "dashboardRender",
+          "declaration": "RenderFunction dashboardRender",
+          "callback": false,
+          "ownerType": "MenuSystem",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/menu_types.h",
+            "line": 82
+          },
+          "description": "Dato de estado/configuración `dashboardRender`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "userEventManagerFn",
+          "declaration": "UserEventManagerFn userEventManagerFn",
+          "callback": false,
+          "ownerType": "MenuSystem",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/menu_types.h",
+            "line": 83
+          },
+          "description": "Gestor de eventos de la vista activa."
+        },
+        {
+          "name": "insideMenuFlag",
+          "declaration": "volatile uint8_t *insideMenuFlag",
+          "callback": false,
+          "ownerType": "MenuSystem",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/menu_types.h",
+            "line": 84
+          },
+          "description": "Bandera externa prestada que diferencia navegación de menú de otra vista."
+        },
+        {
+          "name": "renderFlag",
+          "declaration": "volatile bool renderFlag",
+          "callback": false,
+          "ownerType": "MenuSystem",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/menu_types.h",
+            "line": 85
+          },
+          "description": "Dato de estado/configuración `renderFlag`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "suppressClearOnNextRender",
+          "declaration": "bool suppressClearOnNextRender",
+          "callback": false,
+          "ownerType": "MenuSystem",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/menu_types.h",
+            "line": 86
+          },
+          "description": "Evita limpiar al próximo render para conservar contenido en actualización parcial."
+        },
+        {
+          "name": "allowPeriodicRefresh",
+          "declaration": "bool allowPeriodicRefresh",
+          "callback": false,
+          "ownerType": "MenuSystem",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/menu_types.h",
+            "line": 87
+          },
+          "description": "Dato de estado/configuración `allowPeriodicRefresh`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "current_screen_code",
+          "declaration": "ScreenCode_t current_screen_code",
+          "callback": false,
+          "ownerType": "MenuSystem",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/menu_types.h",
+            "line": 88
+          },
+          "description": "Dato de estado/configuración `current_screen_code`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "last_reported_screen_code",
+          "declaration": "ScreenCode_t last_reported_screen_code",
+          "callback": false,
+          "ownerType": "MenuSystem",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/menu_types.h",
+            "line": 89
+          },
+          "description": "Memoria de la observación anterior usada por la máquina de estados."
+        },
+        {
+          "name": "current_screen_source",
+          "declaration": "uint8_t current_screen_source",
+          "callback": false,
+          "ownerType": "MenuSystem",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/menu_types.h",
+            "line": 90
+          },
+          "description": "Dato de estado/configuración `current_screen_source`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "screen_report_pending",
+          "declaration": "bool screen_report_pending",
+          "callback": false,
+          "ownerType": "MenuSystem",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/menu_types.h",
+            "line": 91
+          },
+          "description": "Queda pendiente publicar identidad de pantalla."
+        },
+        {
+          "name": "current_selected_index",
+          "declaration": "uint8_t current_selected_index",
+          "callback": false,
+          "ownerType": "MenuSystem",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/menu_types.h",
+            "line": 92
+          },
+          "description": "Dato de estado/configuración `current_selected_index`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "last_reported_selected_index",
+          "declaration": "uint8_t last_reported_selected_index",
+          "callback": false,
+          "ownerType": "MenuSystem",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/menu_types.h",
+            "line": 93
+          },
+          "description": "Memoria de la observación anterior usada por la máquina de estados."
+        },
+        {
+          "name": "current_item_count",
+          "declaration": "uint8_t current_item_count",
+          "callback": false,
+          "ownerType": "MenuSystem",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/menu_types.h",
+            "line": 94
+          },
+          "description": "Dato de estado/configuración `current_item_count`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "last_reported_item_count",
+          "declaration": "uint8_t last_reported_item_count",
+          "callback": false,
+          "ownerType": "MenuSystem",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/menu_types.h",
+            "line": 95
+          },
+          "description": "Memoria de la observación anterior usada por la máquina de estados."
+        },
+        {
+          "name": "current_selection_source",
+          "declaration": "uint8_t current_selection_source",
+          "callback": false,
+          "ownerType": "MenuSystem",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/menu_types.h",
+            "line": 96
+          },
+          "description": "Dato de estado/configuración `current_selection_source`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "selection_report_pending",
+          "declaration": "bool selection_report_pending",
+          "callback": false,
+          "ownerType": "MenuSystem",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/menu_types.h",
+            "line": 97
+          },
+          "description": "Queda pendiente publicar selección; espera que finalice reporte de pantalla."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/types/menu_types.h",
+        "line": 75
+      }
+    },
+    {
+      "name": "MenuFunction",
+      "callbackType": "void (*MenuFunction)()",
+      "fields": [],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/types/menu_types.h",
+        "line": 20
+      }
+    },
+    {
+      "name": "ClearFunction",
+      "callbackType": "void (*ClearFunction)()",
+      "fields": [],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/types/menu_types.h",
+        "line": 22
+      }
+    },
+    {
+      "name": "RenderFunction",
+      "callbackType": "void (*RenderFunction)()",
+      "fields": [],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/types/menu_types.h",
+        "line": 23
+      }
+    },
+    {
+      "name": "RenderWrapperFn",
+      "callbackType": "void (*RenderWrapperFn)(void)",
+      "fields": [],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/types/menu_types.h",
+        "line": 24
+      }
+    },
+    {
+      "name": "RenderScreenFunction",
+      "callbackType": "void (*RenderScreenFunction)()",
+      "fields": [],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/types/menu_types.h",
+        "line": 25
+      }
+    },
+    {
+      "name": "UserEventManagerFn",
+      "callbackType": "void (*UserEventManagerFn)(UserEvent_t ev)",
+      "fields": [],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/types/menu_types.h",
+        "line": 26
+      }
+    },
+    {
+      "name": "MenuVisibilityFn",
+      "callbackType": "bool (*MenuVisibilityFn)(void)",
+      "fields": [],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/types/menu_types.h",
+        "line": 27
+      }
+    },
+    {
+      "name": "MenuIconProviderFn",
+      "callbackType": "const uint8_t *(*MenuIconProviderFn)(void)",
+      "fields": [],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/types/menu_types.h",
+        "line": 28
+      }
+    },
+    {
+      "name": "MenuNameProviderFn",
+      "callbackType": "const char *(*MenuNameProviderFn)(void)",
+      "fields": [],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/types/menu_types.h",
+        "line": 29
+      }
+    },
+    {
+      "name": "DrawItemFunction",
+      "callbackType": "void (*DrawItemFunction)(const MenuItem *item, int y, bool selected)",
+      "fields": [],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/types/menu_types.h",
+        "line": 51
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "MenuSys_ClearCurrentMenuSelection",
+      "signature": "void MenuSys_ClearCurrentMenuSelection(MenuSystem *ms, ScreenReportSource_t source)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/menusystem.h",
+        "line": 65
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [
+        "current_item_count",
+        "current_selected_index",
+        "current_selection_source",
+        "last_reported_item_count",
+        "last_reported_selected_index",
+        "selection_report_pending"
+      ],
+      "description": "Invalida selección de menú y solicita el reporte correspondiente.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/menusystem.c",
+        "line": 139
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MenuSys_FlushMenuSelectionReport",
+      "signature": "void MenuSys_FlushMenuSelectionReport(MenuSystem *ms)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/menusystem.h",
+        "line": 66
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MenuSys_HasNavigableSelection",
+        "report_selection"
+      ],
+      "writes": [
+        "last_reported_item_count",
+        "last_reported_selected_index",
+        "selection_report_pending"
+      ],
+      "description": "Envía selección pendiente solo después de completar el reporte de pantalla.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/menusystem.c",
+        "line": 59
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MenuSys_FlushScreenReport",
+      "signature": "void MenuSys_FlushScreenReport(MenuSystem *ms)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/menusystem.h",
+        "line": 58
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "report_screen"
+      ],
+      "writes": [
+        "last_reported_screen_code",
+        "screen_report_pending"
+      ],
+      "description": "Intenta enviar pantalla pendiente y conserva el pendiente si falla.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/menusystem.c",
+        "line": 45
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MenuSys_GetCurrentScreenCode",
+      "signature": "ScreenCode_t MenuSys_GetCurrentScreenCode(const MenuSystem *ms)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/menusystem.h",
+        "line": 56
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Consulta identidad de pantalla del MenuSystem recibido.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/menusystem.c",
+        "line": 288
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MenuSys_GetCurrentScreenSource",
+      "signature": "uint8_t MenuSys_GetCurrentScreenSource(const MenuSystem *ms)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/menusystem.h",
+        "line": 57
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Consulta el origen registrado de la pantalla actual.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/menusystem.c",
+        "line": 293
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MenuSys_HandleClick",
+      "signature": "void MenuSys_HandleClick(MenuSystem *ms)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/menusystem.h",
+        "line": 52
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MenuSys_FindFirstVisibleIndexFrom",
+        "MenuSys_FindLastVisibleIndexBefore",
+        "MenuSys_IsItemAvailable_H",
+        "MenuSys_IsItemVisible",
+        "MenuSys_OpenSubMenu",
+        "MenuSys_SetCurrentScreenCode",
+        "action",
+        "clearScreen"
+      ],
+      "writes": [
+        "currentItemIndex",
+        "lastSelectedItemIndex",
+        "lastVisibleItem",
+        "renderFlag",
+        "renderFn",
+        "userEventManagerFn"
+      ],
+      "description": "Ejecuta acción, pantalla o entrada a submenú del ítem seleccionado.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/menusystem.c",
+        "line": 733
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MenuSys_Init",
+      "signature": "void MenuSys_Init(MenuSystem *system)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/menusystem.h",
+        "line": 25
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MenuSys_FindFirstVisibleIndexFrom"
+      ],
+      "writes": [
+        "allowPeriodicRefresh",
+        "currentItemIndex",
+        "current_item_count",
+        "current_screen_code",
+        "current_screen_source",
+        "current_selected_index",
+        "current_selection_source",
+        "firstVisibleItem",
+        "lastSelectedItemIndex",
+        "last_reported_item_count",
+        "last_reported_screen_code",
+        "last_reported_selected_index",
+        "renderFlag",
+        "screen_report_pending",
+        "selection_report_pending",
+        "userEventManagerFn"
+      ],
+      "description": "Inicializa navegación y estado de reportes a partir de la raíz suministrada.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/menusystem.c",
+        "line": 484
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MenuSys_IsItemAvailable_H",
+      "signature": "bool MenuSys_IsItemAvailable_H(const MenuSystem *ms, const MenuItem *item)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/menusystem.h",
+        "line": 69
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "item_available"
+      ],
+      "writes": [],
+      "description": "Consulta política item_available del servicio externo.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/menusystem.c",
+        "line": 38
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MenuSys_IsItemVisible",
+      "signature": "bool MenuSys_IsItemVisible(const MenuItem *item)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/menusystem.h",
+        "line": 68
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "visibilityFn"
+      ],
+      "writes": [],
+      "description": "Evalúa visibilityFn o considera visible al ítem sin condición.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/menusystem.c",
+        "line": 32
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MenuSys_MoveCursorDown",
+      "signature": "void MenuSys_MoveCursorDown(MenuSystem *ms)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/menusystem.h",
+        "line": 42
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MenuSys_EnsureCurrentSelectionVisible",
+        "MenuSys_FindWrappedVisibleIndex",
+        "MenuSys_ReportCurrentMenuSelection"
+      ],
+      "writes": [
+        "currentItemIndex",
+        "lastSelectedItemIndex",
+        "lastVisibleItem"
+      ],
+      "description": "Avanza a la siguiente selección navegable y ajusta ventana visible.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/menusystem.c",
+        "line": 550
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MenuSys_MoveCursorUp",
+      "signature": "void MenuSys_MoveCursorUp(MenuSystem *ms)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/menusystem.h",
+        "line": 43
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MenuSys_EnsureCurrentSelectionVisible",
+        "MenuSys_FindWrappedVisibleIndex",
+        "MenuSys_ReportCurrentMenuSelection"
+      ],
+      "writes": [
+        "currentItemIndex",
+        "lastSelectedItemIndex",
+        "lastVisibleItem"
+      ],
+      "description": "Retrocede a la selección navegable anterior y ajusta ventana.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/menusystem.c",
+        "line": 531
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MenuSys_MoveVisiblePage",
+      "signature": "bool MenuSys_MoveVisiblePage(MenuSystem *ms, int8_t direction)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/menusystem.h",
+        "line": 45
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "GET_MAX_VISIBLE",
+        "MenuSys_FindFirstVisibleIndexFrom",
+        "MenuSys_FindNextVisibleIndex",
+        "MenuSys_IsCurrentScreenMenu",
+        "MenuSys_ReportCurrentMenuSelection"
+      ],
+      "writes": [
+        "currentItemIndex",
+        "firstVisibleItem",
+        "lastSelectedItemIndex",
+        "lastVisibleItem",
+        "renderFlag"
+      ],
+      "description": "Desplaza una página visible según dirección.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/menusystem.c",
+        "line": 431
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MenuSys_NavigateBack",
+      "signature": "void MenuSys_NavigateBack(MenuSystem *ms)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/menusystem.h",
+        "line": 48
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MenuSys_ComputeLastVisibleIndex",
+        "MenuSys_FindFirstVisibleIndexFrom",
+        "MenuSys_FindLastVisibleIndexBefore",
+        "MenuSys_IsItemVisible",
+        "MenuSys_SelectParentItemForChild",
+        "MenuSys_SetCurrentScreenCode",
+        "dashboardRender"
+      ],
+      "writes": [
+        "currentItemIndex",
+        "currentMenu",
+        "fast_scroll_enabled",
+        "firstVisibleItem",
+        "insideMenuFlag",
+        "lastSelectedItemIndex",
+        "lastVisibleItem",
+        "renderFlag"
+      ],
+      "description": "Vuelve al padre o al dashboard según la posición actual.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/menusystem.c",
+        "line": 608
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MenuSys_NavigateToMain",
+      "signature": "void MenuSys_NavigateToMain(MenuSystem *ms)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/menusystem.h",
+        "line": 49
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MenuSys_OpenSubMenu"
+      ],
+      "writes": [
+        "fast_scroll_enabled"
+      ],
+      "description": "Navega al menú raíz.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/menusystem.c",
+        "line": 676
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MenuSys_NotifyScreenContentChanged",
+      "signature": "void MenuSys_NotifyScreenContentChanged(MenuSystem *ms, ScreenReportSource_t source)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/menusystem.h",
+        "line": 54
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MenuSys_IsCurrentScreenMenu",
+        "MenuSys_RequestCurrentMenuSelectionSnapshot"
+      ],
+      "writes": [
+        "current_screen_source",
+        "current_selection_source",
+        "screen_report_pending"
+      ],
+      "description": "Solicita reportar cambio de contenido sin inventar un framebuffer remoto.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/menusystem.c",
+        "line": 204
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MenuSys_OpenSubMenu",
+      "signature": "void MenuSys_OpenSubMenu(MenuSystem *ms, SubMenu *submenu)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/menusystem.h",
+        "line": 51
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MenuSys_FindFirstVisibleIndexFrom",
+        "MenuSys_SetCurrentScreenCode"
+      ],
+      "writes": [
+        "currentItemIndex",
+        "currentMenu",
+        "fast_scroll_enabled",
+        "firstVisibleItem",
+        "lastSelectedItemIndex",
+        "lastVisibleItem",
+        "renderFlag"
+      ],
+      "description": "Abre el submenú recibido y actualiza identidad de pantalla.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/menusystem.c",
+        "line": 572
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MenuSys_RenderMenu",
+      "signature": "void MenuSys_RenderMenu(MenuSystem *ms)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/menusystem.h",
+        "line": 47
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "GET_MAX_VISIBLE",
+        "MenuSys_FindFirstVisibleIndexFrom",
+        "MenuSys_FindLastVisibleIndexBefore",
+        "MenuSys_FindNextVisibleIndex",
+        "MenuSys_IsItemVisible",
+        "MenuSys_SetCurrentMenuScreenCode",
+        "clearScreen",
+        "drawItem"
+      ],
+      "writes": [
+        "currentItemIndex",
+        "firstVisibleItem",
+        "lastSelectedItemIndex",
+        "lastVisibleItem",
+        "suppressClearOnNextRender"
+      ],
+      "description": "Dibuja los ítems visibles con los callbacks del menú.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/menusystem.c",
+        "line": 684
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MenuSys_ReportCurrentMenuSelection",
+      "signature": "void MenuSys_ReportCurrentMenuSelection(MenuSystem *ms, ScreenReportSource_t source)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/menusystem.h",
+        "line": 63
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MenuSys_UpdateSelectionFromCurrentMenu"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `MenuSys_UpdateSelectionFromCurrentMenu` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/menusystem.c",
+        "line": 101
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MenuSys_RequestCurrentMenuSelectionSnapshot",
+      "signature": "bool MenuSys_RequestCurrentMenuSelectionSnapshot(MenuSystem *ms)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/menusystem.h",
+        "line": 64
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MenuSys_ResolveCurrentMenuSelection"
+      ],
+      "writes": [
+        "current_item_count",
+        "current_selected_index",
+        "current_selection_source",
+        "selection_report_pending"
+      ],
+      "description": "Solicita publicar la selección visible actual como snapshot.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/menusystem.c",
+        "line": 252
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MenuSys_ResetMenu",
+      "signature": "void MenuSys_ResetMenu(MenuSystem *ms)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/menusystem.h",
+        "line": 50
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MenuSys_FindFirstVisibleIndexFrom",
+        "MenuSys_SetCurrentScreenCode"
+      ],
+      "writes": [
+        "currentItemIndex",
+        "currentMenu",
+        "fast_scroll_enabled",
+        "firstVisibleItem",
+        "lastSelectedItemIndex",
+        "lastVisibleItem"
+      ],
+      "description": "Restablece contexto de navegación del menú.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/menusystem.c",
+        "line": 590
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MenuSys_SelectVisibleItem",
+      "signature": "bool MenuSys_SelectVisibleItem(MenuSystem *ms, uint8_t visible_position_one_based)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/menusystem.h",
+        "line": 44
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "GET_MAX_VISIBLE",
+        "MenuSys_EnsureCurrentSelectionVisible",
+        "MenuSys_FindFirstVisibleIndexFrom",
+        "MenuSys_FindNextVisibleIndex",
+        "MenuSys_IsCurrentScreenMenu",
+        "MenuSys_ReportCurrentMenuSelection"
+      ],
+      "writes": [
+        "currentItemIndex",
+        "lastSelectedItemIndex",
+        "lastVisibleItem",
+        "renderFlag"
+      ],
+      "description": "Selecciona una fila visible numerada desde uno.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/menusystem.c",
+        "line": 395
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MenuSys_SetCallbacks",
+      "signature": "void MenuSys_SetCallbacks(MenuSystem *ms, ClearFunction clear, DrawItemFunction draw, RenderFunction render, volatile uint8_t *insideFlag, RenderFunction dashboardRender)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/menusystem.h",
+        "line": 35
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [
+        "clearScreen",
+        "dashboardRender",
+        "drawItem",
+        "insideMenuFlag",
+        "renderFn"
+      ],
+      "description": "Conecta primitivas de dibujo, renderers y bandera externa de menú.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/menusystem.c",
+        "line": 510
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MenuSys_SetCurrentMenuScreenCode",
+      "signature": "void MenuSys_SetCurrentMenuScreenCode(MenuSystem *ms)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/menusystem.h",
+        "line": 55
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MenuSys_SetCurrentScreenCode"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `MenuSys_SetCurrentScreenCode` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/menusystem.c",
+        "line": 128
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MenuSys_SetCurrentMenuSelection",
+      "signature": "void MenuSys_SetCurrentMenuSelection(MenuSystem *ms, uint8_t selected_index, uint8_t item_count, ScreenReportSource_t source)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/menusystem.h",
+        "line": 59
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MenuSys_FlushMenuSelectionReport"
+      ],
+      "writes": [
+        "current_item_count",
+        "current_selected_index",
+        "current_selection_source",
+        "selection_report_pending"
+      ],
+      "description": "Configura índice, cantidad y origen de selección y marca reporte pendiente.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/menusystem.c",
+        "line": 77
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MenuSys_SetCurrentScreenCode",
+      "signature": "void MenuSys_SetCurrentScreenCode(MenuSystem *ms, ScreenCode_t screen_code, ScreenReportSource_t source)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/menusystem.h",
+        "line": 53
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MenuSys_ClearCurrentMenuSelection",
+        "MenuSys_FlushScreenReport",
+        "MenuSys_IsCurrentScreenMenu",
+        "MenuSys_UpdateSelectionFromCurrentMenu"
+      ],
+      "writes": [
+        "current_screen_code",
+        "current_screen_source",
+        "screen_report_pending"
+      ],
+      "description": "Actualiza identidad/origen de pantalla y marca reporte pendiente.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/menusystem.c",
+        "line": 106
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "Menu_IsCurrentItem",
+      "signature": "static inline bool Menu_IsCurrentItem(const MenuSystem *sys, const MenuItem *item)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/menusystem.h",
+        "line": 71
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Compara el ítem con la selección actual; requiere menú e índices válidos.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Inc/menusystem.h",
+        "line": 71
+      },
+      "linkage": "header"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "MenuSys_HasNavigableSelection",
+      "signature": "static bool MenuSys_HasNavigableSelection(const MenuSystem *ms)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/menusystem.c",
+        "line": 159
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "MenuSys_IsCurrentScreenMenu"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `MenuSys_IsCurrentScreenMenu` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "MenuSys_IsCurrentScreenMenu",
+      "signature": "static bool MenuSys_IsCurrentScreenMenu(const MenuSystem *ms)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/menusystem.c",
+        "line": 168
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Indica si se cumple la condición Current Screen Menu dentro de Sistema de menús.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "MenuSys_GetVisibleSelection",
+      "signature": "static bool MenuSys_GetVisibleSelection(const SubMenu *menu, uint8_t *selected_index, uint8_t *item_count)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/menusystem.c",
+        "line": 175
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "MenuSys_IsItemVisible"
+      ],
+      "writes": [],
+      "description": "Consulta Visible Selection dentro de Sistema de menús.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "MenuSys_ResolveCurrentMenuSelection",
+      "signature": "static bool MenuSys_ResolveCurrentMenuSelection(const MenuSystem *ms, uint8_t *selected_index, uint8_t *item_count)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/menusystem.c",
+        "line": 220
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "MenuSys_GetVisibleSelection",
+        "MenuSys_IsCurrentScreenMenu"
+      ],
+      "writes": [],
+      "description": "Coordina `MenuSys_GetVisibleSelection`, `MenuSys_IsCurrentScreenMenu` para Sistema de menús.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "MenuSys_UpdateSelectionFromCurrentMenu",
+      "signature": "static void MenuSys_UpdateSelectionFromCurrentMenu(MenuSystem *ms, ScreenReportSource_t source)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/menusystem.c",
+        "line": 236
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "MenuSys_ClearCurrentMenuSelection",
+        "MenuSys_ResolveCurrentMenuSelection",
+        "MenuSys_SetCurrentMenuSelection"
+      ],
+      "writes": [],
+      "description": "Actualiza Selection From Current Menu dentro de Sistema de menús.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "MenuSys_SelectParentItemForChild",
+      "signature": "static bool MenuSys_SelectParentItemForChild(SubMenu *parent, const SubMenu *child)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/menusystem.c",
+        "line": 272
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "MenuSys_IsItemVisible"
+      ],
+      "writes": [
+        "currentItemIndex"
+      ],
+      "description": "Adapta la llamada a `MenuSys_IsItemVisible` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "MenuSys_FindFirstVisibleIndexFrom",
+      "signature": "static int8_t MenuSys_FindFirstVisibleIndexFrom(const SubMenu *menu, int8_t start)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/menusystem.c",
+        "line": 298
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "MenuSys_IsItemVisible"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `MenuSys_IsItemVisible` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "MenuSys_FindLastVisibleIndexBefore",
+      "signature": "static int8_t MenuSys_FindLastVisibleIndexBefore(const SubMenu *menu, int8_t start)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/menusystem.c",
+        "line": 309
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "MenuSys_IsItemVisible"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `MenuSys_IsItemVisible` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "MenuSys_FindNextVisibleIndex",
+      "signature": "static int8_t MenuSys_FindNextVisibleIndex(const SubMenu *menu, int8_t start, int8_t direction)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/menusystem.c",
+        "line": 320
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "MenuSys_IsItemVisible"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `MenuSys_IsItemVisible` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "MenuSys_ComputeLastVisibleIndex",
+      "signature": "static int8_t MenuSys_ComputeLastVisibleIndex(const SubMenu *menu, int8_t firstVisibleIndex)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/menusystem.c",
+        "line": 332
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "GET_MAX_VISIBLE",
+        "MenuSys_IsItemVisible"
+      ],
+      "writes": [],
+      "description": "Coordina `GET_MAX_VISIBLE`, `MenuSys_IsItemVisible` para Sistema de menús.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "MenuSys_FindWrappedVisibleIndex",
+      "signature": "static int8_t MenuSys_FindWrappedVisibleIndex(const SubMenu *menu, int8_t start, int8_t direction)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/menusystem.c",
+        "line": 349
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "MenuSys_FindFirstVisibleIndexFrom",
+        "MenuSys_FindLastVisibleIndexBefore",
+        "MenuSys_FindNextVisibleIndex"
+      ],
+      "writes": [],
+      "description": "Coordina `MenuSys_FindFirstVisibleIndexFrom`, `MenuSys_FindLastVisibleIndexBefore`, `MenuSys_FindNextVisibleIndex` para Sistema de menús.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "MenuSys_EnsureCurrentSelectionVisible",
+      "signature": "static void MenuSys_EnsureCurrentSelectionVisible(SubMenu *menu)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/menusystem.c",
+        "line": 364
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "MenuSys_ComputeLastVisibleIndex",
+        "MenuSys_FindFirstVisibleIndexFrom",
+        "MenuSys_FindLastVisibleIndexBefore"
+      ],
+      "writes": [
+        "firstVisibleItem"
+      ],
+      "description": "Coordina `MenuSys_ComputeLastVisibleIndex`, `MenuSys_FindFirstVisibleIndexFrom`, `MenuSys_FindLastVisibleIndexBefore` para Sistema de menús.",
+      "descriptionOrigin": "structural"
+    }
+  ]
+}

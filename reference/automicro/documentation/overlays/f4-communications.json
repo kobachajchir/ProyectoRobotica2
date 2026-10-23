@@ -1,0 +1,545 @@
+{
+  "schemaVersion": 1,
+  "modules": [
+    {
+      "id": "f4:module/Core/Inc/wifi_bridge.h",
+      "slug": "wifi-bridge",
+      "title": "Bridge Wi-Fi y backends UNER/AT",
+      "kind": "integración",
+      "files": [
+        "Core/Inc/wifi_bridge.h",
+        "Core/Inc/wifi_bridge_types.h",
+        "Core/Inc/wifi_bridge_port.h",
+        "Core/Inc/wifi_bridge_config.h",
+        "Core/Inc/wifi_bridge_uner.h",
+        "Core/Inc/wifi_bridge_at.h",
+        "Core/Src/wifi_bridge.c",
+        "Core/Src/wifi_bridge_uner.c",
+        "Core/Src/wifi_bridge_at.c",
+        "Core/Src/wifi_bridge_stub.c"
+      ],
+      "prefixes": [
+        "WifiBridge_UNER_",
+        "WifiBridge_AT_",
+        "WifiBridge_"
+      ],
+      "responsibility": "Ofrece operaciones de conectividad sobre el backend Web/UNER o un módem con firmware ESP-AT.",
+      "scope": "Detección de backend, UART y conectividad, exploración/red, capacidades, eventos y encaminamiento de operaciones. ESP-AT es una alternativa de firmware de módem; no es el mismo servidor Web de este proyecto.",
+      "state": "WifiBridge_Handle conserva contexto de hardware/servicios, backend, recepción/transmisión, temporizadores y estado de red. Las credenciales runtime son diferentes de un registro de preferencias. hardware y services son prestados; callbacks devuelven los eventos al integrador.",
+      "modularity": "UART/reloj y UNER de aplicación se inyectan por WifiBridge_Hardware/Services. Persisten SystemHandle y tipos de aplicación en el contrato. Los backends comparten una fachada, no implementaciones idénticas.",
+      "lifecycle": [
+        "Init/Start configura y detecta backend; Process/RxCheck atiende máquina de estados y recepción.",
+        "Callbacks IDLE, half/full RX, TX y error notifican actividad; el planificador completa el trabajo diferido.",
+        "Backend AT procesa comandos, prompt, +IPD y SEND OK/FAIL; QueueFrame puede esperar CIPSEND y fin de envío.",
+        "Alive y sus respuestas actualizan disponibilidad; conectividad de red no demuestra una sesión Web autenticada."
+      ],
+      "interactions": [
+        "Backend UNER delega en UNER_App por services; backend AT transporta frames por su servicio TCP/UDP.",
+        "AP, permisos y UI reciben eventos/estados desde la composición de la aplicación."
+      ],
+      "limitations": [
+        "Firmware ESP de este repositorio no debe describirse como intérprete AT.",
+        "Capacidad anunciada, backend elegido, socket abierto, frame aceptado y respuesta final son hitos distintos.",
+        "No hay tráfico físico demostrado por esta documentación."
+      ],
+      "functions": {
+        "Init": "Inicializa contexto de bridge o backend con sus puertos.",
+        "Start": "Inicia recepción y negociación del backend.",
+        "Process": "Avanza la máquina de estados y operaciones diferidas del backend.",
+        "RxCheck": "Consume nuevos bytes del buffer circular de recepción.",
+        "OnIdleIrq": "Notifica detección IDLE para atender bytes recibidos.",
+        "OnTxComplete": "Notifica final de transmisión UART y permite avanzar la cola.",
+        "OnRxHalfComplete": "Notifica el hito de media recepción DMA.",
+        "OnRxComplete": "Notifica el hito de recepción DMA completa.",
+        "OnError": "Atiende fallo del backend de comunicación.",
+        "SetEventCallback": "Registra receptor de eventos de bridge.",
+        "EmitEvent": "Entrega un evento al callback de la aplicación.",
+        "QueueFrame": "Encola un frame para transporte de red AT.",
+        "GetActiveBackend": "Consulta backend seleccionado por la detección.",
+        "GetCapabilities": "Consulta máscara de operaciones anunciadas por el backend.",
+        "HasCapability": "Comprueba un bit de capacidad del backend.",
+        "IsConnected": "Consulta estado de conectividad del bridge, distinto de sesión PIN.",
+        "IsWaitingValidation": "Indica si el backend espera finalizar una solicitud.",
+        "ConsumeConnectionLostEvent": "Consume la señal pendiente de pérdida de conexión.",
+        "RegisterAliveResponse": "Registra respuesta de mantenimiento de conexión.",
+        "RegisterBackendAlive": "Registra evidencia de actividad del backend."
+      }
+    },
+    {
+      "id": "f4:module/Core/Inc/uner_core.h",
+      "slug": "uner-core",
+      "title": "Parser y cola UNER v2",
+      "kind": "núcleo",
+      "files": [
+        "Core/Inc/uner_core.h",
+        "Core/Inc/uner_core_types.h",
+        "Core/Inc/uner_v2.h",
+        "Core/Inc/uner_status.h",
+        "Core/Src/uner_core.c"
+      ],
+      "prefixes": [
+        "UNER_Core_"
+      ],
+      "responsibility": "Reconoce frames UNER v2 byte a byte, comprueba estructura/checksum y encola paquetes con memoria del llamador.",
+      "scope": "Header UNER, largo, token, versión, ruta, ID, payload y XOR. No conoce nombres JSON ni efectos físicos de comandos.",
+      "state": "UNER_Core conserva configuración, FSM, acumuladores, slots/payload_pool prestados, índices y contadores. UNER_Packet contiene una vista del payload y transporte de origen; no es propietario de un bloque dinámico.",
+      "modularity": "Sin HAL; el protocolo tiene sus propias capas de datos. Los transportes entregan bytes con ID y límite de payload.",
+      "lifecycle": [
+        "Init conecta slots y pool con tamaño suficiente.",
+        "PushByte avanza parser y descarta/resincroniza al detectar frame inválido.",
+        "Al completar encola y avisa por on_packet; Dequeue copia descriptor, no copia sus bytes.",
+        "ReleasePacket es actualmente no-op; el consumidor debe terminar antes de reutilizar el slot."
+      ],
+      "interactions": [
+        "UNER_Handle registra callback de paquete para diferir despacho; UART/USB implementan la entrada de bytes.",
+        "UNER_BuildFrame escribe encabezado/ruta/payload y XOR en un buffer externo."
+      ],
+      "limitations": [
+        "Payload máximo de un byte: 255 bytes; total frame=10+len.",
+        "Cola llena, frame inválido y falta de ruta no tienen el mismo tratamiento.",
+        "El core no incorpora requestId ni correlación de transacciones Web."
+      ],
+      "functions": {
+        "Init": "Inicializa parser y cola sobre memoria prestada del llamador.",
+        "PushByte": "Procesa un byte del transporte con su límite de payload.",
+        "Dequeue": "Extrae un descriptor de paquete manteniendo su payload prestado.",
+        "ReleasePacket": "Entrada de liberación actualmente sin trabajo; no extiende vida del payload.",
+        "ComputeChecksum": "Calcula XOR de los bytes recibidos.",
+        "UNER_BuildFrame": "Serializa frame UNER v2 y checksum en el buffer del llamador."
+      }
+    },
+    {
+      "id": "f4:module/Core/Inc/uner_handle.h",
+      "slug": "uner-router",
+      "title": "UNER Handle, rutas y despacho",
+      "kind": "núcleo",
+      "files": [
+        "Core/Inc/uner_handle.h",
+        "Core/Inc/uner_handle_types.h",
+        "Core/Inc/uner_transport.h",
+        "Core/Src/uner_handle.c"
+      ],
+      "prefixes": [
+        "UNER_Handle_"
+      ],
+      "responsibility": "Conecta parser, transportes, rutas, guardas y tabla de comandos para despachar o reenviar paquetes.",
+      "scope": "Registro de hasta cuatro transportes y seis rutas, control de forwarding, snapshots y callbacks de aplicación.",
+      "state": "UNER_Handle posee core, tablas/rutas, tx_buf, contadores y snapshots; presta transportes, command_table, execute_command/ctx y forward_guard/ctx. CommandSpec incluye ID, límites de longitud, flags, timeout y handler; los metadatos no reemplazan el comportamiento real del handler.",
+      "modularity": "Sin HAL, con relación interna legítima entre core/router/transport. El ejecutor de aplicación define el significado del comando.",
+      "lifecycle": [
+        "Init envuelve on_packet; registrar transportes, rutas, comandos y guardas antes de operar.",
+        "Poll obtiene bytes y ProcessPending consume paquetes encolados.",
+        "Paquetes locales pasan por tabla/longitud; otros pueden reenviarse tras guarda y resolución de ruta."
+      ],
+      "interactions": [
+        "UNER_App conecta handlers y políticas del robot.",
+        "UNER_Send construye en tx_buf y llama try_send; la propiedad del buffer importa si el transporte difiere su uso."
+      ],
+      "limitations": [
+        "Un callback o macro con nombre de función no es una llamada directa resuelta.",
+        "Metadatos de respuesta y handler pueden divergir: ver registro de hallazgos.",
+        "La cola y buffers no ofrecen por sí mismos garantías para varios threads."
+      ],
+      "functions": {
+        "Init": "Inicializa router/core conservando callback de aplicación.",
+        "RegisterTransport": "Agrega un transporte con ID, polling y envío.",
+        "RegisterRoute": "Asocia un nodo destino a un transporte.",
+        "SetForwardingEnabled": "Habilita o bloquea reenvío de paquetes.",
+        "SetForwardGuard": "Registra guarda de forwarding y contexto.",
+        "IsForwardingEnabled": "Consulta si el reenvío está habilitado.",
+        "GetRouterSnapshot": "Copia el último estado resumido del router.",
+        "GetRouterPacketSnapshot": "Copia diagnóstico RX/TX del transporte solicitado.",
+        "RegisterCommands": "Conecta tabla de comandos y ejecutor con contexto.",
+        "Poll": "Atiende transportes y procesa trabajo pendiente.",
+        "ProcessPending": "Despacha o reenvía paquetes consumidos de la cola.",
+        "UNER_Send": "Construye y ofrece un frame al transporte indicado."
+      }
+    },
+    {
+      "id": "f4:module/Core/Inc/uner_app.h",
+      "slug": "uner-application",
+      "title": "UNER de aplicación y contrato del robot",
+      "kind": "integración",
+      "files": [
+        "Core/Inc/uner_app.h",
+        "Core/Src/uner_app.c"
+      ],
+      "prefixes": [
+        "UNER_App_"
+      ],
+      "responsibility": "Implementa comandos, eventos, autorización, serialización y políticas de transporte del robot.",
+      "scope": "Preferencias, movimiento, sensores/streams, UI, conectividad, firmware, assets, perfiles y reset diferido. La tabla de comandos describe registros; el switch/handler determina el efecto.",
+      "state": "Posee estado estático de aplicación: streams por endpoint, colas de respuestas de autenticación, reset pendiente, proxy ESP y assets. El origen se identifica con transporte+nodo; requestId JSON permanece en ESP. Los paquetes recibidos deben consumirse/copiarse antes de reutilizar slots del core.",
+      "modularity": "Capa de composición deliberadamente acoplada a sensores, control, menús y HAL/USB. No debe presentarse como core transportable ni importarse desde librerías genéricas.",
+      "lifecycle": [
+        "Init registra rutas/transportes/tabla; Poll atiende parser, streams, respuestas y operaciones diferidas.",
+        "Los handlers comprueban transporte, nodo, autorización, contexto, argumentos y estado antes del efecto.",
+        "ACK/NACK y respuesta con mismo ID son alternativas o etapas según comando; leer status y correlación.",
+        "Reset difiere la acción hasta condiciones de transmisión; no confundir ACK encolado con ACK físicamente enviado."
+      ],
+      "interactions": [
+        "Web → JSON ESP → broker UART → UNER F4; Qt usa USB UNER directo.",
+        "Streams MPU/IR se mantienen por transporte+nodo, con recepción/consumo independientes de una lectura puntual.",
+        "Consultar ../shared/wire-contracts.md y el catálogo de registro para tamaños y semántica de campos."
+      ],
+      "limitations": [
+        "No todos los IDs definidos tienen handler ni todos los declarados producen la misma respuesta.",
+        "Timeout de metadata F4, broker ESP y Promise Web son capas distintas.",
+        "No se acredita interoperabilidad por copiar el mismo catálogo."
+      ],
+      "functions": {
+        "Init": "Conecta bridge, transportes, rutas y contratos de aplicación.",
+        "Poll": "Atiende protocolos y servicios diferidos de la aplicación.",
+        "SendCommand": "Envía un comando de aplicación por la ruta configurada.",
+        "OnUsbDtrChanged": "Actualiza sesión/estado USB al cambiar DTR.",
+        "OnNrfLinkChanged": "Actualiza estado de enlace NRF y sus reportes.",
+        "ReportScreenChanged": "Serializa identidad/origen de pantalla y publica evento.",
+        "ReportNotificationChanged": "Publica identidad y tiempos de notificación.",
+        "ReportMenuSelectionChanged": "Publica selección visible y cantidad vinculadas a screen code.",
+        "ReportCarModeChanged": "Publica el modo de automóvil confirmado.",
+        "FeedUart1Bytes": "Entrega bytes recibidos al camino UNER de UART1.",
+        "OnUart1TxComplete": "Notifica fin de TX y habilita transiciones diferidas.",
+        "IsMcuResetPending": "Consulta si existe un reset diferido aún pendiente.",
+        "HandleSetExtensionProfile": "Guarda el perfil y responde por el mismo ID con status; revisar metadata ACK.",
+        "ReadU16Le": "Decodifica uint16 little endian desde payload.",
+        "ReadU32Le": "Decodifica uint32 little endian desde payload.",
+        "ReadFloatLe": "Decodifica float de cuatro bytes según representación del target.",
+        "WriteU16Le": "Escribe uint16 en little endian.",
+        "WriteU32Le": "Escribe uint32 en little endian.",
+        "WriteFloatLe": "Escribe float de cuatro bytes en little endian."
+      }
+    },
+    {
+      "id": "f4:module/Core/Inc/uner_transport_uart1_dma.h",
+      "slug": "uart-transport",
+      "title": "Transporte UNER UART1 DMA",
+      "kind": "plataforma",
+      "files": [
+        "Core/Inc/uner_transport_uart1_dma.h",
+        "Core/Src/uner_transport_uart1_dma.c"
+      ],
+      "prefixes": [
+        "UNER_TransportUart1Dma_"
+      ],
+      "responsibility": "Adapta el transporte UNER a recepción circular y transmisión DMA UART1 del STM32.",
+      "scope": "Índices DMA, aceptación TX, finalización y entrega al core; no interpreta comandos del robot.",
+      "state": "El contexto de transporte conserva el recurso UART, buffer RX, posiciones y buffer/estado TX. UNER_Transport presta funciones poll_rx/try_send y ctx.",
+      "modularity": "Adaptador STM32 con HAL explícito; no se exige independencia del periférico.",
+      "lifecycle": [
+        "Init conecta recurso y buffers; poll_rx entrega bytes nuevos al parser.",
+        "try_send inicia/encola según disponibilidad; OnTxComplete libera el estado de transmisión."
+      ],
+      "interactions": [
+        "Bridge y callbacks HAL alimentan el transporte. UNER_Handle usa el mismo contrato para UART y USB."
+      ],
+      "limitations": [
+        "DMA no autoriza a destruir el buffer antes de finalizar.",
+        "IDLE, mitad y fin DMA no equivalen a límites de frame UNER."
+      ],
+      "functions": {
+        "Init": "Conecta UART1 y memoria DMA al contrato UNER_Transport.",
+        "OnTxComplete": "Atiende finalización TX y libera el transporte para el siguiente frame."
+      }
+    },
+    {
+      "id": "f4:module/Core/Inc/uner_transport_usbcdc.h",
+      "slug": "usb-transport",
+      "title": "Transporte UNER USB CDC",
+      "kind": "plataforma",
+      "files": [
+        "Core/Inc/uner_transport_usbcdc.h",
+        "Core/Src/uner_transport_usbcdc.c"
+      ],
+      "prefixes": [
+        "UNER_TransportUsbCdc_"
+      ],
+      "responsibility": "Conecta bytes USB CDC a UNER y mantiene TX diferido con prioridades y diagnóstico de colas.",
+      "scope": "Recepción, cola TX, reintentos, conexión y contadores; el host Qt implementa correlación/interpretación por separado.",
+      "state": "Contexto con buffers/colas RX/TX y contadores de overflow/full/drop/deferred; UNER_Transport.ctx conserva su instancia de plataforma. Consultar PendingTx no es equivalente a DTR activo.",
+      "modularity": "Adaptador ligado a stack ST USB CDC y política de conexión del dispositivo.",
+      "lifecycle": [
+        "Init instala transporte; OnRx copia/entrega recepción.",
+        "ServiceTx intenta enviar; OnTxComplete libera y avanza.",
+        "OnDisconnect limpia estado según política; la aplicación revoca sesión/streams correspondientes."
+      ],
+      "interactions": [
+        "usbd_cdc_if.c entrega callbacks; UNER_App gobierna alive, DTR, reset y permisos Qt."
+      ],
+      "limitations": [
+        "BUSY del stack requiere reintento; encolado no equivale a enviado.",
+        "Contadores de descarte deben interpretarse junto a prioridad y profundidad de cola."
+      ],
+      "functions": {
+        "Init": "Conecta el transporte CDC y sus buffers/colas.",
+        "OnRx": "Entrega bytes USB recibidos a la cola del transporte.",
+        "OnTxComplete": "Marca fin de transferencia USB y permite avanzar la cola.",
+        "OnDisconnect": "Limpia recepción/transmisión pendiente al desconectar.",
+        "ServiceTx": "Intenta despachar el siguiente frame disponible al stack CDC.",
+        "SetNextTxPriority": "Configura prioridad para la siguiente solicitud de envío.",
+        "HasPendingRx": "Consulta si quedan bytes RX por consumir.",
+        "HasPendingTx": "Consulta si hay TX encolado o en curso.",
+        "GetQueuedTxCount": "Consulta profundidad de cola TX.",
+        "GetRxOverflowCount": "Consulta desbordamientos de recepción.",
+        "GetTxQueueFullCount": "Consulta rechazos por cola TX llena.",
+        "GetTxQueueDropCount": "Consulta frames descartados de la cola TX.",
+        "GetTxDeferredCount": "Consulta envíos diferidos por indisponibilidad."
+      }
+    },
+    {
+      "id": "f4:module/Core/Inc/app_tasks.h",
+      "slug": "application-composition",
+      "title": "Composición, tareas y acciones de aplicación",
+      "kind": "composición",
+      "files": [
+        "Core/Inc/app_tasks.h",
+        "Core/Inc/eventManagers.h",
+        "Core/Inc/menu_definitions.h",
+        "Core/Inc/system.h",
+        "Core/Inc/system_flags.h",
+        "Core/Inc/globals.h",
+        "Core/Src/app_tasks.c",
+        "Core/Src/eventManagers.c",
+        "Core/Src/menu_definition.c",
+        "Core/Src/app_globals.c"
+      ],
+      "prefixes": [
+        "APP_"
+      ],
+      "responsibility": "Construye instancias, conecta puertos y coordina tareas, acciones de menú y eventos de hardware.",
+      "scope": "Es el punto permitido de conocimiento de todas las librerías: sensores, control, UI, preferencias y comunicación.",
+      "state": "SystemHandle agrupa runtime/connectivity/configuration/security/metadata y referencias opacas. Cada librería conserva su estado propio; app_tasks/eventManagers mantienen además estado privado de coordinación. System no es un sustituto de todos los handles.",
+      "modularity": "Composición deliberadamente dependiente de HAL y APIs concretas. Los núcleos no deben incluir app_tasks, globals o adaptadores para acceder indirectamente a otros dispositivos.",
+      "lifecycle": [
+        "APP_Init conecta preferencias, motores, AutoMotion, I2C, MPU, balance, estimación, línea, display y menú en el orden del código.",
+        "La aplicación ejecuta tareas periódicas y trabajo diferido; los callbacks HAL I2C reenvían eventos al gestor.",
+        "El camino de control reúne entradas, atiende seguidor/GOTO, estimación y MotionControl; los modos determinan qué productor puede operar.",
+        "eventManagers modifica borradores/acciones y wrappers seleccionan render; una edición no se considera aplicada hasta guardar/confirmar."
+      ],
+      "interactions": [
+        "Aquí se conectan OLED y MPU al mismo árbitro y las tablas AM_* a instancias concretas.",
+        "Los handlers remotos llaman acciones APP y pasan por guardas de modo, permiso y seguridad."
+      ],
+      "limitations": [
+        "Las funciones HAL_*Callback son entradas de interrupción y pueden tocar estado compartido; no inferir serialización de tareas por el nombre.",
+        "Esta ficha inventaría también funciones internas; su descripción estructural no certifica todos los caminos dinámicos.",
+        "Los cambios de orden de inicialización/control requieren revisar consumidores y no solo includes."
+      ],
+      "functions": {
+        "Init": "Construye el sistema y conecta instancias, servicios, periféricos y estado inicial.",
+        "EventsBindSystem": "Conecta el sistema usado por los gestores de eventos.",
+        "LineFollowStop": "Detiene seguimiento y su producción de órdenes.",
+        "AutoMotionCancel": "Cancela misión/calibración GOTO activa.",
+        "AutoMotionBusy": "Consulta si AutoMotion tiene una operación activa.",
+        "MotorTestStop": "Detiene prueba directa de motores.",
+        "GenericEventManager": "Despacha evento de usuario al flujo global activo."
+      }
+    },
+    {
+      "id": "f4:module/Core/Inc/app_stm32_ports.h",
+      "slug": "application-adapters",
+      "title": "Adaptadores de hardware y servicios",
+      "kind": "plataforma",
+      "files": [
+        "Core/Inc/app_stm32_ports.h",
+        "Core/Inc/app_i2c_ports.h",
+        "Core/Inc/app_control_ports.h",
+        "Core/Inc/app_auxiliary_ports.h",
+        "Core/Inc/app_display.h",
+        "Core/Inc/app_screens_ports.h",
+        "Core/Inc/app_menu_services.h",
+        "Core/Inc/app_menu_binding.h",
+        "Core/Inc/app_preferences_binding.h",
+        "Core/Inc/app_preferences_stm32.h",
+        "Core/Inc/app_wifi_binding.h",
+        "Core/Inc/app_wifi_ports.h"
+      ],
+      "prefixes": [
+        "App_",
+        "AppScreens_",
+        "AppWifi_"
+      ],
+      "responsibility": "Empareja contratos neutrales con funciones y recursos concretos de AutoMicro/STM32.",
+      "scope": "Puertos GPIO/timer/PWM/ADC/I2C/UART/Flash y tablas de servicios UI, control, preferencias y Wi-Fi.",
+      "state": "AppI2cBinding conserva manager/id/port; los otros adaptadores usan recursos prestados o contexto activo. Las tablas static const declaradas en headers tienen copias por unidad de compilación que las incluya; su duración es estática.",
+      "modularity": "Es la frontera de plataforma y composición; aquí las dependencias concretas son esperadas. Que una función sea inline no vuelve neutral su acceso HAL.",
+      "lifecycle": [
+        "Construir bindings antes de Init/Bind de los núcleos.",
+        "App_I2cConnect empareja manager y device ID; los callbacks vuelven al mismo cliente.",
+        "BindStm32 fija geometría Flash y operaciones; las macros históricas eligen el handle suministrado por aplicación."
+      ],
+      "interactions": [
+        "app_control_ports conecta MPU → orientación y balance/PID/motores; no mueve esos objetos dentro del consumidor.",
+        "App_I2cUs usa HAL_GetTick()*1000: expresa microsegundos con resolución de ms.",
+        "Flash unlock/erase/program/lock permanece síncrono."
+      ],
+      "limitations": [
+        "No compartir contextos con tablas incompatibles: void* no tiene comprobación de tipo.",
+        "El puerto I2C de dispositivo expone también hardware/hardware_ctx; no impone por sí solo que todo acceso pase por arbitraje.",
+        "Campos públicos y macros permiten acoplamiento por estado aunque no haya llamada directa."
+      ],
+      "functions": {
+        "App_I2cConnect": "Construye el puerto de un dispositivo enlazado al manager y a su ID lógico.",
+        "App_I2cUs": "Entrega HAL_GetTick multiplicado por 1000, con resolución real de milisegundos.",
+        "AppPreferences_BindStm32": "Conecta geometría Flash activa/legado y operaciones de almacenamiento.",
+        "AppScreensBind": "Instala la tabla de servicios y contexto de pantallas.",
+        "AppAuxiliaryBind": "Conecta contextos/servicios de favoritos, permisos, AP y router."
+      }
+    },
+    {
+      "id": "f4:module/Core/Inc/automicro_boot_contract.h",
+      "slug": "boot-mailbox",
+      "title": "Contrato de arranque y mailbox",
+      "kind": "plataforma",
+      "files": [
+        "Core/Inc/automicro_boot_contract.h",
+        "Core/Src/automicro_boot_contract.c"
+      ],
+      "prefixes": [
+        "AutoMicroBootMailbox_",
+        "AutoMicroBoot_"
+      ],
+      "responsibility": "Intercambia metadatos y solicitudes de arranque entre aplicación y bootloader mediante mailbox y CRC.",
+      "scope": "Layout del mailbox, validación, consumo y solicitudes; no documenta internamente el bootloader externo.",
+      "state": "Mailbox en dirección/área fijada por contrato de plataforma; sus campos y CRC deben coincidir con el otro productor/consumidor. Consumir una solicitud tiene efecto sobre su disponibilidad posterior.",
+      "modularity": "Ligado a memoria y contrato de arranque STM32; no es una biblioteca de aplicación portable sin adaptar dirección y layout.",
+      "lifecycle": [
+        "Arranque consulta/valida mailbox; Consume copia y elimina la marca según implementación.",
+        "WriteRequest prepara solicitud antes del reset; el bootloader la consume en otro ciclo de ejecución."
+      ],
+      "interactions": [
+        "UNER_App informa versión/boot report y prepara resets; el bootloader es un consumidor externo a esta fotografía."
+      ],
+      "limitations": [
+        "No suponer compatibilidad con otra versión de bootloader solo por tener el mismo nombre de struct.",
+        "El análisis no modifica linker, sectores ni imagen de firmware."
+      ],
+      "functions": {
+        "Get": "Obtiene vista del mailbox en la ubicación de plataforma.",
+        "Validate": "Comprueba identificación, versión/integridad del mailbox.",
+        "Consume": "Copia y consume el reporte de arranque disponible.",
+        "WriteRequest": "Escribe una solicitud de arranque con su integridad.",
+        "ConsumeRequest": "Lee y consume una solicitud de arranque pendiente.",
+        "Crc32": "Calcula el CRC32 usado por el contrato de arranque."
+      }
+    },
+    {
+      "id": "f4:module/USB_DEVICE/App/usb_mode_manager.h",
+      "slug": "usb-platform",
+      "title": "Plataforma USB CDC/MSC",
+      "kind": "plataforma",
+      "files": [
+        "USB_DEVICE/App/usb_mode_manager.h",
+        "USB_DEVICE/App/usb_mode_manager.c",
+        "USB_DEVICE/App/usb_device.h",
+        "USB_DEVICE/App/usb_device.c",
+        "USB_DEVICE/App/usbd_cdc_if.h",
+        "USB_DEVICE/App/usbd_cdc_if.c",
+        "USB_DEVICE/App/usbd_desc.h",
+        "USB_DEVICE/App/usbd_desc.c",
+        "USB_DEVICE/App/usbd_msc_storage.h",
+        "USB_DEVICE/App/usbd_msc_storage.c",
+        "USB_DEVICE/App/usbd_msc_disk_data.h",
+        "USB_DEVICE/App/usbd_msc_disk_data.c",
+        "USB_DEVICE/Target/usbd_conf.h",
+        "USB_DEVICE/Target/usbd_conf.c"
+      ],
+      "prefixes": [
+        "USB_ModeManager_",
+        "CDC_",
+        "STORAGE_"
+      ],
+      "responsibility": "Configura clases USB, descriptores, callbacks CDC y almacenamiento MSC sobre el stack ST.",
+      "scope": "Modo USB, conexión/DTR y recursos del controlador OTG_FS. El middleware ST queda como dependencia vendor externa al manual propio.",
+      "state": "Conserva objetos y tablas de callbacks del stack USB, buffers CDC y estado de modo/disco. Los buffers entregados al stack deben vivir hasta fin de transferencia.",
+      "modularity": "Es plataforma STM32 y depende del stack ST/HAL por diseño. La interfaz UNER_Transport aísla su consumo por los núcleos.",
+      "lifecycle": [
+        "MX_USB_DEVICE_Init configura la clase y el dispositivo.",
+        "El stack invoca callbacks RX/TX/control; CDC notifica al transporte y UNER_App.",
+        "El modo MSC presta bloques del disco declarado; no interpretar esos datos como preferencias Flash."
+      ],
+      "interactions": [
+        "UNER USB utiliza la clase CDC; boot/mode manager gobierna selección según lógica de la aplicación."
+      ],
+      "limitations": [
+        "No se enumeró el dispositivo en un host ni se comprobó DTR físicamente.",
+        "Las funciones internas del stack se registran como callbacks y no equivalen a llamadas directas desde main."
+      ],
+      "functions": {
+        "MX_USB_DEVICE_Init": "Inicializa el dispositivo USB y la clase seleccionada.",
+        "CDC_Transmit_FS": "Ofrece buffer de transmisión a la clase CDC del stack ST."
+      }
+    },
+    {
+      "id": "f4:module/Core/Inc/fonts.h",
+      "slug": "fonts-resources",
+      "title": "Fuentes, tipos y recursos auxiliares",
+      "kind": "datos",
+      "files": [
+        "Core/Inc/fonts.h",
+        "Core/Src/fonts.c",
+        "Core/Inc/binary_asset_types.h",
+        "Core/Inc/types/bitmap_type.h",
+        "Core/Inc/types/carmode_type.h",
+        "Core/Inc/types/userEvent_type.h",
+        "Core/Inc/utils/macros_utils.h"
+      ],
+      "prefixes": [],
+      "responsibility": "Provee fuentes bitmap, tipos de flags/modos/eventos y vistas de assets sin poseer dispositivos.",
+      "scope": "Tablas de glifos, FontDef, máscaras y vocabulario compartido; otros bitmaps y constantes figuran en source-map.json.",
+      "state": "Fuentes/bitmaps son recursos estáticos; BinaryAssetView_t presta bytes/metadata y no cambia su propiedad. Los tipos de bitfield son representación interna, no un contrato de serialización entre lenguajes.",
+      "modularity": "Los datos simples son reutilizables con su formato, pero macros_utils también conoce carmode y las convenciones de flags del proyecto.",
+      "lifecycle": [
+        "La aplicación/renderer presta FontDef y recursos al driver; los glifos no requieren inicialización de hardware."
+      ],
+      "interactions": [
+        "SSD1306 y OSK integrado consumen fuentes; menús y protocolos comparten constantes lógicas, no punteros."
+      ],
+      "limitations": [
+        "Orden de bits de bitmap, stride y page-major son formatos diferentes; elegir la entrada DrawBitmap correcta.",
+        "No transportar bitfields C ni punteros como bytes de protocolo."
+      ],
+      "functions": {}
+    },
+    {
+      "id": "f4:module/Core/Src/main.c",
+      "slug": "board-runtime",
+      "title": "Arranque de placa e interrupciones STM32",
+      "kind": "plataforma",
+      "files": [
+        "Core/Inc/main.h",
+        "Core/Inc/stm32f4xx_it.h",
+        "Core/Inc/stm32f4xx_hal_conf.h",
+        "Core/Inc/app_version.h",
+        "Core/Src/main.c",
+        "Core/Src/stm32f4xx_it.c",
+        "Core/Src/stm32f4xx_hal_msp.c",
+        "Core/Src/system_stm32f4xx.c",
+        "Core/Src/syscalls.c",
+        "Core/Src/sysmem.c"
+      ],
+      "prefixes": [
+        "MX_"
+      ],
+      "responsibility": "Inicializa reloj, periféricos y bucle de aplicación y conecta vectores de interrupción a HAL.",
+      "scope": "Código generado/de plataforma para STM32F411CEU6; CubeMX/.ioc permanece fuente del pinout. No se confunde con las librerías reutilizables.",
+      "state": "Handles HAL de periféricos, estado del runtime C y recursos estáticos pertenecen a la placa; los puertos neutrales los reciben como referencias opacas.",
+      "modularity": "Dependencia directa STM32/HAL/CMSIS esperada. Su portabilidad requiere reemplazar inicialización, IRQ y adaptadores.",
+      "lifecycle": [
+        "main inicializa plataforma antes de APP_Init y atiende el bucle.",
+        "IRQs llaman HAL y los callbacks de aplicación; evitar trabajo bloqueante arbitrario dentro de IRQ.",
+        "Error_Handler y faults describen rutas de fallo de plataforma, no estados recuperables del protocolo."
+      ],
+      "interactions": [
+        "app_tasks.c es el puente hacia librerías; los módulos neutrales no deben importar main.h."
+      ],
+      "limitations": [
+        "No se compiló ni cargó firmware; no se modifica configuración CubeMX.",
+        "Vendor y startup/linker fuera de Core/USB_DEVICE están excluidos explícitamente de esta extracción."
+      ],
+      "functions": {
+        "main": "Inicializa plataforma y entra al ciclo principal de la aplicación.",
+        "Error_Handler": "Entra al manejo de fallo no recuperable de plataforma."
+      }
+    }
+  ]
+}

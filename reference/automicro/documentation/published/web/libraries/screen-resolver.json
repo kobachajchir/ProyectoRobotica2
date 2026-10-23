@@ -1,0 +1,1138 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "web:module/src/screens/screenRenderRegistry.ts",
+  "slug": "screen-resolver",
+  "title": "Resolución de variantes y fallback de pantalla",
+  "target": "web",
+  "kind": "integración",
+  "status": "source-documented",
+  "snapshotDate": "2026-10-20",
+  "verification": "not-run-user-instruction",
+  "responsibility": "Elige builder y parámetros a partir de screenCode/source/rawData y resuelve identidades con información insuficiente.",
+  "scope": "Orden: remediated, identified, switch de builders. No confundir esa prioridad con el renderer alcanzado en F4.",
+  "state": "ResolvedOledScreen contiene título, variante, categoría, builder y comandos; no contiene prueba de exactitud ni estado físico.",
+  "modularity": "Capa de integración entre reportes y biblioteca de comandos, dependiente del esquema y catálogos del proyecto.",
+  "lifecycle": [
+    "Resolver identidad y source; seleccionar variante antes de construir comandos.",
+    "Cuando faltan campos, algunos caminos usan identity-only y otros valores predeterminados; la diferencia queda en hallazgos."
+  ],
+  "interactions": [
+    "ScreenStreamWorkspace añade irEmitters al rawData.",
+    "F4 publica extensiones concretas de dashboard/notificación/selección, no el estado de cada builder."
+  ],
+  "limitations": [
+    "readMpuArgs/readMotorArgs/readPinFormArgs contienen defaults que no son datos recibidos del equipo.",
+    "La metadata builder candidata no demuestra cobertura exacta.",
+    "GOTO/ON-OFF, OSK y confirmaciones requieren discriminantes y datos suficientes."
+  ],
+  "relationships": [],
+  "findings": [
+    "AMDOC-WEB-002",
+    "AMDOC-WEB-003",
+    "AMDOC-WEB-005",
+    "AMDOC-WEB-006",
+    "AMDOC-WEB-009"
+  ],
+  "files": [
+    {
+      "rootId": "web",
+      "path": "src/screens/identifiedScreens.ts",
+      "sha256": "edd67775298b615e4ca4e75bd01af5b0be4e9c8e6d0355da36c7668718245a6d",
+      "imports": [
+        "./helpers",
+        "./types"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/screens/remediatedScreens.ts",
+      "sha256": "6a008ef7589f42f17d6641bceacadc9e0760b51bee7eb25b1ae61dac192f972f",
+      "imports": [
+        "./identifiedScreens",
+        "./menuScreens",
+        "./screenRenderRegistry"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/screens/screenRenderRegistry.ts",
+      "sha256": "2e8e6cc33595287753c64af0dfc65a03483c943558ccb0a85bf79914e9b5b98d",
+      "imports": [
+        "./connectivityScreens",
+        "./dashboardScreens",
+        "./displayScreens",
+        "./identifiedScreens",
+        "./menuScreens",
+        "./motorScreens",
+        "./notificationScreens",
+        "./remediatedScreens",
+        "./screenCodes",
+        "./sensorScreens",
+        "./settingsScreens",
+        "./types",
+        "./warningScreens"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    }
+  ],
+  "types": [
+    {
+      "name": "IdentifiedScreenArgs",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "lines",
+          "declaration": "lines: string[]",
+          "callback": false,
+          "ownerType": "IdentifiedScreenArgs",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/identifiedScreens.ts",
+            "line": 11
+          },
+          "description": "Dato de estado/configuración `lines`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "footer",
+          "declaration": "footer?: string",
+          "callback": false,
+          "ownerType": "IdentifiedScreenArgs",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/identifiedScreens.ts",
+            "line": 12
+          },
+          "description": "Dato de estado/configuración `footer`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "iconRef",
+          "declaration": "iconRef?: string",
+          "callback": false,
+          "ownerType": "IdentifiedScreenArgs",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/identifiedScreens.ts",
+            "line": 13
+          },
+          "description": "Dato de estado/configuración `iconRef`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/identifiedScreens.ts",
+        "line": 10
+      }
+    },
+    {
+      "name": "IdentifiedMenuDefinition",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "variant",
+          "declaration": "variant: string",
+          "callback": false,
+          "ownerType": "IdentifiedMenuDefinition",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/screenRenderRegistry.ts",
+            "line": 177
+          },
+          "description": "Dato de estado/configuración `variant`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "description",
+          "declaration": "description: string",
+          "callback": false,
+          "ownerType": "IdentifiedMenuDefinition",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/screenRenderRegistry.ts",
+            "line": 178
+          },
+          "description": "Dato de estado/configuración `description`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "items",
+          "declaration": "items: MenuScreenItem[]",
+          "callback": false,
+          "ownerType": "IdentifiedMenuDefinition",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/screenRenderRegistry.ts",
+            "line": 179
+          },
+          "description": "Dato de estado/configuración `items`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/screenRenderRegistry.ts",
+        "line": 176
+      }
+    },
+    {
+      "name": "IdentifiedScreenDefinition",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "variant",
+          "declaration": "variant: string",
+          "callback": false,
+          "ownerType": "IdentifiedScreenDefinition",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/screenRenderRegistry.ts",
+            "line": 183
+          },
+          "description": "Dato de estado/configuración `variant`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "category",
+          "declaration": "category: string",
+          "callback": false,
+          "ownerType": "IdentifiedScreenDefinition",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/screenRenderRegistry.ts",
+            "line": 184
+          },
+          "description": "Dato de estado/configuración `category`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "description",
+          "declaration": "description: string",
+          "callback": false,
+          "ownerType": "IdentifiedScreenDefinition",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/screenRenderRegistry.ts",
+            "line": 185
+          },
+          "description": "Dato de estado/configuración `description`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "lines",
+          "declaration": "lines: string[]",
+          "callback": false,
+          "ownerType": "IdentifiedScreenDefinition",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/screenRenderRegistry.ts",
+            "line": 186
+          },
+          "description": "Dato de estado/configuración `lines`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "footer",
+          "declaration": "footer?: string",
+          "callback": false,
+          "ownerType": "IdentifiedScreenDefinition",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/screenRenderRegistry.ts",
+            "line": 187
+          },
+          "description": "Dato de estado/configuración `footer`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/screenRenderRegistry.ts",
+        "line": 182
+      }
+    },
+    {
+      "name": "ScreenRenderInput",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "screenCode",
+          "declaration": "screenCode: number",
+          "callback": false,
+          "ownerType": "ScreenRenderInput",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/screenRenderRegistry.ts",
+            "line": 322
+          },
+          "description": "Dato de estado/configuración `screenCode`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "source",
+          "declaration": "source?: number",
+          "callback": false,
+          "ownerType": "ScreenRenderInput",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/screenRenderRegistry.ts",
+            "line": 323
+          },
+          "description": "Dato de estado/configuración `source`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "sourceName",
+          "declaration": "sourceName?: string",
+          "callback": false,
+          "ownerType": "ScreenRenderInput",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/screenRenderRegistry.ts",
+            "line": 324
+          },
+          "description": "Dato de estado/configuración `sourceName`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "title",
+          "declaration": "title?: string",
+          "callback": false,
+          "ownerType": "ScreenRenderInput",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/screenRenderRegistry.ts",
+            "line": 325
+          },
+          "description": "Dato de estado/configuración `title`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "rawData",
+          "declaration": "rawData?: Record<string, unknown>",
+          "callback": false,
+          "ownerType": "ScreenRenderInput",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/screenRenderRegistry.ts",
+            "line": 326
+          },
+          "description": "Dato de estado/configuración `rawData`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/screenRenderRegistry.ts",
+        "line": 321
+      }
+    },
+    {
+      "name": "ResolvedOledScreen",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "title",
+          "declaration": "title: string",
+          "callback": false,
+          "ownerType": "ResolvedOledScreen",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/screenRenderRegistry.ts",
+            "line": 330
+          },
+          "description": "Dato de estado/configuración `title`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "variant",
+          "declaration": "variant: string",
+          "callback": false,
+          "ownerType": "ResolvedOledScreen",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/screenRenderRegistry.ts",
+            "line": 331
+          },
+          "description": "Dato de estado/configuración `variant`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "category",
+          "declaration": "category: string",
+          "callback": false,
+          "ownerType": "ResolvedOledScreen",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/screenRenderRegistry.ts",
+            "line": 332
+          },
+          "description": "Dato de estado/configuración `category`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "builder",
+          "declaration": "builder: string",
+          "callback": false,
+          "ownerType": "ResolvedOledScreen",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/screenRenderRegistry.ts",
+            "line": 333
+          },
+          "description": "Dato de estado/configuración `builder`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "description",
+          "declaration": "description: string",
+          "callback": false,
+          "ownerType": "ResolvedOledScreen",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/screenRenderRegistry.ts",
+            "line": 334
+          },
+          "description": "Dato de estado/configuración `description`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "commands",
+          "declaration": "commands: OledCommand[]",
+          "callback": false,
+          "ownerType": "ResolvedOledScreen",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/screenRenderRegistry.ts",
+            "line": 335
+          },
+          "description": "Dato de estado/configuración `commands`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/screenRenderRegistry.ts",
+        "line": 329
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "backItem",
+      "displayName": "backItem",
+      "signature": "backItem(): MenuScreenItem",
+      "line": 191,
+      "endLine": 191,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "item"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/screenRenderRegistry.ts",
+        "line": 191
+      },
+      "description": "Adapta la llamada a `item` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildIdentifiedNotificationCommands",
+      "displayName": "buildIdentifiedNotificationCommands",
+      "signature": "buildIdentifiedNotificationCommands(lines: string[], progress?: NotificationProgressArgs): OledCommand[]",
+      "line": 55,
+      "endLine": 66,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "buildIdentifiedScreenCommands",
+        "withNotificationProgress"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/identifiedScreens.ts",
+        "line": 55
+      },
+      "description": "Coordina `buildIdentifiedScreenCommands`, `withNotificationProgress` para Resolución de variantes y fallback de pantalla.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildIdentifiedScreenCommands",
+      "displayName": "buildIdentifiedScreenCommands",
+      "signature": "buildIdentifiedScreenCommands(args: IdentifiedScreenArgs): OledCommand[]",
+      "line": 32,
+      "endLine": 53,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Boolean",
+        "args.footer?.trim",
+        "args.footer?.trim().slice",
+        "baselineY",
+        "clear",
+        "commands.push",
+        "drawXbm",
+        "lines.forEach",
+        "normalizedLines",
+        "textAt"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/identifiedScreens.ts",
+        "line": 32
+      },
+      "description": "Coordina `Boolean`, `args.footer?.trim`, `args.footer?.trim().slice` para Resolución de variantes y fallback de pantalla.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "centeredX",
+      "displayName": "centeredX",
+      "signature": "centeredX(text: string, glyphWidth: inferred-by-TypeScript): number",
+      "line": 16,
+      "endLine": 18,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.floor",
+        "Math.max"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/identifiedScreens.ts",
+        "line": 16
+      },
+      "description": "Coordina `Math.floor`, `Math.max` para Resolución de variantes y fallback de pantalla.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "item",
+      "displayName": "item",
+      "signature": "item(label: string, iconRef: inferred-by-TypeScript): MenuScreenItem",
+      "line": 190,
+      "endLine": 190,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/screenRenderRegistry.ts",
+        "line": 190
+      },
+      "description": "Operación item de Resolución de variantes y fallback de pantalla; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "normalizedLines",
+      "displayName": "normalizedLines",
+      "signature": "normalizedLines(lines: string[]): string[]",
+      "line": 20,
+      "endLine": 25,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "lines .map",
+        "lines .map((line) => line.trim().slice(0, 18)) .filter",
+        "lines .map((line) => line.trim().slice(0, 18)) .filter(Boolean) .slice"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/identifiedScreens.ts",
+        "line": 20
+      },
+      "description": "Coordina `lines .map`, `lines .map((line) => line.trim().slice(0, 18)) .filter`, `lines .map((line) => line.trim().slice(0, 18)) .filter(Boolean) .slice` para Resolución de variantes y fallback de pantalla.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "readBoolean",
+      "displayName": "readBoolean",
+      "signature": "readBoolean(value: unknown): boolean | undefined",
+      "line": 688,
+      "endLine": 708,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Number.isFinite",
+        "value.trim",
+        "value.trim().toLowerCase"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/screenRenderRegistry.ts",
+        "line": 688
+      },
+      "description": "Coordina `Number.isFinite`, `value.trim`, `value.trim().toLowerCase` para Resolución de variantes y fallback de pantalla.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "readCarMode",
+      "displayName": "readCarMode",
+      "signature": "readCarMode(value: unknown): CarModeLabel",
+      "line": 664,
+      "endLine": 668,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/screenRenderRegistry.ts",
+        "line": 664
+      },
+      "description": "Operación read Car Mode de Resolución de variantes y fallback de pantalla; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "readConnection",
+      "displayName": "readConnection",
+      "signature": "readConnection(value: unknown): DashboardConnectionState",
+      "line": 660,
+      "endLine": 662,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/screenRenderRegistry.ts",
+        "line": 660
+      },
+      "description": "Operación read Connection de Resolución de variantes y fallback de pantalla; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "readCredentialsSsid",
+      "displayName": "readCredentialsSsid",
+      "signature": "readCredentialsSsid(data: Record<string, unknown>): string | undefined",
+      "line": 622,
+      "endLine": 630,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "readString"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/screenRenderRegistry.ts",
+        "line": 622
+      },
+      "description": "Adapta la llamada a `readString` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "readDashboardArgs",
+      "displayName": "readDashboardArgs",
+      "signature": "readDashboardArgs(data: Record<string, unknown>): inferred-by-TypeScript",
+      "line": 584,
+      "endLine": 595,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "readBoolean",
+        "readCarMode",
+        "readConnection",
+        "readDashboardBackend",
+        "readString"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/screenRenderRegistry.ts",
+        "line": 584
+      },
+      "description": "Coordina `readBoolean`, `readCarMode`, `readConnection` para Resolución de variantes y fallback de pantalla.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "readDashboardBackend",
+      "displayName": "readDashboardBackend",
+      "signature": "readDashboardBackend(value: unknown): \"WEB\" | \"AT\" | \"No ESP\"",
+      "line": 597,
+      "endLine": 599,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/screenRenderRegistry.ts",
+        "line": 597
+      },
+      "description": "Operación read Dashboard Backend de Resolución de variantes y fallback de pantalla; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "readMenuArgs",
+      "displayName": "readMenuArgs",
+      "signature": "readMenuArgs(data: Record<string, unknown>): inferred-by-TypeScript",
+      "line": 605,
+      "endLine": 611,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "readBoolean",
+        "readNumber"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/screenRenderRegistry.ts",
+        "line": 605
+      },
+      "description": "Coordina `readBoolean`, `readNumber` para Resolución de variantes y fallback de pantalla.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "readMode",
+      "displayName": "readMode",
+      "signature": "readMode(value: unknown): ModeChangeScreenArgs[\"mode\"]",
+      "line": 670,
+      "endLine": 672,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/screenRenderRegistry.ts",
+        "line": 670
+      },
+      "description": "Operación read Mode de Resolución de variantes y fallback de pantalla; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "readModeChangeArgs",
+      "displayName": "readModeChangeArgs",
+      "signature": "readModeChangeArgs(data: Record<string, unknown>): ModeChangeScreenArgs",
+      "line": 601,
+      "endLine": 603,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "readMode"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/screenRenderRegistry.ts",
+        "line": 601
+      },
+      "description": "Adapta la llamada a `readMode` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "readMotorArgs",
+      "displayName": "readMotorArgs",
+      "signature": "readMotorArgs(data: Record<string, unknown>): inferred-by-TypeScript",
+      "line": 643,
+      "endLine": 651,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "readBoolean",
+        "readMotorDirection",
+        "readMotorSelection",
+        "readNumber"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/screenRenderRegistry.ts",
+        "line": 643
+      },
+      "description": "Lee porcentajes/selección o usa valores por defecto del builder.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "readMotorDirection",
+      "displayName": "readMotorDirection",
+      "signature": "readMotorDirection(value: unknown): MotorDirection",
+      "line": 680,
+      "endLine": 682,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/screenRenderRegistry.ts",
+        "line": 680
+      },
+      "description": "Operación read Motor Direction de Resolución de variantes y fallback de pantalla; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "readMotorSelection",
+      "displayName": "readMotorSelection",
+      "signature": "readMotorSelection(value: unknown): MotorSelection",
+      "line": 674,
+      "endLine": 678,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/screenRenderRegistry.ts",
+        "line": 674
+      },
+      "description": "Operación read Motor Selection de Resolución de variantes y fallback de pantalla; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "readMpuArgs",
+      "displayName": "readMpuArgs",
+      "signature": "readMpuArgs(data: Record<string, unknown>): inferred-by-TypeScript",
+      "line": 632,
+      "endLine": 641,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "readNumber"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/screenRenderRegistry.ts",
+        "line": 632
+      },
+      "description": "Lee campos escalares esperados o usa valores de ejemplo del builder.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "readNetworkObjectSsids",
+      "displayName": "readNetworkObjectSsids",
+      "signature": "readNetworkObjectSsids(value: unknown): string[] | undefined",
+      "line": 754,
+      "endLine": 780,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Array.isArray",
+        "value .map",
+        "value .map((item) => { if (typeof item === \"string\") { return item; } if (!item || typeof item !== \"object\") { return null; } const record = item as Record<string, unknown>; return ( readString(record.ssid) ?? readString(record.SSID) ?? readString(record.name) ?? readString(record.networkName) ); }) .filter"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/screenRenderRegistry.ts",
+        "line": 754
+      },
+      "description": "Coordina `Array.isArray`, `value .map`, `value .map((item) => { if (typeof item === \"string\") { return item; } if (!item || typeof item !== \"object\") { return null; } const record = item as Record<string, unknown>; return ( readString(record.ssid) ?? readString(record.SSID) ?? readString(record.name) ?? readString(record.networkName) ); }) .filter` para Resolución de variantes y fallback de pantalla.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "readNumber",
+      "displayName": "readNumber",
+      "signature": "readNumber(value: unknown): number | undefined",
+      "line": 710,
+      "endLine": 725,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.trunc",
+        "Number",
+        "Number.isFinite",
+        "Number.parseInt",
+        "trimmed.slice",
+        "trimmed.toLowerCase",
+        "trimmed.toLowerCase().startsWith",
+        "value.trim"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/screenRenderRegistry.ts",
+        "line": 710
+      },
+      "description": "Coordina `Math.trunc`, `Number`, `Number.isFinite` para Resolución de variantes y fallback de pantalla.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "readNumberArray",
+      "displayName": "readNumberArray",
+      "signature": "readNumberArray(value: unknown, length: number): number[] | undefined",
+      "line": 727,
+      "endLine": 736,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "(values as number[]).slice",
+        "Array.isArray",
+        "value.map",
+        "values.every"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/screenRenderRegistry.ts",
+        "line": 727
+      },
+      "description": "Coordina `(values as number[]).slice`, `Array.isArray`, `value.map` para Resolución de variantes y fallback de pantalla.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "readPinFormArgs",
+      "displayName": "readPinFormArgs",
+      "signature": "readPinFormArgs(data: Record<string, unknown>): inferred-by-TypeScript",
+      "line": 653,
+      "endLine": 658,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "readNumber",
+        "readNumberArray"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/screenRenderRegistry.ts",
+        "line": 653
+      },
+      "description": "Lee dígitos/índice o usa ceros; no dispone del snapshot local PIN por el reporte actual.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "readString",
+      "displayName": "readString",
+      "signature": "readString(value: unknown): string | undefined",
+      "line": 684,
+      "endLine": 686,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/screenRenderRegistry.ts",
+        "line": 684
+      },
+      "description": "Operación read String de Resolución de variantes y fallback de pantalla; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "readStringArray",
+      "displayName": "readStringArray",
+      "signature": "readStringArray(value: unknown): string[] | undefined",
+      "line": 738,
+      "endLine": 742,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Array.isArray",
+        "value.filter"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/screenRenderRegistry.ts",
+        "line": 738
+      },
+      "description": "Coordina `Array.isArray`, `value.filter` para Resolución de variantes y fallback de pantalla.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "readWifiResultSsids",
+      "displayName": "readWifiResultSsids",
+      "signature": "readWifiResultSsids(data: Record<string, unknown>): string[] | undefined",
+      "line": 744,
+      "endLine": 752,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "readNetworkObjectSsids",
+        "readStringArray"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/screenRenderRegistry.ts",
+        "line": 744
+      },
+      "description": "Coordina `readNetworkObjectSsids`, `readStringArray` para Resolución de variantes y fallback de pantalla.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "readWifiStatusArgs",
+      "displayName": "readWifiStatusArgs",
+      "signature": "readWifiStatusArgs(data: Record<string, unknown>): WifiStatusArgs",
+      "line": 613,
+      "endLine": 620,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "readString"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/screenRenderRegistry.ts",
+        "line": 613
+      },
+      "description": "Adapta la llamada a `readString` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "resolveIdentifiedScreen",
+      "displayName": "resolveIdentifiedScreen",
+      "signature": "resolveIdentifiedScreen(input: ScreenRenderInput, data: Record<string, unknown>, progress: NotificationProgressArgs): ResolvedOledScreen | null",
+      "line": 531,
+      "endLine": 582,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "buildIdentifiedNotificationCommands",
+        "buildIdentifiedScreenCommands",
+        "buildMenuScreenCommands",
+        "readMenuArgs",
+        "resolved"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/screenRenderRegistry.ts",
+        "line": 531
+      },
+      "description": "Resuelve definiciones conocidas de menú/aviso/pantalla.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "resolveOledScreen",
+      "displayName": "resolveOledScreen",
+      "signature": "resolveOledScreen(input: ScreenRenderInput): ResolvedOledScreen | null",
+      "line": 338,
+      "endLine": 511,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.max",
+        "buildScreen010001StartupCommands",
+        "buildScreen010101DashboardCommands",
+        "buildScreen010102ModeChangeCommands",
+        "buildScreen010105RemoteModeChangedNotificationCommands",
+        "buildScreen010201MainMenuCommands",
+        "buildScreen020101WifiMenuCommands",
+        "buildScreen020201WifiStatusCommands",
+        "buildScreen020202WifiSearchCommands",
+        "buildScreen020203WifiResultsMenuCommands",
+        "buildScreen020204WifiNotConnectedNotificationCommands",
+        "buildScreen020205WifiConnectingCommands",
+        "buildScreen020206WifiConnectedCommands",
+        "buildScreen020207WifiSearchCompleteNotificationCommands",
+        "buildScreen020208WifiSearchCanceledNotificationCommands",
+        "buildScreen02020aWifiCredentialsWebCommands",
+        "buildScreen02020bWifiCredentialsSucceededCommands",
+        "buildScreen02020cWifiCredentialsFailedCommands",
+        "buildScreen02020dWifiCredentialsAtCommands",
+        "buildScreen020301EspMenuCommands",
+        "buildScreen020302EspCheckingConnectionNotificationCommands",
+        "buildScreen020303EspFirmwareRequestNotificationCommands",
+        "buildScreen020304EspResetSentNotificationCommands",
+        "buildScreen020305EspCheckConnectionRequiredNotificationCommands",
+        "buildScreen020306EspBootReceivedNotificationCommands",
+        "buildScreen020307EspFirmwareReceivedNotificationCommands",
+        "buildScreen020307EspFirmwareScreenCommands",
+        "buildScreen020308EspModeChangedNotificationCommands",
+        "buildScreen020309EspApStartedNotificationCommands",
+        "buildScreen02030bEspUnresponsiveNotificationCommands",
+        "buildScreen02030cEspWatchdogResetNotificationCommands",
+        "buildScreen02030dEspExceptionResetNotificationCommands",
+        "buildScreen020401UsbConnectedNotificationCommands",
+        "buildScreen020402UsbDisconnectedNotificationCommands",
+        "buildScreen020501WebServerUpNotificationCommands",
+        "buildScreen020502WebClientConnectedNotificationCommands",
+        "buildScreen020503WebClientDisconnectedNotificationCommands",
+        "buildScreen020601ApDeviceConnectedNotificationCommands",
+        "buildScreen020602ApDeviceDisconnectedNotificationCommands",
+        "buildScreen030101SensorsMenuCommands",
+        "buildScreen030201IrValuesCommands",
+        "buildScreen030301MpuValuesCommands",
+        "buildScreen030401RadarCommands",
+        "buildScreen030500DisplayMenuCommands",
+        "buildScreen030503OledCanvasReadyCommands",
+        "buildScreen040101MotorTestCommands",
+        "buildScreen050101SettingsMenuCommands",
+        "buildScreen050201AboutProjectCommands",
+        "buildScreen050202AboutRepoCommands",
+        "buildScreen050301WarningTimeCommands",
+        "buildScreen050417UnerForwardingEnabledNotificationCommands",
+        "buildScreen050418UnerForwardingDisabledNotificationCommands",
+        "buildScreen060101ControllerConnectedNotificationCommands",
+        "buildScreen060102ControllerDisconnectedNotificationCommands",
+        "buildScreen060201CommandReceivedNotificationCommands",
+        "buildScreen060202PingReceivedNotificationCommands",
+        "buildScreen060301EspConnectionSucceededCommands",
+        "buildScreen060302EspConnectionFailedCommands",
+        "buildScreen070101TestScreenCommands",
+        "buildScreen080101LockedCommands",
+        "buildScreen080102PinIncorrectLockCommands",
+        "buildScreen080103PinModifiedLockCommands",
+        "buildScreen080104LockEnterPinCommands",
+        "buildScreen080104PermissionPinEntryCommands",
+        "buildScreen080105PermissionPinWaitingCommands",
+        "buildScreen080106PermissionPinDeniedCommands",
+        "buildScreen080107PermissionPinTimeoutCommands",
+        "buildScreen080108PermissionPinBlockedCommands",
+        "buildScreen080109PermissionDeniedNotificationCommands",
+        "readCredentialsSsid",
+        "readDashboardArgs",
+        "readMenuArgs",
+        "readModeChangeArgs",
+        "readMotorArgs",
+        "readMpuArgs",
+        "readNumber",
+        "readNumberArray",
+        "readPinFormArgs",
+        "readString",
+        "readWifiResultSsids",
+        "readWifiStatusArgs",
+        "resolveIdentifiedScreen",
+        "resolveRemediatedScreen",
+        "resolved"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/screenRenderRegistry.ts",
+        "line": 338
+      },
+      "description": "Selecciona el camino efectivo remediated/identified/switch con sus parámetros.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "resolveRemediatedScreen",
+      "displayName": "resolveRemediatedScreen",
+      "signature": "resolveRemediatedScreen(input: ScreenRenderInput): ResolvedOledScreen | null",
+      "line": 30,
+      "endLine": 50,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "buildIdentifiedScreenCommands",
+        "buildMenuScreenCommands",
+        "input.screenCode.toString",
+        "input.screenCode.toString(16).padStart",
+        "labels.map",
+        "name.replaceAll"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/remediatedScreens.ts",
+        "line": 30
+      },
+      "description": "Usa menú reportado cuando tiene datos suficientes o muestra identidad sin inventar estado.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "resolved",
+      "displayName": "resolved",
+      "signature": "resolved(input: ScreenRenderInput, variant: string, category: string, builder: string, description: string, commands: OledCommand[]): ResolvedOledScreen",
+      "line": 513,
+      "endLine": 529,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/screenRenderRegistry.ts",
+        "line": 513
+      },
+      "description": "Operación resolved de Resolución de variantes y fallback de pantalla; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    }
+  ],
+  "internalFunctions": [],
+  "hooks": []
+}

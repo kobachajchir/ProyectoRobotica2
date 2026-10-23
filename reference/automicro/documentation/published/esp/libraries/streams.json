@@ -1,0 +1,1631 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "esp:module/src/stream_broker.h",
+  "slug": "streams",
+  "title": "Streams MPU/IR y solicitudes en espera",
+  "target": "esp",
+  "kind": "núcleo",
+  "status": "source-documented",
+  "snapshotDate": "2026-10-20",
+  "verification": "not-run-user-instruction",
+  "responsibility": "Reconcilia suscripciones Web con estado de streams aplicado en F4 y distribuye muestras a destinatarios autorizados.",
+  "scope": "Desired/applied, dueño del stream, acciones SET/STOP, resultados obsoletos y waiters; no adquiere sensores.",
+  "state": "StreamBroker posee suscriptores por client/generation/node y estado por MPU/IR. SbAction identifica la acción concreta pendiente; desired no equivale a applied.",
+  "modularity": "C con datos explícitos y sin renderer; coordinación de protocolo y sesiones del robot.",
+  "lifecycle": [
+    "Subscribe actualiza intención y período entre 20 y 1000 ms.",
+    "TakeAction produce trabajo que el broker UART ejecuta; CompleteAction acepta solo el resultado vigente.",
+    "Al perder backend se reconcilia; retirar un cliente no debe detener el stream requerido por otro."
+  ],
+  "interactions": [
+    "SessionManager autoriza; UTM manda control F4; bridge publica solo a suscriptores correspondientes."
+  ],
+  "limitations": [
+    "Acción bloqueada tras fallo no debe convertirse en bucle ilimitado de reintentos.",
+    "Datos de sensor son muestras, no la respuesta de una mutación pendiente."
+  ],
+  "relationships": [],
+  "findings": [],
+  "files": [
+    {
+      "rootId": "esp",
+      "path": "src/stream_broker.c",
+      "sha256": "f2c52f2b9daf98064dafd30b8ed473fbdd3e16516d4761c12fdabd690ee63fcc",
+      "imports": [
+        "stream_broker.h",
+        "string.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    },
+    {
+      "rootId": "esp",
+      "path": "src/stream_broker.h",
+      "sha256": "598448a40371530ee3e64adc275a35d80d45f46e22ced1cb601098cb3e88b0a1",
+      "imports": [
+        "stdint.h",
+        "ws_limits.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    },
+    {
+      "rootId": "esp",
+      "path": "src/stream_request_waiters.c",
+      "sha256": "8fe87c147a8bcc01ae32b5f5e378bb583f86fa7711b51a7e3103d8956c26d34d",
+      "imports": [
+        "stream_request_waiters.h",
+        "stddef.h",
+        "string.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    },
+    {
+      "rootId": "esp",
+      "path": "src/stream_request_waiters.h",
+      "sha256": "e11308125c415253bffccf05c83afef30d1bdfb33464b877c022662b0fbcd8c1",
+      "imports": [
+        "stdint.h",
+        "stream_broker.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    }
+  ],
+  "types": [
+    {
+      "name": "SbEndpoint",
+      "fields": [
+        {
+          "name": "client_id",
+          "declaration": "uint32_t client_id",
+          "callback": false,
+          "ownerType": "SbEndpoint",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/stream_broker.h",
+            "line": 36
+          },
+          "description": "Dato de estado/configuración `client_id`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "generation",
+          "declaration": "uint32_t generation",
+          "callback": false,
+          "ownerType": "SbEndpoint",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/stream_broker.h",
+            "line": 37
+          },
+          "description": "Dato de estado/configuración `generation`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "node",
+          "declaration": "uint8_t node",
+          "callback": false,
+          "ownerType": "SbEndpoint",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/stream_broker.h",
+            "line": 38
+          },
+          "description": "Dato de estado/configuración `node`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/stream_broker.h",
+        "line": 36
+      }
+    },
+    {
+      "name": "SbSubscriber",
+      "fields": [
+        {
+          "name": "used",
+          "declaration": "uint8_t used",
+          "callback": false,
+          "ownerType": "SbSubscriber",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/stream_broker.h",
+            "line": 42
+          },
+          "description": "Dato de estado/configuración `used`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "endpoint",
+          "declaration": "SbEndpoint endpoint",
+          "callback": false,
+          "ownerType": "SbSubscriber",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/stream_broker.h",
+            "line": 43
+          },
+          "description": "Dato de estado/configuración `endpoint`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "subscribed",
+          "declaration": "uint8_t subscribed[SB_STREAM_COUNT]",
+          "callback": false,
+          "ownerType": "SbSubscriber",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/stream_broker.h",
+            "line": 44
+          },
+          "description": "Dato de estado/configuración `subscribed`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "period_ms",
+          "declaration": "uint16_t period_ms[SB_STREAM_COUNT]",
+          "callback": false,
+          "ownerType": "SbSubscriber",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/stream_broker.h",
+            "line": 45
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/stream_broker.h",
+        "line": 42
+      }
+    },
+    {
+      "name": "SbAction",
+      "fields": [
+        {
+          "name": "type",
+          "declaration": "SbActionType type",
+          "callback": false,
+          "ownerType": "SbAction",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/stream_broker.h",
+            "line": 49
+          },
+          "description": "Dato de estado/configuración `type`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "stream",
+          "declaration": "SbStream stream",
+          "callback": false,
+          "ownerType": "SbAction",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/stream_broker.h",
+            "line": 50
+          },
+          "description": "Dato de estado/configuración `stream`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "endpoint",
+          "declaration": "SbEndpoint endpoint",
+          "callback": false,
+          "ownerType": "SbAction",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/stream_broker.h",
+            "line": 51
+          },
+          "description": "Dato de estado/configuración `endpoint`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "period_ms",
+          "declaration": "uint16_t period_ms",
+          "callback": false,
+          "ownerType": "SbAction",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/stream_broker.h",
+            "line": 52
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "reconcile",
+          "declaration": "uint8_t reconcile",
+          "callback": false,
+          "ownerType": "SbAction",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/stream_broker.h",
+            "line": 53
+          },
+          "description": "Dato de estado/configuración `reconcile`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/stream_broker.h",
+        "line": 49
+      }
+    },
+    {
+      "name": "SbStreamState",
+      "fields": [
+        {
+          "name": "desired_active",
+          "declaration": "uint8_t desired_active",
+          "callback": false,
+          "ownerType": "SbStreamState",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/stream_broker.h",
+            "line": 57
+          },
+          "description": "Dato de estado/configuración `desired_active`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "desired_period_ms",
+          "declaration": "uint16_t desired_period_ms",
+          "callback": false,
+          "ownerType": "SbStreamState",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/stream_broker.h",
+            "line": 58
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "desired_owner_valid",
+          "declaration": "uint8_t desired_owner_valid",
+          "callback": false,
+          "ownerType": "SbStreamState",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/stream_broker.h",
+            "line": 59
+          },
+          "description": "Dato de estado/configuración `desired_owner_valid`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "desired_owner",
+          "declaration": "SbEndpoint desired_owner",
+          "callback": false,
+          "ownerType": "SbStreamState",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/stream_broker.h",
+            "line": 60
+          },
+          "description": "Dato de estado/configuración `desired_owner`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "applied_active",
+          "declaration": "uint8_t applied_active",
+          "callback": false,
+          "ownerType": "SbStreamState",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/stream_broker.h",
+            "line": 61
+          },
+          "description": "Dato de estado/configuración `applied_active`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "applied_period_ms",
+          "declaration": "uint16_t applied_period_ms",
+          "callback": false,
+          "ownerType": "SbStreamState",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/stream_broker.h",
+            "line": 62
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "applied_owner_valid",
+          "declaration": "uint8_t applied_owner_valid",
+          "callback": false,
+          "ownerType": "SbStreamState",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/stream_broker.h",
+            "line": 63
+          },
+          "description": "Dato de estado/configuración `applied_owner_valid`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "applied_owner",
+          "declaration": "SbEndpoint applied_owner",
+          "callback": false,
+          "ownerType": "SbStreamState",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/stream_broker.h",
+            "line": 64
+          },
+          "description": "Dato de estado/configuración `applied_owner`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "needs_known_stop",
+          "declaration": "uint8_t needs_known_stop",
+          "callback": false,
+          "ownerType": "SbStreamState",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/stream_broker.h",
+            "line": 65
+          },
+          "description": "Dato de estado/configuración `needs_known_stop`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "pending",
+          "declaration": "uint8_t pending",
+          "callback": false,
+          "ownerType": "SbStreamState",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/stream_broker.h",
+            "line": 66
+          },
+          "description": "Dato de estado/configuración `pending`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "action_blocked",
+          "declaration": "uint8_t action_blocked",
+          "callback": false,
+          "ownerType": "SbStreamState",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/stream_broker.h",
+            "line": 67
+          },
+          "description": "Dato de estado/configuración `action_blocked`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "pending_action",
+          "declaration": "SbAction pending_action",
+          "callback": false,
+          "ownerType": "SbStreamState",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/stream_broker.h",
+            "line": 68
+          },
+          "description": "Dato de estado/configuración `pending_action`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/stream_broker.h",
+        "line": 57
+      }
+    },
+    {
+      "name": "SbMetrics",
+      "fields": [
+        {
+          "name": "subscriptions",
+          "declaration": "uint32_t subscriptions",
+          "callback": false,
+          "ownerType": "SbMetrics",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/stream_broker.h",
+            "line": 72
+          },
+          "description": "Dato de estado/configuración `subscriptions`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "unsubscriptions",
+          "declaration": "uint32_t unsubscriptions",
+          "callback": false,
+          "ownerType": "SbMetrics",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/stream_broker.h",
+            "line": 73
+          },
+          "description": "Dato de estado/configuración `unsubscriptions`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "client_removals",
+          "declaration": "uint32_t client_removals",
+          "callback": false,
+          "ownerType": "SbMetrics",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/stream_broker.h",
+            "line": 74
+          },
+          "description": "Dato de estado/configuración `client_removals`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "desired_period_changes",
+          "declaration": "uint32_t desired_period_changes",
+          "callback": false,
+          "ownerType": "SbMetrics",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/stream_broker.h",
+            "line": 75
+          },
+          "description": "Dato de estado/configuración `desired_period_changes`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "set_actions",
+          "declaration": "uint32_t set_actions",
+          "callback": false,
+          "ownerType": "SbMetrics",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/stream_broker.h",
+            "line": 76
+          },
+          "description": "Dato de estado/configuración `set_actions`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "stop_actions",
+          "declaration": "uint32_t stop_actions",
+          "callback": false,
+          "ownerType": "SbMetrics",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/stream_broker.h",
+            "line": 77
+          },
+          "description": "Dato de estado/configuración `stop_actions`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "owner_transfers",
+          "declaration": "uint32_t owner_transfers",
+          "callback": false,
+          "ownerType": "SbMetrics",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/stream_broker.h",
+            "line": 78
+          },
+          "description": "Dato de estado/configuración `owner_transfers`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "reconcile_cycles",
+          "declaration": "uint32_t reconcile_cycles",
+          "callback": false,
+          "ownerType": "SbMetrics",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/stream_broker.h",
+            "line": 79
+          },
+          "description": "Dato de estado/configuración `reconcile_cycles`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "action_failures",
+          "declaration": "uint32_t action_failures",
+          "callback": false,
+          "ownerType": "SbMetrics",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/stream_broker.h",
+            "line": 80
+          },
+          "description": "Dato de estado/configuración `action_failures`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "stale_action_results",
+          "declaration": "uint32_t stale_action_results",
+          "callback": false,
+          "ownerType": "SbMetrics",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/stream_broker.h",
+            "line": 81
+          },
+          "description": "Dato de estado/configuración `stale_action_results`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "pending_actions_aborted",
+          "declaration": "uint32_t pending_actions_aborted",
+          "callback": false,
+          "ownerType": "SbMetrics",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/stream_broker.h",
+            "line": 82
+          },
+          "description": "Dato de estado/configuración `pending_actions_aborted`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "action_failures_blocked",
+          "declaration": "uint32_t action_failures_blocked",
+          "callback": false,
+          "ownerType": "SbMetrics",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/stream_broker.h",
+            "line": 83
+          },
+          "description": "Dato de estado/configuración `action_failures_blocked`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "explicit_retries",
+          "declaration": "uint32_t explicit_retries",
+          "callback": false,
+          "ownerType": "SbMetrics",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/stream_broker.h",
+            "line": 84
+          },
+          "description": "Dato de estado/configuración `explicit_retries`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "fanout_allowed",
+          "declaration": "uint32_t fanout_allowed",
+          "callback": false,
+          "ownerType": "SbMetrics",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/stream_broker.h",
+            "line": 85
+          },
+          "description": "Dato de estado/configuración `fanout_allowed`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "fanout_denied",
+          "declaration": "uint32_t fanout_denied",
+          "callback": false,
+          "ownerType": "SbMetrics",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/stream_broker.h",
+            "line": 86
+          },
+          "description": "Dato de estado/configuración `fanout_denied`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/stream_broker.h",
+        "line": 72
+      }
+    },
+    {
+      "name": "StreamBroker",
+      "fields": [
+        {
+          "name": "subscribers",
+          "declaration": "SbSubscriber subscribers[SB_MAX_CLIENTS]",
+          "callback": false,
+          "ownerType": "StreamBroker",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/stream_broker.h",
+            "line": 90
+          },
+          "description": "Dato de estado/configuración `subscribers`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "streams",
+          "declaration": "SbStreamState streams[SB_STREAM_COUNT]",
+          "callback": false,
+          "ownerType": "StreamBroker",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/stream_broker.h",
+            "line": 91
+          },
+          "description": "Dato de estado/configuración `streams`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "metrics",
+          "declaration": "SbMetrics metrics",
+          "callback": false,
+          "ownerType": "StreamBroker",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/stream_broker.h",
+            "line": 92
+          },
+          "description": "Dato de estado/configuración `metrics`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/stream_broker.h",
+        "line": 90
+      }
+    },
+    {
+      "name": "SrwWaiter",
+      "fields": [
+        {
+          "name": "used",
+          "declaration": "uint8_t used",
+          "callback": false,
+          "ownerType": "SrwWaiter",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/stream_request_waiters.h",
+            "line": 31
+          },
+          "description": "Dato de estado/configuración `used`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "client_id",
+          "declaration": "uint32_t client_id",
+          "callback": false,
+          "ownerType": "SrwWaiter",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/stream_request_waiters.h",
+            "line": 32
+          },
+          "description": "Dato de estado/configuración `client_id`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "generation",
+          "declaration": "uint32_t generation",
+          "callback": false,
+          "ownerType": "SrwWaiter",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/stream_request_waiters.h",
+            "line": 33
+          },
+          "description": "Dato de estado/configuración `generation`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "api_v1",
+          "declaration": "uint8_t api_v1",
+          "callback": false,
+          "ownerType": "SrwWaiter",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/stream_request_waiters.h",
+            "line": 34
+          },
+          "description": "Dato de estado/configuración `api_v1`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "stream",
+          "declaration": "SbStream stream",
+          "callback": false,
+          "ownerType": "SrwWaiter",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/stream_request_waiters.h",
+            "line": 35
+          },
+          "description": "Dato de estado/configuración `stream`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "subscribed",
+          "declaration": "uint8_t subscribed",
+          "callback": false,
+          "ownerType": "SrwWaiter",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/stream_request_waiters.h",
+            "line": 36
+          },
+          "description": "Dato de estado/configuración `subscribed`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "period_ms",
+          "declaration": "uint16_t period_ms",
+          "callback": false,
+          "ownerType": "SrwWaiter",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/stream_request_waiters.h",
+            "line": 37
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "deadline_ms",
+          "declaration": "uint32_t deadline_ms",
+          "callback": false,
+          "ownerType": "SrwWaiter",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/stream_request_waiters.h",
+            "line": 38
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "request_id",
+          "declaration": "char request_id[SRW_REQUEST_ID_CAPACITY]",
+          "callback": false,
+          "ownerType": "SrwWaiter",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/stream_request_waiters.h",
+            "line": 39
+          },
+          "description": "Dato de estado/configuración `request_id`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "command",
+          "declaration": "char command[SRW_COMMAND_CAPACITY]",
+          "callback": false,
+          "ownerType": "SrwWaiter",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/stream_request_waiters.h",
+            "line": 40
+          },
+          "description": "Dato de estado/configuración `command`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/stream_request_waiters.h",
+        "line": 31
+      }
+    },
+    {
+      "name": "SrwCompletion",
+      "fields": [
+        {
+          "name": "waiter",
+          "declaration": "SrwWaiter waiter",
+          "callback": false,
+          "ownerType": "SrwCompletion",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/stream_request_waiters.h",
+            "line": 44
+          },
+          "description": "Dato de estado/configuración `waiter`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "status",
+          "declaration": "SrwCompletionStatus status",
+          "callback": false,
+          "ownerType": "SrwCompletion",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/stream_request_waiters.h",
+            "line": 45
+          },
+          "description": "Último resultado y guardas del módulo; los getters pueden devolver una vista de este almacenamiento."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/stream_request_waiters.h",
+        "line": 44
+      }
+    },
+    {
+      "name": "SrwMetrics",
+      "fields": [
+        {
+          "name": "added",
+          "declaration": "uint32_t added",
+          "callback": false,
+          "ownerType": "SrwMetrics",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/stream_request_waiters.h",
+            "line": 49
+          },
+          "description": "Dato de estado/configuración `added`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "rejected_full",
+          "declaration": "uint32_t rejected_full",
+          "callback": false,
+          "ownerType": "SrwMetrics",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/stream_request_waiters.h",
+            "line": 50
+          },
+          "description": "Dato de estado/configuración `rejected_full`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "rejected_duplicate",
+          "declaration": "uint32_t rejected_duplicate",
+          "callback": false,
+          "ownerType": "SrwMetrics",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/stream_request_waiters.h",
+            "line": 51
+          },
+          "description": "Dato de estado/configuración `rejected_duplicate`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "converged",
+          "declaration": "uint32_t converged",
+          "callback": false,
+          "ownerType": "SrwMetrics",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/stream_request_waiters.h",
+            "line": 52
+          },
+          "description": "Dato de estado/configuración `converged`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "timed_out",
+          "declaration": "uint32_t timed_out",
+          "callback": false,
+          "ownerType": "SrwMetrics",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/stream_request_waiters.h",
+            "line": 53
+          },
+          "description": "Dato de estado/configuración `timed_out`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "failed",
+          "declaration": "uint32_t failed",
+          "callback": false,
+          "ownerType": "SrwMetrics",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/stream_request_waiters.h",
+            "line": 54
+          },
+          "description": "Dato de estado/configuración `failed`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "canceled",
+          "declaration": "uint32_t canceled",
+          "callback": false,
+          "ownerType": "SrwMetrics",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/stream_request_waiters.h",
+            "line": 55
+          },
+          "description": "Dato de estado/configuración `canceled`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "high_watermark",
+          "declaration": "uint8_t high_watermark",
+          "callback": false,
+          "ownerType": "SrwMetrics",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/stream_request_waiters.h",
+            "line": 56
+          },
+          "description": "Dato de estado/configuración `high_watermark`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/stream_request_waiters.h",
+        "line": 49
+      }
+    },
+    {
+      "name": "StreamRequestWaiters",
+      "fields": [
+        {
+          "name": "waiters",
+          "declaration": "SrwWaiter waiters[SRW_CAPACITY]",
+          "callback": false,
+          "ownerType": "StreamRequestWaiters",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/stream_request_waiters.h",
+            "line": 60
+          },
+          "description": "Dato de estado/configuración `waiters`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "metrics",
+          "declaration": "SrwMetrics metrics",
+          "callback": false,
+          "ownerType": "StreamRequestWaiters",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/stream_request_waiters.h",
+            "line": 61
+          },
+          "description": "Dato de estado/configuración `metrics`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/stream_request_waiters.h",
+        "line": 60
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "sb_backend_reconnected",
+      "signature": "void sb_backend_reconnected(StreamBroker *broker)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/stream_broker.c",
+        "line": 346
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "memset"
+      ],
+      "writes": [
+        "action_blocked",
+        "needs_known_stop",
+        "pending"
+      ],
+      "description": "Coordina `memset` para Streams MPU/IR y solicitudes en espera.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "sb_clamp_period",
+      "signature": "uint16_t sb_clamp_period(uint16_t period_ms)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/stream_broker.c",
+        "line": 163
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación clamp period de Streams MPU/IR y solicitudes en espera; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "sb_complete_action",
+      "signature": "SbResult sb_complete_action(StreamBroker *broker, const SbAction *action, uint8_t success)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/stream_broker.c",
+        "line": 297
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "action_equal",
+        "memset",
+        "stream_valid"
+      ],
+      "writes": [
+        "action_blocked",
+        "applied_active",
+        "applied_owner",
+        "applied_owner_valid",
+        "applied_period_ms",
+        "needs_known_stop",
+        "pending"
+      ],
+      "description": "Aplica resultado solo si corresponde a la acción todavía vigente.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "sb_init",
+      "signature": "void sb_init(StreamBroker *broker)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/stream_broker.c",
+        "line": 157
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "memset"
+      ],
+      "writes": [],
+      "description": "Coordina `memset` para Streams MPU/IR y solicitudes en espera.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "sb_is_converged",
+      "signature": "uint8_t sb_is_converged(const StreamBroker *broker, SbStream stream)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/stream_broker.c",
+        "line": 333
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "endpoint_equal",
+        "stream_valid"
+      ],
+      "writes": [],
+      "description": "Coordina `endpoint_equal`, `stream_valid` para Streams MPU/IR y solicitudes en espera.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "sb_metrics",
+      "signature": "const SbMetrics *sb_metrics(const StreamBroker *broker)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/stream_broker.c",
+        "line": 380
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación metrics de Streams MPU/IR y solicitudes en espera; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "sb_remove_client",
+      "signature": "uint8_t sb_remove_client(StreamBroker *broker, uint32_t client_id, uint32_t generation)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/stream_broker.c",
+        "line": 220
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "abort_pending_for_endpoint",
+        "allow_explicit_retry",
+        "find_subscriber",
+        "memset",
+        "recompute"
+      ],
+      "writes": [],
+      "description": "Coordina `abort_pending_for_endpoint`, `allow_explicit_retry`, `find_subscriber` para Streams MPU/IR y solicitudes en espera.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "sb_should_fanout",
+      "signature": "uint8_t sb_should_fanout(StreamBroker *broker, uint32_t client_id, uint32_t generation, SbStream stream, uint8_t authenticated)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/stream_broker.c",
+        "line": 359
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "find_subscriber",
+        "stream_valid"
+      ],
+      "writes": [],
+      "description": "Decide entrega de muestra según suscripción y autorización.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "sb_stream_state",
+      "signature": "const SbStreamState *sb_stream_state(const StreamBroker *broker, SbStream stream)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/stream_broker.c",
+        "line": 375
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "stream_valid"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `stream_valid` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "sb_subscribe",
+      "signature": "SbResult sb_subscribe(StreamBroker *broker, uint32_t client_id, uint32_t generation, uint8_t node, SbStream stream, uint16_t period_ms)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/stream_broker.c",
+        "line": 170
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "allow_explicit_retry",
+        "ensure_subscriber",
+        "recompute",
+        "sb_clamp_period",
+        "stream_valid"
+      ],
+      "writes": [],
+      "description": "Actualiza deseo de suscripción para cliente/generación/nodo.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "sb_take_action",
+      "signature": "SbAction sb_take_action(StreamBroker *broker, SbStream stream)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/stream_broker.c",
+        "line": 248
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "endpoint_equal",
+        "memset",
+        "stream_valid"
+      ],
+      "writes": [
+        "endpoint",
+        "node",
+        "pending",
+        "pending_action",
+        "period_ms",
+        "reconcile",
+        "stream",
+        "type"
+      ],
+      "description": "Extrae acción pendiente SET/STOP para reconciliar el stream.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "sb_unsubscribe",
+      "signature": "SbResult sb_unsubscribe(StreamBroker *broker, uint32_t client_id, uint32_t generation, SbStream stream)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/stream_broker.c",
+        "line": 194
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "abort_pending_for_stream",
+        "allow_explicit_retry",
+        "find_subscriber",
+        "memset",
+        "recompute",
+        "stream_valid",
+        "subscriber_is_empty"
+      ],
+      "writes": [],
+      "description": "Coordina `abort_pending_for_stream`, `allow_explicit_retry`, `find_subscriber` para Streams MPU/IR y solicitudes en espera.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "srw_add",
+      "signature": "SrwAddResult srw_add(StreamRequestWaiters *manager, uint32_t client_id, uint32_t generation, uint8_t api_v1, SbStream stream, uint8_t subscribed, uint16_t period_ms, const char *request_id, const char *command, uint32_t deadline_ms)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/stream_request_waiters.c",
+        "line": 55
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "copy_text",
+        "memset",
+        "sb_clamp_period",
+        "stream_valid"
+      ],
+      "writes": [
+        "api_v1",
+        "client_id",
+        "deadline_ms",
+        "generation",
+        "high_watermark",
+        "period_ms",
+        "stream",
+        "subscribed",
+        "used"
+      ],
+      "description": "Coordina `copy_text`, `memset`, `sb_clamp_period` para Streams MPU/IR y solicitudes en espera.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "srw_count",
+      "signature": "uint8_t srw_count(const StreamRequestWaiters *manager)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/stream_request_waiters.c",
+        "line": 200
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación count de Streams MPU/IR y solicitudes en espera; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "srw_has_pending",
+      "signature": "uint8_t srw_has_pending(const StreamRequestWaiters *manager, uint32_t client_id, uint32_t generation, SbStream stream)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/stream_request_waiters.c",
+        "line": 114
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "stream_valid"
+      ],
+      "writes": [],
+      "description": "Coordina `stream_valid` para Streams MPU/IR y solicitudes en espera.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "srw_init",
+      "signature": "void srw_init(StreamRequestWaiters *manager)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/stream_request_waiters.c",
+        "line": 49
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "memset"
+      ],
+      "writes": [],
+      "description": "Coordina `memset` para Streams MPU/IR y solicitudes en espera.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "srw_metrics",
+      "signature": "const SrwMetrics *srw_metrics(const StreamRequestWaiters *manager)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/stream_request_waiters.c",
+        "line": 211
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación metrics de Streams MPU/IR y solicitudes en espera; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "srw_remove_client",
+      "signature": "uint8_t srw_remove_client(StreamRequestWaiters *manager, uint32_t client_id, uint32_t generation)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/stream_request_waiters.c",
+        "line": 181
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "memset"
+      ],
+      "writes": [],
+      "description": "Coordina `memset` para Streams MPU/IR y solicitudes en espera.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "srw_take_endpoint_stream",
+      "signature": "uint8_t srw_take_endpoint_stream(StreamRequestWaiters *manager, uint32_t client_id, uint32_t generation, SbStream stream, SrwCompletionStatus status, SrwCompletion *completion)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/stream_request_waiters.c",
+        "line": 147
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "stream_valid",
+        "take_at"
+      ],
+      "writes": [],
+      "description": "Coordina `stream_valid`, `take_at` para Streams MPU/IR y solicitudes en espera.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "srw_take_expired",
+      "signature": "uint8_t srw_take_expired(StreamRequestWaiters *manager, uint32_t now_ms, SrwCompletion *completion)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/stream_request_waiters.c",
+        "line": 166
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "take_at",
+        "time_reached"
+      ],
+      "writes": [],
+      "description": "Coordina `take_at`, `time_reached` para Streams MPU/IR y solicitudes en espera.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "srw_take_for_stream",
+      "signature": "uint8_t srw_take_for_stream(StreamRequestWaiters *manager, SbStream stream, SrwCompletionStatus status, SrwCompletion *completion)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/stream_request_waiters.c",
+        "line": 131
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "stream_valid",
+        "take_at"
+      ],
+      "writes": [],
+      "description": "Coordina `stream_valid`, `take_at` para Streams MPU/IR y solicitudes en espera.",
+      "descriptionOrigin": "structural"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "abort_pending_for_endpoint",
+      "signature": "static void abort_pending_for_endpoint(StreamBroker *broker, const SbEndpoint *endpoint)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/stream_broker.c",
+        "line": 132
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "abort_pending_for_stream"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `abort_pending_for_stream` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "abort_pending_for_stream",
+      "signature": "static void abort_pending_for_stream(StreamBroker *broker, SbStream stream, const SbEndpoint *endpoint)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/stream_broker.c",
+        "line": 120
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "endpoint_equal",
+        "memset"
+      ],
+      "writes": [
+        "pending"
+      ],
+      "description": "Adapta la llamada a `endpoint_equal` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "action_equal",
+      "signature": "static uint8_t action_equal(const SbAction *a, const SbAction *b)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/stream_broker.c",
+        "line": 138
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "endpoint_equal"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `endpoint_equal` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "allow_explicit_retry",
+      "signature": "static void allow_explicit_retry(StreamBroker *broker, SbStream stream)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/stream_broker.c",
+        "line": 148
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [
+        "action_blocked"
+      ],
+      "description": "Operación allow explicit retry de Streams MPU/IR y solicitudes en espera; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "copy_text",
+      "signature": "static void copy_text(char *destination, uint8_t capacity, const char *source)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/stream_request_waiters.c",
+        "line": 16
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "strncpy"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `strncpy` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "endpoint_equal",
+      "signature": "static uint8_t endpoint_equal(const SbEndpoint *a, const SbEndpoint *b)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/stream_broker.c",
+        "line": 10
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación endpoint equal de Streams MPU/IR y solicitudes en espera; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "ensure_subscriber",
+      "signature": "static SbSubscriber *ensure_subscriber(StreamBroker *broker, uint32_t client_id, uint32_t generation, uint8_t node)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/stream_broker.c",
+        "line": 98
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "find_subscriber",
+        "memset"
+      ],
+      "writes": [
+        "client_id",
+        "generation",
+        "node",
+        "used"
+      ],
+      "description": "Coordina `find_subscriber`, `memset` para Streams MPU/IR y solicitudes en espera.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "find_subscriber",
+      "signature": "static SbSubscriber *find_subscriber(StreamBroker *broker, uint32_t client_id, uint32_t generation)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/stream_broker.c",
+        "line": 18
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación find subscriber de Streams MPU/IR y solicitudes en espera; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "owner_is_still_subscribed",
+      "signature": "static uint8_t owner_is_still_subscribed(const StreamBroker *broker, SbStream stream, const SbEndpoint *owner)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/stream_broker.c",
+        "line": 42
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "endpoint_equal"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `endpoint_equal` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "recompute",
+      "signature": "static void recompute(StreamBroker *broker, SbStream stream)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/stream_broker.c",
+        "line": 57
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "memset",
+        "owner_is_still_subscribed"
+      ],
+      "writes": [
+        "desired_active",
+        "desired_owner",
+        "desired_owner_valid",
+        "desired_period_ms"
+      ],
+      "description": "Coordina `memset`, `owner_is_still_subscribed` para Streams MPU/IR y solicitudes en espera.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "record_completion",
+      "signature": "static void record_completion(StreamRequestWaiters *manager, SrwCompletionStatus status)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/stream_request_waiters.c",
+        "line": 24
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación record completion de Streams MPU/IR y solicitudes en espera; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "stream_valid",
+      "signature": "static uint8_t stream_valid(SbStream stream)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/stream_broker.c",
+        "line": 5
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación stream valid de Streams MPU/IR y solicitudes en espera; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "stream_valid",
+      "signature": "static uint8_t stream_valid(SbStream stream)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/stream_request_waiters.c",
+        "line": 6
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación stream valid de Streams MPU/IR y solicitudes en espera; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "subscriber_is_empty",
+      "signature": "static uint8_t subscriber_is_empty(const SbSubscriber *subscriber)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/stream_broker.c",
+        "line": 35
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación subscriber is empty de Streams MPU/IR y solicitudes en espera; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "take_at",
+      "signature": "static uint8_t take_at(StreamRequestWaiters *manager, uint8_t index, SrwCompletionStatus status, SrwCompletion *completion)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/stream_request_waiters.c",
+        "line": 33
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "memset",
+        "record_completion"
+      ],
+      "writes": [
+        "status",
+        "waiter"
+      ],
+      "description": "Adapta la llamada a `record_completion` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "time_reached",
+      "signature": "static uint8_t time_reached(uint32_t now_ms, uint32_t deadline_ms)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/stream_request_waiters.c",
+        "line": 11
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación time reached de Streams MPU/IR y solicitudes en espera; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    }
+  ],
+  "hooks": []
+}

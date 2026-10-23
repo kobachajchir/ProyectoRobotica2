@@ -1,0 +1,4024 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "web:module/src/contexts/EspWifiStatusContext.tsx",
+  "slug": "wifi-interface",
+  "title": "Estado Wi-Fi, AP y credenciales Web",
+  "target": "web",
+  "kind": "integración",
+  "status": "source-documented",
+  "snapshotDate": "2026-10-20",
+  "verification": "not-run-user-instruction",
+  "responsibility": "Presenta y controla Wi-Fi/AP del ESP, flujo de credenciales y política fallback.",
+  "scope": "Estado radio, clientes y configuración deseada/aplicada; la autoridad F4 es otro plano.",
+  "state": "Provider conserva reportes de ESP, modal conserva edición local y sessionId/estado del flujo según contrato.",
+  "modularity": "React y API de red del producto; no llama al SDK del ESP directamente.",
+  "lifecycle": [
+    "Consultar/suscribir estado, abrir flujo solicitado y confirmar/cancelar con su correlación.",
+    "Al cambiar radio pueden existir cortes breves; conservar semántica de reanudación de sesión."
+  ],
+  "interactions": [
+    "WifiService gobierna radio, NVS persiste y bridge publica estados.",
+    "Docs de OLED conectividad necesita el mismo SSID/IP confirmado, no valores de ejemplo."
+  ],
+  "limitations": [
+    "Cambios de depuración pueden vivir solo en RAM.",
+    "No copiar contraseñas reales a reportes/capturas/documentación."
+  ],
+  "relationships": [],
+  "findings": [],
+  "files": [
+    {
+      "rootId": "web",
+      "path": "src/components/ApFallbackControls.tsx",
+      "sha256": "b5545fa4f6ad21ab292bd9a40a0ff9a0f5c1d89ba6295c00ba450abbc35f96ca",
+      "imports": [
+        "../hooks/useApFallback"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/components/ApProvisioningGate.tsx",
+      "sha256": "84c5580cca99ea39717a7b7997f576b53b12fbb90804c3b01b1bbdde1f11bb49",
+      "imports": [
+        "../contexts/UserContext",
+        "react",
+        "react-router-dom"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/components/WifiCredentialsModal.tsx",
+      "sha256": "16d923074848347858da78421ffbded52d5328a05b8ef2f9f2cf80344093727e",
+      "imports": [
+        "../types/WifiTypes",
+        "./modal",
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/contexts/EspWifiStatusContext.tsx",
+      "sha256": "1d663764517e012717391d0a05d149ad468ac4c1469a41391b5769b65e553ae1",
+      "imports": [
+        "../hooks/useWebSocket",
+        "../protocol/wsApi",
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/contexts/WifiCredentialsContext.tsx",
+      "sha256": "c32486779a87bf8cbe01da6d71520c37e89fc9ee3d3a274e71e8319493209994",
+      "imports": [
+        "../components/WifiCredentialsModal",
+        "../hooks/useWebSocket",
+        "../types/WifiTypes",
+        "./EspWifiStatusContext",
+        "./UserContext",
+        "react",
+        "sonner"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/hooks/useApFallback.ts",
+      "sha256": "9ab32f167cb40449246238e84d2860ccefac91234b2ef314e9a69b90e6946a7f",
+      "imports": [
+        "../contexts/UserContext",
+        "../protocol/wsApi",
+        "./useWebSocket",
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/pages/WifiSection.tsx",
+      "sha256": "055cb98e443cd2e9c342010457bd9bd53f196f5b449ffc310f7f8e8f8d121208",
+      "imports": [
+        "../components/ApFallbackControls",
+        "../components/PageHeader",
+        "../components/SystemResetActions",
+        "../components/ThemeModeToggleCard",
+        "../components/modal",
+        "../contexts/EspWifiStatusContext",
+        "../contexts/UserContext",
+        "../hooks/useApFallback",
+        "../hooks/useWebSocket",
+        "../protocol/espClient",
+        "../protocol/wsApi",
+        "../types/WifiTypes",
+        "../utils/wifiModeSwitch",
+        "react",
+        "sonner"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/types/WifiTypes.ts",
+      "sha256": "f9fa20bf52c72e3f6a6921befa13289b9d9ed533036e690fb67d24437834e0e4",
+      "imports": [],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/utils/wifiModeSwitch.ts",
+      "sha256": "15dd891be9fab39151b90b1fdabfd53c1e9123f07d69335fab1583f6b15b6925",
+      "imports": [],
+      "analysisLevel": "typescript-ast-static"
+    }
+  ],
+  "types": [
+    {
+      "name": "WifiCredentialsModalProps",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "isOpen",
+          "declaration": "isOpen: boolean",
+          "callback": false,
+          "ownerType": "WifiCredentialsModalProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/WifiCredentialsModal.tsx",
+            "line": 8
+          },
+          "description": "Dato de estado/configuración `isOpen`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "status",
+          "declaration": "status: WifiCredentialsStatus",
+          "callback": false,
+          "ownerType": "WifiCredentialsModalProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/WifiCredentialsModal.tsx",
+            "line": 9
+          },
+          "description": "Último resultado y guardas del módulo; los getters pueden devolver una vista de este almacenamiento."
+        },
+        {
+          "name": "ssid",
+          "declaration": "ssid: string | null",
+          "callback": false,
+          "ownerType": "WifiCredentialsModalProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/WifiCredentialsModal.tsx",
+            "line": 10
+          },
+          "description": "Dato de estado/configuración `ssid`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "error",
+          "declaration": "error: string | null",
+          "callback": false,
+          "ownerType": "WifiCredentialsModalProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/WifiCredentialsModal.tsx",
+            "line": 11
+          },
+          "description": "Dato de estado/configuración `error`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ip",
+          "declaration": "ip: string | null",
+          "callback": false,
+          "ownerType": "WifiCredentialsModalProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/WifiCredentialsModal.tsx",
+            "line": 12
+          },
+          "description": "Dato de estado/configuración `ip`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "timeoutMs",
+          "declaration": "timeoutMs: number | null",
+          "callback": false,
+          "ownerType": "WifiCredentialsModalProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/WifiCredentialsModal.tsx",
+            "line": 13
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "onSubmit",
+          "declaration": "onSubmit: (ssid: string, password: string) => boolean",
+          "callback": true,
+          "ownerType": "WifiCredentialsModalProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/WifiCredentialsModal.tsx",
+            "line": 14
+          },
+          "description": "Operación on Submit de Estado Wi-Fi, AP y credenciales Web; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "onCancel",
+          "declaration": "onCancel: () => boolean",
+          "callback": true,
+          "ownerType": "WifiCredentialsModalProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/WifiCredentialsModal.tsx",
+            "line": 15
+          },
+          "description": "Informa cancelación del teclado al contexto del usuario."
+        },
+        {
+          "name": "onDismiss",
+          "declaration": "onDismiss: () => void",
+          "callback": true,
+          "ownerType": "WifiCredentialsModalProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/WifiCredentialsModal.tsx",
+            "line": 16
+          },
+          "description": "Operación on Dismiss de Estado Wi-Fi, AP y credenciales Web; semántica fina pendiente de ampliación."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/WifiCredentialsModal.tsx",
+        "line": 7
+      }
+    },
+    {
+      "name": "EspWifiStatus",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "mode",
+          "declaration": "mode: string",
+          "callback": false,
+          "ownerType": "EspWifiStatus",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/EspWifiStatusContext.tsx",
+            "line": 16
+          },
+          "description": "Dato de estado/configuración `mode`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "apActive",
+          "declaration": "apActive: boolean",
+          "callback": false,
+          "ownerType": "EspWifiStatus",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/EspWifiStatusContext.tsx",
+            "line": 17
+          },
+          "description": "Dato de estado/configuración `apActive`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "staConnected",
+          "declaration": "staConnected: boolean",
+          "callback": false,
+          "ownerType": "EspWifiStatus",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/EspWifiStatusContext.tsx",
+            "line": 18
+          },
+          "description": "Dato de estado/configuración `staConnected`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "apIp",
+          "declaration": "apIp: string",
+          "callback": false,
+          "ownerType": "EspWifiStatus",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/EspWifiStatusContext.tsx",
+            "line": 19
+          },
+          "description": "Dato de estado/configuración `apIp`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "staIp",
+          "declaration": "staIp: string",
+          "callback": false,
+          "ownerType": "EspWifiStatus",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/EspWifiStatusContext.tsx",
+            "line": 20
+          },
+          "description": "Dato de estado/configuración `staIp`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "networkSsid",
+          "declaration": "networkSsid: string",
+          "callback": false,
+          "ownerType": "EspWifiStatus",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/EspWifiStatusContext.tsx",
+            "line": 21
+          },
+          "description": "Dato de estado/configuración `networkSsid`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "rssiDbm",
+          "declaration": "rssiDbm: number | null",
+          "callback": false,
+          "ownerType": "EspWifiStatus",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/EspWifiStatusContext.tsx",
+            "line": 22
+          },
+          "description": "Dato de estado/configuración `rssiDbm`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "raw",
+          "declaration": "raw: Record<string, unknown>",
+          "callback": false,
+          "ownerType": "EspWifiStatus",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/EspWifiStatusContext.tsx",
+            "line": 23
+          },
+          "description": "Dato de estado/configuración `raw`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/EspWifiStatusContext.tsx",
+        "line": 15
+      }
+    },
+    {
+      "name": "EspWifiStatusContextValue",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "status",
+          "declaration": "status: EspWifiStatus | null",
+          "callback": false,
+          "ownerType": "EspWifiStatusContextValue",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/EspWifiStatusContext.tsx",
+            "line": 27
+          },
+          "description": "Último resultado y guardas del módulo; los getters pueden devolver una vista de este almacenamiento."
+        },
+        {
+          "name": "statusKnown",
+          "declaration": "statusKnown: boolean",
+          "callback": false,
+          "ownerType": "EspWifiStatusContextValue",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/EspWifiStatusContext.tsx",
+            "line": 28
+          },
+          "description": "Dato de estado/configuración `statusKnown`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "loading",
+          "declaration": "loading: boolean",
+          "callback": false,
+          "ownerType": "EspWifiStatusContextValue",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/EspWifiStatusContext.tsx",
+            "line": 29
+          },
+          "description": "Dato de estado/configuración `loading`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "error",
+          "declaration": "error: string | null",
+          "callback": false,
+          "ownerType": "EspWifiStatusContextValue",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/EspWifiStatusContext.tsx",
+            "line": 30
+          },
+          "description": "Dato de estado/configuración `error`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "lastCheckedAt",
+          "declaration": "lastCheckedAt: number | null",
+          "callback": false,
+          "ownerType": "EspWifiStatusContextValue",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/EspWifiStatusContext.tsx",
+            "line": 31
+          },
+          "description": "Dato de estado/configuración `lastCheckedAt`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "isApProvisioning",
+          "declaration": "isApProvisioning: boolean",
+          "callback": false,
+          "ownerType": "EspWifiStatusContextValue",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/EspWifiStatusContext.tsx",
+            "line": 32
+          },
+          "description": "Dato de estado/configuración `isApProvisioning`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "refresh",
+          "declaration": "refresh: () => Promise<EspWifiStatus | null>",
+          "callback": true,
+          "ownerType": "EspWifiStatusContextValue",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/EspWifiStatusContext.tsx",
+            "line": 33
+          },
+          "description": "Operación refresh de Estado Wi-Fi, AP y credenciales Web; semántica fina pendiente de ampliación."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/EspWifiStatusContext.tsx",
+        "line": 26
+      }
+    },
+    {
+      "name": "WifiCredentialsState",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "status",
+          "declaration": "status: WifiCredentialsStatus",
+          "callback": false,
+          "ownerType": "WifiCredentialsState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/WifiCredentialsContext.tsx",
+            "line": 43
+          },
+          "description": "Último resultado y guardas del módulo; los getters pueden devolver una vista de este almacenamiento."
+        },
+        {
+          "name": "ssid",
+          "declaration": "ssid: string | null",
+          "callback": false,
+          "ownerType": "WifiCredentialsState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/WifiCredentialsContext.tsx",
+            "line": 44
+          },
+          "description": "Dato de estado/configuración `ssid`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "error",
+          "declaration": "error: string | null",
+          "callback": false,
+          "ownerType": "WifiCredentialsState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/WifiCredentialsContext.tsx",
+            "line": 45
+          },
+          "description": "Dato de estado/configuración `error`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "reason",
+          "declaration": "reason: string | null",
+          "callback": false,
+          "ownerType": "WifiCredentialsState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/WifiCredentialsContext.tsx",
+            "line": 46
+          },
+          "description": "Dato de estado/configuración `reason`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ip",
+          "declaration": "ip: string | null",
+          "callback": false,
+          "ownerType": "WifiCredentialsState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/WifiCredentialsContext.tsx",
+            "line": 47
+          },
+          "description": "Dato de estado/configuración `ip`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "timeoutMs",
+          "declaration": "timeoutMs: number | null",
+          "callback": false,
+          "ownerType": "WifiCredentialsState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/WifiCredentialsContext.tsx",
+            "line": 48
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "requestId",
+          "declaration": "requestId: string | null",
+          "callback": false,
+          "ownerType": "WifiCredentialsState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/WifiCredentialsContext.tsx",
+            "line": 49
+          },
+          "description": "Dato de estado/configuración `requestId`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/WifiCredentialsContext.tsx",
+        "line": 42
+      }
+    },
+    {
+      "name": "WifiCredentialsProviderProps",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "children",
+          "declaration": "children: ReactNode",
+          "callback": false,
+          "ownerType": "WifiCredentialsProviderProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/WifiCredentialsContext.tsx",
+            "line": 53
+          },
+          "description": "Dato de estado/configuración `children`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/WifiCredentialsContext.tsx",
+        "line": 52
+      }
+    },
+    {
+      "name": "WifiCredentialsContextValue",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "state",
+          "declaration": "state: WifiCredentialsState",
+          "callback": false,
+          "ownerType": "WifiCredentialsContextValue",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/WifiCredentialsContext.tsx",
+            "line": 57
+          },
+          "description": "Dato de estado/configuración `state`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "requestCurrentCredentials",
+          "declaration": "requestCurrentCredentials: () => string | null",
+          "callback": true,
+          "ownerType": "WifiCredentialsContextValue",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/WifiCredentialsContext.tsx",
+            "line": 58
+          },
+          "description": "Operación request Current Credentials de Estado Wi-Fi, AP y credenciales Web; semántica fina pendiente de ampliación."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/WifiCredentialsContext.tsx",
+        "line": 56
+      }
+    },
+    {
+      "name": "Policy",
+      "kind": "TypeAliasDeclaration",
+      "fields": [
+        {
+          "name": "status",
+          "declaration": "status: number",
+          "callback": false,
+          "ownerType": "Policy",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/hooks/useApFallback.ts",
+            "line": 6
+          },
+          "description": "Último resultado y guardas del módulo; los getters pueden devolver una vista de este almacenamiento."
+        },
+        {
+          "name": "enabled",
+          "declaration": "enabled: boolean",
+          "callback": false,
+          "ownerType": "Policy",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/hooks/useApFallback.ts",
+            "line": 6
+          },
+          "description": "Dato de estado/configuración `enabled`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "syncState",
+          "declaration": "syncState: number",
+          "callback": false,
+          "ownerType": "Policy",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/hooks/useApFallback.ts",
+            "line": 6
+          },
+          "description": "Dato de estado/configuración `syncState`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/hooks/useApFallback.ts",
+        "line": 6
+      }
+    },
+    {
+      "name": "ApFallbackController",
+      "kind": "TypeAliasDeclaration",
+      "type": "ReturnType<typeof useApFallback>",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/hooks/useApFallback.ts",
+        "line": 66
+      }
+    },
+    {
+      "name": "FeedbackTone",
+      "kind": "TypeAliasDeclaration",
+      "type": "\"info\" | \"success\" | \"error\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/WifiSection.tsx",
+        "line": 48
+      }
+    },
+    {
+      "name": "InlineFeedback",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "tone",
+          "declaration": "tone: FeedbackTone",
+          "callback": false,
+          "ownerType": "InlineFeedback",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/WifiSection.tsx",
+            "line": 51
+          },
+          "description": "Dato de estado/configuración `tone`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "text",
+          "declaration": "text: string",
+          "callback": false,
+          "ownerType": "InlineFeedback",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/WifiSection.tsx",
+            "line": 52
+          },
+          "description": "Dato de estado/configuración `text`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/WifiSection.tsx",
+        "line": 50
+      }
+    },
+    {
+      "name": "PersistedWifiConfig",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "loaded",
+          "declaration": "loaded: boolean",
+          "callback": false,
+          "ownerType": "PersistedWifiConfig",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/WifiSection.tsx",
+            "line": 56
+          },
+          "description": "Dato de estado/configuración `loaded`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "stationSsid",
+          "declaration": "stationSsid: string",
+          "callback": false,
+          "ownerType": "PersistedWifiConfig",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/WifiSection.tsx",
+            "line": 57
+          },
+          "description": "Dato de estado/configuración `stationSsid`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "stationIp",
+          "declaration": "stationIp: string",
+          "callback": false,
+          "ownerType": "PersistedWifiConfig",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/WifiSection.tsx",
+            "line": 58
+          },
+          "description": "Dato de estado/configuración `stationIp`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "stationGateway",
+          "declaration": "stationGateway: string",
+          "callback": false,
+          "ownerType": "PersistedWifiConfig",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/WifiSection.tsx",
+            "line": 59
+          },
+          "description": "Dato de estado/configuración `stationGateway`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "stationSubnet",
+          "declaration": "stationSubnet: string",
+          "callback": false,
+          "ownerType": "PersistedWifiConfig",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/WifiSection.tsx",
+            "line": 60
+          },
+          "description": "Dato de estado/configuración `stationSubnet`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "apSsid",
+          "declaration": "apSsid: string",
+          "callback": false,
+          "ownerType": "PersistedWifiConfig",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/WifiSection.tsx",
+            "line": 61
+          },
+          "description": "Dato de estado/configuración `apSsid`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "apIp",
+          "declaration": "apIp: string",
+          "callback": false,
+          "ownerType": "PersistedWifiConfig",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/WifiSection.tsx",
+            "line": 62
+          },
+          "description": "Dato de estado/configuración `apIp`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/WifiSection.tsx",
+        "line": 55
+      }
+    },
+    {
+      "name": "ModeSwitchPhase",
+      "kind": "TypeAliasDeclaration",
+      "type": "\"idle\" | \"submitting\" | \"scheduled\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/WifiSection.tsx",
+        "line": 65
+      }
+    },
+    {
+      "name": "WifiSectionProps",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "provisioning",
+          "declaration": "provisioning?: boolean",
+          "callback": false,
+          "ownerType": "WifiSectionProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/WifiSection.tsx",
+            "line": 85
+          },
+          "description": "Dato de estado/configuración `provisioning`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/WifiSection.tsx",
+        "line": 84
+      }
+    },
+    {
+      "name": "WifiScanResult",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "networks",
+          "declaration": "networks: WifiNetworkDetail[]",
+          "callback": false,
+          "ownerType": "WifiScanResult",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/WifiSection.tsx",
+            "line": 2238
+          },
+          "description": "Dato de estado/configuración `networks`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "reportedCount",
+          "declaration": "reportedCount: number | null",
+          "callback": false,
+          "ownerType": "WifiScanResult",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/WifiSection.tsx",
+            "line": 2239
+          },
+          "description": "Dato de estado/configuración `reportedCount`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "hasExplicitList",
+          "declaration": "hasExplicitList: boolean",
+          "callback": false,
+          "ownerType": "WifiScanResult",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/WifiSection.tsx",
+            "line": 2240
+          },
+          "description": "Dato de estado/configuración `hasExplicitList`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/WifiSection.tsx",
+        "line": 2237
+      }
+    },
+    {
+      "name": "WifiMode",
+      "kind": "TypeAliasDeclaration",
+      "type": "\"AP\" | \"STATION\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/types/WifiTypes.ts",
+        "line": 1
+      }
+    },
+    {
+      "name": "WifiSectionView",
+      "kind": "TypeAliasDeclaration",
+      "type": "\"WIFI\" | \"AP\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/types/WifiTypes.ts",
+        "line": 2
+      }
+    },
+    {
+      "name": "WifiCredentialsResultStatus",
+      "kind": "TypeAliasDeclaration",
+      "type": "| \"success\" | \"failed\" | \"timeout\" | \"cancelled\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/types/WifiTypes.ts",
+        "line": 4
+      }
+    },
+    {
+      "name": "WifiCredentialsStatus",
+      "kind": "TypeAliasDeclaration",
+      "type": "| \"idle\" | \"requested\" | \"submitting\" | \"connecting\" | WifiCredentialsResultStatus | \"cancelling\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/types/WifiTypes.ts",
+        "line": 10
+      }
+    },
+    {
+      "name": "WifiCredentialsSubmitParams",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "ssid",
+          "declaration": "ssid: string",
+          "callback": false,
+          "ownerType": "WifiCredentialsSubmitParams",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/WifiTypes.ts",
+            "line": 33
+          },
+          "description": "Dato de estado/configuración `ssid`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "password",
+          "declaration": "password: string",
+          "callback": false,
+          "ownerType": "WifiCredentialsSubmitParams",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/WifiTypes.ts",
+            "line": 34
+          },
+          "description": "Dato de estado/configuración `password`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "reusePassword",
+          "declaration": "reusePassword?: boolean",
+          "callback": false,
+          "ownerType": "WifiCredentialsSubmitParams",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/WifiTypes.ts",
+            "line": 35
+          },
+          "description": "Dato de estado/configuración `reusePassword`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ip",
+          "declaration": "ip?: string",
+          "callback": false,
+          "ownerType": "WifiCredentialsSubmitParams",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/WifiTypes.ts",
+            "line": 36
+          },
+          "description": "Dato de estado/configuración `ip`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "gateway",
+          "declaration": "gateway?: string",
+          "callback": false,
+          "ownerType": "WifiCredentialsSubmitParams",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/WifiTypes.ts",
+            "line": 37
+          },
+          "description": "Dato de estado/configuración `gateway`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "subnet",
+          "declaration": "subnet?: string",
+          "callback": false,
+          "ownerType": "WifiCredentialsSubmitParams",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/WifiTypes.ts",
+            "line": 38
+          },
+          "description": "Dato de estado/configuración `subnet`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/types/WifiTypes.ts",
+        "line": 32
+      }
+    },
+    {
+      "name": "WifiCredentialsCancelParams",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "ssid",
+          "declaration": "ssid: string",
+          "callback": false,
+          "ownerType": "WifiCredentialsCancelParams",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/WifiTypes.ts",
+            "line": 42
+          },
+          "description": "Dato de estado/configuración `ssid`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/types/WifiTypes.ts",
+        "line": 41
+      }
+    },
+    {
+      "name": "WifiScanNetwork",
+      "kind": "TypeAliasDeclaration",
+      "fields": [
+        {
+          "name": "ssid",
+          "declaration": "ssid: string",
+          "callback": false,
+          "ownerType": "WifiScanNetwork",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/WifiTypes.ts",
+            "line": 46
+          },
+          "description": "Dato de estado/configuración `ssid`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ssidBytes",
+          "declaration": "ssidBytes?: number[]",
+          "callback": false,
+          "ownerType": "WifiScanNetwork",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/WifiTypes.ts",
+            "line": 47
+          },
+          "description": "Dato de estado/configuración `ssidBytes`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "bssid",
+          "declaration": "bssid?: string",
+          "callback": false,
+          "ownerType": "WifiScanNetwork",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/WifiTypes.ts",
+            "line": 48
+          },
+          "description": "Dato de estado/configuración `bssid`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "signalStrength",
+          "declaration": "signalStrength: number",
+          "callback": false,
+          "ownerType": "WifiScanNetwork",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/WifiTypes.ts",
+            "line": 49
+          },
+          "description": "Dato de estado/configuración `signalStrength`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "rssi",
+          "declaration": "rssi?: number",
+          "callback": false,
+          "ownerType": "WifiScanNetwork",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/WifiTypes.ts",
+            "line": 50
+          },
+          "description": "Dato de estado/configuración `rssi`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "encryptionType",
+          "declaration": "encryptionType: number",
+          "callback": false,
+          "ownerType": "WifiScanNetwork",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/WifiTypes.ts",
+            "line": 51
+          },
+          "description": "Dato de estado/configuración `encryptionType`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "security",
+          "declaration": "security?: number",
+          "callback": false,
+          "ownerType": "WifiScanNetwork",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/WifiTypes.ts",
+            "line": 52
+          },
+          "description": "Dato de estado/configuración `security`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "channel",
+          "declaration": "channel: number",
+          "callback": false,
+          "ownerType": "WifiScanNetwork",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/WifiTypes.ts",
+            "line": 53
+          },
+          "description": "Dato de estado/configuración `channel`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "index",
+          "declaration": "index?: number",
+          "callback": false,
+          "ownerType": "WifiScanNetwork",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/WifiTypes.ts",
+            "line": 54
+          },
+          "description": "Dato de estado/configuración `index`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/types/WifiTypes.ts",
+        "line": 45
+      }
+    },
+    {
+      "name": "WifiNetworkDetail",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "ssid",
+          "declaration": "ssid: string",
+          "callback": false,
+          "ownerType": "WifiNetworkDetail",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/WifiTypes.ts",
+            "line": 58
+          },
+          "description": "Dato de estado/configuración `ssid`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ssidBytes",
+          "declaration": "ssidBytes?: number[]",
+          "callback": false,
+          "ownerType": "WifiNetworkDetail",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/WifiTypes.ts",
+            "line": 59
+          },
+          "description": "Dato de estado/configuración `ssidBytes`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "bssid",
+          "declaration": "bssid?: string",
+          "callback": false,
+          "ownerType": "WifiNetworkDetail",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/WifiTypes.ts",
+            "line": 60
+          },
+          "description": "Dato de estado/configuración `bssid`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "signalStrength",
+          "declaration": "signalStrength: number | null",
+          "callback": false,
+          "ownerType": "WifiNetworkDetail",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/WifiTypes.ts",
+            "line": 61
+          },
+          "description": "Dato de estado/configuración `signalStrength`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "rssi",
+          "declaration": "rssi?: number",
+          "callback": false,
+          "ownerType": "WifiNetworkDetail",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/WifiTypes.ts",
+            "line": 62
+          },
+          "description": "Dato de estado/configuración `rssi`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "encryptionType",
+          "declaration": "encryptionType: string | number | null",
+          "callback": false,
+          "ownerType": "WifiNetworkDetail",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/WifiTypes.ts",
+            "line": 63
+          },
+          "description": "Dato de estado/configuración `encryptionType`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "security",
+          "declaration": "security?: number",
+          "callback": false,
+          "ownerType": "WifiNetworkDetail",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/WifiTypes.ts",
+            "line": 64
+          },
+          "description": "Dato de estado/configuración `security`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "channel",
+          "declaration": "channel: number | null",
+          "callback": false,
+          "ownerType": "WifiNetworkDetail",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/WifiTypes.ts",
+            "line": 65
+          },
+          "description": "Dato de estado/configuración `channel`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "index",
+          "declaration": "index?: number",
+          "callback": false,
+          "ownerType": "WifiNetworkDetail",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/WifiTypes.ts",
+            "line": 66
+          },
+          "description": "Dato de estado/configuración `index`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/types/WifiTypes.ts",
+        "line": 57
+      }
+    },
+    {
+      "name": "WifiApClient",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "name",
+          "declaration": "name: string",
+          "callback": false,
+          "ownerType": "WifiApClient",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/WifiTypes.ts",
+            "line": 70
+          },
+          "description": "Dato de estado/configuración `name`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "nameSource",
+          "declaration": "nameSource: \"generated-from-mac\" | string",
+          "callback": false,
+          "ownerType": "WifiApClient",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/WifiTypes.ts",
+            "line": 71
+          },
+          "description": "Dato de estado/configuración `nameSource`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "mac",
+          "declaration": "mac: string",
+          "callback": false,
+          "ownerType": "WifiApClient",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/WifiTypes.ts",
+            "line": 72
+          },
+          "description": "Dato de estado/configuración `mac`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ip",
+          "declaration": "ip: string",
+          "callback": false,
+          "ownerType": "WifiApClient",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/WifiTypes.ts",
+            "line": 73
+          },
+          "description": "Dato de estado/configuración `ip`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/types/WifiTypes.ts",
+        "line": 69
+      }
+    },
+    {
+      "name": "EspOperatingMode",
+      "kind": "TypeAliasDeclaration",
+      "type": "\"AP\" | \"RED\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/utils/wifiModeSwitch.ts",
+        "line": 1
+      }
+    },
+    {
+      "name": "EspBootMode",
+      "kind": "TypeAliasDeclaration",
+      "type": "\"ap\" | \"normal\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/utils/wifiModeSwitch.ts",
+        "line": 2
+      }
+    },
+    {
+      "name": "DestinationIpSource",
+      "kind": "TypeAliasDeclaration",
+      "type": "\"fixed\" | \"default\" | \"dhcp\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/utils/wifiModeSwitch.ts",
+        "line": 3
+      }
+    },
+    {
+      "name": "WifiModeConfig",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "apSsid",
+          "declaration": "apSsid: string",
+          "callback": false,
+          "ownerType": "WifiModeConfig",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/utils/wifiModeSwitch.ts",
+            "line": 6
+          },
+          "description": "Dato de estado/configuración `apSsid`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "apIp",
+          "declaration": "apIp: string",
+          "callback": false,
+          "ownerType": "WifiModeConfig",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/utils/wifiModeSwitch.ts",
+            "line": 7
+          },
+          "description": "Dato de estado/configuración `apIp`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "stationSsid",
+          "declaration": "stationSsid: string",
+          "callback": false,
+          "ownerType": "WifiModeConfig",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/utils/wifiModeSwitch.ts",
+            "line": 8
+          },
+          "description": "Dato de estado/configuración `stationSsid`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "stationIp",
+          "declaration": "stationIp: string",
+          "callback": false,
+          "ownerType": "WifiModeConfig",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/utils/wifiModeSwitch.ts",
+            "line": 9
+          },
+          "description": "Dato de estado/configuración `stationIp`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/utils/wifiModeSwitch.ts",
+        "line": 5
+      }
+    },
+    {
+      "name": "WifiModeDestination",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "mode",
+          "declaration": "mode: EspOperatingMode",
+          "callback": false,
+          "ownerType": "WifiModeDestination",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/utils/wifiModeSwitch.ts",
+            "line": 13
+          },
+          "description": "Dato de estado/configuración `mode`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "bootMode",
+          "declaration": "bootMode: EspBootMode",
+          "callback": false,
+          "ownerType": "WifiModeDestination",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/utils/wifiModeSwitch.ts",
+            "line": 14
+          },
+          "description": "Dato de estado/configuración `bootMode`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ssid",
+          "declaration": "ssid: string",
+          "callback": false,
+          "ownerType": "WifiModeDestination",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/utils/wifiModeSwitch.ts",
+            "line": 15
+          },
+          "description": "Dato de estado/configuración `ssid`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ip",
+          "declaration": "ip: string | null",
+          "callback": false,
+          "ownerType": "WifiModeDestination",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/utils/wifiModeSwitch.ts",
+            "line": 16
+          },
+          "description": "Dato de estado/configuración `ip`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ipSource",
+          "declaration": "ipSource: DestinationIpSource",
+          "callback": false,
+          "ownerType": "WifiModeDestination",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/utils/wifiModeSwitch.ts",
+            "line": 17
+          },
+          "description": "Dato de estado/configuración `ipSource`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "url",
+          "declaration": "url: string | null",
+          "callback": false,
+          "ownerType": "WifiModeDestination",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/utils/wifiModeSwitch.ts",
+            "line": 18
+          },
+          "description": "Dato de estado/configuración `url`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/utils/wifiModeSwitch.ts",
+        "line": 12
+      }
+    },
+    {
+      "name": "WifiStatusLike",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "apActive",
+          "declaration": "apActive: boolean",
+          "callback": false,
+          "ownerType": "WifiStatusLike",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/utils/wifiModeSwitch.ts",
+            "line": 22
+          },
+          "description": "Dato de estado/configuración `apActive`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "staConnected",
+          "declaration": "staConnected: boolean",
+          "callback": false,
+          "ownerType": "WifiStatusLike",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/utils/wifiModeSwitch.ts",
+            "line": 23
+          },
+          "description": "Dato de estado/configuración `staConnected`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/utils/wifiModeSwitch.ts",
+        "line": 21
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "ApFallbackControls",
+      "displayName": "ApFallbackControls",
+      "signature": "ApFallbackControls({ control, disabled = false }: { control: ApFallbackController; disabled?: boolean; }): inferred-by-TypeScript",
+      "line": 3,
+      "endLine": 19,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ApFallbackControls.tsx",
+        "line": 3
+      },
+      "description": "Operación Ap Fallback Controls de Estado Wi-Fi, AP y credenciales Web; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "ApIcon",
+      "displayName": "ApIcon",
+      "signature": "ApIcon(): inferred-by-TypeScript",
+      "line": 2015,
+      "endLine": 2023,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/WifiSection.tsx",
+        "line": 2015
+      },
+      "description": "Operación Ap Icon de Estado Wi-Fi, AP y credenciales Web; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "ApProvisioningGate",
+      "displayName": "ApProvisioningGate",
+      "signature": "ApProvisioningGate(): inferred-by-TypeScript",
+      "line": 5,
+      "endLine": 19,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useEffect",
+        "useLocation",
+        "useNavigate",
+        "useUser"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ApProvisioningGate.tsx",
+        "line": 5
+      },
+      "description": "Coordina `useEffect`, `useLocation`, `useNavigate` para Estado Wi-Fi, AP y credenciales Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "EspWifiStatusProvider",
+      "displayName": "EspWifiStatusProvider",
+      "signature": "EspWifiStatusProvider({ children }: { children: ReactNode }): inferred-by-TypeScript",
+      "line": 48,
+      "endLine": 142,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useCallback",
+        "useEffect",
+        "useMemo",
+        "useRef",
+        "useState",
+        "useWebSocket"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/EspWifiStatusContext.tsx",
+        "line": 48
+      },
+      "description": "Coordina `useCallback`, `useEffect`, `useMemo` para Estado Wi-Fi, AP y credenciales Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "FeedbackBanner",
+      "displayName": "FeedbackBanner",
+      "signature": "FeedbackBanner({ feedback }: { feedback: InlineFeedback }): inferred-by-TypeScript",
+      "line": 1872,
+      "endLine": 1885,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/WifiSection.tsx",
+        "line": 1872
+      },
+      "description": "Operación Feedback Banner de Estado Wi-Fi, AP y credenciales Web; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "MetricChip",
+      "displayName": "MetricChip",
+      "signature": "MetricChip({ label, value }: { label: string; value: string }): inferred-by-TypeScript",
+      "line": 2035,
+      "endLine": 2044,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/WifiSection.tsx",
+        "line": 2035
+      },
+      "description": "Operación Metric Chip de Estado Wi-Fi, AP y credenciales Web; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "WifiCredentialsModal",
+      "displayName": "WifiCredentialsModal",
+      "signature": "WifiCredentialsModal({\n isOpen,\n status,\n ssid,\n error,\n ip,\n timeoutMs,\n onSubmit,\n onCancel,\n onDismiss,\n}: WifiCredentialsModalProps): inferred-by-TypeScript",
+      "line": 19,
+      "endLine": 168,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "BUSY_STATUSES.has",
+        "Boolean",
+        "useEffect",
+        "useMemo",
+        "useState"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/WifiCredentialsModal.tsx",
+        "line": 19
+      },
+      "description": "Coordina `BUSY_STATUSES.has`, `Boolean`, `useEffect` para Estado Wi-Fi, AP y credenciales Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiCredentialsProvider",
+      "displayName": "WifiCredentialsProvider",
+      "signature": "WifiCredentialsProvider({\n  children,\n}: WifiCredentialsProviderProps): inferred-by-TypeScript",
+      "line": 75,
+      "endLine": 473,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useCallback",
+        "useEffect",
+        "useEspWifiStatus",
+        "useRef",
+        "useState",
+        "useUser",
+        "useWebSocket"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/WifiCredentialsContext.tsx",
+        "line": 75
+      },
+      "description": "Coordina `useCallback`, `useEffect`, `useEspWifiStatus` para Estado Wi-Fi, AP y credenciales Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiHeaderStatus",
+      "displayName": "WifiHeaderStatus",
+      "signature": "WifiHeaderStatus({\n connected,\n activeView,\n scanLoading,\n networksCount,\n stationPhase,\n apSaving,\n provisioning,\n mode,\n apIp,\n connectionLabel,\n connectionDetail,\n aliveAt,\n}: { connected: boolean; activeView: WifiSectionView; scanLoading: boolean; networksCount: number; stationPhase: \"idle\" | \"submitting\" | \"connecting\"; apSaving: boolean; provisioning: boolean; mode: string; apIp: string; connectionLabel: string; connectionDetail?: string; aliveAt: number | null; }): inferred-by-TypeScript",
+      "line": 1887,
+      "endLine": 1973,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "String",
+        "formatAliveLabel"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/WifiSection.tsx",
+        "line": 1887
+      },
+      "description": "Coordina `String`, `formatAliveLabel` para Estado Wi-Fi, AP y credenciales Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiIcon",
+      "displayName": "WifiIcon",
+      "signature": "WifiIcon(): inferred-by-TypeScript",
+      "line": 2004,
+      "endLine": 2013,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/WifiSection.tsx",
+        "line": 2004
+      },
+      "description": "Operación Wifi Icon de Estado Wi-Fi, AP y credenciales Web; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "WifiModeSwitchCard",
+      "displayName": "WifiModeSwitchCard",
+      "signature": "WifiModeSwitchCard({\n sessionOnly = false,\n apFallback,\n queryBusy,\n onConsult,\n currentMode,\n destination,\n connected,\n busy,\n configurationLoaded,\n hasUnsavedChanges,\n onOpen,\n}: { sessionOnly?: boolean; apFallback: ApFallbackController; queryBusy: boolean; onConsult: () => void; currentMode: \"AP\" | \"RED\"; destination: WifiModeDestination; connected: boolean; busy: boolean; configurationLoaded: boolean; hasUnsavedChanges: boolean; onOpen: () => void; }): inferred-by-TypeScript",
+      "line": 1786,
+      "endLine": 1862,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "formatDestinationIp"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/WifiSection.tsx",
+        "line": 1786
+      },
+      "description": "Adapta la llamada a `formatDestinationIp` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiSection",
+      "displayName": "WifiSection",
+      "signature": "WifiSection({ provisioning = false }: WifiSectionProps): inferred-by-TypeScript",
+      "line": 88,
+      "endLine": 1784,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "String",
+        "apClients.map",
+        "availableNetworks.map",
+        "formatAvailableNetworksSummary",
+        "formatDestinationIp",
+        "formatEncryption",
+        "getEspConnectionDetail",
+        "getEspConnectionLabel",
+        "persistedWifiConfig.stationSsid.trim",
+        "resolveEspOperatingMode",
+        "segmentedButtonStyle",
+        "useApFallback",
+        "useCallback",
+        "useEffect",
+        "useEspWifiStatus",
+        "useMemo",
+        "useRef",
+        "useState",
+        "useUser",
+        "useWebSocket"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/WifiSection.tsx",
+        "line": 88
+      },
+      "description": "Coordina `String`, `apClients.map`, `availableNetworks.map` para Estado Wi-Fi, AP y credenciales Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiSignalIcon",
+      "displayName": "WifiSignalIcon",
+      "signature": "WifiSignalIcon({ signal }: { signal: number | null }): inferred-by-TypeScript",
+      "line": 2025,
+      "endLine": 2033,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.max",
+        "formatSignalPercent"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/WifiSection.tsx",
+        "line": 2025
+      },
+      "description": "Coordina `Math.max`, `formatSignalPercent` para Estado Wi-Fi, AP y credenciales Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiStatusPill",
+      "displayName": "WifiStatusPill",
+      "signature": "WifiStatusPill({\n label,\n value,\n detail,\n tone,\n}: { label: string; value: string; detail?: string; tone: \"ok\" | \"error\" | \"info\" | \"muted\"; }): inferred-by-TypeScript",
+      "line": 1981,
+      "endLine": 2002,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/WifiSection.tsx",
+        "line": 1981
+      },
+      "description": "Operación Wifi Status Pill de Estado Wi-Fi, AP y credenciales Web; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "createRequestId",
+      "displayName": "createRequestId",
+      "signature": "createRequestId(prefix: string): inferred-by-TypeScript",
+      "line": 2595,
+      "endLine": 2599,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Date.now",
+        "Math.random",
+        "Math.random().toString",
+        "Math.random().toString(16).slice",
+        "crypto.randomUUID"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/WifiSection.tsx",
+        "line": 2595
+      },
+      "description": "Coordina `Date.now`, `Math.random`, `Math.random().toString` para Estado Wi-Fi, AP y credenciales Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "decodeWifiSsid",
+      "displayName": "decodeWifiSsid",
+      "signature": "decodeWifiSsid(bytes: number[] | undefined): string | undefined",
+      "line": 2531,
+      "endLine": 2537,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Uint8Array.from",
+        "wifiSsidDecoder.decode",
+        "wifiSsidDecoder.decode(Uint8Array.from(bytes)).replace"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/WifiSection.tsx",
+        "line": 2531
+      },
+      "description": "Coordina `Uint8Array.from`, `wifiSsidDecoder.decode`, `wifiSsidDecoder.decode(Uint8Array.from(bytes)).replace` para Estado Wi-Fi, AP y credenciales Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "formatAliveLabel",
+      "displayName": "formatAliveLabel",
+      "signature": "formatAliveLabel(timestamp: number | null): inferred-by-TypeScript",
+      "line": 1975,
+      "endLine": 1979,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Date.now",
+        "Math.max",
+        "Math.round"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/WifiSection.tsx",
+        "line": 1975
+      },
+      "description": "Coordina `Date.now`, `Math.max`, `Math.round` para Estado Wi-Fi, AP y credenciales Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "formatAvailableNetworksSummary",
+      "displayName": "formatAvailableNetworksSummary",
+      "signature": "formatAvailableNetworksSummary(visibleCount: number, reportedCount: number | null): inferred-by-TypeScript",
+      "line": 2333,
+      "endLine": 2346,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/WifiSection.tsx",
+        "line": 2333
+      },
+      "description": "Operación format Available Networks Summary de Estado Wi-Fi, AP y credenciales Web; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "formatDestinationIp",
+      "displayName": "formatDestinationIp",
+      "signature": "formatDestinationIp(destination: WifiModeDestination): inferred-by-TypeScript",
+      "line": 1864,
+      "endLine": 1870,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/WifiSection.tsx",
+        "line": 1864
+      },
+      "description": "Operación format Destination Ip de Estado Wi-Fi, AP y credenciales Web; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "formatEncryption",
+      "displayName": "formatEncryption",
+      "signature": "formatEncryption(value: WifiNetworkDetail[\"encryptionType\"]): inferred-by-TypeScript",
+      "line": 2167,
+      "endLine": 2180,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "String"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/WifiSection.tsx",
+        "line": 2167
+      },
+      "description": "Adapta la llamada a `String` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "formatScanResultsFeedback",
+      "displayName": "formatScanResultsFeedback",
+      "signature": "formatScanResultsFeedback(scanResult: WifiScanResult): inferred-by-TypeScript",
+      "line": 2318,
+      "endLine": 2331,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/WifiSection.tsx",
+        "line": 2318
+      },
+      "description": "Operación format Scan Results Feedback de Estado Wi-Fi, AP y credenciales Web; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "formatSignalPercent",
+      "displayName": "formatSignalPercent",
+      "signature": "formatSignalPercent(signal: number | null): inferred-by-TypeScript",
+      "line": 2046,
+      "endLine": 2052,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.max",
+        "Math.min",
+        "Math.round",
+        "Number.isFinite"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/WifiSection.tsx",
+        "line": 2046
+      },
+      "description": "Coordina `Math.max`, `Math.min`, `Math.round` para Estado Wi-Fi, AP y credenciales Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "getDeviceEventData",
+      "displayName": "getDeviceEventData",
+      "signature": "getDeviceEventData(message: unknown): Record<string, unknown>",
+      "line": 2462,
+      "endLine": 2469,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "isRecord",
+        "toRecord"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/WifiSection.tsx",
+        "line": 2462
+      },
+      "description": "Coordina `isRecord`, `toRecord` para Estado Wi-Fi, AP y credenciales Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "getDeviceEventName",
+      "displayName": "getDeviceEventName",
+      "signature": "getDeviceEventName(message: unknown): inferred-by-TypeScript",
+      "line": 2454,
+      "endLine": 2460,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "isRecord",
+        "readString",
+        "toRecord"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/WifiSection.tsx",
+        "line": 2454
+      },
+      "description": "Coordina `isRecord`, `readString`, `toRecord` para Estado Wi-Fi, AP y credenciales Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "getEspConnectionDetail",
+      "displayName": "getEspConnectionDetail",
+      "signature": "getEspConnectionDetail(status: EspWifiStatus | null): inferred-by-TypeScript",
+      "line": 162,
+      "endLine": 166,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "isEspApOnly"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/EspWifiStatusContext.tsx",
+        "line": 162
+      },
+      "description": "Adapta la llamada a `isEspApOnly` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "getEspConnectionLabel",
+      "displayName": "getEspConnectionLabel",
+      "signature": "getEspConnectionLabel(status: EspWifiStatus | null): inferred-by-TypeScript",
+      "line": 156,
+      "endLine": 160,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "isEspApOnly"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/EspWifiStatusContext.tsx",
+        "line": 156
+      },
+      "description": "Adapta la llamada a `isEspApOnly` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "getEspNetworkLabel",
+      "displayName": "getEspNetworkLabel",
+      "signature": "getEspNetworkLabel(status: EspWifiStatus | null): inferred-by-TypeScript",
+      "line": 168,
+      "endLine": 175,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "isEspApOnly"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/EspWifiStatusContext.tsx",
+        "line": 168
+      },
+      "description": "Adapta la llamada a `isEspApOnly` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "getFeedback",
+      "displayName": "getFeedback",
+      "signature": "getFeedback(status: string, error: string | null, ip: string | null, timeoutMs: number | null): inferred-by-TypeScript",
+      "line": 170,
+      "endLine": 238,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.round"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/WifiCredentialsModal.tsx",
+        "line": 170
+      },
+      "description": "Adapta la llamada a `Math.round` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "getResponseCommand",
+      "displayName": "getResponseCommand",
+      "signature": "getResponseCommand(message: unknown): inferred-by-TypeScript",
+      "line": 2471,
+      "endLine": 2482,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "isRecord",
+        "readString",
+        "toRecord"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/WifiSection.tsx",
+        "line": 2471
+      },
+      "description": "Coordina `isRecord`, `readString`, `toRecord` para Estado Wi-Fi, AP y credenciales Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "getResponseData",
+      "displayName": "getResponseData",
+      "signature": "getResponseData(message: unknown): inferred-by-TypeScript",
+      "line": 2494,
+      "endLine": 2501,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "isRecord",
+        "toRecord"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/WifiSection.tsx",
+        "line": 2494
+      },
+      "description": "Coordina `isRecord`, `toRecord` para Estado Wi-Fi, AP y credenciales Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "getResponseErrorCode",
+      "displayName": "getResponseErrorCode",
+      "signature": "getResponseErrorCode(message: unknown): inferred-by-TypeScript",
+      "line": 2575,
+      "endLine": 2593,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "getResponseData",
+        "isRecord",
+        "readString",
+        "toRecord"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/WifiSection.tsx",
+        "line": 2575
+      },
+      "description": "Coordina `getResponseData`, `isRecord`, `readString` para Estado Wi-Fi, AP y credenciales Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "getResponseMessage",
+      "displayName": "getResponseMessage",
+      "signature": "getResponseMessage(message: unknown): inferred-by-TypeScript",
+      "line": 2503,
+      "endLine": 2516,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "getResponseData",
+        "isRecord",
+        "readString",
+        "toRecord"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/WifiSection.tsx",
+        "line": 2503
+      },
+      "description": "Coordina `getResponseData`, `isRecord`, `readString` para Estado Wi-Fi, AP y credenciales Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "getResponseOk",
+      "displayName": "getResponseOk",
+      "signature": "getResponseOk(message: unknown): inferred-by-TypeScript",
+      "line": 2484,
+      "endLine": 2492,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "isRecord",
+        "toRecord"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/WifiSection.tsx",
+        "line": 2484
+      },
+      "description": "Coordina `isRecord`, `toRecord` para Estado Wi-Fi, AP y credenciales Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "getWifiNetworkDetailText",
+      "displayName": "getWifiNetworkDetailText",
+      "signature": "getWifiNetworkDetailText(network: WifiNetworkDetail): inferred-by-TypeScript",
+      "line": 2361,
+      "endLine": 2372,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "String",
+        "formatEncryption"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/WifiSection.tsx",
+        "line": 2361
+      },
+      "description": "Coordina `String`, `formatEncryption` para Estado Wi-Fi, AP y credenciales Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "getWifiNetworkKey",
+      "displayName": "getWifiNetworkKey",
+      "signature": "getWifiNetworkKey(network: WifiNetworkDetail): inferred-by-TypeScript",
+      "line": 2348,
+      "endLine": 2355,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/WifiSection.tsx",
+        "line": 2348
+      },
+      "description": "Operación get Wifi Network Key de Estado Wi-Fi, AP y credenciales Web; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "getWifiNetworkLabel",
+      "displayName": "getWifiNetworkLabel",
+      "signature": "getWifiNetworkLabel(network: WifiNetworkDetail): inferred-by-TypeScript",
+      "line": 2357,
+      "endLine": 2359,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/WifiSection.tsx",
+        "line": 2357
+      },
+      "description": "Operación get Wifi Network Label de Estado Wi-Fi, AP y credenciales Web; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "isEspApOnly",
+      "displayName": "isEspApOnly",
+      "signature": "isEspApOnly(status: EspWifiStatus | null): inferred-by-TypeScript",
+      "line": 152,
+      "endLine": 154,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/EspWifiStatusContext.tsx",
+        "line": 152
+      },
+      "description": "Operación is Esp Ap Only de Estado Wi-Fi, AP y credenciales Web; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "isRecord",
+      "displayName": "isRecord",
+      "signature": "isRecord(value: unknown): value is Record<string, unknown>",
+      "line": 2626,
+      "endLine": 2628,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/WifiSection.tsx",
+        "line": 2626
+      },
+      "description": "Operación is Record de Estado Wi-Fi, AP y credenciales Web; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "isSameIpv4",
+      "displayName": "isSameIpv4",
+      "signature": "isSameIpv4(left: string | undefined, right: string | undefined): boolean",
+      "line": 2228,
+      "endLine": 2235,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "/^\\d{1,3}(?:\\.\\d{1,3}){3}$/.test",
+        "normalize"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/WifiSection.tsx",
+        "line": 2228
+      },
+      "description": "Coordina `/^\\d{1,3}(?:\\.\\d{1,3}){3}$/.test`, `normalize` para Estado Wi-Fi, AP y credenciales Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "isValidIpv4",
+      "displayName": "isValidIpv4",
+      "signature": "isValidIpv4(value: string): inferred-by-TypeScript",
+      "line": 2131,
+      "endLine": 2140,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "parts.every",
+        "value.split"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/WifiSection.tsx",
+        "line": 2131
+      },
+      "description": "Coordina `parts.every`, `value.split` para Estado Wi-Fi, AP y credenciales Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "logWifiScanArrival",
+      "displayName": "logWifiScanArrival",
+      "signature": "logWifiScanArrival(source: \"device.event\" | \"device.response\", message: unknown, data: unknown, scanResult: WifiScanResult): inferred-by-TypeScript",
+      "line": 2281,
+      "endLine": 2298,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "console.log"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/WifiSection.tsx",
+        "line": 2281
+      },
+      "description": "Adapta la llamada a `console.log` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "networkRowStyle",
+      "displayName": "networkRowStyle",
+      "signature": "networkRowStyle(selected: boolean): inferred-by-TypeScript",
+      "line": 2067,
+      "endLine": 2077,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/WifiSection.tsx",
+        "line": 2067
+      },
+      "description": "Operación network Row Style de Estado Wi-Fi, AP y credenciales Web; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "normalizeIp",
+      "displayName": "normalizeIp",
+      "signature": "normalizeIp(value: string): inferred-by-TypeScript",
+      "line": 63,
+      "endLine": 66,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "value.trim"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/utils/wifiModeSwitch.ts",
+        "line": 63
+      },
+      "description": "Distingue dirección configurada de vacío o dirección no especificada antes de construir destino.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "normalizePendingCredentials",
+      "displayName": "normalizePendingCredentials",
+      "signature": "normalizePendingCredentials(data: Record<string, unknown>, fallback?: unknown): inferred-by-TypeScript",
+      "line": 596,
+      "endLine": 635,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Boolean",
+        "readBoolean",
+        "readNumber",
+        "readString",
+        "toRecord"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/WifiCredentialsContext.tsx",
+        "line": 596
+      },
+      "description": "Coordina `Boolean`, `readBoolean`, `readNumber` para Estado Wi-Fi, AP y credenciales Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "normalizeWifiNetwork",
+      "displayName": "normalizeWifiNetwork",
+      "signature": "normalizeWifiNetwork(value: unknown, fallbackSsid?: string | null, fallbackBssid?: string | null, fallbackIndex?: number): WifiNetworkDetail | null",
+      "line": 2374,
+      "endLine": 2452,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "decodeWifiSsid",
+        "isRecord",
+        "readAnyString",
+        "readByteArray",
+        "readNumber",
+        "readString"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/WifiSection.tsx",
+        "line": 2374
+      },
+      "description": "Coordina `decodeWifiSsid`, `isRecord`, `readAnyString` para Estado Wi-Fi, AP y credenciales Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "normalizeWifiStatus",
+      "displayName": "normalizeWifiStatus",
+      "signature": "normalizeWifiStatus(data: Record<string, unknown>): EspWifiStatus",
+      "line": 177,
+      "endLine": 201,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.round",
+        "readNumber",
+        "readString"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/EspWifiStatusContext.tsx",
+        "line": 177
+      },
+      "description": "Coordina `Math.round`, `readNumber`, `readString` para Estado Wi-Fi, AP y credenciales Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "readAnyString",
+      "displayName": "readAnyString",
+      "signature": "readAnyString(value: unknown): string | undefined",
+      "line": 2605,
+      "endLine": 2607,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/WifiSection.tsx",
+        "line": 2605
+      },
+      "description": "Operación read Any String de Estado Wi-Fi, AP y credenciales Web; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "readApClients",
+      "displayName": "readApClients",
+      "signature": "readApClients(value: unknown): WifiApClient[]",
+      "line": 2212,
+      "endLine": 2226,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Array.isArray",
+        "clients.flatMap",
+        "toRecord"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/WifiSection.tsx",
+        "line": 2212
+      },
+      "description": "Coordina `Array.isArray`, `clients.flatMap`, `toRecord` para Estado Wi-Fi, AP y credenciales Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "readBoolean",
+      "displayName": "readBoolean",
+      "signature": "readBoolean(value: unknown): boolean | undefined",
+      "line": 715,
+      "endLine": 749,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Number.isFinite",
+        "value.trim",
+        "value.trim().toLowerCase"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/WifiCredentialsContext.tsx",
+        "line": 715
+      },
+      "description": "Coordina `Number.isFinite`, `value.trim`, `value.trim().toLowerCase` para Estado Wi-Fi, AP y credenciales Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "readByteArray",
+      "displayName": "readByteArray",
+      "signature": "readByteArray(value: unknown): number[] | undefined",
+      "line": 2520,
+      "endLine": 2529,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Array.isArray",
+        "value.map",
+        "value.some"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/WifiSection.tsx",
+        "line": 2520
+      },
+      "description": "Coordina `Array.isArray`, `value.map`, `value.some` para Estado Wi-Fi, AP y credenciales Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "readEventName",
+      "displayName": "readEventName",
+      "signature": "readEventName(message: unknown): inferred-by-TypeScript",
+      "line": 203,
+      "endLine": 208,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "isRecord"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/EspWifiStatusContext.tsx",
+        "line": 203
+      },
+      "description": "Adapta la llamada a `isRecord` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "readNumber",
+      "displayName": "readNumber",
+      "signature": "readNumber(value: unknown): inferred-by-TypeScript",
+      "line": 2609,
+      "endLine": 2620,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.trunc",
+        "Number",
+        "Number.isFinite",
+        "value.trim"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/WifiSection.tsx",
+        "line": 2609
+      },
+      "description": "Coordina `Math.trunc`, `Number`, `Number.isFinite` para Estado Wi-Fi, AP y credenciales Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "readReportedNetworkCount",
+      "displayName": "readReportedNetworkCount",
+      "signature": "readReportedNetworkCount(value: Record<string, unknown> | undefined, visibleCount: number): inferred-by-TypeScript",
+      "line": 2300,
+      "endLine": 2316,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.max",
+        "readNumber"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/WifiSection.tsx",
+        "line": 2300
+      },
+      "description": "Coordina `Math.max`, `readNumber` para Estado Wi-Fi, AP y credenciales Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "readResultStatus",
+      "displayName": "readResultStatus",
+      "signature": "readResultStatus(value: unknown): WifiCredentialsResultStatus | null",
+      "line": 672,
+      "endLine": 683,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/WifiCredentialsContext.tsx",
+        "line": 672
+      },
+      "description": "Operación read Result Status de Estado Wi-Fi, AP y credenciales Web; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "readString",
+      "displayName": "readString",
+      "signature": "readString(value: unknown): string | undefined",
+      "line": 2601,
+      "endLine": 2603,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/WifiSection.tsx",
+        "line": 2601
+      },
+      "description": "Operación read String de Estado Wi-Fi, AP y credenciales Web; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "readWifiCredentialsStatus",
+      "displayName": "readWifiCredentialsStatus",
+      "signature": "readWifiCredentialsStatus(value: unknown): WifiCredentialsResultStatus | null",
+      "line": 2182,
+      "endLine": 2195,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/WifiSection.tsx",
+        "line": 2182
+      },
+      "description": "Operación read Wifi Credentials Status de Estado Wi-Fi, AP y credenciales Web; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "readWifiNetworks",
+      "displayName": "readWifiNetworks",
+      "signature": "readWifiNetworks(value: unknown): WifiNetworkDetail[]",
+      "line": 2197,
+      "endLine": 2210,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Array.isArray",
+        "readByteArray",
+        "readWifiNetworksFromBytes",
+        "value .map",
+        "value .map((item, index) => normalizeWifiNetwork(item, undefined, undefined, index)) .filter"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/WifiSection.tsx",
+        "line": 2197
+      },
+      "description": "Coordina `Array.isArray`, `readByteArray`, `readWifiNetworksFromBytes` para Estado Wi-Fi, AP y credenciales Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "readWifiNetworksFromBytes",
+      "displayName": "readWifiNetworksFromBytes",
+      "signature": "readWifiNetworksFromBytes(bytes: number[]): WifiNetworkDetail[]",
+      "line": 2539,
+      "endLine": 2573,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "[ parse(1, countFirst), parse(2, statusThenCount), ].filter",
+        "candidates.sort",
+        "parse"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/WifiSection.tsx",
+        "line": 2539
+      },
+      "description": "Coordina `[ parse(1, countFirst), parse(2, statusThenCount), ].filter`, `candidates.sort`, `parse` para Estado Wi-Fi, AP y credenciales Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "readWifiScanResult",
+      "displayName": "readWifiScanResult",
+      "signature": "readWifiScanResult(value: unknown): WifiScanResult",
+      "line": 2243,
+      "endLine": 2279,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Array.isArray",
+        "readReportedNetworkCount",
+        "readWifiNetworks",
+        "toRecord"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/WifiSection.tsx",
+        "line": 2243
+      },
+      "description": "Coordina `Array.isArray`, `readReportedNetworkCount`, `readWifiNetworks` para Estado Wi-Fi, AP y credenciales Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "resolveEspOperatingMode",
+      "displayName": "resolveEspOperatingMode",
+      "signature": "resolveEspOperatingMode(status: WifiStatusLike | null): EspOperatingMode",
+      "line": 29,
+      "endLine": 33,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/utils/wifiModeSwitch.ts",
+        "line": 29
+      },
+      "description": "Deriva AP o RED del estado conocido de STA/AP para preparar la transición local.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "resolveOppositeModeDestination",
+      "displayName": "resolveOppositeModeDestination",
+      "signature": "resolveOppositeModeDestination(currentMode: EspOperatingMode, config: WifiModeConfig): WifiModeDestination",
+      "line": 35,
+      "endLine": 61,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "config.apSsid.trim",
+        "config.stationSsid.trim",
+        "normalizeIp"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/utils/wifiModeSwitch.ts",
+        "line": 35
+      },
+      "description": "Resuelve SSID, IP conocida o DHCP y URL del modo opuesto; no acredita que el dispositivo ya haya reiniciado.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "responseErrorToMessage",
+      "displayName": "responseErrorToMessage",
+      "signature": "responseErrorToMessage(code: inferred-by-TypeScript): inferred-by-TypeScript",
+      "line": 637,
+      "endLine": 651,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/WifiCredentialsContext.tsx",
+        "line": 637
+      },
+      "description": "Operación response Error To Message de Estado Wi-Fi, AP y credenciales Web; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "resultStatusToMessage",
+      "displayName": "resultStatusToMessage",
+      "signature": "resultStatusToMessage(status: WifiCredentialsResultStatus, reason?: string, ip?: string): inferred-by-TypeScript",
+      "line": 653,
+      "endLine": 670,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/WifiCredentialsContext.tsx",
+        "line": 653
+      },
+      "description": "Operación result Status To Message de Estado Wi-Fi, AP y credenciales Web; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "segmentedButtonStyle",
+      "displayName": "segmentedButtonStyle",
+      "signature": "segmentedButtonStyle(active: boolean): inferred-by-TypeScript",
+      "line": 2054,
+      "endLine": 2065,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/WifiSection.tsx",
+        "line": 2054
+      },
+      "description": "Operación segmented Button Style de Estado Wi-Fi, AP y credenciales Web; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "stationResultMessage",
+      "displayName": "stationResultMessage",
+      "signature": "stationResultMessage(status: WifiCredentialsResultStatus, ssid: string, ip?: string, reason?: string): inferred-by-TypeScript",
+      "line": 2142,
+      "endLine": 2165,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/WifiSection.tsx",
+        "line": 2142
+      },
+      "description": "Operación station Result Message de Estado Wi-Fi, AP y credenciales Web; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "toRecord",
+      "displayName": "toRecord",
+      "signature": "toRecord(value: unknown): Record<string, unknown> | undefined",
+      "line": 2622,
+      "endLine": 2624,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "isRecord"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/WifiSection.tsx",
+        "line": 2622
+      },
+      "description": "Adapta la llamada a `isRecord` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "useApFallback",
+      "displayName": "useApFallback",
+      "signature": "useApFallback(): inferred-by-TypeScript",
+      "line": 9,
+      "endLine": 64,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useCallback",
+        "useEffect",
+        "useRef",
+        "useState",
+        "useUser",
+        "useWebSocket"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/hooks/useApFallback.ts",
+        "line": 9
+      },
+      "description": "Coordina `useCallback`, `useEffect`, `useRef` para Estado Wi-Fi, AP y credenciales Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "useEspWifiStatus",
+      "displayName": "useEspWifiStatus",
+      "signature": "useEspWifiStatus(): inferred-by-TypeScript",
+      "line": 144,
+      "endLine": 150,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useContext"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/EspWifiStatusContext.tsx",
+        "line": 144
+      },
+      "description": "Adapta la llamada a `useContext` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "useWifiCredentials",
+      "displayName": "useWifiCredentials",
+      "signature": "useWifiCredentials(): inferred-by-TypeScript",
+      "line": 475,
+      "endLine": 485,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useContext"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/WifiCredentialsContext.tsx",
+        "line": 475
+      },
+      "description": "Adapta la llamada a `useContext` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "validateApCredentials",
+      "displayName": "validateApCredentials",
+      "signature": "validateApCredentials(ssid: string, password: string, ip: string): inferred-by-TypeScript",
+      "line": 2108,
+      "endLine": 2129,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "isValidIpv4",
+        "ssid.trim"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/WifiSection.tsx",
+        "line": 2108
+      },
+      "description": "Coordina `isValidIpv4`, `ssid.trim` para Estado Wi-Fi, AP y credenciales Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "validateStationCredentials",
+      "displayName": "validateStationCredentials",
+      "signature": "validateStationCredentials(ssid: string, password: string, reusePassword: boolean, ip: string, gateway: string, subnet: string): inferred-by-TypeScript",
+      "line": 2079,
+      "endLine": 2106,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "isValidIpv4",
+        "ssid.trim"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/WifiSection.tsx",
+        "line": 2079
+      },
+      "description": "Coordina `isValidIpv4`, `ssid.trim` para Estado Wi-Fi, AP y credenciales Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "validateSubmit",
+      "displayName": "validateSubmit",
+      "signature": "validateSubmit(state: WifiCredentialsState, ssid: string, password: string): inferred-by-TypeScript",
+      "line": 487,
+      "endLine": 521,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "ssid.trim"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/WifiCredentialsContext.tsx",
+        "line": 487
+      },
+      "description": "Adapta la llamada a `ssid.trim` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "WifiCredentialsModal.handleCancel",
+      "displayName": "handleCancel",
+      "signature": "WifiCredentialsModal.handleCancel(): inferred-by-TypeScript",
+      "line": 74,
+      "endLine": 81,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "onCancel",
+        "onDismiss"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/WifiCredentialsModal.tsx",
+        "line": 74
+      },
+      "description": "Coordina `onCancel`, `onDismiss` para Estado Wi-Fi, AP y credenciales Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiCredentialsModal.handleClose",
+      "displayName": "handleClose",
+      "signature": "WifiCredentialsModal.handleClose(): inferred-by-TypeScript",
+      "line": 53,
+      "endLine": 62,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "onCancel",
+        "onDismiss"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/WifiCredentialsModal.tsx",
+        "line": 53
+      },
+      "description": "Coordina `onCancel`, `onDismiss` para Estado Wi-Fi, AP y credenciales Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiCredentialsModal.handleSubmit",
+      "displayName": "handleSubmit",
+      "signature": "WifiCredentialsModal.handleSubmit(event: FormEvent<HTMLFormElement>): inferred-by-TypeScript",
+      "line": 64,
+      "endLine": 72,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "event.preventDefault",
+        "onSubmit"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/WifiCredentialsModal.tsx",
+        "line": 64
+      },
+      "description": "Coordina `event.preventDefault`, `onSubmit` para Estado Wi-Fi, AP y credenciales Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiSection.closeModeSwitchConfirmation",
+      "displayName": "closeModeSwitchConfirmation",
+      "signature": "WifiSection.closeModeSwitchConfirmation(): inferred-by-TypeScript",
+      "line": 1036,
+      "endLine": 1041,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "setModeSwitchDestination",
+        "setModeSwitchError",
+        "setModeSwitchPhase"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/WifiSection.tsx",
+        "line": 1036
+      },
+      "description": "Coordina `setModeSwitchDestination`, `setModeSwitchError`, `setModeSwitchPhase` para Estado Wi-Fi, AP y credenciales Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiSection.confirmModeSwitch",
+      "displayName": "confirmModeSwitch",
+      "signature": "WifiSection.confirmModeSwitch(): inferred-by-TypeScript",
+      "line": 1043,
+      "endLine": 1098,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "createRequestId",
+        "readAnyString",
+        "request",
+        "setModeSwitchDestination",
+        "setModeSwitchError",
+        "setModeSwitchPhase"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/WifiSection.tsx",
+        "line": 1043
+      },
+      "description": "Coordina `createRequestId`, `readAnyString`, `request` para Estado Wi-Fi, AP y credenciales Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiSection.openModeSwitchConfirmation",
+      "displayName": "openModeSwitchConfirmation",
+      "signature": "WifiSection.openModeSwitchConfirmation(): inferred-by-TypeScript",
+      "line": 1030,
+      "endLine": 1034,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "setModeSwitchDestination",
+        "setModeSwitchError",
+        "setModeSwitchPhase"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/WifiSection.tsx",
+        "line": 1030
+      },
+      "description": "Coordina `setModeSwitchDestination`, `setModeSwitchError`, `setModeSwitchPhase` para Estado Wi-Fi, AP y credenciales Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiSection.retryStation",
+      "displayName": "retryStation",
+      "signature": "WifiSection.retryStation(): inferred-by-TypeScript",
+      "line": 981,
+      "endLine": 995,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "refreshWifiStatus",
+        "request",
+        "setStationFeedback",
+        "setStationPhase"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/WifiSection.tsx",
+        "line": 981
+      },
+      "description": "Coordina `refreshWifiStatus`, `request`, `setStationFeedback` para Estado Wi-Fi, AP y credenciales Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "isSameIpv4.normalize",
+      "displayName": "normalize",
+      "signature": "isSameIpv4.normalize(value: string): inferred-by-TypeScript",
+      "line": 2230,
+      "endLine": 2230,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "value.trim",
+        "value.trim().replace"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/WifiSection.tsx",
+        "line": 2230
+      },
+      "description": "Coordina `value.trim`, `value.trim().replace` para Estado Wi-Fi, AP y credenciales Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "readWifiNetworksFromBytes.parse",
+      "displayName": "parse",
+      "signature": "readWifiNetworksFromBytes.parse(offset: number, count: number): inferred-by-TypeScript",
+      "line": 2540,
+      "endLine": 2563,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "bytes.slice",
+        "decodeWifiSsid",
+        "networks.push"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/WifiSection.tsx",
+        "line": 2540
+      },
+      "description": "Coordina `bytes.slice`, `decodeWifiSsid`, `networks.push` para Estado Wi-Fi, AP y credenciales Web.",
+      "descriptionOrigin": "structural"
+    }
+  ],
+  "hooks": [
+    {
+      "callee": "useLocation",
+      "scope": "ApProvisioningGate",
+      "line": 6,
+      "arguments": 0,
+      "path": "src/components/ApProvisioningGate.tsx"
+    },
+    {
+      "callee": "useNavigate",
+      "scope": "ApProvisioningGate",
+      "line": 7,
+      "arguments": 0,
+      "path": "src/components/ApProvisioningGate.tsx"
+    },
+    {
+      "callee": "useUser",
+      "scope": "ApProvisioningGate",
+      "line": 8,
+      "arguments": 0,
+      "path": "src/components/ApProvisioningGate.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "ApProvisioningGate",
+      "line": 10,
+      "arguments": 2,
+      "path": "src/components/ApProvisioningGate.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "WifiCredentialsModal",
+      "line": 30,
+      "arguments": 1,
+      "path": "src/components/WifiCredentialsModal.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "WifiCredentialsModal",
+      "line": 32,
+      "arguments": 2,
+      "path": "src/components/WifiCredentialsModal.tsx"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "WifiCredentialsModal",
+      "line": 48,
+      "arguments": 2,
+      "path": "src/components/WifiCredentialsModal.tsx"
+    },
+    {
+      "callee": "useWebSocket",
+      "scope": "EspWifiStatusProvider",
+      "line": 49,
+      "arguments": 0,
+      "path": "src/contexts/EspWifiStatusContext.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "EspWifiStatusProvider",
+      "line": 50,
+      "arguments": 1,
+      "path": "src/contexts/EspWifiStatusContext.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "EspWifiStatusProvider",
+      "line": 51,
+      "arguments": 1,
+      "path": "src/contexts/EspWifiStatusContext.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "EspWifiStatusProvider",
+      "line": 52,
+      "arguments": 1,
+      "path": "src/contexts/EspWifiStatusContext.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "EspWifiStatusProvider",
+      "line": 53,
+      "arguments": 1,
+      "path": "src/contexts/EspWifiStatusContext.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "EspWifiStatusProvider",
+      "line": 54,
+      "arguments": 1,
+      "path": "src/contexts/EspWifiStatusContext.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "EspWifiStatusProvider",
+      "line": 55,
+      "arguments": 1,
+      "path": "src/contexts/EspWifiStatusContext.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "EspWifiStatusProvider",
+      "line": 57,
+      "arguments": 2,
+      "path": "src/contexts/EspWifiStatusContext.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "EspWifiStatusProvider",
+      "line": 93,
+      "arguments": 2,
+      "path": "src/contexts/EspWifiStatusContext.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "EspWifiStatusProvider",
+      "line": 106,
+      "arguments": 2,
+      "path": "src/contexts/EspWifiStatusContext.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "EspWifiStatusProvider",
+      "line": 121,
+      "arguments": 2,
+      "path": "src/contexts/EspWifiStatusContext.tsx"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "EspWifiStatusProvider",
+      "line": 127,
+      "arguments": 2,
+      "path": "src/contexts/EspWifiStatusContext.tsx"
+    },
+    {
+      "callee": "useContext",
+      "scope": "useEspWifiStatus",
+      "line": 145,
+      "arguments": 1,
+      "path": "src/contexts/EspWifiStatusContext.tsx"
+    },
+    {
+      "callee": "useWebSocket",
+      "scope": "WifiCredentialsProvider",
+      "line": 78,
+      "arguments": 0,
+      "path": "src/contexts/WifiCredentialsContext.tsx"
+    },
+    {
+      "callee": "useUser",
+      "scope": "WifiCredentialsProvider",
+      "line": 79,
+      "arguments": 0,
+      "path": "src/contexts/WifiCredentialsContext.tsx"
+    },
+    {
+      "callee": "useEspWifiStatus",
+      "scope": "WifiCredentialsProvider",
+      "line": 81,
+      "arguments": 0,
+      "path": "src/contexts/WifiCredentialsContext.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "WifiCredentialsProvider",
+      "line": 82,
+      "arguments": 1,
+      "path": "src/contexts/WifiCredentialsContext.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "WifiCredentialsProvider",
+      "line": 83,
+      "arguments": 1,
+      "path": "src/contexts/WifiCredentialsContext.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "WifiCredentialsProvider",
+      "line": 84,
+      "arguments": 1,
+      "path": "src/contexts/WifiCredentialsContext.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "WifiCredentialsProvider",
+      "line": 86,
+      "arguments": 2,
+      "path": "src/contexts/WifiCredentialsContext.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "WifiCredentialsProvider",
+      "line": 93,
+      "arguments": 2,
+      "path": "src/contexts/WifiCredentialsContext.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "WifiCredentialsProvider",
+      "line": 98,
+      "arguments": 2,
+      "path": "src/contexts/WifiCredentialsContext.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "WifiCredentialsProvider",
+      "line": 106,
+      "arguments": 2,
+      "path": "src/contexts/WifiCredentialsContext.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "WifiCredentialsProvider",
+      "line": 123,
+      "arguments": 2,
+      "path": "src/contexts/WifiCredentialsContext.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "WifiCredentialsProvider",
+      "line": 159,
+      "arguments": 2,
+      "path": "src/contexts/WifiCredentialsContext.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "WifiCredentialsProvider",
+      "line": 186,
+      "arguments": 2,
+      "path": "src/contexts/WifiCredentialsContext.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "WifiCredentialsProvider",
+      "line": 216,
+      "arguments": 2,
+      "path": "src/contexts/WifiCredentialsContext.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "WifiCredentialsProvider",
+      "line": 371,
+      "arguments": 2,
+      "path": "src/contexts/WifiCredentialsContext.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "WifiCredentialsProvider",
+      "line": 396,
+      "arguments": 2,
+      "path": "src/contexts/WifiCredentialsContext.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "WifiCredentialsProvider",
+      "line": 411,
+      "arguments": 2,
+      "path": "src/contexts/WifiCredentialsContext.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "WifiCredentialsProvider",
+      "line": 418,
+      "arguments": 2,
+      "path": "src/contexts/WifiCredentialsContext.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "WifiCredentialsProvider",
+      "line": 424,
+      "arguments": 2,
+      "path": "src/contexts/WifiCredentialsContext.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "WifiCredentialsProvider",
+      "line": 430,
+      "arguments": 1,
+      "path": "src/contexts/WifiCredentialsContext.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "WifiCredentialsProvider",
+      "line": 431,
+      "arguments": 2,
+      "path": "src/contexts/WifiCredentialsContext.tsx"
+    },
+    {
+      "callee": "useContext",
+      "scope": "useWifiCredentials",
+      "line": 476,
+      "arguments": 1,
+      "path": "src/contexts/WifiCredentialsContext.tsx"
+    },
+    {
+      "callee": "useWebSocket",
+      "scope": "useApFallback",
+      "line": 10,
+      "arguments": 0,
+      "path": "src/hooks/useApFallback.ts"
+    },
+    {
+      "callee": "useUser",
+      "scope": "useApFallback",
+      "line": 11,
+      "arguments": 0,
+      "path": "src/hooks/useApFallback.ts"
+    },
+    {
+      "callee": "useState",
+      "scope": "useApFallback",
+      "line": 14,
+      "arguments": 1,
+      "path": "src/hooks/useApFallback.ts"
+    },
+    {
+      "callee": "useState",
+      "scope": "useApFallback",
+      "line": 15,
+      "arguments": 1,
+      "path": "src/hooks/useApFallback.ts"
+    },
+    {
+      "callee": "useState",
+      "scope": "useApFallback",
+      "line": 16,
+      "arguments": 1,
+      "path": "src/hooks/useApFallback.ts"
+    },
+    {
+      "callee": "useRef",
+      "scope": "useApFallback",
+      "line": 17,
+      "arguments": 1,
+      "path": "src/hooks/useApFallback.ts"
+    },
+    {
+      "callee": "useRef",
+      "scope": "useApFallback",
+      "line": 18,
+      "arguments": 1,
+      "path": "src/hooks/useApFallback.ts"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "useApFallback",
+      "line": 20,
+      "arguments": 2,
+      "path": "src/hooks/useApFallback.ts"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "useApFallback",
+      "line": 30,
+      "arguments": 2,
+      "path": "src/hooks/useApFallback.ts"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "useApFallback",
+      "line": 37,
+      "arguments": 2,
+      "path": "src/hooks/useApFallback.ts"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "useApFallback",
+      "line": 52,
+      "arguments": 2,
+      "path": "src/hooks/useApFallback.ts"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "useApFallback",
+      "line": 53,
+      "arguments": 2,
+      "path": "src/hooks/useApFallback.ts"
+    },
+    {
+      "callee": "useWebSocket",
+      "scope": "WifiSection",
+      "line": 89,
+      "arguments": 0,
+      "path": "src/pages/WifiSection.tsx"
+    },
+    {
+      "callee": "useUser",
+      "scope": "WifiSection",
+      "line": 90,
+      "arguments": 0,
+      "path": "src/pages/WifiSection.tsx"
+    },
+    {
+      "callee": "useEspWifiStatus",
+      "scope": "WifiSection",
+      "line": 98,
+      "arguments": 0,
+      "path": "src/pages/WifiSection.tsx"
+    },
+    {
+      "callee": "useApFallback",
+      "scope": "WifiSection",
+      "line": 99,
+      "arguments": 0,
+      "path": "src/pages/WifiSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "WifiSection",
+      "line": 100,
+      "arguments": 1,
+      "path": "src/pages/WifiSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "WifiSection",
+      "line": 103,
+      "arguments": 1,
+      "path": "src/pages/WifiSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "WifiSection",
+      "line": 104,
+      "arguments": 1,
+      "path": "src/pages/WifiSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "WifiSection",
+      "line": 105,
+      "arguments": 1,
+      "path": "src/pages/WifiSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "WifiSection",
+      "line": 106,
+      "arguments": 1,
+      "path": "src/pages/WifiSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "WifiSection",
+      "line": 107,
+      "arguments": 1,
+      "path": "src/pages/WifiSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "WifiSection",
+      "line": 108,
+      "arguments": 1,
+      "path": "src/pages/WifiSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "WifiSection",
+      "line": 109,
+      "arguments": 1,
+      "path": "src/pages/WifiSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "WifiSection",
+      "line": 110,
+      "arguments": 1,
+      "path": "src/pages/WifiSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "WifiSection",
+      "line": 111,
+      "arguments": 1,
+      "path": "src/pages/WifiSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "WifiSection",
+      "line": 114,
+      "arguments": 1,
+      "path": "src/pages/WifiSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "WifiSection",
+      "line": 117,
+      "arguments": 1,
+      "path": "src/pages/WifiSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "WifiSection",
+      "line": 120,
+      "arguments": 1,
+      "path": "src/pages/WifiSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "WifiSection",
+      "line": 121,
+      "arguments": 1,
+      "path": "src/pages/WifiSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "WifiSection",
+      "line": 122,
+      "arguments": 1,
+      "path": "src/pages/WifiSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "WifiSection",
+      "line": 125,
+      "arguments": 1,
+      "path": "src/pages/WifiSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "WifiSection",
+      "line": 126,
+      "arguments": 1,
+      "path": "src/pages/WifiSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "WifiSection",
+      "line": 127,
+      "arguments": 1,
+      "path": "src/pages/WifiSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "WifiSection",
+      "line": 128,
+      "arguments": 1,
+      "path": "src/pages/WifiSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "WifiSection",
+      "line": 129,
+      "arguments": 1,
+      "path": "src/pages/WifiSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "WifiSection",
+      "line": 130,
+      "arguments": 1,
+      "path": "src/pages/WifiSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "WifiSection",
+      "line": 133,
+      "arguments": 1,
+      "path": "src/pages/WifiSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "WifiSection",
+      "line": 136,
+      "arguments": 1,
+      "path": "src/pages/WifiSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "WifiSection",
+      "line": 137,
+      "arguments": 1,
+      "path": "src/pages/WifiSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "WifiSection",
+      "line": 139,
+      "arguments": 1,
+      "path": "src/pages/WifiSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "WifiSection",
+      "line": 149,
+      "arguments": 1,
+      "path": "src/pages/WifiSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "WifiSection",
+      "line": 151,
+      "arguments": 1,
+      "path": "src/pages/WifiSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "WifiSection",
+      "line": 152,
+      "arguments": 1,
+      "path": "src/pages/WifiSection.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "WifiSection",
+      "line": 154,
+      "arguments": 1,
+      "path": "src/pages/WifiSection.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "WifiSection",
+      "line": 155,
+      "arguments": 1,
+      "path": "src/pages/WifiSection.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "WifiSection",
+      "line": 160,
+      "arguments": 1,
+      "path": "src/pages/WifiSection.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "WifiSection",
+      "line": 161,
+      "arguments": 1,
+      "path": "src/pages/WifiSection.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "WifiSection",
+      "line": 162,
+      "arguments": 1,
+      "path": "src/pages/WifiSection.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "WifiSection",
+      "line": 163,
+      "arguments": 1,
+      "path": "src/pages/WifiSection.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "WifiSection",
+      "line": 164,
+      "arguments": 1,
+      "path": "src/pages/WifiSection.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "WifiSection",
+      "line": 165,
+      "arguments": 1,
+      "path": "src/pages/WifiSection.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "WifiSection",
+      "line": 167,
+      "arguments": 2,
+      "path": "src/pages/WifiSection.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "WifiSection",
+      "line": 176,
+      "arguments": 2,
+      "path": "src/pages/WifiSection.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "WifiSection",
+      "line": 182,
+      "arguments": 2,
+      "path": "src/pages/WifiSection.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "WifiSection",
+      "line": 287,
+      "arguments": 2,
+      "path": "src/pages/WifiSection.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "WifiSection",
+      "line": 312,
+      "arguments": 2,
+      "path": "src/pages/WifiSection.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "WifiSection",
+      "line": 338,
+      "arguments": 2,
+      "path": "src/pages/WifiSection.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "WifiSection",
+      "line": 347,
+      "arguments": 2,
+      "path": "src/pages/WifiSection.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "WifiSection",
+      "line": 355,
+      "arguments": 2,
+      "path": "src/pages/WifiSection.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "WifiSection",
+      "line": 400,
+      "arguments": 2,
+      "path": "src/pages/WifiSection.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "WifiSection",
+      "line": 426,
+      "arguments": 2,
+      "path": "src/pages/WifiSection.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "WifiSection",
+      "line": 446,
+      "arguments": 2,
+      "path": "src/pages/WifiSection.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "WifiSection",
+      "line": 514,
+      "arguments": 2,
+      "path": "src/pages/WifiSection.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "WifiSection",
+      "line": 592,
+      "arguments": 2,
+      "path": "src/pages/WifiSection.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "WifiSection",
+      "line": 720,
+      "arguments": 2,
+      "path": "src/pages/WifiSection.tsx"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "WifiSection",
+      "line": 998,
+      "arguments": 2,
+      "path": "src/pages/WifiSection.tsx"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "WifiSection",
+      "line": 1100,
+      "arguments": 2,
+      "path": "src/pages/WifiSection.tsx"
+    }
+  ]
+}

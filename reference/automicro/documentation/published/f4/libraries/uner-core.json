@@ -1,0 +1,875 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "f4:module/Core/Inc/uner_core.h",
+  "slug": "uner-core",
+  "title": "Parser y cola UNER v2",
+  "target": "f4",
+  "kind": "núcleo",
+  "status": "source-documented",
+  "verification": "not-run-user-instruction",
+  "snapshotDate": "2026-10-20",
+  "responsibility": "Reconoce frames UNER v2 byte a byte, comprueba estructura/checksum y encola paquetes con memoria del llamador.",
+  "scope": "Header UNER, largo, token, versión, ruta, ID, payload y XOR. No conoce nombres JSON ni efectos físicos de comandos.",
+  "state": "UNER_Core conserva configuración, FSM, acumuladores, slots/payload_pool prestados, índices y contadores. UNER_Packet contiene una vista del payload y transporte de origen; no es propietario de un bloque dinámico.",
+  "lifecycle": [
+    "Init conecta slots y pool con tamaño suficiente.",
+    "PushByte avanza parser y descarta/resincroniza al detectar frame inválido.",
+    "Al completar encola y avisa por on_packet; Dequeue copia descriptor, no copia sus bytes.",
+    "ReleasePacket es actualmente no-op; el consumidor debe terminar antes de reutilizar el slot."
+  ],
+  "interactions": [
+    "UNER_Handle registra callback de paquete para diferir despacho; UART/USB implementan la entrada de bytes.",
+    "UNER_BuildFrame escribe encabezado/ruta/payload y XOR en un buffer externo."
+  ],
+  "limitations": [
+    "Payload máximo de un byte: 255 bytes; total frame=10+len.",
+    "Cola llena, frame inválido y falta de ruta no tienen el mismo tratamiento.",
+    "El core no incorpora requestId ni correlación de transacciones Web."
+  ],
+  "modularity": "Sin HAL; el protocolo tiene sus propias capas de datos. Los transportes entregan bytes con ID y límite de payload.",
+  "files": [
+    {
+      "path": "Core/Inc/uner_core.h",
+      "rootId": "f4",
+      "sha256": "c0b74272f7ecd9baab12183ada21e273bfaaf74c096f172b688d0f90339e0dd4",
+      "includes": [
+        "uner_core_types.h"
+      ]
+    },
+    {
+      "path": "Core/Inc/uner_core_types.h",
+      "rootId": "f4",
+      "sha256": "fce205d1af3264b3107992cee49588d783f7049264941b367f9d7e30959fde5b",
+      "includes": [
+        "stdint.h",
+        "stddef.h",
+        "uner_v2.h",
+        "uner_status.h"
+      ]
+    },
+    {
+      "path": "Core/Inc/uner_v2.h",
+      "rootId": "f4",
+      "sha256": "db6d48d6e9578032d39e47cc24e096b86160ea285e987769e540891c5094f1d0",
+      "includes": [
+        "stdint.h"
+      ]
+    },
+    {
+      "path": "Core/Inc/uner_status.h",
+      "rootId": "f4",
+      "sha256": "e3ebf968db51ef05e3cf787d2c9204eef81cdaded731ace3d0539862d551eac4",
+      "includes": []
+    },
+    {
+      "path": "Core/Src/uner_core.c",
+      "rootId": "f4",
+      "sha256": "59d0f1ba072abeafad4d6e69f8f1e8d7366ce4596f87a1abf1daded77b194d84",
+      "includes": [
+        "uner_core.h",
+        "string.h"
+      ]
+    }
+  ],
+  "findings": [
+    "AMDOC-F4-004"
+  ],
+  "types": [
+    {
+      "name": "UNER_Packet",
+      "fields": [
+        {
+          "name": "ver",
+          "declaration": "uint8_t ver",
+          "callback": false,
+          "ownerType": "UNER_Packet",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_core_types.h",
+            "line": 29
+          },
+          "description": "Versión de frame decodificada; el protocolo actual usa 2."
+        },
+        {
+          "name": "src",
+          "declaration": "uint8_t src",
+          "callback": false,
+          "ownerType": "UNER_Packet",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_core_types.h",
+            "line": 30
+          },
+          "description": "Nodo origen de cuatro bits de la ruta UNER."
+        },
+        {
+          "name": "dst",
+          "declaration": "uint8_t dst",
+          "callback": false,
+          "ownerType": "UNER_Packet",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_core_types.h",
+            "line": 31
+          },
+          "description": "Nodo destino de cuatro bits de la ruta UNER."
+        },
+        {
+          "name": "cmd",
+          "declaration": "uint8_t cmd",
+          "callback": false,
+          "ownerType": "UNER_Packet",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_core_types.h",
+            "line": 32
+          },
+          "description": "Identificador numérico del comando/evento recibido."
+        },
+        {
+          "name": "len",
+          "declaration": "uint8_t len",
+          "callback": false,
+          "ownerType": "UNER_Packet",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_core_types.h",
+            "line": 33
+          },
+          "description": "Cantidad válida de bytes de payload, entre 0 y 255."
+        },
+        {
+          "name": "payload",
+          "declaration": "uint8_t *payload",
+          "callback": false,
+          "ownerType": "UNER_Packet",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_core_types.h",
+            "line": 34
+          },
+          "description": "Vista del payload; copiar antes de permitir la reutilización del slot del parser."
+        },
+        {
+          "name": "transport_id",
+          "declaration": "uint8_t transport_id",
+          "callback": false,
+          "ownerType": "UNER_Packet",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_core_types.h",
+            "line": 35
+          },
+          "description": "Transporte de entrada/salida; forma parte de la identidad del endpoint."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_core_types.h",
+        "line": 29
+      }
+    },
+    {
+      "name": "UNER_CoreConfig",
+      "fields": [
+        {
+          "name": "this_node",
+          "declaration": "uint8_t this_node",
+          "callback": false,
+          "ownerType": "UNER_CoreConfig",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_core_types.h",
+            "line": 41
+          },
+          "description": "Nodo local usado para aceptación y despacho."
+        },
+        {
+          "name": "accept_src_mask",
+          "declaration": "uint16_t accept_src_mask",
+          "callback": false,
+          "ownerType": "UNER_CoreConfig",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_core_types.h",
+            "line": 42
+          },
+          "description": "Máscara de nodos origen admitidos por parser."
+        },
+        {
+          "name": "accept_dst_mask",
+          "declaration": "uint16_t accept_dst_mask",
+          "callback": false,
+          "ownerType": "UNER_CoreConfig",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_core_types.h",
+            "line": 43
+          },
+          "description": "Máscara de destinos admitidos por parser."
+        },
+        {
+          "name": "accept_broadcast",
+          "declaration": "uint8_t accept_broadcast",
+          "callback": false,
+          "ownerType": "UNER_CoreConfig",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_core_types.h",
+            "line": 44
+          },
+          "description": "Permite frames dirigidos al nodo broadcast."
+        },
+        {
+          "name": "default_max_payload",
+          "declaration": "uint8_t default_max_payload",
+          "callback": false,
+          "ownerType": "UNER_CoreConfig",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_core_types.h",
+            "line": 45
+          },
+          "description": "Máximo payload si el transporte no impone uno más estricto."
+        },
+        {
+          "name": "on_packet",
+          "declaration": "UNER_OnPacketCb on_packet",
+          "callback": false,
+          "ownerType": "UNER_CoreConfig",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_core_types.h",
+            "line": 46
+          },
+          "description": "Notifica paquete encolado; el handle instala un wrapper para diferir procesamiento."
+        },
+        {
+          "name": "cb_ctx",
+          "declaration": "void *cb_ctx",
+          "callback": false,
+          "ownerType": "UNER_CoreConfig",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_core_types.h",
+            "line": 47
+          },
+          "description": "Contexto prestado al callback de paquete."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_core_types.h",
+        "line": 41
+      }
+    },
+    {
+      "name": "UNER_Core",
+      "fields": [
+        {
+          "name": "cfg",
+          "declaration": "UNER_CoreConfig cfg",
+          "callback": false,
+          "ownerType": "UNER_Core",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_core_types.h",
+            "line": 65
+          },
+          "description": "Dato de estado/configuración `cfg`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "state",
+          "declaration": "UNER_ParserState state",
+          "callback": false,
+          "ownerType": "UNER_Core",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_core_types.h",
+            "line": 66
+          },
+          "description": "Estado del reconocimiento byte a byte del frame."
+        },
+        {
+          "name": "len_expected",
+          "declaration": "uint8_t len_expected",
+          "callback": false,
+          "ownerType": "UNER_Core",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_core_types.h",
+            "line": 68
+          },
+          "description": "Longitud de payload declarada por el frame en recepción."
+        },
+        {
+          "name": "payload_index",
+          "declaration": "uint8_t payload_index",
+          "callback": false,
+          "ownerType": "UNER_Core",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_core_types.h",
+            "line": 69
+          },
+          "description": "Cantidad/posición de bytes de payload ya recibidos."
+        },
+        {
+          "name": "chk_acc",
+          "declaration": "uint8_t chk_acc",
+          "callback": false,
+          "ownerType": "UNER_Core",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_core_types.h",
+            "line": 70
+          },
+          "description": "XOR acumulado de los bytes del frame."
+        },
+        {
+          "name": "route",
+          "declaration": "uint8_t route",
+          "callback": false,
+          "ownerType": "UNER_Core",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_core_types.h",
+            "line": 71
+          },
+          "description": "Dato de estado/configuración `route`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "cmd",
+          "declaration": "uint8_t cmd",
+          "callback": false,
+          "ownerType": "UNER_Core",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_core_types.h",
+            "line": 72
+          },
+          "description": "Dato de estado/configuración `cmd`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ver",
+          "declaration": "uint8_t ver",
+          "callback": false,
+          "ownerType": "UNER_Core",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_core_types.h",
+            "line": 73
+          },
+          "description": "Dato de estado/configuración `ver`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "transport_id",
+          "declaration": "uint8_t transport_id",
+          "callback": false,
+          "ownerType": "UNER_Core",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_core_types.h",
+            "line": 74
+          },
+          "description": "Transporte de entrada/salida; forma parte de la identidad del endpoint."
+        },
+        {
+          "name": "max_payload_transport",
+          "declaration": "uint8_t max_payload_transport",
+          "callback": false,
+          "ownerType": "UNER_Core",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_core_types.h",
+            "line": 75
+          },
+          "description": "Dato de estado/configuración `max_payload_transport`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "drop_frame",
+          "declaration": "uint8_t drop_frame",
+          "callback": false,
+          "ownerType": "UNER_Core",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_core_types.h",
+            "line": 76
+          },
+          "description": "Dato de estado/configuración `drop_frame`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "pkt_slots",
+          "declaration": "UNER_Packet *pkt_slots",
+          "callback": false,
+          "ownerType": "UNER_Core",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_core_types.h",
+            "line": 77
+          },
+          "description": "Array prestado de descriptores usado como cola circular."
+        },
+        {
+          "name": "payload_pool",
+          "declaration": "uint8_t *payload_pool",
+          "callback": false,
+          "ownerType": "UNER_Core",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_core_types.h",
+            "line": 79
+          },
+          "description": "Memoria prestada dividida en regiones por slot; los paquetes apuntan a esta memoria."
+        },
+        {
+          "name": "payload_stride",
+          "declaration": "uint16_t payload_stride",
+          "callback": false,
+          "ownerType": "UNER_Core",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_core_types.h",
+            "line": 80
+          },
+          "description": "Separación en bytes entre regiones de payload de slots."
+        },
+        {
+          "name": "slot_count",
+          "declaration": "uint8_t slot_count",
+          "callback": false,
+          "ownerType": "UNER_Core",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_core_types.h",
+            "line": 81
+          },
+          "description": "Capacidad de paquetes de la cola."
+        },
+        {
+          "name": "q_head",
+          "declaration": "volatile uint8_t q_head",
+          "callback": false,
+          "ownerType": "UNER_Core",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_core_types.h",
+            "line": 82
+          },
+          "description": "Índice del siguiente slot a producir."
+        },
+        {
+          "name": "q_tail",
+          "declaration": "volatile uint8_t q_tail",
+          "callback": false,
+          "ownerType": "UNER_Core",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_core_types.h",
+            "line": 83
+          },
+          "description": "Índice del siguiente slot a consumir."
+        },
+        {
+          "name": "q_count",
+          "declaration": "volatile uint8_t q_count",
+          "callback": false,
+          "ownerType": "UNER_Core",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_core_types.h",
+            "line": 84
+          },
+          "description": "Cantidad actual de paquetes en cola."
+        },
+        {
+          "name": "ok_frames",
+          "declaration": "uint32_t ok_frames",
+          "callback": false,
+          "ownerType": "UNER_Core",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_core_types.h",
+            "line": 85
+          },
+          "description": "Dato de estado/configuración `ok_frames`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "chk_fail",
+          "declaration": "uint32_t chk_fail",
+          "callback": false,
+          "ownerType": "UNER_Core",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_core_types.h",
+            "line": 87
+          },
+          "description": "Dato de estado/configuración `chk_fail`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "len_fail",
+          "declaration": "uint32_t len_fail",
+          "callback": false,
+          "ownerType": "UNER_Core",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_core_types.h",
+            "line": 88
+          },
+          "description": "Dato de estado/configuración `len_fail`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "header_resync",
+          "declaration": "uint32_t header_resync",
+          "callback": false,
+          "ownerType": "UNER_Core",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_core_types.h",
+            "line": 89
+          },
+          "description": "Dato de estado/configuración `header_resync`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "token_fail",
+          "declaration": "uint32_t token_fail",
+          "callback": false,
+          "ownerType": "UNER_Core",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_core_types.h",
+            "line": 90
+          },
+          "description": "Dato de estado/configuración `token_fail`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ver_fail",
+          "declaration": "uint32_t ver_fail",
+          "callback": false,
+          "ownerType": "UNER_Core",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_core_types.h",
+            "line": 91
+          },
+          "description": "Dato de estado/configuración `ver_fail`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "queue_overflow",
+          "declaration": "uint32_t queue_overflow",
+          "callback": false,
+          "ownerType": "UNER_Core",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_core_types.h",
+            "line": 92
+          },
+          "description": "Dato de estado/configuración `queue_overflow`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "last_reset_reason",
+          "declaration": "UNER_ResetReason last_reset_reason",
+          "callback": false,
+          "ownerType": "UNER_Core",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_core_types.h",
+            "line": 93
+          },
+          "description": "Memoria de la observación anterior usada por la máquina de estados."
+        },
+        {
+          "name": "last_reset_state",
+          "declaration": "uint8_t last_reset_state",
+          "callback": false,
+          "ownerType": "UNER_Core",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_core_types.h",
+            "line": 95
+          },
+          "description": "Memoria de la observación anterior usada por la máquina de estados."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_core_types.h",
+        "line": 65
+      }
+    },
+    {
+      "name": "UNER_OnPacketCb",
+      "callbackType": "void (*UNER_OnPacketCb)(void *ctx, const UNER_Packet *p)",
+      "fields": [],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_core_types.h",
+        "line": 38
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "UNER_BuildFrame",
+      "signature": "UNER_Status UNER_BuildFrame( uint8_t *out, uint16_t out_max, uint8_t src, uint8_t dst, uint8_t cmd, const uint8_t *payload, uint8_t len)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_core.h",
+        "line": 26
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "UNER_Core_ComputeChecksum",
+        "memcpy"
+      ],
+      "writes": [],
+      "description": "Serializa frame UNER v2 y checksum en el buffer del llamador.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_core.c",
+        "line": 306
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "UNER_Core_ComputeChecksum",
+      "signature": "uint8_t UNER_Core_ComputeChecksum(const uint8_t *data, uint16_t len)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_core.h",
+        "line": 25
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Calcula XOR de los bytes recibidos.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_core.c",
+        "line": 297
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "UNER_Core_Dequeue",
+      "signature": "uint8_t UNER_Core_Dequeue(UNER_Core *core, UNER_Packet *out)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_core.h",
+        "line": 22
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [
+        "q_count",
+        "q_tail"
+      ],
+      "description": "Extrae un descriptor de paquete manteniendo su payload prestado.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_core.c",
+        "line": 279
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "UNER_Core_Init",
+      "signature": "UNER_Status UNER_Core_Init( UNER_Core *core, const UNER_CoreConfig *cfg, UNER_Packet *slots, uint8_t slot_count, uint8_t *payload_pool_bytes, uint16_t payload_pool_size)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_core.h",
+        "line": 7
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "uner_reset_parser"
+      ],
+      "writes": [
+        "cfg",
+        "chk_fail",
+        "header_resync",
+        "len_fail",
+        "ok_frames",
+        "payload_pool",
+        "payload_stride",
+        "pkt_slots",
+        "q_count",
+        "q_head",
+        "q_tail",
+        "queue_overflow",
+        "slot_count",
+        "token_fail",
+        "ver_fail"
+      ],
+      "description": "Inicializa parser y cola sobre memoria prestada del llamador.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_core.c",
+        "line": 40
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "UNER_Core_PushByte",
+      "signature": "UNER_Status UNER_Core_PushByte( UNER_Core *core, uint8_t transport_id, uint8_t max_payload_for_transport, uint8_t byte)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_core.h",
+        "line": 16
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "uner_accepts_dst",
+        "uner_accepts_src",
+        "uner_queue_commit",
+        "uner_reset_parser"
+      ],
+      "writes": [
+        "chk_acc",
+        "chk_fail",
+        "cmd",
+        "drop_frame",
+        "header_resync",
+        "len_expected",
+        "len_fail",
+        "max_payload_transport",
+        "ok_frames",
+        "payload_index",
+        "queue_overflow",
+        "route",
+        "state",
+        "token_fail",
+        "transport_id",
+        "ver",
+        "ver_fail"
+      ],
+      "description": "Procesa un byte del transporte con su límite de payload.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_core.c",
+        "line": 100
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "UNER_Core_ReleasePacket",
+      "signature": "void UNER_Core_ReleasePacket(UNER_Core *core, const UNER_Packet *p)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_core.h",
+        "line": 23
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Entrada de liberación actualmente sin trabajo; no extiende vida del payload.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_core.c",
+        "line": 291
+      },
+      "linkage": "header"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "uner_accepts_src",
+      "signature": "static uint8_t uner_accepts_src(const UNER_Core *core, uint8_t src)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_core.c",
+        "line": 8
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación uner accepts src de Parser y cola UNER v2; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "uner_accepts_dst",
+      "signature": "static uint8_t uner_accepts_dst(const UNER_Core *core, uint8_t dst)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_core.c",
+        "line": 13
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación uner accepts dst de Parser y cola UNER v2; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "uner_reset_parser",
+      "signature": "static void uner_reset_parser(UNER_Core *core, uint8_t reset_reason)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_core.c",
+        "line": 21
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [
+        "chk_acc",
+        "cmd",
+        "drop_frame",
+        "last_reset_reason",
+        "last_reset_state",
+        "len_expected",
+        "max_payload_transport",
+        "payload_index",
+        "route",
+        "state",
+        "transport_id",
+        "ver"
+      ],
+      "description": "Operación uner reset parser de Parser y cola UNER v2; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "uner_queue_commit",
+      "signature": "static UNER_Status uner_queue_commit(UNER_Core *core, uint8_t len)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_core.c",
+        "line": 74
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "on_packet"
+      ],
+      "writes": [
+        "cmd",
+        "dst",
+        "len",
+        "payload",
+        "q_count",
+        "q_head",
+        "queue_overflow",
+        "src",
+        "transport_id",
+        "ver"
+      ],
+      "description": "Coordina `on_packet` para Parser y cola UNER v2.",
+      "descriptionOrigin": "structural"
+    }
+  ]
+}

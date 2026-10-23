@@ -1,0 +1,3794 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "web:module/src/contexts/CarModeContext.tsx",
+  "slug": "motion-control",
+  "title": "Modo del auto y control de movimiento",
+  "target": "web",
+  "kind": "integración",
+  "status": "source-documented",
+  "snapshotDate": "2026-10-20",
+  "verification": "not-run-user-instruction",
+  "responsibility": "Presenta modo confirmado, armado/balance y consignas de movimiento/prueba.",
+  "scope": "IDLE/FOLLOW/TEST/GOTO y requests porcentuales con duración; no cierra el lazo de balance en navegador.",
+  "state": "Contexto guarda rawMode y label; hooks guardan pending/error/status. Intención local debe distinguirse de modo/estado confirmado.",
+  "modularity": "Capa React con API JSON; control y guardas efectivas pertenecen a F4.",
+  "lifecycle": [
+    "Consultar estado/escuchar eventos; al cambiar modo esperar status y valor aplicado.",
+    "Enviar consignas acotadas y cancelar/sincronizar al cambiar contexto."
+  ],
+  "interactions": [
+    "F4 responde antes de eventos derivados de cambio de modo.",
+    "ScreenContext mantiene otro normalizador de modo que debe aceptar los mismos cuatro valores."
+  ],
+  "limitations": [
+    "PWM/porcentaje no equivale a velocidad física.",
+    "Conflictos con calibración/GOTO/seguidor se rechazan en F4, aunque un control Web esté habilitado."
+  ],
+  "relationships": [],
+  "findings": [
+    "AMDOC-WEB-005"
+  ],
+  "files": [
+    {
+      "rootId": "web",
+      "path": "src/components/CarModeDropdown.tsx",
+      "sha256": "259c48084a432d0e8fb7b60743ab9179b0937362b205ff0ec840ec506499082b",
+      "imports": [
+        "../contexts/CarModeContext",
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/components/CarModeSelectorModal.tsx",
+      "sha256": "16e2e1d60b278c59464a1c84ef6d843a762b5a61944c09366a3506613335a2a9",
+      "imports": [
+        "../contexts/CarModeContext",
+        "../features/autoMotion/MotorDialog",
+        "./CarModeDropdown",
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/components/MotorBlock.tsx",
+      "sha256": "ce792225f459ee85a121401e75756fc2ff9c56ae8762c05f7e67c094cd2e075c",
+      "imports": [
+        "./StopDiscontinuityGlyph"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/contexts/CarModeContext.tsx",
+      "sha256": "98c86dec2d30c2f5b76dc1da01ad777e952d2edf23ba3ad0a1a99dab98e1b275",
+      "imports": [
+        "../hooks/useWebSocket",
+        "../protocol/wsApi",
+        "./UserContext",
+        "react",
+        "sonner"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/features/motion/MotionControlActions.tsx",
+      "sha256": "633e578cf73e9f8672bb81451aac6aaac6c06d757f9d5f7b910329b6261cb029",
+      "imports": [
+        "../../components/TransportActionButton",
+        "../../protocol/wsApi",
+        "./MotionControlIcon",
+        "./useMotionControl"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/features/motion/MotionControlIcon.tsx",
+      "sha256": "e7ea1b14218f2eb702d07eaed5d46a0512eac5de413a93445024ecb7b58f4419",
+      "imports": [],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/features/motion/MotionControlPanel.tsx",
+      "sha256": "f2c4968e3c79713fbefa07a9b03b42e96dd4f8187140d23311e36e95b54a8ccc",
+      "imports": [
+        "../../protocol/wsApi",
+        "./MotionControlActions",
+        "./MotionControlIcon",
+        "./motion.css",
+        "./useMotionControl",
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/features/motion/motion.css",
+      "sha256": "2817ff3f0beea49709e76d5b9fb5e05043f02b69571208c3cda129008eba136a",
+      "imports": [],
+      "analysisLevel": "support-inventory"
+    },
+    {
+      "rootId": "web",
+      "path": "src/features/motion/useMotionControl.ts",
+      "sha256": "df12ce99e650538e600ed457cbe24f127fdef51cd8a19535d8b3e66fdb2df2e4",
+      "imports": [
+        "../../hooks/useWebSocket",
+        "../../protocol/wsApi",
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/pages/ControlSection.tsx",
+      "sha256": "98c5d412e4906b34680c328b00d834fc03e90f42f9417570e8c265823758ae6d",
+      "imports": [
+        "../components/ModelLoadBoundary",
+        "../components/ModelLoadingScreen",
+        "../components/MotorBlock",
+        "../components/PageHeader",
+        "../components/SectionStatusStrip",
+        "../components/StopDiscontinuityGlyph",
+        "../components/SystemResetActions",
+        "../components/ThemeModeToggleCard",
+        "../components/TimelineRow",
+        "../components/TransportActionButton",
+        "../components/WebGLCanvas",
+        "../contexts/CarModeContext",
+        "../contexts/EspWifiStatusContext",
+        "../features/autoMotion/ControlNavigation",
+        "../features/autoMotion/ControlToolbar",
+        "../features/autoMotion/GotoPanel",
+        "../features/autoMotion/MotorDialog",
+        "../features/autoMotion/autoMotion.css",
+        "../features/autoMotion/useAutoMotion",
+        "../features/ir/irEmitterGeometry",
+        "../features/motion/MotionControlActions",
+        "../features/motion/MotionControlPanel",
+        "../features/motion/useMotionControl",
+        "../hooks/useWebSocket",
+        "../types/MotorTypes",
+        "../utils/dracoLoader",
+        "../utils/localModel",
+        "@react-three/drei",
+        "@react-three/fiber",
+        "react",
+        "react-router-dom",
+        "three",
+        "three/addons/loaders/GLTFLoader.js"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/types/MotorTypes.ts",
+      "sha256": "c68bd947fbd9a24658697772f4e0cf0a728103bf4af9227f633b84acd14d6c66",
+      "imports": [],
+      "analysisLevel": "typescript-ast-static"
+    }
+  ],
+  "types": [
+    {
+      "name": "BlockKind",
+      "kind": "TypeAliasDeclaration",
+      "type": "\"ramp\" | \"hold\" | \"pivot\" | \"arc\" | \"stop\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/MotorBlock.tsx",
+        "line": 3
+      }
+    },
+    {
+      "name": "Props",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "kind",
+          "declaration": "kind: BlockKind",
+          "callback": false,
+          "ownerType": "Props",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/MotorBlock.tsx",
+            "line": 6
+          },
+          "description": "Dato de estado/configuración `kind`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "selected",
+          "declaration": "selected?: boolean",
+          "callback": false,
+          "ownerType": "Props",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/MotorBlock.tsx",
+            "line": 7
+          },
+          "description": "Dato de estado/configuración `selected`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "pairSelected",
+          "declaration": "pairSelected?: boolean",
+          "callback": false,
+          "ownerType": "Props",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/MotorBlock.tsx",
+            "line": 9
+          },
+          "description": "Dato de estado/configuración `pairSelected`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "disabled",
+          "declaration": "disabled?: boolean",
+          "callback": false,
+          "ownerType": "Props",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/MotorBlock.tsx",
+            "line": 10
+          },
+          "description": "Dato de estado/configuración `disabled`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "onClick",
+          "declaration": "onClick?: () => void",
+          "callback": true,
+          "ownerType": "Props",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/MotorBlock.tsx",
+            "line": 11
+          },
+          "description": "Operación on Click de Modo del auto y control de movimiento; semántica fina pendiente de ampliación."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/MotorBlock.tsx",
+        "line": 5
+      }
+    },
+    {
+      "name": "CarModeLabel",
+      "kind": "TypeAliasDeclaration",
+      "type": "\"IDLE\" | \"FOLLOW\" | \"TEST\" | \"GOTO\" | \"UNKNOWN\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/CarModeContext.tsx",
+        "line": 17
+      }
+    },
+    {
+      "name": "SelectableCarMode",
+      "kind": "TypeAliasDeclaration",
+      "type": "Exclude<CarModeLabel, \"UNKNOWN\">",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/CarModeContext.tsx",
+        "line": 18
+      }
+    },
+    {
+      "name": "CarModeStatus",
+      "kind": "TypeAliasDeclaration",
+      "type": "\"idle\" | \"loading\" | \"synced\" | \"error\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/CarModeContext.tsx",
+        "line": 19
+      }
+    },
+    {
+      "name": "CarModeContextValue",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "mode",
+          "declaration": "mode: CarModeLabel",
+          "callback": false,
+          "ownerType": "CarModeContextValue",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/CarModeContext.tsx",
+            "line": 30
+          },
+          "description": "Dato de estado/configuración `mode`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "rawMode",
+          "declaration": "rawMode: number | null",
+          "callback": false,
+          "ownerType": "CarModeContextValue",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/CarModeContext.tsx",
+            "line": 31
+          },
+          "description": "Dato de estado/configuración `rawMode`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "isTestMode",
+          "declaration": "isTestMode: boolean",
+          "callback": false,
+          "ownerType": "CarModeContextValue",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/CarModeContext.tsx",
+            "line": 32
+          },
+          "description": "Dato de estado/configuración `isTestMode`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "status",
+          "declaration": "status: CarModeStatus",
+          "callback": false,
+          "ownerType": "CarModeContextValue",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/CarModeContext.tsx",
+            "line": 33
+          },
+          "description": "Último resultado y guardas del módulo; los getters pueden devolver una vista de este almacenamiento."
+        },
+        {
+          "name": "lastUpdatedAt",
+          "declaration": "lastUpdatedAt: number | null",
+          "callback": false,
+          "ownerType": "CarModeContextValue",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/CarModeContext.tsx",
+            "line": 34
+          },
+          "description": "Dato de estado/configuración `lastUpdatedAt`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "requestCarMode",
+          "declaration": "requestCarMode: () => void",
+          "callback": true,
+          "ownerType": "CarModeContextValue",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/CarModeContext.tsx",
+            "line": 35
+          },
+          "description": "Operación request Car Mode de Modo del auto y control de movimiento; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "setCarMode",
+          "declaration": "setCarMode: (mode: SelectableCarMode) => Promise<boolean>",
+          "callback": true,
+          "ownerType": "CarModeContextValue",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/CarModeContext.tsx",
+            "line": 36
+          },
+          "description": "Operación set Car Mode de Modo del auto y control de movimiento; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "applyCarModeValue",
+          "declaration": "applyCarModeValue: (value: number | string, source?: string) => void",
+          "callback": true,
+          "ownerType": "CarModeContextValue",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/CarModeContext.tsx",
+            "line": 37
+          },
+          "description": "Operación apply Car Mode Value de Modo del auto y control de movimiento; semántica fina pendiente de ampliación."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/CarModeContext.tsx",
+        "line": 29
+      }
+    },
+    {
+      "name": "CarModeProviderProps",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "children",
+          "declaration": "children: ReactNode",
+          "callback": false,
+          "ownerType": "CarModeProviderProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/CarModeContext.tsx",
+            "line": 41
+          },
+          "description": "Dato de estado/configuración `children`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/CarModeContext.tsx",
+        "line": 40
+      }
+    },
+    {
+      "name": "MotionIconName",
+      "kind": "TypeAliasDeclaration",
+      "type": "\"balance\" | \"stop\" | \"refresh\" | \"move\" | \"test\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/motion/MotionControlIcon.tsx",
+        "line": 1
+      }
+    },
+    {
+      "name": "MotionState",
+      "kind": "TypeAliasDeclaration",
+      "fields": [
+        {
+          "name": "status",
+          "declaration": "status: number",
+          "callback": false,
+          "ownerType": "MotionState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/motion/useMotionControl.ts",
+            "line": 6
+          },
+          "description": "Último resultado y guardas del módulo; los getters pueden devolver una vista de este almacenamiento."
+        },
+        {
+          "name": "motionArmed",
+          "declaration": "motionArmed: boolean",
+          "callback": false,
+          "ownerType": "MotionState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/motion/useMotionControl.ts",
+            "line": 7
+          },
+          "description": "Dato de estado/configuración `motionArmed`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "balanceActive",
+          "declaration": "balanceActive: boolean",
+          "callback": false,
+          "ownerType": "MotionState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/motion/useMotionControl.ts",
+            "line": 8
+          },
+          "description": "Dato de estado/configuración `balanceActive`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "commandActive",
+          "declaration": "commandActive: boolean",
+          "callback": false,
+          "ownerType": "MotionState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/motion/useMotionControl.ts",
+            "line": 9
+          },
+          "description": "Dato de estado/configuración `commandActive`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "safetyStop",
+          "declaration": "safetyStop: boolean",
+          "callback": false,
+          "ownerType": "MotionState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/motion/useMotionControl.ts",
+            "line": 10
+          },
+          "description": "Dato de estado/configuración `safetyStop`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "rejectReason",
+          "declaration": "rejectReason: number",
+          "callback": false,
+          "ownerType": "MotionState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/motion/useMotionControl.ts",
+            "line": 11
+          },
+          "description": "Dato de estado/configuración `rejectReason`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "carMode",
+          "declaration": "carMode: number",
+          "callback": false,
+          "ownerType": "MotionState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/motion/useMotionControl.ts",
+            "line": 12
+          },
+          "description": "Dato de estado/configuración `carMode`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "motorTestActive",
+          "declaration": "motorTestActive: boolean",
+          "callback": false,
+          "ownerType": "MotionState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/motion/useMotionControl.ts",
+            "line": 13
+          },
+          "description": "Dato de estado/configuración `motorTestActive`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/motion/useMotionControl.ts",
+        "line": 5
+      }
+    },
+    {
+      "name": "MotionController",
+      "kind": "TypeAliasDeclaration",
+      "type": "ReturnType<typeof useMotionControl>",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/motion/useMotionControl.ts",
+        "line": 138
+      }
+    },
+    {
+      "name": "BlockProps",
+      "kind": "TypeAliasDeclaration",
+      "fields": [
+        {
+          "name": "durationMs",
+          "declaration": "durationMs: number",
+          "callback": false,
+          "ownerType": "BlockProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/ControlSection.tsx",
+            "line": 111
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "speed",
+          "declaration": "speed?: number",
+          "callback": false,
+          "ownerType": "BlockProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/ControlSection.tsx",
+            "line": 112
+          },
+          "description": "Dato de estado/configuración `speed`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "fromPct",
+          "declaration": "fromPct?: number",
+          "callback": false,
+          "ownerType": "BlockProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/ControlSection.tsx",
+            "line": 113
+          },
+          "description": "Dato de estado/configuración `fromPct`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "toPct",
+          "declaration": "toPct?: number",
+          "callback": false,
+          "ownerType": "BlockProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/ControlSection.tsx",
+            "line": 114
+          },
+          "description": "Dato de estado/configuración `toPct`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "arcSide",
+          "declaration": "arcSide?: 0 | 1",
+          "callback": false,
+          "ownerType": "BlockProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/ControlSection.tsx",
+            "line": 115
+          },
+          "description": "Dato de estado/configuración `arcSide`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "pivotBaseDir",
+          "declaration": "pivotBaseDir?: Dir",
+          "callback": false,
+          "ownerType": "BlockProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/ControlSection.tsx",
+            "line": 116
+          },
+          "description": "Dato de estado/configuración `pivotBaseDir`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "pivotPairId",
+          "declaration": "pivotPairId?: string",
+          "callback": false,
+          "ownerType": "BlockProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/ControlSection.tsx",
+            "line": 117
+          },
+          "description": "Dato de estado/configuración `pivotPairId`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 110
+      }
+    },
+    {
+      "name": "MinimalBlockProps",
+      "kind": "TypeAliasDeclaration",
+      "fields": [
+        {
+          "name": "fromPct",
+          "declaration": "fromPct?: number",
+          "callback": false,
+          "ownerType": "MinimalBlockProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/ControlSection.tsx",
+            "line": 120
+          },
+          "description": "Dato de estado/configuración `fromPct`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "toPct",
+          "declaration": "toPct?: number",
+          "callback": false,
+          "ownerType": "MinimalBlockProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/ControlSection.tsx",
+            "line": 120
+          },
+          "description": "Dato de estado/configuración `toPct`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "speed",
+          "declaration": "speed?: number",
+          "callback": false,
+          "ownerType": "MinimalBlockProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/ControlSection.tsx",
+            "line": 120
+          },
+          "description": "Dato de estado/configuración `speed`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 120
+      }
+    },
+    {
+      "name": "ValidationIssue",
+      "kind": "TypeAliasDeclaration",
+      "fields": [
+        {
+          "name": "track",
+          "declaration": "track: TrackKey",
+          "callback": false,
+          "ownerType": "ValidationIssue",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/ControlSection.tsx",
+            "line": 123
+          },
+          "description": "Dato de estado/configuración `track`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "blockId",
+          "declaration": "blockId?: string",
+          "callback": false,
+          "ownerType": "ValidationIssue",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/ControlSection.tsx",
+            "line": 124
+          },
+          "description": "Dato de estado/configuración `blockId`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "severity",
+          "declaration": "severity: \"error\" | \"warning\"",
+          "callback": false,
+          "ownerType": "ValidationIssue",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/ControlSection.tsx",
+            "line": 125
+          },
+          "description": "Dato de estado/configuración `severity`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "message",
+          "declaration": "message: string",
+          "callback": false,
+          "ownerType": "ValidationIssue",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/ControlSection.tsx",
+            "line": 126
+          },
+          "description": "Dato de estado/configuración `message`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 122
+      }
+    },
+    {
+      "name": "SimulationPose",
+      "kind": "TypeAliasDeclaration",
+      "fields": [
+        {
+          "name": "x",
+          "declaration": "x: number",
+          "callback": false,
+          "ownerType": "SimulationPose",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/ControlSection.tsx",
+            "line": 130
+          },
+          "description": "Dato de estado/configuración `x`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "y",
+          "declaration": "y: number",
+          "callback": false,
+          "ownerType": "SimulationPose",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/ControlSection.tsx",
+            "line": 131
+          },
+          "description": "Dato de estado/configuración `y`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "yawDeg",
+          "declaration": "yawDeg: number",
+          "callback": false,
+          "ownerType": "SimulationPose",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/ControlSection.tsx",
+            "line": 132
+          },
+          "description": "Ángulo en grados; respetar eje y referencia de esta librería."
+        },
+        {
+          "name": "leftPct",
+          "declaration": "leftPct: number",
+          "callback": false,
+          "ownerType": "SimulationPose",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/ControlSection.tsx",
+            "line": 133
+          },
+          "description": "Dato de estado/configuración `leftPct`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "rightPct",
+          "declaration": "rightPct: number",
+          "callback": false,
+          "ownerType": "SimulationPose",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/ControlSection.tsx",
+            "line": 134
+          },
+          "description": "Dato de estado/configuración `rightPct`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "path",
+          "declaration": "path: Array<{ x: number; y: number }>",
+          "callback": false,
+          "ownerType": "SimulationPose",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/ControlSection.tsx",
+            "line": 135
+          },
+          "description": "Dato de estado/configuración `path`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 129
+      }
+    },
+    {
+      "name": "Dir",
+      "kind": "TypeAliasDeclaration",
+      "type": "0 | 1",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/types/MotorTypes.ts",
+        "line": 1
+      }
+    },
+    {
+      "name": "MotorTarget",
+      "kind": "TypeAliasDeclaration",
+      "type": "\"left\" | \"right\" | \"both\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/types/MotorTypes.ts",
+        "line": 2
+      }
+    },
+    {
+      "name": "BlockKind",
+      "kind": "TypeAliasDeclaration",
+      "type": "\"ramp\" | \"hold\" | \"pivot\" | \"arc\" | \"stop\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/types/MotorTypes.ts",
+        "line": 3
+      }
+    },
+    {
+      "name": "TrackKey",
+      "kind": "TypeAliasDeclaration",
+      "type": "\"left\" | \"right\" | \"dual\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/types/MotorTypes.ts",
+        "line": 4
+      }
+    },
+    {
+      "name": "Block",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "id",
+          "declaration": "id: string",
+          "callback": false,
+          "ownerType": "Block",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/MotorTypes.ts",
+            "line": 7
+          },
+          "description": "Dato de estado/configuración `id`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "kind",
+          "declaration": "kind: BlockKind",
+          "callback": false,
+          "ownerType": "Block",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/MotorTypes.ts",
+            "line": 8
+          },
+          "description": "Dato de estado/configuración `kind`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "label",
+          "declaration": "label: string",
+          "callback": false,
+          "ownerType": "Block",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/MotorTypes.ts",
+            "line": 9
+          },
+          "description": "Dato de estado/configuración `label`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "durationMs",
+          "declaration": "durationMs: number",
+          "callback": false,
+          "ownerType": "Block",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/MotorTypes.ts",
+            "line": 10
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "direction",
+          "declaration": "direction: Dir",
+          "callback": false,
+          "ownerType": "Block",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/MotorTypes.ts",
+            "line": 11
+          },
+          "description": "Dato de estado/configuración `direction`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "speed",
+          "declaration": "speed?: number",
+          "callback": false,
+          "ownerType": "Block",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/MotorTypes.ts",
+            "line": 12
+          },
+          "description": "Dato de estado/configuración `speed`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/types/MotorTypes.ts",
+        "line": 6
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "BlockMiniShape",
+      "displayName": "BlockMiniShape",
+      "signature": "BlockMiniShape({ kind }: { kind: BlockKind }): inferred-by-TypeScript",
+      "line": 2499,
+      "endLine": 2513,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 2499
+      },
+      "description": "Operación Block Mini Shape de Modo del auto y control de movimiento; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "BlockPalettePanel",
+      "displayName": "BlockPalettePanel",
+      "signature": "BlockPalettePanel({\n selection,\n dualMode,\n paletteKind,\n pairSelected,\n selectionLocked,\n onAddBlock,\n onSelectKind,\n}: { selection: { track: TrackKey; id: string } | null; dualMode: boolean; paletteKind: BlockKind | null; pairSelected: { track: TrackKey; id: string } | null; selectionLocked: boolean; onAddBlock: () => void; onSelectKind: (kind: BlockKind) => void; }): inferred-by-TypeScript",
+      "line": 2388,
+      "endLine": 2450,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "([\"ramp\", \"hold\", \"pivot\", \"arc\", \"stop\"] as BlockKind[]).map",
+        "trackLabel"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 2388
+      },
+      "description": "Coordina `([\"ramp\", \"hold\", \"pivot\", \"arc\", \"stop\"] as BlockKind[]).map`, `trackLabel` para Modo del auto y control de movimiento.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "BlockPropertiesPanel",
+      "displayName": "BlockPropertiesPanel",
+      "signature": "BlockPropertiesPanel({\n selected,\n selection,\n durationMs,\n setDurationMs,\n speed,\n setSpeed,\n direction,\n onDirectionChange,\n fromPct,\n setFromPct,\n toPct,\n setToPct,\n arcSide,\n setArcSide,\n selectedHasValidationError,\n selectedHasUnsavedChanges,\n selectedIssues,\n selectionLocked,\n onSave,\n onDuplicate,\n onDelete,\n}: { selected: Block | null; selection: { track: TrackKey; id: string } | null; durationMs: number; setDurationMs: (value: number) => void; speed: number; setSpeed: (value: number) => void; direction: Dir; onDirectionChange: (value: Dir) => void; fromPct: number; setFromPct: (value: number) => void; toPct: number; setToPct: (value: number) => void; arcSide: 0 | 1; setArcSide: (value: 0 | 1) => void; selectedHasValidationError: boolean; selectedHasUnsavedChanges: boolean; selectedIssues: ValidationIssue[]; selectionLocked: boolean; onSave: () => void; onDuplicate: () => void; onDelete: () => void; }): inferred-by-TypeScript",
+      "line": 2515,
+      "endLine": 2713,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "String",
+        "kindBadgeClass",
+        "panelActionClass",
+        "sectionCardClass",
+        "selectedIssues.map",
+        "toneFromKind",
+        "trackLabel"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 2515
+      },
+      "description": "Coordina `String`, `kindBadgeClass`, `panelActionClass` para Modo del auto y control de movimiento.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "CarModeDropdown",
+      "displayName": "CarModeDropdown",
+      "signature": "CarModeDropdown({value,open,onOpenChange,onSelect,disabled=false,label=\"Cambiar\",excludeCurrent=false}: { value:string;open:boolean;onOpenChange:(open:boolean)=>void;onSelect:(mode:SelectableCarMode)=>void; disabled?:boolean;label?:string;excludeCurrent?:boolean; }): inferred-by-TypeScript",
+      "line": 4,
+      "endLine": 35,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "([\"IDLE\",\"FOLLOW\",\"TEST\",\"GOTO\"] as const).filter",
+        "([\"IDLE\",\"FOLLOW\",\"TEST\",\"GOTO\"] as const).filter(mode=>!excludeCurrent||mode!==value).map",
+        "useEffect",
+        "useId",
+        "useRef"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/CarModeDropdown.tsx",
+        "line": 4
+      },
+      "description": "Coordina `([\"IDLE\",\"FOLLOW\",\"TEST\",\"GOTO\"] as const).filter`, `([\"IDLE\",\"FOLLOW\",\"TEST\",\"GOTO\"] as const).filter(mode=>!excludeCurrent||mode!==value).map`, `useEffect` para Modo del auto y control de movimiento.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "CarModeProvider",
+      "displayName": "CarModeProvider",
+      "signature": "CarModeProvider({ children }: CarModeProviderProps): inferred-by-TypeScript",
+      "line": 60,
+      "endLine": 254,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useCallback",
+        "useEffect",
+        "useMemo",
+        "useRef",
+        "useState",
+        "useUser",
+        "useWebSocket"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/CarModeContext.tsx",
+        "line": 60
+      },
+      "description": "Coordina `useCallback`, `useEffect`, `useMemo` para Modo del auto y control de movimiento.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "CarModeSelectorModal",
+      "displayName": "CarModeSelectorModal",
+      "signature": "CarModeSelectorModal({ open, recommended, onClose }: {open:boolean;recommended:SelectableCarMode;onClose:()=>void}): inferred-by-TypeScript",
+      "line": 11,
+      "endLine": 29,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useCarMode",
+        "useEffect",
+        "useRef",
+        "useState"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/CarModeSelectorModal.tsx",
+        "line": 11
+      },
+      "description": "Coordina `useCarMode`, `useEffect`, `useRef` para Modo del auto y control de movimiento.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ControlHeaderStatus",
+      "displayName": "ControlHeaderStatus",
+      "signature": "ControlHeaderStatus({\n connected,\n carMode,\n modeLabel,\n safetyArmed,\n ackLabel,\n}: { connected: boolean; carMode: string; modeLabel: string; safetyArmed: boolean; ackLabel: string; }): inferred-by-TypeScript",
+      "line": 2272,
+      "endLine": 2316,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "getEspConnectionDetail",
+        "getEspConnectionLabel",
+        "useEspWifiStatus"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 2272
+      },
+      "description": "Coordina `getEspConnectionDetail`, `getEspConnectionLabel`, `useEspWifiStatus` para Modo del auto y control de movimiento.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ControlSection",
+      "displayName": "ControlSection",
+      "signature": "ControlSection(): inferred-by-TypeScript",
+      "line": 149,
+      "endLine": 2270,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "([\"ramp\", \"hold\", \"pivot\", \"arc\", \"stop\"] as BlockKind[]).map",
+        "Boolean",
+        "Math.max",
+        "Math.min",
+        "String",
+        "actionButtonClass",
+        "controlSearch.get",
+        "getBlocks",
+        "getBlocks(selection.track).find",
+        "handleReorder",
+        "kindBadgeClass",
+        "sectionCardClass",
+        "sectionSegmentedButtonStyle",
+        "sectionToneClass",
+        "toneFromKind",
+        "trackLabel",
+        "useAutoMotion",
+        "useCallback",
+        "useCarMode",
+        "useEffect",
+        "useMemo",
+        "useMotionControl",
+        "useRef",
+        "useSearchParams",
+        "useState",
+        "useWebSocket",
+        "validationIssues.filter",
+        "validationIssues.some"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 149
+      },
+      "description": "Coordina `([\"ramp\", \"hold\", \"pivot\", \"arc\", \"stop\"] as BlockKind[]).map`, `Boolean`, `Math.max` para Modo del auto y control de movimiento.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "DiagnosticRow",
+      "displayName": "DiagnosticRow",
+      "signature": "DiagnosticRow({\n label,\n value,\n tone,\n}: { label: string; value: string; tone: \"cyan\" | \"emerald\" | \"amber\" | \"rose\" | \"muted\"; }): inferred-by-TypeScript",
+      "line": 3220,
+      "endLine": 3246,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 3220
+      },
+      "description": "Operación Diagnostic Row de Modo del auto y control de movimiento; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "ExecutionStatusPanel",
+      "displayName": "ExecutionStatusPanel",
+      "signature": "ExecutionStatusPanel({\n motionControl,\n compact = false,\n connected,\n carMode,\n carModeStatus,\n safetyArmed,\n physicalBlockedReason,\n isSimulating,\n lastLocalEvent,\n validationRan,\n validationErrorCount,\n validationWarningCount,\n}: { motionControl: MotionController; compact?: boolean; connected: boolean; carMode: string; carModeStatus: string; safetyArmed: boolean; physicalBlockedReason: string; isSimulating: boolean; lastLocalEvent: string; validationRan: boolean; validationErrorCount: number; validationWarningCount: number; }): inferred-by-TypeScript",
+      "line": 3146,
+      "endLine": 3218,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "sectionCardClass"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 3146
+      },
+      "description": "Adapta la llamada a `sectionCardClass` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "MetricCard",
+      "displayName": "MetricCard",
+      "signature": "MetricCard({\n label,\n value,\n tone = \"cyan\",\n}: { label: string; value: string; tone?: \"cyan\" | \"muted\"; }): inferred-by-TypeScript",
+      "line": 3125,
+      "endLine": 3144,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 3125
+      },
+      "description": "Operación Metric Card de Modo del auto y control de movimiento; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "MotionBalancePanel",
+      "displayName": "MotionBalancePanel",
+      "signature": "MotionBalancePanel({ control, showStatus = false, defaultExpanded = false, title = \"Balance\" }: { control: MotionController; showStatus?: boolean; defaultExpanded?: boolean; title?: string }): inferred-by-TypeScript",
+      "line": 38,
+      "endLine": 103,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.abs",
+        "Number.isFinite",
+        "[[\"Inclinación\", \"pitchMeasuredDeg\", \"°\"], [\"Objetivo\", \"pitchSetpointDeg\", \"°\"], [\"Motor izquierdo\", \"leftOutputPercent\", \"%\"], [\"Motor derecho\", \"rightOutputPercent\", \"%\"]].map",
+        "[left, right].every",
+        "useId",
+        "useState"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/motion/MotionControlPanel.tsx",
+        "line": 38
+      },
+      "description": "Coordina `Math.abs`, `Number.isFinite`, `[[\"Inclinación\", \"pitchMeasuredDeg\", \"°\"], [\"Objetivo\", \"pitchSetpointDeg\", \"°\"], [\"Motor izquierdo\", \"leftOutputPercent\", \"%\"], [\"Motor derecho\", \"rightOutputPercent\", \"%\"]].map` para Modo del auto y control de movimiento.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "MotionBalanceStatus",
+      "displayName": "MotionBalanceStatus",
+      "signature": "MotionBalanceStatus({ control }: { control: MotionController }): inferred-by-TypeScript",
+      "line": 8,
+      "endLine": 15,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/motion/MotionControlPanel.tsx",
+        "line": 8
+      },
+      "description": "Operación Motion Balance Status de Modo del auto y control de movimiento; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "MotionControlActions",
+      "displayName": "MotionControlActions",
+      "signature": "MotionControlActions({ control, isSimulating = false, onStopSimulation }: { control: MotionController; isSimulating?: boolean; onStopSimulation?: () => void; }): inferred-by-TypeScript",
+      "line": 6,
+      "endLine": 30,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/motion/MotionControlActions.tsx",
+        "line": 6
+      },
+      "description": "Operación Motion Control Actions de Modo del auto y control de movimiento; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "MotionControlFeedback",
+      "displayName": "MotionControlFeedback",
+      "signature": "MotionControlFeedback({ control }: { control: MotionController }): inferred-by-TypeScript",
+      "line": 105,
+      "endLine": 111,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/motion/MotionControlPanel.tsx",
+        "line": 105
+      },
+      "description": "Operación Motion Control Feedback de Modo del auto y control de movimiento; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "MotionControlIcon",
+      "displayName": "MotionControlIcon",
+      "signature": "MotionControlIcon({ name }: { name: MotionIconName }): inferred-by-TypeScript",
+      "line": 3,
+      "endLine": 12,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/motion/MotionControlIcon.tsx",
+        "line": 3
+      },
+      "description": "Operación Motion Control Icon de Modo del auto y control de movimiento; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "MotionControlPanel",
+      "displayName": "MotionControlPanel",
+      "signature": "MotionControlPanel(): inferred-by-TypeScript",
+      "line": 114,
+      "endLine": 120,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useMotionControl"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/motion/MotionControlPanel.tsx",
+        "line": 114
+      },
+      "description": "Adapta la llamada a `useMotionControl` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "MotionSimulationPanel",
+      "displayName": "MotionSimulationPanel",
+      "signature": "MotionSimulationPanel({\n pose,\n isSimulating,\n dualMode,\n totalMs,\n variant = \"compact\",\n}: { pose: SimulationPose; isSimulating: boolean; dualMode: boolean; totalMs: number; variant?: \"compact\" | \"large\"; }): inferred-by-TypeScript",
+      "line": 2838,
+      "endLine": 2919,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.round",
+        "formatMs",
+        "pose.path .map",
+        "pose.path .map((p) => `${clamp(p.x, -118, 118).toFixed(1)},${clamp(p.y, -78, 78).toFixed(1)}`) .join"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 2838
+      },
+      "description": "Coordina `Math.round`, `formatMs`, `pose.path .map` para Modo del auto y control de movimiento.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "MotionValueControl",
+      "displayName": "MotionValueControl",
+      "signature": "MotionValueControl({ label, value, min, max, step = 1, unit, hint, disabled, onChange }: { label: string; value: number; min: number; max: number; step?: number; unit: string; hint: string; disabled: boolean; onChange: (value: number) => void; }): inferred-by-TypeScript",
+      "line": 17,
+      "endLine": 36,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Number.isFinite",
+        "label.toLowerCase",
+        "useId"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/motion/MotionControlPanel.tsx",
+        "line": 17
+      },
+      "description": "Coordina `Number.isFinite`, `label.toLowerCase`, `useId` para Modo del auto y control de movimiento.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "MotorBlock",
+      "displayName": "MotorBlock",
+      "signature": "MotorBlock({\n  kind,\n  selected = false,\r\n  pairSelected = false,\r\n  disabled = false,\r\n  onClick,\r\n}: Props): inferred-by-TypeScript",
+      "line": 46,
+      "endLine": 131,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/MotorBlock.tsx",
+        "line": 46
+      },
+      "description": "Operación Motor Block de Modo del auto y control de movimiento; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "MotorTopView3D",
+      "displayName": "MotorTopView3D",
+      "signature": "MotorTopView3D({\n modelUrl,\n pose,\n isSimulating,\n}: { modelUrl: string; pose: SimulationPose; isSimulating: boolean; }): inferred-by-TypeScript",
+      "line": 2921,
+      "endLine": 2974,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 2921
+      },
+      "description": "Operación Motor Top View3 D de Modo del auto y control de movimiento; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "PaletteToolButton",
+      "displayName": "PaletteToolButton",
+      "signature": "PaletteToolButton({\n kind,\n selected,\n pairSelected,\n disabled,\n onClick,\n}: { kind: BlockKind; selected: boolean; pairSelected: boolean; disabled: boolean; onClick: () => void; }): inferred-by-TypeScript",
+      "line": 2452,
+      "endLine": 2497,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "paletteTone"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 2452
+      },
+      "description": "Adapta la llamada a `paletteTone` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "PanelActionIcon",
+      "displayName": "PanelActionIcon",
+      "signature": "PanelActionIcon({ name }: { name: \"save\" | \"copy\" | \"trash\" }): inferred-by-TypeScript",
+      "line": 3395,
+      "endLine": 3418,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 3395
+      },
+      "description": "Operación Panel Action Icon de Modo del auto y control de movimiento; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "PropertyNumber",
+      "displayName": "PropertyNumber",
+      "signature": "PropertyNumber({\n label,\n value,\n min,\n suffix,\n icon,\n onChange,\n}: { label: string; value: number; min?: number; suffix: string; icon: string; onChange: (value: number) => void; }): inferred-by-TypeScript",
+      "line": 2735,
+      "endLine": 2766,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 2735
+      },
+      "description": "Operación Property Number de Modo del auto y control de movimiento; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "PropertyRange",
+      "displayName": "PropertyRange",
+      "signature": "PropertyRange({\n label,\n value,\n icon,\n onChange,\n}: { label: string; value: number; icon: string; onChange: (value: number) => void; }): inferred-by-TypeScript",
+      "line": 2768,
+      "endLine": 2804,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.max",
+        "Math.min"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 2768
+      },
+      "description": "Coordina `Math.max`, `Math.min` para Modo del auto y control de movimiento.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "PropertyReadOnly",
+      "displayName": "PropertyReadOnly",
+      "signature": "PropertyReadOnly({\n label,\n value,\n icon,\n}: { label: string; value: string; icon: string; }): inferred-by-TypeScript",
+      "line": 2715,
+      "endLine": 2733,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 2715
+      },
+      "description": "Operación Property Read Only de Modo del auto y control de movimiento; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "PropertySelect",
+      "displayName": "PropertySelect",
+      "signature": "PropertySelect({\n label,\n value,\n options,\n icon,\n onChange,\n}: { label: string; value: string; options: Array<[string, string]>; icon: string; onChange: (value: string) => void; }): inferred-by-TypeScript",
+      "line": 2806,
+      "endLine": 2836,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "options.map"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 2806
+      },
+      "description": "Adapta la llamada a `options.map` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "SimulationPath3D",
+      "displayName": "SimulationPath3D",
+      "signature": "SimulationPath3D({ path }: { path: SimulationPose[\"path\"] }): inferred-by-TypeScript",
+      "line": 3008,
+      "endLine": 3031,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useMemo"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 3008
+      },
+      "description": "Adapta la llamada a `useMemo` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "SimulationTransportControls",
+      "displayName": "SimulationTransportControls",
+      "signature": "SimulationTransportControls({\n motionControl,\n dualMode,\n isSimulating,\n isPlayingLeft,\n isPlayingRight,\n isPlayingDual,\n canRunLeft,\n canRunRight,\n canRunBoth,\n physicalEnabled,\n physicalBlockedReason,\n onStop,\n onRunLeft,\n onRunRight,\n onRunBoth,\n onReset,\n onExecutePhysical,\n}: { motionControl: MotionController; dualMode: boolean; isSimulating: boolean; isPlayingLeft: boolean; isPlayingRight: boolean; isPlayingDual: boolean; canRunLeft: boolean; canRunRight: boolean; canRunBoth: boolean; physicalEnabled: boolean; physicalBlockedReason: string; onStop: () => void; onRunLeft: () => void; onRunRight: () => void; onRunBoth: () => void; onReset: () => void; onExecutePhysical: () => void; }): inferred-by-TypeScript",
+      "line": 3248,
+      "endLine": 3334,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "sectionCardClass"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 3248
+      },
+      "description": "Adapta la llamada a `sectionCardClass` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "StatusPill",
+      "displayName": "StatusPill",
+      "signature": "StatusPill({\n label,\n value,\n tone,\n}: { label: string; value: string; tone: \"cyan\" | \"emerald\" | \"amber\" | \"rose\" | \"muted\"; }): inferred-by-TypeScript",
+      "line": 2318,
+      "endLine": 2358,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 2318
+      },
+      "description": "Operación Status Pill de Modo del auto y control de movimiento; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "TechnicalTopGrid",
+      "displayName": "TechnicalTopGrid",
+      "signature": "TechnicalTopGrid(): inferred-by-TypeScript",
+      "line": 2988,
+      "endLine": 3006,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useMemo"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 2988
+      },
+      "description": "Adapta la llamada a `useMemo` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "TopCameraController",
+      "displayName": "TopCameraController",
+      "signature": "TopCameraController(): inferred-by-TypeScript",
+      "line": 2976,
+      "endLine": 2986,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useEffect",
+        "useThree"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 2976
+      },
+      "description": "Coordina `useEffect`, `useThree` para Modo del auto y control de movimiento.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "TopFallbackVehicle",
+      "displayName": "TopFallbackVehicle",
+      "signature": "TopFallbackVehicle({ pose }: { pose: SimulationPose }): inferred-by-TypeScript",
+      "line": 3106,
+      "endLine": 3123,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "THREE.MathUtils.degToRad",
+        "clamp"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 3106
+      },
+      "description": "Coordina `THREE.MathUtils.degToRad`, `clamp` para Modo del auto y control de movimiento.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "TopVehicleModel",
+      "displayName": "TopVehicleModel",
+      "signature": "TopVehicleModel({\n modelUrl,\n pose,\n isSimulating,\n}: { modelUrl: string; pose: SimulationPose; isSimulating: boolean; }): inferred-by-TypeScript",
+      "line": 3033,
+      "endLine": 3104,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "THREE.MathUtils.degToRad",
+        "clamp",
+        "useLoader",
+        "useMemo"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 3033
+      },
+      "description": "Coordina `THREE.MathUtils.degToRad`, `clamp`, `useLoader` para Modo del auto y control de movimiento.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "TrackSimButton",
+      "displayName": "TrackSimButton",
+      "signature": "TrackSimButton({\n isPlaying,\n disabled,\n onClick,\n}: { isPlaying: boolean; disabled: boolean; onClick: () => void; }): inferred-by-TypeScript",
+      "line": 2360,
+      "endLine": 2386,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 2360
+      },
+      "description": "Operación Track Sim Button de Modo del auto y control de movimiento; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "TransportButton",
+      "displayName": "TransportButton",
+      "signature": "TransportButton({\n label,\n detail,\n icon,\n tone,\n active = false,\n disabled = false,\n onClick,\n}: { label: string; detail: string; icon: string; tone: \"cyan\" | \"emerald\" | \"rose\" | \"muted\"; active?: boolean; disabled?: boolean; onClick: () => void; }): inferred-by-TypeScript",
+      "line": 3336,
+      "endLine": 3364,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 3336
+      },
+      "description": "Operación Transport Button de Modo del auto y control de movimiento; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "actionButtonClass",
+      "displayName": "actionButtonClass",
+      "signature": "actionButtonClass(tone: \"emerald\" | \"rose\" | \"indigo\", active: inferred-by-TypeScript): inferred-by-TypeScript",
+      "line": 3660,
+      "endLine": 3686,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 3660
+      },
+      "description": "Operación action Button Class de Modo del auto y control de movimiento; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "blockRuntimePct",
+      "displayName": "blockRuntimePct",
+      "signature": "blockRuntimePct(block: Block, props: MinimalBlockProps | undefined, progress: number): inferred-by-TypeScript",
+      "line": 3522,
+      "endLine": 3539,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "clamp"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 3522
+      },
+      "description": "Adapta la llamada a `clamp` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "clamp",
+      "displayName": "clamp",
+      "signature": "clamp(value: number, min: number, max: number): inferred-by-TypeScript",
+      "line": 3580,
+      "endLine": 3582,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.max",
+        "Math.min"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 3580
+      },
+      "description": "Coordina `Math.max`, `Math.min` para Modo del auto y control de movimiento.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "createInitialSimPose",
+      "displayName": "createInitialSimPose",
+      "signature": "createInitialSimPose(): SimulationPose",
+      "line": 3420,
+      "endLine": 3425,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 3420
+      },
+      "description": "Operación create Initial Sim Pose de Modo del auto y control de movimiento; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "formatMs",
+      "displayName": "formatMs",
+      "signature": "formatMs(value: number): inferred-by-TypeScript",
+      "line": 3584,
+      "endLine": 3587,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "(value / 1000).toFixed",
+        "Math.round"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 3584
+      },
+      "description": "Coordina `(value / 1000).toFixed`, `Math.round` para Modo del auto y control de movimiento.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "integrateSimulationPose",
+      "displayName": "integrateSimulationPose",
+      "signature": "integrateSimulationPose(pose: SimulationPose, leftPct: number, rightPct: number, dt: number): SimulationPose",
+      "line": 3541,
+      "endLine": 3571,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.cos",
+        "Math.hypot",
+        "Math.sin",
+        "normalizeDeg",
+        "pose.path.slice"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 3541
+      },
+      "description": "Coordina `Math.cos`, `Math.hypot`, `Math.sin` para Modo del auto y control de movimiento.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "kindBadgeClass",
+      "displayName": "kindBadgeClass",
+      "signature": "kindBadgeClass(kind: BlockKind): inferred-by-TypeScript",
+      "line": 3650,
+      "endLine": 3658,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 3650
+      },
+      "description": "Operación kind Badge Class de Modo del auto y control de movimiento; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "normalizeCarModeValue",
+      "displayName": "normalizeCarModeValue",
+      "signature": "normalizeCarModeValue(value: number | string): number | null",
+      "line": 266,
+      "endLine": 291,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.max",
+        "Math.min",
+        "Math.trunc",
+        "Number",
+        "Number.isFinite",
+        "Number.parseInt",
+        "Object.entries",
+        "Object.entries(CAR_MODE_LABEL_BY_VALUE).find",
+        "normalized.slice",
+        "normalized.startsWith",
+        "value.trim",
+        "value.trim().toUpperCase"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/CarModeContext.tsx",
+        "line": 266
+      },
+      "description": "Coordina `Math.max`, `Math.min`, `Math.trunc` para Modo del auto y control de movimiento.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "normalizeDeg",
+      "displayName": "normalizeDeg",
+      "signature": "normalizeDeg(value: number): inferred-by-TypeScript",
+      "line": 3573,
+      "endLine": 3578,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 3573
+      },
+      "description": "Operación normalize Deg de Modo del auto y control de movimiento; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "paletteTone",
+      "displayName": "paletteTone",
+      "signature": "paletteTone(kind: BlockKind, selected: boolean): inferred-by-TypeScript",
+      "line": 3366,
+      "endLine": 3383,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 3366
+      },
+      "description": "Operación palette Tone de Modo del auto y control de movimiento; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "panelActionClass",
+      "displayName": "panelActionClass",
+      "signature": "panelActionClass(tone: \"cyan\" | \"muted\" | \"rose\"): inferred-by-TypeScript",
+      "line": 3385,
+      "endLine": 3393,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 3385
+      },
+      "description": "Operación panel Action Class de Modo del auto y control de movimiento; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "parseState",
+      "displayName": "parseState",
+      "signature": "parseState(value: unknown): MotionState",
+      "line": 22,
+      "endLine": 34,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Number.isInteger",
+        "[state.motionArmed, state.balanceActive, state.commandActive, state.safetyStop, state.motorTestActive].every"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/motion/useMotionControl.ts",
+        "line": 22
+      },
+      "description": "Coordina `Number.isInteger`, `[state.motionArmed, state.balanceActive, state.commandActive, state.safetyStop, state.motorTestActive].every` para Modo del auto y control de movimiento.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "runtimeMotorPct",
+      "displayName": "runtimeMotorPct",
+      "signature": "runtimeMotorPct(blocks: Block[], props: Record<string, MinimalBlockProps>, activeIndex: number, activeProgress: number): inferred-by-TypeScript",
+      "line": 3511,
+      "endLine": 3520,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "blockRuntimePct"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 3511
+      },
+      "description": "Adapta la llamada a `blockRuntimePct` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "sectionCardClass",
+      "displayName": "sectionCardClass",
+      "signature": "sectionCardClass(tone: \"cyan\" | \"emerald\" | \"indigo\" | \"amber\" | \"rose\" | \"sky\"): inferred-by-TypeScript",
+      "line": 3634,
+      "endLine": 3638,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "sectionToneClass"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 3634
+      },
+      "description": "Adapta la llamada a `sectionToneClass` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "sectionSegmentedButtonStyle",
+      "displayName": "sectionSegmentedButtonStyle",
+      "signature": "sectionSegmentedButtonStyle(active: boolean, tone: \"cyan\" | \"emerald\"): React.CSSProperties",
+      "line": 3597,
+      "endLine": 3619,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 3597
+      },
+      "description": "Operación section Segmented Button Style de Modo del auto y control de movimiento; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "sectionToneClass",
+      "displayName": "sectionToneClass",
+      "signature": "sectionToneClass(tone: \"cyan\" | \"emerald\" | \"indigo\" | \"amber\" | \"rose\" | \"sky\"): inferred-by-TypeScript",
+      "line": 3621,
+      "endLine": 3632,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 3621
+      },
+      "description": "Operación section Tone Class de Modo del auto y control de movimiento; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "toneFromKind",
+      "displayName": "toneFromKind",
+      "signature": "toneFromKind(kind: BlockKind): inferred-by-TypeScript",
+      "line": 3640,
+      "endLine": 3648,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 3640
+      },
+      "description": "Operación tone From Kind de Modo del auto y control de movimiento; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "trackLabel",
+      "displayName": "trackLabel",
+      "signature": "trackLabel(track: TrackKey): inferred-by-TypeScript",
+      "line": 3589,
+      "endLine": 3595,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 3589
+      },
+      "description": "Operación track Label de Modo del auto y control de movimiento; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "uid",
+      "displayName": "uid",
+      "signature": "uid(): inferred-by-TypeScript",
+      "line": 39,
+      "endLine": 39,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.random",
+        "Math.random().toString",
+        "Math.random().toString(36).slice"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 39
+      },
+      "description": "Coordina `Math.random`, `Math.random().toString`, `Math.random().toString(36).slice` para Modo del auto y control de movimiento.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "useCarMode",
+      "displayName": "useCarMode",
+      "signature": "useCarMode(): CarModeContextValue",
+      "line": 256,
+      "endLine": 264,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useContext"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/CarModeContext.tsx",
+        "line": 256
+      },
+      "description": "Adapta la llamada a `useContext` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "useMotionControl",
+      "displayName": "useMotionControl",
+      "signature": "useMotionControl(active: inferred-by-TypeScript): inferred-by-TypeScript",
+      "line": 37,
+      "endLine": 136,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useCallback",
+        "useEffect",
+        "useRef",
+        "useState",
+        "useWebSocket"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/motion/useMotionControl.ts",
+        "line": 37
+      },
+      "description": "Coordina `useCallback`, `useEffect`, `useRef` para Modo del auto y control de movimiento.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "validateTrackSequence",
+      "displayName": "validateTrackSequence",
+      "signature": "validateTrackSequence(track: TrackKey, blocks: Block[], props: Record<string, MinimalBlockProps>, dualMode: boolean): ValidationIssue[]",
+      "line": 3427,
+      "endLine": 3509,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "blocks.forEach",
+        "issues.push",
+        "trackLabel"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 3427
+      },
+      "description": "Coordina `blocks.forEach`, `issues.push`, `trackLabel` para Modo del auto y control de movimiento.",
+      "descriptionOrigin": "structural"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "CarModeDropdown.keyboard",
+      "displayName": "keyboard",
+      "signature": "CarModeDropdown.keyboard(event: KeyboardEvent<HTMLDivElement>): inferred-by-TypeScript",
+      "line": 15,
+      "endLine": 24,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Array.from",
+        "[\"ArrowDown\",\"ArrowUp\",\"Home\",\"End\"].includes",
+        "event.preventDefault",
+        "event.stopPropagation",
+        "onOpenChange",
+        "options.indexOf",
+        "options[index]?.focus",
+        "ref.current?.querySelectorAll",
+        "trigger.current?.focus"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/CarModeDropdown.tsx",
+        "line": 15
+      },
+      "description": "Coordina `Array.from`, `[\"ArrowDown\",\"ArrowUp\",\"Home\",\"End\"].includes`, `event.preventDefault` para Modo del auto y control de movimiento.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "CarModeDropdown.outside",
+      "displayName": "outside",
+      "signature": "CarModeDropdown.outside(event: PointerEvent): inferred-by-TypeScript",
+      "line": 11,
+      "endLine": 11,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "onOpenChange",
+        "ref.current?.contains"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/CarModeDropdown.tsx",
+        "line": 11
+      },
+      "description": "Coordina `onOpenChange`, `ref.current?.contains` para Modo del auto y control de movimiento.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "CarModeProvider.applyEvent",
+      "displayName": "applyEvent",
+      "signature": "CarModeProvider.applyEvent({ data }: { data: unknown }): inferred-by-TypeScript",
+      "line": 184,
+      "endLine": 190,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "applyCarModeValue"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/CarModeContext.tsx",
+        "line": 184
+      },
+      "description": "Adapta la llamada a `applyCarModeValue` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "CarModeSelectorModal.apply",
+      "displayName": "apply",
+      "signature": "CarModeSelectorModal.apply(): inferred-by-TypeScript",
+      "line": 16,
+      "endLine": 19,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "mode.setCarMode",
+        "onClose",
+        "setPending"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/CarModeSelectorModal.tsx",
+        "line": 16
+      },
+      "description": "Coordina `mode.setCarMode`, `onClose`, `setPending` para Modo del auto y control de movimiento.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ControlSection.attemptSelect",
+      "displayName": "attemptSelect",
+      "signature": "ControlSection.attemptSelect(track: TrackKey, id: string | null): inferred-by-TypeScript",
+      "line": 424,
+      "endLine": 458,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "getBlocks",
+        "list.find",
+        "otherList.find",
+        "setPairSelected",
+        "setSelection"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 424
+      },
+      "description": "Coordina `getBlocks`, `list.find`, `otherList.find` para Modo del auto y control de movimiento.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ControlSection.blockStartRef",
+      "displayName": "blockStartRef",
+      "signature": "ControlSection.blockStartRef(t: TrackKey): inferred-by-TypeScript",
+      "line": 320,
+      "endLine": 325,
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 320
+      },
+      "description": "Operación block Start Ref de Modo del auto y control de movimiento; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "ControlSection.buildMinimalProps",
+      "displayName": "buildMinimalProps",
+      "signature": "ControlSection.buildMinimalProps(list: Block[], trackKey: TrackKey): Record<string, MinimalBlockProps>",
+      "line": 628,
+      "endLine": 649,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "list.forEach"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 628
+      },
+      "description": "Adapta la llamada a `list.forEach` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ControlSection.changeSelectedDirection",
+      "displayName": "changeSelectedDirection",
+      "signature": "ControlSection.changeSelectedDirection(newDirection: Dir): inferred-by-TypeScript",
+      "line": 844,
+      "endLine": 872,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "setBlocks",
+        "setBlocks(otherTrack)",
+        "setDirection"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 844
+      },
+      "description": "Coordina `setBlocks`, `setBlocks(otherTrack)`, `setDirection` para Modo del auto y control de movimiento.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ControlSection.clearTimer",
+      "displayName": "clearTimer",
+      "signature": "ControlSection.clearTimer(t: TrackKey): inferred-by-TypeScript",
+      "line": 339,
+      "endLine": 345,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "timerRef",
+        "window.clearTimeout"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 339
+      },
+      "description": "Coordina `timerRef`, `window.clearTimeout` para Modo del auto y control de movimiento.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ControlSection.createPairedPivot",
+      "displayName": "createPairedPivot",
+      "signature": "ControlSection.createPairedPivot(): inferred-by-TypeScript",
+      "line": 503,
+      "endLine": 543,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "attemptSelect",
+        "setBlockProps",
+        "setBlocksLeft",
+        "setBlocksRight",
+        "uid"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 503
+      },
+      "description": "Coordina `attemptSelect`, `setBlockProps`, `setBlocksLeft` para Modo del auto y control de movimiento.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ControlSection.duplicateSelected",
+      "displayName": "duplicateSelected",
+      "signature": "ControlSection.duplicateSelected(): inferred-by-TypeScript",
+      "line": 919,
+      "endLine": 940,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "getDefaultPropsFor",
+        "setBlockProps",
+        "setBlocks",
+        "setBlocks(selection.track)",
+        "setLastLocalEvent",
+        "setSelection",
+        "uid"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 919
+      },
+      "description": "Coordina `getDefaultPropsFor`, `setBlockProps`, `setBlocks` para Modo del auto y control de movimiento.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ControlSection.fill",
+      "displayName": "fill",
+      "signature": "ControlSection.fill(list: Block[]): inferred-by-TypeScript",
+      "line": 267,
+      "endLine": 271,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "list.forEach"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 267
+      },
+      "description": "Adapta la llamada a `list.forEach` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ControlSection.getBlocks",
+      "displayName": "getBlocks",
+      "signature": "ControlSection.getBlocks(t: TrackKey): inferred-by-TypeScript",
+      "line": 311,
+      "endLine": 312,
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 311
+      },
+      "description": "Operación get Blocks de Modo del auto y control de movimiento; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "ControlSection.getDefaultPropsFor",
+      "displayName": "getDefaultPropsFor",
+      "signature": "ControlSection.getDefaultPropsFor(b: Block): BlockProps",
+      "line": 237,
+      "endLine": 251,
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 237
+      },
+      "description": "Operación get Default Props For de Modo del auto y control de movimiento; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "ControlSection.handleReorder",
+      "displayName": "handleReorder",
+      "signature": "ControlSection.handleReorder(track: TrackKey): inferred-by-TypeScript",
+      "line": 461,
+      "endLine": 465,
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 461
+      },
+      "description": "Operación handle Reorder de Modo del auto y control de movimiento; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "ControlSection.onAddBlock",
+      "displayName": "onAddBlock",
+      "signature": "ControlSection.onAddBlock(): inferred-by-TypeScript",
+      "line": 474,
+      "endLine": 500,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "attemptSelect",
+        "createPairedPivot",
+        "k.charAt",
+        "k.charAt(0).toUpperCase",
+        "k.slice",
+        "setBlockProps",
+        "setBlocks",
+        "setBlocks(t)",
+        "uid"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 474
+      },
+      "description": "Coordina `attemptSelect`, `createPairedPivot`, `k.charAt` para Modo del auto y control de movimiento.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ControlSection.onRemoveSelected",
+      "displayName": "onRemoveSelected",
+      "signature": "ControlSection.onRemoveSelected(): inferred-by-TypeScript",
+      "line": 545,
+      "endLine": 567,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "setBlockProps",
+        "setBlocks",
+        "setBlocks(otherTrack)",
+        "setBlocks(track)",
+        "setPairSelected",
+        "setSelection"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 545
+      },
+      "description": "Coordina `setBlockProps`, `setBlocks`, `setBlocks(otherTrack)` para Modo del auto y control de movimiento.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ControlSection.resetLocalSimulation",
+      "displayName": "resetLocalSimulation",
+      "signature": "ControlSection.resetLocalSimulation(): inferred-by-TypeScript",
+      "line": 889,
+      "endLine": 893,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "resetSimulationPose",
+        "setLastLocalEvent",
+        "stopAllTracks"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 889
+      },
+      "description": "Coordina `resetSimulationPose`, `setLastLocalEvent`, `stopAllTracks` para Modo del auto y control de movimiento.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ControlSection.resetSimulationPose",
+      "displayName": "resetSimulationPose",
+      "signature": "ControlSection.resetSimulationPose(): inferred-by-TypeScript",
+      "line": 840,
+      "endLine": 842,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "createInitialSimPose",
+        "setSimPose"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 840
+      },
+      "description": "Coordina `createInitialSimPose`, `setSimPose` para Modo del auto y control de movimiento.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ControlSection.runBlock",
+      "displayName": "runBlock",
+      "signature": "ControlSection.runBlock(t: TrackKey, i: number): inferred-by-TypeScript",
+      "line": 381,
+      "endLine": 419,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Date.now",
+        "blockStartRef",
+        "getBlocks",
+        "setActiveIndex",
+        "setActiveProgress",
+        "stopTrack",
+        "timerRef",
+        "window.setTimeout"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 381
+      },
+      "description": "Coordina `Date.now`, `blockStartRef`, `getBlocks` para Modo del auto y control de movimiento.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ControlSection.runBlock.tick",
+      "displayName": "tick",
+      "signature": "ControlSection.runBlock.tick(): inferred-by-TypeScript",
+      "line": 404,
+      "endLine": 417,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Date.now",
+        "blockStartRef",
+        "setActiveProgress",
+        "timerRef",
+        "window.setTimeout"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 404
+      },
+      "description": "Coordina `Date.now`, `blockStartRef`, `setActiveProgress` para Modo del auto y control de movimiento.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ControlSection.runValidation",
+      "displayName": "runValidation",
+      "signature": "ControlSection.runValidation(): inferred-by-TypeScript",
+      "line": 874,
+      "endLine": 882,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "setLastLocalEvent",
+        "setValidationRan"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 874
+      },
+      "description": "Coordina `setLastLocalEvent`, `setValidationRan` para Modo del auto y control de movimiento.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ControlSection.saveSelectedBlock",
+      "displayName": "saveSelectedBlock",
+      "signature": "ControlSection.saveSelectedBlock(): inferred-by-TypeScript",
+      "line": 942,
+      "endLine": 1014,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "setBlockProps",
+        "setBlocks",
+        "setBlocks(otherTrack)",
+        "setBlocks(t)",
+        "setLastLocalEvent"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 942
+      },
+      "description": "Coordina `setBlockProps`, `setBlocks`, `setBlocks(otherTrack)` para Modo del auto y control de movimiento.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ControlSection.setActiveIndex",
+      "displayName": "setActiveIndex",
+      "signature": "ControlSection.setActiveIndex(t: TrackKey, idx: number): inferred-by-TypeScript",
+      "line": 327,
+      "endLine": 331,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "setActiveIndexDual",
+        "setActiveIndexLeft",
+        "setActiveIndexRight"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 327
+      },
+      "description": "Coordina `setActiveIndexDual`, `setActiveIndexLeft`, `setActiveIndexRight` para Modo del auto y control de movimiento.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ControlSection.setActiveProgress",
+      "displayName": "setActiveProgress",
+      "signature": "ControlSection.setActiveProgress(t: TrackKey, prog: number): inferred-by-TypeScript",
+      "line": 332,
+      "endLine": 337,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Math.max",
+        "Math.min",
+        "setActiveProgressDual",
+        "setActiveProgressLeft",
+        "setActiveProgressRight"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 332
+      },
+      "description": "Coordina `Math.max`, `Math.min`, `setActiveProgressDual` para Modo del auto y control de movimiento.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ControlSection.setBlocks",
+      "displayName": "setBlocks",
+      "signature": "ControlSection.setBlocks(t: TrackKey): inferred-by-TypeScript",
+      "line": 313,
+      "endLine": 317,
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 313
+      },
+      "description": "Operación set Blocks de Modo del auto y control de movimiento; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "ControlSection.setControlMode",
+      "displayName": "setControlMode",
+      "signature": "ControlSection.setControlMode(mode: \"free\"|\"goto\"): inferred-by-TypeScript",
+      "line": 155,
+      "endLine": 155,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "setControlSearch"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 155
+      },
+      "description": "Adapta la llamada a `setControlSearch` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ControlSection.startSimulationRun",
+      "displayName": "startSimulationRun",
+      "signature": "ControlSection.startSimulationRun(scope: \"left\" | \"right\" | \"both\"): inferred-by-TypeScript",
+      "line": 895,
+      "endLine": 917,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "resetSimulationPose",
+        "runValidation",
+        "startTrack",
+        "stopAllTracks"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 895
+      },
+      "description": "Coordina `resetSimulationPose`, `runValidation`, `startTrack` para Modo del auto y control de movimiento.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ControlSection.startTrack",
+      "displayName": "startTrack",
+      "signature": "ControlSection.startTrack(t: TrackKey): inferred-by-TypeScript",
+      "line": 367,
+      "endLine": 379,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "clearTimer",
+        "getBlocks",
+        "runBlock",
+        "setActiveIndex",
+        "setActiveProgress",
+        "setIsPlayingDual",
+        "setIsPlayingLeft",
+        "setIsPlayingRight",
+        "setLastLocalEvent",
+        "trackLabel"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 367
+      },
+      "description": "Coordina `clearTimer`, `getBlocks`, `runBlock` para Modo del auto y control de movimiento.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ControlSection.stopAllTracks",
+      "displayName": "stopAllTracks",
+      "signature": "ControlSection.stopAllTracks(): inferred-by-TypeScript",
+      "line": 356,
+      "endLine": 358,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "([\"left\", \"right\", \"dual\"] as TrackKey[]).forEach"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 356
+      },
+      "description": "Adapta la llamada a `([\"left\", \"right\", \"dual\"] as TrackKey[]).forEach` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ControlSection.stopLocalSimulation",
+      "displayName": "stopLocalSimulation",
+      "signature": "ControlSection.stopLocalSimulation(): inferred-by-TypeScript",
+      "line": 884,
+      "endLine": 887,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "setLastLocalEvent",
+        "stopAllTracks"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 884
+      },
+      "description": "Coordina `setLastLocalEvent`, `stopAllTracks` para Modo del auto y control de movimiento.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ControlSection.stopTrack",
+      "displayName": "stopTrack",
+      "signature": "ControlSection.stopTrack(t: TrackKey): inferred-by-TypeScript",
+      "line": 347,
+      "endLine": 354,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "clearTimer",
+        "setActiveIndex",
+        "setActiveProgress",
+        "setIsPlayingDual",
+        "setIsPlayingLeft",
+        "setIsPlayingRight"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 347
+      },
+      "description": "Coordina `clearTimer`, `setActiveIndex`, `setActiveProgress` para Modo del auto y control de movimiento.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ControlSection.timerRef",
+      "displayName": "timerRef",
+      "signature": "ControlSection.timerRef(t: TrackKey): inferred-by-TypeScript",
+      "line": 318,
+      "endLine": 319,
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 318
+      },
+      "description": "Operación timer Ref de Modo del auto y control de movimiento; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "ControlSection.updateInTrack",
+      "displayName": "updateInTrack",
+      "signature": "ControlSection.updateInTrack(setter: React.Dispatch<React.SetStateAction<Block[]>>, blockIndex: number): inferred-by-TypeScript",
+      "line": 1029,
+      "endLine": 1038,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "setter"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ControlSection.tsx",
+        "line": 1029
+      },
+      "description": "Adapta la llamada a `setter` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "MotionBalancePanel.display",
+      "displayName": "display",
+      "signature": "MotionBalancePanel.display(key: string, suffix: string): inferred-by-TypeScript",
+      "line": 48,
+      "endLine": 51,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Number.isFinite",
+        "value.toFixed"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/motion/MotionControlPanel.tsx",
+        "line": 48
+      },
+      "description": "Coordina `Number.isFinite`, `value.toFixed` para Modo del auto y control de movimiento.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "useMotionControl.poll",
+      "displayName": "poll",
+      "signature": "useMotionControl.poll(): inferred-by-TypeScript",
+      "line": 67,
+      "endLine": 84,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "read",
+        "setError",
+        "setPending",
+        "setState",
+        "setTelemetry",
+        "setTimeout"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/motion/useMotionControl.ts",
+        "line": 67
+      },
+      "description": "Coordina `read`, `setError`, `setPending` para Modo del auto y control de movimiento.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "useMotionControl.refresh",
+      "displayName": "refresh",
+      "signature": "useMotionControl.refresh(): inferred-by-TypeScript",
+      "line": 108,
+      "endLine": 121,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "read",
+        "setError",
+        "setPending",
+        "setState",
+        "setTelemetry"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/motion/useMotionControl.ts",
+        "line": 108
+      },
+      "description": "Coordina `read`, `setError`, `setPending` para Modo del auto y control de movimiento.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "useMotionControl.run",
+      "displayName": "run",
+      "signature": "useMotionControl.run(command: string, args: Record<string, unknown>): inferred-by-TypeScript",
+      "line": 92,
+      "endLine": 106,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "parseState",
+        "request",
+        "setError",
+        "setPending",
+        "setState"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/motion/useMotionControl.ts",
+        "line": 92
+      },
+      "description": "Coordina `parseState`, `request`, `setError` para Modo del auto y control de movimiento.",
+      "descriptionOrigin": "structural"
+    }
+  ],
+  "hooks": [
+    {
+      "callee": "useId",
+      "scope": "CarModeDropdown",
+      "line": 8,
+      "arguments": 0,
+      "path": "src/components/CarModeDropdown.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "CarModeDropdown",
+      "line": 8,
+      "arguments": 1,
+      "path": "src/components/CarModeDropdown.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "CarModeDropdown",
+      "line": 8,
+      "arguments": 1,
+      "path": "src/components/CarModeDropdown.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "CarModeDropdown",
+      "line": 9,
+      "arguments": 2,
+      "path": "src/components/CarModeDropdown.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "CarModeDropdown",
+      "line": 25,
+      "arguments": 2,
+      "path": "src/components/CarModeDropdown.tsx"
+    },
+    {
+      "callee": "useCarMode",
+      "scope": "CarModeSelectorModal",
+      "line": 12,
+      "arguments": 0,
+      "path": "src/components/CarModeSelectorModal.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "CarModeSelectorModal",
+      "line": 12,
+      "arguments": 1,
+      "path": "src/components/CarModeSelectorModal.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "CarModeSelectorModal",
+      "line": 12,
+      "arguments": 1,
+      "path": "src/components/CarModeSelectorModal.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "CarModeSelectorModal",
+      "line": 13,
+      "arguments": 1,
+      "path": "src/components/CarModeSelectorModal.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "CarModeSelectorModal",
+      "line": 14,
+      "arguments": 1,
+      "path": "src/components/CarModeSelectorModal.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "CarModeSelectorModal",
+      "line": 15,
+      "arguments": 2,
+      "path": "src/components/CarModeSelectorModal.tsx"
+    },
+    {
+      "callee": "useWebSocket",
+      "scope": "CarModeProvider",
+      "line": 61,
+      "arguments": 0,
+      "path": "src/contexts/CarModeContext.tsx"
+    },
+    {
+      "callee": "useUser",
+      "scope": "CarModeProvider",
+      "line": 62,
+      "arguments": 0,
+      "path": "src/contexts/CarModeContext.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "CarModeProvider",
+      "line": 63,
+      "arguments": 1,
+      "path": "src/contexts/CarModeContext.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "CarModeProvider",
+      "line": 64,
+      "arguments": 1,
+      "path": "src/contexts/CarModeContext.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "CarModeProvider",
+      "line": 65,
+      "arguments": 1,
+      "path": "src/contexts/CarModeContext.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "CarModeProvider",
+      "line": 66,
+      "arguments": 1,
+      "path": "src/contexts/CarModeContext.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "CarModeProvider",
+      "line": 67,
+      "arguments": 1,
+      "path": "src/contexts/CarModeContext.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "CarModeProvider",
+      "line": 68,
+      "arguments": 1,
+      "path": "src/contexts/CarModeContext.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "CarModeProvider",
+      "line": 70,
+      "arguments": 2,
+      "path": "src/contexts/CarModeContext.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "CarModeProvider",
+      "line": 90,
+      "arguments": 2,
+      "path": "src/contexts/CarModeContext.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "CarModeProvider",
+      "line": 107,
+      "arguments": 2,
+      "path": "src/contexts/CarModeContext.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "CarModeProvider",
+      "line": 183,
+      "arguments": 2,
+      "path": "src/contexts/CarModeContext.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "CarModeProvider",
+      "line": 196,
+      "arguments": 2,
+      "path": "src/contexts/CarModeContext.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "CarModeProvider",
+      "line": 216,
+      "arguments": 2,
+      "path": "src/contexts/CarModeContext.tsx"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "CarModeProvider",
+      "line": 235,
+      "arguments": 2,
+      "path": "src/contexts/CarModeContext.tsx"
+    },
+    {
+      "callee": "useContext",
+      "scope": "useCarMode",
+      "line": 257,
+      "arguments": 1,
+      "path": "src/contexts/CarModeContext.tsx"
+    },
+    {
+      "callee": "useId",
+      "scope": "MotionValueControl",
+      "line": 21,
+      "arguments": 0,
+      "path": "src/features/motion/MotionControlPanel.tsx"
+    },
+    {
+      "callee": "useId",
+      "scope": "MotionValueControl",
+      "line": 22,
+      "arguments": 0,
+      "path": "src/features/motion/MotionControlPanel.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "MotionBalancePanel",
+      "line": 39,
+      "arguments": 1,
+      "path": "src/features/motion/MotionControlPanel.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "MotionBalancePanel",
+      "line": 40,
+      "arguments": 1,
+      "path": "src/features/motion/MotionControlPanel.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "MotionBalancePanel",
+      "line": 41,
+      "arguments": 1,
+      "path": "src/features/motion/MotionControlPanel.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "MotionBalancePanel",
+      "line": 42,
+      "arguments": 1,
+      "path": "src/features/motion/MotionControlPanel.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "MotionBalancePanel",
+      "line": 43,
+      "arguments": 1,
+      "path": "src/features/motion/MotionControlPanel.tsx"
+    },
+    {
+      "callee": "useId",
+      "scope": "MotionBalancePanel",
+      "line": 44,
+      "arguments": 0,
+      "path": "src/features/motion/MotionControlPanel.tsx"
+    },
+    {
+      "callee": "useMotionControl",
+      "scope": "MotionControlPanel",
+      "line": 115,
+      "arguments": 0,
+      "path": "src/features/motion/MotionControlPanel.tsx"
+    },
+    {
+      "callee": "useWebSocket",
+      "scope": "useMotionControl",
+      "line": 38,
+      "arguments": 0,
+      "path": "src/features/motion/useMotionControl.ts"
+    },
+    {
+      "callee": "useState",
+      "scope": "useMotionControl",
+      "line": 39,
+      "arguments": 1,
+      "path": "src/features/motion/useMotionControl.ts"
+    },
+    {
+      "callee": "useState",
+      "scope": "useMotionControl",
+      "line": 40,
+      "arguments": 1,
+      "path": "src/features/motion/useMotionControl.ts"
+    },
+    {
+      "callee": "useState",
+      "scope": "useMotionControl",
+      "line": 41,
+      "arguments": 1,
+      "path": "src/features/motion/useMotionControl.ts"
+    },
+    {
+      "callee": "useState",
+      "scope": "useMotionControl",
+      "line": 42,
+      "arguments": 1,
+      "path": "src/features/motion/useMotionControl.ts"
+    },
+    {
+      "callee": "useRef",
+      "scope": "useMotionControl",
+      "line": 43,
+      "arguments": 1,
+      "path": "src/features/motion/useMotionControl.ts"
+    },
+    {
+      "callee": "useRef",
+      "scope": "useMotionControl",
+      "line": 44,
+      "arguments": 1,
+      "path": "src/features/motion/useMotionControl.ts"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "useMotionControl",
+      "line": 47,
+      "arguments": 2,
+      "path": "src/features/motion/useMotionControl.ts"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "useMotionControl",
+      "line": 59,
+      "arguments": 2,
+      "path": "src/features/motion/useMotionControl.ts"
+    },
+    {
+      "callee": "useWebSocket",
+      "scope": "ControlSection",
+      "line": 150,
+      "arguments": 0,
+      "path": "src/pages/ControlSection.tsx"
+    },
+    {
+      "callee": "useMotionControl",
+      "scope": "ControlSection",
+      "line": 151,
+      "arguments": 0,
+      "path": "src/pages/ControlSection.tsx"
+    },
+    {
+      "callee": "useAutoMotion",
+      "scope": "ControlSection",
+      "line": 152,
+      "arguments": 0,
+      "path": "src/pages/ControlSection.tsx"
+    },
+    {
+      "callee": "useSearchParams",
+      "scope": "ControlSection",
+      "line": 153,
+      "arguments": 0,
+      "path": "src/pages/ControlSection.tsx"
+    },
+    {
+      "callee": "useCarMode",
+      "scope": "ControlSection",
+      "line": 156,
+      "arguments": 0,
+      "path": "src/pages/ControlSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "ControlSection",
+      "line": 159,
+      "arguments": 1,
+      "path": "src/pages/ControlSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "ControlSection",
+      "line": 162,
+      "arguments": 1,
+      "path": "src/pages/ControlSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "ControlSection",
+      "line": 165,
+      "arguments": 1,
+      "path": "src/pages/ControlSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "ControlSection",
+      "line": 172,
+      "arguments": 1,
+      "path": "src/pages/ControlSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "ControlSection",
+      "line": 181,
+      "arguments": 1,
+      "path": "src/pages/ControlSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "ControlSection",
+      "line": 187,
+      "arguments": 1,
+      "path": "src/pages/ControlSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "ControlSection",
+      "line": 190,
+      "arguments": 1,
+      "path": "src/pages/ControlSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "ControlSection",
+      "line": 191,
+      "arguments": 1,
+      "path": "src/pages/ControlSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "ControlSection",
+      "line": 192,
+      "arguments": 1,
+      "path": "src/pages/ControlSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "ControlSection",
+      "line": 194,
+      "arguments": 1,
+      "path": "src/pages/ControlSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "ControlSection",
+      "line": 195,
+      "arguments": 1,
+      "path": "src/pages/ControlSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "ControlSection",
+      "line": 196,
+      "arguments": 1,
+      "path": "src/pages/ControlSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "ControlSection",
+      "line": 198,
+      "arguments": 1,
+      "path": "src/pages/ControlSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "ControlSection",
+      "line": 199,
+      "arguments": 1,
+      "path": "src/pages/ControlSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "ControlSection",
+      "line": 200,
+      "arguments": 1,
+      "path": "src/pages/ControlSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "ControlSection",
+      "line": 202,
+      "arguments": 1,
+      "path": "src/pages/ControlSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "ControlSection",
+      "line": 203,
+      "arguments": 1,
+      "path": "src/pages/ControlSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "ControlSection",
+      "line": 204,
+      "arguments": 1,
+      "path": "src/pages/ControlSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "ControlSection",
+      "line": 205,
+      "arguments": 1,
+      "path": "src/pages/ControlSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "ControlSection",
+      "line": 206,
+      "arguments": 1,
+      "path": "src/pages/ControlSection.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "ControlSection",
+      "line": 209,
+      "arguments": 1,
+      "path": "src/pages/ControlSection.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "ControlSection",
+      "line": 210,
+      "arguments": 1,
+      "path": "src/pages/ControlSection.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "ControlSection",
+      "line": 211,
+      "arguments": 1,
+      "path": "src/pages/ControlSection.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "ControlSection",
+      "line": 214,
+      "arguments": 1,
+      "path": "src/pages/ControlSection.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "ControlSection",
+      "line": 215,
+      "arguments": 1,
+      "path": "src/pages/ControlSection.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "ControlSection",
+      "line": 216,
+      "arguments": 1,
+      "path": "src/pages/ControlSection.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "ControlSection",
+      "line": 217,
+      "arguments": 1,
+      "path": "src/pages/ControlSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "ControlSection",
+      "line": 234,
+      "arguments": 1,
+      "path": "src/pages/ControlSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "ControlSection",
+      "line": 254,
+      "arguments": 1,
+      "path": "src/pages/ControlSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "ControlSection",
+      "line": 255,
+      "arguments": 1,
+      "path": "src/pages/ControlSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "ControlSection",
+      "line": 256,
+      "arguments": 1,
+      "path": "src/pages/ControlSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "ControlSection",
+      "line": 257,
+      "arguments": 1,
+      "path": "src/pages/ControlSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "ControlSection",
+      "line": 258,
+      "arguments": 1,
+      "path": "src/pages/ControlSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "ControlSection",
+      "line": 259,
+      "arguments": 1,
+      "path": "src/pages/ControlSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "ControlSection",
+      "line": 260,
+      "arguments": 1,
+      "path": "src/pages/ControlSection.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "ControlSection",
+      "line": 263,
+      "arguments": 2,
+      "path": "src/pages/ControlSection.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "ControlSection",
+      "line": 281,
+      "arguments": 2,
+      "path": "src/pages/ControlSection.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "ControlSection",
+      "line": 360,
+      "arguments": 2,
+      "path": "src/pages/ControlSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "ControlSection",
+      "line": 468,
+      "arguments": 1,
+      "path": "src/pages/ControlSection.tsx"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "ControlSection",
+      "line": 581,
+      "arguments": 2,
+      "path": "src/pages/ControlSection.tsx"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "ControlSection",
+      "line": 590,
+      "arguments": 2,
+      "path": "src/pages/ControlSection.tsx"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "ControlSection",
+      "line": 599,
+      "arguments": 2,
+      "path": "src/pages/ControlSection.tsx"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "ControlSection",
+      "line": 610,
+      "arguments": 2,
+      "path": "src/pages/ControlSection.tsx"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "ControlSection",
+      "line": 615,
+      "arguments": 2,
+      "path": "src/pages/ControlSection.tsx"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "ControlSection",
+      "line": 621,
+      "arguments": 2,
+      "path": "src/pages/ControlSection.tsx"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "ControlSection",
+      "line": 650,
+      "arguments": 2,
+      "path": "src/pages/ControlSection.tsx"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "ControlSection",
+      "line": 662,
+      "arguments": 2,
+      "path": "src/pages/ControlSection.tsx"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "ControlSection",
+      "line": 674,
+      "arguments": 2,
+      "path": "src/pages/ControlSection.tsx"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "ControlSection",
+      "line": 690,
+      "arguments": 2,
+      "path": "src/pages/ControlSection.tsx"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "ControlSection",
+      "line": 733,
+      "arguments": 2,
+      "path": "src/pages/ControlSection.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "ControlSection",
+      "line": 765,
+      "arguments": 2,
+      "path": "src/pages/ControlSection.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "ControlSection",
+      "line": 797,
+      "arguments": 2,
+      "path": "src/pages/ControlSection.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "ControlSection",
+      "line": 1016,
+      "arguments": 2,
+      "path": "src/pages/ControlSection.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "ControlSection",
+      "line": 1081,
+      "arguments": 2,
+      "path": "src/pages/ControlSection.tsx"
+    },
+    {
+      "callee": "useEspWifiStatus",
+      "scope": "ControlHeaderStatus",
+      "line": 2285,
+      "arguments": 0,
+      "path": "src/pages/ControlSection.tsx"
+    },
+    {
+      "callee": "useThree",
+      "scope": "TopCameraController",
+      "line": 2977,
+      "arguments": 0,
+      "path": "src/pages/ControlSection.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "TopCameraController",
+      "line": 2979,
+      "arguments": 2,
+      "path": "src/pages/ControlSection.tsx"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "TechnicalTopGrid",
+      "line": 2989,
+      "arguments": 2,
+      "path": "src/pages/ControlSection.tsx"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "SimulationPath3D",
+      "line": 3009,
+      "arguments": 2,
+      "path": "src/pages/ControlSection.tsx"
+    },
+    {
+      "callee": "useLoader",
+      "scope": "TopVehicleModel",
+      "line": 3042,
+      "arguments": 3,
+      "path": "src/pages/ControlSection.tsx"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "TopVehicleModel",
+      "line": 3046,
+      "arguments": 2,
+      "path": "src/pages/ControlSection.tsx"
+    }
+  ]
+}

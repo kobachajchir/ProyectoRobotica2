@@ -1,0 +1,856 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "esp:module/src/uner_device.h",
+  "slug": "uner-device",
+  "title": "Dispositivo y dispatch UNER",
+  "target": "esp",
+  "kind": "núcleo",
+  "status": "source-documented",
+  "snapshotDate": "2026-10-20",
+  "verification": "not-run-user-instruction",
+  "responsibility": "Asocia identidad del dispositivo, comando y handler a los paquetes parseados.",
+  "scope": "Composición interna de protocolo y tabla de funciones; el efecto pertenece al handler registrado.",
+  "state": "Instancia, callbacks y contexto conservan identidad/ruta y referencias prestadas; no compartir datos de un socket con otro por usar el mismo dispositivo UART.",
+  "modularity": "Núcleo de protocolo dependiente de core/colas legítimamente, separado del significado de comandos de aplicación.",
+  "lifecycle": [
+    "Configurar identidad y registro antes de despachar.",
+    "Recibir paquete, resolver handler y conservar semántica de respuesta/error del comando."
+  ],
+  "interactions": [
+    "UNER_App registra handlers; transport serial transmite frames construidos por la capa de protocolo."
+  ],
+  "limitations": [
+    "Un ID registrado no garantiza soporte físico ni equivalencia de metadata F4/ESP."
+  ],
+  "relationships": [],
+  "findings": [],
+  "files": [
+    {
+      "rootId": "esp",
+      "path": "src/uner_device.c",
+      "sha256": "e67e04e0d3877dea5688a22eba52ed8f65fd21e7f56cf865e9df32b89c8faa79",
+      "imports": [
+        "uner_device.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    },
+    {
+      "rootId": "esp",
+      "path": "src/uner_device.h",
+      "sha256": "d9d7c0cf6672ed4f233b0f5e150f44c6e75c134eb14488f6159a175d63ed789a",
+      "imports": [
+        "stdint.h",
+        "stddef.h",
+        "stdbool.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    }
+  ],
+  "types": [
+    {
+      "name": "UNER_WifiNetworkDesc",
+      "fields": [
+        {
+          "name": "ssid_len",
+          "declaration": "uint8_t ssid_len",
+          "callback": false,
+          "ownerType": "UNER_WifiNetworkDesc",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_device.h",
+            "line": 113
+          },
+          "description": "Dato de estado/configuración `ssid_len`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ssid",
+          "declaration": "const uint8_t *ssid",
+          "callback": false,
+          "ownerType": "UNER_WifiNetworkDesc",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_device.h",
+            "line": 114
+          },
+          "description": "Dato de estado/configuración `ssid`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "rssi_dbm",
+          "declaration": "int8_t rssi_dbm",
+          "callback": false,
+          "ownerType": "UNER_WifiNetworkDesc",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_device.h",
+            "line": 115
+          },
+          "description": "Dato de estado/configuración `rssi_dbm`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "security",
+          "declaration": "uint8_t security",
+          "callback": false,
+          "ownerType": "UNER_WifiNetworkDesc",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_device.h",
+            "line": 116
+          },
+          "description": "Dato de estado/configuración `security`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_device.h",
+        "line": 113
+      }
+    },
+    {
+      "name": "UNER_Device",
+      "fields": [
+        {
+          "name": "rx_ring",
+          "declaration": "uint8_t rx_ring[UNER_RX_RING_CAP]",
+          "callback": false,
+          "ownerType": "UNER_Device",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_device.h",
+            "line": 122
+          },
+          "description": "Dato de estado/configuración `rx_ring`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "head",
+          "declaration": "uint16_t head",
+          "callback": false,
+          "ownerType": "UNER_Device",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_device.h",
+            "line": 124
+          },
+          "description": "Dato de estado/configuración `head`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "tail",
+          "declaration": "uint16_t tail",
+          "callback": false,
+          "ownerType": "UNER_Device",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_device.h",
+            "line": 125
+          },
+          "description": "Dato de estado/configuración `tail`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "state",
+          "declaration": "uint8_t state",
+          "callback": false,
+          "ownerType": "UNER_Device",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_device.h",
+            "line": 126
+          },
+          "description": "Dato de estado/configuración `state`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "header_prog",
+          "declaration": "uint8_t header_prog",
+          "callback": false,
+          "ownerType": "UNER_Device",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_device.h",
+            "line": 129
+          },
+          "description": "Dato de estado/configuración `header_prog`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "len_field",
+          "declaration": "uint8_t len_field",
+          "callback": false,
+          "ownerType": "UNER_Device",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_device.h",
+            "line": 130
+          },
+          "description": "Dato de estado/configuración `len_field`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "expected_payload",
+          "declaration": "uint8_t expected_payload",
+          "callback": false,
+          "ownerType": "UNER_Device",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_device.h",
+            "line": 131
+          },
+          "description": "Dato de estado/configuración `expected_payload`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "cmd",
+          "declaration": "uint8_t cmd",
+          "callback": false,
+          "ownerType": "UNER_Device",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_device.h",
+            "line": 132
+          },
+          "description": "Dato de estado/configuración `cmd`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "pay_idx",
+          "declaration": "uint8_t pay_idx",
+          "callback": false,
+          "ownerType": "UNER_Device",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_device.h",
+            "line": 133
+          },
+          "description": "Dato de estado/configuración `pay_idx`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "cks_running",
+          "declaration": "uint8_t cks_running",
+          "callback": false,
+          "ownerType": "UNER_Device",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_device.h",
+            "line": 134
+          },
+          "description": "Dato de estado/configuración `cks_running`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "pay_buf",
+          "declaration": "uint8_t pay_buf[UNER_PCK_MAX_PAYLOAD]",
+          "callback": false,
+          "ownerType": "UNER_Device",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_device.h",
+            "line": 135
+          },
+          "description": "Dato de estado/configuración `pay_buf`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "send_bytes",
+          "declaration": "uner_send_bytes_fn send_bytes",
+          "callback": false,
+          "ownerType": "UNER_Device",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_device.h",
+            "line": 136
+          },
+          "description": "Dato de estado/configuración `send_bytes`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "wifi_get_mode",
+          "declaration": "uner_wifi_get_mode_fn wifi_get_mode",
+          "callback": false,
+          "ownerType": "UNER_Device",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_device.h",
+            "line": 139
+          },
+          "description": "Dato de estado/configuración `wifi_get_mode`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "wifi_request_scan",
+          "declaration": "uner_wifi_request_scan_fn wifi_request_scan",
+          "callback": false,
+          "ownerType": "UNER_Device",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_device.h",
+            "line": 140
+          },
+          "description": "Dato de estado/configuración `wifi_request_scan`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "wifi_set_ap",
+          "declaration": "uner_wifi_set_ap_fn wifi_set_ap",
+          "callback": false,
+          "ownerType": "UNER_Device",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_device.h",
+            "line": 141
+          },
+          "description": "Dato de estado/configuración `wifi_set_ap`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "wifi_set_sta",
+          "declaration": "uner_wifi_set_sta_fn wifi_set_sta",
+          "callback": false,
+          "ownerType": "UNER_Device",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_device.h",
+            "line": 142
+          },
+          "description": "Dato de estado/configuración `wifi_set_sta`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "telemetry_fill",
+          "declaration": "uner_telemetry_fill_fn telemetry_fill",
+          "callback": false,
+          "ownerType": "UNER_Device",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_device.h",
+            "line": 143
+          },
+          "description": "Dato de estado/configuración `telemetry_fill`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "heartbeat_period_ms",
+          "declaration": "uint16_t heartbeat_period_ms",
+          "callback": false,
+          "ownerType": "UNER_Device",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_device.h",
+            "line": 144
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "heartbeat_elapsed_ms",
+          "declaration": "uint16_t heartbeat_elapsed_ms",
+          "callback": false,
+          "ownerType": "UNER_Device",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_device.h",
+            "line": 147
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "telemetry_period_ms",
+          "declaration": "uint16_t telemetry_period_ms",
+          "callback": false,
+          "ownerType": "UNER_Device",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_device.h",
+            "line": 148
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "telemetry_elapsed_ms",
+          "declaration": "uint16_t telemetry_elapsed_ms",
+          "callback": false,
+          "ownerType": "UNER_Device",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_device.h",
+            "line": 150
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "telemetry_seq",
+          "declaration": "uint16_t telemetry_seq",
+          "callback": false,
+          "ownerType": "UNER_Device",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_device.h",
+            "line": 151
+          },
+          "description": "Dato de estado/configuración `telemetry_seq`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "telemetry_due",
+          "declaration": "bool telemetry_due",
+          "callback": false,
+          "ownerType": "UNER_Device",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_device.h",
+            "line": 152
+          },
+          "description": "Dato de estado/configuración `telemetry_due`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "last_cmd_valid",
+          "declaration": "bool last_cmd_valid",
+          "callback": false,
+          "ownerType": "UNER_Device",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_device.h",
+            "line": 155
+          },
+          "description": "Memoria de la observación anterior usada por la máquina de estados."
+        },
+        {
+          "name": "last_cmd",
+          "declaration": "uint8_t last_cmd",
+          "callback": false,
+          "ownerType": "UNER_Device",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_device.h",
+            "line": 156
+          },
+          "description": "Memoria de la observación anterior usada por la máquina de estados."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_device.h",
+        "line": 122
+      }
+    },
+    {
+      "name": "uner_send_bytes_fn",
+      "callbackType": "uint8_t (*uner_send_bytes_fn)(const uint8_t *data, uint16_t len)",
+      "fields": [],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_device.h",
+        "line": 82
+      },
+      "description": "Puerto de envío de bytes de la fachada histórica UNER; devuelve resultado del transporte según firma y usa contexto prestado. No acredita entrega/respuesta del destino."
+    },
+    {
+      "name": "uner_wifi_get_mode_fn",
+      "callbackType": "uint8_t (*uner_wifi_get_mode_fn)(void)",
+      "fields": [],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_device.h",
+        "line": 87
+      },
+      "description": "Consulta modo Wi-Fi mediante contexto inyectado al dispositivo histórico, sin acoplar parser al SDK."
+    },
+    {
+      "name": "uner_wifi_request_scan_fn",
+      "callbackType": "void (*uner_wifi_request_scan_fn)(void)",
+      "fields": [],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_device.h",
+        "line": 90
+      },
+      "description": "Solicita scan al backend desde un comando de la fachada histórica; el resultado requiere el flujo de scan."
+    },
+    {
+      "name": "uner_wifi_set_ap_fn",
+      "callbackType": "uint8_t (*uner_wifi_set_ap_fn)( const uint8_t *ssid, uint8_t ssid_len, const uint8_t *pass, uint8_t pass_len, const uint8_t ip[4])",
+      "fields": [],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_device.h",
+        "line": 94
+      },
+      "description": "Delega configuración/inicio AP al adaptador Wi-Fi de la fachada histórica."
+    },
+    {
+      "name": "uner_wifi_set_sta_fn",
+      "callbackType": "uint8_t (*uner_wifi_set_sta_fn)( const uint8_t *ssid, uint8_t ssid_len, const uint8_t *pass, uint8_t pass_len, uint8_t fixed_ip, const uint8_t ip[4])",
+      "fields": [],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_device.h",
+        "line": 100
+      },
+      "description": "Delega configuración/conexión STA al adaptador Wi-Fi de la fachada histórica."
+    },
+    {
+      "name": "uner_telemetry_fill_fn",
+      "callbackType": "bool (*uner_telemetry_fill_fn)(uint8_t *out_payload, uint8_t *out_len)",
+      "fields": [],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_device.h",
+        "line": 106
+      },
+      "description": "El dispositivo pide al proveedor rellenar datos de telemetría antes de responder; respetar capacidad de buffer y retorno."
+    }
+  ],
+  "functions": [
+    {
+      "name": "uner_dev_init",
+      "signature": "void uner_dev_init(UNER_Device *dev, uner_send_bytes_fn tx_fn, uner_wifi_get_mode_fn get_mode_fn, uner_wifi_request_scan_fn req_scan_fn, uner_wifi_set_ap_fn set_ap_fn, uner_wifi_set_sta_fn set_sta_fn, uner_telemetry_fill_fn tlm_fill_fn)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_device.c",
+        "line": 55
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [
+        "cks_running",
+        "cmd",
+        "expected_payload",
+        "head",
+        "header_prog",
+        "heartbeat_elapsed_ms",
+        "heartbeat_period_ms",
+        "last_cmd",
+        "last_cmd_valid",
+        "len_field",
+        "pay_idx",
+        "send_bytes",
+        "state",
+        "tail",
+        "telemetry_due",
+        "telemetry_elapsed_ms",
+        "telemetry_fill",
+        "telemetry_period_ms",
+        "telemetry_seq",
+        "wifi_get_mode",
+        "wifi_request_scan",
+        "wifi_set_ap",
+        "wifi_set_sta"
+      ],
+      "description": "Operación uner dev init de Dispositivo y dispatch UNER; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "uner_dev_process_rx",
+      "signature": "void uner_dev_process_rx(UNER_Device *dev)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_device.c",
+        "line": 358
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "handle_cmd",
+        "resync_header",
+        "uner_dev_reset_parser"
+      ],
+      "writes": [
+        "cmd",
+        "expected_payload",
+        "header_prog",
+        "len_field",
+        "pay_idx",
+        "state"
+      ],
+      "description": "Coordina `handle_cmd`, `resync_header`, `uner_dev_reset_parser` para Dispositivo y dispatch UNER.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "uner_dev_push_byte",
+      "signature": "UNER_Status uner_dev_push_byte(UNER_Device *dev, uint8_t b)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_device.c",
+        "line": 109
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "ring_count"
+      ],
+      "writes": [],
+      "description": "Coordina `ring_count` para Dispositivo y dispatch UNER.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "uner_dev_push_bytes",
+      "signature": "UNER_Status uner_dev_push_bytes(UNER_Device *dev, const uint8_t *data, size_t len)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_device.c",
+        "line": 123
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "uner_dev_push_byte"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `uner_dev_push_byte` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "uner_dev_reset_parser",
+      "signature": "void uner_dev_reset_parser(UNER_Device *dev)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_device.c",
+        "line": 93
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [
+        "cks_running",
+        "cmd",
+        "expected_payload",
+        "header_prog",
+        "len_field",
+        "pay_idx",
+        "state"
+      ],
+      "description": "Operación uner dev reset parser de Dispositivo y dispatch UNER; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "uner_dev_send_heartbeat_beat",
+      "signature": "UNER_Status uner_dev_send_heartbeat_beat(UNER_Device *dev)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_device.c",
+        "line": 182
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "send_frame",
+        "uner_le16_write"
+      ],
+      "writes": [],
+      "description": "Coordina `send_frame`, `uner_le16_write` para Dispositivo y dispatch UNER.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "uner_dev_send_telemetry_mpu6050",
+      "signature": "UNER_Status uner_dev_send_telemetry_mpu6050(UNER_Device *dev, uint16_t seq, int16_t accX, int16_t accY, int16_t accZ, int16_t gyroX, int16_t gyroY, int16_t gyroZ, int16_t tempRaw)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_device.c",
+        "line": 194
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "send_frame",
+        "uner_le16_write"
+      ],
+      "writes": [
+        "telemetry_due"
+      ],
+      "description": "Coordina `send_frame`, `uner_le16_write` para Dispositivo y dispatch UNER.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "uner_dev_send_wifi_mode",
+      "signature": "UNER_Status uner_dev_send_wifi_mode(UNER_Device *dev, uint8_t mode)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_device.c",
+        "line": 145
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "send_frame"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `send_frame` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "uner_dev_send_wifi_scan_list",
+      "signature": "uint8_t uner_dev_send_wifi_scan_list(UNER_Device *dev, const UNER_WifiNetworkDesc *list, uint8_t n)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_device.c",
+        "line": 150
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "send_frame"
+      ],
+      "writes": [],
+      "description": "Coordina `send_frame` para Dispositivo y dispatch UNER.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "uner_dev_set_telemetry_rate",
+      "signature": "void uner_dev_set_telemetry_rate(UNER_Device *dev, uint16_t period_ms)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_device.c",
+        "line": 188
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [
+        "telemetry_elapsed_ms",
+        "telemetry_period_ms"
+      ],
+      "description": "Operación uner dev set telemetry rate de Dispositivo y dispatch UNER; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "uner_dev_tick",
+      "signature": "void uner_dev_tick(UNER_Device *dev, uint16_t elapsed_ms)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_device.c",
+        "line": 222
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "send_frame",
+        "telemetry_fill",
+        "uner_dev_send_heartbeat_beat"
+      ],
+      "writes": [
+        "heartbeat_elapsed_ms",
+        "telemetry_due",
+        "telemetry_elapsed_ms"
+      ],
+      "description": "Coordina `send_frame`, `telemetry_fill`, `uner_dev_send_heartbeat_beat` para Dispositivo y dispatch UNER.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "uner_le16_read",
+      "signature": "static inline uint16_t uner_le16_read(const uint8_t *p)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_device.h",
+        "line": 208
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación uner le16 read de Dispositivo y dispatch UNER; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "uner_le16_write",
+      "signature": "static inline void uner_le16_write(uint8_t *p, uint16_t v)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_device.h",
+        "line": 211
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación uner le16 write de Dispositivo y dispatch UNER; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "handle_cmd",
+      "signature": "static void handle_cmd(UNER_Device *dev, uint8_t cmd, const uint8_t *pay, uint8_t n)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_device.c",
+        "line": 264
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "send_frame",
+        "uner_dev_send_wifi_mode",
+        "uner_le16_read",
+        "uner_le16_write",
+        "wifi_get_mode",
+        "wifi_request_scan",
+        "wifi_set_ap",
+        "wifi_set_sta"
+      ],
+      "writes": [
+        "heartbeat_elapsed_ms",
+        "heartbeat_period_ms",
+        "last_cmd",
+        "last_cmd_valid",
+        "telemetry_elapsed_ms",
+        "telemetry_period_ms"
+      ],
+      "description": "Coordina `send_frame`, `uner_dev_send_wifi_mode`, `uner_le16_read` para Dispositivo y dispatch UNER.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "resync_header",
+      "signature": "static void resync_header(UNER_Device *dev, uint8_t b)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_device.c",
+        "line": 134
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "uner_dev_reset_parser"
+      ],
+      "writes": [
+        "cks_running",
+        "header_prog",
+        "state"
+      ],
+      "description": "Adapta la llamada a `uner_dev_reset_parser` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ring_count",
+      "signature": "static inline uint16_t ring_count(const UNER_Device *d)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_device.c",
+        "line": 105
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación ring count de Dispositivo y dispatch UNER; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "send_frame",
+      "signature": "static UNER_Status send_frame(UNER_Device *dev, uint8_t cmd, const uint8_t *payload, uint8_t pay_len)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_device.c",
+        "line": 23
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "send_bytes",
+        "xor_cksum"
+      ],
+      "writes": [],
+      "description": "Coordina `send_bytes`, `xor_cksum` para Dispositivo y dispatch UNER.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "xor_cksum",
+      "signature": "static uint8_t xor_cksum(const uint8_t *p, size_t len)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_device.c",
+        "line": 16
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación xor cksum de Dispositivo y dispatch UNER; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    }
+  ],
+  "hooks": []
+}

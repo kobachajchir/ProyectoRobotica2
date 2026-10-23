@@ -1,0 +1,121 @@
+{
+  "schemaVersion": 1,
+  "id": "shared:screen/030301",
+  "symbol": "SCREEN_CODE_SENSORS_MPU_VALUES",
+  "code": 197377,
+  "hex": "0x030301",
+  "decomposition": {
+    "menu": 3,
+    "submenu": 3,
+    "page": 1
+  },
+  "revision": "working-copy-hashes",
+  "confidence": "manual-review",
+  "family": "shared:screen-family/sensors-controls",
+  "numericObservation": "same-literal",
+  "webDeclaration": {
+    "value": 197377,
+    "line": 83
+  },
+  "metadataEntryObserved": true,
+  "evidence": [
+    {
+      "repo": "f4",
+      "path": "Core/Inc/screen_codes.h",
+      "line": 107
+    },
+    {
+      "repo": "web",
+      "path": "src/screens/screenCodes.ts",
+      "line": 83
+    }
+  ],
+  "renderers": [
+    {
+      "kind": "switch-case",
+      "path": "src/screens/screenRenderRegistry.ts",
+      "line": 456,
+      "builders": [
+        "buildScreen030301MpuValuesCommands"
+      ],
+      "availability": "parameterized-candidate"
+    }
+  ],
+  "callGraph": {
+    "status": "lexical-candidates-only",
+    "edges": []
+  },
+  "f4References": [
+    {
+      "repo": "f4",
+      "path": "Core/Src/menu_definition.c",
+      "line": 362,
+      "kind": "lexical-reference"
+    },
+    {
+      "repo": "f4",
+      "path": "Core/Src/oled_utils.c",
+      "line": 3513,
+      "kind": "lexical-reference"
+    },
+    {
+      "repo": "f4",
+      "path": "Core/Src/oled_utils.c",
+      "line": 3745,
+      "kind": "lexical-reference"
+    },
+    {
+      "repo": "f4",
+      "path": "Core/Src/screenWrappers.c",
+      "line": 654,
+      "kind": "lexical-reference"
+    }
+  ],
+  "variants": [
+    "Sensores, pruebas de actuador, PID y editores tienen diferentes fuentes, unidades y borradores."
+  ],
+  "fields": [
+    {
+      "name": "screenCode/source",
+      "type": "u32/u8",
+      "units": "identidad",
+      "availability": "reported",
+      "note": "no es captura del contenido"
+    },
+    {
+      "name": "MPU/IR/control/PID snapshots",
+      "type": "42/56/64/13 bytes → JSON",
+      "units": "g,dps,ADC,mm,m/s,porcentaje según campo",
+      "availability": "separately-queryable",
+      "note": "cada decoder tiene esquema; consumir no sincroniza automáticamente el renderer físico"
+    },
+    {
+      "name": "vista activa/borrador/ganancia/campo/cursor",
+      "type": "estado local de UI",
+      "units": "según editor",
+      "availability": "unavailable-remotely",
+      "note": "requiere modelo de renderer completo o identidad-only"
+    }
+  ],
+  "actions": [
+    "Giro/pulsación actúan sobre el handler activo en F4.",
+    "Comandos específicos de movimiento/PID requieren sus propias guardas y respuesta."
+  ],
+  "transitions": [
+    "Cambiar un borrador no implica guardarlo/aplicarlo; una acción aceptada puede ser consumida sin cambio visible."
+  ],
+  "missingData": [
+    "El visor no conecta de forma completa los snapshots a todos los argumentos de builders.",
+    "Valores por defecto de MPU/motores no son muestra del equipo."
+  ],
+  "localOnly": [],
+  "findings": [
+    "AMDOC-WEB-002",
+    "AMDOC-WEB-006"
+  ],
+  "exactness": "not-established",
+  "notes": [
+    "La ficha individual enumera bindings candidatos; no se eleva a exact por coincidencia de nombre."
+  ],
+  "role": "not-resolved"
+}

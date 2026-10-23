@@ -1,0 +1,699 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "esp:module/src/wifi_utils.h",
+  "slug": "wifi-facade",
+  "title": "Fachada Wi-Fi de aplicación",
+  "target": "esp",
+  "kind": "integración",
+  "status": "source-documented",
+  "snapshotDate": "2026-10-20",
+  "verification": "not-run-user-instruction",
+  "responsibility": "Conecta el servicio Wi-Fi con el runtime Arduino y conserva su API de aplicación.",
+  "scope": "Bindings del driver/config/reloj y reenvíos a WifiService.",
+  "state": "Instancia del servicio y configuración de sesión; distinguir configuración temporal de NVS persistida.",
+  "modularity": "Fachada específica ESP; no duplicar su estado dentro del bridge.",
+  "lifecycle": [
+    "Begin prepara servicio en setup; Loop lo atiende.",
+    "Cambios temporales pueden aplicar configuración de sesión sin escribir NVS."
+  ],
+  "interactions": [
+    "BridgeWifiPort y UNER_AppServices delegan operaciones aquí."
+  ],
+  "limitations": [
+    "Una configuración en RAM no sobrevive a reinicio salvo guardado explícito."
+  ],
+  "relationships": [],
+  "findings": [],
+  "files": [
+    {
+      "rootId": "esp",
+      "path": "src/wifi_utils.cpp",
+      "sha256": "ce09ac8669585eb45ecec245cddd2d8f9d8171e2b94e06b819605a1a67575a44",
+      "imports": [
+        "wifi_utils.h",
+        "wifi_service.h",
+        "globals.h",
+        "timebase.h",
+        "nvs_utils.h",
+        "esp_platform.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    },
+    {
+      "rootId": "esp",
+      "path": "src/wifi_utils.h",
+      "sha256": "d6ff57046966362c4f93f62a53ea6d3932e8539bf865886352a2a35e19a4ff5e",
+      "imports": [
+        "ESP8266WiFi.h",
+        "config.h",
+        "wifi_service_types.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    }
+  ],
+  "types": [],
+  "functions": [
+    {
+      "name": "WifiUtils_ApplyAPConfig",
+      "signature": "bool WifiUtils_ApplyAPConfig(const AppConfig &c)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_utils.cpp",
+        "line": 75
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "WifiService_ApplyAPConfig",
+        "service"
+      ],
+      "writes": [],
+      "description": "Aplica APConfig dentro de Fachada Wi-Fi de aplicación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "WifiUtils_ApplySTAConfig",
+      "signature": "bool WifiUtils_ApplySTAConfig(const AppConfig &c)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_utils.cpp",
+        "line": 74
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "WifiService_ApplySTAConfig",
+        "service"
+      ],
+      "writes": [],
+      "description": "Aplica STAConfig dentro de Fachada Wi-Fi de aplicación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "WifiUtils_Begin",
+      "signature": "bool WifiUtils_Begin(const AppConfig &c,WifiRunMode m)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_utils.cpp",
+        "line": 61
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "WifiService_Begin",
+        "service"
+      ],
+      "writes": [],
+      "description": "Coordina `WifiService_Begin`, `service` para Fachada Wi-Fi de aplicación.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiUtils_ConfigureAP",
+      "signature": "bool WifiUtils_ConfigureAP(IPAddress ip,IPAddress gw,IPAddress mask)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_utils.cpp",
+        "line": 73
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "WifiService_ConfigureAP",
+        "fromIP",
+        "service"
+      ],
+      "writes": [],
+      "description": "Coordina `WifiService_ConfigureAP`, `fromIP`, `service` para Fachada Wi-Fi de aplicación.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiUtils_ConfigureSTA",
+      "signature": "bool WifiUtils_ConfigureSTA(IPAddress ip,IPAddress gw,IPAddress mask)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_utils.cpp",
+        "line": 72
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "WifiService_ConfigureSTA",
+        "fromIP",
+        "service"
+      ],
+      "writes": [],
+      "description": "Coordina `WifiService_ConfigureSTA`, `fromIP`, `service` para Fachada Wi-Fi de aplicación.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiUtils_ConnectSTA",
+      "signature": "wl_status_t WifiUtils_ConnectSTA(const char *s,const char *p,bool ap,bool disc,const uint8_t *b)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_utils.cpp",
+        "line": 67
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "WifiService_ConnectSTA",
+        "service"
+      ],
+      "writes": [],
+      "description": "Coordina `WifiService_ConnectSTA`, `service` para Fachada Wi-Fi de aplicación.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiUtils_ConsumeAPFallbackReady",
+      "signature": "bool WifiUtils_ConsumeAPFallbackReady()",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_utils.cpp",
+        "line": 89
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "WifiService_ConsumeAPFallbackReady",
+        "service"
+      ],
+      "writes": [],
+      "description": "Coordina `WifiService_ConsumeAPFallbackReady`, `service` para Fachada Wi-Fi de aplicación.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiUtils_ConsumeSTAAttemptFailure",
+      "signature": "bool WifiUtils_ConsumeSTAAttemptFailure()",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_utils.cpp",
+        "line": 91
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "WifiService_ConsumeSTAAttemptFailure",
+        "service"
+      ],
+      "writes": [],
+      "description": "Coordina `WifiService_ConsumeSTAAttemptFailure`, `service` para Fachada Wi-Fi de aplicación.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiUtils_DeleteScanResults",
+      "signature": "void WifiUtils_DeleteScanResults()",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_utils.cpp",
+        "line": 65
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "WifiService_DeleteScanResults",
+        "service"
+      ],
+      "writes": [],
+      "description": "Coordina `WifiService_DeleteScanResults`, `service` para Fachada Wi-Fi de aplicación.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiUtils_DisconnectSTA",
+      "signature": "bool WifiUtils_DisconnectSTA(bool off,bool erase)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_utils.cpp",
+        "line": 70
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "WifiService_DisconnectSTA",
+        "service"
+      ],
+      "writes": [],
+      "description": "Coordina `WifiService_DisconnectSTA`, `service` para Fachada Wi-Fi de aplicación.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiUtils_GetAPClientCount",
+      "signature": "uint8_t WifiUtils_GetAPClientCount()",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_utils.cpp",
+        "line": 88
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "WifiService_GetAPClientCount",
+        "service"
+      ],
+      "writes": [],
+      "description": "Consulta APClient Count dentro de Fachada Wi-Fi de aplicación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "WifiUtils_GetAP_IP",
+      "signature": "IPAddress WifiUtils_GetAP_IP()",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_utils.cpp",
+        "line": 84
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "WifiService_GetAP_IP",
+        "service",
+        "toIP"
+      ],
+      "writes": [],
+      "description": "Consulta AP IP dentro de Fachada Wi-Fi de aplicación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "WifiUtils_GetMode",
+      "signature": "WiFiMode_t WifiUtils_GetMode()",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_utils.cpp",
+        "line": 86
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "WifiService_GetMode",
+        "service"
+      ],
+      "writes": [],
+      "description": "Consulta Mode dentro de Fachada Wi-Fi de aplicación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "WifiUtils_GetRuntimeConfig",
+      "signature": "const AppConfig *WifiUtils_GetRuntimeConfig()",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_utils.cpp",
+        "line": 45
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "NVS_GetCached"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `NVS_GetCached` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiUtils_GetSTAStatus",
+      "signature": "wl_status_t WifiUtils_GetSTAStatus()",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_utils.cpp",
+        "line": 87
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "WifiService_GetSTAStatus",
+        "service"
+      ],
+      "writes": [],
+      "description": "Consulta STAStatus dentro de Fachada Wi-Fi de aplicación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "WifiUtils_GetSTA_IP",
+      "signature": "IPAddress WifiUtils_GetSTA_IP()",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_utils.cpp",
+        "line": 83
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "WifiService_GetSTA_IP",
+        "service",
+        "toIP"
+      ],
+      "writes": [],
+      "description": "Consulta STA IP dentro de Fachada Wi-Fi de aplicación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "WifiUtils_GetState",
+      "signature": "WifiServiceState WifiUtils_GetState()",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_utils.cpp",
+        "line": 82
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "WifiService_GetState",
+        "service"
+      ],
+      "writes": [],
+      "description": "Consulta State dentro de Fachada Wi-Fi de aplicación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "WifiUtils_IsSTAReconnectEnabled",
+      "signature": "bool WifiUtils_IsSTAReconnectEnabled()",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_utils.cpp",
+        "line": 81
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "WifiService_IsSTAReconnectEnabled",
+        "service"
+      ],
+      "writes": [],
+      "description": "Indica si se cumple la condición STAReconnect Enabled dentro de Fachada Wi-Fi de aplicación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "WifiUtils_Loop",
+      "signature": "void WifiUtils_Loop()",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_utils.cpp",
+        "line": 62
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "WifiService_Loop",
+        "service"
+      ],
+      "writes": [],
+      "description": "Coordina `WifiService_Loop`, `service` para Fachada Wi-Fi de aplicación.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiUtils_NotifySTAConfigurationFailure",
+      "signature": "void WifiUtils_NotifySTAConfigurationFailure()",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_utils.cpp",
+        "line": 93
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "WifiService_NotifySTAConfigurationFailure",
+        "service"
+      ],
+      "writes": [],
+      "description": "Notifica STAConfiguration Failure dentro de Fachada Wi-Fi de aplicación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "WifiUtils_ReconnectSTA",
+      "signature": "bool WifiUtils_ReconnectSTA()",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_utils.cpp",
+        "line": 71
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "WifiService_ReconnectSTA",
+        "service"
+      ],
+      "writes": [],
+      "description": "Coordina `WifiService_ReconnectSTA`, `service` para Fachada Wi-Fi de aplicación.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiUtils_RestoreModeAfterScan",
+      "signature": "void WifiUtils_RestoreModeAfterScan()",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_utils.cpp",
+        "line": 66
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "WifiService_RestoreModeAfterScan",
+        "service"
+      ],
+      "writes": [],
+      "description": "Coordina `WifiService_RestoreModeAfterScan`, `service` para Fachada Wi-Fi de aplicación.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiUtils_STA_Connected",
+      "signature": "bool WifiUtils_STA_Connected()",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_utils.cpp",
+        "line": 85
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "WifiService_STA_Connected",
+        "service"
+      ],
+      "writes": [],
+      "description": "Coordina `WifiService_STA_Connected`, `service` para Fachada Wi-Fi de aplicación.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiUtils_ScanComplete",
+      "signature": "int WifiUtils_ScanComplete()",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_utils.cpp",
+        "line": 64
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "WifiService_ScanComplete",
+        "service"
+      ],
+      "writes": [],
+      "description": "Coordina `WifiService_ScanComplete`, `service` para Fachada Wi-Fi de aplicación.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiUtils_SetSTAReconnectEnabled",
+      "signature": "void WifiUtils_SetSTAReconnectEnabled(bool on)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_utils.cpp",
+        "line": 80
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "WifiService_SetSTAReconnectEnabled",
+        "service"
+      ],
+      "writes": [],
+      "description": "Configura STAReconnect Enabled dentro de Fachada Wi-Fi de aplicación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "WifiUtils_SetSessionConfig",
+      "signature": "void WifiUtils_SetSessionConfig(const AppConfig *config)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_utils.cpp",
+        "line": 46
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Configura Session Config dentro de Fachada Wi-Fi de aplicación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "WifiUtils_StartAP",
+      "signature": "bool WifiUtils_StartAP(const char *s,const char *p,bool sta,uint8_t ch,bool hidden,uint8_t max,bool protect)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_utils.cpp",
+        "line": 76
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "WifiService_StartAP",
+        "service"
+      ],
+      "writes": [],
+      "description": "Inicia AP dentro de Fachada Wi-Fi de aplicación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "WifiUtils_StartScan",
+      "signature": "int WifiUtils_StartScan(bool async,bool hidden)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_utils.cpp",
+        "line": 63
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "WifiService_StartScan",
+        "service"
+      ],
+      "writes": [],
+      "description": "Inicia Scan dentro de Fachada Wi-Fi de aplicación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "WifiUtils_StopAP",
+      "signature": "bool WifiUtils_StopAP(bool off)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_utils.cpp",
+        "line": 79
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "WifiService_StopAP",
+        "service"
+      ],
+      "writes": [],
+      "description": "Detiene AP dentro de Fachada Wi-Fi de aplicación.",
+      "descriptionOrigin": "inferred-name"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "driverOps",
+      "signature": "static const WifiDriverOps &driverOps()",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_utils.cpp",
+        "line": 10
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "begin",
+        "config",
+        "disconnect",
+        "fromIP",
+        "getMode",
+        "localIP",
+        "mode",
+        "persistent",
+        "reconnect",
+        "scanComplete",
+        "scanDelete",
+        "scanNetworks",
+        "setAutoConnect",
+        "setAutoReconnect",
+        "setSleepMode",
+        "softAP",
+        "softAPConfig",
+        "softAPIP",
+        "softAPdisconnect",
+        "softAPgetStationNum",
+        "status",
+        "toIP"
+      ],
+      "writes": [
+        "ap_clients",
+        "ap_ip",
+        "auto_reconnect",
+        "configure_ap",
+        "configure_sta",
+        "connect",
+        "disconnect",
+        "get_mode",
+        "initialize",
+        "reconnect",
+        "scan_complete",
+        "scan_delete",
+        "scan_start",
+        "set_mode",
+        "sta_ip",
+        "start_ap",
+        "status",
+        "stop_ap"
+      ],
+      "description": "Coordina `begin`, `config`, `disconnect` para Fachada Wi-Fi de aplicación.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "fromIP",
+      "signature": "static WifiIpv4 fromIP(IPAddress ip)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_utils.cpp",
+        "line": 8
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "WifiIpv4"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `WifiIpv4` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "service",
+      "signature": "static WifiServiceHandle &service()",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_utils.cpp",
+        "line": 48
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Timebase_Ticks",
+        "WifiService_Init",
+        "WifiUtils_GetRuntimeConfig",
+        "driverOps"
+      ],
+      "writes": [
+        "config",
+        "cooperate",
+        "ops",
+        "ticks"
+      ],
+      "description": "Coordina `Timebase_Ticks`, `WifiService_Init`, `WifiUtils_GetRuntimeConfig` para Fachada Wi-Fi de aplicación.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "toIP",
+      "signature": "static IPAddress toIP(WifiIpv4 ip)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_utils.cpp",
+        "line": 9
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "IPAddress"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `IPAddress` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    }
+  ],
+  "hooks": []
+}

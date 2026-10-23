@@ -1,0 +1,1282 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "web:module/src/screens/connectivityScreens.ts",
+  "slug": "connectivity-builders",
+  "title": "Renderers Web de conectividad y avisos",
+  "target": "web",
+  "kind": "núcleo",
+  "status": "source-documented",
+  "snapshotDate": "2026-10-20",
+  "verification": "not-run-user-instruction",
+  "responsibility": "Construye estado Wi-Fi, búsqueda, resultados/credenciales y avisos de enlaces.",
+  "scope": "Primitivas de pantallas/avisos, SSID/IP/número de cliente y progreso; la red real pertenece al ESP/F4.",
+  "state": "Args de contenido y NotificationProgressArgs; el tiempo reportado no incluye necesariamente la fase exacta del refresco físico.",
+  "modularity": "Builders puros, con assets y convenciones OLED del proyecto.",
+  "lifecycle": [
+    "Elegir variante por código/source y datos, después dibujar.",
+    "Un mismo ID puede representar aviso o vista completa; usar discriminante confirmado."
+  ],
+  "interactions": [
+    "reports.inc publica tiempos y clientNumber cuando existen en el payload.",
+    "F4 diferencia Cliente Wi-Fi N y Web N en su cola."
+  ],
+  "limitations": [
+    "Defaults de SSID/IP/contador no son prueba del dato del equipo.",
+    "No elegir variante transitoria ON/OFF a partir del último GET de estado si el evento no la especifica."
+  ],
+  "relationships": [],
+  "findings": [],
+  "files": [
+    {
+      "rootId": "web",
+      "path": "src/screens/connectivityScreens.ts",
+      "sha256": "86124559644319c516ef90557f3a3d83b09e082010caac846c483c96de21e9e1",
+      "imports": [
+        "./helpers",
+        "./screenCodes",
+        "./types"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/screens/notificationScreens.ts",
+      "sha256": "23137d455a656d70ca07dfe0dd18e3885bd185cb70f27894447a4917bdb1e738",
+      "imports": [
+        "./helpers",
+        "./screenCodes",
+        "./types"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    }
+  ],
+  "types": [
+    {
+      "name": "WifiStatusState",
+      "kind": "TypeAliasDeclaration",
+      "type": "\"sta\" | \"ap\" | \"disconnected\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/connectivityScreens.ts",
+        "line": 46
+      }
+    },
+    {
+      "name": "WifiStatusArgs",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "state",
+          "declaration": "state: WifiStatusState",
+          "callback": false,
+          "ownerType": "WifiStatusArgs",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/connectivityScreens.ts",
+            "line": 49
+          },
+          "description": "Dato de estado/configuración `state`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ssid",
+          "declaration": "ssid?: string",
+          "callback": false,
+          "ownerType": "WifiStatusArgs",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/connectivityScreens.ts",
+            "line": 50
+          },
+          "description": "Dato de estado/configuración `ssid`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ipAddress",
+          "declaration": "ipAddress?: string",
+          "callback": false,
+          "ownerType": "WifiStatusArgs",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/connectivityScreens.ts",
+            "line": 51
+          },
+          "description": "Dato de estado/configuración `ipAddress`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/connectivityScreens.ts",
+        "line": 48
+      }
+    },
+    {
+      "name": "WifiAtCredentialsArgs",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "ssid",
+          "declaration": "ssid?: string",
+          "callback": false,
+          "ownerType": "WifiAtCredentialsArgs",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/connectivityScreens.ts",
+            "line": 208
+          },
+          "description": "Dato de estado/configuración `ssid`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "passwordLength",
+          "declaration": "passwordLength?: number",
+          "callback": false,
+          "ownerType": "WifiAtCredentialsArgs",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/connectivityScreens.ts",
+            "line": 209
+          },
+          "description": "Dato de estado/configuración `passwordLength`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "selectedCharacter",
+          "declaration": "selectedCharacter?: string",
+          "callback": false,
+          "ownerType": "WifiAtCredentialsArgs",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/connectivityScreens.ts",
+            "line": 210
+          },
+          "description": "Dato de estado/configuración `selectedCharacter`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/connectivityScreens.ts",
+        "line": 207
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "buildScreen010105RemoteModeChangedNotificationCommands",
+      "displayName": "buildScreen010105RemoteModeChangedNotificationCommands",
+      "signature": "buildScreen010105RemoteModeChangedNotificationCommands(args: { mode: string }, progress?: NotificationProgressArgs): OledCommand[]",
+      "line": 19,
+      "endLine": 33,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "[\"IDLE\", \"FOLLOW\", \"TEST\"].includes",
+        "baselineY",
+        "center7x10",
+        "clear",
+        "drawXbm",
+        "notification",
+        "setWhite",
+        "textAt"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/notificationScreens.ts",
+        "line": 19
+      },
+      "description": "Coordina `[\"IDLE\", \"FOLLOW\", \"TEST\"].includes`, `baselineY`, `center7x10` para Renderers Web de conectividad y avisos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen020201WifiStatusCommands",
+      "displayName": "buildScreen020201WifiStatusCommands",
+      "signature": "buildScreen020201WifiStatusCommands(args: WifiStatusArgs): OledCommand[]",
+      "line": 60,
+      "endLine": 89,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "baselineY",
+        "clear",
+        "drawXbm",
+        "setWhite",
+        "textAt",
+        "textMaxAt"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/connectivityScreens.ts",
+        "line": 60
+      },
+      "description": "Coordina `baselineY`, `clear`, `drawXbm` para Renderers Web de conectividad y avisos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen020202WifiSearchCommands",
+      "displayName": "buildScreen020202WifiSearchCommands",
+      "signature": "buildScreen020202WifiSearchCommands(args: { secondsRemaining: number }): OledCommand[]",
+      "line": 93,
+      "endLine": 105,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "String",
+        "baselineY",
+        "clear",
+        "clearBox",
+        "drawXbm",
+        "setWhite",
+        "textAt"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/connectivityScreens.ts",
+        "line": 93
+      },
+      "description": "Coordina `String`, `baselineY`, `clear` para Renderers Web de conectividad y avisos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen020204WifiNotConnectedNotificationCommands",
+      "displayName": "buildScreen020204WifiNotConnectedNotificationCommands",
+      "signature": "buildScreen020204WifiNotConnectedNotificationCommands(progress?: NotificationProgressArgs): OledCommand[]",
+      "line": 109,
+      "endLine": 117,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "baselineY",
+        "clear",
+        "drawXbm",
+        "setWhite",
+        "simpleNotification",
+        "textAt"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/connectivityScreens.ts",
+        "line": 109
+      },
+      "description": "Coordina `baselineY`, `clear`, `drawXbm` para Renderers Web de conectividad y avisos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen020205WifiConnectingCommands",
+      "displayName": "buildScreen020205WifiConnectingCommands",
+      "signature": "buildScreen020205WifiConnectingCommands(args: { ssid: string }, progress?: NotificationProgressArgs): OledCommand[]",
+      "line": 121,
+      "endLine": 129,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "baselineY",
+        "clear",
+        "drawXbm",
+        "setWhite",
+        "simpleNotification",
+        "textAt",
+        "textMaxAt"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/connectivityScreens.ts",
+        "line": 121
+      },
+      "description": "Coordina `baselineY`, `clear`, `drawXbm` para Renderers Web de conectividad y avisos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen020206WifiConnectedCommands",
+      "displayName": "buildScreen020206WifiConnectedCommands",
+      "signature": "buildScreen020206WifiConnectedCommands(args: { ssid: string; ipAddress: string }, progress?: NotificationProgressArgs): OledCommand[]",
+      "line": 133,
+      "endLine": 143,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "baselineY",
+        "clear",
+        "drawXbm",
+        "setWhite",
+        "simpleNotification",
+        "textAt",
+        "textMaxAt"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/connectivityScreens.ts",
+        "line": 133
+      },
+      "description": "Coordina `baselineY`, `clear`, `drawXbm` para Renderers Web de conectividad y avisos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen020207WifiSearchCompleteNotificationCommands",
+      "displayName": "buildScreen020207WifiSearchCompleteNotificationCommands",
+      "signature": "buildScreen020207WifiSearchCompleteNotificationCommands(progress?: NotificationProgressArgs): OledCommand[]",
+      "line": 147,
+      "endLine": 155,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "baselineY",
+        "clear",
+        "drawXbm",
+        "setWhite",
+        "simpleNotification",
+        "textAt"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/connectivityScreens.ts",
+        "line": 147
+      },
+      "description": "Coordina `baselineY`, `clear`, `drawXbm` para Renderers Web de conectividad y avisos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen020208WifiSearchCanceledNotificationCommands",
+      "displayName": "buildScreen020208WifiSearchCanceledNotificationCommands",
+      "signature": "buildScreen020208WifiSearchCanceledNotificationCommands(progress?: NotificationProgressArgs): OledCommand[]",
+      "line": 159,
+      "endLine": 167,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "baselineY",
+        "clear",
+        "drawXbm",
+        "setWhite",
+        "simpleNotification",
+        "textAt"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/connectivityScreens.ts",
+        "line": 159
+      },
+      "description": "Coordina `baselineY`, `clear`, `drawXbm` para Renderers Web de conectividad y avisos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen02020aWifiCredentialsWebCommands",
+      "displayName": "buildScreen02020aWifiCredentialsWebCommands",
+      "signature": "buildScreen02020aWifiCredentialsWebCommands(args: { ssid?: string }, progress?: NotificationProgressArgs): OledCommand[]",
+      "line": 171,
+      "endLine": 180,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "baselineY",
+        "clear",
+        "drawXbm",
+        "setWhite",
+        "simpleNotification",
+        "textAt",
+        "textMaxAt"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/connectivityScreens.ts",
+        "line": 171
+      },
+      "description": "Coordina `baselineY`, `clear`, `drawXbm` para Renderers Web de conectividad y avisos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen02020bWifiCredentialsSucceededCommands",
+      "displayName": "buildScreen02020bWifiCredentialsSucceededCommands",
+      "signature": "buildScreen02020bWifiCredentialsSucceededCommands(args: { ssid?: string }, progress?: NotificationProgressArgs): OledCommand[]",
+      "line": 184,
+      "endLine": 192,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "baselineY",
+        "clear",
+        "drawXbm",
+        "setWhite",
+        "simpleNotification",
+        "textAt",
+        "textMaxAt"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/connectivityScreens.ts",
+        "line": 184
+      },
+      "description": "Coordina `baselineY`, `clear`, `drawXbm` para Renderers Web de conectividad y avisos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen02020cWifiCredentialsFailedCommands",
+      "displayName": "buildScreen02020cWifiCredentialsFailedCommands",
+      "signature": "buildScreen02020cWifiCredentialsFailedCommands(args: { ssid?: string }, progress?: NotificationProgressArgs): OledCommand[]",
+      "line": 196,
+      "endLine": 205,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "baselineY",
+        "clear",
+        "drawXbm",
+        "setWhite",
+        "simpleNotification",
+        "textAt",
+        "textMaxAt"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/connectivityScreens.ts",
+        "line": 196
+      },
+      "description": "Coordina `baselineY`, `clear`, `drawXbm` para Renderers Web de conectividad y avisos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen02020dWifiCredentialsAtCommands",
+      "displayName": "buildScreen02020dWifiCredentialsAtCommands",
+      "signature": "buildScreen02020dWifiCredentialsAtCommands(args: WifiAtCredentialsArgs): OledCommand[]",
+      "line": 215,
+      "endLine": 231,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "\"*\".repeat",
+        "Math.max",
+        "Math.min",
+        "Math.trunc",
+        "args.selectedCharacter?.charAt",
+        "baselineY",
+        "clear",
+        "drawXbm",
+        "setWhite",
+        "textAt",
+        "textMaxAt"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/connectivityScreens.ts",
+        "line": 215
+      },
+      "description": "Coordina `\"*\".repeat`, `Math.max`, `Math.min` para Renderers Web de conectividad y avisos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen020302EspCheckingConnectionNotificationCommands",
+      "displayName": "buildScreen020302EspCheckingConnectionNotificationCommands",
+      "signature": "buildScreen020302EspCheckingConnectionNotificationCommands(progress?: NotificationProgressArgs): OledCommand[]",
+      "line": 235,
+      "endLine": 242,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "baselineY",
+        "clear",
+        "setWhite",
+        "simpleNotification",
+        "textAt"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/connectivityScreens.ts",
+        "line": 235
+      },
+      "description": "Coordina `baselineY`, `clear`, `setWhite` para Renderers Web de conectividad y avisos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen020303EspFirmwareRequestNotificationCommands",
+      "displayName": "buildScreen020303EspFirmwareRequestNotificationCommands",
+      "signature": "buildScreen020303EspFirmwareRequestNotificationCommands(progress?: NotificationProgressArgs): OledCommand[]",
+      "line": 246,
+      "endLine": 256,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "baselineY",
+        "clear",
+        "drawXbm",
+        "setWhite",
+        "simpleNotification",
+        "textAt"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/connectivityScreens.ts",
+        "line": 246
+      },
+      "description": "Coordina `baselineY`, `clear`, `drawXbm` para Renderers Web de conectividad y avisos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen020304EspResetSentNotificationCommands",
+      "displayName": "buildScreen020304EspResetSentNotificationCommands",
+      "signature": "buildScreen020304EspResetSentNotificationCommands(progress?: NotificationProgressArgs): OledCommand[]",
+      "line": 260,
+      "endLine": 270,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "baselineY",
+        "clear",
+        "drawXbm",
+        "setWhite",
+        "simpleNotification",
+        "textAt"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/connectivityScreens.ts",
+        "line": 260
+      },
+      "description": "Coordina `baselineY`, `clear`, `drawXbm` para Renderers Web de conectividad y avisos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen020305EspCheckConnectionRequiredNotificationCommands",
+      "displayName": "buildScreen020305EspCheckConnectionRequiredNotificationCommands",
+      "signature": "buildScreen020305EspCheckConnectionRequiredNotificationCommands(progress?: NotificationProgressArgs): OledCommand[]",
+      "line": 274,
+      "endLine": 281,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "baselineY",
+        "clear",
+        "setWhite",
+        "simpleNotification",
+        "textAt"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/connectivityScreens.ts",
+        "line": 274
+      },
+      "description": "Coordina `baselineY`, `clear`, `setWhite` para Renderers Web de conectividad y avisos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen020306EspBootReceivedNotificationCommands",
+      "displayName": "buildScreen020306EspBootReceivedNotificationCommands",
+      "signature": "buildScreen020306EspBootReceivedNotificationCommands(progress?: NotificationProgressArgs): OledCommand[]",
+      "line": 285,
+      "endLine": 293,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "baselineY",
+        "clear",
+        "drawXbmMsb",
+        "setWhite",
+        "simpleNotification",
+        "textAt"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/connectivityScreens.ts",
+        "line": 285
+      },
+      "description": "Coordina `baselineY`, `clear`, `drawXbmMsb` para Renderers Web de conectividad y avisos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen020307EspFirmwareReceivedNotificationCommands",
+      "displayName": "buildScreen020307EspFirmwareReceivedNotificationCommands",
+      "signature": "buildScreen020307EspFirmwareReceivedNotificationCommands(args: { firmwareVersion: string }, progress?: NotificationProgressArgs): OledCommand[]",
+      "line": 346,
+      "endLine": 354,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "baselineY",
+        "clear",
+        "drawXbm",
+        "setWhite",
+        "simpleNotification",
+        "textAt",
+        "textMaxAt"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/connectivityScreens.ts",
+        "line": 346
+      },
+      "description": "Coordina `baselineY`, `clear`, `drawXbm` para Renderers Web de conectividad y avisos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen020307EspFirmwareScreenCommands",
+      "displayName": "buildScreen020307EspFirmwareScreenCommands",
+      "signature": "buildScreen020307EspFirmwareScreenCommands(args: { firmwareVersion?: string }): OledCommand[]",
+      "line": 333,
+      "endLine": 344,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "baselineY",
+        "clear",
+        "drawXbm",
+        "setWhite",
+        "textAt",
+        "textMaxAt"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/connectivityScreens.ts",
+        "line": 333
+      },
+      "description": "Coordina `baselineY`, `clear`, `drawXbm` para Renderers Web de conectividad y avisos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen020308EspModeChangedNotificationCommands",
+      "displayName": "buildScreen020308EspModeChangedNotificationCommands",
+      "signature": "buildScreen020308EspModeChangedNotificationCommands(progress?: NotificationProgressArgs): OledCommand[]",
+      "line": 358,
+      "endLine": 366,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "baselineY",
+        "clear",
+        "drawXbm",
+        "setWhite",
+        "simpleNotification",
+        "textAt"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/connectivityScreens.ts",
+        "line": 358
+      },
+      "description": "Coordina `baselineY`, `clear`, `drawXbm` para Renderers Web de conectividad y avisos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen020309EspApStartedNotificationCommands",
+      "displayName": "buildScreen020309EspApStartedNotificationCommands",
+      "signature": "buildScreen020309EspApStartedNotificationCommands(args: { ipAddress: string }, progress?: NotificationProgressArgs): OledCommand[]",
+      "line": 370,
+      "endLine": 378,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "baselineY",
+        "clear",
+        "drawXbm",
+        "setWhite",
+        "simpleNotification",
+        "textAt"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/connectivityScreens.ts",
+        "line": 370
+      },
+      "description": "Coordina `baselineY`, `clear`, `drawXbm` para Renderers Web de conectividad y avisos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen02030bEspUnresponsiveNotificationCommands",
+      "displayName": "buildScreen02030bEspUnresponsiveNotificationCommands",
+      "signature": "buildScreen02030bEspUnresponsiveNotificationCommands(progress?: NotificationProgressArgs): OledCommand[]",
+      "line": 297,
+      "endLine": 305,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "baselineY",
+        "clear",
+        "drawXbm",
+        "setWhite",
+        "simpleNotification",
+        "textAt"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/connectivityScreens.ts",
+        "line": 297
+      },
+      "description": "Coordina `baselineY`, `clear`, `drawXbm` para Renderers Web de conectividad y avisos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen02030cEspWatchdogResetNotificationCommands",
+      "displayName": "buildScreen02030cEspWatchdogResetNotificationCommands",
+      "signature": "buildScreen02030cEspWatchdogResetNotificationCommands(progress?: NotificationProgressArgs): OledCommand[]",
+      "line": 309,
+      "endLine": 317,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "baselineY",
+        "clear",
+        "drawXbm",
+        "setWhite",
+        "simpleNotification",
+        "textAt"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/connectivityScreens.ts",
+        "line": 309
+      },
+      "description": "Coordina `baselineY`, `clear`, `drawXbm` para Renderers Web de conectividad y avisos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen02030dEspExceptionResetNotificationCommands",
+      "displayName": "buildScreen02030dEspExceptionResetNotificationCommands",
+      "signature": "buildScreen02030dEspExceptionResetNotificationCommands(progress?: NotificationProgressArgs): OledCommand[]",
+      "line": 321,
+      "endLine": 329,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "baselineY",
+        "clear",
+        "drawXbm",
+        "setWhite",
+        "simpleNotification",
+        "textAt"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/connectivityScreens.ts",
+        "line": 321
+      },
+      "description": "Coordina `baselineY`, `clear`, `drawXbm` para Renderers Web de conectividad y avisos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen020401UsbConnectedNotificationCommands",
+      "displayName": "buildScreen020401UsbConnectedNotificationCommands",
+      "signature": "buildScreen020401UsbConnectedNotificationCommands(progress?: NotificationProgressArgs): OledCommand[]",
+      "line": 382,
+      "endLine": 390,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "baselineY",
+        "clear",
+        "drawXbm",
+        "setWhite",
+        "simpleNotification",
+        "textAt"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/connectivityScreens.ts",
+        "line": 382
+      },
+      "description": "Coordina `baselineY`, `clear`, `drawXbm` para Renderers Web de conectividad y avisos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen020402UsbDisconnectedNotificationCommands",
+      "displayName": "buildScreen020402UsbDisconnectedNotificationCommands",
+      "signature": "buildScreen020402UsbDisconnectedNotificationCommands(progress?: NotificationProgressArgs): OledCommand[]",
+      "line": 394,
+      "endLine": 402,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "baselineY",
+        "clear",
+        "drawXbm",
+        "setWhite",
+        "simpleNotification",
+        "textAt"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/connectivityScreens.ts",
+        "line": 394
+      },
+      "description": "Coordina `baselineY`, `clear`, `drawXbm` para Renderers Web de conectividad y avisos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen020501WebServerUpNotificationCommands",
+      "displayName": "buildScreen020501WebServerUpNotificationCommands",
+      "signature": "buildScreen020501WebServerUpNotificationCommands(progress?: NotificationProgressArgs): OledCommand[]",
+      "line": 406,
+      "endLine": 414,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "baselineY",
+        "clear",
+        "drawXbm",
+        "setWhite",
+        "simpleNotification",
+        "textAt"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/connectivityScreens.ts",
+        "line": 406
+      },
+      "description": "Coordina `baselineY`, `clear`, `drawXbm` para Renderers Web de conectividad y avisos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen020502WebClientConnectedNotificationCommands",
+      "displayName": "buildScreen020502WebClientConnectedNotificationCommands",
+      "signature": "buildScreen020502WebClientConnectedNotificationCommands(progress?: NotificationProgressArgs, clientNumber: inferred-by-TypeScript): OledCommand[]",
+      "line": 436,
+      "endLine": 438,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "numberedClientNotification"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/connectivityScreens.ts",
+        "line": 436
+      },
+      "description": "Adapta la llamada a `numberedClientNotification` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen020503WebClientDisconnectedNotificationCommands",
+      "displayName": "buildScreen020503WebClientDisconnectedNotificationCommands",
+      "signature": "buildScreen020503WebClientDisconnectedNotificationCommands(progress?: NotificationProgressArgs, clientNumber: inferred-by-TypeScript): OledCommand[]",
+      "line": 441,
+      "endLine": 443,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "numberedClientNotification"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/connectivityScreens.ts",
+        "line": 441
+      },
+      "description": "Adapta la llamada a `numberedClientNotification` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen020601ApDeviceConnectedNotificationCommands",
+      "displayName": "buildScreen020601ApDeviceConnectedNotificationCommands",
+      "signature": "buildScreen020601ApDeviceConnectedNotificationCommands(progress?: NotificationProgressArgs, clientNumber: inferred-by-TypeScript): OledCommand[]",
+      "line": 446,
+      "endLine": 448,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "numberedClientNotification"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/connectivityScreens.ts",
+        "line": 446
+      },
+      "description": "Adapta la llamada a `numberedClientNotification` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen020602ApDeviceDisconnectedNotificationCommands",
+      "displayName": "buildScreen020602ApDeviceDisconnectedNotificationCommands",
+      "signature": "buildScreen020602ApDeviceDisconnectedNotificationCommands(progress?: NotificationProgressArgs, clientNumber: inferred-by-TypeScript): OledCommand[]",
+      "line": 451,
+      "endLine": 453,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "numberedClientNotification"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/connectivityScreens.ts",
+        "line": 451
+      },
+      "description": "Adapta la llamada a `numberedClientNotification` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen050417UnerForwardingEnabledNotificationCommands",
+      "displayName": "buildScreen050417UnerForwardingEnabledNotificationCommands",
+      "signature": "buildScreen050417UnerForwardingEnabledNotificationCommands(progress?: NotificationProgressArgs): OledCommand[]",
+      "line": 63,
+      "endLine": 67,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "buildUnerForwardingNotificationCommands"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/notificationScreens.ts",
+        "line": 63
+      },
+      "description": "Adapta la llamada a `buildUnerForwardingNotificationCommands` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen050418UnerForwardingDisabledNotificationCommands",
+      "displayName": "buildScreen050418UnerForwardingDisabledNotificationCommands",
+      "signature": "buildScreen050418UnerForwardingDisabledNotificationCommands(progress?: NotificationProgressArgs): OledCommand[]",
+      "line": 69,
+      "endLine": 73,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "buildUnerForwardingNotificationCommands"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/notificationScreens.ts",
+        "line": 69
+      },
+      "description": "Adapta la llamada a `buildUnerForwardingNotificationCommands` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen060101ControllerConnectedNotificationCommands",
+      "displayName": "buildScreen060101ControllerConnectedNotificationCommands",
+      "signature": "buildScreen060101ControllerConnectedNotificationCommands(progress?: NotificationProgressArgs): OledCommand[]",
+      "line": 77,
+      "endLine": 85,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "baselineY",
+        "clear",
+        "drawXbm",
+        "notification",
+        "setWhite",
+        "textAt"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/notificationScreens.ts",
+        "line": 77
+      },
+      "description": "Coordina `baselineY`, `clear`, `drawXbm` para Renderers Web de conectividad y avisos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen060102ControllerDisconnectedNotificationCommands",
+      "displayName": "buildScreen060102ControllerDisconnectedNotificationCommands",
+      "signature": "buildScreen060102ControllerDisconnectedNotificationCommands(progress?: NotificationProgressArgs): OledCommand[]",
+      "line": 89,
+      "endLine": 102,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "baselineY",
+        "clear",
+        "drawXbm",
+        "notification",
+        "setInverse",
+        "setWhite",
+        "textAt"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/notificationScreens.ts",
+        "line": 89
+      },
+      "description": "Coordina `baselineY`, `clear`, `drawXbm` para Renderers Web de conectividad y avisos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen060201CommandReceivedNotificationCommands",
+      "displayName": "buildScreen060201CommandReceivedNotificationCommands",
+      "signature": "buildScreen060201CommandReceivedNotificationCommands(progress?: NotificationProgressArgs): OledCommand[]",
+      "line": 106,
+      "endLine": 114,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "baselineY",
+        "clear",
+        "drawXbm",
+        "notification",
+        "setWhite",
+        "textAt"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/notificationScreens.ts",
+        "line": 106
+      },
+      "description": "Coordina `baselineY`, `clear`, `drawXbm` para Renderers Web de conectividad y avisos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen060202PingReceivedNotificationCommands",
+      "displayName": "buildScreen060202PingReceivedNotificationCommands",
+      "signature": "buildScreen060202PingReceivedNotificationCommands(progress?: NotificationProgressArgs): OledCommand[]",
+      "line": 118,
+      "endLine": 126,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "baselineY",
+        "clear",
+        "drawXbm",
+        "notification",
+        "setWhite",
+        "textAt"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/notificationScreens.ts",
+        "line": 118
+      },
+      "description": "Coordina `baselineY`, `clear`, `drawXbm` para Renderers Web de conectividad y avisos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen060301EspConnectionSucceededCommands",
+      "displayName": "buildScreen060301EspConnectionSucceededCommands",
+      "signature": "buildScreen060301EspConnectionSucceededCommands(): OledCommand[]",
+      "line": 130,
+      "endLine": 139,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "baselineY",
+        "clear",
+        "drawXbm",
+        "setWhite",
+        "textAt"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/notificationScreens.ts",
+        "line": 130
+      },
+      "description": "Coordina `baselineY`, `clear`, `drawXbm` para Renderers Web de conectividad y avisos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen060302EspConnectionFailedCommands",
+      "displayName": "buildScreen060302EspConnectionFailedCommands",
+      "signature": "buildScreen060302EspConnectionFailedCommands(): OledCommand[]",
+      "line": 143,
+      "endLine": 152,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "baselineY",
+        "clear",
+        "drawXbm",
+        "setWhite",
+        "textAt"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/notificationScreens.ts",
+        "line": 143
+      },
+      "description": "Coordina `baselineY`, `clear`, `drawXbm` para Renderers Web de conectividad y avisos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildUnerForwardingNotificationCommands",
+      "displayName": "buildUnerForwardingNotificationCommands",
+      "signature": "buildUnerForwardingNotificationCommands(enabled: boolean, progress?: NotificationProgressArgs): OledCommand[]",
+      "line": 38,
+      "endLine": 61,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "baselineY",
+        "centerSmallNotificationTextX",
+        "clear",
+        "commands.push",
+        "drawXbm",
+        "notification",
+        "setInverse",
+        "setWhite",
+        "textAt"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/notificationScreens.ts",
+        "line": 38
+      },
+      "description": "Coordina `baselineY`, `centerSmallNotificationTextX`, `clear` para Renderers Web de conectividad y avisos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "centerSmallNotificationTextX",
+      "displayName": "centerSmallNotificationTextX",
+      "signature": "centerSmallNotificationTextX(text: string): inferred-by-TypeScript",
+      "line": 35,
+      "endLine": 36,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.floor",
+        "Math.max"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/notificationScreens.ts",
+        "line": 35
+      },
+      "description": "Coordina `Math.floor`, `Math.max` para Renderers Web de conectividad y avisos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "notification",
+      "displayName": "notification",
+      "signature": "notification(commands: OledCommand[], progress?: NotificationProgressArgs): OledCommand[]",
+      "line": 13,
+      "endLine": 15,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "withNotificationProgress"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/notificationScreens.ts",
+        "line": 13
+      },
+      "description": "Adapta la llamada a `withNotificationProgress` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "numberedClientNotification",
+      "displayName": "numberedClientNotification",
+      "signature": "numberedClientNotification(label: string, connected: boolean, web: boolean, progress?: NotificationProgressArgs, clientNumber: inferred-by-TypeScript): OledCommand[]",
+      "line": 416,
+      "endLine": 433,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Number.isInteger",
+        "baselineY",
+        "center",
+        "clear",
+        "commands.push",
+        "drawXbm",
+        "setInverse",
+        "setWhite",
+        "simpleNotification",
+        "textAt"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/connectivityScreens.ts",
+        "line": 416
+      },
+      "description": "Coordina `Number.isInteger`, `baselineY`, `center` para Renderers Web de conectividad y avisos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "simpleNotification",
+      "displayName": "simpleNotification",
+      "signature": "simpleNotification(commands: OledCommand[], progress?: NotificationProgressArgs): OledCommand[]",
+      "line": 54,
+      "endLine": 56,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "withNotificationProgress"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/connectivityScreens.ts",
+        "line": 54
+      },
+      "description": "Adapta la llamada a `withNotificationProgress` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "buildScreen010105RemoteModeChangedNotificationCommands.center7x10",
+      "displayName": "center7x10",
+      "signature": "buildScreen010105RemoteModeChangedNotificationCommands.center7x10(text: string): inferred-by-TypeScript",
+      "line": 25,
+      "endLine": 25,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Math.floor",
+        "Math.max"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/notificationScreens.ts",
+        "line": 25
+      },
+      "description": "Coordina `Math.floor`, `Math.max` para Renderers Web de conectividad y avisos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "numberedClientNotification.center",
+      "displayName": "center",
+      "signature": "numberedClientNotification.center(text: string): inferred-by-TypeScript",
+      "line": 420,
+      "endLine": 420,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Math.floor",
+        "Math.max"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/connectivityScreens.ts",
+        "line": 420
+      },
+      "description": "Coordina `Math.floor`, `Math.max` para Renderers Web de conectividad y avisos.",
+      "descriptionOrigin": "structural"
+    }
+  ],
+  "hooks": []
+}

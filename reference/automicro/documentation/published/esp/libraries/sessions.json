@@ -1,0 +1,923 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "esp:module/src/ws_session_manager.h",
+  "slug": "sessions",
+  "title": "Sesiones WebSocket y autoridad STM",
+  "target": "esp",
+  "kind": "núcleo",
+  "status": "source-documented",
+  "snapshotDate": "2026-10-20",
+  "verification": "not-run-user-instruction",
+  "responsibility": "Mantiene identidad cliente/generación/nodo y autoridad STM independiente por sesión.",
+  "scope": "Capacidad, TTL, intentos/rate limit, suspensión, reanudación por token y limpieza.",
+  "state": "WsSessionManager posee slots y buckets. WsmSession contiene token privado, nodo, generación y deadlines; esp_debug_wifi es permiso local ESP y no concede autoridad F4.",
+  "modularity": "C sin socket concreto; adopta reglas del producto y nodos UNER.",
+  "lifecycle": [
+    "Open asigna slot/nodo/generación; autenticar establece TTL.",
+    "Touch solo renueva sesión activa y no revive una ya expirada.",
+    "Suspender conserva autoridad temporalmente pero no la usa hasta reanudación por token propio; cambia generación."
+  ],
+  "interactions": [
+    "Bridge usa sesiones para autorizar requests/fanout; UTM y streams conservan la misma generación."
+  ],
+  "limitations": [
+    "No publicar tokens ni PIN en documentación/snapshots.",
+    "Rango de nodos reservado no equivale a capacidad simultánea; WS_MAX_SESSIONS es la capacidad."
+  ],
+  "relationships": [],
+  "findings": [],
+  "files": [
+    {
+      "rootId": "esp",
+      "path": "src/ws_limits.h",
+      "sha256": "82e09a65340126531042acf552784466f6ae91516ba80a2688c157e0fd9768c3",
+      "imports": [],
+      "analysisLevel": "c-cpp-structural"
+    },
+    {
+      "rootId": "esp",
+      "path": "src/ws_session_manager.c",
+      "sha256": "16dc59e82d03ba80761afd4b626a384e12e1a7a9ffc7bdac4f6574a6736d66d5",
+      "imports": [
+        "ws_session_manager.h",
+        "string.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    },
+    {
+      "rootId": "esp",
+      "path": "src/ws_session_manager.h",
+      "sha256": "a601065af179c660f263905ae645796fcd7717a9091724259bcda4dcb4b0a81c",
+      "imports": [
+        "stdint.h",
+        "ws_limits.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    }
+  ],
+  "types": [
+    {
+      "name": "WsmSession",
+      "fields": [
+        {
+          "name": "state",
+          "declaration": "WsmSlotState state",
+          "callback": false,
+          "ownerType": "WsmSession",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/ws_session_manager.h",
+            "line": 38
+          },
+          "description": "Dato de estado/configuración `state`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "client_id",
+          "declaration": "uint32_t client_id",
+          "callback": false,
+          "ownerType": "WsmSession",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/ws_session_manager.h",
+            "line": 39
+          },
+          "description": "Dato de estado/configuración `client_id`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ip_key",
+          "declaration": "uint32_t ip_key",
+          "callback": false,
+          "ownerType": "WsmSession",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/ws_session_manager.h",
+            "line": 40
+          },
+          "description": "Dato de estado/configuración `ip_key`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "generation",
+          "declaration": "uint32_t generation",
+          "callback": false,
+          "ownerType": "WsmSession",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/ws_session_manager.h",
+            "line": 41
+          },
+          "description": "Dato de estado/configuración `generation`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "node",
+          "declaration": "uint8_t node",
+          "callback": false,
+          "ownerType": "WsmSession",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/ws_session_manager.h",
+            "line": 42
+          },
+          "description": "Dato de estado/configuración `node`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "stm_authenticated",
+          "declaration": "uint8_t stm_authenticated",
+          "callback": false,
+          "ownerType": "WsmSession",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/ws_session_manager.h",
+            "line": 43
+          },
+          "description": "Dato de estado/configuración `stm_authenticated`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "esp_debug_used",
+          "declaration": "uint8_t esp_debug_used",
+          "callback": false,
+          "ownerType": "WsmSession",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/ws_session_manager.h",
+            "line": 44
+          },
+          "description": "Dato de estado/configuración `esp_debug_used`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "esp_debug_wifi",
+          "declaration": "uint8_t esp_debug_wifi",
+          "callback": false,
+          "ownerType": "WsmSession",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/ws_session_manager.h",
+            "line": 45
+          },
+          "description": "Dato de estado/configuración `esp_debug_wifi`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "stm_ttl_ms",
+          "declaration": "uint32_t stm_ttl_ms",
+          "callback": false,
+          "ownerType": "WsmSession",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/ws_session_manager.h",
+            "line": 46
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "stm_expires_at_ms",
+          "declaration": "uint32_t stm_expires_at_ms",
+          "callback": false,
+          "ownerType": "WsmSession",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/ws_session_manager.h",
+            "line": 47
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "resume_until_ms",
+          "declaration": "uint32_t resume_until_ms",
+          "callback": false,
+          "ownerType": "WsmSession",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/ws_session_manager.h",
+            "line": 48
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "resume_token",
+          "declaration": "char resume_token[WSM_RESUME_TOKEN_HEX_LEN + 1u]",
+          "callback": false,
+          "ownerType": "WsmSession",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/ws_session_manager.h",
+            "line": 49
+          },
+          "description": "Dato de estado/configuración `resume_token`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/ws_session_manager.h",
+        "line": 38
+      }
+    },
+    {
+      "name": "WsmRateBucket",
+      "fields": [
+        {
+          "name": "used",
+          "declaration": "uint8_t used",
+          "callback": false,
+          "ownerType": "WsmRateBucket",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/ws_session_manager.h",
+            "line": 53
+          },
+          "description": "Dato de estado/configuración `used`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "key_type",
+          "declaration": "uint8_t key_type",
+          "callback": false,
+          "ownerType": "WsmRateBucket",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/ws_session_manager.h",
+            "line": 54
+          },
+          "description": "Dato de estado/configuración `key_type`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "key",
+          "declaration": "uint32_t key",
+          "callback": false,
+          "ownerType": "WsmRateBucket",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/ws_session_manager.h",
+            "line": 55
+          },
+          "description": "Dato de estado/configuración `key`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "window_started_ms",
+          "declaration": "uint32_t window_started_ms",
+          "callback": false,
+          "ownerType": "WsmRateBucket",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/ws_session_manager.h",
+            "line": 56
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "attempts",
+          "declaration": "uint16_t attempts",
+          "callback": false,
+          "ownerType": "WsmRateBucket",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/ws_session_manager.h",
+            "line": 57
+          },
+          "description": "Dato de estado/configuración `attempts`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/ws_session_manager.h",
+        "line": 53
+      }
+    },
+    {
+      "name": "WsmMetrics",
+      "fields": [
+        {
+          "name": "opened",
+          "declaration": "uint32_t opened",
+          "callback": false,
+          "ownerType": "WsmMetrics",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/ws_session_manager.h",
+            "line": 61
+          },
+          "description": "Dato de estado/configuración `opened`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "capacity_rejections",
+          "declaration": "uint32_t capacity_rejections",
+          "callback": false,
+          "ownerType": "WsmMetrics",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/ws_session_manager.h",
+            "line": 62
+          },
+          "description": "Dato de estado/configuración `capacity_rejections`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "cleanup_started",
+          "declaration": "uint32_t cleanup_started",
+          "callback": false,
+          "ownerType": "WsmMetrics",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/ws_session_manager.h",
+            "line": 63
+          },
+          "description": "Dato de estado/configuración `cleanup_started`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "released",
+          "declaration": "uint32_t released",
+          "callback": false,
+          "ownerType": "WsmMetrics",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/ws_session_manager.h",
+            "line": 64
+          },
+          "description": "Dato de estado/configuración `released`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "stale_generation_rejections",
+          "declaration": "uint32_t stale_generation_rejections",
+          "callback": false,
+          "ownerType": "WsmMetrics",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/ws_session_manager.h",
+            "line": 65
+          },
+          "description": "Dato de estado/configuración `stale_generation_rejections`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "rate_limited",
+          "declaration": "uint32_t rate_limited",
+          "callback": false,
+          "ownerType": "WsmMetrics",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/ws_session_manager.h",
+            "line": 66
+          },
+          "description": "Dato de estado/configuración `rate_limited`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "stm_auth_granted",
+          "declaration": "uint32_t stm_auth_granted",
+          "callback": false,
+          "ownerType": "WsmMetrics",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/ws_session_manager.h",
+            "line": 67
+          },
+          "description": "Dato de estado/configuración `stm_auth_granted`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "stm_auth_revoked",
+          "declaration": "uint32_t stm_auth_revoked",
+          "callback": false,
+          "ownerType": "WsmMetrics",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/ws_session_manager.h",
+            "line": 68
+          },
+          "description": "Dato de estado/configuración `stm_auth_revoked`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "stm_auth_expired",
+          "declaration": "uint32_t stm_auth_expired",
+          "callback": false,
+          "ownerType": "WsmMetrics",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/ws_session_manager.h",
+            "line": 69
+          },
+          "description": "Dato de estado/configuración `stm_auth_expired`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "stm_auth_refreshed",
+          "declaration": "uint32_t stm_auth_refreshed",
+          "callback": false,
+          "ownerType": "WsmMetrics",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/ws_session_manager.h",
+            "line": 70
+          },
+          "description": "Dato de estado/configuración `stm_auth_refreshed`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "reconnect_suspended",
+          "declaration": "uint32_t reconnect_suspended",
+          "callback": false,
+          "ownerType": "WsmMetrics",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/ws_session_manager.h",
+            "line": 71
+          },
+          "description": "Dato de estado/configuración `reconnect_suspended`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "reconnect_resumed",
+          "declaration": "uint32_t reconnect_resumed",
+          "callback": false,
+          "ownerType": "WsmMetrics",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/ws_session_manager.h",
+            "line": 72
+          },
+          "description": "Dato de estado/configuración `reconnect_resumed`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/ws_session_manager.h",
+        "line": 61
+      }
+    },
+    {
+      "name": "WsSessionManager",
+      "fields": [
+        {
+          "name": "sessions",
+          "declaration": "WsmSession sessions[WSM_MAX_SESSIONS]",
+          "callback": false,
+          "ownerType": "WsSessionManager",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/ws_session_manager.h",
+            "line": 76
+          },
+          "description": "Dato de estado/configuración `sessions`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "rate_buckets",
+          "declaration": "WsmRateBucket rate_buckets[WSM_RATE_BUCKET_COUNT]",
+          "callback": false,
+          "ownerType": "WsSessionManager",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/ws_session_manager.h",
+            "line": 77
+          },
+          "description": "Dato de estado/configuración `rate_buckets`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "next_generation",
+          "declaration": "uint32_t next_generation",
+          "callback": false,
+          "ownerType": "WsSessionManager",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/ws_session_manager.h",
+            "line": 78
+          },
+          "description": "Dato de estado/configuración `next_generation`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "rate_window_ms",
+          "declaration": "uint32_t rate_window_ms",
+          "callback": false,
+          "ownerType": "WsSessionManager",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/ws_session_manager.h",
+            "line": 79
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "rate_max_attempts",
+          "declaration": "uint16_t rate_max_attempts",
+          "callback": false,
+          "ownerType": "WsSessionManager",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/ws_session_manager.h",
+            "line": 80
+          },
+          "description": "Dato de estado/configuración `rate_max_attempts`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "metrics",
+          "declaration": "WsmMetrics metrics",
+          "callback": false,
+          "ownerType": "WsSessionManager",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/ws_session_manager.h",
+            "line": 81
+          },
+          "description": "Dato de estado/configuración `metrics`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/ws_session_manager.h",
+        "line": 76
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "wsm_allow_auth_attempt",
+      "signature": "uint8_t wsm_allow_auth_attempt(WsSessionManager *manager, uint32_t client_id, uint32_t generation, uint32_t now_ms)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/ws_session_manager.c",
+        "line": 344
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "rate_bucket",
+        "wsm_find"
+      ],
+      "writes": [],
+      "description": "Coordina `rate_bucket`, `wsm_find` para Sesiones WebSocket y autoridad STM.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "wsm_begin_cleanup",
+      "signature": "WsmResult wsm_begin_cleanup(WsSessionManager *manager, uint32_t client_id, uint32_t generation)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/ws_session_manager.c",
+        "line": 208
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "wsm_find"
+      ],
+      "writes": [
+        "resume_until_ms",
+        "state",
+        "stm_authenticated",
+        "stm_expires_at_ms",
+        "stm_ttl_ms"
+      ],
+      "description": "Coordina `wsm_find` para Sesiones WebSocket y autoridad STM.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "wsm_find",
+      "signature": "WsmSession *wsm_find(WsSessionManager *manager, uint32_t client_id, uint32_t generation)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/ws_session_manager.c",
+        "line": 117
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "generation_matches"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `generation_matches` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "wsm_find_by_node",
+      "signature": "WsmSession *wsm_find_by_node(WsSessionManager *manager, uint8_t node)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/ws_session_manager.c",
+        "line": 145
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación find by node de Sesiones WebSocket y autoridad STM; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "wsm_find_const",
+      "signature": "const WsmSession *wsm_find_const(const WsSessionManager *manager, uint32_t client_id, uint32_t generation)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/ws_session_manager.c",
+        "line": 131
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "generation_matches"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `generation_matches` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "wsm_init",
+      "signature": "void wsm_init(WsSessionManager *manager, uint32_t rate_window_ms, uint16_t rate_max_attempts)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/ws_session_manager.c",
+        "line": 67
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "memset"
+      ],
+      "writes": [
+        "next_generation",
+        "rate_max_attempts",
+        "rate_window_ms"
+      ],
+      "description": "Coordina `memset` para Sesiones WebSocket y autoridad STM.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "wsm_is_authorized",
+      "signature": "uint8_t wsm_is_authorized(const WsSessionManager *manager, uint32_t client_id, uint32_t generation)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/ws_session_manager.c",
+        "line": 369
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "wsm_find_const"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `wsm_find_const` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "wsm_metrics",
+      "signature": "const WsmMetrics *wsm_metrics(const WsSessionManager *manager)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/ws_session_manager.c",
+        "line": 398
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación metrics de Sesiones WebSocket y autoridad STM; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "wsm_open",
+      "signature": "WsmResult wsm_open(WsSessionManager *manager, uint32_t client_id, uint32_t ip_key, WsmSession **out_session)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/ws_session_manager.c",
+        "line": 82
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "allocate_generation",
+        "memset"
+      ],
+      "writes": [
+        "client_id",
+        "generation",
+        "ip_key",
+        "node",
+        "state"
+      ],
+      "description": "Reserva sesión con identidad de cliente y nodo.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "wsm_release",
+      "signature": "WsmResult wsm_release(WsSessionManager *manager, uint32_t client_id, uint32_t generation)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/ws_session_manager.c",
+        "line": 329
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "memset",
+        "wsm_find"
+      ],
+      "writes": [
+        "node"
+      ],
+      "description": "Libera sesión y su identidad después de limpieza.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "wsm_resume_by_ip",
+      "signature": "WsmResult wsm_resume_by_ip(WsSessionManager *manager, uint32_t new_client_id, uint32_t ip_key, uint32_t now_ms, WsmSession **out_session)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/ws_session_manager.c",
+        "line": 241
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "allocate_generation",
+        "time_reached"
+      ],
+      "writes": [
+        "client_id",
+        "generation",
+        "resume_until_ms",
+        "state",
+        "stm_authenticated",
+        "stm_expires_at_ms",
+        "stm_ttl_ms"
+      ],
+      "description": "Coordina `allocate_generation`, `time_reached` para Sesiones WebSocket y autoridad STM.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "wsm_resume_by_token",
+      "signature": "WsmResult wsm_resume_by_token(WsSessionManager *manager, uint32_t new_client_id, const char *resume_token, uint32_t now_ms, WsmSession **out_session)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/ws_session_manager.c",
+        "line": 296
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "allocate_generation",
+        "strcmp",
+        "strlen",
+        "time_reached"
+      ],
+      "writes": [
+        "client_id",
+        "generation",
+        "resume_until_ms",
+        "state",
+        "stm_authenticated",
+        "stm_expires_at_ms",
+        "stm_ttl_ms"
+      ],
+      "description": "Reanuda con token propio y asigna generación nueva.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "wsm_service",
+      "signature": "uint8_t wsm_service(WsSessionManager *manager, uint32_t now_ms)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/ws_session_manager.c",
+        "line": 378
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "time_reached"
+      ],
+      "writes": [
+        "stm_authenticated",
+        "stm_expires_at_ms",
+        "stm_ttl_ms"
+      ],
+      "description": "Coordina `time_reached` para Sesiones WebSocket y autoridad STM.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "wsm_set_stm_auth",
+      "signature": "WsmResult wsm_set_stm_auth(WsSessionManager *manager, uint32_t client_id, uint32_t generation, uint8_t authenticated, uint32_t ttl_ms, uint32_t now_ms)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/ws_session_manager.c",
+        "line": 153
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "wsm_find"
+      ],
+      "writes": [
+        "esp_debug_used",
+        "stm_authenticated",
+        "stm_expires_at_ms",
+        "stm_ttl_ms"
+      ],
+      "description": "Coordina `wsm_find` para Sesiones WebSocket y autoridad STM.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "wsm_suspend_for_reconnect",
+      "signature": "WsmResult wsm_suspend_for_reconnect(WsSessionManager *manager, uint32_t client_id, uint32_t generation, uint32_t now_ms, uint32_t grace_ms)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/ws_session_manager.c",
+        "line": 224
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "wsm_find"
+      ],
+      "writes": [
+        "resume_until_ms",
+        "state"
+      ],
+      "description": "Coordina `wsm_find` para Sesiones WebSocket y autoridad STM.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "wsm_touch_stm_auth",
+      "signature": "WsmResult wsm_touch_stm_auth(WsSessionManager *manager, uint32_t client_id, uint32_t generation, uint32_t now_ms)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/ws_session_manager.c",
+        "line": 182
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "time_reached",
+        "wsm_find"
+      ],
+      "writes": [
+        "stm_authenticated",
+        "stm_expires_at_ms",
+        "stm_ttl_ms"
+      ],
+      "description": "Renueva una autorización todavía activa sin revivir una vencida.",
+      "descriptionOrigin": "editorial"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "allocate_generation",
+      "signature": "static uint32_t allocate_generation(WsSessionManager *manager)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/ws_session_manager.c",
+        "line": 20
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [
+        "next_generation"
+      ],
+      "description": "Operación allocate generation de Sesiones WebSocket y autoridad STM; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "generation_matches",
+      "signature": "static uint8_t generation_matches(const WsmSession *session, uint32_t client_id, uint32_t generation)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/ws_session_manager.c",
+        "line": 10
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación generation matches de Sesiones WebSocket y autoridad STM; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "rate_bucket",
+      "signature": "static WsmRateBucket *rate_bucket(WsSessionManager *manager, uint8_t key_type, uint32_t key, uint32_t now_ms)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/ws_session_manager.c",
+        "line": 28
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "memset",
+        "time_reached"
+      ],
+      "writes": [
+        "attempts",
+        "key",
+        "key_type",
+        "used",
+        "window_started_ms"
+      ],
+      "description": "Coordina `memset`, `time_reached` para Sesiones WebSocket y autoridad STM.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "time_reached",
+      "signature": "static uint8_t time_reached(uint32_t now_ms, uint32_t deadline_ms)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/ws_session_manager.c",
+        "line": 5
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación time reached de Sesiones WebSocket y autoridad STM; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    }
+  ],
+  "hooks": []
+}

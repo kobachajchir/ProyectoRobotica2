@@ -1,0 +1,791 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "f4:module/Core/Inc/uner_transport_usbcdc.h",
+  "slug": "usb-transport",
+  "title": "Transporte UNER USB CDC",
+  "target": "f4",
+  "kind": "plataforma",
+  "status": "source-documented",
+  "verification": "not-run-user-instruction",
+  "snapshotDate": "2026-10-20",
+  "responsibility": "Conecta bytes USB CDC a UNER y mantiene TX diferido con prioridades y diagnóstico de colas.",
+  "scope": "Recepción, cola TX, reintentos, conexión y contadores; el host Qt implementa correlación/interpretación por separado.",
+  "state": "Contexto con buffers/colas RX/TX y contadores de overflow/full/drop/deferred; UNER_Transport.ctx conserva su instancia de plataforma. Consultar PendingTx no es equivalente a DTR activo.",
+  "lifecycle": [
+    "Init instala transporte; OnRx copia/entrega recepción.",
+    "ServiceTx intenta enviar; OnTxComplete libera y avanza.",
+    "OnDisconnect limpia estado según política; la aplicación revoca sesión/streams correspondientes."
+  ],
+  "interactions": [
+    "usbd_cdc_if.c entrega callbacks; UNER_App gobierna alive, DTR, reset y permisos Qt."
+  ],
+  "limitations": [
+    "BUSY del stack requiere reintento; encolado no equivale a enviado.",
+    "Contadores de descarte deben interpretarse junto a prioridad y profundidad de cola."
+  ],
+  "modularity": "Adaptador ligado a stack ST USB CDC y política de conexión del dispositivo.",
+  "files": [
+    {
+      "path": "Core/Inc/uner_transport_usbcdc.h",
+      "rootId": "f4",
+      "sha256": "3fa0241dafb3531e4970bff6d5bd1ef86ee566024c7b74727045bdebab70679f",
+      "includes": [
+        "stdint.h",
+        "uner_transport.h"
+      ]
+    },
+    {
+      "path": "Core/Src/uner_transport_usbcdc.c",
+      "rootId": "f4",
+      "sha256": "0014ed86781e12531c06ae7fe1252e47f07cf83450dec2260eb2713c311b3c6d",
+      "includes": [
+        "uner_transport_usbcdc.h",
+        "string.h",
+        "usbd_cdc_if.h"
+      ]
+    }
+  ],
+  "findings": [],
+  "types": [
+    {
+      "name": "UNER_UsbCdcTxFrame",
+      "fields": [
+        {
+          "name": "len",
+          "declaration": "uint16_t len",
+          "callback": false,
+          "ownerType": "UNER_UsbCdcTxFrame",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_transport_usbcdc.h",
+            "line": 22
+          },
+          "description": "Dato de estado/configuración `len`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "priority",
+          "declaration": "uint8_t priority",
+          "callback": false,
+          "ownerType": "UNER_UsbCdcTxFrame",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_transport_usbcdc.h",
+            "line": 23
+          },
+          "description": "Prioridad base registrada; no confundir con pending_prio ni asumir que gobierna la selección."
+        },
+        {
+          "name": "data",
+          "declaration": "uint8_t data[UNER_USB_CDC_TX_BUFFER_SIZE]",
+          "callback": false,
+          "ownerType": "UNER_UsbCdcTxFrame",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_transport_usbcdc.h",
+            "line": 24
+          },
+          "description": "Dato de estado/configuración `data`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_transport_usbcdc.h",
+        "line": 22
+      }
+    },
+    {
+      "name": "UNER_TransportUsbCdc",
+      "fields": [
+        {
+          "name": "base",
+          "declaration": "UNER_Transport base",
+          "callback": false,
+          "ownerType": "UNER_TransportUsbCdc",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_transport_usbcdc.h",
+            "line": 28
+          },
+          "description": "Dato de estado/configuración `base`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "rx_head",
+          "declaration": "volatile uint16_t rx_head",
+          "callback": false,
+          "ownerType": "UNER_TransportUsbCdc",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_transport_usbcdc.h",
+            "line": 29
+          },
+          "description": "Dato de estado/configuración `rx_head`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "rx_tail",
+          "declaration": "volatile uint16_t rx_tail",
+          "callback": false,
+          "ownerType": "UNER_TransportUsbCdc",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_transport_usbcdc.h",
+            "line": 30
+          },
+          "description": "Dato de estado/configuración `rx_tail`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "tx_busy",
+          "declaration": "volatile uint8_t tx_busy",
+          "callback": false,
+          "ownerType": "UNER_TransportUsbCdc",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_transport_usbcdc.h",
+            "line": 31
+          },
+          "description": "Dato de estado/configuración `tx_busy`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "tx_service_pending",
+          "declaration": "volatile uint8_t tx_service_pending",
+          "callback": false,
+          "ownerType": "UNER_TransportUsbCdc",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_transport_usbcdc.h",
+            "line": 32
+          },
+          "description": "Dato de estado/configuración `tx_service_pending`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "tx_queue_count",
+          "declaration": "uint8_t tx_queue_count",
+          "callback": false,
+          "ownerType": "UNER_TransportUsbCdc",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_transport_usbcdc.h",
+            "line": 33
+          },
+          "description": "Dato de estado/configuración `tx_queue_count`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "next_tx_priority",
+          "declaration": "uint8_t next_tx_priority",
+          "callback": false,
+          "ownerType": "UNER_TransportUsbCdc",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_transport_usbcdc.h",
+            "line": 34
+          },
+          "description": "Dato de estado/configuración `next_tx_priority`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "rx_overflow_count",
+          "declaration": "volatile uint32_t rx_overflow_count",
+          "callback": false,
+          "ownerType": "UNER_TransportUsbCdc",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_transport_usbcdc.h",
+            "line": 35
+          },
+          "description": "Dato de estado/configuración `rx_overflow_count`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "tx_queue_full_count",
+          "declaration": "volatile uint32_t tx_queue_full_count",
+          "callback": false,
+          "ownerType": "UNER_TransportUsbCdc",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_transport_usbcdc.h",
+            "line": 36
+          },
+          "description": "Dato de estado/configuración `tx_queue_full_count`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "tx_queue_drop_count",
+          "declaration": "volatile uint32_t tx_queue_drop_count",
+          "callback": false,
+          "ownerType": "UNER_TransportUsbCdc",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_transport_usbcdc.h",
+            "line": 37
+          },
+          "description": "Dato de estado/configuración `tx_queue_drop_count`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "tx_deferred_count",
+          "declaration": "volatile uint32_t tx_deferred_count",
+          "callback": false,
+          "ownerType": "UNER_TransportUsbCdc",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_transport_usbcdc.h",
+            "line": 38
+          },
+          "description": "Dato de estado/configuración `tx_deferred_count`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "rx_ring",
+          "declaration": "uint8_t rx_ring[UNER_USB_CDC_RX_RING_SIZE]",
+          "callback": false,
+          "ownerType": "UNER_TransportUsbCdc",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_transport_usbcdc.h",
+            "line": 39
+          },
+          "description": "Dato de estado/configuración `rx_ring`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "tx_buffer",
+          "declaration": "uint8_t tx_buffer[UNER_USB_CDC_TX_BUFFER_SIZE]",
+          "callback": false,
+          "ownerType": "UNER_TransportUsbCdc",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_transport_usbcdc.h",
+            "line": 40
+          },
+          "description": "Dato de estado/configuración `tx_buffer`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "tx_queue",
+          "declaration": "UNER_UsbCdcTxFrame tx_queue[UNER_USB_CDC_TX_QUEUE_SLOTS]",
+          "callback": false,
+          "ownerType": "UNER_TransportUsbCdc",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_transport_usbcdc.h",
+            "line": 41
+          },
+          "description": "Dato de estado/configuración `tx_queue`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_transport_usbcdc.h",
+        "line": 28
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "UNER_TransportUsbCdc_GetQueuedTxCount",
+      "signature": "uint8_t UNER_TransportUsbCdc_GetQueuedTxCount(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_transport_usbcdc.h",
+        "line": 53
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Consulta profundidad de cola TX.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_transport_usbcdc.c",
+        "line": 348
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "UNER_TransportUsbCdc_GetRxOverflowCount",
+      "signature": "uint32_t UNER_TransportUsbCdc_GetRxOverflowCount(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_transport_usbcdc.h",
+        "line": 54
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Consulta desbordamientos de recepción.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_transport_usbcdc.c",
+        "line": 355
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "UNER_TransportUsbCdc_GetTxDeferredCount",
+      "signature": "uint32_t UNER_TransportUsbCdc_GetTxDeferredCount(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_transport_usbcdc.h",
+        "line": 57
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Consulta envíos diferidos por indisponibilidad.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_transport_usbcdc.c",
+        "line": 376
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "UNER_TransportUsbCdc_GetTxQueueDropCount",
+      "signature": "uint32_t UNER_TransportUsbCdc_GetTxQueueDropCount(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_transport_usbcdc.h",
+        "line": 56
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Consulta frames descartados de la cola TX.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_transport_usbcdc.c",
+        "line": 369
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "UNER_TransportUsbCdc_GetTxQueueFullCount",
+      "signature": "uint32_t UNER_TransportUsbCdc_GetTxQueueFullCount(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_transport_usbcdc.h",
+        "line": 55
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Consulta rechazos por cola TX llena.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_transport_usbcdc.c",
+        "line": 362
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "UNER_TransportUsbCdc_HasPendingRx",
+      "signature": "uint8_t UNER_TransportUsbCdc_HasPendingRx(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_transport_usbcdc.h",
+        "line": 51
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Consulta si quedan bytes RX por consumir.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_transport_usbcdc.c",
+        "line": 333
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "UNER_TransportUsbCdc_HasPendingTx",
+      "signature": "uint8_t UNER_TransportUsbCdc_HasPendingTx(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_transport_usbcdc.h",
+        "line": 52
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Consulta si hay TX encolado o en curso.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_transport_usbcdc.c",
+        "line": 340
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "UNER_TransportUsbCdc_Init",
+      "signature": "UNER_Status UNER_TransportUsbCdc_Init(UNER_TransportUsbCdc *transport, uint8_t transport_id)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_transport_usbcdc.h",
+        "line": 45
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "memset"
+      ],
+      "writes": [
+        "next_tx_priority",
+        "rx_head",
+        "rx_overflow_count",
+        "rx_tail",
+        "tx_busy",
+        "tx_deferred_count",
+        "tx_queue_count",
+        "tx_queue_drop_count",
+        "tx_queue_full_count",
+        "tx_service_pending"
+      ],
+      "description": "Conecta el transporte CDC y sus buffers/colas.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_transport_usbcdc.c",
+        "line": 235
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "UNER_TransportUsbCdc_OnDisconnect",
+      "signature": "void UNER_TransportUsbCdc_OnDisconnect(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_transport_usbcdc.h",
+        "line": 48
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "UNER_UsbClearRx",
+        "UNER_UsbClearTx"
+      ],
+      "writes": [],
+      "description": "Limpia recepción/transmisión pendiente al desconectar.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_transport_usbcdc.c",
+        "line": 289
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "UNER_TransportUsbCdc_OnRx",
+      "signature": "void UNER_TransportUsbCdc_OnRx(const uint8_t *buf, uint32_t len)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_transport_usbcdc.h",
+        "line": 46
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "UNER_UsbClearRx",
+        "UNER_UsbRingPush"
+      ],
+      "writes": [
+        "rx_overflow_count"
+      ],
+      "description": "Entrega bytes USB recibidos a la cola del transporte.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_transport_usbcdc.c",
+        "line": 264
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "UNER_TransportUsbCdc_OnTxComplete",
+      "signature": "void UNER_TransportUsbCdc_OnTxComplete(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_transport_usbcdc.h",
+        "line": 47
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [
+        "tx_busy",
+        "tx_service_pending"
+      ],
+      "description": "Marca fin de transferencia USB y permite avanzar la cola.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_transport_usbcdc.c",
+        "line": 281
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "UNER_TransportUsbCdc_ServiceTx",
+      "signature": "void UNER_TransportUsbCdc_ServiceTx(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_transport_usbcdc.h",
+        "line": 49
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "UNER_UsbQueueRemoveAt",
+        "UNER_UsbStartTx"
+      ],
+      "writes": [
+        "tx_service_pending"
+      ],
+      "description": "Intenta despachar el siguiente frame disponible al stack CDC.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_transport_usbcdc.c",
+        "line": 297
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "UNER_TransportUsbCdc_SetNextTxPriority",
+      "signature": "void UNER_TransportUsbCdc_SetNextTxPriority(uint8_t priority)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_transport_usbcdc.h",
+        "line": 50
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [
+        "next_tx_priority"
+      ],
+      "description": "Configura prioridad para la siguiente solicitud de envío.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_transport_usbcdc.c",
+        "line": 320
+      },
+      "linkage": "header"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "UNER_UsbNextIndex",
+      "signature": "static uint16_t UNER_UsbNextIndex(uint16_t index)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_transport_usbcdc.c",
+        "line": 17
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación UNER Usb Next Index de Transporte UNER USB CDC; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_UsbRingPush",
+      "signature": "static uint8_t UNER_UsbRingPush(UNER_TransportUsbCdc *usb, uint8_t byte)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_transport_usbcdc.c",
+        "line": 23
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_UsbNextIndex"
+      ],
+      "writes": [
+        "rx_head"
+      ],
+      "description": "Adapta la llamada a `UNER_UsbNextIndex` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_UsbRingPop",
+      "signature": "static uint8_t UNER_UsbRingPop(UNER_TransportUsbCdc *usb, uint8_t *byte)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_transport_usbcdc.c",
+        "line": 41
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_UsbNextIndex"
+      ],
+      "writes": [
+        "rx_tail"
+      ],
+      "description": "Adapta la llamada a `UNER_UsbNextIndex` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_UsbClearRx",
+      "signature": "static void UNER_UsbClearRx(UNER_TransportUsbCdc *usb)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_transport_usbcdc.c",
+        "line": 52
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [
+        "rx_head",
+        "rx_tail"
+      ],
+      "description": "Operación UNER Usb Clear Rx de Transporte UNER USB CDC; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_UsbClearTx",
+      "signature": "static void UNER_UsbClearTx(UNER_TransportUsbCdc *usb)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_transport_usbcdc.c",
+        "line": 62
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [
+        "next_tx_priority",
+        "tx_busy",
+        "tx_queue_count",
+        "tx_service_pending"
+      ],
+      "description": "Operación UNER Usb Clear Tx de Transporte UNER USB CDC; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_UsbPriorityFromFrame",
+      "signature": "static uint8_t UNER_UsbPriorityFromFrame(UNER_TransportUsbCdc *usb, const uint8_t *buf, uint16_t len)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_transport_usbcdc.c",
+        "line": 74
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [
+        "next_tx_priority"
+      ],
+      "description": "Operación UNER Usb Priority From Frame de Transporte UNER USB CDC; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_UsbQueueRemoveAt",
+      "signature": "static void UNER_UsbQueueRemoveAt(UNER_TransportUsbCdc *usb, uint8_t index)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_transport_usbcdc.c",
+        "line": 103
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [
+        "tx_queue_count"
+      ],
+      "description": "Operación UNER Usb Queue Remove At de Transporte UNER USB CDC; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_UsbQueueFrame",
+      "signature": "static UNER_Status UNER_UsbQueueFrame(UNER_TransportUsbCdc *usb, const uint8_t *buf, uint16_t len, uint8_t priority)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_transport_usbcdc.c",
+        "line": 116
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_UsbQueueRemoveAt",
+        "memcpy"
+      ],
+      "writes": [
+        "tx_deferred_count",
+        "tx_queue_count",
+        "tx_queue_drop_count",
+        "tx_queue_full_count"
+      ],
+      "description": "Coordina `UNER_UsbQueueRemoveAt`, `memcpy` para Transporte UNER USB CDC.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_UsbStartTx",
+      "signature": "static UNER_Status UNER_UsbStartTx(UNER_TransportUsbCdc *usb, const uint8_t *buf, uint16_t len)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_transport_usbcdc.c",
+        "line": 163
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "CDC_IsDtrActive_FS",
+        "CDC_Transmit_FS",
+        "memcpy"
+      ],
+      "writes": [
+        "tx_busy"
+      ],
+      "description": "Coordina `CDC_IsDtrActive_FS`, `CDC_Transmit_FS`, `memcpy` para Transporte UNER USB CDC.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_TransportUsbCdc_PollRx",
+      "signature": "static UNER_Status UNER_TransportUsbCdc_PollRx(UNER_Transport *transport, UNER_Core *core)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_transport_usbcdc.c",
+        "line": 189
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_Core_PushByte",
+        "UNER_UsbRingPop"
+      ],
+      "writes": [],
+      "description": "Coordina `UNER_Core_PushByte`, `UNER_UsbRingPop` para Transporte UNER USB CDC.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_TransportUsbCdc_TrySend",
+      "signature": "static UNER_Status UNER_TransportUsbCdc_TrySend(UNER_Transport *transport, const uint8_t *buf, uint16_t len)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_transport_usbcdc.c",
+        "line": 206
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "CDC_IsDtrActive_FS",
+        "UNER_UsbPriorityFromFrame",
+        "UNER_UsbQueueFrame",
+        "UNER_UsbStartTx"
+      ],
+      "writes": [],
+      "description": "Coordina `CDC_IsDtrActive_FS`, `UNER_UsbPriorityFromFrame`, `UNER_UsbQueueFrame` para Transporte UNER USB CDC.",
+      "descriptionOrigin": "structural"
+    }
+  ]
+}

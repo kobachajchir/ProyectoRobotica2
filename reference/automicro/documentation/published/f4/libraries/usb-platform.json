@@ -1,0 +1,1512 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "f4:module/USB_DEVICE/App/usb_mode_manager.h",
+  "slug": "usb-platform",
+  "title": "Plataforma USB CDC/MSC",
+  "target": "f4",
+  "kind": "plataforma",
+  "status": "source-documented",
+  "verification": "not-run-user-instruction",
+  "snapshotDate": "2026-10-20",
+  "responsibility": "Configura clases USB, descriptores, callbacks CDC y almacenamiento MSC sobre el stack ST.",
+  "scope": "Modo USB, conexión/DTR y recursos del controlador OTG_FS. El middleware ST queda como dependencia vendor externa al manual propio.",
+  "state": "Conserva objetos y tablas de callbacks del stack USB, buffers CDC y estado de modo/disco. Los buffers entregados al stack deben vivir hasta fin de transferencia.",
+  "lifecycle": [
+    "MX_USB_DEVICE_Init configura la clase y el dispositivo.",
+    "El stack invoca callbacks RX/TX/control; CDC notifica al transporte y UNER_App.",
+    "El modo MSC presta bloques del disco declarado; no interpretar esos datos como preferencias Flash."
+  ],
+  "interactions": [
+    "UNER USB utiliza la clase CDC; boot/mode manager gobierna selección según lógica de la aplicación."
+  ],
+  "limitations": [
+    "No se enumeró el dispositivo en un host ni se comprobó DTR físicamente.",
+    "Las funciones internas del stack se registran como callbacks y no equivalen a llamadas directas desde main."
+  ],
+  "modularity": "Es plataforma STM32 y depende del stack ST/HAL por diseño. La interfaz UNER_Transport aísla su consumo por los núcleos.",
+  "files": [
+    {
+      "path": "USB_DEVICE/App/usb_mode_manager.h",
+      "rootId": "f4",
+      "sha256": "b0074d9d5d85133a9c84315bce88834ba13e3512392b10ba96da7cca2637c4f0",
+      "includes": [
+        "stdint.h"
+      ]
+    },
+    {
+      "path": "USB_DEVICE/App/usb_mode_manager.c",
+      "rootId": "f4",
+      "sha256": "7f0b94175b8b32ec972b9cd6c1fc49b5867943921e370a8b6c2e2ab997a1b5d8",
+      "includes": [
+        "usb_mode_manager.h",
+        "main.h",
+        "usb_device.h",
+        "usbd_cdc.h",
+        "usbd_cdc_if.h",
+        "usbd_core.h",
+        "usbd_desc.h",
+        "usbd_msc.h",
+        "usbd_msc_storage.h"
+      ]
+    },
+    {
+      "path": "USB_DEVICE/App/usb_device.h",
+      "rootId": "f4",
+      "sha256": "5da12da5450c1e4344d68beb710e530da7d728c6e831a93442614446f84757b1",
+      "includes": [
+        "stm32f4xx.h",
+        "stm32f4xx_hal.h",
+        "usbd_def.h"
+      ]
+    },
+    {
+      "path": "USB_DEVICE/App/usb_device.c",
+      "rootId": "f4",
+      "sha256": "16b517f340022860b39052e83d69eec26e5635cdea2017f0e669176e1eac8eb8",
+      "includes": [
+        "usb_device.h",
+        "usbd_core.h",
+        "usbd_desc.h",
+        "usbd_cdc.h",
+        "usbd_cdc_if.h",
+        "usb_mode_manager.h"
+      ]
+    },
+    {
+      "path": "USB_DEVICE/App/usbd_cdc_if.h",
+      "rootId": "f4",
+      "sha256": "95ff2081039db4beb9874dc7739342421df4c016928602ef0a05d569599b276b",
+      "includes": [
+        "usbd_cdc.h"
+      ]
+    },
+    {
+      "path": "USB_DEVICE/App/usbd_cdc_if.c",
+      "rootId": "f4",
+      "sha256": "b87a0eeb942778cc91b5ddf2c232c9cc8d0afc1fd0b038225bbe69a68045ad07",
+      "includes": [
+        "usbd_cdc_if.h",
+        "usb_mode_manager.h",
+        "uner_transport_usbcdc.h"
+      ]
+    },
+    {
+      "path": "USB_DEVICE/App/usbd_desc.h",
+      "rootId": "f4",
+      "sha256": "a4fbe168f224d3e2d8091b90df1115301247e1a6e16177bab101ca81aa70172d",
+      "includes": [
+        "usbd_def.h"
+      ]
+    },
+    {
+      "path": "USB_DEVICE/App/usbd_desc.c",
+      "rootId": "f4",
+      "sha256": "12b923dded83ac973ad79e8aa417c6e9ea71522e73bd0b0ea4fd7fa557b1561b",
+      "includes": [
+        "usbd_core.h",
+        "usbd_desc.h",
+        "usbd_conf.h",
+        "usb_mode_manager.h"
+      ]
+    },
+    {
+      "path": "USB_DEVICE/App/usbd_msc_storage.h",
+      "rootId": "f4",
+      "sha256": "73d3e66ea4f0318c405c91a2394407b7c1c7f7c331e161d88f51b6fb457a1103",
+      "includes": [
+        "usbd_msc.h"
+      ]
+    },
+    {
+      "path": "USB_DEVICE/App/usbd_msc_storage.c",
+      "rootId": "f4",
+      "sha256": "c41ae0707e2bf2af34e9dff93454ae07bda7701231b93ebceedfae68a0e75d66",
+      "includes": [
+        "usbd_msc_storage.h",
+        "usbd_msc_disk_data.h"
+      ]
+    },
+    {
+      "path": "USB_DEVICE/App/usbd_msc_disk_data.h",
+      "rootId": "f4",
+      "sha256": "02712c1241c579e3aecfe6abc832691426e0d2d2edfb1b8383637ced4d60c636",
+      "includes": [
+        "stdint.h"
+      ]
+    },
+    {
+      "path": "USB_DEVICE/App/usbd_msc_disk_data.c",
+      "rootId": "f4",
+      "sha256": "dcd6fce5732cd91ba46ea8184d01df3c47d72c326b13815a24ab9d3b7b93c08a",
+      "includes": [
+        "usbd_msc_disk_data.h",
+        "stddef.h",
+        "string.h"
+      ]
+    },
+    {
+      "path": "USB_DEVICE/Target/usbd_conf.h",
+      "rootId": "f4",
+      "sha256": "99dcff1bcbf4fbda59073bbc32ec34c61fbf7cbc0456c4f42b568078dee56fdf",
+      "includes": [
+        "stdio.h",
+        "stdlib.h",
+        "string.h",
+        "main.h",
+        "stm32f4xx.h",
+        "stm32f4xx_hal.h"
+      ]
+    },
+    {
+      "path": "USB_DEVICE/Target/usbd_conf.c",
+      "rootId": "f4",
+      "sha256": "08bd4d4e976f669281ab7942042e73156e6a9765db74314e00678b68e76e748f",
+      "includes": [
+        "stm32f4xx.h",
+        "stm32f4xx_hal.h",
+        "usbd_def.h",
+        "usbd_core.h",
+        "usbd_cdc.h",
+        "usbd_msc.h"
+      ]
+    }
+  ],
+  "findings": [],
+  "types": [
+    {
+      "name": "classMemory",
+      "fields": [
+        {
+          "name": "alignment",
+          "declaration": "uint32_t alignment",
+          "callback": false,
+          "ownerType": "classMemory",
+          "evidence": {
+            "rootId": "f4",
+            "path": "USB_DEVICE/Target/usbd_conf.c",
+            "line": 621
+          },
+          "description": "Dato de estado/configuración `alignment`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "cdc",
+          "declaration": "USBD_CDC_HandleTypeDef cdc",
+          "callback": false,
+          "ownerType": "classMemory",
+          "evidence": {
+            "rootId": "f4",
+            "path": "USB_DEVICE/Target/usbd_conf.c",
+            "line": 622
+          },
+          "description": "Dato de estado/configuración `cdc`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "msc",
+          "declaration": "USBD_MSC_BOT_HandleTypeDef msc",
+          "callback": false,
+          "ownerType": "classMemory",
+          "evidence": {
+            "rootId": "f4",
+            "path": "USB_DEVICE/Target/usbd_conf.c",
+            "line": 623
+          },
+          "description": "Dato de estado/configuración `msc`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/Target/usbd_conf.c",
+        "line": 620
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "AutoMicroMscDisk_ReadBlocks",
+      "signature": "int8_t AutoMicroMscDisk_ReadBlocks(uint8_t *destination, uint32_t firstBlock, uint16_t blockCount)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/App/usbd_msc_disk_data.h",
+        "line": 15
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "memcpy",
+        "memset"
+      ],
+      "writes": [],
+      "description": "Coordina `memcpy`, `memset` para Plataforma USB CDC/MSC.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/App/usbd_msc_disk_data.c",
+        "line": 1147
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "CDC_IsDtrActive_FS",
+      "signature": "uint8_t CDC_IsDtrActive_FS(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/App/usbd_cdc_if.h",
+        "line": 112
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "USB_ModeManager_GetActiveMode"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `USB_ModeManager_GetActiveMode` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/App/usbd_cdc_if.c",
+        "line": 349
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "CDC_IsRtsActive_FS",
+      "signature": "uint8_t CDC_IsRtsActive_FS(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/App/usbd_cdc_if.h",
+        "line": 113
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "USB_ModeManager_GetActiveMode"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `USB_ModeManager_GetActiveMode` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/App/usbd_cdc_if.c",
+        "line": 356
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "CDC_Transmit_FS",
+      "signature": "uint8_t CDC_Transmit_FS(uint8_t* Buf, uint16_t Len)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/App/usbd_cdc_if.h",
+        "line": 109
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "USBD_CDC_SetTxBuffer",
+        "USBD_CDC_TransmitPacket",
+        "USB_ModeManager_GetActiveMode",
+        "USB_ModeManager_GetState"
+      ],
+      "writes": [],
+      "description": "Ofrece buffer de transmisión a la clase CDC del stack ST.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/App/usbd_cdc_if.c",
+        "line": 302
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "Error_Handler",
+      "signature": "void Error_Handler(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/Target/usbd_conf.c",
+        "line": 44
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Entra al manejo de fallo no recuperable de plataforma.",
+      "descriptionOrigin": "editorial",
+      "implementation": null,
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "HAL_PCD_MspDeInit",
+      "signature": "void HAL_PCD_MspDeInit(PCD_HandleTypeDef* pcdHandle)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/Target/usbd_conf.c",
+        "line": 103
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "HAL_GPIO_DeInit",
+        "HAL_NVIC_DisableIRQ",
+        "__HAL_RCC_USB_OTG_FS_CLK_DISABLE"
+      ],
+      "writes": [],
+      "description": "Coordina `HAL_GPIO_DeInit`, `HAL_NVIC_DisableIRQ`, `__HAL_RCC_USB_OTG_FS_CLK_DISABLE` para Plataforma USB CDC/MSC.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/Target/usbd_conf.c",
+        "line": 103
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "HAL_PCD_MspInit",
+      "signature": "void HAL_PCD_MspInit(PCD_HandleTypeDef* pcdHandle)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/Target/usbd_conf.c",
+        "line": 70
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "HAL_GPIO_Init",
+        "HAL_NVIC_EnableIRQ",
+        "HAL_NVIC_SetPriority",
+        "__HAL_RCC_GPIOA_CLK_ENABLE",
+        "__HAL_RCC_USB_OTG_FS_CLK_ENABLE"
+      ],
+      "writes": [],
+      "description": "Coordina `HAL_GPIO_Init`, `HAL_NVIC_EnableIRQ`, `HAL_NVIC_SetPriority` para Plataforma USB CDC/MSC.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/Target/usbd_conf.c",
+        "line": 70
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "MX_USB_DEVICE_Init",
+      "signature": "void MX_USB_DEVICE_Init(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/App/usb_device.h",
+        "line": 78
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "USB_ModeManager_Init"
+      ],
+      "writes": [],
+      "description": "Inicializa el dispositivo USB y la clase seleccionada.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/App/usb_device.c",
+        "line": 65
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "SystemClock_Config",
+      "signature": "void SystemClock_Config(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/Target/usbd_conf.c",
+        "line": 47
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación System Clock Config de Plataforma USB CDC/MSC; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": null,
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "USBD_FS_ConfigStrDescriptor",
+      "signature": "uint8_t * USBD_FS_ConfigStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/App/usbd_desc.c",
+        "line": 132
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "UNUSED",
+        "USBD_GetString",
+        "USB_ModeManager_GetDescriptorMode"
+      ],
+      "writes": [],
+      "description": "Coordina `UNUSED`, `USBD_GetString`, `USB_ModeManager_GetDescriptorMode` para Plataforma USB CDC/MSC.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/App/usbd_desc.c",
+        "line": 361
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "USBD_FS_DeviceDescriptor",
+      "signature": "uint8_t * USBD_FS_DeviceDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/App/usbd_desc.c",
+        "line": 127
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "HIBYTE",
+        "LOBYTE",
+        "UNUSED",
+        "USB_ModeManager_GetDescriptorMode"
+      ],
+      "writes": [],
+      "description": "Coordina `HIBYTE`, `LOBYTE`, `UNUSED` para Plataforma USB CDC/MSC.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/App/usbd_desc.c",
+        "line": 268
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "USBD_FS_InterfaceStrDescriptor",
+      "signature": "uint8_t * USBD_FS_InterfaceStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/App/usbd_desc.c",
+        "line": 133
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "UNUSED",
+        "USBD_GetString",
+        "USB_ModeManager_GetDescriptorMode"
+      ],
+      "writes": [],
+      "description": "Coordina `UNUSED`, `USBD_GetString`, `USB_ModeManager_GetDescriptorMode` para Plataforma USB CDC/MSC.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/App/usbd_desc.c",
+        "line": 377
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "USBD_FS_LangIDStrDescriptor",
+      "signature": "uint8_t * USBD_FS_LangIDStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/App/usbd_desc.c",
+        "line": 128
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "UNUSED"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `UNUSED` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/App/usbd_desc.c",
+        "line": 299
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "USBD_FS_ManufacturerStrDescriptor",
+      "signature": "uint8_t * USBD_FS_ManufacturerStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/App/usbd_desc.c",
+        "line": 129
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "UNUSED",
+        "USBD_GetString"
+      ],
+      "writes": [],
+      "description": "Coordina `UNUSED`, `USBD_GetString` para Plataforma USB CDC/MSC.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/App/usbd_desc.c",
+        "line": 328
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "USBD_FS_ProductStrDescriptor",
+      "signature": "uint8_t * USBD_FS_ProductStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/App/usbd_desc.c",
+        "line": 130
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "UNUSED",
+        "USBD_GetString",
+        "USB_ModeManager_GetDescriptorMode"
+      ],
+      "writes": [],
+      "description": "Coordina `UNUSED`, `USBD_GetString`, `USB_ModeManager_GetDescriptorMode` para Plataforma USB CDC/MSC.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/App/usbd_desc.c",
+        "line": 312
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "USBD_FS_SerialStrDescriptor",
+      "signature": "uint8_t * USBD_FS_SerialStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/App/usbd_desc.c",
+        "line": 131
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "Get_SerialNum",
+        "UNUSED"
+      ],
+      "writes": [],
+      "description": "Coordina `Get_SerialNum`, `UNUSED` para Plataforma USB CDC/MSC.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/App/usbd_desc.c",
+        "line": 341
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "USBD_FS_USR_BOSDescriptor",
+      "signature": "uint8_t * USBD_FS_USR_BOSDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/App/usbd_desc.c",
+        "line": 135
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "UNUSED"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `UNUSED` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/App/usbd_desc.c",
+        "line": 394
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "USBD_Get_USB_Status",
+      "signature": "USBD_StatusTypeDef USBD_Get_USB_Status(HAL_StatusTypeDef hal_status)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/Target/usbd_conf.c",
+        "line": 55
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación USBD Get USB Status de Plataforma USB CDC/MSC; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/Target/usbd_conf.c",
+        "line": 655
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "USBD_LL_ClearStallEP",
+      "signature": "USBD_StatusTypeDef USBD_LL_ClearStallEP(USBD_HandleTypeDef *pdev, uint8_t ep_addr)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/Target/usbd_conf.c",
+        "line": 496
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "HAL_PCD_EP_ClrStall",
+        "USBD_Get_USB_Status"
+      ],
+      "writes": [],
+      "description": "Coordina `HAL_PCD_EP_ClrStall`, `USBD_Get_USB_Status` para Plataforma USB CDC/MSC.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/Target/usbd_conf.c",
+        "line": 496
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "USBD_LL_CloseEP",
+      "signature": "USBD_StatusTypeDef USBD_LL_CloseEP(USBD_HandleTypeDef *pdev, uint8_t ep_addr)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/Target/usbd_conf.c",
+        "line": 442
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "HAL_PCD_EP_Close",
+        "USBD_Get_USB_Status"
+      ],
+      "writes": [],
+      "description": "Coordina `HAL_PCD_EP_Close`, `USBD_Get_USB_Status` para Plataforma USB CDC/MSC.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/Target/usbd_conf.c",
+        "line": 442
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "USBD_LL_DeInit",
+      "signature": "USBD_StatusTypeDef USBD_LL_DeInit(USBD_HandleTypeDef *pdev)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/Target/usbd_conf.c",
+        "line": 370
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "HAL_PCD_DeInit",
+        "USBD_Get_USB_Status"
+      ],
+      "writes": [],
+      "description": "Coordina `HAL_PCD_DeInit`, `USBD_Get_USB_Status` para Plataforma USB CDC/MSC.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/Target/usbd_conf.c",
+        "line": 370
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "USBD_LL_Delay",
+      "signature": "void USBD_LL_Delay(uint32_t Delay)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/Target/usbd_conf.c",
+        "line": 645
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "HAL_Delay"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `HAL_Delay` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/Target/usbd_conf.c",
+        "line": 645
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "USBD_LL_FlushEP",
+      "signature": "USBD_StatusTypeDef USBD_LL_FlushEP(USBD_HandleTypeDef *pdev, uint8_t ep_addr)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/Target/usbd_conf.c",
+        "line": 460
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "HAL_PCD_EP_Flush",
+        "USBD_Get_USB_Status"
+      ],
+      "writes": [],
+      "description": "Coordina `HAL_PCD_EP_Flush`, `USBD_Get_USB_Status` para Plataforma USB CDC/MSC.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/Target/usbd_conf.c",
+        "line": 460
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "USBD_LL_GetRxDataSize",
+      "signature": "uint32_t USBD_LL_GetRxDataSize(USBD_HandleTypeDef *pdev, uint8_t ep_addr)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/Target/usbd_conf.c",
+        "line": 592
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "HAL_PCD_EP_GetRxCount"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `HAL_PCD_EP_GetRxCount` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/Target/usbd_conf.c",
+        "line": 592
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "USBD_LL_Init",
+      "signature": "USBD_StatusTypeDef USBD_LL_Init(USBD_HandleTypeDef *pdev)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/Target/usbd_conf.c",
+        "line": 320
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Error_Handler",
+        "HAL_PCDEx_SetRxFiFo",
+        "HAL_PCDEx_SetTxFiFo",
+        "HAL_PCD_Init",
+        "HAL_PCD_RegisterCallback",
+        "HAL_PCD_RegisterDataInStageCallback",
+        "HAL_PCD_RegisterDataOutStageCallback",
+        "HAL_PCD_RegisterIsoInIncpltCallback",
+        "HAL_PCD_RegisterIsoOutIncpltCallback"
+      ],
+      "writes": [
+        "pData"
+      ],
+      "description": "Coordina `Error_Handler`, `HAL_PCDEx_SetRxFiFo`, `HAL_PCDEx_SetTxFiFo` para Plataforma USB CDC/MSC.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/Target/usbd_conf.c",
+        "line": 320
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "USBD_LL_IsStallEP",
+      "signature": "uint8_t USBD_LL_IsStallEP(USBD_HandleTypeDef *pdev, uint8_t ep_addr)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/Target/usbd_conf.c",
+        "line": 514
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación USBD LL Is Stall EP de Plataforma USB CDC/MSC; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/Target/usbd_conf.c",
+        "line": 514
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "USBD_LL_OpenEP",
+      "signature": "USBD_StatusTypeDef USBD_LL_OpenEP(USBD_HandleTypeDef *pdev, uint8_t ep_addr, uint8_t ep_type, uint16_t ep_mps)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/Target/usbd_conf.c",
+        "line": 424
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "HAL_PCD_EP_Open",
+        "USBD_Get_USB_Status"
+      ],
+      "writes": [],
+      "description": "Coordina `HAL_PCD_EP_Open`, `USBD_Get_USB_Status` para Plataforma USB CDC/MSC.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/Target/usbd_conf.c",
+        "line": 424
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "USBD_LL_PrepareReceive",
+      "signature": "USBD_StatusTypeDef USBD_LL_PrepareReceive(USBD_HandleTypeDef *pdev, uint8_t ep_addr, uint8_t *pbuf, uint32_t size)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/Target/usbd_conf.c",
+        "line": 574
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "HAL_PCD_EP_Receive",
+        "USBD_Get_USB_Status"
+      ],
+      "writes": [],
+      "description": "Coordina `HAL_PCD_EP_Receive`, `USBD_Get_USB_Status` para Plataforma USB CDC/MSC.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/Target/usbd_conf.c",
+        "line": 574
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "USBD_LL_SetTestMode",
+      "signature": "USBD_StatusTypeDef USBD_LL_SetTestMode(USBD_HandleTypeDef *pdev, uint8_t testmode)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/Target/usbd_conf.c",
+        "line": 604
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "UNUSED"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `UNUSED` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/Target/usbd_conf.c",
+        "line": 604
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "USBD_LL_SetUSBAddress",
+      "signature": "USBD_StatusTypeDef USBD_LL_SetUSBAddress(USBD_HandleTypeDef *pdev, uint8_t dev_addr)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/Target/usbd_conf.c",
+        "line": 534
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "HAL_PCD_SetAddress",
+        "USBD_Get_USB_Status"
+      ],
+      "writes": [],
+      "description": "Coordina `HAL_PCD_SetAddress`, `USBD_Get_USB_Status` para Plataforma USB CDC/MSC.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/Target/usbd_conf.c",
+        "line": 534
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "USBD_LL_StallEP",
+      "signature": "USBD_StatusTypeDef USBD_LL_StallEP(USBD_HandleTypeDef *pdev, uint8_t ep_addr)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/Target/usbd_conf.c",
+        "line": 478
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "HAL_PCD_EP_SetStall",
+        "USBD_Get_USB_Status"
+      ],
+      "writes": [],
+      "description": "Coordina `HAL_PCD_EP_SetStall`, `USBD_Get_USB_Status` para Plataforma USB CDC/MSC.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/Target/usbd_conf.c",
+        "line": 478
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "USBD_LL_Start",
+      "signature": "USBD_StatusTypeDef USBD_LL_Start(USBD_HandleTypeDef *pdev)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/Target/usbd_conf.c",
+        "line": 387
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "HAL_PCD_Start",
+        "USBD_Get_USB_Status"
+      ],
+      "writes": [],
+      "description": "Coordina `HAL_PCD_Start`, `USBD_Get_USB_Status` para Plataforma USB CDC/MSC.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/Target/usbd_conf.c",
+        "line": 387
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "USBD_LL_Stop",
+      "signature": "USBD_StatusTypeDef USBD_LL_Stop(USBD_HandleTypeDef *pdev)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/Target/usbd_conf.c",
+        "line": 404
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "HAL_PCD_Stop",
+        "USBD_Get_USB_Status"
+      ],
+      "writes": [],
+      "description": "Coordina `HAL_PCD_Stop`, `USBD_Get_USB_Status` para Plataforma USB CDC/MSC.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/Target/usbd_conf.c",
+        "line": 404
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "USBD_LL_Transmit",
+      "signature": "USBD_StatusTypeDef USBD_LL_Transmit(USBD_HandleTypeDef *pdev, uint8_t ep_addr, uint8_t *pbuf, uint32_t size)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/Target/usbd_conf.c",
+        "line": 554
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "HAL_PCD_EP_Transmit",
+        "USBD_Get_USB_Status"
+      ],
+      "writes": [],
+      "description": "Coordina `HAL_PCD_EP_Transmit`, `USBD_Get_USB_Status` para Plataforma USB CDC/MSC.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/Target/usbd_conf.c",
+        "line": 554
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "USBD_static_free",
+      "signature": "void USBD_static_free(void *p)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/Target/usbd_conf.h",
+        "line": 154
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación USBD static free de Plataforma USB CDC/MSC; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/Target/usbd_conf.c",
+        "line": 635
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "USBD_static_malloc",
+      "signature": "void *USBD_static_malloc(uint32_t size)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/Target/usbd_conf.h",
+        "line": 153
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "UNUSED"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `UNUSED` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/Target/usbd_conf.c",
+        "line": 618
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "USB_ModeManager_GetActiveMode",
+      "signature": "USB_Mode_t USB_ModeManager_GetActiveMode(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/App/usb_mode_manager.h",
+        "line": 29
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Consulta el modo de clase USB actualmente activo.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/App/usb_mode_manager.c",
+        "line": 129
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "USB_ModeManager_GetDescriptorMode",
+      "signature": "USB_Mode_t USB_ModeManager_GetDescriptorMode(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/App/usb_mode_manager.h",
+        "line": 30
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Consulta el modo usado para construir descriptores USB.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/App/usb_mode_manager.c",
+        "line": 134
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "USB_ModeManager_GetState",
+      "signature": "USB_ModeState_t USB_ModeManager_GetState(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/App/usb_mode_manager.h",
+        "line": 31
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Consulta la fase de transición del gestor USB.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/App/usb_mode_manager.c",
+        "line": 139
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "USB_ModeManager_Init",
+      "signature": "void USB_ModeManager_Init(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/App/usb_mode_manager.h",
+        "line": 24
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "Error_Handler",
+        "USB_ModeManager_Start"
+      ],
+      "writes": [],
+      "description": "Inicializa el estado del gestor de modo USB.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/App/usb_mode_manager.c",
+        "line": 58
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "USB_ModeManager_RequestCdc",
+      "signature": "void USB_ModeManager_RequestCdc(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/App/usb_mode_manager.h",
+        "line": 27
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "USB_ModeManager_RequestMode"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `USB_ModeManager_RequestMode` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/App/usb_mode_manager.c",
+        "line": 119
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "USB_ModeManager_RequestInstaller",
+      "signature": "void USB_ModeManager_RequestInstaller(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/App/usb_mode_manager.h",
+        "line": 28
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "USB_ModeManager_RequestMode"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `USB_ModeManager_RequestMode` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/App/usb_mode_manager.c",
+        "line": 124
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "USB_ModeManager_RequestMode",
+      "signature": "uint8_t USB_ModeManager_RequestMode(USB_Mode_t mode)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/App/usb_mode_manager.h",
+        "line": 26
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Solicita cambio de modo USB para su procesamiento por el gestor.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/App/usb_mode_manager.c",
+        "line": 101
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "USB_ModeManager_Task",
+      "signature": "void USB_ModeManager_Task(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/App/usb_mode_manager.h",
+        "line": 25
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "HAL_GetTick",
+        "USBD_DeInit",
+        "USB_ModeManager_Start"
+      ],
+      "writes": [],
+      "description": "Coordina `HAL_GetTick`, `USBD_DeInit`, `USB_ModeManager_Start` para Plataforma USB CDC/MSC.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/App/usb_mode_manager.c",
+        "line": 73
+      },
+      "linkage": "header"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "USB_ModeManager_Start",
+      "signature": "static uint8_t USB_ModeManager_Start(USB_Mode_t mode)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/App/usb_mode_manager.c",
+        "line": 22
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "USBD_CDC_RegisterInterface",
+        "USBD_DeInit",
+        "USBD_Init",
+        "USBD_MSC_RegisterStorage",
+        "USBD_RegisterClass",
+        "USBD_Start"
+      ],
+      "writes": [],
+      "description": "Inicia Plataforma USB CDC/MSC dentro de Plataforma USB CDC/MSC.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "CDC_Init_FS",
+      "signature": "static int8_t CDC_Init_FS(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/App/usbd_cdc_if.c",
+        "line": 156
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_TransportUsbCdc_OnDisconnect",
+        "USBD_CDC_SetRxBuffer",
+        "USBD_CDC_SetTxBuffer"
+      ],
+      "writes": [],
+      "description": "Inicializa FS dentro de Plataforma USB CDC/MSC.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "CDC_DeInit_FS",
+      "signature": "static int8_t CDC_DeInit_FS(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/App/usbd_cdc_if.c",
+        "line": 173
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_TransportUsbCdc_OnDisconnect"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `UNER_TransportUsbCdc_OnDisconnect` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "CDC_Control_FS",
+      "signature": "static int8_t CDC_Control_FS(uint8_t cmd, uint8_t* pbuf, uint16_t length)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/App/usbd_cdc_if.c",
+        "line": 190
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNUSED"
+      ],
+      "writes": [],
+      "description": "Coordina `UNUSED` para Plataforma USB CDC/MSC.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "CDC_Receive_FS",
+      "signature": "static int8_t CDC_Receive_FS(uint8_t* Buf, uint32_t *Len)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/App/usbd_cdc_if.c",
+        "line": 281
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_TransportUsbCdc_OnRx",
+        "USBD_CDC_ReceivePacket",
+        "USBD_CDC_SetRxBuffer"
+      ],
+      "writes": [],
+      "description": "Coordina `UNER_TransportUsbCdc_OnRx`, `USBD_CDC_ReceivePacket`, `USBD_CDC_SetRxBuffer` para Plataforma USB CDC/MSC.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "CDC_TransmitCplt_FS",
+      "signature": "static int8_t CDC_TransmitCplt_FS(uint8_t *Buf, uint32_t *Len, uint8_t epnum)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/App/usbd_cdc_if.c",
+        "line": 336
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_TransportUsbCdc_OnTxComplete",
+        "UNUSED"
+      ],
+      "writes": [],
+      "description": "Coordina `UNER_TransportUsbCdc_OnTxComplete`, `UNUSED` para Plataforma USB CDC/MSC.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Get_SerialNum",
+      "signature": "static void Get_SerialNum(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/App/usbd_desc.c",
+        "line": 407
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "IntToUnicode"
+      ],
+      "writes": [],
+      "description": "Consulta Serial Num dentro de Plataforma USB CDC/MSC.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "IntToUnicode",
+      "signature": "static void IntToUnicode(uint32_t value, uint8_t * pbuf, uint8_t len)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/App/usbd_desc.c",
+        "line": 433
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Int To Unicode de Plataforma USB CDC/MSC; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "STORAGE_Init_FS",
+      "signature": "static int8_t STORAGE_Init_FS(uint8_t lun)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/App/usbd_msc_storage.c",
+        "line": 49
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Inicializa FS dentro de Plataforma USB CDC/MSC.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "STORAGE_GetCapacity_FS",
+      "signature": "static int8_t STORAGE_GetCapacity_FS(uint8_t lun, uint32_t *block_num, uint16_t *block_size)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/App/usbd_msc_storage.c",
+        "line": 54
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Consulta Capacity FS dentro de Plataforma USB CDC/MSC.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "STORAGE_IsReady_FS",
+      "signature": "static int8_t STORAGE_IsReady_FS(uint8_t lun)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/App/usbd_msc_storage.c",
+        "line": 67
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Indica si se cumple la condición Ready FS dentro de Plataforma USB CDC/MSC.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "STORAGE_IsWriteProtected_FS",
+      "signature": "static int8_t STORAGE_IsWriteProtected_FS(uint8_t lun)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/App/usbd_msc_storage.c",
+        "line": 72
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Indica si se cumple la condición Write Protected FS dentro de Plataforma USB CDC/MSC.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "STORAGE_Read_FS",
+      "signature": "static int8_t STORAGE_Read_FS(uint8_t lun, uint8_t *buf, uint32_t blk_addr, uint16_t blk_len)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/App/usbd_msc_storage.c",
+        "line": 77
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "AutoMicroMscDisk_ReadBlocks"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `AutoMicroMscDisk_ReadBlocks` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "STORAGE_Write_FS",
+      "signature": "static int8_t STORAGE_Write_FS(uint8_t lun, uint8_t *buf, uint32_t blk_addr, uint16_t blk_len)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/App/usbd_msc_storage.c",
+        "line": 88
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNUSED"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `UNUSED` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "STORAGE_GetMaxLun_FS",
+      "signature": "static int8_t STORAGE_GetMaxLun_FS(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "USB_DEVICE/App/usbd_msc_storage.c",
+        "line": 100
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Consulta Max Lun FS dentro de Plataforma USB CDC/MSC.",
+      "descriptionOrigin": "inferred-name"
+    }
+  ]
+}

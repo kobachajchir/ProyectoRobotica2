@@ -1,0 +1,1719 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "esp:module/src/wifi_service.h",
+  "slug": "wifi-service",
+  "title": "Servicio de radio Wi-Fi",
+  "target": "esp",
+  "kind": "servicio",
+  "status": "source-documented",
+  "snapshotDate": "2026-10-20",
+  "verification": "not-run-user-instruction",
+  "responsibility": "Centraliza mutaciones de radio y máquina de estado STA/AP/reconexión/scan.",
+  "scope": "Config IP, SoftAP, conexión STA, fallback y restauración tras scan.",
+  "state": "WifiServiceHandle posee driver/servicios, flags/timers prestados y estado de intento/red. ap_started, keep_ap_with_sta y scan_previous_mode distinguen radio configurada y transición pendiente.",
+  "modularity": "Recibe WifiDriverPort; config/modelos compartidos conservan conocimiento ESP. El acceso global WiFi debe quedar en adaptador, no duplicarse en consumidores.",
+  "lifecycle": [
+    "Init conecta puertos/runtime; Begin inicia el modo elegido.",
+    "Loop procesa conexión, timeout, reintento y señales de fallback.",
+    "StartScan conserva modo previo y RestoreModeAfterScan aplica la política de restauración."
+  ],
+  "interactions": [
+    "WifiUtils ofrece fachada histórica; bridge y handlers usan el mismo servicio de radio."
+  ],
+  "limitations": [
+    "AP iniciado no implica STA conectada ni cliente Web autorizado.",
+    "Los puertos requieren operaciones válidas; algunos reenvíos no comprueban null."
+  ],
+  "relationships": [],
+  "findings": [],
+  "files": [
+    {
+      "rootId": "esp",
+      "path": "src/wifi_driver_port.h",
+      "sha256": "52f3abad04f4f5c611481592b4211d16aeb1c98243d63642b0f594cec814d222",
+      "imports": [
+        "wifi_service_types.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    },
+    {
+      "rootId": "esp",
+      "path": "src/wifi_service.cpp",
+      "sha256": "2ccd38929bd7b5aa9028a2f5f0ce45638c163b45b6c623882da77d087518ef84",
+      "imports": [
+        "wifi_service.h",
+        "stdio.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    },
+    {
+      "rootId": "esp",
+      "path": "src/wifi_service.h",
+      "sha256": "70e2a9236666cc798ea7e20e56952c5ea19f3dcada33716f74e8af0f8d2605a5",
+      "imports": [
+        "config.h",
+        "bitMap.h",
+        "wifi_driver_port.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    },
+    {
+      "rootId": "esp",
+      "path": "src/wifi_service_types.h",
+      "sha256": "ecc78d952db07cf1205f1bf862ff6ce32ce7f32ab03230162d2fb59110ea3884",
+      "imports": [
+        "stdint.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    }
+  ],
+  "types": [
+    {
+      "name": "WifiDriverOps",
+      "fields": [
+        {
+          "name": "initialize",
+          "declaration": "void (*initialize)(void *)",
+          "callback": true,
+          "ownerType": "WifiDriverOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/wifi_driver_port.h",
+            "line": 4
+          },
+          "description": "Inicializa backend radio desde WifiService; debe registrarse antes de Begin/Loop."
+        },
+        {
+          "name": "set_mode",
+          "declaration": "bool (*set_mode)(void *, WifiRadioMode)",
+          "callback": true,
+          "ownerType": "WifiDriverOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/wifi_driver_port.h",
+            "line": 5
+          },
+          "description": "Aplica modo SDK elegido por la política del servicio."
+        },
+        {
+          "name": "get_mode",
+          "declaration": "WifiRadioMode (*get_mode)(void *)",
+          "callback": true,
+          "ownerType": "WifiDriverOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/wifi_driver_port.h",
+            "line": 6
+          },
+          "description": "Consulta modo SDK para transición/restauración."
+        },
+        {
+          "name": "status",
+          "declaration": "WifiLinkStatus (*status)(void *)",
+          "callback": true,
+          "ownerType": "WifiDriverOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/wifi_driver_port.h",
+            "line": 7
+          },
+          "description": "Consulta estado de conexión STA del driver."
+        },
+        {
+          "name": "connect",
+          "declaration": "WifiLinkStatus (*connect)(void *, const char *, const char *, const uint8_t *)",
+          "callback": true,
+          "ownerType": "WifiDriverOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/wifi_driver_port.h",
+            "line": 8
+          },
+          "description": "Inicia conexión STA con configuración prestada por el servicio."
+        },
+        {
+          "name": "disconnect",
+          "declaration": "bool (*disconnect)(void *, bool, bool)",
+          "callback": true,
+          "ownerType": "WifiDriverOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/wifi_driver_port.h",
+            "line": 9
+          },
+          "description": "Desconecta estación a petición de la política del servicio."
+        },
+        {
+          "name": "reconnect",
+          "declaration": "bool (*reconnect)(void *)",
+          "callback": true,
+          "ownerType": "WifiDriverOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/wifi_driver_port.h",
+            "line": 10
+          },
+          "description": "Solicita reintento de la conexión existente."
+        },
+        {
+          "name": "start_ap",
+          "declaration": "bool (*start_ap)(void *, const char *, const char *, uint8_t, bool, uint8_t)",
+          "callback": true,
+          "ownerType": "WifiDriverOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/wifi_driver_port.h",
+            "line": 11
+          },
+          "description": "Inicia SoftAP en el backend."
+        },
+        {
+          "name": "stop_ap",
+          "declaration": "bool (*stop_ap)(void *, bool)",
+          "callback": true,
+          "ownerType": "WifiDriverOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/wifi_driver_port.h",
+            "line": 12
+          },
+          "description": "Detiene SoftAP en el backend."
+        },
+        {
+          "name": "configure_sta",
+          "declaration": "bool (*configure_sta)(void *, WifiIpv4, WifiIpv4, WifiIpv4)",
+          "callback": true,
+          "ownerType": "WifiDriverOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/wifi_driver_port.h",
+            "line": 13
+          },
+          "description": "Aplica parámetros de red de estación antes de conectar."
+        },
+        {
+          "name": "configure_ap",
+          "declaration": "bool (*configure_ap)(void *, WifiIpv4, WifiIpv4, WifiIpv4)",
+          "callback": true,
+          "ownerType": "WifiDriverOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/wifi_driver_port.h",
+            "line": 14
+          },
+          "description": "Aplica parámetros de red del AP antes de iniciarlo."
+        },
+        {
+          "name": "auto_reconnect",
+          "declaration": "void (*auto_reconnect)(void *, bool)",
+          "callback": true,
+          "ownerType": "WifiDriverOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/wifi_driver_port.h",
+            "line": 15
+          },
+          "description": "Configura reconexión automática del SDK según política central."
+        },
+        {
+          "name": "scan_start",
+          "declaration": "int (*scan_start)(void *, bool, bool)",
+          "callback": true,
+          "ownerType": "WifiDriverOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/wifi_driver_port.h",
+            "line": 16
+          },
+          "description": "Inicia exploración del driver; su resultado no es inmediato por implicación."
+        },
+        {
+          "name": "scan_complete",
+          "declaration": "int (*scan_complete)(void *)",
+          "callback": true,
+          "ownerType": "WifiDriverOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/wifi_driver_port.h",
+            "line": 17
+          },
+          "description": "Consulta resultado/avance de scan asíncrono conforme al retorno del SDK."
+        },
+        {
+          "name": "scan_delete",
+          "declaration": "void (*scan_delete)(void *)",
+          "callback": true,
+          "ownerType": "WifiDriverOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/wifi_driver_port.h",
+            "line": 18
+          },
+          "description": "Libera resultados scan del driver después de su consumo."
+        },
+        {
+          "name": "sta_ip",
+          "declaration": "WifiIpv4 (*sta_ip)(void *)",
+          "callback": true,
+          "ownerType": "WifiDriverOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/wifi_driver_port.h",
+            "line": 19
+          },
+          "description": "Obtiene dirección de estación del backend."
+        },
+        {
+          "name": "ap_ip",
+          "declaration": "WifiIpv4 (*ap_ip)(void *)",
+          "callback": true,
+          "ownerType": "WifiDriverOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/wifi_driver_port.h",
+            "line": 20
+          },
+          "description": "Obtiene dirección de AP del backend."
+        },
+        {
+          "name": "ap_clients",
+          "declaration": "uint8_t (*ap_clients)(void *)",
+          "callback": true,
+          "ownerType": "WifiDriverOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/wifi_driver_port.h",
+            "line": 21
+          },
+          "description": "Consulta estaciones asociadas al AP para estado, no sesiones Web."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_driver_port.h",
+        "line": 4
+      }
+    },
+    {
+      "name": "WifiDriverPort",
+      "fields": [
+        {
+          "name": "ops",
+          "declaration": "const WifiDriverOps *ops",
+          "callback": false,
+          "ownerType": "WifiDriverPort",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/wifi_driver_port.h",
+            "line": 24
+          },
+          "description": "Contrato de operaciones externo; conservar la tabla y su contexto durante el uso."
+        },
+        {
+          "name": "context",
+          "declaration": "void *context",
+          "callback": false,
+          "ownerType": "WifiDriverPort",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/wifi_driver_port.h",
+            "line": 25
+          },
+          "description": "Dato de estado/configuración `context`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_driver_port.h",
+        "line": 24
+      }
+    },
+    {
+      "name": "WifiServiceOps",
+      "fields": [
+        {
+          "name": "context",
+          "declaration": "void *context",
+          "callback": false,
+          "ownerType": "WifiServiceOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/wifi_service.h",
+            "line": 6
+          },
+          "description": "Dato de estado/configuración `context`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ticks",
+          "declaration": "uint32_t (*ticks)(void *)",
+          "callback": true,
+          "ownerType": "WifiServiceOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/wifi_service.h",
+            "line": 7
+          },
+          "description": "Entrega reloj en ms para timeouts del servicio desde la aplicación."
+        },
+        {
+          "name": "config",
+          "declaration": "const AppConfig *(*config)(void *)",
+          "callback": true,
+          "ownerType": "WifiServiceOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/wifi_service.h",
+            "line": 8
+          },
+          "description": "Presta configuración del sistema durante uso del servicio; no transferir ni guardar puntero sin lifetime válido."
+        },
+        {
+          "name": "cooperate",
+          "declaration": "void (*cooperate)(void *)",
+          "callback": true,
+          "ownerType": "WifiServiceOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/wifi_service.h",
+            "line": 9
+          },
+          "description": "Permite ceder ejecución al runtime en puntos del servicio que lo requieren."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_service.h",
+        "line": 6
+      }
+    },
+    {
+      "name": "WifiServiceHandle",
+      "fields": [
+        {
+          "name": "driver",
+          "declaration": "WifiDriverPort driver",
+          "callback": false,
+          "ownerType": "WifiServiceHandle",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/wifi_service.h",
+            "line": 12
+          },
+          "description": "Dato de estado/configuración `driver`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "services",
+          "declaration": "WifiServiceOps services",
+          "callback": false,
+          "ownerType": "WifiServiceHandle",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/wifi_service.h",
+            "line": 13
+          },
+          "description": "Contrato de operaciones externo; conservar la tabla y su contexto durante el uso."
+        },
+        {
+          "name": "flags",
+          "declaration": "volatile t_bitMap *flags",
+          "callback": false,
+          "ownerType": "WifiServiceHandle",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/wifi_service.h",
+            "line": 14
+          },
+          "description": "Bits de estado del módulo; conservar máscaras y distinguir estado de eventos pendientes."
+        },
+        {
+          "name": "sta_wait",
+          "declaration": "volatile uint16_t *sta_wait",
+          "callback": false,
+          "ownerType": "WifiServiceHandle",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/wifi_service.h",
+            "line": 15
+          },
+          "description": "Dato de estado/configuración `sta_wait`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "sta_retry",
+          "declaration": "volatile uint16_t *sta_retry",
+          "callback": false,
+          "ownerType": "WifiServiceHandle",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/wifi_service.h",
+            "line": 16
+          },
+          "description": "Dato de estado/configuración `sta_retry`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "sta_start_tick",
+          "declaration": "uint32_t sta_start_tick",
+          "callback": false,
+          "ownerType": "WifiServiceHandle",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/wifi_service.h",
+            "line": 17
+          },
+          "description": "Dato de estado/configuración `sta_start_tick`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "last_retry_tick",
+          "declaration": "uint32_t last_retry_tick",
+          "callback": false,
+          "ownerType": "WifiServiceHandle",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/wifi_service.h",
+            "line": 18
+          },
+          "description": "Memoria de la observación anterior usada por la máquina de estados."
+        },
+        {
+          "name": "mode",
+          "declaration": "WifiRunMode mode",
+          "callback": false,
+          "ownerType": "WifiServiceHandle",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/wifi_service.h",
+            "line": 19
+          },
+          "description": "Dato de estado/configuración `mode`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "state",
+          "declaration": "WifiServiceState state",
+          "callback": false,
+          "ownerType": "WifiServiceHandle",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/wifi_service.h",
+            "line": 20
+          },
+          "description": "Dato de estado/configuración `state`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ap_started",
+          "declaration": "bool ap_started",
+          "callback": false,
+          "ownerType": "WifiServiceHandle",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/wifi_service.h",
+            "line": 21
+          },
+          "description": "Dato de estado/configuración `ap_started`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "keep_ap_with_sta",
+          "declaration": "bool keep_ap_with_sta",
+          "callback": false,
+          "ownerType": "WifiServiceHandle",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/wifi_service.h",
+            "line": 22
+          },
+          "description": "Dato de estado/configuración `keep_ap_with_sta`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "sta_reconnect_enabled",
+          "declaration": "bool sta_reconnect_enabled",
+          "callback": false,
+          "ownerType": "WifiServiceHandle",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/wifi_service.h",
+            "line": 23
+          },
+          "description": "Dato de estado/configuración `sta_reconnect_enabled`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "scan_previous_mode",
+          "declaration": "WifiRadioMode scan_previous_mode",
+          "callback": false,
+          "ownerType": "WifiServiceHandle",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/wifi_service.h",
+            "line": 24
+          },
+          "description": "Dato de estado/configuración `scan_previous_mode`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "scan_mode_restore_pending",
+          "declaration": "bool scan_mode_restore_pending",
+          "callback": false,
+          "ownerType": "WifiServiceHandle",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/wifi_service.h",
+            "line": 25
+          },
+          "description": "Dato de estado/configuración `scan_mode_restore_pending`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "scan_keep_ap_hybrid",
+          "declaration": "bool scan_keep_ap_hybrid",
+          "callback": false,
+          "ownerType": "WifiServiceHandle",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/wifi_service.h",
+            "line": 26
+          },
+          "description": "Dato de estado/configuración `scan_keep_ap_hybrid`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ap_fallback_ready_pending",
+          "declaration": "bool ap_fallback_ready_pending",
+          "callback": false,
+          "ownerType": "WifiServiceHandle",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/wifi_service.h",
+            "line": 27
+          },
+          "description": "Dato de estado/configuración `ap_fallback_ready_pending`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "sta_attempt_failed_pending",
+          "declaration": "bool sta_attempt_failed_pending",
+          "callback": false,
+          "ownerType": "WifiServiceHandle",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/wifi_service.h",
+            "line": 28
+          },
+          "description": "Dato de estado/configuración `sta_attempt_failed_pending`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_service.h",
+        "line": 12
+      }
+    },
+    {
+      "name": "WifiIpv4",
+      "fields": [
+        {
+          "name": "octets",
+          "declaration": "uint8_t octets[4]",
+          "callback": false,
+          "ownerType": "WifiIpv4",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/wifi_service_types.h",
+            "line": 23
+          },
+          "description": "Dato de estado/configuración `octets`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_service_types.h",
+        "line": 23
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "WifiService_ApplyAPConfig",
+      "signature": "bool WifiService_ApplyAPConfig(WifiServiceHandle &h, const AppConfig &cfg)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_service.cpp",
+        "line": 475
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "WifiIpv4",
+        "WifiService_ConfigureAP",
+        "parseIpv4Text"
+      ],
+      "writes": [],
+      "description": "Aplica APConfig dentro de Servicio de radio Wi-Fi.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "WifiService_ApplySTAConfig",
+      "signature": "bool WifiService_ApplySTAConfig(WifiServiceHandle &h, const AppConfig &cfg)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_service.cpp",
+        "line": 455
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "WifiIpv4",
+        "WifiService_ConfigureSTA",
+        "parseIpv4Text"
+      ],
+      "writes": [],
+      "description": "Aplica STAConfig dentro de Servicio de radio Wi-Fi.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "WifiService_Begin",
+      "signature": "bool WifiService_Begin(WifiServiceHandle &h, const AppConfig &cfg, WifiRunMode mode)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_service.cpp",
+        "line": 193
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "WifiService_ApplyAPConfig",
+        "WifiService_ApplySTAConfig",
+        "enterApFallbackState",
+        "initialize",
+        "mode",
+        "setApRunning",
+        "setStaIdleFlags",
+        "startAPInternal",
+        "startStaAttempt"
+      ],
+      "writes": [
+        "ap_fallback_ready_pending",
+        "ap_started",
+        "keep_ap_with_sta",
+        "mode",
+        "scan_keep_ap_hybrid",
+        "scan_mode_restore_pending",
+        "scan_previous_mode",
+        "sta_attempt_failed_pending",
+        "sta_reconnect_enabled",
+        "state"
+      ],
+      "description": "Inicia AP/STA según configuración y modo solicitados.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "WifiService_ConfigureAP",
+      "signature": "bool WifiService_ConfigureAP(WifiServiceHandle &h, WifiIpv4 local_ip, WifiIpv4 gateway, WifiIpv4 subnet)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_service.cpp",
+        "line": 450
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "softAPConfig"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `softAPConfig` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiService_ConfigureSTA",
+      "signature": "bool WifiService_ConfigureSTA(WifiServiceHandle &h, WifiIpv4 local_ip, WifiIpv4 gateway, WifiIpv4 subnet)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_service.cpp",
+        "line": 445
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "config"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `config` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiService_ConnectSTA",
+      "signature": "WifiLinkStatus WifiService_ConnectSTA(WifiServiceHandle &h, const char *ssid, const char *password, bool keep_ap, bool disconnect_first, const uint8_t *bssid)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_service.cpp",
+        "line": 411
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "config",
+        "startStaAttempt"
+      ],
+      "writes": [
+        "keep_ap_with_sta",
+        "mode"
+      ],
+      "description": "Coordina `config`, `startStaAttempt` para Servicio de radio Wi-Fi.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiService_ConsumeAPFallbackReady",
+      "signature": "bool WifiService_ConsumeAPFallbackReady(WifiServiceHandle &h)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_service.cpp",
+        "line": 532
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [
+        "ap_fallback_ready_pending"
+      ],
+      "description": "Consume la señal de transición a fallback AP disponible.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "WifiService_ConsumeSTAAttemptFailure",
+      "signature": "bool WifiService_ConsumeSTAAttemptFailure(WifiServiceHandle &h)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_service.cpp",
+        "line": 539
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [
+        "sta_attempt_failed_pending"
+      ],
+      "description": "Operación Consume STAAttempt Failure de Servicio de radio Wi-Fi; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "WifiService_DeleteScanResults",
+      "signature": "void WifiService_DeleteScanResults(WifiServiceHandle &h)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_service.cpp",
+        "line": 387
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "scanDelete"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `scanDelete` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiService_DisconnectSTA",
+      "signature": "bool WifiService_DisconnectSTA(WifiServiceHandle &h, bool radio_off, bool erase_sdk_credentials)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_service.cpp",
+        "line": 421
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "WifiService_SetSTAReconnectEnabled",
+        "disconnect",
+        "getMode",
+        "modeHasAP",
+        "setApRunning",
+        "setStaIdleFlags"
+      ],
+      "writes": [
+        "state"
+      ],
+      "description": "Coordina `WifiService_SetSTAReconnectEnabled`, `disconnect`, `getMode` para Servicio de radio Wi-Fi.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiService_GetAPClientCount",
+      "signature": "uint8_t WifiService_GetAPClientCount(WifiServiceHandle &h)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_service.cpp",
+        "line": 530
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "softAPgetStationNum"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `softAPgetStationNum` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiService_GetAP_IP",
+      "signature": "WifiIpv4 WifiService_GetAP_IP(WifiServiceHandle &h)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_service.cpp",
+        "line": 526
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "softAPIP"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `softAPIP` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiService_GetMode",
+      "signature": "WifiRadioMode WifiService_GetMode(WifiServiceHandle &h)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_service.cpp",
+        "line": 528
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "getMode"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `getMode` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiService_GetSTAStatus",
+      "signature": "WifiLinkStatus WifiService_GetSTAStatus(WifiServiceHandle &h)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_service.cpp",
+        "line": 529
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "status"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `status` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiService_GetSTA_IP",
+      "signature": "WifiIpv4 WifiService_GetSTA_IP(WifiServiceHandle &h)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_service.cpp",
+        "line": 525
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "localIP"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `localIP` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiService_GetState",
+      "signature": "WifiServiceState WifiService_GetState(WifiServiceHandle &h)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_service.cpp",
+        "line": 524
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Devuelve el campo `h.state` del estado actual de la instancia.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiService_Init",
+      "signature": "void WifiService_Init(WifiServiceHandle &h, const WifiDriverPort &driver, const WifiServiceOps &services, volatile t_bitMap *flags, volatile uint16_t *sta_wait, volatile uint16_t *sta_retry)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_service.cpp",
+        "line": 7
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [
+        "driver",
+        "flags",
+        "services",
+        "sta_retry",
+        "sta_wait"
+      ],
+      "description": "Conecta driver, reloj/config y referencias runtime del servicio.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "WifiService_IsSTAReconnectEnabled",
+      "signature": "bool WifiService_IsSTAReconnectEnabled(WifiServiceHandle &h)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_service.cpp",
+        "line": 519
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Devuelve el campo `h.sta_reconnect_enabled` del estado actual de la instancia.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiService_Loop",
+      "signature": "void WifiService_Loop(WifiServiceHandle &h)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_service.cpp",
+        "line": 234
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "CLEAR_FLAG",
+        "SET_FLAG",
+        "WifiService_ApplyAPConfig",
+        "WifiService_RestoreModeAfterScan",
+        "WifiService_StopAP",
+        "config",
+        "cooperate",
+        "disconnect",
+        "enterApFallbackState",
+        "getMode",
+        "modeHasAP",
+        "reconnect",
+        "setApRunning",
+        "setStaConnectedFlags",
+        "setStaIdleFlags",
+        "startAPInternal",
+        "startStaAttempt",
+        "status",
+        "ticks"
+      ],
+      "writes": [
+        "last_retry_tick",
+        "sta_attempt_failed_pending",
+        "state"
+      ],
+      "description": "Avanza intentos STA, reconexión y fallback.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "WifiService_NotifySTAConfigurationFailure",
+      "signature": "void WifiService_NotifySTAConfigurationFailure(WifiServiceHandle &h)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_service.cpp",
+        "line": 126
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "config",
+        "enterApFallbackState",
+        "setStaIdleFlags"
+      ],
+      "writes": [
+        "mode",
+        "sta_attempt_failed_pending"
+      ],
+      "description": "Notifica STAConfiguration Failure dentro de Servicio de radio Wi-Fi.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "WifiService_ReconnectSTA",
+      "signature": "bool WifiService_ReconnectSTA(WifiServiceHandle &h)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_service.cpp",
+        "line": 432
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "WifiService_ApplySTAConfig",
+        "config",
+        "startStaAttempt"
+      ],
+      "writes": [],
+      "description": "Coordina `WifiService_ApplySTAConfig`, `config`, `startStaAttempt` para Servicio de radio Wi-Fi.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiService_RestoreModeAfterScan",
+      "signature": "void WifiService_RestoreModeAfterScan(WifiServiceHandle &h)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_service.cpp",
+        "line": 392
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "getMode",
+        "mode",
+        "scanComplete"
+      ],
+      "writes": [
+        "scan_keep_ap_hybrid",
+        "scan_mode_restore_pending",
+        "scan_previous_mode"
+      ],
+      "description": "Restaura modo de radio según el estado conservado.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "WifiService_STA_Connected",
+      "signature": "bool WifiService_STA_Connected(WifiServiceHandle &h)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_service.cpp",
+        "line": 527
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "status"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `status` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiService_ScanComplete",
+      "signature": "int WifiService_ScanComplete(WifiServiceHandle &h)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_service.cpp",
+        "line": 382
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "scanComplete"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `scanComplete` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiService_SetSTAReconnectEnabled",
+      "signature": "void WifiService_SetSTAReconnectEnabled(WifiServiceHandle &h, bool enabled)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_service.cpp",
+        "line": 513
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "setAutoReconnect"
+      ],
+      "writes": [
+        "sta_reconnect_enabled"
+      ],
+      "description": "Adapta la llamada a `setAutoReconnect` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiService_StartAP",
+      "signature": "bool WifiService_StartAP(WifiServiceHandle &h, const char *ssid, const char *password, bool keep_sta, uint8_t channel, bool hidden, uint8_t max_clients, bool ap_protected)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_service.cpp",
+        "line": 486
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "startAPInternal"
+      ],
+      "writes": [
+        "keep_ap_with_sta",
+        "mode"
+      ],
+      "description": "Adapta la llamada a `startAPInternal` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiService_StartScan",
+      "signature": "int WifiService_StartScan(WifiServiceHandle &h, bool async, bool show_hidden)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_service.cpp",
+        "line": 364
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "getMode",
+        "mode",
+        "modeHasAP",
+        "scanNetworks"
+      ],
+      "writes": [
+        "scan_keep_ap_hybrid",
+        "scan_mode_restore_pending",
+        "scan_previous_mode"
+      ],
+      "description": "Solicita scan al driver conservando contexto de radio.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "WifiService_StopAP",
+      "signature": "bool WifiService_StopAP(WifiServiceHandle &h, bool radio_off)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_service.cpp",
+        "line": 496
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "setApRunning",
+        "setStaConnectedFlags",
+        "softAPdisconnect",
+        "status"
+      ],
+      "writes": [
+        "keep_ap_with_sta",
+        "state"
+      ],
+      "description": "Detiene AP dentro de Servicio de radio Wi-Fi.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "begin",
+      "signature": "WifiLinkStatus begin(const char *s, const char *p, int, const uint8_t *bssid, bool) const",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_driver_port.h",
+        "line": 31
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "connect"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `connect` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "config",
+      "signature": "bool config(WifiIpv4 ip,WifiIpv4 gw,WifiIpv4 mask) const",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_driver_port.h",
+        "line": 41
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "configure_sta"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `configure_sta` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "disconnect",
+      "signature": "bool disconnect(bool off, bool erase) const",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_driver_port.h",
+        "line": 35
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "disconnect"
+      ],
+      "writes": [],
+      "description": "Coordina `disconnect` para Servicio de radio Wi-Fi.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "getMode",
+      "signature": "WifiRadioMode getMode() const",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_driver_port.h",
+        "line": 29
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "get_mode"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `get_mode` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "initialize",
+      "signature": "void initialize() const",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_driver_port.h",
+        "line": 27
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "initialize"
+      ],
+      "writes": [],
+      "description": "Coordina `initialize` para Servicio de radio Wi-Fi.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "localIP",
+      "signature": "WifiIpv4 localIP() const",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_driver_port.h",
+        "line": 51
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "sta_ip"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `sta_ip` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "mode",
+      "signature": "bool mode(WifiRadioMode m) const",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_driver_port.h",
+        "line": 28
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "set_mode"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `set_mode` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "reconnect",
+      "signature": "bool reconnect() const",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_driver_port.h",
+        "line": 36
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "reconnect"
+      ],
+      "writes": [],
+      "description": "Coordina `reconnect` para Servicio de radio Wi-Fi.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "scanComplete",
+      "signature": "int scanComplete() const",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_driver_port.h",
+        "line": 49
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "scan_complete"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `scan_complete` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "scanDelete",
+      "signature": "void scanDelete() const",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_driver_port.h",
+        "line": 50
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "scan_delete"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `scan_delete` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "scanNetworks",
+      "signature": "int scanNetworks(bool async,bool hidden) const",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_driver_port.h",
+        "line": 48
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "scan_start"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `scan_start` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "setAutoReconnect",
+      "signature": "void setAutoReconnect(bool on) const",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_driver_port.h",
+        "line": 47
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "auto_reconnect"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `auto_reconnect` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "softAP",
+      "signature": "bool softAP(const char *s,const char *p,uint8_t ch,bool hidden,uint8_t max) const",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_driver_port.h",
+        "line": 37
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "start_ap"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `start_ap` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "softAPConfig",
+      "signature": "bool softAPConfig(WifiIpv4 ip,WifiIpv4 gw,WifiIpv4 mask) const",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_driver_port.h",
+        "line": 44
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "configure_ap"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `configure_ap` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "softAPIP",
+      "signature": "WifiIpv4 softAPIP() const",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_driver_port.h",
+        "line": 52
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "ap_ip"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `ap_ip` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "softAPdisconnect",
+      "signature": "bool softAPdisconnect(bool off) const",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_driver_port.h",
+        "line": 40
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "stop_ap"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `stop_ap` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "softAPgetStationNum",
+      "signature": "uint8_t softAPgetStationNum() const",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_driver_port.h",
+        "line": 53
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "ap_clients"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `ap_clients` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "status",
+      "signature": "WifiLinkStatus status() const",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_driver_port.h",
+        "line": 30
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "status"
+      ],
+      "writes": [],
+      "description": "Coordina `status` para Servicio de radio Wi-Fi.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "uint32_t",
+      "signature": "explicit operator uint32_t() const",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_service_types.h",
+        "line": 27
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación uint32 t de Servicio de radio Wi-Fi; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "armStaAttempt",
+      "signature": "static void armStaAttempt(WifiServiceHandle &h)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_service.cpp",
+        "line": 83
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "CLEAR_FLAG",
+        "SET_FLAG",
+        "ticks"
+      ],
+      "writes": [
+        "ap_fallback_ready_pending",
+        "last_retry_tick",
+        "sta_attempt_failed_pending",
+        "sta_start_tick",
+        "state"
+      ],
+      "description": "Coordina `CLEAR_FLAG`, `SET_FLAG`, `ticks` para Servicio de radio Wi-Fi.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "boundedLength",
+      "signature": "static size_t boundedLength(const char *value, size_t max_length)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_service.cpp",
+        "line": 36
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación bounded Length de Servicio de radio Wi-Fi; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "enterApFallbackState",
+      "signature": "static void enterApFallbackState(WifiServiceHandle &h)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_service.cpp",
+        "line": 98
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "CLEAR_FLAG",
+        "SET_FLAG",
+        "config",
+        "disconnect",
+        "getMode",
+        "mode",
+        "modeHasAP",
+        "setApRunning"
+      ],
+      "writes": [
+        "ap_fallback_ready_pending",
+        "state"
+      ],
+      "description": "Coordina `CLEAR_FLAG`, `SET_FLAG`, `config` para Servicio de radio Wi-Fi.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "modeHasAP",
+      "signature": "static bool modeHasAP(WifiRadioMode mode)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_service.cpp",
+        "line": 46
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación mode Has AP de Servicio de radio Wi-Fi; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "parseIpv4Text",
+      "signature": "static bool parseIpv4Text(const char *text, WifiIpv4 &out)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_service.cpp",
+        "line": 18
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "WifiIpv4",
+        "sscanf"
+      ],
+      "writes": [],
+      "description": "Coordina `WifiIpv4`, `sscanf` para Servicio de radio Wi-Fi.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "setApRunning",
+      "signature": "static void setApRunning(WifiServiceHandle &h, bool running)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_service.cpp",
+        "line": 51
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "CLEAR_FLAG",
+        "SET_FLAG"
+      ],
+      "writes": [
+        "ap_started"
+      ],
+      "description": "Coordina `CLEAR_FLAG`, `SET_FLAG` para Servicio de radio Wi-Fi.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "setStaConnectedFlags",
+      "signature": "static void setStaConnectedFlags(WifiServiceHandle &h)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_service.cpp",
+        "line": 71
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "CLEAR_FLAG",
+        "SET_FLAG"
+      ],
+      "writes": [
+        "ap_fallback_ready_pending",
+        "sta_attempt_failed_pending"
+      ],
+      "description": "Coordina `CLEAR_FLAG`, `SET_FLAG` para Servicio de radio Wi-Fi.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "setStaIdleFlags",
+      "signature": "static void setStaIdleFlags(WifiServiceHandle &h)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_service.cpp",
+        "line": 61
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "CLEAR_FLAG"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `CLEAR_FLAG` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "startAPInternal",
+      "signature": "static bool startAPInternal(WifiServiceHandle &h, const char *ssid, const char *password, bool enable_sta_interface, uint8_t channel, bool hidden, uint8_t max_clients, bool ap_protected)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_service.cpp",
+        "line": 158
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "boundedLength",
+        "mode",
+        "setApRunning",
+        "softAP",
+        "status"
+      ],
+      "writes": [
+        "state"
+      ],
+      "description": "Coordina `boundedLength`, `mode`, `setApRunning` para Servicio de radio Wi-Fi.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "startStaAttempt",
+      "signature": "static WifiLinkStatus startStaAttempt(WifiServiceHandle &h, const char *ssid, const char *password, bool keep_ap, bool disconnect_first, const uint8_t *bssid)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_service.cpp",
+        "line": 136
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "WifiService_NotifySTAConfigurationFailure",
+        "armStaAttempt",
+        "begin",
+        "boundedLength",
+        "disconnect",
+        "mode"
+      ],
+      "writes": [],
+      "description": "Coordina `WifiService_NotifySTAConfigurationFailure`, `armStaAttempt`, `begin` para Servicio de radio Wi-Fi.",
+      "descriptionOrigin": "structural"
+    }
+  ],
+  "hooks": []
+}

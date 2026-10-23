@@ -1,0 +1,125 @@
+{
+  "schema": "afr2-command-draft-1",
+  "commands": [
+    {
+      "name": "system.hello",
+      "owner": "esp",
+      "wire_id": null,
+      "status": "proposed-not-implemented",
+      "payload_schema": null,
+      "notes": "producto/version/capabilities"
+    },
+    {
+      "name": "robot.stop",
+      "owner": "atmega",
+      "wire_id": null,
+      "status": "proposed-not-implemented",
+      "payload_schema": null,
+      "notes": "prioritario/idempotente"
+    },
+    {
+      "name": "robot.state",
+      "owner": "atmega",
+      "wire_id": null,
+      "status": "proposed-not-implemented",
+      "payload_schema": null,
+      "notes": "estado autoritativo"
+    },
+    {
+      "name": "robot.drive",
+      "owner": "atmega",
+      "wire_id": null,
+      "status": "proposed-not-implemented",
+      "payload_schema": null,
+      "notes": "vx/vy/wz con lease"
+    },
+    {
+      "name": "robot.mode",
+      "owner": "atmega",
+      "wire_id": null,
+      "status": "proposed-not-implemented",
+      "payload_schema": null,
+      "notes": "enum pendiente"
+    },
+    {
+      "name": "robot.test.wheel",
+      "owner": "atmega",
+      "wire_id": null,
+      "status": "proposed-not-implemented",
+      "payload_schema": null,
+      "notes": "limite/timeout"
+    },
+    {
+      "name": "robot.sensors",
+      "owner": "atmega",
+      "wire_id": null,
+      "status": "proposed-not-implemented",
+      "payload_schema": null,
+      "notes": "linea5 y distancia valida"
+    },
+    {
+      "name": "robot.encoders",
+      "owner": "atmega",
+      "wire_id": null,
+      "status": "proposed-not-implemented",
+      "payload_schema": null,
+      "notes": "cuatro ruedas"
+    },
+    {
+      "name": "robot.goto.start",
+      "owner": "atmega",
+      "wire_id": null,
+      "status": "proposed-not-implemented",
+      "payload_schema": null,
+      "notes": "requiere odometria"
+    },
+    {
+      "name": "robot.goto.cancel",
+      "owner": "atmega",
+      "wire_id": null,
+      "status": "proposed-not-implemented",
+      "payload_schema": null,
+      "notes": "resultado final"
+    },
+    {
+      "name": "robot.screen.get",
+      "owner": "atmega",
+      "wire_id": null,
+      "status": "proposed-not-implemented",
+      "payload_schema": null,
+      "notes": "snapshot"
+    },
+    {
+      "name": "robot.ui.action",
+      "owner": "atmega",
+      "wire_id": null,
+      "status": "proposed-not-implemented",
+      "payload_schema": null,
+      "notes": "acciones permitidas"
+    },
+    {
+      "name": "wifi.status",
+      "owner": "esp",
+      "wire_id": null,
+      "status": "proposed-not-implemented",
+      "payload_schema": null,
+      "notes": "STA/AP"
+    },
+    {
+      "name": "wifi.scan",
+      "owner": "esp",
+      "wire_id": null,
+      "status": "proposed-not-implemented",
+      "payload_schema": null,
+      "notes": "asincrono"
+    },
+    {
+      "name": "wifi.configure",
+      "owner": "esp",
+      "wire_id": null,
+      "status": "proposed-not-implemented",
+      "payload_schema": null,
+      "notes": "secretos fuera de Git"
+    }
+  ]
+}

@@ -1,0 +1,1475 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "f4:module/Core/Inc/osk.h",
+  "slug": "osk",
+  "title": "Teclado en pantalla OSK",
+  "target": "f4",
+  "kind": "núcleo",
+  "status": "source-documented",
+  "verification": "not-run-user-instruction",
+  "snapshotDate": "2026-10-20",
+  "responsibility": "Edita texto y valores numéricos con navegación explícita y primitivas gráficas inyectadas.",
+  "scope": "QWERTY, mayúsculas/símbolos, teclado numérico y límites de entrada. Geometría de diseño 128×64 y texto máximo 63 caracteres más terminador.",
+  "state": "OSK_State conserva configuración, buffer y selección. OSK_Config incorpora copia de OSK_DrawHandle, onComplete/onCancel y callbackCtx; los dibujos no reciben ctx y usan el backend que el integrador deje activo. GetText devuelve memoria del estado; copiar antes de reutilizarlo.",
+  "lifecycle": [
+    "Open configura contenido y layout; los punteros de dibujo necesarios deben estar conectados.",
+    "OnLeft/OnRight/OnSelect/OnBack procesan entradas; Render invoca el backend de dibujo.",
+    "onComplete entrega estado y contexto; onCancel entrega contexto. Close termina la sesión."
+  ],
+  "interactions": [
+    "osk_integration.c salva/restaura navegación y adapta SSD1306; el núcleo no conoce esa composición."
+  ],
+  "limitations": [
+    "OSK_SUPPORT_FLOAT altera la API disponible por compilación.",
+    "Una referencia de pantalla o selección remota no reconstruye por sí sola cursor/buffer/Shift."
+  ],
+  "modularity": "No depende de SSD1306, encoder ni HAL. Sí fija geometría y contrato de dibujo sin contexto por operación; no se promete un backend arbitrario sin adaptación.",
+  "files": [
+    {
+      "path": "Core/Inc/osk.h",
+      "rootId": "f4",
+      "sha256": "cf09de0323a0ae9e2e2be741ed0be838c8aea3e186b9751134eb4a2f8bf2c17f",
+      "includes": [
+        "osk_types.h"
+      ]
+    },
+    {
+      "path": "Core/Inc/osk_types.h",
+      "rootId": "f4",
+      "sha256": "853416e9d708f76753d2d7d5c8262dcc6a11fc4582cb7005d7c4c0d9ccab05a7",
+      "includes": [
+        "stdbool.h",
+        "stdint.h"
+      ]
+    },
+    {
+      "path": "Core/Src/osk.c",
+      "rootId": "f4",
+      "sha256": "2c2e88fc5f0736ae323de2f40ead82684a7de3939205383f7f83d7fcb5020b7d",
+      "includes": [
+        "osk.h",
+        "string.h",
+        "stdlib.h"
+      ]
+    }
+  ],
+  "findings": [
+    "AMDOC-F4-011"
+  ],
+  "types": [
+    {
+      "name": "OSK_DrawHandle",
+      "fields": [
+        {
+          "name": "clearScreen",
+          "declaration": "void (*clearScreen)(void)",
+          "callback": true,
+          "ownerType": "OSK_DrawHandle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/osk_types.h",
+            "line": 95
+          },
+          "description": "Limpia el buffer de dibujo provisto por el integrador."
+        },
+        {
+          "name": "setColor",
+          "declaration": "void (*setColor)(uint8_t color)",
+          "callback": true,
+          "ownerType": "OSK_DrawHandle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/osk_types.h",
+            "line": 96
+          },
+          "description": "Selecciona color lógico para las primitivas de dibujo siguientes."
+        },
+        {
+          "name": "setCursor",
+          "declaration": "void (*setCursor)(uint8_t x, uint8_t y)",
+          "callback": true,
+          "ownerType": "OSK_DrawHandle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/osk_types.h",
+            "line": 97
+          },
+          "description": "Ubica el cursor de texto en coordenadas de píxel."
+        },
+        {
+          "name": "writeChar",
+          "declaration": "void (*writeChar)(char ch)",
+          "callback": true,
+          "ownerType": "OSK_DrawHandle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/osk_types.h",
+            "line": 98
+          },
+          "description": "Dibuja un carácter con la fuente elegida por el integrador."
+        },
+        {
+          "name": "writeString",
+          "declaration": "void (*writeString)(char *str)",
+          "callback": true,
+          "ownerType": "OSK_DrawHandle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/osk_types.h",
+            "line": 99
+          },
+          "description": "Dibuja una cadena terminada en cero; no transfiere su propiedad."
+        },
+        {
+          "name": "drawRect",
+          "declaration": "void (*drawRect)(int16_t x, int16_t y, int16_t w, int16_t h)",
+          "callback": true,
+          "ownerType": "OSK_DrawHandle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/osk_types.h",
+            "line": 100
+          },
+          "description": "Dibuja el contorno del rectángulo en píxeles."
+        },
+        {
+          "name": "fillRect",
+          "declaration": "void (*fillRect)(int16_t x, int16_t y, int16_t w, int16_t h)",
+          "callback": true,
+          "ownerType": "OSK_DrawHandle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/osk_types.h",
+            "line": 101
+          },
+          "description": "Rellena el rectángulo en píxeles."
+        },
+        {
+          "name": "drawHLine",
+          "declaration": "void (*drawHLine)(int16_t x, int16_t y, int16_t len)",
+          "callback": true,
+          "ownerType": "OSK_DrawHandle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/osk_types.h",
+            "line": 102
+          },
+          "description": "Dibuja un segmento horizontal en píxeles."
+        },
+        {
+          "name": "drawVLine",
+          "declaration": "void (*drawVLine)(int16_t x, int16_t y, int16_t len)",
+          "callback": true,
+          "ownerType": "OSK_DrawHandle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/osk_types.h",
+            "line": 103
+          },
+          "description": "Dibuja un segmento vertical en píxeles."
+        },
+        {
+          "name": "updateScreen",
+          "declaration": "void (*updateScreen)(void)",
+          "callback": true,
+          "ownerType": "OSK_DrawHandle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/osk_types.h",
+            "line": 104
+          },
+          "description": "Solicita el refresco completo al backend de dibujo."
+        },
+        {
+          "name": "requestPageUpdate",
+          "declaration": "void (*requestPageUpdate)(uint8_t page)",
+          "callback": true,
+          "ownerType": "OSK_DrawHandle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/osk_types.h",
+            "line": 105
+          },
+          "description": "Solicita refresco de una página del backend de dibujo."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/osk_types.h",
+        "line": 95
+      }
+    },
+    {
+      "name": "OSK_NumericConfig",
+      "fields": [
+        {
+          "name": "mode",
+          "declaration": "OSK_NumericMode mode",
+          "callback": false,
+          "ownerType": "OSK_NumericConfig",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/osk_types.h",
+            "line": 113
+          },
+          "description": "Dato de estado/configuración `mode`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "maxIntegerDigits",
+          "declaration": "uint8_t maxIntegerDigits",
+          "callback": false,
+          "ownerType": "OSK_NumericConfig",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/osk_types.h",
+            "line": 114
+          },
+          "description": "Dato de estado/configuración `maxIntegerDigits`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "allowNegative",
+          "declaration": "bool allowNegative",
+          "callback": false,
+          "ownerType": "OSK_NumericConfig",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/osk_types.h",
+            "line": 115
+          },
+          "description": "Dato de estado/configuración `allowNegative`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "prefillZero",
+          "declaration": "bool prefillZero",
+          "callback": false,
+          "ownerType": "OSK_NumericConfig",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/osk_types.h",
+            "line": 116
+          },
+          "description": "Dato de estado/configuración `prefillZero`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "minIntValue",
+          "declaration": "int32_t minIntValue",
+          "callback": false,
+          "ownerType": "OSK_NumericConfig",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/osk_types.h",
+            "line": 117
+          },
+          "description": "Dato de estado/configuración `minIntValue`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "maxIntValue",
+          "declaration": "int32_t maxIntValue",
+          "callback": false,
+          "ownerType": "OSK_NumericConfig",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/osk_types.h",
+            "line": 118
+          },
+          "description": "Dato de estado/configuración `maxIntValue`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "initialIntValue",
+          "declaration": "int32_t initialIntValue",
+          "callback": false,
+          "ownerType": "OSK_NumericConfig",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/osk_types.h",
+            "line": 119
+          },
+          "description": "Dato de estado/configuración `initialIntValue`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "maxDecimalDigits",
+          "declaration": "uint8_t maxDecimalDigits",
+          "callback": false,
+          "ownerType": "OSK_NumericConfig",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/osk_types.h",
+            "line": 120
+          },
+          "description": "Dato de estado/configuración `maxDecimalDigits`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "minFloatValue",
+          "declaration": "float minFloatValue",
+          "callback": false,
+          "ownerType": "OSK_NumericConfig",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/osk_types.h",
+            "line": 122
+          },
+          "description": "Dato de estado/configuración `minFloatValue`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "maxFloatValue",
+          "declaration": "float maxFloatValue",
+          "callback": false,
+          "ownerType": "OSK_NumericConfig",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/osk_types.h",
+            "line": 123
+          },
+          "description": "Dato de estado/configuración `maxFloatValue`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "initialFloatValue",
+          "declaration": "float initialFloatValue",
+          "callback": false,
+          "ownerType": "OSK_NumericConfig",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/osk_types.h",
+            "line": 124
+          },
+          "description": "Dato de estado/configuración `initialFloatValue`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/osk_types.h",
+        "line": 113
+      }
+    },
+    {
+      "name": "OSK_AlphaConfig",
+      "fields": [
+        {
+          "name": "allowLowercase",
+          "declaration": "bool allowLowercase",
+          "callback": false,
+          "ownerType": "OSK_AlphaConfig",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/osk_types.h",
+            "line": 138
+          },
+          "description": "Dato de estado/configuración `allowLowercase`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "allowUppercase",
+          "declaration": "bool allowUppercase",
+          "callback": false,
+          "ownerType": "OSK_AlphaConfig",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/osk_types.h",
+            "line": 139
+          },
+          "description": "Dato de estado/configuración `allowUppercase`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "allowNumbers",
+          "declaration": "bool allowNumbers",
+          "callback": false,
+          "ownerType": "OSK_AlphaConfig",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/osk_types.h",
+            "line": 140
+          },
+          "description": "Dato de estado/configuración `allowNumbers`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "allowSymbols",
+          "declaration": "bool allowSymbols",
+          "callback": false,
+          "ownerType": "OSK_AlphaConfig",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/osk_types.h",
+            "line": 141
+          },
+          "description": "Dato de estado/configuración `allowSymbols`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "initialTextMode",
+          "declaration": "OSK_InitialTextMode initialTextMode",
+          "callback": false,
+          "ownerType": "OSK_AlphaConfig",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/osk_types.h",
+            "line": 142
+          },
+          "description": "Dato de estado/configuración `initialTextMode`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "allowedChars",
+          "declaration": "const char *allowedChars",
+          "callback": false,
+          "ownerType": "OSK_AlphaConfig",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/osk_types.h",
+            "line": 143
+          },
+          "description": "Dato de estado/configuración `allowedChars`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/osk_types.h",
+        "line": 138
+      }
+    },
+    {
+      "name": "OSK_Config",
+      "fields": [
+        {
+          "name": "type",
+          "declaration": "OSK_Type type",
+          "callback": false,
+          "ownerType": "OSK_Config",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/osk_types.h",
+            "line": 171
+          },
+          "description": "Dato de estado/configuración `type`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "draw",
+          "declaration": "OSK_DrawHandle draw",
+          "callback": false,
+          "ownerType": "OSK_Config",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/osk_types.h",
+            "line": 172
+          },
+          "description": "Copia de tabla de primitivas de dibujo; sus funciones no reciben contexto por operación."
+        },
+        {
+          "name": "onComplete",
+          "declaration": "OSK_CompleteFn onComplete",
+          "callback": false,
+          "ownerType": "OSK_Config",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/osk_types.h",
+            "line": 173
+          },
+          "description": "Callback de confirmación; recibe OSK_State y callbackCtx."
+        },
+        {
+          "name": "onCancel",
+          "declaration": "OSK_CancelFn onCancel",
+          "callback": false,
+          "ownerType": "OSK_Config",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/osk_types.h",
+            "line": 174
+          },
+          "description": "Callback de cancelación; recibe callbackCtx."
+        },
+        {
+          "name": "callbackCtx",
+          "declaration": "void *callbackCtx",
+          "callback": false,
+          "ownerType": "OSK_Config",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/osk_types.h",
+            "line": 175
+          },
+          "description": "Contexto opaco prestado al callback; el integrador conserva su almacenamiento."
+        },
+        {
+          "name": "initialText",
+          "declaration": "const char *initialText",
+          "callback": false,
+          "ownerType": "OSK_Config",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/osk_types.h",
+            "line": 176
+          },
+          "description": "Texto inicial prestado al abrir; no contiene propiedad transferida del buffer externo."
+        },
+        {
+          "name": "maxLen",
+          "declaration": "uint8_t maxLen",
+          "callback": false,
+          "ownerType": "OSK_Config",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/osk_types.h",
+            "line": 177
+          },
+          "description": "Capacidad de edición alfanumérica limitada a 1..63 caracteres."
+        },
+        {
+          "name": "numeric",
+          "declaration": "OSK_NumericConfig numeric",
+          "callback": false,
+          "ownerType": "OSK_Config",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/osk_types.h",
+            "line": 178
+          },
+          "description": "Dato de estado/configuración `numeric`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "alpha",
+          "declaration": "OSK_AlphaConfig alpha",
+          "callback": false,
+          "ownerType": "OSK_Config",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/osk_types.h",
+            "line": 179
+          },
+          "description": "Dato de estado/configuración `alpha`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/osk_types.h",
+        "line": 171
+      }
+    },
+    {
+      "name": "OSK_State_t",
+      "fields": [
+        {
+          "name": "cfg",
+          "declaration": "OSK_Config cfg",
+          "callback": false,
+          "ownerType": "OSK_State_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/osk_types.h",
+            "line": 196
+          },
+          "description": "Dato de estado/configuración `cfg`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "mode",
+          "declaration": "OSK_Mode mode",
+          "callback": false,
+          "ownerType": "OSK_State_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/osk_types.h",
+            "line": 198
+          },
+          "description": "Dato de estado/configuración `mode`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "textBuf",
+          "declaration": "char textBuf[OSK_MAX_TEXT_LEN + 1]",
+          "callback": false,
+          "ownerType": "OSK_State_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/osk_types.h",
+            "line": 199
+          },
+          "description": "Dato de estado/configuración `textBuf`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "textLen",
+          "declaration": "uint8_t textLen",
+          "callback": false,
+          "ownerType": "OSK_State_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/osk_types.h",
+            "line": 202
+          },
+          "description": "Dato de estado/configuración `textLen`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "curRow",
+          "declaration": "uint8_t curRow",
+          "callback": false,
+          "ownerType": "OSK_State_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/osk_types.h",
+            "line": 203
+          },
+          "description": "Dato de estado/configuración `curRow`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "curCol",
+          "declaration": "uint8_t curCol",
+          "callback": false,
+          "ownerType": "OSK_State_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/osk_types.h",
+            "line": 206
+          },
+          "description": "Dato de estado/configuración `curCol`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "active",
+          "declaration": "bool active",
+          "callback": false,
+          "ownerType": "OSK_State_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/osk_types.h",
+            "line": 207
+          },
+          "description": "Dato de estado/configuración `active`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "needsFullRedraw",
+          "declaration": "bool needsFullRedraw",
+          "callback": false,
+          "ownerType": "OSK_State_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/osk_types.h",
+            "line": 210
+          },
+          "description": "Dato de estado/configuración `needsFullRedraw`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "needsTextRedraw",
+          "declaration": "bool needsTextRedraw",
+          "callback": false,
+          "ownerType": "OSK_State_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/osk_types.h",
+            "line": 211
+          },
+          "description": "Dato de estado/configuración `needsTextRedraw`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "needsKeyHighlight",
+          "declaration": "bool needsKeyHighlight",
+          "callback": false,
+          "ownerType": "OSK_State_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/osk_types.h",
+            "line": 212
+          },
+          "description": "Dato de estado/configuración `needsKeyHighlight`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "prevRow",
+          "declaration": "uint8_t prevRow",
+          "callback": false,
+          "ownerType": "OSK_State_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/osk_types.h",
+            "line": 213
+          },
+          "description": "Memoria de la observación anterior usada por la máquina de estados."
+        },
+        {
+          "name": "prevCol",
+          "declaration": "uint8_t prevCol",
+          "callback": false,
+          "ownerType": "OSK_State_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/osk_types.h",
+            "line": 214
+          },
+          "description": "Memoria de la observación anterior usada por la máquina de estados."
+        },
+        {
+          "name": "hasDecimalPoint",
+          "declaration": "bool hasDecimalPoint",
+          "callback": false,
+          "ownerType": "OSK_State_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/osk_types.h",
+            "line": 215
+          },
+          "description": "Dato de estado/configuración `hasDecimalPoint`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "isNegative",
+          "declaration": "bool isNegative",
+          "callback": false,
+          "ownerType": "OSK_State_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/osk_types.h",
+            "line": 218
+          },
+          "description": "Dato de estado/configuración `isNegative`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "validationError",
+          "declaration": "bool validationError",
+          "callback": false,
+          "ownerType": "OSK_State_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/osk_types.h",
+            "line": 219
+          },
+          "description": "Dato de estado/configuración `validationError`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/osk_types.h",
+        "line": 196
+      }
+    },
+    {
+      "name": "OSK_CompleteFn",
+      "callbackType": "void (*OSK_CompleteFn)(OSK_State *state, void *ctx)",
+      "fields": [],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/osk_types.h",
+        "line": 153
+      }
+    },
+    {
+      "name": "OSK_CancelFn",
+      "callbackType": "void (*OSK_CancelFn)(void *ctx)",
+      "fields": [],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/osk_types.h",
+        "line": 160
+      }
+    },
+    {
+      "name": "RowDesc",
+      "fields": [
+        {
+          "name": "keys",
+          "declaration": "const char *keys",
+          "callback": false,
+          "ownerType": "RowDesc",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Src/osk.c",
+            "line": 100
+          },
+          "description": "Dato de estado/configuración `keys`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "cols",
+          "declaration": "uint8_t cols",
+          "callback": false,
+          "ownerType": "RowDesc",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Src/osk.c",
+            "line": 101
+          },
+          "description": "Dato de estado/configuración `cols`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "y",
+          "declaration": "uint8_t y",
+          "callback": false,
+          "ownerType": "RowDesc",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Src/osk.c",
+            "line": 102
+          },
+          "description": "Dato de estado/configuración `y`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "h",
+          "declaration": "uint8_t h",
+          "callback": false,
+          "ownerType": "RowDesc",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Src/osk.c",
+            "line": 103
+          },
+          "description": "Dato de estado/configuración `h`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/osk.c",
+        "line": 100
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "OSK_Close",
+      "signature": "void OSK_Close(OSK_State *state)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/osk.h",
+        "line": 10
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [
+        "active"
+      ],
+      "description": "Cierra el teclado con el resultado recibido.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/osk.c",
+        "line": 1010
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OSK_GetNumericValueFloat",
+      "signature": "float OSK_GetNumericValueFloat(const OSK_State *state)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/osk.h",
+        "line": 44
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Interpreta el contenido numérico como float si está habilitado.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/osk.c",
+        "line": 1097
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OSK_GetNumericValueInt",
+      "signature": "int32_t OSK_GetNumericValueInt(const OSK_State *state)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/osk.h",
+        "line": 37
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Interpreta el contenido numérico como entero.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/osk.c",
+        "line": 1075
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OSK_GetText",
+      "signature": "const char *OSK_GetText(const OSK_State *state)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/osk.h",
+        "line": 31
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Devuelve una vista del buffer terminado en cero.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/osk.c",
+        "line": 1070
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OSK_IsActive",
+      "signature": "bool OSK_IsActive(const OSK_State *state)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/osk.h",
+        "line": 30
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Consulta si la sesión de teclado permanece abierta.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/osk.c",
+        "line": 1065
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OSK_OnBack",
+      "signature": "void OSK_OnBack(OSK_State *state)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/osk.h",
+        "line": 17
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "onCancel"
+      ],
+      "writes": [
+        "active"
+      ],
+      "description": "Procesa retroceso/cancelación de la sesión.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/osk.c",
+        "line": 1033
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OSK_OnLeft",
+      "signature": "void OSK_OnLeft(OSK_State *state)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/osk.h",
+        "line": 14
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "osk_MoveCursor"
+      ],
+      "writes": [],
+      "description": "Mueve selección hacia la opción anterior del layout.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/osk.c",
+        "line": 1015
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OSK_OnRight",
+      "signature": "void OSK_OnRight(OSK_State *state)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/osk.h",
+        "line": 15
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "osk_MoveCursor"
+      ],
+      "writes": [],
+      "description": "Mueve selección hacia la opción siguiente del layout.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/osk.c",
+        "line": 1021
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OSK_OnSelect",
+      "signature": "void OSK_OnSelect(OSK_State *state)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/osk.h",
+        "line": 16
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "osk_HandleKeyPress"
+      ],
+      "writes": [],
+      "description": "Ejecuta la tecla seleccionada, edición o confirmación.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/osk.c",
+        "line": 1027
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OSK_Open",
+      "signature": "void OSK_Open(OSK_State *state, const OSK_Config *cfg)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/osk.h",
+        "line": 7
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "memcpy",
+        "memset"
+      ],
+      "writes": [
+        "active",
+        "curCol",
+        "curRow",
+        "hasDecimalPoint",
+        "isNegative",
+        "mode",
+        "needsFullRedraw",
+        "textLen"
+      ],
+      "description": "Inicializa una sesión de edición alfanumérica o numérica.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/osk.c",
+        "line": 876
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OSK_Render",
+      "signature": "void OSK_Render(OSK_State *state)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/osk.h",
+        "line": 26
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "osk_DrawAll",
+        "osk_UpdateKeyHighlight",
+        "osk_UpdateTextOnly"
+      ],
+      "writes": [
+        "needsFullRedraw",
+        "needsKeyHighlight",
+        "needsTextRedraw"
+      ],
+      "description": "Dibuja el estado del teclado usando OSK_DrawHandle.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/osk.c",
+        "line": 1042
+      },
+      "linkage": "header"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "osk_GetRows",
+      "signature": "static void osk_GetRows(const OSK_State *st, RowDesc *rows, uint8_t *numRows, char *buf1, char *buf2)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/osk.c",
+        "line": 118
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "osk_BuildAlphaRows",
+        "osk_BuildNumericRows",
+        "osk_BuildSymbolRows"
+      ],
+      "writes": [],
+      "description": "Coordina `osk_BuildAlphaRows`, `osk_BuildNumericRows`, `osk_BuildSymbolRows` para Teclado en pantalla OSK.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "osk_BuildAlphaRows",
+      "signature": "static void osk_BuildAlphaRows(const OSK_State *st, RowDesc *rows, uint8_t *numRows, char *row2Buf, char *row3Buf)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/osk.c",
+        "line": 135
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación osk Build Alpha Rows de Teclado en pantalla OSK; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "osk_BuildSymbolRows",
+      "signature": "static void osk_BuildSymbolRows(const OSK_State *st, RowDesc *rows, uint8_t *numRows, char *row0Buf, char *row4Buf)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/osk.c",
+        "line": 179
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación osk Build Symbol Rows de Teclado en pantalla OSK; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "osk_BuildNumericRows",
+      "signature": "static void osk_BuildNumericRows(const OSK_State *st, RowDesc *rows, uint8_t *numRows, char *numRow2Buf)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/osk.c",
+        "line": 230
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación osk Build Numeric Rows de Teclado en pantalla OSK; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "osk_GetKeyRect",
+      "signature": "static void osk_GetKeyRect(const OSK_State *st, const RowDesc *rows, uint8_t numRows, uint8_t row, uint8_t col, int16_t *outX, int16_t *outY, int16_t *outW, int16_t *outH)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/osk.c",
+        "line": 271
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación osk Get Key Rect de Teclado en pantalla OSK; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "osk_DrawKeyLabel",
+      "signature": "static void osk_DrawKeyLabel(const OSK_State *st, const OSK_DrawHandle *draw, char key, int16_t kx, int16_t ky, int16_t kw, int16_t kh, bool isShiftActive)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/osk.c",
+        "line": 350
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "drawHLine",
+        "drawVLine",
+        "setCursor",
+        "writeChar",
+        "writeString"
+      ],
+      "writes": [],
+      "description": "Coordina `drawHLine`, `drawVLine`, `setCursor` para Teclado en pantalla OSK.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "osk_DrawKey",
+      "signature": "static void osk_DrawKey(const OSK_State *st, const RowDesc *rows, uint8_t numRows, uint8_t row, uint8_t col, bool highlighted)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/osk.c",
+        "line": 449
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "drawRect",
+        "fillRect",
+        "osk_DrawKeyLabel",
+        "osk_GetKeyRect",
+        "setColor"
+      ],
+      "writes": [],
+      "description": "Coordina `drawRect`, `fillRect`, `osk_DrawKeyLabel` para Teclado en pantalla OSK.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "osk_DrawTextBar",
+      "signature": "static void osk_DrawTextBar(const OSK_State *st)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/osk.c",
+        "line": 488
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "drawRect",
+        "fillRect",
+        "memcpy",
+        "setColor",
+        "setCursor",
+        "writeChar",
+        "writeString"
+      ],
+      "writes": [],
+      "description": "Coordina `drawRect`, `fillRect`, `memcpy` para Teclado en pantalla OSK.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "osk_DrawAll",
+      "signature": "static void osk_DrawAll(OSK_State *st)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/osk.c",
+        "line": 526
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "clearScreen",
+        "osk_DrawKey",
+        "osk_DrawTextBar",
+        "osk_GetRows",
+        "updateScreen"
+      ],
+      "writes": [],
+      "description": "Coordina `clearScreen`, `osk_DrawKey`, `osk_DrawTextBar` para Teclado en pantalla OSK.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "osk_UpdateTextOnly",
+      "signature": "static void osk_UpdateTextOnly(OSK_State *st)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/osk.c",
+        "line": 556
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "osk_DrawTextBar",
+        "requestPageUpdate"
+      ],
+      "writes": [],
+      "description": "Coordina `osk_DrawTextBar`, `requestPageUpdate` para Teclado en pantalla OSK.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "osk_UpdateKeyHighlight",
+      "signature": "static void osk_UpdateKeyHighlight(OSK_State *st)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/osk.c",
+        "line": 567
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "osk_DrawKey",
+        "osk_GetKeyRect",
+        "osk_GetRows",
+        "requestPageUpdate"
+      ],
+      "writes": [],
+      "description": "Coordina `osk_DrawKey`, `osk_GetKeyRect`, `osk_GetRows` para Teclado en pantalla OSK.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "osk_TotalKeys",
+      "signature": "static uint16_t osk_TotalKeys(const RowDesc *rows, uint8_t numRows)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/osk.c",
+        "line": 610
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación osk Total Keys de Teclado en pantalla OSK; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "osk_ToFlat",
+      "signature": "static uint16_t osk_ToFlat(const RowDesc *rows, uint8_t numRows, uint8_t row, uint8_t col)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/osk.c",
+        "line": 622
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación osk To Flat de Teclado en pantalla OSK; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "osk_FromFlat",
+      "signature": "static void osk_FromFlat(const RowDesc *rows, uint8_t numRows, uint16_t flat, uint8_t *outRow, uint8_t *outCol)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/osk.c",
+        "line": 636
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación osk From Flat de Teclado en pantalla OSK; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "osk_MoveCursor",
+      "signature": "static void osk_MoveCursor(OSK_State *st, int8_t direction)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/osk.c",
+        "line": 652
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "osk_FromFlat",
+        "osk_GetRows",
+        "osk_ToFlat",
+        "osk_TotalKeys"
+      ],
+      "writes": [
+        "needsKeyHighlight",
+        "prevCol",
+        "prevRow"
+      ],
+      "description": "Coordina `osk_FromFlat`, `osk_GetRows`, `osk_ToFlat` para Teclado en pantalla OSK.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "osk_AppendChar",
+      "signature": "static void osk_AppendChar(OSK_State *st, char ch)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/osk.c",
+        "line": 681
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "strchr"
+      ],
+      "writes": [
+        "needsTextRedraw",
+        "textLen"
+      ],
+      "description": "Coordina `strchr` para Teclado en pantalla OSK.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "osk_DeleteChar",
+      "signature": "static void osk_DeleteChar(OSK_State *st)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/osk.c",
+        "line": 695
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [
+        "hasDecimalPoint",
+        "needsTextRedraw",
+        "textLen"
+      ],
+      "description": "Operación osk Delete Char de Teclado en pantalla OSK; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "osk_NumericCanAddDigit",
+      "signature": "static bool osk_NumericCanAddDigit(const OSK_State *st)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/osk.c",
+        "line": 719
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación osk Numeric Can Add Digit de Teclado en pantalla OSK; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "osk_NumericCanAddDot",
+      "signature": "static bool osk_NumericCanAddDot(const OSK_State *st)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/osk.c",
+        "line": 742
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación osk Numeric Can Add Dot de Teclado en pantalla OSK; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "osk_NumericValidateRange",
+      "signature": "static bool osk_NumericValidateRange(const OSK_State *st)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/osk.c",
+        "line": 753
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "OSK_GetNumericValueFloat",
+        "OSK_GetNumericValueInt"
+      ],
+      "writes": [],
+      "description": "Coordina `OSK_GetNumericValueFloat`, `OSK_GetNumericValueInt` para Teclado en pantalla OSK.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "osk_HandleKeyPress",
+      "signature": "static void osk_HandleKeyPress(OSK_State *st)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/osk.c",
+        "line": 772
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "memcpy",
+        "onComplete",
+        "osk_AppendChar",
+        "osk_DeleteChar",
+        "osk_GetRows",
+        "osk_NumericCanAddDigit",
+        "osk_NumericCanAddDot",
+        "osk_NumericValidateRange"
+      ],
+      "writes": [
+        "active",
+        "curCol",
+        "curRow",
+        "hasDecimalPoint",
+        "isNegative",
+        "mode",
+        "needsFullRedraw",
+        "needsTextRedraw",
+        "textLen",
+        "validationError"
+      ],
+      "description": "Coordina `memcpy`, `onComplete`, `osk_AppendChar` para Teclado en pantalla OSK.",
+      "descriptionOrigin": "structural"
+    }
+  ]
+}

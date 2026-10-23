@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "id": "shared:screen/020211",
+  "symbol": "SCREEN_CODE_CONNECTIVITY_WIFI_RETRY",
+  "code": 131601,
+  "hex": "0x020211",
+  "decomposition": {
+    "menu": 2,
+    "submenu": 2,
+    "page": 17
+  },
+  "revision": "working-copy-hashes",
+  "confidence": "manual-review",
+  "family": "shared:screen-family/general",
+  "numericObservation": "web-symbol-not-extracted",
+  "webDeclaration": null,
+  "metadataEntryObserved": false,
+  "evidence": [
+    {
+      "repo": "f4",
+      "path": "Core/Inc/screen_codes.h",
+      "line": 74
+    }
+  ],
+  "renderers": [],
+  "callGraph": {
+    "status": "lexical-candidates-only",
+    "edges": []
+  },
+  "f4References": [
+    {
+      "repo": "f4",
+      "path": "Core/Src/menu_definition.c",
+      "line": 326,
+      "kind": "lexical-reference"
+    }
+  ],
+  "variants": [
+    "Identidad de ítem/acción localizada en menu_definition.c; no se localizó renderer exclusivo."
+  ],
+  "fields": [
+    {
+      "name": "screenCode/source",
+      "type": "u32/u8",
+      "units": "identidad",
+      "availability": "reported",
+      "note": "cuando existe un reporte de pantalla activa"
+    }
+  ],
+  "actions": [
+    "La selección del ítem invoca MenuAction_RetryWifi bajo las guardas del menú."
+  ],
+  "transitions": [
+    "Puede conservar el menú activo o generar su resultado; no deducir una vista dedicada por la constante."
+  ],
+  "missingData": [
+    "Falta declaración Web de identidad; no se demuestra por ello una vista activa perdida."
+  ],
+  "localOnly": [],
+  "findings": [
+    "AMDOC-WEB-003",
+    "AMDOC-WEB-008"
+  ],
+  "exactness": "not-established",
+  "notes": [
+    "La acción depende del estado/perfil/visibilidad de su menú."
+  ],
+  "role": "menu-item-action"
+}

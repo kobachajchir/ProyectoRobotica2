@@ -1,0 +1,371 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "web:module/src/screens/menuScreens.ts",
+  "slug": "menu-builders",
+  "title": "Constructores de menús OLED",
+  "target": "web",
+  "kind": "núcleo",
+  "status": "source-documented",
+  "snapshotDate": "2026-10-20",
+  "verification": "not-run-user-instruction",
+  "responsibility": "Construye primitivas de listas de menú con iconos y selección.",
+  "scope": "Filtrado visible, tres filas, ventana y catálogos locales; no consulta el árbol dinámico F4 completo.",
+  "state": "MenuScreenArgs presta items y selección; el resultado es un array de comandos. Las listas constantes pueden divergir del catálogo F4 por modo/perfil.",
+  "modularity": "Cálculo TypeScript sin hardware, dependiente de geometría y datos de menú del robot.",
+  "lifecycle": [
+    "Filtrar visibles, calcular ventana, dibujar fila/bitmap/texto/cursor.",
+    "Conservar distinción índice global visible y posición de click 1-based."
+  ],
+  "interactions": [
+    "Contexto deriva firstVisibleIndex; F4 conserva firstVisibleItem y menú puede tener dos filas de favoritos.",
+    "Remote click ejecuta posición visible en F4, no el índice derivado por Web."
+  ],
+  "limitations": [
+    "Ventana de tres fija no sirve por sí sola para todos los menús.",
+    "Catálogos locales requieren actualización junto con menu_definition y política de visibilidad."
+  ],
+  "relationships": [],
+  "findings": [
+    "AMDOC-WEB-004"
+  ],
+  "files": [
+    {
+      "rootId": "web",
+      "path": "src/screens/menuScreens.ts",
+      "sha256": "afcc19124be9f7f700e717bb783320eab903dfd2c78d803be914b95440206da5",
+      "imports": [
+        "../protocol/screenMenuState",
+        "./helpers",
+        "./screenCodes",
+        "./types"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    }
+  ],
+  "types": [
+    {
+      "name": "MenuScreenArgs",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "screenCode",
+          "declaration": "screenCode: ScreenCode",
+          "callback": false,
+          "ownerType": "MenuScreenArgs",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/menuScreens.ts",
+            "line": 25
+          },
+          "description": "Dato de estado/configuración `screenCode`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "items",
+          "declaration": "items: MenuScreenItem[]",
+          "callback": false,
+          "ownerType": "MenuScreenArgs",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/menuScreens.ts",
+            "line": 26
+          },
+          "description": "Dato de estado/configuración `items`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "selectedIndex",
+          "declaration": "selectedIndex?: number",
+          "callback": false,
+          "ownerType": "MenuScreenArgs",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/menuScreens.ts",
+            "line": 27
+          },
+          "description": "Dato de estado/configuración `selectedIndex`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "firstVisibleIndex",
+          "declaration": "firstVisibleIndex?: number",
+          "callback": false,
+          "ownerType": "MenuScreenArgs",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/menuScreens.ts",
+            "line": 28
+          },
+          "description": "Dato de estado/configuración `firstVisibleIndex`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/menuScreens.ts",
+        "line": 24
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "buildLegacyVerticalMenuCommands",
+      "displayName": "buildLegacyVerticalMenuCommands",
+      "signature": "buildLegacyVerticalMenuCommands(args: MenuScreenArgs): OledCommand[]",
+      "line": 236,
+      "endLine": 264,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.floor",
+        "Math.max",
+        "Math.min",
+        "clear",
+        "commands.push",
+        "drawFrame",
+        "drawXbm",
+        "textAt",
+        "visibleItems"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/menuScreens.ts",
+        "line": 236
+      },
+      "description": "Coordina `Math.floor`, `Math.max`, `Math.min` para Constructores de menús OLED.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildMenuItemCommands",
+      "displayName": "buildMenuItemCommands",
+      "signature": "buildMenuItemCommands(item: MenuScreenItem, y: number, selected: boolean): OledCommand[]",
+      "line": 51,
+      "endLine": 70,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "clearBox",
+        "commands.push",
+        "drawFrame",
+        "drawXbm",
+        "menuIconSize",
+        "textAt"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/menuScreens.ts",
+        "line": 51
+      },
+      "description": "Construye marco, icono, etiqueta y cursor de una fila.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "buildMenuScreenCommands",
+      "displayName": "buildMenuScreenCommands",
+      "signature": "buildMenuScreenCommands(args: MenuScreenArgs): OledCommand[]",
+      "line": 72,
+      "endLine": 98,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "buildMenuItemCommands",
+        "clear",
+        "commands.push",
+        "resolveVisibleMenuWindow",
+        "visibleItems"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/menuScreens.ts",
+        "line": 72
+      },
+      "description": "Construye filas de una ventana de tres a partir de items y selección.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "buildScreen010201MainMenuCommands",
+      "displayName": "buildScreen010201MainMenuCommands",
+      "signature": "buildScreen010201MainMenuCommands(args: { selectedIndex?: number; firstVisibleIndex?: number; sensoresVisible?: boolean }): OledCommand[]",
+      "line": 140,
+      "endLine": 153,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "buildMenuScreenCommands",
+        "mainMenuItems.map"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/menuScreens.ts",
+        "line": 140
+      },
+      "description": "Coordina `buildMenuScreenCommands`, `mainMenuItems.map` para Constructores de menús OLED.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen020101WifiMenuCommands",
+      "displayName": "buildScreen020101WifiMenuCommands",
+      "signature": "buildScreen020101WifiMenuCommands(args: { selectedIndex?: number; firstVisibleIndex?: number }): OledCommand[]",
+      "line": 157,
+      "endLine": 164,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "buildMenuScreenCommands"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/menuScreens.ts",
+        "line": 157
+      },
+      "description": "Adapta la llamada a `buildMenuScreenCommands` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen020203WifiResultsMenuCommands",
+      "displayName": "buildScreen020203WifiResultsMenuCommands",
+      "signature": "buildScreen020203WifiResultsMenuCommands(args: { networkSsids?: string[]; selectedIndex?: number; firstVisibleIndex?: number; }): OledCommand[]",
+      "line": 201,
+      "endLine": 224,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "(args.networkSsids?.length ? args.networkSsids : [\"Sin redes\"]).map",
+        "buildMenuScreenCommands"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/menuScreens.ts",
+        "line": 201
+      },
+      "description": "Coordina `(args.networkSsids?.length ? args.networkSsids : [\"Sin redes\"]).map`, `buildMenuScreenCommands` para Constructores de menús OLED.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen020203WifiResultsSummaryCommands",
+      "displayName": "buildScreen020203WifiResultsSummaryCommands",
+      "signature": "buildScreen020203WifiResultsSummaryCommands(): OledCommand[]",
+      "line": 226,
+      "endLine": 234,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "clear",
+        "drawXbm",
+        "textAt"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/menuScreens.ts",
+        "line": 226
+      },
+      "description": "Coordina `clear`, `drawXbm`, `textAt` para Constructores de menús OLED.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen020301EspMenuCommands",
+      "displayName": "buildScreen020301EspMenuCommands",
+      "signature": "buildScreen020301EspMenuCommands(args: { selectedIndex?: number; firstVisibleIndex?: number }): OledCommand[]",
+      "line": 168,
+      "endLine": 175,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "buildMenuScreenCommands"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/menuScreens.ts",
+        "line": 168
+      },
+      "description": "Adapta la llamada a `buildMenuScreenCommands` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen030101SensorsMenuCommands",
+      "displayName": "buildScreen030101SensorsMenuCommands",
+      "signature": "buildScreen030101SensorsMenuCommands(args: { selectedIndex?: number; firstVisibleIndex?: number }): OledCommand[]",
+      "line": 179,
+      "endLine": 186,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "buildMenuScreenCommands"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/menuScreens.ts",
+        "line": 179
+      },
+      "description": "Adapta la llamada a `buildMenuScreenCommands` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen050101SettingsMenuCommands",
+      "displayName": "buildScreen050101SettingsMenuCommands",
+      "signature": "buildScreen050101SettingsMenuCommands(args: { selectedIndex?: number; firstVisibleIndex?: number }): OledCommand[]",
+      "line": 190,
+      "endLine": 197,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "buildMenuScreenCommands"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/menuScreens.ts",
+        "line": 190
+      },
+      "description": "Adapta la llamada a `buildMenuScreenCommands` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "menuIconSize",
+      "displayName": "menuIconSize",
+      "signature": "menuIconSize(iconRef?: string): { width: number; height: number }",
+      "line": 45,
+      "endLine": 49,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/menuScreens.ts",
+        "line": 45
+      },
+      "description": "Operación menu Icon Size de Constructores de menús OLED; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "visibleItems",
+      "displayName": "visibleItems",
+      "signature": "visibleItems(items: MenuScreenItem[]): Array<MenuScreenItem & { sourceIndex: number }>",
+      "line": 39,
+      "endLine": 43,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "items .map",
+        "items .map((item, sourceIndex) => ({ ...item, sourceIndex })) .filter"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/menuScreens.ts",
+        "line": 39
+      },
+      "description": "Coordina `items .map`, `items .map((item, sourceIndex) => ({ ...item, sourceIndex })) .filter` para Constructores de menús OLED.",
+      "descriptionOrigin": "structural"
+    }
+  ],
+  "internalFunctions": [],
+  "hooks": []
+}

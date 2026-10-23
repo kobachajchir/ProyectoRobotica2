@@ -1,0 +1,963 @@
+
+
+--- PAGINA 1 ---
+OSOYOO Mecanum 4WD  |  Base técnica derivada del ManualOsoyoo.pdf
+1
+DOSSIER TÉCNICO
+Robot OSOYOO Mecanum 4WD
+Mecánica · Electricidad · Electrónica · Conexionado · Pinout · Software y estrategia de
+reutilización
+Fuente principal: ManualOsoyoo.pdf, 55 páginas, cinco lecciones, material aportado para este análisis.
+Alcance: documentación del vehículo descrito; matriz de conexión y parámetros citables; análisis de riesgos,
+lagunas y plan de migración.
+Estado: revisión documental. No se contó con el automóvil físico ni con los archivos .ino completos; las
+conexiones no fueron ensayadas sobre hardware.
+ Figura 1. Dimensiones del chasis y ruedas según la página 4 del manual.
+Edición 1 · 22 de octubre de 2026
+
+
+--- PAGINA 2 ---
+OSOYOO Mecanum 4WD  |  Base técnica derivada del ManualOsoyoo.pdf
+2
+Índice de contenidos
+01. Resumen ejecutivo y evidencia
+02. Arquitectura funcional
+03. Inventario de materiales y montaje
+04. Sistema mecánico, ruedas Mecanum y motores
+05. Alimentación eléctrica y protección
+06. Placas, módulos y electrónica de control
+07. Pinout completo y conexiones
+08. Sensores y comunicaciones
+09. Software, parámetros y comandos
+10. Migración y reutilización de código
+11. Verificación física, pruebas y pendientes
+12. Anexos de imágenes y fuentes
+
+
+--- PAGINA 3 ---
+OSOYOO Mecanum 4WD  |  Base técnica derivada del ManualOsoyoo.pdf
+3
+01 · Resumen ejecutivo y criterio de evidencia
+El sistema es un robot de cuatro motores de CC con reductora y cuatro ruedas Mecanum montadas sobre una
+base metálica, controlado por una placa OSOYOO Mega2560 con UART WiFi Shield ESP8266 y una OSOYOO
+Model Y V2.0 de accionamiento de motores. Incorpora ultrasonido orientable, un sensor de seguimiento de
+línea de cinco canales, alimentación mediante dos celdas 18650 y un voltímetro digital. Las lecciones añaden
+conducción programada, evitación de obstáculos, guiado de línea y telecomando Bluetooth/WiFi.
+Convención: [M] dato expresamente indicado en el manual; [G] dato leído en sus gráficos o fotografías; [I]
+deducción técnica sujeta a hipótesis; [P] dato pendiente de medir, identificar o verificar. Las páginas citadas se
+refieren al número de página del archivo PDF, no al número de lección impreso.
+Clave de reutilización: conservar el modelo físico, las conexiones y una capa de abstracción del hardware
+separados de la lógica de navegación y la comunicación. El manual contiene el pinout principal, parámetros
+PWM de ejemplo y un fragmento del parser UDP, pero no incluye los cinco programas completos, un esquema
+eléctrico con valores ni datasheets detallados.
+Ficha técnica rápida
+Variable
+Dato documental / limitación
+Configuración
+4 ruedas Mecanum de rodillos a 45°; 2 de izquierda + 2 de derecha [M], PDF pp. 2, 4, 7
+Dimensión externa
+245 mm de ancho indicado; cota longitudinal de 200 mm en el dibujo [G], p. 4
+Base
+Cota 155 mm indicada en el dibujo, asociada a la placa / zona central [G], p. 4
+Rueda
+Cota 80 mm para el conjunto de rueda [G], p. 4; geometría y diámetro efectivo bajo carga [P]
+Motores
+4 motorreductores de CC, conexiones de motor y dos señales Hall [G], p. 5
+MCU
+OSOYOO Mega2560 compatible con Arduino Mega 2560 [M], pp. 2, 4
+Etapa de potencia
+OSOYOO Model Y V2.0, canales A y B / salidas AK y BK [G], pp. 14–17
+Fuentes
+2 baterías 18650 nominales 3,7 V cada una [M], p. 25
+Comunicación
+Bluetooth serie y ESP8266 WiFi; WiFi AP/STA, app UDP [M], pp. 37–55
+02 · Arquitectura funcional del robot
+La Mega2560 ejecuta las rutinas de movimiento, lee entradas de sensores y recibe comandos a través de la
+placa shield. La Model Y recibe las señales digitales de dirección y habilitación/PWM y suministra potencia a los
+cuatro motorreductores. La placa shield permite llevar las señales de expansión de la Mega y alojar el ESP8266
+y el módulo Bluetooth.
+Flujo funcional propuesto para documentación, no reemplaza un esquema eléctrico: Batería 18650 → Model Y (entrada de
+potencia) → 4 motores; Model Y (salida hacia shield) → shield/Mega; Mega → señales IN y EN → Model Y; sensores → shield
+→ Mega; ESP8266/Bluetooth ↔ UART1 de Mega. Verificar sobre la unidad los circuitos de regulación y la distribución de
+masa.
+Subsistema
+Entradas
+Salidas / función
+Mecánico
+Pares de cada motor
+Tracción X/Y y rotación sobre el eje vertical
+Potencia
+Baterías; EN/IN digitales
+Tensión y corriente a cuatro motores
+Control
+Sensores; enlace serie
+Comandos de dirección, PWM y servo
+
+
+--- PAGINA 4 ---
+OSOYOO Mecanum 4WD  |  Base técnica derivada del ManualOsoyoo.pdf
+4
+Subsistema
+Entradas
+Salidas / función
+Percepción
+Ultrasonido; 5 sensores IR
+Distancia y estado de seguimiento
+Conectividad
+UART1 / WiFi / Bluetooth
+Comandos remotos y retroalimentación dependiente del firmware
+03 · Inventario de materiales y montaje
+3.1 Lista de materiales electrónica y electromecánica
+Ítem
+Cant.
+Descripción / estado
+Referencia
+Chasis / ruedas
+1 + 4
+Placa metálica, cuatro Mecanum (2 L, 2 R)
+pp. 4–7
+Motorreductores
+4
+CC con cable de seis conductores, sensores Hall integrados
+p. 5
+Controladora
+1
+OSOYOO Mega2560, compatible con Arduino Mega
+p. 4
+Shield
+1
+OSOYOO UART WiFi Shield con ESP8266/ESP-12S visible
+pp. 10–17
+Driver
+1
+OSOYOO Model Y V2.0; dos bloques M_A/M_B
+pp. 14–17
+Portabaterías
+1
+Contenedor para 2 celdas 18650
+pp. 9, 17
+Baterías
+2
+18650, 3,7 V nominales cada una
+p. 25
+Voltímetro
+1
+Módulo de 3 dígitos, conectores VCC/VT/GND
+p. 17
+Servo
+1
+SG90 en instalación; MG90 en listados posteriores
+pp. 10, 25, 26
+Ultrasonido
+1
+Transductor de 4 pines: VCC/TRIG/ECHO/GND
+pp. 25–27
+Soporte sensor
+1
+Soporte de ultrasonido acoplado al servo
+pp. 25–26
+IR seguidor de línea
+1
+Módulo de cinco canales; potenciómetro
+pp. 8, 32–34
+Bluetooth
+1*
+Módulo descrito como HC02; figura de conexión
+pp. 37–41
+Acrílico superior
+1
+Placa portaelectrónica
+pp. 8–11
+Cables
+Varios
+2 × 6 pines, 1 × 7 pines, 1 × 3 pines, 1 × 2 pines XH2.54 y jumpers
+pp. 25, 32
+*El módulo Bluetooth no aparece en todas las listas de materiales, pero su inserción en el zócalo del shield está
+documentada en la lección 4; verificar presencia en el equipo real.
+
+
+--- PAGINA 5 ---
+OSOYOO Mecanum 4WD  |  Base técnica derivada del ManualOsoyoo.pdf
+5
+3.2 Fijaciones y elementos de ensamble identificados
+Cantidad
+Elemento / uso
+PDF
+16 + 16 +
+16
+Tornillos M3.5×12, arandelas elásticas/goma M3.5 y tuercas M3.5 para soportes de motor
+5
+8
+Tornillos M3×6 para los cuatro motores
+5
+4
+Tornillos M2.5×10 para ruedas/acoples (el manual menciona 4 unidades; revisar recuento)
+6
+2
+Separadores/cilindros de cobre M3×40 para módulo IR
+7–8
+12 + 12
+Separadores plásticos M3 + tuercas sobre placa acrílica
+8
+8
+Tornillos plásticos M3 para placas electrónicas
+9
+4 + 4
+Tornillos M3×10 y tuercas para caja de baterías
+9
+2
+Tornillos autorroscantes M2.2×8 para servo
+10
+4 + 4
+Tornillos M1.4×8 y tuercas para el ultrasonido
+25
+1
+Autorroscante M2×4 para soporte en servo
+25
+04 · Sistema mecánico: geometría, ruedas y motores
+4.1 Ruedas Mecanum: configuración física
+Cada rueda dispone de rodillos pasivos colocados aproximadamente a 45° respecto de su eje, lo que permite
+combinar velocidades para obtener avance, retroceso, desplazamiento lateral, diagonales y giro in situ. Las
+ruedas izquierdas y derechas no son intercambiables de posición. El fabricante indica que la prolongación de
+los ejes de los rodillos superiores debe apuntar hacia el centro del vehículo; todos los movimientos y ejemplos
+presuponen esa orientación (p. 7).
+4.2 Mecánica constructiva y transmisión
+• La estructura inferior es metálica, con soportes para los cuatro motorreductores; sobre ella se fija una
+plataforma acrílica elevada con separadores (pp. 5–11).
+• Los ejes de motor presentan una cara plana; los acoples de aleación de aluminio se fijan mediante
+prisioneros que deben apoyar sobre esa cara (p. 6).
+• La orientación del chasis superior e inferior importa, al igual que la asignación delantera/trasera de cada
+motor (pp. 11–14).
+• El servo gira la cabeza ultrasónica; la calibración mecánica de su dirección frontal es una operación
+imprescindible (p. 29).
+4.3 Motor con sensor Hall de dos canales
+El diagrama del motor de la p. 5 identifica claramente: M+ (rojo), M− (negro), VCC Hall (blanco), GND Hall
+(amarillo), S1 (naranja) y S2 (verde). La ficha no informa tensión nominal del motor, reducción, RPM nominales,
+corriente de bloqueo, frecuencia de pulsos ni resolución del sensor Hall. El conexionado de la lección 1 lleva las
+parejas de potencia a la placa Model Y; no documenta un cableado de S1/S2 hacia Arduino.
+Pin motor
+Color dibujado
+Uso
+¿Conectado en lección 1?
+M+
+Rojo
+Terminal de alimentación del motor
+Sí, a Model Y
+
+
+--- PAGINA 6 ---
+OSOYOO Mecanum 4WD  |  Base técnica derivada del ManualOsoyoo.pdf
+6
+Pin motor
+Color dibujado
+Uso
+¿Conectado en lección 1?
+M−
+Negro
+Retorno/segundo terminal de motor
+Sí, a Model Y
+VCC Hall
+Blanco
+Alimentación de los sensores Hall
+No documentado
+GND Hall
+Amarillo
+Referencia de Hall
+No documentado
+S1
+Naranja
+Señal de sensor Hall 1
+No documentado
+S2
+Verde
+Señal de sensor Hall 2
+No documentado
+Ingeniería [I]: las dos señales Hall podrían usarse para velocidad, sentido y odometría por cuadratura, pero antes hay que
+medir niveles lógicos, pulsos/revolución y referencia de masa; no conectar sensores a 5 V por suposición.
+ Figura 2. Pinout del motorreductor según p. 5 del manual.
+05 · Alimentación eléctrica y protecciones
+El kit indica dos baterías 18650 nominales de 3,7 V cada una [M]. El portabaterías alimenta la entrada VIN ± de
+la placa Model Y; el cable de dos conductores enlaza la salida de potencia de Model Y con la placa shield; el
+voltímetro usa tres señales GND / 5V / VT (p. 17). No se especifican la topología interna del portabaterías,
+capacidad, química precisa, límite de descarga, BMS, fusible, calibre de los cables, regulación del shield ni
+corrientes nominales.
+Línea o conexión
+Origen
+Destino / observación
+Alimentación principal
+Portabaterías
+Model Y: VIN+ / VIN− (ver polaridad impresa)
+Alimentación shield
+Model Y: VOUT+ / VOUT−
+Shield OSOYOO: conector 2 pines XH2.54; comprobar tensión real
+antes de conectar
+Masa común
+GND de sistema
+Necesaria para reconocer IN/EN y señales de sensores
+Voltímetro VCC
+Model Y 5V
+Voltímetro VCC (p. 17)
+Voltímetro referencia
+Model Y GND
+Voltímetro GND (p. 17)
+Voltímetro medición
+Model Y VT
+Voltímetro VT (p. 17)
+
+
+--- PAGINA 7 ---
+OSOYOO Mecanum 4WD  |  Base técnica derivada del ManualOsoyoo.pdf
+7
+5.1 Tensiones deducidas: únicamente para verificación
+Si al medir se confirma que las celdas están en serie, la batería sería 7,4 V nominales (2×3,7 V); una
+configuración de litio-ion 4,2 V/celda cargada alcanzaría 8,4 V. Son cálculos condicionales [I], no son
+mediciones ni garantías sobre el hardware. Si el conjunto usa otra topología o química, estos valores dejan de
+aplicar.
+5.2 Precauciones imprescindibles
+• Antes de alimentar, comprobar polaridad y voltaje en VIN y VOUT con multímetro; no asumir que VOUT tiene
+necesariamente 5 V.
+• La Model Y conmuta cargas inductivas: no alimentar motores desde pines de Arduino ni unir arbitrariamente
+salidas de puentes H.
+• Usar las celdas, cargador y protección adecuados para el portabaterías; evitar cortocircuitos, sobrecorriente
+y celdas mal emparejadas.
+• Para agregar encoders, definir correctamente la tensión y masa Hall y comprobar nivel alto de S1/S2.
+• Para validar sentido y conexiones: elevar el robot con ruedas libres y usar órdenes muy breves y PWM
+reducido.
+ Figura 3. Diagrama de alimentación, salida al shield y voltímetro (p. 17).
+
+
+--- PAGINA 8 ---
+OSOYOO Mecanum 4WD  |  Base técnica derivada del ManualOsoyoo.pdf
+8
+06 · Placas integradas y electrónica
+Placa
+Función técnica
+Qué puede afirmarse y qué falta
+OSOYOO MEGA2560
+Control lógico y programa Arduino
+Compatible con Arduino Mega2560 [M]; MCU, reloj y periféricos
+precisos no detallados en el PDF
+UART WiFi Shield OSOYOO
+Expansión, alimentación
+distribuida, zócalos y conectividad
+Gráficos muestran módulo ESP-12S/ESP8266 [G]; versión
+hardware exacta por serigrafía a verificar
+OSOYOO Model Y V2.0
+Driver de cuatro salidas de motor,
+señales IN/EN, distribución de
+alimentación
+Tiene dos grupos M_A/M_B y salidas AK/BK [G]; corriente
+admisible y circuito integrado principal no especificados
+Módulo IR 5 canales
+Detección de línea negra
+Salida IR1–IR5, ajuste por potenciómetro [M]; circuito/umbral
+exacto no publicado
+Ultrasonido
+Distancia a obstáculos
+4 pines; el módulo fotografiado se asemeja a HC-SR04, pero no
+se suministra hoja de datos
+Servo SG90/MG90
+Barrido horizontal de ultrasonido
+Modelo nombrado de dos formas; la foto de la p. 26 muestra
+SG90
+Voltímetro
+Visualización de tensión
+Módulo digital con VT y alimentación propia GND/5V [G]
+Módulo Bluetooth HC02
+Control remoto desde app
+Emparejamiento HC02, contraseña 1234 según el manual [M]
+No es correcto atribuir al driver un integrado L298N, TB6612 o una corriente máxima determinada sin inspección o
+documentación de su PCB específica.
+07 · Pinout completo y conexión de motores
+7.1 Modelo Y → Arduino MEGA2560
+Grupo
+Señal Model Y
+Arduino
+Rol
+M_A
+ENA
+D11
+Habilitación / PWM
+M_A
+IN1
+D5
+Dirección
+M_A
+IN2
+D6
+Dirección
+M_A
+IN3
+D7
+Dirección
+M_A
+IN4
+D8
+Dirección
+M_A
+ENB
+D12
+Habilitación / PWM
+M_B
+ENA
+D9
+Habilitación / PWM
+M_B
+IN1
+D22
+Dirección
+M_B
+IN2
+D24
+Dirección
+M_B
+IN3
+D26
+Dirección
+M_B
+IN4
+D28
+Dirección
+M_B
+ENB
+D10
+Habilitación / PWM
+Origen: texto y tablas de la p. 15. D9–D12 son salidas PWM utilizables en Arduino Mega2560. No se debe asumir que los
+valores de IN del driver equivalen a una polaridad concreta de cada motor sin ejecutar las funciones de la versión exacta
+del sketch.
+
+
+--- PAGINA 9 ---
+OSOYOO Mecanum 4WD  |  Base técnica derivada del ManualOsoyoo.pdf
+9
+7.2 Motor físico → conector de potencia Model Y
+Motor y posición
+Conector Model Y
+Observación
+Delantero derecho (FR)
+BK1 / BK2
+Par de bornes que alimenta ese motor
+Delantero izquierdo (FL)
+BK3 / BK4
+Par de bornes que alimenta ese motor
+Trasero derecho (RR)
+AK1 / AK2
+Par de bornes que alimenta ese motor
+Trasero izquierdo (RL)
+AK3 / AK4
+Par de bornes que alimenta ese motor
+La ubicación es explícita en la tabla de la p. 14. El dibujo solo identifica la pareja de bornes por motor; no fija
+inequívocamente la asignación de M+/M− a cada terminal. Preservar polaridad física medida o validar el
+sentido de rotación individual antes de reemplazar el driver.
+ Figura 4. Orden físico de los motores y bornes BK/AK (p. 14).
+
+
+--- PAGINA 10 ---
+OSOYOO Mecanum 4WD  |  Base técnica derivada del ManualOsoyoo.pdf
+10
+ Figura 5. Correspondencia IN/ENA/ENB y pines de Mega (p. 15).
+08 · Pinout de sensores y comunicaciones
+8.1 Sensor ultrasónico orientable
+Módulo
+Terminal
+Conectado a
+PDF
+Ultrasonido
+VCC
+5V del shield
+27
+Ultrasonido
+TRIG
+D30
+27
+Ultrasonido
+ECHO
+D31
+27
+Ultrasonido
+GND
+GND del shield
+27
+Servo
+S (PWM)
+D13 del shield mediante cabecera S en Model Y
+26
+Servo
+VCC rojo
+5V del Model Y
+26
+Servo
+GND marrón
+GND del Model Y
+26
+Las tres conexiones del servo se muestran en la p. 26: la señal S de Model Y está cableada al D13 del shield. El método de
+temporización exacto depende de la biblioteca y código de la lección 2.
+
+
+--- PAGINA 11 ---
+OSOYOO Mecanum 4WD  |  Base técnica derivada del ManualOsoyoo.pdf
+11
+8.2 Seguimiento de línea: cinco canales
+Sensor IR
+Pin Mega / shield
+Polaridad observada de LED
+IR1
+A4
+LED señal encendido sobre negro
+IR2
+A3
+LED señal apagado sobre blanco
+IR3
+A2
+Ajustar sensibilidad por potenciómetro
+IR4
+A1
+Confirmar nivel lógico de salida en firmware
+IR5
+A0
+Conectores 5V y GND del shield
+Correspondencia exacta en pp. 33–34. El manual exige una franja negra de 20 a 30 mm sobre fondo blanco y
+calibración hasta LED apagado sobre blanco / encendido sobre negro (pp. 34–36). Este estado del LED no
+demuestra por sí solo si la variable digital del sketch es HIGH o LOW sobre negro: se verifica mediante lectura
+del pin.
+8.3 Interfaces seriales: una UART compartida por modos
+Modo
+Salida de módulo
+Pin Mega
+Entrada de módulo
+Pin Mega
+Bluetooth
+B_TX
+D19 (RX1)
+B_RX
+D18 (TX1)
+ESP8266 WiFi
+E_TX
+D19 (RX1)
+E_RX
+D18 (TX1)
+Bluetooth: tabla gráfica de la p. 38. WiFi: texto de la p. 43. D18 = TX1 y D19 = RX1 para el Mega2560. Ambos periféricos
+no deberían conducir simultáneamente la misma UART sin aislamiento, conmutación o rediseño. La redacción para retirar
+B_TX/B_RX en la lección 5 intercambia pines y contradice la tabla de la lección 4.
+09 · Software original y parámetros documentados
+9.1 Lecciones / funcionalidades
+Lecció
+n
+Archivo referido
+Función
+PDF
+1
+m2-lesson1.ino
+Prueba secuencial de avance, retroceso, giro, shifts
+y diagonales
+21–24
+2
+m2-lesson2.ino
+Evasión de obstáculos mediante ultrasonido +
+servo
+25–31
+3
+m2-lesson3.ino
+Seguimiento de una línea negra con 5 sensores IR
+32–36
+4
+lesson4.ino / mecanum-2560-lesson4.ino
+(inconsistente)
+Imitation Driving por Bluetooth HC02
+37–42
+5A
+m2-lesson5a.ino
+WiFi AP, robot como punto de acceso
+43–49
+5B
+m2-lesson5b.ino
+WiFi STA, conexión a router local
+49–55
+
+
+--- PAGINA 12 ---
+OSOYOO Mecanum 4WD  |  Base técnica derivada del ManualOsoyoo.pdf
+12
+9.2 Constantes del firmware que cita el manual
+Lección
+Constante
+Valor ejemplo
+Interpretación
+1
+SPEED
+100 (captura p. 23)
+Valor visible en captura; no programa completo
+1 / gen.
+MIN_SPEED, TURN_SPEED,
+SLOW_TURN_SPEED, BACK_SPEED,
+SHIFT_SPEED, SPEED, FAST_SPEED
+Sin conjunto
+completo
+Ajustes enumerados pp. 23–24
+2
+FAST_SPEED
+170
+Mayor PWM motor
+2
+SPEED
+100
+Velocidad nominal
+2
+TURN_SPEED
+150
+Giro
+2
+BACK_SPEED1
+150
+Retroceso 1
+2
+BACK_SPEED2
+100
+Retroceso 2
+3
+LOW_SPEED
+80
+Seguir línea / baja
+3
+MID_SPEED
+100
+Seguir línea / media
+3
+HIGH_SPEED
+120
+Seguir línea / alta
+4
+MIN_SPEED
+50
+PWM mínimo al iniciar
+4
+TURN_SPEED
+70
+Giro
+4
+SLOW_TURN_SPEED
+50
+Giro suave
+4
+BACK_SPEED
+60
+Marcha atrás
+5
+SPEED
+85
+Marcha longitudinal
+5
+TURN_SPEED
+90
+Giro
+5
+SHIFT_SPEED
+130
+Desplazamiento lateral
+El rango 0–255 aplica a los valores PWM de los sketches de Arduino; el manual indica explícitamente 255 como máximo
+para FAST_SPEED. No traducir estos valores directamente a rpm o m/s sin ensayo y caracterización. Las constantes no son
+un único set global: pertenecen a sketches distintos.
+9.3 Evasión de obstáculos
+Secuencia [M] (pp. 29–30): al encender, el servo se mueve y permanece centrado aproximadamente cinco
+segundos para alinear físicamente el sensor de frente; si no está centrado, cortar energía y reajustar el
+montaje. En marcha: al no detectar obstáculos avanza; ante un objeto se detiene, barre con ultrasonido
+derecha–izquierda y decide girar a derecha/izquierda o retroceder. Distancia umbral exacta, ángulos de
+barrido, timeouts y decisiones internas quedan pendientes porque el listado completo del sketch no está en el
+PDF.
+9.4 Seguimiento de línea
+En p. 36 la franja de seguimiento es negra, de 20–30 mm de ancho, sobre suelo blanco. El código equilibra
+movimientos según cinco entradas A4..A0 con velocidades LOW=80, MID=100, HIGH=120. Los umbrales
+analógicos/digitales y la tabla de decisiones no son visibles; no inventarlos.
+
+
+--- PAGINA 13 ---
+OSOYOO Mecanum 4WD  |  Base técnica derivada del ManualOsoyoo.pdf
+13
+09.5 · WiFi, protocolo y comandos remotos
+Modo
+Red
+IP destino
+Puerto / certeza
+AP
+SSID: osoyoo_robot
+192.168.4.1
+8888 [M], pp. 47–48
+STA
+SSID y contraseña del router
+DHCP del router
+Manual: 80 en texto, 8888 en capturas
+(contradicción), pp. 52–53
+La app OSOYOO WiFi UDP Robot Car Controller envía un mensaje de un carácter mediante UDP, y el ejemplo de
+firmware obtiene packetBuffer[0] para un switch(c) (p. 54). Se diferencia del control Bluetooth, que usa
+emparejamiento HC02 y la aplicación OSOYOO Imitation Driving (pp. 40–41). La biblioteca indicada para el
+enlace WiFi es WiFiEsp; el manual no precisa versión compatible.
+Tecla / función UI
+Comando UDP
+Acción del fragmento del sketch
+Arriba
+A
+go_advance(SPEED)
+Abajo
+B
+go_back(SPEED)
+Izquierda
+L
+left_turn(TURN_SPEED)
+Derecha
+R
+right_turn(TURN_SPEED)
+Stop
+E
+stop_Stop()
+F1 diagonal sup. izq.
+F
+left_shift(0,150,0,150)
+F3 diagonal sup. der.
+H
+right_shift(180,0,150,0)
+F4 diagonal inf. izq.
+I
+left_shift(150,0,150,0)
+F6 diagonal inf. der.
+K
+right_shift(0,130,0,130)
+Botón «Obstacle»
+O
+left_shift(200,150,150,200); desplaza a izquierda, no es evasión
+Botón «Tracking»
+T
+right_shift(200,200,200,200); desplaza a derecha, no es line-follow
+F2 / F5
+G / J
+El fragmento publicado no contiene case G ni J
+Importante: «O» en la tabla de caracteres se asemeja al dígito 0 por la tipografía. El código muestra case 'O', letra O.
+Asimismo, el comentario «//left shift» en el case T contradice la función right_shift. Documentar interfaz por la acción
+comprobada en pruebas, no por el rótulo de la app.
+
+
+--- PAGINA 14 ---
+OSOYOO Mecanum 4WD  |  Base técnica derivada del ManualOsoyoo.pdf
+14
+10 · Estrategia para reutilizar el código en otro proyecto
+10.1 Separar las capas (arquitectura recomendada, no código OSOYOO validado)
+Capa de software
+Contrato sugerido
+Estado
+Hardware abstraction
+(HAL)
+setMotor(canal, dirección, PWM), stopAll(), setServo(ángulo)
+Diseñar para pines / driver reales
+Sensores
+readLine5(), readUltrasonicCm(), readBatteryVoltage()
+Última lectura requiere circuito
+ADC adicional
+Cinemática
+drive(vx, vy, omega) → referencias de 4 ruedas
+Validar convención + sentido por
+rueda
+Comportamientos
+Manual, Seguimiento de línea, Evasión, Calibración
+Máquina de estados independiente
+Comunicaciones
+parseCommandByte(), heartbeat, timeout
+UDP/Bluetooth intercambiables
+Seguridad
+Stop por pérdida de comunicación, límites y fallos
+Agregar; no se documenta en los
+ejemplos
+10.2 Correspondencia de los cuatro actuadores
+Sugerencia de convención para el proyecto destino: FL=delantero izquierdo; FR=delantero derecho;
+RL=trasero izquierdo; RR=trasero derecho. Mantener una única tabla FL→BK3/4, FR→BK1/2, RL→AK3/4,
+RR→AK1/2. La asociación EN/IN de cada par motriz y su polaridad lógica concreta se determina inspeccionando
+y ensayando el sketch, nunca solo por la sigla de la PCB.
+10.3 Modelo cinemático nominal de Mecanum [I]
+Para ruedas Mecanum de rodillos a 45°, una convención habitual (a validar respecto de la orientación exacta
+de los rodillos, el sentido motor, y de los ejes positivos del robot) es:
+w_FL = (vx - vy - (lx + ly)*omega) / r
+w_FR = (vx + vy + (lx + ly)*omega) / r
+w_RL = (vx + vy - (lx + ly)*omega) / r
+w_RR = (vx - vy + (lx + ly)*omega) / r
+Aquí vx es velocidad longitudinal, vy lateral, omega velocidad de giro, r radio efectivo y lx/ly semidistancias
+desde el centro geométrico a cada rueda. Estas ecuaciones son un modelo de ingeniería añadido; no son una
+transcripción de las cinco lecciones ni garantizan compatibilidad directa con los signos de la implementación
+del fabricante.
+La rueda indicada como «80 mm» sugiere un radio geométrico nominal de 40 mm solo si esa cota es el
+diámetro exterior; incluso así, el radio efectivo depende de los rodillos y la carga. Faltan coordenadas exactas
+de centros de rueda y el comportamiento de la transmisión. La conversión PWM→velocidad también debe
+calibrarse experimentalmente.
+10.4 Patrón de migración recomendable
+• Congelar una copia de los sketches originales y registrar su hash/versión.
+• Separar configuración de pines, polaridad y parámetros en un encabezado; se adjunta una plantilla en
+osoyoo_pinmap.h.
+• Crear pruebas unitarias o de banco para funciones de movimiento individuales, sin sensores ni conectividad.
+• Implementar recepción de comandos como eventos semánticos (MOVE_FORWARD, STOP, SHIFT_LEFT, etc.)
+para desacoplar la app OSOYOO.
+
+
+--- PAGINA 15 ---
+OSOYOO Mecanum 4WD  |  Base técnica derivada del ManualOsoyoo.pdf
+15
+• Configurar watchdog lógico: detener todos los motores al perder comando remoto o tras un timeout
+razonable.
+• Si se requieren trayectorias repetibles, cablear y calibrar los sensores Hall para cerrar lazo de velocidad por
+motor.
+• No reutilizar referencias A0..A4 ni Serial1 sin revisar conflictos con periféricos del nuevo proyecto.
+11 · Matriz de verificación y parámetros pendientes
+11.1 Parámetros que el PDF no determina
+Parámetro
+Por qué importa
+Cómo obtenerlo
+Voltaje nominal de motor / stall
+current
+Dimensiona batería y driver
+Leer etiqueta/datasheet y ensayar bajo carga de forma
+segura
+Relación de reducción, rpm
+máxima
+Modelo cinemático y PWM
+Contar giro eje vs rueda / encoders
+Resolución Hall y niveles lógicos
+Velocidad, odometría, PID
+Osciloscopio/analizador lógico; alimentación verificada
+Rueda: diámetro efectivo/centros
+vx/vy/omega en unidades físicas
+Medir rueda y separación de centros de ruedas
+Masa total y centro de gravedad
+Inercia, tracción y estabilidad
+Balanza y medición geométrica
+Topología celdas, protección,
+VOUT
+Seguridad y regulación
+Multímetro, inspección PCB y datasheet
+Corriente continua/pico de Model
+Y
+Margen térmico del controlador
+Inspección de IC/PCB, hoja de datos, prueba controlada
+Mapa lógico IN/EN → cada motor
+Reutilización de funciones
+Examinar sketch fuente y ensayar rueda por rueda
+Baudrate UART1 ESP/BT
+Reutilizar comunicaciones
+Leer setup del sketch y configuración de módulo
+Sensibilidad sensor IR / distancia
+Calibración seguimiento
+Ensayo en piso real con altura estable
+Thresholds servo/ultrasonido
+Comportamiento de evasión
+Leer lesson2.ino y medir distancias/ángulos
+11.2 Procedimiento de puesta en marcha por etapas
+• 1. Inventariar piezas, registrar foto de PCB, módulo de comunicaciones, motor y cableado de cada rueda.
+• 2. Confirmar orientación Mecanum (p. 7), libre giro, apriete de prisioneros y altura mecánica.
+• 3. Desconectar motores; medir portabaterías, VIN, VOUT y masas, con el rango de tensión adecuado.
+• 4. Con el robot elevado, energizar una rueda por vez y registrar pin PWM/IN → rueda → signo.
+• 5. Verificar STOP, inversión y combinaciones adelante, lateral, diagonal y giro.
+• 6. Medir sensores IR sobre blanco/negro, registrar HIGH/LOW real para IR1..IR5.
+• 7. Verificar TRIG/ECHO y servo en posición frontal; repetir calibración tras impacto.
+• 8. Validar Bluetooth o WiFi por separado, comprobando UART1, baud y puerto en captura real.
+• 9. Medir corriente, tensión bajo demanda y temperatura de Model Y al aplicar carga moderada.
+• 10. Integrar nueva lógica, límites, parada segura y, si se necesita, los encoders Hall.
+
+
+--- PAGINA 16 ---
+OSOYOO Mecanum 4WD  |  Base técnica derivada del ManualOsoyoo.pdf
+16
+11.3 · Errores, ambigüedades y restricciones del manual
+Hallazgo
+Consecuencia práctica
+Criterio
+Servo denominado SG90 en pp. 10 y
+26, MG90 en materiales pp. 25, 37, 43
+No asegurar par, geometría y consumo
+Identificar modelo físico
+Texto WiFi STA dice puerto 80 (p. 52);
+monitor y app ilustran 8888 (pp. 52–53)
+El cliente puede enviar al puerto equivocado
+Inspeccionar puerto del sketch en
+ejecución
+Lección 4 Bluetooth:
+B_TX→D19/B_RX→D18 (p. 38). Lección
+5 afirma retirar B_TX→D18/B_RX→D19
+(p. 43)
+Error de recableado posible
+Respetar UART1 y continuidad real
+«Obstacle/Tracking» en app WiFi
+disparan shifts y no modos autónomos
+(pp. 49, 54)
+Interfaz semánticamente ambigua
+Mapear comandos a acciones
+observadas
+Case F/G/H/I/J/K incompleto en
+fragmento publicado: G/J no aparecen
+(p. 54)
+No todos los botones tienen handler visible
+Revisar sketch íntegro
+No se publican hojas de datos ni
+esquema circuito al nivel de IC
+No es una BOM electrónica de bajo nivel
+Crear ficha PCB a partir de placa real
+Las capturas y nombres de archivos
+presentan variantes de versión
+Riesgo de mezclar firmwares
+Usar archivo exacto presente en
+equipo
+11.4 Criterios de aceptación de una migración
+La migración está validada cuando: (a) las cuatro ruedas giran individualmente con el sentido esperado; (b)
+todas las combinaciones Mecanum funcionan sin invertir ruedas; (c) se detiene ante falta de comunicación; (d)
+detecta línea y obstáculo tras calibración; (e) el sistema mantiene tensiones dentro del rango de cada placa
+bajo carga; y (f) los datos de velocidad y distancia, si se agregan, están calibrados con mediciones.
+12 · Anexos documentales y trazabilidad
+12.1 Recursos oficiales mencionados en el PDF
+Manual / proyecto: http://osoyoo.com/?p=49235
+Código lección 1: https://osoyoo.com/driver/mecanum_metal_chassis_m2/m2-lesson1.zip
+Código lección 2: https://osoyoo.com/driver/mecanum_metal_chassis_m2/m2-lesson2.zip
+Código lección 3: https://osoyoo.com/driver/mecanum_metal_chassis_m2/m2-lesson3.zip
+Código lección 4: https://osoyoo.com/driver/mecanum_metal_chassis_m2/m2-lesson4.zip
+Código lección 5: https://osoyoo.com/driver/mecanum_metal_chassis_m2/m2-lesson5.zip
+App Android referida: https://osoyoo.com/driver/arduino-udp/udp-robot.apk
+Arduino IDE: https://www.arduino.cc/en/software
+Los enlaces anteriores son referencias consignadas en el manual, no una confirmación de que hoy estén disponibles ni
+una revisión de los .zip. La web del fabricante puede listar revisiones y lecciones adicionales; no mezclar el cableado de
+otra revisión con este PDF sin cotejo de hardware.
+
+
+--- PAGINA 17 ---
+OSOYOO Mecanum 4WD  |  Base técnica derivada del ManualOsoyoo.pdf
+17
+12.2 Imágenes originales de mayor valor para reconstrucción
+Página PDF
+Evidencia disponible
+4
+Dimensiones externas, rueda y plataforma
+5
+Seis hilos por motor y sensor Hall
+7
+Orientación mecánica del conjunto de cuatro Mecanum
+14
+Asignación de ruedas FL/FR/RL/RR a BK/AK
+15
+Tabla M_A/M_B a pines Mega
+17
+Batería / Model Y / voltímetro / alimentación del shield
+26–27
+Servo, ultrasónico y pines D13/D30/D31
+34
+Seguimiento IR1..IR5 a A4..A0
+38
+Bluetooth B_TX/B_RX
+43
+WiFi E_RX/E_TX
+52–54
+Puertos WiFi, app y códigos UDP
+12.3 Imagen de arquitectura y conexión de sensores
+ Figura 6. Servo de ultrasonido y señal D13, alimentación 5 V/GND (p. 26).
+
+
+--- PAGINA 18 ---
+OSOYOO Mecanum 4WD  |  Base técnica derivada del ManualOsoyoo.pdf
+18
+ Figura 7. Módulo IR 5 canales, tabla de correspondencia (p. 34).
+Conclusión técnica: el manual permite replicar el cableado funcional original, identificar los módulos, comenzar
+a portar las rutinas de movimiento y recuperar parámetros de referencia. No permite establecer de manera
+rigurosa por sí solo las prestaciones reales del motor, la etapa de potencia, la odometría, el control en lazo
+cerrado ni el consumo. Esos campos quedan explícitamente abiertos para la caracterización del vehículo y la
+lectura de los sketches completos.

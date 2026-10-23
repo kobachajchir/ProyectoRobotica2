@@ -1,0 +1,688 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "f4:module/Core/Inc/motion_estimator.h",
+  "slug": "motion-estimator",
+  "title": "Estimador de movimiento relativo",
+  "target": "f4",
+  "kind": "núcleo",
+  "status": "source-documented",
+  "verification": "not-run-user-instruction",
+  "snapshotDate": "2026-10-20",
+  "responsibility": "Estima velocidad longitudinal relativa a corto plazo desde aceleración lineal de la IMU.",
+  "scope": "Filtrado, deadband, integración con fuga, confianza y flags de frescura/vibración/referencia. No es odometría absoluta ni mide ruedas.",
+  "state": "MotionEstimator_Handle conserva config/status y última secuencia; config.orientation/mpu prestan el proveedor. Status combina mg, m/s², m/s, grados y dps: no confundir unidades entre campos.",
+  "lifecycle": [
+    "Init configura el modelo; Reset elimina historia.",
+    "Update usa muestra nueva, dt y condiciones de movimiento para actualizar estimación y confianza.",
+    "MarkExternalReference registra una referencia temporal del llamador."
+  ],
+  "interactions": [
+    "app_tasks.c actualiza estimación dentro de la secuencia de control; los reportes la exponen como estimación.",
+    "GOTO actual usa AutoMotion y perfiles de motor; no asumir que integra directamente velocity_mps de este módulo."
+  ],
+  "limitations": [
+    "La integración acumula deriva aun con fugas y guardas.",
+    "El indicador de confianza es heurístico, no precisión física certificada."
+  ],
+  "modularity": "Consume AM_OrientationOps y snapshot, sin incluir implementación MPU ni HAL.",
+  "files": [
+    {
+      "path": "Core/Inc/motion_estimator.h",
+      "rootId": "f4",
+      "sha256": "987a9f61e2b5f33b899eacf457dcbac06f2b716b9fcd0e0c1aaa763c807c4ab1",
+      "includes": [
+        "motion_estimator_types.h"
+      ]
+    },
+    {
+      "path": "Core/Inc/motion_estimator_types.h",
+      "rootId": "f4",
+      "sha256": "1e6e9b8755e8020c3d660da8c60140f4c3197123999ef30007c64c1dfbdbabae",
+      "includes": [
+        "control_ports.h",
+        "stdint.h",
+        "motion_estimator_data.h"
+      ]
+    },
+    {
+      "path": "Core/Inc/motion_estimator_data.h",
+      "rootId": "f4",
+      "sha256": "2ee6988f0ee91b6b49680a8318cafc1d8ce1eaf018ebdf64443354d55dafe6d1",
+      "includes": [
+        "am_port.h"
+      ]
+    },
+    {
+      "path": "Core/Src/motion_estimator.c",
+      "rootId": "f4",
+      "sha256": "be167ff03f9b387cd3b84558f2b18305f1100835dca94b3d3d308cffe3dbe0d9",
+      "includes": [
+        "motion_estimator.h",
+        "utils/macros_utils.h",
+        "stddef.h",
+        "string.h"
+      ]
+    }
+  ],
+  "findings": [],
+  "types": [
+    {
+      "name": "MotionEstimator_Handle",
+      "fields": [
+        {
+          "name": "config",
+          "declaration": "MotionEstimator_Config_t config",
+          "callback": false,
+          "ownerType": "MotionEstimator_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_estimator_types.h",
+            "line": 20
+          },
+          "description": "Configuración copiada por la instancia; los punteros que contiene siguen siendo prestados."
+        },
+        {
+          "name": "status",
+          "declaration": "MotionEstimator_Status_t status",
+          "callback": false,
+          "ownerType": "MotionEstimator_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_estimator_types.h",
+            "line": 21
+          },
+          "description": "Último resultado y guardas del módulo; los getters pueden devolver una vista de este almacenamiento."
+        },
+        {
+          "name": "last_seq",
+          "declaration": "uint16_t last_seq",
+          "callback": false,
+          "ownerType": "MotionEstimator_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_estimator_types.h",
+            "line": 22
+          },
+          "description": "Memoria de la observación anterior usada por la máquina de estados."
+        },
+        {
+          "name": "initialized",
+          "declaration": "uint8_t initialized",
+          "callback": false,
+          "ownerType": "MotionEstimator_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_estimator_types.h",
+            "line": 23
+          },
+          "description": "Marca de inicialización local; no acredita disponibilidad de dispositivos externos."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/motion_estimator_types.h",
+        "line": 20
+      }
+    },
+    {
+      "name": "MotionEstimator_Config_t",
+      "fields": [
+        {
+          "name": "mpu",
+          "declaration": "void *mpu",
+          "callback": false,
+          "ownerType": "MotionEstimator_Config_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_estimator_data.h",
+            "line": 25
+          },
+          "description": "Dato de estado/configuración `mpu`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "orientation",
+          "declaration": "const struct AM_OrientationOps *orientation",
+          "callback": false,
+          "ownerType": "MotionEstimator_Config_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_estimator_data.h",
+            "line": 26
+          },
+          "description": "Contrato de operaciones externo; conservar la tabla y su contexto durante el uso."
+        },
+        {
+          "name": "accel_deadband_mg",
+          "declaration": "float accel_deadband_mg",
+          "callback": false,
+          "ownerType": "MotionEstimator_Config_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_estimator_data.h",
+            "line": 27
+          },
+          "description": "Dato de estado/configuración `accel_deadband_mg`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "accel_filter_alpha",
+          "declaration": "float accel_filter_alpha",
+          "callback": false,
+          "ownerType": "MotionEstimator_Config_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_estimator_data.h",
+            "line": 28
+          },
+          "description": "Dato de estado/configuración `accel_filter_alpha`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "velocity_leak_per_s",
+          "declaration": "float velocity_leak_per_s",
+          "callback": false,
+          "ownerType": "MotionEstimator_Config_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_estimator_data.h",
+            "line": 29
+          },
+          "description": "Dato de estado/configuración `velocity_leak_per_s`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "idle_velocity_leak_per_s",
+          "declaration": "float idle_velocity_leak_per_s",
+          "callback": false,
+          "ownerType": "MotionEstimator_Config_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_estimator_data.h",
+            "line": 30
+          },
+          "description": "Dato de estado/configuración `idle_velocity_leak_per_s`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "velocity_limit_mps",
+          "declaration": "float velocity_limit_mps",
+          "callback": false,
+          "ownerType": "MotionEstimator_Config_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_estimator_data.h",
+            "line": 31
+          },
+          "description": "Dato de estado/configuración `velocity_limit_mps`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "high_pitch_deg",
+          "declaration": "float high_pitch_deg",
+          "callback": false,
+          "ownerType": "MotionEstimator_Config_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_estimator_data.h",
+            "line": 32
+          },
+          "description": "Ángulo en grados; respetar eje y referencia de esta librería."
+        },
+        {
+          "name": "vibration_mg",
+          "declaration": "float vibration_mg",
+          "callback": false,
+          "ownerType": "MotionEstimator_Config_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_estimator_data.h",
+            "line": 33
+          },
+          "description": "Dato de estado/configuración `vibration_mg`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "stale_timeout_ms",
+          "declaration": "uint32_t stale_timeout_ms",
+          "callback": false,
+          "ownerType": "MotionEstimator_Config_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_estimator_data.h",
+            "line": 34
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "reference_timeout_ms",
+          "declaration": "uint32_t reference_timeout_ms",
+          "callback": false,
+          "ownerType": "MotionEstimator_Config_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_estimator_data.h",
+            "line": 35
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/motion_estimator_data.h",
+        "line": 25
+      }
+    },
+    {
+      "name": "MotionEstimator_Status_t",
+      "fields": [
+        {
+          "name": "sample_seq",
+          "declaration": "uint16_t sample_seq",
+          "callback": false,
+          "ownerType": "MotionEstimator_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_estimator_data.h",
+            "line": 39
+          },
+          "description": "Secuencia de muestra; cambia al producir nuevos datos, no al volver a leerlos."
+        },
+        {
+          "name": "sample_dt_us",
+          "declaration": "uint16_t sample_dt_us",
+          "callback": false,
+          "ownerType": "MotionEstimator_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_estimator_data.h",
+            "line": 40
+          },
+          "description": "Tiempo o intervalo en microsegundos; precisión efectiva dependiente del puerto."
+        },
+        {
+          "name": "flags",
+          "declaration": "uint8_t flags",
+          "callback": false,
+          "ownerType": "MotionEstimator_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_estimator_data.h",
+            "line": 41
+          },
+          "description": "Bits de estado del módulo; conservar máscaras y distinguir estado de eventos pendientes."
+        },
+        {
+          "name": "confidence_percent",
+          "declaration": "uint8_t confidence_percent",
+          "callback": false,
+          "ownerType": "MotionEstimator_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_estimator_data.h",
+            "line": 42
+          },
+          "description": "Magnitud porcentual; el rango y signo se fijan en la API de esta librería."
+        },
+        {
+          "name": "linear_accel_y_mg",
+          "declaration": "int16_t linear_accel_y_mg",
+          "callback": false,
+          "ownerType": "MotionEstimator_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_estimator_data.h",
+            "line": 43
+          },
+          "description": "Dato de estado/configuración `linear_accel_y_mg`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "linear_accel_mps2",
+          "declaration": "float linear_accel_mps2",
+          "callback": false,
+          "ownerType": "MotionEstimator_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_estimator_data.h",
+            "line": 44
+          },
+          "description": "Dato de estado/configuración `linear_accel_mps2`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "filtered_accel_mps2",
+          "declaration": "float filtered_accel_mps2",
+          "callback": false,
+          "ownerType": "MotionEstimator_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_estimator_data.h",
+            "line": 45
+          },
+          "description": "Dato de estado/configuración `filtered_accel_mps2`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "velocity_mps",
+          "declaration": "float velocity_mps",
+          "callback": false,
+          "ownerType": "MotionEstimator_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_estimator_data.h",
+            "line": 46
+          },
+          "description": "Dato de estado/configuración `velocity_mps`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "yaw_rate_dps",
+          "declaration": "float yaw_rate_dps",
+          "callback": false,
+          "ownerType": "MotionEstimator_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_estimator_data.h",
+            "line": 47
+          },
+          "description": "Dato de estado/configuración `yaw_rate_dps`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "pitch_deg",
+          "declaration": "float pitch_deg",
+          "callback": false,
+          "ownerType": "MotionEstimator_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_estimator_data.h",
+            "line": 48
+          },
+          "description": "Ángulo en grados; respetar eje y referencia de esta librería."
+        },
+        {
+          "name": "vibration_mg",
+          "declaration": "float vibration_mg",
+          "callback": false,
+          "ownerType": "MotionEstimator_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_estimator_data.h",
+            "line": 49
+          },
+          "description": "Dato de estado/configuración `vibration_mg`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "last_update_ms",
+          "declaration": "uint32_t last_update_ms",
+          "callback": false,
+          "ownerType": "MotionEstimator_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_estimator_data.h",
+            "line": 50
+          },
+          "description": "Memoria de la observación anterior usada por la máquina de estados."
+        },
+        {
+          "name": "last_sample_ms",
+          "declaration": "uint32_t last_sample_ms",
+          "callback": false,
+          "ownerType": "MotionEstimator_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_estimator_data.h",
+            "line": 51
+          },
+          "description": "Memoria de la observación anterior usada por la máquina de estados."
+        },
+        {
+          "name": "last_reference_ms",
+          "declaration": "uint32_t last_reference_ms",
+          "callback": false,
+          "ownerType": "MotionEstimator_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_estimator_data.h",
+            "line": 52
+          },
+          "description": "Memoria de la observación anterior usada por la máquina de estados."
+        },
+        {
+          "name": "has_sample",
+          "declaration": "uint8_t has_sample",
+          "callback": false,
+          "ownerType": "MotionEstimator_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_estimator_data.h",
+            "line": 53
+          },
+          "description": "Dato de estado/configuración `has_sample`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/motion_estimator_data.h",
+        "line": 39
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "MotionEstimator_GetDefaultConfig",
+      "signature": "void MotionEstimator_GetDefaultConfig(MotionEstimator_Config_t *config)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/motion_estimator.h",
+        "line": 7
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "memset"
+      ],
+      "writes": [
+        "accel_deadband_mg",
+        "accel_filter_alpha",
+        "high_pitch_deg",
+        "idle_velocity_leak_per_s",
+        "reference_timeout_ms",
+        "stale_timeout_ms",
+        "velocity_leak_per_s",
+        "velocity_limit_mps",
+        "vibration_mg"
+      ],
+      "description": "Carga filtro, fugas, deadband y límites de confianza predeterminados.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/motion_estimator.c",
+        "line": 89
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MotionEstimator_GetStatus",
+      "signature": "const MotionEstimator_Status_t *MotionEstimator_GetStatus(const MotionEstimator_Handle *estimator)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/motion_estimator.h",
+        "line": 18
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Devuelve vista de velocidad estimada, unidades y flags de calidad.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/motion_estimator.c",
+        "line": 284
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MotionEstimator_Init",
+      "signature": "AM_Result MotionEstimator_Init(MotionEstimator_Handle *estimator, const MotionEstimator_Config_t *config)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/motion_estimator.h",
+        "line": 8
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MotionEstimator_GetDefaultConfig",
+        "memset"
+      ],
+      "writes": [
+        "config",
+        "initialized"
+      ],
+      "description": "Inicializa el estimador y conecta proveedor de orientación.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/motion_estimator.c",
+        "line": 107
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MotionEstimator_MarkExternalReference",
+      "signature": "void MotionEstimator_MarkExternalReference(MotionEstimator_Handle *estimator, float velocity_mps, uint32_t now_ms)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/motion_estimator.h",
+        "line": 11
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MotionEstimator_Clamp"
+      ],
+      "writes": [],
+      "description": "Registra una referencia externa con marca temporal.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/motion_estimator.c",
+        "line": 153
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MotionEstimator_Reset",
+      "signature": "void MotionEstimator_Reset(MotionEstimator_Handle *estimator)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/motion_estimator.h",
+        "line": 10
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "memset"
+      ],
+      "writes": [
+        "config",
+        "last_seq"
+      ],
+      "description": "Borra velocidad, tiempos e historia de muestras.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/motion_estimator.c",
+        "line": 135
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MotionEstimator_Update",
+      "signature": "void MotionEstimator_Update(MotionEstimator_Handle *estimator, uint32_t now_ms, uint8_t motors_active, uint8_t control_saturated)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/motion_estimator.h",
+        "line": 14
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MotionEstimator_Abs",
+        "MotionEstimator_ApplyLeak",
+        "MotionEstimator_Clamp",
+        "MotionEstimator_Confidence",
+        "memset",
+        "ready",
+        "snapshot"
+      ],
+      "writes": [
+        "last_seq"
+      ],
+      "description": "Integra una muestra nueva y actualiza flags/confianza según el contexto recibido.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/motion_estimator.c",
+        "line": 168
+      },
+      "linkage": "header"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "MotionEstimator_Clamp",
+      "signature": "static float MotionEstimator_Clamp(float value, float min_value, float max_value)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/motion_estimator.c",
+        "line": 15
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Clamp de Estimador de movimiento relativo; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "MotionEstimator_Abs",
+      "signature": "static float MotionEstimator_Abs(float value)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/motion_estimator.c",
+        "line": 26
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Abs de Estimador de movimiento relativo; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "MotionEstimator_ApplyLeak",
+      "signature": "static float MotionEstimator_ApplyLeak(float value, float leak_per_s, float dt_s)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/motion_estimator.c",
+        "line": 32
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "MotionEstimator_Clamp"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `MotionEstimator_Clamp` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "MotionEstimator_Confidence",
+      "signature": "static uint8_t MotionEstimator_Confidence(uint8_t flags, uint32_t time_without_reference_ms, uint32_t reference_timeout_ms)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/motion_estimator.c",
+        "line": 45
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Confidence de Estimador de movimiento relativo; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    }
+  ]
+}

@@ -1,0 +1,162 @@
+{
+  "schemaVersion": 1,
+  "edges": [
+    {
+      "from": "web:module/src/protocol/wsApi.ts",
+      "to": "esp:module/src/ws_json_bridge.h",
+      "kind": "wire-json-request",
+      "description": "requestId/command/args API1; respuesta/error correlacionado completa la Promise, queued solo acepta cola.",
+      "confidence": "source-reviewed"
+    },
+    {
+      "from": "esp:module/src/ws_json_bridge.h",
+      "to": "esp:module/src/uart_transaction_manager.h",
+      "kind": "in-process-request",
+      "description": "Copia argumentos binarios a UtmRequest, conserva client/generation/node y política de finalización.",
+      "confidence": "source-reviewed"
+    },
+    {
+      "from": "esp:module/src/uart_transaction_manager.h",
+      "to": "f4:module/Core/Inc/uner_app.h",
+      "kind": "wire-uner-uart",
+      "description": "Sin requestId en wire; ruta/command y ACK/NACK enlazan con la transacción ESP.",
+      "confidence": "source-reviewed"
+    },
+    {
+      "from": "f4:module/Core/Inc/menusystem.h",
+      "to": "esp:module/src/ws_json_bridge.h",
+      "kind": "wire-screen-report",
+      "description": "0x52/0x95/0x96 código/source y extensiones; faltan ventana, buffer OSK y snapshot general.",
+      "confidence": "source-reviewed"
+    },
+    {
+      "from": "esp:module/src/ws_json_bridge.h",
+      "to": "web:module/src/contexts/ScreenContext.tsx",
+      "kind": "wire-screen-json",
+      "description": "Decodifica enteros LE y publica screenCode/source/selección; conservar presencia de campos (ESP-002).",
+      "confidence": "source-reviewed"
+    },
+    {
+      "from": "web:module/src/contexts/ScreenContext.tsx",
+      "to": "web:module/src/screens/screenRenderRegistry.ts",
+      "kind": "render-model",
+      "description": "Normalización de identidad/datos alimenta builder candidato; no garantiza estado completo ni píxeles.",
+      "confidence": "source-reviewed"
+    },
+    {
+      "from": "web:module/src/screens/screenRenderRegistry.ts",
+      "to": "web:module/src/components/OledCommandPreview.tsx",
+      "kind": "draw-commands",
+      "description": "OledCommand[] termina en SVG actual; objetivo de port completo F4 pendiente.",
+      "confidence": "source-reviewed"
+    },
+    {
+      "from": "web:module/src/components/ScreenStreamWorkspace.tsx",
+      "to": "f4:module/Core/Inc/ui_event_router.h",
+      "kind": "remote-logical-input",
+      "description": "Comandos 0x53..0x58 atraviesan ESP/UNER, comparan screenCode y pasan por prioridades F4.",
+      "confidence": "source-reviewed"
+    },
+    {
+      "from": "f4:module/Core/Inc/ssd1306.h",
+      "to": "web:module/src/components/OledCommandPreview.tsx",
+      "kind": "port-target",
+      "description": "Fuente canónica de raster/recursos F4; adaptación Web actual no acredita copia completa.",
+      "confidence": "source-reviewed"
+    },
+    {
+      "from": "web:module/src/features/oledEditor/useOledCanvasTransfer.ts",
+      "to": "esp:module/src/oled_canvas_transfer.h",
+      "kind": "wire-oled-upload",
+      "description": "Begin/chunk/status/commit transaccional; sentido Web→F4, distinto del visor F4→Web.",
+      "confidence": "source-reviewed"
+    },
+    {
+      "from": "esp:module/src/oled_canvas_transfer.h",
+      "to": "f4:module/Core/Inc/oled_canvas.h",
+      "kind": "wire-oled-frame",
+      "description": "1024 bytes para 128×64 monocromo con contrato de páginas/CRC definido por protocolo, no imagen SVG.",
+      "confidence": "source-reviewed"
+    },
+    {
+      "from": "f4:module/Core/Inc/ssd1306.h",
+      "to": "f4:module/Core/Inc/i2c_manager.h",
+      "kind": "runtime-bus-port",
+      "description": "OLED solicita servicio de bus; MPU es otro cliente, sin dependencia OLED→MPU necesaria.",
+      "confidence": "source-reviewed"
+    },
+    {
+      "from": "esp:module/src/stream_broker.h",
+      "to": "esp:module/src/ws_session_manager.h",
+      "kind": "lifetime-session",
+      "description": "Demanda de streams ligada a client/generation, limpieza de sesión y estado upstream compartido.",
+      "confidence": "source-reviewed"
+    },
+    {
+      "from": "web:module/src/features/docs/docsContent.ts",
+      "to": "shared:documentation/amdoc-1",
+      "kind": "documentation-consumer",
+      "description": "Contenido Markdown/JSON e IDs por destino F4/ESP/Web; integración UI/selector diferida.",
+      "confidence": "source-reviewed"
+    },
+    {
+      "from": "web:module/src/contexts/UserContext.tsx",
+      "to": "shared:message/auth-pin/v1",
+      "kind": "uses-shared-message-contract",
+      "description": "Productor JSON de PIN/scopes y consumidor de concesión/TTL.",
+      "confidence": "source-reviewed"
+    },
+    {
+      "from": "esp:module/src/ws_json_bridge.h",
+      "to": "shared:message/auth-pin/v1",
+      "kind": "uses-shared-message-contract",
+      "description": "Serializa dígitos, correlaciona respuesta y aplica autoridad por generación.",
+      "confidence": "source-reviewed"
+    },
+    {
+      "from": "f4:module/Core/Inc/permissions.h",
+      "to": "shared:message/auth-pin/v1",
+      "kind": "uses-shared-message-contract",
+      "description": "Dueño del permiso y validación; edición física no es snapshot JSON.",
+      "confidence": "source-reviewed"
+    },
+    {
+      "from": "web:module/src/features/oledEditor/useOledCanvasTransfer.ts",
+      "to": "shared:message/oled-canvas/v1",
+      "kind": "uses-shared-message-contract",
+      "description": "Upload JSON, chunks512 y validación del resultado rendered.",
+      "confidence": "source-reviewed"
+    },
+    {
+      "from": "esp:module/src/oled_canvas_transfer.h",
+      "to": "shared:message/oled-canvas/v1",
+      "kind": "uses-shared-message-contract",
+      "description": "Ensamblado1024, CRC32 y fragmentos UART112.",
+      "confidence": "source-reviewed"
+    },
+    {
+      "from": "f4:module/Core/Inc/oled_canvas.h",
+      "to": "shared:message/oled-canvas/v1",
+      "kind": "uses-shared-message-contract",
+      "description": "Recepción/commit de imagen en pantalla de servicio, modo TEST.",
+      "confidence": "source-reviewed"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "shared:documentation/amdoc-1",
+      "kind": "method",
+      "page": "METHOD.md"
+    },
+    {
+      "id": "shared:message/auth-pin/v1",
+      "kind": "message-contract",
+      "page": "published/shared/contracts/auth-pin-v1.md"
+    },
+    {
+      "id": "shared:message/oled-canvas/v1",
+      "kind": "message-contract",
+      "page": "published/shared/contracts/oled-canvas-v1.md"
+    }
+  ]
+}

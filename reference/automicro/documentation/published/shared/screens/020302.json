@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "id": "shared:screen/020302",
+  "symbol": "SCREEN_CODE_CONNECTIVITY_ESP_CHECKING",
+  "code": 131842,
+  "hex": "0x020302",
+  "decomposition": {
+    "menu": 2,
+    "submenu": 3,
+    "page": 2
+  },
+  "revision": "working-copy-hashes",
+  "confidence": "manual-review",
+  "family": "shared:screen-family/general",
+  "numericObservation": "same-literal",
+  "webDeclaration": {
+    "value": 131842,
+    "line": 51
+  },
+  "metadataEntryObserved": true,
+  "evidence": [
+    {
+      "repo": "f4",
+      "path": "Core/Inc/screen_codes.h",
+      "line": 77
+    },
+    {
+      "repo": "web",
+      "path": "src/screens/screenCodes.ts",
+      "line": 51
+    }
+  ],
+  "renderers": [
+    {
+      "kind": "switch-case",
+      "path": "src/screens/screenRenderRegistry.ts",
+      "line": 408,
+      "builders": [
+        "buildScreen020302EspCheckingConnectionNotificationCommands"
+      ],
+      "availability": "parameterized-candidate"
+    }
+  ],
+  "callGraph": {
+    "status": "lexical-candidates-only",
+    "edges": []
+  },
+  "f4References": [
+    {
+      "repo": "f4",
+      "path": "Core/Src/menu_definition.c",
+      "line": 114,
+      "kind": "lexical-reference"
+    },
+    {
+      "repo": "f4",
+      "path": "Core/Src/oled_utils.c",
+      "line": 236,
+      "kind": "lexical-reference"
+    }
+  ],
+  "variants": [
+    "Identidad y comportamiento particular deben leerse en renderer, wrapper y router."
+  ],
+  "fields": [
+    {
+      "name": "screenCode/source",
+      "type": "u32/u8",
+      "units": "identidad",
+      "availability": "reported",
+      "note": "cuando existe un reporte de pantalla activa"
+    }
+  ],
+  "actions": [
+    "No atribuir acciones por el nombre del código: comprobar handler/permiso/contexto vigente."
+  ],
+  "transitions": [
+    "Las referencias de fuente son candidatas; no acreditan alcance en todos los modos."
+  ],
+  "missingData": [
+    "No se ha establecido modelo remoto completo ni igualdad de píxeles."
+  ],
+  "localOnly": [],
+  "findings": [
+    "AMDOC-WEB-003"
+  ],
+  "exactness": "not-established",
+  "notes": [
+    "Favoritos y confirmaciones compartidas pueden necesitar discriminantes adicionales."
+  ],
+  "role": "not-resolved"
+}

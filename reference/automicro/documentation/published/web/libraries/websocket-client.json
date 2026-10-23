@@ -1,0 +1,2118 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "web:module/src/protocol/wsApi.ts",
+  "slug": "websocket-client",
+  "title": "API JSON, Promises y WebSocket",
+  "target": "web",
+  "kind": "servicio",
+  "status": "source-documented",
+  "snapshotDate": "2026-10-20",
+  "verification": "not-run-user-instruction",
+  "responsibility": "Construye requests, conecta socket, correlaciona respuestas y entrega eventos a consumidores.",
+  "scope": "API 1, requestId/command, timeout, reconnect y listeners; un evento requestAccepted no resuelve la Promise.",
+  "state": "EspClient posee Map de pendientes y listeners; el sender es prestado por el provider. Cada pending conserva resolve/reject/timer y command. Callbacks/closures duran hasta finalización, cancelación o unsubscribe.",
+  "modularity": "wsApi/EspClient separan sobre y correlación del componente React; provider depende de navegador y transporte WebSocket.",
+  "lifecycle": [
+    "Conectar sender al abrir; desconectarlo cancela solicitudes pendientes.",
+    "request registra antes de enviar, con timeout configurable.",
+    "accept entrega eventos o completa respuesta/error correlacionado; cleanup debe retirar listeners/timers."
+  ],
+  "interactions": [
+    "ESP traduce a UNER y mantiene correlación/generación; el navegador no elige su nodo.",
+    "Los contextos consumen eventos y valores JSON, no memoria de structs C."
+  ],
+  "limitations": [
+    "Tipos TypeScript no validan automáticamente contenido remoto.",
+    "Timeout cliente, broker y operación física son plazos distintos."
+  ],
+  "relationships": [],
+  "findings": [],
+  "files": [
+    {
+      "rootId": "web",
+      "path": "src/contexts/WebSocketContext.tsx",
+      "sha256": "5107635387dd61c6edf766f61c9b12aff1cb1b9fb851f75495d1c9ba23704226",
+      "imports": [
+        "../components/modal",
+        "../protocol/espClient",
+        "../protocol/wsApi",
+        "react",
+        "sonner"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/hooks/useEspCommand.ts",
+      "sha256": "bde836257f8dd9c76eddca2afc29f90830407791ed791e65a34d803d9f42f62a",
+      "imports": [
+        "../protocol/wsApi",
+        "./useWebSocket",
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/hooks/useWebSocket.tsx",
+      "sha256": "f77eaff6d4ea41f42014dddfbb1253f2538ab5842c908b962e147a3a1aceffe1",
+      "imports": [
+        "../contexts/WebSocketContext",
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/protocol/espClient.ts",
+      "sha256": "d8189d8c5bb46d1dc74ef976ee56115342bbc82a5119da75fa823e1b6323bd07",
+      "imports": [
+        "./wsApi.ts"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/protocol/wsApi.ts",
+      "sha256": "2afd850fb874b68677249d0c22232876462e5bd3de00b1bbc93d5984e0b72af5",
+      "imports": [],
+      "analysisLevel": "typescript-ast-static"
+    }
+  ],
+  "types": [
+    {
+      "name": "WSMessageHandler",
+      "kind": "TypeAliasDeclaration",
+      "type": "(data: unknown) => void",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/WebSocketContext.tsx",
+        "line": 22
+      }
+    },
+    {
+      "name": "WSRawHandler",
+      "kind": "TypeAliasDeclaration",
+      "type": "(data: ArrayBuffer | Uint8Array) => void",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/WebSocketContext.tsx",
+        "line": 23
+      }
+    },
+    {
+      "name": "WSDataPacketMeta",
+      "kind": "TypeAliasDeclaration",
+      "type": "Record<string, unknown>",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/WebSocketContext.tsx",
+        "line": 24
+      }
+    },
+    {
+      "name": "ConnectionPhase",
+      "kind": "TypeAliasDeclaration",
+      "type": "| \"idle\" | \"connecting\" | \"authenticating\" | \"ready\" | \"retry_wait\" | \"failed\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/WebSocketContext.tsx",
+        "line": 26
+      }
+    },
+    {
+      "name": "ConnectionHealth",
+      "kind": "TypeAliasDeclaration",
+      "type": "\"connecting\" | \"ready\" | \"degraded\" | \"offline\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/WebSocketContext.tsx",
+        "line": 34
+      }
+    },
+    {
+      "name": "HeartbeatConfig",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "intervalMs",
+          "declaration": "intervalMs: number",
+          "callback": false,
+          "ownerType": "HeartbeatConfig",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/WebSocketContext.tsx",
+            "line": 37
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "maxRetries",
+          "declaration": "maxRetries: number",
+          "callback": false,
+          "ownerType": "HeartbeatConfig",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/WebSocketContext.tsx",
+            "line": 38
+          },
+          "description": "Dato de estado/configuración `maxRetries`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "isActive",
+          "declaration": "isActive: boolean",
+          "callback": false,
+          "ownerType": "HeartbeatConfig",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/WebSocketContext.tsx",
+            "line": 39
+          },
+          "description": "Dato de estado/configuración `isActive`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "remainingRetries",
+          "declaration": "remainingRetries: number",
+          "callback": false,
+          "ownerType": "HeartbeatConfig",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/WebSocketContext.tsx",
+            "line": 40
+          },
+          "description": "Dato de estado/configuración `remainingRetries`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/WebSocketContext.tsx",
+        "line": 36
+      }
+    },
+    {
+      "name": "WebSocketContextType",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "connected",
+          "declaration": "connected: boolean",
+          "callback": false,
+          "ownerType": "WebSocketContextType",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/WebSocketContext.tsx",
+            "line": 44
+          },
+          "description": "Dato de estado/configuración `connected`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "setConnected",
+          "declaration": "setConnected: (state: boolean) => void",
+          "callback": true,
+          "ownerType": "WebSocketContextType",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/WebSocketContext.tsx",
+            "line": 45
+          },
+          "description": "Operación set Connected de API JSON, Promises y WebSocket; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "connectionPhase",
+          "declaration": "connectionPhase: ConnectionPhase",
+          "callback": false,
+          "ownerType": "WebSocketContextType",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/WebSocketContext.tsx",
+            "line": 46
+          },
+          "description": "Dato de estado/configuración `connectionPhase`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "connectionHealth",
+          "declaration": "connectionHealth: ConnectionHealth",
+          "callback": false,
+          "ownerType": "WebSocketContextType",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/WebSocketContext.tsx",
+            "line": 47
+          },
+          "description": "Dato de estado/configuración `connectionHealth`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "hello",
+          "declaration": "hello: EspHello | null",
+          "callback": false,
+          "ownerType": "WebSocketContextType",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/WebSocketContext.tsx",
+            "line": 48
+          },
+          "description": "Dato de estado/configuración `hello`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "lastError",
+          "declaration": "lastError: EspApiError | Error | null",
+          "callback": false,
+          "ownerType": "WebSocketContextType",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/WebSocketContext.tsx",
+            "line": 49
+          },
+          "description": "Dato de estado/configuración `lastError`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "mockMode",
+          "declaration": "mockMode: boolean",
+          "callback": false,
+          "ownerType": "WebSocketContextType",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/WebSocketContext.tsx",
+            "line": 50
+          },
+          "description": "Dato de estado/configuración `mockMode`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "request",
+          "declaration": "request: <T>(command: CommandName, args?: Record<string, unknown>, options?: { requestId?: string; timeoutMs?: number }) => Promise<T>",
+          "callback": true,
+          "ownerType": "WebSocketContextType",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/WebSocketContext.tsx",
+            "line": 51
+          },
+          "description": "Solicita propiedad del bus con prioridad; la concesión llega por on_granted."
+        },
+        {
+          "name": "subscribeEvent",
+          "declaration": "subscribeEvent: (event: string, handler: (event: WsEvent) => void) => () => void",
+          "callback": true,
+          "ownerType": "WebSocketContextType",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/WebSocketContext.tsx",
+            "line": 52
+          },
+          "description": "Operación subscribe Event de API JSON, Promises y WebSocket; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "reconnect",
+          "declaration": "reconnect: () => void",
+          "callback": true,
+          "ownerType": "WebSocketContextType",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/WebSocketContext.tsx",
+            "line": 53
+          },
+          "description": "Operación reconnect de API JSON, Promises y WebSocket; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "send",
+          "declaration": "send: (type: string, payload?: unknown) => void",
+          "callback": true,
+          "ownerType": "WebSocketContextType",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/WebSocketContext.tsx",
+            "line": 54
+          },
+          "description": "Operación send de API JSON, Promises y WebSocket; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "subscribe",
+          "declaration": "subscribe: (type: string, handler: WSMessageHandler) => () => void",
+          "callback": true,
+          "ownerType": "WebSocketContextType",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/WebSocketContext.tsx",
+            "line": 55
+          },
+          "description": "Registra listener y devuelve una función para retirarlo."
+        },
+        {
+          "name": "sendRaw",
+          "declaration": "sendRaw: (data: Uint8Array, meta?: WSDataPacketMeta) => void",
+          "callback": true,
+          "ownerType": "WebSocketContextType",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/WebSocketContext.tsx",
+            "line": 56
+          },
+          "description": "Operación send Raw de API JSON, Promises y WebSocket; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "subscribeRaw",
+          "declaration": "subscribeRaw: (handler: WSRawHandler) => () => void",
+          "callback": true,
+          "ownerType": "WebSocketContextType",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/WebSocketContext.tsx",
+            "line": 57
+          },
+          "description": "Operación subscribe Raw de API JSON, Promises y WebSocket; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "disconnect",
+          "declaration": "disconnect: () => void",
+          "callback": true,
+          "ownerType": "WebSocketContextType",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/WebSocketContext.tsx",
+            "line": 58
+          },
+          "description": "Operación disconnect de API JSON, Promises y WebSocket; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "mockMessage",
+          "declaration": "mockMessage: (type: string, payload?: unknown) => void",
+          "callback": true,
+          "ownerType": "WebSocketContextType",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/WebSocketContext.tsx",
+            "line": 59
+          },
+          "description": "Operación mock Message de API JSON, Promises y WebSocket; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "mockRaw",
+          "declaration": "mockRaw: (data: Uint8Array) => void",
+          "callback": true,
+          "ownerType": "WebSocketContextType",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/WebSocketContext.tsx",
+            "line": 60
+          },
+          "description": "Operación mock Raw de API JSON, Promises y WebSocket; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "heartbeatConfig",
+          "declaration": "heartbeatConfig: HeartbeatConfig",
+          "callback": false,
+          "ownerType": "WebSocketContextType",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/WebSocketContext.tsx",
+            "line": 61
+          },
+          "description": "Dato de estado/configuración `heartbeatConfig`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "lastHeartbeatAt",
+          "declaration": "lastHeartbeatAt: number | null",
+          "callback": false,
+          "ownerType": "WebSocketContextType",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/WebSocketContext.tsx",
+            "line": 62
+          },
+          "description": "Dato de estado/configuración `lastHeartbeatAt`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "setHeartbeatInterval",
+          "declaration": "setHeartbeatInterval: (ms: number) => void",
+          "callback": true,
+          "ownerType": "WebSocketContextType",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/WebSocketContext.tsx",
+            "line": 63
+          },
+          "description": "Operación set Heartbeat Interval de API JSON, Promises y WebSocket; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "setHeartbeatMaxRetries",
+          "declaration": "setHeartbeatMaxRetries: (retries: number) => void",
+          "callback": true,
+          "ownerType": "WebSocketContextType",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/WebSocketContext.tsx",
+            "line": 64
+          },
+          "description": "Operación set Heartbeat Max Retries de API JSON, Promises y WebSocket; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "toggleHeartbeatWatchdog",
+          "declaration": "toggleHeartbeatWatchdog: () => void",
+          "callback": true,
+          "ownerType": "WebSocketContextType",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/WebSocketContext.tsx",
+            "line": 65
+          },
+          "description": "Operación toggle Heartbeat Watchdog de API JSON, Promises y WebSocket; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "resetHeartbeatWatchdog",
+          "declaration": "resetHeartbeatWatchdog: () => void",
+          "callback": true,
+          "ownerType": "WebSocketContextType",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/WebSocketContext.tsx",
+            "line": 66
+          },
+          "description": "Operación reset Heartbeat Watchdog de API JSON, Promises y WebSocket; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "onHeartbeatReceived",
+          "declaration": "onHeartbeatReceived: () => void",
+          "callback": true,
+          "ownerType": "WebSocketContextType",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/WebSocketContext.tsx",
+            "line": 67
+          },
+          "description": "Operación on Heartbeat Received de API JSON, Promises y WebSocket; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "retrying",
+          "declaration": "retrying: boolean",
+          "callback": false,
+          "ownerType": "WebSocketContextType",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/WebSocketContext.tsx",
+            "line": 68
+          },
+          "description": "Dato de estado/configuración `retrying`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "setRetrying",
+          "declaration": "setRetrying: (newVal: boolean) => void",
+          "callback": true,
+          "ownerType": "WebSocketContextType",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/WebSocketContext.tsx",
+            "line": 69
+          },
+          "description": "Operación set Retrying de API JSON, Promises y WebSocket; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "setShowRetryModal",
+          "declaration": "setShowRetryModal: (newVal: boolean) => void",
+          "callback": true,
+          "ownerType": "WebSocketContextType",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/WebSocketContext.tsx",
+            "line": 70
+          },
+          "description": "Operación set Show Retry Modal de API JSON, Promises y WebSocket; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "sensorRefreshInterval",
+          "declaration": "sensorRefreshInterval: number",
+          "callback": false,
+          "ownerType": "WebSocketContextType",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/WebSocketContext.tsx",
+            "line": 71
+          },
+          "description": "Dato de estado/configuración `sensorRefreshInterval`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "setSensorRefreshInterval",
+          "declaration": "setSensorRefreshInterval: (newVal: number) => void",
+          "callback": true,
+          "ownerType": "WebSocketContextType",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/WebSocketContext.tsx",
+            "line": 72
+          },
+          "description": "Operación set Sensor Refresh Interval de API JSON, Promises y WebSocket; semántica fina pendiente de ampliación."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/WebSocketContext.tsx",
+        "line": 43
+      }
+    },
+    {
+      "name": "WebSocketProviderProps",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "url",
+          "declaration": "url: string",
+          "callback": false,
+          "ownerType": "WebSocketProviderProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/WebSocketContext.tsx",
+            "line": 78
+          },
+          "description": "Dato de estado/configuración `url`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "children",
+          "declaration": "children: ReactNode",
+          "callback": false,
+          "ownerType": "WebSocketProviderProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/WebSocketContext.tsx",
+            "line": 79
+          },
+          "description": "Dato de estado/configuración `children`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/WebSocketContext.tsx",
+        "line": 77
+      }
+    },
+    {
+      "name": "EspApiError",
+      "kind": "ClassDeclaration",
+      "fields": [
+        {
+          "name": "code",
+          "declaration": "code: string",
+          "callback": false,
+          "ownerType": "EspApiError",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/protocol/espClient.ts",
+            "line": 11
+          },
+          "description": "Dato de estado/configuración `code`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "details",
+          "declaration": "details?: unknown",
+          "callback": false,
+          "ownerType": "EspApiError",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/protocol/espClient.ts",
+            "line": 12
+          },
+          "description": "Dato de estado/configuración `details`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/protocol/espClient.ts",
+        "line": 10
+      }
+    },
+    {
+      "name": "PendingRequest",
+      "kind": "TypeAliasDeclaration",
+      "fields": [
+        {
+          "name": "command",
+          "declaration": "command: CommandName",
+          "callback": false,
+          "ownerType": "PendingRequest",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/protocol/espClient.ts",
+            "line": 27
+          },
+          "description": "Dato de estado/configuración `command`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "resolve",
+          "declaration": "resolve: (data: unknown) => void",
+          "callback": true,
+          "ownerType": "PendingRequest",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/protocol/espClient.ts",
+            "line": 28
+          },
+          "description": "Operación resolve de API JSON, Promises y WebSocket; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "reject",
+          "declaration": "reject: (error: Error) => void",
+          "callback": true,
+          "ownerType": "PendingRequest",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/protocol/espClient.ts",
+            "line": 29
+          },
+          "description": "Operación reject de API JSON, Promises y WebSocket; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "timer",
+          "declaration": "timer: ReturnType<typeof setTimeout>",
+          "callback": false,
+          "ownerType": "PendingRequest",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/protocol/espClient.ts",
+            "line": 30
+          },
+          "description": "Dato de estado/configuración `timer`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/protocol/espClient.ts",
+        "line": 26
+      }
+    },
+    {
+      "name": "EventHandler",
+      "kind": "TypeAliasDeclaration",
+      "type": "(event: WsEvent) => void",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/protocol/espClient.ts",
+        "line": 33
+      }
+    },
+    {
+      "name": "EspClient",
+      "kind": "ClassDeclaration",
+      "fields": [
+        {
+          "name": "pending",
+          "declaration": "pending: inferred-by-TypeScript",
+          "callback": false,
+          "ownerType": "EspClient",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/protocol/espClient.ts",
+            "line": 36
+          },
+          "description": "Dato de estado/configuración `pending`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "eventListeners",
+          "declaration": "eventListeners: inferred-by-TypeScript",
+          "callback": false,
+          "ownerType": "EspClient",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/protocol/espClient.ts",
+            "line": 37
+          },
+          "description": "Dato de estado/configuración `eventListeners`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "sender",
+          "declaration": "sender: ((text: string) => void) | null",
+          "callback": false,
+          "ownerType": "EspClient",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/protocol/espClient.ts",
+            "line": 38
+          },
+          "description": "Dato de estado/configuración `sender`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "setSender",
+          "declaration": "setSender(sender: ((text: string) => void) | null): void",
+          "callback": true,
+          "ownerType": "EspClient",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/protocol/espClient.ts",
+            "line": 40
+          },
+          "description": "Operación set Sender de API JSON, Promises y WebSocket; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "request",
+          "declaration": "request(command: CommandName, args: Record<string, unknown>, options: { requestId?: string; timeoutMs?: number }): Promise<T>",
+          "callback": true,
+          "ownerType": "EspClient",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/protocol/espClient.ts",
+            "line": 47
+          },
+          "description": "Solicita propiedad del bus con prioridad; la concesión llega por on_granted."
+        },
+        {
+          "name": "accept",
+          "declaration": "accept(value: unknown): WsEnvelope | null",
+          "callback": true,
+          "ownerType": "EspClient",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/protocol/espClient.ts",
+            "line": 86
+          },
+          "description": "Despacha evento o completa el pending correlacionado por requestId/command."
+        },
+        {
+          "name": "subscribe",
+          "declaration": "subscribe(event: string, handler: EventHandler): () => void",
+          "callback": true,
+          "ownerType": "EspClient",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/protocol/espClient.ts",
+            "line": 127
+          },
+          "description": "Registra listener y devuelve una función para retirarlo."
+        },
+        {
+          "name": "cancelPending",
+          "declaration": "cancelPending(code: inferred-by-TypeScript, message: inferred-by-TypeScript): void",
+          "callback": true,
+          "ownerType": "EspClient",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/protocol/espClient.ts",
+            "line": 139
+          },
+          "description": "Rechaza pendientes y limpia sus timers al cancelar la conexión."
+        },
+        {
+          "name": "pendingCount",
+          "declaration": "pendingCount: number",
+          "callback": false,
+          "ownerType": "EspClient",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/protocol/espClient.ts",
+            "line": 147
+          },
+          "description": "Dato de estado/configuración `pendingCount`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/protocol/espClient.ts",
+        "line": 35
+      }
+    },
+    {
+      "name": "CommandName",
+      "kind": "TypeAliasDeclaration",
+      "type": "| (typeof ESP_COMMANDS)[keyof typeof ESP_COMMANDS] | string",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/protocol/wsApi.ts",
+        "line": 71
+      }
+    },
+    {
+      "name": "WsRequest",
+      "kind": "TypeAliasDeclaration",
+      "fields": [
+        {
+          "name": "api",
+          "declaration": "api: 1",
+          "callback": false,
+          "ownerType": "WsRequest",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/protocol/wsApi.ts",
+            "line": 76
+          },
+          "description": "Dato de estado/configuración `api`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "type",
+          "declaration": "type: \"request\"",
+          "callback": false,
+          "ownerType": "WsRequest",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/protocol/wsApi.ts",
+            "line": 77
+          },
+          "description": "Dato de estado/configuración `type`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "requestId",
+          "declaration": "requestId: string",
+          "callback": false,
+          "ownerType": "WsRequest",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/protocol/wsApi.ts",
+            "line": 78
+          },
+          "description": "Dato de estado/configuración `requestId`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "command",
+          "declaration": "command: CommandName",
+          "callback": false,
+          "ownerType": "WsRequest",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/protocol/wsApi.ts",
+            "line": 79
+          },
+          "description": "Dato de estado/configuración `command`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "args",
+          "declaration": "args: Record<string, unknown>",
+          "callback": false,
+          "ownerType": "WsRequest",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/protocol/wsApi.ts",
+            "line": 80
+          },
+          "description": "Dato de estado/configuración `args`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/protocol/wsApi.ts",
+        "line": 75
+      }
+    },
+    {
+      "name": "WsResponse",
+      "kind": "TypeAliasDeclaration",
+      "fields": [
+        {
+          "name": "api",
+          "declaration": "api: 1",
+          "callback": false,
+          "ownerType": "WsResponse",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/protocol/wsApi.ts",
+            "line": 84
+          },
+          "description": "Dato de estado/configuración `api`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "type",
+          "declaration": "type: \"response\"",
+          "callback": false,
+          "ownerType": "WsResponse",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/protocol/wsApi.ts",
+            "line": 85
+          },
+          "description": "Dato de estado/configuración `type`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "requestId",
+          "declaration": "requestId: string",
+          "callback": false,
+          "ownerType": "WsResponse",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/protocol/wsApi.ts",
+            "line": 86
+          },
+          "description": "Dato de estado/configuración `requestId`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ok",
+          "declaration": "ok: true",
+          "callback": false,
+          "ownerType": "WsResponse",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/protocol/wsApi.ts",
+            "line": 87
+          },
+          "description": "Dato de estado/configuración `ok`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "command",
+          "declaration": "command: CommandName",
+          "callback": false,
+          "ownerType": "WsResponse",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/protocol/wsApi.ts",
+            "line": 88
+          },
+          "description": "Dato de estado/configuración `command`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "data",
+          "declaration": "data: T",
+          "callback": false,
+          "ownerType": "WsResponse",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/protocol/wsApi.ts",
+            "line": 89
+          },
+          "description": "Dato de estado/configuración `data`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/protocol/wsApi.ts",
+        "line": 83
+      }
+    },
+    {
+      "name": "WsEvent",
+      "kind": "TypeAliasDeclaration",
+      "fields": [
+        {
+          "name": "api",
+          "declaration": "api: 1",
+          "callback": false,
+          "ownerType": "WsEvent",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/protocol/wsApi.ts",
+            "line": 93
+          },
+          "description": "Dato de estado/configuración `api`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "type",
+          "declaration": "type: \"event\"",
+          "callback": false,
+          "ownerType": "WsEvent",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/protocol/wsApi.ts",
+            "line": 94
+          },
+          "description": "Dato de estado/configuración `type`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "event",
+          "declaration": "event: string",
+          "callback": false,
+          "ownerType": "WsEvent",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/protocol/wsApi.ts",
+            "line": 95
+          },
+          "description": "Dato de estado/configuración `event`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "data",
+          "declaration": "data: T",
+          "callback": false,
+          "ownerType": "WsEvent",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/protocol/wsApi.ts",
+            "line": 96
+          },
+          "description": "Dato de estado/configuración `data`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/protocol/wsApi.ts",
+        "line": 92
+      }
+    },
+    {
+      "name": "WsError",
+      "kind": "TypeAliasDeclaration",
+      "fields": [
+        {
+          "name": "api",
+          "declaration": "api: 1",
+          "callback": false,
+          "ownerType": "WsError",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/protocol/wsApi.ts",
+            "line": 100
+          },
+          "description": "Dato de estado/configuración `api`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "type",
+          "declaration": "type: \"error\"",
+          "callback": false,
+          "ownerType": "WsError",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/protocol/wsApi.ts",
+            "line": 101
+          },
+          "description": "Dato de estado/configuración `type`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "requestId",
+          "declaration": "requestId?: string",
+          "callback": false,
+          "ownerType": "WsError",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/protocol/wsApi.ts",
+            "line": 102
+          },
+          "description": "Dato de estado/configuración `requestId`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "code",
+          "declaration": "code: WsErrorCode | string",
+          "callback": false,
+          "ownerType": "WsError",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/protocol/wsApi.ts",
+            "line": 103
+          },
+          "description": "Dato de estado/configuración `code`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "message",
+          "declaration": "message: string",
+          "callback": false,
+          "ownerType": "WsError",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/protocol/wsApi.ts",
+            "line": 104
+          },
+          "description": "Dato de estado/configuración `message`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "details",
+          "declaration": "details?: unknown",
+          "callback": false,
+          "ownerType": "WsError",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/protocol/wsApi.ts",
+            "line": 105
+          },
+          "description": "Dato de estado/configuración `details`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/protocol/wsApi.ts",
+        "line": 99
+      }
+    },
+    {
+      "name": "WsEnvelope",
+      "kind": "TypeAliasDeclaration",
+      "type": "WsResponse | WsEvent | WsError",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/protocol/wsApi.ts",
+        "line": 108
+      }
+    },
+    {
+      "name": "WsErrorCode",
+      "kind": "TypeAliasDeclaration",
+      "type": "| \"invalid_request\" | \"unauthorized\" | \"forbidden\" | \"unsupported_by_f4\" | \"busy\" | \"timeout\" | \"uart_error\" | \"f4_nack\" | \"offline\" | \"connection_lost\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/protocol/wsApi.ts",
+        "line": 110
+      }
+    },
+    {
+      "name": "EspHello",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "apiVersion",
+          "declaration": "apiVersion: number",
+          "callback": false,
+          "ownerType": "EspHello",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/protocol/wsApi.ts",
+            "line": 123
+          },
+          "description": "Dato de estado/configuración `apiVersion`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "espVersion",
+          "declaration": "espVersion?: string",
+          "callback": false,
+          "ownerType": "EspHello",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/protocol/wsApi.ts",
+            "line": 124
+          },
+          "description": "Dato de estado/configuración `espVersion`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "f4ContractCutoff",
+          "declaration": "f4ContractCutoff?: string",
+          "callback": false,
+          "ownerType": "EspHello",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/protocol/wsApi.ts",
+            "line": 125
+          },
+          "description": "Dato de estado/configuración `f4ContractCutoff`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "clientId",
+          "declaration": "clientId?: number",
+          "callback": false,
+          "ownerType": "EspHello",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/protocol/wsApi.ts",
+            "line": 126
+          },
+          "description": "Dato de estado/configuración `clientId`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "clientIp",
+          "declaration": "clientIp?: string",
+          "callback": false,
+          "ownerType": "EspHello",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/protocol/wsApi.ts",
+            "line": 127
+          },
+          "description": "Dato de estado/configuración `clientIp`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "sessionGeneration",
+          "declaration": "sessionGeneration?: number",
+          "callback": false,
+          "ownerType": "EspHello",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/protocol/wsApi.ts",
+            "line": 128
+          },
+          "description": "Dato de estado/configuración `sessionGeneration`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "resumeToken",
+          "declaration": "resumeToken?: string",
+          "callback": false,
+          "ownerType": "EspHello",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/protocol/wsApi.ts",
+            "line": 129
+          },
+          "description": "Dato de estado/configuración `resumeToken`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "assignedNode",
+          "declaration": "assignedNode?: string",
+          "callback": false,
+          "ownerType": "EspHello",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/protocol/wsApi.ts",
+            "line": 130
+          },
+          "description": "Dato de estado/configuración `assignedNode`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "maxClients",
+          "declaration": "maxClients?: number",
+          "callback": false,
+          "ownerType": "EspHello",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/protocol/wsApi.ts",
+            "line": 131
+          },
+          "description": "Dato de estado/configuración `maxClients`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "features",
+          "declaration": "features?: Record<string, boolean>",
+          "callback": false,
+          "ownerType": "EspHello",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/protocol/wsApi.ts",
+            "line": 132
+          },
+          "description": "Dato de estado/configuración `features`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "backend",
+          "declaration": "backend?: Record<string, unknown>",
+          "callback": false,
+          "ownerType": "EspHello",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/protocol/wsApi.ts",
+            "line": 133
+          },
+          "description": "Dato de estado/configuración `backend`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "sessionResumed",
+          "declaration": "sessionResumed?: boolean",
+          "callback": false,
+          "ownerType": "EspHello",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/protocol/wsApi.ts",
+            "line": 134
+          },
+          "description": "Dato de estado/configuración `sessionResumed`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "authenticated",
+          "declaration": "authenticated?: boolean",
+          "callback": false,
+          "ownerType": "EspHello",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/protocol/wsApi.ts",
+            "line": 135
+          },
+          "description": "Dato de estado/configuración `authenticated`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/protocol/wsApi.ts",
+        "line": 122
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "WebSocketProvider",
+      "displayName": "WebSocketProvider",
+      "signature": "WebSocketProvider({ url, children }: inferred-by-TypeScript): inferred-by-TypeScript",
+      "line": 86,
+      "endLine": 458,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "url.startsWith",
+        "useCallback",
+        "useEffect",
+        "useMemo",
+        "useRef",
+        "useState"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/WebSocketContext.tsx",
+        "line": 86
+      },
+      "description": "Coordina `url.startsWith`, `useCallback`, `useEffect` para API JSON, Promises y WebSocket.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildWsRequest",
+      "displayName": "buildWsRequest",
+      "signature": "buildWsRequest(command: CommandName, args: Record<string, unknown>, requestId: inferred-by-TypeScript): WsRequest",
+      "line": 146,
+      "endLine": 159,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/protocol/wsApi.ts",
+        "line": 146
+      },
+      "description": "Construye sobre API 1 con command, args y requestId válido.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "createRequestId",
+      "displayName": "createRequestId",
+      "signature": "createRequestId(prefix: inferred-by-TypeScript): string",
+      "line": 138,
+      "endLine": 144,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Date.now",
+        "Math.random",
+        "Math.random().toString",
+        "Math.random().toString(16).slice",
+        "crypto.randomUUID"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/protocol/wsApi.ts",
+        "line": 138
+      },
+      "description": "Coordina `Date.now`, `Math.random`, `Math.random().toString` para API JSON, Promises y WebSocket.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "decodeWsDataPacket",
+      "displayName": "decodeWsDataPacket",
+      "signature": "decodeWsDataPacket(message: Record<string, unknown>): Uint8Array | null",
+      "line": 460,
+      "endLine": 466,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Array.isArray",
+        "String",
+        "Uint8Array.from",
+        "WS_DATA_PACKET_TYPES.has",
+        "data.some",
+        "isRecord"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/WebSocketContext.tsx",
+        "line": 460
+      },
+      "description": "Coordina `Array.isArray`, `String`, `Uint8Array.from` para API JSON, Promises y WebSocket.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "isRecord",
+      "displayName": "isRecord",
+      "signature": "isRecord(value: unknown): value is Record<string, unknown>",
+      "line": 204,
+      "endLine": 206,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Array.isArray"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/protocol/wsApi.ts",
+        "line": 204
+      },
+      "description": "Adapta la llamada a `Array.isArray` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "parseWsEnvelope",
+      "displayName": "parseWsEnvelope",
+      "signature": "parseWsEnvelope(value: unknown): WsEnvelope | null",
+      "line": 161,
+      "endLine": 189,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "isRecord"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/protocol/wsApi.ts",
+        "line": 161
+      },
+      "description": "Acepta únicamente los sobres reconocidos de respuesta, evento o error.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "resolveWebSocketUrl",
+      "displayName": "resolveWebSocketUrl",
+      "signature": "resolveWebSocketUrl(configuredUrl: string | undefined, locationLike: Pick<Location, \"protocol\" | \"host\">): string",
+      "line": 191,
+      "endLine": 202,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "configuredUrl?.trim"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/protocol/wsApi.ts",
+        "line": 191
+      },
+      "description": "Adapta la llamada a `configuredUrl?.trim` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "safeParseJson",
+      "displayName": "safeParseJson",
+      "signature": "safeParseJson(text: string): unknown",
+      "line": 152,
+      "endLine": 158,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "JSON.parse"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/protocol/espClient.ts",
+        "line": 152
+      },
+      "description": "Adapta la llamada a `JSON.parse` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "toEspApiError",
+      "displayName": "toEspApiError",
+      "signature": "toEspApiError(error: WsError): EspApiError",
+      "line": 160,
+      "endLine": 162,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/protocol/espClient.ts",
+        "line": 160
+      },
+      "description": "Operación to Esp Api Error de API JSON, Promises y WebSocket; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "useEspCommand",
+      "displayName": "useEspCommand",
+      "signature": "useEspCommand(command: CommandName): inferred-by-TypeScript",
+      "line": 5,
+      "endLine": 25,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useCallback",
+        "useState",
+        "useWebSocket"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/hooks/useEspCommand.ts",
+        "line": 5
+      },
+      "description": "Coordina `useCallback`, `useState`, `useWebSocket` para API JSON, Promises y WebSocket.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "useWebSocket",
+      "displayName": "useWebSocket",
+      "signature": "useWebSocket(): inferred-by-TypeScript",
+      "line": 4,
+      "endLine": 10,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useContext"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/hooks/useWebSocket.tsx",
+        "line": 4
+      },
+      "description": "Adapta la llamada a `useContext` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "EspClient.accept",
+      "displayName": "accept",
+      "signature": "EspClient.accept(value: unknown): WsEnvelope | null",
+      "line": 86,
+      "endLine": 125,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "clearTimeout",
+        "parseWsEnvelope",
+        "pending.reject",
+        "pending.resolve",
+        "safeParseJson",
+        "this.eventListeners.get",
+        "this.eventListeners.get(\"*\")?.forEach",
+        "this.eventListeners.get(envelope.event)?.forEach",
+        "this.pending.delete",
+        "this.pending.get",
+        "toEspApiError"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/protocol/espClient.ts",
+        "line": 86
+      },
+      "description": "Despacha evento o completa el pending correlacionado por requestId/command.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "EspClient.cancelPending",
+      "displayName": "cancelPending",
+      "signature": "EspClient.cancelPending(code: inferred-by-TypeScript, message: inferred-by-TypeScript): void",
+      "line": 139,
+      "endLine": 145,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "clearTimeout",
+        "pending.reject",
+        "this.pending.clear",
+        "this.pending.values"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/protocol/espClient.ts",
+        "line": 139
+      },
+      "description": "Rechaza pendientes y limpia sus timers al cancelar la conexión.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "EspClient.pendingCount",
+      "displayName": "pendingCount",
+      "signature": "EspClient.pendingCount(): number",
+      "line": 147,
+      "endLine": 149,
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/protocol/espClient.ts",
+        "line": 147
+      },
+      "description": "Operación pending Count de API JSON, Promises y WebSocket; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "EspClient.request",
+      "displayName": "request",
+      "signature": "EspClient.request(command: CommandName, args: Record<string, unknown>, options: { requestId?: string; timeoutMs?: number }): Promise<T>",
+      "line": 47,
+      "endLine": 84,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Promise.reject",
+        "buildWsRequest",
+        "this.pending.has"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/protocol/espClient.ts",
+        "line": 47
+      },
+      "description": "Registra Promise correlacionada, envía JSON y establece timeout.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "EspClient.setSender",
+      "displayName": "setSender",
+      "signature": "EspClient.setSender(sender: ((text: string) => void) | null): void",
+      "line": 40,
+      "endLine": 45,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "this.cancelPending"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/protocol/espClient.ts",
+        "line": 40
+      },
+      "description": "Adapta la llamada a `this.cancelPending` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "EspClient.subscribe",
+      "displayName": "subscribe",
+      "signature": "EspClient.subscribe(event: string, handler: EventHandler): () => void",
+      "line": 127,
+      "endLine": 137,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "listeners.add",
+        "this.eventListeners.get",
+        "this.eventListeners.set"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/protocol/espClient.ts",
+        "line": 127
+      },
+      "description": "Registra listener y devuelve una función para retirarlo.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "WebSocketProvider.afterLoad",
+      "displayName": "afterLoad",
+      "signature": "WebSocketProvider.afterLoad(): inferred-by-TypeScript",
+      "line": 300,
+      "endLine": 300,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "window.requestAnimationFrame"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/WebSocketContext.tsx",
+        "line": 300
+      },
+      "description": "Adapta la llamada a `window.requestAnimationFrame` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WebSocketProvider.announce",
+      "displayName": "announce",
+      "signature": "WebSocketProvider.announce(): inferred-by-TypeScript",
+      "line": 293,
+      "endLine": 299,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "clientRef.current.request",
+        "clientRef.current.request(ESP_COMMANDS.PAGE_READY, {}, { timeoutMs: 3_000 }).catch"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/WebSocketContext.tsx",
+        "line": 293
+      },
+      "description": "Coordina `clientRef.current.request`, `clientRef.current.request(ESP_COMMANDS.PAGE_READY, {}, { timeoutMs: 3_000 }).catch` para API JSON, Promises y WebSocket.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WebSocketProvider.onPageHide",
+      "displayName": "onPageHide",
+      "signature": "WebSocketProvider.onPageHide(): inferred-by-TypeScript",
+      "line": 262,
+      "endLine": 266,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "clearTimer",
+        "wsRef.current?.close"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/WebSocketContext.tsx",
+        "line": 262
+      },
+      "description": "Coordina `clearTimer`, `wsRef.current?.close` para API JSON, Promises y WebSocket.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WebSocketProvider.onPageShow",
+      "displayName": "onPageShow",
+      "signature": "WebSocketProvider.onPageShow(event: PageTransitionEvent): inferred-by-TypeScript",
+      "line": 267,
+      "endLine": 269,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "connectRef.current"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/WebSocketContext.tsx",
+        "line": 267
+      },
+      "description": "Adapta la llamada a `connectRef.current` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    }
+  ],
+  "hooks": [
+    {
+      "callee": "useRef",
+      "scope": "WebSocketProvider",
+      "line": 88,
+      "arguments": 1,
+      "path": "src/contexts/WebSocketContext.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "WebSocketProvider",
+      "line": 89,
+      "arguments": 1,
+      "path": "src/contexts/WebSocketContext.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "WebSocketProvider",
+      "line": 90,
+      "arguments": 1,
+      "path": "src/contexts/WebSocketContext.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "WebSocketProvider",
+      "line": 91,
+      "arguments": 1,
+      "path": "src/contexts/WebSocketContext.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "WebSocketProvider",
+      "line": 92,
+      "arguments": 1,
+      "path": "src/contexts/WebSocketContext.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "WebSocketProvider",
+      "line": 93,
+      "arguments": 1,
+      "path": "src/contexts/WebSocketContext.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "WebSocketProvider",
+      "line": 94,
+      "arguments": 1,
+      "path": "src/contexts/WebSocketContext.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "WebSocketProvider",
+      "line": 95,
+      "arguments": 1,
+      "path": "src/contexts/WebSocketContext.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "WebSocketProvider",
+      "line": 96,
+      "arguments": 1,
+      "path": "src/contexts/WebSocketContext.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "WebSocketProvider",
+      "line": 97,
+      "arguments": 1,
+      "path": "src/contexts/WebSocketContext.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "WebSocketProvider",
+      "line": 98,
+      "arguments": 1,
+      "path": "src/contexts/WebSocketContext.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "WebSocketProvider",
+      "line": 100,
+      "arguments": 1,
+      "path": "src/contexts/WebSocketContext.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "WebSocketProvider",
+      "line": 101,
+      "arguments": 1,
+      "path": "src/contexts/WebSocketContext.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "WebSocketProvider",
+      "line": 102,
+      "arguments": 1,
+      "path": "src/contexts/WebSocketContext.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "WebSocketProvider",
+      "line": 103,
+      "arguments": 1,
+      "path": "src/contexts/WebSocketContext.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "WebSocketProvider",
+      "line": 104,
+      "arguments": 1,
+      "path": "src/contexts/WebSocketContext.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "WebSocketProvider",
+      "line": 105,
+      "arguments": 1,
+      "path": "src/contexts/WebSocketContext.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "WebSocketProvider",
+      "line": 106,
+      "arguments": 1,
+      "path": "src/contexts/WebSocketContext.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "WebSocketProvider",
+      "line": 124,
+      "arguments": 2,
+      "path": "src/contexts/WebSocketContext.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "WebSocketProvider",
+      "line": 129,
+      "arguments": 2,
+      "path": "src/contexts/WebSocketContext.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "WebSocketProvider",
+      "line": 133,
+      "arguments": 2,
+      "path": "src/contexts/WebSocketContext.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "WebSocketProvider",
+      "line": 182,
+      "arguments": 2,
+      "path": "src/contexts/WebSocketContext.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "WebSocketProvider",
+      "line": 198,
+      "arguments": 2,
+      "path": "src/contexts/WebSocketContext.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "WebSocketProvider",
+      "line": 258,
+      "arguments": 2,
+      "path": "src/contexts/WebSocketContext.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "WebSocketProvider",
+      "line": 288,
+      "arguments": 2,
+      "path": "src/contexts/WebSocketContext.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "WebSocketProvider",
+      "line": 310,
+      "arguments": 1,
+      "path": "src/contexts/WebSocketContext.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "WebSocketProvider",
+      "line": 311,
+      "arguments": 2,
+      "path": "src/contexts/WebSocketContext.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "WebSocketProvider",
+      "line": 334,
+      "arguments": 2,
+      "path": "src/contexts/WebSocketContext.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "WebSocketProvider",
+      "line": 351,
+      "arguments": 2,
+      "path": "src/contexts/WebSocketContext.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "WebSocketProvider",
+      "line": 356,
+      "arguments": 2,
+      "path": "src/contexts/WebSocketContext.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "WebSocketProvider",
+      "line": 358,
+      "arguments": 2,
+      "path": "src/contexts/WebSocketContext.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "WebSocketProvider",
+      "line": 371,
+      "arguments": 2,
+      "path": "src/contexts/WebSocketContext.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "WebSocketProvider",
+      "line": 381,
+      "arguments": 2,
+      "path": "src/contexts/WebSocketContext.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "WebSocketProvider",
+      "line": 387,
+      "arguments": 2,
+      "path": "src/contexts/WebSocketContext.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "WebSocketProvider",
+      "line": 392,
+      "arguments": 2,
+      "path": "src/contexts/WebSocketContext.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "WebSocketProvider",
+      "line": 404,
+      "arguments": 2,
+      "path": "src/contexts/WebSocketContext.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "WebSocketProvider",
+      "line": 413,
+      "arguments": 2,
+      "path": "src/contexts/WebSocketContext.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "WebSocketProvider",
+      "line": 414,
+      "arguments": 2,
+      "path": "src/contexts/WebSocketContext.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "WebSocketProvider",
+      "line": 415,
+      "arguments": 2,
+      "path": "src/contexts/WebSocketContext.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "WebSocketProvider",
+      "line": 416,
+      "arguments": 2,
+      "path": "src/contexts/WebSocketContext.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "WebSocketProvider",
+      "line": 417,
+      "arguments": 2,
+      "path": "src/contexts/WebSocketContext.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "WebSocketProvider",
+      "line": 422,
+      "arguments": 2,
+      "path": "src/contexts/WebSocketContext.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "WebSocketProvider",
+      "line": 423,
+      "arguments": 2,
+      "path": "src/contexts/WebSocketContext.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "WebSocketProvider",
+      "line": 427,
+      "arguments": 2,
+      "path": "src/contexts/WebSocketContext.tsx"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "WebSocketProvider",
+      "line": 429,
+      "arguments": 2,
+      "path": "src/contexts/WebSocketContext.tsx"
+    },
+    {
+      "callee": "useWebSocket",
+      "scope": "useEspCommand",
+      "line": 6,
+      "arguments": 0,
+      "path": "src/hooks/useEspCommand.ts"
+    },
+    {
+      "callee": "useState",
+      "scope": "useEspCommand",
+      "line": 7,
+      "arguments": 1,
+      "path": "src/hooks/useEspCommand.ts"
+    },
+    {
+      "callee": "useState",
+      "scope": "useEspCommand",
+      "line": 8,
+      "arguments": 1,
+      "path": "src/hooks/useEspCommand.ts"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "useEspCommand",
+      "line": 10,
+      "arguments": 2,
+      "path": "src/hooks/useEspCommand.ts"
+    },
+    {
+      "callee": "useContext",
+      "scope": "useWebSocket",
+      "line": 5,
+      "arguments": 1,
+      "path": "src/hooks/useWebSocket.tsx"
+    }
+  ]
+}

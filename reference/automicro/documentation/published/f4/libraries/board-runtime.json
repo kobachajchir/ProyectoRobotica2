@@ -1,0 +1,1821 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "f4:module/Core/Src/main.c",
+  "slug": "board-runtime",
+  "title": "Arranque de placa e interrupciones STM32",
+  "target": "f4",
+  "kind": "plataforma",
+  "status": "source-documented",
+  "verification": "not-run-user-instruction",
+  "snapshotDate": "2026-10-20",
+  "responsibility": "Inicializa reloj, periféricos y bucle de aplicación y conecta vectores de interrupción a HAL.",
+  "scope": "Código generado/de plataforma para STM32F411CEU6; CubeMX/.ioc permanece fuente del pinout. No se confunde con las librerías reutilizables.",
+  "state": "Handles HAL de periféricos, estado del runtime C y recursos estáticos pertenecen a la placa; los puertos neutrales los reciben como referencias opacas.",
+  "lifecycle": [
+    "main inicializa plataforma antes de APP_Init y atiende el bucle.",
+    "IRQs llaman HAL y los callbacks de aplicación; evitar trabajo bloqueante arbitrario dentro de IRQ.",
+    "Error_Handler y faults describen rutas de fallo de plataforma, no estados recuperables del protocolo."
+  ],
+  "interactions": [
+    "app_tasks.c es el puente hacia librerías; los módulos neutrales no deben importar main.h."
+  ],
+  "limitations": [
+    "No se compiló ni cargó firmware; no se modifica configuración CubeMX.",
+    "Vendor y startup/linker fuera de Core/USB_DEVICE están excluidos explícitamente de esta extracción."
+  ],
+  "modularity": "Dependencia directa STM32/HAL/CMSIS esperada. Su portabilidad requiere reemplazar inicialización, IRQ y adaptadores.",
+  "files": [
+    {
+      "path": "Core/Inc/main.h",
+      "rootId": "f4",
+      "sha256": "365bac6e7e69041db8055e56adaf758c8cd6c5e7a6bfa75cc2b51f1d5d0de959",
+      "includes": [
+        "stm32f4xx_hal.h"
+      ]
+    },
+    {
+      "path": "Core/Inc/stm32f4xx_it.h",
+      "rootId": "f4",
+      "sha256": "c12e6de8c0098590467b665024ab89057561b472ef1b4d1c4951d90295eac890",
+      "includes": []
+    },
+    {
+      "path": "Core/Inc/stm32f4xx_hal_conf.h",
+      "rootId": "f4",
+      "sha256": "3717c97421d96025653534a6652b7fb137e3fa17375345d170fbdd3587c9577b",
+      "includes": [
+        "stm32f4xx_hal_rcc.h",
+        "stm32f4xx_hal_gpio.h",
+        "stm32f4xx_hal_exti.h",
+        "stm32f4xx_hal_dma.h",
+        "stm32f4xx_hal_cortex.h",
+        "stm32f4xx_hal_adc.h",
+        "stm32f4xx_hal_can.h",
+        "stm32f4xx_hal_can_legacy.h",
+        "stm32f4xx_hal_crc.h",
+        "stm32f4xx_hal_cryp.h",
+        "stm32f4xx_hal_dma2d.h",
+        "stm32f4xx_hal_dac.h",
+        "stm32f4xx_hal_dcmi.h",
+        "stm32f4xx_hal_eth.h",
+        "stm32f4xx_hal_eth_legacy.h",
+        "stm32f4xx_hal_flash.h",
+        "stm32f4xx_hal_sram.h",
+        "stm32f4xx_hal_nor.h",
+        "stm32f4xx_hal_nand.h",
+        "stm32f4xx_hal_pccard.h",
+        "stm32f4xx_hal_sdram.h",
+        "stm32f4xx_hal_hash.h",
+        "stm32f4xx_hal_i2c.h",
+        "stm32f4xx_hal_smbus.h",
+        "stm32f4xx_hal_i2s.h",
+        "stm32f4xx_hal_iwdg.h",
+        "stm32f4xx_hal_ltdc.h",
+        "stm32f4xx_hal_pwr.h",
+        "stm32f4xx_hal_rng.h",
+        "stm32f4xx_hal_rtc.h",
+        "stm32f4xx_hal_sai.h",
+        "stm32f4xx_hal_sd.h",
+        "stm32f4xx_hal_spi.h",
+        "stm32f4xx_hal_tim.h",
+        "stm32f4xx_hal_uart.h",
+        "stm32f4xx_hal_usart.h",
+        "stm32f4xx_hal_irda.h",
+        "stm32f4xx_hal_smartcard.h",
+        "stm32f4xx_hal_wwdg.h",
+        "stm32f4xx_hal_pcd.h",
+        "stm32f4xx_hal_hcd.h",
+        "stm32f4xx_hal_dsi.h",
+        "stm32f4xx_hal_qspi.h",
+        "stm32f4xx_hal_cec.h",
+        "stm32f4xx_hal_fmpi2c.h",
+        "stm32f4xx_hal_fmpsmbus.h",
+        "stm32f4xx_hal_spdifrx.h",
+        "stm32f4xx_hal_dfsdm.h",
+        "stm32f4xx_hal_lptim.h",
+        "stm32f4xx_hal_mmc.h"
+      ]
+    },
+    {
+      "path": "Core/Inc/app_version.h",
+      "rootId": "f4",
+      "sha256": "2d2621b37fce9aefa081e6dcf3a12c35b812e8db1a5b325110c221bfe1b3c5f5",
+      "includes": []
+    },
+    {
+      "path": "Core/Src/main.c",
+      "rootId": "f4",
+      "sha256": "363b600e2687ea080f5eb56af66a379479e7e2d5359e6a15ca4bf54ca84a969b",
+      "includes": [
+        "main.h",
+        "usb_device.h",
+        "app_tasks.h",
+        "app_preferences_binding.h",
+        "app_preferences_stm32.h",
+        "tcrt5000.h"
+      ]
+    },
+    {
+      "path": "Core/Src/stm32f4xx_it.c",
+      "rootId": "f4",
+      "sha256": "b3ace6719bc74b20eddfab88110cc0ae2c2946a6c57c38c2930c9d7c589c47cc",
+      "includes": [
+        "main.h",
+        "stm32f4xx_it.h",
+        "app_wifi_binding.h"
+      ]
+    },
+    {
+      "path": "Core/Src/stm32f4xx_hal_msp.c",
+      "rootId": "f4",
+      "sha256": "5614c2508675e4747d3d3c350f3e5e0aee1dd8f78e44751d6a9077d7018e9ab3",
+      "includes": [
+        "main.h"
+      ]
+    },
+    {
+      "path": "Core/Src/system_stm32f4xx.c",
+      "rootId": "f4",
+      "sha256": "a3b81129e52ae083587238d759a5b9d7072e37326af5c7542b73b03936333cba",
+      "includes": [
+        "stm32f4xx.h"
+      ]
+    },
+    {
+      "path": "Core/Src/syscalls.c",
+      "rootId": "f4",
+      "sha256": "b993ebb4f882e8be21cec8d95983655a0caf4f0eb11348f20f6371f5a5031717",
+      "includes": [
+        "sys/stat.h",
+        "stdlib.h",
+        "errno.h",
+        "stdio.h",
+        "signal.h",
+        "time.h",
+        "sys/time.h",
+        "sys/times.h"
+      ]
+    },
+    {
+      "path": "Core/Src/sysmem.c",
+      "rootId": "f4",
+      "sha256": "c41145817cc20abd8881c38851745d6e509e5f8c44a5179b125d108e51d1d432",
+      "includes": [
+        "errno.h",
+        "stdint.h"
+      ]
+    }
+  ],
+  "findings": [],
+  "types": [],
+  "functions": [
+    {
+      "name": "BusFault_Handler",
+      "signature": "void BusFault_Handler(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/stm32f4xx_it.h",
+        "line": 52
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Bus Fault Handler de Arranque de placa e interrupciones STM32; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/stm32f4xx_it.c",
+        "line": 125
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "DMA1_Stream0_IRQHandler",
+      "signature": "void DMA1_Stream0_IRQHandler(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/stm32f4xx_it.h",
+        "line": 58
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "HAL_DMA_IRQHandler"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `HAL_DMA_IRQHandler` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/stm32f4xx_it.c",
+        "line": 215
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "DMA1_Stream3_IRQHandler",
+      "signature": "void DMA1_Stream3_IRQHandler(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/stm32f4xx_it.h",
+        "line": 59
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "HAL_DMA_IRQHandler"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `HAL_DMA_IRQHandler` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/stm32f4xx_it.c",
+        "line": 229
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "DMA1_Stream4_IRQHandler",
+      "signature": "void DMA1_Stream4_IRQHandler(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/stm32f4xx_it.h",
+        "line": 60
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "HAL_DMA_IRQHandler"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `HAL_DMA_IRQHandler` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/stm32f4xx_it.c",
+        "line": 243
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "DMA1_Stream6_IRQHandler",
+      "signature": "void DMA1_Stream6_IRQHandler(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/stm32f4xx_it.h",
+        "line": 61
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "HAL_DMA_IRQHandler"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `HAL_DMA_IRQHandler` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/stm32f4xx_it.c",
+        "line": 257
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "DMA2_Stream0_IRQHandler",
+      "signature": "void DMA2_Stream0_IRQHandler(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/stm32f4xx_it.h",
+        "line": 67
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "HAL_DMA_IRQHandler"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `HAL_DMA_IRQHandler` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/stm32f4xx_it.c",
+        "line": 346
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "DMA2_Stream2_IRQHandler",
+      "signature": "void DMA2_Stream2_IRQHandler(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/stm32f4xx_it.h",
+        "line": 68
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "HAL_DMA_IRQHandler"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `HAL_DMA_IRQHandler` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/stm32f4xx_it.c",
+        "line": 360
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "DMA2_Stream7_IRQHandler",
+      "signature": "void DMA2_Stream7_IRQHandler(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/stm32f4xx_it.h",
+        "line": 70
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "HAL_DMA_IRQHandler"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `HAL_DMA_IRQHandler` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/stm32f4xx_it.c",
+        "line": 388
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "DebugMon_Handler",
+      "signature": "void DebugMon_Handler(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/stm32f4xx_it.h",
+        "line": 55
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Debug Mon Handler de Arranque de placa e interrupciones STM32; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/stm32f4xx_it.c",
+        "line": 168
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "EXTI9_5_IRQHandler",
+      "signature": "void EXTI9_5_IRQHandler(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/stm32f4xx_it.h",
+        "line": 62
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "HAL_GPIO_EXTI_IRQHandler"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `HAL_GPIO_EXTI_IRQHandler` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/stm32f4xx_it.c",
+        "line": 271
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "Error_Handler",
+      "signature": "void Error_Handler(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/main.h",
+        "line": 55
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "__disable_irq"
+      ],
+      "writes": [],
+      "description": "Entra al manejo de fallo no recuperable de plataforma.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/main.c",
+        "line": 725
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "HAL_ADC_MspDeInit",
+      "signature": "void HAL_ADC_MspDeInit(ADC_HandleTypeDef* hadc)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/stm32f4xx_hal_msp.c",
+        "line": 167
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "HAL_DMA_DeInit",
+        "HAL_GPIO_DeInit",
+        "__HAL_RCC_ADC1_CLK_DISABLE"
+      ],
+      "writes": [],
+      "description": "Coordina `HAL_DMA_DeInit`, `HAL_GPIO_DeInit`, `__HAL_RCC_ADC1_CLK_DISABLE` para Arranque de placa e interrupciones STM32.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/stm32f4xx_hal_msp.c",
+        "line": 167
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "HAL_ADC_MspInit",
+      "signature": "void HAL_ADC_MspInit(ADC_HandleTypeDef* hadc)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/stm32f4xx_hal_msp.c",
+        "line": 100
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Error_Handler",
+        "HAL_DMA_Init",
+        "HAL_GPIO_Init",
+        "__HAL_LINKDMA",
+        "__HAL_RCC_ADC1_CLK_ENABLE",
+        "__HAL_RCC_GPIOA_CLK_ENABLE",
+        "__HAL_RCC_GPIOB_CLK_ENABLE"
+      ],
+      "writes": [],
+      "description": "Coordina `Error_Handler`, `HAL_DMA_Init`, `HAL_GPIO_Init` para Arranque de placa e interrupciones STM32.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/stm32f4xx_hal_msp.c",
+        "line": 100
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "HAL_I2C_MspDeInit",
+      "signature": "void HAL_I2C_MspDeInit(I2C_HandleTypeDef* hi2c)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/stm32f4xx_hal_msp.c",
+        "line": 287
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "HAL_DMA_DeInit",
+        "HAL_GPIO_DeInit",
+        "HAL_NVIC_DisableIRQ",
+        "__HAL_RCC_I2C1_CLK_DISABLE"
+      ],
+      "writes": [],
+      "description": "Coordina `HAL_DMA_DeInit`, `HAL_GPIO_DeInit`, `HAL_NVIC_DisableIRQ` para Arranque de placa e interrupciones STM32.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/stm32f4xx_hal_msp.c",
+        "line": 287
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "HAL_I2C_MspInit",
+      "signature": "void HAL_I2C_MspInit(I2C_HandleTypeDef* hi2c)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/stm32f4xx_hal_msp.c",
+        "line": 207
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Error_Handler",
+        "HAL_DMA_Init",
+        "HAL_GPIO_Init",
+        "HAL_NVIC_EnableIRQ",
+        "HAL_NVIC_SetPriority",
+        "__HAL_LINKDMA",
+        "__HAL_RCC_GPIOB_CLK_ENABLE",
+        "__HAL_RCC_I2C1_CLK_ENABLE"
+      ],
+      "writes": [],
+      "description": "Coordina `Error_Handler`, `HAL_DMA_Init`, `HAL_GPIO_Init` para Arranque de placa e interrupciones STM32.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/stm32f4xx_hal_msp.c",
+        "line": 207
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "HAL_MspInit",
+      "signature": "void HAL_MspInit(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/stm32f4xx_hal_msp.c",
+        "line": 77
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "__HAL_RCC_PWR_CLK_ENABLE",
+        "__HAL_RCC_SYSCFG_CLK_ENABLE"
+      ],
+      "writes": [],
+      "description": "Coordina `__HAL_RCC_PWR_CLK_ENABLE`, `__HAL_RCC_SYSCFG_CLK_ENABLE` para Arranque de placa e interrupciones STM32.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/stm32f4xx_hal_msp.c",
+        "line": 77
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "HAL_SPI_MspDeInit",
+      "signature": "void HAL_SPI_MspDeInit(SPI_HandleTypeDef* hspi)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/stm32f4xx_hal_msp.c",
+        "line": 400
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "HAL_DMA_DeInit",
+        "HAL_GPIO_DeInit",
+        "__HAL_RCC_SPI2_CLK_DISABLE"
+      ],
+      "writes": [],
+      "description": "Coordina `HAL_DMA_DeInit`, `HAL_GPIO_DeInit`, `__HAL_RCC_SPI2_CLK_DISABLE` para Arranque de placa e interrupciones STM32.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/stm32f4xx_hal_msp.c",
+        "line": 400
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "HAL_SPI_MspInit",
+      "signature": "void HAL_SPI_MspInit(SPI_HandleTypeDef* hspi)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/stm32f4xx_hal_msp.c",
+        "line": 325
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Error_Handler",
+        "HAL_DMA_Init",
+        "HAL_GPIO_Init",
+        "__HAL_LINKDMA",
+        "__HAL_RCC_GPIOB_CLK_ENABLE",
+        "__HAL_RCC_SPI2_CLK_ENABLE"
+      ],
+      "writes": [],
+      "description": "Coordina `Error_Handler`, `HAL_DMA_Init`, `HAL_GPIO_Init` para Arranque de placa e interrupciones STM32.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/stm32f4xx_hal_msp.c",
+        "line": 325
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "HAL_TIM_Base_MspDeInit",
+      "signature": "void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* htim_base)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/stm32f4xx_hal_msp.c",
+        "line": 543
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "HAL_NVIC_DisableIRQ",
+        "__HAL_RCC_TIM2_CLK_DISABLE",
+        "__HAL_RCC_TIM3_CLK_DISABLE"
+      ],
+      "writes": [],
+      "description": "Coordina `HAL_NVIC_DisableIRQ`, `__HAL_RCC_TIM2_CLK_DISABLE`, `__HAL_RCC_TIM3_CLK_DISABLE` para Arranque de placa e interrupciones STM32.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/stm32f4xx_hal_msp.c",
+        "line": 543
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "HAL_TIM_Base_MspInit",
+      "signature": "void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* htim_base)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/stm32f4xx_hal_msp.c",
+        "line": 433
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "HAL_NVIC_EnableIRQ",
+        "HAL_NVIC_SetPriority",
+        "__HAL_RCC_TIM2_CLK_ENABLE",
+        "__HAL_RCC_TIM3_CLK_ENABLE"
+      ],
+      "writes": [],
+      "description": "Coordina `HAL_NVIC_EnableIRQ`, `HAL_NVIC_SetPriority`, `__HAL_RCC_TIM2_CLK_ENABLE` para Arranque de placa e interrupciones STM32.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/stm32f4xx_hal_msp.c",
+        "line": 433
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "HAL_TIM_Encoder_MspDeInit",
+      "signature": "void HAL_TIM_Encoder_MspDeInit(TIM_HandleTypeDef* htim_encoder)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/stm32f4xx_hal_msp.c",
+        "line": 579
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "HAL_GPIO_DeInit",
+        "__HAL_RCC_TIM4_CLK_DISABLE"
+      ],
+      "writes": [],
+      "description": "Coordina `HAL_GPIO_DeInit`, `__HAL_RCC_TIM4_CLK_DISABLE` para Arranque de placa e interrupciones STM32.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/stm32f4xx_hal_msp.c",
+        "line": 579
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "HAL_TIM_Encoder_MspInit",
+      "signature": "void HAL_TIM_Encoder_MspInit(TIM_HandleTypeDef* htim_encoder)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/stm32f4xx_hal_msp.c",
+        "line": 469
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "HAL_GPIO_Init",
+        "__HAL_RCC_GPIOB_CLK_ENABLE",
+        "__HAL_RCC_TIM4_CLK_ENABLE"
+      ],
+      "writes": [],
+      "description": "Coordina `HAL_GPIO_Init`, `__HAL_RCC_GPIOB_CLK_ENABLE`, `__HAL_RCC_TIM4_CLK_ENABLE` para Arranque de placa e interrupciones STM32.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/stm32f4xx_hal_msp.c",
+        "line": 469
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "HAL_TIM_MspPostInit",
+      "signature": "void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/main.h",
+        "line": 52
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "HAL_GPIO_Init",
+        "__HAL_RCC_GPIOA_CLK_ENABLE",
+        "__HAL_RCC_GPIOB_CLK_ENABLE"
+      ],
+      "writes": [],
+      "description": "Coordina `HAL_GPIO_Init`, `__HAL_RCC_GPIOA_CLK_ENABLE`, `__HAL_RCC_GPIOB_CLK_ENABLE` para Arranque de placa e interrupciones STM32.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/stm32f4xx_hal_msp.c",
+        "line": 500
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "HAL_UART_MspDeInit",
+      "signature": "void HAL_UART_MspDeInit(UART_HandleTypeDef* huart)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/stm32f4xx_hal_msp.c",
+        "line": 685
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "HAL_DMA_DeInit",
+        "HAL_GPIO_DeInit",
+        "HAL_NVIC_DisableIRQ",
+        "__HAL_RCC_USART1_CLK_DISABLE"
+      ],
+      "writes": [],
+      "description": "Coordina `HAL_DMA_DeInit`, `HAL_GPIO_DeInit`, `HAL_NVIC_DisableIRQ` para Arranque de placa e interrupciones STM32.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/stm32f4xx_hal_msp.c",
+        "line": 685
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "HAL_UART_MspInit",
+      "signature": "void HAL_UART_MspInit(UART_HandleTypeDef* huart)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/stm32f4xx_hal_msp.c",
+        "line": 608
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Error_Handler",
+        "HAL_DMA_Init",
+        "HAL_GPIO_Init",
+        "HAL_NVIC_EnableIRQ",
+        "HAL_NVIC_SetPriority",
+        "__HAL_LINKDMA",
+        "__HAL_RCC_GPIOA_CLK_ENABLE",
+        "__HAL_RCC_USART1_CLK_ENABLE"
+      ],
+      "writes": [],
+      "description": "Coordina `Error_Handler`, `HAL_DMA_Init`, `HAL_GPIO_Init` para Arranque de placa e interrupciones STM32.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/stm32f4xx_hal_msp.c",
+        "line": 608
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "HardFault_Handler",
+      "signature": "void HardFault_Handler(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/stm32f4xx_it.h",
+        "line": 50
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Hard Fault Handler de Arranque de placa e interrupciones STM32; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/stm32f4xx_it.c",
+        "line": 95
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "I2C1_ER_IRQHandler",
+      "signature": "void I2C1_ER_IRQHandler(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/stm32f4xx_it.h",
+        "line": 65
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "HAL_I2C_ER_IRQHandler"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `HAL_I2C_ER_IRQHandler` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/stm32f4xx_it.c",
+        "line": 313
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "I2C1_EV_IRQHandler",
+      "signature": "void I2C1_EV_IRQHandler(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/stm32f4xx_it.h",
+        "line": 64
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "HAL_I2C_EV_IRQHandler"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `HAL_I2C_EV_IRQHandler` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/stm32f4xx_it.c",
+        "line": 299
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MemManage_Handler",
+      "signature": "void MemManage_Handler(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/stm32f4xx_it.h",
+        "line": 51
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Mem Manage Handler de Arranque de placa e interrupciones STM32; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/stm32f4xx_it.c",
+        "line": 110
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "NMI_Handler",
+      "signature": "void NMI_Handler(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/stm32f4xx_it.h",
+        "line": 49
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación NMI Handler de Arranque de placa e interrupciones STM32; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/stm32f4xx_it.c",
+        "line": 80
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OTG_FS_IRQHandler",
+      "signature": "void OTG_FS_IRQHandler(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/stm32f4xx_it.h",
+        "line": 69
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "HAL_PCD_IRQHandler"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `HAL_PCD_IRQHandler` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/stm32f4xx_it.c",
+        "line": 374
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "PendSV_Handler",
+      "signature": "void PendSV_Handler(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/stm32f4xx_it.h",
+        "line": 56
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Pend SV Handler de Arranque de placa e interrupciones STM32; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/stm32f4xx_it.c",
+        "line": 181
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "SVC_Handler",
+      "signature": "void SVC_Handler(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/stm32f4xx_it.h",
+        "line": 54
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación SVC Handler de Arranque de placa e interrupciones STM32; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/stm32f4xx_it.c",
+        "line": 155
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "SysTick_Handler",
+      "signature": "void SysTick_Handler(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/stm32f4xx_it.h",
+        "line": 57
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "HAL_IncTick"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `HAL_IncTick` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/stm32f4xx_it.c",
+        "line": 194
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "SystemClock_Config",
+      "signature": "void SystemClock_Config(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/main.c",
+        "line": 71
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "Error_Handler",
+        "HAL_RCC_ClockConfig",
+        "HAL_RCC_OscConfig",
+        "__HAL_PWR_VOLTAGESCALING_CONFIG",
+        "__HAL_RCC_PWR_CLK_ENABLE"
+      ],
+      "writes": [],
+      "description": "Coordina `Error_Handler`, `HAL_RCC_ClockConfig`, `HAL_RCC_OscConfig` para Arranque de placa e interrupciones STM32.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/main.c",
+        "line": 151
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "SystemCoreClockUpdate",
+      "signature": "void SystemCoreClockUpdate(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/system_stm32f4xx.c",
+        "line": 220
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación System Core Clock Update de Arranque de placa e interrupciones STM32; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/system_stm32f4xx.c",
+        "line": 220
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "SystemInit",
+      "signature": "void SystemInit(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/system_stm32f4xx.c",
+        "line": 167
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "SystemInit_ExtMemCtl",
+        "defined"
+      ],
+      "writes": [
+        "CPACR",
+        "VTOR"
+      ],
+      "description": "Coordina `SystemInit_ExtMemCtl`, `defined` para Arranque de placa e interrupciones STM32.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/system_stm32f4xx.c",
+        "line": 167
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "SystemInit_ExtMemCtl",
+      "signature": "void SystemInit_ExtMemCtl(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/system_stm32f4xx.c",
+        "line": 279
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "READ_BIT",
+        "defined",
+        "endif"
+      ],
+      "writes": [
+        "AHB1ENR",
+        "AHB3ENR",
+        "MODER",
+        "OSPEEDR",
+        "OTYPER",
+        "PUPDR",
+        "SDCMR",
+        "SDRTR"
+      ],
+      "description": "Coordina `READ_BIT`, `defined`, `endif` para Arranque de placa e interrupciones STM32.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/system_stm32f4xx.c",
+        "line": 445
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "TIM3_IRQHandler",
+      "signature": "void TIM3_IRQHandler(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/stm32f4xx_it.h",
+        "line": 63
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "HAL_TIM_IRQHandler"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `HAL_TIM_IRQHandler` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/stm32f4xx_it.c",
+        "line": 285
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "USART1_IRQHandler",
+      "signature": "void USART1_IRQHandler(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/stm32f4xx_it.h",
+        "line": 66
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "HAL_UART_IRQHandler",
+        "WifiBridge_OnIdleIrq",
+        "__HAL_UART_CLEAR_IDLEFLAG",
+        "__HAL_UART_GET_FLAG"
+      ],
+      "writes": [],
+      "description": "Coordina `HAL_UART_IRQHandler`, `WifiBridge_OnIdleIrq`, `__HAL_UART_CLEAR_IDLEFLAG` para Arranque de placa e interrupciones STM32.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/stm32f4xx_it.c",
+        "line": 327
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "UsageFault_Handler",
+      "signature": "void UsageFault_Handler(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/stm32f4xx_it.h",
+        "line": 53
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Usage Fault Handler de Arranque de placa e interrupciones STM32; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/stm32f4xx_it.c",
+        "line": 140
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "__io_getchar",
+      "signature": "extern int __io_getchar(void) __attribute__((weak))",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/syscalls.c",
+        "line": 36
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación io getchar de Arranque de placa e interrupciones STM32; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": null,
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "__io_putchar",
+      "signature": "extern int __io_putchar(int ch) __attribute__((weak))",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/syscalls.c",
+        "line": 35
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación io putchar de Arranque de placa e interrupciones STM32; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": null,
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "_close",
+      "signature": "int _close(int file)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/syscalls.c",
+        "line": 92
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación close de Arranque de placa e interrupciones STM32; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/syscalls.c",
+        "line": 92
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "_execve",
+      "signature": "int _execve(char *name, char **argv, char **env)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/syscalls.c",
+        "line": 169
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación execve de Arranque de placa e interrupciones STM32; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/syscalls.c",
+        "line": 169
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "_exit",
+      "signature": "void _exit (int status)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/syscalls.c",
+        "line": 61
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "_kill"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `_kill` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/syscalls.c",
+        "line": 61
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "_fork",
+      "signature": "int _fork(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/syscalls.c",
+        "line": 163
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación fork de Arranque de placa e interrupciones STM32; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/syscalls.c",
+        "line": 163
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "_fstat",
+      "signature": "int _fstat(int file, struct stat *st)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/syscalls.c",
+        "line": 99
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [
+        "st_mode"
+      ],
+      "description": "Operación fstat de Arranque de placa e interrupciones STM32; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/syscalls.c",
+        "line": 99
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "_getpid",
+      "signature": "int _getpid(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/syscalls.c",
+        "line": 48
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación getpid de Arranque de placa e interrupciones STM32; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/syscalls.c",
+        "line": 48
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "_isatty",
+      "signature": "int _isatty(int file)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/syscalls.c",
+        "line": 106
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación isatty de Arranque de placa e interrupciones STM32; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/syscalls.c",
+        "line": 106
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "_kill",
+      "signature": "int _kill(int pid, int sig)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/syscalls.c",
+        "line": 53
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación kill de Arranque de placa e interrupciones STM32; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/syscalls.c",
+        "line": 53
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "_link",
+      "signature": "int _link(char *old, char *new)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/syscalls.c",
+        "line": 155
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación link de Arranque de placa e interrupciones STM32; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/syscalls.c",
+        "line": 155
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "_lseek",
+      "signature": "int _lseek(int file, int ptr, int dir)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/syscalls.c",
+        "line": 112
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación lseek de Arranque de placa e interrupciones STM32; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/syscalls.c",
+        "line": 112
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "_open",
+      "signature": "int _open(char *path, int flags, ...)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/syscalls.c",
+        "line": 120
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación open de Arranque de placa e interrupciones STM32; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/syscalls.c",
+        "line": 120
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "_sbrk",
+      "signature": "void *_sbrk(ptrdiff_t incr)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/sysmem.c",
+        "line": 53
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación sbrk de Arranque de placa e interrupciones STM32; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/sysmem.c",
+        "line": 53
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "_stat",
+      "signature": "int _stat(char *file, struct stat *st)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/syscalls.c",
+        "line": 148
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [
+        "st_mode"
+      ],
+      "description": "Operación stat de Arranque de placa e interrupciones STM32; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/syscalls.c",
+        "line": 148
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "_times",
+      "signature": "int _times(struct tms *buf)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/syscalls.c",
+        "line": 142
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación times de Arranque de placa e interrupciones STM32; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/syscalls.c",
+        "line": 142
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "_unlink",
+      "signature": "int _unlink(char *name)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/syscalls.c",
+        "line": 135
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación unlink de Arranque de placa e interrupciones STM32; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/syscalls.c",
+        "line": 135
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "_wait",
+      "signature": "int _wait(int *status)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/syscalls.c",
+        "line": 128
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación wait de Arranque de placa e interrupciones STM32; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/syscalls.c",
+        "line": 128
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "assert_failed",
+      "signature": "void assert_failed(uint8_t* file, uint32_t line)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/stm32f4xx_hal_conf.h",
+        "line": 486
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación assert failed de Arranque de placa e interrupciones STM32; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/main.c",
+        "line": 743
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "initialise_monitor_handles",
+      "signature": "void initialise_monitor_handles()",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/syscalls.c",
+        "line": 44
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación initialise monitor handles de Arranque de placa e interrupciones STM32; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/syscalls.c",
+        "line": 44
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "main",
+      "signature": "int main(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/main.c",
+        "line": 94
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "APP_Init",
+        "APP_Loop",
+        "AppPreferences_BindStm32",
+        "AppPreferences_GetExtProfile",
+        "AppPreferences_Init",
+        "HAL_Init",
+        "MX_ADC1_Init",
+        "MX_DMA_Init",
+        "MX_GPIO_Init",
+        "MX_I2C1_Init",
+        "MX_SPI2_Init",
+        "MX_TIM2_Init",
+        "MX_TIM3_Init",
+        "MX_TIM4_Init",
+        "MX_USART1_UART_Init",
+        "MX_USB_DEVICE_Init",
+        "SystemClock_Config"
+      ],
+      "writes": [],
+      "description": "Inicializa plataforma y entra al ciclo principal de la aplicación.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/main.c",
+        "line": 94
+      },
+      "linkage": "extern-no-header"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "MX_ADC1_Init",
+      "signature": "static void MX_ADC1_Init(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/main.c",
+        "line": 197
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Error_Handler",
+        "HAL_ADC_ConfigChannel",
+        "HAL_ADC_Init"
+      ],
+      "writes": [],
+      "description": "Coordina `Error_Handler`, `HAL_ADC_ConfigChannel`, `HAL_ADC_Init` para Arranque de placa e interrupciones STM32.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "MX_I2C1_Init",
+      "signature": "static void MX_I2C1_Init(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/main.c",
+        "line": 312
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Error_Handler",
+        "HAL_I2C_Init"
+      ],
+      "writes": [],
+      "description": "Coordina `Error_Handler`, `HAL_I2C_Init` para Arranque de placa e interrupciones STM32.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "MX_SPI2_Init",
+      "signature": "static void MX_SPI2_Init(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/main.c",
+        "line": 346
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Error_Handler",
+        "HAL_SPI_Init"
+      ],
+      "writes": [],
+      "description": "Coordina `Error_Handler`, `HAL_SPI_Init` para Arranque de placa e interrupciones STM32.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "MX_TIM2_Init",
+      "signature": "static void MX_TIM2_Init(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/main.c",
+        "line": 384
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Error_Handler",
+        "HAL_TIMEx_MasterConfigSynchronization",
+        "HAL_TIM_Base_Init",
+        "HAL_TIM_ConfigClockSource",
+        "HAL_TIM_MspPostInit",
+        "HAL_TIM_PWM_ConfigChannel",
+        "HAL_TIM_PWM_Init"
+      ],
+      "writes": [],
+      "description": "Coordina `Error_Handler`, `HAL_TIMEx_MasterConfigSynchronization`, `HAL_TIM_Base_Init` para Arranque de placa e interrupciones STM32.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "MX_TIM3_Init",
+      "signature": "static void MX_TIM3_Init(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/main.c",
+        "line": 455
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Error_Handler",
+        "HAL_TIMEx_MasterConfigSynchronization",
+        "HAL_TIM_Base_Init",
+        "HAL_TIM_ConfigClockSource"
+      ],
+      "writes": [],
+      "description": "Coordina `Error_Handler`, `HAL_TIMEx_MasterConfigSynchronization`, `HAL_TIM_Base_Init` para Arranque de placa e interrupciones STM32.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "MX_TIM4_Init",
+      "signature": "static void MX_TIM4_Init(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/main.c",
+        "line": 500
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Error_Handler",
+        "HAL_TIMEx_MasterConfigSynchronization",
+        "HAL_TIM_Encoder_Init"
+      ],
+      "writes": [],
+      "description": "Coordina `Error_Handler`, `HAL_TIMEx_MasterConfigSynchronization`, `HAL_TIM_Encoder_Init` para Arranque de placa e interrupciones STM32.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "MX_USART1_UART_Init",
+      "signature": "static void MX_USART1_UART_Init(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/main.c",
+        "line": 549
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Error_Handler",
+        "HAL_UART_Init"
+      ],
+      "writes": [],
+      "description": "Coordina `Error_Handler`, `HAL_UART_Init` para Arranque de placa e interrupciones STM32.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "MX_DMA_Init",
+      "signature": "static void MX_DMA_Init(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/main.c",
+        "line": 580
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "HAL_NVIC_EnableIRQ",
+        "HAL_NVIC_SetPriority",
+        "__HAL_RCC_DMA1_CLK_ENABLE",
+        "__HAL_RCC_DMA2_CLK_ENABLE"
+      ],
+      "writes": [],
+      "description": "Coordina `HAL_NVIC_EnableIRQ`, `HAL_NVIC_SetPriority`, `__HAL_RCC_DMA1_CLK_ENABLE` para Arranque de placa e interrupciones STM32.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "MX_GPIO_Init",
+      "signature": "static void MX_GPIO_Init(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/main.c",
+        "line": 617
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "AppPreferences_GetExtProfile",
+        "HAL_GPIO_Init",
+        "HAL_GPIO_WritePin",
+        "HAL_NVIC_EnableIRQ",
+        "HAL_NVIC_SetPriority",
+        "__HAL_RCC_GPIOA_CLK_ENABLE",
+        "__HAL_RCC_GPIOB_CLK_ENABLE",
+        "__HAL_RCC_GPIOC_CLK_ENABLE",
+        "__HAL_RCC_GPIOH_CLK_ENABLE"
+      ],
+      "writes": [],
+      "description": "Coordina `AppPreferences_GetExtProfile`, `HAL_GPIO_Init`, `HAL_GPIO_WritePin` para Arranque de placa e interrupciones STM32.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "SystemInit_ExtMemCtl",
+      "signature": "static void SystemInit_ExtMemCtl(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/system_stm32f4xx.c",
+        "line": 149
+      },
+      "definition": false,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación System Init Ext Mem Ctl de Arranque de placa e interrupciones STM32; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    }
+  ]
+}

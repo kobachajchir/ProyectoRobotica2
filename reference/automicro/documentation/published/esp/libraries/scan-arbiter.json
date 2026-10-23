@@ -1,0 +1,228 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "esp:module/src/wifi_scan_arbiter.h",
+  "slug": "scan-arbiter",
+  "title": "Arbitraje de exploración Wi-Fi",
+  "target": "esp",
+  "kind": "núcleo",
+  "status": "source-documented",
+  "snapshotDate": "2026-10-20",
+  "verification": "not-run-user-instruction",
+  "responsibility": "Asigna dueño de una exploración Wi-Fi para evitar iniciar operaciones competidoras.",
+  "scope": "Adquisición, liberación y dueño lógico; la radio y resultados pertenecen a otros servicios.",
+  "state": "Estado de dueño/actividad del árbitro; las identidades del iniciador deben mantenerse al cancelar/liberar.",
+  "modularity": "Lógica C sin radio concreta.",
+  "lifecycle": [
+    "Adquirir antes de iniciar scan y liberar al completar/cancelar.",
+    "Un iniciador ocupado no debe borrar resultados de otro."
+  ],
+  "interactions": [
+    "Web y UNER comparten el árbitro mediante backend; WifiService ejecuta la radio."
+  ],
+  "limitations": [
+    "La concesión no implica que la radio aceptó o completó scan."
+  ],
+  "relationships": [],
+  "findings": [],
+  "files": [
+    {
+      "rootId": "esp",
+      "path": "src/wifi_scan_arbiter.c",
+      "sha256": "c591fdcb94c327327fe6205064d82ae9d18f0c0ea9a3ce60c4c8d63b2a747653",
+      "imports": [
+        "wifi_scan_arbiter.h",
+        "string.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    },
+    {
+      "rootId": "esp",
+      "path": "src/wifi_scan_arbiter.h",
+      "sha256": "9a9988f2f0a69df0f30d1606f9209251f0a13fe1311a2f5873352764ecc40cff",
+      "imports": [
+        "stdint.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    }
+  ],
+  "types": [
+    {
+      "name": "WifiScanArbiter",
+      "fields": [
+        {
+          "name": "owner",
+          "declaration": "WifiScanOwner owner",
+          "callback": false,
+          "ownerType": "WifiScanArbiter",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/wifi_scan_arbiter.h",
+            "line": 22
+          },
+          "description": "Dato de estado/configuración `owner`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "acquisitions",
+          "declaration": "uint32_t acquisitions",
+          "callback": false,
+          "ownerType": "WifiScanArbiter",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/wifi_scan_arbiter.h",
+            "line": 23
+          },
+          "description": "Dato de estado/configuración `acquisitions`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "releases",
+          "declaration": "uint32_t releases",
+          "callback": false,
+          "ownerType": "WifiScanArbiter",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/wifi_scan_arbiter.h",
+            "line": 24
+          },
+          "description": "Dato de estado/configuración `releases`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "busy_rejections",
+          "declaration": "uint32_t busy_rejections",
+          "callback": false,
+          "ownerType": "WifiScanArbiter",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/wifi_scan_arbiter.h",
+            "line": 25
+          },
+          "description": "Dato de estado/configuración `busy_rejections`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "invalid_releases",
+          "declaration": "uint32_t invalid_releases",
+          "callback": false,
+          "ownerType": "WifiScanArbiter",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/wifi_scan_arbiter.h",
+            "line": 26
+          },
+          "description": "Dato de estado/configuración `invalid_releases`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_scan_arbiter.h",
+        "line": 22
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "WifiScanArbiter_GetOwner",
+      "signature": "WifiScanOwner WifiScanArbiter_GetOwner(const WifiScanArbiter *arbiter)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_scan_arbiter.c",
+        "line": 52
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Consulta Owner dentro de Arbitraje de exploración Wi-Fi.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "WifiScanArbiter_Init",
+      "signature": "void WifiScanArbiter_Init(WifiScanArbiter *arbiter)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_scan_arbiter.c",
+        "line": 11
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "memset"
+      ],
+      "writes": [],
+      "description": "Inicializa Arbitraje de exploración Wi-Fi dentro de Arbitraje de exploración Wi-Fi.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "WifiScanArbiter_IsOwner",
+      "signature": "uint8_t WifiScanArbiter_IsOwner(const WifiScanArbiter *arbiter, WifiScanOwner owner)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_scan_arbiter.c",
+        "line": 45
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "owner_valid"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `owner_valid` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiScanArbiter_Release",
+      "signature": "uint8_t WifiScanArbiter_Release(WifiScanArbiter *arbiter, WifiScanOwner owner)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_scan_arbiter.c",
+        "line": 32
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "owner_valid"
+      ],
+      "writes": [
+        "owner"
+      ],
+      "description": "Adapta la llamada a `owner_valid` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiScanArbiter_TryAcquire",
+      "signature": "WifiScanAcquireResult WifiScanArbiter_TryAcquire(WifiScanArbiter *arbiter, WifiScanOwner owner)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_scan_arbiter.c",
+        "line": 17
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "owner_valid"
+      ],
+      "writes": [
+        "owner"
+      ],
+      "description": "Adapta la llamada a `owner_valid` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "owner_valid",
+      "signature": "static uint8_t owner_valid(WifiScanOwner owner)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_scan_arbiter.c",
+        "line": 5
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación owner valid de Arbitraje de exploración Wi-Fi; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    }
+  ],
+  "hooks": []
+}

@@ -1,0 +1,16 @@
+# Estado de entrega local
+
+Fecha: 2026-10-23. Cuatro repos independientes inicializados en rama codex/bootstrap. Sin remotos ni push. Los repositorios AutoMicro se consultaron sin modificación; sus cambios previos están en origins.json.
+
+Se ejecutaron únicamente lecturas, extracción/render de PDFs, copias, autoría, inventario documental y operaciones Git locales. No se ejecutaron compilaciones, tests, validadores de código/skill, CI, flasheos ni pruebas físicas. Los hooks se deshabilitaron para los commits de esta entrega.
+
+Atmega: base OLED/UI parcial y referencia; backend TWI/UART/control pendientes. ESP: esqueleto y referencia, bridge pendiente. Web: esqueleto y referencia, control pendiente. Contracts: documentación/skill/contratos candidatos; ninguna compatibilidad end-to-end declarada.
+
+| Repo | Commit base local | Remoto |
+| --- | --- | --- |
+| atmega | 72238e3f6ef87730049febd8d750dd9957f118f4 | no configurado |
+| esp | a6d10ce0cd1f6bbd51ee2439b27e1d06b2393ad9 | no configurado |
+| web | f649f072045eb683a54f679619ddd08a70c6613c | no configurado |
+| contracts | Este documento forma parte del commit inicial; consultar git log local | no configurado |
+
+Se crearon 96 informes de carpeta. provenance/files.json conserva el detalle de 1113 archivos de referencia copiados; derived.json identifica la primera base C nueva. El registro de la entrega no certifica que todas las dependencias de los originales sean portables.

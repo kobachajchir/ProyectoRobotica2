@@ -1,0 +1,2025 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "web:module/src/features/calibration/CalibrationWorkspace.tsx",
+  "slug": "calibration-tools",
+  "title": "Herramientas de calibración IR y línea",
+  "target": "web",
+  "kind": "integración",
+  "status": "source-documented",
+  "snapshotDate": "2026-10-20",
+  "verification": "not-run-user-instruction",
+  "responsibility": "Organiza materiales, curvas y herramientas de calibración/inspección del cliente.",
+  "scope": "Edición/análisis local y presentación; no sustituye automáticamente perfiles capturados/persistidos en F4.",
+  "state": "Borradores, curvas y almacenamiento local se diferencian de flags calibrados del dispositivo.",
+  "modularity": "UI y cálculo específicos de sensores del proyecto, separados del productor físico.",
+  "lifecycle": [
+    "Seleccionar muestra/material/modelo y actualizar visualización.",
+    "Persistir localmente o enviar por contrato explícito según la herramienta."
+  ],
+  "interactions": [
+    "Geometría IR y datos de streaming alimentan herramientas; LineDeviceCalibration controla otra sesión en firmware."
+  ],
+  "limitations": [
+    "No mezclar mm/cm, ADC raw, darkness y valores normalizados de presentación.",
+    "Una curva local guardada no acredita calibración aplicada al robot."
+  ],
+  "relationships": [],
+  "findings": [],
+  "files": [
+    {
+      "rootId": "web",
+      "path": "src/features/calibration/CalibrationWorkspace.tsx",
+      "sha256": "869d73be3b6c92c4f0a6c46712bfeb319598cf2f08d5fe6b17794e66696068a8",
+      "imports": [
+        "../../api/UnerFrameV2",
+        "../../components/BrandMark",
+        "../../hooks/useWebSocket",
+        "../balanceCalibration/BalanceWorkbench",
+        "../ir/IrCalibrationWorkbench",
+        "../ir/irCalibration",
+        "./LineWorkbench",
+        "./calibration.css",
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/features/calibration/LineWorkbench.tsx",
+      "sha256": "828cb18fa2e02649b8bcd7ba4fc5d449719cec596e9b059a945d3a124d90b1ad",
+      "imports": [
+        "../../api/UnerFrameV2",
+        "../lineFollow/LineDeviceCalibration",
+        "./MaterialPicker",
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/features/calibration/MaterialPicker.tsx",
+      "sha256": "d20748da81405dcebadb0bccc6b545d0e239a715d6b7826cbb93394154846833",
+      "imports": [],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/features/calibration/calibration.css",
+      "sha256": "2ee7e2ca011992f6287923e2dff54101e34c1d4f1b7cbe169983f5072f5c897e",
+      "imports": [],
+      "analysisLevel": "support-inventory"
+    },
+    {
+      "rootId": "web",
+      "path": "src/features/ir/IrCalibrationWorkbench.tsx",
+      "sha256": "0f61c78720a1974db42f3b6add983a381b8353adf9986f53bba1a99094c5ca1b",
+      "imports": [
+        "../../api/UnerFrameV2",
+        "../calibration/MaterialPicker",
+        "./irCalibration",
+        "./irEmitterGeometry",
+        "./irObjectModel",
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/features/ir/irCalibration.ts",
+      "sha256": "5248d050bded257bec2a82abeda1d89f24c2e6b2469309d68fbef846ee362baf",
+      "imports": [
+        "./irEmitterGeometry.ts",
+        "./irObjectModel.ts"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/features/ir/irCalibrationStorage.ts",
+      "sha256": "62d46424601feec4d47a8a196bf2ffb35aef4a38a8c373c3874718a1c9e5dfa2",
+      "imports": [
+        "./irCalibration"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    }
+  ],
+  "types": [
+    {
+      "name": "LineRecord",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "id",
+          "declaration": "id: string",
+          "callback": false,
+          "ownerType": "LineRecord",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/calibration/LineWorkbench.tsx",
+            "line": 7
+          },
+          "description": "Dato de estado/configuración `id`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "name",
+          "declaration": "name: string",
+          "callback": false,
+          "ownerType": "LineRecord",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/calibration/LineWorkbench.tsx",
+            "line": 7
+          },
+          "description": "Dato de estado/configuración `name`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "material",
+          "declaration": "material: string",
+          "callback": false,
+          "ownerType": "LineRecord",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/calibration/LineWorkbench.tsx",
+            "line": 7
+          },
+          "description": "Dato de estado/configuración `material`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "createdAt",
+          "declaration": "createdAt: string",
+          "callback": false,
+          "ownerType": "LineRecord",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/calibration/LineWorkbench.tsx",
+            "line": 7
+          },
+          "description": "Dato de estado/configuración `createdAt`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "count",
+          "declaration": "count: number",
+          "callback": false,
+          "ownerType": "LineRecord",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/calibration/LineWorkbench.tsx",
+            "line": 7
+          },
+          "description": "Dato de estado/configuración `count`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "raw",
+          "declaration": "raw: number[]",
+          "callback": false,
+          "ownerType": "LineRecord",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/calibration/LineWorkbench.tsx",
+            "line": 7
+          },
+          "description": "Dato de estado/configuración `raw`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "normalized",
+          "declaration": "normalized: number[]",
+          "callback": false,
+          "ownerType": "LineRecord",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/calibration/LineWorkbench.tsx",
+            "line": 7
+          },
+          "description": "Dato de estado/configuración `normalized`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/calibration/LineWorkbench.tsx",
+        "line": 7
+      }
+    },
+    {
+      "name": "IrCalibrationWorkbenchProps",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "profile",
+          "declaration": "profile: IrCalibrationProfile",
+          "callback": false,
+          "ownerType": "IrCalibrationWorkbenchProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/IrCalibrationWorkbench.tsx",
+            "line": 25
+          },
+          "description": "Dato de estado/configuración `profile`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "snapshot",
+          "declaration": "snapshot: IrSnapshot",
+          "callback": false,
+          "ownerType": "IrCalibrationWorkbenchProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/IrCalibrationWorkbench.tsx",
+            "line": 26
+          },
+          "description": "Dato de estado/configuración `snapshot`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "captureAvailable",
+          "declaration": "captureAvailable: boolean",
+          "callback": false,
+          "ownerType": "IrCalibrationWorkbenchProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/IrCalibrationWorkbench.tsx",
+            "line": 27
+          },
+          "description": "Dato de estado/configuración `captureAvailable`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "onProfileChange",
+          "declaration": "onProfileChange: (profile: IrCalibrationProfile) => void",
+          "callback": true,
+          "ownerType": "IrCalibrationWorkbenchProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/IrCalibrationWorkbench.tsx",
+            "line": 28
+          },
+          "description": "Operación on Profile Change de Herramientas de calibración IR y línea; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "onBusyChange",
+          "declaration": "onBusyChange?: (busy: boolean) => void",
+          "callback": true,
+          "ownerType": "IrCalibrationWorkbenchProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/IrCalibrationWorkbench.tsx",
+            "line": 29
+          },
+          "description": "Operación on Busy Change de Herramientas de calibración IR y línea; semántica fina pendiente de ampliación."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/IrCalibrationWorkbench.tsx",
+        "line": 24
+      }
+    },
+    {
+      "name": "CaptureState",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "kind",
+          "declaration": "kind: \"baseline\" | \"point\"",
+          "callback": false,
+          "ownerType": "CaptureState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/IrCalibrationWorkbench.tsx",
+            "line": 33
+          },
+          "description": "Dato de estado/configuración `kind`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "distanceCm",
+          "declaration": "distanceCm: number | null",
+          "callback": false,
+          "ownerType": "CaptureState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/IrCalibrationWorkbench.tsx",
+            "line": 34
+          },
+          "description": "Dato de estado/configuración `distanceCm`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "sensorKey",
+          "declaration": "sensorKey: IrObjectSensorKey | null",
+          "callback": false,
+          "ownerType": "CaptureState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/IrCalibrationWorkbench.tsx",
+            "line": 35
+          },
+          "description": "Dato de estado/configuración `sensorKey`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "settleRemaining",
+          "declaration": "settleRemaining: number",
+          "callback": false,
+          "ownerType": "CaptureState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/IrCalibrationWorkbench.tsx",
+            "line": 36
+          },
+          "description": "Dato de estado/configuración `settleRemaining`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "samples",
+          "declaration": "samples: IrCalibrationSample[]",
+          "callback": false,
+          "ownerType": "CaptureState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/IrCalibrationWorkbench.tsx",
+            "line": 37
+          },
+          "description": "Dato de estado/configuración `samples`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/IrCalibrationWorkbench.tsx",
+        "line": 32
+      }
+    },
+    {
+      "name": "IrCalibrationPolarity",
+      "kind": "TypeAliasDeclaration",
+      "type": "\"higher-is-closer\" | \"lower-is-closer\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irCalibration.ts",
+        "line": 29
+      }
+    },
+    {
+      "name": "IrCalibrationSample",
+      "kind": "TypeAliasDeclaration",
+      "type": "Record<IrObjectSensorKey, number>",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irCalibration.ts",
+        "line": 31
+      }
+    },
+    {
+      "name": "IrCalibrationStats",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "median",
+          "declaration": "median: number",
+          "callback": false,
+          "ownerType": "IrCalibrationStats",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irCalibration.ts",
+            "line": 34
+          },
+          "description": "Dato de estado/configuración `median`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "mean",
+          "declaration": "mean: number",
+          "callback": false,
+          "ownerType": "IrCalibrationStats",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irCalibration.ts",
+            "line": 35
+          },
+          "description": "Dato de estado/configuración `mean`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "min",
+          "declaration": "min: number",
+          "callback": false,
+          "ownerType": "IrCalibrationStats",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irCalibration.ts",
+            "line": 36
+          },
+          "description": "Dato de estado/configuración `min`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "max",
+          "declaration": "max: number",
+          "callback": false,
+          "ownerType": "IrCalibrationStats",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irCalibration.ts",
+            "line": 37
+          },
+          "description": "Dato de estado/configuración `max`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "p10",
+          "declaration": "p10: number",
+          "callback": false,
+          "ownerType": "IrCalibrationStats",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irCalibration.ts",
+            "line": 38
+          },
+          "description": "Dato de estado/configuración `p10`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "p90",
+          "declaration": "p90: number",
+          "callback": false,
+          "ownerType": "IrCalibrationStats",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irCalibration.ts",
+            "line": 39
+          },
+          "description": "Dato de estado/configuración `p90`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "stdDev",
+          "declaration": "stdDev: number",
+          "callback": false,
+          "ownerType": "IrCalibrationStats",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irCalibration.ts",
+            "line": 40
+          },
+          "description": "Dato de estado/configuración `stdDev`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "count",
+          "declaration": "count: number",
+          "callback": false,
+          "ownerType": "IrCalibrationStats",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irCalibration.ts",
+            "line": 41
+          },
+          "description": "Dato de estado/configuración `count`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irCalibration.ts",
+        "line": 33
+      }
+    },
+    {
+      "name": "IrCalibrationSensorStats",
+      "kind": "TypeAliasDeclaration",
+      "type": "Record< IrObjectSensorKey, IrCalibrationStats >",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irCalibration.ts",
+        "line": 44
+      }
+    },
+    {
+      "name": "IrCalibrationPointSensorStats",
+      "kind": "TypeAliasDeclaration",
+      "type": "Partial< Record<IrObjectSensorKey, IrCalibrationStats> >",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irCalibration.ts",
+        "line": 49
+      }
+    },
+    {
+      "name": "IrCalibrationPoint",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "distanceCm",
+          "declaration": "distanceCm: number",
+          "callback": false,
+          "ownerType": "IrCalibrationPoint",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irCalibration.ts",
+            "line": 54
+          },
+          "description": "Dato de estado/configuración `distanceCm`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "sensors",
+          "declaration": "sensors: IrCalibrationPointSensorStats",
+          "callback": false,
+          "ownerType": "IrCalibrationPoint",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irCalibration.ts",
+            "line": 55
+          },
+          "description": "Dato de estado/configuración `sensors`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irCalibration.ts",
+        "line": 53
+      }
+    },
+    {
+      "name": "IrCalibrationProfile",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "schemaVersion",
+          "declaration": "schemaVersion: typeof IR_CALIBRATION_SCHEMA_VERSION",
+          "callback": false,
+          "ownerType": "IrCalibrationProfile",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irCalibration.ts",
+            "line": 59
+          },
+          "description": "Dato de estado/configuración `schemaVersion`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "name",
+          "declaration": "name: string",
+          "callback": false,
+          "ownerType": "IrCalibrationProfile",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irCalibration.ts",
+            "line": 60
+          },
+          "description": "Dato de estado/configuración `name`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "createdAt",
+          "declaration": "createdAt: string",
+          "callback": false,
+          "ownerType": "IrCalibrationProfile",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irCalibration.ts",
+            "line": 61
+          },
+          "description": "Dato de estado/configuración `createdAt`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "source",
+          "declaration": "source: \"real-car\" | \"imported\"",
+          "callback": false,
+          "ownerType": "IrCalibrationProfile",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irCalibration.ts",
+            "line": 62
+          },
+          "description": "Dato de estado/configuración `source`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "polarity",
+          "declaration": "polarity: IrCalibrationPolarity",
+          "callback": false,
+          "ownerType": "IrCalibrationProfile",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irCalibration.ts",
+            "line": 63
+          },
+          "description": "Dato de estado/configuración `polarity`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "material",
+          "declaration": "material: string",
+          "callback": false,
+          "ownerType": "IrCalibrationProfile",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irCalibration.ts",
+            "line": 64
+          },
+          "description": "Dato de estado/configuración `material`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "notes",
+          "declaration": "notes: string",
+          "callback": false,
+          "ownerType": "IrCalibrationProfile",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irCalibration.ts",
+            "line": 65
+          },
+          "description": "Dato de estado/configuración `notes`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "samplesPerPoint",
+          "declaration": "samplesPerPoint: number",
+          "callback": false,
+          "ownerType": "IrCalibrationProfile",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irCalibration.ts",
+            "line": 66
+          },
+          "description": "Dato de estado/configuración `samplesPerPoint`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "settleSamples",
+          "declaration": "settleSamples: number",
+          "callback": false,
+          "ownerType": "IrCalibrationProfile",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irCalibration.ts",
+            "line": 67
+          },
+          "description": "Dato de estado/configuración `settleSamples`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "baseline",
+          "declaration": "baseline: IrCalibrationSensorStats | null",
+          "callback": false,
+          "ownerType": "IrCalibrationProfile",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irCalibration.ts",
+            "line": 68
+          },
+          "description": "Dato de estado/configuración `baseline`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "points",
+          "declaration": "points: IrCalibrationPoint[]",
+          "callback": false,
+          "ownerType": "IrCalibrationProfile",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irCalibration.ts",
+            "line": 69
+          },
+          "description": "Dato de estado/configuración `points`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irCalibration.ts",
+        "line": 58
+      }
+    },
+    {
+      "name": "IrCalibrationParseResult",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "ok",
+          "declaration": "ok: boolean",
+          "callback": false,
+          "ownerType": "IrCalibrationParseResult",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irCalibration.ts",
+            "line": 73
+          },
+          "description": "Dato de estado/configuración `ok`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "profile",
+          "declaration": "profile: IrCalibrationProfile | null",
+          "callback": false,
+          "ownerType": "IrCalibrationParseResult",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irCalibration.ts",
+            "line": 74
+          },
+          "description": "Dato de estado/configuración `profile`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "errors",
+          "declaration": "errors: string[]",
+          "callback": false,
+          "ownerType": "IrCalibrationParseResult",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irCalibration.ts",
+            "line": 75
+          },
+          "description": "Dato de estado/configuración `errors`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irCalibration.ts",
+        "line": 72
+      }
+    },
+    {
+      "name": "IrCalibrationCoverage",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "baselineReady",
+          "declaration": "baselineReady: boolean",
+          "callback": false,
+          "ownerType": "IrCalibrationCoverage",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irCalibration.ts",
+            "line": 79
+          },
+          "description": "Dato de estado/configuración `baselineReady`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "measurementCount",
+          "declaration": "measurementCount: number",
+          "callback": false,
+          "ownerType": "IrCalibrationCoverage",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irCalibration.ts",
+            "line": 80
+          },
+          "description": "Dato de estado/configuración `measurementCount`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "requiredMeasurementCount",
+          "declaration": "requiredMeasurementCount: number",
+          "callback": false,
+          "ownerType": "IrCalibrationCoverage",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irCalibration.ts",
+            "line": 81
+          },
+          "description": "Dato de estado/configuración `requiredMeasurementCount`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "sensorPointCounts",
+          "declaration": "sensorPointCounts: Record<IrObjectSensorKey, number>",
+          "callback": false,
+          "ownerType": "IrCalibrationCoverage",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irCalibration.ts",
+            "line": 82
+          },
+          "description": "Dato de estado/configuración `sensorPointCounts`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "readySensorCount",
+          "declaration": "readySensorCount: number",
+          "callback": false,
+          "ownerType": "IrCalibrationCoverage",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irCalibration.ts",
+            "line": 83
+          },
+          "description": "Dato de estado/configuración `readySensorCount`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "usable",
+          "declaration": "usable: boolean",
+          "callback": false,
+          "ownerType": "IrCalibrationCoverage",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irCalibration.ts",
+            "line": 84
+          },
+          "description": "Dato de estado/configuración `usable`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irCalibration.ts",
+        "line": 78
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "CalibrationWorkspace",
+      "displayName": "CalibrationWorkspace",
+      "signature": "CalibrationWorkspace(props: { profile: IrCalibrationProfile; snapshot: IrSnapshot; captureAvailable: boolean; onProfileChange: (profile: IrCalibrationProfile) => void; }): inferred-by-TypeScript",
+      "line": 10,
+      "endLine": 29,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useCallback",
+        "useState",
+        "useWebSocket"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/calibration/CalibrationWorkspace.tsx",
+        "line": 10
+      },
+      "description": "Coordina `useCallback`, `useState`, `useWebSocket` para Herramientas de calibración IR y línea.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "IrCalibrationWorkbench",
+      "displayName": "IrCalibrationWorkbench",
+      "signature": "IrCalibrationWorkbench({\n  profile,\n  snapshot,\n  captureAvailable,\n  onProfileChange,\n  onBusyChange,\n}: IrCalibrationWorkbenchProps): inferred-by-TypeScript",
+      "line": 48,
+      "endLine": 463,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "([\"prepare\", \"capture\", \"results\"] as const).map",
+        "IR_CALIBRATION_DISTANCES_CM.map",
+        "IR_OBJECT_SENSOR_KEYS.map",
+        "Math.min",
+        "getIrCalibrationCoverage",
+        "importErrors.map",
+        "profile.material.trim",
+        "profile.points.map",
+        "useEffect",
+        "useRef",
+        "useState"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/IrCalibrationWorkbench.tsx",
+        "line": 48
+      },
+      "description": "Coordina `([\"prepare\", \"capture\", \"results\"] as const).map`, `IR_CALIBRATION_DISTANCES_CM.map`, `IR_OBJECT_SENSOR_KEYS.map` para Herramientas de calibración IR y línea.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "IrCurve",
+      "displayName": "IrCurve",
+      "signature": "IrCurve({ profile, sensorKey }: { profile: IrCalibrationProfile; sensorKey: IrObjectSensorKey }): inferred-by-TypeScript",
+      "line": 465,
+      "endLine": 479,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.max",
+        "max.toFixed",
+        "points.map",
+        "profile.points.filter",
+        "values.map",
+        "values.map((p) => `${x(p.distance)},${y(p.stats.median)}`).join",
+        "values.slice",
+        "values.slice(1).some"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/IrCalibrationWorkbench.tsx",
+        "line": 465
+      },
+      "description": "Coordina `Math.max`, `max.toFixed`, `points.map` para Herramientas de calibración IR y línea.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "LineWorkbench",
+      "displayName": "LineWorkbench",
+      "signature": "LineWorkbench({ snapshot, captureAvailable, onBusyChange }: { snapshot: IrSnapshot; captureAvailable: boolean; onBusyChange: (busy: boolean) => void; }): inferred-by-TypeScript",
+      "line": 19,
+      "endLine": 70,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "history.map",
+        "labels.map",
+        "material.trim",
+        "name.trim",
+        "useEffect",
+        "useRef",
+        "useState"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/calibration/LineWorkbench.tsx",
+        "line": 19
+      },
+      "description": "Coordina `history.map`, `labels.map`, `material.trim` para Herramientas de calibración IR y línea.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "MaterialPicker",
+      "displayName": "MaterialPicker",
+      "signature": "MaterialPicker({ value, onChange, disabled = false }: { value: string; onChange: (value: string) => void; disabled?: boolean; }): inferred-by-TypeScript",
+      "line": 1,
+      "endLine": 13,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "([\"Blanco\", \"Negro\"] as const).map"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/calibration/MaterialPicker.tsx",
+        "line": 1
+      },
+      "description": "Adapta la llamada a `([\"Blanco\", \"Negro\"] as const).map` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildIrForwardCalibration",
+      "displayName": "buildIrForwardCalibration",
+      "signature": "buildIrForwardCalibration(profile: IrCalibrationProfile): IrObjectForwardCalibration | null",
+      "line": 296,
+      "endLine": 330,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "IR_OBJECT_SENSOR_KEYS.reduce",
+        "getIrCalibrationCoverage"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irCalibration.ts",
+        "line": 296
+      },
+      "description": "Coordina `IR_OBJECT_SENSOR_KEYS.reduce`, `getIrCalibrationCoverage` para Herramientas de calibración IR y línea.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "clamp",
+      "displayName": "clamp",
+      "signature": "clamp(value: number, min: number, max: number): inferred-by-TypeScript",
+      "line": 616,
+      "endLine": 618,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.max",
+        "Math.min"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irCalibration.ts",
+        "line": 616
+      },
+      "description": "Coordina `Math.max`, `Math.min` para Herramientas de calibración IR y línea.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "clampAdc",
+      "displayName": "clampAdc",
+      "signature": "clampAdc(value: number): inferred-by-TypeScript",
+      "line": 588,
+      "endLine": 590,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.round",
+        "Number",
+        "clamp"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irCalibration.ts",
+        "line": 588
+      },
+      "description": "Coordina `Math.round`, `Number`, `clamp` para Herramientas de calibración IR y línea.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "createEmptyIrCalibrationProfile",
+      "displayName": "createEmptyIrCalibrationProfile",
+      "signature": "createEmptyIrCalibrationProfile(overrides: Partial< Pick< IrCalibrationProfile, \"name\" | \"polarity\" | \"material\" | \"notes\" | \"source\" > >): IrCalibrationProfile",
+      "line": 87,
+      "endLine": 108,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "new Date().toISOString"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irCalibration.ts",
+        "line": 87
+      },
+      "description": "Adapta la llamada a `new Date().toISOString` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "createIrCalibrationPoint",
+      "displayName": "createIrCalibrationPoint",
+      "signature": "createIrCalibrationPoint(distanceCm: number, samples: readonly IrCalibrationSample[]): IrCalibrationPoint",
+      "line": 128,
+      "endLine": 140,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Number.isFinite",
+        "round",
+        "summarizeIrCalibrationSamples"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irCalibration.ts",
+        "line": 128
+      },
+      "description": "Coordina `Number.isFinite`, `round`, `summarizeIrCalibrationSamples` para Herramientas de calibración IR y línea.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "createIrCalibrationSensorPoint",
+      "displayName": "createIrCalibrationSensorPoint",
+      "signature": "createIrCalibrationSensorPoint(distanceCm: number, sensorKey: IrObjectSensorKey, samples: readonly IrCalibrationSample[]): IrCalibrationPoint",
+      "line": 142,
+      "endLine": 157,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Number.isFinite",
+        "round",
+        "summarizeIrCalibrationSamples"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irCalibration.ts",
+        "line": 142
+      },
+      "description": "Coordina `Number.isFinite`, `round`, `summarizeIrCalibrationSamples` para Herramientas de calibración IR y línea.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "downloadText",
+      "displayName": "downloadText",
+      "signature": "downloadText(fileName: string, content: string, mimeType: string): inferred-by-TypeScript",
+      "line": 487,
+      "endLine": 494,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "URL.createObjectURL",
+        "URL.revokeObjectURL",
+        "anchor.click",
+        "document.createElement"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/IrCalibrationWorkbench.tsx",
+        "line": 487
+      },
+      "description": "Coordina `URL.createObjectURL`, `URL.revokeObjectURL`, `anchor.click` para Herramientas de calibración IR y línea.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "exportIrCalibrationAsC",
+      "displayName": "exportIrCalibrationAsC",
+      "signature": "exportIrCalibrationAsC(profile: IrCalibrationProfile, symbolPrefix: inferred-by-TypeScript): string",
+      "line": 364,
+      "endLine": 431,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "IR_OBJECT_SENSOR_KEYS.forEach",
+        "IR_OBJECT_SENSOR_KEYS.map",
+        "IR_OBJECT_SENSOR_KEYS.map( (key) => Math.round(calibration.baselineAdc[key]), ).join",
+        "buildIrForwardCalibration",
+        "lines.join",
+        "lines.push",
+        "normalizeCSymbol",
+        "normalizedPrefix.toUpperCase"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irCalibration.ts",
+        "line": 364
+      },
+      "description": "Coordina `IR_OBJECT_SENSOR_KEYS.forEach`, `IR_OBJECT_SENSOR_KEYS.map`, `IR_OBJECT_SENSOR_KEYS.map( (key) => Math.round(calibration.baselineAdc[key]), ).join` para Herramientas de calibración IR y línea.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "formatDistance",
+      "displayName": "formatDistance",
+      "signature": "formatDistance(value: number): inferred-by-TypeScript",
+      "line": 506,
+      "endLine": 511,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Number.isInteger",
+        "value.toFixed"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/IrCalibrationWorkbench.tsx",
+        "line": 506
+      },
+      "description": "Coordina `Number.isInteger`, `value.toFixed` para Herramientas de calibración IR y línea.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "getIrCalibrationCoverage",
+      "displayName": "getIrCalibrationCoverage",
+      "signature": "getIrCalibrationCoverage(profile: IrCalibrationProfile): IrCalibrationCoverage",
+      "line": 332,
+      "endLine": 362,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "IR_OBJECT_SENSOR_KEYS.filter",
+        "IR_OBJECT_SENSOR_KEYS.reduce"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irCalibration.ts",
+        "line": 332
+      },
+      "description": "Coordina `IR_OBJECT_SENSOR_KEYS.filter`, `IR_OBJECT_SENSOR_KEYS.reduce` para Herramientas de calibración IR y línea.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "isRecord",
+      "displayName": "isRecord",
+      "signature": "isRecord(value: unknown): value is Record<string, unknown>",
+      "line": 580,
+      "endLine": 582,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Array.isArray"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irCalibration.ts",
+        "line": 580
+      },
+      "description": "Adapta la llamada a `Array.isArray` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "load",
+      "displayName": "load",
+      "signature": "load(): LineRecord[]",
+      "line": 8,
+      "endLine": 16,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Array.isArray",
+        "JSON.parse",
+        "localStorage.getItem",
+        "values.filter",
+        "values.filter((v): v is LineRecord => v && typeof v.id === \"string\" && typeof v.name === \"string\" && typeof v.material === \"string\" && typeof v.createdAt === \"string\" && Number.isInteger(v.count) && v.count > 0 && [v.raw, v.normalized].every((a) => Array.isArray(a) && a.length === 3 && a.every((n: unknown) => typeof n === \"number\" && Number.isFinite(n) && n >= 0 && n <= 4095))).slice"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/calibration/LineWorkbench.tsx",
+        "line": 8
+      },
+      "description": "Coordina `Array.isArray`, `JSON.parse`, `localStorage.getItem` para Herramientas de calibración IR y línea.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "loadStoredIrCalibrationProfile",
+      "displayName": "loadStoredIrCalibrationProfile",
+      "signature": "loadStoredIrCalibrationProfile(): IrCalibrationProfile",
+      "line": 6,
+      "endLine": 19,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "createEmptyIrCalibrationProfile",
+        "parseIrCalibrationProfile",
+        "window.localStorage.getItem"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irCalibrationStorage.ts",
+        "line": 6
+      },
+      "description": "Coordina `createEmptyIrCalibrationProfile`, `parseIrCalibrationProfile`, `window.localStorage.getItem` para Herramientas de calibración IR y línea.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "nonNegativeInteger",
+      "displayName": "nonNegativeInteger",
+      "signature": "nonNegativeInteger(value: unknown, fallback: number): inferred-by-TypeScript",
+      "line": 599,
+      "endLine": 604,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.max",
+        "Math.round",
+        "Number",
+        "Number.isFinite"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irCalibration.ts",
+        "line": 599
+      },
+      "description": "Coordina `Math.max`, `Math.round`, `Number` para Herramientas de calibración IR y línea.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "normalizeCSymbol",
+      "displayName": "normalizeCSymbol",
+      "signature": "normalizeCSymbol(value: string): inferred-by-TypeScript",
+      "line": 611,
+      "endLine": 614,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "/^[0-9]/.test",
+        "value.replace"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irCalibration.ts",
+        "line": 611
+      },
+      "description": "Coordina `/^[0-9]/.test`, `value.replace` para Herramientas de calibración IR y línea.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "parseIrCalibrationProfile",
+      "displayName": "parseIrCalibrationProfile",
+      "signature": "parseIrCalibrationProfile(json: string): IrCalibrationParseResult",
+      "line": 196,
+      "endLine": 210,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "JSON.parse",
+        "validateIrCalibrationProfile"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irCalibration.ts",
+        "line": 196
+      },
+      "description": "Coordina `JSON.parse`, `validateIrCalibrationProfile` para Herramientas de calibración IR y línea.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "percentile",
+      "displayName": "percentile",
+      "signature": "percentile(sorted: readonly number[], percentileValue: number): inferred-by-TypeScript",
+      "line": 568,
+      "endLine": 578,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.ceil",
+        "Math.floor",
+        "clamp"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irCalibration.ts",
+        "line": 568
+      },
+      "description": "Coordina `Math.ceil`, `Math.floor`, `clamp` para Herramientas de calibración IR y línea.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "pickObjectSample",
+      "displayName": "pickObjectSample",
+      "signature": "pickObjectSample(snapshot: IrSnapshot): IrCalibrationSample",
+      "line": 481,
+      "endLine": 485,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "IR_OBJECT_SENSOR_KEYS.map",
+        "Object.fromEntries"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/IrCalibrationWorkbench.tsx",
+        "line": 481
+      },
+      "description": "Coordina `IR_OBJECT_SENSOR_KEYS.map`, `Object.fromEntries` para Herramientas de calibración IR y línea.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "positiveInteger",
+      "displayName": "positiveInteger",
+      "signature": "positiveInteger(value: unknown, fallback: number): inferred-by-TypeScript",
+      "line": 592,
+      "endLine": 597,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.max",
+        "Math.round",
+        "Number",
+        "Number.isFinite"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irCalibration.ts",
+        "line": 592
+      },
+      "description": "Coordina `Math.max`, `Math.round`, `Number` para Herramientas de calibración IR y línea.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "round",
+      "displayName": "round",
+      "signature": "round(value: number, digits: number): inferred-by-TypeScript",
+      "line": 606,
+      "endLine": 609,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.round"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irCalibration.ts",
+        "line": 606
+      },
+      "description": "Adapta la llamada a `Math.round` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "safeFileName",
+      "displayName": "safeFileName",
+      "signature": "safeFileName(value: string): inferred-by-TypeScript",
+      "line": 496,
+      "endLine": 504,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "value .normalize",
+        "value .normalize(\"NFD\") .replace",
+        "value .normalize(\"NFD\") .replace(/[\\u0300-\\u036f]/g, \"\") .replace",
+        "value .normalize(\"NFD\") .replace(/[\\u0300-\\u036f]/g, \"\") .replace(/[^a-zA-Z0-9_-]+/g, \"-\") .replace"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/IrCalibrationWorkbench.tsx",
+        "line": 496
+      },
+      "description": "Coordina `value .normalize`, `value .normalize(\"NFD\") .replace`, `value .normalize(\"NFD\") .replace(/[\\u0300-\\u036f]/g, \"\") .replace` para Herramientas de calibración IR y línea.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "safeText",
+      "displayName": "safeText",
+      "signature": "safeText(value: unknown, fallback: string): inferred-by-TypeScript",
+      "line": 584,
+      "endLine": 586,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "value.slice"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irCalibration.ts",
+        "line": 584
+      },
+      "description": "Adapta la llamada a `value.slice` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "serializeIrCalibrationProfile",
+      "displayName": "serializeIrCalibrationProfile",
+      "signature": "serializeIrCalibrationProfile(profile: IrCalibrationProfile): string",
+      "line": 290,
+      "endLine": 294,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "JSON.stringify"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irCalibration.ts",
+        "line": 290
+      },
+      "description": "Adapta la llamada a `JSON.stringify` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "setIrCalibrationBaseline",
+      "displayName": "setIrCalibrationBaseline",
+      "signature": "setIrCalibrationBaseline(profile: IrCalibrationProfile, samples: readonly IrCalibrationSample[]): IrCalibrationProfile",
+      "line": 185,
+      "endLine": 194,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "new Date().toISOString",
+        "summarizeIrCalibrationSamples"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irCalibration.ts",
+        "line": 185
+      },
+      "description": "Coordina `new Date().toISOString`, `summarizeIrCalibrationSamples` para Herramientas de calibración IR y línea.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "summarizeIrCalibrationSamples",
+      "displayName": "summarizeIrCalibrationSamples",
+      "signature": "summarizeIrCalibrationSamples(samples: readonly IrCalibrationSample[]): IrCalibrationSensorStats",
+      "line": 110,
+      "endLine": 126,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "IR_OBJECT_SENSOR_KEYS.reduce"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irCalibration.ts",
+        "line": 110
+      },
+      "description": "Adapta la llamada a `IR_OBJECT_SENSOR_KEYS.reduce` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "summarizeValues",
+      "displayName": "summarizeValues",
+      "signature": "summarizeValues(values: readonly number[]): IrCalibrationStats",
+      "line": 549,
+      "endLine": 566,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.sqrt",
+        "[...values].sort",
+        "percentile",
+        "sorted.reduce"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irCalibration.ts",
+        "line": 549
+      },
+      "description": "Coordina `Math.sqrt`, `[...values].sort`, `percentile` para Herramientas de calibración IR y línea.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "upsertIrCalibrationPoint",
+      "displayName": "upsertIrCalibrationPoint",
+      "signature": "upsertIrCalibrationPoint(profile: IrCalibrationProfile, point: IrCalibrationPoint): IrCalibrationProfile",
+      "line": 159,
+      "endLine": 183,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "new Date().toISOString",
+        "profile.points .filter",
+        "profile.points .filter((candidate) => Math.abs(candidate.distanceCm - point.distanceCm) > 1e-6) .concat",
+        "profile.points .filter((candidate) => Math.abs(candidate.distanceCm - point.distanceCm) > 1e-6) .concat(mergedPoint) .sort",
+        "profile.points.find"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irCalibration.ts",
+        "line": 159
+      },
+      "description": "Coordina `new Date().toISOString`, `profile.points .filter`, `profile.points .filter((candidate) => Math.abs(candidate.distanceCm - point.distanceCm) > 1e-6) .concat` para Herramientas de calibración IR y línea.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "validateIrCalibrationProfile",
+      "displayName": "validateIrCalibrationProfile",
+      "signature": "validateIrCalibrationProfile(value: unknown): IrCalibrationParseResult",
+      "line": 212,
+      "endLine": 288,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Array.isArray",
+        "errors.push",
+        "isRecord",
+        "new Date().toISOString",
+        "nonNegativeInteger",
+        "points .map",
+        "points .map((point, index) => validatePoint(point, index, errors)) .filter",
+        "points .map((point, index) => validatePoint(point, index, errors)) .filter((point): point is IrCalibrationPoint => point !== null) .sort",
+        "positiveInteger",
+        "safeText",
+        "validateSensorStats",
+        "validatedPoints.some"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irCalibration.ts",
+        "line": 212
+      },
+      "description": "Coordina `Array.isArray`, `errors.push`, `isRecord` para Herramientas de calibración IR y línea.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "validatePoint",
+      "displayName": "validatePoint",
+      "signature": "validatePoint(value: unknown, index: number, errors: string[]): IrCalibrationPoint | null",
+      "line": 433,
+      "endLine": 456,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Number",
+        "Number.isFinite",
+        "errors.push",
+        "isRecord",
+        "validatePointSensorStats"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irCalibration.ts",
+        "line": 433
+      },
+      "description": "Coordina `Number`, `Number.isFinite`, `errors.push` para Herramientas de calibración IR y línea.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "validatePointSensorStats",
+      "displayName": "validatePointSensorStats",
+      "signature": "validatePointSensorStats(value: unknown, path: string, errors: string[]): IrCalibrationPointSensorStats | null",
+      "line": 458,
+      "endLine": 485,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "IR_OBJECT_SENSOR_KEYS.forEach",
+        "Object.keys",
+        "errors.push",
+        "isRecord"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irCalibration.ts",
+        "line": 458
+      },
+      "description": "Coordina `IR_OBJECT_SENSOR_KEYS.forEach`, `Object.keys`, `errors.push` para Herramientas de calibración IR y línea.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "validateSensorStats",
+      "displayName": "validateSensorStats",
+      "signature": "validateSensorStats(value: unknown, path: string, errors: string[]): IrCalibrationSensorStats | null",
+      "line": 487,
+      "endLine": 507,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "IR_OBJECT_SENSOR_KEYS.forEach",
+        "errors.push",
+        "isRecord"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irCalibration.ts",
+        "line": 487
+      },
+      "description": "Coordina `IR_OBJECT_SENSOR_KEYS.forEach`, `errors.push`, `isRecord` para Herramientas de calibración IR y línea.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "validateStats",
+      "displayName": "validateStats",
+      "signature": "validateStats(value: unknown, path: string, errors: string[]): IrCalibrationStats | null",
+      "line": 509,
+      "endLine": 547,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.max",
+        "Number",
+        "clampAdc",
+        "errors.push",
+        "isRecord",
+        "numericFields.find",
+        "positiveInteger"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irCalibration.ts",
+        "line": 509
+      },
+      "description": "Coordina `Math.max`, `Number`, `clampAdc` para Herramientas de calibración IR y línea.",
+      "descriptionOrigin": "structural"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "IrCalibrationWorkbench.handleImport",
+      "displayName": "handleImport",
+      "signature": "IrCalibrationWorkbench.handleImport(event: ChangeEvent<HTMLInputElement>): inferred-by-TypeScript",
+      "line": 155,
+      "endLine": 177,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "file.text",
+        "new Date().toISOString",
+        "onProfileChange",
+        "parseIrCalibrationProfile",
+        "setFeedback",
+        "setImportErrors"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/IrCalibrationWorkbench.tsx",
+        "line": 155
+      },
+      "description": "Coordina `file.text`, `new Date().toISOString`, `onProfileChange` para Herramientas de calibración IR y línea.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "IrCalibrationWorkbench.removePoint",
+      "displayName": "removePoint",
+      "signature": "IrCalibrationWorkbench.removePoint(distanceCm: number): inferred-by-TypeScript",
+      "line": 179,
+      "endLine": 185,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "profile.points.filter",
+        "updateProfile"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/IrCalibrationWorkbench.tsx",
+        "line": 179
+      },
+      "description": "Coordina `profile.points.filter`, `updateProfile` para Herramientas de calibración IR y línea.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "IrCalibrationWorkbench.resetProfile",
+      "displayName": "resetProfile",
+      "signature": "IrCalibrationWorkbench.resetProfile(): inferred-by-TypeScript",
+      "line": 187,
+      "endLine": 197,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "createEmptyIrCalibrationProfile",
+        "onProfileChange",
+        "setCapture",
+        "setFeedback"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/IrCalibrationWorkbench.tsx",
+        "line": 187
+      },
+      "description": "Coordina `createEmptyIrCalibrationProfile`, `onProfileChange`, `setCapture` para Herramientas de calibración IR y línea.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "IrCalibrationWorkbench.startCapture",
+      "displayName": "startCapture",
+      "signature": "IrCalibrationWorkbench.startCapture(kind: CaptureState[\"kind\"]): inferred-by-TypeScript",
+      "line": 127,
+      "endLine": 149,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "formatDistance",
+        "profile.material.trim",
+        "setCapture",
+        "setFeedback"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/IrCalibrationWorkbench.tsx",
+        "line": 127
+      },
+      "description": "Coordina `formatDistance`, `profile.material.trim`, `setCapture` para Herramientas de calibración IR y línea.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "IrCalibrationWorkbench.updateProfile",
+      "displayName": "updateProfile",
+      "signature": "IrCalibrationWorkbench.updateProfile(patch: Partial<IrCalibrationProfile>): inferred-by-TypeScript",
+      "line": 151,
+      "endLine": 153,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "new Date().toISOString",
+        "onProfileChange"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/IrCalibrationWorkbench.tsx",
+        "line": 151
+      },
+      "description": "Coordina `new Date().toISOString`, `onProfileChange` para Herramientas de calibración IR y línea.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "IrCurve.x",
+      "displayName": "x",
+      "signature": "IrCurve.x(distance: number): inferred-by-TypeScript",
+      "line": 470,
+      "endLine": 470,
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/IrCalibrationWorkbench.tsx",
+        "line": 470
+      },
+      "description": "Operación x de Herramientas de calibración IR y línea; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "IrCurve.y",
+      "displayName": "y",
+      "signature": "IrCurve.y(adc: number): inferred-by-TypeScript",
+      "line": 471,
+      "endLine": 471,
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/IrCalibrationWorkbench.tsx",
+        "line": 471
+      },
+      "description": "Operación y de Herramientas de calibración IR y línea; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "LineWorkbench.exportRecords",
+      "displayName": "exportRecords",
+      "signature": "LineWorkbench.exportRecords(): inferred-by-TypeScript",
+      "line": 50,
+      "endLine": 53,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "JSON.stringify",
+        "URL.createObjectURL",
+        "a.click",
+        "document.createElement",
+        "setTimeout"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/calibration/LineWorkbench.tsx",
+        "line": 50
+      },
+      "description": "Coordina `JSON.stringify`, `URL.createObjectURL`, `a.click` para Herramientas de calibración IR y línea.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "LineWorkbench.median",
+      "displayName": "median",
+      "signature": "LineWorkbench.median(values: number[]): inferred-by-TypeScript",
+      "line": 39,
+      "endLine": 39,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "[...values].sort"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/calibration/LineWorkbench.tsx",
+        "line": 39
+      },
+      "description": "Adapta la llamada a `[...values].sort` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    }
+  ],
+  "hooks": [
+    {
+      "callee": "useState",
+      "scope": "CalibrationWorkspace",
+      "line": 14,
+      "arguments": 1,
+      "path": "src/features/calibration/CalibrationWorkspace.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "CalibrationWorkspace",
+      "line": 15,
+      "arguments": 1,
+      "path": "src/features/calibration/CalibrationWorkspace.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "CalibrationWorkspace",
+      "line": 15,
+      "arguments": 2,
+      "path": "src/features/calibration/CalibrationWorkspace.tsx"
+    },
+    {
+      "callee": "useWebSocket",
+      "scope": "CalibrationWorkspace",
+      "line": 16,
+      "arguments": 0,
+      "path": "src/features/calibration/CalibrationWorkspace.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "LineWorkbench",
+      "line": 22,
+      "arguments": 1,
+      "path": "src/features/calibration/LineWorkbench.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "LineWorkbench",
+      "line": 23,
+      "arguments": 1,
+      "path": "src/features/calibration/LineWorkbench.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "LineWorkbench",
+      "line": 23,
+      "arguments": 1,
+      "path": "src/features/calibration/LineWorkbench.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "LineWorkbench",
+      "line": 24,
+      "arguments": 1,
+      "path": "src/features/calibration/LineWorkbench.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "LineWorkbench",
+      "line": 24,
+      "arguments": 1,
+      "path": "src/features/calibration/LineWorkbench.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "LineWorkbench",
+      "line": 25,
+      "arguments": 1,
+      "path": "src/features/calibration/LineWorkbench.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "LineWorkbench",
+      "line": 25,
+      "arguments": 1,
+      "path": "src/features/calibration/LineWorkbench.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "LineWorkbench",
+      "line": 26,
+      "arguments": 1,
+      "path": "src/features/calibration/LineWorkbench.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "LineWorkbench",
+      "line": 26,
+      "arguments": 1,
+      "path": "src/features/calibration/LineWorkbench.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "LineWorkbench",
+      "line": 26,
+      "arguments": 1,
+      "path": "src/features/calibration/LineWorkbench.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "LineWorkbench",
+      "line": 27,
+      "arguments": 2,
+      "path": "src/features/calibration/LineWorkbench.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "LineWorkbench",
+      "line": 28,
+      "arguments": 2,
+      "path": "src/features/calibration/LineWorkbench.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "IrCalibrationWorkbench",
+      "line": 55,
+      "arguments": 1,
+      "path": "src/features/ir/IrCalibrationWorkbench.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "IrCalibrationWorkbench",
+      "line": 59,
+      "arguments": 1,
+      "path": "src/features/ir/IrCalibrationWorkbench.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "IrCalibrationWorkbench",
+      "line": 60,
+      "arguments": 1,
+      "path": "src/features/ir/IrCalibrationWorkbench.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "IrCalibrationWorkbench",
+      "line": 61,
+      "arguments": 1,
+      "path": "src/features/ir/IrCalibrationWorkbench.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "IrCalibrationWorkbench",
+      "line": 64,
+      "arguments": 1,
+      "path": "src/features/ir/IrCalibrationWorkbench.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "IrCalibrationWorkbench",
+      "line": 65,
+      "arguments": 1,
+      "path": "src/features/ir/IrCalibrationWorkbench.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "IrCalibrationWorkbench",
+      "line": 66,
+      "arguments": 1,
+      "path": "src/features/ir/IrCalibrationWorkbench.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "IrCalibrationWorkbench",
+      "line": 67,
+      "arguments": 2,
+      "path": "src/features/ir/IrCalibrationWorkbench.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "IrCalibrationWorkbench",
+      "line": 68,
+      "arguments": 2,
+      "path": "src/features/ir/IrCalibrationWorkbench.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "IrCalibrationWorkbench",
+      "line": 72,
+      "arguments": 2,
+      "path": "src/features/ir/IrCalibrationWorkbench.tsx"
+    }
+  ]
+}

@@ -1,0 +1,292 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "f4:module/Core/Inc/uner_transport_uart1_dma.h",
+  "slug": "uart-transport",
+  "title": "Transporte UNER UART1 DMA",
+  "target": "f4",
+  "kind": "plataforma",
+  "status": "source-documented",
+  "verification": "not-run-user-instruction",
+  "snapshotDate": "2026-10-20",
+  "responsibility": "Adapta el transporte UNER a recepción circular y transmisión DMA UART1 del STM32.",
+  "scope": "Índices DMA, aceptación TX, finalización y entrega al core; no interpreta comandos del robot.",
+  "state": "El contexto de transporte conserva el recurso UART, buffer RX, posiciones y buffer/estado TX. UNER_Transport presta funciones poll_rx/try_send y ctx.",
+  "lifecycle": [
+    "Init conecta recurso y buffers; poll_rx entrega bytes nuevos al parser.",
+    "try_send inicia/encola según disponibilidad; OnTxComplete libera el estado de transmisión."
+  ],
+  "interactions": [
+    "Bridge y callbacks HAL alimentan el transporte. UNER_Handle usa el mismo contrato para UART y USB."
+  ],
+  "limitations": [
+    "DMA no autoriza a destruir el buffer antes de finalizar.",
+    "IDLE, mitad y fin DMA no equivalen a límites de frame UNER."
+  ],
+  "modularity": "Adaptador STM32 con HAL explícito; no se exige independencia del periférico.",
+  "files": [
+    {
+      "path": "Core/Inc/uner_transport_uart1_dma.h",
+      "rootId": "f4",
+      "sha256": "00813cdceca58e3c2b7c06533bc9958673a63104f158399686f5bbc96edb4585",
+      "includes": [
+        "stdint.h",
+        "stm32f4xx_hal.h",
+        "uner_transport.h"
+      ]
+    },
+    {
+      "path": "Core/Src/uner_transport_uart1_dma.c",
+      "rootId": "f4",
+      "sha256": "f00189bd697354810494aa2f29e5ee9d373d828b3718e177b168e868ab049621",
+      "includes": [
+        "app_wifi_binding.h",
+        "wifi_bridge_at.h",
+        "uner_transport_uart1_dma.h"
+      ]
+    }
+  ],
+  "findings": [],
+  "types": [
+    {
+      "name": "UNER_TransportUart1Dma",
+      "fields": [
+        {
+          "name": "base",
+          "declaration": "UNER_Transport base",
+          "callback": false,
+          "ownerType": "UNER_TransportUart1Dma",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_transport_uart1_dma.h",
+            "line": 15
+          },
+          "description": "Dato de estado/configuración `base`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "huart",
+          "declaration": "UART_HandleTypeDef *huart",
+          "callback": false,
+          "ownerType": "UNER_TransportUart1Dma",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_transport_uart1_dma.h",
+            "line": 16
+          },
+          "description": "Dato de estado/configuración `huart`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "hdma_rx",
+          "declaration": "DMA_HandleTypeDef *hdma_rx",
+          "callback": false,
+          "ownerType": "UNER_TransportUart1Dma",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_transport_uart1_dma.h",
+            "line": 17
+          },
+          "description": "Dato de estado/configuración `hdma_rx`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "rx_buf",
+          "declaration": "volatile uint8_t *rx_buf",
+          "callback": false,
+          "ownerType": "UNER_TransportUart1Dma",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_transport_uart1_dma.h",
+            "line": 18
+          },
+          "description": "Dato de estado/configuración `rx_buf`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "rx_len",
+          "declaration": "volatile uint16_t rx_len",
+          "callback": false,
+          "ownerType": "UNER_TransportUart1Dma",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_transport_uart1_dma.h",
+            "line": 19
+          },
+          "description": "Dato de estado/configuración `rx_len`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "last_pos",
+          "declaration": "volatile uint16_t last_pos",
+          "callback": false,
+          "ownerType": "UNER_TransportUart1Dma",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_transport_uart1_dma.h",
+            "line": 20
+          },
+          "description": "Memoria de la observación anterior usada por la máquina de estados."
+        },
+        {
+          "name": "tx_busy_flag",
+          "declaration": "volatile uint8_t *tx_busy_flag",
+          "callback": false,
+          "ownerType": "UNER_TransportUart1Dma",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_transport_uart1_dma.h",
+            "line": 21
+          },
+          "description": "Dato de estado/configuración `tx_busy_flag`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "curr_pos",
+          "declaration": "volatile uint16_t curr_pos",
+          "callback": false,
+          "ownerType": "UNER_TransportUart1Dma",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/uner_transport_uart1_dma.h",
+            "line": 22
+          },
+          "description": "Dato de estado/configuración `curr_pos`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_transport_uart1_dma.h",
+        "line": 15
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "UNER_TransportUart1Dma_Init",
+      "signature": "UNER_Status UNER_TransportUart1Dma_Init( UNER_TransportUart1Dma *transport, uint8_t transport_id, UART_HandleTypeDef *huart, DMA_HandleTypeDef *hdma_rx, volatile uint8_t *rx_buf, volatile uint16_t rx_len, volatile uint8_t *tx_busy_flag )",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_transport_uart1_dma.h",
+        "line": 26
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [
+        "curr_pos",
+        "hdma_rx",
+        "huart",
+        "last_pos",
+        "rx_buf",
+        "rx_len",
+        "tx_busy_flag"
+      ],
+      "description": "Conecta UART1 y memoria DMA al contrato UNER_Transport.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_transport_uart1_dma.c",
+        "line": 112
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "UNER_TransportUart1Dma_OnTxComplete",
+      "signature": "void UNER_TransportUart1Dma_OnTxComplete(UNER_TransportUart1Dma *transport)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_transport_uart1_dma.h",
+        "line": 36
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [
+        "tx_busy_flag"
+      ],
+      "description": "Atiende finalización TX y libera el transporte para el siguiente frame.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_transport_uart1_dma.c",
+        "line": 142
+      },
+      "linkage": "header"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "UNER_TransportUart1Dma_QueueFull",
+      "signature": "static uint8_t UNER_TransportUart1Dma_QueueFull(const UNER_Core *core)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_transport_uart1_dma.c",
+        "line": 8
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Queue Full de Transporte UNER UART1 DMA; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_TransportUart1Dma_FeedRange",
+      "signature": "static UNER_Status UNER_TransportUart1Dma_FeedRange( UNER_Transport *transport, UNER_Core *core, uint16_t start_pos, uint16_t end_pos)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_transport_uart1_dma.c",
+        "line": 13
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_Core_PushByte",
+        "UNER_TransportUart1Dma_QueueFull"
+      ],
+      "writes": [
+        "last_pos"
+      ],
+      "description": "Coordina `UNER_Core_PushByte`, `UNER_TransportUart1Dma_QueueFull` para Transporte UNER UART1 DMA.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_TransportUart1Dma_PollRx",
+      "signature": "static UNER_Status UNER_TransportUart1Dma_PollRx(UNER_Transport *transport, UNER_Core *core)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_transport_uart1_dma.c",
+        "line": 38
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_TransportUart1Dma_FeedRange",
+        "UNER_TransportUart1Dma_QueueFull",
+        "WifiBridge_GetActiveBackend",
+        "__HAL_DMA_GET_COUNTER"
+      ],
+      "writes": [
+        "last_pos"
+      ],
+      "description": "Coordina `UNER_TransportUart1Dma_FeedRange`, `UNER_TransportUart1Dma_QueueFull`, `WifiBridge_GetActiveBackend` para Transporte UNER UART1 DMA.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_TransportUart1Dma_TrySend",
+      "signature": "static UNER_Status UNER_TransportUart1Dma_TrySend(UNER_Transport *transport, const uint8_t *buf, uint16_t len)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_transport_uart1_dma.c",
+        "line": 84
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "HAL_UART_Transmit_DMA",
+        "WifiBridge_AT_QueueFrame",
+        "WifiBridge_GetActiveBackend"
+      ],
+      "writes": [
+        "tx_busy_flag"
+      ],
+      "description": "Coordina `HAL_UART_Transmit_DMA`, `WifiBridge_AT_QueueFrame`, `WifiBridge_GetActiveBackend` para Transporte UNER UART1 DMA.",
+      "descriptionOrigin": "structural"
+    }
+  ]
+}

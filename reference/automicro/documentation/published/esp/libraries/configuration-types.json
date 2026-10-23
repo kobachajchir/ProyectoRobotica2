@@ -1,0 +1,477 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "esp:module/src/config.h",
+  "slug": "configuration-types",
+  "title": "Configuración, flags y diagnósticos auxiliares",
+  "target": "esp",
+  "kind": "datos",
+  "status": "source-documented",
+  "snapshotDate": "2026-10-20",
+  "verification": "not-run-user-instruction",
+  "responsibility": "Define modelos compartidos y superficies auxiliares de diagnóstico del firmware.",
+  "scope": "AppConfig y bits del runtime; los valores privados/defaults sensibles no se copian al manual.",
+  "state": "Los modelos contienen configuración y credenciales locales; sus tipos son documentables pero su contenido real se excluye.",
+  "modularity": "Vocabulario del proyecto que acopla esquemas, distinto de enlazar implementaciones.",
+  "lifecycle": [
+    "Config se carga antes de consumidores y puede tener copia temporal de sesión.",
+    "Diagnósticos no deben transmitir secretos ni asumir que un bit sustituye el estado completo del servicio."
+  ],
+  "interactions": [
+    "NVS, Wi-Fi, bridge y composición comparten estos tipos."
+  ],
+  "limitations": [
+    "Bitfields C y objetos C++ no son un contrato de memoria intercambiable con TypeScript.",
+    "Los macros/config privados no se publican como ejemplos de valores."
+  ],
+  "relationships": [],
+  "findings": [],
+  "files": [
+    {
+      "rootId": "esp",
+      "path": "src/bitMap.h",
+      "sha256": "fa10cc2b559953f99fab7380f1e7def4e9f331115f865ba9537395458ee0bd05",
+      "imports": [
+        "stdint.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    },
+    {
+      "rootId": "esp",
+      "path": "src/config.h",
+      "sha256": "ae3fc02d7feb548bc93de9a1aa63959d411e50563705422e64e429817818be7a",
+      "imports": [
+        "stdint.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    },
+    {
+      "rootId": "esp",
+      "path": "src/uner_diagnostics_esp.cpp",
+      "sha256": "7d5f6c282a6d548f74d47652ab7775741d1e779d330c0986ae51b1e90a21c919",
+      "imports": [
+        "uner_platform_esp.h",
+        "Arduino.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    }
+  ],
+  "types": [
+    {
+      "name": "t_bitMap",
+      "fields": [
+        {
+          "name": "bits",
+          "declaration": "struct { estructura anidada } bits",
+          "callback": false,
+          "ownerType": "t_bitMap",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bitMap.h",
+            "line": 14
+          },
+          "description": "Dato de estado/configuración `bits`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "nibbles",
+          "declaration": "struct { estructura anidada } nibbles",
+          "callback": false,
+          "ownerType": "t_bitMap",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bitMap.h",
+            "line": 18
+          },
+          "description": "Dato de estado/configuración `nibbles`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "byte",
+          "declaration": "uint8_t byte",
+          "callback": false,
+          "ownerType": "t_bitMap",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bitMap.h",
+            "line": 19
+          },
+          "description": "Dato de estado/configuración `byte`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/bitMap.h",
+        "line": 14
+      }
+    },
+    {
+      "name": "bits",
+      "fields": [
+        {
+          "name": "b0",
+          "declaration": "uint8_t b0:1",
+          "callback": false,
+          "ownerType": "bits",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bitMap.h",
+            "line": 15
+          },
+          "description": "Dato de estado/configuración `b0`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "b1",
+          "declaration": "uint8_t b1:1",
+          "callback": false,
+          "ownerType": "bits",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bitMap.h",
+            "line": 16
+          },
+          "description": "Dato de estado/configuración `b1`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "b2",
+          "declaration": "uint8_t b2:1",
+          "callback": false,
+          "ownerType": "bits",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bitMap.h",
+            "line": 16
+          },
+          "description": "Dato de estado/configuración `b2`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "b3",
+          "declaration": "uint8_t b3:1",
+          "callback": false,
+          "ownerType": "bits",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bitMap.h",
+            "line": 16
+          },
+          "description": "Dato de estado/configuración `b3`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "b4",
+          "declaration": "uint8_t b4:1",
+          "callback": false,
+          "ownerType": "bits",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bitMap.h",
+            "line": 16
+          },
+          "description": "Dato de estado/configuración `b4`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "b5",
+          "declaration": "uint8_t b5:1",
+          "callback": false,
+          "ownerType": "bits",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bitMap.h",
+            "line": 17
+          },
+          "description": "Dato de estado/configuración `b5`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "b6",
+          "declaration": "uint8_t b6:1",
+          "callback": false,
+          "ownerType": "bits",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bitMap.h",
+            "line": 17
+          },
+          "description": "Dato de estado/configuración `b6`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "b7",
+          "declaration": "uint8_t b7:1",
+          "callback": false,
+          "ownerType": "bits",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bitMap.h",
+            "line": 17
+          },
+          "description": "Dato de estado/configuración `b7`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/bitMap.h",
+        "line": 15
+      }
+    },
+    {
+      "name": "nibbles",
+      "fields": [
+        {
+          "name": "low",
+          "declaration": "uint8_t low:4",
+          "callback": false,
+          "ownerType": "nibbles",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bitMap.h",
+            "line": 19
+          },
+          "description": "Dato de estado/configuración `low`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "high",
+          "declaration": "uint8_t high:4",
+          "callback": false,
+          "ownerType": "nibbles",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bitMap.h",
+            "line": 19
+          },
+          "description": "Dato de estado/configuración `high`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/bitMap.h",
+        "line": 19
+      }
+    },
+    {
+      "name": "AppConfig",
+      "fields": [
+        {
+          "name": "schemaVersion",
+          "declaration": "uint16_t schemaVersion",
+          "callback": false,
+          "ownerType": "AppConfig",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/config.h",
+            "line": 65
+          },
+          "description": "Dato de estado/configuración `schemaVersion`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "initializedNvs",
+          "declaration": "uint8_t initializedNvs",
+          "callback": false,
+          "ownerType": "AppConfig",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/config.h",
+            "line": 66
+          },
+          "description": "Dato de estado/configuración `initializedNvs`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "apSsid",
+          "declaration": "char apSsid[SSID_MAX_LEN + 1]",
+          "callback": false,
+          "ownerType": "AppConfig",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/config.h",
+            "line": 67
+          },
+          "description": "Dato de estado/configuración `apSsid`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "apPass",
+          "declaration": "char apPass[PASS_MAX_LEN + 1]",
+          "callback": false,
+          "ownerType": "AppConfig",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/config.h",
+            "line": 68
+          },
+          "description": "Dato de estado/configuración `apPass`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "apProtected",
+          "declaration": "uint8_t apProtected",
+          "callback": false,
+          "ownerType": "AppConfig",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/config.h",
+            "line": 69
+          },
+          "description": "Dato de estado/configuración `apProtected`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "staSsid",
+          "declaration": "char staSsid[SSID_MAX_LEN + 1]",
+          "callback": false,
+          "ownerType": "AppConfig",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/config.h",
+            "line": 70
+          },
+          "description": "Dato de estado/configuración `staSsid`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "staPass",
+          "declaration": "char staPass[PASS_MAX_LEN + 1]",
+          "callback": false,
+          "ownerType": "AppConfig",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/config.h",
+            "line": 71
+          },
+          "description": "Dato de estado/configuración `staPass`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "staIp",
+          "declaration": "char staIp[IPV4_TEXT_MAX_LEN + 1]",
+          "callback": false,
+          "ownerType": "AppConfig",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/config.h",
+            "line": 72
+          },
+          "description": "Dato de estado/configuración `staIp`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "staGateway",
+          "declaration": "char staGateway[IPV4_TEXT_MAX_LEN + 1]",
+          "callback": false,
+          "ownerType": "AppConfig",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/config.h",
+            "line": 75
+          },
+          "description": "Dato de estado/configuración `staGateway`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "staSubnet",
+          "declaration": "char staSubnet[IPV4_TEXT_MAX_LEN + 1]",
+          "callback": false,
+          "ownerType": "AppConfig",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/config.h",
+            "line": 76
+          },
+          "description": "Dato de estado/configuración `staSubnet`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "apIp",
+          "declaration": "char apIp[IPV4_TEXT_MAX_LEN + 1]",
+          "callback": false,
+          "ownerType": "AppConfig",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/config.h",
+            "line": 77
+          },
+          "description": "Dato de estado/configuración `apIp`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "nextBootMode",
+          "declaration": "uint8_t nextBootMode",
+          "callback": false,
+          "ownerType": "AppConfig",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/config.h",
+            "line": 78
+          },
+          "description": "Dato de estado/configuración `nextBootMode`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "apFallbackEnabled",
+          "declaration": "uint8_t apFallbackEnabled",
+          "callback": false,
+          "ownerType": "AppConfig",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/config.h",
+            "line": 79
+          },
+          "description": "Dato de estado/configuración `apFallbackEnabled`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "apFallbackEnabled",
+          "declaration": "uint8_t apFallbackEnabled",
+          "callback": false,
+          "ownerType": "AppConfig",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/config.h",
+            "line": 81
+          },
+          "description": "Dato de estado/configuración `apFallbackEnabled`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/config.h",
+        "line": 65
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "EspPlatform_LogUNERPacket",
+      "signature": "void EspPlatform_LogUNERPacket(void *, const UNER_Packet *pkt)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_diagnostics_esp.cpp",
+        "line": 55
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Esp Platform Log UNERPacket de Configuración, flags y diagnósticos auxiliares; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "debug_payload_is_sensitive",
+      "signature": "static bool debug_payload_is_sensitive(uint8_t command)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_diagnostics_esp.cpp",
+        "line": 21
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación debug payload is sensitive de Configuración, flags y diagnósticos auxiliares; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "debug_print_hex_bytes",
+      "signature": "static void debug_print_hex_bytes(const uint8_t *data, uint16_t len)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_diagnostics_esp.cpp",
+        "line": 9
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "print"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `print` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    }
+  ],
+  "hooks": []
+}

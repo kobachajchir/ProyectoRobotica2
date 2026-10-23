@@ -1,0 +1,1141 @@
+{
+  "schemaVersion": 1,
+  "modules": [
+    {
+      "id": "web:module/src/main.tsx",
+      "slug": "application",
+      "title": "Arranque, proveedores y rutas Web",
+      "kind": "composición",
+      "files": [
+        "src/main.tsx",
+        "src/App.tsx",
+        "src/App.css",
+        "src/index.css",
+        "src/vite-env.d.ts"
+      ],
+      "prefixes": [],
+      "responsibility": "Monta React, proveedores y rutas que organizan el cliente del robot.",
+      "scope": "Composición de UI/estado; no ejecuta adquisición F4 ni sirve HTTP desde el navegador.",
+      "state": "Providers establecen ámbitos de socket, usuario, modo, sensores y pantalla; montar un provider dos veces crea estados distintos.",
+      "modularity": "Composición dependiente de React y router; las librerías de codecs/dibujo pueden ser puras fuera de esa composición.",
+      "lifecycle": [
+        "main monta aplicación; App crea árbol de proveedores/rutas.",
+        "Effects deben liberar listeners, timers y recursos al desmontar o cambiar dependencias."
+      ],
+      "interactions": [
+        "WebSocketContext conecta servicios remotos y las rutas consumen sus contextos.",
+        "Bundle generado se copia/serve desde ESP en otra etapa."
+      ],
+      "limitations": [
+        "Cambiar fuente no actualiza el bundle que ya sirve la placa.",
+        "No se abrió navegador ni se ejecutó build en esta entrega."
+      ],
+      "functions": {
+        "App": "Compone proveedores, navegación y rutas de la aplicación.",
+        "main": "Monta el árbol de React en el contenedor del documento."
+      }
+    },
+    {
+      "id": "web:module/src/components/RootLayout.tsx",
+      "slug": "navigation-shell",
+      "title": "Layout y navegación de secciones",
+      "kind": "integración",
+      "files": [
+        "src/components/AboutProjectPanel.tsx",
+        "src/components/AppFooter.tsx",
+        "src/components/BrandMark.tsx",
+        "src/components/NavigateVT.tsx",
+        "src/components/PageHeader.tsx",
+        "src/components/RedirectRoot.tsx",
+        "src/components/RootLayout.tsx",
+        "src/components/StartupWelcome.css",
+        "src/components/StartupWelcome.tsx",
+        "src/pages/Home.tsx",
+        "src/pages/NotFound.css",
+        "src/pages/NotFound.tsx"
+      ],
+      "prefixes": [],
+      "responsibility": "Presenta estructura y navegación común de las secciones del cliente.",
+      "scope": "Rutas, identidad visual y contenido general; no define contratos UNER.",
+      "state": "Estado visual local, navegación y props; el dispositivo confirmado pertenece a contextos de dominio.",
+      "modularity": "UI React/router; usa componentes compartidos y estado externo mediante hooks.",
+      "lifecycle": [
+        "La ruta activa monta contenido dentro del layout.",
+        "Efectos de bienvenida/navegación no deben recrear la sesión de dispositivo por accidente."
+      ],
+      "interactions": [
+        "Las páginas enlazan Docs, control, estado, Wi-Fi y estudios."
+      ],
+      "limitations": [
+        "Ruta visible y dispositivo conectado/autorizado son condiciones diferentes."
+      ],
+      "functions": {}
+    },
+    {
+      "id": "web:module/src/protocol/wsApi.ts",
+      "slug": "websocket-client",
+      "title": "API JSON, Promises y WebSocket",
+      "kind": "servicio",
+      "files": [
+        "src/protocol/wsApi.ts",
+        "src/protocol/espClient.ts",
+        "src/contexts/WebSocketContext.tsx",
+        "src/hooks/useWebSocket.tsx",
+        "src/hooks/useEspCommand.ts"
+      ],
+      "prefixes": [],
+      "responsibility": "Construye requests, conecta socket, correlaciona respuestas y entrega eventos a consumidores.",
+      "scope": "API 1, requestId/command, timeout, reconnect y listeners; un evento requestAccepted no resuelve la Promise.",
+      "state": "EspClient posee Map de pendientes y listeners; el sender es prestado por el provider. Cada pending conserva resolve/reject/timer y command. Callbacks/closures duran hasta finalización, cancelación o unsubscribe.",
+      "modularity": "wsApi/EspClient separan sobre y correlación del componente React; provider depende de navegador y transporte WebSocket.",
+      "lifecycle": [
+        "Conectar sender al abrir; desconectarlo cancela solicitudes pendientes.",
+        "request registra antes de enviar, con timeout configurable.",
+        "accept entrega eventos o completa respuesta/error correlacionado; cleanup debe retirar listeners/timers."
+      ],
+      "interactions": [
+        "ESP traduce a UNER y mantiene correlación/generación; el navegador no elige su nodo.",
+        "Los contextos consumen eventos y valores JSON, no memoria de structs C."
+      ],
+      "limitations": [
+        "Tipos TypeScript no validan automáticamente contenido remoto.",
+        "Timeout cliente, broker y operación física son plazos distintos."
+      ],
+      "functions": {
+        "buildWsRequest": "Construye sobre API 1 con command, args y requestId válido.",
+        "parseWsEnvelope": "Acepta únicamente los sobres reconocidos de respuesta, evento o error.",
+        "request": "Registra Promise correlacionada, envía JSON y establece timeout.",
+        "accept": "Despacha evento o completa el pending correlacionado por requestId/command.",
+        "subscribe": "Registra listener y devuelve una función para retirarlo.",
+        "cancelPending": "Rechaza pendientes y limpia sus timers al cancelar la conexión."
+      }
+    },
+    {
+      "id": "web:module/src/contexts/UserContext.tsx",
+      "slug": "authentication",
+      "title": "Usuario, PIN y permisos remotos",
+      "kind": "integración",
+      "files": [
+        "src/contexts/UserContext.tsx",
+        "src/api/UserRepository.tsx",
+        "src/types/UserTypes.ts",
+        "src/types/PinAuthTypes.ts",
+        "src/components/PinScreen.tsx",
+        "src/components/PinScreenModal.tsx",
+        "src/components/ProtectedRoute.tsx",
+        "src/components/PublicRoute.tsx",
+        "src/pages/Login.tsx"
+      ],
+      "prefixes": [],
+      "responsibility": "Mantiene sesión del navegador y flujos de PIN/autorización que habilitan acciones remotas.",
+      "scope": "Login, validar pantalla, cambio PIN y cierre; la comprobación final de acciones sigue en ESP/F4.",
+      "state": "El provider conserva autoridad confirmada y estado de solicitud; formularios PIN guardan edición local que no es el cursor PIN de la OLED física.",
+      "modularity": "React/servicios del producto; separar formulario local, sesión ESP y permiso local F4.",
+      "lifecycle": [
+        "Enviar PIN al comando correspondiente y esperar final.",
+        "Logout/desconexión/expiración actualiza estado y cancela acciones según el flujo.",
+        "Unmount del modal no debe confundirse con revocación remota sin comando."
+      ],
+      "interactions": [
+        "ScreenStreamWorkspace puede pedir validar el screenCode actual.",
+        "ESP asigna sesión/nodo; F4 conserva autorización por origen y TTL.",
+        "PIN JSON string de cuatro dígitos se codifica como cuatro valores numéricos 0..9 en wire; ver shared:message/auth-pin/v1 para scopes y respuestas."
+      ],
+      "limitations": [
+        "No publicar PIN/token ni almacenarlos en artefactos documentales.",
+        "Poder abrir un formulario no demuestra que el comando quedó autorizado."
+      ],
+      "functions": {
+        "validatePin": "Solicita validación del PIN para el ámbito/pantalla y devuelve el resultado remoto.",
+        "PinScreenModal": "Presenta edición local del PIN; no reconstruye el buffer de la pantalla F4."
+      }
+    },
+    {
+      "id": "web:module/src/contexts/ScreenContext.tsx",
+      "slug": "screen-state",
+      "title": "Estado normalizado de pantalla remota",
+      "kind": "servicio",
+      "files": [
+        "src/contexts/ScreenContext.tsx",
+        "src/hooks/useScreen.tsx",
+        "src/types/ScreenTypes.ts",
+        "src/protocol/screenMenuState.ts"
+      ],
+      "prefixes": [],
+      "responsibility": "Normaliza reportes ESP y construye el modelo de pantalla, selección, menú y PIN que usa la UI.",
+      "scope": "Identidad y datos reportados/enriquecidos; no dispone de todos los estados privados de los renderers F4.",
+      "state": "ScreenProvider posee currentScreen, requests pendientes y listeners. CurrentScreen conserva rawData, source y tiempo recibido; ScreenViewModel añade conteos/ventana derivados y clasificación de PIN.",
+      "modularity": "Depende de transporte, usuario y modo; normalización pura separada de provider. El enriquecimiento mezcla datos confirmados y derivados y debe mantener su procedencia.",
+      "lifecycle": [
+        "Recibir screen.changed/current/device.response y normalizar.",
+        "Enriquecer usando datos reportados y contexto global; preservar solo campos cuyo contexto sigue siendo válido.",
+        "RequestCurrentScreen exige conexión y autoridad remota y lleva timeout propio."
+      ],
+      "interactions": [
+        "ESP add_screen_report serializa identidad/selección/dashboard; renderer consume rawData enriquecido.",
+        "La ventana Web se deriva en bloques de tres, frente al estado firstVisibleItem de F4."
+      ],
+      "limitations": [
+        "Código de página del screenCode no equivale a página actual de scroll.",
+        "GOTO no se interpreta en todos los normalizadores de pantalla.",
+        "Índices 0, cantidad 0 y campo ausente no son equivalentes."
+      ],
+      "functions": {
+        "normalizeScreenReport": "Extrae identidad/source y bytes de un reporte JSON admitido.",
+        "toCurrentScreen": "Agrega metadata conocida y tiempo de recepción a un reporte.",
+        "enrichCurrentScreen": "Construye el modelo visual con conteos, selección, ventana y clasificación de PIN.",
+        "enrichRawScreenData": "Agrega datos globales/derivados al rawData consumido por renderers.",
+        "resolveVisibleMenuWindow": "Deriva ventana por bloques cuando falta una primera fila explícita.",
+        "normalizeStmMenuIndex": "Limita el índice reportado sin cambiar su base cero."
+      }
+    },
+    {
+      "id": "web:module/src/screens/screenCodes.ts",
+      "slug": "screen-codes",
+      "title": "Códigos e identidad de pantallas",
+      "kind": "contrato",
+      "files": [
+        "src/screens/screenCodes.ts",
+        "src/screens/index.ts"
+      ],
+      "prefixes": [],
+      "responsibility": "Declara IDs y clasificación de pantallas para resolver contenido y controles.",
+      "scope": "Constantes, descomposición menu/submenu/page y definiciones auxiliares; no prueba render ni alcance de una pantalla.",
+      "state": "Constantes/tablas sin estado de dispositivo; pantalla activa llega por reporte con source.",
+      "modularity": "Contrato de datos TypeScript equivalente a códigos numéricos F4, con clasificación propia del consumidor.",
+      "lifecycle": [
+        "Conservar ID al renombrar título.",
+        "Distinguir código declarado por invocador de código efectivo que la integración OSK publica."
+      ],
+      "interactions": [
+        "ScreenTypes tiene otro catálogo de metadata; registry y remediatedScreens resuelven contenido por código.",
+        "El manifiesto documental lista valor F4, valor Web, metadata y candidatos por separado."
+      ],
+      "limitations": [
+        "Constante existente no implica entrada en SCREEN_META_BY_CODE ni builder activo.",
+        "El source distingue variantes que comparten ID."
+      ],
+      "functions": {
+        "makeScreenCode": "Compone identidad de tres bytes sin datos de selección.",
+        "getScreenDefinition": "Consulta definición auxiliar del código.",
+        "isPermissionValidationScreenCode": "Clasifica una pantalla PIN teniendo en cuenta source.",
+        "getValidationPinDigitsCount": "Consulta cantidad de dígitos configurada para validación Web."
+      }
+    },
+    {
+      "id": "web:module/src/components/OledCommandPreview.tsx",
+      "slug": "oled-renderer",
+      "title": "Primitivas OLED, fuentes y representación SVG",
+      "kind": "núcleo",
+      "files": [
+        "src/screens/types.ts",
+        "src/screens/helpers.ts",
+        "src/screens/bitmapAssets.ts",
+        "src/screens/oledBitmapFont.ts",
+        "src/components/OledCommandPreview.tsx",
+        "src/components/OledBitmapText.tsx"
+      ],
+      "prefixes": [],
+      "responsibility": "Transforma comandos de dibujo en la representación de una OLED de 128×64 y rasteriza fuentes/bitmaps disponibles.",
+      "scope": "Puerto gráfico Web actual: unión OledCommand y nodos SVG. El objetivo del proyecto es portar íntegramente semántica y renderers F4; este consumidor no ejecuta directamente la librería C completa.",
+      "state": "renderCommands crea cursor/color/inverted por render; elements conserva orden de dibujo. Assets/fuentes son tablas estáticas, no snapshot físico.",
+      "modularity": "Helpers de comandos separan geometría de React; OledCommandPreview implementa SVG, con semántica distinta de un framebuffer binario en algunos casos.",
+      "lifecycle": [
+        "Builders generan comandos; preview recorre en orden y crea elementos.",
+        "Texto usa fuente bitmap disponible; faltantes de asset producen un marcador SVG.",
+        "Clear restablece estado local; el driver F4 tiene sus propias reglas y buffers."
+      ],
+      "interactions": [
+        "F4 SSD1306 rasteriza en RAM; Web debe conservar orden de bits, clipping, XOR, fuente y rotación si busca equivalencia exacta.",
+        "OledCanvasRasterizer es otro rasterizador usado para enviar dibujos a F4; no es automáticamente el motor del visor en vivo."
+      ],
+      "limitations": [
+        "Color Inverse en paint no ejecuta XOR del píxel previo.",
+        "SVG con línea/arco/trazo no acredita igualdad píxel a píxel con algoritmos C.",
+        "Portar dibujo sin todo el estado del renderer no completa una réplica exacta.",
+        "F4 aplica Inverse de forma diferente según primitiva (AMDOC-F4-012); un port literal debe conservar esa observación hasta decidir una corrección explícita."
+      ],
+      "functions": {
+        "OledCommandPreview": "Presenta comandos OLED como SVG con clipping 128×64.",
+        "renderCommands": "Interpreta comandos en orden usando cursor, color e inversión locales.",
+        "paint": "Selecciona color SVG; actualmente no reproduce XOR de SSD1306_COLOR Inverse.",
+        "bitmapPath": "Convierte bits de un bitmap row-major LSB/MSB a trazos de píxel SVG.",
+        "bitmapNode": "Dibuja asset conocido o marcador de referencia cuando falta.",
+        "OledBitmapText": "Dibuja glifos bitmap según fuente disponible."
+      }
+    },
+    {
+      "id": "web:module/src/screens/screenRenderRegistry.ts",
+      "slug": "screen-resolver",
+      "title": "Resolución de variantes y fallback de pantalla",
+      "kind": "integración",
+      "files": [
+        "src/screens/screenRenderRegistry.ts",
+        "src/screens/remediatedScreens.ts",
+        "src/screens/identifiedScreens.ts"
+      ],
+      "prefixes": [],
+      "responsibility": "Elige builder y parámetros a partir de screenCode/source/rawData y resuelve identidades con información insuficiente.",
+      "scope": "Orden: remediated, identified, switch de builders. No confundir esa prioridad con el renderer alcanzado en F4.",
+      "state": "ResolvedOledScreen contiene título, variante, categoría, builder y comandos; no contiene prueba de exactitud ni estado físico.",
+      "modularity": "Capa de integración entre reportes y biblioteca de comandos, dependiente del esquema y catálogos del proyecto.",
+      "lifecycle": [
+        "Resolver identidad y source; seleccionar variante antes de construir comandos.",
+        "Cuando faltan campos, algunos caminos usan identity-only y otros valores predeterminados; la diferencia queda en hallazgos."
+      ],
+      "interactions": [
+        "ScreenStreamWorkspace añade irEmitters al rawData.",
+        "F4 publica extensiones concretas de dashboard/notificación/selección, no el estado de cada builder."
+      ],
+      "limitations": [
+        "readMpuArgs/readMotorArgs/readPinFormArgs contienen defaults que no son datos recibidos del equipo.",
+        "La metadata builder candidata no demuestra cobertura exacta.",
+        "GOTO/ON-OFF, OSK y confirmaciones requieren discriminantes y datos suficientes."
+      ],
+      "functions": {
+        "resolveOledScreen": "Selecciona el camino efectivo remediated/identified/switch con sus parámetros.",
+        "resolveRemediatedScreen": "Usa menú reportado cuando tiene datos suficientes o muestra identidad sin inventar estado.",
+        "resolveIdentifiedScreen": "Resuelve definiciones conocidas de menú/aviso/pantalla.",
+        "readPinFormArgs": "Lee dígitos/índice o usa ceros; no dispone del snapshot local PIN por el reporte actual.",
+        "readMpuArgs": "Lee campos escalares esperados o usa valores de ejemplo del builder.",
+        "readMotorArgs": "Lee porcentajes/selección o usa valores por defecto del builder."
+      }
+    },
+    {
+      "id": "web:module/src/screens/menuScreens.ts",
+      "slug": "menu-builders",
+      "title": "Constructores de menús OLED",
+      "kind": "núcleo",
+      "files": [
+        "src/screens/menuScreens.ts"
+      ],
+      "prefixes": [
+        "build"
+      ],
+      "responsibility": "Construye primitivas de listas de menú con iconos y selección.",
+      "scope": "Filtrado visible, tres filas, ventana y catálogos locales; no consulta el árbol dinámico F4 completo.",
+      "state": "MenuScreenArgs presta items y selección; el resultado es un array de comandos. Las listas constantes pueden divergir del catálogo F4 por modo/perfil.",
+      "modularity": "Cálculo TypeScript sin hardware, dependiente de geometría y datos de menú del robot.",
+      "lifecycle": [
+        "Filtrar visibles, calcular ventana, dibujar fila/bitmap/texto/cursor.",
+        "Conservar distinción índice global visible y posición de click 1-based."
+      ],
+      "interactions": [
+        "Contexto deriva firstVisibleIndex; F4 conserva firstVisibleItem y menú puede tener dos filas de favoritos.",
+        "Remote click ejecuta posición visible en F4, no el índice derivado por Web."
+      ],
+      "limitations": [
+        "Ventana de tres fija no sirve por sí sola para todos los menús.",
+        "Catálogos locales requieren actualización junto con menu_definition y política de visibilidad."
+      ],
+      "functions": {
+        "buildMenuScreenCommands": "Construye filas de una ventana de tres a partir de items y selección.",
+        "buildMenuItemCommands": "Construye marco, icono, etiqueta y cursor de una fila."
+      }
+    },
+    {
+      "id": "web:module/src/screens/dashboardScreens.ts",
+      "slug": "dashboard-builders",
+      "title": "Renderers Web de dashboard y modos",
+      "kind": "núcleo",
+      "files": [
+        "src/screens/dashboardScreens.ts"
+      ],
+      "prefixes": [
+        "build"
+      ],
+      "responsibility": "Construye pantallas de arranque, dashboard, selector de modo y test.",
+      "scope": "Modelos visuales y geometría adaptada del dominio F4; no adquiere conectividad directamente.",
+      "state": "Argumentos prestados de backend, conexión, SSID/IP y modo; texto y scroll necesitan valores/tiempo/ref exactos para coincidir con el equipo.",
+      "modularity": "Builder de comandos puro, con convenciones de fuente/montaje del proyecto.",
+      "lifecycle": [
+        "Recibir modelo confirmado y construir comandos.",
+        "No convertir ausencia de dato en un estado físico afirmado."
+      ],
+      "interactions": [
+        "Extensión GET_CURRENT_SCREEN transporta datos dashboard; ScreenContext normaliza y registry adapta.",
+        "F4 reserva carriles de scroll y banda de indicadores; replicar requiere misma ventana y fase temporal."
+      ],
+      "limitations": [
+        "Los lectores de modo del visor conservan casos incompletos para GOTO.",
+        "Igual etiqueta no prueba igual fase de desplazamiento del SSID."
+      ],
+      "functions": {}
+    },
+    {
+      "id": "web:module/src/screens/connectivityScreens.ts",
+      "slug": "connectivity-builders",
+      "title": "Renderers Web de conectividad y avisos",
+      "kind": "núcleo",
+      "files": [
+        "src/screens/connectivityScreens.ts",
+        "src/screens/notificationScreens.ts"
+      ],
+      "prefixes": [
+        "build"
+      ],
+      "responsibility": "Construye estado Wi-Fi, búsqueda, resultados/credenciales y avisos de enlaces.",
+      "scope": "Primitivas de pantallas/avisos, SSID/IP/número de cliente y progreso; la red real pertenece al ESP/F4.",
+      "state": "Args de contenido y NotificationProgressArgs; el tiempo reportado no incluye necesariamente la fase exacta del refresco físico.",
+      "modularity": "Builders puros, con assets y convenciones OLED del proyecto.",
+      "lifecycle": [
+        "Elegir variante por código/source y datos, después dibujar.",
+        "Un mismo ID puede representar aviso o vista completa; usar discriminante confirmado."
+      ],
+      "interactions": [
+        "reports.inc publica tiempos y clientNumber cuando existen en el payload.",
+        "F4 diferencia Cliente Wi-Fi N y Web N en su cola."
+      ],
+      "limitations": [
+        "Defaults de SSID/IP/contador no son prueba del dato del equipo.",
+        "No elegir variante transitoria ON/OFF a partir del último GET de estado si el evento no la especifica."
+      ],
+      "functions": {}
+    },
+    {
+      "id": "web:module/src/screens/sensorScreens.ts",
+      "slug": "sensor-settings-builders",
+      "title": "Renderers Web de sensores, ajustes y PIN",
+      "kind": "núcleo",
+      "files": [
+        "src/screens/sensorScreens.ts",
+        "src/screens/displayScreens.ts",
+        "src/screens/motorScreens.ts",
+        "src/screens/settingsScreens.ts",
+        "src/screens/warningScreens.ts"
+      ],
+      "prefixes": [
+        "build"
+      ],
+      "responsibility": "Construye vistas OLED de sensores/motores, ajustes, canvas y autorización.",
+      "scope": "Geometría y comandos; la disponibilidad remota de cada argumento se documenta por familia de pantalla.",
+      "state": "Args de sensores, porcentajes, dígitos e índice son entradas locales al builder. Su existencia en una interfaz no significa que el ESP las publique.",
+      "modularity": "Builders puros con tipos/recursos compartidos; no controlan actuadores.",
+      "lifecycle": [
+        "Adaptar unidades y variantes antes de invocar.",
+        "No alimentar con valores de ejemplo una vista etiquetada como pantalla real."
+      ],
+      "interactions": [
+        "MPU JSON publica accel/gyro por ejes en g/dps, mientras algunos builders esperan escalares de otra representación.",
+        "PIN y OSK físicos necesitan estado/discriminante adicional o deben permanecer identity-only."
+      ],
+      "limitations": [
+        "Faltan modelos remotos completos para varias vistas/borradores.",
+        "PinScreenModal local y PermissionPinFormArgs del preview son estados distintos."
+      ],
+      "functions": {
+        "buildScreen080104PermissionPinEntryCommands": "Dibuja formulario de PIN a partir de digits/pinIndex suministrados al builder.",
+        "buildScreen030201IrValuesCommands": "Dibuja barras IR según el array recibido; no decide su origen o frescura."
+      }
+    },
+    {
+      "id": "web:module/src/components/ScreenStreamWorkspace.tsx",
+      "slug": "screen-controls",
+      "title": "Visor de pantalla y controles remotos",
+      "kind": "integración",
+      "files": [
+        "src/components/ScreenStreamWorkspace.tsx",
+        "src/components/ScreenStreamModal.tsx",
+        "src/components/ScreenDashboardPanel.tsx",
+        "src/contexts/ScreenStreamModalContext.tsx",
+        "src/hooks/useScreenStreamKeyboard.ts"
+      ],
+      "prefixes": [],
+      "responsibility": "Presenta pantalla, acciones de menú/encoder/USER, validación y acceso al canvas guardado.",
+      "scope": "UI y envío de acciones lógicas con screenCode; no genera la rotación física del encoder.",
+      "state": "Refs conservan pantalla/acciones vigentes; pressed/held y timers viven localmente. currentScreen y autorización pertenecen a contextos.",
+      "modularity": "Integración React entre render, socket y permisos; no es la biblioteca OLED portable.",
+      "lifecycle": [
+        "Enviar comando solo con identidad vigente y permiso.",
+        "Teclado captura dentro del visor; decide pulsación al keyup y cancela held al perder foco/visibilidad.",
+        "Después de acciones solicita resincronización; status de aceptación no demuestra cambio de vista."
+      ],
+      "interactions": [
+        "0x53 click visible 1..3, 0x54/55 pulsación, 0x56 página, 0x57/58 giro lógico.",
+        "F4 contrasta screenCode y aplica prioridad global del router; un código viejo debe resincronizarse."
+      ],
+      "limitations": [
+        "Umbral local de pulsación larga 1500 ms; F4 físico clasifica con otros contadores/umbrales.",
+        "Sin ventana real de F4, una fila dibujada puede diferir de la fila ejecutada por click.",
+        "Un formulario PIN local no debe dibujarse como captura del buffer físico."
+      ],
+      "functions": {
+        "ScreenStreamWorkspace": "Compone preview, estado, acciones y validación sobre la pantalla remota.",
+        "useScreenStreamKeyboard": "Registra teclado limitado al visor y libera pressed/held/listeners al salir.",
+        "buildMenuItemClickPayload": "Codifica screenCode LE y posición visible 1-based.",
+        "buildEncoderRotatePayload": "Codifica screenCode LE para giro lógico remoto."
+      }
+    },
+    {
+      "id": "web:module/src/types/RemoteBridgeTypes.ts",
+      "slug": "remote-actions",
+      "title": "Tipos y feedback de acciones remotas",
+      "kind": "contrato",
+      "files": [
+        "src/types/RemoteBridgeTypes.ts",
+        "src/utils/stmRemoteActionFeedback.ts",
+        "src/components/TransportActionButton.tsx",
+        "src/components/SystemResetActions.tsx"
+      ],
+      "prefixes": [],
+      "responsibility": "Define nombres de acciones, modos de compatibilidad y traducción de status a feedback.",
+      "scope": "Payload/tipos, aceptación/rechazo y acciones de reinicio; efecto físico permanece en firmware.",
+      "state": "Estado pending/error pertenece al consumidor; las tablas de comandos/status son datos.",
+      "modularity": "Contrato compartido representado en TypeScript con adaptación UI.",
+      "lifecycle": [
+        "Elegir comando/args, esperar respuesta final y traducir status.",
+        "Ante screen mismatch solicitar estado actual antes de repetir una acción."
+      ],
+      "interactions": [
+        "ESP codifica nombres hacia UNER; F4 devuelve status tras su guarda/router."
+      ],
+      "limitations": [
+        "Status0 de evento consumido no demuestra que el handler produjo un cambio visible.",
+        "No reconstruir acciones especiales solo desde la categoría visual del código."
+      ],
+      "functions": {}
+    },
+    {
+      "id": "web:module/src/contexts/CarModeContext.tsx",
+      "slug": "motion-control",
+      "title": "Modo del auto y control de movimiento",
+      "kind": "integración",
+      "files": [
+        "src/components/CarModeDropdown.tsx",
+        "src/components/CarModeSelectorModal.tsx",
+        "src/components/MotorBlock.tsx",
+        "src/contexts/CarModeContext.tsx",
+        "src/features/motion/MotionControlActions.tsx",
+        "src/features/motion/MotionControlIcon.tsx",
+        "src/features/motion/MotionControlPanel.tsx",
+        "src/features/motion/motion.css",
+        "src/features/motion/useMotionControl.ts",
+        "src/pages/ControlSection.tsx",
+        "src/types/MotorTypes.ts"
+      ],
+      "prefixes": [],
+      "responsibility": "Presenta modo confirmado, armado/balance y consignas de movimiento/prueba.",
+      "scope": "IDLE/FOLLOW/TEST/GOTO y requests porcentuales con duración; no cierra el lazo de balance en navegador.",
+      "state": "Contexto guarda rawMode y label; hooks guardan pending/error/status. Intención local debe distinguirse de modo/estado confirmado.",
+      "modularity": "Capa React con API JSON; control y guardas efectivas pertenecen a F4.",
+      "lifecycle": [
+        "Consultar estado/escuchar eventos; al cambiar modo esperar status y valor aplicado.",
+        "Enviar consignas acotadas y cancelar/sincronizar al cambiar contexto."
+      ],
+      "interactions": [
+        "F4 responde antes de eventos derivados de cambio de modo.",
+        "ScreenContext mantiene otro normalizador de modo que debe aceptar los mismos cuatro valores."
+      ],
+      "limitations": [
+        "PWM/porcentaje no equivale a velocidad física.",
+        "Conflictos con calibración/GOTO/seguidor se rechazan en F4, aunque un control Web esté habilitado."
+      ],
+      "functions": {}
+    },
+    {
+      "id": "web:module/src/features/autoMotion/useAutoMotion.ts",
+      "slug": "auto-motion",
+      "title": "GOTO y calibración de motores Web",
+      "kind": "integración",
+      "patterns": [
+        "src/features/autoMotion/*.ts",
+        "src/features/autoMotion/*.tsx"
+      ],
+      "files": [
+        "src/features/autoMotion/autoMotion.css",
+        "src/features/autoMotion/motorDialog.css",
+        "src/pages/MotorCalibrationSection.tsx"
+      ],
+      "prefixes": [],
+      "responsibility": "Edita objetivos y perfiles y presenta la evolución de misión/calibración AutoMotion.",
+      "scope": "Requests stm.goto.* y stm.motorCalibration.*, codec de respuestas y requisitos accionables.",
+      "state": "Hooks conservan estado remoto y pending; paneles conservan x/y y borradores. No equiparar un destino editado con misión aceptada.",
+      "modularity": "Codec de datos separado de UI; el algoritmo físico y perfil persistido son de F4.",
+      "lifecycle": [
+        "Consultar estado/perfil, editar y enviar argumentos específicos por operación.",
+        "Interpretar status de solicitud y reason/state/result_valid de la operación por separado."
+      ],
+      "interactions": [
+        "ESP traduce xCm/yCm a dos float32; calibración usa bloques de 13/88/186 bytes.",
+        "Cambios del formato deben actualizar codec, bridge y serializador F4."
+      ],
+      "limitations": [
+        "La posición mostrada es estimada; no es odometría medida.",
+        "El validador compartido ESP admite formas incorrectas por comando; ver AMDOC-ESP-001."
+      ],
+      "functions": {
+        "useAutoMotion": "Consulta/controla operación AutoMotion y conserva estado confirmado de requests.",
+        "GotoPanel": "Edita objetivo relativo y solicita inicio/cancelación de recorrido."
+      }
+    },
+    {
+      "id": "web:module/src/features/lineFollow/useLineDevice.ts",
+      "slug": "line-follow",
+      "title": "Calibración y seguimiento de línea del dispositivo",
+      "kind": "integración",
+      "patterns": [
+        "src/features/lineFollow/*.ts",
+        "src/features/lineFollow/*.tsx"
+      ],
+      "files": [
+        "src/features/lineFollow/lineFollow.css",
+        "src/pages/TrackFollowerSection.tsx"
+      ],
+      "prefixes": [],
+      "responsibility": "Presenta sesión de calibración blanco/pista y habilita seguimiento con estado del dispositivo.",
+      "scope": "Operaciones/sessionId y estado de 168 bytes convertido por ESP; no recalcula captura DMA en Web.",
+      "state": "Hook mantiene estado/progreso/rechazo; el ID de sesión confirma/cancela la operación del equipo, no la identidad de un componente.",
+      "modularity": "Integración de API y UI; separada de las herramientas de calibración local/simulada.",
+      "lifecycle": [
+        "Arrancar blanco/pista con sesión inicial; usar sessionId devuelto para confirmar/cancelar.",
+        "Mostrar estabilidad/calidad/frescura/rechazo sin convertir guardas en éxito."
+      ],
+      "interactions": [
+        "F4 posee perfiles y revisión blanco-pista; ESP decodifica y Web presenta.",
+        "Códigos OLED de esta familia requieren render/campos además de controles de página Web."
+      ],
+      "limitations": [
+        "Botón de seguimiento y pantalla OLED de seguimiento no son el mismo consumidor.",
+        "No asumir render exacto por tener una página de calibración operativa."
+      ],
+      "functions": {}
+    },
+    {
+      "id": "web:module/src/features/balanceCalibration/useBalancePid.ts",
+      "slug": "balance-workbench",
+      "title": "Balance PID, sesiones y análisis",
+      "kind": "integración",
+      "patterns": [
+        "src/features/balanceCalibration/*.ts",
+        "src/features/balanceCalibration/*.tsx"
+      ],
+      "prefixes": [],
+      "responsibility": "Edita PID, conserva sesiones/registros y ejecuta análisis de calibración en el cliente.",
+      "scope": "Ganancias remotas, almacenamiento y worker de análisis; el lazo de control sigue en F4.",
+      "state": "Sesiones, muestras y borradores tienen versión/lifetime de Web; respuesta de persistencia F4 confirma otra copia distinta.",
+      "modularity": "Cálculo/worker separado de React y almacenamiento, con esquema propio de sesiones.",
+      "lifecycle": [
+        "Cargar estado, capturar/seleccionar sesión y analizar en worker.",
+        "Aplicar ganancias mediante contrato remoto y confirmar valores realmente guardados."
+      ],
+      "interactions": [
+        "ESP decodifica PID y telemetría; almacenamiento local no modifica la preferencia del robot sin request."
+      ],
+      "limitations": [
+        "Resultado analítico no constituye prueba física de estabilidad.",
+        "Distinguir datos simulados, guardados y medidos al presentar conclusiones."
+      ],
+      "functions": {}
+    },
+    {
+      "id": "web:module/src/features/calibration/CalibrationWorkspace.tsx",
+      "slug": "calibration-tools",
+      "title": "Herramientas de calibración IR y línea",
+      "kind": "integración",
+      "patterns": [
+        "src/features/calibration/*.tsx",
+        "src/features/ir/*Calibration*.tsx",
+        "src/features/ir/irCalibration*.ts"
+      ],
+      "prefixes": [],
+      "responsibility": "Organiza materiales, curvas y herramientas de calibración/inspección del cliente.",
+      "scope": "Edición/análisis local y presentación; no sustituye automáticamente perfiles capturados/persistidos en F4.",
+      "state": "Borradores, curvas y almacenamiento local se diferencian de flags calibrados del dispositivo.",
+      "modularity": "UI y cálculo específicos de sensores del proyecto, separados del productor físico.",
+      "lifecycle": [
+        "Seleccionar muestra/material/modelo y actualizar visualización.",
+        "Persistir localmente o enviar por contrato explícito según la herramienta."
+      ],
+      "interactions": [
+        "Geometría IR y datos de streaming alimentan herramientas; LineDeviceCalibration controla otra sesión en firmware."
+      ],
+      "limitations": [
+        "No mezclar mm/cm, ADC raw, darkness y valores normalizados de presentación.",
+        "Una curva local guardada no acredita calibración aplicada al robot."
+      ],
+      "functions": {},
+      "files": [
+        "src/features/calibration/calibration.css"
+      ]
+    },
+    {
+      "id": "web:module/src/contexts/IrEmittersContext.tsx",
+      "slug": "sensor-state",
+      "title": "Telemetría y estado de sensores",
+      "kind": "servicio",
+      "files": [
+        "src/contexts/IrEmittersContext.tsx",
+        "src/components/IrEmittersControls.tsx",
+        "src/components/RealtimeEulerPanel.tsx",
+        "src/components/SimulatedBadge.tsx",
+        "src/hooks/useSensorSubscription.ts",
+        "src/pages/EstadoSection.tsx"
+      ],
+      "prefixes": [],
+      "responsibility": "Administra suscripciones y presenta orientación/IR con procedencia y habilitación de emisores.",
+      "scope": "Estado remoto y fanout de muestras; la adquisición y sincronización física pertenecen a F4.",
+      "state": "Hooks/contextos retienen última muestra y estado de petición; la fecha de recepción no reemplaza acquired_ms/seq del productor.",
+      "modularity": "Separación de suscripción/estado y escena; depende de mensajes JSON del bridge.",
+      "lifecycle": [
+        "Suscribir al activar consumidores y retirar/limpiar al desmontar.",
+        "Aplicar estado de emisores desde GET/evento confirmado y no desde la intención del click."
+      ],
+      "interactions": [
+        "StreamBroker ESP combina consumidores y F4 emite por endpoint.",
+        "El visor OLED necesita una adaptación expresa para usar estas muestras; no las recibe por identidad de pantalla."
+      ],
+      "limitations": [
+        "Un stream conectado no acredita que la pantalla física use exactamente esa muestra.",
+        "Señalar simulación y ausencia/vencimiento de dato."
+      ],
+      "functions": {}
+    },
+    {
+      "id": "web:module/src/contexts/EspWifiStatusContext.tsx",
+      "slug": "wifi-interface",
+      "title": "Estado Wi-Fi, AP y credenciales Web",
+      "kind": "integración",
+      "files": [
+        "src/components/ApFallbackControls.tsx",
+        "src/components/ApProvisioningGate.tsx",
+        "src/components/WifiCredentialsModal.tsx",
+        "src/contexts/EspWifiStatusContext.tsx",
+        "src/contexts/WifiCredentialsContext.tsx",
+        "src/hooks/useApFallback.ts",
+        "src/pages/WifiSection.tsx",
+        "src/types/WifiTypes.ts",
+        "src/utils/wifiModeSwitch.ts"
+      ],
+      "prefixes": [],
+      "responsibility": "Presenta y controla Wi-Fi/AP del ESP, flujo de credenciales y política fallback.",
+      "scope": "Estado radio, clientes y configuración deseada/aplicada; la autoridad F4 es otro plano.",
+      "state": "Provider conserva reportes de ESP, modal conserva edición local y sessionId/estado del flujo según contrato.",
+      "modularity": "React y API de red del producto; no llama al SDK del ESP directamente.",
+      "lifecycle": [
+        "Consultar/suscribir estado, abrir flujo solicitado y confirmar/cancelar con su correlación.",
+        "Al cambiar radio pueden existir cortes breves; conservar semántica de reanudación de sesión."
+      ],
+      "interactions": [
+        "WifiService gobierna radio, NVS persiste y bridge publica estados.",
+        "Docs de OLED conectividad necesita el mismo SSID/IP confirmado, no valores de ejemplo."
+      ],
+      "limitations": [
+        "Cambios de depuración pueden vivir solo en RAM.",
+        "No copiar contraseñas reales a reportes/capturas/documentación."
+      ],
+      "functions": {
+        "resolveEspOperatingMode": "Deriva AP o RED del estado conocido de STA/AP para preparar la transición local.",
+        "resolveOppositeModeDestination": "Resuelve SSID, IP conocida o DHCP y URL del modo opuesto; no acredita que el dispositivo ya haya reiniciado.",
+        "normalizeIp": "Distingue dirección configurada de vacío o dirección no especificada antes de construir destino."
+      }
+    },
+    {
+      "id": "web:module/src/features/oledEditor/document.ts",
+      "slug": "oled-document",
+      "title": "Modelo y edición de documentos OLED",
+      "kind": "núcleo",
+      "files": [
+        "src/features/oledEditor/document.ts",
+        "src/features/oledEditor/types.ts",
+        "src/features/oledEditor/assets.ts",
+        "src/features/oledEditor/geometry.ts",
+        "src/features/oledEditor/codegen.ts",
+        "src/features/oledEditor/useOledEditorState.ts",
+        "src/contexts/SavedOledScreensContext.tsx"
+      ],
+      "prefixes": [],
+      "responsibility": "Representa y edita documentos gráficos que el usuario puede guardar y enviar a la OLED.",
+      "scope": "Elementos, geometría, assets, generación de código y persistencia local; separado de captura de pantalla remota.",
+      "state": "Documento/borrador pertenece al editor; savedScreens conserva su versión local. Referencias a assets deben resolverse al rasterizar.",
+      "modularity": "Modelo/cálculo separables de React, con hooks/almacenamiento como adaptación.",
+      "lifecycle": [
+        "Crear/cargar documento, editar elementos y serializar/exportar.",
+        "Guardar una copia local no modifica la pantalla del robot sin transferencia."
+      ],
+      "interactions": [
+        "Rasterizer convierte modelo a 1024 bytes; useOledCanvasTransfer coordina envío."
+      ],
+      "limitations": [
+        "Código generado y render físico deben usar la misma geometría y orden de bits.",
+        "Una previsualización del editor no es una muestra de la pantalla activa F4."
+      ],
+      "functions": {}
+    },
+    {
+      "id": "web:module/src/features/oledEditor/oledCanvasRasterizer.ts",
+      "slug": "oled-rasterizer",
+      "title": "Raster binario y protocolo de canvas Web",
+      "kind": "núcleo",
+      "files": [
+        "src/features/oledEditor/oledCanvasRasterizer.ts",
+        "src/features/oledEditor/oledCanvasProtocol.ts"
+      ],
+      "prefixes": [],
+      "responsibility": "Convierte documentos locales a framebuffer page-major LSB y prepara metadata/CRC de canvas.",
+      "scope": "1024 bytes 128×64 y codificación de operaciones; es distinto del renderer SVG de pantalla en vivo.",
+      "state": "El buffer de salida es copia binaria; preservar su contenido hasta completar el envío de todos los chunks.",
+      "modularity": "Cálculo puro de formato OLED; una implementación independiente puede divergir de primitivas SSD1306 C.",
+      "lifecycle": [
+        "Rasterizar documento/asset, calcular CRC y dividir según límites de transferencia.",
+        "El receptor comprueba formato, orden y checksum antes de presentar."
+      ],
+      "interactions": [
+        "ESP reenvasa chunks Web a chunks F4; F4 aplica el framebuffer final.",
+        "Para port exacto del visor conviene unificar la semántica de píxel con el mismo núcleo, conservando dirección del flujo.",
+        "Esquema compartido por operación: published/shared/contracts/oled-canvas-v1.md; actualizar productor, traductor y consumidor al cambiar offsets/chunks/CRC."
+      ],
+      "limitations": [
+        "Compartir formato de buffer no demuestra igualdad de todos los algoritmos de rasterización."
+      ],
+      "functions": {
+        "rasterizeOledDocument": "Rasteriza el documento local a un framebuffer binario compatible con el formato de canvas."
+      }
+    },
+    {
+      "id": "web:module/src/features/oledEditor/useOledCanvasTransfer.ts",
+      "slug": "oled-transfer",
+      "title": "Transacción de transferencia canvas Web",
+      "kind": "integración",
+      "files": [
+        "src/features/oledEditor/useOledCanvasTransfer.ts",
+        "src/features/oledEditor/OledCanvasTransferPanel.tsx",
+        "src/features/oledEditor/OledStudioWorkspace.tsx",
+        "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "src/pages/OledEditorSection.tsx"
+      ],
+      "prefixes": [],
+      "responsibility": "Coordina envío de un documento al canvas físico con estado, cancelación y respuesta final.",
+      "scope": "BEGIN/CHUNK/COMMIT/CANCEL y UI de estudio, con contexto TEST/pantalla de canvas.",
+      "state": "Hook conserva transacción/offset/pending; el buffer y transferId pertenecen a esa operación.",
+      "modularity": "Adaptador entre modelo/raster, API y UI; no modifica el firmware desde el cliente.",
+      "lifecycle": [
+        "Comprobar modo/pantalla y comenzar metadata.",
+        "Enviar chunks en orden, commit y esperar presentación; cancelar/limpiar cuando corresponde."
+      ],
+      "interactions": [
+        "ESP reserva/reconcilia canal y F4 posee el framebuffer de recepción.",
+        "El mismo usuario puede guardar un documento sin enviarlo.",
+        "Esquema compartido por operación: published/shared/contracts/oled-canvas-v1.md; actualizar productor, traductor y consumidor al cambiar offsets/chunks/CRC."
+      ],
+      "limitations": [
+        "Recepción del último chunk no es confirmación de que el panel presentó la imagen.",
+        "El canal no devuelve automáticamente imágenes de otras pantallas físicas."
+      ],
+      "functions": {
+        "useOledCanvasTransfer": "Gestiona transacción de canvas y resultado final remoto."
+      }
+    },
+    {
+      "id": "web:module/src/features/protocolStudio/payloadCodec.ts",
+      "slug": "protocol-tools",
+      "title": "Catálogo, codecs y herramientas UNER",
+      "kind": "núcleo",
+      "files": [
+        "src/features/protocolStudio/payloadCodec.ts",
+        "src/features/protocolStudio/catalog.ts",
+        "src/features/protocolStudio/commandManifest.json",
+        "src/features/protocolStudio/types.ts",
+        "src/features/protocolStudio/utils.ts",
+        "src/protocol/f4Payloads.ts",
+        "src/api/UnerFrameV2.ts",
+        "src/api/UnerProtocol.ts",
+        "src/api/UnerProtocolUtils.ts",
+        "src/types/UnerProtocolCMDTypes.ts"
+      ],
+      "prefixes": [],
+      "responsibility": "Representa comandos y traduce bytes/campos para inspección y generación de solicitudes.",
+      "scope": "UNER, manifest, valores de ejemplo y decoders; el transporte Web de producción es JSON/ESP.",
+      "state": "Catálogos y buffers pertenecen a la herramienta; ningún payload de ejemplo acredita un efecto físico.",
+      "modularity": "Codecs puros separados de UI y sesión, con esquemas del robot.",
+      "lifecycle": [
+        "Elegir comando, validar forma de entrada y construir/decodificar representación.",
+        "Conservar endian, ancho, unidades y política de finalización de cada comando."
+      ],
+      "interactions": [
+        "Registro ESP, tabla/handler F4 y manifest pueden divergir; se conservan por separado en documentación."
+      ],
+      "limitations": [
+        "Comando declarado no equivale a implementado.",
+        "No usar tamaños de structs ni bitfields como contrato portable."
+      ],
+      "functions": {}
+    },
+    {
+      "id": "web:module/src/features/protocolStudio/useProtocolStudioState.ts",
+      "slug": "protocol-studio",
+      "title": "Interfaz Protocol Studio",
+      "kind": "integración",
+      "files": [
+        "src/features/protocolStudio/ui.tsx",
+        "src/features/protocolStudio/useProtocolStudioState.ts",
+        "src/features/studio.css",
+        "src/pages/ProtocolSection.tsx"
+      ],
+      "patterns": [
+        "src/features/protocolStudio/components/*.tsx"
+      ],
+      "prefixes": [],
+      "responsibility": "Presenta catálogo, formularios y traducción/visualización de frames del protocolo.",
+      "scope": "Edición de request y diagnóstico visual, sin afirmar que todos los comandos están habilitados.",
+      "state": "Hook conserva comando, campos, bytes y salida; componentes reciben props derivadas.",
+      "modularity": "React sobre codecs/catalogo, separado del backend de firmware.",
+      "lifecycle": [
+        "Actualizar selección/inputs y mostrar serialización/interpretación.",
+        "No enviar una mutación por el solo hecho de cambiar campos de preview."
+      ],
+      "interactions": [
+        "Codecs producen datos; conexión/sesión controla envío cuando la herramienta lo permite."
+      ],
+      "limitations": [
+        "La salida local no es respuesta de un dispositivo hasta recibirla por transporte."
+      ],
+      "functions": {}
+    },
+    {
+      "id": "web:module/src/features/docs/docsContent.ts",
+      "slug": "documentation-ui",
+      "title": "Contenido Docs y selector de destino",
+      "kind": "integración",
+      "patterns": [
+        "src/features/docs/*.ts",
+        "src/features/docs/*.tsx"
+      ],
+      "files": [
+        "src/pages/DocsSection.tsx",
+        "src/pages/DocTopicSection.tsx"
+      ],
+      "prefixes": [],
+      "responsibility": "Organiza temas y variantes documentales por destino y presenta navegación de Docs.",
+      "scope": "Modelo actual F4/Web y selector; la fuente autocontenida AMDOC deberá incorporar ESP con cobertura real.",
+      "state": "Destino/tema seleccionados, query/ruta y contenido son estado de navegación; no son configuración del robot.",
+      "modularity": "Consumidor React de contenido; la metodología/IDs y hallazgos viven en Contracts y no deben duplicarse a mano sin procedencia.",
+      "lifecycle": [
+        "Resolver destino/tema desde navegación y construir variante.",
+        "Para añadir ESP adaptar unión, contenido y selector coherentemente, conservando URL/volver."
+      ],
+      "interactions": [
+        "Los JSON publicados por módulo permiten integrar contenido y enlaces de hallazgo sin releer firmware.",
+        "Selector de tres opciones/píldora móvil y divisor se registran para porteo posterior."
+      ],
+      "limitations": [
+        "La generación documental de esta entrega no modifica React/CSS de Docs.",
+        "No marcar como documentado un destino solo por mostrar su botón."
+      ],
+      "functions": {}
+    },
+    {
+      "id": "web:module/src/components/MpuIrScene3D.tsx",
+      "slug": "scene-3d",
+      "title": "Escena 3D y carga de modelos",
+      "kind": "integración",
+      "files": [
+        "src/components/MpuIrScene3D.tsx",
+        "src/components/ThreeModelViewer.tsx",
+        "src/components/WebGLCanvas.tsx",
+        "src/components/ModelLoadingScreen.tsx",
+        "src/components/ModelLoadBoundary.tsx",
+        "src/utils/localModel.ts",
+        "src/utils/dracoLoader.ts",
+        "src/hooks/useModelLoadingState.ts",
+        "src/hooks/useModelViewer.tsx"
+      ],
+      "prefixes": [],
+      "responsibility": "Carga el modelo del robot y aplica orientación/sensores a la escena WebGL.",
+      "scope": "Modelo, materiales, referencias y fallback de carga; no representa por sí mismo la pose física exacta sin datos válidos.",
+      "state": "Recursos GPU/modelo, refs y estado de carga tienen lifetime de la escena; liberar recursos/listeners al reemplazar.",
+      "modularity": "Adaptación React/Three.js con datos de telemetría separados.",
+      "lifecycle": [
+        "Cargar GLB y decodificador configurado, montar escena y aplicar datos.",
+        "Mostrar error/fallback cuando el asset no está disponible y limpiar al desmontar."
+      ],
+      "interactions": [
+        "ESP sirve asset y bundle; sensores/cámara usan sistemas de ejes que deben documentarse juntos."
+      ],
+      "limitations": [
+        "DRACO wasm no es un port wasm de la biblioteca OLED.",
+        "Carga/render WebGL exitoso no valida telemetría física."
+      ],
+      "functions": {}
+    },
+    {
+      "id": "web:module/src/components/CameraRig.tsx",
+      "slug": "camera-controls",
+      "title": "Cámara y controles de orientación",
+      "kind": "integración",
+      "files": [
+        "src/components/CameraRig.tsx",
+        "src/components/CameraPresets.tsx",
+        "src/components/CameraPresetsPanel.tsx",
+        "src/components/OrientationControls.tsx",
+        "src/components/SensorCameraViewIcon.tsx"
+      ],
+      "prefixes": [],
+      "responsibility": "Define vistas y manipulación de cámara de la escena del robot.",
+      "scope": "Presets, interacción y coordenadas visuales; cambiar cámara no modifica pose del equipo.",
+      "state": "Refs/estado local de cámara y controles; distinguir orientación de sensor de orientación de observador.",
+      "modularity": "UI/Three.js independiente de control físico.",
+      "lifecycle": [
+        "Inicializar vista, aplicar preset o gesto y liberar listeners/controles al salir."
+      ],
+      "interactions": [
+        "Escena IR y modelo usan transformaciones comunes para cámara, haces y marcadores."
+      ],
+      "limitations": [
+        "No comparar yaw visual con yaw físico sin aplicar la misma convención de ejes/referencia."
+      ],
+      "functions": {}
+    },
+    {
+      "id": "web:module/src/features/ir/irSensorFrame.ts",
+      "slug": "ir-visual-model",
+      "title": "Geometría y modelo visual de sensores IR",
+      "kind": "núcleo",
+      "files": [
+        "src/features/ir/irSensorFrame.ts",
+        "src/features/ir/irEmitterGeometry.ts",
+        "src/features/ir/irObjectModel.ts",
+        "src/features/ir/sensorCameraViews.ts",
+        "src/features/ir/beamVisualSettings.ts",
+        "src/components/UnderbodySensorBeams.tsx",
+        "src/components/IrObjectDetectionMarkers.tsx",
+        "src/components/SensorBeamControls.tsx",
+        "src/components/StopDiscontinuityGlyph.tsx"
+      ],
+      "prefixes": [],
+      "responsibility": "Relaciona posiciones/ejes IR y magnitudes de sensor con haces/marcadores/lecturas visuales.",
+      "scope": "Modelo geométrico y representación de detección, separado del umbral/calibración efectiva F4.",
+      "state": "Configuración visual local, geometría y arrays de muestras; los valores simulados conservan procedencia.",
+      "modularity": "Cálculos separables de componentes de escena, con convenciones del montaje del proyecto.",
+      "lifecycle": [
+        "Transformar referencia del sensor a robot/escena y aplicar muestra válida.",
+        "Conservar magnitud/unidad antes de decidir marcador o alcance visual."
+      ],
+      "interactions": [
+        "Telemetría ADC y calibración determinan interpretación; los efectos visuales no cambian emisores sin request explícito."
+      ],
+      "limitations": [
+        "Un haz dibujado no mide distancia ni certifica modelo óptico.",
+        "No confundir luces blancas y grupos emisores IR."
+      ],
+      "functions": {}
+    },
+    {
+      "id": "web:module/src/contexts/UNERProtocolContext.tsx",
+      "slug": "legacy-protocol-context",
+      "title": "Contexto UNER y superficies históricas",
+      "kind": "integración",
+      "files": [
+        "src/contexts/UNERProtocolContext.tsx",
+        "src/hooks/useUnerProtocol.tsx"
+      ],
+      "prefixes": [],
+      "responsibility": "Conserva integración histórica de eventos/bytes UNER en la UI.",
+      "scope": "No sustituye automáticamente EspClient/JSON API 1; documentar cuál camino usa cada consumidor.",
+      "state": "Provider mantiene sus datos/listeners; sus valores pueden duplicar un modelo nuevo si se monta en paralelo.",
+      "modularity": "Adaptación React a un contrato histórico, dependiente de transporte y consumidores.",
+      "lifecycle": [
+        "Registrar/retirar callbacks al montar y aplicar solo mensajes del contrato esperado."
+      ],
+      "interactions": [
+        "Codecs UNER y WebSocketContext exponen caminos diferentes; los nombres parecidos no prueban equivalencia de formatos."
+      ],
+      "limitations": [
+        "No documentar como camino activo una exportación sin caller localizado."
+      ],
+      "functions": {}
+    },
+    {
+      "id": "web:module/src/hooks/useMockFirmware.ts",
+      "slug": "simulation",
+      "title": "Simulación y datos de desarrollo",
+      "kind": "soporte",
+      "files": [
+        "src/hooks/useMockFirmware.ts",
+        "src/components/MockInjectButton.tsx",
+        "src/components/MockEulerGenerator.tsx"
+      ],
+      "patterns": [
+        "src/**/__fixtures__/*.json"
+      ],
+      "prefixes": [],
+      "responsibility": "Genera o suministra datos de desarrollo y fixtures para inspección del cliente.",
+      "scope": "Escenarios sintéticos; no son muestras ni resultados del robot real.",
+      "state": "Estado local de simulación/temporizadores y fixtures estáticos.",
+      "modularity": "Soporte del cliente; debe conservar separación/procedencia frente a telemetría recibida.",
+      "lifecycle": [
+        "Activar explícitamente simulación y limpiar timers al desactivar/desmontar."
+      ],
+      "interactions": [
+        "Consumidores de sensores pueden usar mismos tipos; el tipo compartido no convierte una muestra sintética en física."
+      ],
+      "limitations": [
+        "Esta entrega inventaría fixtures sin ejecutar tests ni generar otros."
+      ],
+      "functions": {}
+    },
+    {
+      "id": "web:module/src/utils/theme.ts",
+      "slug": "local-preferences",
+      "title": "Preferencias locales, tema y utilidades",
+      "kind": "servicio",
+      "files": [
+        "src/utils/theme.ts",
+        "src/utils/soundEffects.ts",
+        "src/utils/SoundEffects.ts",
+        "src/hooks/useMediaQuery.ts",
+        "src/hooks/useModalScrollLock.ts",
+        "src/components/ThemeModeToggleCard.tsx"
+      ],
+      "prefixes": [],
+      "responsibility": "Gestiona preferencias y efectos locales del navegador, independientes de preferencias persistidas F4.",
+      "scope": "Tema, media query, sonido y bloqueo de scroll de modal.",
+      "state": "Storage/DOM/listeners/timers pertenecen a la sesión/página del navegador.",
+      "modularity": "Utilidades de plataforma navegador; no afectan el protocolo salvo acciones expresas de consumidores.",
+      "lifecycle": [
+        "Leer preferencia, instalar listeners y retirar/restaurar estado previo al desmontar."
+      ],
+      "interactions": [
+        "Los componentes comparten estas utilidades para mantener comportamiento consistente."
+      ],
+      "limitations": [
+        "Preferencia local no se sincroniza con el firmware por implicación."
+      ],
+      "functions": {}
+    },
+    {
+      "id": "web:module/src/components/SegmentedControl.tsx",
+      "slug": "shared-ui",
+      "title": "Componentes comunes y estados visuales",
+      "kind": "integración",
+      "files": [
+        "src/components/AppLoadingScreen.tsx",
+        "src/components/ConditionStatus.css",
+        "src/components/ConditionStatus.tsx",
+        "src/components/ConnectingScreen.tsx",
+        "src/components/SectionStatusStrip.tsx",
+        "src/components/SegmentedControl.css",
+        "src/components/SegmentedControl.tsx",
+        "src/components/SensorDisclosure.tsx",
+        "src/components/TimelineRow.tsx",
+        "src/components/ToggleButton.tsx",
+        "src/components/modal.tsx"
+      ],
+      "prefixes": [],
+      "responsibility": "Ofrece controles y presentación compartidos para secciones del cliente.",
+      "scope": "Props, selección, disclosure/modal y estados visuales; no decide autoridad del dispositivo.",
+      "state": "Valor controlado y callbacks de props o estado local; definir dueño de selección para evitar desincronización.",
+      "modularity": "React con estilos compartidos; reutilización UI distinta de portabilidad de librería firmware.",
+      "lifecycle": [
+        "Montar con props válidas, emitir intención y reflejar valor confirmado/controlado.",
+        "Liberar foco/listeners y restaurar scroll/contexto cuando corresponda."
+      ],
+      "interactions": [
+        "Docs y paneles usan controles comunes; el selector de destino debe respetar el mismo contrato de valor/callback."
+      ],
+      "limitations": [
+        "Estado visual seleccionado no acredita éxito de una solicitud remota."
+      ],
+      "functions": {}
+    }
+  ]
+}

@@ -1,0 +1,2077 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "f4:module/Core/Inc/ssd1306.h",
+  "slug": "ssd1306",
+  "title": "OLED SSD1306",
+  "target": "f4",
+  "kind": "núcleo",
+  "status": "source-documented",
+  "verification": "not-run-user-instruction",
+  "snapshotDate": "2026-10-20",
+  "responsibility": "Rasteriza primitivas y texto en framebuffer y agenda su presentación por páginas/comandos al SSD1306.",
+  "scope": "Geometría 128×64/128×32, color lógico, cursor, rotación 0/180, cola de páginas y puerto I2C. No contiene navegación ni políticas PIN.",
+  "state": "SSD1306_Handle posee framebuffer, cola g_page_q[8], comandos persistentes, geometría y errores; presta bus y callback_ctx. Las operaciones _H reciben instancia explícita. on_page/on_raster/on_presented/on_empty informan distintos hitos, no son intercambiables.",
+  "lifecycle": [
+    "BindPort_H enlaza puerto y callbacks de bus; Init_H sondea y configura con esperas síncronas.",
+    "Init_H devuelve 1 para éxito y 0 para fallo: no interpretar ese resultado como AM_OK=0.",
+    "Dibujar modifica RAM; RequestPageUpdate_H/UpdateScreen_H solicitan envío y el avance DMA llega por callbacks.",
+    "La cola actualiza solicitudes por página, conserva prioridades y estado de transferencia; no se puede reutilizar buffers DMA arbitrariamente."
+  ],
+  "interactions": [
+    "OLED y MPU comparten arbitraje, no estado ni llamadas de dispositivo a dispositivo.",
+    "app_display.h y app_screens_ports.h conectan primitivas con UI. OledCanvas espera presentación y vigila errores."
+  ],
+  "limitations": [
+    "Presentar en RAM, aceptar la cola y terminar el envío son etapas distintas.",
+    "Existen ramas condicionales de DMA/manager/actualización continua; esta documentación no acredita todas las combinaciones.",
+    "La precisión de now_us del adaptador actual es milisegundos multiplicados por 1000.",
+    "Inverse diverge entre DrawPixel_H (borra salvo White) y líneas horizontal/vertical (XOR); AMDOC-F4-012 impide asumir semántica uniforme al portar."
+  ],
+  "modularity": "Usa AM_I2C_DevicePort y no incluye I2C_ManagerHandle ni MPU. Fuentes y tipos gráficos son contratos de datos. Los callbacks de UI sin argumento se adaptan fuera del driver.",
+  "files": [
+    {
+      "path": "Core/Inc/ssd1306.h",
+      "rootId": "f4",
+      "sha256": "72f870cc71e58aff151d146415e1c0015c5721bc717cedb941b0cbd996bb99f2",
+      "includes": [
+        "ssd1306_types.h"
+      ]
+    },
+    {
+      "path": "Core/Inc/ssd1306_types.h",
+      "rootId": "f4",
+      "sha256": "b9ae6c6bf648713d4378b87a1879d901fc9f9ccf31a5036c046cf2f762ce6889",
+      "includes": [
+        "ssd1306_defines.h",
+        "i2c_port.h",
+        "fonts.h",
+        "stdlib.h",
+        "string.h"
+      ]
+    },
+    {
+      "path": "Core/Inc/ssd1306_defines.h",
+      "rootId": "f4",
+      "sha256": "db274c5cc950115c325b62c7dfd3be6b0a57ec0488922c0bcadd5c0ccc2fb6c5",
+      "includes": []
+    },
+    {
+      "path": "Core/Src/ssd1306.c",
+      "rootId": "f4",
+      "sha256": "04379b72cc26dd2c3adc69363e355a70865524fc695b183ed57815d98b7d4864",
+      "includes": [
+        "math.h",
+        "ssd1306.h"
+      ]
+    }
+  ],
+  "findings": [
+    "AMDOC-WEB-003",
+    "AMDOC-F4-012"
+  ],
+  "types": [
+    {
+      "name": "SSD1306_t",
+      "fields": [
+        {
+          "name": "CurrentX",
+          "declaration": "uint16_t CurrentX",
+          "callback": false,
+          "ownerType": "SSD1306_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/ssd1306_types.h",
+            "line": 104
+          },
+          "description": "Dato de estado/configuración `CurrentX`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "CurrentY",
+          "declaration": "uint16_t CurrentY",
+          "callback": false,
+          "ownerType": "SSD1306_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/ssd1306_types.h",
+            "line": 105
+          },
+          "description": "Dato de estado/configuración `CurrentY`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "Inverted",
+          "declaration": "uint8_t Inverted",
+          "callback": false,
+          "ownerType": "SSD1306_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/ssd1306_types.h",
+            "line": 106
+          },
+          "description": "Dato de estado/configuración `Inverted`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "Color",
+          "declaration": "SSD1306_COLOR Color",
+          "callback": false,
+          "ownerType": "SSD1306_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/ssd1306_types.h",
+            "line": 107
+          },
+          "description": "Dato de estado/configuración `Color`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "Initialized",
+          "declaration": "uint8_t Initialized",
+          "callback": false,
+          "ownerType": "SSD1306_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/ssd1306_types.h",
+            "line": 108
+          },
+          "description": "Dato de estado/configuración `Initialized`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/ssd1306_types.h",
+        "line": 104
+      }
+    },
+    {
+      "name": "SSD1306_VERTEX",
+      "fields": [
+        {
+          "name": "x",
+          "declaration": "uint8_t x",
+          "callback": false,
+          "ownerType": "SSD1306_VERTEX",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/ssd1306_types.h",
+            "line": 112
+          },
+          "description": "Dato de estado/configuración `x`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "y",
+          "declaration": "uint8_t y",
+          "callback": false,
+          "ownerType": "SSD1306_VERTEX",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/ssd1306_types.h",
+            "line": 113
+          },
+          "description": "Dato de estado/configuración `y`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/ssd1306_types.h",
+        "line": 112
+      }
+    },
+    {
+      "name": "OLED_PageReq",
+      "fields": [
+        {
+          "name": "used",
+          "declaration": "uint8_t used",
+          "callback": false,
+          "ownerType": "OLED_PageReq",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/ssd1306_types.h",
+            "line": 130
+          },
+          "description": "Marca que la entrada de página contiene una solicitud válida."
+        },
+        {
+          "name": "page",
+          "declaration": "uint8_t page",
+          "callback": false,
+          "ownerType": "OLED_PageReq",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/ssd1306_types.h",
+            "line": 131
+          },
+          "description": "Índice de página del framebuffer."
+        },
+        {
+          "name": "prio",
+          "declaration": "I2C_RequestPrio prio",
+          "callback": false,
+          "ownerType": "OLED_PageReq",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/ssd1306_types.h",
+            "line": 132
+          },
+          "description": "Prioridad solicitada para enviar esta página."
+        },
+        {
+          "name": "keep_bus",
+          "declaration": "uint8_t keep_bus",
+          "callback": false,
+          "ownerType": "OLED_PageReq",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/ssd1306_types.h",
+            "line": 133
+          },
+          "description": "Solicita mantener la concesión al continuar la secuencia."
+        },
+        {
+          "name": "seq",
+          "declaration": "uint32_t seq",
+          "callback": false,
+          "ownerType": "OLED_PageReq",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/ssd1306_types.h",
+            "line": 134
+          },
+          "description": "Secuencia de inserción/actualización de la solicitud."
+        },
+        {
+          "name": "state",
+          "declaration": "OLED_SM_State state",
+          "callback": false,
+          "ownerType": "OLED_PageReq",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/ssd1306_types.h",
+            "line": 135
+          },
+          "description": "Fase de comandos/datos de la página."
+        },
+        {
+          "name": "pending_refresh",
+          "declaration": "uint8_t pending_refresh",
+          "callback": false,
+          "ownerType": "OLED_PageReq",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/ssd1306_types.h",
+            "line": 136
+          },
+          "description": "Indica que la página necesita otro refresco mientras existe trabajo en curso."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/ssd1306_types.h",
+        "line": 130
+      }
+    },
+    {
+      "name": "SSD1306_Handle",
+      "fields": [
+        {
+          "name": "bus",
+          "declaration": "const AM_I2C_DevicePort *bus",
+          "callback": false,
+          "ownerType": "SSD1306_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/ssd1306_types.h",
+            "line": 140
+          },
+          "description": "Contrato de operaciones externo; conservar la tabla y su contexto durante el uso."
+        },
+        {
+          "name": "on_raster",
+          "declaration": "void (*on_raster)(void *ctx, uint8_t raster)",
+          "callback": true,
+          "ownerType": "SSD1306_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/ssd1306_types.h",
+            "line": 141
+          },
+          "description": "Notifica progreso de raster del driver OLED mediante callback_ctx."
+        },
+        {
+          "name": "callback_ctx",
+          "declaration": "void *callback_ctx",
+          "callback": false,
+          "ownerType": "SSD1306_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/ssd1306_types.h",
+            "line": 142
+          },
+          "description": "Contexto opaco prestado al callback; el integrador conserva su almacenamiento."
+        },
+        {
+          "name": "on_page",
+          "declaration": "void (*on_page)(void *ctx,uint8_t page)",
+          "callback": true,
+          "ownerType": "SSD1306_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/ssd1306_types.h",
+            "line": 143
+          },
+          "description": "Notifica la página OLED procesada mediante callback_ctx."
+        },
+        {
+          "name": "on_presented",
+          "declaration": "void (*on_presented)(void *ctx)",
+          "callback": true,
+          "ownerType": "SSD1306_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/ssd1306_types.h",
+            "line": 144
+          },
+          "description": "Notifica fin de presentación OLED según el driver, mediante callback_ctx."
+        },
+        {
+          "name": "on_empty",
+          "declaration": "void (*on_empty)(void *ctx)",
+          "callback": true,
+          "ownerType": "SSD1306_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/ssd1306_types.h",
+            "line": 145
+          },
+          "description": "Notifica que la cola OLED quedó vacía mediante callback_ctx."
+        },
+        {
+          "name": "SSD1306",
+          "declaration": "SSD1306_t SSD1306",
+          "callback": false,
+          "ownerType": "SSD1306_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/ssd1306_types.h",
+            "line": 146
+          },
+          "description": "Cursor, color, inversión y marca de inicialización del estado gráfico."
+        },
+        {
+          "name": "SSD1306_Buffer",
+          "declaration": "uint8_t SSD1306_Buffer[SSD1306_BUFFER_SIZE]",
+          "callback": false,
+          "ownerType": "SSD1306_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/ssd1306_types.h",
+            "line": 147
+          },
+          "description": "Framebuffer propio del driver, de tamaño fijado por la geometría/configuración."
+        },
+        {
+          "name": "oled_error_count",
+          "declaration": "volatile uint32_t oled_error_count",
+          "callback": false,
+          "ownerType": "SSD1306_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/ssd1306_types.h",
+            "line": 148
+          },
+          "description": "Contador acumulado de errores de transferencia/presentación."
+        },
+        {
+          "name": "oled_rotation",
+          "declaration": "OledRotation_t oled_rotation",
+          "callback": false,
+          "ownerType": "SSD1306_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/ssd1306_types.h",
+            "line": 149
+          },
+          "description": "Rotación lógica vigente del panel: 0 o 180 grados."
+        },
+        {
+          "name": "g_page_q",
+          "declaration": "OLED_PageReq g_page_q[8]",
+          "callback": false,
+          "ownerType": "SSD1306_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/ssd1306_types.h",
+            "line": 150
+          },
+          "description": "Cola de hasta ocho solicitudes, una por página, con prioridad y FSM."
+        },
+        {
+          "name": "g_seq",
+          "declaration": "uint32_t g_seq",
+          "callback": false,
+          "ownerType": "SSD1306_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/ssd1306_types.h",
+            "line": 151
+          },
+          "description": "Secuencia interna usada para ordenar solicitudes de páginas."
+        },
+        {
+          "name": "oled_inflight_page",
+          "declaration": "uint8_t oled_inflight_page",
+          "callback": false,
+          "ownerType": "SSD1306_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/ssd1306_types.h",
+            "line": 152
+          },
+          "description": "Página que está siendo enviada por la máquina de transferencia."
+        },
+        {
+          "name": "oled_direct_pending",
+          "declaration": "uint8_t oled_direct_pending",
+          "callback": false,
+          "ownerType": "SSD1306_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/ssd1306_types.h",
+            "line": 153
+          },
+          "description": "Existe un comando directo pendiente fuera de las páginas del framebuffer."
+        },
+        {
+          "name": "oled_direct_inflight",
+          "declaration": "uint8_t oled_direct_inflight",
+          "callback": false,
+          "ownerType": "SSD1306_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/ssd1306_types.h",
+            "line": 154
+          },
+          "description": "Existe un comando directo en transmisión."
+        },
+        {
+          "name": "oled_direct_pending_len",
+          "declaration": "uint8_t oled_direct_pending_len",
+          "callback": false,
+          "ownerType": "SSD1306_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/ssd1306_types.h",
+            "line": 155
+          },
+          "description": "Longitud del comando directo preparado."
+        },
+        {
+          "name": "oled_direct_active_len",
+          "declaration": "uint8_t oled_direct_active_len",
+          "callback": false,
+          "ownerType": "SSD1306_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/ssd1306_types.h",
+            "line": 156
+          },
+          "description": "Longitud del comando directo en curso."
+        },
+        {
+          "name": "oled_direct_pos",
+          "declaration": "uint8_t oled_direct_pos",
+          "callback": false,
+          "ownerType": "SSD1306_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/ssd1306_types.h",
+            "line": 157
+          },
+          "description": "Posición dentro de la secuencia de bytes de comando directo."
+        },
+        {
+          "name": "oled_direct_pending_buf",
+          "declaration": "uint8_t oled_direct_pending_buf[4]",
+          "callback": false,
+          "ownerType": "SSD1306_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/ssd1306_types.h",
+            "line": 158
+          },
+          "description": "Memoria persistente del comando directo todavía pendiente."
+        },
+        {
+          "name": "oled_direct_active_buf",
+          "declaration": "uint8_t oled_direct_active_buf[4]",
+          "callback": false,
+          "ownerType": "SSD1306_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/ssd1306_types.h",
+            "line": 159
+          },
+          "description": "Memoria persistente del comando directo usado por la transferencia."
+        },
+        {
+          "name": "oled_page",
+          "declaration": "volatile uint8_t oled_page",
+          "callback": false,
+          "ownerType": "SSD1306_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/ssd1306_types.h",
+            "line": 160
+          },
+          "description": "Página corriente del avance de refresco."
+        },
+        {
+          "name": "oled_cmd_byte",
+          "declaration": "uint8_t oled_cmd_byte",
+          "callback": false,
+          "ownerType": "SSD1306_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/ssd1306_types.h",
+            "line": 161
+          },
+          "description": "Byte de comando persistente: no sustituirlo por una variable local usada por DMA."
+        },
+        {
+          "name": "ssd1306_updatestatus",
+          "declaration": "volatile uint8_t ssd1306_updatestatus",
+          "callback": false,
+          "ownerType": "SSD1306_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/ssd1306_types.h",
+            "line": 162
+          },
+          "description": "Marca de estado del ciclo de actualización."
+        },
+        {
+          "name": "ssd1306_updateend",
+          "declaration": "volatile uint8_t ssd1306_updateend",
+          "callback": false,
+          "ownerType": "SSD1306_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/ssd1306_types.h",
+            "line": 163
+          },
+          "description": "Marca de finalización de actualización consultada por la aplicación."
+        },
+        {
+          "name": "ssd1306_command",
+          "declaration": "volatile uint8_t ssd1306_command",
+          "callback": false,
+          "ownerType": "SSD1306_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/ssd1306_types.h",
+            "line": 164
+          },
+          "description": "Dato de estado/configuración `ssd1306_command`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "i2c_command",
+          "declaration": "volatile uint8_t i2c_command",
+          "callback": false,
+          "ownerType": "SSD1306_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/ssd1306_types.h",
+            "line": 165
+          },
+          "description": "Dato de estado/configuración `i2c_command`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ssd1306_ContUpdate",
+          "declaration": "volatile uint8_t ssd1306_ContUpdate",
+          "callback": false,
+          "ownerType": "SSD1306_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/ssd1306_types.h",
+            "line": 166
+          },
+          "description": "Habilitación de refresco continuo en variantes que lo admiten."
+        },
+        {
+          "name": "ssd1306_RasterIntRegs",
+          "declaration": "volatile uint8_t ssd1306_RasterIntRegs",
+          "callback": false,
+          "ownerType": "SSD1306_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/ssd1306_types.h",
+            "line": 167
+          },
+          "description": "Configuración de avisos internos de raster/página."
+        },
+        {
+          "name": "display_geometry",
+          "declaration": "SSD1306_Geometry display_geometry",
+          "callback": false,
+          "ownerType": "SSD1306_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/ssd1306_types.h",
+            "line": 168
+          },
+          "description": "Selector de geometría 128×64 o 128×32."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/ssd1306_types.h",
+        "line": 140
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "ssd1306_BindPort_H",
+      "signature": "AM_Result ssd1306_BindPort_H(SSD1306_Handle *h, const AM_I2C_DevicePort *port)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/ssd1306.h",
+        "line": 59
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "bind",
+        "memset"
+      ],
+      "writes": [
+        "bus",
+        "display_geometry",
+        "oled_inflight_page",
+        "oled_rotation"
+      ],
+      "description": "Conecta el puerto I2C y registra callbacks del driver.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 514
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "ssd1306_Clear_H",
+      "signature": "void ssd1306_Clear_H(SSD1306_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/ssd1306.h",
+        "line": 38
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "memset"
+      ],
+      "writes": [],
+      "description": "Limpia framebuffer y estado gráfico asociado sin demostrar envío físico.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 1392
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "ssd1306_ContUpdateDisable_H",
+      "signature": "void ssd1306_ContUpdateDisable_H(SSD1306_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/ssd1306.h",
+        "line": 82
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [
+        "ssd1306_ContUpdate"
+      ],
+      "description": "Deshabilita refresco continuo de la instancia.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 1552
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "ssd1306_ContUpdateEnable_H",
+      "signature": "void ssd1306_ContUpdateEnable_H(SSD1306_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/ssd1306.h",
+        "line": 81
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "mem_write_dma",
+        "ready"
+      ],
+      "writes": [
+        "i2c_command",
+        "ssd1306_ContUpdate",
+        "ssd1306_updateend",
+        "ssd1306_updatestatus"
+      ],
+      "description": "Habilita refresco continuo en la variante compilada que lo admita.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 1539
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "ssd1306_DrawArc_H",
+      "signature": "void ssd1306_DrawArc_H(SSD1306_Handle *h, uint8_t x, uint8_t y, uint8_t radius, uint16_t start_angle, uint16_t sweep)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/ssd1306.h",
+        "line": 23
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "cos",
+        "sin",
+        "ssd1306_DegToRad",
+        "ssd1306_DrawLine_H",
+        "ssd1306_NormalizeTo0_360"
+      ],
+      "writes": [],
+      "description": "Rasteriza un arco circular con los parámetros recibidos.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 1067
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "ssd1306_DrawBitmap_H",
+      "signature": "void ssd1306_DrawBitmap_H(SSD1306_Handle *h, uint8_t X, uint8_t Y, uint8_t W, uint8_t H, const uint8_t* pBMP)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/ssd1306.h",
+        "line": 14
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "ssd1306_DrawPixel_H"
+      ],
+      "writes": [],
+      "description": "Rasteriza bitmap con el orden de bits esperado por esta entrada.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 1263
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "ssd1306_DrawBitmap_MSB_H",
+      "signature": "void ssd1306_DrawBitmap_MSB_H(SSD1306_Handle *h, uint8_t X, uint8_t Y, uint8_t W, uint8_t H, const uint8_t* pBMP)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/ssd1306.h",
+        "line": 15
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "ssd1306_DrawPixel_H"
+      ],
+      "writes": [],
+      "description": "Rasteriza bitmap con bits más significativos primero.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 1282
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "ssd1306_DrawCircleQuads_H",
+      "signature": "void ssd1306_DrawCircleQuads_H(SSD1306_Handle *h, int16_t x0, int16_t y0, int16_t radius, uint8_t quads)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/ssd1306.h",
+        "line": 27
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "ssd1306_DrawPixel_H"
+      ],
+      "writes": [],
+      "description": "Rasteriza los cuadrantes de círculo seleccionados.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 1157
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "ssd1306_DrawCircle_H",
+      "signature": "void ssd1306_DrawCircle_H(SSD1306_Handle *h, int16_t x0, int16_t y0, int16_t radius)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/ssd1306.h",
+        "line": 24
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "ssd1306_DrawPixel_H"
+      ],
+      "writes": [],
+      "description": "Rasteriza el contorno de un círculo.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 1105
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "ssd1306_DrawFillTriangle",
+      "signature": "void ssd1306_DrawFillTriangle(SSD1306_Handle *h, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t x3, uint16_t y3)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 962
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "abs",
+        "ssd1306_DrawLine_H"
+      ],
+      "writes": [],
+      "description": "Rasteriza un triángulo relleno según la entrada histórica del driver.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 962
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "ssd1306_DrawHorizontalLine_H",
+      "signature": "void ssd1306_DrawHorizontalLine_H(SSD1306_Handle *h, int16_t x, int16_t y, int16_t length)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/ssd1306.h",
+        "line": 19
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "height",
+        "width"
+      ],
+      "writes": [],
+      "description": "Rasteriza un segmento horizontal con longitud explícita.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 811
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "ssd1306_DrawLine_H",
+      "signature": "void ssd1306_DrawLine_H(SSD1306_Handle *h, int16_t x0, int16_t y0, int16_t x1, int16_t y1)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/ssd1306.h",
+        "line": 17
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "SWAP_INT16_T",
+        "abs",
+        "ssd1306_DrawPixel_H"
+      ],
+      "writes": [],
+      "description": "Rasteriza un segmento entre dos coordenadas.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 761
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "ssd1306_DrawLinearProgress_H",
+      "signature": "void ssd1306_DrawLinearProgress_H(SSD1306_Handle *h, uint8_t x, uint8_t y, uint8_t width, uint8_t height, uint32_t elapsed, uint32_t total)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/ssd1306.h",
+        "line": 29
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "ssd1306_FillRect_H",
+        "ssd1306_SetColor_H"
+      ],
+      "writes": [],
+      "description": "Dibuja progreso lineal a partir de elapsed y total.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 1227
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "ssd1306_DrawPixel_H",
+      "signature": "void ssd1306_DrawPixel_H(SSD1306_Handle *h, uint8_t x, uint8_t y)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/ssd1306.h",
+        "line": 13
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "ssd1306_GetHeight_H",
+        "ssd1306_GetWidth_H",
+        "width"
+      ],
+      "writes": [],
+      "description": "Modifica un píxel del framebuffer respetando color y límites.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 735
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "ssd1306_DrawProgressBar_H",
+      "signature": "void ssd1306_DrawProgressBar_H(SSD1306_Handle *h, uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint8_t progress)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/ssd1306.h",
+        "line": 28
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "ssd1306_DrawCircleQuads_H",
+        "ssd1306_DrawHorizontalLine_H",
+        "ssd1306_FillCircle_H",
+        "ssd1306_FillRect_H",
+        "ssd1306_SetColor_H"
+      ],
+      "writes": [],
+      "description": "Dibuja una barra de progreso en el framebuffer.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 1206
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "ssd1306_DrawQR_Fixed_H",
+      "signature": "void ssd1306_DrawQR_Fixed_H(SSD1306_Handle *h, uint8_t startX, uint8_t startY, const uint8_t* qrData)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/ssd1306.h",
+        "line": 16
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "ssd1306_DrawPixel_H"
+      ],
+      "writes": [],
+      "description": "Rasteriza el QR con la geometría fija de esta API.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 1302
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "ssd1306_DrawRect_H",
+      "signature": "void ssd1306_DrawRect_H(SSD1306_Handle *h, int16_t x, int16_t y, int16_t width, int16_t height)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/ssd1306.h",
+        "line": 20
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "ssd1306_DrawHorizontalLine_H",
+        "ssd1306_DrawVerticalLine_H"
+      ],
+      "writes": [],
+      "description": "Rasteriza el contorno de un rectángulo.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 939
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "ssd1306_DrawTriangle_H",
+      "signature": "void ssd1306_DrawTriangle_H(SSD1306_Handle *h, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t x3, uint16_t y3)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/ssd1306.h",
+        "line": 21
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "ssd1306_DrawLine_H"
+      ],
+      "writes": [],
+      "description": "Rasteriza el contorno de un triángulo.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 955
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "ssd1306_DrawVerticalLine_H",
+      "signature": "void ssd1306_DrawVerticalLine_H(SSD1306_Handle *h, int16_t x, int16_t y, int16_t length)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/ssd1306.h",
+        "line": 18
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "height",
+        "width"
+      ],
+      "writes": [],
+      "description": "Rasteriza un segmento vertical con longitud explícita.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 857
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "ssd1306_FillCircle_H",
+      "signature": "void ssd1306_FillCircle_H(SSD1306_Handle *h, int16_t x0, int16_t y0, int16_t radius)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/ssd1306.h",
+        "line": 25
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "ssd1306_DrawHorizontalLine_H"
+      ],
+      "writes": [],
+      "description": "Rasteriza un círculo relleno.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 1133
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "ssd1306_FillRect_H",
+      "signature": "void ssd1306_FillRect_H(SSD1306_Handle *h, int16_t xMove, int16_t yMove, int16_t width, int16_t height)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/ssd1306.h",
+        "line": 22
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "ssd1306_DrawVerticalLine_H"
+      ],
+      "writes": [],
+      "description": "Rasteriza un rectángulo relleno.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 947
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "ssd1306_Fill_H",
+      "signature": "void ssd1306_Fill_H(SSD1306_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/ssd1306.h",
+        "line": 12
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Rellena el framebuffer con el patrón/color recibido.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 726
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "ssd1306_GetColor_H",
+      "signature": "SSD1306_COLOR ssd1306_GetColor_H(SSD1306_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/ssd1306.h",
+        "line": 9
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Devuelve el campo `h->SSD1306.Color` del estado actual de la instancia.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 54
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "ssd1306_GetDefaultContrast_H",
+      "signature": "uint8_t ssd1306_GetDefaultContrast_H(SSD1306_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/ssd1306.h",
+        "line": 45
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Carga los valores predeterminados de Contrast H dentro de OLED SSD1306.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 667
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "ssd1306_GetErrorCount_H",
+      "signature": "uint32_t ssd1306_GetErrorCount_H(SSD1306_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/ssd1306.h",
+        "line": 41
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Consulta el contador acumulado de errores del driver.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 1420
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "ssd1306_GetHeight_H",
+      "signature": "uint16_t ssd1306_GetHeight_H(SSD1306_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/ssd1306.h",
+        "line": 8
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Consulta alto de la geometría de la instancia OLED.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 52
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "ssd1306_GetRotation_H",
+      "signature": "OledRotation_t ssd1306_GetRotation_H(SSD1306_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/ssd1306.h",
+        "line": 47
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Devuelve el campo `h->oled_rotation` del estado actual de la instancia.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 688
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "ssd1306_GetWidth_H",
+      "signature": "uint16_t ssd1306_GetWidth_H(SSD1306_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/ssd1306.h",
+        "line": 7
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Consulta ancho de la geometría de la instancia OLED.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 51
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "ssd1306_Init_H",
+      "signature": "uint8_t ssd1306_Init_H(SSD1306_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/ssd1306.h",
+        "line": 11
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "delay_ms",
+        "height",
+        "probe",
+        "ssd1306_Clear_H",
+        "ssd1306_ContUpdateEnable_H",
+        "ssd1306_UpdateScreen_H",
+        "ssd1306_WriteCommand_Blocking"
+      ],
+      "writes": [
+        "oled_error_count"
+      ],
+      "description": "Configura síncronamente el panel y solicita el primer refresco; devuelve 1/0.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 562
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "ssd1306_Polyline_H",
+      "signature": "void ssd1306_Polyline_H(SSD1306_Handle *h, const SSD1306_VERTEX *par_vertex, uint16_t par_size)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/ssd1306.h",
+        "line": 26
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "ssd1306_DrawLine_H"
+      ],
+      "writes": [],
+      "description": "Rasteriza segmentos consecutivos de una lista de vértices.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 1030
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "ssd1306_PresentFramebuffer_H",
+      "signature": "AM_Result ssd1306_PresentFramebuffer_H(SSD1306_Handle *h, const uint8_t *framebuffer, uint16_t len)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/ssd1306.h",
+        "line": 39
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "memcpy",
+        "ssd1306_UpdateScreenCompleted_H",
+        "ssd1306_UpdateScreen_H"
+      ],
+      "writes": [],
+      "description": "Copia/presenta el framebuffer externo mediante la ruta de refresco del driver.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 1397
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "ssd1306_RasterIntCallback",
+      "signature": "void ssd1306_RasterIntCallback(SSD1306_Handle *h, uint8_t r)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 1566
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "on_raster"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `on_raster` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 1566
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "ssd1306_RequestPageUpdate_H",
+      "signature": "AM_Result ssd1306_RequestPageUpdate_H(SSD1306_Handle *h, uint8_t page, I2C_RequestPrio prio, uint8_t keep_bus)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/ssd1306.h",
+        "line": 61
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OLED_QueueUpsert",
+        "else",
+        "request"
+      ],
+      "writes": [],
+      "description": "Encola o actualiza una página con prioridad y decisión de conservar bus.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 525
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "ssd1306_SetColor_H",
+      "signature": "void ssd1306_SetColor_H(SSD1306_Handle *h, SSD1306_COLOR color)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/ssd1306.h",
+        "line": 10
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Selecciona color lógico para primitivas siguientes en esta instancia.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 56
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "ssd1306_SetContrast_H",
+      "signature": "AM_Result ssd1306_SetContrast_H(SSD1306_Handle *h, uint8_t contrast)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/ssd1306.h",
+        "line": 44
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OLED_QueueDirectCommand",
+        "ssd1306_WriteCommand_H"
+      ],
+      "writes": [],
+      "description": "Solicita un comando de contraste al panel.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 676
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "ssd1306_SetCursor_H",
+      "signature": "void ssd1306_SetCursor_H(SSD1306_Handle *h, uint8_t x, uint8_t y)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/ssd1306.h",
+        "line": 37
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Posiciona el cursor de texto de la instancia OLED.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 1386
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "ssd1306_SetRasterInt_H",
+      "signature": "void ssd1306_SetRasterInt_H(SSD1306_Handle *h, uint8_t r)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/ssd1306.h",
+        "line": 83
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [
+        "ssd1306_RasterIntRegs"
+      ],
+      "description": "Configura avisos de raster según el modo admitido por el driver.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 1561
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "ssd1306_SetRotation_H",
+      "signature": "AM_Result ssd1306_SetRotation_H(SSD1306_Handle *h, OledRotation_t rotation)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/ssd1306.h",
+        "line": 46
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OLED_QueueDirectCommand",
+        "ssd1306_WriteCommand_H"
+      ],
+      "writes": [
+        "oled_rotation"
+      ],
+      "description": "Configura orientación de panel 0 o 180 grados.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 693
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "ssd1306_UpdateScreenCompleted_H",
+      "signature": "char ssd1306_UpdateScreenCompleted_H(SSD1306_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/ssd1306.h",
+        "line": 74
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OLED_QueueHasPending"
+      ],
+      "writes": [],
+      "description": "Consulta la marca de finalización de refresco.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 1500
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "ssd1306_UpdateScreen_H",
+      "signature": "void ssd1306_UpdateScreen_H(SSD1306_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/ssd1306.h",
+        "line": 66
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OLED_ShouldKeepBus",
+        "mem_write_dma",
+        "ssd1306_RequestPageUpdate_H"
+      ],
+      "writes": [
+        "ssd1306_updateend",
+        "ssd1306_updatestatus"
+      ],
+      "description": "Solicita el refresco del framebuffer según la configuración compilada.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 1473
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "ssd1306_WriteChar_H",
+      "signature": "char ssd1306_WriteChar_H(SSD1306_Handle *h, char ch, FontDef Font)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/ssd1306.h",
+        "line": 35
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "height",
+        "ssd1306_DrawPixel_H",
+        "width"
+      ],
+      "writes": [],
+      "description": "Rasteriza un carácter con FontDef y avanza el cursor.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 1325
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "ssd1306_WriteCommand_H",
+      "signature": "void ssd1306_WriteCommand_H(SSD1306_Handle *h, uint8_t command)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/ssd1306.h",
+        "line": 43
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "mem_write_dma",
+        "ready"
+      ],
+      "writes": [
+        "i2c_command",
+        "ssd1306_command"
+      ],
+      "description": "Escribe Command H dentro de OLED SSD1306.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 1524
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "ssd1306_WriteData",
+      "signature": "void ssd1306_WriteData(SSD1306_Handle *h, uint8_t* data, uint16_t size)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 1436
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "mem_write"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `mem_write` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 1436
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "ssd1306_WriteString_H",
+      "signature": "char ssd1306_WriteString_H(SSD1306_Handle *h, char* str, FontDef Font)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/ssd1306.h",
+        "line": 36
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "ssd1306_WriteChar_H"
+      ],
+      "writes": [],
+      "description": "Rasteriza una cadena con FontDef hasta final o falta de espacio.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 1373
+      },
+      "linkage": "header"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "width",
+      "signature": "static uint16_t width(SSD1306_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 48
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación width de OLED SSD1306; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "height",
+      "signature": "static uint16_t height(SSD1306_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 49
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación height de OLED SSD1306; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "OLED_ShouldKeepBus",
+      "signature": "static uint8_t OLED_ShouldKeepBus(SSD1306_Handle *h, uint8_t page, uint8_t max_pages)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 66
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "policy"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `policy` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "OLED_StartFrame",
+      "signature": "static void OLED_StartFrame(SSD1306_Handle *h, uint8_t page)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 119
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "mem_write_dma"
+      ],
+      "writes": [
+        "oled_cmd_byte",
+        "oled_page"
+      ],
+      "description": "Adapta la llamada a `mem_write_dma` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "OLED_QueueHasPending",
+      "signature": "static uint8_t OLED_QueueHasPending(SSD1306_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 128
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Queue Has Pending de OLED SSD1306; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "OLED_QueueMaxPrio",
+      "signature": "static uint8_t OLED_QueueMaxPrio(SSD1306_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 142
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Queue Max Prio de OLED SSD1306; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "OLED_QueueSelectNext",
+      "signature": "static uint8_t OLED_QueueSelectNext(SSD1306_Handle *h, uint8_t *slot_idx)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 157
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Queue Select Next de OLED SSD1306; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "OLED_StartNextQueued",
+      "signature": "static uint8_t OLED_StartNextQueued(SSD1306_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 184
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "OLED_QueueSelectNext",
+        "OLED_StartDirectCommand",
+        "OLED_StartFrame"
+      ],
+      "writes": [
+        "oled_inflight_page"
+      ],
+      "description": "Inicia Next Queued dentro de OLED SSD1306.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "OLED_QueueFindByPage",
+      "signature": "static uint8_t OLED_QueueFindByPage(SSD1306_Handle *h, uint8_t page, uint8_t *slot_idx)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 203
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Queue Find By Page de OLED SSD1306; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "OLED_QueueUpsert",
+      "signature": "static AM_Result OLED_QueueUpsert(SSD1306_Handle *h, uint8_t page, I2C_RequestPrio prio, uint8_t keep_bus)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 214
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [
+        "g_seq"
+      ],
+      "description": "Operación Queue Upsert de OLED SSD1306; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "OLED_I2C_RequestApproved",
+      "signature": "static void OLED_I2C_RequestApproved(void *ctx)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 277
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "OLED_StartNextQueued",
+        "release"
+      ],
+      "writes": [],
+      "description": "Coordina `OLED_StartNextQueued`, `release` para OLED SSD1306.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "OLED_I2C_TxComplete",
+      "signature": "static void OLED_I2C_TxComplete(void *ctx)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 295
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "OLED_DirectCommandTxComplete",
+        "OLED_I2C_TransferComplete",
+        "is_owner"
+      ],
+      "writes": [],
+      "description": "Coordina `OLED_DirectCommandTxComplete`, `OLED_I2C_TransferComplete`, `is_owner` para OLED SSD1306.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "OLED_I2C_TransferComplete",
+      "signature": "static void OLED_I2C_TransferComplete(SSD1306_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 312
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "OLED_QueueFindByPage",
+        "OLED_QueueHasPending",
+        "OLED_QueueMaxPrio",
+        "OLED_SendForState",
+        "OLED_StartNextQueued",
+        "on_empty",
+        "on_page",
+        "on_presented",
+        "release",
+        "request"
+      ],
+      "writes": [
+        "g_seq",
+        "oled_inflight_page"
+      ],
+      "description": "Coordina `OLED_QueueFindByPage`, `OLED_QueueHasPending`, `OLED_QueueMaxPrio` para OLED SSD1306.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "OLED_I2C_Error",
+      "signature": "static void OLED_I2C_Error(void *ctx, I2C_ManagerError err)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 396
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "memset",
+        "release"
+      ],
+      "writes": [
+        "oled_direct_active_len",
+        "oled_direct_inflight",
+        "oled_direct_pending",
+        "oled_direct_pending_len",
+        "oled_direct_pos",
+        "oled_error_count",
+        "oled_inflight_page"
+      ],
+      "description": "Coordina `memset`, `release` para OLED SSD1306.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "OLED_QueueDirectCommand",
+      "signature": "static AM_Result OLED_QueueDirectCommand(SSD1306_Handle *h, const uint8_t *commands, uint8_t len)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 414
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "request"
+      ],
+      "writes": [
+        "oled_direct_pending",
+        "oled_direct_pending_len"
+      ],
+      "description": "Coordina `request` para OLED SSD1306.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "OLED_StartDirectCommand",
+      "signature": "static uint8_t OLED_StartDirectCommand(SSD1306_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 435
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "mem_write_dma"
+      ],
+      "writes": [
+        "oled_cmd_byte",
+        "oled_direct_active_len",
+        "oled_direct_inflight",
+        "oled_direct_pending",
+        "oled_direct_pending_len",
+        "oled_direct_pos"
+      ],
+      "description": "Inicia Direct Command dentro de OLED SSD1306.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "OLED_DirectCommandTxComplete",
+      "signature": "static void OLED_DirectCommandTxComplete(SSD1306_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 460
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "OLED_StartNextQueued",
+        "mem_write_dma",
+        "release"
+      ],
+      "writes": [
+        "oled_cmd_byte",
+        "oled_direct_active_len",
+        "oled_direct_inflight",
+        "oled_direct_pos"
+      ],
+      "description": "Coordina `OLED_StartNextQueued`, `mem_write_dma`, `release` para OLED SSD1306.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "OLED_SendForState",
+      "signature": "static void OLED_SendForState(SSD1306_Handle *h, uint8_t page, OLED_SM_State state)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 487
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "mem_write_dma",
+        "width"
+      ],
+      "writes": [
+        "oled_cmd_byte"
+      ],
+      "description": "Envía For State dentro de OLED SSD1306.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "ssd1306_WriteCommand_Blocking",
+      "signature": "static void ssd1306_WriteCommand_Blocking(SSD1306_Handle *h, uint8_t command)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 556
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "mem_write"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `mem_write` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ssd1306_DegToRad",
+      "signature": "static float ssd1306_DegToRad(SSD1306_Handle *h, float par_deg)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 1047
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Deg To Rad de OLED SSD1306; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "ssd1306_NormalizeTo0_360",
+      "signature": "static uint16_t ssd1306_NormalizeTo0_360(SSD1306_Handle *h, uint16_t par_deg)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/ssd1306.c",
+        "line": 1052
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Normalize To0 360 de OLED SSD1306; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    }
+  ]
+}

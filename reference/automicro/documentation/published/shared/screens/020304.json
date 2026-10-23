@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 1,
+  "id": "shared:screen/020304",
+  "symbol": "SCREEN_CODE_CONNECTIVITY_ESP_RESET_SENT",
+  "code": 131844,
+  "hex": "0x020304",
+  "decomposition": {
+    "menu": 2,
+    "submenu": 3,
+    "page": 4
+  },
+  "revision": "working-copy-hashes",
+  "confidence": "manual-review",
+  "family": "shared:screen-family/notifications",
+  "numericObservation": "same-literal",
+  "webDeclaration": {
+    "value": 131844,
+    "line": 53
+  },
+  "metadataEntryObserved": true,
+  "evidence": [
+    {
+      "repo": "f4",
+      "path": "Core/Inc/screen_codes.h",
+      "line": 79
+    },
+    {
+      "repo": "web",
+      "path": "src/screens/screenCodes.ts",
+      "line": 53
+    }
+  ],
+  "renderers": [
+    {
+      "kind": "switch-case",
+      "path": "src/screens/screenRenderRegistry.ts",
+      "line": 412,
+      "builders": [
+        "buildScreen020304EspResetSentNotificationCommands"
+      ],
+      "availability": "parameterized-candidate"
+    }
+  ],
+  "callGraph": {
+    "status": "lexical-candidates-only",
+    "edges": []
+  },
+  "f4References": [
+    {
+      "repo": "f4",
+      "path": "Core/Src/oled_utils.c",
+      "line": 1172,
+      "kind": "lexical-reference"
+    },
+    {
+      "repo": "f4",
+      "path": "Core/Src/oled_utils.c",
+      "line": 4288,
+      "kind": "lexical-reference"
+    }
+  ],
+  "variants": [
+    "El mismo código puede representar aviso/vista o variantes ON/OFF no distinguidas por su identidad."
+  ],
+  "fields": [
+    {
+      "name": "screenCode/source",
+      "type": "u32/u8",
+      "units": "identidad",
+      "availability": "reported",
+      "note": "source distingue aviso de render cuando el productor lo proporciona"
+    },
+    {
+      "name": "remainingMs/totalMs/clientNumber",
+      "type": "u16/u16/u8 opcional",
+      "units": "ms/número",
+      "availability": "reported",
+      "note": "extensión de aviso según longitud y source; no siempre presente"
+    },
+    {
+      "name": "texto/ON-OFF/event payload exacto",
+      "type": "modelo de aviso local",
+      "units": "texto/variante",
+      "availability": "unavailable-remotely",
+      "note": "un GET posterior del estado no prueba qué aviso transitorio estaba visible"
+    }
+  ],
+  "actions": [
+    "Encoder puede descartar aviso según prioridad del router.",
+    "Los hooks onShow/onHide pueden tener efectos; no basta simular desaparición en Web."
+  ],
+  "transitions": [
+    "Cola F4 conserva vista anterior y restaura al terminar; Web recibe eventos posteriores."
+  ],
+  "missingData": [
+    "No todas las líneas/textos/variantes y fase del refresco se transportan."
+  ],
+  "localOnly": [],
+  "findings": [
+    "AMDOC-WEB-002"
+  ],
+  "exactness": "not-established",
+  "notes": [
+    "Mismo ID y duración no certifican píxeles ni orden visible de todos los avisos."
+  ],
+  "role": "not-resolved"
+}

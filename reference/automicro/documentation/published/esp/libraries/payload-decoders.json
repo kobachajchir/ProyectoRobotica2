@@ -1,0 +1,2612 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "esp:module/src/f4_payload_decoders.h",
+  "slug": "payload-decoders",
+  "title": "Decodificadores de payload F4",
+  "target": "esp",
+  "kind": "núcleo",
+  "status": "source-documented",
+  "snapshotDate": "2026-10-20",
+  "verification": "not-run-user-instruction",
+  "responsibility": "Transforma bytes LE de F4 a estructuras de datos del ESP con comprobación de formato/longitud.",
+  "scope": "MPU, IR, control, telemetría, preferencias y otros formatos definidos; las estructuras no se copian por sizeof al wire.",
+  "state": "El llamador posee salida; los bytes de entrada son prestados durante el decode. Flags/unidades se interpretan según cada formato.",
+  "modularity": "C sin dependencia de UI; depende del esquema compartido de datos del robot.",
+  "lifecycle": [
+    "Comprobar resultado F4_DECODE_* antes de usar salida.",
+    "El bridge convierte posteriormente los campos a JSON y sus nombres públicos."
+  ],
+  "interactions": [
+    "reports.inc usa decoders antes de publicar snapshots.",
+    "Web consume números JSON; no vuelve a interpretar padding ni punteros C."
+  ],
+  "limitations": [
+    "Cada formato mantiene su tamaño/versionado; igual longitud no implica igual esquema.",
+    "Mantener escalas g/mg, dps/mdps y m/s frente a cm/s."
+  ],
+  "relationships": [],
+  "findings": [],
+  "files": [
+    {
+      "rootId": "esp",
+      "path": "src/f4_payload_decoders.c",
+      "sha256": "7a6f32adb0ba4c839d10d2eff03f946124621eaf43a3eb78f0e9b2207d966051",
+      "imports": [
+        "f4_payload_decoders.h",
+        "string.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    },
+    {
+      "rootId": "esp",
+      "path": "src/f4_payload_decoders.h",
+      "sha256": "20e379a1fea2e56a2f22479cbead9c11bd1387cffb9455a76be68d9c19b342c6",
+      "imports": [
+        "stddef.h",
+        "stdint.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    }
+  ],
+  "types": [
+    {
+      "name": "F4_MpuSnapshot",
+      "fields": [
+        {
+          "name": "status",
+          "declaration": "uint8_t status",
+          "callback": false,
+          "ownerType": "F4_MpuSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 30
+          },
+          "description": "Último resultado y guardas del módulo; los getters pueden devolver una vista de este almacenamiento."
+        },
+        {
+          "name": "flags",
+          "declaration": "uint8_t flags",
+          "callback": false,
+          "ownerType": "F4_MpuSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 31
+          },
+          "description": "Bits de estado del módulo; conservar máscaras y distinguir estado de eventos pendientes."
+        },
+        {
+          "name": "sample_sequence",
+          "declaration": "uint16_t sample_sequence",
+          "callback": false,
+          "ownerType": "F4_MpuSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 32
+          },
+          "description": "Dato de estado/configuración `sample_sequence`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "sample_dt_us",
+          "declaration": "uint16_t sample_dt_us",
+          "callback": false,
+          "ownerType": "F4_MpuSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 33
+          },
+          "description": "Tiempo o intervalo en microsegundos; precisión efectiva dependiente del puerto."
+        },
+        {
+          "name": "roll_deg",
+          "declaration": "float roll_deg",
+          "callback": false,
+          "ownerType": "F4_MpuSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 34
+          },
+          "description": "Ángulo en grados; respetar eje y referencia de esta librería."
+        },
+        {
+          "name": "pitch_deg",
+          "declaration": "float pitch_deg",
+          "callback": false,
+          "ownerType": "F4_MpuSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 35
+          },
+          "description": "Ángulo en grados; respetar eje y referencia de esta librería."
+        },
+        {
+          "name": "yaw_magnetic_deg",
+          "declaration": "float yaw_magnetic_deg",
+          "callback": false,
+          "ownerType": "F4_MpuSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 36
+          },
+          "description": "Ángulo en grados; respetar eje y referencia de esta librería."
+        },
+        {
+          "name": "accel_g",
+          "declaration": "float accel_g[3]",
+          "callback": false,
+          "ownerType": "F4_MpuSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 37
+          },
+          "description": "Dato de estado/configuración `accel_g`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "gyro_deg_s",
+          "declaration": "float gyro_deg_s[3]",
+          "callback": false,
+          "ownerType": "F4_MpuSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 38
+          },
+          "description": "Dato de estado/configuración `gyro_deg_s`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/f4_payload_decoders.h",
+        "line": 30
+      }
+    },
+    {
+      "name": "F4_StreamStateResponse",
+      "fields": [
+        {
+          "name": "status",
+          "declaration": "uint8_t status",
+          "callback": false,
+          "ownerType": "F4_StreamStateResponse",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 42
+          },
+          "description": "Último resultado y guardas del módulo; los getters pueden devolver una vista de este almacenamiento."
+        },
+        {
+          "name": "active",
+          "declaration": "uint8_t active",
+          "callback": false,
+          "ownerType": "F4_StreamStateResponse",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 43
+          },
+          "description": "Dato de estado/configuración `active`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "period_ms",
+          "declaration": "uint16_t period_ms",
+          "callback": false,
+          "ownerType": "F4_StreamStateResponse",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 44
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/f4_payload_decoders.h",
+        "line": 42
+      }
+    },
+    {
+      "name": "F4_StatusResponse",
+      "fields": [
+        {
+          "name": "status",
+          "declaration": "uint8_t status",
+          "callback": false,
+          "ownerType": "F4_StatusResponse",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 48
+          },
+          "description": "Último resultado y guardas del módulo; los getters pueden devolver una vista de este almacenamiento."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/f4_payload_decoders.h",
+        "line": 48
+      }
+    },
+    {
+      "name": "F4_SetPreferencesResponse",
+      "fields": [
+        {
+          "name": "status",
+          "declaration": "uint8_t status",
+          "callback": false,
+          "ownerType": "F4_SetPreferencesResponse",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 52
+          },
+          "description": "Último resultado y guardas del módulo; los getters pueden devolver una vista de este almacenamiento."
+        },
+        {
+          "name": "changed_mask",
+          "declaration": "uint32_t changed_mask",
+          "callback": false,
+          "ownerType": "F4_SetPreferencesResponse",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 53
+          },
+          "description": "Dato de estado/configuración `changed_mask`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/f4_payload_decoders.h",
+        "line": 52
+      }
+    },
+    {
+      "name": "F4_PreferencesSnapshot",
+      "fields": [
+        {
+          "name": "status",
+          "declaration": "uint8_t status",
+          "callback": false,
+          "ownerType": "F4_PreferencesSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 57
+          },
+          "description": "Último resultado y guardas del módulo; los getters pueden devolver una vista de este almacenamiento."
+        },
+        {
+          "name": "mode",
+          "declaration": "uint8_t mode",
+          "callback": false,
+          "ownerType": "F4_PreferencesSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 58
+          },
+          "description": "Dato de estado/configuración `mode`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "descriptor_count",
+          "declaration": "uint8_t descriptor_count",
+          "callback": false,
+          "ownerType": "F4_PreferencesSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 59
+          },
+          "description": "Dato de estado/configuración `descriptor_count`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "field_mask",
+          "declaration": "uint32_t field_mask",
+          "callback": false,
+          "ownerType": "F4_PreferencesSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 60
+          },
+          "description": "Dato de estado/configuración `field_mask`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "encoder_inverted",
+          "declaration": "uint8_t encoder_inverted",
+          "callback": false,
+          "ownerType": "F4_PreferencesSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 61
+          },
+          "description": "Dato de estado/configuración `encoder_inverted`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "screen_lock_enabled",
+          "declaration": "uint8_t screen_lock_enabled",
+          "callback": false,
+          "ownerType": "F4_PreferencesSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 62
+          },
+          "description": "Dato de estado/configuración `screen_lock_enabled`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "screen_lock_timeout_sec",
+          "declaration": "uint16_t screen_lock_timeout_sec",
+          "callback": false,
+          "ownerType": "F4_PreferencesSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 63
+          },
+          "description": "Dato de estado/configuración `screen_lock_timeout_sec`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "left_min_pwm",
+          "declaration": "uint16_t left_min_pwm",
+          "callback": false,
+          "ownerType": "F4_PreferencesSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 64
+          },
+          "description": "Dato de estado/configuración `left_min_pwm`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "right_min_pwm",
+          "declaration": "uint16_t right_min_pwm",
+          "callback": false,
+          "ownerType": "F4_PreferencesSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 65
+          },
+          "description": "Dato de estado/configuración `right_min_pwm`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "system_action_timeout_sec",
+          "declaration": "uint16_t system_action_timeout_sec",
+          "callback": false,
+          "ownerType": "F4_PreferencesSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 66
+          },
+          "description": "Dato de estado/configuración `system_action_timeout_sec`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "usb_alive_period_ms",
+          "declaration": "uint16_t usb_alive_period_ms",
+          "callback": false,
+          "ownerType": "F4_PreferencesSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 67
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "oled_rotation_degrees",
+          "declaration": "uint16_t oled_rotation_degrees",
+          "callback": false,
+          "ownerType": "F4_PreferencesSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 68
+          },
+          "description": "Dato de estado/configuración `oled_rotation_degrees`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "oled_auto_rotation_enabled",
+          "declaration": "uint8_t oled_auto_rotation_enabled",
+          "callback": false,
+          "ownerType": "F4_PreferencesSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 69
+          },
+          "description": "Dato de estado/configuración `oled_auto_rotation_enabled`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "uner_router_forwarding_enabled",
+          "declaration": "uint8_t uner_router_forwarding_enabled",
+          "callback": false,
+          "ownerType": "F4_PreferencesSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 70
+          },
+          "description": "Dato de estado/configuración `uner_router_forwarding_enabled`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "black_line_width_mm",
+          "declaration": "uint16_t black_line_width_mm",
+          "callback": false,
+          "ownerType": "F4_PreferencesSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 71
+          },
+          "description": "Dato de estado/configuración `black_line_width_mm`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "mpu_calibration_valid",
+          "declaration": "uint8_t mpu_calibration_valid",
+          "callback": false,
+          "ownerType": "F4_PreferencesSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 72
+          },
+          "description": "Dato de estado/configuración `mpu_calibration_valid`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "has_pin_lock_enabled",
+          "declaration": "uint8_t has_pin_lock_enabled",
+          "callback": false,
+          "ownerType": "F4_PreferencesSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 73
+          },
+          "description": "Dato de estado/configuración `has_pin_lock_enabled`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "pin_lock_enabled",
+          "declaration": "uint8_t pin_lock_enabled",
+          "callback": false,
+          "ownerType": "F4_PreferencesSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 74
+          },
+          "description": "Dato de estado/configuración `pin_lock_enabled`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "has_web_alive_period_ms",
+          "declaration": "uint8_t has_web_alive_period_ms",
+          "callback": false,
+          "ownerType": "F4_PreferencesSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 75
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "web_alive_period_ms",
+          "declaration": "uint16_t web_alive_period_ms",
+          "callback": false,
+          "ownerType": "F4_PreferencesSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 76
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "record_size",
+          "declaration": "uint32_t record_size",
+          "callback": false,
+          "ownerType": "F4_PreferencesSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 77
+          },
+          "description": "Dato de estado/configuración `record_size`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "record_capacity",
+          "declaration": "uint32_t record_capacity",
+          "callback": false,
+          "ownerType": "F4_PreferencesSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 78
+          },
+          "description": "Dato de estado/configuración `record_capacity`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/f4_payload_decoders.h",
+        "line": 57
+      }
+    },
+    {
+      "name": "F4_TelemetrySnapshot",
+      "fields": [
+        {
+          "name": "status",
+          "declaration": "uint8_t status",
+          "callback": false,
+          "ownerType": "F4_TelemetrySnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 82
+          },
+          "description": "Último resultado y guardas del módulo; los getters pueden devolver una vista de este almacenamiento."
+        },
+        {
+          "name": "backend",
+          "declaration": "uint8_t backend",
+          "callback": false,
+          "ownerType": "F4_TelemetrySnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 83
+          },
+          "description": "Dato de estado/configuración `backend`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "wifi_mode",
+          "declaration": "uint8_t wifi_mode",
+          "callback": false,
+          "ownerType": "F4_TelemetrySnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 84
+          },
+          "description": "Dato de estado/configuración `wifi_mode`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "bridge_connected",
+          "declaration": "uint8_t bridge_connected",
+          "callback": false,
+          "ownerType": "F4_TelemetrySnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 85
+          },
+          "description": "Dato de estado/configuración `bridge_connected`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "capability_mask",
+          "declaration": "uint32_t capability_mask",
+          "callback": false,
+          "ownerType": "F4_TelemetrySnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 86
+          },
+          "description": "Dato de estado/configuración `capability_mask`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "i2c_policy",
+          "declaration": "uint8_t i2c_policy",
+          "callback": false,
+          "ownerType": "F4_TelemetrySnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 87
+          },
+          "description": "Dato de estado/configuración `i2c_policy`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "motion_armed",
+          "declaration": "uint8_t motion_armed",
+          "callback": false,
+          "ownerType": "F4_TelemetrySnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 88
+          },
+          "description": "Dato de estado/configuración `motion_armed`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "balance_active",
+          "declaration": "uint8_t balance_active",
+          "callback": false,
+          "ownerType": "F4_TelemetrySnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 89
+          },
+          "description": "Dato de estado/configuración `balance_active`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "command_active",
+          "declaration": "uint8_t command_active",
+          "callback": false,
+          "ownerType": "F4_TelemetrySnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 90
+          },
+          "description": "Dato de estado/configuración `command_active`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "safety_stop",
+          "declaration": "uint8_t safety_stop",
+          "callback": false,
+          "ownerType": "F4_TelemetrySnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 91
+          },
+          "description": "Dato de estado/configuración `safety_stop`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "pitch_measured_deg",
+          "declaration": "float pitch_measured_deg",
+          "callback": false,
+          "ownerType": "F4_TelemetrySnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 92
+          },
+          "description": "Ángulo en grados; respetar eje y referencia de esta librería."
+        },
+        {
+          "name": "pitch_setpoint_deg",
+          "declaration": "float pitch_setpoint_deg",
+          "callback": false,
+          "ownerType": "F4_TelemetrySnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 93
+          },
+          "description": "Ángulo en grados; respetar eje y referencia de esta librería."
+        },
+        {
+          "name": "balance_output_percent",
+          "declaration": "float balance_output_percent",
+          "callback": false,
+          "ownerType": "F4_TelemetrySnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 94
+          },
+          "description": "Magnitud porcentual; el rango y signo se fijan en la API de esta librería."
+        },
+        {
+          "name": "left_output_percent",
+          "declaration": "float left_output_percent",
+          "callback": false,
+          "ownerType": "F4_TelemetrySnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 95
+          },
+          "description": "Magnitud porcentual; el rango y signo se fijan en la API de esta librería."
+        },
+        {
+          "name": "right_output_percent",
+          "declaration": "float right_output_percent",
+          "callback": false,
+          "ownerType": "F4_TelemetrySnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 96
+          },
+          "description": "Magnitud porcentual; el rango y signo se fijan en la API de esta librería."
+        },
+        {
+          "name": "kp",
+          "declaration": "float kp",
+          "callback": false,
+          "ownerType": "F4_TelemetrySnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 97
+          },
+          "description": "Dato de estado/configuración `kp`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ki",
+          "declaration": "float ki",
+          "callback": false,
+          "ownerType": "F4_TelemetrySnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 98
+          },
+          "description": "Dato de estado/configuración `ki`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "kd",
+          "declaration": "float kd",
+          "callback": false,
+          "ownerType": "F4_TelemetrySnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 99
+          },
+          "description": "Dato de estado/configuración `kd`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "roll_deg",
+          "declaration": "float roll_deg",
+          "callback": false,
+          "ownerType": "F4_TelemetrySnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 100
+          },
+          "description": "Ángulo en grados; respetar eje y referencia de esta librería."
+        },
+        {
+          "name": "pitch_deg",
+          "declaration": "float pitch_deg",
+          "callback": false,
+          "ownerType": "F4_TelemetrySnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 101
+          },
+          "description": "Ángulo en grados; respetar eje y referencia de esta librería."
+        },
+        {
+          "name": "yaw_magnetic_deg",
+          "declaration": "float yaw_magnetic_deg",
+          "callback": false,
+          "ownerType": "F4_TelemetrySnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 102
+          },
+          "description": "Ángulo en grados; respetar eje y referencia de esta librería."
+        },
+        {
+          "name": "mpu_stream_active",
+          "declaration": "uint8_t mpu_stream_active",
+          "callback": false,
+          "ownerType": "F4_TelemetrySnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 103
+          },
+          "description": "Dato de estado/configuración `mpu_stream_active`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "mpu_stream_period_ms",
+          "declaration": "uint16_t mpu_stream_period_ms",
+          "callback": false,
+          "ownerType": "F4_TelemetrySnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 104
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "left_min_pwm",
+          "declaration": "uint16_t left_min_pwm",
+          "callback": false,
+          "ownerType": "F4_TelemetrySnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 105
+          },
+          "description": "Dato de estado/configuración `left_min_pwm`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "right_min_pwm",
+          "declaration": "uint16_t right_min_pwm",
+          "callback": false,
+          "ownerType": "F4_TelemetrySnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 106
+          },
+          "description": "Dato de estado/configuración `right_min_pwm`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "raw_adc",
+          "declaration": "uint16_t raw_adc[8]",
+          "callback": false,
+          "ownerType": "F4_TelemetrySnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 107
+          },
+          "description": "Dato de estado/configuración `raw_adc`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "pid_error_deg",
+          "declaration": "float pid_error_deg",
+          "callback": false,
+          "ownerType": "F4_TelemetrySnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 108
+          },
+          "description": "Ángulo en grados; respetar eje y referencia de esta librería."
+        },
+        {
+          "name": "pid_integral_deg_s",
+          "declaration": "float pid_integral_deg_s",
+          "callback": false,
+          "ownerType": "F4_TelemetrySnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 109
+          },
+          "description": "Dato de estado/configuración `pid_integral_deg_s`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "pid_derivative_deg_s",
+          "declaration": "float pid_derivative_deg_s",
+          "callback": false,
+          "ownerType": "F4_TelemetrySnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 110
+          },
+          "description": "Dato de estado/configuración `pid_derivative_deg_s`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/f4_payload_decoders.h",
+        "line": 82
+      }
+    },
+    {
+      "name": "F4_BalancePidResponse",
+      "fields": [
+        {
+          "name": "status",
+          "declaration": "uint8_t status",
+          "callback": false,
+          "ownerType": "F4_BalancePidResponse",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 114
+          },
+          "description": "Último resultado y guardas del módulo; los getters pueden devolver una vista de este almacenamiento."
+        },
+        {
+          "name": "kp",
+          "declaration": "float kp",
+          "callback": false,
+          "ownerType": "F4_BalancePidResponse",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 115
+          },
+          "description": "Dato de estado/configuración `kp`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ki",
+          "declaration": "float ki",
+          "callback": false,
+          "ownerType": "F4_BalancePidResponse",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 116
+          },
+          "description": "Dato de estado/configuración `ki`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "kd",
+          "declaration": "float kd",
+          "callback": false,
+          "ownerType": "F4_BalancePidResponse",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 117
+          },
+          "description": "Dato de estado/configuración `kd`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/f4_payload_decoders.h",
+        "line": 114
+      }
+    },
+    {
+      "name": "F4_SetBalancePidResponse",
+      "fields": [
+        {
+          "name": "status",
+          "declaration": "uint8_t status",
+          "callback": false,
+          "ownerType": "F4_SetBalancePidResponse",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 121
+          },
+          "description": "Último resultado y guardas del módulo; los getters pueden devolver una vista de este almacenamiento."
+        },
+        {
+          "name": "changed_mask",
+          "declaration": "uint8_t changed_mask",
+          "callback": false,
+          "ownerType": "F4_SetBalancePidResponse",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 122
+          },
+          "description": "Dato de estado/configuración `changed_mask`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "kp",
+          "declaration": "float kp",
+          "callback": false,
+          "ownerType": "F4_SetBalancePidResponse",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 123
+          },
+          "description": "Dato de estado/configuración `kp`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ki",
+          "declaration": "float ki",
+          "callback": false,
+          "ownerType": "F4_SetBalancePidResponse",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 124
+          },
+          "description": "Dato de estado/configuración `ki`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "kd",
+          "declaration": "float kd",
+          "callback": false,
+          "ownerType": "F4_SetBalancePidResponse",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 125
+          },
+          "description": "Dato de estado/configuración `kd`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/f4_payload_decoders.h",
+        "line": 121
+      }
+    },
+    {
+      "name": "F4_ControlSnapshot",
+      "fields": [
+        {
+          "name": "status",
+          "declaration": "uint8_t status",
+          "callback": false,
+          "ownerType": "F4_ControlSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 129
+          },
+          "description": "Último resultado y guardas del módulo; los getters pueden devolver una vista de este almacenamiento."
+        },
+        {
+          "name": "car_mode",
+          "declaration": "uint8_t car_mode",
+          "callback": false,
+          "ownerType": "F4_ControlSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 130
+          },
+          "description": "Dato de estado/configuración `car_mode`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "line_follow_fsm",
+          "declaration": "uint8_t line_follow_fsm",
+          "callback": false,
+          "ownerType": "F4_ControlSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 131
+          },
+          "description": "Dato de estado/configuración `line_follow_fsm`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "stable_line_pattern",
+          "declaration": "uint8_t stable_line_pattern",
+          "callback": false,
+          "ownerType": "F4_ControlSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 132
+          },
+          "description": "Dato de estado/configuración `stable_line_pattern`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "line_confidence_percent",
+          "declaration": "uint8_t line_confidence_percent",
+          "callback": false,
+          "ownerType": "F4_ControlSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 133
+          },
+          "description": "Magnitud porcentual; el rango y signo se fijan en la API de esta librería."
+        },
+        {
+          "name": "line_ambiguous",
+          "declaration": "uint8_t line_ambiguous",
+          "callback": false,
+          "ownerType": "F4_ControlSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 134
+          },
+          "description": "Dato de estado/configuración `line_ambiguous`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "line_reject_reason",
+          "declaration": "uint8_t line_reject_reason",
+          "callback": false,
+          "ownerType": "F4_ControlSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 135
+          },
+          "description": "Dato de estado/configuración `line_reject_reason`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "line_width_mm",
+          "declaration": "uint16_t line_width_mm",
+          "callback": false,
+          "ownerType": "F4_ControlSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 136
+          },
+          "description": "Dato de estado/configuración `line_width_mm`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "lateral_error_mm",
+          "declaration": "float lateral_error_mm",
+          "callback": false,
+          "ownerType": "F4_ControlSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 137
+          },
+          "description": "Dato de estado/configuración `lateral_error_mm`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "normalized_lateral_error",
+          "declaration": "float normalized_lateral_error",
+          "callback": false,
+          "ownerType": "F4_ControlSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 138
+          },
+          "description": "Dato de estado/configuración `normalized_lateral_error`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "linear_acceleration_m_s2",
+          "declaration": "float linear_acceleration_m_s2",
+          "callback": false,
+          "ownerType": "F4_ControlSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 139
+          },
+          "description": "Dato de estado/configuración `linear_acceleration_m_s2`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "estimated_velocity_m_s",
+          "declaration": "float estimated_velocity_m_s",
+          "callback": false,
+          "ownerType": "F4_ControlSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 140
+          },
+          "description": "Dato de estado/configuración `estimated_velocity_m_s`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "yaw_rate_deg_s",
+          "declaration": "float yaw_rate_deg_s",
+          "callback": false,
+          "ownerType": "F4_ControlSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 141
+          },
+          "description": "Dato de estado/configuración `yaw_rate_deg_s`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "estimator_confidence_percent",
+          "declaration": "uint8_t estimator_confidence_percent",
+          "callback": false,
+          "ownerType": "F4_ControlSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 142
+          },
+          "description": "Magnitud porcentual; el rango y signo se fijan en la API de esta librería."
+        },
+        {
+          "name": "estimator_flags",
+          "declaration": "uint8_t estimator_flags",
+          "callback": false,
+          "ownerType": "F4_ControlSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 143
+          },
+          "description": "Dato de estado/configuración `estimator_flags`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "common_motion_output_percent",
+          "declaration": "float common_motion_output_percent",
+          "callback": false,
+          "ownerType": "F4_ControlSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 144
+          },
+          "description": "Magnitud porcentual; el rango y signo se fijan en la API de esta librería."
+        },
+        {
+          "name": "differential_motion_output_percent",
+          "declaration": "float differential_motion_output_percent",
+          "callback": false,
+          "ownerType": "F4_ControlSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 145
+          },
+          "description": "Magnitud porcentual; el rango y signo se fijan en la API de esta librería."
+        },
+        {
+          "name": "turn_limit_percent",
+          "declaration": "float turn_limit_percent",
+          "callback": false,
+          "ownerType": "F4_ControlSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 146
+          },
+          "description": "Magnitud porcentual; el rango y signo se fijan en la API de esta librería."
+        },
+        {
+          "name": "saturation_limited",
+          "declaration": "uint8_t saturation_limited",
+          "callback": false,
+          "ownerType": "F4_ControlSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 147
+          },
+          "description": "Dato de estado/configuración `saturation_limited`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "usb_active",
+          "declaration": "uint8_t usb_active",
+          "callback": false,
+          "ownerType": "F4_ControlSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 148
+          },
+          "description": "Dato de estado/configuración `usb_active`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "usb_alive_period_ms",
+          "declaration": "uint16_t usb_alive_period_ms",
+          "callback": false,
+          "ownerType": "F4_ControlSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 149
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "usb_alive_accepted_count",
+          "declaration": "uint32_t usb_alive_accepted_count",
+          "callback": false,
+          "ownerType": "F4_ControlSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 150
+          },
+          "description": "Dato de estado/configuración `usb_alive_accepted_count`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "usb_rx_overflow_count",
+          "declaration": "uint32_t usb_rx_overflow_count",
+          "callback": false,
+          "ownerType": "F4_ControlSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 151
+          },
+          "description": "Dato de estado/configuración `usb_rx_overflow_count`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "usb_tx_queue_full_count",
+          "declaration": "uint32_t usb_tx_queue_full_count",
+          "callback": false,
+          "ownerType": "F4_ControlSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 152
+          },
+          "description": "Dato de estado/configuración `usb_tx_queue_full_count`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "usb_queued_tx_count",
+          "declaration": "uint8_t usb_queued_tx_count",
+          "callback": false,
+          "ownerType": "F4_ControlSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 153
+          },
+          "description": "Dato de estado/configuración `usb_queued_tx_count`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "usb_tx_drop_count",
+          "declaration": "uint32_t usb_tx_drop_count",
+          "callback": false,
+          "ownerType": "F4_ControlSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 154
+          },
+          "description": "Dato de estado/configuración `usb_tx_drop_count`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/f4_payload_decoders.h",
+        "line": 129
+      }
+    },
+    {
+      "name": "F4_FirmwareInfo",
+      "fields": [
+        {
+          "name": "status",
+          "declaration": "uint8_t status",
+          "callback": false,
+          "ownerType": "F4_FirmwareInfo",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 158
+          },
+          "description": "Último resultado y guardas del módulo; los getters pueden devolver una vista de este almacenamiento."
+        },
+        {
+          "name": "name_len",
+          "declaration": "uint8_t name_len",
+          "callback": false,
+          "ownerType": "F4_FirmwareInfo",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 159
+          },
+          "description": "Dato de estado/configuración `name_len`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "version_len",
+          "declaration": "uint8_t version_len",
+          "callback": false,
+          "ownerType": "F4_FirmwareInfo",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 160
+          },
+          "description": "Dato de estado/configuración `version_len`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "target_len",
+          "declaration": "uint8_t target_len",
+          "callback": false,
+          "ownerType": "F4_FirmwareInfo",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 161
+          },
+          "description": "Dato de estado/configuración `target_len`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "name",
+          "declaration": "char name[F4_FIRMWARE_TEXT_MAX + 1u]",
+          "callback": false,
+          "ownerType": "F4_FirmwareInfo",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 162
+          },
+          "description": "Dato de estado/configuración `name`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "version",
+          "declaration": "char version[F4_FIRMWARE_TEXT_MAX + 1u]",
+          "callback": false,
+          "ownerType": "F4_FirmwareInfo",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 163
+          },
+          "description": "Dato de estado/configuración `version`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "target",
+          "declaration": "char target[F4_FIRMWARE_TEXT_MAX + 1u]",
+          "callback": false,
+          "ownerType": "F4_FirmwareInfo",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 164
+          },
+          "description": "Dato de estado/configuración `target`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/f4_payload_decoders.h",
+        "line": 158
+      }
+    },
+    {
+      "name": "F4_BuildInfo",
+      "fields": [
+        {
+          "name": "status",
+          "declaration": "uint8_t status",
+          "callback": false,
+          "ownerType": "F4_BuildInfo",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 168
+          },
+          "description": "Último resultado y guardas del módulo; los getters pueden devolver una vista de este almacenamiento."
+        },
+        {
+          "name": "date_len",
+          "declaration": "uint8_t date_len",
+          "callback": false,
+          "ownerType": "F4_BuildInfo",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 169
+          },
+          "description": "Dato de estado/configuración `date_len`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "time_len",
+          "declaration": "uint8_t time_len",
+          "callback": false,
+          "ownerType": "F4_BuildInfo",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 170
+          },
+          "description": "Dato de estado/configuración `time_len`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "profile_len",
+          "declaration": "uint8_t profile_len",
+          "callback": false,
+          "ownerType": "F4_BuildInfo",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 171
+          },
+          "description": "Dato de estado/configuración `profile_len`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "compiler_len",
+          "declaration": "uint8_t compiler_len",
+          "callback": false,
+          "ownerType": "F4_BuildInfo",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 172
+          },
+          "description": "Dato de estado/configuración `compiler_len`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "date",
+          "declaration": "char date[F4_BUILD_SHORT_TEXT_MAX + 1u]",
+          "callback": false,
+          "ownerType": "F4_BuildInfo",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 173
+          },
+          "description": "Dato de estado/configuración `date`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "time",
+          "declaration": "char time[F4_BUILD_SHORT_TEXT_MAX + 1u]",
+          "callback": false,
+          "ownerType": "F4_BuildInfo",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 174
+          },
+          "description": "Dato de estado/configuración `time`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "profile",
+          "declaration": "char profile[F4_BUILD_SHORT_TEXT_MAX + 1u]",
+          "callback": false,
+          "ownerType": "F4_BuildInfo",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 175
+          },
+          "description": "Dato de estado/configuración `profile`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "compiler",
+          "declaration": "char compiler[F4_COMPILER_TEXT_MAX + 1u]",
+          "callback": false,
+          "ownerType": "F4_BuildInfo",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 176
+          },
+          "description": "Dato de estado/configuración `compiler`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/f4_payload_decoders.h",
+        "line": 168
+      }
+    },
+    {
+      "name": "F4_BootReport",
+      "fields": [
+        {
+          "name": "schema",
+          "declaration": "uint8_t schema",
+          "callback": false,
+          "ownerType": "F4_BootReport",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 180
+          },
+          "description": "Dato de estado/configuración `schema`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "status",
+          "declaration": "uint8_t status",
+          "callback": false,
+          "ownerType": "F4_BootReport",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 181
+          },
+          "description": "Último resultado y guardas del módulo; los getters pueden devolver una vista de este almacenamiento."
+        },
+        {
+          "name": "handoff",
+          "declaration": "uint8_t handoff",
+          "callback": false,
+          "ownerType": "F4_BootReport",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 182
+          },
+          "description": "Dato de estado/configuración `handoff`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "reset_flags",
+          "declaration": "uint8_t reset_flags",
+          "callback": false,
+          "ownerType": "F4_BootReport",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 183
+          },
+          "description": "Dato de estado/configuración `reset_flags`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "app_validation_flags",
+          "declaration": "uint8_t app_validation_flags",
+          "callback": false,
+          "ownerType": "F4_BootReport",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 184
+          },
+          "description": "Dato de estado/configuración `app_validation_flags`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "extension_profile",
+          "declaration": "uint8_t extension_profile",
+          "callback": false,
+          "ownerType": "F4_BootReport",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 185
+          },
+          "description": "Dato de estado/configuración `extension_profile`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "bootloader_version",
+          "declaration": "uint32_t bootloader_version",
+          "callback": false,
+          "ownerType": "F4_BootReport",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 186
+          },
+          "description": "Dato de estado/configuración `bootloader_version`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "app_version",
+          "declaration": "uint32_t app_version",
+          "callback": false,
+          "ownerType": "F4_BootReport",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 187
+          },
+          "description": "Dato de estado/configuración `app_version`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "app_size",
+          "declaration": "uint32_t app_size",
+          "callback": false,
+          "ownerType": "F4_BootReport",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 188
+          },
+          "description": "Dato de estado/configuración `app_size`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "app_crc32",
+          "declaration": "uint32_t app_crc32",
+          "callback": false,
+          "ownerType": "F4_BootReport",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 189
+          },
+          "description": "Dato de estado/configuración `app_crc32`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/f4_payload_decoders.h",
+        "line": 180
+      }
+    },
+    {
+      "name": "F4_IrSnapshot",
+      "fields": [
+        {
+          "name": "status",
+          "declaration": "uint8_t status",
+          "callback": false,
+          "ownerType": "F4_IrSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 193
+          },
+          "description": "Último resultado y guardas del módulo; los getters pueden devolver una vista de este almacenamiento."
+        },
+        {
+          "name": "flags",
+          "declaration": "uint8_t flags",
+          "callback": false,
+          "ownerType": "F4_IrSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 194
+          },
+          "description": "Bits de estado del módulo; conservar máscaras y distinguir estado de eventos pendientes."
+        },
+        {
+          "name": "sample_sequence",
+          "declaration": "uint16_t sample_sequence",
+          "callback": false,
+          "ownerType": "F4_IrSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 195
+          },
+          "description": "Dato de estado/configuración `sample_sequence`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "stream_period_ms",
+          "declaration": "uint16_t stream_period_ms",
+          "callback": false,
+          "ownerType": "F4_IrSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 196
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "hal_tick_ms",
+          "declaration": "uint32_t hal_tick_ms",
+          "callback": false,
+          "ownerType": "F4_IrSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 197
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "raw_adc",
+          "declaration": "uint16_t raw_adc[8]",
+          "callback": false,
+          "ownerType": "F4_IrSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 198
+          },
+          "description": "Dato de estado/configuración `raw_adc`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "normalized",
+          "declaration": "uint16_t normalized[8]",
+          "callback": false,
+          "ownerType": "F4_IrSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 199
+          },
+          "description": "Dato de estado/configuración `normalized`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "line_pattern",
+          "declaration": "uint8_t line_pattern",
+          "callback": false,
+          "ownerType": "F4_IrSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 200
+          },
+          "description": "Dato de estado/configuración `line_pattern`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "route_alignment",
+          "declaration": "uint8_t route_alignment",
+          "callback": false,
+          "ownerType": "F4_IrSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 201
+          },
+          "description": "Dato de estado/configuración `route_alignment`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "confidence_percent",
+          "declaration": "uint8_t confidence_percent",
+          "callback": false,
+          "ownerType": "F4_IrSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 202
+          },
+          "description": "Magnitud porcentual; el rango y signo se fijan en la API de esta librería."
+        },
+        {
+          "name": "ambiguous",
+          "declaration": "uint8_t ambiguous",
+          "callback": false,
+          "ownerType": "F4_IrSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 203
+          },
+          "description": "Dato de estado/configuración `ambiguous`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "line_width_mm",
+          "declaration": "uint16_t line_width_mm",
+          "callback": false,
+          "ownerType": "F4_IrSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 204
+          },
+          "description": "Dato de estado/configuración `line_width_mm`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "lateral_error_mm",
+          "declaration": "float lateral_error_mm",
+          "callback": false,
+          "ownerType": "F4_IrSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 205
+          },
+          "description": "Dato de estado/configuración `lateral_error_mm`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "normalized_lateral_error",
+          "declaration": "float normalized_lateral_error",
+          "callback": false,
+          "ownerType": "F4_IrSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 206
+          },
+          "description": "Dato de estado/configuración `normalized_lateral_error`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/f4_payload_decoders.h",
+        "line": 193
+      }
+    },
+    {
+      "name": "F4_GetApConfigResponse",
+      "fields": [
+        {
+          "name": "status",
+          "declaration": "uint8_t status",
+          "callback": false,
+          "ownerType": "F4_GetApConfigResponse",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 239
+          },
+          "description": "Último resultado y guardas del módulo; los getters pueden devolver una vista de este almacenamiento."
+        },
+        {
+          "name": "apply_state",
+          "declaration": "uint8_t apply_state",
+          "callback": false,
+          "ownerType": "F4_GetApConfigResponse",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 240
+          },
+          "description": "Dato de estado/configuración `apply_state`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ap_protected",
+          "declaration": "uint8_t ap_protected",
+          "callback": false,
+          "ownerType": "F4_GetApConfigResponse",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 241
+          },
+          "description": "Dato de estado/configuración `ap_protected`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "password_set",
+          "declaration": "uint8_t password_set",
+          "callback": false,
+          "ownerType": "F4_GetApConfigResponse",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 242
+          },
+          "description": "Dato de estado/configuración `password_set`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ssid_len",
+          "declaration": "uint8_t ssid_len",
+          "callback": false,
+          "ownerType": "F4_GetApConfigResponse",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 243
+          },
+          "description": "Dato de estado/configuración `ssid_len`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ssid",
+          "declaration": "char ssid[33]",
+          "callback": false,
+          "ownerType": "F4_GetApConfigResponse",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 244
+          },
+          "description": "Dato de estado/configuración `ssid`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ip",
+          "declaration": "uint8_t ip[4]",
+          "callback": false,
+          "ownerType": "F4_GetApConfigResponse",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 245
+          },
+          "description": "Dato de estado/configuración `ip`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/f4_payload_decoders.h",
+        "line": 239
+      }
+    },
+    {
+      "name": "F4_SetApConfigResponse",
+      "fields": [
+        {
+          "name": "status",
+          "declaration": "uint8_t status",
+          "callback": false,
+          "ownerType": "F4_SetApConfigResponse",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 251
+          },
+          "description": "Último resultado y guardas del módulo; los getters pueden devolver una vista de este almacenamiento."
+        },
+        {
+          "name": "changed_mask",
+          "declaration": "uint8_t changed_mask",
+          "callback": false,
+          "ownerType": "F4_SetApConfigResponse",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 252
+          },
+          "description": "Dato de estado/configuración `changed_mask`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "apply_state",
+          "declaration": "uint8_t apply_state",
+          "callback": false,
+          "ownerType": "F4_SetApConfigResponse",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 253
+          },
+          "description": "Dato de estado/configuración `apply_state`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/f4_payload_decoders.h",
+        "line": 251
+      }
+    },
+    {
+      "name": "F4_IrEmitters",
+      "fields": [
+        {
+          "name": "objects",
+          "declaration": "uint8_t objects",
+          "callback": false,
+          "ownerType": "F4_IrEmitters",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 263
+          },
+          "description": "Dato de estado/configuración `objects`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "line",
+          "declaration": "uint8_t line",
+          "callback": false,
+          "ownerType": "F4_IrEmitters",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 263
+          },
+          "description": "Dato de estado/configuración `line`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "lights",
+          "declaration": "uint8_t lights",
+          "callback": false,
+          "ownerType": "F4_IrEmitters",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_payload_decoders.h",
+            "line": 263
+          },
+          "description": "Dato de estado/configuración `lights`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/f4_payload_decoders.h",
+        "line": 263
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "F4_DecodeBalancePidResponse",
+      "signature": "F4_DecodeStatus F4_DecodeBalancePidResponse(const uint8_t *payload, size_t len, F4_BalancePidResponse *out)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/f4_payload_decoders.c",
+        "line": 169
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "read_f32_le",
+        "require_fixed"
+      ],
+      "writes": [
+        "kd",
+        "ki",
+        "kp",
+        "status"
+      ],
+      "description": "Coordina `read_f32_le`, `require_fixed` para Decodificadores de payload F4.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "F4_DecodeBootReport",
+      "signature": "F4_DecodeStatus F4_DecodeBootReport(const uint8_t *payload, size_t len, F4_BootReport *out)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/f4_payload_decoders.c",
+        "line": 283
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "memset",
+        "read_u32_le",
+        "require_fixed"
+      ],
+      "writes": [
+        "app_crc32",
+        "app_size",
+        "app_validation_flags",
+        "app_version",
+        "bootloader_version",
+        "extension_profile",
+        "handoff",
+        "reset_flags",
+        "schema",
+        "status"
+      ],
+      "description": "Coordina `memset`, `read_u32_le`, `require_fixed` para Decodificadores de payload F4.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "F4_DecodeBuildInfo",
+      "signature": "F4_DecodeStatus F4_DecodeBuildInfo(const uint8_t *payload, size_t len, F4_BuildInfo *out)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/f4_payload_decoders.c",
+        "line": 263
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "decode_text_field",
+        "memset"
+      ],
+      "writes": [
+        "status"
+      ],
+      "description": "Construye Info dentro de Decodificadores de payload F4.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "F4_DecodeControlSnapshot",
+      "signature": "F4_DecodeStatus F4_DecodeControlSnapshot(const uint8_t *payload, size_t len, F4_ControlSnapshot *out)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/f4_payload_decoders.c",
+        "line": 192
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "memset",
+        "read_f32_le",
+        "read_u16_le",
+        "read_u32_le",
+        "require_fixed"
+      ],
+      "writes": [
+        "car_mode",
+        "common_motion_output_percent",
+        "differential_motion_output_percent",
+        "estimated_velocity_m_s",
+        "estimator_confidence_percent",
+        "estimator_flags",
+        "lateral_error_mm",
+        "line_ambiguous",
+        "line_confidence_percent",
+        "line_follow_fsm",
+        "line_reject_reason",
+        "line_width_mm",
+        "linear_acceleration_m_s2",
+        "normalized_lateral_error",
+        "saturation_limited",
+        "stable_line_pattern",
+        "status",
+        "turn_limit_percent",
+        "usb_active",
+        "usb_alive_accepted_count",
+        "usb_alive_period_ms",
+        "usb_queued_tx_count",
+        "usb_rx_overflow_count",
+        "usb_tx_drop_count",
+        "usb_tx_queue_full_count",
+        "yaw_rate_deg_s"
+      ],
+      "description": "Coordina `memset`, `read_f32_le`, `read_u16_le` para Decodificadores de payload F4.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "F4_DecodeFirmwareInfo",
+      "signature": "F4_DecodeStatus F4_DecodeFirmwareInfo(const uint8_t *payload, size_t len, F4_FirmwareInfo *out)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/f4_payload_decoders.c",
+        "line": 245
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "decode_text_field",
+        "memset"
+      ],
+      "writes": [
+        "status"
+      ],
+      "description": "Coordina `decode_text_field`, `memset` para Decodificadores de payload F4.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "F4_DecodeGetApConfigResponse",
+      "signature": "F4_DecodeStatus F4_DecodeGetApConfigResponse(const uint8_t *payload, size_t len, F4_GetApConfigResponse *out)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/f4_payload_decoders.c",
+        "line": 328
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "memcpy",
+        "memset"
+      ],
+      "writes": [
+        "ap_protected",
+        "apply_state",
+        "password_set",
+        "ssid_len",
+        "status"
+      ],
+      "description": "Consulta Ap Config Response dentro de Decodificadores de payload F4.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "F4_DecodeIrEmitters",
+      "signature": "F4_DecodeStatus F4_DecodeIrEmitters(const uint8_t *payload, size_t len, F4_IrEmitters *out)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/f4_payload_decoders.c",
+        "line": 379
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "require_fixed"
+      ],
+      "writes": [
+        "lights",
+        "line",
+        "objects"
+      ],
+      "description": "Adapta la llamada a `require_fixed` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "F4_DecodeIrEmittersResult",
+      "signature": "F4_DecodeStatus F4_DecodeIrEmittersResult(const uint8_t *payload, size_t len, uint8_t *status, F4_IrEmitters *out)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/f4_payload_decoders.c",
+        "line": 388
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "F4_DecodeIrEmitters",
+        "require_fixed"
+      ],
+      "writes": [],
+      "description": "Coordina `F4_DecodeIrEmitters`, `require_fixed` para Decodificadores de payload F4.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "F4_DecodeIrSnapshot",
+      "signature": "F4_DecodeStatus F4_DecodeIrSnapshot(const uint8_t *payload, size_t len, F4_IrSnapshot *out)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/f4_payload_decoders.c",
+        "line": 304
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "memset",
+        "read_f32_le",
+        "read_u16_le",
+        "read_u32_le",
+        "require_fixed"
+      ],
+      "writes": [
+        "ambiguous",
+        "confidence_percent",
+        "flags",
+        "hal_tick_ms",
+        "lateral_error_mm",
+        "line_pattern",
+        "line_width_mm",
+        "normalized_lateral_error",
+        "route_alignment",
+        "sample_sequence",
+        "status",
+        "stream_period_ms"
+      ],
+      "description": "Coordina `memset`, `read_f32_le`, `read_u16_le` para Decodificadores de payload F4.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "F4_DecodeMpuSnapshot",
+      "signature": "F4_DecodeStatus F4_DecodeMpuSnapshot(const uint8_t *payload, size_t len, F4_MpuSnapshot *out)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/f4_payload_decoders.c",
+        "line": 34
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "memset",
+        "read_f32_le",
+        "read_u16_le",
+        "require_fixed"
+      ],
+      "writes": [
+        "flags",
+        "pitch_deg",
+        "roll_deg",
+        "sample_dt_us",
+        "sample_sequence",
+        "status",
+        "yaw_magnetic_deg"
+      ],
+      "description": "Coordina `memset`, `read_f32_le`, `read_u16_le` para Decodificadores de payload F4.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "F4_DecodePreferencesSnapshot",
+      "signature": "F4_DecodeStatus F4_DecodePreferencesSnapshot(const uint8_t *payload, size_t len, F4_PreferencesSnapshot *out)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/f4_payload_decoders.c",
+        "line": 83
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "memset",
+        "read_u16_le",
+        "read_u32_le"
+      ],
+      "writes": [
+        "black_line_width_mm",
+        "descriptor_count",
+        "encoder_inverted",
+        "field_mask",
+        "has_pin_lock_enabled",
+        "has_web_alive_period_ms",
+        "left_min_pwm",
+        "mode",
+        "mpu_calibration_valid",
+        "oled_auto_rotation_enabled",
+        "oled_rotation_degrees",
+        "pin_lock_enabled",
+        "record_capacity",
+        "record_size",
+        "right_min_pwm",
+        "screen_lock_enabled",
+        "screen_lock_timeout_sec",
+        "status",
+        "system_action_timeout_sec",
+        "uner_router_forwarding_enabled",
+        "usb_alive_period_ms",
+        "web_alive_period_ms"
+      ],
+      "description": "Coordina `memset`, `read_u16_le`, `read_u32_le` para Decodificadores de payload F4.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "F4_DecodeSetApConfigResponse",
+      "signature": "F4_DecodeStatus F4_DecodeSetApConfigResponse(const uint8_t *payload, size_t len, F4_SetApConfigResponse *out)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/f4_payload_decoders.c",
+        "line": 364
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "require_fixed"
+      ],
+      "writes": [
+        "apply_state",
+        "changed_mask",
+        "status"
+      ],
+      "description": "Configura Ap Config Response dentro de Decodificadores de payload F4.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "F4_DecodeSetBalancePidResponse",
+      "signature": "F4_DecodeStatus F4_DecodeSetBalancePidResponse(const uint8_t *payload, size_t len, F4_SetBalancePidResponse *out)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/f4_payload_decoders.c",
+        "line": 180
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "read_f32_le",
+        "require_fixed"
+      ],
+      "writes": [
+        "changed_mask",
+        "kd",
+        "ki",
+        "kp",
+        "status"
+      ],
+      "description": "Configura Balance Pid Response dentro de Decodificadores de payload F4.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "F4_DecodeSetPreferencesResponse",
+      "signature": "F4_DecodeStatus F4_DecodeSetPreferencesResponse(const uint8_t *payload, size_t len, F4_SetPreferencesResponse *out)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/f4_payload_decoders.c",
+        "line": 74
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "read_u32_le",
+        "require_fixed"
+      ],
+      "writes": [
+        "changed_mask",
+        "status"
+      ],
+      "description": "Configura Preferences Response dentro de Decodificadores de payload F4.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "F4_DecodeStatusResponse",
+      "signature": "F4_DecodeStatus F4_DecodeStatusResponse(const uint8_t *payload, size_t len, F4_StatusResponse *out)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/f4_payload_decoders.c",
+        "line": 66
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "require_fixed"
+      ],
+      "writes": [
+        "status"
+      ],
+      "description": "Adapta la llamada a `require_fixed` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "F4_DecodeStreamStateResponse",
+      "signature": "F4_DecodeStatus F4_DecodeStreamStateResponse(const uint8_t *payload, size_t len, F4_StreamStateResponse *out)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/f4_payload_decoders.c",
+        "line": 56
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "read_u16_le",
+        "require_fixed"
+      ],
+      "writes": [
+        "active",
+        "period_ms",
+        "status"
+      ],
+      "description": "Coordina `read_u16_le`, `require_fixed` para Decodificadores de payload F4.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "F4_DecodeTelemetrySnapshot",
+      "signature": "F4_DecodeStatus F4_DecodeTelemetrySnapshot(const uint8_t *payload, size_t len, F4_TelemetrySnapshot *out)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/f4_payload_decoders.c",
+        "line": 130
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "memset",
+        "read_f32_le",
+        "read_u16_le",
+        "read_u32_le",
+        "require_fixed"
+      ],
+      "writes": [
+        "backend",
+        "balance_active",
+        "balance_output_percent",
+        "bridge_connected",
+        "capability_mask",
+        "command_active",
+        "i2c_policy",
+        "kd",
+        "ki",
+        "kp",
+        "left_min_pwm",
+        "left_output_percent",
+        "motion_armed",
+        "mpu_stream_active",
+        "mpu_stream_period_ms",
+        "pid_derivative_deg_s",
+        "pid_error_deg",
+        "pid_integral_deg_s",
+        "pitch_deg",
+        "pitch_measured_deg",
+        "pitch_setpoint_deg",
+        "right_min_pwm",
+        "right_output_percent",
+        "roll_deg",
+        "safety_stop",
+        "status",
+        "wifi_mode",
+        "yaw_magnetic_deg"
+      ],
+      "description": "Coordina `memset`, `read_f32_le`, `read_u16_le` para Decodificadores de payload F4.",
+      "descriptionOrigin": "structural"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "decode_text_field",
+      "signature": "static F4_DecodeStatus decode_text_field(const uint8_t *payload, size_t len, size_t *offset, char *dst, size_t dst_capacity, uint8_t *decoded_len)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/f4_payload_decoders.c",
+        "line": 227
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "memcpy"
+      ],
+      "writes": [],
+      "description": "Coordina `memcpy` para Decodificadores de payload F4.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "read_f32_le",
+      "signature": "static float read_f32_le(const uint8_t *p)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/f4_payload_decoders.c",
+        "line": 20
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "memcpy",
+        "read_u32_le"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `read_u32_le` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "read_u16_le",
+      "signature": "static uint16_t read_u16_le(const uint8_t *p)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/f4_payload_decoders.c",
+        "line": 7
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación read u16 le de Decodificadores de payload F4; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "read_u32_le",
+      "signature": "static uint32_t read_u32_le(const uint8_t *p)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/f4_payload_decoders.c",
+        "line": 12
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación read u32 le de Decodificadores de payload F4; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "require_fixed",
+      "signature": "static F4_DecodeStatus require_fixed(const uint8_t *payload, size_t len, const void *out, size_t expected)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/f4_payload_decoders.c",
+        "line": 28
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación require fixed de Decodificadores de payload F4; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    }
+  ],
+  "hooks": []
+}

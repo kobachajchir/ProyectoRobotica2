@@ -1,0 +1,235 @@
+{
+  "schema": "afr2-findings-1",
+  "findings": [
+    {
+      "id": "AFRDOC-001",
+      "title": "Desactivar DMA no produce un port asíncrono",
+      "status": "open",
+      "certainty": "source-observed-or-design-gap",
+      "repository": "atmega",
+      "code": [
+        "reference/f4/Core/Src/ssd1306.c:ssd1306_UpdateScreen_H"
+      ],
+      "observation": "Rama sin DMA usa mem_write bloqueante; backend TWI nuevo pendiente.",
+      "documentation": [
+        {
+          "path": "../../../AutoFinalRobo2-Atmega/docs/modules/i2c-oled.md",
+          "selector": "atmega:i2c-oled / adaptation"
+        }
+      ],
+      "history": [
+        {
+          "date": "2026-10-23",
+          "action": "registered"
+        }
+      ]
+    },
+    {
+      "id": "AFRDOC-002",
+      "title": "GOTO heredado depende de MPU/balance",
+      "status": "open",
+      "certainty": "source-observed-or-design-gap",
+      "repository": "atmega",
+      "code": [
+        "reference/f4/Core/Src/auto_motion.c:ready"
+      ],
+      "observation": "Cambiar planificador/guardas para odometría Mecanum, no falsear señales ready.",
+      "documentation": [
+        {
+          "path": "../../../AutoFinalRobo2-Atmega/docs/modules/motion.md",
+          "selector": "atmega:motion / adaptation"
+        }
+      ],
+      "history": [
+        {
+          "date": "2026-10-23",
+          "action": "registered"
+        }
+      ]
+    },
+    {
+      "id": "AFRDOC-003",
+      "title": "Encoder UI distinto de los Hall motrices",
+      "status": "open",
+      "certainty": "source-observed-or-design-gap",
+      "repository": "atmega",
+      "code": [
+        "reference/f4/Core/Inc/encoder.h:ENC_Task_N10ms"
+      ],
+      "observation": "UI D40-D42 propuesta; Hall de cuatro ruedas siguen sin asignar.",
+      "documentation": [
+        {
+          "path": "../../../AutoFinalRobo2-Atmega/docs/modules/encoder-ui.md",
+          "selector": "atmega:encoder-ui / adaptation"
+        }
+      ],
+      "history": [
+        {
+          "date": "2026-10-23",
+          "action": "registered"
+        }
+      ]
+    },
+    {
+      "id": "AFRDOC-004",
+      "title": "Captura ECHO D31 exige estrategia específica",
+      "status": "open",
+      "certainty": "source-observed-or-design-gap",
+      "repository": "atmega",
+      "code": [
+        "include/board_pinmap.h:AFR2_HCSR04_ECHO_BIT"
+      ],
+      "observation": "No asumir entrada de captura/INT/PCINT; resolver timing o recableado.",
+      "documentation": [
+        {
+          "path": "../../../AutoFinalRobo2-Atmega/docs/modules/hcsr04.md",
+          "selector": "atmega:hcsr04 / adaptation"
+        }
+      ],
+      "history": [
+        {
+          "date": "2026-10-23",
+          "action": "registered"
+        }
+      ]
+    },
+    {
+      "id": "AFRDOC-005",
+      "title": "Recursos F4 superan supuestos de AVR",
+      "status": "open",
+      "certainty": "source-observed-or-design-gap",
+      "repository": "atmega",
+      "code": [
+        "reference/f4/Core/Inc/uner_handle_types.h:UNER_Handle"
+      ],
+      "observation": "Presupuesto SRAM/pila/flash, PROGMEM y colas por cerrar.",
+      "documentation": [
+        {
+          "path": "../../../AutoFinalRobo2-Atmega/docs/modules/protocol.md",
+          "selector": "atmega:protocol / adaptation"
+        }
+      ],
+      "history": [
+        {
+          "date": "2026-10-23",
+          "action": "registered"
+        }
+      ]
+    },
+    {
+      "id": "AFRDOC-006",
+      "title": "IR8/ADC/emisores no equivalen a línea5 OSOYOO",
+      "status": "open",
+      "certainty": "source-observed-or-design-gap",
+      "repository": "atmega",
+      "code": [
+        "reference/f4/Core/Inc/tcrt5000_types.h:TCRT5000_Port"
+      ],
+      "observation": "Confirmar salida/polaridad; retirar objetos IR y no fabricar distancias.",
+      "documentation": [
+        {
+          "path": "../../../AutoFinalRobo2-Atmega/docs/modules/line-ir.md",
+          "selector": "atmega:line-ir / adaptation"
+        }
+      ],
+      "history": [
+        {
+          "date": "2026-10-23",
+          "action": "registered"
+        }
+      ]
+    },
+    {
+      "id": "AFRDOC-007",
+      "title": "Reset Mega no conecta USB con UART1",
+      "status": "open",
+      "certainty": "source-observed-or-design-gap",
+      "repository": "esp",
+      "code": [
+        "reference/esp01/src/main.cpp:setup"
+      ],
+      "observation": "Conmutación física al puente USB y niveles 3,3 V pendientes.",
+      "documentation": [
+        {
+          "path": "../../../AutoFinalRobo2-ESP/docs/modules/wifi.md",
+          "selector": "esp:wifi / adaptation"
+        }
+      ],
+      "history": [
+        {
+          "date": "2026-10-23",
+          "action": "registered"
+        }
+      ]
+    },
+    {
+      "id": "AFRDOC-008",
+      "title": "UNER sin secuencia exige política para respuesta tardía",
+      "status": "open",
+      "certainty": "source-observed-or-design-gap",
+      "repository": "esp",
+      "code": [
+        "reference/esp01/src/uart_transaction_manager.c"
+      ],
+      "observation": "Definir cuarentena/resync o versión con correlación; evitar ACK viejo para pedido nuevo.",
+      "documentation": [
+        {
+          "path": "../../../AutoFinalRobo2-ESP/docs/modules/uart.md",
+          "selector": "esp:uart / adaptation"
+        }
+      ],
+      "history": [
+        {
+          "date": "2026-10-23",
+          "action": "registered"
+        }
+      ]
+    },
+    {
+      "id": "AFRDOC-009",
+      "title": "Raster Web y OLED nuevo no acreditan paridad F4",
+      "status": "open",
+      "certainty": "source-observed-or-design-gap",
+      "repository": "web",
+      "code": [
+        "reference/web/src/screens"
+      ],
+      "observation": "Referencia histórica tiene distinta semántica Inverse y datos parciales; la base nueva declara XOR.",
+      "documentation": [
+        {
+          "path": "../../../AutoFinalRobo2-Web/docs/modules/oled-ui.md",
+          "selector": "web:oled-ui / adaptation"
+        }
+      ],
+      "history": [
+        {
+          "date": "2026-10-23",
+          "action": "registered"
+        }
+      ]
+    },
+    {
+      "id": "AFRDOC-010",
+      "title": "Navegación se cambia a un único SW",
+      "status": "open",
+      "certainty": "source-observed-or-design-gap",
+      "repository": "atmega",
+      "code": [
+        "src/input/afr2_encoder_ui.c:Afr2EncoderUi_Poll"
+      ],
+      "observation": "Corto confirma, largo abre menú, atrás solo ítem; sin user_button dedicado.",
+      "documentation": [
+        {
+          "path": "../../../AutoFinalRobo2-Atmega/docs/modules/screens.md",
+          "selector": "atmega:screens / adaptation"
+        }
+      ],
+      "history": [
+        {
+          "date": "2026-10-23",
+          "action": "registered"
+        }
+      ]
+    }
+  ]
+}

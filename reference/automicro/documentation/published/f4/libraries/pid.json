@@ -1,0 +1,691 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "f4:module/Core/Inc/pid_controller.h",
+  "slug": "pid",
+  "title": "Controlador PID",
+  "target": "f4",
+  "kind": "núcleo",
+  "status": "source-documented",
+  "verification": "not-run-user-instruction",
+  "snapshotDate": "2026-10-20",
+  "responsibility": "Calcula control proporcional, integral y derivativo con límites, filtro derivativo y anti-windup.",
+  "scope": "Cálculo escalar con medida y dt entregados por el llamador; no adquiere sensores ni manda PWM.",
+  "state": "PidController_Handle contiene config y status. Status conserva error, contribuciones, salida raw/limitada, historia y saturación. GetStatus devuelve una vista const prestada, no una copia inmutable en el tiempo.",
+  "lifecycle": [
+    "GetDefaultConfig carga límites y dt predeterminados; Init prepara la instancia.",
+    "Update recibe valores/tiempo; Reset limpia memoria del controlador para evitar reutilizar acumulación anterior."
+  ],
+  "interactions": [
+    "BalanceControl usa AM_PidOps; la aplicación conserva la instancia PID separada de BalanceControl_Handle."
+  ],
+  "limitations": [
+    "dt en segundos; no entregar milisegundos directamente.",
+    "Cambiar ganancias o límites no implica reinicio de historia salvo que la API lo haga expresamente."
+  ],
+  "modularity": "Solo tipos estándar, AM_Result y matemáticas; no conoce balance, motores o MPU.",
+  "files": [
+    {
+      "path": "Core/Inc/pid_controller.h",
+      "rootId": "f4",
+      "sha256": "d43c8c4d826b2b28fa0e2ecbd912ed5f56dfc80d60c54a6822a9667e80f56bc2",
+      "includes": [
+        "pid_controller_types.h"
+      ]
+    },
+    {
+      "path": "Core/Inc/pid_controller_types.h",
+      "rootId": "f4",
+      "sha256": "a79edcdb8a21158a405bd95e57a08cb92eba17b9c5a08f404d7876ff762548ee",
+      "includes": [
+        "am_port.h",
+        "stdint.h",
+        "pid_controller_data.h"
+      ]
+    },
+    {
+      "path": "Core/Inc/pid_controller_data.h",
+      "rootId": "f4",
+      "sha256": "cc6759dc651cb0f851b1c4e26895e6ad3baa0ce04f72b5de121439e40f231308",
+      "includes": [
+        "am_port.h"
+      ]
+    },
+    {
+      "path": "Core/Src/pid_controller.c",
+      "rootId": "f4",
+      "sha256": "7b82e742aafd092a7bf74f655d94b8b62a99da20e5b7e2c749470a8ed1ed67ce",
+      "includes": [
+        "pid_controller.h",
+        "stddef.h",
+        "string.h"
+      ]
+    }
+  ],
+  "findings": [],
+  "types": [
+    {
+      "name": "PidController_Handle",
+      "fields": [
+        {
+          "name": "config",
+          "declaration": "PidController_Config_t config",
+          "callback": false,
+          "ownerType": "PidController_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/pid_controller_types.h",
+            "line": 20
+          },
+          "description": "Configuración copiada por la instancia; los punteros que contiene siguen siendo prestados."
+        },
+        {
+          "name": "status",
+          "declaration": "PidController_Status_t status",
+          "callback": false,
+          "ownerType": "PidController_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/pid_controller_types.h",
+            "line": 21
+          },
+          "description": "Último resultado y guardas del módulo; los getters pueden devolver una vista de este almacenamiento."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/pid_controller_types.h",
+        "line": 20
+      }
+    },
+    {
+      "name": "PidController_Config_t",
+      "fields": [
+        {
+          "name": "kp",
+          "declaration": "float kp",
+          "callback": false,
+          "ownerType": "PidController_Config_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/pid_controller_data.h",
+            "line": 12
+          },
+          "description": "Dato de estado/configuración `kp`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ki",
+          "declaration": "float ki",
+          "callback": false,
+          "ownerType": "PidController_Config_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/pid_controller_data.h",
+            "line": 13
+          },
+          "description": "Dato de estado/configuración `ki`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "kd",
+          "declaration": "float kd",
+          "callback": false,
+          "ownerType": "PidController_Config_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/pid_controller_data.h",
+            "line": 14
+          },
+          "description": "Dato de estado/configuración `kd`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "default_dt_s",
+          "declaration": "float default_dt_s",
+          "callback": false,
+          "ownerType": "PidController_Config_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/pid_controller_data.h",
+            "line": 15
+          },
+          "description": "Dato de estado/configuración `default_dt_s`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "output_min",
+          "declaration": "float output_min",
+          "callback": false,
+          "ownerType": "PidController_Config_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/pid_controller_data.h",
+            "line": 16
+          },
+          "description": "Dato de estado/configuración `output_min`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "output_max",
+          "declaration": "float output_max",
+          "callback": false,
+          "ownerType": "PidController_Config_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/pid_controller_data.h",
+            "line": 17
+          },
+          "description": "Dato de estado/configuración `output_max`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "integral_min",
+          "declaration": "float integral_min",
+          "callback": false,
+          "ownerType": "PidController_Config_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/pid_controller_data.h",
+            "line": 18
+          },
+          "description": "Dato de estado/configuración `integral_min`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "integral_max",
+          "declaration": "float integral_max",
+          "callback": false,
+          "ownerType": "PidController_Config_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/pid_controller_data.h",
+            "line": 19
+          },
+          "description": "Dato de estado/configuración `integral_max`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "derivative_filter_tau_s",
+          "declaration": "float derivative_filter_tau_s",
+          "callback": false,
+          "ownerType": "PidController_Config_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/pid_controller_data.h",
+            "line": 20
+          },
+          "description": "Dato de estado/configuración `derivative_filter_tau_s`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "anti_windup_gain",
+          "declaration": "float anti_windup_gain",
+          "callback": false,
+          "ownerType": "PidController_Config_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/pid_controller_data.h",
+            "line": 21
+          },
+          "description": "Dato de estado/configuración `anti_windup_gain`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/pid_controller_data.h",
+        "line": 12
+      }
+    },
+    {
+      "name": "PidController_Status_t",
+      "fields": [
+        {
+          "name": "setpoint",
+          "declaration": "float setpoint",
+          "callback": false,
+          "ownerType": "PidController_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/pid_controller_data.h",
+            "line": 25
+          },
+          "description": "Referencia escalar configurada antes del cálculo."
+        },
+        {
+          "name": "measurement",
+          "declaration": "float measurement",
+          "callback": false,
+          "ownerType": "PidController_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/pid_controller_data.h",
+            "line": 26
+          },
+          "description": "Medida escalar usada en la última actualización."
+        },
+        {
+          "name": "error",
+          "declaration": "float error",
+          "callback": false,
+          "ownerType": "PidController_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/pid_controller_data.h",
+            "line": 27
+          },
+          "description": "Diferencia de control entre referencia y medida."
+        },
+        {
+          "name": "proportional",
+          "declaration": "float proportional",
+          "callback": false,
+          "ownerType": "PidController_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/pid_controller_data.h",
+            "line": 28
+          },
+          "description": "Contribución proporcional calculada."
+        },
+        {
+          "name": "integral",
+          "declaration": "float integral",
+          "callback": false,
+          "ownerType": "PidController_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/pid_controller_data.h",
+            "line": 29
+          },
+          "description": "Contribución integral acumulada y limitada."
+        },
+        {
+          "name": "derivative",
+          "declaration": "float derivative",
+          "callback": false,
+          "ownerType": "PidController_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/pid_controller_data.h",
+            "line": 30
+          },
+          "description": "Contribución derivativa filtrada."
+        },
+        {
+          "name": "output_raw",
+          "declaration": "float output_raw",
+          "callback": false,
+          "ownerType": "PidController_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/pid_controller_data.h",
+            "line": 31
+          },
+          "description": "Salida antes de limitar al rango configurado."
+        },
+        {
+          "name": "output",
+          "declaration": "float output",
+          "callback": false,
+          "ownerType": "PidController_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/pid_controller_data.h",
+            "line": 32
+          },
+          "description": "Salida final limitada que consumen las capas superiores."
+        },
+        {
+          "name": "last_measurement",
+          "declaration": "float last_measurement",
+          "callback": false,
+          "ownerType": "PidController_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/pid_controller_data.h",
+            "line": 33
+          },
+          "description": "Memoria de la observación anterior usada por la máquina de estados."
+        },
+        {
+          "name": "last_error",
+          "declaration": "float last_error",
+          "callback": false,
+          "ownerType": "PidController_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/pid_controller_data.h",
+            "line": 34
+          },
+          "description": "Memoria de la observación anterior usada por la máquina de estados."
+        },
+        {
+          "name": "dt_s",
+          "declaration": "float dt_s",
+          "callback": false,
+          "ownerType": "PidController_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/pid_controller_data.h",
+            "line": 35
+          },
+          "description": "Intervalo usado por el cálculo en segundos."
+        },
+        {
+          "name": "initialized",
+          "declaration": "uint8_t initialized",
+          "callback": false,
+          "ownerType": "PidController_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/pid_controller_data.h",
+            "line": 36
+          },
+          "description": "Marca de inicialización local; no acredita disponibilidad de dispositivos externos."
+        },
+        {
+          "name": "saturated",
+          "declaration": "uint8_t saturated",
+          "callback": false,
+          "ownerType": "PidController_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/pid_controller_data.h",
+            "line": 37
+          },
+          "description": "Indica que la salida alcanzó límites del controlador."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/pid_controller_data.h",
+        "line": 25
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "PidController_GetDefaultConfig",
+      "signature": "void PidController_GetDefaultConfig(PidController_Config_t *config)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/pid_controller.h",
+        "line": 7
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [
+        "anti_windup_gain",
+        "default_dt_s",
+        "derivative_filter_tau_s",
+        "integral_max",
+        "integral_min",
+        "kd",
+        "ki",
+        "kp",
+        "output_max",
+        "output_min"
+      ],
+      "description": "Carga ganancias, límites, dt y filtro predeterminados.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/pid_controller.c",
+        "line": 67
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "PidController_GetOutput",
+      "signature": "float PidController_GetOutput(const PidController_Handle *pid)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/pid_controller.h",
+        "line": 26
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Consulta la última salida limitada.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/pid_controller.c",
+        "line": 239
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "PidController_GetStatus",
+      "signature": "const PidController_Status_t *PidController_GetStatus(const PidController_Handle *pid)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/pid_controller.h",
+        "line": 27
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Devuelve vista const prestada del estado del cálculo.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/pid_controller.c",
+        "line": 244
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "PidController_Init",
+      "signature": "AM_Result PidController_Init(PidController_Handle *pid, const PidController_Config_t *config)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/pid_controller.h",
+        "line": 8
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "PidController_GetDefaultConfig",
+        "Pid_NormalizeConfig",
+        "memset"
+      ],
+      "writes": [
+        "config"
+      ],
+      "description": "Inicializa configuración e historia de la instancia PID.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/pid_controller.c",
+        "line": 85
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "PidController_Reset",
+      "signature": "void PidController_Reset(PidController_Handle *pid)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/pid_controller.h",
+        "line": 10
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "memset"
+      ],
+      "writes": [],
+      "description": "Limpia términos e historia del controlador.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/pid_controller.c",
+        "line": 102
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "PidController_SetGains",
+      "signature": "void PidController_SetGains(PidController_Handle *pid, float kp, float ki, float kd)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/pid_controller.h",
+        "line": 11
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Actualiza Kp, Ki y Kd.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/pid_controller.c",
+        "line": 115
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "PidController_SetIntegralLimits",
+      "signature": "void PidController_SetIntegralLimits(PidController_Handle *pid, float integral_min, float integral_max)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/pid_controller.h",
+        "line": 18
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "Pid_NormalizeConfig"
+      ],
+      "writes": [],
+      "description": "Actualiza el intervalo permitido para el término integral.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/pid_controller.c",
+        "line": 142
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "PidController_SetOutputLimits",
+      "signature": "void PidController_SetOutputLimits(PidController_Handle *pid, float output_min, float output_max)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/pid_controller.h",
+        "line": 15
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "Pid_NormalizeConfig"
+      ],
+      "writes": [],
+      "description": "Actualiza el intervalo permitido para salida.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/pid_controller.c",
+        "line": 129
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "PidController_SetSetpoint",
+      "signature": "void PidController_SetSetpoint(PidController_Handle *pid, float setpoint)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/pid_controller.h",
+        "line": 21
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Configura la referencia que comparará la siguiente actualización.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/pid_controller.c",
+        "line": 155
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "PidController_Update",
+      "signature": "AM_Result PidController_Update(PidController_Handle *pid, float setpoint, float measurement, float dt_s)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/pid_controller.h",
+        "line": 22
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "Pid_Abs",
+        "Pid_Clamp"
+      ],
+      "writes": [],
+      "description": "Calcula términos PID y salida limitada con la medida y dt recibidos.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/pid_controller.c",
+        "line": 164
+      },
+      "linkage": "header"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "Pid_Clamp",
+      "signature": "static float Pid_Clamp(float value, float min_value, float max_value)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/pid_controller.c",
+        "line": 14
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Pid Clamp de Controlador PID; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "Pid_Abs",
+      "signature": "static float Pid_Abs(float value)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/pid_controller.c",
+        "line": 25
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Pid Abs de Controlador PID; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "Pid_NormalizeConfig",
+      "signature": "static void Pid_NormalizeConfig(PidController_Config_t *config)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/pid_controller.c",
+        "line": 30
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [
+        "anti_windup_gain",
+        "default_dt_s",
+        "derivative_filter_tau_s",
+        "integral_max",
+        "integral_min",
+        "output_max",
+        "output_min"
+      ],
+      "description": "Operación Pid Normalize Config de Controlador PID; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    }
+  ]
+}

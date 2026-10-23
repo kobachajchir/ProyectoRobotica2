@@ -1,0 +1,1050 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "f4:module/Core/Inc/motion_control.h",
+  "slug": "motion",
+  "title": "Árbitro de movimiento",
+  "target": "f4",
+  "kind": "núcleo",
+  "status": "source-documented",
+  "verification": "not-run-user-instruction",
+  "snapshotDate": "2026-10-20",
+  "responsibility": "Arbitra intención de marcha/giro, balance y seguridad antes de aplicar salidas diferenciales a motores.",
+  "scope": "Armado, desarmado, rechazo, rampas, duración, inclinación segura, frescura de orientación y enclavamiento de seguridad.",
+  "state": "MotionControl_Handle posee config, command, status, consignas rampadas y secuencia procesada. config.motors/balance/mpu son contextos opacos de drive_ops/balance_ops/orientation. GetStatus expone guardas, motivo de rechazo, saturación y salida aplicada; command no es prueba de movimiento.",
+  "lifecycle": [
+    "Init establece dependencias y estado seguro; Arm exige condiciones del sensor y orientación.",
+    "SetCommand registra intención temporal; Task revisa frescura/seguridad y calcula rampas, balance y mezcla.",
+    "EmergencyStop enclava seguridad; no equivale a una parada ordinaria y no se revierte por enviar otra consigna."
+  ],
+  "interactions": [
+    "LineFollow, Web, NRF y GOTO producen MotionControl_Command_t; la aplicación decide qué modo puede producirlo.",
+    "El puerto de orientación conserva ready/calibrating/fresh y secuencia por separado."
+  ],
+  "limitations": [
+    "Stop con COAST/BRAKE, Disarm y EmergencyStop tienen efectos distintos.",
+    "No llamar MotorDrive directo en modos normales para eludir guardas.",
+    "duration_ms/ramp_up_ms/ramp_down_ms son uint16_t, con límites de representación propios."
+  ],
+  "modularity": "Depende de operaciones y datos neutrales, sin llamar drivers concretos. El arbitraje y valores de fuente son semántica del robot.",
+  "files": [
+    {
+      "path": "Core/Inc/motion_control.h",
+      "rootId": "f4",
+      "sha256": "49179cee23b70cdfc3aea2132f3b3660e88da4d09d3a917c501800a0f44f8805",
+      "includes": [
+        "motion_control_types.h"
+      ]
+    },
+    {
+      "path": "Core/Inc/motion_control_types.h",
+      "rootId": "f4",
+      "sha256": "81539a15851ee9aee70b91016a963ce41f4f92a0175db175eb01e9e721645264",
+      "includes": [
+        "control_ports.h",
+        "stdint.h",
+        "motion_control_data.h"
+      ]
+    },
+    {
+      "path": "Core/Inc/motion_control_data.h",
+      "rootId": "f4",
+      "sha256": "dce850f1fa3a58717a11c5a3baa20b74b905a306a7e5ae1e5b51c5b1844e44f5",
+      "includes": [
+        "am_port.h"
+      ]
+    },
+    {
+      "path": "Core/Src/motion_control.c",
+      "rootId": "f4",
+      "sha256": "633d70bb7f3e910cf1f51240b38ba93ae310640957305adeb55060140e6e7a56",
+      "includes": [
+        "motion_control.h",
+        "utils/macros_utils.h",
+        "stddef.h",
+        "math.h",
+        "string.h"
+      ]
+    }
+  ],
+  "findings": [],
+  "types": [
+    {
+      "name": "MotionControl_Handle",
+      "fields": [
+        {
+          "name": "config",
+          "declaration": "MotionControl_Config_t config",
+          "callback": false,
+          "ownerType": "MotionControl_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_control_types.h",
+            "line": 20
+          },
+          "description": "Configuración copiada por la instancia; los punteros que contiene siguen siendo prestados."
+        },
+        {
+          "name": "command",
+          "declaration": "MotionControl_Command_t command",
+          "callback": false,
+          "ownerType": "MotionControl_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_control_types.h",
+            "line": 21
+          },
+          "description": "Dato de estado/configuración `command`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "status",
+          "declaration": "MotionControl_Status_t status",
+          "callback": false,
+          "ownerType": "MotionControl_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_control_types.h",
+            "line": 22
+          },
+          "description": "Último resultado y guardas del módulo; los getters pueden devolver una vista de este almacenamiento."
+        },
+        {
+          "name": "current_forward_percent",
+          "declaration": "float current_forward_percent",
+          "callback": false,
+          "ownerType": "MotionControl_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_control_types.h",
+            "line": 23
+          },
+          "description": "Magnitud porcentual; el rango y signo se fijan en la API de esta librería."
+        },
+        {
+          "name": "current_turn_percent",
+          "declaration": "float current_turn_percent",
+          "callback": false,
+          "ownerType": "MotionControl_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_control_types.h",
+            "line": 24
+          },
+          "description": "Magnitud porcentual; el rango y signo se fijan en la API de esta librería."
+        },
+        {
+          "name": "initialized",
+          "declaration": "uint8_t initialized",
+          "callback": false,
+          "ownerType": "MotionControl_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_control_types.h",
+            "line": 25
+          },
+          "description": "Marca de inicialización local; no acredita disponibilidad de dispositivos externos."
+        },
+        {
+          "name": "last_sample_seq",
+          "declaration": "uint16_t last_sample_seq",
+          "callback": false,
+          "ownerType": "MotionControl_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_control_types.h",
+            "line": 26
+          },
+          "description": "Memoria de la observación anterior usada por la máquina de estados."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/motion_control_types.h",
+        "line": 20
+      }
+    },
+    {
+      "name": "MotionControl_Command_t",
+      "fields": [
+        {
+          "name": "source",
+          "declaration": "MotionControl_Source_t source",
+          "callback": false,
+          "ownerType": "MotionControl_Command_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_control_data.h",
+            "line": 40
+          },
+          "description": "Productor lógico de la orden: balance, follow, Web, NRF, TEST, seguridad o GOTO."
+        },
+        {
+          "name": "forward_percent",
+          "declaration": "float forward_percent",
+          "callback": false,
+          "ownerType": "MotionControl_Command_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_control_data.h",
+            "line": 41
+          },
+          "description": "Magnitud porcentual; el rango y signo se fijan en la API de esta librería."
+        },
+        {
+          "name": "turn_percent",
+          "declaration": "float turn_percent",
+          "callback": false,
+          "ownerType": "MotionControl_Command_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_control_data.h",
+            "line": 42
+          },
+          "description": "Magnitud porcentual; el rango y signo se fijan en la API de esta librería."
+        },
+        {
+          "name": "duration_ms",
+          "declaration": "uint16_t duration_ms",
+          "callback": false,
+          "ownerType": "MotionControl_Command_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_control_data.h",
+            "line": 43
+          },
+          "description": "Vigencia de la orden en milisegundos, almacenada como uint16_t."
+        },
+        {
+          "name": "ramp_up_ms",
+          "declaration": "uint16_t ramp_up_ms",
+          "callback": false,
+          "ownerType": "MotionControl_Command_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_control_data.h",
+            "line": 44
+          },
+          "description": "Tiempo de subida de la consigna en milisegundos."
+        },
+        {
+          "name": "ramp_down_ms",
+          "declaration": "uint16_t ramp_down_ms",
+          "callback": false,
+          "ownerType": "MotionControl_Command_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_control_data.h",
+            "line": 45
+          },
+          "description": "Tiempo de bajada de la consigna en milisegundos."
+        },
+        {
+          "name": "end_mode",
+          "declaration": "MotionControl_StopMode_t end_mode",
+          "callback": false,
+          "ownerType": "MotionControl_Command_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_control_data.h",
+            "line": 46
+          },
+          "description": "Parada libre o frenada al terminar la orden."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/motion_control_data.h",
+        "line": 40
+      }
+    },
+    {
+      "name": "MotionControl_Config_t",
+      "fields": [
+        {
+          "name": "motors",
+          "declaration": "void *motors",
+          "callback": false,
+          "ownerType": "MotionControl_Config_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_control_data.h",
+            "line": 51
+          },
+          "description": "Contexto opaco de actuadores que interpreta drive_ops."
+        },
+        {
+          "name": "balance",
+          "declaration": "void *balance",
+          "callback": false,
+          "ownerType": "MotionControl_Config_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_control_data.h",
+            "line": 52
+          },
+          "description": "Contexto opaco del balance que interpreta balance_ops."
+        },
+        {
+          "name": "mpu",
+          "declaration": "void *mpu",
+          "callback": false,
+          "ownerType": "MotionControl_Config_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_control_data.h",
+            "line": 53
+          },
+          "description": "Contexto opaco de orientación que interpreta orientation."
+        },
+        {
+          "name": "drive_ops",
+          "declaration": "const struct AM_DriveOps *drive_ops",
+          "callback": false,
+          "ownerType": "MotionControl_Config_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_control_data.h",
+            "line": 54
+          },
+          "description": "Contrato de operaciones externo; conservar la tabla y su contexto durante el uso."
+        },
+        {
+          "name": "balance_ops",
+          "declaration": "const struct AM_BalanceOps *balance_ops",
+          "callback": false,
+          "ownerType": "MotionControl_Config_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_control_data.h",
+            "line": 55
+          },
+          "description": "Contrato de operaciones externo; conservar la tabla y su contexto durante el uso."
+        },
+        {
+          "name": "orientation",
+          "declaration": "const struct AM_OrientationOps *orientation",
+          "callback": false,
+          "ownerType": "MotionControl_Config_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_control_data.h",
+            "line": 56
+          },
+          "description": "Contrato de operaciones externo; conservar la tabla y su contexto durante el uso."
+        },
+        {
+          "name": "neutral_pitch_deg",
+          "declaration": "float neutral_pitch_deg",
+          "callback": false,
+          "ownerType": "MotionControl_Config_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_control_data.h",
+            "line": 57
+          },
+          "description": "Ángulo en grados; respetar eje y referencia de esta librería."
+        },
+        {
+          "name": "max_pitch_offset_deg",
+          "declaration": "float max_pitch_offset_deg",
+          "callback": false,
+          "ownerType": "MotionControl_Config_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_control_data.h",
+            "line": 58
+          },
+          "description": "Ángulo en grados; respetar eje y referencia de esta librería."
+        },
+        {
+          "name": "max_turn_percent",
+          "declaration": "float max_turn_percent",
+          "callback": false,
+          "ownerType": "MotionControl_Config_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_control_data.h",
+            "line": 59
+          },
+          "description": "Magnitud porcentual; el rango y signo se fijan en la API de esta librería."
+        },
+        {
+          "name": "safe_pitch_deg",
+          "declaration": "float safe_pitch_deg",
+          "callback": false,
+          "ownerType": "MotionControl_Config_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_control_data.h",
+            "line": 60
+          },
+          "description": "Ángulo en grados; respetar eje y referencia de esta librería."
+        },
+        {
+          "name": "turn_headroom_ratio",
+          "declaration": "float turn_headroom_ratio",
+          "callback": false,
+          "ownerType": "MotionControl_Config_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_control_data.h",
+            "line": 61
+          },
+          "description": "Dato de estado/configuración `turn_headroom_ratio`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "enabled",
+          "declaration": "uint8_t enabled",
+          "callback": false,
+          "ownerType": "MotionControl_Config_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_control_data.h",
+            "line": 62
+          },
+          "description": "Dato de estado/configuración `enabled`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/motion_control_data.h",
+        "line": 51
+      }
+    },
+    {
+      "name": "MotionControl_Status_t",
+      "fields": [
+        {
+          "name": "source",
+          "declaration": "MotionControl_Source_t source",
+          "callback": false,
+          "ownerType": "MotionControl_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_control_data.h",
+            "line": 66
+          },
+          "description": "Dato de estado/configuración `source`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "reject_reason",
+          "declaration": "MotionControl_RejectReason_t reject_reason",
+          "callback": false,
+          "ownerType": "MotionControl_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_control_data.h",
+            "line": 67
+          },
+          "description": "Motivo actual de rechazo o guarda del árbitro."
+        },
+        {
+          "name": "pitch_measured_deg",
+          "declaration": "float pitch_measured_deg",
+          "callback": false,
+          "ownerType": "MotionControl_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_control_data.h",
+            "line": 68
+          },
+          "description": "Ángulo en grados; respetar eje y referencia de esta librería."
+        },
+        {
+          "name": "pitch_setpoint_deg",
+          "declaration": "float pitch_setpoint_deg",
+          "callback": false,
+          "ownerType": "MotionControl_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_control_data.h",
+            "line": 69
+          },
+          "description": "Ángulo en grados; respetar eje y referencia de esta librería."
+        },
+        {
+          "name": "balance_output_percent",
+          "declaration": "float balance_output_percent",
+          "callback": false,
+          "ownerType": "MotionControl_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_control_data.h",
+            "line": 70
+          },
+          "description": "Magnitud porcentual; el rango y signo se fijan en la API de esta librería."
+        },
+        {
+          "name": "forward_applied_percent",
+          "declaration": "float forward_applied_percent",
+          "callback": false,
+          "ownerType": "MotionControl_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_control_data.h",
+            "line": 71
+          },
+          "description": "Magnitud porcentual; el rango y signo se fijan en la API de esta librería."
+        },
+        {
+          "name": "turn_applied_percent",
+          "declaration": "float turn_applied_percent",
+          "callback": false,
+          "ownerType": "MotionControl_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_control_data.h",
+            "line": 72
+          },
+          "description": "Magnitud porcentual; el rango y signo se fijan en la API de esta librería."
+        },
+        {
+          "name": "turn_requested_percent",
+          "declaration": "float turn_requested_percent",
+          "callback": false,
+          "ownerType": "MotionControl_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_control_data.h",
+            "line": 73
+          },
+          "description": "Magnitud porcentual; el rango y signo se fijan en la API de esta librería."
+        },
+        {
+          "name": "turn_limit_percent",
+          "declaration": "float turn_limit_percent",
+          "callback": false,
+          "ownerType": "MotionControl_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_control_data.h",
+            "line": 74
+          },
+          "description": "Magnitud porcentual; el rango y signo se fijan en la API de esta librería."
+        },
+        {
+          "name": "u_common_percent",
+          "declaration": "float u_common_percent",
+          "callback": false,
+          "ownerType": "MotionControl_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_control_data.h",
+            "line": 75
+          },
+          "description": "Magnitud porcentual; el rango y signo se fijan en la API de esta librería."
+        },
+        {
+          "name": "u_diff_percent",
+          "declaration": "float u_diff_percent",
+          "callback": false,
+          "ownerType": "MotionControl_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_control_data.h",
+            "line": 76
+          },
+          "description": "Magnitud porcentual; el rango y signo se fijan en la API de esta librería."
+        },
+        {
+          "name": "left_output_percent",
+          "declaration": "float left_output_percent",
+          "callback": false,
+          "ownerType": "MotionControl_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_control_data.h",
+            "line": 77
+          },
+          "description": "Magnitud porcentual; el rango y signo se fijan en la API de esta librería."
+        },
+        {
+          "name": "right_output_percent",
+          "declaration": "float right_output_percent",
+          "callback": false,
+          "ownerType": "MotionControl_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_control_data.h",
+            "line": 78
+          },
+          "description": "Magnitud porcentual; el rango y signo se fijan en la API de esta librería."
+        },
+        {
+          "name": "command_started_ms",
+          "declaration": "uint32_t command_started_ms",
+          "callback": false,
+          "ownerType": "MotionControl_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_control_data.h",
+            "line": 79
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "command_active",
+          "declaration": "uint8_t command_active",
+          "callback": false,
+          "ownerType": "MotionControl_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_control_data.h",
+            "line": 80
+          },
+          "description": "Dato de estado/configuración `command_active`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "safety_stop",
+          "declaration": "uint8_t safety_stop",
+          "callback": false,
+          "ownerType": "MotionControl_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_control_data.h",
+            "line": 81
+          },
+          "description": "Enclavamiento de parada de seguridad, distinto de stop ordinario."
+        },
+        {
+          "name": "balance_active",
+          "declaration": "uint8_t balance_active",
+          "callback": false,
+          "ownerType": "MotionControl_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_control_data.h",
+            "line": 82
+          },
+          "description": "Indica que balance participa en el control actual."
+        },
+        {
+          "name": "balance_settled",
+          "declaration": "uint8_t balance_settled",
+          "callback": false,
+          "ownerType": "MotionControl_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_control_data.h",
+            "line": 83
+          },
+          "description": "Indica que se cumplen criterios de balance estabilizado de la aplicación."
+        },
+        {
+          "name": "armed",
+          "declaration": "uint8_t armed",
+          "callback": false,
+          "ownerType": "MotionControl_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_control_data.h",
+            "line": 84
+          },
+          "description": "Estado de armado que habilita aplicar movimiento."
+        },
+        {
+          "name": "saturation_limited",
+          "declaration": "uint8_t saturation_limited",
+          "callback": false,
+          "ownerType": "MotionControl_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motion_control_data.h",
+            "line": 85
+          },
+          "description": "Indica limitación de mezcla diferencial por margen disponible."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/motion_control_data.h",
+        "line": 66
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "MotionControl_Arm",
+      "signature": "void MotionControl_Arm(MotionControl_Handle *motion)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/motion_control.h",
+        "line": 13
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MotionControl_Disarm",
+        "MotionControl_GetDefaultCommand",
+        "Motion_Abs",
+        "Motion_ClearOutputStatus",
+        "calibrating",
+        "enable",
+        "fresh",
+        "front_tilt",
+        "isfinite",
+        "now_ms",
+        "ready",
+        "reset",
+        "target"
+      ],
+      "writes": [
+        "command",
+        "current_forward_percent",
+        "current_turn_percent",
+        "last_sample_seq"
+      ],
+      "description": "Intenta armar el movimiento comprobando las guardas vigentes.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/motion_control.c",
+        "line": 219
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MotionControl_Disarm",
+      "signature": "void MotionControl_Disarm(MotionControl_Handle *motion)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/motion_control.h",
+        "line": 14
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MotionControl_GetDefaultCommand",
+        "Motion_ClearOutputStatus",
+        "Motion_StopOutputs",
+        "reset",
+        "target"
+      ],
+      "writes": [
+        "current_forward_percent",
+        "current_turn_percent"
+      ],
+      "description": "Desarma el movimiento y lleva la tracción a estado detenido.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/motion_control.c",
+        "line": 258
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MotionControl_EmergencyStop",
+      "signature": "void MotionControl_EmergencyStop(MotionControl_Handle *motion)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/motion_control.h",
+        "line": 17
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MotionControl_GetDefaultCommand",
+        "Motion_ClearOutputStatus",
+        "Motion_StopOutputs",
+        "reset"
+      ],
+      "writes": [
+        "current_forward_percent",
+        "current_turn_percent"
+      ],
+      "description": "Aplica parada de seguridad con enclavamiento.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/motion_control.c",
+        "line": 284
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MotionControl_GetDefaultCommand",
+      "signature": "void MotionControl_GetDefaultCommand(MotionControl_Command_t *command)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/motion_control.h",
+        "line": 7
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [
+        "duration_ms",
+        "end_mode",
+        "forward_percent",
+        "ramp_down_ms",
+        "ramp_up_ms",
+        "source",
+        "turn_percent"
+      ],
+      "description": "Carga una orden de movimiento neutra con valores predeterminados.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/motion_control.c",
+        "line": 112
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MotionControl_GetStatus",
+      "signature": "const MotionControl_Status_t *MotionControl_GetStatus(const MotionControl_Handle *motion)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/motion_control.h",
+        "line": 19
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Devuelve vista del estado aplicado y del motivo de rechazo.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/motion_control.c",
+        "line": 452
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MotionControl_Init",
+      "signature": "AM_Result MotionControl_Init(MotionControl_Handle *motion, const MotionControl_Config_t *config)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/motion_control.h",
+        "line": 8
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MotionControl_GetDefaultCommand",
+        "memset"
+      ],
+      "writes": [
+        "command",
+        "config",
+        "initialized"
+      ],
+      "description": "Conecta operaciones externas e inicializa el árbitro en estado seguro.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/motion_control.c",
+        "line": 127
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MotionControl_IsArmed",
+      "signature": "uint8_t MotionControl_IsArmed(const MotionControl_Handle *motion)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/motion_control.h",
+        "line": 15
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Consulta el estado de armado del árbitro.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/motion_control.c",
+        "line": 279
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MotionControl_SetCommand",
+      "signature": "AM_Result MotionControl_SetCommand(MotionControl_Handle *motion, const MotionControl_Command_t *command, uint32_t now_ms)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/motion_control.h",
+        "line": 10
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MotionControl_EmergencyStop",
+        "Motion_Clamp",
+        "fresh",
+        "isfinite",
+        "ready"
+      ],
+      "writes": [
+        "command"
+      ],
+      "description": "Evalúa y registra una intención de movimiento y su tiempo de inicio.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/motion_control.c",
+        "line": 164
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MotionControl_Stop",
+      "signature": "void MotionControl_Stop(MotionControl_Handle *motion, MotionControl_StopMode_t mode)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/motion_control.h",
+        "line": 16
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MotionControl_GetDefaultCommand",
+        "Motion_ClearOutputStatus",
+        "Motion_StopOutputs",
+        "target"
+      ],
+      "writes": [
+        "current_forward_percent",
+        "current_turn_percent"
+      ],
+      "description": "Detiene la orden con la modalidad de parada recibida.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/motion_control.c",
+        "line": 197
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MotionControl_Task",
+      "signature": "void MotionControl_Task(MotionControl_Handle *motion, uint32_t now_ms)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/motion_control.h",
+        "line": 18
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MotionControl_EmergencyStop",
+        "MotionControl_GetDefaultCommand",
+        "MotionControl_Stop",
+        "Motion_Abs",
+        "Motion_Clamp",
+        "Motion_ClearOutputStatus",
+        "Motion_ProfileFactor",
+        "Motion_StopOutputs",
+        "apply",
+        "attitude_ms",
+        "calibrating",
+        "fresh",
+        "front_tilt",
+        "isfinite",
+        "output",
+        "ready",
+        "sequence",
+        "target",
+        "update"
+      ],
+      "writes": [
+        "current_forward_percent",
+        "current_turn_percent",
+        "last_sample_seq"
+      ],
+      "description": "Actualiza seguridad, balance, rampas y mezcla diferencial con now_ms.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/motion_control.c",
+        "line": 304
+      },
+      "linkage": "header"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "Motion_Clamp",
+      "signature": "static float Motion_Clamp(float value, float min_value, float max_value)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/motion_control.c",
+        "line": 15
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Motion Clamp de Árbitro de movimiento; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "Motion_Abs",
+      "signature": "static float Motion_Abs(float value)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/motion_control.c",
+        "line": 26
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Motion Abs de Árbitro de movimiento; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "Motion_ProfileFactor",
+      "signature": "static float Motion_ProfileFactor(const MotionControl_Command_t *command, uint32_t start_ms, uint32_t now_ms, uint8_t *finished)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/motion_control.c",
+        "line": 32
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Motion_Clamp"
+      ],
+      "writes": [],
+      "description": "Coordina `Motion_Clamp` para Árbitro de movimiento.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Motion_StopOutputs",
+      "signature": "static void Motion_StopOutputs(MotionControl_Handle *motion, MotionControl_StopMode_t mode)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/motion_control.c",
+        "line": 81
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "brake",
+        "stop"
+      ],
+      "writes": [],
+      "description": "Coordina `brake`, `stop` para Árbitro de movimiento.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Motion_ClearOutputStatus",
+      "signature": "static void Motion_ClearOutputStatus(MotionControl_Handle *motion)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/motion_control.c",
+        "line": 94
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Motion Clear Output Status de Árbitro de movimiento; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    }
+  ]
+}

@@ -1,0 +1,1959 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "web:module/src/contexts/UserContext.tsx",
+  "slug": "authentication",
+  "title": "Usuario, PIN y permisos remotos",
+  "target": "web",
+  "kind": "integración",
+  "status": "source-documented",
+  "snapshotDate": "2026-10-20",
+  "verification": "not-run-user-instruction",
+  "responsibility": "Mantiene sesión del navegador y flujos de PIN/autorización que habilitan acciones remotas.",
+  "scope": "Login, validar pantalla, cambio PIN y cierre; la comprobación final de acciones sigue en ESP/F4.",
+  "state": "El provider conserva autoridad confirmada y estado de solicitud; formularios PIN guardan edición local que no es el cursor PIN de la OLED física.",
+  "modularity": "React/servicios del producto; separar formulario local, sesión ESP y permiso local F4.",
+  "lifecycle": [
+    "Enviar PIN al comando correspondiente y esperar final.",
+    "Logout/desconexión/expiración actualiza estado y cancela acciones según el flujo.",
+    "Unmount del modal no debe confundirse con revocación remota sin comando."
+  ],
+  "interactions": [
+    "ScreenStreamWorkspace puede pedir validar el screenCode actual.",
+    "ESP asigna sesión/nodo; F4 conserva autorización por origen y TTL.",
+    "PIN JSON string de cuatro dígitos se codifica como cuatro valores numéricos 0..9 en wire; ver shared:message/auth-pin/v1 para scopes y respuestas."
+  ],
+  "limitations": [
+    "No publicar PIN/token ni almacenarlos en artefactos documentales.",
+    "Poder abrir un formulario no demuestra que el comando quedó autorizado."
+  ],
+  "relationships": [],
+  "findings": [],
+  "files": [
+    {
+      "rootId": "web",
+      "path": "src/api/UserRepository.tsx",
+      "sha256": "ec12dfe00633a34b426262ad2d5446a67641901b2339eadfef8510a50aa5dffc",
+      "imports": [],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/components/PinScreen.tsx",
+      "sha256": "f717ab48362a7e016a7d9fcd3ed9bdc255aba8f6e614091f5d70de93df1faca3",
+      "imports": [
+        "../types/PinAuthTypes",
+        "./BrandMark",
+        "framer-motion",
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/components/PinScreenModal.tsx",
+      "sha256": "b2d8bc59ac3e41b68dfff20493f3f99eecc23990aab48327c2bc5ff7d7ca03ee",
+      "imports": [
+        "../hooks/useModalScrollLock",
+        "../types/PinAuthTypes",
+        "./PinScreen",
+        "framer-motion",
+        "react",
+        "react-dom"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/components/ProtectedRoute.tsx",
+      "sha256": "44e6f7e65e602272d3ccc3369e12c3123d21753df281b7e523b035088fe73e57",
+      "imports": [
+        "../contexts/UserContext",
+        "./AppLoadingScreen",
+        "react-router-dom"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/components/PublicRoute.tsx",
+      "sha256": "42c4d51756bd1c88ff6779d57f3db25ab8d9cb531b6950e72e9f780334791eca",
+      "imports": [
+        "../contexts/UserContext",
+        "./AppLoadingScreen",
+        "react",
+        "react-router-dom"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/contexts/UserContext.tsx",
+      "sha256": "16c1437b753012f9afdeb4d5dce63fd70328a2f7a02e35fe81cf1017d93fc75e",
+      "imports": [
+        "../hooks/useWebSocket",
+        "../protocol/espClient",
+        "../protocol/wsApi",
+        "../types/PinAuthTypes",
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/pages/Login.tsx",
+      "sha256": "b1b2838e84590c844a3c368ff7da0df9686709524e46b8ac937d814402437925",
+      "imports": [
+        "../components/PinScreen",
+        "../contexts/UserContext"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/types/PinAuthTypes.ts",
+      "sha256": "ba3d5fe21dca38ca9d75fc696678739177496776f63784b8acbd798a7e5bf722",
+      "imports": [],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/types/UserTypes.ts",
+      "sha256": "0f27305478f8f6d27694d5f799085c749774b14d06c8db1edb4863cc0c70cbfe",
+      "imports": [],
+      "analysisLevel": "typescript-ast-static"
+    }
+  ],
+  "types": [
+    {
+      "name": "User",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "id",
+          "declaration": "id: string",
+          "callback": false,
+          "ownerType": "User",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/api/UserRepository.tsx",
+            "line": 4
+          },
+          "description": "Dato de estado/configuración `id`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "name",
+          "declaration": "name: string",
+          "callback": false,
+          "ownerType": "User",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/api/UserRepository.tsx",
+            "line": 5
+          },
+          "description": "Dato de estado/configuración `name`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/api/UserRepository.tsx",
+        "line": 3
+      }
+    },
+    {
+      "name": "LoginResponse",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "user",
+          "declaration": "user: User",
+          "callback": false,
+          "ownerType": "LoginResponse",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/api/UserRepository.tsx",
+            "line": 10
+          },
+          "description": "Dato de estado/configuración `user`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "token",
+          "declaration": "token: string",
+          "callback": false,
+          "ownerType": "LoginResponse",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/api/UserRepository.tsx",
+            "line": 11
+          },
+          "description": "Dato de estado/configuración `token`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/api/UserRepository.tsx",
+        "line": 9
+      }
+    },
+    {
+      "name": "PinScreenStatus",
+      "kind": "TypeAliasDeclaration",
+      "type": "\"idle\" | \"loading\" | \"error\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/PinScreen.tsx",
+        "line": 7
+      }
+    },
+    {
+      "name": "PinScreenProps",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "title",
+          "declaration": "title?: string",
+          "callback": false,
+          "ownerType": "PinScreenProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/PinScreen.tsx",
+            "line": 10
+          },
+          "description": "Dato de estado/configuración `title`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "subtitle",
+          "declaration": "subtitle?: string",
+          "callback": false,
+          "ownerType": "PinScreenProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/PinScreen.tsx",
+            "line": 11
+          },
+          "description": "Dato de estado/configuración `subtitle`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "kicker",
+          "declaration": "kicker?: string",
+          "callback": false,
+          "ownerType": "PinScreenProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/PinScreen.tsx",
+            "line": 12
+          },
+          "description": "Dato de estado/configuración `kicker`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "submitLabel",
+          "declaration": "submitLabel?: string",
+          "callback": false,
+          "ownerType": "PinScreenProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/PinScreen.tsx",
+            "line": 13
+          },
+          "description": "Dato de estado/configuración `submitLabel`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "digitsCount",
+          "declaration": "digitsCount?: number",
+          "callback": false,
+          "ownerType": "PinScreenProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/PinScreen.tsx",
+            "line": 14
+          },
+          "description": "Dato de estado/configuración `digitsCount`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "canClose",
+          "declaration": "canClose?: boolean",
+          "callback": false,
+          "ownerType": "PinScreenProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/PinScreen.tsx",
+            "line": 15
+          },
+          "description": "Dato de estado/configuración `canClose`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "onClose",
+          "declaration": "onClose?: () => void",
+          "callback": true,
+          "ownerType": "PinScreenProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/PinScreen.tsx",
+            "line": 16
+          },
+          "description": "El diálogo invoca al cancelar/cerrar para que el dueño retire la vista; no revoca sesión F4 por sí solo."
+        },
+        {
+          "name": "onSubmit",
+          "declaration": "onSubmit: (pin: string) => Promise<PinSubmitResult> | PinSubmitResult",
+          "callback": true,
+          "ownerType": "PinScreenProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/PinScreen.tsx",
+            "line": 17
+          },
+          "description": "Entrega PIN local al dueño y espera PinSubmitResult síncrono/Promise; la UI refleja el resultado sin inventar concesión física."
+        },
+        {
+          "name": "successAction",
+          "declaration": "successAction?: () => void",
+          "callback": true,
+          "ownerType": "PinScreenProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/PinScreen.tsx",
+            "line": 18
+          },
+          "description": "Continuación opcional tras éxito confirmado por el flujo de PIN; no se ejecuta por solo escribir cuatro dígitos."
+        },
+        {
+          "name": "idleMessage",
+          "declaration": "idleMessage?: string",
+          "callback": false,
+          "ownerType": "PinScreenProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/PinScreen.tsx",
+            "line": 19
+          },
+          "description": "Dato de estado/configuración `idleMessage`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "errorMessage",
+          "declaration": "errorMessage?: string",
+          "callback": false,
+          "ownerType": "PinScreenProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/PinScreen.tsx",
+            "line": 20
+          },
+          "description": "Dato de estado/configuración `errorMessage`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "loadingMessage",
+          "declaration": "loadingMessage?: string",
+          "callback": false,
+          "ownerType": "PinScreenProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/PinScreen.tsx",
+            "line": 21
+          },
+          "description": "Dato de estado/configuración `loadingMessage`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "compactInvalidPinError",
+          "declaration": "compactInvalidPinError?: boolean",
+          "callback": false,
+          "ownerType": "PinScreenProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/PinScreen.tsx",
+            "line": 22
+          },
+          "description": "Dato de estado/configuración `compactInvalidPinError`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/PinScreen.tsx",
+        "line": 9
+      }
+    },
+    {
+      "name": "PinScreenModalProps",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "isOpen",
+          "declaration": "isOpen: boolean",
+          "callback": false,
+          "ownerType": "PinScreenModalProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/PinScreenModal.tsx",
+            "line": 10
+          },
+          "description": "Dato de estado/configuración `isOpen`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "onClose",
+          "declaration": "onClose: () => void",
+          "callback": true,
+          "ownerType": "PinScreenModalProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/PinScreenModal.tsx",
+            "line": 11
+          },
+          "description": "El diálogo invoca al cancelar/cerrar para que el dueño retire la vista; no revoca sesión F4 por sí solo."
+        },
+        {
+          "name": "title",
+          "declaration": "title?: string",
+          "callback": false,
+          "ownerType": "PinScreenModalProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/PinScreenModal.tsx",
+            "line": 12
+          },
+          "description": "Dato de estado/configuración `title`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "subtitle",
+          "declaration": "subtitle?: string",
+          "callback": false,
+          "ownerType": "PinScreenModalProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/PinScreenModal.tsx",
+            "line": 13
+          },
+          "description": "Dato de estado/configuración `subtitle`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "kicker",
+          "declaration": "kicker?: string",
+          "callback": false,
+          "ownerType": "PinScreenModalProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/PinScreenModal.tsx",
+            "line": 14
+          },
+          "description": "Dato de estado/configuración `kicker`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "submitLabel",
+          "declaration": "submitLabel?: string",
+          "callback": false,
+          "ownerType": "PinScreenModalProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/PinScreenModal.tsx",
+            "line": 15
+          },
+          "description": "Dato de estado/configuración `submitLabel`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "digitsCount",
+          "declaration": "digitsCount?: number",
+          "callback": false,
+          "ownerType": "PinScreenModalProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/PinScreenModal.tsx",
+            "line": 16
+          },
+          "description": "Dato de estado/configuración `digitsCount`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "canClose",
+          "declaration": "canClose?: boolean",
+          "callback": false,
+          "ownerType": "PinScreenModalProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/PinScreenModal.tsx",
+            "line": 17
+          },
+          "description": "Dato de estado/configuración `canClose`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "onSubmit",
+          "declaration": "onSubmit: (pin: string) => Promise<PinSubmitResult> | PinSubmitResult",
+          "callback": true,
+          "ownerType": "PinScreenModalProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/PinScreenModal.tsx",
+            "line": 18
+          },
+          "description": "Entrega PIN local al dueño y espera PinSubmitResult síncrono/Promise; la UI refleja el resultado sin inventar concesión física."
+        },
+        {
+          "name": "successAction",
+          "declaration": "successAction?: () => void",
+          "callback": true,
+          "ownerType": "PinScreenModalProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/PinScreenModal.tsx",
+            "line": 19
+          },
+          "description": "Continuación opcional tras éxito confirmado por el flujo de PIN; no se ejecuta por solo escribir cuatro dígitos."
+        },
+        {
+          "name": "idleMessage",
+          "declaration": "idleMessage?: string",
+          "callback": false,
+          "ownerType": "PinScreenModalProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/PinScreenModal.tsx",
+            "line": 20
+          },
+          "description": "Dato de estado/configuración `idleMessage`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "errorMessage",
+          "declaration": "errorMessage?: string",
+          "callback": false,
+          "ownerType": "PinScreenModalProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/PinScreenModal.tsx",
+            "line": 21
+          },
+          "description": "Dato de estado/configuración `errorMessage`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "loadingMessage",
+          "declaration": "loadingMessage?: string",
+          "callback": false,
+          "ownerType": "PinScreenModalProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/PinScreenModal.tsx",
+            "line": 22
+          },
+          "description": "Dato de estado/configuración `loadingMessage`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/PinScreenModal.tsx",
+        "line": 9
+      }
+    },
+    {
+      "name": "User",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "id",
+          "declaration": "id: string",
+          "callback": false,
+          "ownerType": "User",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/UserContext.tsx",
+            "line": 9
+          },
+          "description": "Dato de estado/configuración `id`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "name",
+          "declaration": "name: string",
+          "callback": false,
+          "ownerType": "User",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/UserContext.tsx",
+            "line": 10
+          },
+          "description": "Dato de estado/configuración `name`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/UserContext.tsx",
+        "line": 8
+      }
+    },
+    {
+      "name": "StmAuthState",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "authenticated",
+          "declaration": "authenticated: boolean",
+          "callback": false,
+          "ownerType": "StmAuthState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/UserContext.tsx",
+            "line": 14
+          },
+          "description": "Dato de estado/configuración `authenticated`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "authSource",
+          "declaration": "authSource: \"stm32\" | null",
+          "callback": false,
+          "ownerType": "StmAuthState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/UserContext.tsx",
+            "line": 15
+          },
+          "description": "Dato de estado/configuración `authSource`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ttlMs",
+          "declaration": "ttlMs: number",
+          "callback": false,
+          "ownerType": "StmAuthState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/UserContext.tsx",
+            "line": 16
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "attemptsLeft",
+          "declaration": "attemptsLeft: number | null",
+          "callback": false,
+          "ownerType": "StmAuthState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/UserContext.tsx",
+            "line": 17
+          },
+          "description": "Dato de estado/configuración `attemptsLeft`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "blocked",
+          "declaration": "blocked: boolean",
+          "callback": false,
+          "ownerType": "StmAuthState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/UserContext.tsx",
+            "line": 18
+          },
+          "description": "Dato de estado/configuración `blocked`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/UserContext.tsx",
+        "line": 13
+      }
+    },
+    {
+      "name": "UserContextType",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "user",
+          "declaration": "user: User | null",
+          "callback": false,
+          "ownerType": "UserContextType",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/UserContext.tsx",
+            "line": 22
+          },
+          "description": "Dato de estado/configuración `user`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "loading",
+          "declaration": "loading: boolean",
+          "callback": false,
+          "ownerType": "UserContextType",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/UserContext.tsx",
+            "line": 23
+          },
+          "description": "Dato de estado/configuración `loading`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "remotePinAuthenticated",
+          "declaration": "remotePinAuthenticated: boolean",
+          "callback": false,
+          "ownerType": "UserContextType",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/UserContext.tsx",
+            "line": 24
+          },
+          "description": "Dato de estado/configuración `remotePinAuthenticated`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "localEspDebugReady",
+          "declaration": "localEspDebugReady: boolean",
+          "callback": false,
+          "ownerType": "UserContextType",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/UserContext.tsx",
+            "line": 25
+          },
+          "description": "Dato de estado/configuración `localEspDebugReady`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "stmAuth",
+          "declaration": "stmAuth: StmAuthState",
+          "callback": false,
+          "ownerType": "UserContextType",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/UserContext.tsx",
+            "line": 26
+          },
+          "description": "Dato de estado/configuración `stmAuth`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "login",
+          "declaration": "login: (pin: string) => Promise<PinAuthResult>",
+          "callback": true,
+          "ownerType": "UserContextType",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/UserContext.tsx",
+            "line": 27
+          },
+          "description": "Envía PIN de login local al contrato de autenticación y conserva resultado/TTL de la sesión correspondiente."
+        },
+        {
+          "name": "validatePin",
+          "declaration": "validatePin: (pin: string, screenCode?: number) => Promise<PinAuthResult>",
+          "callback": true,
+          "ownerType": "UserContextType",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/UserContext.tsx",
+            "line": 28
+          },
+          "description": "Solicita validación del PIN, con screenCode cuando corresponde; scope pantalla no concede login general nuevo."
+        },
+        {
+          "name": "changePin",
+          "declaration": "changePin: (currentPin: string, newPin: string) => Promise<PinAuthResult>",
+          "callback": true,
+          "ownerType": "UserContextType",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/UserContext.tsx",
+            "line": 29
+          },
+          "description": "Solicita cambio de PIN actual/nuevo; después de resultado revisar revocación de sesiones y streams."
+        },
+        {
+          "name": "logout",
+          "declaration": "logout: () => void",
+          "callback": true,
+          "ownerType": "UserContextType",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/UserContext.tsx",
+            "line": 30
+          },
+          "description": "Inicia cierre de sesión y limpieza local/remota según el provider; quitar el modal no equivale a logout."
+        },
+        {
+          "name": "sessionNotice",
+          "declaration": "sessionNotice: string | null",
+          "callback": false,
+          "ownerType": "UserContextType",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/UserContext.tsx",
+            "line": 31
+          },
+          "description": "Dato de estado/configuración `sessionNotice`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "clearSessionNotice",
+          "declaration": "clearSessionNotice: () => void",
+          "callback": true,
+          "ownerType": "UserContextType",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/UserContext.tsx",
+            "line": 32
+          },
+          "description": "Limpia aviso local de estado de sesión después de mostrarlo; no cambia autoridad física."
+        },
+        {
+          "name": "setUser",
+          "declaration": "setUser: (user: User | null) => void",
+          "callback": true,
+          "ownerType": "UserContextType",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/UserContext.tsx",
+            "line": 33
+          },
+          "description": "Actualiza proyección local de usuario; no concede permiso F4 por sí solo."
+        },
+        {
+          "name": "devMode",
+          "declaration": "devMode: boolean",
+          "callback": false,
+          "ownerType": "UserContextType",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/UserContext.tsx",
+            "line": 34
+          },
+          "description": "Dato de estado/configuración `devMode`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "setDevMode",
+          "declaration": "setDevMode: (value: boolean) => void",
+          "callback": true,
+          "ownerType": "UserContextType",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/UserContext.tsx",
+            "line": 35
+          },
+          "description": "Configura modo local de desarrollo; no sustituye concesión de PIN F4."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/UserContext.tsx",
+        "line": 21
+      }
+    },
+    {
+      "name": "AuthResponse",
+      "kind": "TypeAliasDeclaration",
+      "fields": [
+        {
+          "name": "granted",
+          "declaration": "granted?: boolean",
+          "callback": false,
+          "ownerType": "AuthResponse",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/UserContext.tsx",
+            "line": 39
+          },
+          "description": "Dato de estado/configuración `granted`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "authenticated",
+          "declaration": "authenticated?: boolean",
+          "callback": false,
+          "ownerType": "AuthResponse",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/UserContext.tsx",
+            "line": 40
+          },
+          "description": "Dato de estado/configuración `authenticated`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "authSource",
+          "declaration": "authSource?: string",
+          "callback": false,
+          "ownerType": "AuthResponse",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/UserContext.tsx",
+            "line": 41
+          },
+          "description": "Dato de estado/configuración `authSource`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ttlMs",
+          "declaration": "ttlMs?: number",
+          "callback": false,
+          "ownerType": "AuthResponse",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/UserContext.tsx",
+            "line": 42
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "ttlRemainingMs",
+          "declaration": "ttlRemainingMs?: number",
+          "callback": false,
+          "ownerType": "AuthResponse",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/UserContext.tsx",
+            "line": 43
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "attemptsLeft",
+          "declaration": "attemptsLeft?: number",
+          "callback": false,
+          "ownerType": "AuthResponse",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/UserContext.tsx",
+            "line": 44
+          },
+          "description": "Dato de estado/configuración `attemptsLeft`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "blocked",
+          "declaration": "blocked?: boolean",
+          "callback": false,
+          "ownerType": "AuthResponse",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/UserContext.tsx",
+            "line": 45
+          },
+          "description": "Dato de estado/configuración `blocked`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/UserContext.tsx",
+        "line": 38
+      }
+    },
+    {
+      "name": "PinAuthFailureReason",
+      "kind": "TypeAliasDeclaration",
+      "type": "| \"invalid-pin\" | \"timeout\" | \"busy\" | \"bad-request\" | \"transport-error\" | \"grant-rejected\" | \"unknown\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/types/PinAuthTypes.ts",
+        "line": 1
+      }
+    },
+    {
+      "name": "PinAuthResult",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "ok",
+          "declaration": "ok: boolean",
+          "callback": false,
+          "ownerType": "PinAuthResult",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/PinAuthTypes.ts",
+            "line": 11
+          },
+          "description": "Dato de estado/configuración `ok`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "reason",
+          "declaration": "reason?: PinAuthFailureReason",
+          "callback": false,
+          "ownerType": "PinAuthResult",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/PinAuthTypes.ts",
+            "line": 12
+          },
+          "description": "Dato de estado/configuración `reason`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "message",
+          "declaration": "message?: string",
+          "callback": false,
+          "ownerType": "PinAuthResult",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/PinAuthTypes.ts",
+            "line": 13
+          },
+          "description": "Dato de estado/configuración `message`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "code",
+          "declaration": "code?: number",
+          "callback": false,
+          "ownerType": "PinAuthResult",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/PinAuthTypes.ts",
+            "line": 14
+          },
+          "description": "Dato de estado/configuración `code`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "attemptsLeft",
+          "declaration": "attemptsLeft?: number | null",
+          "callback": false,
+          "ownerType": "PinAuthResult",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/PinAuthTypes.ts",
+            "line": 15
+          },
+          "description": "Dato de estado/configuración `attemptsLeft`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "blocked",
+          "declaration": "blocked?: boolean",
+          "callback": false,
+          "ownerType": "PinAuthResult",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/PinAuthTypes.ts",
+            "line": 16
+          },
+          "description": "Dato de estado/configuración `blocked`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "authSource",
+          "declaration": "authSource?: \"stm32\" | null",
+          "callback": false,
+          "ownerType": "PinAuthResult",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/PinAuthTypes.ts",
+            "line": 17
+          },
+          "description": "Dato de estado/configuración `authSource`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "retryAfterMs",
+          "declaration": "retryAfterMs?: number",
+          "callback": false,
+          "ownerType": "PinAuthResult",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/PinAuthTypes.ts",
+            "line": 18
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/types/PinAuthTypes.ts",
+        "line": 10
+      }
+    },
+    {
+      "name": "PinSubmitResult",
+      "kind": "TypeAliasDeclaration",
+      "type": "boolean | PinAuthResult",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/types/PinAuthTypes.ts",
+        "line": 21
+      }
+    },
+    {
+      "name": "User",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "id",
+          "declaration": "id: string",
+          "callback": false,
+          "ownerType": "User",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/UserTypes.ts",
+            "line": 2
+          },
+          "description": "Dato de estado/configuración `id`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "name",
+          "declaration": "name: string",
+          "callback": false,
+          "ownerType": "User",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/UserTypes.ts",
+            "line": 3
+          },
+          "description": "Dato de estado/configuración `name`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/types/UserTypes.ts",
+        "line": 1
+      }
+    },
+    {
+      "name": "UserContextType",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "user",
+          "declaration": "user: User | null",
+          "callback": false,
+          "ownerType": "UserContextType",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/UserTypes.ts",
+            "line": 8
+          },
+          "description": "Dato de estado/configuración `user`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "loading",
+          "declaration": "loading?: boolean",
+          "callback": false,
+          "ownerType": "UserContextType",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/UserTypes.ts",
+            "line": 9
+          },
+          "description": "Dato de estado/configuración `loading`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "remotePinAuthenticated",
+          "declaration": "remotePinAuthenticated?: boolean",
+          "callback": false,
+          "ownerType": "UserContextType",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/UserTypes.ts",
+            "line": 10
+          },
+          "description": "Dato de estado/configuración `remotePinAuthenticated`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "login",
+          "declaration": "login: (pin: string) => Promise<boolean>",
+          "callback": true,
+          "ownerType": "UserContextType",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/UserTypes.ts",
+            "line": 11
+          },
+          "description": "Envía PIN de login local al contrato de autenticación y conserva resultado/TTL de la sesión correspondiente."
+        },
+        {
+          "name": "validatePin",
+          "declaration": "validatePin?: (pin: string) => Promise<boolean>",
+          "callback": true,
+          "ownerType": "UserContextType",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/UserTypes.ts",
+            "line": 12
+          },
+          "description": "Solicita validación del PIN, con screenCode cuando corresponde; scope pantalla no concede login general nuevo."
+        },
+        {
+          "name": "logout",
+          "declaration": "logout: () => void",
+          "callback": true,
+          "ownerType": "UserContextType",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/UserTypes.ts",
+            "line": 13
+          },
+          "description": "Inicia cierre de sesión y limpieza local/remota según el provider; quitar el modal no equivale a logout."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/types/UserTypes.ts",
+        "line": 7
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "FeedbackStep",
+      "displayName": "FeedbackStep",
+      "signature": "FeedbackStep({\n label,\n value,\n tone,\n}: { label: string; value: string; tone: \"ok\" | \"error\"; }): inferred-by-TypeScript",
+      "line": 387,
+      "endLine": 404,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/PinScreen.tsx",
+        "line": 387
+      },
+      "description": "Operación Feedback Step de Usuario, PIN y permisos remotos; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "Login",
+      "displayName": "Login",
+      "signature": "Login(): inferred-by-TypeScript",
+      "line": 5,
+      "endLine": 23,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useUser"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/Login.tsx",
+        "line": 5
+      },
+      "description": "Adapta la llamada a `useUser` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "PinScreen",
+      "displayName": "PinScreen",
+      "signature": "PinScreen({\n title = \"Ingresar PIN\",\n subtitle = \"Usa el PIN de 4 digitos guardado en el ESP.\",\n kicker = \"Acceso seguro\",\n submitLabel = \"Entrar\",\n digitsCount = 4,\n canClose = false,\n onClose,\n onSubmit,\n successAction,\n idleMessage = \"Escribi los digitos con el teclado.\",\n errorMessage = \"No se pudo validar el PIN.\",\n loadingMessage = \"Validando...\",\n compactInvalidPinError = false,\n}: PinScreenProps): inferred-by-TypeScript",
+      "line": 25,
+      "endLine": 338,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Array.from",
+        "Array.from({ length: 3 }).map",
+        "Array.from({ length: safeDigitsCount }).map",
+        "Math.max",
+        "getPinFailureTitle",
+        "useEffect",
+        "useMemo",
+        "useReducedMotion",
+        "useRef",
+        "useState"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/PinScreen.tsx",
+        "line": 25
+      },
+      "description": "Coordina `Array.from`, `Array.from({ length: 3 }).map`, `Array.from({ length: safeDigitsCount }).map` para Usuario, PIN y permisos remotos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "PinScreenModal",
+      "displayName": "PinScreenModal",
+      "signature": "PinScreenModal({\r\n  isOpen,\r\n  onClose,\r\n  title,\r\n  subtitle,\r\n  kicker,\r\n  submitLabel,\r\n  digitsCount = 4,\r\n  canClose = true,\r\n  onSubmit,\r\n  successAction,\r\n  idleMessage,\r\n  errorMessage,\r\n  loadingMessage,\r\n}: PinScreenModalProps): inferred-by-TypeScript",
+      "line": 25,
+      "endLine": 103,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "createPortal",
+        "useEffect",
+        "useModalScrollLock",
+        "useReducedMotion"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/PinScreenModal.tsx",
+        "line": 25
+      },
+      "description": "Presenta edición local del PIN; no reconstruye el buffer de la pantalla F4.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "ProtectedRoute",
+      "displayName": "ProtectedRoute",
+      "signature": "ProtectedRoute({\n  children,\n  loadingLabel = \"Cargando dashboard\",\n}: inferred-by-TypeScript): inferred-by-TypeScript",
+      "line": 5,
+      "endLine": 16,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useUser"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ProtectedRoute.tsx",
+        "line": 5
+      },
+      "description": "Adapta la llamada a `useUser` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "PublicRoute",
+      "displayName": "PublicRoute",
+      "signature": "PublicRoute({\r\n  children,\r\n}: inferred-by-TypeScript): inferred-by-TypeScript",
+      "line": 7,
+      "endLine": 17,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useUser"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/PublicRoute.tsx",
+        "line": 7
+      },
+      "description": "Adapta la llamada a `useUser` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UserProvider",
+      "displayName": "UserProvider",
+      "signature": "UserProvider({ children }: inferred-by-TypeScript): inferred-by-TypeScript",
+      "line": 65,
+      "endLine": 371,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useCallback",
+        "useEffect",
+        "useRef",
+        "useState",
+        "useWebSocket"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/UserContext.tsx",
+        "line": 65
+      },
+      "description": "Coordina `useCallback`, `useEffect`, `useRef` para Usuario, PIN y permisos remotos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "fetchWithAuth",
+      "displayName": "fetchWithAuth",
+      "signature": "fetchWithAuth(endpoint: string, options: RequestInit): Promise<T>",
+      "line": 73,
+      "endLine": 94,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "fetch",
+        "getAuthToken",
+        "res.json",
+        "res.json().catch"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/api/UserRepository.tsx",
+        "line": 73
+      },
+      "description": "Coordina `fetch`, `getAuthToken`, `res.json` para Usuario, PIN y permisos remotos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "finiteNumber",
+      "displayName": "finiteNumber",
+      "signature": "finiteNumber(value: unknown): number | null",
+      "line": 379,
+      "endLine": 381,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Number.isFinite"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/UserContext.tsx",
+        "line": 379
+      },
+      "description": "Adapta la llamada a `Number.isFinite` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "getAuthToken",
+      "displayName": "getAuthToken",
+      "signature": "getAuthToken(): string | null",
+      "line": 65,
+      "endLine": 67,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "localStorage.getItem"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/api/UserRepository.tsx",
+        "line": 65
+      },
+      "description": "Adapta la llamada a `localStorage.getItem` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "getCurrentUser",
+      "displayName": "getCurrentUser",
+      "signature": "getCurrentUser(): User | null",
+      "line": 52,
+      "endLine": 60,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "JSON.parse",
+        "localStorage.getItem"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/api/UserRepository.tsx",
+        "line": 52
+      },
+      "description": "Coordina `JSON.parse`, `localStorage.getItem` para Usuario, PIN y permisos remotos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "getPinFailureTitle",
+      "displayName": "getPinFailureTitle",
+      "signature": "getPinFailureTitle(failure: PinAuthResult): string",
+      "line": 366,
+      "endLine": 385,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/PinScreen.tsx",
+        "line": 366
+      },
+      "description": "Operación get Pin Failure Title de Usuario, PIN y permisos remotos; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "getProfile",
+      "displayName": "getProfile",
+      "signature": "getProfile(): Promise<User>",
+      "line": 99,
+      "endLine": 101,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "fetchWithAuth"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/api/UserRepository.tsx",
+        "line": 99
+      },
+      "description": "Adapta la llamada a `fetchWithAuth` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "login",
+      "displayName": "login",
+      "signature": "login(username: string, password: string): Promise<User>",
+      "line": 22,
+      "endLine": 38,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "JSON.stringify",
+        "fetch",
+        "localStorage.setItem",
+        "res.json",
+        "res.json().catch"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/api/UserRepository.tsx",
+        "line": 22
+      },
+      "description": "Coordina `JSON.stringify`, `fetch`, `localStorage.setItem` para Usuario, PIN y permisos remotos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "logout",
+      "displayName": "logout",
+      "signature": "logout(): void",
+      "line": 43,
+      "endLine": 46,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "localStorage.removeItem"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/api/UserRepository.tsx",
+        "line": 43
+      },
+      "description": "Adapta la llamada a `localStorage.removeItem` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "normalizePinSubmitResult",
+      "displayName": "normalizePinSubmitResult",
+      "signature": "normalizePinSubmitResult(result: PinSubmitResult, fallbackMessage: string): PinAuthResult",
+      "line": 340,
+      "endLine": 364,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/PinScreen.tsx",
+        "line": 340
+      },
+      "description": "Operación normalize Pin Submit Result de Usuario, PIN y permisos remotos; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "pinFailure",
+      "displayName": "pinFailure",
+      "signature": "pinFailure(cause: unknown): PinAuthResult",
+      "line": 387,
+      "endLine": 393,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/UserContext.tsx",
+        "line": 387
+      },
+      "description": "Operación pin Failure de Usuario, PIN y permisos remotos; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "useUser",
+      "displayName": "useUser",
+      "signature": "useUser(): inferred-by-TypeScript",
+      "line": 373,
+      "endLine": 377,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useContext"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/UserContext.tsx",
+        "line": 373
+      },
+      "description": "Adapta la llamada a `useContext` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "wait",
+      "displayName": "wait",
+      "signature": "wait(delayMs: number): Promise<void>",
+      "line": 383,
+      "endLine": 385,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/UserContext.tsx",
+        "line": 383
+      },
+      "description": "Operación wait de Usuario, PIN y permisos remotos; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "PinScreen.handlePinChange",
+      "displayName": "handlePinChange",
+      "signature": "PinScreen.handlePinChange(value: string): inferred-by-TypeScript",
+      "line": 78,
+      "endLine": 82,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "setFailure",
+        "setPin",
+        "setStatus",
+        "value.replace",
+        "value.replace(/\\D/g, \"\").slice"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/PinScreen.tsx",
+        "line": 78
+      },
+      "description": "Coordina `setFailure`, `setPin`, `setStatus` para Usuario, PIN y permisos remotos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "PinScreen.resetAttempt",
+      "displayName": "resetAttempt",
+      "signature": "PinScreen.resetAttempt(): inferred-by-TypeScript",
+      "line": 84,
+      "endLine": 90,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "setFailure",
+        "setPin",
+        "setStatus",
+        "window.setTimeout"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/PinScreen.tsx",
+        "line": 84
+      },
+      "description": "Coordina `setFailure`, `setPin`, `setStatus` para Usuario, PIN y permisos remotos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "PinScreen.sendAttempt",
+      "displayName": "sendAttempt",
+      "signature": "PinScreen.sendAttempt(): inferred-by-TypeScript",
+      "line": 92,
+      "endLine": 117,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "console.error",
+        "normalizePinSubmitResult",
+        "onSubmit",
+        "setFailure",
+        "setStatus",
+        "successAction"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/PinScreen.tsx",
+        "line": 92
+      },
+      "description": "Coordina `console.error`, `normalizePinSubmitResult`, `onSubmit` para Usuario, PIN y permisos remotos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "PinScreen.updateCountdown",
+      "displayName": "updateCountdown",
+      "signature": "PinScreen.updateCountdown(): inferred-by-TypeScript",
+      "line": 69,
+      "endLine": 71,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Date.now",
+        "Math.ceil",
+        "Math.max",
+        "setRetrySeconds"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/PinScreen.tsx",
+        "line": 69
+      },
+      "description": "Coordina `Date.now`, `Math.ceil`, `Math.max` para Usuario, PIN y permisos remotos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "PinScreenModal.onKeyDown",
+      "displayName": "onKeyDown",
+      "signature": "PinScreenModal.onKeyDown(event: KeyboardEvent): inferred-by-TypeScript",
+      "line": 47,
+      "endLine": 51,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "onClose"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/PinScreenModal.tsx",
+        "line": 47
+      },
+      "description": "Adapta la llamada a `onClose` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    }
+  ],
+  "hooks": [
+    {
+      "callee": "useReducedMotion",
+      "scope": "PinScreen",
+      "line": 40,
+      "arguments": 0,
+      "path": "src/components/PinScreen.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "PinScreen",
+      "line": 41,
+      "arguments": 1,
+      "path": "src/components/PinScreen.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "PinScreen",
+      "line": 42,
+      "arguments": 1,
+      "path": "src/components/PinScreen.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "PinScreen",
+      "line": 43,
+      "arguments": 1,
+      "path": "src/components/PinScreen.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "PinScreen",
+      "line": 44,
+      "arguments": 1,
+      "path": "src/components/PinScreen.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "PinScreen",
+      "line": 45,
+      "arguments": 1,
+      "path": "src/components/PinScreen.tsx"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "PinScreen",
+      "line": 48,
+      "arguments": 2,
+      "path": "src/components/PinScreen.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "PinScreen",
+      "line": 53,
+      "arguments": 2,
+      "path": "src/components/PinScreen.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "PinScreen",
+      "line": 61,
+      "arguments": 2,
+      "path": "src/components/PinScreen.tsx"
+    },
+    {
+      "callee": "useReducedMotion",
+      "scope": "PinScreenModal",
+      "line": 40,
+      "arguments": 0,
+      "path": "src/components/PinScreenModal.tsx"
+    },
+    {
+      "callee": "useModalScrollLock",
+      "scope": "PinScreenModal",
+      "line": 41,
+      "arguments": 1,
+      "path": "src/components/PinScreenModal.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "PinScreenModal",
+      "line": 43,
+      "arguments": 2,
+      "path": "src/components/PinScreenModal.tsx"
+    },
+    {
+      "callee": "useUser",
+      "scope": "ProtectedRoute",
+      "line": 9,
+      "arguments": 0,
+      "path": "src/components/ProtectedRoute.tsx"
+    },
+    {
+      "callee": "useUser",
+      "scope": "PublicRoute",
+      "line": 10,
+      "arguments": 0,
+      "path": "src/components/PublicRoute.tsx"
+    },
+    {
+      "callee": "useWebSocket",
+      "scope": "UserProvider",
+      "line": 66,
+      "arguments": 0,
+      "path": "src/contexts/UserContext.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "UserProvider",
+      "line": 67,
+      "arguments": 1,
+      "path": "src/contexts/UserContext.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "UserProvider",
+      "line": 68,
+      "arguments": 1,
+      "path": "src/contexts/UserContext.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "UserProvider",
+      "line": 69,
+      "arguments": 1,
+      "path": "src/contexts/UserContext.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "UserProvider",
+      "line": 70,
+      "arguments": 1,
+      "path": "src/contexts/UserContext.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "UserProvider",
+      "line": 71,
+      "arguments": 1,
+      "path": "src/contexts/UserContext.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "UserProvider",
+      "line": 72,
+      "arguments": 1,
+      "path": "src/contexts/UserContext.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "UserProvider",
+      "line": 73,
+      "arguments": 1,
+      "path": "src/contexts/UserContext.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "UserProvider",
+      "line": 75,
+      "arguments": 2,
+      "path": "src/contexts/UserContext.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "UserProvider",
+      "line": 77,
+      "arguments": 2,
+      "path": "src/contexts/UserContext.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "UserProvider",
+      "line": 83,
+      "arguments": 2,
+      "path": "src/contexts/UserContext.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "UserProvider",
+      "line": 103,
+      "arguments": 2,
+      "path": "src/contexts/UserContext.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "UserProvider",
+      "line": 115,
+      "arguments": 2,
+      "path": "src/contexts/UserContext.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "UserProvider",
+      "line": 150,
+      "arguments": 2,
+      "path": "src/contexts/UserContext.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "UserProvider",
+      "line": 170,
+      "arguments": 2,
+      "path": "src/contexts/UserContext.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "UserProvider",
+      "line": 227,
+      "arguments": 2,
+      "path": "src/contexts/UserContext.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "UserProvider",
+      "line": 254,
+      "arguments": 2,
+      "path": "src/contexts/UserContext.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "UserProvider",
+      "line": 303,
+      "arguments": 2,
+      "path": "src/contexts/UserContext.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "UserProvider",
+      "line": 310,
+      "arguments": 2,
+      "path": "src/contexts/UserContext.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "UserProvider",
+      "line": 319,
+      "arguments": 2,
+      "path": "src/contexts/UserContext.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "UserProvider",
+      "line": 339,
+      "arguments": 2,
+      "path": "src/contexts/UserContext.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "UserProvider",
+      "line": 351,
+      "arguments": 2,
+      "path": "src/contexts/UserContext.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "UserProvider",
+      "line": 360,
+      "arguments": 2,
+      "path": "src/contexts/UserContext.tsx"
+    },
+    {
+      "callee": "useContext",
+      "scope": "useUser",
+      "line": 374,
+      "arguments": 1,
+      "path": "src/contexts/UserContext.tsx"
+    },
+    {
+      "callee": "useUser",
+      "scope": "Login",
+      "line": 6,
+      "arguments": 0,
+      "path": "src/pages/Login.tsx"
+    }
+  ]
+}

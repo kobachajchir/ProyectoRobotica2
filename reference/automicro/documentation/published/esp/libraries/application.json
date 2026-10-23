@@ -1,0 +1,717 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "esp:module/src/main.cpp",
+  "slug": "application",
+  "title": "Composición y ciclo principal ESP",
+  "target": "esp",
+  "kind": "composición",
+  "status": "source-documented",
+  "snapshotDate": "2026-10-20",
+  "verification": "not-run-user-instruction",
+  "responsibility": "Construye servicios y adapta Arduino/ESP8266 al servidor, Wi-Fi y protocolo del robot.",
+  "scope": "setup/loop, referencias de sistema y conexión de tablas; no concentra buffers privados de cada librería.",
+  "state": "g_unerApp pertenece a la composición. EspSystemHandle conserva referencias a flags/timers y referencias opacas a UNER/bridge; no duplica el almacenamiento de los globals existentes.",
+  "modularity": "Capa de aplicación ligada a Arduino y servicios concretos. Las librerías reciben puertos; el sistema no se convierte en una dependencia universal neutral.",
+  "lifecycle": [
+    "setup inicia Serial, timebase, NVS, LED y Wi-Fi; después sensores, bindings, UNER y servidor.",
+    "loop actualiza tiempo, Wi-Fi, LED, servidor y UNER, consume tick y cede con delay(0)."
+  ],
+  "interactions": [
+    "AppBindings_Configure conecta servicios antes de UNER_App_Init.",
+    "El modo de boot persistido elige AP-only o AP+STA; arrancar no debe volver a persistir/reiniciar por esa sola selección."
+  ],
+  "limitations": [
+    "El orden observado no demuestra latencia máxima ni ausencia de esperas.",
+    "Código de firmware F4, servidor ESP y bundle Web se publican/cargan por separado."
+  ],
+  "relationships": [],
+  "findings": [],
+  "files": [
+    {
+      "rootId": "esp",
+      "path": "src/app_bindings.cpp",
+      "sha256": "30fc5d6cf8cc664de420fa894097cdc968c78c67bfbb55b9bcccfde6c6705e70",
+      "imports": [
+        "app_bindings.h",
+        "uner_app_handlers.h",
+        "uner_app_ports.h",
+        "webserver_ws.h",
+        "webserver_ports.h",
+        "ws_json_bridge.h",
+        "wifi_utils.h",
+        "nvs_utils.h",
+        "uner_transport_serial.h",
+        "string.h",
+        "user_interface.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    },
+    {
+      "rootId": "esp",
+      "path": "src/app_bindings.h",
+      "sha256": "6f279f0e724460ebf5413ee1976125075788c5a653d1a35d883bca3d66c4c74e",
+      "imports": [],
+      "analysisLevel": "c-cpp-structural"
+    },
+    {
+      "rootId": "esp",
+      "path": "src/esp_system.cpp",
+      "sha256": "899d3abdee587159db2ad5c9001f4d5e11461111b078499302907c7f303bc26e",
+      "imports": [
+        "esp_system.h",
+        "globals.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    },
+    {
+      "rootId": "esp",
+      "path": "src/esp_system.h",
+      "sha256": "7e1beff1518e10bd59ecfc0c0dba36a0330b8f8cf9aef35033994316fb9791ad",
+      "imports": [
+        "stdint.h",
+        "bitMap.h",
+        "config.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    },
+    {
+      "rootId": "esp",
+      "path": "src/globals.h",
+      "sha256": "8a9d87a6cce292b8d793c4a1e52d495cee0810e9451a0b0125338320d3582f6d",
+      "imports": [
+        "stdint.h",
+        "bitMap.h",
+        "config.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    },
+    {
+      "rootId": "esp",
+      "path": "src/main.cpp",
+      "sha256": "3e23d3ef2309cb966bcc5af68d8b3608ba700eaf2a098d394574029acff01f0b",
+      "imports": [
+        "Arduino.h",
+        "config.h",
+        "nvs_utils.h",
+        "wifi_utils.h",
+        "sensors.h",
+        "webserver_ws.h",
+        "timebase.h",
+        "globals.h",
+        "esp_system.h",
+        "app_bindings.h",
+        "ws_json_bridge.h",
+        "uner_app_handlers.h",
+        "boot_mode.h",
+        "wifi_status_led.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    }
+  ],
+  "types": [
+    {
+      "name": "EspSystemRuntime",
+      "fields": [
+        {
+          "name": "flags",
+          "declaration": "volatile t_bitMap &flags",
+          "callback": false,
+          "ownerType": "EspSystemRuntime",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/esp_system.h",
+            "line": 8
+          },
+          "description": "Bits de estado del módulo; conservar máscaras y distinguir estado de eventos pendientes."
+        },
+        {
+          "name": "sta_wait",
+          "declaration": "volatile uint16_t &sta_wait",
+          "callback": false,
+          "ownerType": "EspSystemRuntime",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/esp_system.h",
+            "line": 9
+          },
+          "description": "Dato de estado/configuración `sta_wait`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "sta_retry",
+          "declaration": "volatile uint16_t &sta_retry",
+          "callback": false,
+          "ownerType": "EspSystemRuntime",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/esp_system.h",
+            "line": 10
+          },
+          "description": "Dato de estado/configuración `sta_retry`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/esp_system.h",
+        "line": 8
+      }
+    },
+    {
+      "name": "EspSystemHandle",
+      "fields": [
+        {
+          "name": "runtime",
+          "declaration": "EspSystemRuntime runtime",
+          "callback": false,
+          "ownerType": "EspSystemHandle",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/esp_system.h",
+            "line": 13
+          },
+          "description": "Dato de estado/configuración `runtime`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "preferences",
+          "declaration": "struct { estructura anidada } preferences",
+          "callback": false,
+          "ownerType": "EspSystemHandle",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/esp_system.h",
+            "line": 14
+          },
+          "description": "Dato de estado/configuración `preferences`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "handles",
+          "declaration": "struct { estructura anidada } handles",
+          "callback": false,
+          "ownerType": "EspSystemHandle",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/esp_system.h",
+            "line": 15
+          },
+          "description": "Dato de estado/configuración `handles`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/esp_system.h",
+        "line": 13
+      }
+    },
+    {
+      "name": "preferences",
+      "fields": [
+        {
+          "name": "cached",
+          "declaration": "const AppConfig *cached",
+          "callback": false,
+          "ownerType": "preferences",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/esp_system.h",
+            "line": 15
+          },
+          "description": "Dato de estado/configuración `cached`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/esp_system.h",
+        "line": 15
+      }
+    },
+    {
+      "name": "handles",
+      "fields": [
+        {
+          "name": "uner_app",
+          "declaration": "void *uner_app",
+          "callback": false,
+          "ownerType": "handles",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/esp_system.h",
+            "line": 16
+          },
+          "description": "Dato de estado/configuración `uner_app`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "json_bridge",
+          "declaration": "void *json_bridge",
+          "callback": false,
+          "ownerType": "handles",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/esp_system.h",
+            "line": 16
+          },
+          "description": "Dato de estado/configuración `json_bridge`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/esp_system.h",
+        "line": 16
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "AppBindings_Configure",
+      "signature": "void AppBindings_Configure(UNER_App *app)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/app_bindings.cpp",
+        "line": 183
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "UNER_App_DefaultServices",
+        "UNER_App_SetServices",
+        "WebServerWS_SetServices",
+        "WebServer_DefaultServices"
+      ],
+      "writes": [
+        "context"
+      ],
+      "description": "Conecta operaciones de aplicación a los handlers UNER sin mover su estado privado.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "Bridge_DefaultBackend",
+      "signature": "const BridgeBackendOps &Bridge_DefaultBackend()",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/app_bindings.cpp",
+        "line": 191
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "bridgeBackend"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `bridgeBackend` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Bridge_DefaultWifi",
+      "signature": "const BridgeWifiPort &Bridge_DefaultWifi()",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/app_bindings.cpp",
+        "line": 195
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "wifiOps"
+      ],
+      "writes": [
+        "ops"
+      ],
+      "description": "Adapta la llamada a `wifiOps` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_App_DefaultServices",
+      "signature": "const UNER_AppServices &UNER_App_DefaultServices()",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/app_bindings.cpp",
+        "line": 128
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "BridgePlatform_ESP",
+        "UNER_SerialTransport_InitWithContext",
+        "delay",
+        "flush",
+        "getResetInfoPtr",
+        "restart",
+        "wifiOps",
+        "yield"
+      ],
+      "writes": [
+        "ap_clients_page",
+        "cancel_credentials",
+        "client_info",
+        "config",
+        "connected_count",
+        "cooperate",
+        "credentials_state",
+        "delay_ms",
+        "disconnect_ap_client",
+        "flush_serial",
+        "initialize_serial_transport",
+        "ops",
+        "platform",
+        "request_credentials",
+        "reset_diagnostic",
+        "restart",
+        "save_config",
+        "scan_entry",
+        "submit_credentials"
+      ],
+      "description": "Coordina `BridgePlatform_ESP`, `UNER_SerialTransport_InitWithContext`, `delay` para Composición y ciclo principal ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WSJsonBridge_Init",
+      "signature": "void WSJsonBridge_Init(AsyncWebSocket *socket, UNER_App *app)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/app_bindings.cpp",
+        "line": 72
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "BridgePlatform_ESP",
+        "WSJsonBridge_InitWithPorts",
+        "bridgeBackend",
+        "wifiOps"
+      ],
+      "writes": [
+        "ops"
+      ],
+      "description": "Coordina `BridgePlatform_ESP`, `WSJsonBridge_InitWithPorts`, `bridgeBackend` para Composición y ciclo principal ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WebServerWS_SetUNERApp",
+      "signature": "void WebServerWS_SetUNERApp(void *app)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/app_bindings.cpp",
+        "line": 189
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "AppBindings_Configure"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `AppBindings_Configure` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WebServer_DefaultServices",
+      "signature": "const WebServerServices &WebServer_DefaultServices()",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/app_bindings.cpp",
+        "line": 161
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "UNER_App_NotifyApClientJoined",
+        "UNER_App_NotifyApClientLeft",
+        "UNER_App_NotifyWebPageClosed",
+        "UNER_App_NotifyWebPageReady",
+        "UNER_App_NotifyWebserverUp",
+        "UNER_App_NotifyWsClientConnected",
+        "UNER_App_NotifyWsClientDisconnected",
+        "WSJsonBridge_Init"
+      ],
+      "writes": [
+        "bridge_connect",
+        "bridge_data",
+        "bridge_disconnect",
+        "bridge_initialize",
+        "bridge_loop",
+        "notify_ap_join",
+        "notify_ap_leave",
+        "notify_connected",
+        "notify_disconnected",
+        "notify_page_closed",
+        "notify_page_ready",
+        "notify_server_up",
+        "storage_ready"
+      ],
+      "description": "Coordina `UNER_App_NotifyApClientJoined`, `UNER_App_NotifyApClientLeft`, `UNER_App_NotifyWebPageClosed` para Composición y ciclo principal ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "g_espSystem",
+      "signature": "EspSystemHandle g_espSystem(flagsGlobals,tm_sta_wait,tm_sta_retry)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/esp_system.cpp",
+        "line": 7
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación g esp System de Composición y ciclo principal ESP; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "loop",
+      "signature": "void loop()",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/main.cpp",
+        "line": 70
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Timebase_ConsumeTick",
+        "Timebase_Update",
+        "UNER_App_Loop",
+        "WebServerWS_Loop",
+        "WifiStatusLed_Update",
+        "WifiUtils_GetState",
+        "WifiUtils_Loop",
+        "delay",
+        "millis",
+        "wifiStatusLedModeFor"
+      ],
+      "writes": [],
+      "description": "Atiende periódicamente servicios y cede tiempo al scheduler/WDT.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "setup",
+      "signature": "void setup()",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/main.cpp",
+        "line": 28
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "AppBindings_Configure",
+        "BootMode_GetRequested",
+        "NVS_GetCached",
+        "NVS_InitAndLoad",
+        "Sensors_Init",
+        "Timebase_Init10ms",
+        "UNER_App_Init",
+        "WSJsonBridge_GetContext",
+        "WebServerWS_Init",
+        "WebServerWS_SetUNERApp",
+        "WifiStatusLed_Begin",
+        "WifiStatusLed_Update",
+        "WifiUtils_Begin",
+        "WifiUtils_GetState",
+        "begin",
+        "delay",
+        "millis",
+        "setDebugOutput",
+        "wifiStatusLedModeFor"
+      ],
+      "writes": [
+        "cached",
+        "json_bridge",
+        "uner_app"
+      ],
+      "description": "Inicializa plataforma, servicios, puertos, protocolo y servidor en el orden de composición.",
+      "descriptionOrigin": "editorial"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "bridgeBackend",
+      "signature": "static BridgeBackendOps bridgeBackend(UNER_App *app)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/app_bindings.cpp",
+        "line": 44
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "NVS_Save",
+        "NVS_StorageReady",
+        "UNER_App_NotifyApFallbackReady",
+        "UNER_App_ReleaseWifiScan",
+        "UNER_App_SendRawFromNode",
+        "UNER_App_SendRawToPeer",
+        "UNER_App_TryAcquireWifiScan",
+        "UNER_App_UpdateScanSnapshotFromDriver",
+        "UNER_Handle_SetPacketInterceptor",
+        "WebServerWS_MarkPageReady",
+        "WifiUtils_GetRuntimeConfig"
+      ],
+      "writes": [
+        "acquire_scan",
+        "config",
+        "context",
+        "intercept_packets",
+        "notify_ap_fallback",
+        "reboot_boot_mode",
+        "reboot_not_before_ms",
+        "reboot_pending",
+        "release_scan",
+        "save_config",
+        "scan_snapshot",
+        "send_from_node",
+        "send_peer",
+        "storage_ready",
+        "web_page_ready"
+      ],
+      "description": "Coordina `NVS_Save`, `NVS_StorageReady`, `UNER_App_NotifyApFallbackReady` para Composición y ciclo principal ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "clamp_scan_rssi",
+      "signature": "static int8_t clamp_scan_rssi(int32_t rssi)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/app_bindings.cpp",
+        "line": 103
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación clamp scan rssi de Composición y ciclo principal ESP; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "map_scan_encryption_type",
+      "signature": "static uint8_t map_scan_encryption_type(uint8_t raw_type)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/app_bindings.cpp",
+        "line": 77
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "defined",
+        "else"
+      ],
+      "writes": [],
+      "description": "Coordina `defined`, `else` para Composición y ciclo principal ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "neutralIP",
+      "signature": "static WifiIpv4 neutralIP(IPAddress ip)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/app_bindings.cpp",
+        "line": 15
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "WifiIpv4"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `WifiIpv4` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "read_scan_entry",
+      "signature": "static bool read_scan_entry(uint8_t index, WifiScanSnapshotEntry *out)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/app_bindings.cpp",
+        "line": 110
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "clamp_scan_rssi",
+        "encryptionType",
+        "getScanInfoByIndex",
+        "map_scan_encryption_type",
+        "memcpy"
+      ],
+      "writes": [
+        "channel",
+        "encryption_type",
+        "signal_strength"
+      ],
+      "description": "Coordina `clamp_scan_rssi`, `encryptionType`, `getScanInfoByIndex` para Composición y ciclo principal ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "wifiOps",
+      "signature": "static const BridgeWifiOps &wifiOps()",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/app_bindings.cpp",
+        "line": 17
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "WifiUtils_ApplyAPConfig",
+        "WifiUtils_ApplySTAConfig",
+        "WifiUtils_Begin",
+        "WifiUtils_ConnectSTA",
+        "WifiUtils_ConsumeAPFallbackReady",
+        "WifiUtils_ConsumeSTAAttemptFailure",
+        "WifiUtils_DeleteScanResults",
+        "WifiUtils_DisconnectSTA",
+        "WifiUtils_GetAP_IP",
+        "WifiUtils_GetMode",
+        "WifiUtils_GetState",
+        "WifiUtils_IsSTAReconnectEnabled",
+        "WifiUtils_NotifySTAConfigurationFailure",
+        "WifiUtils_RestoreModeAfterScan",
+        "WifiUtils_ScanComplete",
+        "WifiUtils_SetSTAReconnectEnabled",
+        "WifiUtils_SetSessionConfig",
+        "WifiUtils_StartAP",
+        "WifiUtils_StartScan",
+        "WifiUtils_StopAP",
+        "neutralIP"
+      ],
+      "writes": [
+        "ApplyAPConfig",
+        "ApplySTAConfig",
+        "BeginSessionMode",
+        "ConnectSTA",
+        "ConsumeAPFallbackReady",
+        "ConsumeSTAAttemptFailure",
+        "DeleteScanResults",
+        "DisconnectSTA",
+        "GetAP_IP",
+        "GetMode",
+        "GetState",
+        "IsSTAReconnectEnabled",
+        "NotifySTAConfigurationFailure",
+        "RestoreModeAfterScan",
+        "ScanComplete",
+        "SetSTAReconnectEnabled",
+        "SetSessionConfig",
+        "StartAP",
+        "StartScan",
+        "StopAP"
+      ],
+      "description": "Coordina `WifiUtils_ApplyAPConfig`, `WifiUtils_ApplySTAConfig`, `WifiUtils_Begin` para Composición y ciclo principal ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "wifiStatusLedModeFor",
+      "signature": "static WifiStatusLedMode wifiStatusLedModeFor(WifiServiceState state)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/main.cpp",
+        "line": 19
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación wifi Status Led Mode For de Composición y ciclo principal ESP; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    }
+  ],
+  "hooks": []
+}

@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "id": "shared:screen/030207",
+  "symbol": "SCREEN_CODE_LINE_FOLLOW",
+  "code": 197127,
+  "hex": "0x030207",
+  "decomposition": {
+    "menu": 3,
+    "submenu": 2,
+    "page": 7
+  },
+  "revision": "working-copy-hashes",
+  "confidence": "manual-review",
+  "family": "shared:screen-family/line",
+  "numericObservation": "same-literal",
+  "webDeclaration": {
+    "value": 197127,
+    "line": 80
+  },
+  "metadataEntryObserved": false,
+  "evidence": [
+    {
+      "repo": "f4",
+      "path": "Core/Inc/screen_codes.h",
+      "line": 41
+    },
+    {
+      "repo": "web",
+      "path": "src/screens/screenCodes.ts",
+      "line": 80
+    }
+  ],
+  "renderers": [],
+  "callGraph": {
+    "status": "lexical-candidates-only",
+    "edges": []
+  },
+  "f4References": [
+    {
+      "repo": "f4",
+      "path": "Core/Src/menu_definition.c",
+      "line": 274,
+      "kind": "lexical-reference"
+    }
+  ],
+  "variants": [
+    "MenuAction_LineFollow alterna seguimiento; un rechazo activa MenuRender_LineNotice."
+  ],
+  "fields": [
+    {
+      "name": "screenCode/source",
+      "type": "u32/u8 → number",
+      "units": "identidad",
+      "availability": "reported",
+      "note": "identifica pantalla/origen, no el perfil completo"
+    },
+    {
+      "name": "lineState/sessionId",
+      "type": "168 bytes → objeto JSON",
+      "units": "mixtas según campo",
+      "availability": "separately-queryable",
+      "note": "consultar stm.ir.lineCalibration.get; no se incorpora automáticamente al visor OLED"
+    }
+  ],
+  "actions": [
+    "Seleccionar desde el menú físico/remoto ejecuta la política APP_LineFollowSetEnabled, con guardas de modo/estado."
+  ],
+  "transitions": [
+    "Resultado aceptado actualiza menú; motivo de rechazo puede publicar 0x030208."
+  ],
+  "missingData": [
+    "Falta asociación específica del visor; no se localizó renderer dedicado para 0x030207."
+  ],
+  "localOnly": [],
+  "findings": [
+    "AMDOC-WEB-009"
+  ],
+  "exactness": "not-established",
+  "notes": [
+    "No confundir control Web de seguimiento con reproducción del menú/aviso F4."
+  ],
+  "role": "menu-item-action"
+}

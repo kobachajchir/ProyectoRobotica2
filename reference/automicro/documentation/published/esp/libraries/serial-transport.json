@@ -1,0 +1,154 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "esp:module/src/uner_transport_serial.h",
+  "slug": "serial-transport",
+  "title": "Transporte serial Arduino",
+  "target": "esp",
+  "kind": "plataforma",
+  "status": "source-documented",
+  "snapshotDate": "2026-10-20",
+  "verification": "not-run-user-instruction",
+  "responsibility": "Adapta UART/Serial del ESP al contrato de transporte UNER.",
+  "scope": "Disponibilidad de bytes, recepción y aceptación TX, sin interpretar JSON ni permisos.",
+  "state": "Buffer y recurso serial pertenecen al adaptador; las vistas no deben sobrevivir a su reutilización.",
+  "modularity": "Ligado a Arduino/ESP por diseño; mantiene el protocolo separado del acceso físico.",
+  "lifecycle": [
+    "Serial se inicia en setup antes de UNER.",
+    "El loop atiende bytes y envío; flush/cooperate no equivalen a respuesta F4."
+  ],
+  "interactions": [
+    "UNER_Handle utiliza el transporte; TransactionManager serializa solicitudes Web sobre ese canal."
+  ],
+  "limitations": [
+    "No emitir logs arbitrarios sobre la UART que comparte frames del robot.",
+    "Baudrate configurado y entrega de bytes no prueban conectividad física."
+  ],
+  "relationships": [],
+  "findings": [],
+  "files": [
+    {
+      "rootId": "esp",
+      "path": "src/uner_transport_serial.cpp",
+      "sha256": "708a04bc2e92eea7890a6fdfdab2dec66e7f47871d2cf8315384033043b6f47a",
+      "imports": [
+        "uner_transport_serial.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    },
+    {
+      "rootId": "esp",
+      "path": "src/uner_transport_serial.h",
+      "sha256": "b1cc33e2d146e91facdfaadc206fda9c55927ee57142001ac3cc8ba85e3641ee",
+      "imports": [
+        "Arduino.h",
+        "uner_handle.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    }
+  ],
+  "types": [
+    {
+      "name": "UNER_SerialTransportCtx",
+      "fields": [
+        {
+          "name": "serial",
+          "declaration": "HardwareSerial *serial",
+          "callback": false,
+          "ownerType": "UNER_SerialTransportCtx",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_transport_serial.h",
+            "line": 5
+          },
+          "description": "Dato de estado/configuración `serial`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_transport_serial.h",
+        "line": 5
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "UNER_SerialPollRx",
+      "signature": "uint16_t UNER_SerialPollRx(void *ctx, uint8_t *out, uint16_t max_len)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_transport_serial.cpp",
+        "line": 3
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "available",
+        "read",
+        "yield"
+      ],
+      "writes": [],
+      "description": "Coordina `available`, `read`, `yield` para Transporte serial Arduino.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_SerialTransport_Init",
+      "signature": "void UNER_SerialTransport_Init(UNER_Transport *transport, uint8_t id, HardwareSerial &serial, uint8_t max_payload)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_transport_serial.cpp",
+        "line": 32
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "UNER_SerialTransport_InitWithContext"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `UNER_SerialTransport_InitWithContext` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_SerialTransport_InitWithContext",
+      "signature": "void UNER_SerialTransport_InitWithContext(UNER_Transport *transport, UNER_SerialTransportCtx *ctx, uint8_t id, HardwareSerial &serial, uint8_t max_payload)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_transport_serial.cpp",
+        "line": 22
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [
+        "ctx",
+        "id",
+        "max_payload",
+        "poll_rx",
+        "serial",
+        "try_send"
+      ],
+      "description": "Operación UNER Serial Transport Init With Context de Transporte serial Arduino; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_SerialTrySend",
+      "signature": "int UNER_SerialTrySend(void *ctx, const uint8_t *data, uint16_t len)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_transport_serial.cpp",
+        "line": 14
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "availableForWrite",
+        "write"
+      ],
+      "writes": [],
+      "description": "Coordina `availableForWrite`, `write` para Transporte serial Arduino.",
+      "descriptionOrigin": "structural"
+    }
+  ],
+  "internalFunctions": [],
+  "hooks": []
+}

@@ -1,0 +1,2601 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "web:module/src/contexts/IrEmittersContext.tsx",
+  "slug": "sensor-state",
+  "title": "Telemetría y estado de sensores",
+  "target": "web",
+  "kind": "servicio",
+  "status": "source-documented",
+  "snapshotDate": "2026-10-20",
+  "verification": "not-run-user-instruction",
+  "responsibility": "Administra suscripciones y presenta orientación/IR con procedencia y habilitación de emisores.",
+  "scope": "Estado remoto y fanout de muestras; la adquisición y sincronización física pertenecen a F4.",
+  "state": "Hooks/contextos retienen última muestra y estado de petición; la fecha de recepción no reemplaza acquired_ms/seq del productor.",
+  "modularity": "Separación de suscripción/estado y escena; depende de mensajes JSON del bridge.",
+  "lifecycle": [
+    "Suscribir al activar consumidores y retirar/limpiar al desmontar.",
+    "Aplicar estado de emisores desde GET/evento confirmado y no desde la intención del click."
+  ],
+  "interactions": [
+    "StreamBroker ESP combina consumidores y F4 emite por endpoint.",
+    "El visor OLED necesita una adaptación expresa para usar estas muestras; no las recibe por identidad de pantalla."
+  ],
+  "limitations": [
+    "Un stream conectado no acredita que la pantalla física use exactamente esa muestra.",
+    "Señalar simulación y ausencia/vencimiento de dato."
+  ],
+  "relationships": [],
+  "findings": [],
+  "files": [
+    {
+      "rootId": "web",
+      "path": "src/components/IrEmittersControls.tsx",
+      "sha256": "c3020c351d16217f541bd67786cfb097e95de9848693e7d06bfb45d70b3471b8",
+      "imports": [
+        "../contexts/IrEmittersContext",
+        "../features/ir/irEmitterGeometry",
+        "./ToggleButton",
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/components/RealtimeEulerPanel.tsx",
+      "sha256": "8283dc54adc185d7e87cbe3fe9eaaec31bf153d924e57e36f52adca8731d34ef",
+      "imports": [
+        "./SensorDisclosure",
+        "./SimulatedBadge",
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/components/SimulatedBadge.tsx",
+      "sha256": "c47d7a38665e522d838f1a88d367b7d7b903c3dd84efe0cf9ef2b8141ef7756b",
+      "imports": [],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/contexts/IrEmittersContext.tsx",
+      "sha256": "ad310ef2a30661a2d4470bafe21fde073d63896204443874686f5c616c2c834b",
+      "imports": [
+        "../hooks/useWebSocket",
+        "../protocol/wsApi",
+        "./UserContext",
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/hooks/useSensorSubscription.ts",
+      "sha256": "dbb52fa77371e6330e6d5685b71b78597ac72d415570d502f653ca7dd99ef041",
+      "imports": [
+        "../protocol/f4Payloads",
+        "../protocol/wsApi",
+        "./useWebSocket",
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/pages/EstadoSection.tsx",
+      "sha256": "3e08619ffb3ad6a9f4725f154411e1221d763a01780d23097491e449cdddc8db",
+      "imports": [
+        "../components/IrEmittersControls",
+        "../components/MockEulerGenerator",
+        "../components/MpuIrScene3D",
+        "../components/OrientationControls",
+        "../components/PageHeader",
+        "../components/RealtimeEulerPanel",
+        "../components/SectionStatusStrip",
+        "../components/SensorBeamControls",
+        "../components/SensorCameraViewIcon",
+        "../components/SensorDisclosure",
+        "../components/SimulatedBadge",
+        "../components/ThemeModeToggleCard",
+        "../components/modal",
+        "../contexts/EspWifiStatusContext",
+        "../contexts/IrEmittersContext",
+        "../contexts/UserContext",
+        "../features/calibration/CalibrationWorkspace",
+        "../features/ir/beamVisualSettings",
+        "../features/ir/irCalibration",
+        "../features/ir/irCalibrationStorage",
+        "../features/ir/irEmitterGeometry",
+        "../features/ir/irObjectModel",
+        "../features/ir/irSensorFrame",
+        "../features/ir/sensorCameraViews",
+        "../hooks/useSensorSubscription",
+        "../hooks/useWebSocket",
+        "../protocol/espClient",
+        "../protocol/f4Payloads",
+        "../utils/localModel",
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    }
+  ],
+  "types": [
+    {
+      "name": "Euler",
+      "kind": "TypeAliasDeclaration",
+      "fields": [
+        {
+          "name": "yaw",
+          "declaration": "yaw: number",
+          "callback": false,
+          "ownerType": "Euler",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/RealtimeEulerPanel.tsx",
+            "line": 5
+          },
+          "description": "Dato de estado/configuración `yaw`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "pitch",
+          "declaration": "pitch: number",
+          "callback": false,
+          "ownerType": "Euler",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/RealtimeEulerPanel.tsx",
+            "line": 5
+          },
+          "description": "Dato de estado/configuración `pitch`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "roll",
+          "declaration": "roll: number",
+          "callback": false,
+          "ownerType": "Euler",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/RealtimeEulerPanel.tsx",
+            "line": 5
+          },
+          "description": "Dato de estado/configuración `roll`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/RealtimeEulerPanel.tsx",
+        "line": 5
+      }
+    },
+    {
+      "name": "Series",
+      "kind": "TypeAliasDeclaration",
+      "type": "Record<keyof Euler, number[]>",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/RealtimeEulerPanel.tsx",
+        "line": 6
+      }
+    },
+    {
+      "name": "RealtimeEulerPanelProps",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "eulerDeg",
+          "declaration": "eulerDeg: Euler",
+          "callback": false,
+          "ownerType": "RealtimeEulerPanelProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/RealtimeEulerPanel.tsx",
+            "line": 9
+          },
+          "description": "Ángulo en grados; respetar eje y referencia de esta librería."
+        },
+        {
+          "name": "connected",
+          "declaration": "connected: boolean",
+          "callback": false,
+          "ownerType": "RealtimeEulerPanelProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/RealtimeEulerPanel.tsx",
+            "line": 10
+          },
+          "description": "Dato de estado/configuración `connected`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "simulated",
+          "declaration": "simulated?: boolean",
+          "callback": false,
+          "ownerType": "RealtimeEulerPanelProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/RealtimeEulerPanel.tsx",
+            "line": 11
+          },
+          "description": "Dato de estado/configuración `simulated`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "sampling",
+          "declaration": "sampling: boolean",
+          "callback": false,
+          "ownerType": "RealtimeEulerPanelProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/RealtimeEulerPanel.tsx",
+            "line": 12
+          },
+          "description": "Dato de estado/configuración `sampling`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "sampleVersion",
+          "declaration": "sampleVersion: number",
+          "callback": false,
+          "ownerType": "RealtimeEulerPanelProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/RealtimeEulerPanel.tsx",
+            "line": 13
+          },
+          "description": "Dato de estado/configuración `sampleVersion`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "maxPoints",
+          "declaration": "maxPoints?: number",
+          "callback": false,
+          "ownerType": "RealtimeEulerPanelProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/RealtimeEulerPanel.tsx",
+            "line": 14
+          },
+          "description": "Dato de estado/configuración `maxPoints`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "sampleMs",
+          "declaration": "sampleMs?: number",
+          "callback": false,
+          "ownerType": "RealtimeEulerPanelProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/RealtimeEulerPanel.tsx",
+            "line": 15
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "heightPx",
+          "declaration": "heightPx?: number",
+          "callback": false,
+          "ownerType": "RealtimeEulerPanelProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/RealtimeEulerPanel.tsx",
+            "line": 16
+          },
+          "description": "Dato de estado/configuración `heightPx`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "sensorIntervalTime",
+          "declaration": "sensorIntervalTime: number",
+          "callback": false,
+          "ownerType": "RealtimeEulerPanelProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/RealtimeEulerPanel.tsx",
+            "line": 17
+          },
+          "description": "Dato de estado/configuración `sensorIntervalTime`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/RealtimeEulerPanel.tsx",
+        "line": 8
+      }
+    },
+    {
+      "name": "IrEmittersState",
+      "kind": "TypeAliasDeclaration",
+      "fields": [
+        {
+          "name": "objects",
+          "declaration": "objects: boolean",
+          "callback": false,
+          "ownerType": "IrEmittersState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/IrEmittersContext.tsx",
+            "line": 6
+          },
+          "description": "Dato de estado/configuración `objects`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "line",
+          "declaration": "line: boolean",
+          "callback": false,
+          "ownerType": "IrEmittersState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/IrEmittersContext.tsx",
+            "line": 6
+          },
+          "description": "Dato de estado/configuración `line`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "lights",
+          "declaration": "lights: boolean",
+          "callback": false,
+          "ownerType": "IrEmittersState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/IrEmittersContext.tsx",
+            "line": 6
+          },
+          "description": "Dato de estado/configuración `lights`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/IrEmittersContext.tsx",
+        "line": 6
+      }
+    },
+    {
+      "name": "ContextValue",
+      "kind": "TypeAliasDeclaration",
+      "fields": [
+        {
+          "name": "state",
+          "declaration": "state: IrEmittersState | null",
+          "callback": false,
+          "ownerType": "ContextValue",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/IrEmittersContext.tsx",
+            "line": 7
+          },
+          "description": "Dato de estado/configuración `state`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "available",
+          "declaration": "available: boolean",
+          "callback": false,
+          "ownerType": "ContextValue",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/IrEmittersContext.tsx",
+            "line": 7
+          },
+          "description": "Dato de estado/configuración `available`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "pending",
+          "declaration": "pending: boolean",
+          "callback": false,
+          "ownerType": "ContextValue",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/IrEmittersContext.tsx",
+            "line": 7
+          },
+          "description": "Dato de estado/configuración `pending`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "error",
+          "declaration": "error: string | null",
+          "callback": false,
+          "ownerType": "ContextValue",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/IrEmittersContext.tsx",
+            "line": 7
+          },
+          "description": "Dato de estado/configuración `error`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "refresh",
+          "declaration": "refresh: () => Promise<void>",
+          "callback": true,
+          "ownerType": "ContextValue",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/IrEmittersContext.tsx",
+            "line": 7
+          },
+          "description": "Operación refresh de Telemetría y estado de sensores; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "setEnabled",
+          "declaration": "setEnabled: (key: keyof IrEmittersState, enabled: boolean) => Promise<void>",
+          "callback": true,
+          "ownerType": "ContextValue",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/IrEmittersContext.tsx",
+            "line": 7
+          },
+          "description": "Operación set Enabled de Telemetría y estado de sensores; semántica fina pendiente de ampliación."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/IrEmittersContext.tsx",
+        "line": 7
+      }
+    },
+    {
+      "name": "SensorName",
+      "kind": "TypeAliasDeclaration",
+      "type": "\"mpu\" | \"ir\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/hooks/useSensorSubscription.ts",
+        "line": 6
+      }
+    },
+    {
+      "name": "SubscriptionState",
+      "kind": "TypeAliasDeclaration",
+      "type": "\"idle\" | \"subscribing\" | \"active\" | \"error\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/hooks/useSensorSubscription.ts",
+        "line": 7
+      }
+    },
+    {
+      "name": "Consumer",
+      "kind": "TypeAliasDeclaration",
+      "fields": [
+        {
+          "name": "periodMs",
+          "declaration": "periodMs: number",
+          "callback": false,
+          "ownerType": "Consumer",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/hooks/useSensorSubscription.ts",
+            "line": 9
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/hooks/useSensorSubscription.ts",
+        "line": 9
+      }
+    },
+    {
+      "name": "SensorRegistry",
+      "kind": "TypeAliasDeclaration",
+      "fields": [
+        {
+          "name": "consumers",
+          "declaration": "consumers: Map<symbol, Consumer>",
+          "callback": false,
+          "ownerType": "SensorRegistry",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/hooks/useSensorSubscription.ts",
+            "line": 11
+          },
+          "description": "Dato de estado/configuración `consumers`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "appliedPeriodMs",
+          "declaration": "appliedPeriodMs: number | null | undefined",
+          "callback": false,
+          "ownerType": "SensorRegistry",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/hooks/useSensorSubscription.ts",
+            "line": 15
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "operation",
+          "declaration": "operation: Promise<unknown> | null",
+          "callback": false,
+          "ownerType": "SensorRegistry",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/hooks/useSensorSubscription.ts",
+            "line": 16
+          },
+          "description": "Dato de estado/configuración `operation`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/hooks/useSensorSubscription.ts",
+        "line": 10
+      }
+    },
+    {
+      "name": "RequestCommand",
+      "kind": "TypeAliasDeclaration",
+      "type": "<T>( command: string, args?: Record<string, unknown>, options?: { timeoutMs?: number }, ) => Promise<T>",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/hooks/useSensorSubscription.ts",
+        "line": 19
+      }
+    },
+    {
+      "name": "StreamStatus",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "active",
+          "declaration": "active: boolean",
+          "callback": false,
+          "ownerType": "StreamStatus",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/EstadoSection.tsx",
+            "line": 69
+          },
+          "description": "Dato de estado/configuración `active`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "pending",
+          "declaration": "pending: boolean",
+          "callback": false,
+          "ownerType": "StreamStatus",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/EstadoSection.tsx",
+            "line": 70
+          },
+          "description": "Dato de estado/configuración `pending`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "packetsReceived",
+          "declaration": "packetsReceived: number",
+          "callback": false,
+          "ownerType": "StreamStatus",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/EstadoSection.tsx",
+            "line": 71
+          },
+          "description": "Dato de estado/configuración `packetsReceived`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "lastSeq",
+          "declaration": "lastSeq: number | null",
+          "callback": false,
+          "ownerType": "StreamStatus",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/EstadoSection.tsx",
+            "line": 72
+          },
+          "description": "Dato de estado/configuración `lastSeq`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "lastStatus",
+          "declaration": "lastStatus: number | null",
+          "callback": false,
+          "ownerType": "StreamStatus",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/EstadoSection.tsx",
+            "line": 73
+          },
+          "description": "Dato de estado/configuración `lastStatus`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "lastFlags",
+          "declaration": "lastFlags: number | null",
+          "callback": false,
+          "ownerType": "StreamStatus",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/EstadoSection.tsx",
+            "line": 74
+          },
+          "description": "Dato de estado/configuración `lastFlags`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ackCode",
+          "declaration": "ackCode: number | null",
+          "callback": false,
+          "ownerType": "StreamStatus",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/EstadoSection.tsx",
+            "line": 75
+          },
+          "description": "Dato de estado/configuración `ackCode`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ackActive",
+          "declaration": "ackActive: boolean | null",
+          "callback": false,
+          "ownerType": "StreamStatus",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/EstadoSection.tsx",
+            "line": 76
+          },
+          "description": "Dato de estado/configuración `ackActive`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ackPeriodMs",
+          "declaration": "ackPeriodMs: number | null",
+          "callback": false,
+          "ownerType": "StreamStatus",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/EstadoSection.tsx",
+            "line": 77
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "statusText",
+          "declaration": "statusText: string",
+          "callback": false,
+          "ownerType": "StreamStatus",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/EstadoSection.tsx",
+            "line": 78
+          },
+          "description": "Dato de estado/configuración `statusText`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "lastFrameHex",
+          "declaration": "lastFrameHex: string",
+          "callback": false,
+          "ownerType": "StreamStatus",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/EstadoSection.tsx",
+            "line": 79
+          },
+          "description": "Dato de estado/configuración `lastFrameHex`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "updatedAt",
+          "declaration": "updatedAt: number | null",
+          "callback": false,
+          "ownerType": "StreamStatus",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/EstadoSection.tsx",
+            "line": 80
+          },
+          "description": "Dato de estado/configuración `updatedAt`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/EstadoSection.tsx",
+        "line": 68
+      }
+    },
+    {
+      "name": "SensorIconName",
+      "kind": "TypeAliasDeclaration",
+      "type": "| \"cube\" | \"target\" | \"frame\" | \"focus\" | \"snow\" | \"grid\" | \"orbit\" | \"origin\" | \"trash\" | \"signal\" | \"link\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/EstadoSection.tsx",
+        "line": 1643
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "ConsoleCard",
+      "displayName": "ConsoleCard",
+      "signature": "ConsoleCard({\n  title,\n  status,\n  active = false,\n  layout = \"default\",\n  children,\n}: { title: string; status?: string; active?: boolean; layout?: \"default\" | \"toggle\"; children: ReactNode; }): inferred-by-TypeScript",
+      "line": 1563,
+      "endLine": 1585,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/EstadoSection.tsx",
+        "line": 1563
+      },
+      "description": "Operación Console Card de Telemetría y estado de sensores; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "EstadoSection",
+      "displayName": "EstadoSection",
+      "signature": "EstadoSection(): inferred-by-TypeScript",
+      "line": 115,
+      "endLine": 895,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.max",
+        "new URLSearchParams(window.location.search).get",
+        "periodToHz",
+        "useCallback",
+        "useEffect",
+        "useMemo",
+        "useRef",
+        "useSensorSubscription",
+        "useState",
+        "useUser",
+        "useWebSocket"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/EstadoSection.tsx",
+        "line": 115
+      },
+      "description": "Coordina `Math.max`, `new URLSearchParams(window.location.search).get`, `periodToHz` para Telemetría y estado de sensores.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "HeaderPill",
+      "displayName": "HeaderPill",
+      "signature": "HeaderPill({\n  label,\n  value,\n  tone,\n}: { label: string; value: string; tone: \"ok\" | \"error\" | \"info\" | \"muted\"; }): inferred-by-TypeScript",
+      "line": 931,
+      "endLine": 946,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/EstadoSection.tsx",
+        "line": 931
+      },
+      "description": "Operación Header Pill de Telemetría y estado de sensores; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "IrEmittersControls",
+      "displayName": "IrEmittersControls",
+      "signature": "IrEmittersControls({ icon }: { icon?: ReactNode; }): inferred-by-TypeScript",
+      "line": 6,
+      "endLine": 28,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useId",
+        "useIrEmitters"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/IrEmittersControls.tsx",
+        "line": 6
+      },
+      "description": "Coordina `useId`, `useIrEmitters` para Telemetría y estado de sensores.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "IrEmittersProvider",
+      "displayName": "IrEmittersProvider",
+      "signature": "IrEmittersProvider({ children }: { children: ReactNode }): inferred-by-TypeScript",
+      "line": 14,
+      "endLine": 55,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useCallback",
+        "useEffect",
+        "useRef",
+        "useState",
+        "useUser",
+        "useWebSocket"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/IrEmittersContext.tsx",
+        "line": 14
+      },
+      "description": "Coordina `useCallback`, `useEffect`, `useRef` para Telemetría y estado de sensores.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Legend",
+      "displayName": "Legend",
+      "signature": "Legend({ label, dot }: { label: string; dot: string }): inferred-by-TypeScript",
+      "line": 116,
+      "endLine": 120,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/RealtimeEulerPanel.tsx",
+        "line": 116
+      },
+      "description": "Operación Legend de Telemetría y estado de sensores; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "MpuSimulationWorkbench",
+      "displayName": "MpuSimulationWorkbench",
+      "signature": "MpuSimulationWorkbench({\n  eulerDeg,\n  autoMotion,\n  autoAxes,\n  periodMs,\n  onEulerChange,\n  onAutoEulerChange,\n  onAutoAxisChange,\n  onPeriodChange,\n}: { eulerDeg: EulerDeg; autoMotion: boolean; autoAxes: Record<keyof EulerDeg, boolean>; periodMs: number; onEulerChange: (value: EulerDeg) => void; onAutoEulerChange: (value: EulerDeg) => void; onAutoAxisChange: (axis: keyof EulerDeg, enabled: boolean) => void; onPeriodChange: (value: number) => void; }): inferred-by-TypeScript",
+      "line": 1514,
+      "endLine": 1561,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Object.values",
+        "Object.values(autoAxes).some"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/EstadoSection.tsx",
+        "line": 1514
+      },
+      "description": "Coordina `Object.values`, `Object.values(autoAxes).some` para Telemetría y estado de sensores.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "NumberControl",
+      "displayName": "NumberControl",
+      "signature": "NumberControl({\n  value,\n  min,\n  max,\n  suffix,\n  onChange,\n}: { value: number; min: number; max: number; suffix: string; onChange: (value: number) => void; }): inferred-by-TypeScript",
+      "line": 1615,
+      "endLine": 1641,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/EstadoSection.tsx",
+        "line": 1615
+      },
+      "description": "Operación Number Control de Telemetría y estado de sensores; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "PanelBlock",
+      "displayName": "PanelBlock",
+      "signature": "PanelBlock({\n  title,\n  icon,\n  children,\n  className = \"\",\n}: { title: string; icon: SensorIconName; children: ReactNode; className?: string; }): inferred-by-TypeScript",
+      "line": 1411,
+      "endLine": 1427,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/EstadoSection.tsx",
+        "line": 1411
+      },
+      "description": "Operación Panel Block de Telemetría y estado de sensores; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "RealtimeEulerPanel",
+      "displayName": "RealtimeEulerPanel",
+      "signature": "RealtimeEulerPanel({\n  eulerDeg, connected, simulated = false, sampling, sampleVersion,\n  maxPoints = 80, sampleMs = 250, heightPx = 130, sensorIntervalTime,\n}: RealtimeEulerPanelProps): inferred-by-TypeScript",
+      "line": 20,
+      "endLine": 104,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Array.from",
+        "useEffect",
+        "useMemo",
+        "useRef",
+        "useState"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/RealtimeEulerPanel.tsx",
+        "line": 20
+      },
+      "description": "Coordina `Array.from`, `useEffect`, `useMemo` para Telemetría y estado de sensores.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Row",
+      "displayName": "Row",
+      "signature": "Row({ label, value, hasSamples, colorDot }: { label: string; value: number; hasSamples: boolean; colorDot: string; }): inferred-by-TypeScript",
+      "line": 106,
+      "endLine": 114,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Number.isFinite",
+        "value.toFixed"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/RealtimeEulerPanel.tsx",
+        "line": 106
+      },
+      "description": "Coordina `Number.isFinite`, `value.toFixed` para Telemetría y estado de sensores.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "SensorBottomConsole",
+      "displayName": "SensorBottomConsole",
+      "signature": "SensorBottomConsole({\n  connected, mpuStatus, irStatus, mpuPeriodMs, irPeriodMs,\n  irEmu, mpuEmu, mpuRequested, irRequested,\n  onMpuPeriodChange, onIrPeriodChange, onMpuToggle, onIrToggle, onZeroMpu,\n}: { connected: boolean; mpuStatus: StreamStatus; irStatus: StreamStatus; mpuPeriodMs: number; irPeriodMs: number; irEmu: boolean; mpuEmu: boolean; mpuRequested: boolean; irRequested: boolean; onMpuPeriodChange: (value: number) => void; onIrPeriodChange: (value: number) => void; onMpuToggle: () => void; onIrToggle: () => void; onZeroMpu: () => void; }): inferred-by-TypeScript",
+      "line": 1448,
+      "endLine": 1513,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "periodToHz",
+        "useIrEmitters"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/EstadoSection.tsx",
+        "line": 1448
+      },
+      "description": "Coordina `periodToHz`, `useIrEmitters` para Telemetría y estado de sensores.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "SensorCameraViews",
+      "displayName": "SensorCameraViews",
+      "signature": "SensorCameraViews({ selected, onPreset, simulated, simulationDescription }: { selected: SensorCameraPreset | null; onPreset: (preset: SensorCameraPreset) => void; simulated: boolean; simulationDescription: string; }): inferred-by-TypeScript",
+      "line": 1015,
+      "endLine": 1052,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "SENSOR_CAMERA_VIEW_GROUPS.find",
+        "isometricViews.map",
+        "renderButtons",
+        "selectedGroup?.views.find"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/EstadoSection.tsx",
+        "line": 1015
+      },
+      "description": "Coordina `SENSOR_CAMERA_VIEW_GROUPS.find`, `isometricViews.map`, `renderButtons` para Telemetría y estado de sensores.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "SensorCanvasTelemetry",
+      "displayName": "SensorCanvasTelemetry",
+      "signature": "SensorCanvasTelemetry({\n  irSnapshot,\n  objectDetections,\n}: { irSnapshot: IrSnapshot; objectDetections: IrObjectAxialDetections; }): inferred-by-TypeScript",
+      "line": 1266,
+      "endLine": 1290,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/EstadoSection.tsx",
+        "line": 1266
+      },
+      "description": "Operación Sensor Canvas Telemetry de Telemetría y estado de sensores; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "SensorConnectionBar",
+      "displayName": "SensorConnectionBar",
+      "signature": "SensorConnectionBar({\n  connected,\n  mpuStatus,\n  irStatus,\n  renderLink,\n}: { connected: boolean; mpuStatus: StreamStatus; irStatus: StreamStatus; renderLink: boolean; }): inferred-by-TypeScript",
+      "line": 948,
+      "endLine": 1013,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useIrEmitters"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/EstadoSection.tsx",
+        "line": 948
+      },
+      "description": "Adapta la llamada a `useIrEmitters` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "SensorHeaderStatus",
+      "displayName": "SensorHeaderStatus",
+      "signature": "SensorHeaderStatus({\n  connected,\n  mpuHz,\n  irHz,\n  mpuPeriodMs,\n  irPeriodMs,\n}: { connected: boolean; mpuHz: number; irHz: number; mpuPeriodMs: number; irPeriodMs: number; }): inferred-by-TypeScript",
+      "line": 897,
+      "endLine": 929,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "getEspConnectionDetail",
+        "getEspConnectionLabel",
+        "useEspWifiStatus"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/EstadoSection.tsx",
+        "line": 897
+      },
+      "description": "Coordina `getEspConnectionDetail`, `getEspConnectionLabel`, `useEspWifiStatus` para Telemetría y estado de sensores.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "SensorIcon",
+      "displayName": "SensorIcon",
+      "signature": "SensorIcon({ name }: { name: SensorIconName }): inferred-by-TypeScript",
+      "line": 1656,
+      "endLine": 1752,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/EstadoSection.tsx",
+        "line": 1656
+      },
+      "description": "Operación Sensor Icon de Telemetría y estado de sensores; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "SensorSensitivityControl",
+      "displayName": "SensorSensitivityControl",
+      "signature": "SensorSensitivityControl({\n  valueCm,\n  onChange,\n  onClear,\n  onOpenCalibration,\n}: { valueCm: number; onChange: (value: number) => void; onClear: () => void; onOpenCalibration: () => void; }): inferred-by-TypeScript",
+      "line": 1292,
+      "endLine": 1335,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "formatDecimal"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/EstadoSection.tsx",
+        "line": 1292
+      },
+      "description": "Adapta la llamada a `formatDecimal` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "SensorStatusPanel",
+      "displayName": "SensorStatusPanel",
+      "signature": "SensorStatusPanel({\n  connected,\n  systemMode,\n  mpuEulerRaw,\n  renderEuler,\n  mpuMagValid,\n  mpuStatus,\n  irStatus,\n  irSnapshot,\n  irObjectEstimate,\n  lastMpuSampleDtUs,\n}: { connected: boolean; systemMode: string; mpuEulerRaw: EulerDeg; renderEuler: EulerDeg; mpuMagValid: boolean | null; mpuStatus: StreamStatus; irStatus: StreamStatus; irSnapshot: IrSnapshot; irObjectEstimate: IrObjectPositionEstimate; lastMpuSampleDtUs: number | null; }): inferred-by-TypeScript",
+      "line": 1155,
+      "endLine": 1264,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.round",
+        "formatDecimal",
+        "formatHexByte",
+        "formatMpuLatency",
+        "formatObjectMask",
+        "formatSigned"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/EstadoSection.tsx",
+        "line": 1155
+      },
+      "description": "Coordina `Math.round`, `formatDecimal`, `formatHexByte` para Telemetría y estado de sensores.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "SensorToolbox",
+      "displayName": "SensorToolbox",
+      "signature": "SensorToolbox({\n  showGrid,\n  showObjectAxes,\n  showLineAxes,\n  showOrigin,\n  renderLink,\n  onResetCamera,\n  onToggleGrid,\n  onToggleObjectAxes,\n  onToggleLineAxes,\n  onToggleOrigin,\n  onToggleRenderLink,\n}: { showGrid: boolean; showObjectAxes: boolean; showLineAxes: boolean; showOrigin: boolean; renderLink: boolean; onResetCamera: () => void; onToggleGrid: () => void; onToggleObjectAxes: () => void; onToggleLineAxes: () => void; onToggleOrigin: () => void; onToggleRenderLink: () => void; }): inferred-by-TypeScript",
+      "line": 1054,
+      "endLine": 1104,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/EstadoSection.tsx",
+        "line": 1054
+      },
+      "description": "Operación Sensor Toolbox de Telemetría y estado de sensores; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "SimulatedBadge",
+      "displayName": "SimulatedBadge",
+      "signature": "SimulatedBadge({ description }: { description: string }): inferred-by-TypeScript",
+      "line": 1,
+      "endLine": 8,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/SimulatedBadge.tsx",
+        "line": 1
+      },
+      "description": "Operación Simulated Badge de Telemetría y estado de sensores; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "StatusRow",
+      "displayName": "StatusRow",
+      "signature": "StatusRow({\n  label,\n  value,\n  tone = \"muted\",\n}: { label: string; value: string; tone?: \"ok\" | \"error\" | \"info\" | \"muted\"; }): inferred-by-TypeScript",
+      "line": 1429,
+      "endLine": 1446,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/EstadoSection.tsx",
+        "line": 1429
+      },
+      "description": "Operación Status Row de Telemetría y estado de sensores; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "SwitchButton",
+      "displayName": "SwitchButton",
+      "signature": "SwitchButton({\n  active,\n  disabled = false,\n  onClick,\n  ariaLabel,\n}: { active: boolean; disabled?: boolean; onClick: () => void; ariaLabel?: string; }): inferred-by-TypeScript",
+      "line": 1587,
+      "endLine": 1613,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/EstadoSection.tsx",
+        "line": 1587
+      },
+      "description": "Operación Switch Button de Telemetría y estado de sensores; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "ToolButton",
+      "displayName": "ToolButton",
+      "signature": "ToolButton({\n  label,\n  icon,\n  active,\n  danger = false,\n  title,\n  onClick,\n}: { label: string; icon: SensorIconName; active?: boolean; danger?: boolean; title?: string; onClick: () => void; }): inferred-by-TypeScript",
+      "line": 1106,
+      "endLine": 1153,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/EstadoSection.tsx",
+        "line": 1106
+      },
+      "description": "Operación Tool Button de Telemetría y estado de sensores; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "VerticalSensorBar",
+      "displayName": "VerticalSensorBar",
+      "signature": "VerticalSensorBar({\n  label,\n  shortLabel,\n  value,\n  tone,\n  detection,\n}: { label: string; shortLabel: string; value: number; tone: \"cyan\" | \"rose\"; detection?: IrObjectAxialDetection; }): inferred-by-TypeScript",
+      "line": 1376,
+      "endLine": 1409,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.max",
+        "Math.min",
+        "Math.round",
+        "clamp01",
+        "formatDecimal"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/EstadoSection.tsx",
+        "line": 1376
+      },
+      "description": "Coordina `Math.max`, `Math.min`, `Math.round` para Telemetría y estado de sensores.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "VerticalSensorGroup",
+      "displayName": "VerticalSensorGroup",
+      "signature": "VerticalSensorGroup({\n  title,\n  tone,\n  channels,\n  values,\n  detections,\n}: { title: string; tone: \"cyan\" | \"rose\"; channels: Array<{ key: IrSensorKey; label: string; shortLabel: string; }>; values: Record<IrSensorKey, number>; detections?: Partial<Record<IrSensorKey, IrObjectAxialDetection>>; }): inferred-by-TypeScript",
+      "line": 1337,
+      "endLine": 1374,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "channels.map"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/EstadoSection.tsx",
+        "line": 1337
+      },
+      "description": "Adapta la llamada a `channels.map` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "assertStreamCommandAccepted",
+      "displayName": "assertStreamCommandAccepted",
+      "signature": "assertStreamCommandAccepted(sensor: SensorName, desiredPeriodMs: number | null, data: Record<string, unknown>): void",
+      "line": 112,
+      "endLine": 125,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "sensor.toUpperCase"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/hooks/useSensorSubscription.ts",
+        "line": 112
+      },
+      "description": "Adapta la llamada a `sensor.toUpperCase` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "clamp01",
+      "displayName": "clamp01",
+      "signature": "clamp01(value: number): inferred-by-TypeScript",
+      "line": 1900,
+      "endLine": 1906,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.max",
+        "Math.min",
+        "Number.isFinite"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/EstadoSection.tsx",
+        "line": 1900
+      },
+      "description": "Coordina `Math.max`, `Math.min`, `Number.isFinite` para Telemetría y estado de sensores.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "createEmptySensorRecord",
+      "displayName": "createEmptySensorRecord",
+      "signature": "createEmptySensorRecord(): Record<IrSensorKey, number>",
+      "line": 1800,
+      "endLine": 1808,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "IR_SENSOR_ORDER.reduce"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/EstadoSection.tsx",
+        "line": 1800
+      },
+      "description": "Adapta la llamada a `IR_SENSOR_ORDER.reduce` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "createEmulatedIrSnapshot",
+      "displayName": "createEmulatedIrSnapshot",
+      "signature": "createEmulatedIrSnapshot(objectReadings: Readonly<Record<IrObjectSensorKey, number>>, periodMs: number, sampleSeq: number): IrSnapshot",
+      "line": 1822,
+      "endLine": 1854,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "IR_OBJECT_SENSOR_KEYS.forEach",
+        "Math.round",
+        "createEmptySensorRecord",
+        "performance.now"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/EstadoSection.tsx",
+        "line": 1822
+      },
+      "description": "Coordina `IR_OBJECT_SENSOR_KEYS.forEach`, `Math.round`, `createEmptySensorRecord` para Telemetría y estado de sensores.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "createIdleIrSnapshot",
+      "displayName": "createIdleIrSnapshot",
+      "signature": "createIdleIrSnapshot(periodMs: number): IrSnapshot",
+      "line": 1781,
+      "endLine": 1798,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "createEmptySensorRecord"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/EstadoSection.tsx",
+        "line": 1781
+      },
+      "description": "Adapta la llamada a `createEmptySensorRecord` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "createStreamStatus",
+      "displayName": "createStreamStatus",
+      "signature": "createStreamStatus(statusText: string): StreamStatus",
+      "line": 1754,
+      "endLine": 1769,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/EstadoSection.tsx",
+        "line": 1754
+      },
+      "description": "Operación create Stream Status de Telemetría y estado de sensores; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "decode",
+      "displayName": "decode",
+      "signature": "decode(value: unknown): IrEmittersState",
+      "line": 9,
+      "endLine": 13,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/IrEmittersContext.tsx",
+        "line": 9
+      },
+      "description": "Operación decode de Telemetría y estado de sensores; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "formatDecimal",
+      "displayName": "formatDecimal",
+      "signature": "formatDecimal(value: number, digits: number): inferred-by-TypeScript",
+      "line": 1884,
+      "endLine": 1890,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Number.isFinite",
+        "value.toFixed"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/EstadoSection.tsx",
+        "line": 1884
+      },
+      "description": "Coordina `Number.isFinite`, `value.toFixed` para Telemetría y estado de sensores.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "formatHexByte",
+      "displayName": "formatHexByte",
+      "signature": "formatHexByte(value: number): inferred-by-TypeScript",
+      "line": 1872,
+      "endLine": 1874,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "value.toString",
+        "value.toString(16).toUpperCase",
+        "value.toString(16).toUpperCase().padStart"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/EstadoSection.tsx",
+        "line": 1872
+      },
+      "description": "Coordina `value.toString`, `value.toString(16).toUpperCase`, `value.toString(16).toUpperCase().padStart` para Telemetría y estado de sensores.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "formatMpuLatency",
+      "displayName": "formatMpuLatency",
+      "signature": "formatMpuLatency(sampleDtUs: number | null): inferred-by-TypeScript",
+      "line": 1892,
+      "endLine": 1898,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "formatDecimal"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/EstadoSection.tsx",
+        "line": 1892
+      },
+      "description": "Adapta la llamada a `formatDecimal` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "formatObjectMask",
+      "displayName": "formatObjectMask",
+      "signature": "formatObjectMask(value: number): inferred-by-TypeScript",
+      "line": 1876,
+      "endLine": 1878,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "(value & 0x1f).toString",
+        "(value & 0x1f).toString(2).padStart"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/EstadoSection.tsx",
+        "line": 1876
+      },
+      "description": "Coordina `(value & 0x1f).toString`, `(value & 0x1f).toString(2).padStart` para Telemetría y estado de sensores.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "formatSigned",
+      "displayName": "formatSigned",
+      "signature": "formatSigned(value: number): inferred-by-TypeScript",
+      "line": 1880,
+      "endLine": 1882,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "formatDecimal"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/EstadoSection.tsx",
+        "line": 1880
+      },
+      "description": "Adapta la llamada a `formatDecimal` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "formatStreamSubscriptionError",
+      "displayName": "formatStreamSubscriptionError",
+      "signature": "formatStreamSubscriptionError(sensor: \"MPU\" | \"IR\", error: Error): string",
+      "line": 1771,
+      "endLine": 1779,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/EstadoSection.tsx",
+        "line": 1771
+      },
+      "description": "Operación format Stream Subscription Error de Telemetría y estado de sensores; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "normalizeIrStreamPeriodMs",
+      "displayName": "normalizeIrStreamPeriodMs",
+      "signature": "normalizeIrStreamPeriodMs(value: number): inferred-by-TypeScript",
+      "line": 1860,
+      "endLine": 1862,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "normalizeStreamPeriodMs"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/EstadoSection.tsx",
+        "line": 1860
+      },
+      "description": "Adapta la llamada a `normalizeStreamPeriodMs` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "normalizeMpuPeriodMs",
+      "displayName": "normalizeMpuPeriodMs",
+      "signature": "normalizeMpuPeriodMs(value: number): inferred-by-TypeScript",
+      "line": 1856,
+      "endLine": 1858,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "normalizeStreamPeriodMs"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/EstadoSection.tsx",
+        "line": 1856
+      },
+      "description": "Adapta la llamada a `normalizeStreamPeriodMs` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "periodToHz",
+      "displayName": "periodToHz",
+      "signature": "periodToHz(periodMs: number): inferred-by-TypeScript",
+      "line": 1864,
+      "endLine": 1870,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.round",
+        "Number.isFinite"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/EstadoSection.tsx",
+        "line": 1864
+      },
+      "description": "Coordina `Math.round`, `Number.isFinite` para Telemetría y estado de sensores.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "pickObjectSensorReadings",
+      "displayName": "pickObjectSensorReadings",
+      "signature": "pickObjectSensorReadings(values: Readonly<Record<IrSensorKey, number>>): Record<IrObjectSensorKey, number>",
+      "line": 1810,
+      "endLine": 1820,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "IR_OBJECT_SENSOR_KEYS.reduce"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/EstadoSection.tsx",
+        "line": 1810
+      },
+      "description": "Adapta la llamada a `IR_OBJECT_SENSOR_KEYS.reduce` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "pushClamped",
+      "displayName": "pushClamped",
+      "signature": "pushClamped(values: number[], value: number, max: number): inferred-by-TypeScript",
+      "line": 122,
+      "endLine": 124,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.max",
+        "values.slice"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/RealtimeEulerPanel.tsx",
+        "line": 122
+      },
+      "description": "Coordina `Math.max`, `values.slice` para Telemetría y estado de sensores.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "reconcile",
+      "displayName": "reconcile",
+      "signature": "reconcile(sensor: SensorName, request: RequestCommand): Promise<void>",
+      "line": 86,
+      "endLine": 110,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.min",
+        "[...registry.consumers.values()].map",
+        "registry.consumers.values",
+        "registry.operation.catch",
+        "request",
+        "request<Record<string, unknown>>(command, args, { timeoutMs: 7_000 }).then"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/hooks/useSensorSubscription.ts",
+        "line": 86
+      },
+      "description": "Coordina `Math.min`, `[...registry.consumers.values()].map`, `registry.consumers.values` para Telemetría y estado de sensores.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "useIrEmitters",
+      "displayName": "useIrEmitters",
+      "signature": "useIrEmitters(): inferred-by-TypeScript",
+      "line": 56,
+      "endLine": 60,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useContext"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/IrEmittersContext.tsx",
+        "line": 56
+      },
+      "description": "Adapta la llamada a `useContext` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "useSensorSubscription",
+      "displayName": "useSensorSubscription",
+      "signature": "useSensorSubscription(sensor: SensorName, enabled: boolean, requestedPeriodMs: number): inferred-by-TypeScript",
+      "line": 30,
+      "endLine": 84,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "normalizeStreamPeriodMs",
+        "useEffect",
+        "useMemo",
+        "useRef",
+        "useState",
+        "useWebSocket"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/hooks/useSensorSubscription.ts",
+        "line": 30
+      },
+      "description": "Coordina `normalizeStreamPeriodMs`, `useEffect`, `useMemo` para Telemetría y estado de sensores.",
+      "descriptionOrigin": "structural"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "EstadoSection.handleCameraPreset",
+      "displayName": "handleCameraPreset",
+      "signature": "EstadoSection.handleCameraPreset(preset: SensorCameraPreset): inferred-by-TypeScript",
+      "line": 534,
+      "endLine": 537,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "sceneRef.current?.setCameraPreset",
+        "setCameraPreset"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/EstadoSection.tsx",
+        "line": 534
+      },
+      "description": "Coordina `sceneRef.current?.setCameraPreset`, `setCameraPreset` para Telemetría y estado de sensores.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "EstadoSection.handleClearIr",
+      "displayName": "handleClearIr",
+      "signature": "EstadoSection.handleClearIr(): inferred-by-TypeScript",
+      "line": 521,
+      "endLine": 532,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "createIdleIrSnapshot",
+        "sceneRef.current?.clearIrTarget",
+        "setHasIrSceneSample",
+        "setIrAutoMotion",
+        "setIrSnapshot",
+        "setIrStatus"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/EstadoSection.tsx",
+        "line": 521
+      },
+      "description": "Coordina `createIdleIrSnapshot`, `sceneRef.current?.clearIrTarget`, `setHasIrSceneSample` para Telemetría y estado de sensores.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "EstadoSection.handleRenderLinkToggle",
+      "displayName": "handleRenderLinkToggle",
+      "signature": "EstadoSection.handleRenderLinkToggle(): inferred-by-TypeScript",
+      "line": 452,
+      "endLine": 460,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "setRenderLink"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/EstadoSection.tsx",
+        "line": 452
+      },
+      "description": "Adapta la llamada a `setRenderLink` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "EstadoSection.handleSimulationToggle",
+      "displayName": "handleSimulationToggle",
+      "signature": "EstadoSection.handleSimulationToggle(): inferred-by-TypeScript",
+      "line": 510,
+      "endLine": 514,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "setIrSimulationEnabled",
+        "setMpuSimulationEnabled"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/EstadoSection.tsx",
+        "line": 510
+      },
+      "description": "Coordina `setIrSimulationEnabled`, `setMpuSimulationEnabled` para Telemetría y estado de sensores.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "EstadoSection.handleZeroMpu",
+      "displayName": "handleZeroMpu",
+      "signature": "EstadoSection.handleZeroMpu(): inferred-by-TypeScript",
+      "line": 516,
+      "endLine": 519,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "setRenderEuler",
+        "setZeroOffset"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/EstadoSection.tsx",
+        "line": 516
+      },
+      "description": "Coordina `setRenderEuler`, `setZeroOffset` para Telemetría y estado de sensores.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "EstadoSection.setIrSimulationEnabled",
+      "displayName": "setIrSimulationEnabled",
+      "signature": "EstadoSection.setIrSimulationEnabled(next: boolean): inferred-by-TypeScript",
+      "line": 462,
+      "endLine": 489,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "createIdleIrSnapshot",
+        "sceneRef.current?.clearIrTarget",
+        "setHasIrSceneSample",
+        "setIrAutoMotion",
+        "setIrEmu",
+        "setIrRequested",
+        "setIrSnapshot",
+        "setIrStatus"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/EstadoSection.tsx",
+        "line": 462
+      },
+      "description": "Coordina `createIdleIrSnapshot`, `sceneRef.current?.clearIrTarget`, `setHasIrSceneSample` para Telemetría y estado de sensores.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "EstadoSection.setMpuSimulationEnabled",
+      "displayName": "setMpuSimulationEnabled",
+      "signature": "EstadoSection.setMpuSimulationEnabled(next: boolean): inferred-by-TypeScript",
+      "line": 491,
+      "endLine": 508,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "setHasRealMpuSample",
+        "setMpuAutoMotion",
+        "setMpuEmu",
+        "setMpuEmuEuler",
+        "setMpuRequested",
+        "setMpuStatus",
+        "setRenderLink",
+        "setZeroOffset"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/EstadoSection.tsx",
+        "line": 491
+      },
+      "description": "Coordina `setHasRealMpuSample`, `setMpuAutoMotion`, `setMpuEmu` para Telemetría y estado de sensores.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "RealtimeEulerPanel.capture",
+      "displayName": "capture",
+      "signature": "RealtimeEulerPanel.capture(): inferred-by-TypeScript",
+      "line": 40,
+      "endLine": 50,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Object.values",
+        "Object.values(latest.eulerDeg).every",
+        "setSeries"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/RealtimeEulerPanel.tsx",
+        "line": 40
+      },
+      "description": "Coordina `Object.values`, `Object.values(latest.eulerDeg).every`, `setSeries` para Telemetría y estado de sensores.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "RealtimeEulerPanel.toPath",
+      "displayName": "toPath",
+      "signature": "RealtimeEulerPanel.toPath(values: number[]): inferred-by-TypeScript",
+      "line": 61,
+      "endLine": 62,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "values.map",
+        "values.map((value, index) => `${(maxPoints - values.length + index) * stepX},${toY(value)}`).join"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/RealtimeEulerPanel.tsx",
+        "line": 61
+      },
+      "description": "Coordina `values.map`, `values.map((value, index) => `${(maxPoints - values.length + index) * stepX},${toY(value)}`).join` para Telemetría y estado de sensores.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "RealtimeEulerPanel.toY",
+      "displayName": "toY",
+      "signature": "RealtimeEulerPanel.toY(value: number): inferred-by-TypeScript",
+      "line": 59,
+      "endLine": 59,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Math.max",
+        "Math.min"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/RealtimeEulerPanel.tsx",
+        "line": 59
+      },
+      "description": "Coordina `Math.max`, `Math.min` para Telemetría y estado de sensores.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "SensorCameraViews.renderButtons",
+      "displayName": "renderButtons",
+      "signature": "SensorCameraViews.renderButtons(group: (typeof SENSOR_CAMERA_VIEW_GROUPS)[number]): inferred-by-TypeScript",
+      "line": 1024,
+      "endLine": 1034,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "group.views.map"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/EstadoSection.tsx",
+        "line": 1024
+      },
+      "description": "Adapta la llamada a `group.views.map` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    }
+  ],
+  "hooks": [
+    {
+      "callee": "useIrEmitters",
+      "scope": "IrEmittersControls",
+      "line": 9,
+      "arguments": 0,
+      "path": "src/components/IrEmittersControls.tsx"
+    },
+    {
+      "callee": "useId",
+      "scope": "IrEmittersControls",
+      "line": 10,
+      "arguments": 0,
+      "path": "src/components/IrEmittersControls.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "RealtimeEulerPanel",
+      "line": 24,
+      "arguments": 1,
+      "path": "src/components/RealtimeEulerPanel.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "RealtimeEulerPanel",
+      "line": 25,
+      "arguments": 1,
+      "path": "src/components/RealtimeEulerPanel.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "RealtimeEulerPanel",
+      "line": 26,
+      "arguments": 1,
+      "path": "src/components/RealtimeEulerPanel.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "RealtimeEulerPanel",
+      "line": 29,
+      "arguments": 2,
+      "path": "src/components/RealtimeEulerPanel.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "RealtimeEulerPanel",
+      "line": 33,
+      "arguments": 2,
+      "path": "src/components/RealtimeEulerPanel.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "RealtimeEulerPanel",
+      "line": 38,
+      "arguments": 2,
+      "path": "src/components/RealtimeEulerPanel.tsx"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "RealtimeEulerPanel",
+      "line": 56,
+      "arguments": 2,
+      "path": "src/components/RealtimeEulerPanel.tsx"
+    },
+    {
+      "callee": "useWebSocket",
+      "scope": "IrEmittersProvider",
+      "line": 15,
+      "arguments": 0,
+      "path": "src/contexts/IrEmittersContext.tsx"
+    },
+    {
+      "callee": "useUser",
+      "scope": "IrEmittersProvider",
+      "line": 16,
+      "arguments": 0,
+      "path": "src/contexts/IrEmittersContext.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "IrEmittersProvider",
+      "line": 18,
+      "arguments": 1,
+      "path": "src/contexts/IrEmittersContext.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "IrEmittersProvider",
+      "line": 19,
+      "arguments": 1,
+      "path": "src/contexts/IrEmittersContext.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "IrEmittersProvider",
+      "line": 20,
+      "arguments": 1,
+      "path": "src/contexts/IrEmittersContext.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "IrEmittersProvider",
+      "line": 21,
+      "arguments": 1,
+      "path": "src/contexts/IrEmittersContext.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "IrEmittersProvider",
+      "line": 22,
+      "arguments": 1,
+      "path": "src/contexts/IrEmittersContext.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "IrEmittersProvider",
+      "line": 23,
+      "arguments": 1,
+      "path": "src/contexts/IrEmittersContext.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "IrEmittersProvider",
+      "line": 24,
+      "arguments": 2,
+      "path": "src/contexts/IrEmittersContext.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "IrEmittersProvider",
+      "line": 25,
+      "arguments": 2,
+      "path": "src/contexts/IrEmittersContext.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "IrEmittersProvider",
+      "line": 40,
+      "arguments": 2,
+      "path": "src/contexts/IrEmittersContext.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "IrEmittersProvider",
+      "line": 41,
+      "arguments": 2,
+      "path": "src/contexts/IrEmittersContext.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "IrEmittersProvider",
+      "line": 44,
+      "arguments": 2,
+      "path": "src/contexts/IrEmittersContext.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "IrEmittersProvider",
+      "line": 50,
+      "arguments": 2,
+      "path": "src/contexts/IrEmittersContext.tsx"
+    },
+    {
+      "callee": "useContext",
+      "scope": "useIrEmitters",
+      "line": 57,
+      "arguments": 1,
+      "path": "src/contexts/IrEmittersContext.tsx"
+    },
+    {
+      "callee": "useWebSocket",
+      "scope": "useSensorSubscription",
+      "line": 31,
+      "arguments": 0,
+      "path": "src/hooks/useSensorSubscription.ts"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "useSensorSubscription",
+      "line": 32,
+      "arguments": 2,
+      "path": "src/hooks/useSensorSubscription.ts"
+    },
+    {
+      "callee": "useState",
+      "scope": "useSensorSubscription",
+      "line": 33,
+      "arguments": 1,
+      "path": "src/hooks/useSensorSubscription.ts"
+    },
+    {
+      "callee": "useState",
+      "scope": "useSensorSubscription",
+      "line": 34,
+      "arguments": 1,
+      "path": "src/hooks/useSensorSubscription.ts"
+    },
+    {
+      "callee": "useRef",
+      "scope": "useSensorSubscription",
+      "line": 36,
+      "arguments": 1,
+      "path": "src/hooks/useSensorSubscription.ts"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "useSensorSubscription",
+      "line": 39,
+      "arguments": 2,
+      "path": "src/hooks/useSensorSubscription.ts"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "useSensorSubscription",
+      "line": 66,
+      "arguments": 2,
+      "path": "src/hooks/useSensorSubscription.ts"
+    },
+    {
+      "callee": "useWebSocket",
+      "scope": "EstadoSection",
+      "line": 121,
+      "arguments": 0,
+      "path": "src/pages/EstadoSection.tsx"
+    },
+    {
+      "callee": "useUser",
+      "scope": "EstadoSection",
+      "line": 122,
+      "arguments": 0,
+      "path": "src/pages/EstadoSection.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "EstadoSection",
+      "line": 126,
+      "arguments": 1,
+      "path": "src/pages/EstadoSection.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "EstadoSection",
+      "line": 127,
+      "arguments": 1,
+      "path": "src/pages/EstadoSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "EstadoSection",
+      "line": 129,
+      "arguments": 1,
+      "path": "src/pages/EstadoSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "EstadoSection",
+      "line": 130,
+      "arguments": 1,
+      "path": "src/pages/EstadoSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "EstadoSection",
+      "line": 131,
+      "arguments": 1,
+      "path": "src/pages/EstadoSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "EstadoSection",
+      "line": 133,
+      "arguments": 1,
+      "path": "src/pages/EstadoSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "EstadoSection",
+      "line": 134,
+      "arguments": 1,
+      "path": "src/pages/EstadoSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "EstadoSection",
+      "line": 135,
+      "arguments": 1,
+      "path": "src/pages/EstadoSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "EstadoSection",
+      "line": 136,
+      "arguments": 1,
+      "path": "src/pages/EstadoSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "EstadoSection",
+      "line": 141,
+      "arguments": 1,
+      "path": "src/pages/EstadoSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "EstadoSection",
+      "line": 146,
+      "arguments": 1,
+      "path": "src/pages/EstadoSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "EstadoSection",
+      "line": 151,
+      "arguments": 1,
+      "path": "src/pages/EstadoSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "EstadoSection",
+      "line": 152,
+      "arguments": 1,
+      "path": "src/pages/EstadoSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "EstadoSection",
+      "line": 153,
+      "arguments": 1,
+      "path": "src/pages/EstadoSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "EstadoSection",
+      "line": 154,
+      "arguments": 1,
+      "path": "src/pages/EstadoSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "EstadoSection",
+      "line": 155,
+      "arguments": 1,
+      "path": "src/pages/EstadoSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "EstadoSection",
+      "line": 156,
+      "arguments": 1,
+      "path": "src/pages/EstadoSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "EstadoSection",
+      "line": 157,
+      "arguments": 1,
+      "path": "src/pages/EstadoSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "EstadoSection",
+      "line": 158,
+      "arguments": 1,
+      "path": "src/pages/EstadoSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "EstadoSection",
+      "line": 161,
+      "arguments": 1,
+      "path": "src/pages/EstadoSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "EstadoSection",
+      "line": 162,
+      "arguments": 1,
+      "path": "src/pages/EstadoSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "EstadoSection",
+      "line": 163,
+      "arguments": 1,
+      "path": "src/pages/EstadoSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "EstadoSection",
+      "line": 164,
+      "arguments": 1,
+      "path": "src/pages/EstadoSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "EstadoSection",
+      "line": 165,
+      "arguments": 1,
+      "path": "src/pages/EstadoSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "EstadoSection",
+      "line": 166,
+      "arguments": 1,
+      "path": "src/pages/EstadoSection.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "EstadoSection",
+      "line": 167,
+      "arguments": 1,
+      "path": "src/pages/EstadoSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "EstadoSection",
+      "line": 168,
+      "arguments": 1,
+      "path": "src/pages/EstadoSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "EstadoSection",
+      "line": 169,
+      "arguments": 1,
+      "path": "src/pages/EstadoSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "EstadoSection",
+      "line": 174,
+      "arguments": 1,
+      "path": "src/pages/EstadoSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "EstadoSection",
+      "line": 177,
+      "arguments": 1,
+      "path": "src/pages/EstadoSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "EstadoSection",
+      "line": 180,
+      "arguments": 1,
+      "path": "src/pages/EstadoSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "EstadoSection",
+      "line": 183,
+      "arguments": 1,
+      "path": "src/pages/EstadoSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "EstadoSection",
+      "line": 186,
+      "arguments": 1,
+      "path": "src/pages/EstadoSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "EstadoSection",
+      "line": 187,
+      "arguments": 1,
+      "path": "src/pages/EstadoSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "EstadoSection",
+      "line": 188,
+      "arguments": 1,
+      "path": "src/pages/EstadoSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "EstadoSection",
+      "line": 189,
+      "arguments": 1,
+      "path": "src/pages/EstadoSection.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "EstadoSection",
+      "line": 190,
+      "arguments": 1,
+      "path": "src/pages/EstadoSection.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "EstadoSection",
+      "line": 191,
+      "arguments": 1,
+      "path": "src/pages/EstadoSection.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "EstadoSection",
+      "line": 192,
+      "arguments": 1,
+      "path": "src/pages/EstadoSection.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "EstadoSection",
+      "line": 193,
+      "arguments": 1,
+      "path": "src/pages/EstadoSection.tsx"
+    },
+    {
+      "callee": "useSensorSubscription",
+      "scope": "EstadoSection",
+      "line": 194,
+      "arguments": 3,
+      "path": "src/pages/EstadoSection.tsx"
+    },
+    {
+      "callee": "useSensorSubscription",
+      "scope": "EstadoSection",
+      "line": 199,
+      "arguments": 3,
+      "path": "src/pages/EstadoSection.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "EstadoSection",
+      "line": 210,
+      "arguments": 2,
+      "path": "src/pages/EstadoSection.tsx"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "EstadoSection",
+      "line": 222,
+      "arguments": 2,
+      "path": "src/pages/EstadoSection.tsx"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "EstadoSection",
+      "line": 235,
+      "arguments": 2,
+      "path": "src/pages/EstadoSection.tsx"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "EstadoSection",
+      "line": 239,
+      "arguments": 2,
+      "path": "src/pages/EstadoSection.tsx"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "EstadoSection",
+      "line": 248,
+      "arguments": 2,
+      "path": "src/pages/EstadoSection.tsx"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "EstadoSection",
+      "line": 252,
+      "arguments": 2,
+      "path": "src/pages/EstadoSection.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "EstadoSection",
+      "line": 283,
+      "arguments": 2,
+      "path": "src/pages/EstadoSection.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "EstadoSection",
+      "line": 289,
+      "arguments": 2,
+      "path": "src/pages/EstadoSection.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "EstadoSection",
+      "line": 293,
+      "arguments": 2,
+      "path": "src/pages/EstadoSection.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "EstadoSection",
+      "line": 297,
+      "arguments": 2,
+      "path": "src/pages/EstadoSection.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "EstadoSection",
+      "line": 301,
+      "arguments": 2,
+      "path": "src/pages/EstadoSection.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "EstadoSection",
+      "line": 345,
+      "arguments": 2,
+      "path": "src/pages/EstadoSection.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "EstadoSection",
+      "line": 363,
+      "arguments": 2,
+      "path": "src/pages/EstadoSection.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "EstadoSection",
+      "line": 381,
+      "arguments": 2,
+      "path": "src/pages/EstadoSection.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "EstadoSection",
+      "line": 398,
+      "arguments": 2,
+      "path": "src/pages/EstadoSection.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "EstadoSection",
+      "line": 417,
+      "arguments": 2,
+      "path": "src/pages/EstadoSection.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "EstadoSection",
+      "line": 539,
+      "arguments": 2,
+      "path": "src/pages/EstadoSection.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "EstadoSection",
+      "line": 541,
+      "arguments": 2,
+      "path": "src/pages/EstadoSection.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "EstadoSection",
+      "line": 578,
+      "arguments": 2,
+      "path": "src/pages/EstadoSection.tsx"
+    },
+    {
+      "callee": "useEspWifiStatus",
+      "scope": "SensorHeaderStatus",
+      "line": 910,
+      "arguments": 0,
+      "path": "src/pages/EstadoSection.tsx"
+    },
+    {
+      "callee": "useIrEmitters",
+      "scope": "SensorConnectionBar",
+      "line": 959,
+      "arguments": 0,
+      "path": "src/pages/EstadoSection.tsx"
+    },
+    {
+      "callee": "useIrEmitters",
+      "scope": "SensorBottomConsole",
+      "line": 1468,
+      "arguments": 0,
+      "path": "src/pages/EstadoSection.tsx"
+    }
+  ]
+}

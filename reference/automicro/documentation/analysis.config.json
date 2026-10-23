@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "roots": [
+    {
+      "id": "f4",
+      "path": "../../FirmwareF4",
+      "include": ["Core/**/*.h", "Core/**/*.c", "USB_DEVICE/**/*.h", "USB_DEVICE/**/*.c"],
+      "exclude": []
+    },
+    {
+      "id": "esp",
+      "path": "../../Firmware ESP01/FirmESP01MicroArduino2025",
+      "include": ["src/*.h", "src/*.c", "src/*.cpp", "src/**/*.h", "src/**/*.c", "src/**/*.cpp", "src/**/*.inc"],
+      "exclude": []
+    },
+    {
+      "id": "web",
+      "path": "../../Web ESP01/WebESP01AutoMicro2025",
+      "include": ["src/*.ts", "src/*.tsx", "src/*.js", "src/*.jsx", "src/**/*.ts", "src/**/*.tsx", "src/**/*.js", "src/**/*.jsx"],
+      "exclude": []
+    }
+  ],
+  "outputDir": "../.cache/code-docs",
+  "maxFileSize": 1500000
+}

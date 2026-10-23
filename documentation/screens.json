@@ -1,0 +1,83 @@
+{
+  "schema": "afr2-screens-1",
+  "screens": [
+    {
+      "id": "shared:screen/010001",
+      "local_code": "0x010001",
+      "wire_status": "not-defined",
+      "name": "Inicio",
+      "role": "view",
+      "renderer": "atmega:src/ui/afr2_screens.c:render_home",
+      "fields": [],
+      "actions": [
+        "menu"
+      ],
+      "parent": null,
+      "state": "source-partial",
+      "physical_evidence": false,
+      "web_fidelity": "not-implemented"
+    },
+    {
+      "id": "shared:screen/010002",
+      "local_code": "0x010002",
+      "wire_status": "not-defined",
+      "name": "Menu principal",
+      "role": "view",
+      "renderer": "atmega:src/ui/afr2_screens.c:render_menu",
+      "fields": [
+        "selection"
+      ],
+      "actions": [
+        "rotate",
+        "select",
+        "menu"
+      ],
+      "parent": "0x010001",
+      "state": "source-partial",
+      "physical_evidence": false,
+      "web_fidelity": "not-implemented"
+    },
+    {
+      "id": "shared:screen/020001",
+      "local_code": "0x020001",
+      "wire_status": "not-defined",
+      "name": "Sensores",
+      "role": "view",
+      "renderer": "atmega:src/ui/afr2_screens.c:render_sensors",
+      "fields": [
+        "line_valid",
+        "line_bits",
+        "ultrasonic_valid",
+        "ultrasonic_mm"
+      ],
+      "actions": [
+        "select:Volver",
+        "menu"
+      ],
+      "parent": "0x010002",
+      "state": "source-partial",
+      "physical_evidence": false,
+      "web_fidelity": "not-implemented"
+    },
+    {
+      "id": "shared:screen/020002",
+      "local_code": "0x020002",
+      "wire_status": "not-defined",
+      "name": "Estado OLED",
+      "role": "view",
+      "renderer": "atmega:src/ui/afr2_screens.c:render_display",
+      "fields": [
+        "oled_ready",
+        "oled_errors"
+      ],
+      "actions": [
+        "select:Volver",
+        "menu"
+      ],
+      "parent": "0x010002",
+      "state": "source-partial",
+      "physical_evidence": false,
+      "web_fidelity": "not-implemented"
+    }
+  ]
+}

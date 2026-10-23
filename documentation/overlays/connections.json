@@ -1,0 +1,39 @@
+{
+  "schema": "afr2-connections-1",
+  "connections": [
+    {
+      "id": "shared:flow/web-esp-atmega",
+      "path": [
+        "web:protocol-client",
+        "esp:json-bridge",
+        "esp:uart-broker",
+        "atmega:uner-core",
+        "atmega:handlers"
+      ],
+      "state": "migration-design"
+    },
+    {
+      "id": "shared:flow/local-ui",
+      "path": [
+        "atmega:encoder-ui",
+        "atmega:ui-wrapper",
+        "atmega:renderer",
+        "atmega:oled-page-service",
+        "atmega:i2c-manager",
+        "atmega:twi-backend"
+      ],
+      "state": "partial-source-backend-pending"
+    },
+    {
+      "id": "shared:flow/sensors-control",
+      "path": [
+        "atmega:line5/hcsr04/hall4",
+        "atmega:snapshot",
+        "atmega:control",
+        "atmega:mecanum",
+        "atmega:motors4"
+      ],
+      "state": "planned"
+    }
+  ]
+}

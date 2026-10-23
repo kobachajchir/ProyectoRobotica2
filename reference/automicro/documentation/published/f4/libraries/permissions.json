@@ -1,0 +1,1840 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "f4:module/Core/Inc/permissions.h",
+  "slug": "permissions",
+  "title": "Permisos y sesiones PIN",
+  "target": "f4",
+  "kind": "integración",
+  "status": "source-documented",
+  "verification": "not-run-user-instruction",
+  "snapshotDate": "2026-10-20",
+  "responsibility": "Gestiona permiso local con continuación y autenticación remota independiente por nodo.",
+  "scope": "Máquina AUTH_*, intentos, bloqueo, expiración, autorización y revocación; el archivo conserva el nombre histórico permissions_stub.c aunque contiene lógica efectiva.",
+  "state": "PermissionHandle presta services, SystemHandle y MenuSystem y posee PermissionManager_t. El manager guarda solicitud local, continuation+ctx, dígitos, deadlines y remote[16]. Permission_Context es contexto global activo; el evento usa un callback distinto a la continuación.",
+  "lifecycle": [
+    "Init prepara estados; Request acepta o rechaza una solicitud local y conserva continuación.",
+    "Task aplica expiraciones y transiciones; HandleUserEvent edita/confirma PIN local.",
+    "RemoteAuthenticate opera sobre nodo autorizado por remote_node_valid; Touch renueva sesión y Revoke la invalida."
+  ],
+  "interactions": [
+    "UNER_App comprueba transporte y nodo además de consultar Permission; la sesión del navegador no hereda autorización Qt.",
+    "UiEventRouter entrega primero los eventos que corresponden al PIN; UI bloquea notificaciones durante flujos prioritarios."
+  ],
+  "limitations": [
+    "No publicar PIN, credenciales ni contenido real de sesiones en el manual.",
+    "TTL y bloqueo usan reloj modular en ms; autorización histórica no equivale a autorización vigente.",
+    "El nombre stub no implica ausencia de implementación."
+  ],
+  "modularity": "Reloj/verificación PIN/dibujo son inyectados, pero el handle conoce tipos de menú/sistema y la API usa contexto global. No es política totalmente independiente del modelo UI.",
+  "files": [
+    {
+      "path": "Core/Inc/permissions.h",
+      "rootId": "f4",
+      "sha256": "404d84ba97e90d72e62302f3abd6496301c9bd6a830183468f803c987f5a2fa1",
+      "includes": [
+        "permissions_types.h"
+      ]
+    },
+    {
+      "path": "Core/Inc/permissions_types.h",
+      "rootId": "f4",
+      "sha256": "a3bfe167df95644e66688d370d4012a81a455bd5643936b0aa7582b361084fcc",
+      "includes": [
+        "stdbool.h",
+        "stdint.h",
+        "types/userEvent_type.h"
+      ]
+    },
+    {
+      "path": "Core/Inc/permission_context.h",
+      "rootId": "f4",
+      "sha256": "693be07293427064056725f623ef1afe42bcc0f84f923049771533e5c57a1b33",
+      "includes": [
+        "permissions_types.h",
+        "ssd1306_types.h",
+        "app_preferences_types.h",
+        "types/menu_types.h",
+        "system.h",
+        "fonts.h"
+      ]
+    },
+    {
+      "path": "Core/Src/permissions_stub.c",
+      "rootId": "f4",
+      "sha256": "62deb6c161fdd26ffab14a5f1ff717c48a7886a7ce48e53a2dc2e1e6776a854b",
+      "includes": [
+        "permission_context.h",
+        "permissions.h",
+        "stddef.h",
+        "string.h"
+      ]
+    }
+  ],
+  "findings": [
+    "AMDOC-F4-007",
+    "AMDOC-WEB-002"
+  ],
+  "types": [
+    {
+      "name": "PermissionPolicy_t",
+      "fields": [
+        {
+          "name": "id",
+          "declaration": "PermissionId_t id",
+          "callback": false,
+          "ownerType": "PermissionPolicy_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/permissions_types.h",
+            "line": 71
+          },
+          "description": "Dato de estado/configuración `id`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ttl_ms",
+          "declaration": "uint32_t ttl_ms",
+          "callback": false,
+          "ownerType": "PermissionPolicy_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/permissions_types.h",
+            "line": 72
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "max_attempts",
+          "declaration": "uint8_t max_attempts",
+          "callback": false,
+          "ownerType": "PermissionPolicy_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/permissions_types.h",
+            "line": 73
+          },
+          "description": "Dato de estado/configuración `max_attempts`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/permissions_types.h",
+        "line": 71
+      }
+    },
+    {
+      "name": "PermissionEvent_t",
+      "fields": [
+        {
+          "name": "event",
+          "declaration": "PermissionEventId_t event",
+          "callback": false,
+          "ownerType": "PermissionEvent_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/permissions_types.h",
+            "line": 77
+          },
+          "description": "Dato de estado/configuración `event`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "permission",
+          "declaration": "PermissionId_t permission",
+          "callback": false,
+          "ownerType": "PermissionEvent_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/permissions_types.h",
+            "line": 78
+          },
+          "description": "Dato de estado/configuración `permission`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "request_id",
+          "declaration": "uint8_t request_id",
+          "callback": false,
+          "ownerType": "PermissionEvent_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/permissions_types.h",
+            "line": 79
+          },
+          "description": "Dato de estado/configuración `request_id`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "attempts_left",
+          "declaration": "uint8_t attempts_left",
+          "callback": false,
+          "ownerType": "PermissionEvent_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/permissions_types.h",
+            "line": 80
+          },
+          "description": "Dato de estado/configuración `attempts_left`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/permissions_types.h",
+        "line": 77
+      }
+    },
+    {
+      "name": "PermissionContinuationFn",
+      "callbackType": "void (*PermissionContinuationFn)(void *ctx)",
+      "fields": [],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/permissions_types.h",
+        "line": 83
+      }
+    },
+    {
+      "name": "PermissionEventCallback",
+      "callbackType": "void (*PermissionEventCallback)(const PermissionEvent_t *event)",
+      "fields": [],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/permissions_types.h",
+        "line": 85
+      }
+    },
+    {
+      "name": "PendingPermissionAction_t",
+      "fields": [
+        {
+          "name": "onGranted",
+          "declaration": "PermissionContinuationFn onGranted",
+          "callback": false,
+          "ownerType": "PendingPermissionAction_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/permission_context.h",
+            "line": 10
+          },
+          "description": "Dato de estado/configuración `onGranted`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ctx",
+          "declaration": "void *ctx",
+          "callback": false,
+          "ownerType": "PendingPermissionAction_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/permission_context.h",
+            "line": 11
+          },
+          "description": "Contexto opaco prestado al callback; el integrador conserva su almacenamiento."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/permission_context.h",
+        "line": 10
+      }
+    },
+    {
+      "name": "PermissionRemoteSession_t",
+      "fields": [
+        {
+          "name": "authenticated",
+          "declaration": "uint8_t authenticated",
+          "callback": false,
+          "ownerType": "PermissionRemoteSession_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/permission_context.h",
+            "line": 15
+          },
+          "description": "Marca de autenticación del nodo; debe combinarse con el deadline vigente."
+        },
+        {
+          "name": "attemptsLeft",
+          "declaration": "uint8_t attemptsLeft",
+          "callback": false,
+          "ownerType": "PermissionRemoteSession_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/permission_context.h",
+            "line": 16
+          },
+          "description": "Intentos restantes antes del bloqueo."
+        },
+        {
+          "name": "authorizedUntilMs",
+          "declaration": "uint32_t authorizedUntilMs",
+          "callback": false,
+          "ownerType": "PermissionRemoteSession_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/permission_context.h",
+            "line": 17
+          },
+          "description": "Deadline modular de autorización remota."
+        },
+        {
+          "name": "blockedUntilMs",
+          "declaration": "uint32_t blockedUntilMs",
+          "callback": false,
+          "ownerType": "PermissionRemoteSession_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/permission_context.h",
+            "line": 18
+          },
+          "description": "Deadline modular de bloqueo por intentos fallidos."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/permission_context.h",
+        "line": 15
+      }
+    },
+    {
+      "name": "PermissionManager_t",
+      "fields": [
+        {
+          "name": "state",
+          "declaration": "AuthState_t state",
+          "callback": false,
+          "ownerType": "PermissionManager_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/permission_context.h",
+            "line": 22
+          },
+          "description": "Dato de estado/configuración `state`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "requestedPermission",
+          "declaration": "PermissionId_t requestedPermission",
+          "callback": false,
+          "ownerType": "PermissionManager_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/permission_context.h",
+            "line": 23
+          },
+          "description": "Dato de estado/configuración `requestedPermission`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "pendingAction",
+          "declaration": "PendingPermissionAction_t pendingAction",
+          "callback": false,
+          "ownerType": "PermissionManager_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/permission_context.h",
+            "line": 24
+          },
+          "description": "Continuación local y contexto guardados hasta concesión o cancelación."
+        },
+        {
+          "name": "requestId",
+          "declaration": "uint8_t requestId",
+          "callback": false,
+          "ownerType": "PermissionManager_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/permission_context.h",
+            "line": 25
+          },
+          "description": "Dato de estado/configuración `requestId`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "pinDigits",
+          "declaration": "uint8_t pinDigits[PERMISSION_PIN_DIGITS]",
+          "callback": false,
+          "ownerType": "PermissionManager_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/permission_context.h",
+            "line": 26
+          },
+          "description": "Dato de estado/configuración `pinDigits`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "pinIndex",
+          "declaration": "uint8_t pinIndex",
+          "callback": false,
+          "ownerType": "PermissionManager_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/permission_context.h",
+            "line": 27
+          },
+          "description": "Dato de estado/configuración `pinIndex`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "attemptsLeft",
+          "declaration": "uint8_t attemptsLeft",
+          "callback": false,
+          "ownerType": "PermissionManager_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/permission_context.h",
+            "line": 28
+          },
+          "description": "Dato de estado/configuración `attemptsLeft`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "localDeadlineMs",
+          "declaration": "uint32_t localDeadlineMs",
+          "callback": false,
+          "ownerType": "PermissionManager_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/permission_context.h",
+            "line": 29
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "submitAtMs",
+          "declaration": "uint32_t submitAtMs",
+          "callback": false,
+          "ownerType": "PermissionManager_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/permission_context.h",
+            "line": 30
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "localBlockedUntilMs",
+          "declaration": "uint32_t localBlockedUntilMs",
+          "callback": false,
+          "ownerType": "PermissionManager_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/permission_context.h",
+            "line": 31
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "remoteAuthNoticeId",
+          "declaration": "PermissionAuthNoticeId_t remoteAuthNoticeId",
+          "callback": false,
+          "ownerType": "PermissionManager_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/permission_context.h",
+            "line": 32
+          },
+          "description": "Dato de estado/configuración `remoteAuthNoticeId`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "remoteAuthNoticeUntilMs",
+          "declaration": "uint32_t remoteAuthNoticeUntilMs",
+          "callback": false,
+          "ownerType": "PermissionManager_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/permission_context.h",
+            "line": 33
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "authorizedUntil",
+          "declaration": "uint32_t authorizedUntil[PERMISSION_COUNT]",
+          "callback": false,
+          "ownerType": "PermissionManager_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/permission_context.h",
+            "line": 34
+          },
+          "description": "Dato de estado/configuración `authorizedUntil`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "previousRenderFn",
+          "declaration": "RenderFunction previousRenderFn",
+          "callback": false,
+          "ownerType": "PermissionManager_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/permission_context.h",
+            "line": 35
+          },
+          "description": "Memoria de la observación anterior usada por la máquina de estados."
+        },
+        {
+          "name": "previousUserEventManagerFn",
+          "declaration": "UserEventManagerFn previousUserEventManagerFn",
+          "callback": false,
+          "ownerType": "PermissionManager_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/permission_context.h",
+            "line": 36
+          },
+          "description": "Memoria de la observación anterior usada por la máquina de estados."
+        },
+        {
+          "name": "previousAllowPeriodicRefresh",
+          "declaration": "bool previousAllowPeriodicRefresh",
+          "callback": false,
+          "ownerType": "PermissionManager_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/permission_context.h",
+            "line": 37
+          },
+          "description": "Memoria de la observación anterior usada por la máquina de estados."
+        },
+        {
+          "name": "previousInsideMenu",
+          "declaration": "uint8_t previousInsideMenu",
+          "callback": false,
+          "ownerType": "PermissionManager_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/permission_context.h",
+            "line": 38
+          },
+          "description": "Memoria de la observación anterior usada por la máquina de estados."
+        },
+        {
+          "name": "eventCallback",
+          "declaration": "PermissionEventCallback eventCallback",
+          "callback": false,
+          "ownerType": "PermissionManager_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/permission_context.h",
+            "line": 39
+          },
+          "description": "Receptor de eventos de permiso; distinto de la continuación onGranted."
+        },
+        {
+          "name": "remote",
+          "declaration": "PermissionRemoteSession_t remote[PERMISSION_UNER_NODE_COUNT]",
+          "callback": false,
+          "ownerType": "PermissionManager_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/permission_context.h",
+            "line": 40
+          },
+          "description": "Sesiones por nodo UNER, sin herencia entre navegador/Qt."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/permission_context.h",
+        "line": 22
+      }
+    },
+    {
+      "name": "PermissionServices",
+      "fields": [
+        {
+          "name": "now_ms",
+          "declaration": "uint32_t (*now_ms)(void)",
+          "callback": true,
+          "ownerType": "PermissionServices",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/permission_context.h",
+            "line": 44
+          },
+          "description": "Entrega reloj monotónico modular en milisegundos para deadlines y períodos."
+        },
+        {
+          "name": "remote_node_valid",
+          "declaration": "bool (*remote_node_valid)(uint8_t node)",
+          "callback": true,
+          "ownerType": "PermissionServices",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/permission_context.h",
+            "line": 45
+          },
+          "description": "Operación remote node valid de Permisos y sesiones PIN; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "AppPreferences_IsPinLockEnabled",
+          "declaration": "bool (*AppPreferences_IsPinLockEnabled)(void)",
+          "callback": true,
+          "ownerType": "PermissionServices",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/permission_context.h",
+            "line": 46
+          },
+          "description": "Operación App Preferences Is Pin Lock Enabled de Permisos y sesiones PIN; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "AppPreferences_VerifyAuthPin",
+          "declaration": "bool (*AppPreferences_VerifyAuthPin)(const uint8_t pinDigits[APP_PREFS_AUTH_PIN_DIGITS])",
+          "callback": true,
+          "ownerType": "PermissionServices",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/permission_context.h",
+            "line": 47
+          },
+          "description": "Operación App Preferences Verify Auth Pin de Permisos y sesiones PIN; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "MenuSys_SetCurrentScreenCode",
+          "declaration": "void (*MenuSys_SetCurrentScreenCode)(MenuSystem *ms, ScreenCode_t screen_code, ScreenReportSource_t source)",
+          "callback": true,
+          "ownerType": "PermissionServices",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/permission_context.h",
+            "line": 48
+          },
+          "description": "Actualiza identidad/origen de pantalla y marca reporte pendiente."
+        },
+        {
+          "name": "OledUtils_DismissNotification",
+          "declaration": "void (*OledUtils_DismissNotification)(void)",
+          "callback": true,
+          "ownerType": "PermissionServices",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/permission_context.h",
+            "line": 49
+          },
+          "description": "Descarta el aviso actual y avanza/restaura la vista correspondiente."
+        },
+        {
+          "name": "OledUtils_SetNotificationsBlocked",
+          "declaration": "void (*OledUtils_SetNotificationsBlocked)(bool blocked)",
+          "callback": true,
+          "ownerType": "PermissionServices",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/permission_context.h",
+            "line": 50
+          },
+          "description": "Bloquea o habilita la presentación de avisos durante flujos prioritarios."
+        },
+        {
+          "name": "ssd1306_Clear",
+          "declaration": "void (*ssd1306_Clear)(void)",
+          "callback": true,
+          "ownerType": "PermissionServices",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/permission_context.h",
+            "line": 51
+          },
+          "description": "Operación ssd1306 Clear de Permisos y sesiones PIN; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "ssd1306_DrawBitmap",
+          "declaration": "void (*ssd1306_DrawBitmap)(uint8_t X, uint8_t Y, uint8_t W, uint8_t H, const uint8_t* pBMP)",
+          "callback": true,
+          "ownerType": "PermissionServices",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/permission_context.h",
+            "line": 52
+          },
+          "description": "Operación ssd1306 Draw Bitmap de Permisos y sesiones PIN; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "ssd1306_DrawRect",
+          "declaration": "void (*ssd1306_DrawRect)(int16_t x, int16_t y, int16_t width, int16_t height)",
+          "callback": true,
+          "ownerType": "PermissionServices",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/permission_context.h",
+            "line": 53
+          },
+          "description": "Operación ssd1306 Draw Rect de Permisos y sesiones PIN; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "ssd1306_FillRect",
+          "declaration": "void (*ssd1306_FillRect)(int16_t xMove, int16_t yMove, int16_t width, int16_t height)",
+          "callback": true,
+          "ownerType": "PermissionServices",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/permission_context.h",
+            "line": 54
+          },
+          "description": "Operación ssd1306 Fill Rect de Permisos y sesiones PIN; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "ssd1306_SetColor",
+          "declaration": "void (*ssd1306_SetColor)(SSD1306_COLOR color)",
+          "callback": true,
+          "ownerType": "PermissionServices",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/permission_context.h",
+            "line": 55
+          },
+          "description": "Operación ssd1306 Set Color de Permisos y sesiones PIN; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "ssd1306_SetCursor",
+          "declaration": "void (*ssd1306_SetCursor)(uint8_t x, uint8_t y)",
+          "callback": true,
+          "ownerType": "PermissionServices",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/permission_context.h",
+            "line": 56
+          },
+          "description": "Operación ssd1306 Set Cursor de Permisos y sesiones PIN; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "ssd1306_WriteString",
+          "declaration": "char (*ssd1306_WriteString)(char* str, FontDef Font)",
+          "callback": true,
+          "ownerType": "PermissionServices",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/permission_context.h",
+            "line": 57
+          },
+          "description": "Operación ssd1306 Write String de Permisos y sesiones PIN; semántica fina pendiente de ampliación."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/permission_context.h",
+        "line": 44
+      }
+    },
+    {
+      "name": "PermissionHandle",
+      "fields": [
+        {
+          "name": "services",
+          "declaration": "const PermissionServices *services",
+          "callback": false,
+          "ownerType": "PermissionHandle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/permission_context.h",
+            "line": 60
+          },
+          "description": "Contrato de operaciones externo; conservar la tabla y su contexto durante el uso."
+        },
+        {
+          "name": "system",
+          "declaration": "SystemHandle *system",
+          "callback": false,
+          "ownerType": "PermissionHandle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/permission_context.h",
+            "line": 61
+          },
+          "description": "Referencia al estado compartido AutoMicro; introduce dependencia del modelo de aplicación."
+        },
+        {
+          "name": "menuSystem",
+          "declaration": "MenuSystem *menuSystem",
+          "callback": false,
+          "ownerType": "PermissionHandle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/permission_context.h",
+            "line": 62
+          },
+          "description": "Referencia al menú compuesto por la aplicación."
+        },
+        {
+          "name": "permissionManager",
+          "declaration": "PermissionManager_t permissionManager",
+          "callback": false,
+          "ownerType": "PermissionHandle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/permission_context.h",
+            "line": 63
+          },
+          "description": "Dato de estado/configuración `permissionManager`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/permission_context.h",
+        "line": 60
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "Permission_CancelLocalRequest",
+      "signature": "void Permission_CancelLocalRequest(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/permissions.h",
+        "line": 19
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "Permission_CancelRequest"
+      ],
+      "writes": [],
+      "description": "Cancela la solicitud local y restaura contexto UI.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/permissions_stub.c",
+        "line": 605
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "Permission_GetRemoteTtlRemaining",
+      "signature": "uint32_t Permission_GetRemoteTtlRemaining(uint8_t source_node, uint32_t now_ms)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/permissions.h",
+        "line": 43
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "Permission_IsRemoteNodeAuthorized"
+      ],
+      "writes": [],
+      "description": "Consulta tiempo restante de sesión del nodo.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/permissions_stub.c",
+        "line": 948
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "Permission_GetRequestedPermission",
+      "signature": "PermissionId_t Permission_GetRequestedPermission(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/permissions.h",
+        "line": 25
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Consulta qué permiso solicita el flujo local actual.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/permissions_stub.c",
+        "line": 737
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "Permission_GetState",
+      "signature": "AuthState_t Permission_GetState(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/permissions.h",
+        "line": 26
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Consulta estado AUTH_* actual del gestor local.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/permissions_stub.c",
+        "line": 742
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "Permission_GrantCurrentRequest",
+      "signature": "bool Permission_GrantCurrentRequest(uint32_t ttl_ms)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/permissions.h",
+        "line": 23
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "Permission_Grant",
+        "Permission_HasActiveLocalRequest"
+      ],
+      "writes": [],
+      "description": "Concede solicitud actual y ejecuta la continuación registrada.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/permissions_stub.c",
+        "line": 718
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "Permission_HandleUserEvent",
+      "signature": "void Permission_HandleUserEvent(UserEvent_t ev)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/permissions.h",
+        "line": 21
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "Permission_BeginPinSubmit",
+        "Permission_CancelRequest",
+        "Permission_IsExpired",
+        "Permission_RequestRender",
+        "Permission_ResetForRetry",
+        "now_ms"
+      ],
+      "writes": [],
+      "description": "Procesa entradas de PIN del flujo local activo.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/permissions_stub.c",
+        "line": 615
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "Permission_HasActiveLocalRequest",
+      "signature": "bool Permission_HasActiveLocalRequest(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/permissions.h",
+        "line": 24
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Indica si una solicitud de permiso local sigue en curso.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/permissions_stub.c",
+        "line": 728
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "Permission_Init",
+      "signature": "void Permission_Init(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/permissions.h",
+        "line": 7
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "memset"
+      ],
+      "writes": [],
+      "description": "Inicializa permisos locales y sesiones por nodo.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/permissions_stub.c",
+        "line": 454
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "Permission_IsAuthorized",
+      "signature": "bool Permission_IsAuthorized(PermissionId_t permission, uint32_t now_ms)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/permissions.h",
+        "line": 10
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "Permission_IsExpired"
+      ],
+      "writes": [],
+      "description": "Consulta autorización con el tiempo recibido.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/permissions_stub.c",
+        "line": 519
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "Permission_IsAuthorizedNow",
+      "signature": "bool Permission_IsAuthorizedNow(PermissionId_t permission)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/permissions.h",
+        "line": 11
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "Permission_IsAuthorized",
+        "now_ms"
+      ],
+      "writes": [],
+      "description": "Consulta autorización usando el reloj del servicio.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/permissions_stub.c",
+        "line": 532
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "Permission_IsRemoteNodeAuthorized",
+      "signature": "bool Permission_IsRemoteNodeAuthorized(uint8_t source_node, uint32_t now_ms)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/permissions.h",
+        "line": 38
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "Permission_IsExpired",
+        "Permission_RemoteNodeIsValid"
+      ],
+      "writes": [
+        "authenticated",
+        "authorizedUntilMs"
+      ],
+      "description": "Comprueba sesión del nodo frente al tiempo recibido.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/permissions_stub.c",
+        "line": 889
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "Permission_IsRemoteNodeAuthorizedNow",
+      "signature": "bool Permission_IsRemoteNodeAuthorizedNow(uint8_t source_node)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/permissions.h",
+        "line": 39
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "Permission_IsRemoteNodeAuthorized",
+        "now_ms"
+      ],
+      "writes": [],
+      "description": "Comprueba sesión remota con el reloj del servicio.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/permissions_stub.c",
+        "line": 908
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "Permission_RemoteAuthenticate",
+      "signature": "bool Permission_RemoteAuthenticate( uint8_t source_node, const uint8_t pin_digits[PERMISSION_PIN_DIGITS], uint32_t now_ms, uint32_t *ttl_ms, uint8_t *attempts_left, bool *new_session)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/permissions.h",
+        "line": 31
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "AppPreferences_IsPinLockEnabled",
+        "AppPreferences_VerifyAuthPin",
+        "Permission_IsExpired",
+        "Permission_IsRemoteNodeAuthorized",
+        "Permission_RemoteNodeIsValid"
+      ],
+      "writes": [
+        "attemptsLeft",
+        "authenticated",
+        "authorizedUntilMs",
+        "blockedUntilMs"
+      ],
+      "description": "Comprueba PIN/intentos y abre o rechaza sesión del nodo.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/permissions_stub.c",
+        "line": 795
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "Permission_RenderPinEntry",
+      "signature": "void Permission_RenderPinEntry(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/permissions.h",
+        "line": 22
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MenuSys_SetCurrentScreenCode",
+        "Permission_DrawBaselineText",
+        "Permission_DrawText",
+        "Permission_FormatAttempts",
+        "Permission_IsExpired",
+        "Permission_RenderEncoderHint",
+        "Permission_RenderPinForm",
+        "Permission_RenderRemoteAuthNotice",
+        "now_ms",
+        "ssd1306_Clear",
+        "ssd1306_SetColor"
+      ],
+      "writes": [],
+      "description": "Dibuja entrada PIN y estado de intentos.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/permissions_stub.c",
+        "line": 672
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "Permission_Request",
+      "signature": "bool Permission_Request(PermissionId_t permission, PermissionContinuationFn on_granted, void *ctx)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/permissions.h",
+        "line": 13
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "AppPreferences_IsPinLockEnabled",
+        "OledUtils_DismissNotification",
+        "OledUtils_SetNotificationsBlocked",
+        "Permission_Emit",
+        "Permission_EmitFor",
+        "Permission_IsAuthorizedNow",
+        "Permission_IsExpired",
+        "Permission_RequestRender",
+        "Permission_SaveUiContext",
+        "Permission_StartInput",
+        "now_ms",
+        "on_granted"
+      ],
+      "writes": [],
+      "description": "Solicita permiso local y registra continuación con su contexto.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/permissions_stub.c",
+        "line": 537
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "Permission_Revoke",
+      "signature": "void Permission_Revoke(PermissionId_t permission)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/permissions.h",
+        "line": 17
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "Permission_EmitFor"
+      ],
+      "writes": [],
+      "description": "Revoca el permiso local indicado.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/permissions_stub.c",
+        "line": 586
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "Permission_RevokeAll",
+      "signature": "void Permission_RevokeAll(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/permissions.h",
+        "line": 18
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "Permission_Revoke"
+      ],
+      "writes": [],
+      "description": "Revoca todos los permisos locales.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/permissions_stub.c",
+        "line": 596
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "Permission_RevokeAllRemote",
+      "signature": "void Permission_RevokeAllRemote(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/permissions.h",
+        "line": 42
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "Permission_RevokeRemoteNode"
+      ],
+      "writes": [],
+      "description": "Revoca todas las sesiones remotas.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/permissions_stub.c",
+        "line": 941
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "Permission_RevokeRemoteNode",
+      "signature": "void Permission_RevokeRemoteNode(uint8_t source_node)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/permissions.h",
+        "line": 41
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "Permission_RemoteNodeIsValid"
+      ],
+      "writes": [
+        "authenticated",
+        "authorizedUntilMs"
+      ],
+      "description": "Revoca autorización del nodo indicado.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/permissions_stub.c",
+        "line": 928
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "Permission_SetEventCallback",
+      "signature": "void Permission_SetEventCallback(PermissionEventCallback callback)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/permissions.h",
+        "line": 27
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Registra receptor de eventos del ciclo de permisos.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/permissions_stub.c",
+        "line": 747
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "Permission_ShowRemoteAuthNotice",
+      "signature": "bool Permission_ShowRemoteAuthNotice(PermissionAuthNoticeId_t notice_id, uint16_t timeout_ms)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/permissions.h",
+        "line": 28
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "Permission_ExtendDeadline",
+        "Permission_IsExpired",
+        "Permission_RequestRender",
+        "now_ms"
+      ],
+      "writes": [],
+      "description": "Coordina `Permission_ExtendDeadline`, `Permission_IsExpired`, `Permission_RequestRender` para Permisos y sesiones PIN.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/permissions_stub.c",
+        "line": 752
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "Permission_Task",
+      "signature": "void Permission_Task(uint32_t now_ms)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/permissions.h",
+        "line": 8
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "Permission_ClearPendingRequest",
+        "Permission_Emit",
+        "Permission_EmitFor",
+        "Permission_IsExpired",
+        "Permission_RequestRender",
+        "Permission_RestoreUiContext",
+        "Permission_StartInput",
+        "Permission_SubmitPin"
+      ],
+      "writes": [
+        "attemptsLeft",
+        "authenticated",
+        "authorizedUntilMs",
+        "blockedUntilMs"
+      ],
+      "description": "Procesa vencimientos, bloqueo y transiciones temporales.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/permissions_stub.c",
+        "line": 467
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "Permission_TouchRemoteNode",
+      "signature": "void Permission_TouchRemoteNode(uint8_t source_node, uint32_t now_ms)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/permissions.h",
+        "line": 40
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "Permission_IsRemoteNodeAuthorized"
+      ],
+      "writes": [
+        "authorizedUntilMs"
+      ],
+      "description": "Renueva actividad de la sesión remota autorizada.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/permissions_stub.c",
+        "line": 913
+      },
+      "linkage": "header"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "Permission_IsExpired",
+      "signature": "static bool Permission_IsExpired(uint32_t deadline, uint32_t now_ms)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/permissions_stub.c",
+        "line": 50
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Indica si se cumple la condición Expired dentro de Permisos y sesiones PIN.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "Permission_RemoteNodeIsValid",
+      "signature": "static bool Permission_RemoteNodeIsValid(uint8_t source_node)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/permissions_stub.c",
+        "line": 55
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "remote_node_valid"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `remote_node_valid` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Permission_GetPolicy",
+      "signature": "static const PermissionPolicy_t *Permission_GetPolicy(PermissionId_t permission)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/permissions_stub.c",
+        "line": 60
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Consulta Policy dentro de Permisos y sesiones PIN.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "Permission_EmitFor",
+      "signature": "static void Permission_EmitFor(PermissionId_t permission, PermissionEventId_t event)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/permissions_stub.c",
+        "line": 69
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "eventCallback"
+      ],
+      "writes": [],
+      "description": "Coordina `eventCallback` para Permisos y sesiones PIN.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Permission_Emit",
+      "signature": "static void Permission_Emit(PermissionEventId_t event)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/permissions_stub.c",
+        "line": 84
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Permission_EmitFor"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `Permission_EmitFor` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Permission_ClearPin",
+      "signature": "static void Permission_ClearPin(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/permissions_stub.c",
+        "line": 89
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "memset"
+      ],
+      "writes": [],
+      "description": "Limpia Pin dentro de Permisos y sesiones PIN.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "Permission_ExtendDeadline",
+      "signature": "static void Permission_ExtendDeadline(uint32_t *deadline_ms, uint32_t extension_ms)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/permissions_stub.c",
+        "line": 95
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Extend Deadline de Permisos y sesiones PIN; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "Permission_RequestRender",
+      "signature": "static void Permission_RequestRender(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/permissions_stub.c",
+        "line": 108
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Solicita Render dentro de Permisos y sesiones PIN.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "Permission_SaveUiContext",
+      "signature": "static void Permission_SaveUiContext(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/permissions_stub.c",
+        "line": 117
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Save Ui Context de Permisos y sesiones PIN; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "Permission_RestoreUiContext",
+      "signature": "static void Permission_RestoreUiContext(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/permissions_stub.c",
+        "line": 126
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "OledUtils_SetNotificationsBlocked",
+        "clearScreen"
+      ],
+      "writes": [],
+      "description": "Coordina `OledUtils_SetNotificationsBlocked`, `clearScreen` para Permisos y sesiones PIN.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Permission_ClearPendingRequest",
+      "signature": "static void Permission_ClearPendingRequest(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/permissions_stub.c",
+        "line": 144
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Permission_ClearPin"
+      ],
+      "writes": [],
+      "description": "Limpia Pending Request dentro de Permisos y sesiones PIN.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "Permission_ResolveTtl",
+      "signature": "static uint32_t Permission_ResolveTtl(PermissionId_t permission, uint32_t ttl_ms)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/permissions_stub.c",
+        "line": 157
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Permission_GetPolicy"
+      ],
+      "writes": [],
+      "description": "Coordina `Permission_GetPolicy` para Permisos y sesiones PIN.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Permission_Grant",
+      "signature": "static void Permission_Grant(uint32_t ttl_ms)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/permissions_stub.c",
+        "line": 175
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Permission_ClearPendingRequest",
+        "Permission_Emit",
+        "Permission_ResolveTtl",
+        "Permission_RestoreUiContext",
+        "now_ms",
+        "onGranted"
+      ],
+      "writes": [],
+      "description": "Coordina `Permission_ClearPendingRequest`, `Permission_Emit`, `Permission_ResolveTtl` para Permisos y sesiones PIN.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Permission_CancelRequest",
+      "signature": "static void Permission_CancelRequest(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/permissions_stub.c",
+        "line": 201
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Permission_ClearPendingRequest",
+        "Permission_Emit",
+        "Permission_RestoreUiContext"
+      ],
+      "writes": [],
+      "description": "Coordina `Permission_ClearPendingRequest`, `Permission_Emit`, `Permission_RestoreUiContext` para Permisos y sesiones PIN.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Permission_ApplyDeniedState",
+      "signature": "static void Permission_ApplyDeniedState(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/permissions_stub.c",
+        "line": 209
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Permission_ClearPin",
+        "Permission_Emit",
+        "Permission_RequestRender",
+        "now_ms"
+      ],
+      "writes": [],
+      "description": "Aplica Denied State dentro de Permisos y sesiones PIN.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "Permission_StartInput",
+      "signature": "static void Permission_StartInput(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/permissions_stub.c",
+        "line": 228
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Permission_ClearPin",
+        "Permission_Emit",
+        "Permission_GetPolicy",
+        "Permission_RequestRender",
+        "now_ms"
+      ],
+      "writes": [],
+      "description": "Inicia Input dentro de Permisos y sesiones PIN.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "Permission_SubmitPin",
+      "signature": "static void Permission_SubmitPin(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/permissions_stub.c",
+        "line": 248
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "AppPreferences_VerifyAuthPin",
+        "Permission_ApplyDeniedState",
+        "Permission_Emit",
+        "Permission_Grant"
+      ],
+      "writes": [],
+      "description": "Coordina `AppPreferences_VerifyAuthPin`, `Permission_ApplyDeniedState`, `Permission_Emit` para Permisos y sesiones PIN.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Permission_BeginPinSubmit",
+      "signature": "static void Permission_BeginPinSubmit(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/permissions_stub.c",
+        "line": 267
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Permission_RequestRender",
+        "now_ms"
+      ],
+      "writes": [],
+      "description": "Coordina `Permission_RequestRender`, `now_ms` para Permisos y sesiones PIN.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Permission_ResetForRetry",
+      "signature": "static void Permission_ResetForRetry(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/permissions_stub.c",
+        "line": 277
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Permission_ClearPin",
+        "Permission_RequestRender"
+      ],
+      "writes": [],
+      "description": "Restablece For Retry dentro de Permisos y sesiones PIN.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "Permission_DrawText",
+      "signature": "static void Permission_DrawText(uint8_t x, uint8_t y, FontDef font, const char *text)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/permissions_stub.c",
+        "line": 288
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "ssd1306_SetColor",
+        "ssd1306_SetCursor",
+        "ssd1306_WriteString"
+      ],
+      "writes": [],
+      "description": "Dibuja Text dentro de Permisos y sesiones PIN.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "Permission_DrawBaselineText",
+      "signature": "static void Permission_DrawBaselineText(uint8_t x, uint8_t baseline_y, FontDef font, const char *text)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/permissions_stub.c",
+        "line": 295
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Permission_DrawText"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `Permission_DrawText` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Permission_DrawCenteredBaselineText",
+      "signature": "static void Permission_DrawCenteredBaselineText(uint8_t baseline_y, FontDef font, const char *text)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/permissions_stub.c",
+        "line": 309
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Permission_DrawBaselineText",
+        "strlen"
+      ],
+      "writes": [],
+      "description": "Dibuja Centered Baseline Text dentro de Permisos y sesiones PIN.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "Permission_RenderRemoteAuthNotice",
+      "signature": "static void Permission_RenderRemoteAuthNotice(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/permissions_stub.c",
+        "line": 330
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "MenuSys_SetCurrentScreenCode",
+        "Permission_DrawCenteredBaselineText",
+        "ssd1306_Clear",
+        "ssd1306_DrawBitmap",
+        "ssd1306_SetColor"
+      ],
+      "writes": [],
+      "description": "Renderiza Remote Auth Notice dentro de Permisos y sesiones PIN.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "Permission_RenderPinDigits",
+      "signature": "static void Permission_RenderPinDigits(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/permissions_stub.c",
+        "line": 377
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Permission_DrawText",
+        "ssd1306_DrawBitmap",
+        "ssd1306_DrawRect",
+        "ssd1306_SetColor"
+      ],
+      "writes": [],
+      "description": "Renderiza Pin Digits dentro de Permisos y sesiones PIN.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "Permission_RenderEncoderHint",
+      "signature": "static void Permission_RenderEncoderHint(const char *label, uint8_t text_x)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/permissions_stub.c",
+        "line": 409
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Permission_DrawBaselineText",
+        "ssd1306_DrawBitmap"
+      ],
+      "writes": [],
+      "description": "Renderiza Encoder Hint dentro de Permisos y sesiones PIN.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "Permission_RenderPinForm",
+      "signature": "static void Permission_RenderPinForm(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/permissions_stub.c",
+        "line": 417
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Permission_DrawBaselineText",
+        "Permission_RenderEncoderHint",
+        "Permission_RenderPinDigits",
+        "ssd1306_DrawBitmap",
+        "ssd1306_FillRect",
+        "ssd1306_SetColor"
+      ],
+      "writes": [],
+      "description": "Renderiza Pin Form dentro de Permisos y sesiones PIN.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "Permission_FormatAttempts",
+      "signature": "static void Permission_FormatAttempts(char *buf, size_t len, uint8_t attempts)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/permissions_stub.c",
+        "line": 436
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Format Attempts de Permisos y sesiones PIN; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    }
+  ]
+}

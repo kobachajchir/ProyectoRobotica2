@@ -1,0 +1,641 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "f4:module/Core/Inc/oled_canvas.h",
+  "slug": "oled-canvas",
+  "title": "Transferencia transaccional OLED Canvas",
+  "target": "f4",
+  "kind": "integración",
+  "status": "source-documented",
+  "verification": "not-run-user-instruction",
+  "snapshotDate": "2026-10-20",
+  "responsibility": "Recibe un framebuffer por operaciones BEGIN/CHUNK/COMMIT/CANCEL y completa después de su presentación.",
+  "scope": "Transacción de 1024 bytes 128×64 page-major LSB, correlación por transporte/nodo/transfer_id, orden y CRC32.",
+  "state": "OledCanvasContext_t vive en ScreensState y posee framebuffer, metadatos, respuesta pendiente, estado y callback send_response/send_ctx. No conserva punteros al payload recibido: el ensamblaje pertenece al contexto.",
+  "lifecycle": [
+    "Init instala envío; BeginFromMenu prepara pantalla receptora.",
+    "HandlePacket comprueba endpoint, operación y datos y ensambla el framebuffer.",
+    "COMMIT pasa a presentación diferida; Poll resuelve finalización, errores, timeout y reintentos de respuesta.",
+    "HandleLocalEvent puede cancelar la transacción y restaurar navegación."
+  ],
+  "interactions": [
+    "UNER_App enruta 0x6D; ESP coordina transferencia y Web empaqueta bitmap.",
+    "SSD1306 presenta la imagen; recibir todos los chunks no prueba presentación física."
+  ],
+  "limitations": [
+    "Chunk UART máximo 112 bytes; ensamblaje 3000 ms y presentación 1000 ms según las constantes del header.",
+    "Respuesta de 10 bytes incluye resultado; diferenciar error CRC, orden, contexto y E/S.",
+    "Los reportes de pantalla ordinarios no transportan esta imagen."
+  ],
+  "modularity": "Usa paquetes UNER, reglas TEST/pantalla activa y servicios de UI. Es integración de protocolo y presentación, no extensión del core UNER.",
+  "files": [
+    {
+      "path": "Core/Inc/oled_canvas.h",
+      "rootId": "f4",
+      "sha256": "7ec7d21482c87df73fe27b4a230d90820e0efaedcc3a5947dc424e994c52844f",
+      "includes": [
+        "stdint.h",
+        "types/userEvent_type.h",
+        "uner_core_types.h"
+      ]
+    },
+    {
+      "path": "Core/Src/oled_canvas.c",
+      "rootId": "f4",
+      "sha256": "10a1d5628c0a2ac35606b1a15e7188c97ae08f3431f3b9d24d1060e99f765157",
+      "includes": [
+        "screens_internal.h",
+        "oled_canvas.h",
+        "string.h",
+        "fonts.h",
+        "types/menu_types.h",
+        "oled_utils.h",
+        "screenWrappers.h",
+        "screen_codes.h",
+        "uner_v2.h",
+        "utils/macros_utils.h"
+      ]
+    }
+  ],
+  "findings": [],
+  "types": [
+    {
+      "name": "OledCanvasSendResponseFn",
+      "callbackType": "uint8_t (*OledCanvasSendResponseFn)(uint8_t transport_id, uint8_t destination_node, const uint8_t *payload, uint8_t len, void *ctx)",
+      "fields": [],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_canvas.h",
+        "line": 47
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "OledCanvas_BeginFromMenu",
+      "signature": "void OledCanvas_BeginFromMenu(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_canvas.h",
+        "line": 55
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledCanvas_ResetTransferState",
+        "OledCanvas_ShowReadyUi",
+        "OledUtils_DismissNotification"
+      ],
+      "writes": [],
+      "description": "Abre la pantalla local receptora de canvas.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_canvas.c",
+        "line": 620
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledCanvas_HandleLocalEvent",
+      "signature": "void OledCanvas_HandleLocalEvent(UserEvent_t event)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_canvas.h",
+        "line": 57
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledCanvas_CancelForUi"
+      ],
+      "writes": [],
+      "description": "Procesa cancelación/navegación local durante el canvas.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_canvas.c",
+        "line": 644
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledCanvas_HandlePacket",
+      "signature": "void OledCanvas_HandlePacket(const UNER_Packet *packet)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_canvas.h",
+        "line": 58
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledCanvas_GuardStatus",
+        "OledCanvas_HandleBegin",
+        "OledCanvas_HandleCancel",
+        "OledCanvas_HandleChunk",
+        "OledCanvas_HandleCommit",
+        "OledCanvas_QueueResponse",
+        "OledCanvas_ReadU16Le"
+      ],
+      "writes": [],
+      "description": "Procesa una operación de transferencia y sus metadatos.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_canvas.c",
+        "line": 655
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledCanvas_Init",
+      "signature": "void OledCanvas_Init(OledCanvasSendResponseFn send_response, void *ctx)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_canvas.h",
+        "line": 54
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "memset"
+      ],
+      "writes": [],
+      "description": "Inicializa estado y callback de respuesta de canvas.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_canvas.c",
+        "line": 613
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledCanvas_IsActiveScreen",
+      "signature": "uint8_t OledCanvas_IsActiveScreen(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_canvas.h",
+        "line": 60
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MenuSys_GetCurrentScreenCode"
+      ],
+      "writes": [],
+      "description": "Indica si la pantalla actual acepta la operación canvas.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_canvas.c",
+        "line": 886
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledCanvas_Poll",
+      "signature": "void OledCanvas_Poll(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_canvas.h",
+        "line": 59
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "GET_CAR_MODE",
+        "OledCanvas_ApplyUiAction",
+        "OledCanvas_CancelForUi",
+        "OledCanvas_GuardStatus",
+        "OledCanvas_IsActiveScreen",
+        "OledCanvas_QueueResponse",
+        "OledCanvas_RememberResult",
+        "OledCanvas_ResetTransferState",
+        "OledCanvas_TrySendPendingResponse",
+        "Screens_NowMs",
+        "ssd1306_GetErrorCount",
+        "ssd1306_PresentFramebuffer",
+        "ssd1306_UpdateScreenCompleted"
+      ],
+      "writes": [],
+      "description": "Avanza presentación y resuelve timeouts/respuestas diferidas.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_canvas.c",
+        "line": 705
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledCanvas_RenderReadyScreen",
+      "signature": "void OledCanvas_RenderReadyScreen(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_canvas.h",
+        "line": 56
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "ssd1306_Clear",
+        "ssd1306_SetColor",
+        "ssd1306_SetCursor",
+        "ssd1306_WriteString"
+      ],
+      "writes": [],
+      "description": "Dibuja la vista de espera para transferencia.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_canvas.c",
+        "line": 628
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "Screens_Init_oled_canvas",
+      "signature": "void Screens_Init_oled_canvas(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_canvas.c",
+        "line": 892
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Inicializa el estado canvas del contexto activo de pantallas.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_canvas.c",
+        "line": 892
+      },
+      "linkage": "extern-no-header"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "OledCanvas_ReadU16Le",
+      "signature": "static uint16_t OledCanvas_ReadU16Le(const uint8_t *data)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_canvas.c",
+        "line": 32
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Lee U16 Le dentro de Transferencia transaccional OLED Canvas.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "OledCanvas_ReadU32Le",
+      "signature": "static uint32_t OledCanvas_ReadU32Le(const uint8_t *data)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_canvas.c",
+        "line": 37
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Lee U32 Le dentro de Transferencia transaccional OLED Canvas.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "OledCanvas_WriteU16Le",
+      "signature": "static void OledCanvas_WriteU16Le(uint8_t *data, uint16_t value)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_canvas.c",
+        "line": 45
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Escribe U16 Le dentro de Transferencia transaccional OLED Canvas.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "OledCanvas_WriteU32Le",
+      "signature": "static void OledCanvas_WriteU32Le(uint8_t *data, uint32_t value)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_canvas.c",
+        "line": 51
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Escribe U32 Le dentro de Transferencia transaccional OLED Canvas.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "OledCanvas_Crc32",
+      "signature": "static uint32_t OledCanvas_Crc32(const uint8_t *data, uint16_t len)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_canvas.c",
+        "line": 59
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Crc32 de Transferencia transaccional OLED Canvas; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "OledCanvas_GuardStatus",
+      "signature": "static uint8_t OledCanvas_GuardStatus(uint8_t source_node)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_canvas.c",
+        "line": 75
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "GET_CAR_MODE",
+        "MenuSys_GetCurrentScreenCode",
+        "Permission_IsRemoteNodeAuthorizedNow"
+      ],
+      "writes": [],
+      "description": "Coordina `GET_CAR_MODE`, `MenuSys_GetCurrentScreenCode`, `Permission_IsRemoteNodeAuthorizedNow` para Transferencia transaccional OLED Canvas.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "OledCanvas_TrySendPendingResponse",
+      "signature": "static void OledCanvas_TrySendPendingResponse(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_canvas.c",
+        "line": 96
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "memset",
+        "send_response"
+      ],
+      "writes": [],
+      "description": "Coordina `memset`, `send_response` para Transferencia transaccional OLED Canvas.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "OledCanvas_QueueResponse",
+      "signature": "static void OledCanvas_QueueResponse(uint8_t operation, uint8_t status, uint8_t transport_id, uint8_t destination_node, uint16_t transfer_id, uint16_t next_offset, uint32_t computed_crc32)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_canvas.c",
+        "line": 113
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "OledCanvas_TrySendPendingResponse",
+        "OledCanvas_WriteU16Le",
+        "OledCanvas_WriteU32Le"
+      ],
+      "writes": [
+        "destination_node",
+        "transport_id",
+        "valid"
+      ],
+      "description": "Coordina `OledCanvas_TrySendPendingResponse`, `OledCanvas_WriteU16Le`, `OledCanvas_WriteU32Le` para Transferencia transaccional OLED Canvas.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "OledCanvas_RememberResult",
+      "signature": "static void OledCanvas_RememberResult(uint8_t status)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_canvas.c",
+        "line": 139
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Remember Result de Transferencia transaccional OLED Canvas; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "OledCanvas_ResetTransferState",
+      "signature": "static void OledCanvas_ResetTransferState(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_canvas.c",
+        "line": 148
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "memset"
+      ],
+      "writes": [],
+      "description": "Restablece Transfer State dentro de Transferencia transaccional OLED Canvas.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "OledCanvas_ShowReadyUi",
+      "signature": "static void OledCanvas_ShowReadyUi(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_canvas.c",
+        "line": 164
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "MenuSys_SetCurrentScreenCode",
+        "clearScreen"
+      ],
+      "writes": [],
+      "description": "Coordina `MenuSys_SetCurrentScreenCode`, `clearScreen` para Transferencia transaccional OLED Canvas.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "OledCanvas_ExitToDisplayMenu",
+      "signature": "static void OledCanvas_ExitToDisplayMenu(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_canvas.c",
+        "line": 185
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "MenuSys_SetCurrentMenuScreenCode",
+        "clearScreen"
+      ],
+      "writes": [],
+      "description": "Coordina `MenuSys_SetCurrentMenuScreenCode`, `clearScreen` para Transferencia transaccional OLED Canvas.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "OledCanvas_ExitToDashboard",
+      "signature": "static void OledCanvas_ExitToDashboard(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_canvas.c",
+        "line": 207
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "clearScreen"
+      ],
+      "writes": [],
+      "description": "Coordina `clearScreen` para Transferencia transaccional OLED Canvas.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "OledCanvas_ApplyUiAction",
+      "signature": "static void OledCanvas_ApplyUiAction(OledCanvasUiAction_t action)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_canvas.c",
+        "line": 228
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "OledCanvas_ExitToDashboard",
+        "OledCanvas_ExitToDisplayMenu",
+        "OledCanvas_ShowReadyUi"
+      ],
+      "writes": [],
+      "description": "Aplica Ui Action dentro de Transferencia transaccional OLED Canvas.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "OledCanvas_CancelForUi",
+      "signature": "static void OledCanvas_CancelForUi(uint8_t status, OledCanvasUiAction_t action)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_canvas.c",
+        "line": 245
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "OledCanvas_ApplyUiAction",
+        "OledCanvas_QueueResponse",
+        "OledCanvas_RememberResult",
+        "OledCanvas_ResetTransferState"
+      ],
+      "writes": [],
+      "description": "Coordina `OledCanvas_ApplyUiAction`, `OledCanvas_QueueResponse`, `OledCanvas_RememberResult` para Transferencia transaccional OLED Canvas.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "OledCanvas_HandleBegin",
+      "signature": "static void OledCanvas_HandleBegin(const UNER_Packet *packet)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_canvas.c",
+        "line": 270
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "OledCanvas_QueueResponse",
+        "OledCanvas_ReadU16Le",
+        "OledCanvas_ReadU32Le",
+        "OledCanvas_ResetTransferState",
+        "Screens_NowMs"
+      ],
+      "writes": [],
+      "description": "Procesa Begin dentro de Transferencia transaccional OLED Canvas.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "OledCanvas_ExpectedChunkLength",
+      "signature": "static uint8_t OledCanvas_ExpectedChunkLength(uint16_t offset)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_canvas.c",
+        "line": 359
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Expected Chunk Length de Transferencia transaccional OLED Canvas; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "OledCanvas_HandleChunk",
+      "signature": "static void OledCanvas_HandleChunk(const UNER_Packet *packet)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_canvas.c",
+        "line": 367
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "OledCanvas_ExpectedChunkLength",
+        "OledCanvas_QueueResponse",
+        "OledCanvas_ReadU16Le",
+        "Screens_NowMs",
+        "memcmp",
+        "memcpy"
+      ],
+      "writes": [],
+      "description": "Procesa Chunk dentro de Transferencia transaccional OLED Canvas.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "OledCanvas_HandleCommit",
+      "signature": "static void OledCanvas_HandleCommit(const UNER_Packet *packet)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_canvas.c",
+        "line": 477
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "OledCanvas_Crc32",
+        "OledCanvas_QueueResponse",
+        "OledCanvas_ReadU16Le",
+        "OledCanvas_RememberResult",
+        "OledCanvas_ResetTransferState",
+        "Screens_NowMs"
+      ],
+      "writes": [],
+      "description": "Procesa Commit dentro de Transferencia transaccional OLED Canvas.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "OledCanvas_HandleCancel",
+      "signature": "static void OledCanvas_HandleCancel(const UNER_Packet *packet)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_canvas.c",
+        "line": 567
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "OledCanvas_QueueResponse",
+        "OledCanvas_ReadU16Le",
+        "OledCanvas_ResetTransferState",
+        "OledCanvas_ShowReadyUi"
+      ],
+      "writes": [],
+      "description": "Procesa Cancel dentro de Transferencia transaccional OLED Canvas.",
+      "descriptionOrigin": "inferred-name"
+    }
+  ]
+}

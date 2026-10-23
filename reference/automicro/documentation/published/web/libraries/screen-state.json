@@ -1,0 +1,1729 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "web:module/src/contexts/ScreenContext.tsx",
+  "slug": "screen-state",
+  "title": "Estado normalizado de pantalla remota",
+  "target": "web",
+  "kind": "servicio",
+  "status": "source-documented",
+  "snapshotDate": "2026-10-20",
+  "verification": "not-run-user-instruction",
+  "responsibility": "Normaliza reportes ESP y construye el modelo de pantalla, selección, menú y PIN que usa la UI.",
+  "scope": "Identidad y datos reportados/enriquecidos; no dispone de todos los estados privados de los renderers F4.",
+  "state": "ScreenProvider posee currentScreen, requests pendientes y listeners. CurrentScreen conserva rawData, source y tiempo recibido; ScreenViewModel añade conteos/ventana derivados y clasificación de PIN.",
+  "modularity": "Depende de transporte, usuario y modo; normalización pura separada de provider. El enriquecimiento mezcla datos confirmados y derivados y debe mantener su procedencia.",
+  "lifecycle": [
+    "Recibir screen.changed/current/device.response y normalizar.",
+    "Enriquecer usando datos reportados y contexto global; preservar solo campos cuyo contexto sigue siendo válido.",
+    "RequestCurrentScreen exige conexión y autoridad remota y lleva timeout propio."
+  ],
+  "interactions": [
+    "ESP add_screen_report serializa identidad/selección/dashboard; renderer consume rawData enriquecido.",
+    "La ventana Web se deriva en bloques de tres, frente al estado firstVisibleItem de F4."
+  ],
+  "limitations": [
+    "Código de página del screenCode no equivale a página actual de scroll.",
+    "GOTO no se interpreta en todos los normalizadores de pantalla.",
+    "Índices 0, cantidad 0 y campo ausente no son equivalentes."
+  ],
+  "relationships": [],
+  "findings": [
+    "AMDOC-ESP-002",
+    "AMDOC-WEB-002",
+    "AMDOC-WEB-004",
+    "AMDOC-WEB-005"
+  ],
+  "files": [
+    {
+      "rootId": "web",
+      "path": "src/contexts/ScreenContext.tsx",
+      "sha256": "051bbf46c10de8f4fce7382cb6c3e36a6a83a65557e6f1bc772ec4c414785165",
+      "imports": [
+        "../api/UnerFrameV2",
+        "../hooks/useWebSocket",
+        "../protocol/screenMenuState",
+        "../screens/screenCodes",
+        "../types/ScreenTypes",
+        "./CarModeContext",
+        "./UserContext",
+        "./WifiCredentialsContext",
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/hooks/useScreen.tsx",
+      "sha256": "8abe8789859e9d611a2fb94cb0b62d7977a85a475f236ad7689856d368ef2b44",
+      "imports": [
+        "../contexts/ScreenContext",
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/protocol/screenMenuState.ts",
+      "sha256": "7d816c5a1309d7457a5129f4e4b39d3166a69aab5a4cc126c94a33103f7b0aeb",
+      "imports": [],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/types/ScreenTypes.ts",
+      "sha256": "de3cf48411ba56a0a4e906e3d733ce2702f8481b3e29bfaa91c6553bb7eddc70",
+      "imports": [],
+      "analysisLevel": "typescript-ast-static"
+    }
+  ],
+  "types": [
+    {
+      "name": "ScreenViewModel",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "itemsCount",
+          "declaration": "itemsCount: number",
+          "callback": false,
+          "ownerType": "ScreenViewModel",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/ScreenContext.tsx",
+            "line": 47
+          },
+          "description": "Dato de estado/configuración `itemsCount`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "hasMenuItems",
+          "declaration": "hasMenuItems: boolean",
+          "callback": false,
+          "ownerType": "ScreenViewModel",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/ScreenContext.tsx",
+            "line": 48
+          },
+          "description": "Dato de estado/configuración `hasMenuItems`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "currentMenuPage",
+          "declaration": "currentMenuPage: number",
+          "callback": false,
+          "ownerType": "ScreenViewModel",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/ScreenContext.tsx",
+            "line": 49
+          },
+          "description": "Dato de estado/configuración `currentMenuPage`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "totalMenuPages",
+          "declaration": "totalMenuPages: number",
+          "callback": false,
+          "ownerType": "ScreenViewModel",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/ScreenContext.tsx",
+            "line": 50
+          },
+          "description": "Dato de estado/configuración `totalMenuPages`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "selectedIndex",
+          "declaration": "selectedIndex: number | null",
+          "callback": false,
+          "ownerType": "ScreenViewModel",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/ScreenContext.tsx",
+            "line": 51
+          },
+          "description": "Dato de estado/configuración `selectedIndex`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "visibleStartIndex",
+          "declaration": "visibleStartIndex: number",
+          "callback": false,
+          "ownerType": "ScreenViewModel",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/ScreenContext.tsx",
+            "line": 52
+          },
+          "description": "Dato de estado/configuración `visibleStartIndex`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "visibleEndIndex",
+          "declaration": "visibleEndIndex: number",
+          "callback": false,
+          "ownerType": "ScreenViewModel",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/ScreenContext.tsx",
+            "line": 53
+          },
+          "description": "Dato de estado/configuración `visibleEndIndex`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "isValidationScreen",
+          "declaration": "isValidationScreen: boolean",
+          "callback": false,
+          "ownerType": "ScreenViewModel",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/ScreenContext.tsx",
+            "line": 54
+          },
+          "description": "Dato de estado/configuración `isValidationScreen`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "pinDigitsCount",
+          "declaration": "pinDigitsCount: number",
+          "callback": false,
+          "ownerType": "ScreenViewModel",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/ScreenContext.tsx",
+            "line": 55
+          },
+          "description": "Dato de estado/configuración `pinDigitsCount`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "screenDefinition",
+          "declaration": "screenDefinition: ReturnType<typeof getScreenDefinition>",
+          "callback": false,
+          "ownerType": "ScreenViewModel",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/ScreenContext.tsx",
+            "line": 56
+          },
+          "description": "Dato de estado/configuración `screenDefinition`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/ScreenContext.tsx",
+        "line": 46
+      }
+    },
+    {
+      "name": "ScreenContextType",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "currentScreen",
+          "declaration": "currentScreen: ScreenViewModel | null",
+          "callback": false,
+          "ownerType": "ScreenContextType",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/ScreenContext.tsx",
+            "line": 60
+          },
+          "description": "Dato de estado/configuración `currentScreen`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "requestCurrentScreen",
+          "declaration": "requestCurrentScreen: () => string | null",
+          "callback": true,
+          "ownerType": "ScreenContextType",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/ScreenContext.tsx",
+            "line": 61
+          },
+          "description": "Solicita refresco de pantalla mediante el cliente; retorna correlación local o null, no un framebuffer ni una autorización."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/ScreenContext.tsx",
+        "line": 59
+      }
+    },
+    {
+      "name": "ScreenProviderProps",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "children",
+          "declaration": "children: ReactNode",
+          "callback": false,
+          "ownerType": "ScreenProviderProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/ScreenContext.tsx",
+            "line": 69
+          },
+          "description": "Dato de estado/configuración `children`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/ScreenContext.tsx",
+        "line": 68
+      }
+    },
+    {
+      "name": "ScreenMeta",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "title",
+          "declaration": "title: string",
+          "callback": false,
+          "ownerType": "ScreenMeta",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/ScreenTypes.ts",
+            "line": 20
+          },
+          "description": "Dato de estado/configuración `title`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "menu",
+          "declaration": "menu: number",
+          "callback": false,
+          "ownerType": "ScreenMeta",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/ScreenTypes.ts",
+            "line": 21
+          },
+          "description": "Dato de estado/configuración `menu`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "submenu",
+          "declaration": "submenu: number",
+          "callback": false,
+          "ownerType": "ScreenMeta",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/ScreenTypes.ts",
+            "line": 22
+          },
+          "description": "Dato de estado/configuración `submenu`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "page",
+          "declaration": "page: number",
+          "callback": false,
+          "ownerType": "ScreenMeta",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/ScreenTypes.ts",
+            "line": 23
+          },
+          "description": "Dato de estado/configuración `page`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "source",
+          "declaration": "source?: number",
+          "callback": false,
+          "ownerType": "ScreenMeta",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/ScreenTypes.ts",
+            "line": 24
+          },
+          "description": "Dato de estado/configuración `source`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "sourceName",
+          "declaration": "sourceName?: string",
+          "callback": false,
+          "ownerType": "ScreenMeta",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/ScreenTypes.ts",
+            "line": 25
+          },
+          "description": "Dato de estado/configuración `sourceName`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "payload",
+          "declaration": "payload?: number[]",
+          "callback": false,
+          "ownerType": "ScreenMeta",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/ScreenTypes.ts",
+            "line": 26
+          },
+          "description": "Vista del payload; copiar antes de permitir la reutilización del slot del parser."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/types/ScreenTypes.ts",
+        "line": 19
+      }
+    },
+    {
+      "name": "ScreenUpdateKind",
+      "kind": "TypeAliasDeclaration",
+      "type": "| \"screen.changed\" | \"screen.current\" | \"device.response\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/types/ScreenTypes.ts",
+        "line": 142
+      }
+    },
+    {
+      "name": "ScreenReport",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "cmd",
+          "declaration": "cmd?: number",
+          "callback": false,
+          "ownerType": "ScreenReport",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/ScreenTypes.ts",
+            "line": 148
+          },
+          "description": "Dato de estado/configuración `cmd`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "src",
+          "declaration": "src?: number",
+          "callback": false,
+          "ownerType": "ScreenReport",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/ScreenTypes.ts",
+            "line": 149
+          },
+          "description": "Dato de estado/configuración `src`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "dst",
+          "declaration": "dst?: number",
+          "callback": false,
+          "ownerType": "ScreenReport",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/ScreenTypes.ts",
+            "line": 150
+          },
+          "description": "Dato de estado/configuración `dst`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "len",
+          "declaration": "len?: number",
+          "callback": false,
+          "ownerType": "ScreenReport",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/ScreenTypes.ts",
+            "line": 151
+          },
+          "description": "Dato de estado/configuración `len`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "screen_code",
+          "declaration": "screen_code: number",
+          "callback": false,
+          "ownerType": "ScreenReport",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/ScreenTypes.ts",
+            "line": 152
+          },
+          "description": "Dato de estado/configuración `screen_code`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "screenCode",
+          "declaration": "screenCode: number",
+          "callback": false,
+          "ownerType": "ScreenReport",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/ScreenTypes.ts",
+            "line": 153
+          },
+          "description": "Dato de estado/configuración `screenCode`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "screenCodeHex",
+          "declaration": "screenCodeHex: string",
+          "callback": false,
+          "ownerType": "ScreenReport",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/ScreenTypes.ts",
+            "line": 154
+          },
+          "description": "Dato de estado/configuración `screenCodeHex`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "menu",
+          "declaration": "menu: number",
+          "callback": false,
+          "ownerType": "ScreenReport",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/ScreenTypes.ts",
+            "line": 155
+          },
+          "description": "Dato de estado/configuración `menu`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "submenu",
+          "declaration": "submenu: number",
+          "callback": false,
+          "ownerType": "ScreenReport",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/ScreenTypes.ts",
+            "line": 156
+          },
+          "description": "Dato de estado/configuración `submenu`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "page",
+          "declaration": "page: number",
+          "callback": false,
+          "ownerType": "ScreenReport",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/ScreenTypes.ts",
+            "line": 157
+          },
+          "description": "Dato de estado/configuración `page`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "source",
+          "declaration": "source?: number",
+          "callback": false,
+          "ownerType": "ScreenReport",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/ScreenTypes.ts",
+            "line": 158
+          },
+          "description": "Dato de estado/configuración `source`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "sourceName",
+          "declaration": "sourceName?: string",
+          "callback": false,
+          "ownerType": "ScreenReport",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/ScreenTypes.ts",
+            "line": 159
+          },
+          "description": "Dato de estado/configuración `sourceName`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "payload",
+          "declaration": "payload?: number[]",
+          "callback": false,
+          "ownerType": "ScreenReport",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/ScreenTypes.ts",
+            "line": 160
+          },
+          "description": "Vista del payload; copiar antes de permitir la reutilización del slot del parser."
+        },
+        {
+          "name": "rawData",
+          "declaration": "rawData?: Record<string, unknown>",
+          "callback": false,
+          "ownerType": "ScreenReport",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/ScreenTypes.ts",
+            "line": 161
+          },
+          "description": "Dato de estado/configuración `rawData`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/types/ScreenTypes.ts",
+        "line": 147
+      }
+    },
+    {
+      "name": "CurrentScreen",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "title",
+          "declaration": "title: string",
+          "callback": false,
+          "ownerType": "CurrentScreen",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/ScreenTypes.ts",
+            "line": 165
+          },
+          "description": "Dato de estado/configuración `title`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "known",
+          "declaration": "known: boolean",
+          "callback": false,
+          "ownerType": "CurrentScreen",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/ScreenTypes.ts",
+            "line": 166
+          },
+          "description": "Dato de estado/configuración `known`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "meta",
+          "declaration": "meta?: ScreenMeta",
+          "callback": false,
+          "ownerType": "CurrentScreen",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/ScreenTypes.ts",
+            "line": 167
+          },
+          "description": "Dato de estado/configuración `meta`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "updateKind",
+          "declaration": "updateKind: ScreenUpdateKind",
+          "callback": false,
+          "ownerType": "CurrentScreen",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/ScreenTypes.ts",
+            "line": 168
+          },
+          "description": "Dato de estado/configuración `updateKind`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "receivedAt",
+          "declaration": "receivedAt: number",
+          "callback": false,
+          "ownerType": "CurrentScreen",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/ScreenTypes.ts",
+            "line": 169
+          },
+          "description": "Dato de estado/configuración `receivedAt`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "requestId",
+          "declaration": "requestId?: string",
+          "callback": false,
+          "ownerType": "CurrentScreen",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/ScreenTypes.ts",
+            "line": 170
+          },
+          "description": "Dato de estado/configuración `requestId`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/types/ScreenTypes.ts",
+        "line": 164
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "ScreenProvider",
+      "displayName": "ScreenProvider",
+      "signature": "ScreenProvider({ children }: inferred-by-TypeScript): inferred-by-TypeScript",
+      "line": 72,
+      "endLine": 283,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useCallback",
+        "useCarMode",
+        "useEffect",
+        "useRef",
+        "useState",
+        "useUser",
+        "useWebSocket",
+        "useWifiCredentials"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/ScreenContext.tsx",
+        "line": 72
+      },
+      "description": "Coordina `useCallback`, `useCarMode`, `useEffect` para Estado normalizado de pantalla remota.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "carModeLabelFromByte",
+      "displayName": "carModeLabelFromByte",
+      "signature": "carModeLabelFromByte(value: number): CarModeLabel",
+      "line": 624,
+      "endLine": 630,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.max",
+        "Math.min",
+        "Math.trunc"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/ScreenContext.tsx",
+        "line": 624
+      },
+      "description": "Coordina `Math.max`, `Math.min`, `Math.trunc` para Estado normalizado de pantalla remota.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "clampByte",
+      "displayName": "clampByte",
+      "signature": "clampByte(value: number): number",
+      "line": 42,
+      "endLine": 44,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.max",
+        "Math.min",
+        "Math.trunc"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/protocol/screenMenuState.ts",
+        "line": 42
+      },
+      "description": "Coordina `Math.max`, `Math.min`, `Math.trunc` para Estado normalizado de pantalla remota.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "createRequestId",
+      "displayName": "createRequestId",
+      "signature": "createRequestId(): string",
+      "line": 814,
+      "endLine": 818,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Date.now",
+        "Math.random",
+        "Math.random().toString",
+        "Math.random().toString(16).slice",
+        "crypto.randomUUID"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/ScreenContext.tsx",
+        "line": 814
+      },
+      "description": "Coordina `Date.now`, `Math.random`, `Math.random().toString` para Estado normalizado de pantalla remota.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "enrichCurrentScreen",
+      "displayName": "enrichCurrentScreen",
+      "signature": "enrichCurrentScreen(baseScreen: CurrentScreen, rawData: unknown, globalMeta: { carMode: CarModeLabel; sensoresVisible: boolean; }): ScreenViewModel",
+      "line": 295,
+      "endLine": 383,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.ceil",
+        "Math.floor",
+        "Math.max",
+        "Math.min",
+        "Math.trunc",
+        "Number.isFinite",
+        "clampByte",
+        "enrichRawScreenData",
+        "extractScreenMeta",
+        "getKnownMenuItemsCount",
+        "getScreenDefinition",
+        "getValidationPinDigitsCount",
+        "isPermissionValidationScreenCode"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/ScreenContext.tsx",
+        "line": 295
+      },
+      "description": "Construye el modelo visual con conteos, selección, ventana y clasificación de PIN.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "enrichRawScreenData",
+      "displayName": "enrichRawScreenData",
+      "signature": "enrichRawScreenData(rawData: unknown, meta: { carMode: CarModeLabel; firstVisibleIndex: number; hasMenuItems: boolean; itemsCount: number; sensoresVisible: boolean; selectedIndex: number | null; }): Record<string, unknown>",
+      "line": 385,
+      "endLine": 412,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "isRecord"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/ScreenContext.tsx",
+        "line": 385
+      },
+      "description": "Agrega datos globales/derivados al rawData consumido por renderers.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "extractScreenMeta",
+      "displayName": "extractScreenMeta",
+      "signature": "extractScreenMeta(data: unknown): { hasMenuItems?: boolean; itemsCount?: number; selectedIndex?: number; }",
+      "line": 632,
+      "endLine": 747,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "isRecord",
+        "normalizeStmMenuIndex",
+        "readBoolean",
+        "readNumber",
+        "readPayloadBytes"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/ScreenContext.tsx",
+        "line": 632
+      },
+      "description": "Coordina `isRecord`, `normalizeStmMenuIndex`, `readBoolean` para Estado normalizado de pantalla remota.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "formatScreenCodeHex",
+      "displayName": "formatScreenCodeHex",
+      "signature": "formatScreenCodeHex(screenCode: number): string",
+      "line": 232,
+      "endLine": 236,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "normalized.toString",
+        "normalized.toString(16).toUpperCase",
+        "normalized.toString(16).toUpperCase().padStart"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/types/ScreenTypes.ts",
+        "line": 232
+      },
+      "description": "Coordina `normalized.toString`, `normalized.toString(16).toUpperCase`, `normalized.toString(16).toUpperCase().padStart` para Estado normalizado de pantalla remota.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "getKnownMenuItemsCount",
+      "displayName": "getKnownMenuItemsCount",
+      "signature": "getKnownMenuItemsCount(screenCode: number, data: unknown, sensoresVisible: boolean): number | undefined",
+      "line": 749,
+      "endLine": 772,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "getWifiResultSsidCount"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/ScreenContext.tsx",
+        "line": 749
+      },
+      "description": "Adapta la llamada a `getWifiResultSsidCount` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "getScreenEventName",
+      "displayName": "getScreenEventName",
+      "signature": "getScreenEventName(payload: unknown): string | undefined",
+      "line": 832,
+      "endLine": 845,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "isRecord",
+        "readString",
+        "toRecord"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/ScreenContext.tsx",
+        "line": 832
+      },
+      "description": "Coordina `isRecord`, `readString`, `toRecord` para Estado normalizado de pantalla remota.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "getScreenResponseCommand",
+      "displayName": "getScreenResponseCommand",
+      "signature": "getScreenResponseCommand(payload: unknown): string | undefined",
+      "line": 862,
+      "endLine": 878,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "isRecord",
+        "readString",
+        "toRecord"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/ScreenContext.tsx",
+        "line": 862
+      },
+      "description": "Coordina `isRecord`, `readString`, `toRecord` para Estado normalizado de pantalla remota.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "getScreenResponseRequestId",
+      "displayName": "getScreenResponseRequestId",
+      "signature": "getScreenResponseRequestId(payload: unknown): string | undefined",
+      "line": 847,
+      "endLine": 860,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "isRecord",
+        "readString",
+        "toRecord"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/ScreenContext.tsx",
+        "line": 847
+      },
+      "description": "Coordina `isRecord`, `readString`, `toRecord` para Estado normalizado de pantalla remota.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "getWifiResultSsidCount",
+      "displayName": "getWifiResultSsidCount",
+      "signature": "getWifiResultSsidCount(data: unknown): number",
+      "line": 774,
+      "endLine": 786,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.max",
+        "isRecord",
+        "readArray"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/ScreenContext.tsx",
+        "line": 774
+      },
+      "description": "Coordina `Math.max`, `isRecord`, `readArray` para Estado normalizado de pantalla remota.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "hasScreenIdentity",
+      "displayName": "hasScreenIdentity",
+      "signature": "hasScreenIdentity(value: unknown): boolean",
+      "line": 906,
+      "endLine": 920,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "hasScreenReportCmd",
+        "isRecord",
+        "readNumber"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/ScreenContext.tsx",
+        "line": 906
+      },
+      "description": "Coordina `hasScreenReportCmd`, `isRecord`, `readNumber` para Estado normalizado de pantalla remota.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "hasScreenReportCmd",
+      "displayName": "hasScreenReportCmd",
+      "signature": "hasScreenReportCmd(data: unknown): boolean",
+      "line": 820,
+      "endLine": 830,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "isRecord",
+        "readNumber"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/ScreenContext.tsx",
+        "line": 820
+      },
+      "description": "Coordina `isRecord`, `readNumber` para Estado normalizado de pantalla remota.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "isRecord",
+      "displayName": "isRecord",
+      "signature": "isRecord(value: unknown): value is Record<string, unknown>",
+      "line": 328,
+      "endLine": 330,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/types/ScreenTypes.ts",
+        "line": 328
+      },
+      "description": "Operación is Record de Estado normalizado de pantalla remota; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "isScreenLikeRecord",
+      "displayName": "isScreenLikeRecord",
+      "signature": "isScreenLikeRecord(value: unknown): value is Record<string, unknown>",
+      "line": 889,
+      "endLine": 904,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "hasScreenReportCmd",
+        "isRecord",
+        "readNumber",
+        "readPayloadBytes"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/ScreenContext.tsx",
+        "line": 889
+      },
+      "description": "Coordina `hasScreenReportCmd`, `isRecord`, `readNumber` para Estado normalizado de pantalla remota.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "isShortMenuSelectionReport",
+      "displayName": "isShortMenuSelectionReport",
+      "signature": "isShortMenuSelectionReport(data: unknown): boolean",
+      "line": 880,
+      "endLine": 887,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "isRecord",
+        "readNumber",
+        "readPayloadBytes"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/ScreenContext.tsx",
+        "line": 880
+      },
+      "description": "Coordina `isRecord`, `readNumber`, `readPayloadBytes` para Estado normalizado de pantalla remota.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "isWifiCredentialsScreenCode",
+      "displayName": "isWifiCredentialsScreenCode",
+      "signature": "isWifiCredentialsScreenCode(screenCode: number | null): boolean",
+      "line": 549,
+      "endLine": 555,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/ScreenContext.tsx",
+        "line": 549
+      },
+      "description": "Operación is Wifi Credentials Screen Code de Estado normalizado de pantalla remota; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "mergeWifiCredentialsIntoScreenData",
+      "displayName": "mergeWifiCredentialsIntoScreenData",
+      "signature": "mergeWifiCredentialsIntoScreenData(data: unknown, credentials: { status: string; ssid: string | null; reason: string | null; timeoutMs: number | null; requestId: string | null; }): Record<string, unknown>",
+      "line": 506,
+      "endLine": 547,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "isRecord",
+        "isWifiCredentialsScreenCode",
+        "readScreenCodeValue",
+        "readString"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/ScreenContext.tsx",
+        "line": 506
+      },
+      "description": "Coordina `isRecord`, `isWifiCredentialsScreenCode`, `readScreenCodeValue` para Estado normalizado de pantalla remota.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "normalizeScreenReport",
+      "displayName": "normalizeScreenReport",
+      "signature": "normalizeScreenReport(data: unknown): ScreenReport | null",
+      "line": 173,
+      "endLine": 212,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "formatScreenCodeHex",
+        "isRecord",
+        "readByte",
+        "readInteger",
+        "readNumberArray",
+        "readPayloadSource",
+        "readScreenCodeFromParts",
+        "readScreenCodeFromPayload",
+        "readString",
+        "readUint32"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/types/ScreenTypes.ts",
+        "line": 173
+      },
+      "description": "Extrae identidad/source y bytes de un reporte JSON admitido.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "normalizeStmMenuIndex",
+      "displayName": "normalizeStmMenuIndex",
+      "signature": "normalizeStmMenuIndex(value: number | undefined, itemsCount?: number): number | undefined",
+      "line": 1,
+      "endLine": 12,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.min",
+        "clampByte"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/protocol/screenMenuState.ts",
+        "line": 1
+      },
+      "description": "Limita el índice reportado sin cambiar su base cero.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "preservePreviousMenuCountForShortSelection",
+      "displayName": "preservePreviousMenuCountForShortSelection",
+      "signature": "preservePreviousMenuCountForShortSelection(nextScreen: ScreenViewModel, previousScreen: ScreenViewModel | null): ScreenViewModel",
+      "line": 414,
+      "endLine": 430,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "isShortMenuSelectionReport",
+        "withMenuItemsCount"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/ScreenContext.tsx",
+        "line": 414
+      },
+      "description": "Coordina `isShortMenuSelectionReport`, `withMenuItemsCount` para Estado normalizado de pantalla remota.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "readArray",
+      "displayName": "readArray",
+      "signature": "readArray(value: unknown): unknown[] | undefined",
+      "line": 788,
+      "endLine": 790,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Array.isArray"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/ScreenContext.tsx",
+        "line": 788
+      },
+      "description": "Adapta la llamada a `Array.isArray` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "readBoolean",
+      "displayName": "readBoolean",
+      "signature": "readBoolean(value: unknown): boolean | undefined",
+      "line": 947,
+      "endLine": 974,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Number.isFinite",
+        "value.trim",
+        "value.trim().toLowerCase"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/ScreenContext.tsx",
+        "line": 947
+      },
+      "description": "Coordina `Number.isFinite`, `value.trim`, `value.trim().toLowerCase` para Estado normalizado de pantalla remota.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "readByte",
+      "displayName": "readByte",
+      "signature": "readByte(value: unknown): number | undefined",
+      "line": 297,
+      "endLine": 304,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "readInteger"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/types/ScreenTypes.ts",
+        "line": 297
+      },
+      "description": "Adapta la llamada a `readInteger` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "readCarModeLabelFromScreenData",
+      "displayName": "readCarModeLabelFromScreenData",
+      "signature": "readCarModeLabelFromScreenData(data: unknown): CarModeLabel | null",
+      "line": 587,
+      "endLine": 622,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Number",
+        "Number.isFinite",
+        "Number.parseInt",
+        "carModeLabelFromByte",
+        "isRecord",
+        "normalized.slice",
+        "normalized.startsWith",
+        "rawCarMode.trim",
+        "rawCarMode.trim().toUpperCase"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/ScreenContext.tsx",
+        "line": 587
+      },
+      "description": "Coordina `Number`, `Number.isFinite`, `Number.parseInt` para Estado normalizado de pantalla remota.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "readInteger",
+      "displayName": "readInteger",
+      "signature": "readInteger(value: unknown): number | undefined",
+      "line": 311,
+      "endLine": 326,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.trunc",
+        "Number",
+        "Number.isFinite",
+        "Number.parseInt",
+        "trimmed.slice",
+        "trimmed.toLowerCase",
+        "trimmed.toLowerCase().startsWith",
+        "value.trim"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/types/ScreenTypes.ts",
+        "line": 311
+      },
+      "description": "Coordina `Math.trunc`, `Number`, `Number.isFinite` para Estado normalizado de pantalla remota.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "readNumber",
+      "displayName": "readNumber",
+      "signature": "readNumber(value: unknown): number | undefined",
+      "line": 930,
+      "endLine": 945,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.trunc",
+        "Number",
+        "Number.isFinite",
+        "Number.parseInt",
+        "trimmed.slice",
+        "trimmed.toLowerCase",
+        "trimmed.toLowerCase().startsWith",
+        "value.trim"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/ScreenContext.tsx",
+        "line": 930
+      },
+      "description": "Coordina `Math.trunc`, `Number`, `Number.isFinite` para Estado normalizado de pantalla remota.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "readNumberArray",
+      "displayName": "readNumberArray",
+      "signature": "readNumberArray(value: unknown): number[] | undefined",
+      "line": 282,
+      "endLine": 291,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Array.isArray",
+        "value.map",
+        "values.every"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/types/ScreenTypes.ts",
+        "line": 282
+      },
+      "description": "Coordina `Array.isArray`, `value.map`, `values.every` para Estado normalizado de pantalla remota.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "readPayloadBytes",
+      "displayName": "readPayloadBytes",
+      "signature": "readPayloadBytes(data: unknown): number[] | undefined",
+      "line": 792,
+      "endLine": 808,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Array.isArray",
+        "bytes.push",
+        "clampByte",
+        "isRecord",
+        "readNumber"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/ScreenContext.tsx",
+        "line": 792
+      },
+      "description": "Coordina `Array.isArray`, `bytes.push`, `clampByte` para Estado normalizado de pantalla remota.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "readPayloadSource",
+      "displayName": "readPayloadSource",
+      "signature": "readPayloadSource(payload: number[] | undefined, cmd: number | undefined): number | undefined",
+      "line": 251,
+      "endLine": 268,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/types/ScreenTypes.ts",
+        "line": 251
+      },
+      "description": "Operación read Payload Source de Estado normalizado de pantalla remota; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "readScreenCodeFromParts",
+      "displayName": "readScreenCodeFromParts",
+      "signature": "readScreenCodeFromParts(data: Record<string, unknown>): number | null",
+      "line": 270,
+      "endLine": 280,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "readByte"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/types/ScreenTypes.ts",
+        "line": 270
+      },
+      "description": "Adapta la llamada a `readByte` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "readScreenCodeFromPayload",
+      "displayName": "readScreenCodeFromPayload",
+      "signature": "readScreenCodeFromPayload(payload: number[] | undefined): number | null",
+      "line": 238,
+      "endLine": 249,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/types/ScreenTypes.ts",
+        "line": 238
+      },
+      "description": "Operación read Screen Code From Payload de Estado normalizado de pantalla remota; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "readScreenCodeValue",
+      "displayName": "readScreenCodeValue",
+      "signature": "readScreenCodeValue(data: Record<string, unknown>): number | null",
+      "line": 557,
+      "endLine": 585,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "readNumber",
+        "readPayloadBytes"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/ScreenContext.tsx",
+        "line": 557
+      },
+      "description": "Coordina `readNumber`, `readPayloadBytes` para Estado normalizado de pantalla remota.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "readString",
+      "displayName": "readString",
+      "signature": "readString(value: unknown): string | undefined",
+      "line": 293,
+      "endLine": 295,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/types/ScreenTypes.ts",
+        "line": 293
+      },
+      "description": "Operación read String de Estado normalizado de pantalla remota; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "readUint32",
+      "displayName": "readUint32",
+      "signature": "readUint32(value: unknown): number | null",
+      "line": 306,
+      "endLine": 309,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "readInteger"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/types/ScreenTypes.ts",
+        "line": 306
+      },
+      "description": "Adapta la llamada a `readInteger` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "resolveVisibleMenuWindow",
+      "displayName": "resolveVisibleMenuWindow",
+      "signature": "resolveVisibleMenuWindow(selectedIndex: number | undefined, itemsCount: number, requestedFirstVisibleIndex?: number, pageSize: inferred-by-TypeScript): { firstVisibleIndex: number; selectedSlot: number | null }",
+      "line": 14,
+      "endLine": 40,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.floor",
+        "Math.max",
+        "Math.min",
+        "Math.trunc"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/protocol/screenMenuState.ts",
+        "line": 14
+      },
+      "description": "Deriva ventana por bloques cuando falta una primera fila explícita.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "screenMeta",
+      "displayName": "screenMeta",
+      "signature": "screenMeta(title: string, screenCode: number, source: number, payload: number[]): ScreenMeta",
+      "line": 125,
+      "endLine": 140,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/types/ScreenTypes.ts",
+        "line": 125
+      },
+      "description": "Operación screen Meta de Estado normalizado de pantalla remota; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "toCurrentScreen",
+      "displayName": "toCurrentScreen",
+      "signature": "toCurrentScreen(report: ScreenReport, updateKind: ScreenUpdateKind, requestId?: string): CurrentScreen",
+      "line": 214,
+      "endLine": 230,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Boolean",
+        "Date.now"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/types/ScreenTypes.ts",
+        "line": 214
+      },
+      "description": "Agrega metadata conocida y tiempo de recepción a un reporte.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "toRecord",
+      "displayName": "toRecord",
+      "signature": "toRecord(value: unknown): Record<string, unknown> | undefined",
+      "line": 922,
+      "endLine": 924,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "isRecord"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/ScreenContext.tsx",
+        "line": 922
+      },
+      "description": "Adapta la llamada a `isRecord` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "unwrapScreenEventData",
+      "displayName": "unwrapScreenEventData",
+      "signature": "unwrapScreenEventData(payload: unknown): unknown",
+      "line": 480,
+      "endLine": 504,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "isRecord",
+        "isScreenLikeRecord",
+        "toRecord"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/ScreenContext.tsx",
+        "line": 480
+      },
+      "description": "Coordina `isRecord`, `isScreenLikeRecord`, `toRecord` para Estado normalizado de pantalla remota.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "useScreen",
+      "displayName": "useScreen",
+      "signature": "useScreen(): inferred-by-TypeScript",
+      "line": 4,
+      "endLine": 10,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useContext"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/hooks/useScreen.tsx",
+        "line": 4
+      },
+      "description": "Adapta la llamada a `useContext` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "withMenuItemsCount",
+      "displayName": "withMenuItemsCount",
+      "signature": "withMenuItemsCount(screen: ScreenViewModel, itemsCount: number): ScreenViewModel",
+      "line": 432,
+      "endLine": 478,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.ceil",
+        "Math.floor",
+        "Math.max",
+        "Math.min",
+        "clampByte",
+        "isRecord"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/ScreenContext.tsx",
+        "line": 432
+      },
+      "description": "Coordina `Math.ceil`, `Math.floor`, `Math.max` para Estado normalizado de pantalla remota.",
+      "descriptionOrigin": "structural"
+    }
+  ],
+  "internalFunctions": [],
+  "hooks": [
+    {
+      "callee": "useWebSocket",
+      "scope": "ScreenProvider",
+      "line": 73,
+      "arguments": 0,
+      "path": "src/contexts/ScreenContext.tsx"
+    },
+    {
+      "callee": "useUser",
+      "scope": "ScreenProvider",
+      "line": 74,
+      "arguments": 0,
+      "path": "src/contexts/ScreenContext.tsx"
+    },
+    {
+      "callee": "useCarMode",
+      "scope": "ScreenProvider",
+      "line": 78,
+      "arguments": 0,
+      "path": "src/contexts/ScreenContext.tsx"
+    },
+    {
+      "callee": "useWifiCredentials",
+      "scope": "ScreenProvider",
+      "line": 79,
+      "arguments": 0,
+      "path": "src/contexts/ScreenContext.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "ScreenProvider",
+      "line": 81,
+      "arguments": 1,
+      "path": "src/contexts/ScreenContext.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "ScreenProvider",
+      "line": 85,
+      "arguments": 1,
+      "path": "src/contexts/ScreenContext.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "ScreenProvider",
+      "line": 86,
+      "arguments": 1,
+      "path": "src/contexts/ScreenContext.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "ScreenProvider",
+      "line": 87,
+      "arguments": 1,
+      "path": "src/contexts/ScreenContext.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "ScreenProvider",
+      "line": 89,
+      "arguments": 2,
+      "path": "src/contexts/ScreenContext.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "ScreenProvider",
+      "line": 122,
+      "arguments": 2,
+      "path": "src/contexts/ScreenContext.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "ScreenProvider",
+      "line": 140,
+      "arguments": 2,
+      "path": "src/contexts/ScreenContext.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "ScreenProvider",
+      "line": 228,
+      "arguments": 2,
+      "path": "src/contexts/ScreenContext.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "ScreenProvider",
+      "line": 243,
+      "arguments": 2,
+      "path": "src/contexts/ScreenContext.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "ScreenProvider",
+      "line": 259,
+      "arguments": 2,
+      "path": "src/contexts/ScreenContext.tsx"
+    },
+    {
+      "callee": "useContext",
+      "scope": "useScreen",
+      "line": 286,
+      "arguments": 1,
+      "path": "src/contexts/ScreenContext.tsx"
+    },
+    {
+      "callee": "useContext",
+      "scope": "useScreen",
+      "line": 5,
+      "arguments": 1,
+      "path": "src/hooks/useScreen.tsx"
+    }
+  ]
+}

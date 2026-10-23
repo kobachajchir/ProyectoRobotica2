@@ -1,0 +1,4486 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "web:module/src/features/oledEditor/document.ts",
+  "slug": "oled-document",
+  "title": "Modelo y edición de documentos OLED",
+  "target": "web",
+  "kind": "núcleo",
+  "status": "source-documented",
+  "snapshotDate": "2026-10-20",
+  "verification": "not-run-user-instruction",
+  "responsibility": "Representa y edita documentos gráficos que el usuario puede guardar y enviar a la OLED.",
+  "scope": "Elementos, geometría, assets, generación de código y persistencia local; separado de captura de pantalla remota.",
+  "state": "Documento/borrador pertenece al editor; savedScreens conserva su versión local. Referencias a assets deben resolverse al rasterizar.",
+  "modularity": "Modelo/cálculo separables de React, con hooks/almacenamiento como adaptación.",
+  "lifecycle": [
+    "Crear/cargar documento, editar elementos y serializar/exportar.",
+    "Guardar una copia local no modifica la pantalla del robot sin transferencia."
+  ],
+  "interactions": [
+    "Rasterizer convierte modelo a 1024 bytes; useOledCanvasTransfer coordina envío."
+  ],
+  "limitations": [
+    "Código generado y render físico deben usar la misma geometría y orden de bits.",
+    "Una previsualización del editor no es una muestra de la pantalla activa F4."
+  ],
+  "relationships": [],
+  "findings": [],
+  "files": [
+    {
+      "rootId": "web",
+      "path": "src/contexts/SavedOledScreensContext.tsx",
+      "sha256": "57bf4eecb95e9fa5f4ccef303174d44f56aaff850fee2c51c1915ac88cd8c40c",
+      "imports": [
+        "../features/oledEditor/codegen",
+        "../features/oledEditor/document",
+        "../features/oledEditor/types",
+        "../screens",
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/features/oledEditor/assets.ts",
+      "sha256": "45d7516a1575ae70a56dd6e959204c4267b983a425a4326a48b3ad880d1106c4",
+      "imports": [
+        "../../screens",
+        "../../screens/bitmapAssets.ts",
+        "./types"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/features/oledEditor/codegen.ts",
+      "sha256": "0d035809c10733546649da2ca790f90c8d31e5f0a79f4f714b5e04e7cc99d686",
+      "imports": [
+        "../../screens",
+        "./assets",
+        "./document",
+        "./types"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/features/oledEditor/document.ts",
+      "sha256": "680e5c2bab0cddfb6d296b4c2eb20936930b8ec0c097697c7be67d1074380f9d",
+      "imports": [
+        "./types"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/features/oledEditor/geometry.ts",
+      "sha256": "c7ec1d9bdebe4c7c601793c23393792456745addc450220dc953e59e8c930904",
+      "imports": [
+        "../../screens",
+        "./types"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/features/oledEditor/types.ts",
+      "sha256": "5ac41095010cfa6cd267f583ea3c584e6f3e436a0016fc1534bb73f81c88dabf",
+      "imports": [
+        "../../screens"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/features/oledEditor/useOledEditorState.ts",
+      "sha256": "6d2cabca6be6cc9ac14a5022c29d0c5a71826ae432bcd4e9e770d0781988af6a",
+      "imports": [
+        "./assets",
+        "./codegen",
+        "./document",
+        "./types",
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    }
+  ],
+  "types": [
+    {
+      "name": "PersistedSavedOledScreen",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "id",
+          "declaration": "id: string",
+          "callback": false,
+          "ownerType": "PersistedSavedOledScreen",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/SavedOledScreensContext.tsx",
+            "line": 17
+          },
+          "description": "Dato de estado/configuración `id`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "title",
+          "declaration": "title: string",
+          "callback": false,
+          "ownerType": "PersistedSavedOledScreen",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/SavedOledScreensContext.tsx",
+            "line": 18
+          },
+          "description": "Dato de estado/configuración `title`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "document",
+          "declaration": "document: EditorDocument",
+          "callback": false,
+          "ownerType": "PersistedSavedOledScreen",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/SavedOledScreensContext.tsx",
+            "line": 19
+          },
+          "description": "Dato de estado/configuración `document`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "createdAt",
+          "declaration": "createdAt: number",
+          "callback": false,
+          "ownerType": "PersistedSavedOledScreen",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/SavedOledScreensContext.tsx",
+            "line": 20
+          },
+          "description": "Dato de estado/configuración `createdAt`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "updatedAt",
+          "declaration": "updatedAt: number",
+          "callback": false,
+          "ownerType": "PersistedSavedOledScreen",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/SavedOledScreensContext.tsx",
+            "line": 21
+          },
+          "description": "Dato de estado/configuración `updatedAt`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/SavedOledScreensContext.tsx",
+        "line": 16
+      }
+    },
+    {
+      "name": "SavedOledScreen",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "commands",
+          "declaration": "commands: OledCommand[]",
+          "callback": false,
+          "ownerType": "SavedOledScreen",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/SavedOledScreensContext.tsx",
+            "line": 25
+          },
+          "description": "Dato de estado/configuración `commands`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/SavedOledScreensContext.tsx",
+        "line": 24
+      }
+    },
+    {
+      "name": "SaveScreenArgs",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "id",
+          "declaration": "id?: string",
+          "callback": false,
+          "ownerType": "SaveScreenArgs",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/SavedOledScreensContext.tsx",
+            "line": 29
+          },
+          "description": "Dato de estado/configuración `id`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "document",
+          "declaration": "document: EditorDocument",
+          "callback": false,
+          "ownerType": "SaveScreenArgs",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/SavedOledScreensContext.tsx",
+            "line": 30
+          },
+          "description": "Dato de estado/configuración `document`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/SavedOledScreensContext.tsx",
+        "line": 28
+      }
+    },
+    {
+      "name": "SavedOledScreensContextValue",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "savedScreens",
+          "declaration": "savedScreens: SavedOledScreen[]",
+          "callback": false,
+          "ownerType": "SavedOledScreensContextValue",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/SavedOledScreensContext.tsx",
+            "line": 34
+          },
+          "description": "Dato de estado/configuración `savedScreens`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "saveScreen",
+          "declaration": "saveScreen: (args: SaveScreenArgs) => string",
+          "callback": true,
+          "ownerType": "SavedOledScreensContextValue",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/SavedOledScreensContext.tsx",
+            "line": 35
+          },
+          "description": "Operación save Screen de Modelo y edición de documentos OLED; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "deleteScreen",
+          "declaration": "deleteScreen: (id: string) => void",
+          "callback": true,
+          "ownerType": "SavedOledScreensContextValue",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/SavedOledScreensContext.tsx",
+            "line": 36
+          },
+          "description": "Operación delete Screen de Modelo y edición de documentos OLED; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "getScreen",
+          "declaration": "getScreen: (id: string) => SavedOledScreen | undefined",
+          "callback": true,
+          "ownerType": "SavedOledScreensContextValue",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/SavedOledScreensContext.tsx",
+            "line": 37
+          },
+          "description": "Operación get Screen de Modelo y edición de documentos OLED; semántica fina pendiente de ampliación."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/SavedOledScreensContext.tsx",
+        "line": 33
+      }
+    },
+    {
+      "name": "EditorFontPreset",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "id",
+          "declaration": "id: OledFont",
+          "callback": false,
+          "ownerType": "EditorFontPreset",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/assets.ts",
+            "line": 6
+          },
+          "description": "Dato de estado/configuración `id`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "label",
+          "declaration": "label: string",
+          "callback": false,
+          "ownerType": "EditorFontPreset",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/assets.ts",
+            "line": 7
+          },
+          "description": "Dato de estado/configuración `label`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "width",
+          "declaration": "width: number",
+          "callback": false,
+          "ownerType": "EditorFontPreset",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/assets.ts",
+            "line": 8
+          },
+          "description": "Dato de estado/configuración `width`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "height",
+          "declaration": "height: number",
+          "callback": false,
+          "ownerType": "EditorFontPreset",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/assets.ts",
+            "line": 9
+          },
+          "description": "Dato de estado/configuración `height`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/assets.ts",
+        "line": 5
+      }
+    },
+    {
+      "name": "EditorBitmapAssetDefinition",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "label",
+          "declaration": "label: string",
+          "callback": false,
+          "ownerType": "EditorBitmapAssetDefinition",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/assets.ts",
+            "line": 13
+          },
+          "description": "Dato de estado/configuración `label`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "category",
+          "declaration": "category: string",
+          "callback": false,
+          "ownerType": "EditorBitmapAssetDefinition",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/assets.ts",
+            "line": 14
+          },
+          "description": "Dato de estado/configuración `category`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "dataRef",
+          "declaration": "dataRef: string",
+          "callback": false,
+          "ownerType": "EditorBitmapAssetDefinition",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/assets.ts",
+            "line": 15
+          },
+          "description": "Dato de estado/configuración `dataRef`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "description",
+          "declaration": "description?: string",
+          "callback": false,
+          "ownerType": "EditorBitmapAssetDefinition",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/assets.ts",
+            "line": 16
+          },
+          "description": "Dato de estado/configuración `description`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/assets.ts",
+        "line": 12
+      }
+    },
+    {
+      "name": "SharedAssetSeed",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "id",
+          "declaration": "id: string",
+          "callback": false,
+          "ownerType": "SharedAssetSeed",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/assets.ts",
+            "line": 20
+          },
+          "description": "Dato de estado/configuración `id`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "label",
+          "declaration": "label: string",
+          "callback": false,
+          "ownerType": "SharedAssetSeed",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/assets.ts",
+            "line": 21
+          },
+          "description": "Dato de estado/configuración `label`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "width",
+          "declaration": "width: number",
+          "callback": false,
+          "ownerType": "SharedAssetSeed",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/assets.ts",
+            "line": 22
+          },
+          "description": "Dato de estado/configuración `width`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "height",
+          "declaration": "height: number",
+          "callback": false,
+          "ownerType": "SharedAssetSeed",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/assets.ts",
+            "line": 23
+          },
+          "description": "Dato de estado/configuración `height`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "bitOrder",
+          "declaration": "bitOrder: BitOrder",
+          "callback": false,
+          "ownerType": "SharedAssetSeed",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/assets.ts",
+            "line": 24
+          },
+          "description": "Dato de estado/configuración `bitOrder`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "category",
+          "declaration": "category: string",
+          "callback": false,
+          "ownerType": "SharedAssetSeed",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/assets.ts",
+            "line": 25
+          },
+          "description": "Dato de estado/configuración `category`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "description",
+          "declaration": "description?: string",
+          "callback": false,
+          "ownerType": "SharedAssetSeed",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/assets.ts",
+            "line": 26
+          },
+          "description": "Dato de estado/configuración `description`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "sourceRef",
+          "declaration": "sourceRef?: string",
+          "callback": false,
+          "ownerType": "SharedAssetSeed",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/assets.ts",
+            "line": 27
+          },
+          "description": "Dato de estado/configuración `sourceRef`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/assets.ts",
+        "line": 19
+      }
+    },
+    {
+      "name": "LocalBitmapDeclaration",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "id",
+          "declaration": "id: string",
+          "callback": false,
+          "ownerType": "LocalBitmapDeclaration",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/codegen.ts",
+            "line": 18
+          },
+          "description": "Dato de estado/configuración `id`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "objectId",
+          "declaration": "objectId: string",
+          "callback": false,
+          "ownerType": "LocalBitmapDeclaration",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/codegen.ts",
+            "line": 19
+          },
+          "description": "Dato de estado/configuración `objectId`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "symbol",
+          "declaration": "symbol: string",
+          "callback": false,
+          "ownerType": "LocalBitmapDeclaration",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/codegen.ts",
+            "line": 20
+          },
+          "description": "Dato de estado/configuración `symbol`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "bytes",
+          "declaration": "bytes: number[]",
+          "callback": false,
+          "ownerType": "LocalBitmapDeclaration",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/codegen.ts",
+            "line": 21
+          },
+          "description": "Dato de estado/configuración `bytes`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/codegen.ts",
+        "line": 17
+      }
+    },
+    {
+      "name": "HandlePosition",
+      "kind": "TypeAliasDeclaration",
+      "type": "| \"nw\" | \"n\" | \"ne\" | \"e\" | \"se\" | \"s\" | \"sw\" | \"w\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/geometry.ts",
+        "line": 15
+      }
+    },
+    {
+      "name": "ToolId",
+      "kind": "TypeAliasDeclaration",
+      "type": "| \"select\" | \"image\" | \"paint\" | \"text\" | \"rectangle\" | \"circle\" | \"line\" | \"triangle\" | \"polygon\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/types.ts",
+        "line": 3
+      }
+    },
+    {
+      "name": "MonoColor",
+      "kind": "TypeAliasDeclaration",
+      "type": "\"white\" | \"black\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/types.ts",
+        "line": 14
+      }
+    },
+    {
+      "name": "BitOrder",
+      "kind": "TypeAliasDeclaration",
+      "type": "\"lsb\" | \"msb\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/types.ts",
+        "line": 15
+      }
+    },
+    {
+      "name": "CanvasObjectKind",
+      "kind": "TypeAliasDeclaration",
+      "type": "| \"rectangle\" | \"circle\" | \"line\" | \"triangle\" | \"polygon\" | \"text\" | \"image\" | \"bitmap\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/types.ts",
+        "line": 16
+      }
+    },
+    {
+      "name": "Point",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "x",
+          "declaration": "x: number",
+          "callback": false,
+          "ownerType": "Point",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 27
+          },
+          "description": "Dato de estado/configuración `x`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "y",
+          "declaration": "y: number",
+          "callback": false,
+          "ownerType": "Point",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 28
+          },
+          "description": "Dato de estado/configuración `y`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/types.ts",
+        "line": 26
+      }
+    },
+    {
+      "name": "BoundingBox",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "x",
+          "declaration": "x: number",
+          "callback": false,
+          "ownerType": "BoundingBox",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 32
+          },
+          "description": "Dato de estado/configuración `x`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "y",
+          "declaration": "y: number",
+          "callback": false,
+          "ownerType": "BoundingBox",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 33
+          },
+          "description": "Dato de estado/configuración `y`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "width",
+          "declaration": "width: number",
+          "callback": false,
+          "ownerType": "BoundingBox",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 34
+          },
+          "description": "Dato de estado/configuración `width`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "height",
+          "declaration": "height: number",
+          "callback": false,
+          "ownerType": "BoundingBox",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 35
+          },
+          "description": "Dato de estado/configuración `height`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/types.ts",
+        "line": 31
+      }
+    },
+    {
+      "name": "ScreenSpec",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "width",
+          "declaration": "width: number",
+          "callback": false,
+          "ownerType": "ScreenSpec",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 39
+          },
+          "description": "Dato de estado/configuración `width`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "height",
+          "declaration": "height: number",
+          "callback": false,
+          "ownerType": "ScreenSpec",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 40
+          },
+          "description": "Dato de estado/configuración `height`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "background",
+          "declaration": "background: MonoColor",
+          "callback": false,
+          "ownerType": "ScreenSpec",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 41
+          },
+          "description": "Dato de estado/configuración `background`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "title",
+          "declaration": "title: string",
+          "callback": false,
+          "ownerType": "ScreenSpec",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 42
+          },
+          "description": "Dato de estado/configuración `title`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/types.ts",
+        "line": 38
+      }
+    },
+    {
+      "name": "BaseObject",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "id",
+          "declaration": "id: string",
+          "callback": false,
+          "ownerType": "BaseObject",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 46
+          },
+          "description": "Dato de estado/configuración `id`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "kind",
+          "declaration": "kind: CanvasObjectKind",
+          "callback": false,
+          "ownerType": "BaseObject",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 47
+          },
+          "description": "Dato de estado/configuración `kind`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "name",
+          "declaration": "name: string",
+          "callback": false,
+          "ownerType": "BaseObject",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 48
+          },
+          "description": "Dato de estado/configuración `name`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "locked",
+          "declaration": "locked: boolean",
+          "callback": false,
+          "ownerType": "BaseObject",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 49
+          },
+          "description": "Dato de estado/configuración `locked`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "hidden",
+          "declaration": "hidden: boolean",
+          "callback": false,
+          "ownerType": "BaseObject",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 50
+          },
+          "description": "Dato de estado/configuración `hidden`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "overlay",
+          "declaration": "overlay?: boolean",
+          "callback": false,
+          "ownerType": "BaseObject",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 51
+          },
+          "description": "Dato de estado/configuración `overlay`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "zIndex",
+          "declaration": "zIndex: number",
+          "callback": false,
+          "ownerType": "BaseObject",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 52
+          },
+          "description": "Dato de estado/configuración `zIndex`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/types.ts",
+        "line": 45
+      }
+    },
+    {
+      "name": "RectangleObject",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "kind",
+          "declaration": "kind: \"rectangle\"",
+          "callback": false,
+          "ownerType": "RectangleObject",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 56
+          },
+          "description": "Dato de estado/configuración `kind`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "x",
+          "declaration": "x: number",
+          "callback": false,
+          "ownerType": "RectangleObject",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 57
+          },
+          "description": "Dato de estado/configuración `x`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "y",
+          "declaration": "y: number",
+          "callback": false,
+          "ownerType": "RectangleObject",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 58
+          },
+          "description": "Dato de estado/configuración `y`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "width",
+          "declaration": "width: number",
+          "callback": false,
+          "ownerType": "RectangleObject",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 59
+          },
+          "description": "Dato de estado/configuración `width`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "height",
+          "declaration": "height: number",
+          "callback": false,
+          "ownerType": "RectangleObject",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 60
+          },
+          "description": "Dato de estado/configuración `height`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "fill",
+          "declaration": "fill: MonoColor | null",
+          "callback": false,
+          "ownerType": "RectangleObject",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 61
+          },
+          "description": "Dato de estado/configuración `fill`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "stroke",
+          "declaration": "stroke: MonoColor | null",
+          "callback": false,
+          "ownerType": "RectangleObject",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 62
+          },
+          "description": "Dato de estado/configuración `stroke`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "strokeWidth",
+          "declaration": "strokeWidth: number",
+          "callback": false,
+          "ownerType": "RectangleObject",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 63
+          },
+          "description": "Dato de estado/configuración `strokeWidth`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/types.ts",
+        "line": 55
+      }
+    },
+    {
+      "name": "CircleObject",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "kind",
+          "declaration": "kind: \"circle\"",
+          "callback": false,
+          "ownerType": "CircleObject",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 67
+          },
+          "description": "Dato de estado/configuración `kind`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "cx",
+          "declaration": "cx: number",
+          "callback": false,
+          "ownerType": "CircleObject",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 68
+          },
+          "description": "Dato de estado/configuración `cx`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "cy",
+          "declaration": "cy: number",
+          "callback": false,
+          "ownerType": "CircleObject",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 69
+          },
+          "description": "Dato de estado/configuración `cy`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "radius",
+          "declaration": "radius: number",
+          "callback": false,
+          "ownerType": "CircleObject",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 70
+          },
+          "description": "Dato de estado/configuración `radius`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "fill",
+          "declaration": "fill: MonoColor | null",
+          "callback": false,
+          "ownerType": "CircleObject",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 71
+          },
+          "description": "Dato de estado/configuración `fill`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "stroke",
+          "declaration": "stroke: MonoColor | null",
+          "callback": false,
+          "ownerType": "CircleObject",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 72
+          },
+          "description": "Dato de estado/configuración `stroke`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "strokeWidth",
+          "declaration": "strokeWidth: number",
+          "callback": false,
+          "ownerType": "CircleObject",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 73
+          },
+          "description": "Dato de estado/configuración `strokeWidth`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/types.ts",
+        "line": 66
+      }
+    },
+    {
+      "name": "LineObject",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "kind",
+          "declaration": "kind: \"line\"",
+          "callback": false,
+          "ownerType": "LineObject",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 77
+          },
+          "description": "Dato de estado/configuración `kind`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "x1",
+          "declaration": "x1: number",
+          "callback": false,
+          "ownerType": "LineObject",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 78
+          },
+          "description": "Dato de estado/configuración `x1`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "y1",
+          "declaration": "y1: number",
+          "callback": false,
+          "ownerType": "LineObject",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 79
+          },
+          "description": "Dato de estado/configuración `y1`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "x2",
+          "declaration": "x2: number",
+          "callback": false,
+          "ownerType": "LineObject",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 80
+          },
+          "description": "Dato de estado/configuración `x2`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "y2",
+          "declaration": "y2: number",
+          "callback": false,
+          "ownerType": "LineObject",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 81
+          },
+          "description": "Dato de estado/configuración `y2`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "stroke",
+          "declaration": "stroke: MonoColor",
+          "callback": false,
+          "ownerType": "LineObject",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 82
+          },
+          "description": "Dato de estado/configuración `stroke`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "strokeWidth",
+          "declaration": "strokeWidth: number",
+          "callback": false,
+          "ownerType": "LineObject",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 83
+          },
+          "description": "Dato de estado/configuración `strokeWidth`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/types.ts",
+        "line": 76
+      }
+    },
+    {
+      "name": "TriangleObject",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "kind",
+          "declaration": "kind: \"triangle\"",
+          "callback": false,
+          "ownerType": "TriangleObject",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 87
+          },
+          "description": "Dato de estado/configuración `kind`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "points",
+          "declaration": "points: [Point, Point, Point]",
+          "callback": false,
+          "ownerType": "TriangleObject",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 88
+          },
+          "description": "Dato de estado/configuración `points`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "fill",
+          "declaration": "fill: MonoColor | null",
+          "callback": false,
+          "ownerType": "TriangleObject",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 89
+          },
+          "description": "Dato de estado/configuración `fill`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "stroke",
+          "declaration": "stroke: MonoColor | null",
+          "callback": false,
+          "ownerType": "TriangleObject",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 90
+          },
+          "description": "Dato de estado/configuración `stroke`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "strokeWidth",
+          "declaration": "strokeWidth: number",
+          "callback": false,
+          "ownerType": "TriangleObject",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 91
+          },
+          "description": "Dato de estado/configuración `strokeWidth`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/types.ts",
+        "line": 86
+      }
+    },
+    {
+      "name": "PolygonObject",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "kind",
+          "declaration": "kind: \"polygon\"",
+          "callback": false,
+          "ownerType": "PolygonObject",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 95
+          },
+          "description": "Dato de estado/configuración `kind`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "points",
+          "declaration": "points: Point[]",
+          "callback": false,
+          "ownerType": "PolygonObject",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 96
+          },
+          "description": "Dato de estado/configuración `points`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "fill",
+          "declaration": "fill: MonoColor | null",
+          "callback": false,
+          "ownerType": "PolygonObject",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 97
+          },
+          "description": "Dato de estado/configuración `fill`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "stroke",
+          "declaration": "stroke: MonoColor | null",
+          "callback": false,
+          "ownerType": "PolygonObject",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 98
+          },
+          "description": "Dato de estado/configuración `stroke`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "strokeWidth",
+          "declaration": "strokeWidth: number",
+          "callback": false,
+          "ownerType": "PolygonObject",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 99
+          },
+          "description": "Dato de estado/configuración `strokeWidth`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/types.ts",
+        "line": 94
+      }
+    },
+    {
+      "name": "TextObject",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "kind",
+          "declaration": "kind: \"text\"",
+          "callback": false,
+          "ownerType": "TextObject",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 103
+          },
+          "description": "Dato de estado/configuración `kind`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "x",
+          "declaration": "x: number",
+          "callback": false,
+          "ownerType": "TextObject",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 104
+          },
+          "description": "Dato de estado/configuración `x`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "y",
+          "declaration": "y: number",
+          "callback": false,
+          "ownerType": "TextObject",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 105
+          },
+          "description": "Dato de estado/configuración `y`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "text",
+          "declaration": "text: string",
+          "callback": false,
+          "ownerType": "TextObject",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 106
+          },
+          "description": "Dato de estado/configuración `text`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "font",
+          "declaration": "font: OledFont",
+          "callback": false,
+          "ownerType": "TextObject",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 107
+          },
+          "description": "Dato de estado/configuración `font`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "fill",
+          "declaration": "fill: MonoColor",
+          "callback": false,
+          "ownerType": "TextObject",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 108
+          },
+          "description": "Dato de estado/configuración `fill`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "align",
+          "declaration": "align?: \"left\" | \"center\" | \"right\"",
+          "callback": false,
+          "ownerType": "TextObject",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 109
+          },
+          "description": "Dato de estado/configuración `align`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/types.ts",
+        "line": 102
+      }
+    },
+    {
+      "name": "ImageObject",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "kind",
+          "declaration": "kind: \"image\"",
+          "callback": false,
+          "ownerType": "ImageObject",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 113
+          },
+          "description": "Dato de estado/configuración `kind`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "x",
+          "declaration": "x: number",
+          "callback": false,
+          "ownerType": "ImageObject",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 114
+          },
+          "description": "Dato de estado/configuración `x`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "y",
+          "declaration": "y: number",
+          "callback": false,
+          "ownerType": "ImageObject",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 115
+          },
+          "description": "Dato de estado/configuración `y`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "width",
+          "declaration": "width: number",
+          "callback": false,
+          "ownerType": "ImageObject",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 116
+          },
+          "description": "Dato de estado/configuración `width`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "height",
+          "declaration": "height: number",
+          "callback": false,
+          "ownerType": "ImageObject",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 117
+          },
+          "description": "Dato de estado/configuración `height`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "assetId",
+          "declaration": "assetId: string",
+          "callback": false,
+          "ownerType": "ImageObject",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 118
+          },
+          "description": "Dato de estado/configuración `assetId`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "bitOrder",
+          "declaration": "bitOrder: BitOrder",
+          "callback": false,
+          "ownerType": "ImageObject",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 119
+          },
+          "description": "Dato de estado/configuración `bitOrder`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "alphaChannel",
+          "declaration": "alphaChannel?: boolean",
+          "callback": false,
+          "ownerType": "ImageObject",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 120
+          },
+          "description": "Dato de estado/configuración `alphaChannel`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/types.ts",
+        "line": 112
+      }
+    },
+    {
+      "name": "BitmapObject",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "kind",
+          "declaration": "kind: \"bitmap\"",
+          "callback": false,
+          "ownerType": "BitmapObject",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 124
+          },
+          "description": "Dato de estado/configuración `kind`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "x",
+          "declaration": "x: number",
+          "callback": false,
+          "ownerType": "BitmapObject",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 125
+          },
+          "description": "Dato de estado/configuración `x`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "y",
+          "declaration": "y: number",
+          "callback": false,
+          "ownerType": "BitmapObject",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 126
+          },
+          "description": "Dato de estado/configuración `y`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "width",
+          "declaration": "width: number",
+          "callback": false,
+          "ownerType": "BitmapObject",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 127
+          },
+          "description": "Dato de estado/configuración `width`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "height",
+          "declaration": "height: number",
+          "callback": false,
+          "ownerType": "BitmapObject",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 128
+          },
+          "description": "Dato de estado/configuración `height`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "pixelData",
+          "declaration": "pixelData: number[]",
+          "callback": false,
+          "ownerType": "BitmapObject",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 129
+          },
+          "description": "Dato de estado/configuración `pixelData`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "colorMode",
+          "declaration": "colorMode: \"monochrome\"",
+          "callback": false,
+          "ownerType": "BitmapObject",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 130
+          },
+          "description": "Dato de estado/configuración `colorMode`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "alphaChannel",
+          "declaration": "alphaChannel?: boolean",
+          "callback": false,
+          "ownerType": "BitmapObject",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 131
+          },
+          "description": "Dato de estado/configuración `alphaChannel`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/types.ts",
+        "line": 123
+      }
+    },
+    {
+      "name": "CanvasObject",
+      "kind": "TypeAliasDeclaration",
+      "type": "| RectangleObject | CircleObject | LineObject | TriangleObject | PolygonObject | TextObject | ImageObject | BitmapObject",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/types.ts",
+        "line": 134
+      }
+    },
+    {
+      "name": "ImageAsset",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "id",
+          "declaration": "id: string",
+          "callback": false,
+          "ownerType": "ImageAsset",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 145
+          },
+          "description": "Dato de estado/configuración `id`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "name",
+          "declaration": "name: string",
+          "callback": false,
+          "ownerType": "ImageAsset",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 146
+          },
+          "description": "Dato de estado/configuración `name`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "width",
+          "declaration": "width: number",
+          "callback": false,
+          "ownerType": "ImageAsset",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 147
+          },
+          "description": "Dato de estado/configuración `width`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "height",
+          "declaration": "height: number",
+          "callback": false,
+          "ownerType": "ImageAsset",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 148
+          },
+          "description": "Dato de estado/configuración `height`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "bytes",
+          "declaration": "bytes: number[]",
+          "callback": false,
+          "ownerType": "ImageAsset",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 149
+          },
+          "description": "Dato de estado/configuración `bytes`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "bitOrder",
+          "declaration": "bitOrder: BitOrder",
+          "callback": false,
+          "ownerType": "ImageAsset",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 150
+          },
+          "description": "Dato de estado/configuración `bitOrder`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "source",
+          "declaration": "source: \"shared\" | \"upload\" | \"generated\"",
+          "callback": false,
+          "ownerType": "ImageAsset",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 151
+          },
+          "description": "Dato de estado/configuración `source`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "draft",
+          "declaration": "draft?: boolean",
+          "callback": false,
+          "ownerType": "ImageAsset",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 152
+          },
+          "description": "Dato de estado/configuración `draft`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/types.ts",
+        "line": 144
+      }
+    },
+    {
+      "name": "EditorDocument",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "screen",
+          "declaration": "screen: ScreenSpec",
+          "callback": false,
+          "ownerType": "EditorDocument",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 156
+          },
+          "description": "Dato de estado/configuración `screen`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "objectsById",
+          "declaration": "objectsById: Record<string, CanvasObject>",
+          "callback": false,
+          "ownerType": "EditorDocument",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 157
+          },
+          "description": "Dato de estado/configuración `objectsById`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "zOrder",
+          "declaration": "zOrder: string[]",
+          "callback": false,
+          "ownerType": "EditorDocument",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 158
+          },
+          "description": "Dato de estado/configuración `zOrder`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "assetsById",
+          "declaration": "assetsById: Record<string, ImageAsset>",
+          "callback": false,
+          "ownerType": "EditorDocument",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 159
+          },
+          "description": "Dato de estado/configuración `assetsById`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/types.ts",
+        "line": 155
+      }
+    },
+    {
+      "name": "SelectionState",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "selectedIds",
+          "declaration": "selectedIds: string[]",
+          "callback": false,
+          "ownerType": "SelectionState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 163
+          },
+          "description": "Dato de estado/configuración `selectedIds`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "vertexEdit",
+          "declaration": "vertexEdit?: | { objectId: string; kind: \"triangle\"; activeVertex?: 0 | 1 | 2 } | { objectId: string; kind: \"polygon\"; activeVertex?: number } | { objectId: string; kind: \"line\"; activeVertex?: 0 | 1 }",
+          "callback": false,
+          "ownerType": "SelectionState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 164
+          },
+          "description": "Dato de estado/configuración `vertexEdit`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/types.ts",
+        "line": 162
+      }
+    },
+    {
+      "name": "CodegenSettings",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "wrapperFunction",
+          "declaration": "wrapperFunction: boolean",
+          "callback": false,
+          "ownerType": "CodegenSettings",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 171
+          },
+          "description": "Dato de estado/configuración `wrapperFunction`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "includeComments",
+          "declaration": "includeComments: boolean",
+          "callback": false,
+          "ownerType": "CodegenSettings",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 172
+          },
+          "description": "Dato de estado/configuración `includeComments`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "declareImages",
+          "declaration": "declareImages: boolean",
+          "callback": false,
+          "ownerType": "CodegenSettings",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 173
+          },
+          "description": "Dato de estado/configuración `declareImages`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "declareVariables",
+          "declaration": "declareVariables: boolean",
+          "callback": false,
+          "ownerType": "CodegenSettings",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 174
+          },
+          "description": "Dato de estado/configuración `declareVariables`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "clearDisplay",
+          "declaration": "clearDisplay: boolean",
+          "callback": false,
+          "ownerType": "CodegenSettings",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 175
+          },
+          "description": "Dato de estado/configuración `clearDisplay`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "prefix",
+          "declaration": "prefix: string",
+          "callback": false,
+          "ownerType": "CodegenSettings",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 176
+          },
+          "description": "Dato de estado/configuración `prefix`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "suffix",
+          "declaration": "suffix: string",
+          "callback": false,
+          "ownerType": "CodegenSettings",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 177
+          },
+          "description": "Dato de estado/configuración `suffix`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "mode",
+          "declaration": "mode: \"uner-commands\" | \"json-ir\"",
+          "callback": false,
+          "ownerType": "CodegenSettings",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 178
+          },
+          "description": "Dato de estado/configuración `mode`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/types.ts",
+        "line": 170
+      }
+    },
+    {
+      "name": "HistoryEditorAction",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "type",
+          "declaration": "type: \"document/replace\"",
+          "callback": false,
+          "ownerType": "HistoryEditorAction",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 182
+          },
+          "description": "Dato de estado/configuración `type`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "document",
+          "declaration": "document: EditorDocument",
+          "callback": false,
+          "ownerType": "HistoryEditorAction",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 183
+          },
+          "description": "Dato de estado/configuración `document`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/types.ts",
+        "line": 181
+      }
+    },
+    {
+      "name": "HistoryEntry",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "label",
+          "declaration": "label: string",
+          "callback": false,
+          "ownerType": "HistoryEntry",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 187
+          },
+          "description": "Dato de estado/configuración `label`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "forward",
+          "declaration": "forward: HistoryEditorAction[]",
+          "callback": false,
+          "ownerType": "HistoryEntry",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 188
+          },
+          "description": "Dato de estado/configuración `forward`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "inverse",
+          "declaration": "inverse: HistoryEditorAction[]",
+          "callback": false,
+          "ownerType": "HistoryEntry",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 189
+          },
+          "description": "Dato de estado/configuración `inverse`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "timestamp",
+          "declaration": "timestamp: number",
+          "callback": false,
+          "ownerType": "HistoryEntry",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 190
+          },
+          "description": "Dato de estado/configuración `timestamp`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/types.ts",
+        "line": 186
+      }
+    },
+    {
+      "name": "EditorState",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "document",
+          "declaration": "document: EditorDocument",
+          "callback": false,
+          "ownerType": "EditorState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 194
+          },
+          "description": "Dato de estado/configuración `document`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "selection",
+          "declaration": "selection: SelectionState",
+          "callback": false,
+          "ownerType": "EditorState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 195
+          },
+          "description": "Dato de estado/configuración `selection`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "activeTool",
+          "declaration": "activeTool: ToolId",
+          "callback": false,
+          "ownerType": "EditorState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 196
+          },
+          "description": "Dato de estado/configuración `activeTool`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "hoveredId",
+          "declaration": "hoveredId: string | null",
+          "callback": false,
+          "ownerType": "EditorState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 197
+          },
+          "description": "Dato de estado/configuración `hoveredId`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "viewport",
+          "declaration": "viewport: { zoom: number; panX: number; panY: number; }",
+          "callback": false,
+          "ownerType": "EditorState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 198
+          },
+          "description": "Dato de estado/configuración `viewport`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "history",
+          "declaration": "history: { past: HistoryEntry[]; future: HistoryEntry[]; transactionLabel?: string; stagedForward: HistoryEditorAction[]; stagedInverse: HistoryEditorAction[]; }",
+          "callback": false,
+          "ownerType": "EditorState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 203
+          },
+          "description": "Dato de estado/configuración `history`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ui",
+          "declaration": "ui: { rightMouseMode: \"none\" | \"erase\" | \"remove-vertex\"; textEditingId?: string; imagePanelOpen: boolean; selectedAssetId?: string; codeSettings: CodegenSettings; }",
+          "callback": false,
+          "ownerType": "EditorState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 210
+          },
+          "description": "Dato de estado/configuración `ui`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/types.ts",
+        "line": 193
+      }
+    },
+    {
+      "name": "DrawOp",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "id",
+          "declaration": "id: string",
+          "callback": false,
+          "ownerType": "DrawOp",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 220
+          },
+          "description": "Dato de estado/configuración `id`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "sourceObjectId",
+          "declaration": "sourceObjectId: string",
+          "callback": false,
+          "ownerType": "DrawOp",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 221
+          },
+          "description": "Dato de estado/configuración `sourceObjectId`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "kind",
+          "declaration": "kind: \"rect\" | \"circle\" | \"line\" | \"polygon\" | \"text\" | \"bitmap\"",
+          "callback": false,
+          "ownerType": "DrawOp",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 222
+          },
+          "description": "Dato de estado/configuración `kind`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "args",
+          "declaration": "args: Record<string, unknown>",
+          "callback": false,
+          "ownerType": "DrawOp",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 223
+          },
+          "description": "Dato de estado/configuración `args`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/types.ts",
+        "line": 219
+      }
+    },
+    {
+      "name": "GeneratedCodeResult",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "ir",
+          "declaration": "ir: DrawOp[]",
+          "callback": false,
+          "ownerType": "GeneratedCodeResult",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 227
+          },
+          "description": "Dato de estado/configuración `ir`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "text",
+          "declaration": "text: string",
+          "callback": false,
+          "ownerType": "GeneratedCodeResult",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 228
+          },
+          "description": "Dato de estado/configuración `text`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "lineMap",
+          "declaration": "lineMap: Record<string, { startLine: number; endLine: number }>",
+          "callback": false,
+          "ownerType": "GeneratedCodeResult",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/types.ts",
+            "line": 229
+          },
+          "description": "Dato de estado/configuración `lineMap`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/types.ts",
+        "line": 226
+      }
+    },
+    {
+      "name": "EditorReducerAction",
+      "kind": "TypeAliasDeclaration",
+      "type": "| { type: \"tool/set\"; tool: ToolId } | { type: \"selection/set\"; selection: SelectionState } | { type: \"hover/set\"; id: string | null } | { type: \"viewport/set\"; patch: Partial<EditorState[\"viewport\"]> } | { type: \"document/set\"; document: EditorDocument } | { type: \"screen/set\"; patch: Partial<EditorDocument[\"screen\"]> } | { type: \"asset/select\"; assetId?: string } | { type: \"ui/image-panel\"; open: boolean } | { type: \"ui/right-mouse-mode\"; value: EditorState[\"ui\"][\"rightMouseMode\"] } | { type: \"ui/code-settings\"; patch: Partial<CodegenSettings> } | { type: \"history/push\"; entry: HistoryEntry; selection?: SelectionState } | { type: \"history/undo\" } | { type: \"history/redo\" }",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/useOledEditorState.ts",
+        "line": 16
+      }
+    },
+    {
+      "name": "UseOledEditorStateArgs",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "initialDocument",
+          "declaration": "initialDocument?: EditorDocument",
+          "callback": false,
+          "ownerType": "UseOledEditorStateArgs",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/useOledEditorState.ts",
+            "line": 32
+          },
+          "description": "Dato de estado/configuración `initialDocument`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "onDocumentChange",
+          "declaration": "onDocumentChange?: (document: EditorDocument) => void",
+          "callback": true,
+          "ownerType": "UseOledEditorStateArgs",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/useOledEditorState.ts",
+            "line": 33
+          },
+          "description": "Operación on Document Change de Modelo y edición de documentos OLED; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "onCodeChange",
+          "declaration": "onCodeChange?: (result: GeneratedCodeResult) => void",
+          "callback": true,
+          "ownerType": "UseOledEditorStateArgs",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/useOledEditorState.ts",
+            "line": 34
+          },
+          "description": "Operación on Code Change de Modelo y edición de documentos OLED; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "onDirtyChange",
+          "declaration": "onDirtyChange?: (dirty: boolean) => void",
+          "callback": true,
+          "ownerType": "UseOledEditorStateArgs",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/useOledEditorState.ts",
+            "line": 35
+          },
+          "description": "Operación on Dirty Change de Modelo y edición de documentos OLED; semántica fina pendiente de ampliación."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/useOledEditorState.ts",
+        "line": 31
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "SavedOledScreensProvider",
+      "displayName": "SavedOledScreensProvider",
+      "signature": "SavedOledScreensProvider({\n  children,\n}: { children: ReactNode; }): inferred-by-TypeScript",
+      "line": 44,
+      "endLine": 122,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useEffect",
+        "useMemo",
+        "useState"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/SavedOledScreensContext.tsx",
+        "line": 44
+      },
+      "description": "Coordina `useEffect`, `useMemo`, `useState` para Modelo y edición de documentos OLED.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "applyHistoryAction",
+      "displayName": "applyHistoryAction",
+      "signature": "applyHistoryAction(document: EditorDocument, action: HistoryEditorAction): inferred-by-TypeScript",
+      "line": 296,
+      "endLine": 302,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "cloneDocument"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/useOledEditorState.ts",
+        "line": 296
+      },
+      "description": "Adapta la llamada a `cloneDocument` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "bitmapBytesToPixels",
+      "displayName": "bitmapBytesToPixels",
+      "signature": "bitmapBytesToPixels(bytes: readonly number[], width: number, height: number, bitOrder: BitOrder): inferred-by-TypeScript",
+      "line": 389,
+      "endLine": 407,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.ceil",
+        "buildEmptyPixelData"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/document.ts",
+        "line": 389
+      },
+      "description": "Coordina `Math.ceil`, `buildEmptyPixelData` para Modelo y edición de documentos OLED.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "bitmapDeclarationLines",
+      "displayName": "bitmapDeclarationLines",
+      "signature": "bitmapDeclarationLines(symbol: string, bytes: number[]): inferred-by-TypeScript",
+      "line": 464,
+      "endLine": 477,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "bytes .slice",
+        "bytes .slice(index, index + 12) .map",
+        "bytes .slice(index, index + 12) .map((value) => `0x${value.toString(16).padStart(2, \"0\")}`) .join",
+        "lines.push"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/codegen.ts",
+        "line": 464
+      },
+      "description": "Coordina `bytes .slice`, `bytes .slice(index, index + 12) .map`, `bytes .slice(index, index + 12) .map((value) => `0x${value.toString(16).padStart(2, \"0\")}`) .join` para Modelo y edición de documentos OLED.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildDrawOps",
+      "displayName": "buildDrawOps",
+      "signature": "buildDrawOps(document: EditorDocument): DrawOp[]",
+      "line": 53,
+      "endLine": 177,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "buildEditorAssetIndex",
+        "orderedRenderableObjects",
+        "orderedRenderableObjects(document).flatMap"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/codegen.ts",
+        "line": 53
+      },
+      "description": "Coordina `buildEditorAssetIndex`, `orderedRenderableObjects`, `orderedRenderableObjects(document).flatMap` para Modelo y edición de documentos OLED.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildEditorAssetIndex",
+      "displayName": "buildEditorAssetIndex",
+      "signature": "buildEditorAssetIndex(customAssets: Record<string, ImageAsset>): Record<string, EditorBitmapAssetDefinition>",
+      "line": 307,
+      "endLine": 329,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Object.fromEntries",
+        "Object.values",
+        "Object.values(customAssets).map",
+        "SHARED_EDITOR_BITMAPS.map"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/assets.ts",
+        "line": 307
+      },
+      "description": "Coordina `Object.fromEntries`, `Object.values`, `Object.values(customAssets).map` para Modelo y edición de documentos OLED.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildEmptyPixelData",
+      "displayName": "buildEmptyPixelData",
+      "signature": "buildEmptyPixelData(width: number, height: number): inferred-by-TypeScript",
+      "line": 385,
+      "endLine": 387,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Array.from"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/document.ts",
+        "line": 385
+      },
+      "description": "Adapta la llamada a `Array.from` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildJsonIrOutput",
+      "displayName": "buildJsonIrOutput",
+      "signature": "buildJsonIrOutput(document: EditorDocument, settings: CodegenSettings, ir: DrawOp[]): GeneratedCodeResult",
+      "line": 179,
+      "endLine": 223,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "JSON.stringify",
+        "JSON.stringify(document.screen, null, 2).replace",
+        "ir.forEach",
+        "lines.join",
+        "lines.push",
+        "settings.prefix.split",
+        "settings.prefix.trim",
+        "settings.suffix.split",
+        "settings.suffix.trim"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/codegen.ts",
+        "line": 179
+      },
+      "description": "Coordina `JSON.stringify`, `JSON.stringify(document.screen, null, 2).replace`, `ir.forEach` para Modelo y edición de documentos OLED.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildOledCommands",
+      "displayName": "buildOledCommands",
+      "signature": "buildOledCommands(document: EditorDocument): OledCommand[]",
+      "line": 24,
+      "endLine": 41,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "buildEditorAssetIndex",
+        "commands.push",
+        "orderedRenderableObjects",
+        "orderedRenderableObjects(document).forEach"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/codegen.ts",
+        "line": 24
+      },
+      "description": "Coordina `buildEditorAssetIndex`, `commands.push`, `orderedRenderableObjects` para Modelo y edición de documentos OLED.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildTriangleCommands",
+      "displayName": "buildTriangleCommands",
+      "signature": "buildTriangleCommands(object: Extract<CanvasObject, { kind: \"triangle\" }>): inferred-by-TypeScript",
+      "line": 612,
+      "endLine": 647,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "commands.push",
+        "monoToColor"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/codegen.ts",
+        "line": 612
+      },
+      "description": "Coordina `commands.push`, `monoToColor` para Modelo y edición de documentos OLED.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildUnerCommandsOutput",
+      "displayName": "buildUnerCommandsOutput",
+      "signature": "buildUnerCommandsOutput(document: EditorDocument, settings: CodegenSettings, ir: DrawOp[]): GeneratedCodeResult",
+      "line": 225,
+      "endLine": 290,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "JSON.stringify",
+        "buildEditorAssetIndex",
+        "collectLocalBitmapDeclarations",
+        "commandRows.forEach",
+        "declarations.forEach",
+        "lines.join",
+        "lines.push",
+        "orderedRenderableObjects",
+        "orderedRenderableObjects(document).map",
+        "settings.prefix.split",
+        "settings.prefix.trim",
+        "settings.suffix.split",
+        "settings.suffix.trim"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/codegen.ts",
+        "line": 225
+      },
+      "description": "Coordina `JSON.stringify`, `buildEditorAssetIndex`, `collectLocalBitmapDeclarations` para Modelo y edición de documentos OLED.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "centerObjectAt",
+      "displayName": "centerObjectAt",
+      "signature": "centerObjectAt(point: Point, width: number, height: number): Point",
+      "line": 72,
+      "endLine": 81,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.round",
+        "clamp"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/geometry.ts",
+        "line": 72
+      },
+      "description": "Coordina `Math.round`, `clamp` para Modelo y edición de documentos OLED.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "clamp",
+      "displayName": "clamp",
+      "signature": "clamp(value: number, min: number, max: number): inferred-by-TypeScript",
+      "line": 27,
+      "endLine": 29,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.max",
+        "Math.min"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/geometry.ts",
+        "line": 27
+      },
+      "description": "Coordina `Math.max`, `Math.min` para Modelo y edición de documentos OLED.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "clampPointToScreen",
+      "displayName": "clampPointToScreen",
+      "signature": "clampPointToScreen(point: Point): Point",
+      "line": 31,
+      "endLine": 36,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "clamp"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/geometry.ts",
+        "line": 31
+      },
+      "description": "Adapta la llamada a `clamp` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "cloneAsset",
+      "displayName": "cloneAsset",
+      "signature": "cloneAsset(asset: ImageAsset): ImageAsset",
+      "line": 103,
+      "endLine": 108,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/document.ts",
+        "line": 103
+      },
+      "description": "Operación clone Asset de Modelo y edición de documentos OLED; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "cloneDocument",
+      "displayName": "cloneDocument",
+      "signature": "cloneDocument(document: EditorDocument): EditorDocument",
+      "line": 54,
+      "endLine": 71,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Object.entries",
+        "Object.entries(document.assetsById).map",
+        "Object.entries(document.objectsById).map",
+        "Object.fromEntries"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/document.ts",
+        "line": 54
+      },
+      "description": "Coordina `Object.entries`, `Object.entries(document.assetsById).map`, `Object.entries(document.objectsById).map` para Modelo y edición de documentos OLED.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "cloneObject",
+      "displayName": "cloneObject",
+      "signature": "cloneObject(object: CanvasObject): CanvasObject",
+      "line": 73,
+      "endLine": 101,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "object.points.map"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/document.ts",
+        "line": 73
+      },
+      "description": "Adapta la llamada a `object.points.map` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "collectLocalBitmapDeclarations",
+      "displayName": "collectLocalBitmapDeclarations",
+      "signature": "collectLocalBitmapDeclarations(document: EditorDocument): inferred-by-TypeScript",
+      "line": 447,
+      "endLine": 462,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "orderedRenderableObjects",
+        "orderedRenderableObjects(document).flatMap"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/codegen.ts",
+        "line": 447
+      },
+      "description": "Coordina `orderedRenderableObjects`, `orderedRenderableObjects(document).flatMap` para Modelo y edición de documentos OLED.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "createBitmapObject",
+      "displayName": "createBitmapObject",
+      "signature": "createBitmapObject(document: EditorDocument, point: Point, width: inferred-by-TypeScript, height: inferred-by-TypeScript): BitmapObject",
+      "line": 362,
+      "endLine": 383,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "buildEmptyPixelData",
+        "nextObjectId",
+        "nextZIndex"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/document.ts",
+        "line": 362
+      },
+      "description": "Coordina `buildEmptyPixelData`, `nextObjectId`, `nextZIndex` para Modelo y edición de documentos OLED.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "createCircle",
+      "displayName": "createCircle",
+      "signature": "createCircle(document: EditorDocument, center: Point, radius: number): CircleObject",
+      "line": 242,
+      "endLine": 261,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "nextObjectId",
+        "nextZIndex"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/document.ts",
+        "line": 242
+      },
+      "description": "Coordina `nextObjectId`, `nextZIndex` para Modelo y edición de documentos OLED.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "createEmptyDocument",
+      "displayName": "createEmptyDocument",
+      "signature": "createEmptyDocument(partial?: Partial<EditorDocument>): EditorDocument",
+      "line": 40,
+      "endLine": 52,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/document.ts",
+        "line": 40
+      },
+      "description": "Operación create Empty Document de Modelo y edición de documentos OLED; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "createImageObject",
+      "displayName": "createImageObject",
+      "signature": "createImageObject(document: EditorDocument, asset: ImageAsset, point: Point): ImageObject",
+      "line": 340,
+      "endLine": 360,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "nextObjectId",
+        "nextZIndex"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/document.ts",
+        "line": 340
+      },
+      "description": "Coordina `nextObjectId`, `nextZIndex` para Modelo y edición de documentos OLED.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "createInitialState",
+      "displayName": "createInitialState",
+      "signature": "createInitialState(initialDocument?: EditorDocument): EditorState",
+      "line": 146,
+      "endLine": 170,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "cloneDocument",
+        "createEmptyDocument"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/useOledEditorState.ts",
+        "line": 146
+      },
+      "description": "Coordina `cloneDocument`, `createEmptyDocument` para Modelo y edición de documentos OLED.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "createLine",
+      "displayName": "createLine",
+      "signature": "createLine(document: EditorDocument, start: Point, end: Point): LineObject",
+      "line": 263,
+      "endLine": 282,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "nextObjectId",
+        "nextZIndex"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/document.ts",
+        "line": 263
+      },
+      "description": "Coordina `nextObjectId`, `nextZIndex` para Modelo y edición de documentos OLED.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "createPolygon",
+      "displayName": "createPolygon",
+      "signature": "createPolygon(document: EditorDocument, points: Point[]): PolygonObject",
+      "line": 302,
+      "endLine": 318,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "nextObjectId",
+        "nextZIndex"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/document.ts",
+        "line": 302
+      },
+      "description": "Coordina `nextObjectId`, `nextZIndex` para Modelo y edición de documentos OLED.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "createRectangle",
+      "displayName": "createRectangle",
+      "signature": "createRectangle(document: EditorDocument, bounds: { x: number; y: number; width: number; height: number }): RectangleObject",
+      "line": 221,
+      "endLine": 240,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "nextObjectId",
+        "nextZIndex"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/document.ts",
+        "line": 221
+      },
+      "description": "Coordina `nextObjectId`, `nextZIndex` para Modelo y edición de documentos OLED.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "createSavedScreenId",
+      "displayName": "createSavedScreenId",
+      "signature": "createSavedScreenId(): inferred-by-TypeScript",
+      "line": 163,
+      "endLine": 167,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Date.now",
+        "Math.random",
+        "Math.random().toString",
+        "Math.random().toString(16).slice",
+        "crypto.randomUUID"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/SavedOledScreensContext.tsx",
+        "line": 163
+      },
+      "description": "Coordina `Date.now`, `Math.random`, `Math.random().toString` para Modelo y edición de documentos OLED.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "createText",
+      "displayName": "createText",
+      "signature": "createText(document: EditorDocument, point: Point): TextObject",
+      "line": 320,
+      "endLine": 338,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "nextObjectId",
+        "nextZIndex"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/document.ts",
+        "line": 320
+      },
+      "description": "Coordina `nextObjectId`, `nextZIndex` para Modelo y edición de documentos OLED.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "createTriangle",
+      "displayName": "createTriangle",
+      "signature": "createTriangle(document: EditorDocument, points: [Point, Point, Point]): TriangleObject",
+      "line": 284,
+      "endLine": 300,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "nextObjectId",
+        "nextZIndex"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/document.ts",
+        "line": 284
+      },
+      "description": "Coordina `nextObjectId`, `nextZIndex` para Modelo y edición de documentos OLED.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "createUploadedAsset",
+      "displayName": "createUploadedAsset",
+      "signature": "createUploadedAsset(name: string, width: number, height: number, bytes: number[], bitOrder: BitOrder): ImageAsset",
+      "line": 433,
+      "endLine": 450,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "nextAssetId"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/document.ts",
+        "line": 433
+      },
+      "description": "Adapta la llamada a `nextAssetId` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "distanceToSegment",
+      "displayName": "distanceToSegment",
+      "signature": "distanceToSegment(point: Point, start: Point, end: Point): inferred-by-TypeScript",
+      "line": 162,
+      "endLine": 179,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.hypot",
+        "clamp"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/geometry.ts",
+        "line": 162
+      },
+      "description": "Coordina `Math.hypot`, `clamp` para Modelo y edición de documentos OLED.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "editorReducer",
+      "displayName": "editorReducer",
+      "signature": "editorReducer(state: EditorState, action: EditorReducerAction): EditorState",
+      "line": 172,
+      "endLine": 294,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "applyHistoryAction",
+        "cloneDocument",
+        "state.history.past.slice"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/useOledEditorState.ts",
+        "line": 172
+      },
+      "description": "Coordina `applyHistoryAction`, `cloneDocument`, `state.history.past.slice` para Modelo y edición de documentos OLED.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "fillCircleCommands",
+      "displayName": "fillCircleCommands",
+      "signature": "fillCircleCommands(color: MonoColor | null, x: number, y: number, radius: number): inferred-by-TypeScript",
+      "line": 580,
+      "endLine": 594,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "monoToColor"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/codegen.ts",
+        "line": 580
+      },
+      "description": "Adapta la llamada a `monoToColor` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "fillRectCommands",
+      "displayName": "fillRectCommands",
+      "signature": "fillRectCommands(color: MonoColor | null, x: number, y: number, width: number, height: number): inferred-by-TypeScript",
+      "line": 546,
+      "endLine": 561,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "monoToColor"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/codegen.ts",
+        "line": 546
+      },
+      "description": "Adapta la llamada a `monoToColor` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "findLineEndpointHandle",
+      "displayName": "findLineEndpointHandle",
+      "signature": "findLineEndpointHandle(object: LineObject, point: Point, tolerance: inferred-by-TypeScript): 0 | 1 | null",
+      "line": 243,
+      "endLine": 257,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.hypot"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/geometry.ts",
+        "line": 243
+      },
+      "description": "Adapta la llamada a `Math.hypot` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "findResizeHandle",
+      "displayName": "findResizeHandle",
+      "signature": "findResizeHandle(bounds: BoundingBox, point: Point, tolerance: inferred-by-TypeScript): HandlePosition | null",
+      "line": 279,
+      "endLine": 293,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.hypot",
+        "Object.entries",
+        "getResizeHandles"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/geometry.ts",
+        "line": 279
+      },
+      "description": "Coordina `Math.hypot`, `Object.entries`, `getResizeHandles` para Modelo y edición de documentos OLED.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "findVertexHandle",
+      "displayName": "findVertexHandle",
+      "signature": "findVertexHandle(points: readonly Point[], point: Point, tolerance: inferred-by-TypeScript): number | null",
+      "line": 229,
+      "endLine": 241,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.hypot"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/geometry.ts",
+        "line": 229
+      },
+      "description": "Adapta la llamada a `Math.hypot` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "generateEditorCode",
+      "displayName": "generateEditorCode",
+      "signature": "generateEditorCode(document: EditorDocument, settings: CodegenSettings): GeneratedCodeResult",
+      "line": 43,
+      "endLine": 51,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "buildDrawOps",
+        "buildJsonIrOutput",
+        "buildUnerCommandsOutput"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/codegen.ts",
+        "line": 43
+      },
+      "description": "Coordina `buildDrawOps`, `buildJsonIrOutput`, `buildUnerCommandsOutput` para Modelo y edición de documentos OLED.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "getObjectBounds",
+      "displayName": "getObjectBounds",
+      "signature": "getObjectBounds(object: CanvasObject): BoundingBox",
+      "line": 83,
+      "endLine": 132,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.abs",
+        "Math.max",
+        "Math.min",
+        "pointsBounds"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/geometry.ts",
+        "line": 83
+      },
+      "description": "Coordina `Math.abs`, `Math.max`, `Math.min` para Modelo y edición de documentos OLED.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "getResizeHandles",
+      "displayName": "getResizeHandles",
+      "signature": "getResizeHandles(bounds: BoundingBox): Record<HandlePosition, Point>",
+      "line": 259,
+      "endLine": 277,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/geometry.ts",
+        "line": 259
+      },
+      "description": "Operación get Resize Handles de Modelo y edición de documentos OLED; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "getSelectionBounds",
+      "displayName": "getSelectionBounds",
+      "signature": "getSelectionBounds(objects: CanvasObject[]): BoundingBox | null",
+      "line": 134,
+      "endLine": 151,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.max",
+        "Math.min",
+        "bounds.map",
+        "objects.map"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/geometry.ts",
+        "line": 134
+      },
+      "description": "Coordina `Math.max`, `Math.min`, `bounds.map` para Modelo y edición de documentos OLED.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "hitTestObject",
+      "displayName": "hitTestObject",
+      "signature": "hitTestObject(object: CanvasObject, point: Point): inferred-by-TypeScript",
+      "line": 201,
+      "endLine": 227,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.hypot",
+        "Math.max",
+        "distanceToSegment",
+        "getObjectBounds",
+        "pointInBounds",
+        "pointInPolygon"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/geometry.ts",
+        "line": 201
+      },
+      "description": "Coordina `Math.hypot`, `Math.max`, `distanceToSegment` para Modelo y edición de documentos OLED.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "insertObject",
+      "displayName": "insertObject",
+      "signature": "insertObject(document: EditorDocument, object: CanvasObject): EditorDocument",
+      "line": 124,
+      "endLine": 133,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "cloneDocument",
+        "cloneObject",
+        "next.zOrder.filter",
+        "syncZIndices"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/document.ts",
+        "line": 124
+      },
+      "description": "Coordina `cloneDocument`, `cloneObject`, `next.zOrder.filter` para Modelo y edición de documentos OLED.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "isPersistedSavedOledScreen",
+      "displayName": "isPersistedSavedOledScreen",
+      "signature": "isPersistedSavedOledScreen(value: unknown): value is PersistedSavedOledScreen",
+      "line": 169,
+      "endLine": 184,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Boolean"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/SavedOledScreensContext.tsx",
+        "line": 169
+      },
+      "description": "Adapta la llamada a `Boolean` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "listEditorAssets",
+      "displayName": "listEditorAssets",
+      "signature": "listEditorAssets(customAssets: Record<string, ImageAsset>): EditorBitmapAssetDefinition[]",
+      "line": 331,
+      "endLine": 339,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Object.values",
+        "Object.values(buildEditorAssetIndex(customAssets)).sort",
+        "buildEditorAssetIndex"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/assets.ts",
+        "line": 331
+      },
+      "description": "Coordina `Object.values`, `Object.values(buildEditorAssetIndex(customAssets)).sort`, `buildEditorAssetIndex` para Modelo y edición de documentos OLED.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "loadPersistedScreens",
+      "displayName": "loadPersistedScreens",
+      "signature": "loadPersistedScreens(): PersistedSavedOledScreen[]",
+      "line": 136,
+      "endLine": 161,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Array.isArray",
+        "JSON.parse",
+        "parsed .filter",
+        "parsed .filter(isPersistedSavedOledScreen) .map",
+        "window.localStorage.getItem"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/SavedOledScreensContext.tsx",
+        "line": 136
+      },
+      "description": "Coordina `Array.isArray`, `JSON.parse`, `parsed .filter` para Modelo y edición de documentos OLED.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "monoToColor",
+      "displayName": "monoToColor",
+      "signature": "monoToColor(color: MonoColor): inferred-by-TypeScript",
+      "line": 542,
+      "endLine": 544,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/codegen.ts",
+        "line": 542
+      },
+      "description": "Operación mono To Color de Modelo y edición de documentos OLED; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "moveObjectDown",
+      "displayName": "moveObjectDown",
+      "signature": "moveObjectDown(document: EditorDocument, id: string): inferred-by-TypeScript",
+      "line": 195,
+      "endLine": 210,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "cloneDocument",
+        "next.zOrder.indexOf",
+        "syncZIndices"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/document.ts",
+        "line": 195
+      },
+      "description": "Coordina `cloneDocument`, `next.zOrder.indexOf`, `syncZIndices` para Modelo y edición de documentos OLED.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "moveObjectUp",
+      "displayName": "moveObjectUp",
+      "signature": "moveObjectUp(document: EditorDocument, id: string): inferred-by-TypeScript",
+      "line": 178,
+      "endLine": 193,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "cloneDocument",
+        "next.zOrder.indexOf",
+        "syncZIndices"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/document.ts",
+        "line": 178
+      },
+      "description": "Coordina `cloneDocument`, `next.zOrder.indexOf`, `syncZIndices` para Modelo y edición de documentos OLED.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "nextAssetId",
+      "displayName": "nextAssetId",
+      "signature": "nextAssetId(prefix: inferred-by-TypeScript): inferred-by-TypeScript",
+      "line": 115,
+      "endLine": 118,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/document.ts",
+        "line": 115
+      },
+      "description": "Operación next Asset Id de Modelo y edición de documentos OLED; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "nextObjectId",
+      "displayName": "nextObjectId",
+      "signature": "nextObjectId(prefix: string): inferred-by-TypeScript",
+      "line": 110,
+      "endLine": 113,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/document.ts",
+        "line": 110
+      },
+      "description": "Operación next Object Id de Modelo y edición de documentos OLED; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "nextZIndex",
+      "displayName": "nextZIndex",
+      "signature": "nextZIndex(document: EditorDocument): inferred-by-TypeScript",
+      "line": 120,
+      "endLine": 122,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/document.ts",
+        "line": 120
+      },
+      "description": "Operación next ZIndex de Modelo y edición de documentos OLED; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "normalizeRect",
+      "displayName": "normalizeRect",
+      "signature": "normalizeRect(start: Point, end: Point): BoundingBox",
+      "line": 38,
+      "endLine": 45,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.abs",
+        "Math.max",
+        "Math.min"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/geometry.ts",
+        "line": 38
+      },
+      "description": "Coordina `Math.abs`, `Math.max`, `Math.min` para Modelo y edición de documentos OLED.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "objectToCommandLines",
+      "displayName": "objectToCommandLines",
+      "signature": "objectToCommandLines(object: CanvasObject, assetIndex: Record<string, ImageAsset>, declarations: LocalBitmapDeclaration[], includeComments: boolean): inferred-by-TypeScript",
+      "line": 376,
+      "endLine": 394,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "commands.forEach",
+        "lines.push",
+        "objectToCommandsWithLocalRefs"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/codegen.ts",
+        "line": 376
+      },
+      "description": "Coordina `commands.forEach`, `lines.push`, `objectToCommandsWithLocalRefs` para Modelo y edición de documentos OLED.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "objectToCommands",
+      "displayName": "objectToCommands",
+      "signature": "objectToCommands(object: CanvasObject, assetIndex: Record<string, ImageAsset>): OledCommand[]",
+      "line": 299,
+      "endLine": 374,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "buildTriangleCommands",
+        "fillCircleCommands",
+        "fillRectCommands",
+        "monoToColor",
+        "sanitizeSymbol",
+        "strokeCircleCommands",
+        "strokeRectCommands"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/codegen.ts",
+        "line": 299
+      },
+      "description": "Coordina `buildTriangleCommands`, `fillCircleCommands`, `fillRectCommands` para Modelo y edición de documentos OLED.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "objectToCommandsWithLocalRefs",
+      "displayName": "objectToCommandsWithLocalRefs",
+      "signature": "objectToCommandsWithLocalRefs(object: CanvasObject, assetIndex: Record<string, ImageAsset>, declarations: LocalBitmapDeclaration[]): OledCommand[]",
+      "line": 396,
+      "endLine": 445,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "declarations.find",
+        "objectToCommands",
+        "sanitizeSymbol"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/codegen.ts",
+        "line": 396
+      },
+      "description": "Coordina `declarations.find`, `objectToCommands`, `sanitizeSymbol` para Modelo y edición de documentos OLED.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "orderedRenderableObjects",
+      "displayName": "orderedRenderableObjects",
+      "signature": "orderedRenderableObjects(document: EditorDocument): inferred-by-TypeScript",
+      "line": 292,
+      "endLine": 297,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "document.zOrder .map",
+        "document.zOrder .map((id) => document.objectsById[id]) .filter",
+        "document.zOrder .map((id) => document.objectsById[id]) .filter((object): object is CanvasObject => Boolean(object)) .filter"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/codegen.ts",
+        "line": 292
+      },
+      "description": "Coordina `document.zOrder .map`, `document.zOrder .map((id) => document.objectsById[id]) .filter`, `document.zOrder .map((id) => document.objectsById[id]) .filter((object): object is CanvasObject => Boolean(object)) .filter` para Modelo y edición de documentos OLED.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "patchObject",
+      "displayName": "patchObject",
+      "signature": "patchObject(document: EditorDocument, id: string, patch: Partial<T>): EditorDocument",
+      "line": 135,
+      "endLine": 152,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "cloneDocument"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/document.ts",
+        "line": 135
+      },
+      "description": "Adapta la llamada a `cloneDocument` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "pixelsToBitmapBytes",
+      "displayName": "pixelsToBitmapBytes",
+      "signature": "pixelsToBitmapBytes(pixels: readonly number[], width: number, height: number, bitOrder: BitOrder): inferred-by-TypeScript",
+      "line": 409,
+      "endLine": 431,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Array.from",
+        "Math.ceil"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/document.ts",
+        "line": 409
+      },
+      "description": "Coordina `Array.from`, `Math.ceil` para Modelo y edición de documentos OLED.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "pointInBounds",
+      "displayName": "pointInBounds",
+      "signature": "pointInBounds(point: Point, bounds: BoundingBox, padding: inferred-by-TypeScript): inferred-by-TypeScript",
+      "line": 153,
+      "endLine": 160,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/geometry.ts",
+        "line": 153
+      },
+      "description": "Operación point In Bounds de Modelo y edición de documentos OLED; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "pointInPolygon",
+      "displayName": "pointInPolygon",
+      "signature": "pointInPolygon(point: Point, vertices: readonly Point[]): inferred-by-TypeScript",
+      "line": 181,
+      "endLine": 199,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/geometry.ts",
+        "line": 181
+      },
+      "description": "Operación point In Polygon de Modelo y edición de documentos OLED; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "pointsBounds",
+      "displayName": "pointsBounds",
+      "signature": "pointsBounds(points: readonly Point[]): BoundingBox",
+      "line": 451,
+      "endLine": 463,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.max",
+        "Math.min",
+        "points.map"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/geometry.ts",
+        "line": 451
+      },
+      "description": "Coordina `Math.max`, `Math.min`, `points.map` para Modelo y edición de documentos OLED.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "registerAsset",
+      "displayName": "registerAsset",
+      "signature": "registerAsset(document: EditorDocument, asset: ImageAsset): EditorDocument",
+      "line": 212,
+      "endLine": 219,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "cloneAsset",
+        "cloneDocument"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/document.ts",
+        "line": 212
+      },
+      "description": "Coordina `cloneAsset`, `cloneDocument` para Modelo y edición de documentos OLED.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "removeObjects",
+      "displayName": "removeObjects",
+      "signature": "removeObjects(document: EditorDocument, ids: string[]): EditorDocument",
+      "line": 163,
+      "endLine": 176,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "cloneDocument",
+        "ids.forEach",
+        "next.zOrder.filter",
+        "syncZIndices"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/document.ts",
+        "line": 163
+      },
+      "description": "Coordina `cloneDocument`, `ids.forEach`, `next.zOrder.filter` para Modelo y edición de documentos OLED.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "replaceObject",
+      "displayName": "replaceObject",
+      "signature": "replaceObject(document: EditorDocument, object: CanvasObject): EditorDocument",
+      "line": 154,
+      "endLine": 161,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "cloneDocument",
+        "cloneObject"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/document.ts",
+        "line": 154
+      },
+      "description": "Coordina `cloneDocument`, `cloneObject` para Modelo y edición de documentos OLED.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "resizeBitmapFromBounds",
+      "displayName": "resizeBitmapFromBounds",
+      "signature": "resizeBitmapFromBounds(object: BitmapObject, bounds: BoundingBox): BitmapObject",
+      "line": 382,
+      "endLine": 410,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Array.from",
+        "Math.max",
+        "Math.round",
+        "clamp"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/geometry.ts",
+        "line": 382
+      },
+      "description": "Coordina `Array.from`, `Math.max`, `Math.round` para Modelo y edición de documentos OLED.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "resizeBounds",
+      "displayName": "resizeBounds",
+      "signature": "resizeBounds(original: BoundingBox, handle: HandlePosition, dx: number, dy: number): BoundingBox",
+      "line": 412,
+      "endLine": 449,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "clamp",
+        "handle.includes"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/geometry.ts",
+        "line": 412
+      },
+      "description": "Coordina `clamp`, `handle.includes` para Modelo y edición de documentos OLED.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "resizeCircleFromBounds",
+      "displayName": "resizeCircleFromBounds",
+      "signature": "resizeCircleFromBounds(object: CircleObject, bounds: BoundingBox): CircleObject",
+      "line": 369,
+      "endLine": 380,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.max",
+        "Math.round"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/geometry.ts",
+        "line": 369
+      },
+      "description": "Coordina `Math.max`, `Math.round` para Modelo y edición de documentos OLED.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "resizeObjectFromBounds",
+      "displayName": "resizeObjectFromBounds",
+      "signature": "resizeObjectFromBounds(object: T, bounds: BoundingBox): T",
+      "line": 356,
+      "endLine": 367,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.max",
+        "Math.round",
+        "clamp"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/geometry.ts",
+        "line": 356
+      },
+      "description": "Coordina `Math.max`, `Math.round`, `clamp` para Modelo y edición de documentos OLED.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "sameDocument",
+      "displayName": "sameDocument",
+      "signature": "sameDocument(left: EditorDocument, right: EditorDocument): inferred-by-TypeScript",
+      "line": 304,
+      "endLine": 306,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "JSON.stringify"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/useOledEditorState.ts",
+        "line": 304
+      },
+      "description": "Adapta la llamada a `JSON.stringify` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "sanitizeSymbol",
+      "displayName": "sanitizeSymbol",
+      "signature": "sanitizeSymbol(input: string): inferred-by-TypeScript",
+      "line": 649,
+      "endLine": 657,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "input .trim",
+        "input .trim() .toLowerCase",
+        "input .trim() .toLowerCase() .replace",
+        "input .trim() .toLowerCase() .replace(/[^a-z0-9]+/g, \"_\") .replace"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/codegen.ts",
+        "line": 649
+      },
+      "description": "Coordina `input .trim`, `input .trim() .toLowerCase`, `input .trim() .toLowerCase() .replace` para Modelo y edición de documentos OLED.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "snapLine",
+      "displayName": "snapLine",
+      "signature": "snapLine(start: Point, end: Point, enabled: boolean): Point",
+      "line": 47,
+      "endLine": 70,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.abs",
+        "Math.max",
+        "Math.sign"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/geometry.ts",
+        "line": 47
+      },
+      "description": "Coordina `Math.abs`, `Math.max`, `Math.sign` para Modelo y edición de documentos OLED.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "stringifyColor",
+      "displayName": "stringifyColor",
+      "signature": "stringifyColor(color: SSD1306Color): inferred-by-TypeScript",
+      "line": 530,
+      "endLine": 540,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/codegen.ts",
+        "line": 530
+      },
+      "description": "Operación stringify Color de Modelo y edición de documentos OLED; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "stringifyCommand",
+      "displayName": "stringifyCommand",
+      "signature": "stringifyCommand(command: OledCommand): inferred-by-TypeScript",
+      "line": 479,
+      "endLine": 528,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "JSON.stringify",
+        "String",
+        "stringifyColor"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/codegen.ts",
+        "line": 479
+      },
+      "description": "Coordina `JSON.stringify`, `String`, `stringifyColor` para Modelo y edición de documentos OLED.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "strokeCircleCommands",
+      "displayName": "strokeCircleCommands",
+      "signature": "strokeCircleCommands(color: MonoColor | null, x: number, y: number, radius: number): inferred-by-TypeScript",
+      "line": 596,
+      "endLine": 610,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "monoToColor"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/codegen.ts",
+        "line": 596
+      },
+      "description": "Adapta la llamada a `monoToColor` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "strokeRectCommands",
+      "displayName": "strokeRectCommands",
+      "signature": "strokeRectCommands(color: MonoColor | null, x: number, y: number, width: number, height: number): inferred-by-TypeScript",
+      "line": 563,
+      "endLine": 578,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "monoToColor"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/codegen.ts",
+        "line": 563
+      },
+      "description": "Adapta la llamada a `monoToColor` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "syncZIndices",
+      "displayName": "syncZIndices",
+      "signature": "syncZIndices(document: EditorDocument): inferred-by-TypeScript",
+      "line": 452,
+      "endLine": 460,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "document.zOrder.forEach"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/document.ts",
+        "line": 452
+      },
+      "description": "Adapta la llamada a `document.zOrder.forEach` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "translateObject",
+      "displayName": "translateObject",
+      "signature": "translateObject(object: T, dx: number, dy: number): T",
+      "line": 295,
+      "endLine": 330,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "object.points.map"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/geometry.ts",
+        "line": 295
+      },
+      "description": "Adapta la llamada a `object.points.map` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "updateLineEndpoint",
+      "displayName": "updateLineEndpoint",
+      "signature": "updateLineEndpoint(object: LineObject, endpoint: 0 | 1, point: Point): LineObject",
+      "line": 346,
+      "endLine": 354,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/geometry.ts",
+        "line": 346
+      },
+      "description": "Operación update Line Endpoint de Modelo y edición de documentos OLED; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "updateVertexPoint",
+      "displayName": "updateVertexPoint",
+      "signature": "updateVertexPoint(object: T, index: number, point: Point): T",
+      "line": 332,
+      "endLine": 344,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "object.points.map"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/geometry.ts",
+        "line": 332
+      },
+      "description": "Adapta la llamada a `object.points.map` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "useOledEditorState",
+      "displayName": "useOledEditorState",
+      "signature": "useOledEditorState({\n  initialDocument,\n  onDocumentChange,\n  onCodeChange,\n  onDirtyChange,\n}: UseOledEditorStateArgs): inferred-by-TypeScript",
+      "line": 38,
+      "endLine": 144,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Date.now",
+        "cloneDocument",
+        "dispatch",
+        "sameDocument",
+        "useEffect",
+        "useMemo",
+        "useReducer"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/useOledEditorState.ts",
+        "line": 38
+      },
+      "description": "Coordina `Date.now`, `cloneDocument`, `dispatch` para Modelo y edición de documentos OLED.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "useSavedOledScreens",
+      "displayName": "useSavedOledScreens",
+      "signature": "useSavedOledScreens(): inferred-by-TypeScript",
+      "line": 124,
+      "endLine": 134,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useContext"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/SavedOledScreensContext.tsx",
+        "line": 124
+      },
+      "description": "Adapta la llamada a `useContext` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "SavedOledScreensProvider.deleteScreen",
+      "displayName": "deleteScreen",
+      "signature": "SavedOledScreensProvider.deleteScreen(id: inferred-by-TypeScript): inferred-by-TypeScript",
+      "line": 105,
+      "endLine": 109,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "setPersistedScreens"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/SavedOledScreensContext.tsx",
+        "line": 105
+      },
+      "description": "Adapta la llamada a `setPersistedScreens` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "SavedOledScreensProvider.getScreen",
+      "displayName": "getScreen",
+      "signature": "SavedOledScreensProvider.getScreen(id: inferred-by-TypeScript): inferred-by-TypeScript",
+      "line": 110,
+      "endLine": 112,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "savedScreens.find"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/SavedOledScreensContext.tsx",
+        "line": 110
+      },
+      "description": "Adapta la llamada a `savedScreens.find` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "SavedOledScreensProvider.saveScreen",
+      "displayName": "saveScreen",
+      "signature": "SavedOledScreensProvider.saveScreen({ id, document }: inferred-by-TypeScript): inferred-by-TypeScript",
+      "line": 79,
+      "endLine": 104,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Date.now",
+        "createSavedScreenId",
+        "document.screen.title.trim",
+        "setPersistedScreens"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/SavedOledScreensContext.tsx",
+        "line": 79
+      },
+      "description": "Coordina `Date.now`, `createSavedScreenId`, `document.screen.title.trim` para Modelo y edición de documentos OLED.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "useOledEditorState.commitDocument",
+      "displayName": "commitDocument",
+      "signature": "useOledEditorState.commitDocument(label: string, previousDocument: EditorDocument, nextDocument: EditorDocument, selection?: SelectionState): inferred-by-TypeScript",
+      "line": 103,
+      "endLine": 121,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Date.now",
+        "cloneDocument",
+        "dispatch",
+        "sameDocument"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/useOledEditorState.ts",
+        "line": 103
+      },
+      "description": "Coordina `Date.now`, `cloneDocument`, `dispatch` para Modelo y edición de documentos OLED.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "useOledEditorState.redo",
+      "displayName": "redo",
+      "signature": "useOledEditorState.redo(): inferred-by-TypeScript",
+      "line": 125,
+      "endLine": 127,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "dispatch"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/useOledEditorState.ts",
+        "line": 125
+      },
+      "description": "Adapta la llamada a `dispatch` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "useOledEditorState.selectAsset",
+      "displayName": "selectAsset",
+      "signature": "useOledEditorState.selectAsset(assetId?: string): inferred-by-TypeScript",
+      "line": 131,
+      "endLine": 133,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "dispatch"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/useOledEditorState.ts",
+        "line": 131
+      },
+      "description": "Adapta la llamada a `dispatch` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "useOledEditorState.setDocument",
+      "displayName": "setDocument",
+      "signature": "useOledEditorState.setDocument(document: EditorDocument): inferred-by-TypeScript",
+      "line": 100,
+      "endLine": 102,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "dispatch"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/useOledEditorState.ts",
+        "line": 100
+      },
+      "description": "Adapta la llamada a `dispatch` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "useOledEditorState.setHoveredId",
+      "displayName": "setHoveredId",
+      "signature": "useOledEditorState.setHoveredId(id: string | null): inferred-by-TypeScript",
+      "line": 94,
+      "endLine": 96,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "dispatch"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/useOledEditorState.ts",
+        "line": 94
+      },
+      "description": "Adapta la llamada a `dispatch` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "useOledEditorState.setImagePanelOpen",
+      "displayName": "setImagePanelOpen",
+      "signature": "useOledEditorState.setImagePanelOpen(open: boolean): inferred-by-TypeScript",
+      "line": 128,
+      "endLine": 130,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "dispatch"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/useOledEditorState.ts",
+        "line": 128
+      },
+      "description": "Adapta la llamada a `dispatch` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "useOledEditorState.setRightMouseMode",
+      "displayName": "setRightMouseMode",
+      "signature": "useOledEditorState.setRightMouseMode(value: EditorState[\"ui\"][\"rightMouseMode\"]): inferred-by-TypeScript",
+      "line": 134,
+      "endLine": 136,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "dispatch"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/useOledEditorState.ts",
+        "line": 134
+      },
+      "description": "Adapta la llamada a `dispatch` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "useOledEditorState.setSelection",
+      "displayName": "setSelection",
+      "signature": "useOledEditorState.setSelection(selection: SelectionState): inferred-by-TypeScript",
+      "line": 91,
+      "endLine": 93,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "dispatch"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/useOledEditorState.ts",
+        "line": 91
+      },
+      "description": "Adapta la llamada a `dispatch` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "useOledEditorState.setTool",
+      "displayName": "setTool",
+      "signature": "useOledEditorState.setTool(tool: ToolId): inferred-by-TypeScript",
+      "line": 88,
+      "endLine": 90,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "dispatch"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/useOledEditorState.ts",
+        "line": 88
+      },
+      "description": "Adapta la llamada a `dispatch` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "useOledEditorState.setViewport",
+      "displayName": "setViewport",
+      "signature": "useOledEditorState.setViewport(patch: Partial<EditorState[\"viewport\"]>): inferred-by-TypeScript",
+      "line": 97,
+      "endLine": 99,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "dispatch"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/useOledEditorState.ts",
+        "line": 97
+      },
+      "description": "Adapta la llamada a `dispatch` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "useOledEditorState.undo",
+      "displayName": "undo",
+      "signature": "useOledEditorState.undo(): inferred-by-TypeScript",
+      "line": 122,
+      "endLine": 124,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "dispatch"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/useOledEditorState.ts",
+        "line": 122
+      },
+      "description": "Adapta la llamada a `dispatch` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "useOledEditorState.updateCodeSettings",
+      "displayName": "updateCodeSettings",
+      "signature": "useOledEditorState.updateCodeSettings(patch: Partial<CodegenSettings>): inferred-by-TypeScript",
+      "line": 137,
+      "endLine": 139,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "dispatch"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/useOledEditorState.ts",
+        "line": 137
+      },
+      "description": "Adapta la llamada a `dispatch` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "useOledEditorState.updateScreen",
+      "displayName": "updateScreen",
+      "signature": "useOledEditorState.updateScreen(patch: Partial<EditorDocument[\"screen\"]>): inferred-by-TypeScript",
+      "line": 140,
+      "endLine": 142,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "dispatch"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/useOledEditorState.ts",
+        "line": 140
+      },
+      "description": "Adapta la llamada a `dispatch` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    }
+  ],
+  "hooks": [
+    {
+      "callee": "useState",
+      "scope": "SavedOledScreensProvider",
+      "line": 49,
+      "arguments": 1,
+      "path": "src/contexts/SavedOledScreensContext.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "SavedOledScreensProvider",
+      "line": 53,
+      "arguments": 2,
+      "path": "src/contexts/SavedOledScreensContext.tsx"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "SavedOledScreensProvider",
+      "line": 64,
+      "arguments": 2,
+      "path": "src/contexts/SavedOledScreensContext.tsx"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "SavedOledScreensProvider",
+      "line": 76,
+      "arguments": 2,
+      "path": "src/contexts/SavedOledScreensContext.tsx"
+    },
+    {
+      "callee": "useContext",
+      "scope": "useSavedOledScreens",
+      "line": 125,
+      "arguments": 1,
+      "path": "src/contexts/SavedOledScreensContext.tsx"
+    },
+    {
+      "callee": "useReducer",
+      "scope": "useOledEditorState",
+      "line": 44,
+      "arguments": 3,
+      "path": "src/features/oledEditor/useOledEditorState.ts"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "useOledEditorState",
+      "line": 50,
+      "arguments": 2,
+      "path": "src/features/oledEditor/useOledEditorState.ts"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "useOledEditorState",
+      "line": 54,
+      "arguments": 2,
+      "path": "src/features/oledEditor/useOledEditorState.ts"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "useOledEditorState",
+      "line": 58,
+      "arguments": 2,
+      "path": "src/features/oledEditor/useOledEditorState.ts"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "useOledEditorState",
+      "line": 62,
+      "arguments": 2,
+      "path": "src/features/oledEditor/useOledEditorState.ts"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "useOledEditorState",
+      "line": 70,
+      "arguments": 2,
+      "path": "src/features/oledEditor/useOledEditorState.ts"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "useOledEditorState",
+      "line": 74,
+      "arguments": 2,
+      "path": "src/features/oledEditor/useOledEditorState.ts"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "useOledEditorState",
+      "line": 78,
+      "arguments": 2,
+      "path": "src/features/oledEditor/useOledEditorState.ts"
+    }
+  ]
+}

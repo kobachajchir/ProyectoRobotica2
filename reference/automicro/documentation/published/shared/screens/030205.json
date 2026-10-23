@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "id": "shared:screen/030205",
+  "symbol": "SCREEN_CODE_LINE_CAL_WHITE",
+  "code": 197125,
+  "hex": "0x030205",
+  "decomposition": {
+    "menu": 3,
+    "submenu": 2,
+    "page": 5
+  },
+  "revision": "working-copy-hashes",
+  "confidence": "manual-review",
+  "family": "shared:screen-family/line",
+  "numericObservation": "same-literal",
+  "webDeclaration": {
+    "value": 197125,
+    "line": 78
+  },
+  "metadataEntryObserved": false,
+  "evidence": [
+    {
+      "repo": "f4",
+      "path": "Core/Inc/screen_codes.h",
+      "line": 39
+    },
+    {
+      "repo": "web",
+      "path": "src/screens/screenCodes.ts",
+      "line": 78
+    }
+  ],
+  "renderers": [],
+  "callGraph": {
+    "status": "lexical-candidates-only",
+    "edges": []
+  },
+  "f4References": [
+    {
+      "repo": "f4",
+      "path": "Core/Src/menu_definition.c",
+      "line": 241,
+      "kind": "lexical-reference"
+    },
+    {
+      "repo": "f4",
+      "path": "Core/Src/menu_definition.c",
+      "line": 261,
+      "kind": "lexical-reference"
+    }
+  ],
+  "variants": [
+    "MenuRender_LineCalibration usa APP_GetLineState y elige este código según target blanco."
+  ],
+  "fields": [
+    {
+      "name": "screenCode/source",
+      "type": "u32/u8 → number",
+      "units": "identidad",
+      "availability": "reported",
+      "note": "identifica pantalla/origen, no el perfil completo"
+    },
+    {
+      "name": "lineState/sessionId",
+      "type": "168 bytes → objeto JSON",
+      "units": "mixtas según campo",
+      "availability": "separately-queryable",
+      "note": "consultar stm.ir.lineCalibration.get; no se incorpora automáticamente al visor OLED"
+    }
+  ],
+  "actions": [
+    "Encoder largo cancela la sesión actual y vuelve.",
+    "Encoder/USER corto captura en fase PROMPT; fuera de busy puede volver."
+  ],
+  "transitions": [
+    "La sesión localLineCalSession se conserva al iniciar; el renderer es continuo durante calibración."
+  ],
+  "missingData": [
+    "El visor necesita parámetros del renderer, variante, borradores y selección efectiva; una página Web de calibración separada no es esa misma pantalla."
+  ],
+  "localOnly": [],
+  "findings": [
+    "AMDOC-WEB-009"
+  ],
+  "exactness": "not-established",
+  "notes": [
+    "Renderer OledUtils_RenderLineCalibration requiere el estado y texto de motivo; no tiene binding específico de visor localizado."
+  ],
+  "role": "render-view"
+}

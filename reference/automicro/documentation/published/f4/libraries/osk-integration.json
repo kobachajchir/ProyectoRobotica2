@@ -1,0 +1,503 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "f4:module/Core/Inc/osk_integration.h",
+  "slug": "osk-integration",
+  "title": "Integración del teclado con UI",
+  "target": "f4",
+  "kind": "integración",
+  "status": "source-documented",
+  "verification": "not-run-user-instruction",
+  "snapshotDate": "2026-10-20",
+  "responsibility": "Conecta el teclado agnóstico con dibujo OLED, eventos del encoder y restauración de navegación AutoMicro.",
+  "scope": "Adaptación de primitivas, apertura alpha/numérica y callbacks finales del editor.",
+  "state": "ScreensState contiene s_oskState, s_savedCtx, tabla de dibujo y callbacks/contexto del usuario. La integración conserva el renderer, gestor de eventos y flags de la vista anterior.",
+  "lifecycle": [
+    "Init instala adaptadores gráficos.",
+    "OpenAlpha/OpenNumeric salvan contexto y abren el teclado.",
+    "EventManager traduce entradas; callbacks internos restauran UI y llaman al consumidor final."
+  ],
+  "interactions": [
+    "OSK mantiene edición; ScreensServices ejecuta dibujo. Los editores Wi-Fi y PID reciben resultado mediante callbacks."
+  ],
+  "limitations": [
+    "Un único contexto activo de pantallas; no abrir otra edición sobre la primera sin considerar savedCtx.",
+    "Copiar texto confirmado si el consumidor lo conserva después de cerrar/reabrir.",
+    "USER largo global retorna al dashboard antes del handler OSK y sin OnBack/cleanup explícito; ver AMDOC-F4-011 antes de asumir cancelación equivalente."
+  ],
+  "modularity": "Es el adaptador explícito entre OSK y Screens; está permitido que conozca ambas APIs.",
+  "files": [
+    {
+      "path": "Core/Inc/osk_integration.h",
+      "rootId": "f4",
+      "sha256": "7e7ecdf1c5c7471706540a66b34de30d7afb718182fd07d29df0bbe55b588a67",
+      "includes": [
+        "osk_types.h",
+        "types/userEvent_type.h"
+      ]
+    },
+    {
+      "path": "Core/Src/osk_integration.c",
+      "rootId": "f4",
+      "sha256": "cbf81e3cdff41049a3f7112985bf2837f570c7812a3e4aee9cebf2f5ca77e63f",
+      "includes": [
+        "screens_internal.h",
+        "osk_integration.h",
+        "fonts.h",
+        "screen_codes.h",
+        "oled_utils.h",
+        "string.h"
+      ]
+    }
+  ],
+  "findings": [
+    "AMDOC-WEB-002",
+    "AMDOC-F4-011"
+  ],
+  "types": [],
+  "functions": [
+    {
+      "name": "OSK_Integration_EventManager",
+      "signature": "void OSK_Integration_EventManager(UserEvent_t ev)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/osk_integration.h",
+        "line": 66
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OSK_IsActive",
+        "OSK_OnBack",
+        "OSK_OnLeft",
+        "OSK_OnRight",
+        "OSK_OnSelect"
+      ],
+      "writes": [],
+      "description": "Traduce eventos de usuario a navegación/acción del teclado.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/osk_integration.c",
+        "line": 285
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OSK_Integration_Init",
+      "signature": "void OSK_Integration_Init(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/osk_integration.h",
+        "line": 28
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Conecta primitivas gráficas y estado del adaptador OSK.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/osk_integration.c",
+        "line": 205
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OSK_Integration_IsActive",
+      "signature": "bool OSK_Integration_IsActive(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/osk_integration.h",
+        "line": 78
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OSK_IsActive"
+      ],
+      "writes": [],
+      "description": "Consulta si el teclado integrado permanece abierto.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/osk_integration.c",
+        "line": 318
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OSK_Integration_OpenAlpha",
+      "signature": "void OSK_Integration_OpenAlpha(const char *initialText, uint8_t maxLen, const OSK_AlphaConfig *alphaCfg, OSK_CompleteFn onComplete, OSK_CancelFn onCancel, void *ctx)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/osk_integration.h",
+        "line": 42
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OSK_Integration_Init",
+        "OSK_Open",
+        "memset",
+        "osk_ActivateUi"
+      ],
+      "writes": [],
+      "description": "Salva la vista anterior y abre edición de texto con sus restricciones.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/osk_integration.c",
+        "line": 222
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OSK_Integration_OpenNumeric",
+      "signature": "void OSK_Integration_OpenNumeric(const OSK_NumericConfig *numCfg, OSK_CompleteFn onComplete, OSK_CancelFn onCancel, void *ctx)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/osk_integration.h",
+        "line": 57
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OSK_Integration_Init",
+        "OSK_Open",
+        "memset",
+        "osk_ActivateUi"
+      ],
+      "writes": [],
+      "description": "Salva la vista anterior y abre edición numérica configurada.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/osk_integration.c",
+        "line": 260
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OSK_Integration_Render",
+      "signature": "void OSK_Integration_Render(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/osk_integration.h",
+        "line": 72
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OSK_Render"
+      ],
+      "writes": [],
+      "description": "Invoca render del teclado integrado.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/osk_integration.c",
+        "line": 313
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "Screens_Init_osk_integration",
+      "signature": "void Screens_Init_osk_integration(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/osk_integration.c",
+        "line": 323
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Inicializa estado de adaptación de teclado en el contexto activo.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/osk_integration.c",
+        "line": 323
+      },
+      "linkage": "extern-no-header"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "wrap_clearScreen",
+      "signature": "static void wrap_clearScreen(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/osk_integration.c",
+        "line": 44
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "ssd1306_Clear"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `ssd1306_Clear` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "wrap_setColor",
+      "signature": "static void wrap_setColor(uint8_t color)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/osk_integration.c",
+        "line": 49
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "ssd1306_SetColor"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `ssd1306_SetColor` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "wrap_setCursor",
+      "signature": "static void wrap_setCursor(uint8_t x, uint8_t y)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/osk_integration.c",
+        "line": 60
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "ssd1306_SetCursor"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `ssd1306_SetCursor` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "wrap_writeChar",
+      "signature": "static void wrap_writeChar(char ch)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/osk_integration.c",
+        "line": 65
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "ssd1306_WriteChar"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `ssd1306_WriteChar` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "wrap_writeString",
+      "signature": "static void wrap_writeString(char *str)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/osk_integration.c",
+        "line": 70
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "ssd1306_WriteString"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `ssd1306_WriteString` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "wrap_drawRect",
+      "signature": "static void wrap_drawRect(int16_t x, int16_t y, int16_t w, int16_t h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/osk_integration.c",
+        "line": 75
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "ssd1306_DrawRect"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `ssd1306_DrawRect` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "wrap_fillRect",
+      "signature": "static void wrap_fillRect(int16_t x, int16_t y, int16_t w, int16_t h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/osk_integration.c",
+        "line": 80
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "ssd1306_FillRect"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `ssd1306_FillRect` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "wrap_drawHLine",
+      "signature": "static void wrap_drawHLine(int16_t x, int16_t y, int16_t len)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/osk_integration.c",
+        "line": 85
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "ssd1306_DrawHorizontalLine"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `ssd1306_DrawHorizontalLine` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "wrap_drawVLine",
+      "signature": "static void wrap_drawVLine(int16_t x, int16_t y, int16_t len)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/osk_integration.c",
+        "line": 90
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "ssd1306_DrawVerticalLine"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `ssd1306_DrawVerticalLine` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "wrap_updateScreen",
+      "signature": "static void wrap_updateScreen(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/osk_integration.c",
+        "line": 95
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "ssd1306_UpdateScreen"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `ssd1306_UpdateScreen` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "wrap_requestPageUpdate",
+      "signature": "static void wrap_requestPageUpdate(uint8_t page)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/osk_integration.c",
+        "line": 100
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "ssd1306_RequestPageUpdate"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `ssd1306_RequestPageUpdate` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "osk_SaveUiContext",
+      "signature": "static void osk_SaveUiContext(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/osk_integration.c",
+        "line": 109
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación osk Save Ui Context de Integración del teclado con UI; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "osk_RestoreUiContext",
+      "signature": "static void osk_RestoreUiContext(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/osk_integration.c",
+        "line": 119
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "OledUtils_SetNotificationsBlocked",
+        "clearScreen"
+      ],
+      "writes": [],
+      "description": "Coordina `OledUtils_SetNotificationsBlocked`, `clearScreen` para Integración del teclado con UI.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "osk_ActivateUi",
+      "signature": "static void osk_ActivateUi(ScreenCode_t screenCode)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/osk_integration.c",
+        "line": 140
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "OledUtils_SetNotificationsBlocked",
+        "osk_SaveUiContext"
+      ],
+      "writes": [],
+      "description": "Coordina `OledUtils_SetNotificationsBlocked`, `osk_SaveUiContext` para Integración del teclado con UI.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "osk_InternalOnComplete",
+      "signature": "static void osk_InternalOnComplete(OSK_State *state, void *ctx)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/osk_integration.c",
+        "line": 167
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "osk_RestoreUiContext",
+        "userCb"
+      ],
+      "writes": [],
+      "description": "Coordina `osk_RestoreUiContext`, `userCb` para Integración del teclado con UI.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "osk_InternalOnCancel",
+      "signature": "static void osk_InternalOnCancel(void *ctx)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/osk_integration.c",
+        "line": 184
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "osk_RestoreUiContext",
+        "userCb"
+      ],
+      "writes": [],
+      "description": "Coordina `osk_RestoreUiContext`, `userCb` para Integración del teclado con UI.",
+      "descriptionOrigin": "structural"
+    }
+  ]
+}

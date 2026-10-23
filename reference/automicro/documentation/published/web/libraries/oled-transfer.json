@@ -1,0 +1,2405 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "web:module/src/features/oledEditor/useOledCanvasTransfer.ts",
+  "slug": "oled-transfer",
+  "title": "Transacción de transferencia canvas Web",
+  "target": "web",
+  "kind": "integración",
+  "status": "source-documented",
+  "snapshotDate": "2026-10-20",
+  "verification": "not-run-user-instruction",
+  "responsibility": "Coordina envío de un documento al canvas físico con estado, cancelación y respuesta final.",
+  "scope": "BEGIN/CHUNK/COMMIT/CANCEL y UI de estudio, con contexto TEST/pantalla de canvas.",
+  "state": "Hook conserva transacción/offset/pending; el buffer y transferId pertenecen a esa operación.",
+  "modularity": "Adaptador entre modelo/raster, API y UI; no modifica el firmware desde el cliente.",
+  "lifecycle": [
+    "Comprobar modo/pantalla y comenzar metadata.",
+    "Enviar chunks en orden, commit y esperar presentación; cancelar/limpiar cuando corresponde."
+  ],
+  "interactions": [
+    "ESP reserva/reconcilia canal y F4 posee el framebuffer de recepción.",
+    "El mismo usuario puede guardar un documento sin enviarlo.",
+    "Esquema compartido por operación: published/shared/contracts/oled-canvas-v1.md; actualizar productor, traductor y consumidor al cambiar offsets/chunks/CRC."
+  ],
+  "limitations": [
+    "Recepción del último chunk no es confirmación de que el panel presentó la imagen.",
+    "El canal no devuelve automáticamente imágenes de otras pantallas físicas."
+  ],
+  "relationships": [],
+  "findings": [],
+  "files": [
+    {
+      "rootId": "web",
+      "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+      "sha256": "2f08168943628bfd5b9fc251e6e5670727fd8bf9903f4bf06f9c9e4618fccff5",
+      "imports": [
+        "../../components/OledBitmapText",
+        "../../components/modal",
+        "../../screens",
+        "./assets",
+        "./document",
+        "./geometry",
+        "./types",
+        "./useOledEditorState",
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/features/oledEditor/OledCanvasTransferPanel.tsx",
+      "sha256": "6c27b52ea4959426925310513d4d47bef493ab14f80210c2c52e71f6ec0d2fa8",
+      "imports": [
+        "../../components/ConditionStatus",
+        "../../types/ScreenTypes",
+        "./oledCanvasProtocol",
+        "./oledCanvasRasterizer",
+        "./types",
+        "./useOledCanvasTransfer",
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/features/oledEditor/OledStudioWorkspace.tsx",
+      "sha256": "193ec488fa6248aab24ee6c7a2f148a7ba2e8159bee8345d98efc67fd258ecf0",
+      "imports": [
+        "../../components/OledCommandPreview",
+        "../../contexts/SavedOledScreensContext",
+        "./LopakaLikeEditor",
+        "./OledCanvasTransferPanel",
+        "./document",
+        "./types",
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/features/oledEditor/useOledCanvasTransfer.ts",
+      "sha256": "91998fee17ac2ffe36254449032ac1d059123fcadc29ea93bab26bff5479e23e",
+      "imports": [
+        "../../contexts/CarModeContext",
+        "../../contexts/UserContext",
+        "../../hooks/useScreen",
+        "../../hooks/useWebSocket",
+        "../../protocol/wsApi",
+        "../../types/ScreenTypes",
+        "./oledCanvasProtocol",
+        "./oledCanvasRasterizer",
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/pages/OledEditorSection.tsx",
+      "sha256": "37680a6f4544127f9555df1020b9197048b0575e6ea7e7e312157f677c6bc660",
+      "imports": [
+        "react-router-dom"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    }
+  ],
+  "types": [
+    {
+      "name": "DraftShape",
+      "kind": "TypeAliasDeclaration",
+      "type": "| { tool: \"rectangle\"; start: Point; current: Point } | { tool: \"circle\"; start: Point; current: Point } | { tool: \"line\"; start: Point; current: Point; snapped: boolean } | { tool: \"triangle\"; points: Point[]; current: Point | null } | { tool: \"polygon\"; points: Point[]; current: Point | null } | { tool: \"marquee\"; start: Point; current: Point }",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 73
+      }
+    },
+    {
+      "name": "InteractionSession",
+      "kind": "TypeAliasDeclaration",
+      "type": "| { kind: \"move\"; beforeDocument: EditorDocument; selectedIds: string[]; start: Point; } | { kind: \"resize\"; beforeDocument: EditorDocument; objectId: string; handle: HandlePosition; start: Point; bounds: ReturnType<typeof getObjectBounds>; } | { kind: \"line-endpoint\"; beforeDocument: EditorDocument; objectId: string; endpoint: 0 | 1; } | { kind: \"vertex\"; beforeDocument: EditorDocument; objectId: string; index: number; } | { kind: \"paint\"; beforeDocument: EditorDocument; objectId: string; lastPoint: Point; erase: boolean; } | null",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 81
+      }
+    },
+    {
+      "name": "LopakaLikeEditorProps",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "initialDocument",
+          "declaration": "initialDocument?: EditorDocument",
+          "callback": false,
+          "ownerType": "LopakaLikeEditorProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+            "line": 118
+          },
+          "description": "Dato de estado/configuración `initialDocument`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "readOnly",
+          "declaration": "readOnly?: boolean",
+          "callback": false,
+          "ownerType": "LopakaLikeEditorProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+            "line": 119
+          },
+          "description": "Dato de estado/configuración `readOnly`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "activeView",
+          "declaration": "activeView?: \"visualization\" | \"code\"",
+          "callback": false,
+          "ownerType": "LopakaLikeEditorProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+            "line": 120
+          },
+          "description": "Dato de estado/configuración `activeView`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "onDocumentChange",
+          "declaration": "onDocumentChange?: (document: EditorDocument) => void",
+          "callback": true,
+          "ownerType": "LopakaLikeEditorProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+            "line": 121
+          },
+          "description": "Entrega documento editado al dueño; el objeto pertenece al modelo Web, no a memoria F4."
+        },
+        {
+          "name": "onCodeChange",
+          "declaration": "onCodeChange?: (result: GeneratedCodeResult) => void",
+          "callback": true,
+          "ownerType": "LopakaLikeEditorProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+            "line": 122
+          },
+          "description": "Entrega código generado al panel consumidor; generación no compila ni envía firmware."
+        },
+        {
+          "name": "onDirtyChange",
+          "declaration": "onDirtyChange?: (dirty: boolean) => void",
+          "callback": true,
+          "ownerType": "LopakaLikeEditorProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+            "line": 123
+          },
+          "description": "Informa si el editor tiene cambios locales pendientes de guardar."
+        },
+        {
+          "name": "onSaveDocument",
+          "declaration": "onSaveDocument?: (document: EditorDocument) => void",
+          "callback": true,
+          "ownerType": "LopakaLikeEditorProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+            "line": 124
+          },
+          "description": "Pide persistir documento Web por la política del dueño; no es commit OLED Canvas físico."
+        },
+        {
+          "name": "onClearDocument",
+          "declaration": "onClearDocument?: () => void",
+          "callback": true,
+          "ownerType": "LopakaLikeEditorProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+            "line": 125
+          },
+          "description": "Pide limpiar documento/selección del editor; no borra pantalla F4 sin transferencia explícita."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 117
+      }
+    },
+    {
+      "name": "EditorIconProps",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "className",
+          "declaration": "className?: string",
+          "callback": false,
+          "ownerType": "EditorIconProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+            "line": 145
+          },
+          "description": "Dato de estado/configuración `className`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 144
+      }
+    },
+    {
+      "name": "OledStudioTab",
+      "kind": "TypeAliasDeclaration",
+      "type": "\"visualization\" | \"code\" | \"stream\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/OledStudioWorkspace.tsx",
+        "line": 9
+      }
+    },
+    {
+      "name": "OledCanvasTransferPhase",
+      "kind": "TypeAliasDeclaration",
+      "type": "| \"idle\" | \"preparing\" | \"uploading\" | \"waiting_f4\" | \"rendered\" | \"canceling\" | \"canceled\" | \"error\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/useOledCanvasTransfer.ts",
+        "line": 25
+      }
+    },
+    {
+      "name": "OledCanvasTransferState",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "phase",
+          "declaration": "phase: OledCanvasTransferPhase",
+          "callback": false,
+          "ownerType": "OledCanvasTransferState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/useOledCanvasTransfer.ts",
+            "line": 36
+          },
+          "description": "Dato de estado/configuración `phase`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "progressBytes",
+          "declaration": "progressBytes: number",
+          "callback": false,
+          "ownerType": "OledCanvasTransferState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/useOledCanvasTransfer.ts",
+            "line": 37
+          },
+          "description": "Dato de estado/configuración `progressBytes`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "message",
+          "declaration": "message: string",
+          "callback": false,
+          "ownerType": "OledCanvasTransferState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/useOledCanvasTransfer.ts",
+            "line": 38
+          },
+          "description": "Dato de estado/configuración `message`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "error",
+          "declaration": "error: string | null",
+          "callback": false,
+          "ownerType": "OledCanvasTransferState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/useOledCanvasTransfer.ts",
+            "line": 39
+          },
+          "description": "Dato de estado/configuración `error`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "transferId",
+          "declaration": "transferId: number | null",
+          "callback": false,
+          "ownerType": "OledCanvasTransferState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/oledEditor/useOledCanvasTransfer.ts",
+            "line": 40
+          },
+          "description": "Dato de estado/configuración `transferId`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/useOledCanvasTransfer.ts",
+        "line": 35
+      }
+    },
+    {
+      "name": "LocalCancellation",
+      "kind": "ClassDeclaration",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/useOledCanvasTransfer.ts",
+        "line": 51
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "BitmapMiniPreview",
+      "displayName": "BitmapMiniPreview",
+      "signature": "BitmapMiniPreview({\r\n width,\r\n height,\r\n pixels,\r\n}: { width: number; height: number; pixels: number[]; }): inferred-by-TypeScript",
+      "line": 2317,
+      "endLine": 2353,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.floor",
+        "Math.max",
+        "pixels.map"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 2317
+      },
+      "description": "Coordina `Math.floor`, `Math.max`, `pixels.map` para Transacción de transferencia canvas Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "BoundsFields",
+      "displayName": "BoundsFields",
+      "signature": "BoundsFields({\r\n x,\r\n y,\r\n width,\r\n height,\r\n onChange,\r\n}: { x: number; y: number; width: number; height: number; onChange: (patch: { x: number; y: number; width: number; height: number }) => void; }): inferred-by-TypeScript",
+      "line": 2223,
+      "endLine": 2244,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 2223
+      },
+      "description": "Operación Bounds Fields de Transacción de transferencia canvas Web; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "ChevronDownIcon",
+      "displayName": "ChevronDownIcon",
+      "signature": "ChevronDownIcon({ className }: EditorIconProps): inferred-by-TypeScript",
+      "line": 2157,
+      "endLine": 2163,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 2157
+      },
+      "description": "Operación Chevron Down Icon de Transacción de transferencia canvas Web; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "ChevronToggleIcon",
+      "displayName": "ChevronToggleIcon",
+      "signature": "ChevronToggleIcon({ open }: { open: boolean }): inferred-by-TypeScript",
+      "line": 247,
+      "endLine": 267,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/OledStudioWorkspace.tsx",
+        "line": 247
+      },
+      "description": "Operación Chevron Toggle Icon de Transacción de transferencia canvas Web; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "ChevronUpIcon",
+      "displayName": "ChevronUpIcon",
+      "signature": "ChevronUpIcon({ className }: EditorIconProps): inferred-by-TypeScript",
+      "line": 2149,
+      "endLine": 2155,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 2149
+      },
+      "description": "Operación Chevron Up Icon de Transacción de transferencia canvas Web; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "CircleToolIcon",
+      "displayName": "CircleToolIcon",
+      "signature": "CircleToolIcon({ className }: EditorIconProps): inferred-by-TypeScript",
+      "line": 2048,
+      "endLine": 2054,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 2048
+      },
+      "description": "Operación Circle Tool Icon de Transacción de transferencia canvas Web; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "ClearIcon",
+      "displayName": "ClearIcon",
+      "signature": "ClearIcon({ className }: EditorIconProps): inferred-by-TypeScript",
+      "line": 2214,
+      "endLine": 2221,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 2214
+      },
+      "description": "Limpia Icon dentro de Transacción de transferencia canvas Web.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "CursorSelectIcon",
+      "displayName": "CursorSelectIcon",
+      "signature": "CursorSelectIcon({ className }: EditorIconProps): inferred-by-TypeScript",
+      "line": 2014,
+      "endLine": 2038,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 2014
+      },
+      "description": "Operación Cursor Select Icon de Transacción de transferencia canvas Web; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "EyeClosedIcon",
+      "displayName": "EyeClosedIcon",
+      "signature": "EyeClosedIcon({ className }: EditorIconProps): inferred-by-TypeScript",
+      "line": 2121,
+      "endLine": 2129,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 2121
+      },
+      "description": "Operación Eye Closed Icon de Transacción de transferencia canvas Web; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "EyeOpenIcon",
+      "displayName": "EyeOpenIcon",
+      "signature": "EyeOpenIcon({ className }: EditorIconProps): inferred-by-TypeScript",
+      "line": 2112,
+      "endLine": 2119,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 2112
+      },
+      "description": "Operación Eye Open Icon de Transacción de transferencia canvas Web; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "FramebufferPreview",
+      "displayName": "FramebufferPreview",
+      "signature": "FramebufferPreview({\r\n title,\r\n framebuffer,\r\n confirmed = false,\r\n}: { title: string; framebuffer: Uint8Array; confirmed?: boolean; }): inferred-by-TypeScript",
+      "line": 169,
+      "endLine": 193,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useMemo"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/OledCanvasTransferPanel.tsx",
+        "line": 169
+      },
+      "description": "Adapta la llamada a `useMemo` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "IconBase",
+      "displayName": "IconBase",
+      "signature": "IconBase({\r\n className,\r\n children,\r\n viewBox = \"0 0 24 24\",\r\n fill = \"none\",\r\n}: { className?: string; children: ReactNode; viewBox?: string; fill?: string; }): inferred-by-TypeScript",
+      "line": 1973,
+      "endLine": 1999,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 1973
+      },
+      "description": "Operación Icon Base de Transacción de transferencia canvas Web; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "ImageToolIcon",
+      "displayName": "ImageToolIcon",
+      "signature": "ImageToolIcon({ className }: EditorIconProps): inferred-by-TypeScript",
+      "line": 2092,
+      "endLine": 2100,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 2092
+      },
+      "description": "Operación Image Tool Icon de Transacción de transferencia canvas Web; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "LayerActionIconButton",
+      "displayName": "LayerActionIconButton",
+      "signature": "LayerActionIconButton({\r\n label,\r\n icon,\r\n onClick,\r\n disabled = false,\r\n}: { label: string; icon: ReactNode; onClick?: (event: ReactMouseEvent<HTMLButtonElement>) => void; disabled?: boolean; }): inferred-by-TypeScript",
+      "line": 1948,
+      "endLine": 1971,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 1948
+      },
+      "description": "Operación Layer Action Icon Button de Transacción de transferencia canvas Web; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "LineToolIcon",
+      "displayName": "LineToolIcon",
+      "signature": "LineToolIcon({ className }: EditorIconProps): inferred-by-TypeScript",
+      "line": 2056,
+      "endLine": 2064,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 2056
+      },
+      "description": "Operación Line Tool Icon de Transacción de transferencia canvas Web; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "LockClosedIcon",
+      "displayName": "LockClosedIcon",
+      "signature": "LockClosedIcon({ className }: EditorIconProps): inferred-by-TypeScript",
+      "line": 2131,
+      "endLine": 2138,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 2131
+      },
+      "description": "Operación Lock Closed Icon de Transacción de transferencia canvas Web; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "LockOpenIcon",
+      "displayName": "LockOpenIcon",
+      "signature": "LockOpenIcon({ className }: EditorIconProps): inferred-by-TypeScript",
+      "line": 2140,
+      "endLine": 2147,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 2140
+      },
+      "description": "Operación Lock Open Icon de Transacción de transferencia canvas Web; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "LopakaLikeEditor",
+      "displayName": "LopakaLikeEditor",
+      "signature": "LopakaLikeEditor({\r\n initialDocument,\r\n readOnly = false,\r\n activeView = \"visualization\",\r\n onDocumentChange,\r\n onCodeChange,\r\n onDirtyChange,\r\n onSaveDocument,\r\n onClearDocument,\r\n}: LopakaLikeEditorProps): inferred-by-TypeScript",
+      "line": 148,
+      "endLine": 1635,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "( [ [\"wrapperFunction\", \"Función contenedora\"], [\"includeComments\", \"Comentarios por capa\"], [\"declareImages\", \"Declarar bitmaps locales\"], [\"declareVariables\", \"Declarar variables de pantalla\"], [\"clearDisplay\", \"Limpiar pantalla al inicio\"], ] as Array<[keyof typeof editor.state.ui.codeSettings, string]> ).map",
+        "TOOL_DEFINITIONS.map",
+        "[...editor.state.document.zOrder].reverse",
+        "[...editor.state.document.zOrder].reverse().map",
+        "assetList.map",
+        "editor.generatedCode.text.split",
+        "editor.generatedCode.text.split(\"\\n\").map",
+        "editor.state.document.zOrder.map",
+        "getToolLabel",
+        "renderDraftShape",
+        "renderSelectionOverlay",
+        "useEffect",
+        "useMemo",
+        "useOledEditorState",
+        "useRef",
+        "useState"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 148
+      },
+      "description": "Coordina `( [ [\"wrapperFunction\", \"Función contenedora\"], [\"includeComments\", \"Comentarios por capa\"], [\"declareImages\", \"Declarar bitmaps locales\"], [\"declareVariables\", \"Declarar variables de pantalla\"], [\"clearDisplay\", \"Limpiar pantalla al inicio\"], ] as Array<[keyof typeof editor.state.ui.codeSettings, string]> ).map`, `TOOL_DEFINITIONS.map`, `[...editor.state.document.zOrder].reverse` para Transacción de transferencia canvas Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "MonoColorFields",
+      "displayName": "MonoColorFields",
+      "signature": "MonoColorFields({\r\n fill,\r\n stroke,\r\n onFillChange,\r\n onStrokeChange,\r\n}: { fill: \"white\" | \"black\" | null; stroke: \"white\" | \"black\" | null; onFillChange: (value: \"white\" | \"black\" | null) => void; onStrokeChange: (value: \"white\" | \"black\" | null) => void; }): inferred-by-TypeScript",
+      "line": 2246,
+      "endLine": 2263,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 2246
+      },
+      "description": "Operación Mono Color Fields de Transacción de transferencia canvas Web; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "MonoSelect",
+      "displayName": "MonoSelect",
+      "signature": "MonoSelect({\r\n label,\r\n value,\r\n onChange,\r\n allowNull = false,\r\n}: { label: string; value: \"white\" | \"black\" | null; onChange: (value: \"white\" | \"black\" | null) => void; allowNull?: boolean; }): inferred-by-TypeScript",
+      "line": 2265,
+      "endLine": 2293,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 2265
+      },
+      "description": "Operación Mono Select de Transacción de transferencia canvas Web; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "NumberField",
+      "displayName": "NumberField",
+      "signature": "NumberField({\r\n label,\r\n value,\r\n onChange,\r\n}: { label: string; value: number; onChange: (value: number) => void; }): inferred-by-TypeScript",
+      "line": 2295,
+      "endLine": 2315,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 2295
+      },
+      "description": "Operación Number Field de Transacción de transferencia canvas Web; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "ObjectInspector",
+      "displayName": "ObjectInspector",
+      "signature": "ObjectInspector({\r\n object,\r\n onRename,\r\n onDelete,\r\n onToggleLocked,\r\n onToggleHidden,\r\n onPatch,\r\n onAssetChange,\r\n assetList,\r\n}: { object: CanvasObject; onRename: (name: string) => void; onDelete: () => void; onToggleLocked: () => void; onToggleHidden: () => void; onPatch: (object: CanvasObject, label: string) => void; onAssetChange: (assetId: string) => void; assetList: ReturnType<typeof listEditorAssets>; }): inferred-by-TypeScript",
+      "line": 1637,
+      "endLine": 1695,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "renderInspectorFields"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 1637
+      },
+      "description": "Adapta la llamada a `renderInspectorFields` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "OledCanvasTransferPanel",
+      "displayName": "OledCanvasTransferPanel",
+      "signature": "OledCanvasTransferPanel({ document }: { document: EditorDocument }): inferred-by-TypeScript",
+      "line": 15,
+      "endLine": 160,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.max",
+        "Math.min",
+        "Math.round",
+        "[transfer.apiV1Ready, transfer.canStart, isTestMode, isOledCanvasScreen].filter",
+        "formatCarModeValue",
+        "formatScreenCodeHex",
+        "useMemo",
+        "useOledCanvasTransfer"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/OledCanvasTransferPanel.tsx",
+        "line": 15
+      },
+      "description": "Coordina `Math.max`, `Math.min`, `Math.round` para Transacción de transferencia canvas Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "OledEditorSection",
+      "displayName": "OledEditorSection",
+      "signature": "OledEditorSection(): inferred-by-TypeScript",
+      "line": 3,
+      "endLine": 5,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/OledEditorSection.tsx",
+        "line": 3
+      },
+      "description": "Operación Oled Editor Section de Transacción de transferencia canvas Web; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "OledStudioWorkspace",
+      "displayName": "OledStudioWorkspace",
+      "signature": "OledStudioWorkspace(): inferred-by-TypeScript",
+      "line": 20,
+      "endLine": 245,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "OLED_STUDIO_TABS.map",
+        "savedScreens.map",
+        "useCallback",
+        "useSavedOledScreens",
+        "useState"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/OledStudioWorkspace.tsx",
+        "line": 20
+      },
+      "description": "Coordina `OLED_STUDIO_TABS.map`, `savedScreens.map`, `useCallback` para Transacción de transferencia canvas Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "PaintBrushToolIcon",
+      "displayName": "PaintBrushToolIcon",
+      "signature": "PaintBrushToolIcon({ className }: EditorIconProps): inferred-by-TypeScript",
+      "line": 2102,
+      "endLine": 2110,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 2102
+      },
+      "description": "Operación Paint Brush Tool Icon de Transacción de transferencia canvas Web; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "PolygonToolIcon",
+      "displayName": "PolygonToolIcon",
+      "signature": "PolygonToolIcon({ className }: EditorIconProps): inferred-by-TypeScript",
+      "line": 2074,
+      "endLine": 2080,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 2074
+      },
+      "description": "Operación Polygon Tool Icon de Transacción de transferencia canvas Web; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "RectangleToolIcon",
+      "displayName": "RectangleToolIcon",
+      "signature": "RectangleToolIcon({ className }: EditorIconProps): inferred-by-TypeScript",
+      "line": 2040,
+      "endLine": 2046,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 2040
+      },
+      "description": "Operación Rectangle Tool Icon de Transacción de transferencia canvas Web; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "RedoIcon",
+      "displayName": "RedoIcon",
+      "signature": "RedoIcon({ className }: EditorIconProps): inferred-by-TypeScript",
+      "line": 2195,
+      "endLine": 2202,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 2195
+      },
+      "description": "Operación Redo Icon de Transacción de transferencia canvas Web; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "SaveIcon",
+      "displayName": "SaveIcon",
+      "signature": "SaveIcon({ className }: EditorIconProps): inferred-by-TypeScript",
+      "line": 2204,
+      "endLine": 2212,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 2204
+      },
+      "description": "Operación Save Icon de Transacción de transferencia canvas Web; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "TextToolIcon",
+      "displayName": "TextToolIcon",
+      "signature": "TextToolIcon({ className }: EditorIconProps): inferred-by-TypeScript",
+      "line": 2082,
+      "endLine": 2090,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 2082
+      },
+      "description": "Operación Text Tool Icon de Transacción de transferencia canvas Web; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "ToolbarIconButton",
+      "displayName": "ToolbarIconButton",
+      "signature": "ToolbarIconButton({\r\n label,\r\n active = false,\r\n disabled = false,\r\n onClick,\r\n children,\r\n}: { label: string; active?: boolean; disabled?: boolean; onClick?: (event: ReactMouseEvent<HTMLButtonElement>) => void; children: ReactNode; }): inferred-by-TypeScript",
+      "line": 1907,
+      "endLine": 1946,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 1907
+      },
+      "description": "Operación Toolbar Icon Button de Transacción de transferencia canvas Web; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "TriangleToolIcon",
+      "displayName": "TriangleToolIcon",
+      "signature": "TriangleToolIcon({ className }: EditorIconProps): inferred-by-TypeScript",
+      "line": 2066,
+      "endLine": 2072,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 2066
+      },
+      "description": "Operación Triangle Tool Icon de Transacción de transferencia canvas Web; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UndoIcon",
+      "displayName": "UndoIcon",
+      "signature": "UndoIcon({ className }: EditorIconProps): inferred-by-TypeScript",
+      "line": 2186,
+      "endLine": 2193,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 2186
+      },
+      "description": "Operación Undo Icon de Transacción de transferencia canvas Web; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "ZoomInIcon",
+      "displayName": "ZoomInIcon",
+      "signature": "ZoomInIcon({ className }: EditorIconProps): inferred-by-TypeScript",
+      "line": 2165,
+      "endLine": 2174,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 2165
+      },
+      "description": "Operación Zoom In Icon de Transacción de transferencia canvas Web; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "ZoomOutIcon",
+      "displayName": "ZoomOutIcon",
+      "signature": "ZoomOutIcon({ className }: EditorIconProps): inferred-by-TypeScript",
+      "line": 2176,
+      "endLine": 2184,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 2176
+      },
+      "description": "Operación Zoom Out Icon de Transacción de transferencia canvas Web; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "applyPaintStroke",
+      "displayName": "applyPaintStroke",
+      "signature": "applyPaintStroke(document: EditorDocument, objectId: string, from: Point, to: Point, erase: boolean): inferred-by-TypeScript",
+      "line": 2463,
+      "endLine": 2492,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "cloneDocument",
+        "linePoints",
+        "points.forEach"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 2463
+      },
+      "description": "Coordina `cloneDocument`, `linePoints`, `points.forEach` para Transacción de transferencia canvas Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "canvasNavigationMessage",
+      "displayName": "canvasNavigationMessage",
+      "signature": "canvasNavigationMessage(): string",
+      "line": 312,
+      "endLine": 314,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/useOledCanvasTransfer.ts",
+        "line": 312
+      },
+      "description": "Operación canvas Navigation Message de Transacción de transferencia canvas Web; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "decodeImageFile",
+      "displayName": "decodeImageFile",
+      "signature": "decodeImageFile(file: File): inferred-by-TypeScript",
+      "line": 2523,
+      "endLine": 2573,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Array.from",
+        "Math.ceil",
+        "Math.max",
+        "Math.min",
+        "Math.round",
+        "canvas.getContext",
+        "context.drawImage",
+        "context.getImageData",
+        "createImageBitmap",
+        "document.createElement",
+        "file.name.replace"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 2523
+      },
+      "description": "Coordina `Array.from`, `Math.ceil`, `Math.max` para Transacción de transferencia canvas Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "drawPackedBitmap",
+      "displayName": "drawPackedBitmap",
+      "signature": "drawPackedBitmap(context: CanvasRenderingContext2D, bytes: readonly number[], sourceWidth: number, sourceHeight: number, object: ImageObject, bitOrder: ImageAsset[\"bitOrder\"]): inferred-by-TypeScript",
+      "line": 2395,
+      "endLine": 2422,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.max",
+        "bitmapBytesToPixels",
+        "context.fillRect"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 2395
+      },
+      "description": "Coordina `Math.max`, `bitmapBytesToPixels`, `context.fillRect` para Transacción de transferencia canvas Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "drawPixels",
+      "displayName": "drawPixels",
+      "signature": "drawPixels(context: CanvasRenderingContext2D, object: BitmapObject): inferred-by-TypeScript",
+      "line": 2424,
+      "endLine": 2438,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "context.fillRect"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 2424
+      },
+      "description": "Adapta la llamada a `context.fillRect` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "drawRasterObjects",
+      "displayName": "drawRasterObjects",
+      "signature": "drawRasterObjects(canvas: HTMLCanvasElement | null, document: EditorDocument, assetIndex: Record<string, ImageAsset>): inferred-by-TypeScript",
+      "line": 2355,
+      "endLine": 2393,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "canvas.getContext",
+        "context.clearRect",
+        "context.fillRect",
+        "document.zOrder.forEach"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 2355
+      },
+      "description": "Coordina `canvas.getContext`, `context.clearRect`, `context.fillRect` para Transacción de transferencia canvas Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "formatCarModeValue",
+      "displayName": "formatCarModeValue",
+      "signature": "formatCarModeValue(value: number): string",
+      "line": 162,
+      "endLine": 167,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "value.toString",
+        "value.toString(16).toUpperCase",
+        "value.toString(16).toUpperCase().padStart"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/OledCanvasTransferPanel.tsx",
+        "line": 162
+      },
+      "description": "Coordina `value.toString`, `value.toString(16).toUpperCase`, `value.toString(16).toUpperCase().padStart` para Transacción de transferencia canvas Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "framebufferPath",
+      "displayName": "framebufferPath",
+      "signature": "framebufferPath(framebuffer: Uint8Array): string",
+      "line": 195,
+      "endLine": 211,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "segments.join",
+        "segments.push",
+        "unpackPageMajor"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/OledCanvasTransferPanel.tsx",
+        "line": 195
+      },
+      "description": "Coordina `segments.join`, `segments.push`, `unpackPageMajor` para Transacción de transferencia canvas Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "getToolLabel",
+      "displayName": "getToolLabel",
+      "signature": "getToolLabel(tool: ToolId): inferred-by-TypeScript",
+      "line": 1903,
+      "endLine": 1905,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "TOOL_DEFINITIONS.find"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 1903
+      },
+      "description": "Adapta la llamada a `TOOL_DEFINITIONS.find` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "isActivePhase",
+      "displayName": "isActivePhase",
+      "signature": "isActivePhase(phase: OledCanvasTransferPhase): boolean",
+      "line": 316,
+      "endLine": 318,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/useOledCanvasTransfer.ts",
+        "line": 316
+      },
+      "description": "Operación is Active Phase de Transacción de transferencia canvas Web; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "isArrowKey",
+      "displayName": "isArrowKey",
+      "signature": "isArrowKey(key: string): inferred-by-TypeScript",
+      "line": 2459,
+      "endLine": 2461,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 2459
+      },
+      "description": "Operación is Arrow Key de Transacción de transferencia canvas Web; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "isEditableElement",
+      "displayName": "isEditableElement",
+      "signature": "isEditableElement(element: Element | null): inferred-by-TypeScript",
+      "line": 2001,
+      "endLine": 2012,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 2001
+      },
+      "description": "Operación is Editable Element de Transacción de transferencia canvas Web; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "linePoints",
+      "displayName": "linePoints",
+      "signature": "linePoints(start: Point, end: Point): inferred-by-TypeScript",
+      "line": 2494,
+      "endLine": 2521,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.abs",
+        "points.push"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 2494
+      },
+      "description": "Coordina `Math.abs`, `points.push` para Transacción de transferencia canvas Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "monoToPaint",
+      "displayName": "monoToPaint",
+      "signature": "monoToPaint(color: \"white\" | \"black\" | null): inferred-by-TypeScript",
+      "line": 2440,
+      "endLine": 2448,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 2440
+      },
+      "description": "Operación mono To Paint de Transacción de transferencia canvas Web; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "parseMode",
+      "displayName": "parseMode",
+      "signature": "parseMode(value: unknown): number | null",
+      "line": 301,
+      "endLine": 310,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.trunc",
+        "Number",
+        "Number.isFinite",
+        "Number.parseInt",
+        "normalized.slice",
+        "normalized.startsWith",
+        "value.trim",
+        "value.trim().toUpperCase"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/useOledCanvasTransfer.ts",
+        "line": 301
+      },
+      "description": "Coordina `Math.trunc`, `Number`, `Number.isFinite` para Transacción de transferencia canvas Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "readCarMode",
+      "displayName": "readCarMode",
+      "signature": "readCarMode(value: unknown): number | null",
+      "line": 293,
+      "endLine": 299,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Array.isArray",
+        "parseMode"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/useOledCanvasTransfer.ts",
+        "line": 293
+      },
+      "description": "Coordina `Array.isArray`, `parseMode` para Transacción de transferencia canvas Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "rectsOverlap",
+      "displayName": "rectsOverlap",
+      "signature": "rectsOverlap(left: ReturnType<typeof normalizeRect>, right: ReturnType<typeof getObjectBounds>): inferred-by-TypeScript",
+      "line": 2450,
+      "endLine": 2457,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 2450
+      },
+      "description": "Operación rects Overlap de Transacción de transferencia canvas Web; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "renderInspectorFields",
+      "displayName": "renderInspectorFields",
+      "signature": "renderInspectorFields(object: CanvasObject, onPatch: (object: CanvasObject, label: string) => void, onAssetChange: (assetId: string) => void, assetList: ReturnType<typeof listEditorAssets>): inferred-by-TypeScript",
+      "line": 1697,
+      "endLine": 1901,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "OLED_FONT_PRESETS.map",
+        "assetList.map",
+        "object.points.map"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 1697
+      },
+      "description": "Coordina `OLED_FONT_PRESETS.map`, `assetList.map`, `object.points.map` para Transacción de transferencia canvas Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "useOledCanvasTransfer",
+      "displayName": "useOledCanvasTransfer",
+      "signature": "useOledCanvasTransfer(): inferred-by-TypeScript",
+      "line": 53,
+      "endLine": 291,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "isActivePhase",
+        "useCallback",
+        "useCarMode",
+        "useEffect",
+        "useMemo",
+        "useRef",
+        "useScreen",
+        "useState",
+        "useUser",
+        "useWebSocket"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/useOledCanvasTransfer.ts",
+        "line": 53
+      },
+      "description": "Gestiona transacción de canvas y resultado final remoto.",
+      "descriptionOrigin": "editorial"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "LopakaLikeEditor.copyGeneratedCode",
+      "displayName": "copyGeneratedCode",
+      "signature": "LopakaLikeEditor.copyGeneratedCode(): inferred-by-TypeScript",
+      "line": 875,
+      "endLine": 882,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "navigator.clipboard.writeText",
+        "setCodeCopied"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 875
+      },
+      "description": "Coordina `navigator.clipboard.writeText`, `setCodeCopied` para Transacción de transferencia canvas Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "LopakaLikeEditor.ensurePaintLayer",
+      "displayName": "ensurePaintLayer",
+      "signature": "LopakaLikeEditor.ensurePaintLayer(): inferred-by-TypeScript",
+      "line": 807,
+      "endLine": 834,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "createBitmapObject",
+        "editor.setSelection",
+        "editor.state.document.zOrder .map",
+        "editor.state.document.zOrder .map((id) => editor.state.document.objectsById[id]) .find",
+        "insertObject"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 807
+      },
+      "description": "Coordina `createBitmapObject`, `editor.setSelection`, `editor.state.document.zOrder .map` para Transacción de transferencia canvas Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "LopakaLikeEditor.finalizePolygonDraft",
+      "displayName": "finalizePolygonDraft",
+      "signature": "LopakaLikeEditor.finalizePolygonDraft(points: Point[]): inferred-by-TypeScript",
+      "line": 847,
+      "endLine": 856,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "cloneDocument",
+        "createPolygon",
+        "editor.commitDocument",
+        "editor.setTool",
+        "insertObject",
+        "setDraftShape"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 847
+      },
+      "description": "Coordina `cloneDocument`, `createPolygon`, `editor.commitDocument` para Transacción de transferencia canvas Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "LopakaLikeEditor.finalizeTriangleDraft",
+      "displayName": "finalizeTriangleDraft",
+      "signature": "LopakaLikeEditor.finalizeTriangleDraft(points: [Point, Point, Point]): inferred-by-TypeScript",
+      "line": 836,
+      "endLine": 845,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "cloneDocument",
+        "createTriangle",
+        "editor.commitDocument",
+        "editor.setTool",
+        "insertObject",
+        "setDraftShape"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 836
+      },
+      "description": "Coordina `cloneDocument`, `createTriangle`, `editor.commitDocument` para Transacción de transferencia canvas Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "LopakaLikeEditor.findTopObjectAtPoint",
+      "displayName": "findTopObjectAtPoint",
+      "signature": "LopakaLikeEditor.findTopObjectAtPoint(point: Point): inferred-by-TypeScript",
+      "line": 322,
+      "endLine": 331,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "hitTestObject"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 322
+      },
+      "description": "Adapta la llamada a `hitTestObject` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "LopakaLikeEditor.focusEditor",
+      "displayName": "focusEditor",
+      "signature": "LopakaLikeEditor.focusEditor(): inferred-by-TypeScript",
+      "line": 297,
+      "endLine": 299,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "rootRef.current?.focus"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 297
+      },
+      "description": "Adapta la llamada a `rootRef.current?.focus` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "LopakaLikeEditor.getCanvasPointFromPointer",
+      "displayName": "getCanvasPointFromPointer",
+      "signature": "LopakaLikeEditor.getCanvasPointFromPointer(event: ReactPointerEvent<HTMLDivElement>): Point",
+      "line": 301,
+      "endLine": 320,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Math.floor",
+        "clamp",
+        "stageRef.current?.getBoundingClientRect"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 301
+      },
+      "description": "Coordina `Math.floor`, `clamp`, `stageRef.current?.getBoundingClientRect` para Transacción de transferencia canvas Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "LopakaLikeEditor.handleClearDocument",
+      "displayName": "handleClearDocument",
+      "signature": "LopakaLikeEditor.handleClearDocument(): inferred-by-TypeScript",
+      "line": 888,
+      "endLine": 890,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "onClearDocument"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 888
+      },
+      "description": "Adapta la llamada a `onClearDocument` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "LopakaLikeEditor.handleSaveDocument",
+      "displayName": "handleSaveDocument",
+      "signature": "LopakaLikeEditor.handleSaveDocument(): inferred-by-TypeScript",
+      "line": 884,
+      "endLine": 886,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "cloneDocument",
+        "onSaveDocument"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 884
+      },
+      "description": "Coordina `cloneDocument`, `onSaveDocument` para Transacción de transferencia canvas Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "LopakaLikeEditor.handleSelectionPointerDown",
+      "displayName": "handleSelectionPointerDown",
+      "signature": "LopakaLikeEditor.handleSelectionPointerDown(event: ReactPointerEvent<HTMLDivElement>, point: Point): inferred-by-TypeScript",
+      "line": 448,
+      "endLine": 555,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "cloneDocument",
+        "editor.setSelection",
+        "editor.state.selection.selectedIds .map",
+        "editor.state.selection.selectedIds .map((id) => editor.state.document.objectsById[id]) .filter",
+        "editor.state.selection.selectedIds.includes",
+        "findLineEndpointHandle",
+        "findResizeHandle",
+        "findTopObjectAtPoint",
+        "findVertexHandle",
+        "getObjectBounds",
+        "setDraftShape"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 448
+      },
+      "description": "Coordina `cloneDocument`, `editor.setSelection`, `editor.state.selection.selectedIds .map` para Transacción de transferencia canvas Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "LopakaLikeEditor.handleStageContextMenu",
+      "displayName": "handleStageContextMenu",
+      "signature": "LopakaLikeEditor.handleStageContextMenu(event: React.MouseEvent<HTMLDivElement>): inferred-by-TypeScript",
+      "line": 779,
+      "endLine": 805,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "cloneDocument",
+        "editor.commitDocument",
+        "event.preventDefault",
+        "findVertexHandle",
+        "getCanvasPointFromPointer",
+        "selected.points.filter"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 779
+      },
+      "description": "Coordina `cloneDocument`, `editor.commitDocument`, `event.preventDefault` para Transacción de transferencia canvas Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "LopakaLikeEditor.handleStageDoubleClick",
+      "displayName": "handleStageDoubleClick",
+      "signature": "LopakaLikeEditor.handleStageDoubleClick(): inferred-by-TypeScript",
+      "line": 773,
+      "endLine": 777,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "finalizePolygonDraft"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 773
+      },
+      "description": "Adapta la llamada a `finalizePolygonDraft` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "LopakaLikeEditor.handleStagePointerDown",
+      "displayName": "handleStagePointerDown",
+      "signature": "LopakaLikeEditor.handleStagePointerDown(event: ReactPointerEvent<HTMLDivElement>): inferred-by-TypeScript",
+      "line": 333,
+      "endLine": 446,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "applyPaintStroke",
+        "centerObjectAt",
+        "cloneDocument",
+        "createImageObject",
+        "createText",
+        "editor.commitDocument",
+        "editor.setDocument",
+        "editor.setImagePanelOpen",
+        "editor.setTool",
+        "ensurePaintLayer",
+        "finalizeTriangleDraft",
+        "focusEditor",
+        "getCanvasPointFromPointer",
+        "handleSelectionPointerDown",
+        "insertObject",
+        "setDraftShape",
+        "stage.setPointerCapture"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 333
+      },
+      "description": "Coordina `applyPaintStroke`, `centerObjectAt`, `cloneDocument` para Transacción de transferencia canvas Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "LopakaLikeEditor.handleStagePointerMove",
+      "displayName": "handleStagePointerMove",
+      "signature": "LopakaLikeEditor.handleStagePointerMove(event: ReactPointerEvent<HTMLDivElement>): inferred-by-TypeScript",
+      "line": 557,
+      "endLine": 662,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "applyPaintStroke",
+        "cloneDocument",
+        "editor.setDocument",
+        "editor.setHoveredId",
+        "findTopObjectAtPoint",
+        "getCanvasPointFromPointer",
+        "resizeBitmapFromBounds",
+        "resizeBounds",
+        "resizeCircleFromBounds",
+        "resizeObjectFromBounds",
+        "session.selectedIds.forEach",
+        "setDraftShape",
+        "snapLine",
+        "updateLineEndpoint",
+        "updateVertexPoint"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 557
+      },
+      "description": "Coordina `applyPaintStroke`, `cloneDocument`, `editor.setDocument` para Transacción de transferencia canvas Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "LopakaLikeEditor.handleStagePointerUp",
+      "displayName": "handleStagePointerUp",
+      "signature": "LopakaLikeEditor.handleStagePointerUp(): inferred-by-TypeScript",
+      "line": 664,
+      "endLine": 771,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Math.max",
+        "Math.round",
+        "cloneDocument",
+        "createCircle",
+        "createLine",
+        "createRectangle",
+        "editor.commitDocument",
+        "editor.setSelection",
+        "editor.setTool",
+        "editor.state.document.zOrder.filter",
+        "insertObject",
+        "normalizeRect",
+        "setDraftShape"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 664
+      },
+      "description": "Coordina `Math.max`, `Math.round`, `cloneDocument` para Transacción de transferencia canvas Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "LopakaLikeEditor.handleUploadChange",
+      "displayName": "handleUploadChange",
+      "signature": "LopakaLikeEditor.handleUploadChange(event: ChangeEvent<HTMLInputElement>): inferred-by-TypeScript",
+      "line": 858,
+      "endLine": 873,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "cloneDocument",
+        "createUploadedAsset",
+        "decodeImageFile",
+        "editor.commitDocument",
+        "editor.selectAsset",
+        "editor.setImagePanelOpen",
+        "registerAsset"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 858
+      },
+      "description": "Coordina `cloneDocument`, `createUploadedAsset`, `decodeImageFile` para Transacción de transferencia canvas Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "LopakaLikeEditor.listener",
+      "displayName": "listener",
+      "signature": "LopakaLikeEditor.listener(event: KeyboardEvent): inferred-by-TypeScript",
+      "line": 195,
+      "endLine": 276,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "cloneDocument",
+        "editor.commitDocument",
+        "editor.redo",
+        "editor.setSelection",
+        "editor.setTool",
+        "editor.undo",
+        "event.key.toLowerCase",
+        "event.preventDefault",
+        "finalizePolygonDraft",
+        "isArrowKey",
+        "isEditableElement",
+        "removeObjects",
+        "rootRef.current?.contains",
+        "setDraftShape",
+        "translateObject"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 195
+      },
+      "description": "Coordina `cloneDocument`, `editor.commitDocument`, `editor.redo` para Transacción de transferencia canvas Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "LopakaLikeEditor.renderDraftShape",
+      "displayName": "renderDraftShape",
+      "signature": "LopakaLikeEditor.renderDraftShape(shape: DraftShape | null): inferred-by-TypeScript",
+      "line": 1513,
+      "endLine": 1577,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Math.max",
+        "normalizeRect",
+        "points.map",
+        "points.map((point) => `${point.x},${point.y}`).join"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 1513
+      },
+      "description": "Coordina `Math.max`, `normalizeRect`, `points.map` para Transacción de transferencia canvas Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "LopakaLikeEditor.renderSelectionOverlay",
+      "displayName": "renderSelectionOverlay",
+      "signature": "LopakaLikeEditor.renderSelectionOverlay(bounds: ReturnType<typeof getSelectionBounds>, object: CanvasObject | null): inferred-by-TypeScript",
+      "line": 1579,
+      "endLine": 1634,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Object.entries",
+        "Object.entries(handles).map",
+        "getResizeHandles",
+        "object.points.map"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 1579
+      },
+      "description": "Coordina `Object.entries`, `Object.entries(handles).map`, `getResizeHandles` para Transacción de transferencia canvas Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "LopakaLikeEditor.renderVectorObject",
+      "displayName": "renderVectorObject",
+      "signature": "LopakaLikeEditor.renderVectorObject(object: CanvasObject): inferred-by-TypeScript",
+      "line": 1433,
+      "endLine": 1511,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "monoToPaint",
+        "object.points.map",
+        "object.points.map((point) => `${point.x},${point.y}`).join"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 1433
+      },
+      "description": "Coordina `monoToPaint`, `object.points.map`, `object.points.map((point) => `${point.x},${point.y}`).join` para Transacción de transferencia canvas Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "LopakaLikeEditor.updateSingleObject",
+      "displayName": "updateSingleObject",
+      "signature": "LopakaLikeEditor.updateSingleObject(nextObject: CanvasObject, label: inferred-by-TypeScript): inferred-by-TypeScript",
+      "line": 892,
+      "endLine": 898,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "cloneDocument",
+        "editor.commitDocument",
+        "replaceObject"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/LopakaLikeEditor.tsx",
+        "line": 892
+      },
+      "description": "Coordina `cloneDocument`, `editor.commitDocument`, `replaceObject` para Transacción de transferencia canvas Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "OledStudioWorkspace.handleClearDocument",
+      "displayName": "handleClearDocument",
+      "signature": "OledStudioWorkspace.handleClearDocument(): inferred-by-TypeScript",
+      "line": 64,
+      "endLine": 74,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "cloneDocument",
+        "createEmptyDocument",
+        "setEditorKey",
+        "setEditorSeed",
+        "setLiveDocument",
+        "setLoadedScreenId"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/OledStudioWorkspace.tsx",
+        "line": 64
+      },
+      "description": "Coordina `cloneDocument`, `createEmptyDocument`, `setEditorKey` para Transacción de transferencia canvas Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "OledStudioWorkspace.handleDeleteScreen",
+      "displayName": "handleDeleteScreen",
+      "signature": "OledStudioWorkspace.handleDeleteScreen(screenId: string): inferred-by-TypeScript",
+      "line": 57,
+      "endLine": 62,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "deleteScreen",
+        "setLoadedScreenId"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/OledStudioWorkspace.tsx",
+        "line": 57
+      },
+      "description": "Coordina `deleteScreen`, `setLoadedScreenId` para Transacción de transferencia canvas Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "OledStudioWorkspace.handleLoadScreen",
+      "displayName": "handleLoadScreen",
+      "signature": "OledStudioWorkspace.handleLoadScreen(screenId: string): inferred-by-TypeScript",
+      "line": 45,
+      "endLine": 55,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "cloneDocument",
+        "savedScreens.find",
+        "setEditorKey",
+        "setEditorSeed",
+        "setLiveDocument",
+        "setLoadedScreenId"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/OledStudioWorkspace.tsx",
+        "line": 45
+      },
+      "description": "Coordina `cloneDocument`, `savedScreens.find`, `setEditorKey` para Transacción de transferencia canvas Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "OledStudioWorkspace.handleSaveDocument",
+      "displayName": "handleSaveDocument",
+      "signature": "OledStudioWorkspace.handleSaveDocument(document: EditorDocument): inferred-by-TypeScript",
+      "line": 37,
+      "endLine": 43,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "saveScreen",
+        "setLoadedScreenId"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/oledEditor/OledStudioWorkspace.tsx",
+        "line": 37
+      },
+      "description": "Coordina `saveScreen`, `setLoadedScreenId` para Transacción de transferencia canvas Web.",
+      "descriptionOrigin": "structural"
+    }
+  ],
+  "hooks": [
+    {
+      "callee": "useOledEditorState",
+      "scope": "LopakaLikeEditor",
+      "line": 158,
+      "arguments": 1,
+      "path": "src/features/oledEditor/LopakaLikeEditor.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "LopakaLikeEditor",
+      "line": 164,
+      "arguments": 1,
+      "path": "src/features/oledEditor/LopakaLikeEditor.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "LopakaLikeEditor",
+      "line": 165,
+      "arguments": 1,
+      "path": "src/features/oledEditor/LopakaLikeEditor.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "LopakaLikeEditor",
+      "line": 166,
+      "arguments": 1,
+      "path": "src/features/oledEditor/LopakaLikeEditor.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "LopakaLikeEditor",
+      "line": 167,
+      "arguments": 1,
+      "path": "src/features/oledEditor/LopakaLikeEditor.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "LopakaLikeEditor",
+      "line": 168,
+      "arguments": 1,
+      "path": "src/features/oledEditor/LopakaLikeEditor.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "LopakaLikeEditor",
+      "line": 170,
+      "arguments": 1,
+      "path": "src/features/oledEditor/LopakaLikeEditor.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "LopakaLikeEditor",
+      "line": 171,
+      "arguments": 1,
+      "path": "src/features/oledEditor/LopakaLikeEditor.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "LopakaLikeEditor",
+      "line": 172,
+      "arguments": 1,
+      "path": "src/features/oledEditor/LopakaLikeEditor.tsx"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "LopakaLikeEditor",
+      "line": 174,
+      "arguments": 2,
+      "path": "src/features/oledEditor/LopakaLikeEditor.tsx"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "LopakaLikeEditor",
+      "line": 185,
+      "arguments": 2,
+      "path": "src/features/oledEditor/LopakaLikeEditor.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "LopakaLikeEditor",
+      "line": 190,
+      "arguments": 2,
+      "path": "src/features/oledEditor/LopakaLikeEditor.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "LopakaLikeEditor",
+      "line": 194,
+      "arguments": 2,
+      "path": "src/features/oledEditor/LopakaLikeEditor.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "LopakaLikeEditor",
+      "line": 288,
+      "arguments": 2,
+      "path": "src/features/oledEditor/LopakaLikeEditor.tsx"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "OledCanvasTransferPanel",
+      "line": 16,
+      "arguments": 2,
+      "path": "src/features/oledEditor/OledCanvasTransferPanel.tsx"
+    },
+    {
+      "callee": "useOledCanvasTransfer",
+      "scope": "OledCanvasTransferPanel",
+      "line": 17,
+      "arguments": 0,
+      "path": "src/features/oledEditor/OledCanvasTransferPanel.tsx"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "FramebufferPreview",
+      "line": 178,
+      "arguments": 2,
+      "path": "src/features/oledEditor/OledCanvasTransferPanel.tsx"
+    },
+    {
+      "callee": "useSavedOledScreens",
+      "scope": "OledStudioWorkspace",
+      "line": 21,
+      "arguments": 0,
+      "path": "src/features/oledEditor/OledStudioWorkspace.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "OledStudioWorkspace",
+      "line": 22,
+      "arguments": 1,
+      "path": "src/features/oledEditor/OledStudioWorkspace.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "OledStudioWorkspace",
+      "line": 23,
+      "arguments": 1,
+      "path": "src/features/oledEditor/OledStudioWorkspace.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "OledStudioWorkspace",
+      "line": 24,
+      "arguments": 1,
+      "path": "src/features/oledEditor/OledStudioWorkspace.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "OledStudioWorkspace",
+      "line": 27,
+      "arguments": 1,
+      "path": "src/features/oledEditor/OledStudioWorkspace.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "OledStudioWorkspace",
+      "line": 30,
+      "arguments": 1,
+      "path": "src/features/oledEditor/OledStudioWorkspace.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "OledStudioWorkspace",
+      "line": 31,
+      "arguments": 1,
+      "path": "src/features/oledEditor/OledStudioWorkspace.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "OledStudioWorkspace",
+      "line": 33,
+      "arguments": 2,
+      "path": "src/features/oledEditor/OledStudioWorkspace.tsx"
+    },
+    {
+      "callee": "useWebSocket",
+      "scope": "useOledCanvasTransfer",
+      "line": 54,
+      "arguments": 0,
+      "path": "src/features/oledEditor/useOledCanvasTransfer.ts"
+    },
+    {
+      "callee": "useUser",
+      "scope": "useOledCanvasTransfer",
+      "line": 55,
+      "arguments": 0,
+      "path": "src/features/oledEditor/useOledCanvasTransfer.ts"
+    },
+    {
+      "callee": "useCarMode",
+      "scope": "useOledCanvasTransfer",
+      "line": 56,
+      "arguments": 0,
+      "path": "src/features/oledEditor/useOledCanvasTransfer.ts"
+    },
+    {
+      "callee": "useScreen",
+      "scope": "useOledCanvasTransfer",
+      "line": 57,
+      "arguments": 0,
+      "path": "src/features/oledEditor/useOledCanvasTransfer.ts"
+    },
+    {
+      "callee": "useState",
+      "scope": "useOledCanvasTransfer",
+      "line": 58,
+      "arguments": 1,
+      "path": "src/features/oledEditor/useOledCanvasTransfer.ts"
+    },
+    {
+      "callee": "useState",
+      "scope": "useOledCanvasTransfer",
+      "line": 59,
+      "arguments": 1,
+      "path": "src/features/oledEditor/useOledCanvasTransfer.ts"
+    },
+    {
+      "callee": "useState",
+      "scope": "useOledCanvasTransfer",
+      "line": 60,
+      "arguments": 1,
+      "path": "src/features/oledEditor/useOledCanvasTransfer.ts"
+    },
+    {
+      "callee": "useRef",
+      "scope": "useOledCanvasTransfer",
+      "line": 61,
+      "arguments": 1,
+      "path": "src/features/oledEditor/useOledCanvasTransfer.ts"
+    },
+    {
+      "callee": "useRef",
+      "scope": "useOledCanvasTransfer",
+      "line": 62,
+      "arguments": 1,
+      "path": "src/features/oledEditor/useOledCanvasTransfer.ts"
+    },
+    {
+      "callee": "useRef",
+      "scope": "useOledCanvasTransfer",
+      "line": 63,
+      "arguments": 1,
+      "path": "src/features/oledEditor/useOledCanvasTransfer.ts"
+    },
+    {
+      "callee": "useRef",
+      "scope": "useOledCanvasTransfer",
+      "line": 64,
+      "arguments": 1,
+      "path": "src/features/oledEditor/useOledCanvasTransfer.ts"
+    },
+    {
+      "callee": "useRef",
+      "scope": "useOledCanvasTransfer",
+      "line": 65,
+      "arguments": 1,
+      "path": "src/features/oledEditor/useOledCanvasTransfer.ts"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "useOledCanvasTransfer",
+      "line": 72,
+      "arguments": 2,
+      "path": "src/features/oledEditor/useOledCanvasTransfer.ts"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "useOledCanvasTransfer",
+      "line": 87,
+      "arguments": 2,
+      "path": "src/features/oledEditor/useOledCanvasTransfer.ts"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "useOledCanvasTransfer",
+      "line": 102,
+      "arguments": 2,
+      "path": "src/features/oledEditor/useOledCanvasTransfer.ts"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "useOledCanvasTransfer",
+      "line": 230,
+      "arguments": 2,
+      "path": "src/features/oledEditor/useOledCanvasTransfer.ts"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "useOledCanvasTransfer",
+      "line": 236,
+      "arguments": 2,
+      "path": "src/features/oledEditor/useOledCanvasTransfer.ts"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "useOledCanvasTransfer",
+      "line": 243,
+      "arguments": 2,
+      "path": "src/features/oledEditor/useOledCanvasTransfer.ts"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "useOledCanvasTransfer",
+      "line": 249,
+      "arguments": 2,
+      "path": "src/features/oledEditor/useOledCanvasTransfer.ts"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "useOledCanvasTransfer",
+      "line": 257,
+      "arguments": 2,
+      "path": "src/features/oledEditor/useOledCanvasTransfer.ts"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "useOledCanvasTransfer",
+      "line": 266,
+      "arguments": 2,
+      "path": "src/features/oledEditor/useOledCanvasTransfer.ts"
+    }
+  ]
+}

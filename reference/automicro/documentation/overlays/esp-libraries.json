@@ -1,0 +1,939 @@
+{
+  "schemaVersion": 1,
+  "modules": [
+    {
+      "id": "esp:module/src/main.cpp",
+      "slug": "application",
+      "title": "Composición y ciclo principal ESP",
+      "kind": "composición",
+      "files": [
+        "src/main.cpp",
+        "src/app_bindings.h",
+        "src/app_bindings.cpp",
+        "src/esp_system.h",
+        "src/esp_system.cpp",
+        "src/globals.h"
+      ],
+      "prefixes": [
+        "AppBindings_"
+      ],
+      "responsibility": "Construye servicios y adapta Arduino/ESP8266 al servidor, Wi-Fi y protocolo del robot.",
+      "scope": "setup/loop, referencias de sistema y conexión de tablas; no concentra buffers privados de cada librería.",
+      "state": "g_unerApp pertenece a la composición. EspSystemHandle conserva referencias a flags/timers y referencias opacas a UNER/bridge; no duplica el almacenamiento de los globals existentes.",
+      "modularity": "Capa de aplicación ligada a Arduino y servicios concretos. Las librerías reciben puertos; el sistema no se convierte en una dependencia universal neutral.",
+      "lifecycle": [
+        "setup inicia Serial, timebase, NVS, LED y Wi-Fi; después sensores, bindings, UNER y servidor.",
+        "loop actualiza tiempo, Wi-Fi, LED, servidor y UNER, consume tick y cede con delay(0)."
+      ],
+      "interactions": [
+        "AppBindings_Configure conecta servicios antes de UNER_App_Init.",
+        "El modo de boot persistido elige AP-only o AP+STA; arrancar no debe volver a persistir/reiniciar por esa sola selección."
+      ],
+      "limitations": [
+        "El orden observado no demuestra latencia máxima ni ausencia de esperas.",
+        "Código de firmware F4, servidor ESP y bundle Web se publican/cargan por separado."
+      ],
+      "functions": {
+        "setup": "Inicializa plataforma, servicios, puertos, protocolo y servidor en el orden de composición.",
+        "loop": "Atiende periódicamente servicios y cede tiempo al scheduler/WDT.",
+        "Configure": "Conecta operaciones de aplicación a los handlers UNER sin mover su estado privado."
+      }
+    },
+    {
+      "id": "esp:module/src/bridge_ports.h",
+      "slug": "ports-platform",
+      "title": "Puertos y adaptadores de plataforma ESP",
+      "kind": "plataforma",
+      "files": [
+        "src/bridge_ports.h",
+        "src/bridge_platform_esp.cpp",
+        "src/esp_platform.h",
+        "src/esp_platform.cpp",
+        "src/uner_platform_esp.h",
+        "src/webserver_ports.h",
+        "src/uner_app_ports.h"
+      ],
+      "prefixes": [
+        "Bridge_",
+        "EspPlatform_"
+      ],
+      "responsibility": "Define operaciones de radio, red, plataforma, almacenamiento y backend que consume la integración JSON/UNER.",
+      "scope": "Tablas BridgeWifiOps, BridgeBackendOps, BridgePlatformOps, UNER_AppServices y fachadas que prestan recursos.",
+      "state": "Los puertos contienen ops/context, funciones y referencias prestadas a estado de reinicio. No transfieren propiedad de credenciales, AppConfig, cliente AsyncWebSocket ni recursos SDK.",
+      "modularity": "Abstrae llamadas concretas, pero bridge_ports.h incluye Arduino, config, UNER y tipos Wi-Fi; los String y AsyncWebSocketClient mantienen dependencia de plataforma/modelo.",
+      "lifecycle": [
+        "La composición suministra tablas completas antes de consumidores.",
+        "Cada método de fachada reenvía context; algunos callbacks opcionales comprueban null y otros exigen un puerto completo."
+      ],
+      "interactions": [
+        "BridgeWifiPort concentra mutaciones de radio en WifiService.",
+        "BridgeBackendOps conecta envío/scan/config con UNER sin que el bridge conozca buffers UART."
+      ],
+      "limitations": [
+        "Un void* requiere emparejamiento correcto con su tabla.",
+        "La inyección no vuelve no bloqueantes restart, flush, filesystem ni operaciones de radio."
+      ],
+      "attributes": {
+        "now_ms": "Entrega reloj modular de plataforma en milisegundos.",
+        "send_peer": "Envía comando al peer configurado y devuelve aceptación UNER, no resultado físico.",
+        "send_from_node": "Envía con identidad del nodo Web asignado conservando destino y correlación.",
+        "intercept_packets": "Registra interceptor de paquetes con contexto para el bridge.",
+        "config": "Devuelve vista prestada de configuración; nunca publicarla completa porque contiene secretos.",
+        "save_config": "Solicita guardar configuración mediante el servicio de almacenamiento."
+      }
+    },
+    {
+      "id": "esp:module/src/uner_core.h",
+      "slug": "uner-core",
+      "title": "Parser UNER v2 ESP",
+      "kind": "núcleo",
+      "files": [
+        "src/uner_core.h",
+        "src/uner_core.c",
+        "src/uner_v2.h"
+      ],
+      "prefixes": [
+        "UNER_Core_",
+        "uner_"
+      ],
+      "responsibility": "Reconoce frames UNER y construye su representación binaria con longitud, ruta, ID y checksum.",
+      "scope": "Parser/serializador; no autentica sesiones Web ni interpreta acciones físicas.",
+      "state": "El core mantiene FSM y almacenamiento de recepción según sus tipos; los payloads son bytes de protocolo, no structs F4 compartidos por dirección.",
+      "modularity": "Núcleo C separado del transporte Arduino; revisar callbacks y almacenamiento suministrado, sin asumir que el handle ESP es idéntico al F4.",
+      "lifecycle": [
+        "Inicializar antes de entregar bytes del transporte.",
+        "Procesar por byte, completar/descarte por estructura y entregar paquetes a la capa dispositivo/handle."
+      ],
+      "interactions": [
+        "Serial entrega bytes; device/handle conectan callbacks y comandos.",
+        "El esquema wire es común a F4, pero funciones y organización internas pueden diferir."
+      ],
+      "limitations": [
+        "Checksum válido no acredita argumentos válidos ni autorización.",
+        "La vida del payload termina según su dueño; copiar si se difiere el procesamiento."
+      ],
+      "functions": {
+        "UNER_BuildFrame": "Construye un frame UNER v2 en el buffer suministrado."
+      }
+    },
+    {
+      "id": "esp:module/src/uner_queue.h",
+      "slug": "uner-queue",
+      "title": "Cola UNER",
+      "kind": "núcleo",
+      "files": [
+        "src/uner_queue.h",
+        "src/uner_queue.c"
+      ],
+      "prefixes": [
+        "UNER_Queue_"
+      ],
+      "responsibility": "Mantiene colas acotadas de datos/paquetes del protocolo.",
+      "scope": "Operaciones de inserción/extracción y estado de capacidad, sin radio ni sesiones.",
+      "state": "Índices y memoria pertenecen a la instancia/almacenamiento configurado; una cola llena debe propagarse como rechazo, no éxito de envío.",
+      "modularity": "Capa interna del protocolo, con dependencia de sus tipos; no es un servicio HTTP.",
+      "lifecycle": [
+        "Inicializar memoria/índices antes de producir.",
+        "Consumir y liberar según las operaciones de cola y la propiedad real del payload."
+      ],
+      "interactions": [
+        "El handle/dispositivo usa la cola para separar producción de consumo."
+      ],
+      "limitations": [
+        "No suponer seguridad multihilo ni copia profunda de cada puntero por ser una cola."
+      ],
+      "functions": {}
+    },
+    {
+      "id": "esp:module/src/uner_device.h",
+      "slug": "uner-device",
+      "title": "Dispositivo y dispatch UNER",
+      "kind": "núcleo",
+      "files": [
+        "src/uner_device.h",
+        "src/uner_device.c"
+      ],
+      "prefixes": [
+        "UNER_Device_"
+      ],
+      "responsibility": "Asocia identidad del dispositivo, comando y handler a los paquetes parseados.",
+      "scope": "Composición interna de protocolo y tabla de funciones; el efecto pertenece al handler registrado.",
+      "state": "Instancia, callbacks y contexto conservan identidad/ruta y referencias prestadas; no compartir datos de un socket con otro por usar el mismo dispositivo UART.",
+      "modularity": "Núcleo de protocolo dependiente de core/colas legítimamente, separado del significado de comandos de aplicación.",
+      "lifecycle": [
+        "Configurar identidad y registro antes de despachar.",
+        "Recibir paquete, resolver handler y conservar semántica de respuesta/error del comando."
+      ],
+      "interactions": [
+        "UNER_App registra handlers; transport serial transmite frames construidos por la capa de protocolo."
+      ],
+      "limitations": [
+        "Un ID registrado no garantiza soporte físico ni equivalencia de metadata F4/ESP."
+      ],
+      "functions": {}
+    },
+    {
+      "id": "esp:module/src/uner_handle.h",
+      "slug": "uner-handle",
+      "title": "Fachada y compatibilidad UNER ESP",
+      "kind": "integración",
+      "files": [
+        "src/uner_handle.h",
+        "src/uner_handle.cpp",
+        "src/uner_handle_compat.cpp",
+        "src/UNERUtils.h",
+        "src/UNERUtils.cpp"
+      ],
+      "prefixes": [
+        "UNER_",
+        "UNERUtils_"
+      ],
+      "responsibility": "Coordina parser, dispositivo, transporte e interfaces históricas de aplicación ESP.",
+      "scope": "Handle y wrappers de compatibilidad, recepción/envío y extensión de hooks/interceptores.",
+      "state": "Conserva recursos internos de protocolo y referencias a callbacks/transportes; la fachada histórica no debe interpretarse como API idéntica a UNER_Handle F4.",
+      "modularity": "Integra capas del mismo protocolo y adaptación C/C++; los wrappers conservan acoplamientos históricos del ESP.",
+      "lifecycle": [
+        "Conectar servicios/transportes e inicializar antes de atender loop.",
+        "Al recibir se notifican/interceptan paquetes y se despacha al dueño; enviar conserva src/dst del solicitante."
+      ],
+      "interactions": [
+        "El bridge JSON usa backend/interceptor; handlers implementan comandos propios del ESP.",
+        "TransactionManager conserva requestId fuera del frame, no dentro del parser."
+      ],
+      "limitations": [
+        "Revisar memoria prestada al guardar un interceptor o diferir payloads.",
+        "Callbacks sin contexto explícito pueden conservar una instancia global activa."
+      ],
+      "functions": {}
+    },
+    {
+      "id": "esp:module/src/uner_transport_serial.h",
+      "slug": "serial-transport",
+      "title": "Transporte serial Arduino",
+      "kind": "plataforma",
+      "files": [
+        "src/uner_transport_serial.h",
+        "src/uner_transport_serial.cpp"
+      ],
+      "prefixes": [
+        "UNER_TransportSerial_"
+      ],
+      "responsibility": "Adapta UART/Serial del ESP al contrato de transporte UNER.",
+      "scope": "Disponibilidad de bytes, recepción y aceptación TX, sin interpretar JSON ni permisos.",
+      "state": "Buffer y recurso serial pertenecen al adaptador; las vistas no deben sobrevivir a su reutilización.",
+      "modularity": "Ligado a Arduino/ESP por diseño; mantiene el protocolo separado del acceso físico.",
+      "lifecycle": [
+        "Serial se inicia en setup antes de UNER.",
+        "El loop atiende bytes y envío; flush/cooperate no equivalen a respuesta F4."
+      ],
+      "interactions": [
+        "UNER_Handle utiliza el transporte; TransactionManager serializa solicitudes Web sobre ese canal."
+      ],
+      "limitations": [
+        "No emitir logs arbitrarios sobre la UART que comparte frames del robot.",
+        "Baudrate configurado y entrega de bytes no prueban conectividad física."
+      ],
+      "functions": {}
+    },
+    {
+      "id": "esp:module/src/uner_app_handlers.h",
+      "slug": "uner-application",
+      "title": "Handlers UNER de aplicación ESP",
+      "kind": "integración",
+      "files": [
+        "src/uner_app_handlers.h",
+        "src/uner_app_handlers.cpp"
+      ],
+      "prefixes": [
+        "UNER_App_"
+      ],
+      "responsibility": "Ejecuta comandos cuyo dueño es ESP y coordina respuestas, red, estado y reinicio diferido.",
+      "scope": "Operaciones Wi-Fi/AP, credenciales, info de dispositivo, assets y sesiones vistas desde UART.",
+      "state": "UNER_App conserva estado de sus operaciones; UNER_AppServices presta Wi-Fi/config/server/restart. No emitir configuración privada completa como telemetría.",
+      "modularity": "Aplicación con operaciones inyectadas; depende de esquemas y semántica de ESP/robot, no es parser genérico.",
+      "lifecycle": [
+        "AppBindings conecta servicios antes de UNER_App_Init.",
+        "UNER_App_Loop atiende acciones diferidas y emisión de respuestas/eventos.",
+        "Reinicio se programa después de la aceptación/respuesta según el flujo implementado."
+      ],
+      "interactions": [
+        "Web/JSON y UART pueden solicitar servicios del mismo dispositivo; mantener dueño/correlación.",
+        "Wi-Fi, NVS y scan usan sus servicios en vez de duplicar sus máquinas de estados."
+      ],
+      "limitations": [
+        "ACK intermedio y respuesta final no son equivalentes.",
+        "Los guardas de transporte del ESP no sustituyen permisos F4."
+      ],
+      "functions": {
+        "Init": "Inicializa handlers, nodo propio y peer para la aplicación ESP.",
+        "Loop": "Atiende protocolo y operaciones diferidas de aplicación."
+      }
+    },
+    {
+      "id": "esp:module/src/f4_command_registry.h",
+      "slug": "command-catalog",
+      "title": "Registros de comandos y sus políticas",
+      "kind": "contrato",
+      "files": [
+        "src/f4_command_registry.h",
+        "src/f4_command_registry.c",
+        "src/uner_cmdspec.h",
+        "src/uner_cmdspec.c"
+      ],
+      "prefixes": [
+        "F4_",
+        "UNER_CmdSpec_"
+      ],
+      "responsibility": "Describe IDs, dueño, longitudes, timeout, privilegio e interpretación de finalización.",
+      "scope": "Metadata de catálogo para broker/bridge y especificación UNER; no demuestra por sí misma la implementación del peer.",
+      "state": "Tablas estáticas; en ESP8266 se conservan en PROGMEM y se copian mediante acceso apropiado. Los nombres pueden no ocupar RAM en esa variante.",
+      "modularity": "Contrato de aplicación, no HAL; conserva conocimiento de F4/ESP y privilegios Web.",
+      "lifecycle": [
+        "Consultar/cargar una entrada antes de construir solicitud.",
+        "La política elegida determina si ACK o mismo comando completa al cliente."
+      ],
+      "interactions": [
+        "TransactionManager y dispatch usan estos registros.",
+        "La documentación cruza cada registro con tabla/handler F4 sin fusionar contradicciones."
+      ],
+      "limitations": [
+        "implementedMetadata no garantiza que la placa instalada soporte el ID.",
+        "Mantener nombres JSON separados de IDs numéricos y comandos reservados."
+      ],
+      "functions": {}
+    },
+    {
+      "id": "esp:module/src/f4_payload_decoders.h",
+      "slug": "payload-decoders",
+      "title": "Decodificadores de payload F4",
+      "kind": "núcleo",
+      "files": [
+        "src/f4_payload_decoders.h",
+        "src/f4_payload_decoders.c"
+      ],
+      "prefixes": [
+        "F4_Decode"
+      ],
+      "responsibility": "Transforma bytes LE de F4 a estructuras de datos del ESP con comprobación de formato/longitud.",
+      "scope": "MPU, IR, control, telemetría, preferencias y otros formatos definidos; las estructuras no se copian por sizeof al wire.",
+      "state": "El llamador posee salida; los bytes de entrada son prestados durante el decode. Flags/unidades se interpretan según cada formato.",
+      "modularity": "C sin dependencia de UI; depende del esquema compartido de datos del robot.",
+      "lifecycle": [
+        "Comprobar resultado F4_DECODE_* antes de usar salida.",
+        "El bridge convierte posteriormente los campos a JSON y sus nombres públicos."
+      ],
+      "interactions": [
+        "reports.inc usa decoders antes de publicar snapshots.",
+        "Web consume números JSON; no vuelve a interpretar padding ni punteros C."
+      ],
+      "limitations": [
+        "Cada formato mantiene su tamaño/versionado; igual longitud no implica igual esquema.",
+        "Mantener escalas g/mg, dps/mdps y m/s frente a cm/s."
+      ],
+      "functions": {}
+    },
+    {
+      "id": "esp:module/src/f4_extension_profiles.h",
+      "slug": "extension-profiles",
+      "title": "Perfiles de extensión F4",
+      "kind": "contrato",
+      "files": [
+        "src/f4_extension_profiles.h",
+        "src/f4_extension_profiles.c"
+      ],
+      "prefixes": [
+        "F4_ExtensionProfile_"
+      ],
+      "responsibility": "Construye e interpreta operaciones de selección y reinicio en perfil de extensión F4.",
+      "scope": "Perfil 0/1 y comandos 0x73/0x74/0x76; no redefine pinout de placa desde el ESP.",
+      "state": "Datos pequeños del request/response pertenecen al llamador; configuración deseada y perfil activo pueden diferir hasta reinicio.",
+      "modularity": "Helper de contrato compartido, independiente de UI pero específico de perfiles F4.",
+      "lifecycle": [
+        "Construir request correcto, esperar la política final y revisar status.",
+        "Distinguir seleccionar perfil de seleccionar y reiniciar."
+      ],
+      "interactions": [
+        "El bridge traduce nombres stm.extensionProfile.* y usa el registro de comandos."
+      ],
+      "limitations": [
+        "0x75 no debe confundirse con reboot 0x76.",
+        "Un cambio persistido no acredita que el reinicio se completó."
+      ],
+      "functions": {}
+    },
+    {
+      "id": "esp:module/src/uart_transaction_manager.h",
+      "slug": "uart-transactions",
+      "title": "Broker de transacciones UART",
+      "kind": "núcleo",
+      "files": [
+        "src/uart_transaction_manager.h",
+        "src/uart_transaction_manager.c"
+      ],
+      "prefixes": [
+        "utm_"
+      ],
+      "responsibility": "Relaciona requests Web con solicitudes UART acotadas y una transacción en vuelo.",
+      "scope": "Cola, cuota por cliente, generación, deadline, reintento idempotente y finalización por ACK/mismo comando.",
+      "state": "UartTransactionManager posee queue[8], inflight y métricas; UtmRequest copia payload, request_id y command_name. send_fn/send_ctx y completion_fn/completion_ctx son prestados y deben permanecer válidos.",
+      "modularity": "C sin WebSocket concreto; las identidades de cliente y políticas son parte del contrato del broker.",
+      "lifecycle": [
+        "utm_enqueue copia y valida admisión; no significa ejecución F4.",
+        "utm_service inicia/reintenta/vence según deadlines y disponibilidad.",
+        "utm_on_frame exige ruta inversa y comando correlacionado; eventos MPU/IR no completan la solicitud.",
+        "Disconnect invalida generación o deja la transacción huérfana sin completarla sobre otro socket."
+      ],
+      "interactions": [
+        "requests.inc traduce política del registro y emite requestAccepted.",
+        "completion entrega resultado al bridge que construye response/error JSON."
+      ],
+      "limitations": [
+        "UTM_MAX_QUEUED_PER_CLIENT=2; cola total 8.",
+        "Reintentar una mutación no idempotente puede duplicar efectos; respetar retry_policy."
+      ],
+      "functions": {
+        "init": "Conecta envío/finalización y reinicia cola y métricas.",
+        "enqueue": "Admite y copia una solicitud dentro de límites globales y por cliente.",
+        "service": "Avanza envío, reintentos y expiración de la transacción activa.",
+        "on_frame": "Correlaciona ruta/ID/ACK y completa o mantiene pendiente la solicitud.",
+        "disconnect_client": "Cancela pendientes de cliente/generación sin asignarlos a otro socket."
+      },
+      "attributes": {
+        "send_fn": "Intenta enviar la solicitud; BUSY mantiene pendiente, OK no es respuesta final.",
+        "completion_fn": "Notifica resultado final con request y frame prestados durante el callback.",
+        "generation": "Generación que impide completar sobre una conexión reemplazada."
+      }
+    },
+    {
+      "id": "esp:module/src/ws_session_manager.h",
+      "slug": "sessions",
+      "title": "Sesiones WebSocket y autoridad STM",
+      "kind": "núcleo",
+      "files": [
+        "src/ws_session_manager.h",
+        "src/ws_session_manager.c",
+        "src/ws_limits.h"
+      ],
+      "prefixes": [
+        "wsm_"
+      ],
+      "responsibility": "Mantiene identidad cliente/generación/nodo y autoridad STM independiente por sesión.",
+      "scope": "Capacidad, TTL, intentos/rate limit, suspensión, reanudación por token y limpieza.",
+      "state": "WsSessionManager posee slots y buckets. WsmSession contiene token privado, nodo, generación y deadlines; esp_debug_wifi es permiso local ESP y no concede autoridad F4.",
+      "modularity": "C sin socket concreto; adopta reglas del producto y nodos UNER.",
+      "lifecycle": [
+        "Open asigna slot/nodo/generación; autenticar establece TTL.",
+        "Touch solo renueva sesión activa y no revive una ya expirada.",
+        "Suspender conserva autoridad temporalmente pero no la usa hasta reanudación por token propio; cambia generación."
+      ],
+      "interactions": [
+        "Bridge usa sesiones para autorizar requests/fanout; UTM y streams conservan la misma generación."
+      ],
+      "limitations": [
+        "No publicar tokens ni PIN en documentación/snapshots.",
+        "Rango de nodos reservado no equivale a capacidad simultánea; WS_MAX_SESSIONS es la capacidad."
+      ],
+      "functions": {
+        "open": "Reserva sesión con identidad de cliente y nodo.",
+        "touch_stm_auth": "Renueva una autorización todavía activa sin revivir una vencida.",
+        "resume_by_token": "Reanuda con token propio y asigna generación nueva.",
+        "release": "Libera sesión y su identidad después de limpieza."
+      }
+    },
+    {
+      "id": "esp:module/src/stream_broker.h",
+      "slug": "streams",
+      "title": "Streams MPU/IR y solicitudes en espera",
+      "kind": "núcleo",
+      "files": [
+        "src/stream_broker.h",
+        "src/stream_broker.c",
+        "src/stream_request_waiters.h",
+        "src/stream_request_waiters.c"
+      ],
+      "prefixes": [
+        "sb_",
+        "srw_"
+      ],
+      "responsibility": "Reconcilia suscripciones Web con estado de streams aplicado en F4 y distribuye muestras a destinatarios autorizados.",
+      "scope": "Desired/applied, dueño del stream, acciones SET/STOP, resultados obsoletos y waiters; no adquiere sensores.",
+      "state": "StreamBroker posee suscriptores por client/generation/node y estado por MPU/IR. SbAction identifica la acción concreta pendiente; desired no equivale a applied.",
+      "modularity": "C con datos explícitos y sin renderer; coordinación de protocolo y sesiones del robot.",
+      "lifecycle": [
+        "Subscribe actualiza intención y período entre 20 y 1000 ms.",
+        "TakeAction produce trabajo que el broker UART ejecuta; CompleteAction acepta solo el resultado vigente.",
+        "Al perder backend se reconcilia; retirar un cliente no debe detener el stream requerido por otro."
+      ],
+      "interactions": [
+        "SessionManager autoriza; UTM manda control F4; bridge publica solo a suscriptores correspondientes."
+      ],
+      "limitations": [
+        "Acción bloqueada tras fallo no debe convertirse en bucle ilimitado de reintentos.",
+        "Datos de sensor son muestras, no la respuesta de una mutación pendiente."
+      ],
+      "functions": {
+        "subscribe": "Actualiza deseo de suscripción para cliente/generación/nodo.",
+        "take_action": "Extrae acción pendiente SET/STOP para reconciliar el stream.",
+        "complete_action": "Aplica resultado solo si corresponde a la acción todavía vigente.",
+        "should_fanout": "Decide entrega de muestra según suscripción y autorización."
+      }
+    },
+    {
+      "id": "esp:module/src/wifi_scan_arbiter.h",
+      "slug": "scan-arbiter",
+      "title": "Arbitraje de exploración Wi-Fi",
+      "kind": "núcleo",
+      "files": [
+        "src/wifi_scan_arbiter.h",
+        "src/wifi_scan_arbiter.c"
+      ],
+      "prefixes": [
+        "WifiScanArbiter_"
+      ],
+      "responsibility": "Asigna dueño de una exploración Wi-Fi para evitar iniciar operaciones competidoras.",
+      "scope": "Adquisición, liberación y dueño lógico; la radio y resultados pertenecen a otros servicios.",
+      "state": "Estado de dueño/actividad del árbitro; las identidades del iniciador deben mantenerse al cancelar/liberar.",
+      "modularity": "Lógica C sin radio concreta.",
+      "lifecycle": [
+        "Adquirir antes de iniciar scan y liberar al completar/cancelar.",
+        "Un iniciador ocupado no debe borrar resultados de otro."
+      ],
+      "interactions": [
+        "Web y UNER comparten el árbitro mediante backend; WifiService ejecuta la radio."
+      ],
+      "limitations": [
+        "La concesión no implica que la radio aceptó o completó scan."
+      ],
+      "functions": {}
+    },
+    {
+      "id": "esp:module/src/wifi_scan_snapshot.h",
+      "slug": "scan-snapshot",
+      "title": "Snapshot de resultados Wi-Fi",
+      "kind": "datos",
+      "files": [
+        "src/wifi_scan_snapshot.h",
+        "src/wifi_scan_snapshot.c"
+      ],
+      "prefixes": [
+        "WifiScanSnapshot_"
+      ],
+      "responsibility": "Conserva resultados de scan en un modelo estable para consumidores del SDK y protocolo.",
+      "scope": "Entradas SSID, señal, canal y seguridad; no iniciar ni cancelar radio.",
+      "state": "El snapshot posee copia acotada de resultados; cadenas y contadores respetan capacidades declaradas.",
+      "modularity": "Datos neutrales del scan y operaciones de lectura, separados de lifetime del SDK.",
+      "lifecycle": [
+        "Capturar desde resultados válidos antes de borrar recursos de scan.",
+        "Consumir el snapshot para reportes/páginas sin depender de punteros del SDK liberados."
+      ],
+      "interactions": [
+        "Bridge y handlers UNER comparten el mismo resultado observado."
+      ],
+      "limitations": [
+        "No inventar detalles de red no disponibles; respetar cantidad/capacidad real."
+      ],
+      "functions": {}
+    },
+    {
+      "id": "esp:module/src/oled_canvas_transfer.h",
+      "slug": "oled-canvas",
+      "title": "Ensamblaje de framebuffer OLED",
+      "kind": "núcleo",
+      "files": [
+        "src/oled_canvas_transfer.h",
+        "src/oled_canvas_transfer.c"
+      ],
+      "prefixes": [
+        "OledCanvasAssembly_",
+        "OledCanvas_"
+      ],
+      "responsibility": "Ensambla un framebuffer enviado por Web y construye operaciones de transferencia F4 con orden/CRC.",
+      "scope": "1024 bytes, chunks Web hasta 512 y F4 hasta 112, IDs y respuesta de 10 bytes.",
+      "state": "OledCanvasAssembly posee bytes, transfer_id, next_offset y CRC esperado/calculado. Las respuestas decodificadas son datos del llamador.",
+      "modularity": "C sin HTTP ni pantalla física; la exclusión de UART y el envío se coordinan en el bridge.",
+      "lifecycle": [
+        "Begin establece metadata; Append verifica transferencia/offset y duplicados.",
+        "Finalizar ensamblaje comprueba integridad; los chunks se reenvasan a F4.",
+        "COMMIT espera presentación final, no solo recepción de bytes."
+      ],
+      "interactions": [
+        "Web rasteriza un documento local; ESP lo envía a OledCanvas F4.",
+        "Este camino es Web → OLED; no es una captura OLED F4 → navegador.",
+        "Esquema compartido por operación: published/shared/contracts/oled-canvas-v1.md; actualizar productor, traductor y consumidor al cambiar offsets/chunks/CRC."
+      ],
+      "limitations": [
+        "No confundir esta imagen enviada con la reconstrucción de pantalla en vivo.",
+        "Formato page-major LSB y geometría deben coincidir en los tres extremos."
+      ],
+      "functions": {
+        "Init": "Reinicia estado de ensamblaje.",
+        "Begin": "Abre transferencia con ID y CRC anunciado.",
+        "Append": "Copia bytes del chunk respetando transferencia y siguiente offset."
+      }
+    },
+    {
+      "id": "esp:module/src/wifi_service.h",
+      "slug": "wifi-service",
+      "title": "Servicio de radio Wi-Fi",
+      "kind": "servicio",
+      "files": [
+        "src/wifi_service.h",
+        "src/wifi_service.cpp",
+        "src/wifi_service_types.h",
+        "src/wifi_driver_port.h"
+      ],
+      "prefixes": [
+        "WifiService_"
+      ],
+      "responsibility": "Centraliza mutaciones de radio y máquina de estado STA/AP/reconexión/scan.",
+      "scope": "Config IP, SoftAP, conexión STA, fallback y restauración tras scan.",
+      "state": "WifiServiceHandle posee driver/servicios, flags/timers prestados y estado de intento/red. ap_started, keep_ap_with_sta y scan_previous_mode distinguen radio configurada y transición pendiente.",
+      "modularity": "Recibe WifiDriverPort; config/modelos compartidos conservan conocimiento ESP. El acceso global WiFi debe quedar en adaptador, no duplicarse en consumidores.",
+      "lifecycle": [
+        "Init conecta puertos/runtime; Begin inicia el modo elegido.",
+        "Loop procesa conexión, timeout, reintento y señales de fallback.",
+        "StartScan conserva modo previo y RestoreModeAfterScan aplica la política de restauración."
+      ],
+      "interactions": [
+        "WifiUtils ofrece fachada histórica; bridge y handlers usan el mismo servicio de radio."
+      ],
+      "limitations": [
+        "AP iniciado no implica STA conectada ni cliente Web autorizado.",
+        "Los puertos requieren operaciones válidas; algunos reenvíos no comprueban null."
+      ],
+      "functions": {
+        "Init": "Conecta driver, reloj/config y referencias runtime del servicio.",
+        "Begin": "Inicia AP/STA según configuración y modo solicitados.",
+        "Loop": "Avanza intentos STA, reconexión y fallback.",
+        "StartScan": "Solicita scan al driver conservando contexto de radio.",
+        "RestoreModeAfterScan": "Restaura modo de radio según el estado conservado.",
+        "ConsumeAPFallbackReady": "Consume la señal de transición a fallback AP disponible."
+      }
+    },
+    {
+      "id": "esp:module/src/wifi_utils.h",
+      "slug": "wifi-facade",
+      "title": "Fachada Wi-Fi de aplicación",
+      "kind": "integración",
+      "files": [
+        "src/wifi_utils.h",
+        "src/wifi_utils.cpp"
+      ],
+      "prefixes": [
+        "WifiUtils_"
+      ],
+      "responsibility": "Conecta el servicio Wi-Fi con el runtime Arduino y conserva su API de aplicación.",
+      "scope": "Bindings del driver/config/reloj y reenvíos a WifiService.",
+      "state": "Instancia del servicio y configuración de sesión; distinguir configuración temporal de NVS persistida.",
+      "modularity": "Fachada específica ESP; no duplicar su estado dentro del bridge.",
+      "lifecycle": [
+        "Begin prepara servicio en setup; Loop lo atiende.",
+        "Cambios temporales pueden aplicar configuración de sesión sin escribir NVS."
+      ],
+      "interactions": [
+        "BridgeWifiPort y UNER_AppServices delegan operaciones aquí."
+      ],
+      "limitations": [
+        "Una configuración en RAM no sobrevive a reinicio salvo guardado explícito."
+      ],
+      "functions": {}
+    },
+    {
+      "id": "esp:module/src/nvs_store.h",
+      "slug": "preferences-store",
+      "title": "Preferencias NVS y caché",
+      "kind": "servicio",
+      "files": [
+        "src/nvs_store.h",
+        "src/nvs_store.cpp",
+        "src/nvs_utils.h",
+        "src/nvs_utils.cpp"
+      ],
+      "prefixes": [
+        "NvsStore_",
+        "NVS_"
+      ],
+      "responsibility": "Carga/persiste AppConfig con caché, migración y recuperación de respaldo.",
+      "scope": "Transacción lógica de configuración; filesystem y codec se prestan por NvsStoreOps.",
+      "state": "NvsStoreHandle posee ops copiado, cached, valid y mounted. GetCached devuelve vista const de su almacenamiento, no una copia independiente.",
+      "modularity": "Núcleo de store usa operaciones; nvs_utils es adaptación histórica. AppConfig sigue siendo esquema del producto.",
+      "lifecycle": [
+        "Init conecta backend; InitAndLoad monta y elige archivo/defaults/migración.",
+        "Save solicita escritura mediante el backend y actualiza caché según resultado.",
+        "RestoreBackup recupera configuración guardada si puede hacerlo."
+      ],
+      "interactions": [
+        "Wi-Fi consume configuración; bridge distingue cambios persistentes y de sesión."
+      ],
+      "limitations": [
+        "No exponer contraseñas o PIN de cached como documentación/JSON de diagnóstico.",
+        "Un callback de escritura sigue pudiendo bloquear el loop."
+      ],
+      "functions": {
+        "Init": "Conecta operaciones del backend y reinicia estado del store.",
+        "InitAndLoad": "Monta y carga configuración con recuperación/migración disponible.",
+        "Save": "Persiste configuración y mantiene caché según éxito.",
+        "GetCached": "Devuelve vista prestada de la configuración cargada."
+      }
+    },
+    {
+      "id": "esp:module/src/nvs_littlefs.h",
+      "slug": "littlefs-adapter",
+      "title": "Codec y almacenamiento LittleFS",
+      "kind": "plataforma",
+      "files": [
+        "src/nvs_littlefs.h",
+        "src/nvs_littlefs.cpp"
+      ],
+      "prefixes": [
+        "NvsLittleFs_"
+      ],
+      "responsibility": "Implementa archivos y codificación de configuración sobre LittleFS del ESP.",
+      "scope": "Mount, load/write/rename/remove y traducción AppConfig; separado del bundle Web servido.",
+      "state": "Recursos de filesystem y buffers temporales pertenecen al adaptador; los strings de configuración se copian al modelo.",
+      "modularity": "Dependencia Arduino/FS/codec esperada; NvsStore recibe la tabla para no importar filesystem directamente.",
+      "lifecycle": [
+        "Montar antes de lectura/escritura.",
+        "Conservar semántica de archivo temporal/respaldo y resultado al sustituir backend."
+      ],
+      "interactions": [
+        "NvsStore recibe operaciones; servidor también usa LittleFS pero con ciclo y recursos propios."
+      ],
+      "limitations": [
+        "Espacio total se comparte con assets Web; escribir configuración no debe suponer disponibilidad ilimitada.",
+        "No se montó ni verificó filesystem físico en esta entrega."
+      ],
+      "functions": {}
+    },
+    {
+      "id": "esp:module/src/timebase.h",
+      "slug": "timebase",
+      "title": "Base temporal y timers",
+      "kind": "servicio",
+      "files": [
+        "src/timebase.h",
+        "src/timebase.cpp",
+        "src/timebase_core.cpp"
+      ],
+      "prefixes": [
+        "Timebase_"
+      ],
+      "responsibility": "Produce ticks y actualiza timers/flags de aplicación.",
+      "scope": "Reloj, tick de 10 ms y adaptación de plataforma; un tick acumulado no es una ejecución paralela de tarea.",
+      "state": "Conserva marcas/pendientes y referencias runtime; el consumidor debe usar unidades correctas y diferencias modulares.",
+      "modularity": "Separación de core temporal y adaptación Arduino, con convenciones de flags del proyecto.",
+      "lifecycle": [
+        "Init10ms prepara base en setup; Update contabiliza avance.",
+        "ConsumeTick consume señal/contador según la API para evitar tratar una señal persistente como ticks ilimitados."
+      ],
+      "interactions": [
+        "Wi-Fi y otros servicios usan tiempo/timers; loop decide cuándo atenderlos."
+      ],
+      "limitations": [
+        "No inferir resolución mayor a la fuente de reloj ni latencia máxima del loop."
+      ],
+      "functions": {
+        "Init10ms": "Inicializa la base de tick de 10 ms.",
+        "Update": "Actualiza ticks y timers con el tiempo transcurrido.",
+        "ConsumeTick": "Consume el tick pendiente según la semántica de la base."
+      }
+    },
+    {
+      "id": "esp:module/src/wifi_status_led.h",
+      "slug": "status-led",
+      "title": "Indicador LED de conectividad",
+      "kind": "plataforma",
+      "files": [
+        "src/wifi_status_led.h",
+        "src/wifi_status_led.cpp",
+        "src/wifi_status_led_core.cpp"
+      ],
+      "prefixes": [
+        "WifiStatusLed_"
+      ],
+      "responsibility": "Expresa el estado AP/STA/inactivo mediante el LED activo bajo del ESP.",
+      "scope": "Patrón temporal y escritura de pin; no define autoridad de sesión ni disponibilidad F4.",
+      "state": "Modo, fase y reloj del indicador; la adaptación toma GPIO2 después del arranque para respetar su función de boot.",
+      "modularity": "Core de patrón y adaptador GPIO separados; el pin es propio de ESP8266.",
+      "lifecycle": [
+        "Begin toma el pin después de setup.",
+        "Update recibe modo derivado de WifiService y tiempo actual."
+      ],
+      "interactions": [
+        "main mapea WifiServiceState a modo del indicador."
+      ],
+      "limitations": [
+        "Un LED indica estado de servicio, no prueba tráfico extremo a extremo."
+      ],
+      "functions": {
+        "Begin": "Inicializa salida LED después de la etapa de arranque.",
+        "Update": "Actualiza el patrón de conectividad con modo y tiempo recibidos."
+      }
+    },
+    {
+      "id": "esp:module/src/sensors.h",
+      "slug": "sensors-facade",
+      "title": "Fachada de sensores ESP",
+      "kind": "integración",
+      "files": [
+        "src/sensors.h",
+        "src/sensors.cpp"
+      ],
+      "prefixes": [
+        "Sensors_"
+      ],
+      "responsibility": "Provee la superficie local de sensores declarada en la aplicación ESP.",
+      "scope": "No atribuye al ESP las adquisiciones MPU/IR que pertenecen a F4.",
+      "state": "Estado local que define el módulo; telemetría remota proviene de decoders y streams UNER.",
+      "modularity": "Fachada de aplicación; revisar trabajo efectivo de cada operación antes de describir un sensor físico conectado al ESP.",
+      "lifecycle": [
+        "Sensors_Init se invoca en setup.",
+        "Distinguir funciones declaradas de adquisiciones efectivas y de reportes recibidos."
+      ],
+      "interactions": [
+        "F4 sigue siendo productor de las muestras del robot."
+      ],
+      "limitations": [
+        "No inferir hardware por el nombre del módulo ni convertir datos simulados en muestra real."
+      ],
+      "functions": {}
+    },
+    {
+      "id": "esp:module/src/boot_mode.h",
+      "slug": "boot-mode",
+      "title": "Selección de modo de arranque ESP",
+      "kind": "integración",
+      "files": [
+        "src/boot_mode.h",
+        "src/boot_mode.cpp"
+      ],
+      "prefixes": [
+        "BootMode_"
+      ],
+      "responsibility": "Interpreta y conserva modo solicitado para el próximo arranque ESP.",
+      "scope": "AP-only frente a modo normal AP/STA y su relación con configuración persistida.",
+      "state": "Selección de modo y AppConfig; no usar el mismo dato como disparador de reinicio en cada boot.",
+      "modularity": "Política de aplicación ESP, separada del bucle del servicio Wi-Fi.",
+      "lifecycle": [
+        "GetRequested se consulta después de cargar NVS y antes de iniciar Wi-Fi.",
+        "Un comando explícito cambia selección/reinicio; el arranque consume la decisión sin bucle de reescritura."
+      ],
+      "interactions": [
+        "UNER/JSON solicita reboot; main decide WifiRunMode a partir del modo elegido."
+      ],
+      "limitations": [
+        "Modo deseado/persistido y modo de radio activo son observaciones diferentes."
+      ],
+      "functions": {}
+    },
+    {
+      "id": "esp:module/src/webserver_ws.h",
+      "slug": "http-websocket",
+      "title": "Servidor HTTP y conexiones WebSocket",
+      "kind": "plataforma",
+      "files": [
+        "src/webserver_ws.h",
+        "src/webserver_ws.cpp"
+      ],
+      "prefixes": [
+        "WebServerWS_"
+      ],
+      "responsibility": "Sirve assets LittleFS y mantiene conexiones /ws del navegador.",
+      "scope": "HTTP, archivos comprimidos, mensajes WS_TEXT, clientes y eventos de socket; el bridge interpreta la API.",
+      "state": "Servidor/socket y lista acotada de conexiones; los buffers async deben copiarse o conservarse según el API real.",
+      "modularity": "Dependiente de ESPAsyncWebServer/AsyncTCP y filesystem; la frontera de protocolo queda en WSJsonBridge.",
+      "lifecycle": [
+        "SetUNERApp enlaza aplicación antes de Init.",
+        "Al conectar asigna/solicita sesión; los mensajes de texto JSON pasan al bridge.",
+        "Al desconectar se limpia cliente/autoridad/requests; loop atiende mantenimiento."
+      ],
+      "interactions": [
+        "Entrega bytes JSON al bridge y sirve el bundle Web producido por otro repositorio.",
+        "HTTP y WS tienen límites de memoria/buffers distintos."
+      ],
+      "limitations": [
+        "Máximo dos sesiones según WS_MAX_SESSIONS actual.",
+        "No confundir bundle copiado, firmware cargado y comportamiento verificado en navegador."
+      ],
+      "functions": {
+        "Init": "Configura rutas HTTP/WS y pone en marcha el servidor.",
+        "Loop": "Atiende mantenimiento de conexiones y bridge.",
+        "SetUNERApp": "Presta al servidor la instancia UNER que usará el bridge."
+      }
+    },
+    {
+      "id": "esp:module/src/ws_json_bridge.h",
+      "slug": "json-bridge",
+      "title": "Bridge JSON, sesiones y traducción de pantallas",
+      "kind": "integración",
+      "files": [
+        "src/ws_json_bridge.h",
+        "src/ws_json_bridge.cpp"
+      ],
+      "patterns": [
+        "src/ws_bridge/*.h",
+        "src/ws_bridge/*.inc"
+      ],
+      "prefixes": [
+        "WSJsonBridge_"
+      ],
+      "responsibility": "Despacha API JSON, autoriza por sesión, codifica solicitudes y traduce respuestas/eventos F4 a Web.",
+      "scope": "Una unidad C++ incluye partes .inc ordenadas: common, validation, canvas, requests, comandos ESP/STM, debug, dispatch, reports, services y lifecycle.",
+      "state": "Contexto privado s_bridge posee clientes, sesiones, broker UART, streams, credenciales temporales, canvas y refrescos. Los .inc comparten linkage estático; no son doce librerías independientes.",
+      "modularity": "Operaciones externas por puertos, con ArduinoJson, sockets y modelos concretos; capa de integración, no núcleo neutral.",
+      "lifecycle": [
+        "Init enlaza app/backend y prepara estados.",
+        "Un request valida sobre y forma, comprueba permiso y encola o ejecuta localmente.",
+        "requestAccepted es intermedio; response/error final respeta client/generation/requestId/command.",
+        "add_screen_report traduce identidad, selección, notificaciones y extensión dashboard; no publica un snapshot general de renderers."
+      ],
+      "interactions": [
+        "wsm autoriza, UTM correlaciona, StreamBroker reconcilia y decoders convierten unidades.",
+        "F4 envía screenCode/source y datos específicos; ScreenContext y resolver Web completan su modelo local.",
+        "PIN JSON string de cuatro dígitos se codifica como cuatro valores numéricos 0..9 en wire; ver shared:message/auth-pin/v1 para scopes y respuestas."
+      ],
+      "limitations": [
+        "Campos ausentes no deben darse por recibidos: selectedIndex/itemCount inicializados a cero pueden ocultar ausencia.",
+        "No hay snapshot completo de OSK, scroll o borradores por los reportes actuales.",
+        "validate_auto_params y cmd_stm_auto conservan la incongruencia AMDOC-ESP-001."
+      ],
+      "functions": {
+        "add_screen_report": "Traduce reportes binarios de pantalla a JSON con variantes según comando/source.",
+        "start_stm_request": "Construye y encola una transacción F4 con identidad del cliente.",
+        "emit_request_accepted": "Publica aceptación de cola, sin completar todavía la operación.",
+        "validate_auto_params": "Acepta formas de argumentos AutoMotion sin distinguir suficientemente el comando; ver hallazgo.",
+        "cmd_stm_auto": "Selecciona ID/offsets por nombre JSON y encola la operación AutoMotion."
+      }
+    },
+    {
+      "id": "esp:module/src/config.h",
+      "slug": "configuration-types",
+      "title": "Configuración, flags y diagnósticos auxiliares",
+      "kind": "datos",
+      "files": [
+        "src/config.h",
+        "src/bitMap.h",
+        "src/uner_diagnostics_esp.cpp"
+      ],
+      "prefixes": [
+        "UNER_Diagnostics_"
+      ],
+      "responsibility": "Define modelos compartidos y superficies auxiliares de diagnóstico del firmware.",
+      "scope": "AppConfig y bits del runtime; los valores privados/defaults sensibles no se copian al manual.",
+      "state": "Los modelos contienen configuración y credenciales locales; sus tipos son documentables pero su contenido real se excluye.",
+      "modularity": "Vocabulario del proyecto que acopla esquemas, distinto de enlazar implementaciones.",
+      "lifecycle": [
+        "Config se carga antes de consumidores y puede tener copia temporal de sesión.",
+        "Diagnósticos no deben transmitir secretos ni asumir que un bit sustituye el estado completo del servicio."
+      ],
+      "interactions": [
+        "NVS, Wi-Fi, bridge y composición comparten estos tipos."
+      ],
+      "limitations": [
+        "Bitfields C y objetos C++ no son un contrato de memoria intercambiable con TypeScript.",
+        "Los macros/config privados no se publican como ejemplos de valores."
+      ],
+      "functions": {}
+    }
+  ]
+}

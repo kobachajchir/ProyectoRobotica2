@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "id": "shared:screen/020202",
+  "symbol": "SCREEN_CODE_CONNECTIVITY_WIFI_SEARCHING",
+  "code": 131586,
+  "hex": "0x020202",
+  "decomposition": {
+    "menu": 2,
+    "submenu": 2,
+    "page": 2
+  },
+  "revision": "working-copy-hashes",
+  "confidence": "manual-review",
+  "family": "shared:screen-family/general",
+  "numericObservation": "same-literal",
+  "webDeclaration": {
+    "value": 131586,
+    "line": 37
+  },
+  "metadataEntryObserved": true,
+  "evidence": [
+    {
+      "repo": "f4",
+      "path": "Core/Inc/screen_codes.h",
+      "line": 59
+    },
+    {
+      "repo": "web",
+      "path": "src/screens/screenCodes.ts",
+      "line": 37
+    }
+  ],
+  "renderers": [
+    {
+      "kind": "switch-case",
+      "path": "src/screens/screenRenderRegistry.ts",
+      "line": 372,
+      "builders": [
+        "buildScreen020202WifiSearchCommands"
+      ],
+      "availability": "parameterized-candidate"
+    }
+  ],
+  "callGraph": {
+    "status": "lexical-candidates-only",
+    "edges": []
+  },
+  "f4References": [
+    {
+      "repo": "f4",
+      "path": "Core/Src/menu_definition.c",
+      "line": 319,
+      "kind": "lexical-reference"
+    },
+    {
+      "repo": "f4",
+      "path": "Core/Src/menu_definition.c",
+      "line": 322,
+      "kind": "lexical-reference"
+    },
+    {
+      "repo": "f4",
+      "path": "Core/Src/oled_utils.c",
+      "line": 3815,
+      "kind": "lexical-reference"
+    },
+    {
+      "repo": "f4",
+      "path": "Core/Src/screenWrappers.c",
+      "line": 128,
+      "kind": "lexical-reference"
+    },
+    {
+      "repo": "f4",
+      "path": "Core/Src/screenWrappers.c",
+      "line": 975,
+      "kind": "lexical-reference"
+    },
+    {
+      "repo": "f4",
+      "path": "Core/Src/ui_event_router.c",
+      "line": 66,
+      "kind": "lexical-reference"
+    }
+  ],
+  "variants": [
+    "Identidad y comportamiento particular deben leerse en renderer, wrapper y router."
+  ],
+  "fields": [
+    {
+      "name": "screenCode/source",
+      "type": "u32/u8",
+      "units": "identidad",
+      "availability": "reported",
+      "note": "cuando existe un reporte de pantalla activa"
+    }
+  ],
+  "actions": [
+    "No atribuir acciones por el nombre del código: comprobar handler/permiso/contexto vigente."
+  ],
+  "transitions": [
+    "Las referencias de fuente son candidatas; no acreditan alcance en todos los modos."
+  ],
+  "missingData": [
+    "No se ha establecido modelo remoto completo ni igualdad de píxeles."
+  ],
+  "localOnly": [],
+  "findings": [
+    "AMDOC-WEB-003"
+  ],
+  "exactness": "not-established",
+  "notes": [
+    "Favoritos y confirmaciones compartidas pueden necesitar discriminantes adicionales."
+  ],
+  "role": "not-resolved"
+}

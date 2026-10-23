@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 1,
+  "id": "shared:screen/050409",
+  "symbol": "SCREEN_CODE_SETTINGS_PREFS_MOTOR_PWM_RIGHT",
+  "code": 328713,
+  "hex": "0x050409",
+  "decomposition": {
+    "menu": 5,
+    "submenu": 4,
+    "page": 9
+  },
+  "revision": "working-copy-hashes",
+  "confidence": "manual-review",
+  "family": "shared:screen-family/sensors-controls",
+  "numericObservation": "same-literal",
+  "webDeclaration": {
+    "value": 328713,
+    "line": 122
+  },
+  "metadataEntryObserved": false,
+  "evidence": [
+    {
+      "repo": "f4",
+      "path": "Core/Inc/screen_codes.h",
+      "line": 154
+    },
+    {
+      "repo": "web",
+      "path": "src/screens/screenCodes.ts",
+      "line": 122
+    }
+  ],
+  "renderers": [
+    {
+      "kind": "identified-table",
+      "path": "src/screens/screenRenderRegistry.ts",
+      "line": 297,
+      "availability": "generic-builder-candidate"
+    }
+  ],
+  "callGraph": {
+    "status": "lexical-candidates-only",
+    "edges": []
+  },
+  "f4References": [
+    {
+      "repo": "f4",
+      "path": "Core/Src/eventManagers.c",
+      "line": 1966,
+      "kind": "lexical-reference"
+    },
+    {
+      "repo": "f4",
+      "path": "Core/Src/menu_definition.c",
+      "line": 752,
+      "kind": "lexical-reference"
+    }
+  ],
+  "variants": [
+    "Sensores, pruebas de actuador, PID y editores tienen diferentes fuentes, unidades y borradores."
+  ],
+  "fields": [
+    {
+      "name": "screenCode/source",
+      "type": "u32/u8",
+      "units": "identidad",
+      "availability": "reported",
+      "note": "no es captura del contenido"
+    },
+    {
+      "name": "MPU/IR/control/PID snapshots",
+      "type": "42/56/64/13 bytes → JSON",
+      "units": "g,dps,ADC,mm,m/s,porcentaje según campo",
+      "availability": "separately-queryable",
+      "note": "cada decoder tiene esquema; consumir no sincroniza automáticamente el renderer físico"
+    },
+    {
+      "name": "vista activa/borrador/ganancia/campo/cursor",
+      "type": "estado local de UI",
+      "units": "según editor",
+      "availability": "unavailable-remotely",
+      "note": "requiere modelo de renderer completo o identidad-only"
+    }
+  ],
+  "actions": [
+    "Giro/pulsación actúan sobre el handler activo en F4.",
+    "Comandos específicos de movimiento/PID requieren sus propias guardas y respuesta."
+  ],
+  "transitions": [
+    "Cambiar un borrador no implica guardarlo/aplicarlo; una acción aceptada puede ser consumida sin cambio visible."
+  ],
+  "missingData": [
+    "El visor no conecta de forma completa los snapshots a todos los argumentos de builders.",
+    "Valores por defecto de MPU/motores no son muestra del equipo."
+  ],
+  "localOnly": [],
+  "findings": [
+    "AMDOC-WEB-002",
+    "AMDOC-WEB-006"
+  ],
+  "exactness": "not-established",
+  "notes": [
+    "La ficha individual enumera bindings candidatos; no se eleva a exact por coincidencia de nombre."
+  ],
+  "role": "not-resolved"
+}

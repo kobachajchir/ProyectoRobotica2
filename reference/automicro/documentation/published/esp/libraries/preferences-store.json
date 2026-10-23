@@ -1,0 +1,603 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "esp:module/src/nvs_store.h",
+  "slug": "preferences-store",
+  "title": "Preferencias NVS y caché",
+  "target": "esp",
+  "kind": "servicio",
+  "status": "source-documented",
+  "snapshotDate": "2026-10-20",
+  "verification": "not-run-user-instruction",
+  "responsibility": "Carga/persiste AppConfig con caché, migración y recuperación de respaldo.",
+  "scope": "Transacción lógica de configuración; filesystem y codec se prestan por NvsStoreOps.",
+  "state": "NvsStoreHandle posee ops copiado, cached, valid y mounted. GetCached devuelve vista const de su almacenamiento, no una copia independiente.",
+  "modularity": "Núcleo de store usa operaciones; nvs_utils es adaptación histórica. AppConfig sigue siendo esquema del producto.",
+  "lifecycle": [
+    "Init conecta backend; InitAndLoad monta y elige archivo/defaults/migración.",
+    "Save solicita escritura mediante el backend y actualiza caché según resultado.",
+    "RestoreBackup recupera configuración guardada si puede hacerlo."
+  ],
+  "interactions": [
+    "Wi-Fi consume configuración; bridge distingue cambios persistentes y de sesión."
+  ],
+  "limitations": [
+    "No exponer contraseñas o PIN de cached como documentación/JSON de diagnóstico.",
+    "Un callback de escritura sigue pudiendo bloquear el loop."
+  ],
+  "relationships": [],
+  "findings": [],
+  "files": [
+    {
+      "rootId": "esp",
+      "path": "src/nvs_store.cpp",
+      "sha256": "37ba7cacf1da449065de7564541b196caa68b773c95a2c6e41a5fcc100079795",
+      "imports": [
+        "nvs_store.h",
+        "string.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    },
+    {
+      "rootId": "esp",
+      "path": "src/nvs_store.h",
+      "sha256": "ed012af9355be2baa0de4eb60213850fbb979a52e77bb4195a6e378b06820a20",
+      "imports": [
+        "config.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    },
+    {
+      "rootId": "esp",
+      "path": "src/nvs_utils.cpp",
+      "sha256": "d06b92f6e37ff13c72a60642fd4a362755eac3c74c9d0aae7e48640b57681b70",
+      "imports": [
+        "nvs_utils.h",
+        "nvs_store.h",
+        "nvs_littlefs.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    },
+    {
+      "rootId": "esp",
+      "path": "src/nvs_utils.h",
+      "sha256": "1de3237c121616bcbf5342ed7878bc066cc66349e4d41712523e482d7db44fc6",
+      "imports": [
+        "config.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    }
+  ],
+  "types": [
+    {
+      "name": "NvsStoreOps",
+      "fields": [
+        {
+          "name": "context",
+          "declaration": "void *context",
+          "callback": false,
+          "ownerType": "NvsStoreOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/nvs_store.h",
+            "line": 5
+          },
+          "description": "Dato de estado/configuración `context`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "mount",
+          "declaration": "bool (*mount)(void *)",
+          "callback": true,
+          "ownerType": "NvsStoreOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/nvs_store.h",
+            "line": 6
+          },
+          "description": "Inicializa/monta backend antes de leer/escribir preferencias; informar fallo al store."
+        },
+        {
+          "name": "exists",
+          "declaration": "bool (*exists)(void *, const char *)",
+          "callback": true,
+          "ownerType": "NvsStoreOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/nvs_store.h",
+            "line": 7
+          },
+          "description": "Consulta existencia de la ruta lógica pedida por el store."
+        },
+        {
+          "name": "remove",
+          "declaration": "bool (*remove)(void *, const char *)",
+          "callback": true,
+          "ownerType": "NvsStoreOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/nvs_store.h",
+            "line": 8
+          },
+          "description": "Elimina archivo lógico del backend durante el protocolo de persistencia."
+        },
+        {
+          "name": "rename",
+          "declaration": "bool (*rename)(void *, const char *, const char *)",
+          "callback": true,
+          "ownerType": "NvsStoreOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/nvs_store.h",
+            "line": 9
+          },
+          "description": "Renombra archivo temporal/final según transacción de guardado; comprobar el resultado."
+        },
+        {
+          "name": "load",
+          "declaration": "bool (*load)(void *, const char *, AppConfig &, bool *requires_migration)",
+          "callback": true,
+          "ownerType": "NvsStoreOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/nvs_store.h",
+            "line": 10
+          },
+          "description": "Carga bytes de una ruta en los buffers/argumentos indicados por la firma, sin inventar un struct portable."
+        },
+        {
+          "name": "write",
+          "declaration": "bool (*write)(void *, const char *, const AppConfig &)",
+          "callback": true,
+          "ownerType": "NvsStoreOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/nvs_store.h",
+            "line": 11
+          },
+          "description": "Escribe datos serializados del store a la ruta del backend; conservar longitud y resultado."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/nvs_store.h",
+        "line": 5
+      }
+    },
+    {
+      "name": "NvsStoreHandle",
+      "fields": [
+        {
+          "name": "ops",
+          "declaration": "NvsStoreOps ops",
+          "callback": false,
+          "ownerType": "NvsStoreHandle",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/nvs_store.h",
+            "line": 14
+          },
+          "description": "Contrato de operaciones externo; conservar la tabla y su contexto durante el uso."
+        },
+        {
+          "name": "cached",
+          "declaration": "AppConfig cached{ estructura anidada }",
+          "callback": false,
+          "ownerType": "NvsStoreHandle",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/nvs_store.h",
+            "line": 15
+          },
+          "description": "Dato de estado/configuración `cached`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "valid",
+          "declaration": "bool valid",
+          "callback": false,
+          "ownerType": "NvsStoreHandle",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/nvs_store.h",
+            "line": 16
+          },
+          "description": "Dato de estado/configuración `valid`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "mounted",
+          "declaration": "bool mounted",
+          "callback": false,
+          "ownerType": "NvsStoreHandle",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/nvs_store.h",
+            "line": 17
+          },
+          "description": "Dato de estado/configuración `mounted`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/nvs_store.h",
+        "line": 14
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "NVS_GetCached",
+      "signature": "const AppConfig *NVS_GetCached()",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/nvs_utils.cpp",
+        "line": 14
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "NvsStore_GetCached",
+        "store"
+      ],
+      "writes": [],
+      "description": "Devuelve vista prestada de la configuración cargada.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "NVS_InitAndLoad",
+      "signature": "bool NVS_InitAndLoad(AppConfig *out)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/nvs_utils.cpp",
+        "line": 10
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "NvsStore_InitAndLoad",
+        "store"
+      ],
+      "writes": [],
+      "description": "Monta y carga configuración con recuperación/migración disponible.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "NVS_RestoreBackup",
+      "signature": "bool NVS_RestoreBackup(AppConfig *out)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/nvs_utils.cpp",
+        "line": 12
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "NvsStore_RestoreBackup",
+        "store"
+      ],
+      "writes": [],
+      "description": "Coordina `NvsStore_RestoreBackup`, `store` para Preferencias NVS y caché.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "NVS_Save",
+      "signature": "bool NVS_Save(const AppConfig &config)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/nvs_utils.cpp",
+        "line": 11
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "NvsStore_Save",
+        "store"
+      ],
+      "writes": [],
+      "description": "Persiste configuración y mantiene caché según éxito.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "NVS_StorageReady",
+      "signature": "bool NVS_StorageReady()",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/nvs_utils.cpp",
+        "line": 13
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "NvsStore_StorageReady",
+        "store"
+      ],
+      "writes": [],
+      "description": "Coordina `NvsStore_StorageReady`, `store` para Preferencias NVS y caché.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "NvsStore_GetCached",
+      "signature": "const AppConfig *NvsStore_GetCached(const NvsStoreHandle &h)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/nvs_store.cpp",
+        "line": 283
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Devuelve vista prestada de la configuración cargada.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "NvsStore_Init",
+      "signature": "void NvsStore_Init(NvsStoreHandle &h, const NvsStoreOps &ops)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/nvs_store.cpp",
+        "line": 4
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [
+        "ops"
+      ],
+      "description": "Conecta operaciones del backend y reinicia estado del store.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "NvsStore_InitAndLoad",
+      "signature": "bool NvsStore_InitAndLoad(NvsStoreHandle &h, AppConfig *out)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/nvs_store.cpp",
+        "line": 185
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "NvsStore_Save",
+        "exists",
+        "fillDefaults",
+        "load",
+        "mountFs",
+        "remove",
+        "writeSanitizedBackup"
+      ],
+      "writes": [
+        "cached",
+        "valid"
+      ],
+      "description": "Monta y carga configuración con recuperación/migración disponible.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "NvsStore_RestoreBackup",
+      "signature": "bool NvsStore_RestoreBackup(NvsStoreHandle &h, AppConfig *out)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/nvs_store.cpp",
+        "line": 255
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "exists",
+        "load",
+        "mountFs",
+        "remove",
+        "rename",
+        "verifyConfigFile",
+        "write"
+      ],
+      "writes": [
+        "cached",
+        "valid"
+      ],
+      "description": "Coordina `exists`, `load`, `mountFs` para Preferencias NVS y caché.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "NvsStore_Save",
+      "signature": "bool NvsStore_Save(NvsStoreHandle &h, const AppConfig &cfg)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/nvs_store.cpp",
+        "line": 134
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "exists",
+        "mountFs",
+        "normalizeConfig",
+        "remove",
+        "rename",
+        "verifyConfigFile",
+        "write"
+      ],
+      "writes": [
+        "cached",
+        "valid"
+      ],
+      "description": "Persiste configuración y mantiene caché según éxito.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "NvsStore_StorageReady",
+      "signature": "bool NvsStore_StorageReady(const NvsStoreHandle &h)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/nvs_store.cpp",
+        "line": 281
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Devuelve el campo `h.mounted` del estado actual de la instancia.",
+      "descriptionOrigin": "structural"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "configsEqual",
+      "signature": "static bool configsEqual(const AppConfig &a, const AppConfig &b)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/nvs_store.cpp",
+        "line": 83
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "strcmp"
+      ],
+      "writes": [],
+      "description": "Coordina `strcmp` para Preferencias NVS y caché.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "cpy",
+      "signature": "static void cpy(char *dst, const char *src, size_t n)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/nvs_store.cpp",
+        "line": 16
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "memcpy"
+      ],
+      "writes": [],
+      "description": "Coordina `memcpy` para Preferencias NVS y caché.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "fillDefaults",
+      "signature": "static void fillDefaults(AppConfig &cfg)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/nvs_store.cpp",
+        "line": 65
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "cpy",
+        "memset"
+      ],
+      "writes": [
+        "apFallbackEnabled",
+        "apProtected",
+        "initializedNvs",
+        "nextBootMode",
+        "schemaVersion"
+      ],
+      "description": "Coordina `cpy`, `memset` para Preferencias NVS y caché.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "mountFs",
+      "signature": "static bool mountFs(NvsStoreHandle &h)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/nvs_store.cpp",
+        "line": 8
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "mount"
+      ],
+      "writes": [
+        "mounted"
+      ],
+      "description": "Adapta la llamada a `mount` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "normalizeConfig",
+      "signature": "static void normalizeConfig(const AppConfig &input, AppConfig &output)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/nvs_store.cpp",
+        "line": 33
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "cpy",
+        "memset"
+      ],
+      "writes": [
+        "apFallbackEnabled",
+        "apProtected",
+        "initializedNvs",
+        "nextBootMode",
+        "schemaVersion"
+      ],
+      "description": "Coordina `cpy`, `memset` para Preferencias NVS y caché.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "store",
+      "signature": "static NvsStoreHandle &store()",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/nvs_utils.cpp",
+        "line": 5
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "NVS_LittleFSOps",
+        "NvsStore_Init"
+      ],
+      "writes": [],
+      "description": "Coordina `NVS_LittleFSOps`, `NvsStore_Init` para Preferencias NVS y caché.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "verifyConfigFile",
+      "signature": "static bool verifyConfigFile(NvsStoreHandle &h, const char *path, const AppConfig &expected)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/nvs_store.cpp",
+        "line": 100
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "configsEqual",
+        "load"
+      ],
+      "writes": [],
+      "description": "Coordina `configsEqual`, `load` para Preferencias NVS y caché.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "writeSanitizedBackup",
+      "signature": "static bool writeSanitizedBackup(NvsStoreHandle &h, const AppConfig &cfg)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/nvs_store.cpp",
+        "line": 108
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "exists",
+        "remove",
+        "rename",
+        "verifyConfigFile",
+        "write"
+      ],
+      "writes": [],
+      "description": "Coordina `exists`, `remove`, `rename` para Preferencias NVS y caché.",
+      "descriptionOrigin": "structural"
+    }
+  ],
+  "hooks": []
+}

@@ -1,0 +1,459 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "f4:module/Core/Inc/fonts.h",
+  "slug": "fonts-resources",
+  "title": "Fuentes, tipos y recursos auxiliares",
+  "target": "f4",
+  "kind": "datos",
+  "status": "source-documented",
+  "verification": "not-run-user-instruction",
+  "snapshotDate": "2026-10-20",
+  "responsibility": "Provee fuentes bitmap, tipos de flags/modos/eventos y vistas de assets sin poseer dispositivos.",
+  "scope": "Tablas de glifos, FontDef, máscaras y vocabulario compartido; otros bitmaps y constantes figuran en source-map.json.",
+  "state": "Fuentes/bitmaps son recursos estáticos; BinaryAssetView_t presta bytes/metadata y no cambia su propiedad. Los tipos de bitfield son representación interna, no un contrato de serialización entre lenguajes.",
+  "lifecycle": [
+    "La aplicación/renderer presta FontDef y recursos al driver; los glifos no requieren inicialización de hardware."
+  ],
+  "interactions": [
+    "SSD1306 y OSK integrado consumen fuentes; menús y protocolos comparten constantes lógicas, no punteros."
+  ],
+  "limitations": [
+    "Orden de bits de bitmap, stride y page-major son formatos diferentes; elegir la entrada DrawBitmap correcta.",
+    "No transportar bitfields C ni punteros como bytes de protocolo."
+  ],
+  "modularity": "Los datos simples son reutilizables con su formato, pero macros_utils también conoce carmode y las convenciones de flags del proyecto.",
+  "files": [
+    {
+      "path": "Core/Inc/fonts.h",
+      "rootId": "f4",
+      "sha256": "03e4a44764b6431a1da22fadf8e1a0b4a95f7393fba89a59b0965b702c2ad94f",
+      "includes": [
+        "stdint.h"
+      ]
+    },
+    {
+      "path": "Core/Src/fonts.c",
+      "rootId": "f4",
+      "sha256": "ae39599174c06d70852ab2fd1f58aa820d233c0ba756bed34c8ee90ac48d7995",
+      "includes": [
+        "fonts.h"
+      ]
+    },
+    {
+      "path": "Core/Inc/binary_asset_types.h",
+      "rootId": "f4",
+      "sha256": "094950a90369c0f2da11aa90cc4f388cf3f6d3fad3803b0deec9a978cbe1e74d",
+      "includes": [
+        "stdint.h"
+      ]
+    },
+    {
+      "path": "Core/Inc/types/bitmap_type.h",
+      "rootId": "f4",
+      "sha256": "2388adc3a34d0a3f96f4caa9c621a9c2c351d700c2bad4b62d3dfb4a1cfd0421",
+      "includes": [
+        "stdint.h"
+      ]
+    },
+    {
+      "path": "Core/Inc/types/carmode_type.h",
+      "rootId": "f4",
+      "sha256": "29ed225a874787323b7713fe051c2b81f1a08229afd900abc62d34279a688701",
+      "includes": []
+    },
+    {
+      "path": "Core/Inc/types/userEvent_type.h",
+      "rootId": "f4",
+      "sha256": "f8a2ff0ba68082512a6a90adebfb595c844041ad6255e63022c9322d71a6e2ef",
+      "includes": []
+    },
+    {
+      "path": "Core/Inc/utils/macros_utils.h",
+      "rootId": "f4",
+      "sha256": "0984bb89c0b1e8446fa01b8672af741e6d817d2f371215f25f2c6d7fbacd932d",
+      "includes": [
+        "stdint.h",
+        "../types/bitmap_type.h",
+        "../types/carmode_type.h"
+      ]
+    }
+  ],
+  "findings": [],
+  "types": [
+    {
+      "name": "FontDef",
+      "fields": [
+        {
+          "name": "FontWidth",
+          "declaration": "const uint8_t FontWidth",
+          "callback": false,
+          "ownerType": "FontDef",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/fonts.h",
+            "line": 10
+          },
+          "description": "Dato de estado/configuración `FontWidth`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "FontHeight",
+          "declaration": "uint8_t FontHeight",
+          "callback": false,
+          "ownerType": "FontDef",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/fonts.h",
+            "line": 11
+          },
+          "description": "Dato de estado/configuración `FontHeight`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "data",
+          "declaration": "const void *data",
+          "callback": false,
+          "ownerType": "FontDef",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/fonts.h",
+            "line": 12
+          },
+          "description": "Dato de estado/configuración `data`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/fonts.h",
+        "line": 10
+      }
+    },
+    {
+      "name": "BinaryAssetView_t",
+      "fields": [
+        {
+          "name": "asset_id",
+          "declaration": "uint8_t asset_id",
+          "callback": false,
+          "ownerType": "BinaryAssetView_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/binary_asset_types.h",
+            "line": 5
+          },
+          "description": "Dato de estado/configuración `asset_id`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "width",
+          "declaration": "uint8_t width",
+          "callback": false,
+          "ownerType": "BinaryAssetView_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/binary_asset_types.h",
+            "line": 6
+          },
+          "description": "Dato de estado/configuración `width`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "height",
+          "declaration": "uint8_t height",
+          "callback": false,
+          "ownerType": "BinaryAssetView_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/binary_asset_types.h",
+            "line": 7
+          },
+          "description": "Dato de estado/configuración `height`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "len",
+          "declaration": "uint16_t len",
+          "callback": false,
+          "ownerType": "BinaryAssetView_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/binary_asset_types.h",
+            "line": 8
+          },
+          "description": "Dato de estado/configuración `len`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "data",
+          "declaration": "const uint8_t *data",
+          "callback": false,
+          "ownerType": "BinaryAssetView_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/binary_asset_types.h",
+            "line": 9
+          },
+          "description": "Dato de estado/configuración `data`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/binary_asset_types.h",
+        "line": 4
+      }
+    },
+    {
+      "name": "Byte_Flag_Struct",
+      "fields": [
+        {
+          "name": "bitmap",
+          "declaration": "struct { estructura anidada } bitmap",
+          "callback": false,
+          "ownerType": "Byte_Flag_Struct",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/bitmap_type.h",
+            "line": 20
+          },
+          "description": "Dato de estado/configuración `bitmap`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "bitPair",
+          "declaration": "struct { estructura anidada } bitPair",
+          "callback": false,
+          "ownerType": "Byte_Flag_Struct",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/bitmap_type.h",
+            "line": 30
+          },
+          "description": "Dato de estado/configuración `bitPair`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "nibbles",
+          "declaration": "struct { estructura anidada } nibbles",
+          "callback": false,
+          "ownerType": "Byte_Flag_Struct",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/bitmap_type.h",
+            "line": 36
+          },
+          "description": "Dato de estado/configuración `nibbles`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "byte",
+          "declaration": "uint8_t byte",
+          "callback": false,
+          "ownerType": "Byte_Flag_Struct",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/bitmap_type.h",
+            "line": 40
+          },
+          "description": "Dato de estado/configuración `byte`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/types/bitmap_type.h",
+        "line": 20
+      }
+    },
+    {
+      "name": "bitmap",
+      "fields": [
+        {
+          "name": "1",
+          "declaration": "uint8_t bit0: 1",
+          "callback": false,
+          "ownerType": "bitmap",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/bitmap_type.h",
+            "line": 21
+          },
+          "description": "Dato de estado/configuración `1`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "1",
+          "declaration": "uint8_t bit1: 1",
+          "callback": false,
+          "ownerType": "bitmap",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/bitmap_type.h",
+            "line": 22
+          },
+          "description": "Dato de estado/configuración `1`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "1",
+          "declaration": "uint8_t bit2: 1",
+          "callback": false,
+          "ownerType": "bitmap",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/bitmap_type.h",
+            "line": 23
+          },
+          "description": "Dato de estado/configuración `1`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "1",
+          "declaration": "uint8_t bit3: 1",
+          "callback": false,
+          "ownerType": "bitmap",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/bitmap_type.h",
+            "line": 24
+          },
+          "description": "Dato de estado/configuración `1`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "1",
+          "declaration": "uint8_t bit4: 1",
+          "callback": false,
+          "ownerType": "bitmap",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/bitmap_type.h",
+            "line": 25
+          },
+          "description": "Dato de estado/configuración `1`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "1",
+          "declaration": "uint8_t bit5: 1",
+          "callback": false,
+          "ownerType": "bitmap",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/bitmap_type.h",
+            "line": 26
+          },
+          "description": "Dato de estado/configuración `1`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "1",
+          "declaration": "uint8_t bit6: 1",
+          "callback": false,
+          "ownerType": "bitmap",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/bitmap_type.h",
+            "line": 27
+          },
+          "description": "Dato de estado/configuración `1`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "1",
+          "declaration": "uint8_t bit7: 1",
+          "callback": false,
+          "ownerType": "bitmap",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/bitmap_type.h",
+            "line": 28
+          },
+          "description": "Dato de estado/configuración `1`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/types/bitmap_type.h",
+        "line": 21
+      }
+    },
+    {
+      "name": "bitPair",
+      "fields": [
+        {
+          "name": "2",
+          "declaration": "uint8_t bitPairL: 2",
+          "callback": false,
+          "ownerType": "bitPair",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/bitmap_type.h",
+            "line": 31
+          },
+          "description": "Dato de estado/configuración `2`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "2",
+          "declaration": "uint8_t bitPairCL: 2",
+          "callback": false,
+          "ownerType": "bitPair",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/bitmap_type.h",
+            "line": 32
+          },
+          "description": "Dato de estado/configuración `2`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "2",
+          "declaration": "uint8_t bitPairCH: 2",
+          "callback": false,
+          "ownerType": "bitPair",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/bitmap_type.h",
+            "line": 33
+          },
+          "description": "Dato de estado/configuración `2`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "2",
+          "declaration": "uint8_t bitPairH: 2",
+          "callback": false,
+          "ownerType": "bitPair",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/bitmap_type.h",
+            "line": 34
+          },
+          "description": "Dato de estado/configuración `2`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/types/bitmap_type.h",
+        "line": 31
+      }
+    },
+    {
+      "name": "nibbles",
+      "fields": [
+        {
+          "name": "4",
+          "declaration": "uint8_t bitL: 4",
+          "callback": false,
+          "ownerType": "nibbles",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/bitmap_type.h",
+            "line": 37
+          },
+          "description": "Dato de estado/configuración `4`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "4",
+          "declaration": "uint8_t bitH: 4",
+          "callback": false,
+          "ownerType": "nibbles",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/bitmap_type.h",
+            "line": 38
+          },
+          "description": "Dato de estado/configuración `4`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/types/bitmap_type.h",
+        "line": 37
+      }
+    }
+  ],
+  "functions": [],
+  "internalFunctions": []
+}

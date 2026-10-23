@@ -1,0 +1,1209 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "f4:module/Core/Inc/tcrt5000.h",
+  "slug": "infrared",
+  "title": "Sensores IR TCRT5000",
+  "target": "f4",
+  "kind": "núcleo",
+  "status": "source-documented",
+  "verification": "not-run-user-instruction",
+  "snapshotDate": "2026-10-20",
+  "responsibility": "Da identidad y polaridad a ocho sensores ADC y controla semánticamente los emisores IR de grupos 5 y 3.",
+  "scope": "Incluye lecturas raw, normalización de presentación y evaluación geométrica de línea. La adquisición DMA y la calibración por sesión pertenecen a la aplicación y LineCalibration.",
+  "state": "TCRT5000_Handle posee puerto copiado y dos booleanos de emisores; el array volatile de ocho lecturas se recibe prestado. Las definiciones SensorDef relacionan identidad lógica, índice ADC y geometría; no reordenar el array por su posición visual.",
+  "lifecycle": [
+    "Init llama initialize y establece los estados de emisores.",
+    "Los cambios de iluminación necesitan asentamiento; leer ADC no acredita que corresponda al nuevo estado óptico.",
+    "ReadRouteSensorsEx transforma lecturas con configuración; el seguidor actual añade evaluación calibrada por LineFollow_Evaluate."
+  ],
+  "interactions": [
+    "app_stm32_ports.h conecta ADC y emisores activos bajos.",
+    "LineCalibration captura con distintas fases de luz; LineFollow consume error y confianza junto a frescura MPU."
+  ],
+  "limitations": [
+    "Distinguir raw ADC, normalizado de presentación y darkness calibrada.",
+    "Los umbrales estáticos de RouteProfile no sustituyen una calibración blanco/pista válida."
+  ],
+  "modularity": "Sin HAL, pero el modelo de ocho sensores y dos grupos es específico del robot. initialize y set_emitters encapsulan plataforma.",
+  "files": [
+    {
+      "path": "Core/Inc/tcrt5000.h",
+      "rootId": "f4",
+      "sha256": "d2d457d128fabc78d45323547083029b2e5799a6eb4d21a400831e56427aec1b",
+      "includes": [
+        "tcrt5000_types.h",
+        "tcrt5000_data.h"
+      ]
+    },
+    {
+      "path": "Core/Inc/tcrt5000_types.h",
+      "rootId": "f4",
+      "sha256": "77b2c96008c8e7d66d9b69c25bda2e7d47bd8caf6006fe0c966cb67c348c9dac",
+      "includes": [
+        "am_port.h",
+        "stdbool.h",
+        "stdint.h"
+      ]
+    },
+    {
+      "path": "Core/Inc/tcrt5000_data.h",
+      "rootId": "f4",
+      "sha256": "78042a34cc089c561f6466df6f036b2a79284ecd20cce1b368299feb2ad2cb16",
+      "includes": [
+        "am_port.h"
+      ]
+    },
+    {
+      "path": "Core/Src/tcrt5000.c",
+      "rootId": "f4",
+      "sha256": "f8e46d820004bd5c7eb63fde515bf38eaefb16d205357187726b702f2f62234d",
+      "includes": [
+        "tcrt5000.h",
+        "stddef.h",
+        "string.h"
+      ]
+    }
+  ],
+  "findings": [],
+  "types": [
+    {
+      "name": "TCRT5000_Port",
+      "fields": [
+        {
+          "name": "ctx",
+          "declaration": "void *ctx",
+          "callback": false,
+          "ownerType": "TCRT5000_Port",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/tcrt5000_types.h",
+            "line": 19
+          },
+          "description": "Contexto opaco prestado al callback; el integrador conserva su almacenamiento."
+        },
+        {
+          "name": "initialize",
+          "declaration": "AM_Result (*initialize)(void *ctx)",
+          "callback": true,
+          "ownerType": "TCRT5000_Port",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/tcrt5000_types.h",
+            "line": 20
+          },
+          "description": "Operación initialize de Sensores IR TCRT5000; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "set_emitters",
+          "declaration": "void (*set_emitters)(void *ctx, uint8_t group, bool enabled)",
+          "callback": true,
+          "ownerType": "TCRT5000_Port",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/tcrt5000_types.h",
+            "line": 21
+          },
+          "description": "Ordena encender/apagar un grupo IR; el adaptador resuelve los pines."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/tcrt5000_types.h",
+        "line": 19
+      }
+    },
+    {
+      "name": "TCRT5000_Handle",
+      "fields": [
+        {
+          "name": "port",
+          "declaration": "TCRT5000_Port port",
+          "callback": false,
+          "ownerType": "TCRT5000_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/tcrt5000_types.h",
+            "line": 24
+          },
+          "description": "Contrato de operaciones externo; conservar la tabla y su contexto durante el uso."
+        },
+        {
+          "name": "emitters_group3_on",
+          "declaration": "bool emitters_group5_on, emitters_group3_on",
+          "callback": false,
+          "ownerType": "TCRT5000_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/tcrt5000_types.h",
+            "line": 25
+          },
+          "description": "La declaración agrupa estados lógicos group5/group3; reflejan la orden de iluminación, no una medida óptica."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/tcrt5000_types.h",
+        "line": 24
+      }
+    },
+    {
+      "name": "TCRT5000_SensorDef_t",
+      "fields": [
+        {
+          "name": "sensorId",
+          "declaration": "TCRT5000_SensorId_t sensorId",
+          "callback": false,
+          "ownerType": "TCRT5000_SensorDef_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/tcrt5000_data.h",
+            "line": 54
+          },
+          "description": "Dato de estado/configuración `sensorId`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "label",
+          "declaration": "const char *label",
+          "callback": false,
+          "ownerType": "TCRT5000_SensorDef_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/tcrt5000_data.h",
+            "line": 55
+          },
+          "description": "Dato de estado/configuración `label`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "polarity",
+          "declaration": "TCRT5000_Polarity_t polarity",
+          "callback": false,
+          "ownerType": "TCRT5000_SensorDef_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/tcrt5000_data.h",
+            "line": 56
+          },
+          "description": "Dato de estado/configuración `polarity`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/tcrt5000_data.h",
+        "line": 54
+      }
+    },
+    {
+      "name": "TCRT5000_RouteProfile_t",
+      "fields": [
+        {
+          "name": "whiteMaxRaw",
+          "declaration": "uint16_t whiteMaxRaw",
+          "callback": false,
+          "ownerType": "TCRT5000_RouteProfile_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/tcrt5000_data.h",
+            "line": 60
+          },
+          "description": "Dato de estado/configuración `whiteMaxRaw`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "blackMinRaw",
+          "declaration": "uint16_t blackMinRaw",
+          "callback": false,
+          "ownerType": "TCRT5000_RouteProfile_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/tcrt5000_data.h",
+            "line": 61
+          },
+          "description": "Dato de estado/configuración `blackMinRaw`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "sideMarginRaw",
+          "declaration": "uint16_t sideMarginRaw",
+          "callback": false,
+          "ownerType": "TCRT5000_RouteProfile_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/tcrt5000_data.h",
+            "line": 62
+          },
+          "description": "Dato de estado/configuración `sideMarginRaw`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/tcrt5000_data.h",
+        "line": 60
+      }
+    },
+    {
+      "name": "TCRT5000_LineConfig_t",
+      "fields": [
+        {
+          "name": "black_width_mm",
+          "declaration": "uint16_t black_width_mm",
+          "callback": false,
+          "ownerType": "TCRT5000_LineConfig_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/tcrt5000_data.h",
+            "line": 66
+          },
+          "description": "Dato de estado/configuración `black_width_mm`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "sensor_position_mm",
+          "declaration": "float sensor_position_mm[TCRT5000_LINE_COUNT]",
+          "callback": false,
+          "ownerType": "TCRT5000_LineConfig_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/tcrt5000_data.h",
+            "line": 67
+          },
+          "description": "Dato de estado/configuración `sensor_position_mm`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "centered_margin_mm",
+          "declaration": "float centered_margin_mm",
+          "callback": false,
+          "ownerType": "TCRT5000_LineConfig_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/tcrt5000_data.h",
+            "line": 68
+          },
+          "description": "Dato de estado/configuración `centered_margin_mm`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/tcrt5000_data.h",
+        "line": 66
+      }
+    },
+    {
+      "name": "TCRT5000_RouteSample_t",
+      "fields": [
+        {
+          "name": "leftRaw",
+          "declaration": "uint16_t leftRaw",
+          "callback": false,
+          "ownerType": "TCRT5000_RouteSample_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/tcrt5000_data.h",
+            "line": 72
+          },
+          "description": "Dato de estado/configuración `leftRaw`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "centerRaw",
+          "declaration": "uint16_t centerRaw",
+          "callback": false,
+          "ownerType": "TCRT5000_RouteSample_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/tcrt5000_data.h",
+            "line": 73
+          },
+          "description": "Dato de estado/configuración `centerRaw`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "rightRaw",
+          "declaration": "uint16_t rightRaw",
+          "callback": false,
+          "ownerType": "TCRT5000_RouteSample_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/tcrt5000_data.h",
+            "line": 74
+          },
+          "description": "Dato de estado/configuración `rightRaw`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "leftNorm",
+          "declaration": "uint16_t leftNorm",
+          "callback": false,
+          "ownerType": "TCRT5000_RouteSample_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/tcrt5000_data.h",
+            "line": 75
+          },
+          "description": "Dato de estado/configuración `leftNorm`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "centerNorm",
+          "declaration": "uint16_t centerNorm",
+          "callback": false,
+          "ownerType": "TCRT5000_RouteSample_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/tcrt5000_data.h",
+            "line": 76
+          },
+          "description": "Dato de estado/configuración `centerNorm`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "rightNorm",
+          "declaration": "uint16_t rightNorm",
+          "callback": false,
+          "ownerType": "TCRT5000_RouteSample_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/tcrt5000_data.h",
+            "line": 77
+          },
+          "description": "Dato de estado/configuración `rightNorm`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "leftDarkness",
+          "declaration": "float leftDarkness",
+          "callback": false,
+          "ownerType": "TCRT5000_RouteSample_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/tcrt5000_data.h",
+            "line": 78
+          },
+          "description": "Dato de estado/configuración `leftDarkness`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "centerDarkness",
+          "declaration": "float centerDarkness",
+          "callback": false,
+          "ownerType": "TCRT5000_RouteSample_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/tcrt5000_data.h",
+            "line": 79
+          },
+          "description": "Dato de estado/configuración `centerDarkness`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "rightDarkness",
+          "declaration": "float rightDarkness",
+          "callback": false,
+          "ownerType": "TCRT5000_RouteSample_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/tcrt5000_data.h",
+            "line": 80
+          },
+          "description": "Dato de estado/configuración `rightDarkness`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "lateralErrorMm",
+          "declaration": "float lateralErrorMm",
+          "callback": false,
+          "ownerType": "TCRT5000_RouteSample_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/tcrt5000_data.h",
+            "line": 81
+          },
+          "description": "Dato de estado/configuración `lateralErrorMm`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "lateralErrorNorm",
+          "declaration": "float lateralErrorNorm",
+          "callback": false,
+          "ownerType": "TCRT5000_RouteSample_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/tcrt5000_data.h",
+            "line": 82
+          },
+          "description": "Dato de estado/configuración `lateralErrorNorm`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "centeredMarginMm",
+          "declaration": "float centeredMarginMm",
+          "callback": false,
+          "ownerType": "TCRT5000_RouteSample_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/tcrt5000_data.h",
+            "line": 83
+          },
+          "description": "Dato de estado/configuración `centeredMarginMm`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "lineWidthMm",
+          "declaration": "uint16_t lineWidthMm",
+          "callback": false,
+          "ownerType": "TCRT5000_RouteSample_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/tcrt5000_data.h",
+            "line": 84
+          },
+          "description": "Dato de estado/configuración `lineWidthMm`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "pattern",
+          "declaration": "uint8_t pattern",
+          "callback": false,
+          "ownerType": "TCRT5000_RouteSample_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/tcrt5000_data.h",
+            "line": 85
+          },
+          "description": "Dato de estado/configuración `pattern`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "confidence",
+          "declaration": "uint8_t confidence",
+          "callback": false,
+          "ownerType": "TCRT5000_RouteSample_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/tcrt5000_data.h",
+            "line": 86
+          },
+          "description": "Dato de estado/configuración `confidence`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ambiguous",
+          "declaration": "bool ambiguous",
+          "callback": false,
+          "ownerType": "TCRT5000_RouteSample_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/tcrt5000_data.h",
+            "line": 87
+          },
+          "description": "Dato de estado/configuración `ambiguous`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "leftBlack",
+          "declaration": "bool leftBlack",
+          "callback": false,
+          "ownerType": "TCRT5000_RouteSample_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/tcrt5000_data.h",
+            "line": 88
+          },
+          "description": "Dato de estado/configuración `leftBlack`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "centerBlack",
+          "declaration": "bool centerBlack",
+          "callback": false,
+          "ownerType": "TCRT5000_RouteSample_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/tcrt5000_data.h",
+            "line": 89
+          },
+          "description": "Dato de estado/configuración `centerBlack`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "rightBlack",
+          "declaration": "bool rightBlack",
+          "callback": false,
+          "ownerType": "TCRT5000_RouteSample_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/tcrt5000_data.h",
+            "line": 90
+          },
+          "description": "Dato de estado/configuración `rightBlack`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "leftWhite",
+          "declaration": "bool leftWhite",
+          "callback": false,
+          "ownerType": "TCRT5000_RouteSample_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/tcrt5000_data.h",
+            "line": 91
+          },
+          "description": "Dato de estado/configuración `leftWhite`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "rightWhite",
+          "declaration": "bool rightWhite",
+          "callback": false,
+          "ownerType": "TCRT5000_RouteSample_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/tcrt5000_data.h",
+            "line": 92
+          },
+          "description": "Dato de estado/configuración `rightWhite`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "alignment",
+          "declaration": "TCRT5000_RouteAlignment_t alignment",
+          "callback": false,
+          "ownerType": "TCRT5000_RouteSample_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/tcrt5000_data.h",
+            "line": 93
+          },
+          "description": "Dato de estado/configuración `alignment`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/tcrt5000_data.h",
+        "line": 72
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "TCRT5000_EmittersGroup3IsOn",
+      "signature": "bool TCRT5000_EmittersGroup3IsOn(TCRT5000_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/tcrt5000.h",
+        "line": 17
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Consulta el estado lógico ordenado al grupo de tres emisores de línea.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/tcrt5000.c",
+        "line": 34
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "TCRT5000_EmittersGroup3Off",
+      "signature": "void TCRT5000_EmittersGroup3Off(TCRT5000_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/tcrt5000.h",
+        "line": 15
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "TCRT5000_EmittersGroup3Set"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `TCRT5000_EmittersGroup3Set` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/tcrt5000.c",
+        "line": 32
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "TCRT5000_EmittersGroup3On",
+      "signature": "void TCRT5000_EmittersGroup3On(TCRT5000_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/tcrt5000.h",
+        "line": 14
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "TCRT5000_EmittersGroup3Set"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `TCRT5000_EmittersGroup3Set` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/tcrt5000.c",
+        "line": 31
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "TCRT5000_EmittersGroup3Set",
+      "signature": "void TCRT5000_EmittersGroup3Set(TCRT5000_Handle *h, bool enabled)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/tcrt5000.h",
+        "line": 16
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "set_emitters"
+      ],
+      "writes": [
+        "emitters_group3_on"
+      ],
+      "description": "Adapta la llamada a `set_emitters` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/tcrt5000.c",
+        "line": 26
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "TCRT5000_EmittersGroup5IsOn",
+      "signature": "bool TCRT5000_EmittersGroup5IsOn(TCRT5000_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/tcrt5000.h",
+        "line": 13
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Consulta el estado lógico ordenado al grupo de cinco emisores de objetos.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/tcrt5000.c",
+        "line": 33
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "TCRT5000_EmittersGroup5Off",
+      "signature": "void TCRT5000_EmittersGroup5Off(TCRT5000_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/tcrt5000.h",
+        "line": 11
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "TCRT5000_EmittersGroup5Set"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `TCRT5000_EmittersGroup5Set` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/tcrt5000.c",
+        "line": 30
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "TCRT5000_EmittersGroup5On",
+      "signature": "void TCRT5000_EmittersGroup5On(TCRT5000_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/tcrt5000.h",
+        "line": 10
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "TCRT5000_EmittersGroup5Set"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `TCRT5000_EmittersGroup5Set` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/tcrt5000.c",
+        "line": 29
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "TCRT5000_EmittersGroup5Set",
+      "signature": "void TCRT5000_EmittersGroup5Set(TCRT5000_Handle *h, bool enabled)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/tcrt5000.h",
+        "line": 12
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "set_emitters"
+      ],
+      "writes": [
+        "emitters_group5_on"
+      ],
+      "description": "Adapta la llamada a `set_emitters` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/tcrt5000.c",
+        "line": 23
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "TCRT5000_GetDefaultLineConfig",
+      "signature": "void TCRT5000_GetDefaultLineConfig(TCRT5000_LineConfig_t *config)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/tcrt5000.h",
+        "line": 31
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "TCRT5000_UpdateLineGeometry",
+        "memset"
+      ],
+      "writes": [
+        "black_width_mm"
+      ],
+      "description": "Carga geometría y anchura de línea predeterminadas.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/tcrt5000.c",
+        "line": 245
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "TCRT5000_GetLineSensorDef",
+      "signature": "const TCRT5000_SensorDef_t *TCRT5000_GetLineSensorDef(TCRT5000_LineSensor_t sensor)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/tcrt5000.h",
+        "line": 20
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "TCRT5000_GetSensorDef"
+      ],
+      "writes": [],
+      "description": "Devuelve la definición e índice ADC de un sensor de línea.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/tcrt5000.c",
+        "line": 126
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "TCRT5000_GetObjectSensorDef",
+      "signature": "const TCRT5000_SensorDef_t *TCRT5000_GetObjectSensorDef(TCRT5000_ObjectSensor_t sensor)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/tcrt5000.h",
+        "line": 21
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "TCRT5000_GetSensorDef"
+      ],
+      "writes": [],
+      "description": "Devuelve la definición e índice ADC de un sensor de objetos.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/tcrt5000.c",
+        "line": 135
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "TCRT5000_GetRaw",
+      "signature": "uint16_t TCRT5000_GetRaw(const volatile uint16_t *sensorData, const TCRT5000_SensorDef_t *sensor)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/tcrt5000.h",
+        "line": 23
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Lee el canal ADC indicado por una definición de sensor.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/tcrt5000.c",
+        "line": 151
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "TCRT5000_GetRawById",
+      "signature": "uint16_t TCRT5000_GetRawById(const volatile uint16_t *sensorData, TCRT5000_SensorId_t sensorId)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/tcrt5000.h",
+        "line": 25
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "TCRT5000_GetRaw",
+        "TCRT5000_GetSensorDef"
+      ],
+      "writes": [],
+      "description": "Resuelve un ID lógico y devuelve su lectura raw.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/tcrt5000.c",
+        "line": 161
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "TCRT5000_GetRouteAlignmentText",
+      "signature": "const char *TCRT5000_GetRouteAlignmentText(TCRT5000_RouteAlignment_t alignment)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/tcrt5000.h",
+        "line": 41
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Devuelve el texto de la clasificación de alineación.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/tcrt5000.c",
+        "line": 364
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "TCRT5000_GetRouteProfile",
+      "signature": "const TCRT5000_RouteProfile_t *TCRT5000_GetRouteProfile(bool irLightsOn)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/tcrt5000.h",
+        "line": 28
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Elige umbrales estáticos según estado lógico de iluminación.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/tcrt5000.c",
+        "line": 178
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "TCRT5000_GetRouteSensorPositionMm",
+      "signature": "float TCRT5000_GetRouteSensorPositionMm(TCRT5000_LineSensor_t sensor)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/tcrt5000.h",
+        "line": 33
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Devuelve la posición transversal del sensor de línea en milímetros.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/tcrt5000.c",
+        "line": 266
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "TCRT5000_GetSensorLabel",
+      "signature": "const char *TCRT5000_GetSensorLabel(TCRT5000_SensorId_t sensorId)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/tcrt5000.h",
+        "line": 22
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "TCRT5000_GetSensorDef"
+      ],
+      "writes": [],
+      "description": "Devuelve la etiqueta del identificador lógico IR.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/tcrt5000.c",
+        "line": 144
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "TCRT5000_Init",
+      "signature": "AM_Result TCRT5000_Init(TCRT5000_Handle *h, const TCRT5000_Port *port)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/tcrt5000.h",
+        "line": 7
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "initialize",
+        "memset"
+      ],
+      "writes": [
+        "port"
+      ],
+      "description": "Inicializa el puerto y el estado lógico de los dos grupos de emisores.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/tcrt5000.c",
+        "line": 17
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "TCRT5000_IsBlack",
+      "signature": "bool TCRT5000_IsBlack(uint16_t raw, const TCRT5000_RouteProfile_t *profile)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/tcrt5000.h",
+        "line": 29
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Clasifica la lectura como negro usando el perfil recibido.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/tcrt5000.c",
+        "line": 185
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "TCRT5000_IsWhite",
+      "signature": "bool TCRT5000_IsWhite(uint16_t raw, const TCRT5000_RouteProfile_t *profile)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/tcrt5000.h",
+        "line": 30
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Clasifica la lectura como blanco usando el perfil recibido.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/tcrt5000.c",
+        "line": 190
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "TCRT5000_NormalizeForDisplay",
+      "signature": "uint16_t TCRT5000_NormalizeForDisplay(uint16_t raw, TCRT5000_Polarity_t polarity)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/tcrt5000.h",
+        "line": 27
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Normaliza el valor ADC según polaridad para su presentación.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/tcrt5000.c",
+        "line": 167
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "TCRT5000_ReadRouteSensors",
+      "signature": "void TCRT5000_ReadRouteSensors(const volatile uint16_t *sensorData, bool irLightsOn, TCRT5000_RouteSample_t *sample)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/tcrt5000.h",
+        "line": 34
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "TCRT5000_ReadRouteSensorsEx"
+      ],
+      "writes": [],
+      "description": "Evalúa los tres sensores de línea con configuración predeterminada.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/tcrt5000.c",
+        "line": 357
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "TCRT5000_ReadRouteSensorsEx",
+      "signature": "void TCRT5000_ReadRouteSensorsEx(const volatile uint16_t *sensorData, bool irLightsOn, const TCRT5000_LineConfig_t *config, TCRT5000_RouteSample_t *sample)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/tcrt5000.h",
+        "line": 37
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "TCRT5000_EvaluateRouteAlignment",
+        "TCRT5000_GetDefaultLineConfig",
+        "TCRT5000_GetLineSensorDef",
+        "TCRT5000_GetRaw",
+        "TCRT5000_GetRouteProfile",
+        "TCRT5000_IsBlack",
+        "TCRT5000_IsWhite",
+        "TCRT5000_NormalizeForDisplay",
+        "TCRT5000_NormalizedDarkness",
+        "memset"
+      ],
+      "writes": [
+        "alignment",
+        "ambiguous",
+        "centerBlack",
+        "centerDarkness",
+        "centerNorm",
+        "centerRaw",
+        "centeredMarginMm",
+        "confidence",
+        "lateralErrorMm",
+        "lateralErrorNorm",
+        "leftBlack",
+        "leftDarkness",
+        "leftNorm",
+        "leftRaw",
+        "leftWhite",
+        "lineWidthMm",
+        "pattern",
+        "rightBlack",
+        "rightDarkness",
+        "rightNorm",
+        "rightRaw",
+        "rightWhite"
+      ],
+      "description": "Evalúa patrón, error lateral y alineación con configuración explícita.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/tcrt5000.c",
+        "line": 275
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "TCRT5000_SetLineBlackWidth",
+      "signature": "void TCRT5000_SetLineBlackWidth(TCRT5000_LineConfig_t *config, uint16_t blackWidthMm)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/tcrt5000.h",
+        "line": 32
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "TCRT5000_UpdateLineGeometry"
+      ],
+      "writes": [
+        "black_width_mm"
+      ],
+      "description": "Actualiza anchura negra y margen geométrico derivado.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/tcrt5000.c",
+        "line": 256
+      },
+      "linkage": "header"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "TCRT5000_GetSensorDef",
+      "signature": "static const TCRT5000_SensorDef_t *TCRT5000_GetSensorDef(TCRT5000_SensorId_t sensorId)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/tcrt5000.c",
+        "line": 85
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Consulta Sensor Def dentro de Sensores IR TCRT5000.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "TCRT5000_EvaluateRouteAlignment",
+      "signature": "static TCRT5000_RouteAlignment_t TCRT5000_EvaluateRouteAlignment(const TCRT5000_RouteSample_t *sample, const TCRT5000_RouteProfile_t *profile)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/tcrt5000.c",
+        "line": 94
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Evaluate Route Alignment de Sensores IR TCRT5000; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "TCRT5000_NormalizedDarkness",
+      "signature": "static float TCRT5000_NormalizedDarkness(uint16_t normalized, const TCRT5000_RouteProfile_t *profile)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/tcrt5000.c",
+        "line": 195
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Devuelve el campo `0.0f` del estado actual de la instancia.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "TCRT5000_UpdateLineGeometry",
+      "signature": "static void TCRT5000_UpdateLineGeometry(TCRT5000_LineConfig_t *config)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/tcrt5000.c",
+        "line": 218
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [
+        "black_width_mm",
+        "centered_margin_mm"
+      ],
+      "description": "Actualiza Line Geometry dentro de Sensores IR TCRT5000.",
+      "descriptionOrigin": "inferred-name"
+    }
+  ]
+}

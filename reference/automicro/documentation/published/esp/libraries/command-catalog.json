@@ -1,0 +1,499 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "esp:module/src/f4_command_registry.h",
+  "slug": "command-catalog",
+  "title": "Registros de comandos y sus políticas",
+  "target": "esp",
+  "kind": "contrato",
+  "status": "source-documented",
+  "snapshotDate": "2026-10-20",
+  "verification": "not-run-user-instruction",
+  "responsibility": "Describe IDs, dueño, longitudes, timeout, privilegio e interpretación de finalización.",
+  "scope": "Metadata de catálogo para broker/bridge y especificación UNER; no demuestra por sí misma la implementación del peer.",
+  "state": "Tablas estáticas; en ESP8266 se conservan en PROGMEM y se copian mediante acceso apropiado. Los nombres pueden no ocupar RAM en esa variante.",
+  "modularity": "Contrato de aplicación, no HAL; conserva conocimiento de F4/ESP y privilegios Web.",
+  "lifecycle": [
+    "Consultar/cargar una entrada antes de construir solicitud.",
+    "La política elegida determina si ACK o mismo comando completa al cliente."
+  ],
+  "interactions": [
+    "TransactionManager y dispatch usan estos registros.",
+    "La documentación cruza cada registro con tabla/handler F4 sin fusionar contradicciones."
+  ],
+  "limitations": [
+    "implementedMetadata no garantiza que la placa instalada soporte el ID.",
+    "Mantener nombres JSON separados de IDs numéricos y comandos reservados."
+  ],
+  "relationships": [],
+  "findings": [],
+  "files": [
+    {
+      "rootId": "esp",
+      "path": "src/f4_command_registry.c",
+      "sha256": "fad61527bebf3527009fce13c0f2789279a1b015cd2c4cf07aaf7bdf2a988400",
+      "imports": [
+        "f4_command_registry.h",
+        "string.h",
+        "pgmspace.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    },
+    {
+      "rootId": "esp",
+      "path": "src/f4_command_registry.h",
+      "sha256": "f3419c4319bdc3d92597415adc84603039fd9dda9f2f3741c2bd8a7636d6c972",
+      "imports": [
+        "stdbool.h",
+        "stddef.h",
+        "stdint.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    },
+    {
+      "rootId": "esp",
+      "path": "src/uner_cmdspec.c",
+      "sha256": "89c6a4a8e78c8d3954bec60d59885073647561f808264358e6457d4c02b40e63",
+      "imports": [
+        "uner_cmdspec.h",
+        "string.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    },
+    {
+      "rootId": "esp",
+      "path": "src/uner_cmdspec.h",
+      "sha256": "aaad42fa2defd6039e9c09a4908a9a0e7e2674a54f557b1286ebb5f56a67234c",
+      "imports": [
+        "uner_v2.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    }
+  ],
+  "types": [
+    {
+      "name": "F4_CommandSpec",
+      "fields": [
+        {
+          "name": "id",
+          "declaration": "uint8_t id",
+          "callback": false,
+          "ownerType": "F4_CommandSpec",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_command_registry.h",
+            "line": 35
+          },
+          "description": "Dato de estado/configuración `id`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "name",
+          "declaration": "const char *name",
+          "callback": false,
+          "ownerType": "F4_CommandSpec",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_command_registry.h",
+            "line": 36
+          },
+          "description": "Dato de estado/configuración `name`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "owner",
+          "declaration": "F4_CommandOwner owner",
+          "callback": false,
+          "ownerType": "F4_CommandSpec",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_command_registry.h",
+            "line": 37
+          },
+          "description": "Dato de estado/configuración `owner`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "request_min_len",
+          "declaration": "uint8_t request_min_len",
+          "callback": false,
+          "ownerType": "F4_CommandSpec",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_command_registry.h",
+            "line": 38
+          },
+          "description": "Dato de estado/configuración `request_min_len`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "request_max_len",
+          "declaration": "uint8_t request_max_len",
+          "callback": false,
+          "ownerType": "F4_CommandSpec",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_command_registry.h",
+            "line": 39
+          },
+          "description": "Dato de estado/configuración `request_max_len`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "response_min_len",
+          "declaration": "uint8_t response_min_len",
+          "callback": false,
+          "ownerType": "F4_CommandSpec",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_command_registry.h",
+            "line": 40
+          },
+          "description": "Dato de estado/configuración `response_min_len`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "response_max_len",
+          "declaration": "uint8_t response_max_len",
+          "callback": false,
+          "ownerType": "F4_CommandSpec",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_command_registry.h",
+            "line": 41
+          },
+          "description": "Dato de estado/configuración `response_max_len`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "response_policy",
+          "declaration": "F4_ResponsePolicy response_policy",
+          "callback": false,
+          "ownerType": "F4_CommandSpec",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_command_registry.h",
+            "line": 42
+          },
+          "description": "Dato de estado/configuración `response_policy`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "timeout_ms",
+          "declaration": "uint16_t timeout_ms",
+          "callback": false,
+          "ownerType": "F4_CommandSpec",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_command_registry.h",
+            "line": 43
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "idempotent",
+          "declaration": "bool idempotent",
+          "callback": false,
+          "ownerType": "F4_CommandSpec",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_command_registry.h",
+            "line": 44
+          },
+          "description": "Dato de estado/configuración `idempotent`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "privilege",
+          "declaration": "F4_CommandPrivilege privilege",
+          "callback": false,
+          "ownerType": "F4_CommandSpec",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_command_registry.h",
+            "line": 45
+          },
+          "description": "Dato de estado/configuración `privilege`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "implemented",
+          "declaration": "bool implemented",
+          "callback": false,
+          "ownerType": "F4_CommandSpec",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_command_registry.h",
+            "line": 46
+          },
+          "description": "Dato de estado/configuración `implemented`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "sensitive",
+          "declaration": "bool sensitive",
+          "callback": false,
+          "ownerType": "F4_CommandSpec",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_command_registry.h",
+            "line": 47
+          },
+          "description": "Dato de estado/configuración `sensitive`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/f4_command_registry.h",
+        "line": 35
+      }
+    },
+    {
+      "name": "UNER_CommandSpec",
+      "fields": [
+        {
+          "name": "id",
+          "declaration": "uint8_t id",
+          "callback": false,
+          "ownerType": "UNER_CommandSpec",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_cmdspec.h",
+            "line": 16
+          },
+          "description": "Dato de estado/configuración `id`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "min_args",
+          "declaration": "uint8_t min_args",
+          "callback": false,
+          "ownerType": "UNER_CommandSpec",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_cmdspec.h",
+            "line": 17
+          },
+          "description": "Dato de estado/configuración `min_args`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "max_args",
+          "declaration": "uint8_t max_args",
+          "callback": false,
+          "ownerType": "UNER_CommandSpec",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_cmdspec.h",
+            "line": 18
+          },
+          "description": "Dato de estado/configuración `max_args`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "flags",
+          "declaration": "uint8_t flags",
+          "callback": false,
+          "ownerType": "UNER_CommandSpec",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_cmdspec.h",
+            "line": 19
+          },
+          "description": "Bits de estado del módulo; conservar máscaras y distinguir estado de eventos pendientes."
+        },
+        {
+          "name": "timeout_ms",
+          "declaration": "uint16_t timeout_ms",
+          "callback": false,
+          "ownerType": "UNER_CommandSpec",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_cmdspec.h",
+            "line": 20
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "handler",
+          "declaration": "UNER_CommandHandler handler",
+          "callback": false,
+          "ownerType": "UNER_CommandSpec",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_cmdspec.h",
+            "line": 21
+          },
+          "description": "Dato de estado/configuración `handler`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_cmdspec.h",
+        "line": 16
+      }
+    },
+    {
+      "name": "UNER_CommandHandler",
+      "callbackType": "void (*UNER_CommandHandler)(void *ctx, const UNER_Packet *packet)",
+      "fields": [],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_cmdspec.h",
+        "line": 7
+      },
+      "description": "Handler de la tabla invocado con handle/paquete según firma; valida semántica y decide respuesta de ese comando. Una entrada NULL puede usar dispatcher de aplicación."
+    }
+  ],
+  "functions": [
+    {
+      "name": "F4_CommandRegistry_At",
+      "signature": "const F4_CommandSpec *F4_CommandRegistry_At(size_t index)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/f4_command_registry.c",
+        "line": 176
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "F4_CommandRegistry_Count",
+        "F4_REGISTRY_COPY",
+        "defined"
+      ],
+      "writes": [],
+      "description": "Coordina `F4_CommandRegistry_Count`, `F4_REGISTRY_COPY`, `defined` para Registros de comandos y sus políticas.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "F4_CommandRegistry_Count",
+      "signature": "size_t F4_CommandRegistry_Count(void)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/f4_command_registry.c",
+        "line": 208
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Command Registry Count de Registros de comandos y sus políticas; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "F4_CommandRegistry_Find",
+      "signature": "const F4_CommandSpec *F4_CommandRegistry_Find(uint8_t id)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/f4_command_registry.c",
+        "line": 157
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "F4_CommandRegistry_Lookup",
+        "defined"
+      ],
+      "writes": [],
+      "description": "Coordina `F4_CommandRegistry_Lookup`, `defined` para Registros de comandos y sus políticas.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "F4_CommandRegistry_IsRequestLengthValid",
+      "signature": "bool F4_CommandRegistry_IsRequestLengthValid(const F4_CommandSpec *spec, size_t len)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/f4_command_registry.c",
+        "line": 213
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Command Registry Is Request Length Valid de Registros de comandos y sus políticas; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "F4_CommandRegistry_IsResponseLengthValid",
+      "signature": "bool F4_CommandRegistry_IsResponseLengthValid(const F4_CommandSpec *spec, size_t len)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/f4_command_registry.c",
+        "line": 225
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Command Registry Is Response Length Valid de Registros de comandos y sus políticas; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "F4_CommandRegistry_IsWireAllowed",
+      "signature": "bool F4_CommandRegistry_IsWireAllowed(const F4_CommandSpec *spec)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/f4_command_registry.c",
+        "line": 235
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Command Registry Is Wire Allowed de Registros de comandos y sus políticas; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "F4_CommandRegistry_Lookup",
+      "signature": "bool F4_CommandRegistry_Lookup(uint8_t id, F4_CommandSpec *out)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/f4_command_registry.c",
+        "line": 188
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "F4_REGISTRY_COPY"
+      ],
+      "writes": [],
+      "description": "Coordina `F4_REGISTRY_COPY` para Registros de comandos y sus políticas.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_DefaultCommandTable",
+      "signature": "const UNER_CommandSpec *UNER_DefaultCommandTable(uint8_t *count)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_cmdspec.c",
+        "line": 107
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación UNER Default Command Table de Registros de comandos y sus políticas; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_FindCommandSpec",
+      "signature": "const UNER_CommandSpec *UNER_FindCommandSpec(const UNER_CommandSpec *table, uint8_t count, uint8_t cmd)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_cmdspec.c",
+        "line": 4
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación UNER Find Command Spec de Registros de comandos y sus políticas; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_MutableCommandTable",
+      "signature": "UNER_CommandSpec *UNER_MutableCommandTable(uint8_t *count)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_cmdspec.c",
+        "line": 112
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "memcpy"
+      ],
+      "writes": [],
+      "description": "Coordina `memcpy` para Registros de comandos y sus políticas.",
+      "descriptionOrigin": "structural"
+    }
+  ],
+  "internalFunctions": [],
+  "hooks": []
+}

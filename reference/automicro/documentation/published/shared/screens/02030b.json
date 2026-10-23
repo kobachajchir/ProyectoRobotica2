@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 1,
+  "id": "shared:screen/02030b",
+  "symbol": "SCREEN_CODE_CONNECTIVITY_ESP_UNRESPONSIVE",
+  "code": 131851,
+  "hex": "0x02030B",
+  "decomposition": {
+    "menu": 2,
+    "submenu": 3,
+    "page": 11
+  },
+  "revision": "working-copy-hashes",
+  "confidence": "manual-review",
+  "family": "shared:screen-family/notifications",
+  "numericObservation": "same-literal",
+  "webDeclaration": {
+    "value": 131851,
+    "line": 60
+  },
+  "metadataEntryObserved": false,
+  "evidence": [
+    {
+      "repo": "f4",
+      "path": "Core/Inc/screen_codes.h",
+      "line": 86
+    },
+    {
+      "repo": "web",
+      "path": "src/screens/screenCodes.ts",
+      "line": 60
+    }
+  ],
+  "renderers": [
+    {
+      "kind": "switch-case",
+      "path": "src/screens/screenRenderRegistry.ts",
+      "line": 418,
+      "builders": [
+        "buildScreen02030bEspUnresponsiveNotificationCommands"
+      ],
+      "availability": "parameterized-candidate"
+    }
+  ],
+  "callGraph": {
+    "status": "lexical-candidates-only",
+    "edges": []
+  },
+  "f4References": [
+    {
+      "repo": "f4",
+      "path": "Core/Src/oled_utils.c",
+      "line": 181,
+      "kind": "lexical-reference"
+    }
+  ],
+  "variants": [
+    "El mismo código puede representar aviso/vista o variantes ON/OFF no distinguidas por su identidad."
+  ],
+  "fields": [
+    {
+      "name": "screenCode/source",
+      "type": "u32/u8",
+      "units": "identidad",
+      "availability": "reported",
+      "note": "source distingue aviso de render cuando el productor lo proporciona"
+    },
+    {
+      "name": "remainingMs/totalMs/clientNumber",
+      "type": "u16/u16/u8 opcional",
+      "units": "ms/número",
+      "availability": "reported",
+      "note": "extensión de aviso según longitud y source; no siempre presente"
+    },
+    {
+      "name": "texto/ON-OFF/event payload exacto",
+      "type": "modelo de aviso local",
+      "units": "texto/variante",
+      "availability": "unavailable-remotely",
+      "note": "un GET posterior del estado no prueba qué aviso transitorio estaba visible"
+    }
+  ],
+  "actions": [
+    "Encoder puede descartar aviso según prioridad del router.",
+    "Los hooks onShow/onHide pueden tener efectos; no basta simular desaparición en Web."
+  ],
+  "transitions": [
+    "Cola F4 conserva vista anterior y restaura al terminar; Web recibe eventos posteriores."
+  ],
+  "missingData": [
+    "No todas las líneas/textos/variantes y fase del refresco se transportan."
+  ],
+  "localOnly": [],
+  "findings": [
+    "AMDOC-WEB-002"
+  ],
+  "exactness": "not-established",
+  "notes": [
+    "Mismo ID y duración no certifican píxeles ni orden visible de todos los avisos."
+  ],
+  "role": "not-resolved"
+}

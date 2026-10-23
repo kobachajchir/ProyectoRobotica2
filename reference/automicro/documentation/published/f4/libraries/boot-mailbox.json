@@ -1,0 +1,538 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "f4:module/Core/Inc/automicro_boot_contract.h",
+  "slug": "boot-mailbox",
+  "title": "Contrato de arranque y mailbox",
+  "target": "f4",
+  "kind": "plataforma",
+  "status": "source-documented",
+  "verification": "not-run-user-instruction",
+  "snapshotDate": "2026-10-20",
+  "responsibility": "Intercambia metadatos y solicitudes de arranque entre aplicación y bootloader mediante mailbox y CRC.",
+  "scope": "Layout del mailbox, validación, consumo y solicitudes; no documenta internamente el bootloader externo.",
+  "state": "Mailbox en dirección/área fijada por contrato de plataforma; sus campos y CRC deben coincidir con el otro productor/consumidor. Consumir una solicitud tiene efecto sobre su disponibilidad posterior.",
+  "lifecycle": [
+    "Arranque consulta/valida mailbox; Consume copia y elimina la marca según implementación.",
+    "WriteRequest prepara solicitud antes del reset; el bootloader la consume en otro ciclo de ejecución."
+  ],
+  "interactions": [
+    "UNER_App informa versión/boot report y prepara resets; el bootloader es un consumidor externo a esta fotografía."
+  ],
+  "limitations": [
+    "No suponer compatibilidad con otra versión de bootloader solo por tener el mismo nombre de struct.",
+    "El análisis no modifica linker, sectores ni imagen de firmware."
+  ],
+  "modularity": "Ligado a memoria y contrato de arranque STM32; no es una biblioteca de aplicación portable sin adaptar dirección y layout.",
+  "files": [
+    {
+      "path": "Core/Inc/automicro_boot_contract.h",
+      "rootId": "f4",
+      "sha256": "d60581b850062cba9502d1f1ee2ecf5780ba2601b602a258a15ceb01db461ba3",
+      "includes": [
+        "stdbool.h",
+        "stddef.h",
+        "stdint.h"
+      ]
+    },
+    {
+      "path": "Core/Src/automicro_boot_contract.c",
+      "rootId": "f4",
+      "sha256": "18f6838024f68deaebe551b5c3aff74f8c2654262987e7e521f642d0f4436e31",
+      "includes": [
+        "automicro_boot_contract.h",
+        "string.h"
+      ]
+    }
+  ],
+  "findings": [],
+  "types": [
+    {
+      "name": "AutoMicroAppManifest",
+      "fields": [
+        {
+          "name": "magic",
+          "declaration": "uint32_t magic",
+          "callback": false,
+          "ownerType": "AutoMicroAppManifest",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/automicro_boot_contract.h",
+            "line": 98
+          },
+          "description": "Dato de estado/configuración `magic`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "schema_version",
+          "declaration": "uint16_t schema_version",
+          "callback": false,
+          "ownerType": "AutoMicroAppManifest",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/automicro_boot_contract.h",
+            "line": 99
+          },
+          "description": "Dato de estado/configuración `schema_version`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "struct_size",
+          "declaration": "uint16_t struct_size",
+          "callback": false,
+          "ownerType": "AutoMicroAppManifest",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/automicro_boot_contract.h",
+            "line": 100
+          },
+          "description": "Dato de estado/configuración `struct_size`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "app_base",
+          "declaration": "uint32_t app_base",
+          "callback": false,
+          "ownerType": "AutoMicroAppManifest",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/automicro_boot_contract.h",
+            "line": 101
+          },
+          "description": "Dato de estado/configuración `app_base`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "image_size",
+          "declaration": "uint32_t image_size",
+          "callback": false,
+          "ownerType": "AutoMicroAppManifest",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/automicro_boot_contract.h",
+            "line": 102
+          },
+          "description": "Dato de estado/configuración `image_size`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "image_crc32",
+          "declaration": "uint32_t image_crc32",
+          "callback": false,
+          "ownerType": "AutoMicroAppManifest",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/automicro_boot_contract.h",
+            "line": 103
+          },
+          "description": "Dato de estado/configuración `image_crc32`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "firmware_version",
+          "declaration": "uint32_t firmware_version",
+          "callback": false,
+          "ownerType": "AutoMicroAppManifest",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/automicro_boot_contract.h",
+            "line": 104
+          },
+          "description": "Dato de estado/configuración `firmware_version`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "build_id",
+          "declaration": "uint32_t build_id",
+          "callback": false,
+          "ownerType": "AutoMicroAppManifest",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/automicro_boot_contract.h",
+            "line": 105
+          },
+          "description": "Dato de estado/configuración `build_id`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "flags",
+          "declaration": "uint32_t flags",
+          "callback": false,
+          "ownerType": "AutoMicroAppManifest",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/automicro_boot_contract.h",
+            "line": 106
+          },
+          "description": "Bits de estado del módulo; conservar máscaras y distinguir estado de eventos pendientes."
+        },
+        {
+          "name": "reserved",
+          "declaration": "uint32_t reserved[8]",
+          "callback": false,
+          "ownerType": "AutoMicroAppManifest",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/automicro_boot_contract.h",
+            "line": 107
+          },
+          "description": "Dato de estado/configuración `reserved`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/automicro_boot_contract.h",
+        "line": 97
+      }
+    },
+    {
+      "name": "AutoMicroBootMailbox",
+      "fields": [
+        {
+          "name": "magic",
+          "declaration": "uint32_t magic",
+          "callback": false,
+          "ownerType": "AutoMicroBootMailbox",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/automicro_boot_contract.h",
+            "line": 112
+          },
+          "description": "Dato de estado/configuración `magic`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "schema_version",
+          "declaration": "uint16_t schema_version",
+          "callback": false,
+          "ownerType": "AutoMicroBootMailbox",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/automicro_boot_contract.h",
+            "line": 113
+          },
+          "description": "Dato de estado/configuración `schema_version`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "struct_size",
+          "declaration": "uint16_t struct_size",
+          "callback": false,
+          "ownerType": "AutoMicroBootMailbox",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/automicro_boot_contract.h",
+            "line": 114
+          },
+          "description": "Dato de estado/configuración `struct_size`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "bootloader_version",
+          "declaration": "uint32_t bootloader_version",
+          "callback": false,
+          "ownerType": "AutoMicroBootMailbox",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/automicro_boot_contract.h",
+            "line": 115
+          },
+          "description": "Dato de estado/configuración `bootloader_version`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "bootloader_build_id",
+          "declaration": "uint32_t bootloader_build_id",
+          "callback": false,
+          "ownerType": "AutoMicroBootMailbox",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/automicro_boot_contract.h",
+            "line": 116
+          },
+          "description": "Dato de estado/configuración `bootloader_build_id`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "reset_reason_flags",
+          "declaration": "uint32_t reset_reason_flags",
+          "callback": false,
+          "ownerType": "AutoMicroBootMailbox",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/automicro_boot_contract.h",
+            "line": 117
+          },
+          "description": "Dato de estado/configuración `reset_reason_flags`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "app_validation_flags",
+          "declaration": "uint32_t app_validation_flags",
+          "callback": false,
+          "ownerType": "AutoMicroBootMailbox",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/automicro_boot_contract.h",
+            "line": 118
+          },
+          "description": "Dato de estado/configuración `app_validation_flags`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "app_base",
+          "declaration": "uint32_t app_base",
+          "callback": false,
+          "ownerType": "AutoMicroBootMailbox",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/automicro_boot_contract.h",
+            "line": 119
+          },
+          "description": "Dato de estado/configuración `app_base`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "app_size",
+          "declaration": "uint32_t app_size",
+          "callback": false,
+          "ownerType": "AutoMicroBootMailbox",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/automicro_boot_contract.h",
+            "line": 120
+          },
+          "description": "Dato de estado/configuración `app_size`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "app_version",
+          "declaration": "uint32_t app_version",
+          "callback": false,
+          "ownerType": "AutoMicroBootMailbox",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/automicro_boot_contract.h",
+            "line": 121
+          },
+          "description": "Dato de estado/configuración `app_version`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "app_build_id",
+          "declaration": "uint32_t app_build_id",
+          "callback": false,
+          "ownerType": "AutoMicroBootMailbox",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/automicro_boot_contract.h",
+            "line": 122
+          },
+          "description": "Dato de estado/configuración `app_build_id`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "app_crc32",
+          "declaration": "uint32_t app_crc32",
+          "callback": false,
+          "ownerType": "AutoMicroBootMailbox",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/automicro_boot_contract.h",
+            "line": 123
+          },
+          "description": "Dato de estado/configuración `app_crc32`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "handoff",
+          "declaration": "uint32_t handoff",
+          "callback": false,
+          "ownerType": "AutoMicroBootMailbox",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/automicro_boot_contract.h",
+            "line": 124
+          },
+          "description": "Dato de estado/configuración `handoff`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "request",
+          "declaration": "uint32_t request",
+          "callback": false,
+          "ownerType": "AutoMicroBootMailbox",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/automicro_boot_contract.h",
+            "line": 125
+          },
+          "description": "Dato de estado/configuración `request`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "reserved",
+          "declaration": "uint32_t reserved[2]",
+          "callback": false,
+          "ownerType": "AutoMicroBootMailbox",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/automicro_boot_contract.h",
+            "line": 126
+          },
+          "description": "Dato de estado/configuración `reserved`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "mailbox_crc32",
+          "declaration": "uint32_t mailbox_crc32",
+          "callback": false,
+          "ownerType": "AutoMicroBootMailbox",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/automicro_boot_contract.h",
+            "line": 127
+          },
+          "description": "Dato de estado/configuración `mailbox_crc32`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/automicro_boot_contract.h",
+        "line": 111
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "AutoMicroBootMailbox_Consume",
+      "signature": "bool AutoMicroBootMailbox_Consume(AutoMicroBootMailbox *out)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/automicro_boot_contract.h",
+        "line": 145
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "AutoMicroBootMailbox_Get",
+        "AutoMicroBootMailbox_Validate",
+        "memcpy",
+        "memset"
+      ],
+      "writes": [
+        "magic",
+        "mailbox_crc32"
+      ],
+      "description": "Copia y consume el reporte de arranque disponible.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/automicro_boot_contract.c",
+        "line": 42
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AutoMicroBootMailbox_ConsumeRequest",
+      "signature": "AutoMicroBootRequest AutoMicroBootMailbox_ConsumeRequest(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/automicro_boot_contract.h",
+        "line": 147
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "AutoMicroBootMailbox_Get",
+        "AutoMicroBootMailbox_Validate"
+      ],
+      "writes": [
+        "magic",
+        "mailbox_crc32",
+        "request"
+      ],
+      "description": "Lee y consume una solicitud de arranque pendiente.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/automicro_boot_contract.c",
+        "line": 97
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AutoMicroBootMailbox_Get",
+      "signature": "const AutoMicroBootMailbox *AutoMicroBootMailbox_Get(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/automicro_boot_contract.h",
+        "line": 143
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Obtiene vista del mailbox en la ubicación de plataforma.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/automicro_boot_contract.c",
+        "line": 23
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AutoMicroBootMailbox_Validate",
+      "signature": "bool AutoMicroBootMailbox_Validate(const AutoMicroBootMailbox *mailbox)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/automicro_boot_contract.h",
+        "line": 144
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "AutoMicroBoot_Crc32",
+        "offsetof"
+      ],
+      "writes": [],
+      "description": "Comprueba identificación, versión/integridad del mailbox.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/automicro_boot_contract.c",
+        "line": 28
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AutoMicroBootMailbox_WriteRequest",
+      "signature": "bool AutoMicroBootMailbox_WriteRequest(AutoMicroBootRequest request)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/automicro_boot_contract.h",
+        "line": 146
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "AutoMicroBootMailbox_Get",
+        "AutoMicroBootMailbox_Validate",
+        "AutoMicroBoot_Crc32",
+        "memset",
+        "offsetof"
+      ],
+      "writes": [],
+      "description": "Escribe una solicitud de arranque con su integridad.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/automicro_boot_contract.c",
+        "line": 63
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AutoMicroBoot_Crc32",
+      "signature": "uint32_t AutoMicroBoot_Crc32(const void *data, size_t length)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/automicro_boot_contract.h",
+        "line": 148
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "UINT32_C"
+      ],
+      "writes": [],
+      "description": "Calcula el CRC32 usado por el contrato de arranque.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/automicro_boot_contract.c",
+        "line": 5
+      },
+      "linkage": "header"
+    }
+  ],
+  "internalFunctions": []
+}

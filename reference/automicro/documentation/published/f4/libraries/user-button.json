@@ -1,0 +1,229 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "f4:module/Core/Inc/user_button.h",
+  "slug": "user-button",
+  "title": "Botón de usuario",
+  "target": "f4",
+  "kind": "núcleo",
+  "status": "source-documented",
+  "verification": "not-run-user-instruction",
+  "snapshotDate": "2026-10-20",
+  "responsibility": "Convierte un nivel eléctrico periódico en estado y banderas de pulsación del botón.",
+  "scope": "No configura GPIO ni decide navegación; interpreta activeLevel y mantiene contadores del pulsador.",
+  "state": "UserButton_Handle_t posee una copia de UserButton_Port, ButtonState_t y la polaridad activa. read_level recibe port.ctx. La aplicación consume state y sus flags; no existe una cola de eventos propia del botón.",
+  "lifecycle": [
+    "UserButton_Init copia el puerto e inicializa el estado.",
+    "La aplicación llama Task10ms con cadencia de 10 ms y traduce flags a UserEvent_t."
+  ],
+  "interactions": [
+    "app_stm32_ports.h realiza la lectura HAL; app_tasks.c integra el muestreo con UiEventRouter."
+  ],
+  "limitations": [
+    "Cambiar la cadencia cambia la interpretación temporal de contadores y pulsaciones.",
+    "No llamar desde dos productores sin definir quién consume/limpia las banderas."
+  ],
+  "modularity": "Lectura de GPIO inyectada y sin HAL en el núcleo. Usa tipos y macros de bits compartidos.",
+  "files": [
+    {
+      "path": "Core/Inc/user_button.h",
+      "rootId": "f4",
+      "sha256": "5a90152231665fa84ca2ae33d92f2e4de4e45243891f62da10f47d87ca9102a2",
+      "includes": [
+        "stdbool.h",
+        "types/button_state.h"
+      ]
+    },
+    {
+      "path": "Core/Inc/types/button_state.h",
+      "rootId": "f4",
+      "sha256": "93cc2f94233675c07dbf44acff15dde3e5a899c8cd669cc9bc4fc5d7d7bb5429",
+      "includes": [
+        "stdint.h",
+        "bitmap_type.h",
+        "utils/macros_utils.h"
+      ]
+    },
+    {
+      "path": "Core/Src/user_button.c",
+      "rootId": "f4",
+      "sha256": "6239f1be6e3a50f73065a91a8b21af9f6b3588fa9845dc0bf7aef5f44e2a19b4",
+      "includes": [
+        "user_button.h",
+        "utils/macros_utils.h"
+      ]
+    }
+  ],
+  "findings": [],
+  "types": [
+    {
+      "name": "UserButton_Port",
+      "fields": [
+        {
+          "name": "ctx",
+          "declaration": "void *ctx",
+          "callback": false,
+          "ownerType": "UserButton_Port",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/user_button.h",
+            "line": 23
+          },
+          "description": "Contexto opaco prestado al callback; el integrador conserva su almacenamiento."
+        },
+        {
+          "name": "read_level",
+          "declaration": "bool (*read_level)(void *ctx)",
+          "callback": true,
+          "ownerType": "UserButton_Port",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/user_button.h",
+            "line": 24
+          },
+          "description": "Lee el nivel eléctrico del botón; activeLevel interpreta su polaridad."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/user_button.h",
+        "line": 23
+      }
+    },
+    {
+      "name": "UserButton_Handle_t",
+      "fields": [
+        {
+          "name": "port",
+          "declaration": "UserButton_Port port",
+          "callback": false,
+          "ownerType": "UserButton_Handle_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/user_button.h",
+            "line": 28
+          },
+          "description": "Contrato de operaciones externo; conservar la tabla y su contexto durante el uso."
+        },
+        {
+          "name": "state",
+          "declaration": "ButtonState_t state",
+          "callback": false,
+          "ownerType": "UserButton_Handle_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/user_button.h",
+            "line": 29
+          },
+          "description": "Contadores y flags de pulsación que consume la tarea principal."
+        },
+        {
+          "name": "activeLevel",
+          "declaration": "UserButton_ActiveLevel activeLevel",
+          "callback": false,
+          "ownerType": "UserButton_Handle_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/user_button.h",
+            "line": 30
+          },
+          "description": "Polaridad que convierte nivel eléctrico en botón presionado."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/user_button.h",
+        "line": 28
+      }
+    },
+    {
+      "name": "ButtonState_t",
+      "fields": [
+        {
+          "name": "flags",
+          "declaration": "Byte_Flag_Struct flags",
+          "callback": false,
+          "ownerType": "ButtonState_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/button_state.h",
+            "line": 31
+          },
+          "description": "Bits de estado del módulo; conservar máscaras y distinguir estado de eventos pendientes."
+        },
+        {
+          "name": "counter",
+          "declaration": "uint8_t counter",
+          "callback": false,
+          "ownerType": "ButtonState_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/types/button_state.h",
+            "line": 32
+          },
+          "description": "Dato de estado/configuración `counter`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/types/button_state.h",
+        "line": 31
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "UserButton_Init",
+      "signature": "void UserButton_Init(UserButton_Handle_t *btn, const UserButton_Port *port, UserButton_ActiveLevel activeLevel)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/user_button.h",
+        "line": 34
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [
+        "activeLevel",
+        "port"
+      ],
+      "description": "Copia puerto y polaridad e inicializa el estado del botón.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/user_button.c",
+        "line": 11
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "UserButton_Task10ms",
+      "signature": "void UserButton_Task10ms(UserButton_Handle_t *btn)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/user_button.h",
+        "line": 38
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "CLEAR_FLAG",
+        "IS_FLAG_SET",
+        "NIBBLEH_GET_STATE",
+        "NIBBLEH_SET_STATE",
+        "SET_FLAG",
+        "read_level"
+      ],
+      "writes": [],
+      "description": "Muestrea el nivel y actualiza contadores y flags de pulsación cada 10 ms.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/user_button.c",
+        "line": 22
+      },
+      "linkage": "header"
+    }
+  ],
+  "internalFunctions": []
+}

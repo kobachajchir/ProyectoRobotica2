@@ -1,0 +1,2713 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "web:module/src/components/RootLayout.tsx",
+  "slug": "navigation-shell",
+  "title": "Layout y navegación de secciones",
+  "target": "web",
+  "kind": "integración",
+  "status": "source-documented",
+  "snapshotDate": "2026-10-20",
+  "verification": "not-run-user-instruction",
+  "responsibility": "Presenta estructura y navegación común de las secciones del cliente.",
+  "scope": "Rutas, identidad visual y contenido general; no define contratos UNER.",
+  "state": "Estado visual local, navegación y props; el dispositivo confirmado pertenece a contextos de dominio.",
+  "modularity": "UI React/router; usa componentes compartidos y estado externo mediante hooks.",
+  "lifecycle": [
+    "La ruta activa monta contenido dentro del layout.",
+    "Efectos de bienvenida/navegación no deben recrear la sesión de dispositivo por accidente."
+  ],
+  "interactions": [
+    "Las páginas enlazan Docs, control, estado, Wi-Fi y estudios."
+  ],
+  "limitations": [
+    "Ruta visible y dispositivo conectado/autorizado son condiciones diferentes."
+  ],
+  "relationships": [],
+  "findings": [],
+  "files": [
+    {
+      "rootId": "web",
+      "path": "src/components/AboutProjectPanel.tsx",
+      "sha256": "88b1224d7683594637afadd38bc5365e474855027924708ebc94a5846c134c34",
+      "imports": [
+        "../assets/LogoDashboardV2.webp",
+        "../contexts/EspWifiStatusContext",
+        "../contexts/UserContext",
+        "../hooks/useWebSocket",
+        "../protocol/f4Payloads",
+        "../protocol/wsApi",
+        "../screens/bitmapAssets",
+        "framer-motion",
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/components/AppFooter.tsx",
+      "sha256": "8281ce3148cbb93426b34b10ee0e6ed6616fbc220590b6b5573c68249a9598ad",
+      "imports": [],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/components/BrandMark.tsx",
+      "sha256": "d1978ec5278a8b075c6942e7e9d515e8bc67690225572d2b7814387feb273687",
+      "imports": [
+        "../assets/LogoDashboardV2.webp"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/components/NavigateVT.tsx",
+      "sha256": "31a023c7b68c4c517673fc2d43349ee37cd0145e91c8955d075499ed40e44ae2",
+      "imports": [
+        "react",
+        "react-router-dom"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/components/PageHeader.tsx",
+      "sha256": "ff22478a797278aee516d3c99f6c50cbc4c5e2ec8377dcbc88825b5967144da2",
+      "imports": [
+        "../contexts/ScreenStreamModalContext",
+        "../contexts/UserContext",
+        "./BrandMark",
+        "react",
+        "react-router-dom"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/components/RedirectRoot.tsx",
+      "sha256": "14fee8127cd9c9c831a967c7ec647d25cb01625ed55175266ea190c3e808c3f9",
+      "imports": [
+        "../contexts/UserContext",
+        "./AppLoadingScreen",
+        "react-router-dom"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/components/RootLayout.tsx",
+      "sha256": "5ea671e5ea083e3d9c717c7a41c7ebef910085ffb211a57e2060e4efba735e98",
+      "imports": [
+        "./ApProvisioningGate",
+        "framer-motion",
+        "react-router-dom"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/components/StartupWelcome.css",
+      "sha256": "6ab0dcb4f1ab0380ede53231dbc50c1450500113c3c760c069be25a8b8881f61",
+      "imports": [],
+      "analysisLevel": "support-inventory"
+    },
+    {
+      "rootId": "web",
+      "path": "src/components/StartupWelcome.tsx",
+      "sha256": "ae78c3f9841e0534ac17642657635e2e4829493b6eafa2e50a28ca5a434ade87",
+      "imports": [
+        "../assets/LogoDashboardV2.webp",
+        "./StartupWelcome.css",
+        "react",
+        "react-dom"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/pages/Home.tsx",
+      "sha256": "ff4620eca52e844974245db9d01af088ce49f8f3a873a38074e7c6cbfe6dd5bb",
+      "imports": [
+        "../assets/LogoControlV2.webp",
+        "../assets/LogoMPUIRV2.webp",
+        "../assets/LogoSeguidorV2.webp",
+        "../assets/LogoWifiAPV2.webp",
+        "../components/AboutProjectPanel",
+        "../components/CarModeDropdown",
+        "../components/PageHeader",
+        "../components/SystemResetActions",
+        "../components/ThemeModeToggleCard",
+        "../components/ToggleButton",
+        "../components/modal",
+        "../contexts/CarModeContext",
+        "../contexts/EspWifiStatusContext",
+        "../contexts/ScreenContext",
+        "../contexts/ScreenStreamModalContext",
+        "../contexts/UserContext",
+        "../hooks/useWebSocket",
+        "../protocol/wsApi",
+        "../screens/screenCodes",
+        "react",
+        "react-router-dom"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/pages/NotFound.css",
+      "sha256": "247e4b584f5d5588163bc04540a3ccb0ef2b6f626e0ebab38fef5723e7d524f6",
+      "imports": [],
+      "analysisLevel": "support-inventory"
+    },
+    {
+      "rootId": "web",
+      "path": "src/pages/NotFound.tsx",
+      "sha256": "b9b5f61feb3406bca9986f8ca9b4df209df43014939152ea93e058ec4baf8dcd",
+      "imports": [
+        "../assets/LogoDashboardV2.webp",
+        "./NotFound.css",
+        "react-router-dom"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    }
+  ],
+  "types": [
+    {
+      "name": "FirmwareInfo",
+      "kind": "TypeAliasDeclaration",
+      "fields": [
+        {
+          "name": "name",
+          "declaration": "name: string",
+          "callback": false,
+          "ownerType": "FirmwareInfo",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/AboutProjectPanel.tsx",
+            "line": 18
+          },
+          "description": "Dato de estado/configuración `name`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "version",
+          "declaration": "version: string",
+          "callback": false,
+          "ownerType": "FirmwareInfo",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/AboutProjectPanel.tsx",
+            "line": 19
+          },
+          "description": "Dato de estado/configuración `version`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "target",
+          "declaration": "target: string",
+          "callback": false,
+          "ownerType": "FirmwareInfo",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/AboutProjectPanel.tsx",
+            "line": 20
+          },
+          "description": "Dato de estado/configuración `target`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/AboutProjectPanel.tsx",
+        "line": 17
+      }
+    },
+    {
+      "name": "BuildInfo",
+      "kind": "TypeAliasDeclaration",
+      "fields": [
+        {
+          "name": "date",
+          "declaration": "date: string",
+          "callback": false,
+          "ownerType": "BuildInfo",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/AboutProjectPanel.tsx",
+            "line": 24
+          },
+          "description": "Dato de estado/configuración `date`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "time",
+          "declaration": "time: string",
+          "callback": false,
+          "ownerType": "BuildInfo",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/AboutProjectPanel.tsx",
+            "line": 25
+          },
+          "description": "Dato de estado/configuración `time`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "profile",
+          "declaration": "profile: string",
+          "callback": false,
+          "ownerType": "BuildInfo",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/AboutProjectPanel.tsx",
+            "line": 26
+          },
+          "description": "Dato de estado/configuración `profile`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "compiler",
+          "declaration": "compiler: string",
+          "callback": false,
+          "ownerType": "BuildInfo",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/AboutProjectPanel.tsx",
+            "line": 27
+          },
+          "description": "Dato de estado/configuración `compiler`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "arduinoCore",
+          "declaration": "arduinoCore?: string",
+          "callback": false,
+          "ownerType": "BuildInfo",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/AboutProjectPanel.tsx",
+            "line": 28
+          },
+          "description": "Dato de estado/configuración `arduinoCore`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "sdk",
+          "declaration": "sdk?: string",
+          "callback": false,
+          "ownerType": "BuildInfo",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/AboutProjectPanel.tsx",
+            "line": 29
+          },
+          "description": "Dato de estado/configuración `sdk`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/AboutProjectPanel.tsx",
+        "line": 23
+      }
+    },
+    {
+      "name": "EspRuntimeInfo",
+      "kind": "TypeAliasDeclaration",
+      "fields": [
+        {
+          "name": "freeHeap",
+          "declaration": "freeHeap: string",
+          "callback": false,
+          "ownerType": "EspRuntimeInfo",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/AboutProjectPanel.tsx",
+            "line": 33
+          },
+          "description": "Dato de estado/configuración `freeHeap`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "maxFreeBlock",
+          "declaration": "maxFreeBlock: string",
+          "callback": false,
+          "ownerType": "EspRuntimeInfo",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/AboutProjectPanel.tsx",
+            "line": 34
+          },
+          "description": "Dato de estado/configuración `maxFreeBlock`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "heapFragmentation",
+          "declaration": "heapFragmentation: string",
+          "callback": false,
+          "ownerType": "EspRuntimeInfo",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/AboutProjectPanel.tsx",
+            "line": 35
+          },
+          "description": "Dato de estado/configuración `heapFragmentation`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/AboutProjectPanel.tsx",
+        "line": 32
+      }
+    },
+    {
+      "name": "EspDeviceInfo",
+      "kind": "TypeAliasDeclaration",
+      "fields": [
+        {
+          "name": "firmware",
+          "declaration": "firmware: FirmwareInfo",
+          "callback": false,
+          "ownerType": "EspDeviceInfo",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/AboutProjectPanel.tsx",
+            "line": 39
+          },
+          "description": "Dato de estado/configuración `firmware`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "build",
+          "declaration": "build: BuildInfo",
+          "callback": false,
+          "ownerType": "EspDeviceInfo",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/AboutProjectPanel.tsx",
+            "line": 40
+          },
+          "description": "Dato de estado/configuración `build`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "runtime",
+          "declaration": "runtime: EspRuntimeInfo",
+          "callback": false,
+          "ownerType": "EspDeviceInfo",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/AboutProjectPanel.tsx",
+            "line": 41
+          },
+          "description": "Dato de estado/configuración `runtime`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/AboutProjectPanel.tsx",
+        "line": 38
+      }
+    },
+    {
+      "name": "LoadState",
+      "kind": "TypeAliasDeclaration",
+      "type": "\"idle\" | \"loading\" | \"success\" | \"partial\" | \"error\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/AboutProjectPanel.tsx",
+        "line": 44
+      }
+    },
+    {
+      "name": "NavigateVTProps",
+      "kind": "TypeAliasDeclaration",
+      "fields": [
+        {
+          "name": "to",
+          "declaration": "to: To",
+          "callback": false,
+          "ownerType": "NavigateVTProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/NavigateVT.tsx",
+            "line": 7
+          },
+          "description": "Dato de estado/configuración `to`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "replace",
+          "declaration": "replace?: boolean",
+          "callback": false,
+          "ownerType": "NavigateVTProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/NavigateVT.tsx",
+            "line": 8
+          },
+          "description": "Dato de estado/configuración `replace`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "state",
+          "declaration": "state?: any",
+          "callback": false,
+          "ownerType": "NavigateVTProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/NavigateVT.tsx",
+            "line": 9
+          },
+          "description": "Dato de estado/configuración `state`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/NavigateVT.tsx",
+        "line": 6
+      }
+    },
+    {
+      "name": "PageHeaderProps",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "setOpenSettingsModal",
+          "declaration": "setOpenSettingsModal?: (open: boolean) => void",
+          "callback": true,
+          "ownerType": "PageHeaderProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/PageHeader.tsx",
+            "line": 9
+          },
+          "description": "Operación set Open Settings Modal de Layout y navegación de secciones; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "setOpenInfoModal",
+          "declaration": "setOpenInfoModal?: (open: boolean) => void",
+          "callback": true,
+          "ownerType": "PageHeaderProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/PageHeader.tsx",
+            "line": 10
+          },
+          "description": "Operación set Open Info Modal de Layout y navegación de secciones; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "showSettings",
+          "declaration": "showSettings?: boolean",
+          "callback": false,
+          "ownerType": "PageHeaderProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/PageHeader.tsx",
+            "line": 11
+          },
+          "description": "Dato de estado/configuración `showSettings`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "showInfo",
+          "declaration": "showInfo?: boolean",
+          "callback": false,
+          "ownerType": "PageHeaderProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/PageHeader.tsx",
+            "line": 12
+          },
+          "description": "Dato de estado/configuración `showInfo`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "showLogout",
+          "declaration": "showLogout?: boolean",
+          "callback": false,
+          "ownerType": "PageHeaderProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/PageHeader.tsx",
+            "line": 13
+          },
+          "description": "Dato de estado/configuración `showLogout`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "showHome",
+          "declaration": "showHome?: boolean",
+          "callback": false,
+          "ownerType": "PageHeaderProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/PageHeader.tsx",
+            "line": 14
+          },
+          "description": "Dato de estado/configuración `showHome`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "className",
+          "declaration": "className?: string",
+          "callback": false,
+          "ownerType": "PageHeaderProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/PageHeader.tsx",
+            "line": 15
+          },
+          "description": "Dato de estado/configuración `className`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "titleOverride",
+          "declaration": "titleOverride?: string",
+          "callback": false,
+          "ownerType": "PageHeaderProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/PageHeader.tsx",
+            "line": 16
+          },
+          "description": "Dato de estado/configuración `titleOverride`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "statusSlot",
+          "declaration": "statusSlot?: ReactNode",
+          "callback": false,
+          "ownerType": "PageHeaderProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/PageHeader.tsx",
+            "line": 17
+          },
+          "description": "Dato de estado/configuración `statusSlot`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/PageHeader.tsx",
+        "line": 8
+      }
+    },
+    {
+      "name": "RequestStatus",
+      "kind": "TypeAliasDeclaration",
+      "fields": [
+        {
+          "name": "tone",
+          "declaration": "tone: \"idle\" | \"loading\" | \"success\" | \"error\"",
+          "callback": false,
+          "ownerType": "RequestStatus",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/Home.tsx",
+            "line": 33
+          },
+          "description": "Dato de estado/configuración `tone`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "message",
+          "declaration": "message: string",
+          "callback": false,
+          "ownerType": "RequestStatus",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/Home.tsx",
+            "line": 34
+          },
+          "description": "Dato de estado/configuración `message`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/Home.tsx",
+        "line": 32
+      }
+    },
+    {
+      "name": "PinStep",
+      "kind": "TypeAliasDeclaration",
+      "type": "\"validate\" | \"change\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/Home.tsx",
+        "line": 37
+      }
+    },
+    {
+      "name": "SettingsTab",
+      "kind": "TypeAliasDeclaration",
+      "type": "\"settings\" | \"about\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/Home.tsx",
+        "line": 38
+      }
+    },
+    {
+      "name": "QtUsbDiagnostics",
+      "kind": "TypeAliasDeclaration",
+      "fields": [
+        {
+          "name": "connectedSince",
+          "declaration": "connectedSince: number | null",
+          "callback": false,
+          "ownerType": "QtUsbDiagnostics",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/Home.tsx",
+            "line": 41
+          },
+          "description": "Dato de estado/configuración `connectedSince`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "connectedSinceEstimated",
+          "declaration": "connectedSinceEstimated: boolean",
+          "callback": false,
+          "ownerType": "QtUsbDiagnostics",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/Home.tsx",
+            "line": 42
+          },
+          "description": "Dato de estado/configuración `connectedSinceEstimated`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "alivePeriodMs",
+          "declaration": "alivePeriodMs: number | null",
+          "callback": false,
+          "ownerType": "QtUsbDiagnostics",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/Home.tsx",
+            "line": 43
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "aliveCount",
+          "declaration": "aliveCount: number | null",
+          "callback": false,
+          "ownerType": "QtUsbDiagnostics",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/Home.tsx",
+            "line": 44
+          },
+          "description": "Dato de estado/configuración `aliveCount`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "rxOverflowCount",
+          "declaration": "rxOverflowCount: number | null",
+          "callback": false,
+          "ownerType": "QtUsbDiagnostics",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/Home.tsx",
+            "line": 45
+          },
+          "description": "Dato de estado/configuración `rxOverflowCount`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "txQueueFullCount",
+          "declaration": "txQueueFullCount: number | null",
+          "callback": false,
+          "ownerType": "QtUsbDiagnostics",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/Home.tsx",
+            "line": 46
+          },
+          "description": "Dato de estado/configuración `txQueueFullCount`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "queuedTxCount",
+          "declaration": "queuedTxCount: number | null",
+          "callback": false,
+          "ownerType": "QtUsbDiagnostics",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/Home.tsx",
+            "line": 47
+          },
+          "description": "Dato de estado/configuración `queuedTxCount`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "txDropCount",
+          "declaration": "txDropCount: number | null",
+          "callback": false,
+          "ownerType": "QtUsbDiagnostics",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/Home.tsx",
+            "line": 48
+          },
+          "description": "Dato de estado/configuración `txDropCount`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "updatedAt",
+          "declaration": "updatedAt: number | null",
+          "callback": false,
+          "ownerType": "QtUsbDiagnostics",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/Home.tsx",
+            "line": 49
+          },
+          "description": "Dato de estado/configuración `updatedAt`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/Home.tsx",
+        "line": 40
+      }
+    },
+    {
+      "name": "HomeTone",
+      "kind": "TypeAliasDeclaration",
+      "type": "\"ok\" | \"error\" | \"info\" | \"muted\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/Home.tsx",
+        "line": 1263
+      }
+    },
+    {
+      "name": "HomeIconName",
+      "kind": "TypeAliasDeclaration",
+      "type": "| \"oled\" | \"pulse\" | \"clock\" | \"eye\" | \"eyeOff\" | \"cube\" | \"signal\" | \"chip\" | \"gamepad\" | \"track\" | \"wifi\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/Home.tsx",
+        "line": 1264
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "AboutChevron",
+      "displayName": "AboutChevron",
+      "signature": "AboutChevron({ open }: { open: boolean }): inferred-by-TypeScript",
+      "line": 403,
+      "endLine": 409,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/AboutProjectPanel.tsx",
+        "line": 403
+      },
+      "description": "Operación About Chevron de Layout y navegación de secciones; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "AboutDataCard",
+      "displayName": "AboutDataCard",
+      "signature": "AboutDataCard({ title, eyebrow, children }: { title: string; eyebrow: string; children: React.ReactNode }): inferred-by-TypeScript",
+      "line": 352,
+      "endLine": 360,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/AboutProjectPanel.tsx",
+        "line": 352
+      },
+      "description": "Operación About Data Card de Layout y navegación de secciones; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "AboutDataRow",
+      "displayName": "AboutDataRow",
+      "signature": "AboutDataRow({ label, value }: { label: string; value: string }): inferred-by-TypeScript",
+      "line": 366,
+      "endLine": 373,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/AboutProjectPanel.tsx",
+        "line": 366
+      },
+      "description": "Operación About Data Row de Layout y navegación de secciones; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "AboutDataSection",
+      "displayName": "AboutDataSection",
+      "signature": "AboutDataSection({ title }: { title: string }): inferred-by-TypeScript",
+      "line": 362,
+      "endLine": 364,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/AboutProjectPanel.tsx",
+        "line": 362
+      },
+      "description": "Operación About Data Section de Layout y navegación de secciones; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "AboutPhotoPlaceholder",
+      "displayName": "AboutPhotoPlaceholder",
+      "signature": "AboutPhotoPlaceholder({ title }: { title: string }): inferred-by-TypeScript",
+      "line": 375,
+      "endLine": 383,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/AboutProjectPanel.tsx",
+        "line": 375
+      },
+      "description": "Operación About Photo Placeholder de Layout y navegación de secciones; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "AboutProjectPanel",
+      "displayName": "AboutProjectPanel",
+      "signature": "AboutProjectPanel(): inferred-by-TypeScript",
+      "line": 72,
+      "endLine": 350,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "REPOSITORIES.map",
+        "formatBuildDate",
+        "formatBytes",
+        "formatF4BootHandoff",
+        "formatF4ExtensionProfile",
+        "formatF4PackedVersion",
+        "formatHex32",
+        "formatValidationFlags",
+        "useCallback",
+        "useEffect",
+        "useEspWifiStatus",
+        "useReducedMotion",
+        "useState",
+        "useUser",
+        "useWebSocket"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/AboutProjectPanel.tsx",
+        "line": 72
+      },
+      "description": "Coordina `REPOSITORIES.map`, `formatBuildDate`, `formatBytes` para Layout y navegación de secciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "AppFooter",
+      "displayName": "AppFooter",
+      "signature": "AppFooter(): inferred-by-TypeScript",
+      "line": 2,
+      "endLine": 36,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/AppFooter.tsx",
+        "line": 2
+      },
+      "description": "Operación App Footer de Layout y navegación de secciones; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "BrandMark",
+      "displayName": "BrandMark",
+      "signature": "BrandMark({ className = \"\" }: { className?: string }): inferred-by-TypeScript",
+      "line": 3,
+      "endLine": 9,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "`home-brand-glyph app-brand-mark ${className}`.trim"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/BrandMark.tsx",
+        "line": 3
+      },
+      "description": "Adapta la llamada a ``home-brand-glyph app-brand-mark ${className}`.trim` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ChevronDownIcon",
+      "displayName": "ChevronDownIcon",
+      "signature": "ChevronDownIcon({ open = false }: { open?: boolean }): inferred-by-TypeScript",
+      "line": 1513,
+      "endLine": 1523,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/Home.tsx",
+        "line": 1513
+      },
+      "description": "Operación Chevron Down Icon de Layout y navegación de secciones; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "ChevronRightIcon",
+      "displayName": "ChevronRightIcon",
+      "signature": "ChevronRightIcon(): inferred-by-TypeScript",
+      "line": 1505,
+      "endLine": 1511,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/Home.tsx",
+        "line": 1505
+      },
+      "description": "Operación Chevron Right Icon de Layout y navegación de secciones; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "DevModeToggle",
+      "displayName": "DevModeToggle",
+      "signature": "DevModeToggle(): inferred-by-TypeScript",
+      "line": 58,
+      "endLine": 74,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useUser"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/Home.tsx",
+        "line": 58
+      },
+      "description": "Adapta la llamada a `useUser` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Home",
+      "displayName": "Home",
+      "signature": "Home(): inferred-by-TypeScript",
+      "line": 76,
+      "endLine": 1200,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "/^\\d{4}$/.test",
+        "Math.max",
+        "formatCarMode",
+        "formatDiagnosticCounter",
+        "formatHeartbeatTime",
+        "formatLocalDateTime",
+        "getEspConnectionLabel",
+        "getEspNetworkLabel",
+        "isEspApOnly",
+        "useCallback",
+        "useCarMode",
+        "useEffect",
+        "useEspWifiStatus",
+        "useNavigate",
+        "useRef",
+        "useScreen",
+        "useScreenStreamModal",
+        "useState",
+        "useUser",
+        "useWebSocket"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/Home.tsx",
+        "line": 76
+      },
+      "description": "Coordina `/^\\d{4}$/.test`, `Math.max`, `formatCarMode` para Layout y navegación de secciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "HomeDropdownButton",
+      "displayName": "HomeDropdownButton",
+      "signature": "HomeDropdownButton({\n label,\n open,\n ariaLabel,\n disabled = false,\n onClick,\n}: { label: string; open: boolean; ariaLabel: string; disabled?: boolean; onClick: () => void; }): inferred-by-TypeScript",
+      "line": 1303,
+      "endLine": 1329,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/Home.tsx",
+        "line": 1303
+      },
+      "description": "Operación Home Dropdown Button de Layout y navegación de secciones; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "HomeIcon",
+      "displayName": "HomeIcon",
+      "signature": "HomeIcon({ name }: { name: HomeIconName }): inferred-by-TypeScript",
+      "line": 1525,
+      "endLine": 1617,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/Home.tsx",
+        "line": 1525
+      },
+      "description": "Operación Home Icon de Layout y navegación de secciones; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "HomeSystemStatusStrip",
+      "displayName": "HomeSystemStatusStrip",
+      "signature": "HomeSystemStatusStrip({\n connected,\n connectionLabel,\n connectionTone,\n systemStateLabel,\n networkLabel,\n qtUsbConnected,\n qtUsbStateKnown,\n qtUsbPortForwardingLabel,\n qtUsbPortForwardingTone,\n onOpenQtDiagnostics,\n}: { connected: boolean; connectionLabel: string; connectionTone: HomeTone; systemStateLabel: string; networkLabel: string; qtUsbConnected: boolean; qtUsbStateKnown: boolean; qtUsbPortForwardingLabel: string; qtUsbPortForwardingTone: HomeTone; onOpenQtDiagnostics: () => void; }): inferred-by-TypeScript",
+      "line": 1384,
+      "endLine": 1429,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/Home.tsx",
+        "line": 1384
+      },
+      "description": "Operación Home System Status Strip de Layout y navegación de secciones; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "NavigateVT",
+      "displayName": "NavigateVT",
+      "signature": "NavigateVT({ to, replace = false, state }: NavigateVTProps): inferred-by-TypeScript",
+      "line": 12,
+      "endLine": 18,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useEffect",
+        "useNavigate"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/NavigateVT.tsx",
+        "line": 12
+      },
+      "description": "Coordina `useEffect`, `useNavigate` para Layout y navegación de secciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "NavigationModuleCard",
+      "displayName": "NavigationModuleCard",
+      "signature": "NavigationModuleCard({\n title,\n backgroundImage,\n eyebrow,\n description,\n status,\n statusTone,\n metaLeft,\n metaRight,\n icon,\n primary = false,\n disabled = false,\n onClick,\n}: { title: string; backgroundImage: string; eyebrow?: string; description: string; status: string; statusTone: HomeTone; metaLeft: string; metaRight: string; icon: HomeIconName; primary?: boolean; disabled?: boolean; onClick: () => void; }): inferred-by-TypeScript",
+      "line": 1431,
+      "endLine": 1503,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "metaRight.toLowerCase",
+        "metaRight.toLowerCase().includes"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/Home.tsx",
+        "line": 1431
+      },
+      "description": "Coordina `metaRight.toLowerCase`, `metaRight.toLowerCase().includes` para Layout y navegación de secciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "NotFound",
+      "displayName": "NotFound",
+      "signature": "NotFound(): inferred-by-TypeScript",
+      "line": 5,
+      "endLine": 44,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/NotFound.tsx",
+        "line": 5
+      },
+      "description": "Operación Not Found de Layout y navegación de secciones; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "PageHeader",
+      "displayName": "PageHeader",
+      "signature": "PageHeader({\r\n setOpenSettingsModal,\r\n setOpenInfoModal,\r\n showSettings = true,\r\n showInfo = true,\r\n showLogout = true,\n showHome = true,\n className = \"app-page-header\",\n titleOverride = \"\",\n statusSlot,\n}: PageHeaderProps): inferred-by-TypeScript",
+      "line": 33,
+      "endLine": 227,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "getPageTitle",
+        "location.pathname.includes",
+        "location.pathname.startsWith",
+        "useLocation",
+        "useNavigate",
+        "useScreenStreamModal",
+        "useUser"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/PageHeader.tsx",
+        "line": 33
+      },
+      "description": "Coordina `getPageTitle`, `location.pathname.includes`, `location.pathname.startsWith` para Layout y navegación de secciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "PhotoIcon",
+      "displayName": "PhotoIcon",
+      "signature": "PhotoIcon(): inferred-by-TypeScript",
+      "line": 411,
+      "endLine": 419,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/AboutProjectPanel.tsx",
+        "line": 411
+      },
+      "description": "Operación Photo Icon de Layout y navegación de secciones; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "PinDigitField",
+      "displayName": "PinDigitField",
+      "signature": "PinDigitField({\n label,\n value,\n onChange,\n autoFocus = false,\n}: { label: string; value: string; onChange: (value: string) => void; autoFocus?: boolean; }): inferred-by-TypeScript",
+      "line": 1636,
+      "endLine": 1693,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Array.from",
+        "Array.from({ length: 4 }).map",
+        "useEffect",
+        "useRef"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/Home.tsx",
+        "line": 1636
+      },
+      "description": "Coordina `Array.from`, `Array.from({ length: 4 }).map`, `useEffect` para Layout y navegación de secciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "QrPlaceholderIcon",
+      "displayName": "QrPlaceholderIcon",
+      "signature": "QrPlaceholderIcon(): inferred-by-TypeScript",
+      "line": 421,
+      "endLine": 427,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/AboutProjectPanel.tsx",
+        "line": 421
+      },
+      "description": "Operación Qr Placeholder Icon de Layout y navegación de secciones; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "QtDiagnosticRow",
+      "displayName": "QtDiagnosticRow",
+      "signature": "QtDiagnosticRow({ label, value }: { label: string; value: string }): inferred-by-TypeScript",
+      "line": 1375,
+      "endLine": 1382,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/Home.tsx",
+        "line": 1375
+      },
+      "description": "Operación Qt Diagnostic Row de Layout y navegación de secciones; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "RedirectRoot",
+      "displayName": "RedirectRoot",
+      "signature": "RedirectRoot(): inferred-by-TypeScript",
+      "line": 5,
+      "endLine": 13,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useUser"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/RedirectRoot.tsx",
+        "line": 5
+      },
+      "description": "Adapta la llamada a `useUser` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "RepositoryArrow",
+      "displayName": "RepositoryArrow",
+      "signature": "RepositoryArrow(): inferred-by-TypeScript",
+      "line": 429,
+      "endLine": 435,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/AboutProjectPanel.tsx",
+        "line": 429
+      },
+      "description": "Operación Repository Arrow de Layout y navegación de secciones; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "RepositoryQr",
+      "displayName": "RepositoryQr",
+      "signature": "RepositoryQr({ title }: { title: string }): inferred-by-TypeScript",
+      "line": 385,
+      "endLine": 392,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/AboutProjectPanel.tsx",
+        "line": 385
+      },
+      "description": "Operación Repository Qr de Layout y navegación de secciones; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "RepositoryQrPlaceholder",
+      "displayName": "RepositoryQrPlaceholder",
+      "signature": "RepositoryQrPlaceholder({ title }: { title: string }): inferred-by-TypeScript",
+      "line": 394,
+      "endLine": 401,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/AboutProjectPanel.tsx",
+        "line": 394
+      },
+      "description": "Operación Repository Qr Placeholder de Layout y navegación de secciones; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "RootLayout",
+      "displayName": "RootLayout",
+      "signature": "RootLayout(): inferred-by-TypeScript",
+      "line": 6,
+      "endLine": 33,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useLocation",
+        "useOutlet",
+        "useReducedMotion"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/RootLayout.tsx",
+        "line": 6
+      },
+      "description": "Coordina `useLocation`, `useOutlet`, `useReducedMotion` para Layout y navegación de secciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "StartupWelcome",
+      "displayName": "StartupWelcome",
+      "signature": "StartupWelcome({ children }: PropsWithChildren): inferred-by-TypeScript",
+      "line": 7,
+      "endLine": 74,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "createPortal",
+        "useEffect",
+        "useLayoutEffect",
+        "useRef",
+        "useState"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/StartupWelcome.tsx",
+        "line": 7
+      },
+      "description": "Inicia up Welcome dentro de Layout y navegación de secciones.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "StatusNote",
+      "displayName": "StatusNote",
+      "signature": "StatusNote({ status }: { status: RequestStatus }): inferred-by-TypeScript",
+      "line": 1619,
+      "endLine": 1634,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/Home.tsx",
+        "line": 1619
+      },
+      "description": "Operación Status Note de Layout y navegación de secciones; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "SystemMetricRow",
+      "displayName": "SystemMetricRow",
+      "signature": "SystemMetricRow({\n label,\n value,\n tone = \"muted\",\n onClick,\n ariaLabel,\n}: { label: string; value: string; tone?: HomeTone; onClick?: () => void; ariaLabel?: string; }): inferred-by-TypeScript",
+      "line": 1331,
+      "endLine": 1373,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/Home.tsx",
+        "line": 1331
+      },
+      "description": "Operación System Metric Row de Layout y navegación de secciones; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "assertOkStatus",
+      "displayName": "assertOkStatus",
+      "signature": "assertOkStatus(data: Record<string, unknown>, label: string): inferred-by-TypeScript",
+      "line": 509,
+      "endLine": 513,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/AboutProjectPanel.tsx",
+        "line": 509
+      },
+      "description": "Operación assert Ok Status de Layout y navegación de secciones; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "buildQrPath",
+      "displayName": "buildQrPath",
+      "signature": "buildQrPath(): string",
+      "line": 525,
+      "endLine": 542,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.floor",
+        "commands.join",
+        "commands.push"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/AboutProjectPanel.tsx",
+        "line": 525
+      },
+      "description": "Coordina `Math.floor`, `commands.join`, `commands.push` para Layout y navegación de secciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "createEmptyQtUsbDiagnostics",
+      "displayName": "createEmptyQtUsbDiagnostics",
+      "signature": "createEmptyQtUsbDiagnostics(): QtUsbDiagnostics",
+      "line": 1225,
+      "endLine": 1237,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/Home.tsx",
+        "line": 1225
+      },
+      "description": "Operación create Empty Qt Usb Diagnostics de Layout y navegación de secciones; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "estimateQtConnectionStart",
+      "displayName": "estimateQtConnectionStart",
+      "signature": "estimateQtConnectionStart(now: number, alivePeriodMs: number | null, aliveCount: number | null): inferred-by-TypeScript",
+      "line": 1245,
+      "endLine": 1253,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.max"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/Home.tsx",
+        "line": 1245
+      },
+      "description": "Adapta la llamada a `Math.max` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "formatBuildDate",
+      "displayName": "formatBuildDate",
+      "signature": "formatBuildDate(build: BuildInfo | null | undefined): string",
+      "line": 495,
+      "endLine": 497,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "`${build.date} ${build.time}`.trim"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/AboutProjectPanel.tsx",
+        "line": 495
+      },
+      "description": "Adapta la llamada a ``${build.date} ${build.time}`.trim` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "formatBytes",
+      "displayName": "formatBytes",
+      "signature": "formatBytes(value: unknown): string",
+      "line": 499,
+      "endLine": 502,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.max",
+        "Math.max(0, Math.round(number)).toLocaleString",
+        "Math.round",
+        "Number",
+        "Number.isFinite"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/AboutProjectPanel.tsx",
+        "line": 499
+      },
+      "description": "Coordina `Math.max`, `Math.max(0, Math.round(number)).toLocaleString`, `Math.round` para Layout y navegación de secciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "formatCarMode",
+      "displayName": "formatCarMode",
+      "signature": "formatCarMode(mode: string): string",
+      "line": 1259,
+      "endLine": 1261,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/Home.tsx",
+        "line": 1259
+      },
+      "description": "Operación format Car Mode de Layout y navegación de secciones; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "formatDiagnosticCounter",
+      "displayName": "formatDiagnosticCounter",
+      "signature": "formatDiagnosticCounter(value: number | null): inferred-by-TypeScript",
+      "line": 1255,
+      "endLine": 1257,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "String"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/Home.tsx",
+        "line": 1255
+      },
+      "description": "Adapta la llamada a `String` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "formatHeartbeatTime",
+      "displayName": "formatHeartbeatTime",
+      "signature": "formatHeartbeatTime(timestamp: number | null): inferred-by-TypeScript",
+      "line": 1202,
+      "endLine": 1212,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "new Intl.DateTimeFormat(\"es-AR\", { hour: \"2-digit\", minute: \"2-digit\", second: \"2-digit\", }).format"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/Home.tsx",
+        "line": 1202
+      },
+      "description": "Adapta la llamada a `new Intl.DateTimeFormat(\"es-AR\", { hour: \"2-digit\", minute: \"2-digit\", second: \"2-digit\", }).format` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "formatHex32",
+      "displayName": "formatHex32",
+      "signature": "formatHex32(value: number): string",
+      "line": 491,
+      "endLine": 493,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "(value >>> 0).toString",
+        "(value >>> 0).toString(16).toUpperCase",
+        "(value >>> 0).toString(16).toUpperCase().padStart"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/AboutProjectPanel.tsx",
+        "line": 491
+      },
+      "description": "Coordina `(value >>> 0).toString`, `(value >>> 0).toString(16).toUpperCase`, `(value >>> 0).toString(16).toUpperCase().padStart` para Layout y navegación de secciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "formatHexByte",
+      "displayName": "formatHexByte",
+      "signature": "formatHexByte(value: number): string",
+      "line": 487,
+      "endLine": 489,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "(value & 0xff).toString",
+        "(value & 0xff).toString(16).toUpperCase",
+        "(value & 0xff).toString(16).toUpperCase().padStart"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/AboutProjectPanel.tsx",
+        "line": 487
+      },
+      "description": "Coordina `(value & 0xff).toString`, `(value & 0xff).toString(16).toUpperCase`, `(value & 0xff).toString(16).toUpperCase().padStart` para Layout y navegación de secciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "formatLocalDateTime",
+      "displayName": "formatLocalDateTime",
+      "signature": "formatLocalDateTime(timestamp: number): inferred-by-TypeScript",
+      "line": 1214,
+      "endLine": 1223,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "new Intl.DateTimeFormat(\"es-AR\", { day: \"2-digit\", month: \"2-digit\", year: \"numeric\", hour: \"2-digit\", minute: \"2-digit\", second: \"2-digit\", }).format"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/Home.tsx",
+        "line": 1214
+      },
+      "description": "Adapta la llamada a `new Intl.DateTimeFormat(\"es-AR\", { day: \"2-digit\", month: \"2-digit\", year: \"numeric\", hour: \"2-digit\", minute: \"2-digit\", second: \"2-digit\", }).format` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "formatPercent",
+      "displayName": "formatPercent",
+      "signature": "formatPercent(value: unknown): string",
+      "line": 504,
+      "endLine": 507,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.max",
+        "Math.round",
+        "Number",
+        "Number.isFinite"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/AboutProjectPanel.tsx",
+        "line": 504
+      },
+      "description": "Coordina `Math.max`, `Math.round`, `Number` para Layout y navegación de secciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "formatValidationFlags",
+      "displayName": "formatValidationFlags",
+      "signature": "formatValidationFlags(flags: number): string",
+      "line": 482,
+      "endLine": 485,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "formatHexByte"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/AboutProjectPanel.tsx",
+        "line": 482
+      },
+      "description": "Adapta la llamada a `formatHexByte` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "normalizeWebAlivePeriodMs",
+      "displayName": "normalizeWebAlivePeriodMs",
+      "signature": "normalizeWebAlivePeriodMs(value: number): number",
+      "line": 1277,
+      "endLine": 1283,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.max",
+        "Math.min",
+        "Math.round",
+        "Number.isFinite"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/Home.tsx",
+        "line": 1277
+      },
+      "description": "Coordina `Math.max`, `Math.min`, `Math.round` para Layout y navegación de secciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "readBuildInfo",
+      "displayName": "readBuildInfo",
+      "signature": "readBuildInfo(data: Record<string, unknown>): BuildInfo",
+      "line": 446,
+      "endLine": 454,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "assertOkStatus",
+        "readText"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/AboutProjectPanel.tsx",
+        "line": 446
+      },
+      "description": "Coordina `assertOkStatus`, `readText` para Layout y navegación de secciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "readEspDeviceInfo",
+      "displayName": "readEspDeviceInfo",
+      "signature": "readEspDeviceInfo(data: Record<string, unknown>): EspDeviceInfo",
+      "line": 456,
+      "endLine": 480,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "formatBytes",
+        "formatPercent",
+        "readRecord",
+        "readText"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/AboutProjectPanel.tsx",
+        "line": 456
+      },
+      "description": "Coordina `formatBytes`, `formatPercent`, `readRecord` para Layout y navegación de secciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "readFirmwareInfo",
+      "displayName": "readFirmwareInfo",
+      "signature": "readFirmwareInfo(data: Record<string, unknown>): FirmwareInfo",
+      "line": 437,
+      "endLine": 444,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "assertOkStatus",
+        "readText"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/AboutProjectPanel.tsx",
+        "line": 437
+      },
+      "description": "Coordina `assertOkStatus`, `readText` para Layout y navegación de secciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "readNonNegativeInteger",
+      "displayName": "readNonNegativeInteger",
+      "signature": "readNonNegativeInteger(value: unknown): number | null",
+      "line": 1239,
+      "endLine": 1243,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Number.isSafeInteger"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/Home.tsx",
+        "line": 1239
+      },
+      "description": "Adapta la llamada a `Number.isSafeInteger` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "readPortForwardingEnabled",
+      "displayName": "readPortForwardingEnabled",
+      "signature": "readPortForwardingEnabled(data: Record<string, unknown>): boolean | null",
+      "line": 1295,
+      "endLine": 1301,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/Home.tsx",
+        "line": 1295
+      },
+      "description": "Operación read Port Forwarding Enabled de Layout y navegación de secciones; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "readRecord",
+      "displayName": "readRecord",
+      "signature": "readRecord(value: unknown): Record<string, unknown>",
+      "line": 515,
+      "endLine": 519,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Array.isArray"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/AboutProjectPanel.tsx",
+        "line": 515
+      },
+      "description": "Adapta la llamada a `Array.isArray` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "readText",
+      "displayName": "readText",
+      "signature": "readText(value: unknown): string",
+      "line": 521,
+      "endLine": 523,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "value.trim"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/AboutProjectPanel.tsx",
+        "line": 521
+      },
+      "description": "Adapta la llamada a `value.trim` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "readWebAlivePeriodMs",
+      "displayName": "readWebAlivePeriodMs",
+      "signature": "readWebAlivePeriodMs(data: Record<string, unknown>): number | null",
+      "line": 1285,
+      "endLine": 1293,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Number.isFinite",
+        "normalizeWebAlivePeriodMs"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/Home.tsx",
+        "line": 1285
+      },
+      "description": "Coordina `Number.isFinite`, `normalizeWebAlivePeriodMs` para Layout y navegación de secciones.",
+      "descriptionOrigin": "structural"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "AboutProjectPanel.applyReport",
+      "displayName": "applyReport",
+      "signature": "AboutProjectPanel.applyReport({ data }: { data: unknown }): inferred-by-TypeScript",
+      "line": 178,
+      "endLine": 184,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "parseBootReportData",
+        "setBootReport"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/AboutProjectPanel.tsx",
+        "line": 178
+      },
+      "description": "Coordina `parseBootReportData`, `setBootReport` para Layout y navegación de secciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Home.closeOnEscape",
+      "displayName": "closeOnEscape",
+      "signature": "Home.closeOnEscape(event: KeyboardEvent): inferred-by-TypeScript",
+      "line": 154,
+      "endLine": 156,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "setIsModeMenuOpen"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/Home.tsx",
+        "line": 154
+      },
+      "description": "Adapta la llamada a `setIsModeMenuOpen` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Home.closeOnOutsidePointer",
+      "displayName": "closeOnOutsidePointer",
+      "signature": "Home.closeOnOutsidePointer(event: PointerEvent): inferred-by-TypeScript",
+      "line": 149,
+      "endLine": 153,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "modeMenuRef.current?.contains",
+        "setIsModeMenuOpen"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/Home.tsx",
+        "line": 149
+      },
+      "description": "Coordina `modeMenuRef.current?.contains`, `setIsModeMenuOpen` para Layout y navegación de secciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Home.handleCarModeChange",
+      "displayName": "handleCarModeChange",
+      "signature": "Home.handleCarModeChange(nextMode: SelectableCarMode): inferred-by-TypeScript",
+      "line": 491,
+      "endLine": 498,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "formatCarMode",
+        "setCarMode",
+        "setIsModeMenuOpen",
+        "setModeChangeMessage"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/Home.tsx",
+        "line": 491
+      },
+      "description": "Coordina `formatCarMode`, `setCarMode`, `setIsModeMenuOpen` para Layout y navegación de secciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Home.handlePortForwardingChange",
+      "displayName": "handlePortForwardingChange",
+      "signature": "Home.handlePortForwardingChange(nextEnabled: boolean): inferred-by-TypeScript",
+      "line": 531,
+      "endLine": 572,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "refreshF4Preferences",
+        "request",
+        "setPortForwardingEnabled",
+        "setPortForwardingStatus"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/Home.tsx",
+        "line": 531
+      },
+      "description": "Coordina `refreshF4Preferences`, `request`, `setPortForwardingEnabled` para Layout y navegación de secciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Home.handleSendHeartbeat",
+      "displayName": "handleSendHeartbeat",
+      "signature": "Home.handleSendHeartbeat(): inferred-by-TypeScript",
+      "line": 397,
+      "endLine": 400,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "onHeartbeatReceived",
+        "refreshWifiStatus"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/Home.tsx",
+        "line": 397
+      },
+      "description": "Coordina `onHeartbeatReceived`, `refreshWifiStatus` para Layout y navegación de secciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Home.openPinEditor",
+      "displayName": "openPinEditor",
+      "signature": "Home.openPinEditor(): inferred-by-TypeScript",
+      "line": 441,
+      "endLine": 451,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "setConfirmPin",
+        "setCurrentPin",
+        "setNewPin",
+        "setOpenPinModal",
+        "setPinStatus",
+        "setPinStep"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/Home.tsx",
+        "line": 441
+      },
+      "description": "Coordina `setConfirmPin`, `setCurrentPin`, `setNewPin` para Layout y navegación de secciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Home.openQtDiagnostics",
+      "displayName": "openQtDiagnostics",
+      "signature": "Home.openQtDiagnostics(): inferred-by-TypeScript",
+      "line": 526,
+      "endLine": 529,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "refreshQtDiagnostics",
+        "setOpenQtDiagnosticsModal"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/Home.tsx",
+        "line": 526
+      },
+      "description": "Coordina `refreshQtDiagnostics`, `setOpenQtDiagnosticsModal` para Layout y navegación de secciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Home.refreshQtDiagnostics",
+      "displayName": "refreshQtDiagnostics",
+      "signature": "Home.refreshQtDiagnostics(): inferred-by-TypeScript",
+      "line": 500,
+      "endLine": 524,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Promise.all",
+        "refreshF4Preferences",
+        "refreshQtControlSnapshot",
+        "setPortForwardingStatus",
+        "setQtDiagnosticsLoading"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/Home.tsx",
+        "line": 500
+      },
+      "description": "Coordina `Promise.all`, `refreshF4Preferences`, `refreshQtControlSnapshot` para Layout y navegación de secciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Home.requestPinChange",
+      "displayName": "requestPinChange",
+      "signature": "Home.requestPinChange(): inferred-by-TypeScript",
+      "line": 469,
+      "endLine": 489,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "/^\\d{4}$/.test",
+        "changePin",
+        "setConfirmPin",
+        "setCurrentPin",
+        "setNewPin",
+        "setPinStatus"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/Home.tsx",
+        "line": 469
+      },
+      "description": "Coordina `/^\\d{4}$/.test`, `changePin`, `setConfirmPin` para Layout y navegación de secciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Home.requestPinValidation",
+      "displayName": "requestPinValidation",
+      "signature": "Home.requestPinValidation(): inferred-by-TypeScript",
+      "line": 453,
+      "endLine": 467,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "/^\\d{4}$/.test",
+        "login",
+        "setPinStatus",
+        "setPinStep"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/Home.tsx",
+        "line": 453
+      },
+      "description": "Coordina `/^\\d{4}$/.test`, `login`, `setPinStatus` para Layout y navegación de secciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "PageHeader.getPageTitle",
+      "displayName": "getPageTitle",
+      "signature": "PageHeader.getPageTitle(): inferred-by-TypeScript",
+      "line": 55,
+      "endLine": 64,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "path.startsWith"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/PageHeader.tsx",
+        "line": 55
+      },
+      "description": "Adapta la llamada a `path.startsWith` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "PinDigitField.handleChange",
+      "displayName": "handleChange",
+      "signature": "PinDigitField.handleChange(nextValue: string): inferred-by-TypeScript",
+      "line": 1655,
+      "endLine": 1657,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "nextValue.replace",
+        "nextValue.replace(/\\D/g, \"\").slice",
+        "onChange"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/Home.tsx",
+        "line": 1655
+      },
+      "description": "Coordina `nextValue.replace`, `nextValue.replace(/\\D/g, \"\").slice`, `onChange` para Layout y navegación de secciones.",
+      "descriptionOrigin": "structural"
+    }
+  ],
+  "hooks": [
+    {
+      "callee": "useReducedMotion",
+      "scope": "AboutProjectPanel",
+      "line": 73,
+      "arguments": 0,
+      "path": "src/components/AboutProjectPanel.tsx"
+    },
+    {
+      "callee": "useWebSocket",
+      "scope": "AboutProjectPanel",
+      "line": 74,
+      "arguments": 0,
+      "path": "src/components/AboutProjectPanel.tsx"
+    },
+    {
+      "callee": "useEspWifiStatus",
+      "scope": "AboutProjectPanel",
+      "line": 75,
+      "arguments": 0,
+      "path": "src/components/AboutProjectPanel.tsx"
+    },
+    {
+      "callee": "useUser",
+      "scope": "AboutProjectPanel",
+      "line": 76,
+      "arguments": 0,
+      "path": "src/components/AboutProjectPanel.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "AboutProjectPanel",
+      "line": 77,
+      "arguments": 1,
+      "path": "src/components/AboutProjectPanel.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "AboutProjectPanel",
+      "line": 78,
+      "arguments": 1,
+      "path": "src/components/AboutProjectPanel.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "AboutProjectPanel",
+      "line": 79,
+      "arguments": 1,
+      "path": "src/components/AboutProjectPanel.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "AboutProjectPanel",
+      "line": 82,
+      "arguments": 1,
+      "path": "src/components/AboutProjectPanel.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "AboutProjectPanel",
+      "line": 83,
+      "arguments": 1,
+      "path": "src/components/AboutProjectPanel.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "AboutProjectPanel",
+      "line": 84,
+      "arguments": 1,
+      "path": "src/components/AboutProjectPanel.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "AboutProjectPanel",
+      "line": 85,
+      "arguments": 1,
+      "path": "src/components/AboutProjectPanel.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "AboutProjectPanel",
+      "line": 87,
+      "arguments": 2,
+      "path": "src/components/AboutProjectPanel.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "AboutProjectPanel",
+      "line": 173,
+      "arguments": 2,
+      "path": "src/components/AboutProjectPanel.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "AboutProjectPanel",
+      "line": 177,
+      "arguments": 2,
+      "path": "src/components/AboutProjectPanel.tsx"
+    },
+    {
+      "callee": "useNavigate",
+      "scope": "NavigateVT",
+      "line": 13,
+      "arguments": 0,
+      "path": "src/components/NavigateVT.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "NavigateVT",
+      "line": 14,
+      "arguments": 2,
+      "path": "src/components/NavigateVT.tsx"
+    },
+    {
+      "callee": "useLocation",
+      "scope": "PageHeader",
+      "line": 44,
+      "arguments": 0,
+      "path": "src/components/PageHeader.tsx"
+    },
+    {
+      "callee": "useNavigate",
+      "scope": "PageHeader",
+      "line": 45,
+      "arguments": 0,
+      "path": "src/components/PageHeader.tsx"
+    },
+    {
+      "callee": "useUser",
+      "scope": "PageHeader",
+      "line": 46,
+      "arguments": 0,
+      "path": "src/components/PageHeader.tsx"
+    },
+    {
+      "callee": "useScreenStreamModal",
+      "scope": "PageHeader",
+      "line": 47,
+      "arguments": 0,
+      "path": "src/components/PageHeader.tsx"
+    },
+    {
+      "callee": "useUser",
+      "scope": "RedirectRoot",
+      "line": 6,
+      "arguments": 0,
+      "path": "src/components/RedirectRoot.tsx"
+    },
+    {
+      "callee": "useLocation",
+      "scope": "RootLayout",
+      "line": 7,
+      "arguments": 0,
+      "path": "src/components/RootLayout.tsx"
+    },
+    {
+      "callee": "useOutlet",
+      "scope": "RootLayout",
+      "line": 8,
+      "arguments": 0,
+      "path": "src/components/RootLayout.tsx"
+    },
+    {
+      "callee": "useReducedMotion",
+      "scope": "RootLayout",
+      "line": 9,
+      "arguments": 0,
+      "path": "src/components/RootLayout.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "StartupWelcome",
+      "line": 8,
+      "arguments": 1,
+      "path": "src/components/StartupWelcome.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "StartupWelcome",
+      "line": 9,
+      "arguments": 1,
+      "path": "src/components/StartupWelcome.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "StartupWelcome",
+      "line": 10,
+      "arguments": 1,
+      "path": "src/components/StartupWelcome.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "StartupWelcome",
+      "line": 11,
+      "arguments": 1,
+      "path": "src/components/StartupWelcome.tsx"
+    },
+    {
+      "callee": "useLayoutEffect",
+      "scope": "StartupWelcome",
+      "line": 13,
+      "arguments": 2,
+      "path": "src/components/StartupWelcome.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "StartupWelcome",
+      "line": 20,
+      "arguments": 2,
+      "path": "src/components/StartupWelcome.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "StartupWelcome",
+      "line": 26,
+      "arguments": 2,
+      "path": "src/components/StartupWelcome.tsx"
+    },
+    {
+      "callee": "useUser",
+      "scope": "DevModeToggle",
+      "line": 59,
+      "arguments": 0,
+      "path": "src/pages/Home.tsx"
+    },
+    {
+      "callee": "useWebSocket",
+      "scope": "Home",
+      "line": 88,
+      "arguments": 0,
+      "path": "src/pages/Home.tsx"
+    },
+    {
+      "callee": "useEspWifiStatus",
+      "scope": "Home",
+      "line": 92,
+      "arguments": 0,
+      "path": "src/pages/Home.tsx"
+    },
+    {
+      "callee": "useNavigate",
+      "scope": "Home",
+      "line": 94,
+      "arguments": 0,
+      "path": "src/pages/Home.tsx"
+    },
+    {
+      "callee": "useUser",
+      "scope": "Home",
+      "line": 95,
+      "arguments": 0,
+      "path": "src/pages/Home.tsx"
+    },
+    {
+      "callee": "useScreenStreamModal",
+      "scope": "Home",
+      "line": 99,
+      "arguments": 0,
+      "path": "src/pages/Home.tsx"
+    },
+    {
+      "callee": "useScreen",
+      "scope": "Home",
+      "line": 100,
+      "arguments": 0,
+      "path": "src/pages/Home.tsx"
+    },
+    {
+      "callee": "useCarMode",
+      "scope": "Home",
+      "line": 101,
+      "arguments": 0,
+      "path": "src/pages/Home.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "Home",
+      "line": 102,
+      "arguments": 1,
+      "path": "src/pages/Home.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "Home",
+      "line": 103,
+      "arguments": 1,
+      "path": "src/pages/Home.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "Home",
+      "line": 104,
+      "arguments": 1,
+      "path": "src/pages/Home.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "Home",
+      "line": 105,
+      "arguments": 1,
+      "path": "src/pages/Home.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "Home",
+      "line": 107,
+      "arguments": 1,
+      "path": "src/pages/Home.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "Home",
+      "line": 108,
+      "arguments": 1,
+      "path": "src/pages/Home.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "Home",
+      "line": 109,
+      "arguments": 1,
+      "path": "src/pages/Home.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "Home",
+      "line": 110,
+      "arguments": 1,
+      "path": "src/pages/Home.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "Home",
+      "line": 111,
+      "arguments": 1,
+      "path": "src/pages/Home.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "Home",
+      "line": 112,
+      "arguments": 1,
+      "path": "src/pages/Home.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "Home",
+      "line": 113,
+      "arguments": 1,
+      "path": "src/pages/Home.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "Home",
+      "line": 114,
+      "arguments": 1,
+      "path": "src/pages/Home.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "Home",
+      "line": 115,
+      "arguments": 1,
+      "path": "src/pages/Home.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "Home",
+      "line": 119,
+      "arguments": 1,
+      "path": "src/pages/Home.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "Home",
+      "line": 123,
+      "arguments": 1,
+      "path": "src/pages/Home.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "Home",
+      "line": 126,
+      "arguments": 1,
+      "path": "src/pages/Home.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "Home",
+      "line": 127,
+      "arguments": 1,
+      "path": "src/pages/Home.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "Home",
+      "line": 128,
+      "arguments": 1,
+      "path": "src/pages/Home.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "Home",
+      "line": 130,
+      "arguments": 1,
+      "path": "src/pages/Home.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "Home",
+      "line": 131,
+      "arguments": 1,
+      "path": "src/pages/Home.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "Home",
+      "line": 135,
+      "arguments": 1,
+      "path": "src/pages/Home.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "Home",
+      "line": 136,
+      "arguments": 1,
+      "path": "src/pages/Home.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "Home",
+      "line": 141,
+      "arguments": 1,
+      "path": "src/pages/Home.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "Home",
+      "line": 142,
+      "arguments": 1,
+      "path": "src/pages/Home.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "Home",
+      "line": 143,
+      "arguments": 1,
+      "path": "src/pages/Home.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "Home",
+      "line": 144,
+      "arguments": 1,
+      "path": "src/pages/Home.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "Home",
+      "line": 146,
+      "arguments": 2,
+      "path": "src/pages/Home.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "Home",
+      "line": 166,
+      "arguments": 2,
+      "path": "src/pages/Home.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "Home",
+      "line": 184,
+      "arguments": 2,
+      "path": "src/pages/Home.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "Home",
+      "line": 193,
+      "arguments": 2,
+      "path": "src/pages/Home.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "Home",
+      "line": 230,
+      "arguments": 2,
+      "path": "src/pages/Home.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "Home",
+      "line": 253,
+      "arguments": 2,
+      "path": "src/pages/Home.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "Home",
+      "line": 273,
+      "arguments": 2,
+      "path": "src/pages/Home.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "Home",
+      "line": 328,
+      "arguments": 2,
+      "path": "src/pages/Home.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "Home",
+      "line": 364,
+      "arguments": 2,
+      "path": "src/pages/Home.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "Home",
+      "line": 385,
+      "arguments": 2,
+      "path": "src/pages/Home.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "PinDigitField",
+      "line": 1647,
+      "arguments": 1,
+      "path": "src/pages/Home.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "PinDigitField",
+      "line": 1649,
+      "arguments": 2,
+      "path": "src/pages/Home.tsx"
+    }
+  ]
+}

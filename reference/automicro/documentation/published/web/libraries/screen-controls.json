@@ -1,0 +1,2053 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "web:module/src/components/ScreenStreamWorkspace.tsx",
+  "slug": "screen-controls",
+  "title": "Visor de pantalla y controles remotos",
+  "target": "web",
+  "kind": "integración",
+  "status": "source-documented",
+  "snapshotDate": "2026-10-20",
+  "verification": "not-run-user-instruction",
+  "responsibility": "Presenta pantalla, acciones de menú/encoder/USER, validación y acceso al canvas guardado.",
+  "scope": "UI y envío de acciones lógicas con screenCode; no genera la rotación física del encoder.",
+  "state": "Refs conservan pantalla/acciones vigentes; pressed/held y timers viven localmente. currentScreen y autorización pertenecen a contextos.",
+  "modularity": "Integración React entre render, socket y permisos; no es la biblioteca OLED portable.",
+  "lifecycle": [
+    "Enviar comando solo con identidad vigente y permiso.",
+    "Teclado captura dentro del visor; decide pulsación al keyup y cancela held al perder foco/visibilidad.",
+    "Después de acciones solicita resincronización; status de aceptación no demuestra cambio de vista."
+  ],
+  "interactions": [
+    "0x53 click visible 1..3, 0x54/55 pulsación, 0x56 página, 0x57/58 giro lógico.",
+    "F4 contrasta screenCode y aplica prioridad global del router; un código viejo debe resincronizarse."
+  ],
+  "limitations": [
+    "Umbral local de pulsación larga 1500 ms; F4 físico clasifica con otros contadores/umbrales.",
+    "Sin ventana real de F4, una fila dibujada puede diferir de la fila ejecutada por click.",
+    "Un formulario PIN local no debe dibujarse como captura del buffer físico."
+  ],
+  "relationships": [],
+  "findings": [
+    "AMDOC-WEB-002",
+    "AMDOC-WEB-004",
+    "AMDOC-WEB-006",
+    "AMDOC-WEB-007"
+  ],
+  "files": [
+    {
+      "rootId": "web",
+      "path": "src/components/ScreenDashboardPanel.tsx",
+      "sha256": "8c46cd9c118328aade5fb96e2ff8e7f1571702e4bed87a487f0ec08430fbd1b9",
+      "imports": [
+        "./ScreenStreamWorkspace",
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/components/ScreenStreamModal.tsx",
+      "sha256": "4a29cbf2fa48454ca950ed3f47f091619367cf8e5dc442a09c515c8c708336fe",
+      "imports": [
+        "../hooks/useScreenStreamKeyboard",
+        "./ScreenStreamWorkspace",
+        "./modal",
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/components/ScreenStreamWorkspace.tsx",
+      "sha256": "1dda55208edda4524b95ca3528a53eb235cbaf6fe412ff9fe9199484fa26318e",
+      "imports": [
+        "../contexts/CarModeContext",
+        "../contexts/IrEmittersContext",
+        "../contexts/SavedOledScreensContext",
+        "../contexts/ScreenContext",
+        "../contexts/UserContext",
+        "../features/oledEditor/oledCanvasProtocol",
+        "../features/oledEditor/oledCanvasRasterizer",
+        "../features/oledEditor/useOledCanvasTransfer",
+        "../hooks/useScreenStreamKeyboard",
+        "../hooks/useWebSocket",
+        "../protocol/wsApi",
+        "../screens",
+        "../screens/screenCodes",
+        "../types/RemoteBridgeTypes",
+        "../types/ScreenTypes",
+        "../utils/stmRemoteActionFeedback",
+        "./OledCommandPreview",
+        "./PinScreenModal",
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/contexts/ScreenStreamModalContext.tsx",
+      "sha256": "838c1ddbf54090558becad38b464b60f9eee6ca8b123bf3bd54938958aa64b3a",
+      "imports": [
+        "../components/ScreenStreamModal",
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/hooks/useScreenStreamKeyboard.ts",
+      "sha256": "72f8f9b2acc35082c3a371aeeef15f6f30dc6bad35face796086392194cb0c4d",
+      "imports": [
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    }
+  ],
+  "types": [
+    {
+      "name": "ScreenDashboardPanelProps",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "compact",
+          "declaration": "compact?: boolean",
+          "callback": false,
+          "ownerType": "ScreenDashboardPanelProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/ScreenDashboardPanel.tsx",
+            "line": 6
+          },
+          "description": "Dato de estado/configuración `compact`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ScreenDashboardPanel.tsx",
+        "line": 5
+      }
+    },
+    {
+      "name": "ScreenStreamModalProps",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "isOpen",
+          "declaration": "isOpen: boolean",
+          "callback": false,
+          "ownerType": "ScreenStreamModalProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/ScreenStreamModal.tsx",
+            "line": 8
+          },
+          "description": "Dato de estado/configuración `isOpen`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "onClose",
+          "declaration": "onClose: () => void",
+          "callback": true,
+          "ownerType": "ScreenStreamModalProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/ScreenStreamModal.tsx",
+            "line": 9
+          },
+          "description": "Pide al dueño cerrar el modal y completar limpieza del montaje; no simula pulsación USER en F4."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ScreenStreamModal.tsx",
+        "line": 7
+      }
+    },
+    {
+      "name": "ScreenPageDirection",
+      "kind": "TypeAliasDeclaration",
+      "type": "\"up\" | \"down\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ScreenStreamWorkspace.tsx",
+        "line": 46
+      }
+    },
+    {
+      "name": "AuxButtonKind",
+      "kind": "TypeAliasDeclaration",
+      "type": "\"encoder\" | \"user\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ScreenStreamWorkspace.tsx",
+        "line": 47
+      }
+    },
+    {
+      "name": "KeyboardCommandDebug",
+      "kind": "TypeAliasDeclaration",
+      "fields": [
+        {
+          "name": "key",
+          "declaration": "key: string",
+          "callback": false,
+          "ownerType": "KeyboardCommandDebug",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/ScreenStreamWorkspace.tsx",
+            "line": 50
+          },
+          "description": "Dato de estado/configuración `key`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "heldMs",
+          "declaration": "heldMs?: number",
+          "callback": false,
+          "ownerType": "KeyboardCommandDebug",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/ScreenStreamWorkspace.tsx",
+            "line": 51
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ScreenStreamWorkspace.tsx",
+        "line": 49
+      }
+    },
+    {
+      "name": "ScreenStreamModalContextValue",
+      "kind": "TypeAliasDeclaration",
+      "fields": [
+        {
+          "name": "isOpen",
+          "declaration": "isOpen: boolean",
+          "callback": false,
+          "ownerType": "ScreenStreamModalContextValue",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/ScreenStreamModalContext.tsx",
+            "line": 6
+          },
+          "description": "Dato de estado/configuración `isOpen`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "open",
+          "declaration": "open: () => void",
+          "callback": true,
+          "ownerType": "ScreenStreamModalContextValue",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/ScreenStreamModalContext.tsx",
+            "line": 7
+          },
+          "description": "Abre visor en el estado de UI del provider."
+        },
+        {
+          "name": "close",
+          "declaration": "close: () => void",
+          "callback": true,
+          "ownerType": "ScreenStreamModalContextValue",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/ScreenStreamModalContext.tsx",
+            "line": 8
+          },
+          "description": "Cierra visor y deja al montaje retirar foco/listeners/gestos."
+        },
+        {
+          "name": "toggle",
+          "declaration": "toggle: () => void",
+          "callback": true,
+          "ownerType": "ScreenStreamModalContextValue",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/ScreenStreamModalContext.tsx",
+            "line": 9
+          },
+          "description": "Alterna apertura local del visor; no cambia pantalla F4 por implicación."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/ScreenStreamModalContext.tsx",
+        "line": 5
+      }
+    },
+    {
+      "name": "RemoteButtonKind",
+      "kind": "TypeAliasDeclaration",
+      "type": "\"encoder\" | \"user\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/hooks/useScreenStreamKeyboard.ts",
+        "line": 3
+      }
+    },
+    {
+      "name": "ScreenStreamKeyboardActions",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "active",
+          "declaration": "active: boolean",
+          "callback": false,
+          "ownerType": "ScreenStreamKeyboardActions",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/hooks/useScreenStreamKeyboard.ts",
+            "line": 6
+          },
+          "description": "Dato de estado/configuración `active`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "onRotate",
+          "declaration": "onRotate: (direction: \"left\" | \"right\") => void",
+          "callback": true,
+          "ownerType": "ScreenStreamKeyboardActions",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/hooks/useScreenStreamKeyboard.ts",
+            "line": 7
+          },
+          "description": "El hook emite intención left/right desde teclas del visor; el consumidor la traduce al comando y screenCode vigente."
+        },
+        {
+          "name": "onRefresh",
+          "declaration": "onRefresh: () => void",
+          "callback": true,
+          "ownerType": "ScreenStreamKeyboardActions",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/hooks/useScreenStreamKeyboard.ts",
+            "line": 8
+          },
+          "description": "Solicita consulta de estado actual desde el ámbito de teclado del visor."
+        },
+        {
+          "name": "onPressStart",
+          "declaration": "onPressStart: (kind: RemoteButtonKind) => void",
+          "callback": true,
+          "ownerType": "ScreenStreamKeyboardActions",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/hooks/useScreenStreamKeyboard.ts",
+            "line": 9
+          },
+          "description": "Inicia seguimiento local de gesto USER/encoder y su reloj; no confirma aún el evento remoto."
+        },
+        {
+          "name": "onPressRelease",
+          "declaration": "onPressRelease: (kind: RemoteButtonKind) => void",
+          "callback": true,
+          "ownerType": "ScreenStreamKeyboardActions",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/hooks/useScreenStreamKeyboard.ts",
+            "line": 10
+          },
+          "description": "Termina gesto, calcula tipo lógico y permite envío del comando."
+        },
+        {
+          "name": "onPressCancel",
+          "declaration": "onPressCancel: (kind: RemoteButtonKind) => void",
+          "callback": true,
+          "ownerType": "ScreenStreamKeyboardActions",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/hooks/useScreenStreamKeyboard.ts",
+            "line": 11
+          },
+          "description": "Descarta gesto pendiente al perder foco/visibilidad, sin fabricar liberación con acción."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/hooks/useScreenStreamKeyboard.ts",
+        "line": 5
+      }
+    },
+    {
+      "name": "ScreenStreamKeyboardOptions",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "enabled",
+          "declaration": "enabled: boolean",
+          "callback": false,
+          "ownerType": "ScreenStreamKeyboardOptions",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/hooks/useScreenStreamKeyboard.ts",
+            "line": 15
+          },
+          "description": "Dato de estado/configuración `enabled`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "scopeRef",
+          "declaration": "scopeRef: RefObject<HTMLDivElement | null>",
+          "callback": false,
+          "ownerType": "ScreenStreamKeyboardOptions",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/hooks/useScreenStreamKeyboard.ts",
+            "line": 16
+          },
+          "description": "Dato de estado/configuración `scopeRef`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "actionsRef",
+          "declaration": "actionsRef: RefObject<ScreenStreamKeyboardActions | null>",
+          "callback": false,
+          "ownerType": "ScreenStreamKeyboardOptions",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/hooks/useScreenStreamKeyboard.ts",
+            "line": 17
+          },
+          "description": "Dato de estado/configuración `actionsRef`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/hooks/useScreenStreamKeyboard.ts",
+        "line": 14
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "ControlBlock",
+      "displayName": "ControlBlock",
+      "signature": "ControlBlock({\r\n title,\r\n children,\r\n}: { title: string; children: React.ReactNode; }): inferred-by-TypeScript",
+      "line": 1594,
+      "endLine": 1609,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ScreenStreamWorkspace.tsx",
+        "line": 1594
+      },
+      "description": "Operación Control Block de Visor de pantalla y controles remotos; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "LabeledLiveControl",
+      "displayName": "LabeledLiveControl",
+      "signature": "LabeledLiveControl({\r\n title,\r\n children,\r\n}: { title: string; children: React.ReactNode; }): inferred-by-TypeScript",
+      "line": 1611,
+      "endLine": 1624,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ScreenStreamWorkspace.tsx",
+        "line": 1611
+      },
+      "description": "Operación Labeled Live Control de Visor de pantalla y controles remotos; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "MonoBitmapIcon",
+      "displayName": "MonoBitmapIcon",
+      "signature": "MonoBitmapIcon({\r\n bitmap,\r\n width,\r\n height,\r\n scale = 2,\r\n color,\r\n}: { bitmap: Uint8Array; width: number; height: number; scale?: number; color: string; }): inferred-by-TypeScript",
+      "line": 1626,
+      "endLine": 1677,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useEffect",
+        "useRef"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ScreenStreamWorkspace.tsx",
+        "line": 1626
+      },
+      "description": "Coordina `useEffect`, `useRef` para Visor de pantalla y controles remotos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "PillWithTooltip",
+      "displayName": "PillWithTooltip",
+      "signature": "PillWithTooltip({\r\n label,\r\n tooltip,\r\n tone,\r\n}: { label: string; tooltip: string; tone: \"cyan\" | \"emerald\"; }): inferred-by-TypeScript",
+      "line": 1715,
+      "endLine": 1742,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ScreenStreamWorkspace.tsx",
+        "line": 1715
+      },
+      "description": "Operación Pill With Tooltip de Visor de pantalla y controles remotos; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "ScreenDashboardPanel",
+      "displayName": "ScreenDashboardPanel",
+      "signature": "ScreenDashboardPanel({\n compact = false,\n}: ScreenDashboardPanelProps): inferred-by-TypeScript",
+      "line": 9,
+      "endLine": 128,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useEffect",
+        "useState"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ScreenDashboardPanel.tsx",
+        "line": 9
+      },
+      "description": "Coordina `useEffect`, `useState` para Visor de pantalla y controles remotos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ScreenFact",
+      "displayName": "ScreenFact",
+      "signature": "ScreenFact({\r\n label,\r\n value,\r\n wide = false,\r\n styles = \"\",\r\n}: { label: string; value: string; wide?: boolean; styles?: string; }): inferred-by-TypeScript",
+      "line": 1744,
+      "endLine": 1763,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ScreenStreamWorkspace.tsx",
+        "line": 1744
+      },
+      "description": "Operación Screen Fact de Visor de pantalla y controles remotos; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "ScreenStreamModal",
+      "displayName": "ScreenStreamModal",
+      "signature": "ScreenStreamModal({\r\n isOpen,\r\n onClose,\r\n}: ScreenStreamModalProps): inferred-by-TypeScript",
+      "line": 12,
+      "endLine": 49,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useRef",
+        "useScreenStreamKeyboard"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ScreenStreamModal.tsx",
+        "line": 12
+      },
+      "description": "Coordina `useRef`, `useScreenStreamKeyboard` para Visor de pantalla y controles remotos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ScreenStreamModalProvider",
+      "displayName": "ScreenStreamModalProvider",
+      "signature": "ScreenStreamModalProvider({\r\n  children,\r\n}: { children: React.ReactNode; }): inferred-by-TypeScript",
+      "line": 15,
+      "endLine": 38,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useMemo",
+        "useState"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/ScreenStreamModalContext.tsx",
+        "line": 15
+      },
+      "description": "Coordina `useMemo`, `useState` para Visor de pantalla y controles remotos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ScreenStreamWorkspace",
+      "displayName": "ScreenStreamWorkspace",
+      "signature": "ScreenStreamWorkspace({\r\n isModal = false,\r\n keyboardActionsRef,\r\n}: { isModal?: boolean; keyboardActionsRef?: React.RefObject<ScreenStreamKeyboardActions | null>; }): inferred-by-TypeScript",
+      "line": 109,
+      "endLine": 1532,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "(notificationTotalMs / 1000).toFixed",
+        "Boolean",
+        "Math.max",
+        "Math.min",
+        "String",
+        "actionButtonStyle",
+        "formatPayload",
+        "formatRemainingSeconds",
+        "formatScreenCodeHex",
+        "getAccentButtonStyle",
+        "getStmRemoteCommandMode",
+        "isMenuControlScreenCode",
+        "readFiniteNumber",
+        "savedScreens.map",
+        "useCarMode",
+        "useEffect",
+        "useIrEmitters",
+        "useLayoutEffect",
+        "useMemo",
+        "useOledCanvasTransfer",
+        "useRef",
+        "useSavedOledScreens",
+        "useScreen",
+        "useState",
+        "useUser",
+        "useWebSocket"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ScreenStreamWorkspace.tsx",
+        "line": 109
+      },
+      "description": "Compone preview, estado, acciones y validación sobre la pantalla remota.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "TurnArrowIcon",
+      "displayName": "TurnArrowIcon",
+      "signature": "TurnArrowIcon({ direction }: { direction: \"left\" | \"right\" }): inferred-by-TypeScript",
+      "line": 1679,
+      "endLine": 1713,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ScreenStreamWorkspace.tsx",
+        "line": 1679
+      },
+      "description": "Operación Turn Arrow Icon de Visor de pantalla y controles remotos; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "buildAuxButtonPayload",
+      "displayName": "buildAuxButtonPayload",
+      "signature": "buildAuxButtonPayload(screenCode: number, pressKind: number): number[]",
+      "line": 92,
+      "endLine": 97,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "screenCodeToLeBytes"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ScreenStreamWorkspace.tsx",
+        "line": 92
+      },
+      "description": "Adapta la llamada a `screenCodeToLeBytes` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildEncoderRotatePayload",
+      "displayName": "buildEncoderRotatePayload",
+      "signature": "buildEncoderRotatePayload(screenCode: number): number[]",
+      "line": 99,
+      "endLine": 101,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "screenCodeToLeBytes"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ScreenStreamWorkspace.tsx",
+        "line": 99
+      },
+      "description": "Codifica screenCode LE para giro lógico remoto.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "buildMenuItemClickPayload",
+      "displayName": "buildMenuItemClickPayload",
+      "signature": "buildMenuItemClickPayload(screenCode: number, item: 1 | 2 | 3): number[]",
+      "line": 85,
+      "endLine": 90,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "screenCodeToLeBytes"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ScreenStreamWorkspace.tsx",
+        "line": 85
+      },
+      "description": "Codifica screenCode LE y posición visible 1-based.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "buildScreenPagePayload",
+      "displayName": "buildScreenPagePayload",
+      "signature": "buildScreenPagePayload(screenCode: number, direction: ScreenPageDirection): number[]",
+      "line": 75,
+      "endLine": 83,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "screenCodeToLeBytes"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ScreenStreamWorkspace.tsx",
+        "line": 75
+      },
+      "description": "Adapta la llamada a `screenCodeToLeBytes` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buttonForKey",
+      "displayName": "buttonForKey",
+      "signature": "buttonForKey(key: string): RemoteButtonKind | null",
+      "line": 20,
+      "endLine": 24,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/hooks/useScreenStreamKeyboard.ts",
+        "line": 20
+      },
+      "description": "Operación button For Key de Visor de pantalla y controles remotos; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "createCommandRequestId",
+      "displayName": "createCommandRequestId",
+      "signature": "createCommandRequestId(): string",
+      "line": 103,
+      "endLine": 107,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Date.now",
+        "Math.random",
+        "Math.random().toString",
+        "Math.random().toString(16).slice",
+        "crypto.randomUUID"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ScreenStreamWorkspace.tsx",
+        "line": 103
+      },
+      "description": "Coordina `Date.now`, `Math.random`, `Math.random().toString` para Visor de pantalla y controles remotos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "directionForKey",
+      "displayName": "directionForKey",
+      "signature": "directionForKey(key: string): \"left\" | \"right\" | null",
+      "line": 26,
+      "endLine": 30,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/hooks/useScreenStreamKeyboard.ts",
+        "line": 26
+      },
+      "description": "Operación direction For Key de Visor de pantalla y controles remotos; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "formatPayload",
+      "displayName": "formatPayload",
+      "signature": "formatPayload(payload: number[] | undefined): inferred-by-TypeScript",
+      "line": 1765,
+      "endLine": 1771,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "payload .map",
+        "payload .map((byte) => byte.toString(16).toUpperCase().padStart(2, \"0\")) .join"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ScreenStreamWorkspace.tsx",
+        "line": 1765
+      },
+      "description": "Coordina `payload .map`, `payload .map((byte) => byte.toString(16).toUpperCase().padStart(2, \"0\")) .join` para Visor de pantalla y controles remotos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "formatRemainingSeconds",
+      "displayName": "formatRemainingSeconds",
+      "signature": "formatRemainingSeconds(remainingMs: number | null): string",
+      "line": 1777,
+      "endLine": 1780,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.max",
+        "Math.max(0, remainingMs / 1000).toFixed"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ScreenStreamWorkspace.tsx",
+        "line": 1777
+      },
+      "description": "Coordina `Math.max`, `Math.max(0, remainingMs / 1000).toFixed` para Visor de pantalla y controles remotos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "isMenuControlScreenCode",
+      "displayName": "isMenuControlScreenCode",
+      "signature": "isMenuControlScreenCode(screenCode: number | undefined): boolean",
+      "line": 1579,
+      "endLine": 1592,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ScreenStreamWorkspace.tsx",
+        "line": 1579
+      },
+      "description": "Operación is Menu Control Screen Code de Visor de pantalla y controles remotos; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "isStmCommandOptions",
+      "displayName": "isStmCommandOptions",
+      "signature": "isStmCommandOptions(value: unknown): value is { payload?: number[]; jsonCommand?: string; jsonParams?: Record<string, unknown>; }",
+      "line": 1569,
+      "endLine": 1577,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Array.isArray"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ScreenStreamWorkspace.tsx",
+        "line": 1569
+      },
+      "description": "Adapta la llamada a `Array.isArray` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "normalizeStmCommandOptions",
+      "displayName": "normalizeStmCommandOptions",
+      "signature": "normalizeStmCommandOptions(payloadOrOptionsOrDescription: | number[] | { payload?: number[]; jsonCommand?: string; jsonParams?: Record<string, unknown>; } | string, descriptionOrOptions?: | string | { payload?: number[]; jsonCommand?: string; jsonParams?: Record<string, unknown>; }): inferred-by-TypeScript",
+      "line": 1534,
+      "endLine": 1567,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Array.isArray",
+        "isStmCommandOptions"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ScreenStreamWorkspace.tsx",
+        "line": 1534
+      },
+      "description": "Coordina `Array.isArray`, `isStmCommandOptions` para Visor de pantalla y controles remotos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "readFiniteNumber",
+      "displayName": "readFiniteNumber",
+      "signature": "readFiniteNumber(value: unknown): number | null",
+      "line": 1773,
+      "endLine": 1775,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Number.isFinite"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ScreenStreamWorkspace.tsx",
+        "line": 1773
+      },
+      "description": "Adapta la llamada a `Number.isFinite` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "screenCodeToLeBytes",
+      "displayName": "screenCodeToLeBytes",
+      "signature": "screenCodeToLeBytes(screenCode: number): number[]",
+      "line": 65,
+      "endLine": 73,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ScreenStreamWorkspace.tsx",
+        "line": 65
+      },
+      "description": "Operación screen Code To Le Bytes de Visor de pantalla y controles remotos; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "useScreenStreamKeyboard",
+      "displayName": "useScreenStreamKeyboard",
+      "signature": "useScreenStreamKeyboard({\n  enabled,\n  scopeRef,\n  actionsRef,\n}: ScreenStreamKeyboardOptions): inferred-by-TypeScript",
+      "line": 32,
+      "endLine": 119,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useLayoutEffect"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/hooks/useScreenStreamKeyboard.ts",
+        "line": 32
+      },
+      "description": "Registra teclado limitado al visor y libera pressed/held/listeners al salir.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "useScreenStreamModal",
+      "displayName": "useScreenStreamModal",
+      "signature": "useScreenStreamModal(): inferred-by-TypeScript",
+      "line": 40,
+      "endLine": 48,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useContext"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/ScreenStreamModalContext.tsx",
+        "line": 40
+      },
+      "description": "Adapta la llamada a `useContext` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "ScreenStreamModalProvider.close",
+      "displayName": "close",
+      "signature": "ScreenStreamModalProvider.close(): inferred-by-TypeScript",
+      "line": 26,
+      "endLine": 26,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "setIsOpen"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/ScreenStreamModalContext.tsx",
+        "line": 26
+      },
+      "description": "Adapta la llamada a `setIsOpen` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ScreenStreamModalProvider.open",
+      "displayName": "open",
+      "signature": "ScreenStreamModalProvider.open(): inferred-by-TypeScript",
+      "line": 25,
+      "endLine": 25,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "setIsOpen"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/ScreenStreamModalContext.tsx",
+        "line": 25
+      },
+      "description": "Adapta la llamada a `setIsOpen` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ScreenStreamModalProvider.toggle",
+      "displayName": "toggle",
+      "signature": "ScreenStreamModalProvider.toggle(): inferred-by-TypeScript",
+      "line": 27,
+      "endLine": 27,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "setIsOpen"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/ScreenStreamModalContext.tsx",
+        "line": 27
+      },
+      "description": "Adapta la llamada a `setIsOpen` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ScreenStreamWorkspace.actionButtonStyle",
+      "displayName": "actionButtonStyle",
+      "signature": "ScreenStreamWorkspace.actionButtonStyle(hovered: boolean): React.CSSProperties",
+      "line": 707,
+      "endLine": 717,
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ScreenStreamWorkspace.tsx",
+        "line": 707
+      },
+      "description": "Operación action Button Style de Visor de pantalla y controles remotos; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "ScreenStreamWorkspace.animateMenuItemPress",
+      "displayName": "animateMenuItemPress",
+      "signature": "ScreenStreamWorkspace.animateMenuItemPress(item: number): inferred-by-TypeScript",
+      "line": 471,
+      "endLine": 476,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "setPressedMenuItem",
+        "window.setTimeout"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ScreenStreamWorkspace.tsx",
+        "line": 471
+      },
+      "description": "Coordina `setPressedMenuItem`, `window.setTimeout` para Visor de pantalla y controles remotos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ScreenStreamWorkspace.animateRotatePress",
+      "displayName": "animateRotatePress",
+      "signature": "ScreenStreamWorkspace.animateRotatePress(direction: \"left\" | \"right\"): inferred-by-TypeScript",
+      "line": 485,
+      "endLine": 490,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "setPressedRotate",
+        "window.setTimeout"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ScreenStreamWorkspace.tsx",
+        "line": 485
+      },
+      "description": "Coordina `setPressedRotate`, `window.setTimeout` para Visor de pantalla y controles remotos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ScreenStreamWorkspace.animateScrollPress",
+      "displayName": "animateScrollPress",
+      "signature": "ScreenStreamWorkspace.animateScrollPress(direction: ScreenPageDirection): inferred-by-TypeScript",
+      "line": 478,
+      "endLine": 483,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "setPressedScrollDir",
+        "window.setTimeout"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ScreenStreamWorkspace.tsx",
+        "line": 478
+      },
+      "description": "Coordina `setPressedScrollDir`, `window.setTimeout` para Visor de pantalla y controles remotos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ScreenStreamWorkspace.cancelAuxPress",
+      "displayName": "cancelAuxPress",
+      "signature": "ScreenStreamWorkspace.cancelAuxPress(kind: AuxButtonKind): inferred-by-TypeScript",
+      "line": 567,
+      "endLine": 576,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "setLongPressActive",
+        "setPressedAuxButtons",
+        "window.clearTimeout"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ScreenStreamWorkspace.tsx",
+        "line": 567
+      },
+      "description": "Coordina `setLongPressActive`, `setPressedAuxButtons`, `window.clearTimeout` para Visor de pantalla y controles remotos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ScreenStreamWorkspace.dispatchStmCommand",
+      "displayName": "dispatchStmCommand",
+      "signature": "ScreenStreamWorkspace.dispatchStmCommand(legacyCommand: string, payloadOrOptionsOrDescription: | number[] | { payload?: number[]; jsonCommand?: string; jsonParams?: Record<string, unknown>; } | string, descriptionOrOptions?: | string | { payload?: number[]; jsonCommand?: string; jsonParams?: Record<string, unknown>; }, inputSource: \"pointer\" | \"keyboard\"): inferred-by-TypeScript",
+      "line": 343,
+      "endLine": 429,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Boolean",
+        "console.log",
+        "console.warn",
+        "createCommandRequestId",
+        "getStmRemoteActionFeedback",
+        "normalizeStmCommandOptions",
+        "payload .map",
+        "payload .map((byte) => byte.toString(16).toUpperCase().padStart(2, \"0\")) .join",
+        "request",
+        "scheduleScreenRefresh",
+        "setRemoteCommandStatus"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ScreenStreamWorkspace.tsx",
+        "line": 343
+      },
+      "description": "Coordina `Boolean`, `console.log`, `console.warn` para Visor de pantalla y controles remotos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ScreenStreamWorkspace.getAccentButtonStyle",
+      "displayName": "getAccentButtonStyle",
+      "signature": "ScreenStreamWorkspace.getAccentButtonStyle(hovered: boolean, pressed: inferred-by-TypeScript, longPressed: inferred-by-TypeScript): React.CSSProperties",
+      "line": 431,
+      "endLine": 469,
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ScreenStreamWorkspace.tsx",
+        "line": 431
+      },
+      "description": "Operación get Accent Button Style de Visor de pantalla y controles remotos; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "ScreenStreamWorkspace.handleEncoderRotate",
+      "displayName": "handleEncoderRotate",
+      "signature": "ScreenStreamWorkspace.handleEncoderRotate(direction: \"left\" | \"right\", inputSource: \"pointer\" | \"keyboard\"): inferred-by-TypeScript",
+      "line": 624,
+      "endLine": 663,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "animateRotatePress",
+        "buildEncoderRotatePayload",
+        "console.warn",
+        "dispatchStmCommand",
+        "dispatchStmCommand( legacyCommand, { payload, jsonCommand, jsonParams, }, direction === \"left\" ? \"Emular giro físico del encoder hacia la izquierda\" : \"Emular giro físico del encoder hacia la derecha\", inputSource, ).then",
+        "logKeyboardCommand"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ScreenStreamWorkspace.tsx",
+        "line": 624
+      },
+      "description": "Coordina `animateRotatePress`, `buildEncoderRotatePayload`, `console.warn` para Visor de pantalla y controles remotos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ScreenStreamWorkspace.handleManualScreenSync",
+      "displayName": "handleManualScreenSync",
+      "signature": "ScreenStreamWorkspace.handleManualScreenSync(inputSource: \"pointer\" | \"keyboard\"): inferred-by-TypeScript",
+      "line": 752,
+      "endLine": 784,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "console.log",
+        "requestCarMode",
+        "requestCurrentScreen",
+        "setRemoteCommandStatus",
+        "window.clearTimeout",
+        "window.setTimeout"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ScreenStreamWorkspace.tsx",
+        "line": 752
+      },
+      "description": "Coordina `console.log`, `requestCarMode`, `requestCurrentScreen` para Visor de pantalla y controles remotos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ScreenStreamWorkspace.handleMenuItemClick",
+      "displayName": "handleMenuItemClick",
+      "signature": "ScreenStreamWorkspace.handleMenuItemClick(item: 1 | 2 | 3): inferred-by-TypeScript",
+      "line": 492,
+      "endLine": 516,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "animateMenuItemPress",
+        "buildMenuItemClickPayload",
+        "console.warn",
+        "dispatchStmCommand",
+        "dispatchStmCommand( STM_LEGACY_REMOTE_COMMANDS.MENU_ITEM_CLICK, { payload, jsonCommand: STM_REMOTE_INPUT_COMMANDS.MENU_ITEM_CLICK, jsonParams: { screenCode: currentScreen.screenCode, item }, }, `Emular click físico sobre item visible ${item}`, ).then",
+        "setSelectedMenuItem"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ScreenStreamWorkspace.tsx",
+        "line": 492
+      },
+      "description": "Coordina `animateMenuItemPress`, `buildMenuItemClickPayload`, `console.warn` para Visor de pantalla y controles remotos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ScreenStreamWorkspace.handleMenuScroll",
+      "displayName": "handleMenuScroll",
+      "signature": "ScreenStreamWorkspace.handleMenuScroll(direction: ScreenPageDirection): inferred-by-TypeScript",
+      "line": 518,
+      "endLine": 547,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "animateScrollPress",
+        "buildScreenPagePayload",
+        "console.warn",
+        "dispatchStmCommand",
+        "dispatchStmCommand( STM_LEGACY_REMOTE_COMMANDS.REQUEST_SCREEN_PAGE, { payload, jsonCommand: STM_REMOTE_INPUT_COMMANDS.REQUEST_SCREEN_PAGE, jsonParams: { screenCode: currentScreen.screenCode, direction }, }, direction === \"up\" ? \"Solicitar página anterior de la screen actual\" : \"Solicitar página siguiente de la screen actual\", ).then"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ScreenStreamWorkspace.tsx",
+        "line": 518
+      },
+      "description": "Coordina `animateScrollPress`, `buildScreenPagePayload`, `console.warn` para Visor de pantalla y controles remotos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ScreenStreamWorkspace.handleValidatePin",
+      "displayName": "handleValidatePin",
+      "signature": "ScreenStreamWorkspace.handleValidatePin(pin: string): inferred-by-TypeScript",
+      "line": 665,
+      "endLine": 684,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "scheduleScreenRefresh",
+        "validatePin"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ScreenStreamWorkspace.tsx",
+        "line": 665
+      },
+      "description": "Coordina `scheduleScreenRefresh`, `validatePin` para Visor de pantalla y controles remotos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ScreenStreamWorkspace.logKeyboardCommand",
+      "displayName": "logKeyboardCommand",
+      "signature": "ScreenStreamWorkspace.logKeyboardCommand(legacyCommand: string, jsonCommand: string, jsonParams: Record<string, unknown>, payload: number[] | null, keyboardDebug: KeyboardCommandDebug): inferred-by-TypeScript",
+      "line": 314,
+      "endLine": 341,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "console.log",
+        "payload?.map",
+        "payload?.map((byte) => byte.toString(16).toUpperCase().padStart(2, \"0\")).join"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ScreenStreamWorkspace.tsx",
+        "line": 314
+      },
+      "description": "Coordina `console.log`, `payload?.map`, `payload?.map((byte) => byte.toString(16).toUpperCase().padStart(2, \"0\")).join` para Visor de pantalla y controles remotos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ScreenStreamWorkspace.onPressRelease",
+      "displayName": "onPressRelease",
+      "signature": "ScreenStreamWorkspace.onPressRelease(kind: inferred-by-TypeScript): inferred-by-TypeScript",
+      "line": 794,
+      "endLine": 794,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "releaseAuxPress"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ScreenStreamWorkspace.tsx",
+        "line": 794
+      },
+      "description": "Adapta la llamada a `releaseAuxPress` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ScreenStreamWorkspace.onRefresh",
+      "displayName": "onRefresh",
+      "signature": "ScreenStreamWorkspace.onRefresh(): inferred-by-TypeScript",
+      "line": 792,
+      "endLine": 792,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "handleManualScreenSync"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ScreenStreamWorkspace.tsx",
+        "line": 792
+      },
+      "description": "Adapta la llamada a `handleManualScreenSync` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ScreenStreamWorkspace.onRotate",
+      "displayName": "onRotate",
+      "signature": "ScreenStreamWorkspace.onRotate(direction: inferred-by-TypeScript): inferred-by-TypeScript",
+      "line": 791,
+      "endLine": 791,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "handleEncoderRotate"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ScreenStreamWorkspace.tsx",
+        "line": 791
+      },
+      "description": "Adapta la llamada a `handleEncoderRotate` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ScreenStreamWorkspace.releaseAuxPress",
+      "displayName": "releaseAuxPress",
+      "signature": "ScreenStreamWorkspace.releaseAuxPress(kind: AuxButtonKind, inputSource: \"pointer\" | \"keyboard\"): inferred-by-TypeScript",
+      "line": 578,
+      "endLine": 622,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Date.now",
+        "buildAuxButtonPayload",
+        "cancelAuxPress",
+        "dispatchStmCommand",
+        "dispatchStmCommand( legacyCommand, { payload, jsonCommand, jsonParams, }, `${kind === \"encoder\" ? \"Emular botón encoder\" : \"Emular botón user\"} como ${ pressKind === UNER_PRESS_KIND_LONG ? \"longpress\" : \"shortpress\" }`, inputSource, ).then",
+        "logKeyboardCommand",
+        "toRemotePressKindLabel"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ScreenStreamWorkspace.tsx",
+        "line": 578
+      },
+      "description": "Coordina `Date.now`, `buildAuxButtonPayload`, `cancelAuxPress` para Visor de pantalla y controles remotos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ScreenStreamWorkspace.scheduleScreenRefresh",
+      "displayName": "scheduleScreenRefresh",
+      "signature": "ScreenStreamWorkspace.scheduleScreenRefresh(): inferred-by-TypeScript",
+      "line": 303,
+      "endLine": 312,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "window.clearTimeout",
+        "window.setTimeout"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ScreenStreamWorkspace.tsx",
+        "line": 303
+      },
+      "description": "Coordina `window.clearTimeout`, `window.setTimeout` para Visor de pantalla y controles remotos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ScreenStreamWorkspace.sendSavedScreen",
+      "displayName": "sendSavedScreen",
+      "signature": "ScreenStreamWorkspace.sendSavedScreen(screenId: string): inferred-by-TypeScript",
+      "line": 719,
+      "endLine": 750,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "oledCanvasTransfer.send",
+        "rasterizeOledDocument",
+        "savedScreens.find",
+        "setRemoteCommandStatus"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ScreenStreamWorkspace.tsx",
+        "line": 719
+      },
+      "description": "Coordina `oledCanvasTransfer.send`, `rasterizeOledDocument`, `savedScreens.find` para Visor de pantalla y controles remotos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ScreenStreamWorkspace.startAuxPress",
+      "displayName": "startAuxPress",
+      "signature": "ScreenStreamWorkspace.startAuxPress(kind: AuxButtonKind): inferred-by-TypeScript",
+      "line": 549,
+      "endLine": 565,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Date.now",
+        "setLongPressActive",
+        "setPressedAuxButtons",
+        "window.clearTimeout",
+        "window.setTimeout"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ScreenStreamWorkspace.tsx",
+        "line": 549
+      },
+      "description": "Coordina `Date.now`, `setLongPressActive`, `setPressedAuxButtons` para Visor de pantalla y controles remotos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ScreenStreamWorkspace.updateHeight",
+      "displayName": "updateHeight",
+      "signature": "ScreenStreamWorkspace.updateHeight(): inferred-by-TypeScript",
+      "line": 249,
+      "endLine": 254,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "setPreviewHeight",
+        "target.getBoundingClientRect"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ScreenStreamWorkspace.tsx",
+        "line": 249
+      },
+      "description": "Coordina `setPreviewHeight`, `target.getBoundingClientRect` para Visor de pantalla y controles remotos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "useScreenStreamKeyboard.cancelHeldKeys",
+      "displayName": "cancelHeldKeys",
+      "signature": "useScreenStreamKeyboard.cancelHeldKeys(): inferred-by-TypeScript",
+      "line": 43,
+      "endLine": 49,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "heldKeys.clear",
+        "heldKeys.forEach"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/hooks/useScreenStreamKeyboard.ts",
+        "line": 43
+      },
+      "description": "Coordina `heldKeys.clear`, `heldKeys.forEach` para Visor de pantalla y controles remotos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "useScreenStreamKeyboard.captureKey",
+      "displayName": "captureKey",
+      "signature": "useScreenStreamKeyboard.captureKey(event: KeyboardEvent): inferred-by-TypeScript",
+      "line": 52,
+      "endLine": 59,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "event.preventDefault",
+        "event.stopImmediatePropagation",
+        "scope.contains"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/hooks/useScreenStreamKeyboard.ts",
+        "line": 52
+      },
+      "description": "Coordina `event.preventDefault`, `event.stopImmediatePropagation`, `scope.contains` para Visor de pantalla y controles remotos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "useScreenStreamKeyboard.onFocusOut",
+      "displayName": "onFocusOut",
+      "signature": "useScreenStreamKeyboard.onFocusOut(event: FocusEvent): inferred-by-TypeScript",
+      "line": 98,
+      "endLine": 102,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "cancelHeldKeys",
+        "scope.contains"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/hooks/useScreenStreamKeyboard.ts",
+        "line": 98
+      },
+      "description": "Coordina `cancelHeldKeys`, `scope.contains` para Visor de pantalla y controles remotos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "useScreenStreamKeyboard.onKeyDown",
+      "displayName": "onKeyDown",
+      "signature": "useScreenStreamKeyboard.onKeyDown(event: KeyboardEvent): inferred-by-TypeScript",
+      "line": 61,
+      "endLine": 72,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "actionsRef.current.onPressStart",
+        "buttonForKey",
+        "captureKey",
+        "directionForKey",
+        "event.key.toLowerCase",
+        "heldKeys.add",
+        "heldKeys.has",
+        "shouldIgnoreAction"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/hooks/useScreenStreamKeyboard.ts",
+        "line": 61
+      },
+      "description": "Coordina `actionsRef.current.onPressStart`, `buttonForKey`, `captureKey` para Visor de pantalla y controles remotos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "useScreenStreamKeyboard.onKeyUp",
+      "displayName": "onKeyUp",
+      "signature": "useScreenStreamKeyboard.onKeyUp(event: KeyboardEvent): inferred-by-TypeScript",
+      "line": 74,
+      "endLine": 93,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "actionsRef.current.onPressRelease",
+        "actionsRef.current.onRefresh",
+        "actionsRef.current.onRotate",
+        "actionsRef.current?.onPressCancel",
+        "buttonForKey",
+        "captureKey",
+        "directionForKey",
+        "event.key.toLowerCase",
+        "heldKeys.delete",
+        "shouldIgnoreAction"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/hooks/useScreenStreamKeyboard.ts",
+        "line": 74
+      },
+      "description": "Coordina `actionsRef.current.onPressRelease`, `actionsRef.current.onRefresh`, `actionsRef.current.onRotate` para Visor de pantalla y controles remotos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "useScreenStreamKeyboard.onVisibilityChange",
+      "displayName": "onVisibilityChange",
+      "signature": "useScreenStreamKeyboard.onVisibilityChange(): inferred-by-TypeScript",
+      "line": 95,
+      "endLine": 97,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "cancelHeldKeys"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/hooks/useScreenStreamKeyboard.ts",
+        "line": 95
+      },
+      "description": "Adapta la llamada a `cancelHeldKeys` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "useScreenStreamKeyboard.shouldIgnoreAction",
+      "displayName": "shouldIgnoreAction",
+      "signature": "useScreenStreamKeyboard.shouldIgnoreAction(event: KeyboardEvent): inferred-by-TypeScript",
+      "line": 50,
+      "endLine": 51,
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/hooks/useScreenStreamKeyboard.ts",
+        "line": 50
+      },
+      "description": "Operación should Ignore Action de Visor de pantalla y controles remotos; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    }
+  ],
+  "hooks": [
+    {
+      "callee": "useState",
+      "scope": "ScreenDashboardPanel",
+      "line": 12,
+      "arguments": 1,
+      "path": "src/components/ScreenDashboardPanel.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "ScreenDashboardPanel",
+      "line": 13,
+      "arguments": 1,
+      "path": "src/components/ScreenDashboardPanel.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "ScreenDashboardPanel",
+      "line": 14,
+      "arguments": 1,
+      "path": "src/components/ScreenDashboardPanel.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "ScreenDashboardPanel",
+      "line": 18,
+      "arguments": 2,
+      "path": "src/components/ScreenDashboardPanel.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "ScreenStreamModal",
+      "line": 16,
+      "arguments": 1,
+      "path": "src/components/ScreenStreamModal.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "ScreenStreamModal",
+      "line": 17,
+      "arguments": 1,
+      "path": "src/components/ScreenStreamModal.tsx"
+    },
+    {
+      "callee": "useScreenStreamKeyboard",
+      "scope": "ScreenStreamModal",
+      "line": 18,
+      "arguments": 1,
+      "path": "src/components/ScreenStreamModal.tsx"
+    },
+    {
+      "callee": "useUser",
+      "scope": "ScreenStreamWorkspace",
+      "line": 116,
+      "arguments": 0,
+      "path": "src/components/ScreenStreamWorkspace.tsx"
+    },
+    {
+      "callee": "useIrEmitters",
+      "scope": "ScreenStreamWorkspace",
+      "line": 117,
+      "arguments": 0,
+      "path": "src/components/ScreenStreamWorkspace.tsx"
+    },
+    {
+      "callee": "useWebSocket",
+      "scope": "ScreenStreamWorkspace",
+      "line": 118,
+      "arguments": 0,
+      "path": "src/components/ScreenStreamWorkspace.tsx"
+    },
+    {
+      "callee": "useScreen",
+      "scope": "ScreenStreamWorkspace",
+      "line": 119,
+      "arguments": 0,
+      "path": "src/components/ScreenStreamWorkspace.tsx"
+    },
+    {
+      "callee": "useCarMode",
+      "scope": "ScreenStreamWorkspace",
+      "line": 120,
+      "arguments": 0,
+      "path": "src/components/ScreenStreamWorkspace.tsx"
+    },
+    {
+      "callee": "useSavedOledScreens",
+      "scope": "ScreenStreamWorkspace",
+      "line": 121,
+      "arguments": 0,
+      "path": "src/components/ScreenStreamWorkspace.tsx"
+    },
+    {
+      "callee": "useOledCanvasTransfer",
+      "scope": "ScreenStreamWorkspace",
+      "line": 122,
+      "arguments": 0,
+      "path": "src/components/ScreenStreamWorkspace.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "ScreenStreamWorkspace",
+      "line": 125,
+      "arguments": 1,
+      "path": "src/components/ScreenStreamWorkspace.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "ScreenStreamWorkspace",
+      "line": 126,
+      "arguments": 1,
+      "path": "src/components/ScreenStreamWorkspace.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "ScreenStreamWorkspace",
+      "line": 128,
+      "arguments": 1,
+      "path": "src/components/ScreenStreamWorkspace.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "ScreenStreamWorkspace",
+      "line": 129,
+      "arguments": 1,
+      "path": "src/components/ScreenStreamWorkspace.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "ScreenStreamWorkspace",
+      "line": 131,
+      "arguments": 1,
+      "path": "src/components/ScreenStreamWorkspace.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "ScreenStreamWorkspace",
+      "line": 132,
+      "arguments": 1,
+      "path": "src/components/ScreenStreamWorkspace.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "ScreenStreamWorkspace",
+      "line": 134,
+      "arguments": 1,
+      "path": "src/components/ScreenStreamWorkspace.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "ScreenStreamWorkspace",
+      "line": 135,
+      "arguments": 1,
+      "path": "src/components/ScreenStreamWorkspace.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "ScreenStreamWorkspace",
+      "line": 136,
+      "arguments": 1,
+      "path": "src/components/ScreenStreamWorkspace.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "ScreenStreamWorkspace",
+      "line": 138,
+      "arguments": 1,
+      "path": "src/components/ScreenStreamWorkspace.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "ScreenStreamWorkspace",
+      "line": 140,
+      "arguments": 1,
+      "path": "src/components/ScreenStreamWorkspace.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "ScreenStreamWorkspace",
+      "line": 141,
+      "arguments": 1,
+      "path": "src/components/ScreenStreamWorkspace.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "ScreenStreamWorkspace",
+      "line": 142,
+      "arguments": 1,
+      "path": "src/components/ScreenStreamWorkspace.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "ScreenStreamWorkspace",
+      "line": 143,
+      "arguments": 1,
+      "path": "src/components/ScreenStreamWorkspace.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "ScreenStreamWorkspace",
+      "line": 144,
+      "arguments": 1,
+      "path": "src/components/ScreenStreamWorkspace.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "ScreenStreamWorkspace",
+      "line": 145,
+      "arguments": 1,
+      "path": "src/components/ScreenStreamWorkspace.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "ScreenStreamWorkspace",
+      "line": 152,
+      "arguments": 1,
+      "path": "src/components/ScreenStreamWorkspace.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "ScreenStreamWorkspace",
+      "line": 154,
+      "arguments": 1,
+      "path": "src/components/ScreenStreamWorkspace.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "ScreenStreamWorkspace",
+      "line": 155,
+      "arguments": 1,
+      "path": "src/components/ScreenStreamWorkspace.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "ScreenStreamWorkspace",
+      "line": 161,
+      "arguments": 1,
+      "path": "src/components/ScreenStreamWorkspace.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "ScreenStreamWorkspace",
+      "line": 167,
+      "arguments": 1,
+      "path": "src/components/ScreenStreamWorkspace.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "ScreenStreamWorkspace",
+      "line": 174,
+      "arguments": 1,
+      "path": "src/components/ScreenStreamWorkspace.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "ScreenStreamWorkspace",
+      "line": 179,
+      "arguments": 1,
+      "path": "src/components/ScreenStreamWorkspace.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "ScreenStreamWorkspace",
+      "line": 184,
+      "arguments": 1,
+      "path": "src/components/ScreenStreamWorkspace.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "ScreenStreamWorkspace",
+      "line": 185,
+      "arguments": 1,
+      "path": "src/components/ScreenStreamWorkspace.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "ScreenStreamWorkspace",
+      "line": 186,
+      "arguments": 1,
+      "path": "src/components/ScreenStreamWorkspace.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "ScreenStreamWorkspace",
+      "line": 187,
+      "arguments": 1,
+      "path": "src/components/ScreenStreamWorkspace.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "ScreenStreamWorkspace",
+      "line": 188,
+      "arguments": 1,
+      "path": "src/components/ScreenStreamWorkspace.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "ScreenStreamWorkspace",
+      "line": 189,
+      "arguments": 1,
+      "path": "src/components/ScreenStreamWorkspace.tsx"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "ScreenStreamWorkspace",
+      "line": 191,
+      "arguments": 2,
+      "path": "src/components/ScreenStreamWorkspace.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "ScreenStreamWorkspace",
+      "line": 229,
+      "arguments": 1,
+      "path": "src/components/ScreenStreamWorkspace.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "ScreenStreamWorkspace",
+      "line": 241,
+      "arguments": 2,
+      "path": "src/components/ScreenStreamWorkspace.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "ScreenStreamWorkspace",
+      "line": 245,
+      "arguments": 2,
+      "path": "src/components/ScreenStreamWorkspace.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "ScreenStreamWorkspace",
+      "line": 269,
+      "arguments": 2,
+      "path": "src/components/ScreenStreamWorkspace.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "ScreenStreamWorkspace",
+      "line": 285,
+      "arguments": 2,
+      "path": "src/components/ScreenStreamWorkspace.tsx"
+    },
+    {
+      "callee": "useLayoutEffect",
+      "scope": "ScreenStreamWorkspace",
+      "line": 787,
+      "arguments": 1,
+      "path": "src/components/ScreenStreamWorkspace.tsx"
+    },
+    {
+      "callee": "useLayoutEffect",
+      "scope": "ScreenStreamWorkspace",
+      "line": 799,
+      "arguments": 2,
+      "path": "src/components/ScreenStreamWorkspace.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "MonoBitmapIcon",
+      "line": 1639,
+      "arguments": 1,
+      "path": "src/components/ScreenStreamWorkspace.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "MonoBitmapIcon",
+      "line": 1641,
+      "arguments": 2,
+      "path": "src/components/ScreenStreamWorkspace.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "ScreenStreamModalProvider",
+      "line": 20,
+      "arguments": 1,
+      "path": "src/contexts/ScreenStreamModalContext.tsx"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "ScreenStreamModalProvider",
+      "line": 22,
+      "arguments": 2,
+      "path": "src/contexts/ScreenStreamModalContext.tsx"
+    },
+    {
+      "callee": "useContext",
+      "scope": "useScreenStreamModal",
+      "line": 41,
+      "arguments": 1,
+      "path": "src/contexts/ScreenStreamModalContext.tsx"
+    },
+    {
+      "callee": "useLayoutEffect",
+      "scope": "useScreenStreamKeyboard",
+      "line": 37,
+      "arguments": 2,
+      "path": "src/hooks/useScreenStreamKeyboard.ts"
+    }
+  ]
+}

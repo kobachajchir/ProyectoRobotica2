@@ -1,0 +1,621 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "f4:module/Core/Inc/balance_control.h",
+  "slug": "balance",
+  "title": "Balance de inclinación",
+  "target": "f4",
+  "kind": "núcleo",
+  "status": "source-documented",
+  "verification": "not-run-user-instruction",
+  "snapshotDate": "2026-10-20",
+  "responsibility": "Convierte inclinación frontal filtrada y objetivo angular en esfuerzo motor porcentual común.",
+  "scope": "Configura el PID inyectado, tiempo, límites e inversión de salida. No accede a I2C ni a motores.",
+  "state": "BalanceControl_Handle conserva config/status; config.pid_ops y pid_ctx apuntan al PID externo. status expone referencia, medida, contribuciones y enabled. La aplicación es dueña de ambos handles.",
+  "lifecycle": [
+    "Init configura el PID externo; SetEnabled y Reset controlan acumulación/historia.",
+    "Update recibe pitch en grados y reloj en ms, calcula dt y consulta salida PID."
+  ],
+  "interactions": [
+    "MotionControl desplaza target_pitch_deg para marcha y mezcla este esfuerzo común con el giro diferencial."
+  ],
+  "limitations": [
+    "Un BalanceControl enabled no acredita que el robot esté armado o que la muestra sea fresca: esas guardas las aplica MotionControl.",
+    "No compartir pid_ctx entre controles activos sin una política explícita."
+  ],
+  "modularity": "Desacoplado de la implementación PID a través de AM_PidOps; comparte sus modelos numéricos.",
+  "files": [
+    {
+      "path": "Core/Inc/balance_control.h",
+      "rootId": "f4",
+      "sha256": "39d23b7229adb721baedd4fcb25cb6ea73cb6f35a050d87fd862fb31475abf13",
+      "includes": [
+        "balance_control_types.h"
+      ]
+    },
+    {
+      "path": "Core/Inc/balance_control_types.h",
+      "rootId": "f4",
+      "sha256": "4c8fcd62b24e3b891c2cd64c6030aa2d7ef7e7a1db9821c757beb49564d7ca7a",
+      "includes": [
+        "control_ports.h",
+        "stdint.h",
+        "balance_control_data.h"
+      ]
+    },
+    {
+      "path": "Core/Inc/balance_control_data.h",
+      "rootId": "f4",
+      "sha256": "cbe01b2ab9e3250870ffc4f40c067b38f2ec853f51de80a5d91b7c97f37aee84",
+      "includes": [
+        "am_port.h"
+      ]
+    },
+    {
+      "path": "Core/Src/balance_control.c",
+      "rootId": "f4",
+      "sha256": "891e8e66b60033743037bfb2fe2b45aeb38ad56e1918acd412176e218f026673",
+      "includes": [
+        "balance_control.h",
+        "stddef.h",
+        "math.h",
+        "string.h"
+      ]
+    }
+  ],
+  "findings": [],
+  "types": [
+    {
+      "name": "BalanceControl_Handle",
+      "fields": [
+        {
+          "name": "config",
+          "declaration": "BalanceControl_Config_t config",
+          "callback": false,
+          "ownerType": "BalanceControl_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/balance_control_types.h",
+            "line": 20
+          },
+          "description": "Configuración copiada por la instancia; los punteros que contiene siguen siendo prestados."
+        },
+        {
+          "name": "status",
+          "declaration": "BalanceControl_Status_t status",
+          "callback": false,
+          "ownerType": "BalanceControl_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/balance_control_types.h",
+            "line": 21
+          },
+          "description": "Último resultado y guardas del módulo; los getters pueden devolver una vista de este almacenamiento."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/balance_control_types.h",
+        "line": 20
+      }
+    },
+    {
+      "name": "BalanceControl_Config_t",
+      "fields": [
+        {
+          "name": "pid_ops",
+          "declaration": "const struct AM_PidOps *pid_ops",
+          "callback": false,
+          "ownerType": "BalanceControl_Config_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/balance_control_data.h",
+            "line": 14
+          },
+          "description": "Tabla prestada de operaciones del PID; evita enlazar el balance a una implementación concreta."
+        },
+        {
+          "name": "pid_ctx",
+          "declaration": "void *pid_ctx",
+          "callback": false,
+          "ownerType": "BalanceControl_Config_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/balance_control_data.h",
+            "line": 15
+          },
+          "description": "Instancia PID externa emparejada con pid_ops."
+        },
+        {
+          "name": "kp",
+          "declaration": "float kp",
+          "callback": false,
+          "ownerType": "BalanceControl_Config_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/balance_control_data.h",
+            "line": 16
+          },
+          "description": "Dato de estado/configuración `kp`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ki",
+          "declaration": "float ki",
+          "callback": false,
+          "ownerType": "BalanceControl_Config_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/balance_control_data.h",
+            "line": 17
+          },
+          "description": "Dato de estado/configuración `ki`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "kd",
+          "declaration": "float kd",
+          "callback": false,
+          "ownerType": "BalanceControl_Config_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/balance_control_data.h",
+            "line": 18
+          },
+          "description": "Dato de estado/configuración `kd`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "default_dt_s",
+          "declaration": "float default_dt_s",
+          "callback": false,
+          "ownerType": "BalanceControl_Config_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/balance_control_data.h",
+            "line": 19
+          },
+          "description": "Dato de estado/configuración `default_dt_s`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "output_limit_percent",
+          "declaration": "float output_limit_percent",
+          "callback": false,
+          "ownerType": "BalanceControl_Config_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/balance_control_data.h",
+            "line": 20
+          },
+          "description": "Magnitud porcentual; el rango y signo se fijan en la API de esta librería."
+        },
+        {
+          "name": "integral_limit_deg_s",
+          "declaration": "float integral_limit_deg_s",
+          "callback": false,
+          "ownerType": "BalanceControl_Config_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/balance_control_data.h",
+            "line": 21
+          },
+          "description": "Dato de estado/configuración `integral_limit_deg_s`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "derivative_filter_tau_s",
+          "declaration": "float derivative_filter_tau_s",
+          "callback": false,
+          "ownerType": "BalanceControl_Config_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/balance_control_data.h",
+            "line": 22
+          },
+          "description": "Dato de estado/configuración `derivative_filter_tau_s`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "anti_windup_gain",
+          "declaration": "float anti_windup_gain",
+          "callback": false,
+          "ownerType": "BalanceControl_Config_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/balance_control_data.h",
+            "line": 23
+          },
+          "description": "Dato de estado/configuración `anti_windup_gain`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "output_inverted",
+          "declaration": "uint8_t output_inverted",
+          "callback": false,
+          "ownerType": "BalanceControl_Config_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/balance_control_data.h",
+            "line": 24
+          },
+          "description": "Dato de estado/configuración `output_inverted`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/balance_control_data.h",
+        "line": 14
+      }
+    },
+    {
+      "name": "BalanceControl_Status_t",
+      "fields": [
+        {
+          "name": "target_pitch_deg",
+          "declaration": "float target_pitch_deg",
+          "callback": false,
+          "ownerType": "BalanceControl_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/balance_control_data.h",
+            "line": 28
+          },
+          "description": "Ángulo en grados; respetar eje y referencia de esta librería."
+        },
+        {
+          "name": "measured_pitch_deg",
+          "declaration": "float measured_pitch_deg",
+          "callback": false,
+          "ownerType": "BalanceControl_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/balance_control_data.h",
+            "line": 29
+          },
+          "description": "Ángulo en grados; respetar eje y referencia de esta librería."
+        },
+        {
+          "name": "error_deg",
+          "declaration": "float error_deg",
+          "callback": false,
+          "ownerType": "BalanceControl_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/balance_control_data.h",
+            "line": 30
+          },
+          "description": "Ángulo en grados; respetar eje y referencia de esta librería."
+        },
+        {
+          "name": "integral_deg_s",
+          "declaration": "float integral_deg_s",
+          "callback": false,
+          "ownerType": "BalanceControl_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/balance_control_data.h",
+            "line": 31
+          },
+          "description": "Dato de estado/configuración `integral_deg_s`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "derivative_deg_s",
+          "declaration": "float derivative_deg_s",
+          "callback": false,
+          "ownerType": "BalanceControl_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/balance_control_data.h",
+            "line": 32
+          },
+          "description": "Dato de estado/configuración `derivative_deg_s`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "output_percent",
+          "declaration": "float output_percent",
+          "callback": false,
+          "ownerType": "BalanceControl_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/balance_control_data.h",
+            "line": 33
+          },
+          "description": "Magnitud porcentual; el rango y signo se fijan en la API de esta librería."
+        },
+        {
+          "name": "last_update_ms",
+          "declaration": "uint32_t last_update_ms",
+          "callback": false,
+          "ownerType": "BalanceControl_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/balance_control_data.h",
+            "line": 34
+          },
+          "description": "Memoria de la observación anterior usada por la máquina de estados."
+        },
+        {
+          "name": "has_previous",
+          "declaration": "uint8_t has_previous",
+          "callback": false,
+          "ownerType": "BalanceControl_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/balance_control_data.h",
+            "line": 35
+          },
+          "description": "Dato de estado/configuración `has_previous`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "enabled",
+          "declaration": "uint8_t enabled",
+          "callback": false,
+          "ownerType": "BalanceControl_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/balance_control_data.h",
+            "line": 36
+          },
+          "description": "Dato de estado/configuración `enabled`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/balance_control_data.h",
+        "line": 28
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "BalanceControl_GetDefaultConfig",
+      "signature": "void BalanceControl_GetDefaultConfig(BalanceControl_Config_t *config)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/balance_control.h",
+        "line": 7
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [
+        "anti_windup_gain",
+        "default_dt_s",
+        "derivative_filter_tau_s",
+        "integral_limit_deg_s",
+        "kd",
+        "ki",
+        "kp",
+        "output_inverted",
+        "output_limit_percent",
+        "pid_ctx",
+        "pid_ops"
+      ],
+      "description": "Carga ganancias y límites predeterminados del balance.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/balance_control.c",
+        "line": 30
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "BalanceControl_GetOutputPercent",
+      "signature": "float BalanceControl_GetOutputPercent(const BalanceControl_Handle *balance)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/balance_control.h",
+        "line": 21
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Consulta esfuerzo porcentual calculado.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/balance_control.c",
+        "line": 207
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "BalanceControl_GetStatus",
+      "signature": "const BalanceControl_Status_t *BalanceControl_GetStatus(const BalanceControl_Handle *balance)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/balance_control.h",
+        "line": 22
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Devuelve vista prestada del estado de balance.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/balance_control.c",
+        "line": 212
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "BalanceControl_Init",
+      "signature": "AM_Result BalanceControl_Init(BalanceControl_Handle *balance, const BalanceControl_Config_t *config)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/balance_control.h",
+        "line": 8
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "BalanceControl_GetDefaultConfig",
+        "Balance_Abs",
+        "defaults",
+        "init",
+        "memset"
+      ],
+      "writes": [
+        "config"
+      ],
+      "description": "Configura el balance y su PID externo a partir del puerto recibido.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/balance_control.c",
+        "line": 48
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "BalanceControl_Reset",
+      "signature": "void BalanceControl_Reset(BalanceControl_Handle *balance)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/balance_control.h",
+        "line": 10
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "memset",
+        "reset",
+        "setpoint"
+      ],
+      "writes": [],
+      "description": "Reinicia memoria de balance y PID.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/balance_control.c",
+        "line": 98
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "BalanceControl_SetEnabled",
+      "signature": "void BalanceControl_SetEnabled(BalanceControl_Handle *balance, uint8_t enabled)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/balance_control.h",
+        "line": 11
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Habilita o deshabilita cálculo del balance.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/balance_control.c",
+        "line": 116
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "BalanceControl_SetPid",
+      "signature": "void BalanceControl_SetPid(BalanceControl_Handle *balance, float kp, float ki, float kd)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/balance_control.h",
+        "line": 14
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "gains"
+      ],
+      "writes": [],
+      "description": "Actualiza ganancias PID del balance.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/balance_control.c",
+        "line": 139
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "BalanceControl_SetTargetPitchDeg",
+      "signature": "void BalanceControl_SetTargetPitchDeg(BalanceControl_Handle *balance, float target_pitch_deg)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/balance_control.h",
+        "line": 12
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "setpoint"
+      ],
+      "writes": [],
+      "description": "Configura inclinación frontal objetivo en grados.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/balance_control.c",
+        "line": 128
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "BalanceControl_Update",
+      "signature": "AM_Result BalanceControl_Update(BalanceControl_Handle *balance, float measured_pitch_deg, uint32_t now_ms)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/balance_control.h",
+        "line": 18
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "Balance_Abs",
+        "Balance_Clamp",
+        "isfinite",
+        "output",
+        "status",
+        "update"
+      ],
+      "writes": [],
+      "description": "Calcula esfuerzo común a partir de pitch y tiempo actuales.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/balance_control.c",
+        "line": 154
+      },
+      "linkage": "header"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "Balance_Clamp",
+      "signature": "static float Balance_Clamp(float value, float min_value, float max_value)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/balance_control.c",
+        "line": 14
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Balance Clamp de Balance de inclinación; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "Balance_Abs",
+      "signature": "static float Balance_Abs(float value)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/balance_control.c",
+        "line": 25
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Balance Abs de Balance de inclinación; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    }
+  ]
+}

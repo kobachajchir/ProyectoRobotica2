@@ -1,0 +1,540 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "esp:module/src/webserver_ws.h",
+  "slug": "http-websocket",
+  "title": "Servidor HTTP y conexiones WebSocket",
+  "target": "esp",
+  "kind": "plataforma",
+  "status": "source-documented",
+  "snapshotDate": "2026-10-20",
+  "verification": "not-run-user-instruction",
+  "responsibility": "Sirve assets LittleFS y mantiene conexiones /ws del navegador.",
+  "scope": "HTTP, archivos comprimidos, mensajes WS_TEXT, clientes y eventos de socket; el bridge interpreta la API.",
+  "state": "Servidor/socket y lista acotada de conexiones; los buffers async deben copiarse o conservarse según el API real.",
+  "modularity": "Dependiente de ESPAsyncWebServer/AsyncTCP y filesystem; la frontera de protocolo queda en WSJsonBridge.",
+  "lifecycle": [
+    "SetUNERApp enlaza aplicación antes de Init.",
+    "Al conectar asigna/solicita sesión; los mensajes de texto JSON pasan al bridge.",
+    "Al desconectar se limpia cliente/autoridad/requests; loop atiende mantenimiento."
+  ],
+  "interactions": [
+    "Entrega bytes JSON al bridge y sirve el bundle Web producido por otro repositorio.",
+    "HTTP y WS tienen límites de memoria/buffers distintos."
+  ],
+  "limitations": [
+    "Máximo dos sesiones según WS_MAX_SESSIONS actual.",
+    "No confundir bundle copiado, firmware cargado y comportamiento verificado en navegador."
+  ],
+  "relationships": [],
+  "findings": [],
+  "files": [
+    {
+      "rootId": "esp",
+      "path": "src/webserver_ws.cpp",
+      "sha256": "19f51be9df1a37d5060783d687220fd6b40dde0226fa6eebfb190a57e6d08c20",
+      "imports": [
+        "webserver_ws.h",
+        "ESPAsyncTCP.h",
+        "ESPAsyncWebServer.h",
+        "ESP8266WiFi.h",
+        "LittleFS.h",
+        "FS.h",
+        "pgmspace.h",
+        "webserver_ports.h",
+        "ws_limits.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    },
+    {
+      "rootId": "esp",
+      "path": "src/webserver_ws.h",
+      "sha256": "19e6899c017e7c6ba6ee1b9b500616d3efed392531b5b23b0370d11c6924080d",
+      "imports": [
+        "Arduino.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    }
+  ],
+  "types": [
+    {
+      "name": "WebServerContext",
+      "fields": [
+        {
+          "name": "wsClients",
+          "declaration": "uint16_t wsClients",
+          "callback": false,
+          "ownerType": "WebServerContext",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/webserver_ws.cpp",
+            "line": 27
+          },
+          "description": "Dato de estado/configuración `wsClients`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "unerApp",
+          "declaration": "void *unerApp",
+          "callback": false,
+          "ownerType": "WebServerContext",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/webserver_ws.cpp",
+            "line": 28
+          },
+          "description": "Dato de estado/configuración `unerApp`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "services",
+          "declaration": "WebServerServices services{ estructura anidada }",
+          "callback": false,
+          "ownerType": "WebServerContext",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/webserver_ws.cpp",
+            "line": 29
+          },
+          "description": "Contrato de operaciones externo; conservar la tabla y su contexto durante el uso."
+        },
+        {
+          "name": "wsClientIds",
+          "declaration": "uint32_t wsClientIds[WS_CLIENT_TRACK_MAX]{ estructura anidada }",
+          "callback": false,
+          "ownerType": "WebServerContext",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/webserver_ws.cpp",
+            "line": 30
+          },
+          "description": "Dato de estado/configuración `wsClientIds`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "wsClientIps",
+          "declaration": "uint8_t wsClientIps[WS_CLIENT_TRACK_MAX][4]{ estructura anidada }",
+          "callback": false,
+          "ownerType": "WebServerContext",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/webserver_ws.cpp",
+            "line": 31
+          },
+          "description": "Dato de estado/configuración `wsClientIps`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "wsClientUsed",
+          "declaration": "uint8_t wsClientUsed[WS_CLIENT_TRACK_MAX]{ estructura anidada }",
+          "callback": false,
+          "ownerType": "WebServerContext",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/webserver_ws.cpp",
+            "line": 32
+          },
+          "description": "Dato de estado/configuración `wsClientUsed`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "wsPageReady",
+          "declaration": "uint8_t wsPageReady[WS_CLIENT_TRACK_MAX]{ estructura anidada }",
+          "callback": false,
+          "ownerType": "WebServerContext",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/webserver_ws.cpp",
+            "line": 33
+          },
+          "description": "Dato de estado/configuración `wsPageReady`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "apStaConnHandler",
+          "declaration": "WiFiEventHandler apStaConnHandler{ estructura anidada }",
+          "callback": false,
+          "ownerType": "WebServerContext",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/webserver_ws.cpp",
+            "line": 34
+          },
+          "description": "Dato de estado/configuración `apStaConnHandler`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "apStaDisconnHandler",
+          "declaration": "WiFiEventHandler apStaDisconnHandler{ estructura anidada }",
+          "callback": false,
+          "ownerType": "WebServerContext",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/webserver_ws.cpp",
+            "line": 35
+          },
+          "description": "Dato de estado/configuración `apStaDisconnHandler`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/webserver_ws.cpp",
+        "line": 27
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "WebServerWS_GetClientInfoByIndex",
+      "signature": "bool WebServerWS_GetClientInfoByIndex(uint8_t index, uint32_t *id, uint8_t ip_out[4])",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/webserver_ws.cpp",
+        "line": 412
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Consulta Client Info By Index dentro de Servidor HTTP y conexiones WebSocket.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "WebServerWS_GetConnectedCount",
+      "signature": "uint8_t WebServerWS_GetConnectedCount()",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/webserver_ws.cpp",
+        "line": 410
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Consulta Connected Count dentro de Servidor HTTP y conexiones WebSocket.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "WebServerWS_Init",
+      "signature": "void WebServerWS_Init()",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/webserver_ws.cpp",
+        "line": 284
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "String",
+        "addHandler",
+        "addMiddleware",
+        "begin",
+        "bridge_initialize",
+        "client",
+        "fsExists",
+        "header",
+        "host",
+        "indexOf",
+        "info",
+        "length",
+        "makeFileResponse",
+        "makeGzipOnlyResponse",
+        "next",
+        "notify_ap_join",
+        "notify_ap_leave",
+        "notify_server_up",
+        "on",
+        "onEvent",
+        "onNotFound",
+        "onSoftAPModeStationConnected",
+        "onSoftAPModeStationDisconnected",
+        "remoteIP",
+        "send",
+        "send_P",
+        "services",
+        "softAPgetStationNum",
+        "storage_ready",
+        "url"
+      ],
+      "writes": [
+        "apStaConnHandler",
+        "apStaDisconnHandler"
+      ],
+      "description": "Configura rutas HTTP/WS y pone en marcha el servidor.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "WebServerWS_Loop",
+      "signature": "void WebServerWS_Loop()",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/webserver_ws.cpp",
+        "line": 398
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "bridge_loop",
+        "cleanupClients",
+        "services"
+      ],
+      "writes": [],
+      "description": "Atiende mantenimiento de conexiones y bridge.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "WebServerWS_MarkPageReady",
+      "signature": "uint8_t WebServerWS_MarkPageReady(uint32_t client_id)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/webserver_ws.cpp",
+        "line": 200
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "notify_page_ready",
+        "services"
+      ],
+      "writes": [],
+      "description": "Coordina `notify_page_ready`, `services` para Servidor HTTP y conexiones WebSocket.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WebServerWS_SetServices",
+      "signature": "void WebServerWS_SetServices(const WebServerServices &value)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/webserver_ws.cpp",
+        "line": 43
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [
+        "services",
+        "unerApp"
+      ],
+      "description": "Configura Services dentro de Servidor HTTP y conexiones WebSocket.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "WebServerWS_SetUNERApp",
+      "signature": "void WebServerWS_SetUNERApp(void* app_ptr)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/webserver_ws.h",
+        "line": 5
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Presta al servidor la instancia UNER que usará el bridge.",
+      "descriptionOrigin": "editorial"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "addImmutableCacheHeaders",
+      "signature": "static void addImmutableCacheHeaders(AsyncWebServerResponse *r)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/webserver_ws.cpp",
+        "line": 61
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "addHeader"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `addHeader` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "addNoCacheHeaders",
+      "signature": "static void addNoCacheHeaders(AsyncWebServerResponse *r)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/webserver_ws.cpp",
+        "line": 51
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "addHeader"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `addHeader` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "fsExists",
+      "signature": "static inline bool fsExists(const char *p)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/webserver_ws.cpp",
+        "line": 49
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "exists"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `exists` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "makeFileResponse",
+      "signature": "static AsyncWebServerResponse *makeFileResponse(AsyncWebServerRequest *req, const char *path, const char *contentType, bool allowGzip, bool noCache)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/webserver_ws.cpp",
+        "line": 106
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "String",
+        "addHeader",
+        "addImmutableCacheHeaders",
+        "addNoCacheHeaders",
+        "beginResponse",
+        "exists"
+      ],
+      "writes": [],
+      "description": "Coordina `String`, `addHeader`, `addImmutableCacheHeaders` para Servidor HTTP y conexiones WebSocket.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "makeGzipOnlyResponse",
+      "signature": "static AsyncWebServerResponse *makeGzipOnlyResponse(AsyncWebServerRequest *req, const char *path, const char *contentType, bool noCache)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/webserver_ws.cpp",
+        "line": 69
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "String",
+        "addHeader",
+        "addImmutableCacheHeaders",
+        "addNoCacheHeaders",
+        "beginResponse",
+        "exists"
+      ],
+      "writes": [],
+      "description": "Coordina `String`, `addHeader`, `addImmutableCacheHeaders` para Servidor HTTP y conexiones WebSocket.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "onWSEvent",
+      "signature": "static void onWSEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType type, void *arg, uint8_t *data, size_t len)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/webserver_ws.cpp",
+        "line": 216
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "bridge_connect",
+        "bridge_data",
+        "bridge_disconnect",
+        "c_str",
+        "close",
+        "getParam",
+        "hasParam",
+        "id",
+        "notify_connected",
+        "notify_disconnected",
+        "remoteIP",
+        "services",
+        "text",
+        "value",
+        "ws_track_add",
+        "ws_track_remove"
+      ],
+      "writes": [],
+      "description": "Coordina `bridge_connect`, `bridge_data`, `bridge_disconnect` para Servidor HTTP y conexiones WebSocket.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "server",
+      "signature": "static AsyncWebServer server(80)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/webserver_ws.cpp",
+        "line": 21
+      },
+      "definition": false,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación server de Servidor HTTP y conexiones WebSocket; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "services",
+      "signature": "static const WebServerServices &services()",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/webserver_ws.cpp",
+        "line": 40
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "WebServer_DefaultServices"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `WebServer_DefaultServices` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ws",
+      "signature": "static AsyncWebSocket ws( )",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/webserver_ws.cpp",
+        "line": 22
+      },
+      "definition": false,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación ws de Servidor HTTP y conexiones WebSocket; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "ws_track_add",
+      "signature": "static void ws_track_add(uint32_t id, IPAddress ip)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/webserver_ws.cpp",
+        "line": 166
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación ws track add de Servidor HTTP y conexiones WebSocket; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "ws_track_remove",
+      "signature": "static bool ws_track_remove(uint32_t id)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/webserver_ws.cpp",
+        "line": 184
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "notify_page_closed",
+        "services"
+      ],
+      "writes": [],
+      "description": "Coordina `notify_page_closed`, `services` para Servidor HTTP y conexiones WebSocket.",
+      "descriptionOrigin": "structural"
+    }
+  ],
+  "hooks": []
+}

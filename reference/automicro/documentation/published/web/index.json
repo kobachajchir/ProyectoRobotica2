@@ -1,0 +1,612 @@
+[
+  {
+    "id": "web:module/src/components/CameraRig.tsx",
+    "slug": "camera-controls",
+    "title": "Cámara y controles de orientación",
+    "kind": "integración",
+    "files": [
+      "src/components/CameraPresets.tsx",
+      "src/components/CameraPresetsPanel.tsx",
+      "src/components/CameraRig.tsx",
+      "src/components/OrientationControls.tsx",
+      "src/components/SensorCameraViewIcon.tsx"
+    ],
+    "markdown": "libraries/camera-controls.md",
+    "json": "libraries/camera-controls.json",
+    "functions": 10,
+    "internalFunctions": 15
+  },
+  {
+    "id": "web:module/src/components/MpuIrScene3D.tsx",
+    "slug": "scene-3d",
+    "title": "Escena 3D y carga de modelos",
+    "kind": "integración",
+    "files": [
+      "src/components/ModelLoadBoundary.tsx",
+      "src/components/ModelLoadingScreen.tsx",
+      "src/components/MpuIrScene3D.tsx",
+      "src/components/ThreeModelViewer.tsx",
+      "src/components/WebGLCanvas.tsx",
+      "src/hooks/useModelLoadingState.ts",
+      "src/utils/dracoLoader.ts",
+      "src/utils/localModel.ts"
+    ],
+    "markdown": "libraries/scene-3d.md",
+    "json": "libraries/scene-3d.json",
+    "functions": 28,
+    "internalFunctions": 17
+  },
+  {
+    "id": "web:module/src/components/OledCommandPreview.tsx",
+    "slug": "oled-renderer",
+    "title": "Primitivas OLED, fuentes y representación SVG",
+    "kind": "núcleo",
+    "files": [
+      "src/components/OledBitmapText.tsx",
+      "src/components/OledCommandPreview.tsx",
+      "src/screens/bitmapAssets.ts",
+      "src/screens/helpers.ts",
+      "src/screens/oledBitmapFont.ts",
+      "src/screens/types.ts"
+    ],
+    "markdown": "libraries/oled-renderer.md",
+    "json": "libraries/oled-renderer.json",
+    "functions": 36,
+    "internalFunctions": 0
+  },
+  {
+    "id": "web:module/src/components/RootLayout.tsx",
+    "slug": "navigation-shell",
+    "title": "Layout y navegación de secciones",
+    "kind": "integración",
+    "files": [
+      "src/components/AboutProjectPanel.tsx",
+      "src/components/AppFooter.tsx",
+      "src/components/BrandMark.tsx",
+      "src/components/NavigateVT.tsx",
+      "src/components/PageHeader.tsx",
+      "src/components/RedirectRoot.tsx",
+      "src/components/RootLayout.tsx",
+      "src/components/StartupWelcome.css",
+      "src/components/StartupWelcome.tsx",
+      "src/pages/Home.tsx",
+      "src/pages/NotFound.css",
+      "src/pages/NotFound.tsx"
+    ],
+    "markdown": "libraries/navigation-shell.md",
+    "json": "libraries/navigation-shell.json",
+    "functions": 54,
+    "internalFunctions": 13
+  },
+  {
+    "id": "web:module/src/components/ScreenStreamWorkspace.tsx",
+    "slug": "screen-controls",
+    "title": "Visor de pantalla y controles remotos",
+    "kind": "integración",
+    "files": [
+      "src/components/ScreenDashboardPanel.tsx",
+      "src/components/ScreenStreamModal.tsx",
+      "src/components/ScreenStreamWorkspace.tsx",
+      "src/contexts/ScreenStreamModalContext.tsx",
+      "src/hooks/useScreenStreamKeyboard.ts"
+    ],
+    "markdown": "libraries/screen-controls.md",
+    "json": "libraries/screen-controls.json",
+    "functions": 26,
+    "internalFunctions": 31
+  },
+  {
+    "id": "web:module/src/components/SegmentedControl.tsx",
+    "slug": "shared-ui",
+    "title": "Componentes comunes y estados visuales",
+    "kind": "integración",
+    "files": [
+      "src/components/AppLoadingScreen.tsx",
+      "src/components/ConditionStatus.css",
+      "src/components/ConditionStatus.tsx",
+      "src/components/ConnectingScreen.tsx",
+      "src/components/SectionStatusStrip.tsx",
+      "src/components/SegmentedControl.css",
+      "src/components/SegmentedControl.tsx",
+      "src/components/SensorDisclosure.tsx",
+      "src/components/TimelineRow.tsx",
+      "src/components/ToggleButton.tsx",
+      "src/components/modal.tsx"
+    ],
+    "markdown": "libraries/shared-ui.md",
+    "json": "libraries/shared-ui.json",
+    "functions": 17,
+    "internalFunctions": 11
+  },
+  {
+    "id": "web:module/src/contexts/CarModeContext.tsx",
+    "slug": "motion-control",
+    "title": "Modo del auto y control de movimiento",
+    "kind": "integración",
+    "files": [
+      "src/components/CarModeDropdown.tsx",
+      "src/components/CarModeSelectorModal.tsx",
+      "src/components/MotorBlock.tsx",
+      "src/contexts/CarModeContext.tsx",
+      "src/features/motion/MotionControlActions.tsx",
+      "src/features/motion/MotionControlIcon.tsx",
+      "src/features/motion/MotionControlPanel.tsx",
+      "src/features/motion/motion.css",
+      "src/features/motion/useMotionControl.ts",
+      "src/pages/ControlSection.tsx",
+      "src/types/MotorTypes.ts"
+    ],
+    "markdown": "libraries/motion-control.md",
+    "json": "libraries/motion-control.json",
+    "functions": 58,
+    "internalFunctions": 38
+  },
+  {
+    "id": "web:module/src/contexts/EspWifiStatusContext.tsx",
+    "slug": "wifi-interface",
+    "title": "Estado Wi-Fi, AP y credenciales Web",
+    "kind": "integración",
+    "files": [
+      "src/components/ApFallbackControls.tsx",
+      "src/components/ApProvisioningGate.tsx",
+      "src/components/WifiCredentialsModal.tsx",
+      "src/contexts/EspWifiStatusContext.tsx",
+      "src/contexts/WifiCredentialsContext.tsx",
+      "src/hooks/useApFallback.ts",
+      "src/pages/WifiSection.tsx",
+      "src/types/WifiTypes.ts",
+      "src/utils/wifiModeSwitch.ts"
+    ],
+    "markdown": "libraries/wifi-interface.md",
+    "json": "libraries/wifi-interface.json",
+    "functions": 72,
+    "internalFunctions": 9
+  },
+  {
+    "id": "web:module/src/contexts/IrEmittersContext.tsx",
+    "slug": "sensor-state",
+    "title": "Telemetría y estado de sensores",
+    "kind": "servicio",
+    "files": [
+      "src/components/IrEmittersControls.tsx",
+      "src/components/RealtimeEulerPanel.tsx",
+      "src/components/SimulatedBadge.tsx",
+      "src/contexts/IrEmittersContext.tsx",
+      "src/hooks/useSensorSubscription.ts",
+      "src/pages/EstadoSection.tsx"
+    ],
+    "markdown": "libraries/sensor-state.md",
+    "json": "libraries/sensor-state.json",
+    "functions": 47,
+    "internalFunctions": 11
+  },
+  {
+    "id": "web:module/src/contexts/ScreenContext.tsx",
+    "slug": "screen-state",
+    "title": "Estado normalizado de pantalla remota",
+    "kind": "servicio",
+    "files": [
+      "src/contexts/ScreenContext.tsx",
+      "src/hooks/useScreen.tsx",
+      "src/protocol/screenMenuState.ts",
+      "src/types/ScreenTypes.ts"
+    ],
+    "markdown": "libraries/screen-state.md",
+    "json": "libraries/screen-state.json",
+    "functions": 44,
+    "internalFunctions": 0
+  },
+  {
+    "id": "web:module/src/contexts/UNERProtocolContext.tsx",
+    "slug": "legacy-protocol-context",
+    "title": "Contexto UNER y superficies históricas",
+    "kind": "integración",
+    "files": [
+      "src/contexts/UNERProtocolContext.tsx",
+      "src/hooks/useUnerProtocol.tsx"
+    ],
+    "markdown": "libraries/legacy-protocol-context.md",
+    "json": "libraries/legacy-protocol-context.json",
+    "functions": 3,
+    "internalFunctions": 5
+  },
+  {
+    "id": "web:module/src/contexts/UserContext.tsx",
+    "slug": "authentication",
+    "title": "Usuario, PIN y permisos remotos",
+    "kind": "integración",
+    "files": [
+      "src/api/UserRepository.tsx",
+      "src/components/PinScreen.tsx",
+      "src/components/PinScreenModal.tsx",
+      "src/components/ProtectedRoute.tsx",
+      "src/components/PublicRoute.tsx",
+      "src/contexts/UserContext.tsx",
+      "src/pages/Login.tsx",
+      "src/types/PinAuthTypes.ts",
+      "src/types/UserTypes.ts"
+    ],
+    "markdown": "libraries/authentication.md",
+    "json": "libraries/authentication.json",
+    "functions": 19,
+    "internalFunctions": 5
+  },
+  {
+    "id": "web:module/src/features/autoMotion/useAutoMotion.ts",
+    "slug": "auto-motion",
+    "title": "GOTO y calibración de motores Web",
+    "kind": "integración",
+    "files": [
+      "src/features/autoMotion/ControlNavigation.tsx",
+      "src/features/autoMotion/ControlToolbar.tsx",
+      "src/features/autoMotion/GotoPanel.tsx",
+      "src/features/autoMotion/MotionReadiness.tsx",
+      "src/features/autoMotion/MotorCalibration.tsx",
+      "src/features/autoMotion/MotorDialog.tsx",
+      "src/features/autoMotion/autoMotion.css",
+      "src/features/autoMotion/motorCodec.ts",
+      "src/features/autoMotion/motorDialog.css",
+      "src/features/autoMotion/useAutoMotion.ts",
+      "src/pages/MotorCalibrationSection.tsx"
+    ],
+    "markdown": "libraries/auto-motion.md",
+    "json": "libraries/auto-motion.json",
+    "functions": 16,
+    "internalFunctions": 6
+  },
+  {
+    "id": "web:module/src/features/balanceCalibration/useBalancePid.ts",
+    "slug": "balance-workbench",
+    "title": "Balance PID, sesiones y análisis",
+    "kind": "integración",
+    "files": [
+      "src/features/balanceCalibration/BalanceWorkbench.tsx",
+      "src/features/balanceCalibration/analysis.worker.ts",
+      "src/features/balanceCalibration/optimizer.ts",
+      "src/features/balanceCalibration/remote.ts",
+      "src/features/balanceCalibration/session.ts",
+      "src/features/balanceCalibration/storage.ts",
+      "src/features/balanceCalibration/useBalancePid.ts"
+    ],
+    "markdown": "libraries/balance-workbench.md",
+    "json": "libraries/balance-workbench.json",
+    "functions": 25,
+    "internalFunctions": 9
+  },
+  {
+    "id": "web:module/src/features/calibration/CalibrationWorkspace.tsx",
+    "slug": "calibration-tools",
+    "title": "Herramientas de calibración IR y línea",
+    "kind": "integración",
+    "files": [
+      "src/features/calibration/CalibrationWorkspace.tsx",
+      "src/features/calibration/LineWorkbench.tsx",
+      "src/features/calibration/MaterialPicker.tsx",
+      "src/features/calibration/calibration.css",
+      "src/features/ir/IrCalibrationWorkbench.tsx",
+      "src/features/ir/irCalibration.ts",
+      "src/features/ir/irCalibrationStorage.ts"
+    ],
+    "markdown": "libraries/calibration-tools.md",
+    "json": "libraries/calibration-tools.json",
+    "functions": 37,
+    "internalFunctions": 9
+  },
+  {
+    "id": "web:module/src/features/docs/docsContent.ts",
+    "slug": "documentation-ui",
+    "title": "Contenido Docs y selector de destino",
+    "kind": "integración",
+    "files": [
+      "src/features/docs/DocsFirmwareSelector.tsx",
+      "src/features/docs/docsCatalog.tsx",
+      "src/features/docs/docsContent.ts",
+      "src/pages/DocTopicSection.tsx",
+      "src/pages/DocsSection.tsx"
+    ],
+    "markdown": "libraries/documentation-ui.md",
+    "json": "libraries/documentation-ui.json",
+    "functions": 14,
+    "internalFunctions": 2
+  },
+  {
+    "id": "web:module/src/features/ir/irSensorFrame.ts",
+    "slug": "ir-visual-model",
+    "title": "Geometría y modelo visual de sensores IR",
+    "kind": "núcleo",
+    "files": [
+      "src/components/IrObjectDetectionMarkers.tsx",
+      "src/components/SensorBeamControls.tsx",
+      "src/components/StopDiscontinuityGlyph.tsx",
+      "src/components/UnderbodySensorBeams.tsx",
+      "src/features/ir/beamVisualSettings.ts",
+      "src/features/ir/irEmitterGeometry.ts",
+      "src/features/ir/irObjectModel.ts",
+      "src/features/ir/irSensorFrame.ts",
+      "src/features/ir/sensorCameraViews.ts"
+    ],
+    "markdown": "libraries/ir-visual-model.md",
+    "json": "libraries/ir-visual-model.json",
+    "functions": 37,
+    "internalFunctions": 0
+  },
+  {
+    "id": "web:module/src/features/lineFollow/useLineDevice.ts",
+    "slug": "line-follow",
+    "title": "Calibración y seguimiento de línea del dispositivo",
+    "kind": "integración",
+    "files": [
+      "src/features/lineFollow/LineDeviceCalibration.tsx",
+      "src/features/lineFollow/LineFollowPanel.tsx",
+      "src/features/lineFollow/lineFollow.css",
+      "src/features/lineFollow/useLineDevice.ts",
+      "src/pages/TrackFollowerSection.tsx"
+    ],
+    "markdown": "libraries/line-follow.md",
+    "json": "libraries/line-follow.json",
+    "functions": 35,
+    "internalFunctions": 12
+  },
+  {
+    "id": "web:module/src/features/oledEditor/document.ts",
+    "slug": "oled-document",
+    "title": "Modelo y edición de documentos OLED",
+    "kind": "núcleo",
+    "files": [
+      "src/contexts/SavedOledScreensContext.tsx",
+      "src/features/oledEditor/assets.ts",
+      "src/features/oledEditor/codegen.ts",
+      "src/features/oledEditor/document.ts",
+      "src/features/oledEditor/geometry.ts",
+      "src/features/oledEditor/types.ts",
+      "src/features/oledEditor/useOledEditorState.ts"
+    ],
+    "markdown": "libraries/oled-document.md",
+    "json": "libraries/oled-document.json",
+    "functions": 82,
+    "internalFunctions": 16
+  },
+  {
+    "id": "web:module/src/features/oledEditor/oledCanvasRasterizer.ts",
+    "slug": "oled-rasterizer",
+    "title": "Raster binario y protocolo de canvas Web",
+    "kind": "núcleo",
+    "files": [
+      "src/features/oledEditor/oledCanvasProtocol.ts",
+      "src/features/oledEditor/oledCanvasRasterizer.ts"
+    ],
+    "markdown": "libraries/oled-rasterizer.md",
+    "json": "libraries/oled-rasterizer.json",
+    "functions": 35,
+    "internalFunctions": 0
+  },
+  {
+    "id": "web:module/src/features/oledEditor/useOledCanvasTransfer.ts",
+    "slug": "oled-transfer",
+    "title": "Transacción de transferencia canvas Web",
+    "kind": "integración",
+    "files": [
+      "src/features/oledEditor/LopakaLikeEditor.tsx",
+      "src/features/oledEditor/OledCanvasTransferPanel.tsx",
+      "src/features/oledEditor/OledStudioWorkspace.tsx",
+      "src/features/oledEditor/useOledCanvasTransfer.ts",
+      "src/pages/OledEditorSection.tsx"
+    ],
+    "markdown": "libraries/oled-transfer.md",
+    "json": "libraries/oled-transfer.json",
+    "functions": 55,
+    "internalFunctions": 25
+  },
+  {
+    "id": "web:module/src/features/protocolStudio/payloadCodec.ts",
+    "slug": "protocol-tools",
+    "title": "Catálogo, codecs y herramientas UNER",
+    "kind": "núcleo",
+    "files": [
+      "src/api/UnerFrameV2.ts",
+      "src/api/UnerProtocol.ts",
+      "src/api/UnerProtocolUtils.ts",
+      "src/features/protocolStudio/catalog.ts",
+      "src/features/protocolStudio/commandManifest.json",
+      "src/features/protocolStudio/payloadCodec.ts",
+      "src/features/protocolStudio/types.ts",
+      "src/features/protocolStudio/utils.ts",
+      "src/protocol/f4Payloads.ts",
+      "src/types/UnerProtocolCMDTypes.ts"
+    ],
+    "markdown": "libraries/protocol-tools.md",
+    "json": "libraries/protocol-tools.json",
+    "functions": 93,
+    "internalFunctions": 23
+  },
+  {
+    "id": "web:module/src/features/protocolStudio/useProtocolStudioState.ts",
+    "slug": "protocol-studio",
+    "title": "Interfaz Protocol Studio",
+    "kind": "integración",
+    "files": [
+      "src/features/protocolStudio/components/BuilderColumn.tsx",
+      "src/features/protocolStudio/components/FrameVisualizationShowcase.tsx",
+      "src/features/protocolStudio/components/OutputsColumn.tsx",
+      "src/features/protocolStudio/components/ProtocolHelpModal.tsx",
+      "src/features/protocolStudio/components/ProtocolHero.tsx",
+      "src/features/protocolStudio/components/TranslatorColumn.tsx",
+      "src/features/protocolStudio/ui.tsx",
+      "src/features/protocolStudio/useProtocolStudioState.ts",
+      "src/features/studio.css",
+      "src/pages/ProtocolSection.tsx"
+    ],
+    "markdown": "libraries/protocol-studio.md",
+    "json": "libraries/protocol-studio.json",
+    "functions": 26,
+    "internalFunctions": 13
+  },
+  {
+    "id": "web:module/src/hooks/useMockFirmware.ts",
+    "slug": "simulation",
+    "title": "Simulación y datos de desarrollo",
+    "kind": "soporte",
+    "files": [
+      "src/components/MockEulerGenerator.tsx",
+      "src/components/MockInjectButton.tsx",
+      "src/hooks/useMockFirmware.ts",
+      "src/protocol/__fixtures__/f4-uner-golden-vectors.json"
+    ],
+    "markdown": "libraries/simulation.md",
+    "json": "libraries/simulation.json",
+    "functions": 4,
+    "internalFunctions": 1
+  },
+  {
+    "id": "web:module/src/main.tsx",
+    "slug": "application",
+    "title": "Arranque, proveedores y rutas Web",
+    "kind": "composición",
+    "files": [
+      "src/App.css",
+      "src/App.tsx",
+      "src/index.css",
+      "src/main.tsx",
+      "src/vite-env.d.ts"
+    ],
+    "markdown": "libraries/application.md",
+    "json": "libraries/application.json",
+    "functions": 2,
+    "internalFunctions": 0
+  },
+  {
+    "id": "web:module/src/protocol/wsApi.ts",
+    "slug": "websocket-client",
+    "title": "API JSON, Promises y WebSocket",
+    "kind": "servicio",
+    "files": [
+      "src/contexts/WebSocketContext.tsx",
+      "src/hooks/useEspCommand.ts",
+      "src/hooks/useWebSocket.tsx",
+      "src/protocol/espClient.ts",
+      "src/protocol/wsApi.ts"
+    ],
+    "markdown": "libraries/websocket-client.md",
+    "json": "libraries/websocket-client.json",
+    "functions": 11,
+    "internalFunctions": 10
+  },
+  {
+    "id": "web:module/src/screens/connectivityScreens.ts",
+    "slug": "connectivity-builders",
+    "title": "Renderers Web de conectividad y avisos",
+    "kind": "núcleo",
+    "files": [
+      "src/screens/connectivityScreens.ts",
+      "src/screens/notificationScreens.ts"
+    ],
+    "markdown": "libraries/connectivity-builders.md",
+    "json": "libraries/connectivity-builders.json",
+    "functions": 44,
+    "internalFunctions": 2
+  },
+  {
+    "id": "web:module/src/screens/dashboardScreens.ts",
+    "slug": "dashboard-builders",
+    "title": "Renderers Web de dashboard y modos",
+    "kind": "núcleo",
+    "files": [
+      "src/screens/dashboardScreens.ts"
+    ],
+    "markdown": "libraries/dashboard-builders.md",
+    "json": "libraries/dashboard-builders.json",
+    "functions": 5,
+    "internalFunctions": 0
+  },
+  {
+    "id": "web:module/src/screens/menuScreens.ts",
+    "slug": "menu-builders",
+    "title": "Constructores de menús OLED",
+    "kind": "núcleo",
+    "files": [
+      "src/screens/menuScreens.ts"
+    ],
+    "markdown": "libraries/menu-builders.md",
+    "json": "libraries/menu-builders.json",
+    "functions": 12,
+    "internalFunctions": 0
+  },
+  {
+    "id": "web:module/src/screens/screenCodes.ts",
+    "slug": "screen-codes",
+    "title": "Códigos e identidad de pantallas",
+    "kind": "contrato",
+    "files": [
+      "src/screens/index.ts",
+      "src/screens/screenCodes.ts"
+    ],
+    "markdown": "libraries/screen-codes.md",
+    "json": "libraries/screen-codes.json",
+    "functions": 8,
+    "internalFunctions": 0
+  },
+  {
+    "id": "web:module/src/screens/screenRenderRegistry.ts",
+    "slug": "screen-resolver",
+    "title": "Resolución de variantes y fallback de pantalla",
+    "kind": "integración",
+    "files": [
+      "src/screens/identifiedScreens.ts",
+      "src/screens/remediatedScreens.ts",
+      "src/screens/screenRenderRegistry.ts"
+    ],
+    "markdown": "libraries/screen-resolver.md",
+    "json": "libraries/screen-resolver.json",
+    "functions": 31,
+    "internalFunctions": 0
+  },
+  {
+    "id": "web:module/src/screens/sensorScreens.ts",
+    "slug": "sensor-settings-builders",
+    "title": "Renderers Web de sensores, ajustes y PIN",
+    "kind": "núcleo",
+    "files": [
+      "src/screens/displayScreens.ts",
+      "src/screens/motorScreens.ts",
+      "src/screens/sensorScreens.ts",
+      "src/screens/settingsScreens.ts",
+      "src/screens/warningScreens.ts"
+    ],
+    "markdown": "libraries/sensor-settings-builders.md",
+    "json": "libraries/sensor-settings-builders.json",
+    "functions": 34,
+    "internalFunctions": 0
+  },
+  {
+    "id": "web:module/src/types/RemoteBridgeTypes.ts",
+    "slug": "remote-actions",
+    "title": "Tipos y feedback de acciones remotas",
+    "kind": "contrato",
+    "files": [
+      "src/components/SystemResetActions.tsx",
+      "src/components/TransportActionButton.tsx",
+      "src/types/RemoteBridgeTypes.ts",
+      "src/utils/stmRemoteActionFeedback.ts"
+    ],
+    "markdown": "libraries/remote-actions.md",
+    "json": "libraries/remote-actions.json",
+    "functions": 12,
+    "internalFunctions": 2
+  },
+  {
+    "id": "web:module/src/utils/theme.ts",
+    "slug": "local-preferences",
+    "title": "Preferencias locales, tema y utilidades",
+    "kind": "servicio",
+    "files": [
+      "src/components/ThemeModeToggleCard.tsx",
+      "src/hooks/useMediaQuery.ts",
+      "src/hooks/useModalScrollLock.ts",
+      "src/utils/theme.ts"
+    ],
+    "markdown": "libraries/local-preferences.md",
+    "json": "libraries/local-preferences.json",
+    "functions": 14,
+    "internalFunctions": 2
+  }
+]

@@ -1,0 +1,923 @@
+{
+  "schemaVersion": 1,
+  "findings": [
+    {
+      "id": "AMDOC-F4-001",
+      "title": "Escala cero aceptada por el encoder",
+      "priority": "alta",
+      "category": "guarda de argumentos ausente",
+      "status": "abierto",
+      "certainty": "observed",
+      "modules": [
+        "f4:module/Core/Inc/encoder.h"
+      ],
+      "repositories": [
+        "FirmwareF4"
+      ],
+      "observation": "ENC_Init guarda calibrateCountPerStep sin rechazar cero; ENC_Task_N10ms divide y calcula módulo por ese campo.",
+      "impact": "Un integrador que inicialice escala 0 llega a división por cero al muestrear. El fallo bajo ese argumento se desprende del código; no se afirma que la configuración actual lo envíe.",
+      "proposal": "Definir rechazo o valor seguro para cero y hacer observable el fallo de inicialización; conservar escala válida antes de activar tareas.",
+      "code": [
+        "f4:Core/Src/encoder.c:ENC_Init",
+        "f4:Core/Src/encoder.c:ENC_Task_N10ms",
+        "f4:Core/Inc/encoder_types.h:ENC_Handle_t.calibrateCountPerStep"
+      ],
+      "documentation": [
+        {
+          "label": "Encoder / inicialización",
+          "path": "published/f4/libraries/encoder.md#fn-enc_init",
+          "selector": "f4:module/Core/Inc/encoder.h / functions[name=ENC_Init]"
+        },
+        {
+          "label": "Encoder / ciclo de vida",
+          "path": "published/f4/libraries/encoder.md#lifecycle",
+          "selector": "f4:module/Core/Inc/encoder.h / lifecycle"
+        }
+      ],
+      "closure": "Pendiente de decisión e implementación. Al corregir, actualizar overlay de encoder, regenerar solo esa ficha y registrar commit; prueba únicamente con autorización."
+    },
+    {
+      "id": "AMDOC-F4-002",
+      "title": "El acumulador de pulsos reduce un delta de 32 bits a 8 bits",
+      "priority": "media",
+      "category": "pérdida potencial de conteo",
+      "status": "abierto",
+      "certainty": "observed",
+      "modules": [
+        "f4:module/Core/Inc/encoder.h"
+      ],
+      "repositories": [
+        "FirmwareF4"
+      ],
+      "observation": "El delta con wrap se calcula como int32_t y se suma a accumCount, declarado int8_t, antes de extraer pasos completos.",
+      "impact": "Si delta más resto supera el rango int8_t, la conversión pierde información y puede producir conteo o sentido incorrecto. No se midió si el montaje actual alcanza ese rango entre muestreos.",
+      "proposal": "Conservar acumulación en un tipo suficientemente ancho y decidir límites explícitos antes de derivar pasos; revisar compatibilidad de getters históricos unsigned.",
+      "code": [
+        "f4:Core/Inc/encoder_types.h:ENC_Handle_t.accumCount",
+        "f4:Core/Src/encoder.c:ENC_Task_N10ms"
+      ],
+      "documentation": [
+        {
+          "label": "Encoder / estado",
+          "path": "published/f4/libraries/encoder.md#state",
+          "selector": "f4:module/Core/Inc/encoder.h / state; types[name=ENC_Handle_t]"
+        },
+        {
+          "label": "Encoder / muestreo",
+          "path": "published/f4/libraries/encoder.md#fn-enc_task_n10ms",
+          "selector": "f4:module/Core/Inc/encoder.h / functions[name=ENC_Task_N10ms]"
+        }
+      ],
+      "closure": "Sin cambio de código. Si se amplía tipo, actualizar atributos y explicación del cálculo, sin alterar la convención física/remota por implicación."
+    },
+    {
+      "id": "AMDOC-F4-003",
+      "title": "La marca RESP permite longitudes fuera del rango de solicitud",
+      "priority": "alta",
+      "category": "frontera de parsing y despacho",
+      "status": "abierto",
+      "certainty": "resolved",
+      "modules": [
+        "f4:module/Core/Inc/uner_handle.h",
+        "f4:module/Core/Inc/uner_app.h",
+        "f4:module/Core/Inc/app_tasks.h",
+        "f4:module/Core/Inc/auto_motion.h",
+        "f4:module/Core/Inc/line_follow_control.h"
+      ],
+      "repositories": [
+        "FirmwareF4",
+        "Firmware ESP01",
+        "Web ESP01",
+        "AutoMicroQtDesktop"
+      ],
+      "observation": "UNER_Handle_IsLengthValid acepta cualquier len>=1 cuando el CommandSpec tiene UNER_SPEC_F_RESP, aunque no cumpla min_args/max_args. La condición no distingue por sí misma solicitud entrante de respuesta.",
+      "impact": "Se siguió un camino concreto: 0x24 con len=1 cumple la excepción RESP, llega al switch y APP_AutoMotionRequest copia dos floats de 4 bytes sin comprobar length. 0x28 y el control de calibración de línea también leen campos sin guarda local de longitud. Eso permite leer fuera de los bytes válidos declarados del paquete, posiblemente datos residuales del slot. No equivale por sí mismo a demostrar acceso fuera de toda memoria asignada ni un fallo físico; siguen aplicándose autorización y otras guardas.",
+      "proposal": "Separar reglas de solicitud y respuesta según ruta/propósito, y mantener guardas locales de tamaño en cada handler. Revisar también paquetes asincrónicos/proxy para no bloquear respuestas legítimas.",
+      "code": [
+        "f4:Core/Src/uner_handle.c:UNER_Handle_IsLengthValid",
+        "f4:Core/Src/uner_handle.c:UNER_Handle_ProcessPending",
+        "f4:Core/Src/uner_app.c:uner_commands/UNER_App_ExecuteCommand",
+        "f4:Core/Src/app_tasks.c:APP_AutoMotionRequest"
+      ],
+      "documentation": [
+        {
+          "label": "Router / validación de longitud",
+          "path": "published/f4/libraries/uner-router.md#fn-uner_handle_islengthvalid",
+          "selector": "f4:module/Core/Inc/uner_handle.h / internalFunctions[name=UNER_Handle_IsLengthValid]"
+        },
+        {
+          "label": "Aplicación / decodificación GOTO",
+          "path": "published/f4/libraries/application-composition.md#fn-app_automotionrequest",
+          "selector": "f4:module/Core/Inc/app_tasks.h / functions[name=APP_AutoMotionRequest]"
+        },
+        {
+          "label": "Contrato / longitudes",
+          "path": "published/shared/wire-contracts.md#length-guards",
+          "selector": "shared:wire / length-guards"
+        }
+      ],
+      "closure": "Revisión de handlers pendiente. Si cambia aceptación/rechazo observable en el wire, crear ficha AMI y actualizar estados reales de consumidores."
+    },
+    {
+      "id": "AMDOC-F4-004",
+      "title": "BuildFrame acepta payload nulo con longitud positiva",
+      "priority": "alta",
+      "category": "guarda de buffer ausente",
+      "status": "abierto",
+      "certainty": "observed",
+      "modules": [
+        "f4:module/Core/Inc/uner_core.h",
+        "f4:module/Core/Inc/uner_handle.h"
+      ],
+      "repositories": [
+        "FirmwareF4"
+      ],
+      "observation": "UNER_BuildFrame solo copia payload si len>0 y payload!=NULL; con len positivo y puntero nulo conserva bytes previos del buffer y calcula XOR sobre ellos. UNER_Send tampoco rechaza esa combinación.",
+      "impact": "Un llamador con esa combinación puede emitir un frame de checksum válido con datos residuales en lugar de rechazar argumentos. No se localizó en esta revisión una llamada activa que la produzca.",
+      "proposal": "Rechazar len>0 con payload nulo antes de construir el frame; mantener permitido payload nulo con len=0.",
+      "code": [
+        "f4:Core/Src/uner_core.c:UNER_BuildFrame",
+        "f4:Core/Src/uner_handle.c:UNER_Send"
+      ],
+      "documentation": [
+        {
+          "label": "Core / construcción de frame",
+          "path": "published/f4/libraries/uner-core.md#fn-uner_buildframe",
+          "selector": "f4:module/Core/Inc/uner_core.h / functions[name=UNER_BuildFrame]"
+        },
+        {
+          "label": "Router / envío",
+          "path": "published/f4/libraries/uner-router.md#fn-uner_send",
+          "selector": "f4:module/Core/Inc/uner_handle.h / functions[name=UNER_Send]"
+        }
+      ],
+      "closure": "Sin corrección aplicada. Actualizar precondiciones y retorno documentado junto al cambio del guard."
+    },
+    {
+      "id": "AMDOC-F4-005",
+      "title": "La prioridad registrada del dispositivo no participa del arbitraje",
+      "priority": "media",
+      "category": "API y política de planificación",
+      "status": "abierto",
+      "certainty": "observed",
+      "modules": [
+        "f4:module/Core/Inc/i2c_manager.h"
+      ],
+      "repositories": [
+        "FirmwareF4"
+      ],
+      "observation": "RegisterDevice conserva priority en la entrada, pero effective_prio usa pending_prio y policy; la prioridad base guardada no interviene en esa selección.",
+      "impact": "Cambiar priority al registrar un dispositivo no produce la preferencia que el parámetro sugiere. La prioridad de request y las políticas OLED/MPU sí tienen efecto.",
+      "proposal": "Decidir si priority debe combinarse con la solicitud o si se retira/depreca como parámetro sin efecto. No cambiar la equidad ni prioridad MPU por accidente.",
+      "code": [
+        "f4:Core/Src/i2c_manager.c:I2C_Manager_RegisterDevice",
+        "f4:Core/Src/i2c_manager.c:effective_prio",
+        "f4:Core/Src/i2c_manager.c:pick_next_pending_index"
+      ],
+      "documentation": [
+        {
+          "label": "I2C / política",
+          "path": "published/f4/libraries/i2c-manager.md#modularity",
+          "selector": "f4:module/Core/Inc/i2c_manager.h / modularity; types[name=I2C_DeviceEntry]"
+        }
+      ],
+      "closure": "Falta decisión de política. Documentar después fórmula efectiva y significado de cada prioridad."
+    },
+    {
+      "id": "AMDOC-F4-006",
+      "title": "0x74 declara ACK en F4 pero el handler responde por el mismo comando",
+      "priority": "media",
+      "category": "contradicción de metadata",
+      "status": "abierto",
+      "certainty": "contradicted",
+      "modules": [
+        "f4:module/Core/Inc/uner_app.h",
+        "f4:module/Core/Inc/uner_handle.h"
+      ],
+      "repositories": [
+        "FirmwareF4",
+        "Firmware ESP01",
+        "AutoMicroQtDesktop"
+      ],
+      "observation": "uner_commands registra SET_EXTENSION_PROFILE con UNER_SPEC_F_ACK. HandleSetExtensionProfile envía cmd 0x74 y un byte status. El registro actual ESP ya usa F4_RESPONSE_SAME_COMMAND para ese ID.",
+      "impact": "Un consumidor/generador que derive finalización de la tabla F4 puede esperar un ACK inexistente. No se atribuye ese fallo al ESP actual, que describe SameCommand. Qt no fue reinspeccionado aquí.",
+      "proposal": "Alinear metadata con la respuesta efectiva y documentar diferencias entre flags F4 y completion policy; no cambiar el wire actual solo para igualarlo a una bandera obsoleta.",
+      "code": [
+        "f4:Core/Src/uner_app.c:uner_commands[UNER_CMD_ID_SET_EXTENSION_PROFILE]",
+        "f4:Core/Src/uner_app.c:UNER_App_HandleSetExtensionProfile",
+        "esp:src/f4_command_registry.c:kF4Commands[0x74]"
+      ],
+      "documentation": [
+        {
+          "label": "Aplicación / perfil",
+          "path": "published/f4/libraries/uner-application.md#fn-uner_app_handlesetextensionprofile",
+          "selector": "f4:module/Core/Inc/uner_app.h / internalFunctions[name=UNER_App_HandleSetExtensionProfile]"
+        },
+        {
+          "label": "Contrato / finalización",
+          "path": "published/shared/wire-contracts.md#completion",
+          "selector": "shared:wire / completion"
+        },
+        {
+          "label": "Catálogo de registro",
+          "path": "published/shared/command-registry.md#command-0x74",
+          "selector": "shared:registry / command[id=0x74]"
+        }
+      ],
+      "closure": "No se reabre como vigente el choque histórico Qt sin revisar su código actual. Actualizar esta entrada y metadata tras la corrección."
+    },
+    {
+      "id": "AMDOC-F4-007",
+      "title": "Los contextos activos de UI limitan independencia y reentrada",
+      "priority": "media",
+      "category": "límite arquitectónico",
+      "status": "revisar",
+      "certainty": "observed",
+      "modules": [
+        "f4:module/Core/Inc/screen_context.h",
+        "f4:module/Core/Inc/permissions.h",
+        "f4:module/Core/Inc/menu_favorites.h",
+        "f4:module/Core/Inc/ui_event_router.h",
+        "f4:module/Core/Inc/app_ap_config.h"
+      ],
+      "repositories": [
+        "FirmwareF4"
+      ],
+      "observation": "Screens_Context, Permission_Context, Favorites_Context, UiRouter_Context y Ap_Context seleccionan instancias globales. Sus handles conservan SystemHandle/MenuSystem u otros tipos concretos aunque las operaciones se inyecten.",
+      "impact": "El código no cumple independencia completa de modelos ni varias instancias simultáneas por API. No es un fallo demostrado del uso actual con un contexto; sí afecta un port o refactor que asuma reentrada.",
+      "proposal": "Si se requiere portabilidad/múltiples instancias, diseñar APIs con handle explícito y modelos de vista estrechos; conservar wrappers históricos solo en integración.",
+      "code": [
+        "f4:Core/Inc/screen_context.h:Screens_Handle/Screens_Context",
+        "f4:Core/Inc/screens_internal.h",
+        "f4:Core/Inc/permission_context.h",
+        "f4:Core/Inc/favorites_context.h",
+        "f4:Core/Inc/uirouter_context.h",
+        "f4:Core/Inc/ap_context.h"
+      ],
+      "documentation": [
+        {
+          "label": "Pantallas / modularidad",
+          "path": "published/f4/libraries/screen-context.md#modularity",
+          "selector": "f4:module/Core/Inc/screen_context.h / modularity; state"
+        },
+        {
+          "label": "Arquitectura / clasificación",
+          "path": "published/f4/architecture.md#boundaries",
+          "selector": "f4:architecture / boundaries"
+        }
+      ],
+      "closure": "Refactor no autorizado en esta etapa. Cada ficha afectada lista este ID; actualizar las cinco fronteras documentales si se rediseñan."
+    },
+    {
+      "id": "AMDOC-F4-008",
+      "title": "El reloj now_us tiene resolución efectiva de milisegundos",
+      "priority": "media",
+      "category": "precisión temporal del adaptador",
+      "status": "revisar",
+      "certainty": "observed",
+      "modules": [
+        "f4:module/Core/Inc/app_stm32_ports.h",
+        "f4:module/Core/Inc/mpu9250.h"
+      ],
+      "repositories": [
+        "FirmwareF4"
+      ],
+      "observation": "App_I2cUs devuelve App_I2cMs(ctx)*1000 y App_I2cMs usa HAL_GetTick. El nombre/unidad son microsegundos, pero no aporta resolución submilisegundo.",
+      "impact": "Cuantiza intervalos de muestra y puede afectar algoritmos que supongan precisión de microsegundos; magnitud física del efecto no medida. No es un error de conversión de unidad.",
+      "proposal": "Decidir si la precisión actual basta o si debe usarse un contador de mayor resolución, definiendo wrap y contexto de lectura.",
+      "code": [
+        "f4:Core/Inc/app_i2c_ports.h:App_I2cUs",
+        "f4:Core/Src/mpu9250.c:MPU_UpdateSampleTiming"
+      ],
+      "documentation": [
+        {
+          "label": "Adaptadores / reloj",
+          "path": "published/f4/libraries/application-adapters.md#fn-app_i2cus",
+          "selector": "f4:module/Core/Inc/app_stm32_ports.h / functions[name=App_I2cUs]"
+        },
+        {
+          "label": "MPU / temporización",
+          "path": "published/f4/libraries/mpu9250.md#lifecycle",
+          "selector": "f4:module/Core/Inc/mpu9250.h / lifecycle; limitations"
+        }
+      ],
+      "closure": "Sin mediciones ni cambio de reloj. Actualizar unidad, resolución y wrap juntos si se cambia el backend."
+    },
+    {
+      "id": "AMDOC-F4-009",
+      "title": "GetScaledSteps devuelve 1 con desplazamiento cero",
+      "priority": "baja",
+      "category": "precondición implícita",
+      "status": "revisar",
+      "certainty": "observed",
+      "modules": [
+        "f4:module/Core/Inc/encoder.h",
+        "f4:module/Core/Inc/app_tasks.h"
+      ],
+      "repositories": [
+        "FirmwareF4"
+      ],
+      "observation": "ENC_GetScaledSteps parte de multiplier=1 y no trata steps==0. Encoder_MainTask lo llama bajo ENC_FLAG_UPDATED, por lo que existe una guarda en ese consumidor actual.",
+      "impact": "Otro consumidor que use el getter como delta puede fabricar movimiento lógico en reposo. No se afirma un evento fantasma actual porque se encontró la guarda del llamador.",
+      "proposal": "Definir si la API devuelve multiplicador para evento existente o delta escalado; documentar precondición o devolver cero según la decisión.",
+      "code": [
+        "f4:Core/Src/encoder.c:ENC_GetScaledSteps",
+        "f4:Core/Src/app_tasks.c:Encoder_MainTask"
+      ],
+      "documentation": [
+        {
+          "label": "Encoder / escalado",
+          "path": "published/f4/libraries/encoder.md#fn-enc_getscaledsteps",
+          "selector": "f4:module/Core/Inc/encoder.h / functions[name=ENC_GetScaledSteps]; limitations"
+        }
+      ],
+      "closure": "No modificar el llamador por suposición; conservar su guarda y actualizar contrato del getter al resolver."
+    },
+    {
+      "id": "AMDOC-F4-010",
+      "title": "sampleTenMs se almacena pero no gobierna el muestreo",
+      "priority": "baja",
+      "category": "parámetro sin efecto en la cadencia",
+      "status": "abierto",
+      "certainty": "observed",
+      "modules": [
+        "f4:module/Core/Inc/encoder.h",
+        "f4:module/Core/Inc/app_tasks.h"
+      ],
+      "repositories": [
+        "FirmwareF4"
+      ],
+      "observation": "ENC_Init recibe uint32_t sampleTenMs y lo guarda en uint8_t. ENC_Task_N10ms no lo consulta y la tarea de timer lo llama cada 10 ms; el pulsador se muestrea dentro de esa llamada.",
+      "impact": "Cambiar el argumento no cambia la cadencia como sugiere la API. Si se empieza a usar para espaciar toda la tarea, también cambiarían las duraciones de pulsación contadas por el botón integrado.",
+      "proposal": "Decidir si se elimina/depreca el parámetro o se implementa un divisor solo para el contador, conservando pulsador a 10 ms y límites de tipo explícitos.",
+      "code": [
+        "f4:Core/Src/encoder.c:ENC_Init/ENC_Task_N10ms",
+        "f4:Core/Inc/encoder_types.h:ENC_Handle_t.sampleTenMs",
+        "f4:Core/Src/app_tasks.c:callback timer de 10 ms"
+      ],
+      "documentation": [
+        {
+          "label": "Encoder / cadencia",
+          "path": "published/f4/libraries/encoder.md#lifecycle",
+          "selector": "f4:module/Core/Inc/encoder.h / lifecycle; types[name=ENC_Handle_t]"
+        }
+      ],
+      "closure": "Sin modificación de la cadencia. Actualizar firma, unidad y ciclo de vida cuando se decida su contrato."
+    },
+    {
+      "id": "AMDOC-ESP-001",
+      "title": "El validador AutoMotion acepta formas de argumentos de otros comandos",
+      "priority": "media",
+      "category": "desacuerdo entre validador y codificador JSON",
+      "status": "abierto",
+      "certainty": "resolved",
+      "modules": [
+        "f4:module/Core/Inc/auto_motion.h",
+        "f4:module/Core/Inc/uner_app.h",
+        "esp:module/src/ws_json_bridge.h"
+      ],
+      "repositories": [
+        "Firmware ESP01",
+        "Web ESP01",
+        "FirmwareF4"
+      ],
+      "observation": "validate_auto_params acepta cualquiera de tres formas: payload, xCm/yCm o parámetros de calibración. No conoce el comando. cmd_stm_auto selecciona campos según command; stm.goto.start lee xCm/yCm aunque otra forma haya pasado el validador.",
+      "impact": "Una solicitud stm.goto.start con forma de calibración puede pasar y codificar coordenadas ausentes como cero mediante as<float>(). La Web normal envía xCm/yCm; no se afirma un envío incorrecto desde su UI actual.",
+      "proposal": "Usar validadores específicos por operación o hacer depender la forma aceptada del comando; rechazar campos ausentes antes de convertirlos.",
+      "code": [
+        "esp:src/ws_bridge/dispatch.inc:validate_auto_params",
+        "esp:src/ws_bridge/dispatch.inc:cmd_stm_auto",
+        "esp:src/ws_bridge/dispatch.inc:tabla de rutas stm.goto.start/stm.motorCalibration.*"
+      ],
+      "documentation": [
+        {
+          "label": "Contrato / AutoMotion",
+          "path": "published/shared/wire-contracts.md#auto-motion",
+          "selector": "shared:wire / auto-motion"
+        },
+        {
+          "label": "GOTO / frontera de argumentos",
+          "path": "published/f4/libraries/auto-motion.md#lifecycle",
+          "selector": "f4:module/Core/Inc/auto_motion.h / lifecycle; limitations"
+        },
+        {
+          "label": "ESP / bridge y validadores",
+          "path": "published/esp/libraries/json-bridge.md#lifecycle",
+          "selector": "esp:module/src/ws_json_bridge.h / lifecycle; limitations"
+        }
+      ],
+      "closure": "Solo registro documental. Requiere edición explícita del firmware ESP en la etapa de correcciones; conservar la semántica wire de argumentos válidos."
+    },
+    {
+      "id": "AMDOC-WEB-001",
+      "title": "Docs requiere tercer destino ESP y selector visual estable",
+      "priority": "media",
+      "category": "pedido de interfaz diferido",
+      "status": "reportado",
+      "certainty": "observed-partial",
+      "modules": [
+        "web:module/src/features/docs/docsContent.ts"
+      ],
+      "repositories": [
+        "Web ESP01"
+      ],
+      "observation": "docsContent.ts limita DocFirmwareTarget a web|f4 y variants usa Record de ambos. El usuario informa pérdida del divisor/fondo del selector; no se ejecutó inspección visual para atribuir causa CSS.",
+      "impact": "La documentación ESP no tiene destino representable en el modelo actual. El defecto visual del divisor está reportado, no diagnosticado por ejecución.",
+      "proposal": "Tras completar contenido, incorporar esp al modelo/catálogo y adaptar el selector con píldora móvil centrada en la opción elegida; revisar fondo/divisor, teclado y movimiento reducido cuando el usuario autorice esa etapa.",
+      "code": [
+        "web:src/features/docs/docsContent.ts:DocFirmwareTarget/DocTopic.variants",
+        "web:src/features/docs/docsCatalog.tsx"
+      ],
+      "documentation": [
+        {
+          "label": "Web / porteo de Docs",
+          "path": "published/web/architecture.md#docs-adapter",
+          "selector": "web:architecture / docs-adapter"
+        },
+        {
+          "label": "Docs / catálogo de destinos",
+          "path": "published/web/libraries/documentation-ui.md#limitations",
+          "selector": "web:module/src/features/docs/docsContent.ts / limitations"
+        }
+      ],
+      "closure": "Etapa de UI pendiente por decisión del usuario. Sin cambios de Web ni comprobación visual."
+    },
+    {
+      "id": "AMDOC-ESP-002",
+      "title": "Los reportes sin selección publican selectedIndex/itemCount como cero",
+      "priority": "media",
+      "category": "ausencia de dato convertida en valor",
+      "status": "abierto",
+      "certainty": "resolved",
+      "modules": [
+        "esp:module/src/ws_json_bridge.h",
+        "web:module/src/contexts/ScreenContext.tsx"
+      ],
+      "repositories": [
+        "Firmware ESP01",
+        "Web ESP01",
+        "FirmwareF4"
+      ],
+      "observation": "add_screen_report inicializa ambos campos en cero y siempre los emite. Un 0x95 de cinco bytes solo transporta código/source; la variante antigua 0x96 de seis bytes tampoco lleva índice. ScreenContext interpreta los campos numéricos emitidos como disponibles.",
+      "impact": "Se pierde la distinción entre selección cero observada y selección ausente. Puede aparecer cursor o conteo transitorio falso al procesar eventos cortos; no se ejecutó una sesión para medir su manifestación.",
+      "proposal": "Conservar presencia/validez por longitud y tipo de reporte; omitir lo ausente o exponer un discriminante explícito, y definir en Web cuándo preservar o invalidar la última selección.",
+      "code": [
+        "esp:src/ws_bridge/reports.inc:add_screen_report",
+        "web:src/contexts/ScreenContext.tsx:enrichCurrentScreen"
+      ],
+      "documentation": [
+        {
+          "label": "Pantallas / reports",
+          "path": "published/shared/SCREEN_SYSTEM.md#reports",
+          "selector": "shared:screen-system / reports"
+        },
+        {
+          "label": "ESP / traductor de reportes",
+          "path": "published/esp/libraries/json-bridge.md#limitations",
+          "selector": "esp:module/src/ws_json_bridge.h / limitations"
+        }
+      ],
+      "closure": "Actualizar decoder, presencia de campos y normalizador juntos; crear ficha AMI si cambia el JSON público. No resolver fabricando estado de menú.",
+      "history": []
+    },
+    {
+      "id": "AMDOC-WEB-002",
+      "title": "El visor rellena estados que el reporte de pantalla no transporta",
+      "priority": "alta",
+      "category": "réplica con estado incompleto",
+      "status": "abierto",
+      "certainty": "resolved",
+      "modules": [
+        "web:module/src/screens/screenRenderRegistry.ts",
+        "web:module/src/contexts/ScreenContext.tsx",
+        "web:module/src/components/ScreenStreamWorkspace.tsx",
+        "f4:module/Core/Inc/permissions.h",
+        "f4:module/Core/Inc/osk_integration.h"
+      ],
+      "repositories": [
+        "Web ESP01",
+        "Firmware ESP01",
+        "FirmwareF4"
+      ],
+      "observation": "0x52/0x95/0x96 no transportan snapshot general de renderer, buffer/cursor OSK ni digits/pinIndex. readPinFormArgs fabrica cuatro ceros e índice cero; otros builders usan valores de muestra. remediatedScreens ya mantiene identidad sola para parte de las vistas sin datos.",
+      "impact": "El PIN físico o una variante dinámica puede dibujarse con un estado inventado. Compartir código numérico no permite afirmar que la imagen coincida con la pantalla real; el formulario de login Web es una entrada local distinta.",
+      "proposal": "Definir estado discriminado por familia/variante y procedencia reported/query/simulation/unavailable. Mientras falte información, documentar y mostrar identidad/disponibilidad; cualquier nuevo snapshot requiere contrato y política de datos sensibles explícitos.",
+      "code": [
+        "web:src/screens/screenRenderRegistry.ts:readPinFormArgs",
+        "web:src/screens/warningScreens.ts:buildPermissionPinFormCommands",
+        "web:src/screens/remediatedScreens.ts:resolveRemediatedScreen",
+        "esp:src/ws_bridge/reports.inc:add_screen_report",
+        "f4:Core/Src/uner_app.c:UNER_CMD_GET_CURRENT_SCREEN"
+      ],
+      "documentation": [
+        {
+          "label": "Pantallas / state-model",
+          "path": "published/shared/SCREEN_SYSTEM.md#state-model",
+          "selector": "shared:screen-system / state-model"
+        },
+        {
+          "label": "Pantallas / pin-osk",
+          "path": "published/shared/SCREEN_SYSTEM.md#pin-osk",
+          "selector": "shared:screen-system / pin-osk"
+        },
+        {
+          "label": "Web / resolver",
+          "path": "published/web/libraries/screen-resolver.md#limitations",
+          "selector": "web:module/src/screens/screenRenderRegistry.ts / limitations"
+        }
+      ],
+      "closure": "Separar disponibilidad de estado y port de raster. Una entrada PIN transmitida correctamente no demuestra que el visor copie el formulario físico.",
+      "history": []
+    },
+    {
+      "id": "AMDOC-WEB-003",
+      "title": "El renderer SVG actual no constituye el port completo de OLED F4",
+      "priority": "alta",
+      "category": "fidelidad del motor de dibujo",
+      "status": "abierto",
+      "certainty": "resolved",
+      "modules": [
+        "web:module/src/components/OledCommandPreview.tsx",
+        "web:module/src/screens/screenRenderRegistry.ts",
+        "web:module/src/features/oledEditor/oledCanvasRasterizer.ts",
+        "f4:module/Core/Inc/ssd1306.h"
+      ],
+      "repositories": [
+        "Web ESP01",
+        "FirmwareF4"
+      ],
+      "observation": "OledCommandPreview traduce OledCommand a SVG; usa geometría SVG, paint() de dos colores y placeholders de bitmap desconocido. F4 modifica framebuffer y tiene primitivas Inverse por XOR (aunque DrawPixel_H diverge: F4-012). Los builders TS son adaptaciones; compartir fuentes/bitmaps no copia toda la implementación.",
+      "impact": "No está establecida igualdad de píxeles, clipping, redondeo, inversión ni recursos. Un dibujo visualmente parecido o el envío OLED Canvas no acredita réplica de la pantalla F4.",
+      "proposal": "Mantener objetivo de copiar/adaptar toda la biblioteca OLED y sus renderers/recursos, con capa de plataforma separada y framebuffer equivalente. Conservar procedencia/revisión por archivo; decidir explícitamente inconsistencias F4 antes de corregirlas en un solo lado.",
+      "code": [
+        "web:src/components/OledCommandPreview.tsx:renderCommands/paint/bitmapNode",
+        "web:src/screens/types.ts:OledCommand",
+        "web:src/features/oledEditor/oledCanvasRasterizer.ts",
+        "f4:Core/Src/ssd1306.c:ssd1306_DrawPixel_H/ssd1306_DrawHorizontalLine_H"
+      ],
+      "documentation": [
+        {
+          "label": "Pantallas / exact-port",
+          "path": "published/shared/SCREEN_SYSTEM.md#exact-port",
+          "selector": "shared:screen-system / exact-port"
+        },
+        {
+          "label": "Renderer Web",
+          "path": "published/web/libraries/oled-renderer.md#limitations",
+          "selector": "web:module/src/components/OledCommandPreview.tsx / limitations"
+        }
+      ],
+      "closure": "Futuras comparaciones de framebuffer solo con autorización del usuario. No etiquetar exact por contar constantes ni por portar únicamente el rasterizador de Canvas.",
+      "history": []
+    },
+    {
+      "id": "AMDOC-WEB-004",
+      "title": "La ventana del menú reconstruida en Web puede ejecutar otra fila en F4",
+      "priority": "alta",
+      "category": "contrato de scroll y selección",
+      "status": "abierto",
+      "certainty": "resolved",
+      "modules": [
+        "f4:module/Core/Inc/menusystem.h",
+        "f4:module/Core/Inc/uner_app.h",
+        "esp:module/src/ws_json_bridge.h",
+        "web:module/src/contexts/ScreenContext.tsx",
+        "web:module/src/screens/menuScreens.ts",
+        "web:module/src/components/ScreenStreamWorkspace.tsx"
+      ],
+      "repositories": [
+        "FirmwareF4",
+        "Firmware ESP01",
+        "Web ESP01"
+      ],
+      "observation": "F4 desplaza firstVisibleItem conservando historia y max_visible_items (favoritos usa dos). Web calcula bloques floor(selectedIndex/3) y usa tres posiciones. El reporte no lleva origen/tamaño real de ventana; 0x53 se interpreta en F4 como posición de su ventana actual.",
+      "impact": "Con ítems visibles consecutivos, después de avanzar de índice 2 a 3 F4 puede mostrar 1..3 y Web 3..5. Un click Web sobre su fila 1 nombra el ítem 3 pero F4 puede seleccionar el 1. Es una derivación de las rutas leídas, sin ejecución física.",
+      "proposal": "Compartir ventana efectiva, catálogo visible y número de filas, o cambiar explícitamente el contrato para seleccionar identidad/índice confirmado. No reemplazar solo el dibujo por bloques ni suponer tres filas en todos los menús.",
+      "code": [
+        "f4:Core/Src/menusystem.c:MenuSys_EnsureCurrentSelectionVisible/MenuSys_SelectVisibleItem",
+        "f4:Core/Src/menu_favorites.c",
+        "web:src/protocol/screenMenuState.ts:resolveVisibleMenuWindow",
+        "web:src/contexts/ScreenContext.tsx:enrichCurrentScreen",
+        "web:src/components/ScreenStreamWorkspace.tsx:MENU_VISIBLE_ITEMS",
+        "esp:src/ws_bridge/reports.inc:add_screen_report"
+      ],
+      "documentation": [
+        {
+          "label": "Pantallas / menu-window",
+          "path": "published/shared/SCREEN_SYSTEM.md#menu-window",
+          "selector": "shared:screen-system / menu-window"
+        },
+        {
+          "label": "Pantallas / remote-actions",
+          "path": "published/shared/SCREEN_SYSTEM.md#remote-actions",
+          "selector": "shared:screen-system / remote-actions"
+        },
+        {
+          "label": "Web / estado de pantalla",
+          "path": "published/web/libraries/screen-state.md#limitations",
+          "selector": "web:module/src/contexts/ScreenContext.tsx / limitations"
+        },
+        {
+          "label": "F4 / menús",
+          "path": "published/f4/libraries/menus.md#lifecycle",
+          "selector": "f4:module/Core/Inc/menusystem.h / lifecycle"
+        }
+      ],
+      "closure": "Actualizar ventana, render y click en conjunto. Una ficha AMI debe describir cualquier ampliación de reporte o cambio de selección antes de portar consumidores.",
+      "history": []
+    },
+    {
+      "id": "AMDOC-WEB-005",
+      "title": "Normalizadores del visor pierden el modo GOTO",
+      "priority": "media",
+      "category": "enum representado de forma distinta",
+      "status": "abierto",
+      "certainty": "resolved",
+      "modules": [
+        "web:module/src/contexts/ScreenContext.tsx",
+        "web:module/src/screens/screenRenderRegistry.ts",
+        "web:module/src/contexts/CarModeContext.tsx"
+      ],
+      "repositories": [
+        "Web ESP01",
+        "Firmware ESP01",
+        "FirmwareF4"
+      ],
+      "observation": "F4/ESP y CarModeContext reconocen modo 3 GOTO. ScreenContext.carModeLabelFromByte y readCarModeLabelFromScreenData solo reconocen IDLE/FOLLOW/TEST; el resolver readCarMode/readMode también limita esos tres y cae a IDLE.",
+      "impact": "El dashboard/vista de cambio de modo puede dibujar IDLE o un fallback aunque el estado físico reportado sea GOTO. El contexto global puede seguir mostrando GOTO en otro componente.",
+      "proposal": "Usar una normalización exhaustiva común con UNKNOWN separado de IDLE y adaptar tipos/builders a los cuatro modos manteniendo la representación wire.",
+      "code": [
+        "web:src/contexts/ScreenContext.tsx:carModeLabelFromByte/readCarModeLabelFromScreenData",
+        "web:src/screens/screenRenderRegistry.ts:readCarMode/readMode",
+        "web:src/contexts/CarModeContext.tsx:CarModeLabel",
+        "esp:src/ws_bridge/reports.inc:car_mode_name"
+      ],
+      "documentation": [
+        {
+          "label": "Pantallas / state-model",
+          "path": "published/shared/SCREEN_SYSTEM.md#state-model",
+          "selector": "shared:screen-system / state-model"
+        },
+        {
+          "label": "Web / dashboard y modos",
+          "path": "published/web/libraries/dashboard-builders.md#limitations",
+          "selector": "web:module/src/screens/dashboardScreens.ts / limitations"
+        }
+      ],
+      "closure": "Actualizar enum, normalizadores y representación juntos; no renumerar el modo 3 ni convertir desconocido en IDLE por conveniencia.",
+      "history": []
+    },
+    {
+      "id": "AMDOC-WEB-006",
+      "title": "Los builders de sensores no reciben el mismo modelo que la telemetría actual",
+      "priority": "alta",
+      "category": "datos y unidades de render",
+      "status": "abierto",
+      "certainty": "resolved",
+      "modules": [
+        "esp:module/src/ws_json_bridge.h",
+        "web:module/src/screens/sensorScreens.ts",
+        "web:module/src/screens/screenRenderRegistry.ts",
+        "web:module/src/components/ScreenStreamWorkspace.tsx"
+      ],
+      "repositories": [
+        "Web ESP01",
+        "Firmware ESP01",
+        "FirmwareF4"
+      ],
+      "observation": "El reporte MPU JSON publica accel/gyro anidados en g y dps. readMpuArgs busca accelX/accelY/accelZ y gyroX/Y/Z y usa 120,-40,980,3,-2,0 si faltan. El visor pasa rawData de pantalla y estado IR; no se localizó una unión completa con la muestra MPU/variante local que usa el renderer F4. IR también tiene muestra escalonada de fallback.",
+      "impact": "Una pantalla de sensores puede presentar ejemplos como si fueran datos actuales o escalar incorrectamente si se conectan campos sin conversión. Una suscripción de otro panel no garantiza que el visor use esa misma muestra ni su fase de render.",
+      "proposal": "Documentar/adaptar nombres, unidades, seq/instante, variante y validez por renderer. Separar ejemplo de dato recibido; no basta aplanar el JSON sin revisar la unidad y el estado F4 requerido.",
+      "code": [
+        "esp:src/ws_bridge/reports.inc:add_mpu_snapshot_fields",
+        "web:src/screens/screenRenderRegistry.ts:readMpuArgs/resolveOledScreen",
+        "web:src/screens/sensorScreens.ts:MpuValuesArgs",
+        "web:src/components/ScreenStreamWorkspace.tsx:rawData"
+      ],
+      "documentation": [
+        {
+          "label": "Pantallas / sensor-model",
+          "path": "published/shared/SCREEN_SYSTEM.md#sensor-model",
+          "selector": "shared:screen-system / sensor-model"
+        },
+        {
+          "label": "Web / builders de sensores",
+          "path": "published/web/libraries/sensor-settings-builders.md#limitations",
+          "selector": "web:module/src/screens/sensorScreens.ts / limitations"
+        }
+      ],
+      "closure": "Mantener relaciones con wire-contracts / samples; no modificar unidades del productor para acomodar un valor de ejemplo del consumidor.",
+      "history": []
+    },
+    {
+      "id": "AMDOC-WEB-007",
+      "title": "El umbral de pulsación larga del visor difiere del botón físico",
+      "priority": "baja",
+      "category": "semántica de interacción a decidir",
+      "status": "revisar",
+      "certainty": "observed",
+      "modules": [
+        "f4:module/Core/Inc/encoder.h",
+        "web:module/src/components/ScreenStreamWorkspace.tsx"
+      ],
+      "repositories": [
+        "Web ESP01",
+        "FirmwareF4"
+      ],
+      "observation": "El visor clasifica long press a 1500 ms. El encoder F4 cuenta ciclos de 10 ms y clasifica counter>=30 como largo (también trata pulsación mantenida). El comando remoto transmite pressKind, no duración.",
+      "impact": "Una pulsación de la misma duración puede producir acciones distintas en Web y placa. Puede ser una decisión de UX válida; no se atribuye fallo de transporte ni necesidad automática de igualar temporizadores.",
+      "proposal": "Decidir y documentar si la equivalencia buscada es evento lógico o gesto físico. Si se exige equivalencia temporal, acordar límites de ambos pulsadores y teclado sin cambiar IDs.",
+      "code": [
+        "web:src/components/ScreenStreamWorkspace.tsx:LONG_PRESS_THRESHOLD_MS",
+        "f4:Core/Src/encoder.c:ENC_UpdateButtonState"
+      ],
+      "documentation": [
+        {
+          "label": "Pantallas / remote-actions",
+          "path": "published/shared/SCREEN_SYSTEM.md#remote-actions",
+          "selector": "shared:screen-system / remote-actions"
+        },
+        {
+          "label": "Web / controles",
+          "path": "published/web/libraries/screen-controls.md#limitations",
+          "selector": "web:module/src/components/ScreenStreamWorkspace.tsx / limitations"
+        }
+      ],
+      "closure": "Pendiente decisión funcional. Registrar ambos umbrales aunque se conserve la diferencia por diseño.",
+      "history": []
+    },
+    {
+      "id": "AMDOC-WEB-008",
+      "title": "Dos identidades de acción F4 no están declaradas en screenCodes Web",
+      "priority": "baja",
+      "category": "catálogo de identidades",
+      "status": "abierto",
+      "certainty": "observed",
+      "modules": [
+        "web:module/src/screens/screenCodes.ts",
+        "f4:module/Core/Inc/menusystem.h"
+      ],
+      "repositories": [
+        "Web ESP01",
+        "FirmwareF4"
+      ],
+      "observation": "No están declarados SCREEN_CODE_CONNECTIVITY_WIFI_RETRY (0x020211) ni SCREEN_CODE_SETTINGS_PREFS_WIFI_AP_FALLBACK (0x05041D) en screenCodes.ts. Se localizaron como identidades de acciones MenuItem en menu_definition.c, sin renderer dedicado localizado.",
+      "impact": "El catálogo Web queda incompleto para esas identidades y futuras herramientas pueden desconocerlas. La ausencia no demuestra por sí sola una pantalla activa sin renderer: Retry y el toggle pueden conservar el código del menú.",
+      "proposal": "Agregar al catálogo cuando se porte el contenido, conservando la clasificación action-only y los valores canónicos F4. No inventar una pantalla dedicada para completar una tabla.",
+      "code": [
+        "f4:Core/Inc/screen_codes.h:SCREEN_CODE_CONNECTIVITY_WIFI_RETRY/SCREEN_CODE_SETTINGS_PREFS_WIFI_AP_FALLBACK",
+        "f4:Core/Src/menu_definition.c:submenuWifiItems/submenuPreferencesFlagsItems",
+        "web:src/screens/screenCodes.ts"
+      ],
+      "documentation": [
+        {
+          "label": "Pantallas / code-register",
+          "path": "published/shared/SCREEN_SYSTEM.md#code-register",
+          "selector": "shared:screen-system / code-register"
+        },
+        {
+          "label": "Catálogo 0x020211",
+          "path": "published/shared/screens/020211.md",
+          "selector": "shared:screen/020211"
+        },
+        {
+          "label": "Catálogo 0x05041D",
+          "path": "published/shared/screens/05041d.md",
+          "selector": "shared:screen/05041d"
+        }
+      ],
+      "closure": "No se modificaron constantes Web. Mantener la distinción entre declaración, identidad de acción y pantalla efectivamente renderizada.",
+      "history": []
+    },
+    {
+      "id": "AMDOC-WEB-009",
+      "title": "El catálogo de línea no tiene bindings específicos de visor localizados",
+      "priority": "media",
+      "category": "cobertura de render y acciones",
+      "status": "abierto",
+      "certainty": "observed",
+      "modules": [
+        "web:module/src/screens/screenRenderRegistry.ts",
+        "web:module/src/screens/screenCodes.ts",
+        "web:module/src/features/lineFollow/useLineDevice.ts",
+        "f4:module/Core/Inc/line_follow_control.h"
+      ],
+      "repositories": [
+        "Web ESP01",
+        "FirmwareF4",
+        "Firmware ESP01"
+      ],
+      "observation": "Los cinco códigos LINE 0x030204..0x030208 están declarados en ambos repositorios pero no se localizaron en el resolver de visor/remediated. F4 usa menú de calibración, render blanco/pista y aviso con estado/motivo propios. LINE_FOLLOW se localizó como identidad de acción que alterna seguimiento, no como renderer dedicado.",
+      "impact": "Las pantallas activas de calibración/aviso caen al fallback del visor aunque la página Web de seguimiento tenga operaciones. La página de control y la réplica del OLED son consumidores distintos.",
+      "proposal": "Portar renderers y discriminantes F4 de menú, blanco, pista y aviso con su modelo. Conservar LINE_FOLLOW como acción mientras no exista evidencia de una vista dedicada; mapear sus confirmaciones/rechazos al estado efectivo.",
+      "code": [
+        "f4:Core/Src/menu_definition.c:MenuRender_LineCalibration/MenuRender_LineNotice/MenuAction_LineFollow/MenuLineCalEvents",
+        "f4:Core/Src/oled_utils.c:OledUtils_RenderLineCalibration/OledUtils_RenderLineNotice",
+        "web:src/screens/screenRenderRegistry.ts:resolveOledScreen",
+        "web:src/features/lineFollow/useLineDevice.ts"
+      ],
+      "documentation": [
+        {
+          "label": "Pantallas / line-family",
+          "path": "published/shared/SCREEN_SYSTEM.md#line-family",
+          "selector": "shared:screen-system / line-family"
+        },
+        {
+          "label": "Línea 0x030205",
+          "path": "published/shared/screens/030205.md",
+          "selector": "shared:screen/030205"
+        },
+        {
+          "label": "Línea 0x030208",
+          "path": "published/shared/screens/030208.md",
+          "selector": "shared:screen/030208"
+        }
+      ],
+      "closure": "Sin port de código en esta etapa. Actualizar estado, acciones y resolución por separado al implementar cada vista.",
+      "history": []
+    },
+    {
+      "id": "AMDOC-F4-011",
+      "title": "USER largo sale del OSK por el router sin ejecutar su cancelación",
+      "priority": "media",
+      "category": "cleanup de contexto UI",
+      "status": "abierto",
+      "certainty": "resolved",
+      "modules": [
+        "f4:module/Core/Inc/ui_event_router.h",
+        "f4:module/Core/Inc/osk_integration.h",
+        "f4:module/Core/Inc/osk.h"
+      ],
+      "repositories": [
+        "FirmwareF4",
+        "Web ESP01"
+      ],
+      "observation": "UiEventRouter_HandleEvent consume UE_LONG_PRESS antes del handler activo y vuelve al dashboard. OSK_Integration_EventManager tiene rama UE_LONG_PRESS que llama OnBack, pero no se alcanza por ese router. MenuSys_ResetMenu no cancela OSK; OnBack y osk_InternalOnCancel limpian active/callbacks y desbloquean notificaciones.",
+      "impact": "Durante un OSK, si Permission/ScreenLock no consumen antes, USER largo puede cambiar pantalla conservando estado OSK activo, bloqueo de notificaciones o callbacks pendientes. Es un camino de fuente; no se reprodujo físicamente.",
+      "proposal": "Definir salida global con cancelación/cleanup explícito del contexto activo antes de dashboard, evitando restaurar una pantalla anterior después del reset. Mantener coherencia entre input físico y remoto.",
+      "code": [
+        "f4:Core/Src/ui_event_router.c:UiEventRouter_HandleEvent",
+        "f4:Core/Src/menusystem.c:MenuSys_ResetMenu",
+        "f4:Core/Src/osk_integration.c:OSK_Integration_EventManager/osk_InternalOnCancel/osk_RestoreUiContext",
+        "f4:Core/Src/osk.c:OSK_OnBack"
+      ],
+      "documentation": [
+        {
+          "label": "Pantallas / pin-osk",
+          "path": "published/shared/SCREEN_SYSTEM.md#pin-osk",
+          "selector": "shared:screen-system / pin-osk"
+        },
+        {
+          "label": "F4 / integración OSK",
+          "path": "published/f4/libraries/osk-integration.md#lifecycle",
+          "selector": "f4:module/Core/Inc/osk_integration.h / lifecycle"
+        },
+        {
+          "label": "F4 / prioridad de eventos",
+          "path": "published/f4/libraries/ui-router.md#lifecycle",
+          "selector": "f4:module/Core/Inc/ui_event_router.h / lifecycle"
+        }
+      ],
+      "closure": "Decidir orden de cancelación y restauración; no cambiar únicamente la rama local que el router no deja ejecutar.",
+      "history": []
+    },
+    {
+      "id": "AMDOC-F4-012",
+      "title": "Inverse cambia de semántica entre píxel y líneas rápidas OLED",
+      "priority": "media",
+      "category": "consistencia interna del raster",
+      "status": "abierto",
+      "certainty": "resolved",
+      "modules": [
+        "f4:module/Core/Inc/ssd1306.h",
+        "web:module/src/components/OledCommandPreview.tsx"
+      ],
+      "repositories": [
+        "FirmwareF4",
+        "Web ESP01"
+      ],
+      "observation": "ssd1306_DrawPixel_H compara color==White y en cualquier otro caso borra el bit (tras posible !color). Las primitivas rápidas de línea tienen case Inverse con XOR del framebuffer. El SVG paint Web trata Inverse como White salvo inverted.",
+      "impact": "El mismo color Inverse no tiene efecto uniforme según la primitiva y difiere también del SVG. Un port que lo convierta siempre a XOR cambiaría silenciosamente el comportamiento actual del productor.",
+      "proposal": "Acordar semántica de Inverse por primitiva y distinguir port literal de corrección funcional. Si se corrige, actualizar F4 y réplica en la misma revisión documentada; preservar clipping/operaciones de buffer.",
+      "code": [
+        "f4:Core/Src/ssd1306.c:ssd1306_DrawPixel_H",
+        "f4:Core/Src/ssd1306.c:ssd1306_DrawHorizontalLine_H/ssd1306_DrawVerticalLine_H",
+        "web:src/components/OledCommandPreview.tsx:paint"
+      ],
+      "documentation": [
+        {
+          "label": "Pantallas / exact-port",
+          "path": "published/shared/SCREEN_SYSTEM.md#exact-port",
+          "selector": "shared:screen-system / exact-port"
+        },
+        {
+          "label": "F4 / primitivas OLED",
+          "path": "published/f4/libraries/ssd1306.md#fn-ssd1306_drawpixel_h",
+          "selector": "f4:module/Core/Inc/ssd1306.h / functions[name=ssd1306_DrawPixel_H]"
+        }
+      ],
+      "closure": "No se corrigió el raster. Una decisión de semántica debe quedar separada de la afirmación futura de fidelidad exacta.",
+      "history": []
+    }
+  ]
+}

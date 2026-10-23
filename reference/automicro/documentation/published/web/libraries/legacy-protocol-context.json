@@ -1,0 +1,509 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "web:module/src/contexts/UNERProtocolContext.tsx",
+  "slug": "legacy-protocol-context",
+  "title": "Contexto UNER y superficies históricas",
+  "target": "web",
+  "kind": "integración",
+  "status": "source-documented",
+  "snapshotDate": "2026-10-20",
+  "verification": "not-run-user-instruction",
+  "responsibility": "Conserva integración histórica de eventos/bytes UNER en la UI.",
+  "scope": "No sustituye automáticamente EspClient/JSON API 1; documentar cuál camino usa cada consumidor.",
+  "state": "Provider mantiene sus datos/listeners; sus valores pueden duplicar un modelo nuevo si se monta en paralelo.",
+  "modularity": "Adaptación React a un contrato histórico, dependiente de transporte y consumidores.",
+  "lifecycle": [
+    "Registrar/retirar callbacks al montar y aplicar solo mensajes del contrato esperado."
+  ],
+  "interactions": [
+    "Codecs UNER y WebSocketContext exponen caminos diferentes; los nombres parecidos no prueban equivalencia de formatos."
+  ],
+  "limitations": [
+    "No documentar como camino activo una exportación sin caller localizado."
+  ],
+  "relationships": [],
+  "findings": [],
+  "files": [
+    {
+      "rootId": "web",
+      "path": "src/contexts/UNERProtocolContext.tsx",
+      "sha256": "fd571d1ff96ea72d4a07aa12d6830a8fc67181692c5b328c380b92df5534344f",
+      "imports": [
+        "../hooks/useWebSocket",
+        "./../api/UnerProtocol",
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/hooks/useUnerProtocol.tsx",
+      "sha256": "0d9dc277be91d865f090bc1e05e40ee0f39a0eb85635a494c046782a479d8a01",
+      "imports": [
+        "../contexts/UNERProtocolContext",
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    }
+  ],
+  "types": [
+    {
+      "name": "UNERTransport",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "write",
+          "declaration": "write: (data: Uint8Array) => Promise<void> | void",
+          "callback": true,
+          "ownerType": "UNERTransport",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/UNERProtocolContext.tsx",
+            "line": 19
+          },
+          "description": "Operación write de Contexto UNER y superficies históricas; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "start",
+          "declaration": "start?: () => Promise<() => void> | (() => void) | void",
+          "callback": true,
+          "ownerType": "UNERTransport",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/UNERProtocolContext.tsx",
+            "line": 20
+          },
+          "description": "Operación start de Contexto UNER y superficies históricas; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "onBytes",
+          "declaration": "onBytes: (cb: (chunk: Uint8Array) => void) => (() => void) | void",
+          "callback": true,
+          "ownerType": "UNERTransport",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/UNERProtocolContext.tsx",
+            "line": 21
+          },
+          "description": "Operación on Bytes de Contexto UNER y superficies históricas; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "isConnected",
+          "declaration": "isConnected?: () => boolean",
+          "callback": true,
+          "ownerType": "UNERTransport",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/UNERProtocolContext.tsx",
+            "line": 22
+          },
+          "description": "Operación is Connected de Contexto UNER y superficies históricas; semántica fina pendiente de ampliación."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/UNERProtocolContext.tsx",
+        "line": 18
+      }
+    },
+    {
+      "name": "UNERCmdHandler",
+      "kind": "TypeAliasDeclaration",
+      "type": "(packet: UNERPacket) => void",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/UNERProtocolContext.tsx",
+        "line": 25
+      }
+    },
+    {
+      "name": "UNERContextValue",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "send",
+          "declaration": "send: (cmd: number, payload?: Uint8Array) => Promise<void>",
+          "callback": true,
+          "ownerType": "UNERContextValue",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/UNERProtocolContext.tsx",
+            "line": 28
+          },
+          "description": "Operación send de Contexto UNER y superficies históricas; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "subscribe",
+          "declaration": "subscribe: (cmd: number, handler: UNERCmdHandler) => () => void",
+          "callback": true,
+          "ownerType": "UNERContextValue",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/UNERProtocolContext.tsx",
+            "line": 29
+          },
+          "description": "Operación subscribe de Contexto UNER y superficies históricas; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "lastPacket",
+          "declaration": "lastPacket?: UNERPacket",
+          "callback": false,
+          "ownerType": "UNERContextValue",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/UNERProtocolContext.tsx",
+            "line": 30
+          },
+          "description": "Dato de estado/configuración `lastPacket`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "stats",
+          "declaration": "stats: { packetsOK: number; errorsChecksum: number; errorsLength: number; errorsHeader: number; errorsToken: number; errorsOverflow: number; }",
+          "callback": false,
+          "ownerType": "UNERContextValue",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/UNERProtocolContext.tsx",
+            "line": 31
+          },
+          "description": "Dato de estado/configuración `stats`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "connected",
+          "declaration": "connected: boolean",
+          "callback": false,
+          "ownerType": "UNERContextValue",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/UNERProtocolContext.tsx",
+            "line": 39
+          },
+          "description": "Dato de estado/configuración `connected`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/UNERProtocolContext.tsx",
+        "line": 27
+      }
+    },
+    {
+      "name": "UNERProtocolProviderProps",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "transport",
+          "declaration": "transport?: UNERTransport",
+          "callback": false,
+          "ownerType": "UNERProtocolProviderProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/UNERProtocolContext.tsx",
+            "line": 43
+          },
+          "description": "Dato de estado/configuración `transport`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ringCapacity",
+          "declaration": "ringCapacity?: number",
+          "callback": false,
+          "ownerType": "UNERProtocolProviderProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/UNERProtocolContext.tsx",
+            "line": 44
+          },
+          "description": "Dato de estado/configuración `ringCapacity`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "children",
+          "declaration": "children: ReactNode",
+          "callback": false,
+          "ownerType": "UNERProtocolProviderProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/contexts/UNERProtocolContext.tsx",
+            "line": 45
+          },
+          "description": "Dato de estado/configuración `children`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/UNERProtocolContext.tsx",
+        "line": 42
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "UNERProtocolProvider",
+      "displayName": "UNERProtocolProvider",
+      "signature": "UNERProtocolProvider({\r\n  transport: transportProp,\r\n  ringCapacity = 256,\r\n  children,\r\n}: UNERProtocolProviderProps): inferred-by-TypeScript",
+      "line": 78,
+      "endLine": 215,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "transport.isConnected",
+        "useAutoWsTransport",
+        "useCallback",
+        "useEffect",
+        "useMemo",
+        "useRef",
+        "useState"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/UNERProtocolContext.tsx",
+        "line": 78
+      },
+      "description": "Coordina `transport.isConnected`, `useAutoWsTransport`, `useCallback` para Contexto UNER y superficies históricas.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "useAutoWsTransport",
+      "displayName": "useAutoWsTransport",
+      "signature": "useAutoWsTransport(): UNERTransport",
+      "line": 53,
+      "endLine": 75,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useMemo",
+        "useWebSocket"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/UNERProtocolContext.tsx",
+        "line": 53
+      },
+      "description": "Coordina `useMemo`, `useWebSocket` para Contexto UNER y superficies históricas.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "useUNERProtocol",
+      "displayName": "useUNERProtocol",
+      "signature": "useUNERProtocol(): UNERContextValue",
+      "line": 4,
+      "endLine": 11,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useContext"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/hooks/useUnerProtocol.tsx",
+        "line": 4
+      },
+      "description": "Adapta la llamada a `useContext` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "UNERProtocolProvider.feed",
+      "displayName": "feed",
+      "signature": "UNERProtocolProvider.feed(chunk: Uint8Array): inferred-by-TypeScript",
+      "line": 117,
+      "endLine": 125,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "console.warn",
+        "uner.parse",
+        "uner.pushByte"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/UNERProtocolContext.tsx",
+        "line": 117
+      },
+      "description": "Coordina `console.warn`, `uner.parse`, `uner.pushByte` para Contexto UNER y superficies históricas.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "useAutoWsTransport.isConnected",
+      "displayName": "isConnected",
+      "signature": "useAutoWsTransport.isConnected(): inferred-by-TypeScript",
+      "line": 71,
+      "endLine": 71,
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/UNERProtocolContext.tsx",
+        "line": 71
+      },
+      "description": "Operación is Connected de Contexto UNER y superficies históricas; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "useAutoWsTransport.onBytes",
+      "displayName": "onBytes",
+      "signature": "useAutoWsTransport.onBytes(cb: inferred-by-TypeScript): inferred-by-TypeScript",
+      "line": 61,
+      "endLine": 69,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "ws.subscribeRaw"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/UNERProtocolContext.tsx",
+        "line": 61
+      },
+      "description": "Adapta la llamada a `ws.subscribeRaw` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "useAutoWsTransport.start",
+      "displayName": "start",
+      "signature": "useAutoWsTransport.start(): inferred-by-TypeScript",
+      "line": 70,
+      "endLine": 70,
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/UNERProtocolContext.tsx",
+        "line": 70
+      },
+      "description": "Operación start de Contexto UNER y superficies históricas; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "useAutoWsTransport.write",
+      "displayName": "write",
+      "signature": "useAutoWsTransport.write(data: Uint8Array): inferred-by-TypeScript",
+      "line": 58,
+      "endLine": 60,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "ws.sendRaw"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/contexts/UNERProtocolContext.tsx",
+        "line": 58
+      },
+      "description": "Adapta la llamada a `ws.sendRaw` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    }
+  ],
+  "hooks": [
+    {
+      "callee": "useWebSocket",
+      "scope": "useAutoWsTransport",
+      "line": 54,
+      "arguments": 0,
+      "path": "src/contexts/UNERProtocolContext.tsx"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "useAutoWsTransport",
+      "line": 56,
+      "arguments": 2,
+      "path": "src/contexts/UNERProtocolContext.tsx"
+    },
+    {
+      "callee": "useAutoWsTransport",
+      "scope": "UNERProtocolProvider",
+      "line": 83,
+      "arguments": 0,
+      "path": "src/contexts/UNERProtocolContext.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "UNERProtocolProvider",
+      "line": 86,
+      "arguments": 0,
+      "path": "src/contexts/UNERProtocolContext.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "UNERProtocolProvider",
+      "line": 87,
+      "arguments": 1,
+      "path": "src/contexts/UNERProtocolContext.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "UNERProtocolProvider",
+      "line": 91,
+      "arguments": 1,
+      "path": "src/contexts/UNERProtocolContext.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "UNERProtocolProvider",
+      "line": 93,
+      "arguments": 2,
+      "path": "src/contexts/UNERProtocolContext.tsx"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "UNERProtocolProvider",
+      "line": 107,
+      "arguments": 2,
+      "path": "src/contexts/UNERProtocolContext.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "UNERProtocolProvider",
+      "line": 113,
+      "arguments": 2,
+      "path": "src/contexts/UNERProtocolContext.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "UNERProtocolProvider",
+      "line": 163,
+      "arguments": 2,
+      "path": "src/contexts/UNERProtocolContext.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "UNERProtocolProvider",
+      "line": 172,
+      "arguments": 2,
+      "path": "src/contexts/UNERProtocolContext.tsx"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "UNERProtocolProvider",
+      "line": 187,
+      "arguments": 2,
+      "path": "src/contexts/UNERProtocolContext.tsx"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "UNERProtocolProvider",
+      "line": 199,
+      "arguments": 2,
+      "path": "src/contexts/UNERProtocolContext.tsx"
+    },
+    {
+      "callee": "useContext",
+      "scope": "useUNERProtocol",
+      "line": 5,
+      "arguments": 1,
+      "path": "src/hooks/useUnerProtocol.tsx"
+    }
+  ]
+}

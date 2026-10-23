@@ -1,0 +1,390 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "f4:module/Core/Inc/screen_lock.h",
+  "slug": "screen-lock",
+  "title": "Bloqueo de pantalla por inactividad",
+  "target": "f4",
+  "kind": "integración",
+  "status": "source-documented",
+  "verification": "not-run-user-instruction",
+  "snapshotDate": "2026-10-20",
+  "responsibility": "Aplica bloqueo visual por inactividad y controla edición del tiempo de bloqueo.",
+  "scope": "Temporización y filtrado de eventos locales; no sustituye las sesiones PIN remotas de Permission.",
+  "state": "El estado vive en ScreensState: locked, ticks de inactividad, borrador y renderer/eventos anteriores. El API usa Screens_Context implícito.",
+  "lifecycle": [
+    "Init restablece estado; Task10ms cuenta inactividad.",
+    "ProcessEvent decide consumo/desbloqueo de entrada antes del gestor de la vista.",
+    "OnPreferencesChanged aplica nuevas reglas; SaveTimeoutDraft solicita persistencia."
+  ],
+  "interactions": [
+    "UiEventRouter consulta bloqueo antes de propagar eventos ordinarios.",
+    "Permission puede mantener un flujo de PIN distinto al bloqueo por inactividad."
+  ],
+  "limitations": [
+    "Bloqueo visual y autorización de comandos son políticas distintas.",
+    "Requiere cadencia de 10 ms para interpretar correctamente el timeout."
+  ],
+  "modularity": "Pertenece a UI AutoMicro y depende de menús, preferencias y servicios de pantalla.",
+  "files": [
+    {
+      "path": "Core/Inc/screen_lock.h",
+      "rootId": "f4",
+      "sha256": "a442dd5f6bec7b372de70cea2374723519e4610b6ad6dee4d4a5b4a478fabf44",
+      "includes": [
+        "stdbool.h",
+        "stdint.h",
+        "types/userEvent_type.h"
+      ]
+    },
+    {
+      "path": "Core/Src/screen_lock.c",
+      "rootId": "f4",
+      "sha256": "3a7bdcc67c66f3e4928b70cd2996e5588802c24deead840bab6279ac3b66bb24",
+      "includes": [
+        "screens_internal.h",
+        "screen_lock.h",
+        "stddef.h",
+        "oled_utils.h",
+        "screenWrappers.h"
+      ]
+    }
+  ],
+  "findings": [],
+  "types": [],
+  "functions": [
+    {
+      "name": "ScreenLock_AdjustTimeoutDraft",
+      "signature": "void ScreenLock_AdjustTimeoutDraft(int16_t deltaSec)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/screen_lock.h",
+        "line": 25
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "AppPreferences_ClampScreenLockTimeoutSec"
+      ],
+      "writes": [],
+      "description": "Ajusta el borrador dentro de límites configurados.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screen_lock.c",
+        "line": 149
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "ScreenLock_BeginTimeoutEdit",
+      "signature": "void ScreenLock_BeginTimeoutEdit(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/screen_lock.h",
+        "line": 24
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "AppPreferences_GetScreenLockTimeoutSec"
+      ],
+      "writes": [],
+      "description": "Inicializa edición del timeout desde preferencias.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screen_lock.c",
+        "line": 144
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "ScreenLock_CancelTimeoutDraft",
+      "signature": "void ScreenLock_CancelTimeoutDraft(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/screen_lock.h",
+        "line": 27
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "AppPreferences_GetScreenLockTimeoutSec"
+      ],
+      "writes": [],
+      "description": "Descarta la edición pendiente del timeout.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screen_lock.c",
+        "line": 169
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "ScreenLock_GetTimeoutDraftSec",
+      "signature": "uint16_t ScreenLock_GetTimeoutDraftSec(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/screen_lock.h",
+        "line": 23
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Consulta el borrador de timeout en segundos.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screen_lock.c",
+        "line": 139
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "ScreenLock_Init",
+      "signature": "void ScreenLock_Init(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/screen_lock.h",
+        "line": 17
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "AppPreferences_GetScreenLockTimeoutSec"
+      ],
+      "writes": [],
+      "description": "Inicializa estado de bloqueo visual.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screen_lock.c",
+        "line": 73
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "ScreenLock_IsLocked",
+      "signature": "bool ScreenLock_IsLocked(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/screen_lock.h",
+        "line": 22
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Consulta si la pantalla está bloqueada.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screen_lock.c",
+        "line": 134
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "ScreenLock_OnPreferencesChanged",
+      "signature": "void ScreenLock_OnPreferencesChanged(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/screen_lock.h",
+        "line": 19
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "AppPreferences_IsScreenLockEnabled",
+        "ScreenLock_ResetIdle",
+        "ScreenLock_Unlock"
+      ],
+      "writes": [],
+      "description": "Aplica cambios de habilitación/tiempo de bloqueo.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screen_lock.c",
+        "line": 107
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "ScreenLock_ProcessEvent",
+      "signature": "ScreenLock_EventResult_t ScreenLock_ProcessEvent(UserEvent_t ev)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/screen_lock.h",
+        "line": 20
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "ScreenLock_ResetIdle"
+      ],
+      "writes": [],
+      "description": "Filtra un evento y devuelve si el bloqueo lo consumió.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screen_lock.c",
+        "line": 116
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "ScreenLock_SaveTimeoutDraft",
+      "signature": "void ScreenLock_SaveTimeoutDraft(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/screen_lock.h",
+        "line": 26
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "AppPreferences_SetScreenLockTimeoutSec",
+        "ScreenLock_OnPreferencesChanged"
+      ],
+      "writes": [],
+      "description": "Persiste el timeout editado.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screen_lock.c",
+        "line": 163
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "ScreenLock_Task10ms",
+      "signature": "void ScreenLock_Task10ms(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/screen_lock.h",
+        "line": 18
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "AppPreferences_GetScreenLockTimeoutSec",
+        "ScreenLock_IsEligibleNow",
+        "ScreenLock_Lock",
+        "ScreenLock_ResetIdle"
+      ],
+      "writes": [],
+      "description": "Actualiza inactividad y activa bloqueo cuando corresponde.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screen_lock.c",
+        "line": 84
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "ScreenLock_Unlock",
+      "signature": "void ScreenLock_Unlock(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/screen_lock.h",
+        "line": 28
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "ScreenLock_ResetIdle",
+        "clearScreen",
+        "ssd1306_GetDefaultContrast",
+        "ssd1306_SetContrast"
+      ],
+      "writes": [],
+      "description": "Desbloquea y restaura la vista guardada.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screen_lock.c",
+        "line": 174
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "Screens_Init_screen_lock",
+      "signature": "void Screens_Init_screen_lock(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/screen_lock.c",
+        "line": 203
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Inicializa estado de bloqueo del contexto activo de pantallas.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screen_lock.c",
+        "line": 203
+      },
+      "linkage": "extern-no-header"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "ScreenLock_IsEligibleNow",
+      "signature": "static bool ScreenLock_IsEligibleNow(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/screen_lock.c",
+        "line": 21
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "AppPreferences_IsScreenLockEnabled",
+        "IS_FLAG_SET"
+      ],
+      "writes": [],
+      "description": "Indica si se cumple la condición Eligible Now dentro de Bloqueo de pantalla por inactividad.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "ScreenLock_ResetIdle",
+      "signature": "static void ScreenLock_ResetIdle(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/screen_lock.c",
+        "line": 39
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Restablece Idle dentro de Bloqueo de pantalla por inactividad.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "ScreenLock_Lock",
+      "signature": "static void ScreenLock_Lock(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/screen_lock.c",
+        "line": 44
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "OledUtils_DismissNotification",
+        "clearScreen",
+        "ssd1306_SetContrast"
+      ],
+      "writes": [],
+      "description": "Coordina `OledUtils_DismissNotification`, `clearScreen`, `ssd1306_SetContrast` para Bloqueo de pantalla por inactividad.",
+      "descriptionOrigin": "structural"
+    }
+  ]
+}

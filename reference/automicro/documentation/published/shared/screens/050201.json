@@ -1,0 +1,104 @@
+{
+  "schemaVersion": 1,
+  "id": "shared:screen/050201",
+  "symbol": "SCREEN_CODE_SETTINGS_ABOUT_PROJECT",
+  "code": 328193,
+  "hex": "0x050201",
+  "decomposition": {
+    "menu": 5,
+    "submenu": 2,
+    "page": 1
+  },
+  "revision": "working-copy-hashes",
+  "confidence": "manual-review",
+  "family": "shared:screen-family/general",
+  "numericObservation": "same-literal",
+  "webDeclaration": {
+    "value": 328193,
+    "line": 109
+  },
+  "metadataEntryObserved": true,
+  "evidence": [
+    {
+      "repo": "f4",
+      "path": "Core/Inc/screen_codes.h",
+      "line": 138
+    },
+    {
+      "repo": "web",
+      "path": "src/screens/screenCodes.ts",
+      "line": 109
+    }
+  ],
+  "renderers": [
+    {
+      "kind": "switch-case",
+      "path": "src/screens/screenRenderRegistry.ts",
+      "line": 464,
+      "builders": [
+        "buildScreen050201AboutProjectCommands"
+      ],
+      "availability": "parameterized-candidate"
+    }
+  ],
+  "callGraph": {
+    "status": "lexical-candidates-only",
+    "edges": []
+  },
+  "f4References": [
+    {
+      "repo": "f4",
+      "path": "Core/Src/menu_definition.c",
+      "line": 578,
+      "kind": "lexical-reference"
+    },
+    {
+      "repo": "f4",
+      "path": "Core/Src/oled_utils.c",
+      "line": 2099,
+      "kind": "lexical-reference"
+    },
+    {
+      "repo": "f4",
+      "path": "Core/Src/screenWrappers.c",
+      "line": 443,
+      "kind": "lexical-reference"
+    },
+    {
+      "repo": "f4",
+      "path": "Core/Src/screenWrappers.c",
+      "line": 468,
+      "kind": "lexical-reference"
+    }
+  ],
+  "variants": [
+    "Identidad y comportamiento particular deben leerse en renderer, wrapper y router."
+  ],
+  "fields": [
+    {
+      "name": "screenCode/source",
+      "type": "u32/u8",
+      "units": "identidad",
+      "availability": "reported",
+      "note": "cuando existe un reporte de pantalla activa"
+    }
+  ],
+  "actions": [
+    "No atribuir acciones por el nombre del código: comprobar handler/permiso/contexto vigente."
+  ],
+  "transitions": [
+    "Las referencias de fuente son candidatas; no acreditan alcance en todos los modos."
+  ],
+  "missingData": [
+    "No se ha establecido modelo remoto completo ni igualdad de píxeles."
+  ],
+  "localOnly": [],
+  "findings": [
+    "AMDOC-WEB-003"
+  ],
+  "exactness": "not-established",
+  "notes": [
+    "Favoritos y confirmaciones compartidas pueden necesitar discriminantes adicionales."
+  ],
+  "role": "not-resolved"
+}

@@ -1,0 +1,254 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "esp:module/src/wifi_status_led.h",
+  "slug": "status-led",
+  "title": "Indicador LED de conectividad",
+  "target": "esp",
+  "kind": "plataforma",
+  "status": "source-documented",
+  "snapshotDate": "2026-10-20",
+  "verification": "not-run-user-instruction",
+  "responsibility": "Expresa el estado AP/STA/inactivo mediante el LED activo bajo del ESP.",
+  "scope": "Patrón temporal y escritura de pin; no define autoridad de sesión ni disponibilidad F4.",
+  "state": "Modo, fase y reloj del indicador; la adaptación toma GPIO2 después del arranque para respetar su función de boot.",
+  "modularity": "Core de patrón y adaptador GPIO separados; el pin es propio de ESP8266.",
+  "lifecycle": [
+    "Begin toma el pin después de setup.",
+    "Update recibe modo derivado de WifiService y tiempo actual."
+  ],
+  "interactions": [
+    "main mapea WifiServiceState a modo del indicador."
+  ],
+  "limitations": [
+    "Un LED indica estado de servicio, no prueba tráfico extremo a extremo."
+  ],
+  "relationships": [],
+  "findings": [],
+  "files": [
+    {
+      "rootId": "esp",
+      "path": "src/wifi_status_led.cpp",
+      "sha256": "377525ce1d28c44dfb489da6bc2275d46c723ad3c9c309ee2e112d5fd8577a1e",
+      "imports": [
+        "wifi_status_led.h",
+        "esp_platform.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    },
+    {
+      "rootId": "esp",
+      "path": "src/wifi_status_led.h",
+      "sha256": "51c7b1f25cec8f12de88c7d252d92d4593a2e5a5dc89b16887b62edf65cc698b",
+      "imports": [
+        "stdint.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    },
+    {
+      "rootId": "esp",
+      "path": "src/wifi_status_led_core.cpp",
+      "sha256": "7e0d0073d0f5605d21e9a64b65785bf6934d15fb697a46b2feafd8599f952ae5",
+      "imports": [
+        "wifi_status_led.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    }
+  ],
+  "types": [
+    {
+      "name": "WifiStatusLedOps",
+      "fields": [
+        {
+          "name": "context",
+          "declaration": "void *context",
+          "callback": false,
+          "ownerType": "WifiStatusLedOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/wifi_status_led.h",
+            "line": 9
+          },
+          "description": "Dato de estado/configuración `context`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "initialize",
+          "declaration": "void (*initialize)(void *)",
+          "callback": true,
+          "ownerType": "WifiStatusLedOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/wifi_status_led.h",
+            "line": 10
+          },
+          "description": "Configura pin/recurso de salida en plataforma antes del primer patrón LED."
+        },
+        {
+          "name": "write",
+          "declaration": "void (*write)(void *, bool on)",
+          "callback": true,
+          "ownerType": "WifiStatusLedOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/wifi_status_led.h",
+            "line": 11
+          },
+          "description": "Aplica nivel lógico de LED desde la política de estado; el adaptador decide polaridad física."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_status_led.h",
+        "line": 9
+      }
+    },
+    {
+      "name": "WifiStatusLedHandle",
+      "fields": [
+        {
+          "name": "ops",
+          "declaration": "WifiStatusLedOps ops",
+          "callback": false,
+          "ownerType": "WifiStatusLedHandle",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/wifi_status_led.h",
+            "line": 14
+          },
+          "description": "Contrato de operaciones externo; conservar la tabla y su contexto durante el uso."
+        },
+        {
+          "name": "initialized",
+          "declaration": "bool initialized",
+          "callback": false,
+          "ownerType": "WifiStatusLedHandle",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/wifi_status_led.h",
+            "line": 15
+          },
+          "description": "Marca de inicialización local; no acredita disponibilidad de dispositivos externos."
+        },
+        {
+          "name": "ap_led_on",
+          "declaration": "bool ap_led_on",
+          "callback": false,
+          "ownerType": "WifiStatusLedHandle",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/wifi_status_led.h",
+            "line": 16
+          },
+          "description": "Dato de estado/configuración `ap_led_on`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "last_toggle_ms",
+          "declaration": "uint32_t last_toggle_ms",
+          "callback": false,
+          "ownerType": "WifiStatusLedHandle",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/wifi_status_led.h",
+            "line": 17
+          },
+          "description": "Memoria de la observación anterior usada por la máquina de estados."
+        },
+        {
+          "name": "blink_period_ms",
+          "declaration": "uint32_t blink_period_ms",
+          "callback": false,
+          "ownerType": "WifiStatusLedHandle",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/wifi_status_led.h",
+            "line": 18
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "mode",
+          "declaration": "WifiStatusLedMode mode",
+          "callback": false,
+          "ownerType": "WifiStatusLedHandle",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/wifi_status_led.h",
+            "line": 19
+          },
+          "description": "Dato de estado/configuración `mode`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_status_led.h",
+        "line": 14
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "WifiStatusLed_Begin",
+      "signature": "void WifiStatusLed_Begin(WifiStatusLedHandle &h, const WifiStatusLedOps &ops, uint32_t now_ms, uint32_t blink_period_ms)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_status_led_core.cpp",
+        "line": 6
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "initialize",
+        "writeLed"
+      ],
+      "writes": [
+        "blink_period_ms",
+        "initialized",
+        "last_toggle_ms",
+        "ops"
+      ],
+      "description": "Inicializa salida LED después de la etapa de arranque.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "WifiStatusLed_Update",
+      "signature": "void WifiStatusLed_Update(WifiStatusLedHandle &h, WifiStatusLedMode mode, uint32_t now_ms)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_status_led_core.cpp",
+        "line": 16
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "writeLed"
+      ],
+      "writes": [
+        "ap_led_on",
+        "last_toggle_ms",
+        "mode"
+      ],
+      "description": "Actualiza el patrón de conectividad con modo y tiempo recibidos.",
+      "descriptionOrigin": "editorial"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "writeLed",
+      "signature": "static void writeLed(WifiStatusLedHandle &h, bool on)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_status_led_core.cpp",
+        "line": 3
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "write"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `write` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    }
+  ],
+  "hooks": []
+}

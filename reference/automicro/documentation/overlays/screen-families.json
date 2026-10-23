@@ -1,0 +1,405 @@
+{
+  "schemaVersion": 1,
+  "families": [
+    {
+      "id": "shared:screen-family/line",
+      "symbolPatterns": [
+        "SCREEN_CODE_LINE_"
+      ],
+      "variants": [
+        "Menú de calibración, blanco, pista, seguimiento y aviso de línea; mismo subsistema con estados distintos."
+      ],
+      "fields": [
+        {
+          "name": "screenCode/source",
+          "type": "u32/u8 → number",
+          "units": "identidad",
+          "availability": "reported",
+          "note": "identifica pantalla/origen, no el perfil completo"
+        },
+        {
+          "name": "lineState/sessionId",
+          "type": "168 bytes → objeto JSON",
+          "units": "mixtas según campo",
+          "availability": "separately-queryable",
+          "note": "consultar stm.ir.lineCalibration.get; no se incorpora automáticamente al visor OLED"
+        }
+      ],
+      "actions": [
+        "0x53/0x54/0x55/0x57/0x58 operan sobre el contexto vigente si su handler lo admite.",
+        "stm.ir.lineCalibration.control usa operation y sessionId; stm.lineFollow.setEnabled usa enabled."
+      ],
+      "transitions": [
+        "F4 posee sesión, progreso, rechazo y cambios de pantalla; no inferir transición solo por pulsar el botón Web."
+      ],
+      "missingData": [
+        "El visor necesita parámetros del renderer, variante, borradores y selección efectiva; una página Web de calibración separada no es esa misma pantalla."
+      ],
+      "findings": [
+        "AMDOC-WEB-009"
+      ],
+      "notes": [
+        "Constantes de esta familia existen en F4/Web; el binding de render se inventaría por separado."
+      ]
+    },
+    {
+      "id": "shared:screen-family/osk",
+      "symbolPatterns": [
+        "OSK_",
+        "KEYBOARD_"
+      ],
+      "variants": [
+        "Alpha y numérico usan códigos efectivos 0x090101/0x090102, aunque el invocador declare códigos Wi-Fi o de test.",
+        "Shift, Symbols, validación, allow-list y restricciones numéricas pertenecen al estado OSK local."
+      ],
+      "fields": [
+        {
+          "name": "screenCode/source",
+          "type": "u32/u8 → number",
+          "units": "identidad",
+          "availability": "reported",
+          "note": "código efectivo publicado por integración"
+        },
+        {
+          "name": "buffer,row,col,mode,validationError",
+          "type": "estado OSK/strings/enums",
+          "units": "caracteres/selección",
+          "availability": "unavailable-remotely",
+          "note": "0x52/0x95/0x96 no transportan este snapshot"
+        }
+      ],
+      "actions": [
+        "0x57 CCW termina en OSK_OnRight y 0x58 CW en OSK_OnLeft según integración.",
+        "Encoder corto activa tecla; USER corto cancela por OnBack.",
+        "USER largo tiene prioridad global del router y vuelve al dashboard; no asumir cleanup equivalente a OSK_OnBack."
+      ],
+      "transitions": [
+        "La integración guarda renderer/handler previo y los restaura al completar/cancelar.",
+        "Symbols/ABC restablece fila/columna; Shift conserva/clampa; no inventar serpentina de filas."
+      ],
+      "missingData": [
+        "Buffer editado, fila/columna, layout actual, límites y validación no están disponibles en el reporte.",
+        "Copiar la librería de dibujo requiere además modelo/estado equivalente, o conservar identidad-only."
+      ],
+      "findings": [
+        "AMDOC-WEB-002",
+        "AMDOC-F4-011"
+      ],
+      "notes": [
+        "Se documentan invocador y pantalla efectiva por separado; no corregir códigos a partir de la apariencia del nombre."
+      ]
+    },
+    {
+      "id": "shared:screen-family/permissions",
+      "symbolPatterns": [
+        "WARNING_.*PIN",
+        "WARNING_.*PERMISSION",
+        "WARNING_REMOTE_AUTH"
+      ],
+      "variants": [
+        "0x080104 distingue aviso de ingreso y formulario de permiso mediante source.",
+        "Input/waiting/denied/timeout/blocked y resultado de sesión son fases diferentes."
+      ],
+      "fields": [
+        {
+          "name": "screenCode/source",
+          "type": "u32/u8 → number",
+          "units": "identidad/fase",
+          "availability": "reported",
+          "note": "el source participa del discriminante"
+        },
+        {
+          "name": "pinDigits/pinIndex",
+          "type": "dígitos/índice local",
+          "units": "edición PIN",
+          "availability": "unavailable-remotely",
+          "note": "no se publican en el reporte de identidad; no usar ceros como observación"
+        },
+        {
+          "name": "estado de autenticación/TTL",
+          "type": "status/TTL",
+          "units": "ms/boolean",
+          "availability": "separately-queryable",
+          "note": "autoridad de sesión no es cursor local de edición"
+        }
+      ],
+      "actions": [
+        "Validación JSON usa screenCode/ámbito y espera resultado F4; los datos sensibles no se copian a documentación.",
+        "Los eventos de encoder/USER pasan antes por la prioridad Permission del router."
+      ],
+      "transitions": [
+        "Concesión ejecuta continuación registrada; cancelación/timeout/bloqueo siguen políticas propias.",
+        "Formulario PIN Web es entrada local y no una captura del framebuffer F4."
+      ],
+      "missingData": [
+        "La réplica del formulario físico no puede inferir dígitos/posición desde 0x52/0x95.",
+        "No confundir ACK de input consumido con permiso concedido."
+      ],
+      "findings": [
+        "AMDOC-WEB-002"
+      ],
+      "notes": [
+        "Una futura exposición de datos/píxeles debe definir permiso y enmascarado según el comportamiento deseado, mediante contrato explícito."
+      ]
+    },
+    {
+      "id": "shared:screen-family/menus",
+      "symbolPatterns": [
+        "_MENU$",
+        "CORE_FAVORITES$",
+        "WIFI_RESULTS$"
+      ],
+      "variants": [
+        "Menús ordinarios hasta tres filas; favoritos usa dos.",
+        "Visibilidad, disponibilidad por perfil y catálogo dinámico cambian qué ítems son navegables."
+      ],
+      "fields": [
+        {
+          "name": "screenCode/source",
+          "type": "u32/u8",
+          "units": "identidad",
+          "availability": "reported",
+          "note": "source MENU identifica contexto"
+        },
+        {
+          "name": "selectedIndex/itemCount",
+          "type": "u8/u8 → number",
+          "units": "índice 0-based/cantidad",
+          "availability": "reported",
+          "note": "0x96 de siete bytes o extensión GET_CURRENT_SCREEN de siete"
+        },
+        {
+          "name": "firstVisibleItem/max_visible_items",
+          "type": "índice/cantidad local",
+          "units": "ventana",
+          "availability": "unavailable-remotely",
+          "note": "los reportes actuales no transportan el origen/tamaño real de ventana"
+        },
+        {
+          "name": "labels/icons/visibility/favorites",
+          "type": "catálogo y estado local",
+          "units": "ítems",
+          "availability": "unavailable-remotely",
+          "note": "Web conserva listas locales parciales; favoritos es dinámico"
+        }
+      ],
+      "actions": [
+        "0x53: screenCode:u32 LE y posición visible u8 desde 1; F4 decide ítem de su ventana.",
+        "0x56: screenCode y dirección 0=up/1=down; 0x57/0x58: giro lógico.",
+        "Screen mismatch status2 requiere resincronizar y no repetir sobre contexto viejo."
+      ],
+      "transitions": [
+        "F4 desplaza firstVisibleItem hasta incluir selección; Web deriva bloques floor(index/3).",
+        "Después de click se ejecuta la acción/submenú del ítem realmente seleccionado en F4."
+      ],
+      "missingData": [
+        "Sin ventana real pueden diferir fila dibujada y fila ejecutada.",
+        "Las listas por modo/perfil y textos desplazados requieren datos/semántica comunes."
+      ],
+      "findings": [
+        "AMDOC-WEB-004",
+        "AMDOC-ESP-002"
+      ],
+      "notes": [
+        "Mismo selectedIndex no determina una única ventana física porque depende de la historia de scroll."
+      ]
+    },
+    {
+      "id": "shared:screen-family/dashboard",
+      "symbolPatterns": [
+        "CORE_DASHBOARD",
+        "CORE_MODE_",
+        "CORE_STABILIZE"
+      ],
+      "variants": [
+        "Dashboard, confirmación/selector de modo y estabilización son pantallas con estados distintos."
+      ],
+      "fields": [
+        {
+          "name": "dashboard connectivity extension",
+          "type": "flags/backend/mode/IP/SSID",
+          "units": "bits/número/texto",
+          "availability": "reported",
+          "note": "GET_CURRENT_SCREEN dashboard source RENDER incluye extensión; eventos cortos no siempre"
+        },
+        {
+          "name": "carMode",
+          "type": "u8 → number/string",
+          "units": "0 IDLE,1 FOLLOW,2 TEST,3 GOTO",
+          "availability": "reported",
+          "note": "los normalizadores Web del visor no admiten todos los valores"
+        },
+        {
+          "name": "scroll phase/draft/timeout context",
+          "type": "estado UI local",
+          "units": "píxeles/ms/elección",
+          "availability": "unavailable-remotely",
+          "note": "no basta SSID/IP para conocer la fase exacta de desplazamiento"
+        }
+      ],
+      "actions": [
+        "Giros y pulsaciones se envían con identidad actual y pasan por modo/permiso/router.",
+        "El cambio remoto de modo confirma respuesta antes de eventos derivados."
+      ],
+      "transitions": [
+        "F4 decide confirmación/estabilización y activa el modo; intención Web no equivale a modo aplicado."
+      ],
+      "missingData": [
+        "Ventana de texto, fase temporal y borradores/confirmación pueden permanecer locales."
+      ],
+      "findings": [
+        "AMDOC-WEB-005"
+      ],
+      "notes": [
+        "EspClient y CarModeContext sí conocen GOTO; hay normalizadores paralelos que requieren alineación."
+      ]
+    },
+    {
+      "id": "shared:screen-family/notifications",
+      "symbolPatterns": [
+        "CONNECTED$",
+        "DISCONNECTED$",
+        "RECEIVED$",
+        "FAILED$",
+        "SUCCEEDED$",
+        "_RESET",
+        "WATCHDOG",
+        "UNRESPONSIVE",
+        "_NOTICE$",
+        "_CORRECT$",
+        "BYPASSED$",
+        "REMOTE_MODE_CHANGED",
+        "_ENABLED$",
+        "_DISABLED$"
+      ],
+      "variants": [
+        "El mismo código puede representar aviso/vista o variantes ON/OFF no distinguidas por su identidad."
+      ],
+      "fields": [
+        {
+          "name": "screenCode/source",
+          "type": "u32/u8",
+          "units": "identidad",
+          "availability": "reported",
+          "note": "source distingue aviso de render cuando el productor lo proporciona"
+        },
+        {
+          "name": "remainingMs/totalMs/clientNumber",
+          "type": "u16/u16/u8 opcional",
+          "units": "ms/número",
+          "availability": "reported",
+          "note": "extensión de aviso según longitud y source; no siempre presente"
+        },
+        {
+          "name": "texto/ON-OFF/event payload exacto",
+          "type": "modelo de aviso local",
+          "units": "texto/variante",
+          "availability": "unavailable-remotely",
+          "note": "un GET posterior del estado no prueba qué aviso transitorio estaba visible"
+        }
+      ],
+      "actions": [
+        "Encoder puede descartar aviso según prioridad del router.",
+        "Los hooks onShow/onHide pueden tener efectos; no basta simular desaparición en Web."
+      ],
+      "transitions": [
+        "Cola F4 conserva vista anterior y restaura al terminar; Web recibe eventos posteriores."
+      ],
+      "missingData": [
+        "No todas las líneas/textos/variantes y fase del refresco se transportan."
+      ],
+      "findings": [
+        "AMDOC-WEB-002"
+      ],
+      "notes": [
+        "Mismo ID y duración no certifican píxeles ni orden visible de todos los avisos."
+      ]
+    },
+    {
+      "id": "shared:screen-family/sensors-controls",
+      "symbolPatterns": [
+        "SENSORS_",
+        "MOTOR_",
+        "BALANCE_",
+        "PREFS_"
+      ],
+      "variants": [
+        "Sensores, pruebas de actuador, PID y editores tienen diferentes fuentes, unidades y borradores."
+      ],
+      "fields": [
+        {
+          "name": "screenCode/source",
+          "type": "u32/u8",
+          "units": "identidad",
+          "availability": "reported",
+          "note": "no es captura del contenido"
+        },
+        {
+          "name": "MPU/IR/control/PID snapshots",
+          "type": "42/56/64/13 bytes → JSON",
+          "units": "g,dps,ADC,mm,m/s,porcentaje según campo",
+          "availability": "separately-queryable",
+          "note": "cada decoder tiene esquema; consumir no sincroniza automáticamente el renderer físico"
+        },
+        {
+          "name": "vista activa/borrador/ganancia/campo/cursor",
+          "type": "estado local de UI",
+          "units": "según editor",
+          "availability": "unavailable-remotely",
+          "note": "requiere modelo de renderer completo o identidad-only"
+        }
+      ],
+      "actions": [
+        "Giro/pulsación actúan sobre el handler activo en F4.",
+        "Comandos específicos de movimiento/PID requieren sus propias guardas y respuesta."
+      ],
+      "transitions": [
+        "Cambiar un borrador no implica guardarlo/aplicarlo; una acción aceptada puede ser consumida sin cambio visible."
+      ],
+      "missingData": [
+        "El visor no conecta de forma completa los snapshots a todos los argumentos de builders.",
+        "Valores por defecto de MPU/motores no son muestra del equipo."
+      ],
+      "findings": [
+        "AMDOC-WEB-002",
+        "AMDOC-WEB-006"
+      ],
+      "notes": [
+        "La ficha individual enumera bindings candidatos; no se eleva a exact por coincidencia de nombre."
+      ]
+    },
+    {
+      "id": "shared:screen-family/general",
+      "symbolPatterns": [
+        ".*"
+      ],
+      "variants": [
+        "Identidad y comportamiento particular deben leerse en renderer, wrapper y router."
+      ],
+      "fields": [
+        {
+          "name": "screenCode/source",
+          "type": "u32/u8",
+          "units": "identidad",
+          "availability": "reported",
+          "note": "cuando existe un reporte de pantalla activa"
+        }
+      ],
+      "actions": [
+        "No atribuir acciones por el nombre del código: comprobar handler/permiso/contexto vigente."
+      ],
+      "transitions": [
+        "Las referencias de fuente son candidatas; no acreditan alcance en todos los modos."
+      ],
+      "missingData": [
+        "No se ha establecido modelo remoto completo ni igualdad de píxeles."
+      ],
+      "findings": [
+        "AMDOC-WEB-003"
+      ],
+      "notes": [
+        "Favoritos y confirmaciones compartidas pueden necesitar discriminantes adicionales."
+      ]
+    }
+  ]
+}

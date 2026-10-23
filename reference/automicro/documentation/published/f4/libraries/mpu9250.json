@@ -1,0 +1,3285 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "f4:module/Core/Inc/mpu9250.h",
+  "slug": "mpu9250",
+  "title": "MPU9250 y estimación de actitud",
+  "target": "f4",
+  "kind": "núcleo",
+  "status": "source-documented",
+  "verification": "not-run-user-instruction",
+  "snapshotDate": "2026-10-20",
+  "responsibility": "Adquiere aceleración, giro, temperatura y magnetómetro, calibra sesgos y produce orientación/snapshots del robot.",
+  "scope": "Driver MPU9250/AK8963, conversión de unidades y filtro de actitud. No acciona motores ni publica directamente WebSocket.",
+  "state": "MPU9250_Handle_t conserva AM_I2C_DevicePort prestado, buffers TX/RX persistentes, transfer_state, datos, latest, calibración, filtro y tiempos. trigger es una bandera externa; on_data_ready_cb es un callback histórico sin ctx. GetLatest copia; GetData devuelve una vista del almacenamiento de la instancia.",
+  "lifecycle": [
+    "Init enlaza estado y puerto; BindPort registra callbacks ante el backend.",
+    "Configure programa registros con operaciones síncronas y delay de arranque; adquisición posterior usa DMA.",
+    "Request* pasa IDLE → WAIT_GRANT → TX_REG → RX_DATA → IDLE; finalización RX libera bus y marca datos disponibles.",
+    "Process convierte/calibra/actualiza estimación y después invoca on_data_ready_cb; consultar frescura con tiempo real y secuencia."
+  ],
+  "interactions": [
+    "Comparte bus con SSD1306 mediante el gestor. AM_OrientationOps adapta sus lecturas para MotionControl y MotionEstimator.",
+    "AppPreferences conserva calibración; UNER_App serializa snapshots, no el layout crudo del handle."
+  ],
+  "limitations": [
+    "DMA de adquisición no elimina los delays y accesos síncronos de Configure.",
+    "IsCalibrated, flags válidos y IsSampleFresh son condiciones diferentes.",
+    "No tomar yaw integrado ni MotionEstimator como posición absoluta."
+  ],
+  "modularity": "Sin handle HAL ni dependencia del tipo I2C_ManagerHandle. Comparte modelos de datos y macros AutoMicro. El montaje fija Y/pitch como inclinación frontal y X/roll como lateral.",
+  "files": [
+    {
+      "path": "Core/Inc/mpu9250.h",
+      "rootId": "f4",
+      "sha256": "2a96d3bc955653e751b709125cd99653e570a263db1d49dae5c2d3281497646a",
+      "includes": [
+        "mpu9250_types.h"
+      ]
+    },
+    {
+      "path": "Core/Inc/mpu9250_types.h",
+      "rootId": "f4",
+      "sha256": "0e228407058ff9c2e6cc95d5eb4bff0e13df02402c2ba8ffcd02fe73634bc535",
+      "includes": [
+        "am_port.h",
+        "i2c_port.h",
+        "types/bitmap_type.h",
+        "utils/macros_utils.h",
+        "stdbool.h",
+        "stdint.h",
+        "mpu9250_data.h"
+      ]
+    },
+    {
+      "path": "Core/Inc/mpu9250_data.h",
+      "rootId": "f4",
+      "sha256": "0da5fa8c2d503a84f18f090e5182313e5bd83c8dd25efa3d9031a66fdf20c212",
+      "includes": [
+        "am_port.h",
+        "types/bitmap_type.h"
+      ]
+    },
+    {
+      "path": "Core/Src/mpu9250.c",
+      "rootId": "f4",
+      "sha256": "5cc553fbf4694d0a2b6aef6466210ee4870490f164408d0d5afa2757ab0818b9",
+      "includes": [
+        "mpu9250.h",
+        "math.h",
+        "string.h"
+      ]
+    }
+  ],
+  "findings": [
+    "AMDOC-F4-008"
+  ],
+  "types": [
+    {
+      "name": "MPU9250_Handle_t",
+      "fields": [
+        {
+          "name": "bus",
+          "declaration": "const AM_I2C_DevicePort *bus",
+          "callback": false,
+          "ownerType": "MPU9250_Handle_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_types.h",
+            "line": 25
+          },
+          "description": "Contrato de operaciones externo; conservar la tabla y su contexto durante el uso."
+        },
+        {
+          "name": "i2c_address",
+          "declaration": "uint8_t i2c_address",
+          "callback": false,
+          "ownerType": "MPU9250_Handle_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_types.h",
+            "line": 26
+          },
+          "description": "Dirección configurada del sensor según el contrato de su puerto."
+        },
+        {
+          "name": "tx_buffer",
+          "declaration": "uint8_t tx_buffer[1]",
+          "callback": false,
+          "ownerType": "MPU9250_Handle_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_types.h",
+            "line": 27
+          },
+          "description": "Byte persistente de selección de registro para transferencia DMA."
+        },
+        {
+          "name": "rx_buffer",
+          "declaration": "uint8_t rx_buffer[22]",
+          "callback": false,
+          "ownerType": "MPU9250_Handle_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_types.h",
+            "line": 28
+          },
+          "description": "Buffer persistente de hasta 22 bytes de adquisición DMA."
+        },
+        {
+          "name": "expected_rx_len",
+          "declaration": "uint8_t expected_rx_len",
+          "callback": false,
+          "ownerType": "MPU9250_Handle_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_types.h",
+            "line": 29
+          },
+          "description": "Cantidad de bytes esperada para el modo de lectura activo."
+        },
+        {
+          "name": "read_mode",
+          "declaration": "MPU9250_ReadMode read_mode",
+          "callback": false,
+          "ownerType": "MPU9250_Handle_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_types.h",
+            "line": 30
+          },
+          "description": "Tipo de adquisición solicitado al sensor."
+        },
+        {
+          "name": "last_read_mode",
+          "declaration": "MPU9250_ReadMode last_read_mode",
+          "callback": false,
+          "ownerType": "MPU9250_Handle_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_types.h",
+            "line": 31
+          },
+          "description": "Modo de la adquisición terminada que se procesa."
+        },
+        {
+          "name": "transfer_state",
+          "declaration": "MPU9250_TransferState transfer_state",
+          "callback": false,
+          "ownerType": "MPU9250_Handle_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_types.h",
+            "line": 32
+          },
+          "description": "FSM del acceso I2C: IDLE, espera de concesión, TX de registro y RX de datos."
+        },
+        {
+          "name": "flags",
+          "declaration": "Byte_Flag_Struct flags",
+          "callback": false,
+          "ownerType": "MPU9250_Handle_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_types.h",
+            "line": 33
+          },
+          "description": "Bits de estado del módulo; conservar máscaras y distinguir estado de eventos pendientes."
+        },
+        {
+          "name": "data",
+          "declaration": "MPU9250_IntData_t data",
+          "callback": false,
+          "ownerType": "MPU9250_Handle_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_types.h",
+            "line": 34
+          },
+          "description": "Datos convertidos internos; su puntero puede exponerse como vista prestada."
+        },
+        {
+          "name": "latest",
+          "declaration": "MPU9250_Snapshot_t latest",
+          "callback": false,
+          "ownerType": "MPU9250_Handle_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_types.h",
+            "line": 35
+          },
+          "description": "Último snapshot producido; incluye secuencia y datos de adquisición."
+        },
+        {
+          "name": "on_data_ready_cb",
+          "declaration": "MPU9250_Callback on_data_ready_cb",
+          "callback": false,
+          "ownerType": "MPU9250_Handle_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_types.h",
+            "line": 36
+          },
+          "description": "Aviso de muestra procesada sin argumento de contexto; lo invoca MPU9250_Process."
+        },
+        {
+          "name": "dt_div",
+          "declaration": "uint16_t dt_div",
+          "callback": false,
+          "ownerType": "MPU9250_Handle_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_types.h",
+            "line": 37
+          },
+          "description": "Divisor/escala temporal usado por la integración interna del driver."
+        },
+        {
+          "name": "trigger",
+          "declaration": "volatile bool *trigger",
+          "callback": false,
+          "ownerType": "MPU9250_Handle_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_types.h",
+            "line": 38
+          },
+          "description": "Bandera externa volátil de adquisición; no contiene una muestra ni prueba de frescura."
+        },
+        {
+          "name": "gyro_bias_z",
+          "declaration": "int32_t gyro_bias_x, gyro_bias_y, gyro_bias_z",
+          "callback": false,
+          "ownerType": "MPU9250_Handle_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_types.h",
+            "line": 39
+          },
+          "description": "Dato de estado/configuración `gyro_bias_z`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "calib_sum_z",
+          "declaration": "int32_t calib_sum_x, calib_sum_y, calib_sum_z",
+          "callback": false,
+          "ownerType": "MPU9250_Handle_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_types.h",
+            "line": 40
+          },
+          "description": "Dato de estado/configuración `calib_sum_z`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "calib_accel_sum_z",
+          "declaration": "int32_t calib_accel_sum_x, calib_accel_sum_y, calib_accel_sum_z",
+          "callback": false,
+          "ownerType": "MPU9250_Handle_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_types.h",
+            "line": 41
+          },
+          "description": "Dato de estado/configuración `calib_accel_sum_z`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "angle_z_md",
+          "declaration": "int32_t angle_x_md, angle_y_md, angle_z_md",
+          "callback": false,
+          "ownerType": "MPU9250_Handle_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_types.h",
+            "line": 42
+          },
+          "description": "Dato de estado/configuración `angle_z_md`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "rem_z",
+          "declaration": "int32_t rem_x, rem_y, rem_z",
+          "callback": false,
+          "ownerType": "MPU9250_Handle_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_types.h",
+            "line": 43
+          },
+          "description": "Dato de estado/configuración `rem_z`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "gyro_bias_z_dps",
+          "declaration": "float gyro_bias_x_dps, gyro_bias_y_dps, gyro_bias_z_dps",
+          "callback": false,
+          "ownerType": "MPU9250_Handle_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_types.h",
+            "line": 44
+          },
+          "description": "Dato de estado/configuración `gyro_bias_z_dps`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "angle_z_deg",
+          "declaration": "float angle_x_deg, angle_y_deg, angle_z_deg",
+          "callback": false,
+          "ownerType": "MPU9250_Handle_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_types.h",
+            "line": 45
+          },
+          "description": "Ángulo en grados; respetar eje y referencia de esta librería."
+        },
+        {
+          "name": "gravity_z_mg_f",
+          "declaration": "float gravity_x_mg_f, gravity_y_mg_f, gravity_z_mg_f",
+          "callback": false,
+          "ownerType": "MPU9250_Handle_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_types.h",
+            "line": 46
+          },
+          "description": "Dato de estado/configuración `gravity_z_mg_f`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "pitch_ref_deg",
+          "declaration": "float roll_ref_deg, pitch_ref_deg",
+          "callback": false,
+          "ownerType": "MPU9250_Handle_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_types.h",
+            "line": 47
+          },
+          "description": "Ángulo en grados; respetar eje y referencia de esta librería."
+        },
+        {
+          "name": "gravity_z_mg",
+          "declaration": "int16_t gravity_x_mg, gravity_y_mg, gravity_z_mg",
+          "callback": false,
+          "ownerType": "MPU9250_Handle_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_types.h",
+            "line": 48
+          },
+          "description": "Dato de estado/configuración `gravity_z_mg`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "prev_accel_z_mg",
+          "declaration": "int16_t prev_accel_x_mg, prev_accel_y_mg, prev_accel_z_mg",
+          "callback": false,
+          "ownerType": "MPU9250_Handle_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_types.h",
+            "line": 49
+          },
+          "description": "Memoria de la observación anterior usada por la máquina de estados."
+        },
+        {
+          "name": "pitch_ref_md",
+          "declaration": "int32_t roll_ref_md, pitch_ref_md",
+          "callback": false,
+          "ownerType": "MPU9250_Handle_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_types.h",
+            "line": 50
+          },
+          "description": "Dato de estado/configuración `pitch_ref_md`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "attitude",
+          "declaration": "MPU9250_AttitudeState_t attitude",
+          "callback": false,
+          "ownerType": "MPU9250_Handle_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_types.h",
+            "line": 51
+          },
+          "description": "Estado del filtro de orientación, incluidos referencias y términos de corrección."
+        },
+        {
+          "name": "mag_calibration",
+          "declaration": "MPU9250_MagCalibration_t mag_calibration",
+          "callback": false,
+          "ownerType": "MPU9250_Handle_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_types.h",
+            "line": 52
+          },
+          "description": "Calibración del magnetómetro aplicada a los datos de actitud."
+        },
+        {
+          "name": "calib_started_ms",
+          "declaration": "uint32_t calib_started_ms",
+          "callback": false,
+          "ownerType": "MPU9250_Handle_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_types.h",
+            "line": 53
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "last_sample_time_us",
+          "declaration": "uint32_t last_sample_time_us",
+          "callback": false,
+          "ownerType": "MPU9250_Handle_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_types.h",
+            "line": 54
+          },
+          "description": "Marca de adquisición del puerto now_us; en STM32 actual tiene resolución de ms (AMDOC-F4-008)."
+        },
+        {
+          "name": "last_attitude_ms",
+          "declaration": "uint32_t last_attitude_ms",
+          "callback": false,
+          "ownerType": "MPU9250_Handle_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_types.h",
+            "line": 55
+          },
+          "description": "Última marca de actualización de orientación; distinta de leer el getter."
+        },
+        {
+          "name": "sample_acquired_ms",
+          "declaration": "uint32_t sample_acquired_ms",
+          "callback": false,
+          "ownerType": "MPU9250_Handle_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_types.h",
+            "line": 56
+          },
+          "description": "Tiempo del snapshot adquirido usado para evaluar frescura."
+        },
+        {
+          "name": "calib_target",
+          "declaration": "uint16_t calib_count, calib_target",
+          "callback": false,
+          "ownerType": "MPU9250_Handle_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_types.h",
+            "line": 57
+          },
+          "description": "La declaración agrupa calib_count (muestras acumuladas) y calib_target (objetivo de muestras)."
+        },
+        {
+          "name": "calib_window_ms",
+          "declaration": "uint16_t calib_warmup_ms, calib_window_ms",
+          "callback": false,
+          "ownerType": "MPU9250_Handle_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_types.h",
+            "line": 58
+          },
+          "description": "La declaración agrupa warmup y ventana de calibración en milisegundos."
+        },
+        {
+          "name": "prev_accel_valid",
+          "declaration": "uint8_t prev_accel_valid",
+          "callback": false,
+          "ownerType": "MPU9250_Handle_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_types.h",
+            "line": 59
+          },
+          "description": "Indica si existe aceleración anterior utilizable para continuidad del filtro."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/mpu9250_types.h",
+        "line": 25
+      }
+    },
+    {
+      "name": "MPU9250_IntData_t",
+      "fields": [
+        {
+          "name": "accel_x_mg",
+          "declaration": "int16_t accel_x_mg",
+          "callback": false,
+          "ownerType": "MPU9250_IntData_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 13
+          },
+          "description": "Dato de estado/configuración `accel_x_mg`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "accel_y_mg",
+          "declaration": "int16_t accel_y_mg",
+          "callback": false,
+          "ownerType": "MPU9250_IntData_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 14
+          },
+          "description": "Dato de estado/configuración `accel_y_mg`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "accel_z_mg",
+          "declaration": "int16_t accel_z_mg",
+          "callback": false,
+          "ownerType": "MPU9250_IntData_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 15
+          },
+          "description": "Dato de estado/configuración `accel_z_mg`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "temperature_celsius_x100",
+          "declaration": "int16_t temperature_celsius_x100",
+          "callback": false,
+          "ownerType": "MPU9250_IntData_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 16
+          },
+          "description": "Dato de estado/configuración `temperature_celsius_x100`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "gyro_x_mdps",
+          "declaration": "int32_t gyro_x_mdps",
+          "callback": false,
+          "ownerType": "MPU9250_IntData_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 17
+          },
+          "description": "Dato de estado/configuración `gyro_x_mdps`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "gyro_y_mdps",
+          "declaration": "int32_t gyro_y_mdps",
+          "callback": false,
+          "ownerType": "MPU9250_IntData_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 18
+          },
+          "description": "Dato de estado/configuración `gyro_y_mdps`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "gyro_z_mdps",
+          "declaration": "int32_t gyro_z_mdps",
+          "callback": false,
+          "ownerType": "MPU9250_IntData_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 19
+          },
+          "description": "Dato de estado/configuración `gyro_z_mdps`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "mag_x_nt",
+          "declaration": "int32_t mag_x_nt",
+          "callback": false,
+          "ownerType": "MPU9250_IntData_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 20
+          },
+          "description": "Dato de estado/configuración `mag_x_nt`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "mag_y_nt",
+          "declaration": "int32_t mag_y_nt",
+          "callback": false,
+          "ownerType": "MPU9250_IntData_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 21
+          },
+          "description": "Dato de estado/configuración `mag_y_nt`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "mag_z_nt",
+          "declaration": "int32_t mag_z_nt",
+          "callback": false,
+          "ownerType": "MPU9250_IntData_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 22
+          },
+          "description": "Dato de estado/configuración `mag_z_nt`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "mag_valid",
+          "declaration": "uint8_t mag_valid",
+          "callback": false,
+          "ownerType": "MPU9250_IntData_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 23
+          },
+          "description": "Dato de estado/configuración `mag_valid`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/mpu9250_data.h",
+        "line": 13
+      }
+    },
+    {
+      "name": "MPU9250_Orientation_t",
+      "fields": [
+        {
+          "name": "angle_x_md",
+          "declaration": "int32_t angle_x_md",
+          "callback": false,
+          "ownerType": "MPU9250_Orientation_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 27
+          },
+          "description": "Dato de estado/configuración `angle_x_md`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "angle_y_md",
+          "declaration": "int32_t angle_y_md",
+          "callback": false,
+          "ownerType": "MPU9250_Orientation_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 28
+          },
+          "description": "Dato de estado/configuración `angle_y_md`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "angle_z_md",
+          "declaration": "int32_t angle_z_md",
+          "callback": false,
+          "ownerType": "MPU9250_Orientation_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 29
+          },
+          "description": "Dato de estado/configuración `angle_z_md`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/mpu9250_data.h",
+        "line": 27
+      }
+    },
+    {
+      "name": "MPU9250_NormalizedData_t",
+      "fields": [
+        {
+          "name": "ax_g",
+          "declaration": "float ax_g",
+          "callback": false,
+          "ownerType": "MPU9250_NormalizedData_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 33
+          },
+          "description": "Dato de estado/configuración `ax_g`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ay_g",
+          "declaration": "float ay_g",
+          "callback": false,
+          "ownerType": "MPU9250_NormalizedData_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 34
+          },
+          "description": "Dato de estado/configuración `ay_g`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "az_g",
+          "declaration": "float az_g",
+          "callback": false,
+          "ownerType": "MPU9250_NormalizedData_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 35
+          },
+          "description": "Dato de estado/configuración `az_g`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "gx_dps",
+          "declaration": "float gx_dps",
+          "callback": false,
+          "ownerType": "MPU9250_NormalizedData_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 36
+          },
+          "description": "Dato de estado/configuración `gx_dps`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "gy_dps",
+          "declaration": "float gy_dps",
+          "callback": false,
+          "ownerType": "MPU9250_NormalizedData_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 37
+          },
+          "description": "Dato de estado/configuración `gy_dps`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "gz_dps",
+          "declaration": "float gz_dps",
+          "callback": false,
+          "ownerType": "MPU9250_NormalizedData_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 38
+          },
+          "description": "Dato de estado/configuración `gz_dps`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "mx_uT",
+          "declaration": "float mx_uT",
+          "callback": false,
+          "ownerType": "MPU9250_NormalizedData_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 39
+          },
+          "description": "Dato de estado/configuración `mx_uT`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "my_uT",
+          "declaration": "float my_uT",
+          "callback": false,
+          "ownerType": "MPU9250_NormalizedData_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 40
+          },
+          "description": "Dato de estado/configuración `my_uT`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "mz_uT",
+          "declaration": "float mz_uT",
+          "callback": false,
+          "ownerType": "MPU9250_NormalizedData_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 41
+          },
+          "description": "Dato de estado/configuración `mz_uT`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "sample_dt_s",
+          "declaration": "float sample_dt_s",
+          "callback": false,
+          "ownerType": "MPU9250_NormalizedData_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 42
+          },
+          "description": "Dato de estado/configuración `sample_dt_s`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "mag_valid",
+          "declaration": "uint8_t mag_valid",
+          "callback": false,
+          "ownerType": "MPU9250_NormalizedData_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 43
+          },
+          "description": "Dato de estado/configuración `mag_valid`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/mpu9250_data.h",
+        "line": 33
+      }
+    },
+    {
+      "name": "MPU9250_AttitudeOffsets_t",
+      "fields": [
+        {
+          "name": "accel_roll_offset_deg",
+          "declaration": "float accel_roll_offset_deg",
+          "callback": false,
+          "ownerType": "MPU9250_AttitudeOffsets_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 47
+          },
+          "description": "Ángulo en grados; respetar eje y referencia de esta librería."
+        },
+        {
+          "name": "accel_pitch_offset_deg",
+          "declaration": "float accel_pitch_offset_deg",
+          "callback": false,
+          "ownerType": "MPU9250_AttitudeOffsets_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 48
+          },
+          "description": "Ángulo en grados; respetar eje y referencia de esta librería."
+        },
+        {
+          "name": "gyro_x_offset_dps",
+          "declaration": "float gyro_x_offset_dps",
+          "callback": false,
+          "ownerType": "MPU9250_AttitudeOffsets_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 49
+          },
+          "description": "Dato de estado/configuración `gyro_x_offset_dps`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "gyro_y_offset_dps",
+          "declaration": "float gyro_y_offset_dps",
+          "callback": false,
+          "ownerType": "MPU9250_AttitudeOffsets_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 50
+          },
+          "description": "Dato de estado/configuración `gyro_y_offset_dps`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "gyro_z_offset_dps",
+          "declaration": "float gyro_z_offset_dps",
+          "callback": false,
+          "ownerType": "MPU9250_AttitudeOffsets_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 51
+          },
+          "description": "Dato de estado/configuración `gyro_z_offset_dps`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/mpu9250_data.h",
+        "line": 47
+      }
+    },
+    {
+      "name": "MPU9250_Attitude_t",
+      "fields": [
+        {
+          "name": "roll_deg",
+          "declaration": "float roll_deg",
+          "callback": false,
+          "ownerType": "MPU9250_Attitude_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 55
+          },
+          "description": "Ángulo en grados; respetar eje y referencia de esta librería."
+        },
+        {
+          "name": "pitch_deg",
+          "declaration": "float pitch_deg",
+          "callback": false,
+          "ownerType": "MPU9250_Attitude_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 56
+          },
+          "description": "Ángulo en grados; respetar eje y referencia de esta librería."
+        },
+        {
+          "name": "yaw_deg",
+          "declaration": "float yaw_deg",
+          "callback": false,
+          "ownerType": "MPU9250_Attitude_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 57
+          },
+          "description": "Ángulo en grados; respetar eje y referencia de esta librería."
+        },
+        {
+          "name": "heading_deg",
+          "declaration": "float heading_deg",
+          "callback": false,
+          "ownerType": "MPU9250_Attitude_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 59
+          },
+          "description": "Ángulo en grados; respetar eje y referencia de esta librería."
+        },
+        {
+          "name": "accel_roll_deg",
+          "declaration": "float accel_roll_deg",
+          "callback": false,
+          "ownerType": "MPU9250_Attitude_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 61
+          },
+          "description": "Ángulo en grados; respetar eje y referencia de esta librería."
+        },
+        {
+          "name": "accel_pitch_deg",
+          "declaration": "float accel_pitch_deg",
+          "callback": false,
+          "ownerType": "MPU9250_Attitude_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 62
+          },
+          "description": "Ángulo en grados; respetar eje y referencia de esta librería."
+        },
+        {
+          "name": "mag_heading_deg",
+          "declaration": "float mag_heading_deg",
+          "callback": false,
+          "ownerType": "MPU9250_Attitude_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 63
+          },
+          "description": "Ángulo en grados; respetar eje y referencia de esta librería."
+        },
+        {
+          "name": "gyro_roll_rate_dps",
+          "declaration": "float gyro_roll_rate_dps",
+          "callback": false,
+          "ownerType": "MPU9250_Attitude_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 64
+          },
+          "description": "Dato de estado/configuración `gyro_roll_rate_dps`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "gyro_pitch_rate_dps",
+          "declaration": "float gyro_pitch_rate_dps",
+          "callback": false,
+          "ownerType": "MPU9250_Attitude_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 65
+          },
+          "description": "Dato de estado/configuración `gyro_pitch_rate_dps`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "gyro_yaw_rate_dps",
+          "declaration": "float gyro_yaw_rate_dps",
+          "callback": false,
+          "ownerType": "MPU9250_Attitude_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 66
+          },
+          "description": "Dato de estado/configuración `gyro_yaw_rate_dps`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "mag_valid",
+          "declaration": "uint8_t mag_valid",
+          "callback": false,
+          "ownerType": "MPU9250_Attitude_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 67
+          },
+          "description": "Dato de estado/configuración `mag_valid`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/mpu9250_data.h",
+        "line": 55
+      }
+    },
+    {
+      "name": "MPU9250_AttitudeState_t",
+      "fields": [
+        {
+          "name": "offsets",
+          "declaration": "MPU9250_AttitudeOffsets_t offsets",
+          "callback": false,
+          "ownerType": "MPU9250_AttitudeState_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 71
+          },
+          "description": "Dato de estado/configuración `offsets`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "output",
+          "declaration": "MPU9250_Attitude_t output",
+          "callback": false,
+          "ownerType": "MPU9250_AttitudeState_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 72
+          },
+          "description": "Dato de estado/configuración `output`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "q0",
+          "declaration": "float q0",
+          "callback": false,
+          "ownerType": "MPU9250_AttitudeState_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 73
+          },
+          "description": "Dato de estado/configuración `q0`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "q1",
+          "declaration": "float q1",
+          "callback": false,
+          "ownerType": "MPU9250_AttitudeState_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 74
+          },
+          "description": "Dato de estado/configuración `q1`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "q2",
+          "declaration": "float q2",
+          "callback": false,
+          "ownerType": "MPU9250_AttitudeState_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 75
+          },
+          "description": "Dato de estado/configuración `q2`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "q3",
+          "declaration": "float q3",
+          "callback": false,
+          "ownerType": "MPU9250_AttitudeState_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 76
+          },
+          "description": "Dato de estado/configuración `q3`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "integral_x",
+          "declaration": "float integral_x",
+          "callback": false,
+          "ownerType": "MPU9250_AttitudeState_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 77
+          },
+          "description": "Dato de estado/configuración `integral_x`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "integral_y",
+          "declaration": "float integral_y",
+          "callback": false,
+          "ownerType": "MPU9250_AttitudeState_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 78
+          },
+          "description": "Dato de estado/configuración `integral_y`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "integral_z",
+          "declaration": "float integral_z",
+          "callback": false,
+          "ownerType": "MPU9250_AttitudeState_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 79
+          },
+          "description": "Dato de estado/configuración `integral_z`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "kp",
+          "declaration": "float kp",
+          "callback": false,
+          "ownerType": "MPU9250_AttitudeState_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 80
+          },
+          "description": "Dato de estado/configuración `kp`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ki",
+          "declaration": "float ki",
+          "callback": false,
+          "ownerType": "MPU9250_AttitudeState_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 81
+          },
+          "description": "Dato de estado/configuración `ki`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "fixed_dt_s",
+          "declaration": "float fixed_dt_s",
+          "callback": false,
+          "ownerType": "MPU9250_AttitudeState_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 82
+          },
+          "description": "Dato de estado/configuración `fixed_dt_s`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "yaw_zero_deg",
+          "declaration": "float yaw_zero_deg",
+          "callback": false,
+          "ownerType": "MPU9250_AttitudeState_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 83
+          },
+          "description": "Ángulo en grados; respetar eje y referencia de esta librería."
+        },
+        {
+          "name": "initialized",
+          "declaration": "uint8_t initialized",
+          "callback": false,
+          "ownerType": "MPU9250_AttitudeState_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 84
+          },
+          "description": "Marca de inicialización local; no acredita disponibilidad de dispositivos externos."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/mpu9250_data.h",
+        "line": 71
+      }
+    },
+    {
+      "name": "MPU9250_CalibrationData_t",
+      "fields": [
+        {
+          "name": "attitudeOffsets",
+          "declaration": "MPU9250_AttitudeOffsets_t attitudeOffsets",
+          "callback": false,
+          "ownerType": "MPU9250_CalibrationData_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 88
+          },
+          "description": "Dato de estado/configuración `attitudeOffsets`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "gravity_x_mg",
+          "declaration": "int16_t gravity_x_mg",
+          "callback": false,
+          "ownerType": "MPU9250_CalibrationData_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 89
+          },
+          "description": "Dato de estado/configuración `gravity_x_mg`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "gravity_y_mg",
+          "declaration": "int16_t gravity_y_mg",
+          "callback": false,
+          "ownerType": "MPU9250_CalibrationData_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 90
+          },
+          "description": "Dato de estado/configuración `gravity_y_mg`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "gravity_z_mg",
+          "declaration": "int16_t gravity_z_mg",
+          "callback": false,
+          "ownerType": "MPU9250_CalibrationData_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 91
+          },
+          "description": "Dato de estado/configuración `gravity_z_mg`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/mpu9250_data.h",
+        "line": 88
+      }
+    },
+    {
+      "name": "MPU9250_MagCalibration_t",
+      "fields": [
+        {
+          "name": "factory_adjust_x",
+          "declaration": "float factory_adjust_x",
+          "callback": false,
+          "ownerType": "MPU9250_MagCalibration_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 95
+          },
+          "description": "Dato de estado/configuración `factory_adjust_x`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "factory_adjust_y",
+          "declaration": "float factory_adjust_y",
+          "callback": false,
+          "ownerType": "MPU9250_MagCalibration_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 96
+          },
+          "description": "Dato de estado/configuración `factory_adjust_y`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "factory_adjust_z",
+          "declaration": "float factory_adjust_z",
+          "callback": false,
+          "ownerType": "MPU9250_MagCalibration_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 97
+          },
+          "description": "Dato de estado/configuración `factory_adjust_z`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "bias_x_uT",
+          "declaration": "float bias_x_uT",
+          "callback": false,
+          "ownerType": "MPU9250_MagCalibration_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 98
+          },
+          "description": "Dato de estado/configuración `bias_x_uT`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "bias_y_uT",
+          "declaration": "float bias_y_uT",
+          "callback": false,
+          "ownerType": "MPU9250_MagCalibration_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 99
+          },
+          "description": "Dato de estado/configuración `bias_y_uT`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "bias_z_uT",
+          "declaration": "float bias_z_uT",
+          "callback": false,
+          "ownerType": "MPU9250_MagCalibration_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 100
+          },
+          "description": "Dato de estado/configuración `bias_z_uT`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "scale_x",
+          "declaration": "float scale_x",
+          "callback": false,
+          "ownerType": "MPU9250_MagCalibration_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 101
+          },
+          "description": "Dato de estado/configuración `scale_x`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "scale_y",
+          "declaration": "float scale_y",
+          "callback": false,
+          "ownerType": "MPU9250_MagCalibration_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 102
+          },
+          "description": "Dato de estado/configuración `scale_y`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "scale_z",
+          "declaration": "float scale_z",
+          "callback": false,
+          "ownerType": "MPU9250_MagCalibration_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 103
+          },
+          "description": "Dato de estado/configuración `scale_z`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/mpu9250_data.h",
+        "line": 95
+      }
+    },
+    {
+      "name": "MPU9250_Snapshot_t",
+      "fields": [
+        {
+          "name": "flags",
+          "declaration": "uint8_t flags",
+          "callback": false,
+          "ownerType": "MPU9250_Snapshot_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 107
+          },
+          "description": "Bits de estado del módulo; conservar máscaras y distinguir estado de eventos pendientes."
+        },
+        {
+          "name": "sample_seq",
+          "declaration": "uint16_t sample_seq",
+          "callback": false,
+          "ownerType": "MPU9250_Snapshot_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 108
+          },
+          "description": "Secuencia de muestra; cambia al producir nuevos datos, no al volver a leerlos."
+        },
+        {
+          "name": "sample_dt_us",
+          "declaration": "uint16_t sample_dt_us",
+          "callback": false,
+          "ownerType": "MPU9250_Snapshot_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 109
+          },
+          "description": "Tiempo o intervalo en microsegundos; precisión efectiva dependiente del puerto."
+        },
+        {
+          "name": "accel_x_mg",
+          "declaration": "int16_t accel_x_mg",
+          "callback": false,
+          "ownerType": "MPU9250_Snapshot_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 110
+          },
+          "description": "Dato de estado/configuración `accel_x_mg`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "accel_y_mg",
+          "declaration": "int16_t accel_y_mg",
+          "callback": false,
+          "ownerType": "MPU9250_Snapshot_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 111
+          },
+          "description": "Dato de estado/configuración `accel_y_mg`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "accel_z_mg",
+          "declaration": "int16_t accel_z_mg",
+          "callback": false,
+          "ownerType": "MPU9250_Snapshot_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 112
+          },
+          "description": "Dato de estado/configuración `accel_z_mg`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "linear_accel_x_mg",
+          "declaration": "int16_t linear_accel_x_mg",
+          "callback": false,
+          "ownerType": "MPU9250_Snapshot_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 113
+          },
+          "description": "Dato de estado/configuración `linear_accel_x_mg`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "linear_accel_y_mg",
+          "declaration": "int16_t linear_accel_y_mg",
+          "callback": false,
+          "ownerType": "MPU9250_Snapshot_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 114
+          },
+          "description": "Dato de estado/configuración `linear_accel_y_mg`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "linear_accel_z_mg",
+          "declaration": "int16_t linear_accel_z_mg",
+          "callback": false,
+          "ownerType": "MPU9250_Snapshot_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 115
+          },
+          "description": "Dato de estado/configuración `linear_accel_z_mg`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "gyro_x_mdps",
+          "declaration": "int32_t gyro_x_mdps",
+          "callback": false,
+          "ownerType": "MPU9250_Snapshot_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 116
+          },
+          "description": "Dato de estado/configuración `gyro_x_mdps`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "gyro_y_mdps",
+          "declaration": "int32_t gyro_y_mdps",
+          "callback": false,
+          "ownerType": "MPU9250_Snapshot_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 117
+          },
+          "description": "Dato de estado/configuración `gyro_y_mdps`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "gyro_z_mdps",
+          "declaration": "int32_t gyro_z_mdps",
+          "callback": false,
+          "ownerType": "MPU9250_Snapshot_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 118
+          },
+          "description": "Dato de estado/configuración `gyro_z_mdps`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "mag_x_nt",
+          "declaration": "int32_t mag_x_nt",
+          "callback": false,
+          "ownerType": "MPU9250_Snapshot_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 119
+          },
+          "description": "Dato de estado/configuración `mag_x_nt`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "mag_y_nt",
+          "declaration": "int32_t mag_y_nt",
+          "callback": false,
+          "ownerType": "MPU9250_Snapshot_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 120
+          },
+          "description": "Dato de estado/configuración `mag_y_nt`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "mag_z_nt",
+          "declaration": "int32_t mag_z_nt",
+          "callback": false,
+          "ownerType": "MPU9250_Snapshot_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 121
+          },
+          "description": "Dato de estado/configuración `mag_z_nt`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "roll_md",
+          "declaration": "int32_t roll_md",
+          "callback": false,
+          "ownerType": "MPU9250_Snapshot_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 122
+          },
+          "description": "Dato de estado/configuración `roll_md`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "pitch_md",
+          "declaration": "int32_t pitch_md",
+          "callback": false,
+          "ownerType": "MPU9250_Snapshot_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 123
+          },
+          "description": "Dato de estado/configuración `pitch_md`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "yaw_md",
+          "declaration": "int32_t yaw_md",
+          "callback": false,
+          "ownerType": "MPU9250_Snapshot_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/mpu9250_data.h",
+            "line": 124
+          },
+          "description": "Dato de estado/configuración `yaw_md`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/mpu9250_data.h",
+        "line": 107
+      }
+    },
+    {
+      "name": "MPU9250_Callback",
+      "callbackType": "void (*MPU9250_Callback)(void)",
+      "fields": [],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/mpu9250_data.h",
+        "line": 10
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "MPU9250_ApplyCalibrationData",
+      "signature": "AM_Result MPU9250_ApplyCalibrationData(MPU9250_Handle_t *hmpu, const MPU9250_CalibrationData_t *calibration)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/mpu9250.h",
+        "line": 46
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "CLEAR_FLAG",
+        "MPU9250_AttitudeInit",
+        "MPU9250_AttitudeSetOffsets",
+        "MPU_DegToMd",
+        "MPU_RoundFloatToI32",
+        "SET_FLAG"
+      ],
+      "writes": [
+        "angle_x_deg",
+        "angle_x_md",
+        "angle_y_deg",
+        "angle_y_md",
+        "angle_z_deg",
+        "angle_z_md",
+        "gravity_x_mg",
+        "gravity_x_mg_f",
+        "gravity_y_mg",
+        "gravity_y_mg_f",
+        "gravity_z_mg",
+        "gravity_z_mg_f",
+        "gyro_bias_x",
+        "gyro_bias_x_dps",
+        "gyro_bias_y",
+        "gyro_bias_y_dps",
+        "gyro_bias_z",
+        "gyro_bias_z_dps",
+        "pitch_ref_deg",
+        "pitch_ref_md",
+        "rem_x",
+        "rem_y",
+        "rem_z",
+        "roll_ref_deg",
+        "roll_ref_md"
+      ],
+      "description": "Carga sesgos y referencias de calibración en la instancia.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 1058
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MPU9250_AttitudeInit",
+      "signature": "void MPU9250_AttitudeInit(MPU9250_AttitudeState_t *state, float kp, float ki, float fixed_dt_s)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/mpu9250.h",
+        "line": 36
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "memset"
+      ],
+      "writes": [
+        "fixed_dt_s",
+        "ki",
+        "kp",
+        "offsets",
+        "q0",
+        "yaw_zero_deg"
+      ],
+      "description": "Inicializa el filtro de actitud con ganancias y dt fijo.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 373
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MPU9250_AttitudeResetYaw",
+      "signature": "void MPU9250_AttitudeResetYaw(MPU9250_AttitudeState_t *state)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/mpu9250.h",
+        "line": 42
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [
+        "yaw_zero_deg"
+      ],
+      "description": "Restablece la referencia yaw del filtro.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 406
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MPU9250_AttitudeSetOffsets",
+      "signature": "void MPU9250_AttitudeSetOffsets(MPU9250_AttitudeState_t *state, const MPU9250_AttitudeOffsets_t *offsets)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/mpu9250.h",
+        "line": 40
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [
+        "offsets"
+      ],
+      "description": "Configura correcciones de orientación del filtro.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 396
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MPU9250_AttitudeUpdate",
+      "signature": "void MPU9250_AttitudeUpdate(MPU9250_AttitudeState_t *state, const MPU9250_NormalizedData_t *input, MPU9250_Attitude_t *out)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/mpu9250.h",
+        "line": 43
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MPU_AccelPitchDegG",
+        "MPU_AccelRollDegG",
+        "MPU_ClampFloat",
+        "MPU_MagHeadingDeg",
+        "MPU_MahonyUpdate",
+        "MPU_Normalize180",
+        "MPU_Normalize360",
+        "MPU_QuaternionFromEuler",
+        "asinf",
+        "atan2f"
+      ],
+      "writes": [
+        "initialized"
+      ],
+      "description": "Actualiza actitud con datos físicos normalizados.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 416
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MPU9250_BindPort",
+      "signature": "AM_Result MPU9250_BindPort(MPU9250_Handle_t *hmpu)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/mpu9250.h",
+        "line": 13
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "bind"
+      ],
+      "writes": [],
+      "description": "Registra callbacks y dirección del sensor en el puerto I2C.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 731
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MPU9250_CalibrateGyro",
+      "signature": "void MPU9250_CalibrateGyro(MPU9250_Handle_t *hmpu, uint16_t samples)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/mpu9250.h",
+        "line": 17
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MPU9250_StartCalibration"
+      ],
+      "writes": [],
+      "description": "Inicia calibración de giroscopio con objetivo de muestras.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 1397
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MPU9250_CheckTrigger",
+      "signature": "void MPU9250_CheckTrigger(MPU9250_Handle_t *hmpu)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/mpu9250.h",
+        "line": 19
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MPU9250_RequestAllData"
+      ],
+      "writes": [],
+      "description": "Consume trigger y solicita adquisición completa cuando corresponde.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 889
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MPU9250_ClearNewFlag",
+      "signature": "void MPU9250_ClearNewFlag(MPU9250_Handle_t *hmpu)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/mpu9250.h",
+        "line": 33
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "CLEAR_FLAG"
+      ],
+      "writes": [],
+      "description": "Limpia la marca de nuevo dato sin producir otra muestra.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 995
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MPU9250_Configure",
+      "signature": "AM_Result MPU9250_Configure(MPU9250_Handle_t *hmpu)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/mpu9250.h",
+        "line": 15
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "CLEAR_FLAG",
+        "MPU_ConfigureAk8963",
+        "MPU_ReadRegister",
+        "MPU_SetError",
+        "MPU_WriteRegister",
+        "delay_ms"
+      ],
+      "writes": [],
+      "description": "Configura MPU/AK8963 mediante transferencias y esperas síncronas.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 853
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MPU9250_Convert",
+      "signature": "void MPU9250_Convert(MPU9250_Handle_t *hmpu)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/mpu9250.h",
+        "line": 63
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MERGE_RAW_BE",
+        "MERGE_RAW_LE",
+        "MPU_RoundFloatToI32",
+        "sqrtf"
+      ],
+      "writes": [],
+      "description": "Convierte lectura raw a las magnitudes internas del driver.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 1240
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MPU9250_GetAttitude",
+      "signature": "AM_Result MPU9250_GetAttitude(const MPU9250_Handle_t *hmpu, MPU9250_Attitude_t *out)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/mpu9250.h",
+        "line": 51
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MPU9250_IsSampleFresh",
+        "now_ms"
+      ],
+      "writes": [],
+      "description": "Copia la actitud calculada si está disponible.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 1141
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MPU9250_GetCalibrationData",
+      "signature": "AM_Result MPU9250_GetCalibrationData(const MPU9250_Handle_t *hmpu, MPU9250_CalibrationData_t *out)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/mpu9250.h",
+        "line": 48
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "IS_FLAG_SET"
+      ],
+      "writes": [
+        "attitudeOffsets",
+        "gravity_x_mg",
+        "gravity_y_mg",
+        "gravity_z_mg"
+      ],
+      "description": "Copia los datos de calibración que pueden persistirse.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 1107
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MPU9250_GetCalibrationProgressPercent",
+      "signature": "uint8_t MPU9250_GetCalibrationProgressPercent(const MPU9250_Handle_t *hmpu)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/mpu9250.h",
+        "line": 62
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "IS_FLAG_SET",
+        "now_ms"
+      ],
+      "writes": [],
+      "description": "Consulta avance porcentual de la calibración.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 1212
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MPU9250_GetData",
+      "signature": "const MPU9250_IntData_t *MPU9250_GetData(MPU9250_Handle_t *hmpu)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/mpu9250.h",
+        "line": 28
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Devuelve vista prestada de datos enteros internos.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 965
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MPU9250_GetFrontTiltDeg",
+      "signature": "float MPU9250_GetFrontTiltDeg(const MPU9250_Handle_t *hmpu)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/mpu9250.h",
+        "line": 57
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "IS_FLAG_SET"
+      ],
+      "writes": [],
+      "description": "Consulta inclinación frontal según el montaje Y/pitch del robot.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 1184
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MPU9250_GetLateralTiltDeg",
+      "signature": "float MPU9250_GetLateralTiltDeg(const MPU9250_Handle_t *hmpu)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/mpu9250.h",
+        "line": 58
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "IS_FLAG_SET"
+      ],
+      "writes": [],
+      "description": "Consulta inclinación lateral según el montaje X/roll del robot.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 1193
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MPU9250_GetLatest",
+      "signature": "AM_Result MPU9250_GetLatest(MPU9250_Handle_t *hmpu, MPU9250_Snapshot_t *out)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/mpu9250.h",
+        "line": 29
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MPU9250_IsSampleFresh",
+        "now_ms"
+      ],
+      "writes": [
+        "flags"
+      ],
+      "description": "Copia el último snapshot disponible a la salida del llamador.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 970
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MPU9250_GetMagCalibration",
+      "signature": "void MPU9250_GetMagCalibration(const MPU9250_Handle_t *hmpu, MPU9250_MagCalibration_t *out)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/mpu9250.h",
+        "line": 52
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Copia calibración del magnetómetro.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 1151
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MPU9250_GetNormalizedData",
+      "signature": "void MPU9250_GetNormalizedData(const MPU9250_Handle_t *hmpu, MPU9250_NormalizedData_t *out)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/mpu9250.h",
+        "line": 50
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [
+        "ax_g",
+        "ay_g",
+        "az_g",
+        "gx_dps",
+        "gy_dps",
+        "gz_dps",
+        "mag_valid",
+        "mx_uT",
+        "my_uT",
+        "mz_uT",
+        "sample_dt_s"
+      ],
+      "description": "Copia magnitudes convertidas a unidades físicas.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 1122
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MPU9250_GetOrientation",
+      "signature": "void MPU9250_GetOrientation(const MPU9250_Handle_t *hmpu, MPU9250_Orientation_t *out)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/mpu9250.h",
+        "line": 35
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [
+        "angle_x_md",
+        "angle_y_md",
+        "angle_z_md"
+      ],
+      "description": "Copia la orientación con la referencia vigente.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 1047
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MPU9250_GetPitchDeg",
+      "signature": "float MPU9250_GetPitchDeg(const MPU9250_Handle_t *hmpu)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/mpu9250.h",
+        "line": 59
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MPU9250_GetFrontTiltDeg"
+      ],
+      "writes": [],
+      "description": "Consulta pitch mediante la convención pública del driver.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 1179
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MPU9250_HasNewSample",
+      "signature": "uint8_t MPU9250_HasNewSample(const MPU9250_Handle_t *hmpu, uint16_t last_seq)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/mpu9250.h",
+        "line": 32
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "IS_FLAG_SET"
+      ],
+      "writes": [],
+      "description": "Compara secuencia actual con la última consumida.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 988
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MPU9250_Init",
+      "signature": "AM_Result MPU9250_Init(MPU9250_Handle_t *hmpu, uint8_t address, const AM_I2C_DevicePort *bus, MPU9250_Callback on_data_ready, volatile bool *trigger)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/mpu9250.h",
+        "line": 7
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MPU9250_AttitudeInit",
+        "memset"
+      ],
+      "writes": [
+        "bus",
+        "dt_div",
+        "expected_rx_len",
+        "i2c_address",
+        "last_read_mode",
+        "on_data_ready_cb",
+        "read_mode",
+        "transfer_state",
+        "trigger"
+      ],
+      "description": "Inicializa instancia, puerto, callback de muestra y bandera de trigger.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 696
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MPU9250_IsCalibrated",
+      "signature": "uint8_t MPU9250_IsCalibrated(const MPU9250_Handle_t *hmpu)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/mpu9250.h",
+        "line": 61
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "IS_FLAG_SET"
+      ],
+      "writes": [],
+      "description": "Indica si la instancia tiene calibración disponible.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 1207
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MPU9250_IsCalibrating",
+      "signature": "uint8_t MPU9250_IsCalibrating(const MPU9250_Handle_t *hmpu)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/mpu9250.h",
+        "line": 60
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "IS_FLAG_SET"
+      ],
+      "writes": [],
+      "description": "Indica si hay una calibración en curso.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 1202
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MPU9250_IsSampleFresh",
+      "signature": "uint8_t MPU9250_IsSampleFresh(const MPU9250_Handle_t *hmpu, uint32_t now_ms)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/mpu9250.h",
+        "line": 30
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "IS_FLAG_SET"
+      ],
+      "writes": [],
+      "description": "Comprueba edad y validez de muestra frente a now_ms.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 981
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MPU9250_Process",
+      "signature": "void MPU9250_Process(MPU9250_Handle_t *hmpu)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/mpu9250.h",
+        "line": 20
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "CLEAR_FLAG",
+        "IS_FLAG_SET",
+        "MPU9250_CheckTrigger",
+        "MPU9250_Convert",
+        "MPU_IsStationary",
+        "MPU_ProcessCalibration",
+        "MPU_UpdateEstimator",
+        "SET_FLAG",
+        "on_data_ready_cb"
+      ],
+      "writes": [],
+      "description": "Procesa una adquisición terminada y publica el nuevo estado de muestra.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 901
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MPU9250_ReadWhoAmI",
+      "signature": "AM_Result MPU9250_ReadWhoAmI(MPU9250_Handle_t *hmpu, uint8_t *whoami)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/mpu9250.h",
+        "line": 65
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "mem_read"
+      ],
+      "writes": [],
+      "description": "Lee síncronamente el registro de identidad del dispositivo.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 1341
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MPU9250_RequestAccel",
+      "signature": "AM_Result MPU9250_RequestAccel(MPU9250_Handle_t *hmpu)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/mpu9250.h",
+        "line": 23
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MPU9250_RequestRead"
+      ],
+      "writes": [],
+      "description": "Solicita lectura de acelerómetro.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 945
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MPU9250_RequestAllData",
+      "signature": "AM_Result MPU9250_RequestAllData(MPU9250_Handle_t *hmpu)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/mpu9250.h",
+        "line": 22
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MPU9250_RequestRead"
+      ],
+      "writes": [],
+      "description": "Solicita la adquisición agrupada de los datos del sensor.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 940
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MPU9250_RequestGyro",
+      "signature": "AM_Result MPU9250_RequestGyro(MPU9250_Handle_t *hmpu)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/mpu9250.h",
+        "line": 24
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MPU9250_RequestRead"
+      ],
+      "writes": [],
+      "description": "Solicita lectura de giroscopio.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 950
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MPU9250_RequestOrientation",
+      "signature": "AM_Result MPU9250_RequestOrientation(MPU9250_Handle_t *hmpu)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/mpu9250.h",
+        "line": 26
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MPU9250_RequestAllData"
+      ],
+      "writes": [],
+      "description": "Solicita los datos usados por la orientación.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 960
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MPU9250_RequestTemp",
+      "signature": "AM_Result MPU9250_RequestTemp(MPU9250_Handle_t *hmpu)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/mpu9250.h",
+        "line": 25
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MPU9250_RequestRead"
+      ],
+      "writes": [],
+      "description": "Solicita lectura de temperatura.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 955
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MPU9250_SetMagCalibration",
+      "signature": "AM_Result MPU9250_SetMagCalibration(MPU9250_Handle_t *hmpu, const MPU9250_MagCalibration_t *calibration)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/mpu9250.h",
+        "line": 54
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Aplica calibración del magnetómetro.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 1160
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MPU9250_SetReferenceNow",
+      "signature": "void MPU9250_SetReferenceNow(MPU9250_Handle_t *hmpu)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/mpu9250.h",
+        "line": 34
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MPU9250_AttitudeInit",
+        "MPU9250_AttitudeSetOffsets",
+        "MPU_AccelPitchDeg",
+        "MPU_AccelRollDeg",
+        "MPU_DegToMd"
+      ],
+      "writes": [
+        "angle_x_deg",
+        "angle_x_md",
+        "angle_y_deg",
+        "angle_y_md",
+        "angle_z_deg",
+        "angle_z_md",
+        "gravity_x_mg",
+        "gravity_x_mg_f",
+        "gravity_y_mg",
+        "gravity_y_mg_f",
+        "gravity_z_mg",
+        "gravity_z_mg_f",
+        "pitch_ref_deg",
+        "pitch_ref_md",
+        "rem_x",
+        "rem_y",
+        "rem_z",
+        "roll_ref_deg",
+        "roll_ref_md"
+      ],
+      "description": "Fija la referencia angular a partir de la orientación actual.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 1005
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MPU9250_StartCalibration",
+      "signature": "void MPU9250_StartCalibration(MPU9250_Handle_t *hmpu, uint16_t warmup_ms, uint16_t window_ms)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/mpu9250.h",
+        "line": 18
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "CLEAR_FLAG",
+        "MPU_ResetCalibrationAccum",
+        "SET_FLAG",
+        "now_ms"
+      ],
+      "writes": [
+        "calib_started_ms",
+        "calib_target",
+        "calib_warmup_ms",
+        "calib_window_ms",
+        "last_sample_time_us",
+        "prev_accel_valid"
+      ],
+      "description": "Inicia calentamiento y ventana temporal de calibración.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 1356
+      },
+      "linkage": "header"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "MPU_Abs32",
+      "signature": "static int32_t MPU_Abs32(int32_t value)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 83
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Abs32 de MPU9250 y estimación de actitud; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "MPU_ClampI16",
+      "signature": "static int16_t MPU_ClampI16(int32_t value)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 88
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Clamp I16 de MPU9250 y estimación de actitud; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "MPU_RoundFloatToI32",
+      "signature": "static int32_t MPU_RoundFloatToI32(float value)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 99
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Round Float To I32 de MPU9250 y estimación de actitud; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "MPU_DegToMd",
+      "signature": "static int32_t MPU_DegToMd(float deg)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 104
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "MPU_RoundFloatToI32"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `MPU_RoundFloatToI32` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "MPU_Normalize180",
+      "signature": "static float MPU_Normalize180(float angle_deg)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 109
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Normalize180 de MPU9250 y estimación de actitud; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "MPU_Normalize360",
+      "signature": "static float MPU_Normalize360(float angle_deg)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 120
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Normalize360 de MPU9250 y estimación de actitud; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "MPU_ClampFloat",
+      "signature": "static float MPU_ClampFloat(float value, float low, float high)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 131
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Clamp Float de MPU9250 y estimación de actitud; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "MPU_AccelRollDegG",
+      "signature": "static float MPU_AccelRollDegG(float ay_g, float az_g)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 142
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "atan2f"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `atan2f` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "MPU_AccelPitchDegG",
+      "signature": "static float MPU_AccelPitchDegG(float ax_g, float ay_g, float az_g)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 147
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "atan2f",
+        "sqrtf"
+      ],
+      "writes": [],
+      "description": "Coordina `atan2f`, `sqrtf` para MPU9250 y estimación de actitud.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "MPU_AccelRollDeg",
+      "signature": "static float MPU_AccelRollDeg(int16_t ay, int16_t az)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 153
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "MPU_AccelRollDegG"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `MPU_AccelRollDegG` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "MPU_AccelPitchDeg",
+      "signature": "static float MPU_AccelPitchDeg(int16_t ax, int16_t ay, int16_t az)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 158
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "MPU_AccelPitchDegG"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `MPU_AccelPitchDegG` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "MPU_MagHeadingDeg",
+      "signature": "static float MPU_MagHeadingDeg(const MPU9250_NormalizedData_t *input, float roll_deg, float pitch_deg)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 163
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "MPU_Normalize360",
+        "atan2f",
+        "cosf",
+        "sinf"
+      ],
+      "writes": [],
+      "description": "Coordina `MPU_Normalize360`, `atan2f`, `cosf` para MPU9250 y estimación de actitud.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "MPU_QuaternionFromEuler",
+      "signature": "static void MPU_QuaternionFromEuler(float roll_deg, float pitch_deg, float yaw_deg, MPU9250_AttitudeState_t *state)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 182
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "cosf",
+        "sinf"
+      ],
+      "writes": [
+        "q0",
+        "q1",
+        "q2",
+        "q3"
+      ],
+      "description": "Coordina `cosf`, `sinf` para MPU9250 y estimación de actitud.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "MPU_MahonyUpdate",
+      "signature": "static void MPU_MahonyUpdate(MPU9250_AttitudeState_t *state, const MPU9250_NormalizedData_t *input, float dt_s)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 203
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "sqrtf"
+      ],
+      "writes": [
+        "integral_x",
+        "integral_y",
+        "integral_z",
+        "q0",
+        "q1",
+        "q2",
+        "q3"
+      ],
+      "description": "Coordina `sqrtf` para MPU9250 y estimación de actitud.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "MPU_IsStationary",
+      "signature": "static uint8_t MPU_IsStationary(MPU9250_Handle_t *hmpu)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 327
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "MPU_Abs32",
+        "fabsf",
+        "sqrtf"
+      ],
+      "writes": [
+        "prev_accel_valid",
+        "prev_accel_x_mg",
+        "prev_accel_y_mg",
+        "prev_accel_z_mg"
+      ],
+      "description": "Indica si se cumple la condición Stationary dentro de MPU9250 y estimación de actitud.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "MPU_ClampDtUs",
+      "signature": "static uint16_t MPU_ClampDtUs(uint32_t dt_us)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 362
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Clamp Dt Us de MPU9250 y estimación de actitud; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "MPU_UpdateSampleTiming",
+      "signature": "static void MPU_UpdateSampleTiming(MPU9250_Handle_t *hmpu)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 482
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "MPU_ClampDtUs",
+        "now_ms",
+        "now_us"
+      ],
+      "writes": [
+        "last_sample_time_us",
+        "sample_acquired_ms"
+      ],
+      "description": "Actualiza Sample Timing dentro de MPU9250 y estimación de actitud.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "MPU_SetError",
+      "signature": "static void MPU_SetError(MPU9250_Handle_t *hmpu)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 494
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "CLEAR_FLAG",
+        "SET_FLAG"
+      ],
+      "writes": [],
+      "description": "Configura Error dentro de MPU9250 y estimación de actitud.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "MPU_ResetCalibrationAccum",
+      "signature": "static void MPU_ResetCalibrationAccum(MPU9250_Handle_t *hmpu)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 501
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [
+        "calib_accel_sum_x",
+        "calib_accel_sum_y",
+        "calib_accel_sum_z",
+        "calib_count",
+        "calib_sum_x",
+        "calib_sum_y",
+        "calib_sum_z"
+      ],
+      "description": "Restablece Calibration Accum dentro de MPU9250 y estimación de actitud.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "MPU_FinishCalibration",
+      "signature": "static void MPU_FinishCalibration(MPU9250_Handle_t *hmpu)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 512
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "CLEAR_FLAG",
+        "MPU9250_AttitudeInit",
+        "MPU9250_AttitudeSetOffsets",
+        "MPU_AccelPitchDeg",
+        "MPU_AccelRollDeg",
+        "MPU_ClampI16",
+        "MPU_DegToMd",
+        "MPU_SetError",
+        "SET_FLAG"
+      ],
+      "writes": [
+        "angle_x_deg",
+        "angle_x_md",
+        "angle_y_deg",
+        "angle_y_md",
+        "angle_z_deg",
+        "angle_z_md",
+        "gravity_x_mg",
+        "gravity_x_mg_f",
+        "gravity_y_mg",
+        "gravity_y_mg_f",
+        "gravity_z_mg",
+        "gravity_z_mg_f",
+        "gyro_bias_x",
+        "gyro_bias_x_dps",
+        "gyro_bias_y",
+        "gyro_bias_y_dps",
+        "gyro_bias_z",
+        "gyro_bias_z_dps",
+        "pitch_ref_deg",
+        "pitch_ref_md",
+        "rem_x",
+        "rem_y",
+        "rem_z",
+        "roll_ref_deg",
+        "roll_ref_md"
+      ],
+      "description": "Coordina `CLEAR_FLAG`, `MPU9250_AttitudeInit`, `MPU9250_AttitudeSetOffsets` para MPU9250 y estimación de actitud.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "MPU_ProcessCalibration",
+      "signature": "static void MPU_ProcessCalibration(MPU9250_Handle_t *hmpu, uint8_t stationary)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 572
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "MPU_FinishCalibration",
+        "MPU_ResetCalibrationAccum",
+        "SET_FLAG",
+        "now_ms"
+      ],
+      "writes": [
+        "calib_accel_sum_x",
+        "calib_accel_sum_y",
+        "calib_accel_sum_z",
+        "calib_count",
+        "calib_started_ms",
+        "calib_sum_x",
+        "calib_sum_y",
+        "calib_sum_z"
+      ],
+      "description": "Coordina `MPU_FinishCalibration`, `MPU_ResetCalibrationAccum`, `SET_FLAG` para MPU9250 y estimación de actitud.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "MPU_UpdateEstimator",
+      "signature": "static void MPU_UpdateEstimator(MPU9250_Handle_t *hmpu, uint8_t stationary)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 610
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "CLEAR_FLAG",
+        "IS_FLAG_SET",
+        "MPU9250_AttitudeUpdate",
+        "MPU9250_GetNormalizedData",
+        "MPU_ClampI16",
+        "MPU_DegToMd",
+        "MPU_RoundFloatToI32",
+        "SET_FLAG"
+      ],
+      "writes": [
+        "angle_x_deg",
+        "angle_x_md",
+        "angle_y_deg",
+        "angle_y_md",
+        "angle_z_deg",
+        "angle_z_md",
+        "gravity_x_mg",
+        "gravity_x_mg_f",
+        "gravity_y_mg",
+        "gravity_y_mg_f",
+        "gravity_z_mg",
+        "gravity_z_mg_f",
+        "last_attitude_ms"
+      ],
+      "description": "Actualiza Estimator dentro de MPU9250 y estimación de actitud.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "MPU9250_RequestRead",
+      "signature": "static AM_Result MPU9250_RequestRead(MPU9250_Handle_t *hmpu, MPU9250_ReadMode mode, uint8_t start_reg, uint8_t len)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 667
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "MPU_SetError",
+        "request"
+      ],
+      "writes": [
+        "expected_rx_len",
+        "read_mode",
+        "transfer_state"
+      ],
+      "description": "Solicita Read dentro de MPU9250 y estimación de actitud.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "MPU_WriteRegister",
+      "signature": "static AM_Result MPU_WriteRegister(MPU9250_Handle_t *hmpu, uint8_t reg, uint8_t value)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 740
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "mem_write"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `mem_write` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "MPU_ReadRegister",
+      "signature": "static AM_Result MPU_ReadRegister(MPU9250_Handle_t *hmpu, uint8_t reg, uint8_t *value)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 753
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "mem_read"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `mem_read` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "AK8963_WriteRegister",
+      "signature": "static AM_Result AK8963_WriteRegister(MPU9250_Handle_t *hmpu, uint8_t reg, uint8_t value)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 766
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "mem_write"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `mem_write` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "AK8963_ReadRegisters",
+      "signature": "static AM_Result AK8963_ReadRegisters(MPU9250_Handle_t *hmpu, uint8_t reg, uint8_t *data, uint16_t len)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 779
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "mem_read"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `mem_read` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "MPU_ConfigureAk8963",
+      "signature": "static AM_Result MPU_ConfigureAk8963(MPU9250_Handle_t *hmpu)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 793
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "AK8963_ReadRegisters",
+        "AK8963_WriteRegister",
+        "MPU_WriteRegister",
+        "delay_ms"
+      ],
+      "writes": [],
+      "description": "Coordina `AK8963_ReadRegisters`, `AK8963_WriteRegister`, `MPU_WriteRegister` para MPU9250 y estimación de actitud.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "MPU_I2C_RequestApproved",
+      "signature": "static void MPU_I2C_RequestApproved(void *ctx)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 1410
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "MPU_SetError",
+        "SET_FLAG",
+        "release",
+        "tx_dma"
+      ],
+      "writes": [
+        "transfer_state"
+      ],
+      "description": "Coordina `MPU_SetError`, `SET_FLAG`, `release` para MPU9250 y estimación de actitud.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "MPU_I2C_TxComplete",
+      "signature": "static void MPU_I2C_TxComplete(void *ctx)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 1437
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "CLEAR_FLAG",
+        "MPU_SetError",
+        "release",
+        "rx_dma"
+      ],
+      "writes": [
+        "transfer_state"
+      ],
+      "description": "Coordina `CLEAR_FLAG`, `MPU_SetError`, `release` para MPU9250 y estimación de actitud.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "MPU_I2C_RxComplete",
+      "signature": "static void MPU_I2C_RxComplete(void *ctx)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 1460
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "CLEAR_FLAG",
+        "MPU_UpdateSampleTiming",
+        "SET_FLAG",
+        "release"
+      ],
+      "writes": [
+        "last_read_mode",
+        "transfer_state"
+      ],
+      "description": "Coordina `CLEAR_FLAG`, `MPU_UpdateSampleTiming`, `SET_FLAG` para MPU9250 y estimación de actitud.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "MPU_I2C_Error",
+      "signature": "static void MPU_I2C_Error(void *ctx, I2C_ManagerError err)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/mpu9250.c",
+        "line": 1477
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "CLEAR_FLAG",
+        "MPU_SetError",
+        "memset"
+      ],
+      "writes": [
+        "last_read_mode",
+        "transfer_state"
+      ],
+      "description": "Coordina `CLEAR_FLAG`, `MPU_SetError`, `memset` para MPU9250 y estimación de actitud.",
+      "descriptionOrigin": "structural"
+    }
+  ]
+}

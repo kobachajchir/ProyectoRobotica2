@@ -1,0 +1,1174 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "esp:module/src/uart_transaction_manager.h",
+  "slug": "uart-transactions",
+  "title": "Broker de transacciones UART",
+  "target": "esp",
+  "kind": "núcleo",
+  "status": "source-documented",
+  "snapshotDate": "2026-10-20",
+  "verification": "not-run-user-instruction",
+  "responsibility": "Relaciona requests Web con solicitudes UART acotadas y una transacción en vuelo.",
+  "scope": "Cola, cuota por cliente, generación, deadline, reintento idempotente y finalización por ACK/mismo comando.",
+  "state": "UartTransactionManager posee queue[8], inflight y métricas; UtmRequest copia payload, request_id y command_name. send_fn/send_ctx y completion_fn/completion_ctx son prestados y deben permanecer válidos.",
+  "modularity": "C sin WebSocket concreto; las identidades de cliente y políticas son parte del contrato del broker.",
+  "lifecycle": [
+    "utm_enqueue copia y valida admisión; no significa ejecución F4.",
+    "utm_service inicia/reintenta/vence según deadlines y disponibilidad.",
+    "utm_on_frame exige ruta inversa y comando correlacionado; eventos MPU/IR no completan la solicitud.",
+    "Disconnect invalida generación o deja la transacción huérfana sin completarla sobre otro socket."
+  ],
+  "interactions": [
+    "requests.inc traduce política del registro y emite requestAccepted.",
+    "completion entrega resultado al bridge que construye response/error JSON."
+  ],
+  "limitations": [
+    "UTM_MAX_QUEUED_PER_CLIENT=2; cola total 8.",
+    "Reintentar una mutación no idempotente puede duplicar efectos; respetar retry_policy."
+  ],
+  "relationships": [],
+  "findings": [],
+  "files": [
+    {
+      "rootId": "esp",
+      "path": "src/uart_transaction_manager.c",
+      "sha256": "8d944ca3a4cdda6adebdb8e59fa243a50f097bfc7cdd356bf4d779b9ce52e445",
+      "imports": [
+        "uart_transaction_manager.h",
+        "string.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    },
+    {
+      "rootId": "esp",
+      "path": "src/uart_transaction_manager.h",
+      "sha256": "a6044e17ecd6041a082ea00bbb90a866fbd8ed13b32e553f124bbac12b6d3561",
+      "imports": [
+        "stddef.h",
+        "stdint.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    }
+  ],
+  "types": [
+    {
+      "name": "UtmFrame",
+      "fields": [
+        {
+          "name": "src",
+          "declaration": "uint8_t src",
+          "callback": false,
+          "ownerType": "UtmFrame",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uart_transaction_manager.h",
+            "line": 76
+          },
+          "description": "Dato de estado/configuración `src`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "dst",
+          "declaration": "uint8_t dst",
+          "callback": false,
+          "ownerType": "UtmFrame",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uart_transaction_manager.h",
+            "line": 77
+          },
+          "description": "Dato de estado/configuración `dst`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "command_id",
+          "declaration": "uint8_t command_id",
+          "callback": false,
+          "ownerType": "UtmFrame",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uart_transaction_manager.h",
+            "line": 78
+          },
+          "description": "Dato de estado/configuración `command_id`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "payload",
+          "declaration": "const uint8_t *payload",
+          "callback": false,
+          "ownerType": "UtmFrame",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uart_transaction_manager.h",
+            "line": 79
+          },
+          "description": "Vista del payload; copiar antes de permitir la reutilización del slot del parser."
+        },
+        {
+          "name": "payload_len",
+          "declaration": "uint16_t payload_len",
+          "callback": false,
+          "ownerType": "UtmFrame",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uart_transaction_manager.h",
+            "line": 80
+          },
+          "description": "Dato de estado/configuración `payload_len`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uart_transaction_manager.h",
+        "line": 76
+      }
+    },
+    {
+      "name": "UtmRequest",
+      "fields": [
+        {
+          "name": "client_id",
+          "declaration": "uint32_t client_id",
+          "callback": false,
+          "ownerType": "UtmRequest",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uart_transaction_manager.h",
+            "line": 84
+          },
+          "description": "Dato de estado/configuración `client_id`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "generation",
+          "declaration": "uint32_t generation",
+          "callback": false,
+          "ownerType": "UtmRequest",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uart_transaction_manager.h",
+            "line": 85
+          },
+          "description": "Generación que impide completar sobre una conexión reemplazada."
+        },
+        {
+          "name": "node",
+          "declaration": "uint8_t node",
+          "callback": false,
+          "ownerType": "UtmRequest",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uart_transaction_manager.h",
+            "line": 86
+          },
+          "description": "Dato de estado/configuración `node`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "dst_node",
+          "declaration": "uint8_t dst_node",
+          "callback": false,
+          "ownerType": "UtmRequest",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uart_transaction_manager.h",
+            "line": 87
+          },
+          "description": "Dato de estado/configuración `dst_node`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "command_id",
+          "declaration": "uint8_t command_id",
+          "callback": false,
+          "ownerType": "UtmRequest",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uart_transaction_manager.h",
+            "line": 88
+          },
+          "description": "Dato de estado/configuración `command_id`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "owner",
+          "declaration": "UtmCommandOwner owner",
+          "callback": false,
+          "ownerType": "UtmRequest",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uart_transaction_manager.h",
+            "line": 89
+          },
+          "description": "Dato de estado/configuración `owner`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "response_policy",
+          "declaration": "UtmResponsePolicy response_policy",
+          "callback": false,
+          "ownerType": "UtmRequest",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uart_transaction_manager.h",
+            "line": 90
+          },
+          "description": "Dato de estado/configuración `response_policy`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "retry_policy",
+          "declaration": "UtmRetryPolicy retry_policy",
+          "callback": false,
+          "ownerType": "UtmRequest",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uart_transaction_manager.h",
+            "line": 91
+          },
+          "description": "Dato de estado/configuración `retry_policy`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "idempotent",
+          "declaration": "uint8_t idempotent",
+          "callback": false,
+          "ownerType": "UtmRequest",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uart_transaction_manager.h",
+            "line": 92
+          },
+          "description": "Dato de estado/configuración `idempotent`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "max_retries",
+          "declaration": "uint8_t max_retries",
+          "callback": false,
+          "ownerType": "UtmRequest",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uart_transaction_manager.h",
+            "line": 93
+          },
+          "description": "Dato de estado/configuración `max_retries`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "retries_done",
+          "declaration": "uint8_t retries_done",
+          "callback": false,
+          "ownerType": "UtmRequest",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uart_transaction_manager.h",
+            "line": 94
+          },
+          "description": "Dato de estado/configuración `retries_done`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "payload_len",
+          "declaration": "uint16_t payload_len",
+          "callback": false,
+          "ownerType": "UtmRequest",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uart_transaction_manager.h",
+            "line": 95
+          },
+          "description": "Dato de estado/configuración `payload_len`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "payload",
+          "declaration": "uint8_t payload[UTM_MAX_PAYLOAD]",
+          "callback": false,
+          "ownerType": "UtmRequest",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uart_transaction_manager.h",
+            "line": 96
+          },
+          "description": "Vista del payload; copiar antes de permitir la reutilización del slot del parser."
+        },
+        {
+          "name": "request_id",
+          "declaration": "char request_id[UTM_REQUEST_ID_CAPACITY]",
+          "callback": false,
+          "ownerType": "UtmRequest",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uart_transaction_manager.h",
+            "line": 97
+          },
+          "description": "Dato de estado/configuración `request_id`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "command_name",
+          "declaration": "char command_name[UTM_REQUEST_ID_CAPACITY]",
+          "callback": false,
+          "ownerType": "UtmRequest",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uart_transaction_manager.h",
+            "line": 98
+          },
+          "description": "Dato de estado/configuración `command_name`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "api_v1",
+          "declaration": "uint8_t api_v1",
+          "callback": false,
+          "ownerType": "UtmRequest",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uart_transaction_manager.h",
+            "line": 99
+          },
+          "description": "Dato de estado/configuración `api_v1`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "internal_kind",
+          "declaration": "uint8_t internal_kind",
+          "callback": false,
+          "ownerType": "UtmRequest",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uart_transaction_manager.h",
+            "line": 100
+          },
+          "description": "Dato de estado/configuración `internal_kind`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "timeout_ms",
+          "declaration": "uint32_t timeout_ms",
+          "callback": false,
+          "ownerType": "UtmRequest",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uart_transaction_manager.h",
+            "line": 101
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "deadline_ms",
+          "declaration": "uint32_t deadline_ms",
+          "callback": false,
+          "ownerType": "UtmRequest",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uart_transaction_manager.h",
+            "line": 102
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uart_transaction_manager.h",
+        "line": 84
+      }
+    },
+    {
+      "name": "UtmMetrics",
+      "fields": [
+        {
+          "name": "enqueued",
+          "declaration": "uint32_t enqueued",
+          "callback": false,
+          "ownerType": "UtmMetrics",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uart_transaction_manager.h",
+            "line": 106
+          },
+          "description": "Dato de estado/configuración `enqueued`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "rejected_invalid",
+          "declaration": "uint32_t rejected_invalid",
+          "callback": false,
+          "ownerType": "UtmMetrics",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uart_transaction_manager.h",
+            "line": 107
+          },
+          "description": "Dato de estado/configuración `rejected_invalid`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "rejected_full",
+          "declaration": "uint32_t rejected_full",
+          "callback": false,
+          "ownerType": "UtmMetrics",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uart_transaction_manager.h",
+            "line": 108
+          },
+          "description": "Dato de estado/configuración `rejected_full`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "rejected_client_limit",
+          "declaration": "uint32_t rejected_client_limit",
+          "callback": false,
+          "ownerType": "UtmMetrics",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uart_transaction_manager.h",
+            "line": 109
+          },
+          "description": "Dato de estado/configuración `rejected_client_limit`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "rejected_owner",
+          "declaration": "uint32_t rejected_owner",
+          "callback": false,
+          "ownerType": "UtmMetrics",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uart_transaction_manager.h",
+            "line": 110
+          },
+          "description": "Dato de estado/configuración `rejected_owner`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "started",
+          "declaration": "uint32_t started",
+          "callback": false,
+          "ownerType": "UtmMetrics",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uart_transaction_manager.h",
+            "line": 111
+          },
+          "description": "Dato de estado/configuración `started`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "completed",
+          "declaration": "uint32_t completed",
+          "callback": false,
+          "ownerType": "UtmMetrics",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uart_transaction_manager.h",
+            "line": 112
+          },
+          "description": "Dato de estado/configuración `completed`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "f4_nacks",
+          "declaration": "uint32_t f4_nacks",
+          "callback": false,
+          "ownerType": "UtmMetrics",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uart_transaction_manager.h",
+            "line": 113
+          },
+          "description": "Dato de estado/configuración `f4_nacks`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "timed_out",
+          "declaration": "uint32_t timed_out",
+          "callback": false,
+          "ownerType": "UtmMetrics",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uart_transaction_manager.h",
+            "line": 114
+          },
+          "description": "Dato de estado/configuración `timed_out`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "uart_errors",
+          "declaration": "uint32_t uart_errors",
+          "callback": false,
+          "ownerType": "UtmMetrics",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uart_transaction_manager.h",
+            "line": 115
+          },
+          "description": "Dato de estado/configuración `uart_errors`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "retries",
+          "declaration": "uint32_t retries",
+          "callback": false,
+          "ownerType": "UtmMetrics",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uart_transaction_manager.h",
+            "line": 116
+          },
+          "description": "Dato de estado/configuración `retries`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "send_busy",
+          "declaration": "uint32_t send_busy",
+          "callback": false,
+          "ownerType": "UtmMetrics",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uart_transaction_manager.h",
+            "line": 117
+          },
+          "description": "Dato de estado/configuración `send_busy`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "canceled_queued",
+          "declaration": "uint32_t canceled_queued",
+          "callback": false,
+          "ownerType": "UtmMetrics",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uart_transaction_manager.h",
+            "line": 118
+          },
+          "description": "Dato de estado/configuración `canceled_queued`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "orphaned_inflight",
+          "declaration": "uint32_t orphaned_inflight",
+          "callback": false,
+          "ownerType": "UtmMetrics",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uart_transaction_manager.h",
+            "line": 119
+          },
+          "description": "Dato de estado/configuración `orphaned_inflight`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ignored_stream_events",
+          "declaration": "uint32_t ignored_stream_events",
+          "callback": false,
+          "ownerType": "UtmMetrics",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uart_transaction_manager.h",
+            "line": 120
+          },
+          "description": "Dato de estado/configuración `ignored_stream_events`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "unmatched_frames",
+          "declaration": "uint32_t unmatched_frames",
+          "callback": false,
+          "ownerType": "UtmMetrics",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uart_transaction_manager.h",
+            "line": 121
+          },
+          "description": "Dato de estado/configuración `unmatched_frames`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "max_queue_depth",
+          "declaration": "uint8_t max_queue_depth",
+          "callback": false,
+          "ownerType": "UtmMetrics",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uart_transaction_manager.h",
+            "line": 122
+          },
+          "description": "Dato de estado/configuración `max_queue_depth`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uart_transaction_manager.h",
+        "line": 106
+      }
+    },
+    {
+      "name": "UartTransactionManager",
+      "fields": [
+        {
+          "name": "queue",
+          "declaration": "UtmRequest queue[UTM_QUEUE_CAPACITY]",
+          "callback": false,
+          "ownerType": "UartTransactionManager",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uart_transaction_manager.h",
+            "line": 132
+          },
+          "description": "Dato de estado/configuración `queue`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "queue_count",
+          "declaration": "uint8_t queue_count",
+          "callback": false,
+          "ownerType": "UartTransactionManager",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uart_transaction_manager.h",
+            "line": 133
+          },
+          "description": "Dato de estado/configuración `queue_count`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "inflight",
+          "declaration": "UtmRequest inflight",
+          "callback": false,
+          "ownerType": "UartTransactionManager",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uart_transaction_manager.h",
+            "line": 134
+          },
+          "description": "Dato de estado/configuración `inflight`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "inflight_active",
+          "declaration": "uint8_t inflight_active",
+          "callback": false,
+          "ownerType": "UartTransactionManager",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uart_transaction_manager.h",
+            "line": 135
+          },
+          "description": "Dato de estado/configuración `inflight_active`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "inflight_orphaned",
+          "declaration": "uint8_t inflight_orphaned",
+          "callback": false,
+          "ownerType": "UartTransactionManager",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uart_transaction_manager.h",
+            "line": 136
+          },
+          "description": "Dato de estado/configuración `inflight_orphaned`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ack_seen",
+          "declaration": "uint8_t ack_seen",
+          "callback": false,
+          "ownerType": "UartTransactionManager",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uart_transaction_manager.h",
+            "line": 137
+          },
+          "description": "Dato de estado/configuración `ack_seen`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "response_seen",
+          "declaration": "uint8_t response_seen",
+          "callback": false,
+          "ownerType": "UartTransactionManager",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uart_transaction_manager.h",
+            "line": 138
+          },
+          "description": "Dato de estado/configuración `response_seen`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "attempt_deadline_ms",
+          "declaration": "uint32_t attempt_deadline_ms",
+          "callback": false,
+          "ownerType": "UartTransactionManager",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uart_transaction_manager.h",
+            "line": 139
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "send_fn",
+          "declaration": "UtmSendFn send_fn",
+          "callback": false,
+          "ownerType": "UartTransactionManager",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uart_transaction_manager.h",
+            "line": 140
+          },
+          "description": "Intenta enviar la solicitud; BUSY mantiene pendiente, OK no es respuesta final."
+        },
+        {
+          "name": "send_ctx",
+          "declaration": "void *send_ctx",
+          "callback": false,
+          "ownerType": "UartTransactionManager",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uart_transaction_manager.h",
+            "line": 141
+          },
+          "description": "Contexto opaco prestado al callback; el integrador conserva su almacenamiento."
+        },
+        {
+          "name": "completion_fn",
+          "declaration": "UtmCompletionFn completion_fn",
+          "callback": false,
+          "ownerType": "UartTransactionManager",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uart_transaction_manager.h",
+            "line": 142
+          },
+          "description": "Notifica resultado final con request y frame prestados durante el callback."
+        },
+        {
+          "name": "completion_ctx",
+          "declaration": "void *completion_ctx",
+          "callback": false,
+          "ownerType": "UartTransactionManager",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uart_transaction_manager.h",
+            "line": 143
+          },
+          "description": "Contexto opaco prestado al callback; el integrador conserva su almacenamiento."
+        },
+        {
+          "name": "metrics",
+          "declaration": "UtmMetrics metrics",
+          "callback": false,
+          "ownerType": "UartTransactionManager",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uart_transaction_manager.h",
+            "line": 144
+          },
+          "description": "Dato de estado/configuración `metrics`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uart_transaction_manager.h",
+        "line": 132
+      }
+    },
+    {
+      "name": "UtmSendFn",
+      "callbackType": "UtmSendResult (*UtmSendFn)(void *ctx, const UtmRequest *request)",
+      "fields": [],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uart_transaction_manager.h",
+        "line": 125
+      },
+      "description": "utm_service lo invoca con request prestado y send_ctx: devuelve UTM_SEND_OK/BUSY/ERROR. OK confirma admisión del envío, no respuesta del F4; contexto vive mientras el manager lo use."
+    },
+    {
+      "name": "UtmCompletionFn",
+      "callbackType": "void (*UtmCompletionFn)(void *ctx, const UtmRequest *request, UtmCompletionStatus status, const UtmFrame *frame)",
+      "fields": [],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uart_transaction_manager.h",
+        "line": 127
+      },
+      "description": "El broker lo invoca al finalizar con request/status y frame cuando existe. Bridge debe correlacionar cliente/generación y copiar lo que retenga; no completa otro socket reutilizado."
+    }
+  ],
+  "functions": [
+    {
+      "name": "utm_cancel_all",
+      "signature": "void utm_cancel_all(UartTransactionManager *manager)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uart_transaction_manager.c",
+        "line": 383
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "memset"
+      ],
+      "writes": [
+        "ack_seen",
+        "attempt_deadline_ms",
+        "inflight_active",
+        "inflight_orphaned",
+        "queue_count",
+        "response_seen"
+      ],
+      "description": "Coordina `memset` para Broker de transacciones UART.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "utm_client_queued_count",
+      "signature": "uint8_t utm_client_queued_count(const UartTransactionManager *manager, uint32_t client_id, uint32_t generation)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uart_transaction_manager.c",
+        "line": 184
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación client queued count de Broker de transacciones UART; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "utm_disconnect_client",
+      "signature": "void utm_disconnect_client(UartTransactionManager *manager, uint32_t client_id, uint32_t generation, uint32_t now_ms)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uart_transaction_manager.c",
+        "line": 351
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "notify_completion",
+        "remove_queue_at",
+        "try_start_next"
+      ],
+      "writes": [
+        "inflight_orphaned",
+        "retry_policy"
+      ],
+      "description": "Cancela pendientes de cliente/generación sin asignarlos a otro socket.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "utm_enqueue",
+      "signature": "UtmEnqueueResult utm_enqueue(UartTransactionManager *manager, const UtmRequest *request, uint32_t now_ms)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uart_transaction_manager.c",
+        "line": 200
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "add_ms_saturated",
+        "default_deadline_span",
+        "request_is_valid",
+        "try_start_next",
+        "utm_client_queued_count"
+      ],
+      "writes": [
+        "deadline_ms",
+        "max_queue_depth",
+        "retries_done"
+      ],
+      "description": "Admite y copia una solicitud dentro de límites globales y por cliente.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "utm_inflight",
+      "signature": "const UtmRequest *utm_inflight(const UartTransactionManager *manager)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uart_transaction_manager.c",
+        "line": 410
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación inflight de Broker de transacciones UART; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "utm_init",
+      "signature": "void utm_init(UartTransactionManager *manager, UtmSendFn send_fn, void *send_ctx, UtmCompletionFn completion_fn, void *completion_ctx)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uart_transaction_manager.c",
+        "line": 160
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "memset"
+      ],
+      "writes": [
+        "completion_ctx",
+        "completion_fn",
+        "send_ctx",
+        "send_fn"
+      ],
+      "description": "Conecta envío/finalización y reinicia cola y métricas.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "utm_metrics",
+      "signature": "const UtmMetrics *utm_metrics(const UartTransactionManager *manager)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uart_transaction_manager.c",
+        "line": 415
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación metrics de Broker de transacciones UART; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "utm_on_frame",
+      "signature": "UtmFrameResult utm_on_frame(UartTransactionManager *manager, const UtmFrame *frame, uint32_t now_ms)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uart_transaction_manager.c",
+        "line": 289
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "complete_inflight"
+      ],
+      "writes": [
+        "ack_seen",
+        "response_seen"
+      ],
+      "description": "Correlaciona ruta/ID/ACK y completa o mantiene pendiente la solicitud.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "utm_queued_count",
+      "signature": "uint8_t utm_queued_count(const UartTransactionManager *manager)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uart_transaction_manager.c",
+        "line": 405
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación queued count de Broker de transacciones UART; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "utm_request_init",
+      "signature": "void utm_request_init(UtmRequest *request)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uart_transaction_manager.c",
+        "line": 174
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "memset"
+      ],
+      "writes": [
+        "owner",
+        "response_policy",
+        "retry_policy",
+        "timeout_ms"
+      ],
+      "description": "Coordina `memset` para Broker de transacciones UART.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "utm_service",
+      "signature": "void utm_service(UartTransactionManager *manager, uint32_t now_ms)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uart_transaction_manager.c",
+        "line": 239
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "add_ms_saturated",
+        "complete_inflight",
+        "earlier_deadline",
+        "expire_queued",
+        "send_fn",
+        "time_reached",
+        "try_start_next"
+      ],
+      "writes": [
+        "attempt_deadline_ms"
+      ],
+      "description": "Avanza envío, reintentos y expiración de la transacción activa.",
+      "descriptionOrigin": "editorial"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "add_ms_saturated",
+      "signature": "static uint32_t add_ms_saturated(uint32_t now_ms, uint32_t delta_ms)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uart_transaction_manager.c",
+        "line": 12
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación add ms saturated de Broker de transacciones UART; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "complete_inflight",
+      "signature": "static void complete_inflight(UartTransactionManager *manager, UtmCompletionStatus status, const UtmFrame *frame, uint32_t now_ms)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uart_transaction_manager.c",
+        "line": 133
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "memset",
+        "notify_completion",
+        "try_start_next"
+      ],
+      "writes": [
+        "ack_seen",
+        "attempt_deadline_ms",
+        "inflight_active",
+        "inflight_orphaned",
+        "response_seen"
+      ],
+      "description": "Coordina `memset`, `notify_completion`, `try_start_next` para Broker de transacciones UART.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "default_deadline_span",
+      "signature": "static uint32_t default_deadline_span(const UtmRequest *request)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uart_transaction_manager.c",
+        "line": 43
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación default deadline span de Broker de transacciones UART; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "earlier_deadline",
+      "signature": "static uint32_t earlier_deadline(uint32_t first, uint32_t second)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uart_transaction_manager.c",
+        "line": 17
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación earlier deadline de Broker de transacciones UART; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "expire_queued",
+      "signature": "static void expire_queued(UartTransactionManager *manager, uint32_t now_ms)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uart_transaction_manager.c",
+        "line": 70
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "notify_completion",
+        "remove_queue_at",
+        "time_reached"
+      ],
+      "writes": [],
+      "description": "Coordina `notify_completion`, `remove_queue_at`, `time_reached` para Broker de transacciones UART.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "notify_completion",
+      "signature": "static void notify_completion(UartTransactionManager *manager, const UtmRequest *request, UtmCompletionStatus status, const UtmFrame *frame)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uart_transaction_manager.c",
+        "line": 22
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "completion_fn"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `completion_fn` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "remove_queue_at",
+      "signature": "static void remove_queue_at(UartTransactionManager *manager, uint8_t index)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uart_transaction_manager.c",
+        "line": 32
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "memset"
+      ],
+      "writes": [],
+      "description": "Coordina `memset` para Broker de transacciones UART.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "request_is_valid",
+      "signature": "static uint8_t request_is_valid(const UtmRequest *request)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uart_transaction_manager.c",
+        "line": 57
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación request is valid de Broker de transacciones UART; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "time_reached",
+      "signature": "static uint8_t time_reached(uint32_t now_ms, uint32_t deadline_ms)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uart_transaction_manager.c",
+        "line": 7
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación time reached de Broker de transacciones UART; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "try_start_next",
+      "signature": "static void try_start_next(UartTransactionManager *manager, uint32_t now_ms)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uart_transaction_manager.c",
+        "line": 91
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "add_ms_saturated",
+        "earlier_deadline",
+        "expire_queued",
+        "notify_completion",
+        "remove_queue_at",
+        "send_fn",
+        "time_reached"
+      ],
+      "writes": [
+        "ack_seen",
+        "attempt_deadline_ms",
+        "inflight",
+        "inflight_active",
+        "inflight_orphaned",
+        "response_seen"
+      ],
+      "description": "Coordina `add_ms_saturated`, `earlier_deadline`, `expire_queued` para Broker de transacciones UART.",
+      "descriptionOrigin": "structural"
+    }
+  ],
+  "hooks": []
+}

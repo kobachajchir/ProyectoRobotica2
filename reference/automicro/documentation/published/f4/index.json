@@ -1,0 +1,636 @@
+[
+  {
+    "id": "f4:module/Core/Inc/am_port.h",
+    "slug": "ports",
+    "title": "Contratos neutrales de plataforma y control",
+    "kind": "contrato",
+    "json": "libraries/ports.json",
+    "markdown": "libraries/ports.md",
+    "functions": 0,
+    "internalFunctions": 0,
+    "files": [
+      "Core/Inc/am_port.h",
+      "Core/Inc/i2c_port.h",
+      "Core/Inc/control_ports.h"
+    ]
+  },
+  {
+    "id": "f4:module/Core/Inc/app_ap_config.h",
+    "slug": "ap-configuration",
+    "title": "Configuración deseada y aplicación de AP",
+    "kind": "integración",
+    "json": "libraries/ap-configuration.json",
+    "markdown": "libraries/ap-configuration.md",
+    "functions": 8,
+    "internalFunctions": 3,
+    "files": [
+      "Core/Inc/app_ap_config.h",
+      "Core/Inc/app_ap_config_data.h",
+      "Core/Inc/ap_context.h",
+      "Core/Src/app_ap_config.c"
+    ]
+  },
+  {
+    "id": "f4:module/Core/Inc/app_preferences.h",
+    "slug": "preferences",
+    "title": "Preferencias y persistencia",
+    "kind": "servicio",
+    "json": "libraries/preferences.json",
+    "markdown": "libraries/preferences.md",
+    "functions": 67,
+    "internalFunctions": 51,
+    "files": [
+      "Core/Inc/app_preferences.h",
+      "Core/Inc/app_preferences_types.h",
+      "Core/Src/app_preferences.c"
+    ]
+  },
+  {
+    "id": "f4:module/Core/Inc/app_stm32_ports.h",
+    "slug": "application-adapters",
+    "title": "Adaptadores de hardware y servicios",
+    "kind": "plataforma",
+    "json": "libraries/application-adapters.json",
+    "markdown": "libraries/application-adapters.md",
+    "functions": 139,
+    "internalFunctions": 0,
+    "files": [
+      "Core/Inc/app_stm32_ports.h",
+      "Core/Inc/app_i2c_ports.h",
+      "Core/Inc/app_control_ports.h",
+      "Core/Inc/app_auxiliary_ports.h",
+      "Core/Inc/app_display.h",
+      "Core/Inc/app_screens_ports.h",
+      "Core/Inc/app_menu_services.h",
+      "Core/Inc/app_menu_binding.h",
+      "Core/Inc/app_preferences_binding.h",
+      "Core/Inc/app_preferences_stm32.h",
+      "Core/Inc/app_wifi_binding.h",
+      "Core/Inc/app_wifi_ports.h"
+    ]
+  },
+  {
+    "id": "f4:module/Core/Inc/app_tasks.h",
+    "slug": "application-composition",
+    "title": "Composición, tareas y acciones de aplicación",
+    "kind": "composición",
+    "json": "libraries/application-composition.json",
+    "markdown": "libraries/application-composition.md",
+    "functions": 160,
+    "internalFunctions": 261,
+    "files": [
+      "Core/Inc/app_tasks.h",
+      "Core/Inc/eventManagers.h",
+      "Core/Inc/menu_definitions.h",
+      "Core/Inc/system.h",
+      "Core/Inc/system_flags.h",
+      "Core/Inc/globals.h",
+      "Core/Src/app_tasks.c",
+      "Core/Src/eventManagers.c",
+      "Core/Src/menu_definition.c",
+      "Core/Src/app_globals.c"
+    ]
+  },
+  {
+    "id": "f4:module/Core/Inc/auto_motion.h",
+    "slug": "auto-motion",
+    "title": "GOTO y calibración de motores",
+    "kind": "núcleo",
+    "json": "libraries/auto-motion.json",
+    "markdown": "libraries/auto-motion.md",
+    "functions": 10,
+    "internalFunctions": 13,
+    "files": [
+      "Core/Inc/auto_motion.h",
+      "Core/Src/auto_motion.c"
+    ]
+  },
+  {
+    "id": "f4:module/Core/Inc/automicro_boot_contract.h",
+    "slug": "boot-mailbox",
+    "title": "Contrato de arranque y mailbox",
+    "kind": "plataforma",
+    "json": "libraries/boot-mailbox.json",
+    "markdown": "libraries/boot-mailbox.md",
+    "functions": 6,
+    "internalFunctions": 0,
+    "files": [
+      "Core/Inc/automicro_boot_contract.h",
+      "Core/Src/automicro_boot_contract.c"
+    ]
+  },
+  {
+    "id": "f4:module/Core/Inc/balance_control.h",
+    "slug": "balance",
+    "title": "Balance de inclinación",
+    "kind": "núcleo",
+    "json": "libraries/balance.json",
+    "markdown": "libraries/balance.md",
+    "functions": 9,
+    "internalFunctions": 2,
+    "files": [
+      "Core/Inc/balance_control.h",
+      "Core/Inc/balance_control_types.h",
+      "Core/Inc/balance_control_data.h",
+      "Core/Src/balance_control.c"
+    ]
+  },
+  {
+    "id": "f4:module/Core/Inc/encoder.h",
+    "slug": "encoder",
+    "title": "Encoder rotativo y pulsador integrado",
+    "kind": "núcleo",
+    "json": "libraries/encoder.json",
+    "markdown": "libraries/encoder.md",
+    "functions": 13,
+    "internalFunctions": 0,
+    "files": [
+      "Core/Inc/encoder.h",
+      "Core/Inc/encoder_types.h",
+      "Core/Src/encoder.c"
+    ]
+  },
+  {
+    "id": "f4:module/Core/Inc/fonts.h",
+    "slug": "fonts-resources",
+    "title": "Fuentes, tipos y recursos auxiliares",
+    "kind": "datos",
+    "json": "libraries/fonts-resources.json",
+    "markdown": "libraries/fonts-resources.md",
+    "functions": 0,
+    "internalFunctions": 0,
+    "files": [
+      "Core/Inc/fonts.h",
+      "Core/Src/fonts.c",
+      "Core/Inc/binary_asset_types.h",
+      "Core/Inc/types/bitmap_type.h",
+      "Core/Inc/types/carmode_type.h",
+      "Core/Inc/types/userEvent_type.h",
+      "Core/Inc/utils/macros_utils.h"
+    ]
+  },
+  {
+    "id": "f4:module/Core/Inc/i2c_manager.h",
+    "slug": "i2c-manager",
+    "title": "I2C Manager",
+    "kind": "servicio",
+    "json": "libraries/i2c-manager.json",
+    "markdown": "libraries/i2c-manager.md",
+    "functions": 14,
+    "internalFunctions": 5,
+    "files": [
+      "Core/Inc/i2c_manager.h",
+      "Core/Src/i2c_manager.c"
+    ]
+  },
+  {
+    "id": "f4:module/Core/Inc/line_follow_control.h",
+    "slug": "line-follow",
+    "title": "Calibración de línea y seguidor",
+    "kind": "núcleo",
+    "json": "libraries/line-follow.json",
+    "markdown": "libraries/line-follow.md",
+    "functions": 15,
+    "internalFunctions": 8,
+    "files": [
+      "Core/Inc/line_follow_control.h",
+      "Core/Inc/line_follow_control_types.h",
+      "Core/Inc/line_calibration.h",
+      "Core/Src/line_follow_control.c"
+    ]
+  },
+  {
+    "id": "f4:module/Core/Inc/menu_favorites.h",
+    "slug": "favorites",
+    "title": "Favoritos de menú",
+    "kind": "integración",
+    "json": "libraries/favorites.json",
+    "markdown": "libraries/favorites.md",
+    "functions": 5,
+    "internalFunctions": 2,
+    "files": [
+      "Core/Inc/menu_favorites.h",
+      "Core/Inc/favorites_context.h",
+      "Core/Src/menu_favorites.c"
+    ]
+  },
+  {
+    "id": "f4:module/Core/Inc/menusystem.h",
+    "slug": "menus",
+    "title": "Sistema de menús",
+    "kind": "núcleo",
+    "json": "libraries/menus.json",
+    "markdown": "libraries/menus.md",
+    "functions": 26,
+    "internalFunctions": 12,
+    "files": [
+      "Core/Inc/menusystem.h",
+      "Core/Inc/types/menu_types.h",
+      "Core/Src/menusystem.c"
+    ]
+  },
+  {
+    "id": "f4:module/Core/Inc/motion_control.h",
+    "slug": "motion",
+    "title": "Árbitro de movimiento",
+    "kind": "núcleo",
+    "json": "libraries/motion.json",
+    "markdown": "libraries/motion.md",
+    "functions": 10,
+    "internalFunctions": 5,
+    "files": [
+      "Core/Inc/motion_control.h",
+      "Core/Inc/motion_control_types.h",
+      "Core/Inc/motion_control_data.h",
+      "Core/Src/motion_control.c"
+    ]
+  },
+  {
+    "id": "f4:module/Core/Inc/motion_estimator.h",
+    "slug": "motion-estimator",
+    "title": "Estimador de movimiento relativo",
+    "kind": "núcleo",
+    "json": "libraries/motion-estimator.json",
+    "markdown": "libraries/motion-estimator.md",
+    "functions": 6,
+    "internalFunctions": 4,
+    "files": [
+      "Core/Inc/motion_estimator.h",
+      "Core/Inc/motion_estimator_types.h",
+      "Core/Inc/motion_estimator_data.h",
+      "Core/Src/motion_estimator.c"
+    ]
+  },
+  {
+    "id": "f4:module/Core/Inc/motor_control.h",
+    "slug": "motors",
+    "title": "Motores y tracción diferencial",
+    "kind": "núcleo",
+    "json": "libraries/motors.json",
+    "markdown": "libraries/motors.md",
+    "functions": 21,
+    "internalFunctions": 2,
+    "files": [
+      "Core/Inc/motor_control.h",
+      "Core/Inc/motor_control_types.h",
+      "Core/Src/motor_control.c"
+    ]
+  },
+  {
+    "id": "f4:module/Core/Inc/mpu9250.h",
+    "slug": "mpu9250",
+    "title": "MPU9250 y estimación de actitud",
+    "kind": "núcleo",
+    "json": "libraries/mpu9250.json",
+    "markdown": "libraries/mpu9250.md",
+    "functions": 37,
+    "internalFunctions": 32,
+    "files": [
+      "Core/Inc/mpu9250.h",
+      "Core/Inc/mpu9250_types.h",
+      "Core/Inc/mpu9250_data.h",
+      "Core/Src/mpu9250.c"
+    ]
+  },
+  {
+    "id": "f4:module/Core/Inc/oled_canvas.h",
+    "slug": "oled-canvas",
+    "title": "Transferencia transaccional OLED Canvas",
+    "kind": "integración",
+    "json": "libraries/oled-canvas.json",
+    "markdown": "libraries/oled-canvas.md",
+    "functions": 8,
+    "internalFunctions": 20,
+    "files": [
+      "Core/Inc/oled_canvas.h",
+      "Core/Src/oled_canvas.c"
+    ]
+  },
+  {
+    "id": "f4:module/Core/Inc/oled_utils.h",
+    "slug": "screen-renderers",
+    "title": "Renderers y cola de notificaciones",
+    "kind": "integración",
+    "json": "libraries/screen-renderers.json",
+    "markdown": "libraries/screen-renderers.md",
+    "functions": 123,
+    "internalFunctions": 102,
+    "files": [
+      "Core/Inc/oled_utils.h",
+      "Core/Inc/notificationWrappers.h",
+      "Core/Src/oled_utils.c",
+      "Core/Src/notificationWrappers.c"
+    ]
+  },
+  {
+    "id": "f4:module/Core/Inc/osk.h",
+    "slug": "osk",
+    "title": "Teclado en pantalla OSK",
+    "kind": "núcleo",
+    "json": "libraries/osk.json",
+    "markdown": "libraries/osk.md",
+    "functions": 11,
+    "internalFunctions": 21,
+    "files": [
+      "Core/Inc/osk.h",
+      "Core/Inc/osk_types.h",
+      "Core/Src/osk.c"
+    ]
+  },
+  {
+    "id": "f4:module/Core/Inc/osk_integration.h",
+    "slug": "osk-integration",
+    "title": "Integración del teclado con UI",
+    "kind": "integración",
+    "json": "libraries/osk-integration.json",
+    "markdown": "libraries/osk-integration.md",
+    "functions": 7,
+    "internalFunctions": 16,
+    "files": [
+      "Core/Inc/osk_integration.h",
+      "Core/Src/osk_integration.c"
+    ]
+  },
+  {
+    "id": "f4:module/Core/Inc/permissions.h",
+    "slug": "permissions",
+    "title": "Permisos y sesiones PIN",
+    "kind": "integración",
+    "json": "libraries/permissions.json",
+    "markdown": "libraries/permissions.md",
+    "functions": 23,
+    "internalFunctions": 27,
+    "files": [
+      "Core/Inc/permissions.h",
+      "Core/Inc/permissions_types.h",
+      "Core/Inc/permission_context.h",
+      "Core/Src/permissions_stub.c"
+    ]
+  },
+  {
+    "id": "f4:module/Core/Inc/pid_controller.h",
+    "slug": "pid",
+    "title": "Controlador PID",
+    "kind": "núcleo",
+    "json": "libraries/pid.json",
+    "markdown": "libraries/pid.md",
+    "functions": 10,
+    "internalFunctions": 3,
+    "files": [
+      "Core/Inc/pid_controller.h",
+      "Core/Inc/pid_controller_types.h",
+      "Core/Inc/pid_controller_data.h",
+      "Core/Src/pid_controller.c"
+    ]
+  },
+  {
+    "id": "f4:module/Core/Inc/screenWrappers.h",
+    "slug": "screen-wrappers",
+    "title": "Preparación y navegación de pantallas",
+    "kind": "integración",
+    "json": "libraries/screen-wrappers.json",
+    "markdown": "libraries/screen-wrappers.md",
+    "functions": 54,
+    "internalFunctions": 9,
+    "files": [
+      "Core/Inc/screenWrappers.h",
+      "Core/Src/screenWrappers.c"
+    ]
+  },
+  {
+    "id": "f4:module/Core/Inc/screen_context.h",
+    "slug": "screen-context",
+    "title": "Contexto y servicios de pantallas",
+    "kind": "integración",
+    "json": "libraries/screen-context.json",
+    "markdown": "libraries/screen-context.md",
+    "functions": 6,
+    "internalFunctions": 0,
+    "files": [
+      "Core/Inc/screen_context.h",
+      "Core/Inc/screens_internal.h",
+      "Core/Inc/oled_handle.h"
+    ]
+  },
+  {
+    "id": "f4:module/Core/Inc/screen_lock.h",
+    "slug": "screen-lock",
+    "title": "Bloqueo de pantalla por inactividad",
+    "kind": "integración",
+    "json": "libraries/screen-lock.json",
+    "markdown": "libraries/screen-lock.md",
+    "functions": 12,
+    "internalFunctions": 3,
+    "files": [
+      "Core/Inc/screen_lock.h",
+      "Core/Src/screen_lock.c"
+    ]
+  },
+  {
+    "id": "f4:module/Core/Inc/ssd1306.h",
+    "slug": "ssd1306",
+    "title": "OLED SSD1306",
+    "kind": "núcleo",
+    "json": "libraries/ssd1306.json",
+    "markdown": "libraries/ssd1306.md",
+    "functions": 44,
+    "internalFunctions": 21,
+    "files": [
+      "Core/Inc/ssd1306.h",
+      "Core/Inc/ssd1306_types.h",
+      "Core/Inc/ssd1306_defines.h",
+      "Core/Src/ssd1306.c"
+    ]
+  },
+  {
+    "id": "f4:module/Core/Inc/tcrt5000.h",
+    "slug": "infrared",
+    "title": "Sensores IR TCRT5000",
+    "kind": "núcleo",
+    "json": "libraries/infrared.json",
+    "markdown": "libraries/infrared.md",
+    "functions": 24,
+    "internalFunctions": 4,
+    "files": [
+      "Core/Inc/tcrt5000.h",
+      "Core/Inc/tcrt5000_types.h",
+      "Core/Inc/tcrt5000_data.h",
+      "Core/Src/tcrt5000.c"
+    ]
+  },
+  {
+    "id": "f4:module/Core/Inc/ui_event_router.h",
+    "slug": "ui-router",
+    "title": "Router de eventos de usuario",
+    "kind": "integración",
+    "json": "libraries/ui-router.json",
+    "markdown": "libraries/ui-router.md",
+    "functions": 1,
+    "internalFunctions": 0,
+    "files": [
+      "Core/Inc/ui_event_router.h",
+      "Core/Inc/uirouter_context.h",
+      "Core/Src/ui_event_router.c"
+    ]
+  },
+  {
+    "id": "f4:module/Core/Inc/uner_app.h",
+    "slug": "uner-application",
+    "title": "UNER de aplicación y contrato del robot",
+    "kind": "integración",
+    "json": "libraries/uner-application.json",
+    "markdown": "libraries/uner-application.md",
+    "functions": 31,
+    "internalFunctions": 114,
+    "files": [
+      "Core/Inc/uner_app.h",
+      "Core/Src/uner_app.c"
+    ]
+  },
+  {
+    "id": "f4:module/Core/Inc/uner_core.h",
+    "slug": "uner-core",
+    "title": "Parser y cola UNER v2",
+    "kind": "núcleo",
+    "json": "libraries/uner-core.json",
+    "markdown": "libraries/uner-core.md",
+    "functions": 6,
+    "internalFunctions": 4,
+    "files": [
+      "Core/Inc/uner_core.h",
+      "Core/Inc/uner_core_types.h",
+      "Core/Inc/uner_v2.h",
+      "Core/Inc/uner_status.h",
+      "Core/Src/uner_core.c"
+    ]
+  },
+  {
+    "id": "f4:module/Core/Inc/uner_handle.h",
+    "slug": "uner-router",
+    "title": "UNER Handle, rutas y despacho",
+    "kind": "núcleo",
+    "json": "libraries/uner-router.json",
+    "markdown": "libraries/uner-router.md",
+    "functions": 12,
+    "internalFunctions": 12,
+    "files": [
+      "Core/Inc/uner_handle.h",
+      "Core/Inc/uner_handle_types.h",
+      "Core/Inc/uner_transport.h",
+      "Core/Src/uner_handle.c"
+    ]
+  },
+  {
+    "id": "f4:module/Core/Inc/uner_transport_uart1_dma.h",
+    "slug": "uart-transport",
+    "title": "Transporte UNER UART1 DMA",
+    "kind": "plataforma",
+    "json": "libraries/uart-transport.json",
+    "markdown": "libraries/uart-transport.md",
+    "functions": 2,
+    "internalFunctions": 4,
+    "files": [
+      "Core/Inc/uner_transport_uart1_dma.h",
+      "Core/Src/uner_transport_uart1_dma.c"
+    ]
+  },
+  {
+    "id": "f4:module/Core/Inc/uner_transport_usbcdc.h",
+    "slug": "usb-transport",
+    "title": "Transporte UNER USB CDC",
+    "kind": "plataforma",
+    "json": "libraries/usb-transport.json",
+    "markdown": "libraries/usb-transport.md",
+    "functions": 13,
+    "internalFunctions": 11,
+    "files": [
+      "Core/Inc/uner_transport_usbcdc.h",
+      "Core/Src/uner_transport_usbcdc.c"
+    ]
+  },
+  {
+    "id": "f4:module/Core/Inc/user_button.h",
+    "slug": "user-button",
+    "title": "Botón de usuario",
+    "kind": "núcleo",
+    "json": "libraries/user-button.json",
+    "markdown": "libraries/user-button.md",
+    "functions": 2,
+    "internalFunctions": 0,
+    "files": [
+      "Core/Inc/user_button.h",
+      "Core/Inc/types/button_state.h",
+      "Core/Src/user_button.c"
+    ]
+  },
+  {
+    "id": "f4:module/Core/Inc/wifi_bridge.h",
+    "slug": "wifi-bridge",
+    "title": "Bridge Wi-Fi y backends UNER/AT",
+    "kind": "integración",
+    "json": "libraries/wifi-bridge.json",
+    "markdown": "libraries/wifi-bridge.md",
+    "functions": 105,
+    "internalFunctions": 49,
+    "files": [
+      "Core/Inc/wifi_bridge.h",
+      "Core/Inc/wifi_bridge_types.h",
+      "Core/Inc/wifi_bridge_port.h",
+      "Core/Inc/wifi_bridge_config.h",
+      "Core/Inc/wifi_bridge_uner.h",
+      "Core/Inc/wifi_bridge_at.h",
+      "Core/Src/wifi_bridge.c",
+      "Core/Src/wifi_bridge_uner.c",
+      "Core/Src/wifi_bridge_at.c",
+      "Core/Src/wifi_bridge_stub.c"
+    ]
+  },
+  {
+    "id": "f4:module/Core/Src/main.c",
+    "slug": "board-runtime",
+    "title": "Arranque de placa e interrupciones STM32",
+    "kind": "plataforma",
+    "json": "libraries/board-runtime.json",
+    "markdown": "libraries/board-runtime.md",
+    "functions": 62,
+    "internalFunctions": 10,
+    "files": [
+      "Core/Inc/main.h",
+      "Core/Inc/stm32f4xx_it.h",
+      "Core/Inc/stm32f4xx_hal_conf.h",
+      "Core/Inc/app_version.h",
+      "Core/Src/main.c",
+      "Core/Src/stm32f4xx_it.c",
+      "Core/Src/stm32f4xx_hal_msp.c",
+      "Core/Src/system_stm32f4xx.c",
+      "Core/Src/syscalls.c",
+      "Core/Src/sysmem.c"
+    ]
+  },
+  {
+    "id": "f4:module/USB_DEVICE/App/usb_mode_manager.h",
+    "slug": "usb-platform",
+    "title": "Plataforma USB CDC/MSC",
+    "kind": "plataforma",
+    "json": "libraries/usb-platform.json",
+    "markdown": "libraries/usb-platform.md",
+    "functions": 44,
+    "internalFunctions": 15,
+    "files": [
+      "USB_DEVICE/App/usb_mode_manager.h",
+      "USB_DEVICE/App/usb_mode_manager.c",
+      "USB_DEVICE/App/usb_device.h",
+      "USB_DEVICE/App/usb_device.c",
+      "USB_DEVICE/App/usbd_cdc_if.h",
+      "USB_DEVICE/App/usbd_cdc_if.c",
+      "USB_DEVICE/App/usbd_desc.h",
+      "USB_DEVICE/App/usbd_desc.c",
+      "USB_DEVICE/App/usbd_msc_storage.h",
+      "USB_DEVICE/App/usbd_msc_storage.c",
+      "USB_DEVICE/App/usbd_msc_disk_data.h",
+      "USB_DEVICE/App/usbd_msc_disk_data.c",
+      "USB_DEVICE/Target/usbd_conf.h",
+      "USB_DEVICE/Target/usbd_conf.c"
+    ]
+  }
+]

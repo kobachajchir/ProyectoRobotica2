@@ -1,0 +1,1169 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "web:module/src/screens/sensorScreens.ts",
+  "slug": "sensor-settings-builders",
+  "title": "Renderers Web de sensores, ajustes y PIN",
+  "target": "web",
+  "kind": "núcleo",
+  "status": "source-documented",
+  "snapshotDate": "2026-10-20",
+  "verification": "not-run-user-instruction",
+  "responsibility": "Construye vistas OLED de sensores/motores, ajustes, canvas y autorización.",
+  "scope": "Geometría y comandos; la disponibilidad remota de cada argumento se documenta por familia de pantalla.",
+  "state": "Args de sensores, porcentajes, dígitos e índice son entradas locales al builder. Su existencia en una interfaz no significa que el ESP las publique.",
+  "modularity": "Builders puros con tipos/recursos compartidos; no controlan actuadores.",
+  "lifecycle": [
+    "Adaptar unidades y variantes antes de invocar.",
+    "No alimentar con valores de ejemplo una vista etiquetada como pantalla real."
+  ],
+  "interactions": [
+    "MPU JSON publica accel/gyro por ejes en g/dps, mientras algunos builders esperan escalares de otra representación.",
+    "PIN y OSK físicos necesitan estado/discriminante adicional o deben permanecer identity-only."
+  ],
+  "limitations": [
+    "Faltan modelos remotos completos para varias vistas/borradores.",
+    "PinScreenModal local y PermissionPinFormArgs del preview son estados distintos."
+  ],
+  "relationships": [],
+  "findings": [
+    "AMDOC-WEB-006"
+  ],
+  "files": [
+    {
+      "rootId": "web",
+      "path": "src/screens/displayScreens.ts",
+      "sha256": "62caa259f7ac16cfcb6ef7f7b1197fdc022910bbdcfca00ac1a94a5888dc6341",
+      "imports": [
+        "./helpers",
+        "./menuScreens",
+        "./screenCodes",
+        "./types"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/screens/motorScreens.ts",
+      "sha256": "247997324939d92cd28078eef7c73fd27704be439c98019af3a8d0d23abaef54",
+      "imports": [
+        "./helpers",
+        "./screenCodes",
+        "./types"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/screens/sensorScreens.ts",
+      "sha256": "e4827ad88aab6da0fa2810463897525d8310551c2d823f57c544f83c41b804a5",
+      "imports": [
+        "./helpers",
+        "./screenCodes",
+        "./types"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/screens/settingsScreens.ts",
+      "sha256": "008417181e8e915ccc1315caf9febfc4765d968136b5485429d5e7d607daf53b",
+      "imports": [
+        "./helpers",
+        "./screenCodes",
+        "./types"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/screens/warningScreens.ts",
+      "sha256": "0080ffe5b026a582a185f737ef106bc2c968e11e230cfd10b65a3297ce56cf80",
+      "imports": [
+        "./helpers",
+        "./screenCodes",
+        "./types"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    }
+  ],
+  "types": [
+    {
+      "name": "MotorSelection",
+      "kind": "TypeAliasDeclaration",
+      "type": "\"left\" | \"right\" | \"both\" | \"none\" | \"unknown\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/motorScreens.ts",
+        "line": 5
+      }
+    },
+    {
+      "name": "MotorDirection",
+      "kind": "TypeAliasDeclaration",
+      "type": "\"forward\" | \"backward\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/motorScreens.ts",
+        "line": 6
+      }
+    },
+    {
+      "name": "MotorTestArgs",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "selectedMotor",
+          "declaration": "selectedMotor: MotorSelection",
+          "callback": false,
+          "ownerType": "MotorTestArgs",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/motorScreens.ts",
+            "line": 9
+          },
+          "description": "Dato de estado/configuración `selectedMotor`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "direction",
+          "declaration": "direction: MotorDirection",
+          "callback": false,
+          "ownerType": "MotorTestArgs",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/motorScreens.ts",
+            "line": 10
+          },
+          "description": "Dato de estado/configuración `direction`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "leftSpeed",
+          "declaration": "leftSpeed: number",
+          "callback": false,
+          "ownerType": "MotorTestArgs",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/motorScreens.ts",
+            "line": 11
+          },
+          "description": "Dato de estado/configuración `leftSpeed`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "rightSpeed",
+          "declaration": "rightSpeed: number",
+          "callback": false,
+          "ownerType": "MotorTestArgs",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/motorScreens.ts",
+            "line": 12
+          },
+          "description": "Dato de estado/configuración `rightSpeed`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "movementEnabled",
+          "declaration": "movementEnabled: boolean",
+          "callback": false,
+          "ownerType": "MotorTestArgs",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/motorScreens.ts",
+            "line": 13
+          },
+          "description": "Dato de estado/configuración `movementEnabled`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/motorScreens.ts",
+        "line": 8
+      }
+    },
+    {
+      "name": "IrValuesArgs",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "irValues",
+          "declaration": "irValues: number[]",
+          "callback": false,
+          "ownerType": "IrValuesArgs",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/sensorScreens.ts",
+            "line": 21
+          },
+          "description": "Dato de estado/configuración `irValues`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/sensorScreens.ts",
+        "line": 20
+      }
+    },
+    {
+      "name": "MpuValuesArgs",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "accelX",
+          "declaration": "accelX: number",
+          "callback": false,
+          "ownerType": "MpuValuesArgs",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/sensorScreens.ts",
+            "line": 25
+          },
+          "description": "Dato de estado/configuración `accelX`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "accelY",
+          "declaration": "accelY: number",
+          "callback": false,
+          "ownerType": "MpuValuesArgs",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/sensorScreens.ts",
+            "line": 26
+          },
+          "description": "Dato de estado/configuración `accelY`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "accelZ",
+          "declaration": "accelZ: number",
+          "callback": false,
+          "ownerType": "MpuValuesArgs",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/sensorScreens.ts",
+            "line": 27
+          },
+          "description": "Dato de estado/configuración `accelZ`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "gyroX",
+          "declaration": "gyroX: number",
+          "callback": false,
+          "ownerType": "MpuValuesArgs",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/sensorScreens.ts",
+            "line": 28
+          },
+          "description": "Dato de estado/configuración `gyroX`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "gyroY",
+          "declaration": "gyroY: number",
+          "callback": false,
+          "ownerType": "MpuValuesArgs",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/sensorScreens.ts",
+            "line": 29
+          },
+          "description": "Dato de estado/configuración `gyroY`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "gyroZ",
+          "declaration": "gyroZ: number",
+          "callback": false,
+          "ownerType": "MpuValuesArgs",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/sensorScreens.ts",
+            "line": 30
+          },
+          "description": "Dato de estado/configuración `gyroZ`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/sensorScreens.ts",
+        "line": 24
+      }
+    },
+    {
+      "name": "LegacyMpuTableArgs",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "calibrated",
+          "declaration": "calibrated: boolean",
+          "callback": false,
+          "ownerType": "LegacyMpuTableArgs",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/sensorScreens.ts",
+            "line": 34
+          },
+          "description": "Dato de estado/configuración `calibrated`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "angleXMd",
+          "declaration": "angleXMd: number",
+          "callback": false,
+          "ownerType": "LegacyMpuTableArgs",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/sensorScreens.ts",
+            "line": 35
+          },
+          "description": "Dato de estado/configuración `angleXMd`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "angleYMd",
+          "declaration": "angleYMd: number",
+          "callback": false,
+          "ownerType": "LegacyMpuTableArgs",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/sensorScreens.ts",
+            "line": 36
+          },
+          "description": "Dato de estado/configuración `angleYMd`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "angleZMd",
+          "declaration": "angleZMd: number",
+          "callback": false,
+          "ownerType": "LegacyMpuTableArgs",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/sensorScreens.ts",
+            "line": 37
+          },
+          "description": "Dato de estado/configuración `angleZMd`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/sensorScreens.ts",
+        "line": 33
+      }
+    },
+    {
+      "name": "LockScreenState",
+      "kind": "TypeAliasDeclaration",
+      "type": "\"locked\" | \"pinIncorrect\" | \"pinModified\" | \"enterPin\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/warningScreens.ts",
+        "line": 15
+      }
+    },
+    {
+      "name": "PermissionPinState",
+      "kind": "TypeAliasDeclaration",
+      "type": "\"input\" | \"waiting\" | \"denied\" | \"timeout\" | \"blocked\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/warningScreens.ts",
+        "line": 16
+      }
+    },
+    {
+      "name": "PermissionPinFormArgs",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "digits",
+          "declaration": "digits: number[]",
+          "callback": false,
+          "ownerType": "PermissionPinFormArgs",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/warningScreens.ts",
+            "line": 19
+          },
+          "description": "Dato de estado/configuración `digits`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "pinIndex",
+          "declaration": "pinIndex?: number",
+          "callback": false,
+          "ownerType": "PermissionPinFormArgs",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/warningScreens.ts",
+            "line": 20
+          },
+          "description": "Dato de estado/configuración `pinIndex`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/warningScreens.ts",
+        "line": 18
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "buildLockScreenCommands",
+      "displayName": "buildLockScreenCommands",
+      "signature": "buildLockScreenCommands(args: { state: LockScreenState }): OledCommand[]",
+      "line": 65,
+      "endLine": 73,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "baselineY",
+        "clear",
+        "drawXbm",
+        "lockTextForState",
+        "setWhite",
+        "textAt"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/warningScreens.ts",
+        "line": 65
+      },
+      "description": "Coordina `baselineY`, `clear`, `drawXbm` para Renderers Web de sensores, ajustes y PIN.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildPermissionPinFormCommands",
+      "displayName": "buildPermissionPinFormCommands",
+      "signature": "buildPermissionPinFormCommands(args: PermissionPinFormArgs & { waiting?: boolean; confirmText: string }): OledCommand[]",
+      "line": 34,
+      "endLine": 58,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "baselineY",
+        "commands.push",
+        "drawFrame",
+        "drawXbm",
+        "pinDigit",
+        "setWhite",
+        "textAt"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/warningScreens.ts",
+        "line": 34
+      },
+      "description": "Coordina `baselineY`, `commands.push`, `drawFrame` para Renderers Web de sensores, ajustes y PIN.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen030201IrValuesCommands",
+      "displayName": "buildScreen030201IrValuesCommands",
+      "signature": "buildScreen030201IrValuesCommands(args: IrValuesArgs): OledCommand[]",
+      "line": 53,
+      "endLine": 82,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "clear",
+        "commands.push",
+        "irBarHeight",
+        "sensorValueAt",
+        "setBlack",
+        "setWhite",
+        "textAt",
+        "u8"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/sensorScreens.ts",
+        "line": 53
+      },
+      "description": "Dibuja barras IR según el array recibido; no decide su origen o frescura.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "buildScreen030201LegacyIrGraphCommands",
+      "displayName": "buildScreen030201LegacyIrGraphCommands",
+      "signature": "buildScreen030201LegacyIrGraphCommands(args: IrValuesArgs): OledCommand[]",
+      "line": 84,
+      "endLine": 106,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "clear",
+        "clearBox",
+        "commands.push",
+        "drawBox",
+        "irBarHeight",
+        "sensorValueAt",
+        "textAt"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/sensorScreens.ts",
+        "line": 84
+      },
+      "description": "Coordina `clear`, `clearBox`, `commands.push` para Renderers Web de sensores, ajustes y PIN.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen030301LegacyMpuTableCommands",
+      "displayName": "buildScreen030301LegacyMpuTableCommands",
+      "signature": "buildScreen030301LegacyMpuTableCommands(args: LegacyMpuTableArgs): OledCommand[]",
+      "line": 136,
+      "endLine": 161,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "String",
+        "baselineY",
+        "clear",
+        "clearBox",
+        "normalizeAngleFromMd",
+        "textAt"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/sensorScreens.ts",
+        "line": 136
+      },
+      "description": "Coordina `String`, `baselineY`, `clear` para Renderers Web de sensores, ajustes y PIN.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen030301MpuValuesCommands",
+      "displayName": "buildScreen030301MpuValuesCommands",
+      "signature": "buildScreen030301MpuValuesCommands(args: MpuValuesArgs): OledCommand[]",
+      "line": 110,
+      "endLine": 134,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "String",
+        "baselineY",
+        "clear",
+        "clearBox",
+        "setWhite",
+        "textAt",
+        "u8"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/sensorScreens.ts",
+        "line": 110
+      },
+      "description": "Coordina `String`, `baselineY`, `clear` para Renderers Web de sensores, ajustes y PIN.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen030401RadarCommands",
+      "displayName": "buildScreen030401RadarCommands",
+      "signature": "buildScreen030401RadarCommands(): OledCommand[]",
+      "line": 165,
+      "endLine": 173,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "clear",
+        "drawXbm",
+        "setWhite"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/sensorScreens.ts",
+        "line": 165
+      },
+      "description": "Coordina `clear`, `drawXbm`, `setWhite` para Renderers Web de sensores, ajustes y PIN.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen030401RadarObjectsPatchCommands",
+      "displayName": "buildScreen030401RadarObjectsPatchCommands",
+      "signature": "buildScreen030401RadarObjectsPatchCommands(): OledCommand[]",
+      "line": 175,
+      "endLine": 177,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/sensorScreens.ts",
+        "line": 175
+      },
+      "description": "Operación Screen030401 Radar Objects Patch Commands de Renderers Web de sensores, ajustes y PIN; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "buildScreen030500DisplayMenuCommands",
+      "displayName": "buildScreen030500DisplayMenuCommands",
+      "signature": "buildScreen030500DisplayMenuCommands(args: { selectedIndex?: number; firstVisibleIndex?: number }): OledCommand[]",
+      "line": 19,
+      "endLine": 28,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "buildMenuScreenCommands"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/displayScreens.ts",
+        "line": 19
+      },
+      "description": "Adapta la llamada a `buildMenuScreenCommands` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen030503OledCanvasReadyCommands",
+      "displayName": "buildScreen030503OledCanvasReadyCommands",
+      "signature": "buildScreen030503OledCanvasReadyCommands(): OledCommand[]",
+      "line": 30,
+      "endLine": 36,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "clear",
+        "textAt"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/displayScreens.ts",
+        "line": 30
+      },
+      "description": "Coordina `clear`, `textAt` para Renderers Web de sensores, ajustes y PIN.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen040101MotorTestCommands",
+      "displayName": "buildScreen040101MotorTestCommands",
+      "signature": "buildScreen040101MotorTestCommands(args: MotorTestArgs): OledCommand[]",
+      "line": 47,
+      "endLine": 62,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "barWidthFromByte",
+        "baselineY",
+        "clear",
+        "commands.push",
+        "completeMotorLabel",
+        "drawBox",
+        "drawFrame",
+        "selectedSpeedForComplete",
+        "speedText",
+        "textAt"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/motorScreens.ts",
+        "line": 47
+      },
+      "description": "Coordina `barWidthFromByte`, `baselineY`, `clear` para Renderers Web de sensores, ajustes y PIN.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen040101MotorTestPatchCommands",
+      "displayName": "buildScreen040101MotorTestPatchCommands",
+      "signature": "buildScreen040101MotorTestPatchCommands(args: MotorTestArgs): OledCommand[]",
+      "line": 64,
+      "endLine": 85,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "barWidthFromByte",
+        "baselineY",
+        "clearBox",
+        "commands.push",
+        "drawBox",
+        "drawFrame",
+        "patchMotorLabel",
+        "selectedSpeedForPatch",
+        "speedText",
+        "textAt"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/motorScreens.ts",
+        "line": 64
+      },
+      "description": "Coordina `barWidthFromByte`, `baselineY`, `clearBox` para Renderers Web de sensores, ajustes y PIN.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen050201AboutProjectCommands",
+      "displayName": "buildScreen050201AboutProjectCommands",
+      "signature": "buildScreen050201AboutProjectCommands(): OledCommand[]",
+      "line": 11,
+      "endLine": 23,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "baselineY",
+        "clear",
+        "drawXbm",
+        "setWhite",
+        "textAt"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/settingsScreens.ts",
+        "line": 11
+      },
+      "description": "Coordina `baselineY`, `clear`, `drawXbm` para Renderers Web de sensores, ajustes y PIN.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen050202AboutRepoCommands",
+      "displayName": "buildScreen050202AboutRepoCommands",
+      "signature": "buildScreen050202AboutRepoCommands(): OledCommand[]",
+      "line": 27,
+      "endLine": 37,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "baselineY",
+        "clear",
+        "drawXbm",
+        "drawXbmMsb",
+        "setWhite",
+        "textAt"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/settingsScreens.ts",
+        "line": 27
+      },
+      "description": "Coordina `baselineY`, `clear`, `drawXbm` para Renderers Web de sensores, ajustes y PIN.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen050301WarningTimeCommands",
+      "displayName": "buildScreen050301WarningTimeCommands",
+      "signature": "buildScreen050301WarningTimeCommands(args: { seconds: number }): OledCommand[]",
+      "line": 41,
+      "endLine": 50,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "baselineY",
+        "clear",
+        "drawXbm",
+        "setWhite",
+        "textAt"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/settingsScreens.ts",
+        "line": 41
+      },
+      "description": "Coordina `baselineY`, `clear`, `drawXbm` para Renderers Web de sensores, ajustes y PIN.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen080101LockedCommands",
+      "displayName": "buildScreen080101LockedCommands",
+      "signature": "buildScreen080101LockedCommands(): OledCommand[]",
+      "line": 75,
+      "endLine": 77,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "buildLockScreenCommands"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/warningScreens.ts",
+        "line": 75
+      },
+      "description": "Adapta la llamada a `buildLockScreenCommands` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen080102PinIncorrectLockCommands",
+      "displayName": "buildScreen080102PinIncorrectLockCommands",
+      "signature": "buildScreen080102PinIncorrectLockCommands(): OledCommand[]",
+      "line": 79,
+      "endLine": 81,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "buildLockScreenCommands"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/warningScreens.ts",
+        "line": 79
+      },
+      "description": "Adapta la llamada a `buildLockScreenCommands` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen080103PinModifiedLockCommands",
+      "displayName": "buildScreen080103PinModifiedLockCommands",
+      "signature": "buildScreen080103PinModifiedLockCommands(): OledCommand[]",
+      "line": 83,
+      "endLine": 85,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "buildLockScreenCommands"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/warningScreens.ts",
+        "line": 83
+      },
+      "description": "Adapta la llamada a `buildLockScreenCommands` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen080104LockEnterPinCommands",
+      "displayName": "buildScreen080104LockEnterPinCommands",
+      "signature": "buildScreen080104LockEnterPinCommands(): OledCommand[]",
+      "line": 87,
+      "endLine": 89,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "buildLockScreenCommands"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/warningScreens.ts",
+        "line": 87
+      },
+      "description": "Adapta la llamada a `buildLockScreenCommands` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen080104PermissionPinEntryCommands",
+      "displayName": "buildScreen080104PermissionPinEntryCommands",
+      "signature": "buildScreen080104PermissionPinEntryCommands(args: PermissionPinFormArgs): OledCommand[]",
+      "line": 91,
+      "endLine": 97,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "buildPermissionPinFormCommands",
+        "clear",
+        "setWhite"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/warningScreens.ts",
+        "line": 91
+      },
+      "description": "Dibuja formulario de PIN a partir de digits/pinIndex suministrados al builder.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "buildScreen080105PermissionPinWaitingCommands",
+      "displayName": "buildScreen080105PermissionPinWaitingCommands",
+      "signature": "buildScreen080105PermissionPinWaitingCommands(args: PermissionPinFormArgs): OledCommand[]",
+      "line": 101,
+      "endLine": 107,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "buildPermissionPinFormCommands",
+        "clear",
+        "setWhite"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/warningScreens.ts",
+        "line": 101
+      },
+      "description": "Coordina `buildPermissionPinFormCommands`, `clear`, `setWhite` para Renderers Web de sensores, ajustes y PIN.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen080106PermissionPinDeniedCommands",
+      "displayName": "buildScreen080106PermissionPinDeniedCommands",
+      "signature": "buildScreen080106PermissionPinDeniedCommands(args: { attemptsLeft: number }): OledCommand[]",
+      "line": 111,
+      "endLine": 119,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "clear",
+        "setWhite",
+        "textAt"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/warningScreens.ts",
+        "line": 111
+      },
+      "description": "Coordina `clear`, `setWhite`, `textAt` para Renderers Web de sensores, ajustes y PIN.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen080107PermissionPinTimeoutCommands",
+      "displayName": "buildScreen080107PermissionPinTimeoutCommands",
+      "signature": "buildScreen080107PermissionPinTimeoutCommands(): OledCommand[]",
+      "line": 123,
+      "endLine": 131,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "clear",
+        "setWhite",
+        "textAt"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/warningScreens.ts",
+        "line": 123
+      },
+      "description": "Coordina `clear`, `setWhite`, `textAt` para Renderers Web de sensores, ajustes y PIN.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen080108PermissionPinBlockedCommands",
+      "displayName": "buildScreen080108PermissionPinBlockedCommands",
+      "signature": "buildScreen080108PermissionPinBlockedCommands(): OledCommand[]",
+      "line": 135,
+      "endLine": 143,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "clear",
+        "setWhite",
+        "textAt"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/warningScreens.ts",
+        "line": 135
+      },
+      "description": "Coordina `clear`, `setWhite`, `textAt` para Renderers Web de sensores, ajustes y PIN.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen080109PermissionDeniedNotificationCommands",
+      "displayName": "buildScreen080109PermissionDeniedNotificationCommands",
+      "signature": "buildScreen080109PermissionDeniedNotificationCommands(progress?: NotificationProgressArgs): OledCommand[]",
+      "line": 147,
+      "endLine": 155,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "baselineY",
+        "clear",
+        "drawXbm",
+        "setWhite",
+        "textAt",
+        "withNotificationProgress"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/warningScreens.ts",
+        "line": 147
+      },
+      "description": "Coordina `baselineY`, `clear`, `drawXbm` para Renderers Web de sensores, ajustes y PIN.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "completeMotorLabel",
+      "displayName": "completeMotorLabel",
+      "signature": "completeMotorLabel(selectedMotor: MotorSelection): string",
+      "line": 16,
+      "endLine": 21,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/motorScreens.ts",
+        "line": 16
+      },
+      "description": "Operación complete Motor Label de Renderers Web de sensores, ajustes y PIN; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "lockTextForState",
+      "displayName": "lockTextForState",
+      "signature": "lockTextForState(state: LockScreenState): { screenCode: ScreenCode; message: string; x: number }",
+      "line": 23,
+      "endLine": 28,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/warningScreens.ts",
+        "line": 23
+      },
+      "description": "Operación lock Text For State de Renderers Web de sensores, ajustes y PIN; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "normalizeAngleFromMd",
+      "displayName": "normalizeAngleFromMd",
+      "signature": "normalizeAngleFromMd(angleMd: number): number",
+      "line": 44,
+      "endLine": 49,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.trunc"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/sensorScreens.ts",
+        "line": 44
+      },
+      "description": "Adapta la llamada a `Math.trunc` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "patchMotorLabel",
+      "displayName": "patchMotorLabel",
+      "signature": "patchMotorLabel(selectedMotor: MotorSelection): string",
+      "line": 23,
+      "endLine": 27,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/motorScreens.ts",
+        "line": 23
+      },
+      "description": "Operación patch Motor Label de Renderers Web de sensores, ajustes y PIN; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "pinDigit",
+      "displayName": "pinDigit",
+      "signature": "pinDigit(digits: number[], index: number): string",
+      "line": 30,
+      "endLine": 32,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.max",
+        "Math.min",
+        "String"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/warningScreens.ts",
+        "line": 30
+      },
+      "description": "Coordina `Math.max`, `Math.min`, `String` para Renderers Web de sensores, ajustes y PIN.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "selectedSpeedForComplete",
+      "displayName": "selectedSpeedForComplete",
+      "signature": "selectedSpeedForComplete(args: MotorTestArgs): number",
+      "line": 29,
+      "endLine": 33,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.floor"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/motorScreens.ts",
+        "line": 29
+      },
+      "description": "Adapta la llamada a `Math.floor` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "selectedSpeedForPatch",
+      "displayName": "selectedSpeedForPatch",
+      "signature": "selectedSpeedForPatch(args: MotorTestArgs): number",
+      "line": 35,
+      "endLine": 37,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/motorScreens.ts",
+        "line": 35
+      },
+      "description": "Operación selected Speed For Patch de Renderers Web de sensores, ajustes y PIN; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "sensorValueAt",
+      "displayName": "sensorValueAt",
+      "signature": "sensorValueAt(values: number[], index: number): number",
+      "line": 40,
+      "endLine": 42,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/sensorScreens.ts",
+        "line": 40
+      },
+      "description": "Operación sensor Value At de Renderers Web de sensores, ajustes y PIN; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "speedText",
+      "displayName": "speedText",
+      "signature": "speedText(speed: number, movementEnabled: boolean): string",
+      "line": 39,
+      "endLine": 43,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.floor",
+        "Math.max",
+        "Math.min",
+        "String",
+        "String(pct).padStart"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/motorScreens.ts",
+        "line": 39
+      },
+      "description": "Coordina `Math.floor`, `Math.max`, `Math.min` para Renderers Web de sensores, ajustes y PIN.",
+      "descriptionOrigin": "structural"
+    }
+  ],
+  "internalFunctions": [],
+  "hooks": []
+}

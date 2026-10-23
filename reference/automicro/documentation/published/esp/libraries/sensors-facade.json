@@ -1,0 +1,190 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "esp:module/src/sensors.h",
+  "slug": "sensors-facade",
+  "title": "Fachada de sensores ESP",
+  "target": "esp",
+  "kind": "integración",
+  "status": "source-documented",
+  "snapshotDate": "2026-10-20",
+  "verification": "not-run-user-instruction",
+  "responsibility": "Provee la superficie local de sensores declarada en la aplicación ESP.",
+  "scope": "No atribuye al ESP las adquisiciones MPU/IR que pertenecen a F4.",
+  "state": "Estado local que define el módulo; telemetría remota proviene de decoders y streams UNER.",
+  "modularity": "Fachada de aplicación; revisar trabajo efectivo de cada operación antes de describir un sensor físico conectado al ESP.",
+  "lifecycle": [
+    "Sensors_Init se invoca en setup.",
+    "Distinguir funciones declaradas de adquisiciones efectivas y de reportes recibidos."
+  ],
+  "interactions": [
+    "F4 sigue siendo productor de las muestras del robot."
+  ],
+  "limitations": [
+    "No inferir hardware por el nombre del módulo ni convertir datos simulados en muestra real."
+  ],
+  "relationships": [],
+  "findings": [],
+  "files": [
+    {
+      "rootId": "esp",
+      "path": "src/sensors.cpp",
+      "sha256": "9015786feb18b25683151cd91ebf0d534a44ad71004c9fa92c7129fe286d8697",
+      "imports": [
+        "sensors.h",
+        "stdio.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    },
+    {
+      "rootId": "esp",
+      "path": "src/sensors.h",
+      "sha256": "e03e5087b7bab019744e6c4670dc5c7e8e3315d52fb91edde1bcaa5a6c3c2052",
+      "imports": [
+        "stddef.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    }
+  ],
+  "types": [
+    {
+      "name": "SensorsOps",
+      "fields": [
+        {
+          "name": "context",
+          "declaration": "void *context",
+          "callback": false,
+          "ownerType": "SensorsOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/sensors.h",
+            "line": 4
+          },
+          "description": "Dato de estado/configuración `context`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "initialize",
+          "declaration": "bool (*initialize)(void *)",
+          "callback": true,
+          "ownerType": "SensorsOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/sensors.h",
+            "line": 5
+          },
+          "description": "Prepara fuente de sensores de esta fachada de aplicación."
+        },
+        {
+          "name": "read_json",
+          "declaration": "bool (*read_json)(void *, char *out, size_t capacity)",
+          "callback": true,
+          "ownerType": "SensorsOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/sensors.h",
+            "line": 6
+          },
+          "description": "Rellena representación JSON de sensores según argumentos/capacidad de la firma; no equivale al decoder de telemetría F4."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/sensors.h",
+        "line": 4
+      }
+    },
+    {
+      "name": "SensorsHandle",
+      "fields": [
+        {
+          "name": "ops",
+          "declaration": "SensorsOps ops",
+          "callback": false,
+          "ownerType": "SensorsHandle",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/sensors.h",
+            "line": 9
+          },
+          "description": "Contrato de operaciones externo; conservar la tabla y su contexto durante el uso."
+        },
+        {
+          "name": "json",
+          "declaration": "char json[96]{ estructura anidada }",
+          "callback": false,
+          "ownerType": "SensorsHandle",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/sensors.h",
+            "line": 10
+          },
+          "description": "Dato de estado/configuración `json`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/sensors.h",
+        "line": 9
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "Sensors_GetReadingsJSON",
+      "signature": "const char *Sensors_GetReadingsJSON()",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/sensors.cpp",
+        "line": 26
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Sensors_GetReadingsJSON"
+      ],
+      "writes": [
+        "read_json"
+      ],
+      "description": "Consulta Readings JSON dentro de Fachada de sensores ESP.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "Sensors_Init",
+      "signature": "bool Sensors_Init()",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/sensors.cpp",
+        "line": 20
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [
+        "ops",
+        "read_json"
+      ],
+      "description": "Inicializa Fachada de sensores ESP dentro de Fachada de sensores ESP.",
+      "descriptionOrigin": "inferred-name"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "defaultRead",
+      "signature": "static bool defaultRead(void *, char *out, size_t capacity)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/sensors.cpp",
+        "line": 5
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "snprintf"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `snprintf` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    }
+  ],
+  "hooks": []
+}

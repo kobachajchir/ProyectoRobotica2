@@ -1,0 +1,1712 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "web:module/src/features/balanceCalibration/useBalancePid.ts",
+  "slug": "balance-workbench",
+  "title": "Balance PID, sesiones y análisis",
+  "target": "web",
+  "kind": "integración",
+  "status": "source-documented",
+  "snapshotDate": "2026-10-20",
+  "verification": "not-run-user-instruction",
+  "responsibility": "Edita PID, conserva sesiones/registros y ejecuta análisis de calibración en el cliente.",
+  "scope": "Ganancias remotas, almacenamiento y worker de análisis; el lazo de control sigue en F4.",
+  "state": "Sesiones, muestras y borradores tienen versión/lifetime de Web; respuesta de persistencia F4 confirma otra copia distinta.",
+  "modularity": "Cálculo/worker separado de React y almacenamiento, con esquema propio de sesiones.",
+  "lifecycle": [
+    "Cargar estado, capturar/seleccionar sesión y analizar en worker.",
+    "Aplicar ganancias mediante contrato remoto y confirmar valores realmente guardados."
+  ],
+  "interactions": [
+    "ESP decodifica PID y telemetría; almacenamiento local no modifica la preferencia del robot sin request."
+  ],
+  "limitations": [
+    "Resultado analítico no constituye prueba física de estabilidad.",
+    "Distinguir datos simulados, guardados y medidos al presentar conclusiones."
+  ],
+  "relationships": [],
+  "findings": [],
+  "files": [
+    {
+      "rootId": "web",
+      "path": "src/features/balanceCalibration/BalanceWorkbench.tsx",
+      "sha256": "ec87b478b6d5ecda6961daaf726713ed296108b7f841d0eea68d28e8865d4629",
+      "imports": [
+        "../../hooks/useWebSocket",
+        "../../protocol/wsApi",
+        "../motion/MotionControlPanel",
+        "./analysis.worker?worker&inline",
+        "./optimizer",
+        "./remote",
+        "./session",
+        "./storage",
+        "./useBalancePid",
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/features/balanceCalibration/analysis.worker.ts",
+      "sha256": "ada69f9e8f07294c6f6c54f5eb93661002c67976d3d1c1be08563ee04b1abd02",
+      "imports": [
+        "./optimizer"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/features/balanceCalibration/optimizer.ts",
+      "sha256": "a5ab18488cdb123793f5b0996e737b0ffdb825b6351741b4d8c5de57b9a86d77",
+      "imports": [
+        "./session.ts"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/features/balanceCalibration/remote.ts",
+      "sha256": "6c5ff031fca2178ac4097decf29d87db2a28ef66a862c31871f26f3bcbf15202",
+      "imports": [
+        "./optimizer",
+        "./session"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/features/balanceCalibration/session.ts",
+      "sha256": "a53c37308ff0eb770837bbd7a863d8c2cac3963c88f3e22aa5e61f1b05af6b19",
+      "imports": [],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/features/balanceCalibration/storage.ts",
+      "sha256": "9d4fea10eec127993ccac0c54b86f54389fca6ba0391f770ec79a60804bd2562",
+      "imports": [
+        "./session"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/features/balanceCalibration/useBalancePid.ts",
+      "sha256": "d4fe3b4a8cade306347ee428f8eb97805f8407e745e8c481e43ba422fafbd08c",
+      "imports": [
+        "../../hooks/useWebSocket",
+        "../../protocol/wsApi",
+        "./session",
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    }
+  ],
+  "types": [
+    {
+      "name": "Analysis",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "algorithm",
+          "declaration": "algorithm: \"arx2-grid-v1\"",
+          "callback": false,
+          "ownerType": "Analysis",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/balanceCalibration/optimizer.ts",
+            "line": 4
+          },
+          "description": "Dato de estado/configuración `algorithm`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "sessionId",
+          "declaration": "sessionId: string",
+          "callback": false,
+          "ownerType": "Analysis",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/balanceCalibration/optimizer.ts",
+            "line": 4
+          },
+          "description": "Dato de estado/configuración `sessionId`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "status",
+          "declaration": "status: \"insufficient-data\" | \"no-candidate\" | \"proposal\"",
+          "callback": false,
+          "ownerType": "Analysis",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/balanceCalibration/optimizer.ts",
+            "line": 5
+          },
+          "description": "Último resultado y guardas del módulo; los getters pueden devolver una vista de este almacenamiento."
+        },
+        {
+          "name": "reasons",
+          "declaration": "reasons: string[]",
+          "callback": false,
+          "ownerType": "Analysis",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/balanceCalibration/optimizer.ts",
+            "line": 6
+          },
+          "description": "Dato de estado/configuración `reasons`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "candidate",
+          "declaration": "candidate: Gains | null",
+          "callback": false,
+          "ownerType": "Analysis",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/balanceCalibration/optimizer.ts",
+            "line": 6
+          },
+          "description": "Dato de estado/configuración `candidate`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "baselineCost",
+          "declaration": "baselineCost: number | null",
+          "callback": false,
+          "ownerType": "Analysis",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/balanceCalibration/optimizer.ts",
+            "line": 6
+          },
+          "description": "Dato de estado/configuración `baselineCost`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "candidateCost",
+          "declaration": "candidateCost: number | null",
+          "callback": false,
+          "ownerType": "Analysis",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/balanceCalibration/optimizer.ts",
+            "line": 7
+          },
+          "description": "Dato de estado/configuración `candidateCost`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "fitErrorDeg",
+          "declaration": "fitErrorDeg: number | null",
+          "callback": false,
+          "ownerType": "Analysis",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/balanceCalibration/optimizer.ts",
+            "line": 7
+          },
+          "description": "Ángulo en grados; respetar eje y referencia de esta librería."
+        },
+        {
+          "name": "sensitivity",
+          "declaration": "sensitivity: { term: keyof Gains; minusCost: number | null; plusCost: number | null }[]",
+          "callback": false,
+          "ownerType": "Analysis",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/balanceCalibration/optimizer.ts",
+            "line": 8
+          },
+          "description": "Dato de estado/configuración `sensitivity`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/balanceCalibration/optimizer.ts",
+        "line": 3
+      }
+    },
+    {
+      "name": "Gains",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "kp",
+          "declaration": "kp: number",
+          "callback": false,
+          "ownerType": "Gains",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/balanceCalibration/session.ts",
+            "line": 1
+          },
+          "description": "Dato de estado/configuración `kp`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ki",
+          "declaration": "ki: number",
+          "callback": false,
+          "ownerType": "Gains",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/balanceCalibration/session.ts",
+            "line": 1
+          },
+          "description": "Dato de estado/configuración `ki`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "kd",
+          "declaration": "kd: number",
+          "callback": false,
+          "ownerType": "Gains",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/balanceCalibration/session.ts",
+            "line": 1
+          },
+          "description": "Dato de estado/configuración `kd`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/balanceCalibration/session.ts",
+        "line": 1
+      }
+    },
+    {
+      "name": "BalanceSample",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "timeMs",
+          "declaration": "timeMs: number",
+          "callback": false,
+          "ownerType": "BalanceSample",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/balanceCalibration/session.ts",
+            "line": 3
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "sequence",
+          "declaration": "sequence: number",
+          "callback": false,
+          "ownerType": "BalanceSample",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/balanceCalibration/session.ts",
+            "line": 3
+          },
+          "description": "Dato de estado/configuración `sequence`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "pitch",
+          "declaration": "pitch: number",
+          "callback": false,
+          "ownerType": "BalanceSample",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/balanceCalibration/session.ts",
+            "line": 3
+          },
+          "description": "Dato de estado/configuración `pitch`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "target",
+          "declaration": "target: number",
+          "callback": false,
+          "ownerType": "BalanceSample",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/balanceCalibration/session.ts",
+            "line": 3
+          },
+          "description": "Dato de estado/configuración `target`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "output",
+          "declaration": "output: number",
+          "callback": false,
+          "ownerType": "BalanceSample",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/balanceCalibration/session.ts",
+            "line": 4
+          },
+          "description": "Dato de estado/configuración `output`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "left",
+          "declaration": "left: number",
+          "callback": false,
+          "ownerType": "BalanceSample",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/balanceCalibration/session.ts",
+            "line": 4
+          },
+          "description": "Dato de estado/configuración `left`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "right",
+          "declaration": "right: number",
+          "callback": false,
+          "ownerType": "BalanceSample",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/balanceCalibration/session.ts",
+            "line": 4
+          },
+          "description": "Dato de estado/configuración `right`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "error",
+          "declaration": "error: number",
+          "callback": false,
+          "ownerType": "BalanceSample",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/balanceCalibration/session.ts",
+            "line": 4
+          },
+          "description": "Dato de estado/configuración `error`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "integral",
+          "declaration": "integral: number",
+          "callback": false,
+          "ownerType": "BalanceSample",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/balanceCalibration/session.ts",
+            "line": 5
+          },
+          "description": "Dato de estado/configuración `integral`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "derivative",
+          "declaration": "derivative: number",
+          "callback": false,
+          "ownerType": "BalanceSample",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/balanceCalibration/session.ts",
+            "line": 5
+          },
+          "description": "Dato de estado/configuración `derivative`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "gains",
+          "declaration": "gains: Gains",
+          "callback": false,
+          "ownerType": "BalanceSample",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/balanceCalibration/session.ts",
+            "line": 5
+          },
+          "description": "Dato de estado/configuración `gains`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "stopped",
+          "declaration": "stopped: boolean",
+          "callback": false,
+          "ownerType": "BalanceSample",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/balanceCalibration/session.ts",
+            "line": 5
+          },
+          "description": "Dato de estado/configuración `stopped`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/balanceCalibration/session.ts",
+        "line": 2
+      }
+    },
+    {
+      "name": "ControllerConfig",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "derivativeTauS",
+          "declaration": "derivativeTauS: number",
+          "callback": false,
+          "ownerType": "ControllerConfig",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/balanceCalibration/session.ts",
+            "line": 8
+          },
+          "description": "Dato de estado/configuración `derivativeTauS`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "integralMin",
+          "declaration": "integralMin: number",
+          "callback": false,
+          "ownerType": "ControllerConfig",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/balanceCalibration/session.ts",
+            "line": 8
+          },
+          "description": "Dato de estado/configuración `integralMin`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "integralMax",
+          "declaration": "integralMax: number",
+          "callback": false,
+          "ownerType": "ControllerConfig",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/balanceCalibration/session.ts",
+            "line": 8
+          },
+          "description": "Dato de estado/configuración `integralMax`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "outputLimit",
+          "declaration": "outputLimit: number",
+          "callback": false,
+          "ownerType": "ControllerConfig",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/balanceCalibration/session.ts",
+            "line": 9
+          },
+          "description": "Dato de estado/configuración `outputLimit`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "antiWindupGain",
+          "declaration": "antiWindupGain: number",
+          "callback": false,
+          "ownerType": "ControllerConfig",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/balanceCalibration/session.ts",
+            "line": 9
+          },
+          "description": "Dato de estado/configuración `antiWindupGain`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "inverted",
+          "declaration": "inverted: boolean",
+          "callback": false,
+          "ownerType": "ControllerConfig",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/balanceCalibration/session.ts",
+            "line": 9
+          },
+          "description": "Dato de estado/configuración `inverted`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/balanceCalibration/session.ts",
+        "line": 7
+      }
+    },
+    {
+      "name": "BalanceSession",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "schema",
+          "declaration": "schema: \"automicro.balance-session\"",
+          "callback": false,
+          "ownerType": "BalanceSession",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/balanceCalibration/session.ts",
+            "line": 12
+          },
+          "description": "Dato de estado/configuración `schema`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "version",
+          "declaration": "version: 1",
+          "callback": false,
+          "ownerType": "BalanceSession",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/balanceCalibration/session.ts",
+            "line": 12
+          },
+          "description": "Dato de estado/configuración `version`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "id",
+          "declaration": "id: string",
+          "callback": false,
+          "ownerType": "BalanceSession",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/balanceCalibration/session.ts",
+            "line": 12
+          },
+          "description": "Dato de estado/configuración `id`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "createdAt",
+          "declaration": "createdAt: string",
+          "callback": false,
+          "ownerType": "BalanceSession",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/balanceCalibration/session.ts",
+            "line": 12
+          },
+          "description": "Dato de estado/configuración `createdAt`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "name",
+          "declaration": "name: string",
+          "callback": false,
+          "ownerType": "BalanceSession",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/balanceCalibration/session.ts",
+            "line": 13
+          },
+          "description": "Dato de estado/configuración `name`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "notes",
+          "declaration": "notes: string",
+          "callback": false,
+          "ownerType": "BalanceSession",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/balanceCalibration/session.ts",
+            "line": 13
+          },
+          "description": "Dato de estado/configuración `notes`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "firmware",
+          "declaration": "firmware: string",
+          "callback": false,
+          "ownerType": "BalanceSession",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/balanceCalibration/session.ts",
+            "line": 13
+          },
+          "description": "Dato de estado/configuración `firmware`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "timing",
+          "declaration": "timing: \"web-arrival\" | \"f4-control-cycle\"",
+          "callback": false,
+          "ownerType": "BalanceSession",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/balanceCalibration/session.ts",
+            "line": 14
+          },
+          "description": "Dato de estado/configuración `timing`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "controller",
+          "declaration": "controller: ControllerConfig | null",
+          "callback": false,
+          "ownerType": "BalanceSession",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/balanceCalibration/session.ts",
+            "line": 15
+          },
+          "description": "Dato de estado/configuración `controller`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "samples",
+          "declaration": "samples: BalanceSample[]",
+          "callback": false,
+          "ownerType": "BalanceSession",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/balanceCalibration/session.ts",
+            "line": 15
+          },
+          "description": "Dato de estado/configuración `samples`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "initialPid",
+          "declaration": "initialPid?: Gains",
+          "callback": false,
+          "ownerType": "BalanceSession",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/balanceCalibration/session.ts",
+            "line": 16
+          },
+          "description": "Dato de estado/configuración `initialPid`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "processed",
+          "declaration": "processed?: { name: string; processedAt: string; algorithm: string; candidate: Gains; confirmedPid?: Gains; appliedAt?: string }",
+          "callback": false,
+          "ownerType": "BalanceSession",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/balanceCalibration/session.ts",
+            "line": 17
+          },
+          "description": "Dato de estado/configuración `processed`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/balanceCalibration/session.ts",
+        "line": 11
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "BalanceWorkbench",
+      "displayName": "BalanceWorkbench",
+      "signature": "BalanceWorkbench({ onBusyChange }: { onBusyChange: (busy: boolean) => void }): inferred-by-TypeScript",
+      "line": 13,
+      "endLine": 206,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "([\"angle\", \"output\", \"terms\"] as const).map",
+        "([\"kp\", \"ki\", \"kd\"] as const).map",
+        "analysis.baselineCost?.toFixed",
+        "analysis.candidateCost?.toFixed",
+        "analysis.fitErrorDeg?.toFixed",
+        "analysis.reasons.map",
+        "analysis.sensitivity.map",
+        "comparisonStats.durationS.toFixed",
+        "comparisonStats.peakDeg.toFixed",
+        "comparisonStats.rmsDeg.toFixed",
+        "history.filter",
+        "history.filter((s) => s.id !== session.id).map",
+        "history.find",
+        "history.map",
+        "new Date(session.processed.appliedAt).toLocaleString",
+        "processingName.trim",
+        "stats?.durationS.toFixed",
+        "stats?.peakDeg.toFixed",
+        "stats?.rmsDeg.toFixed",
+        "summarize",
+        "useBalancePid",
+        "useEffect",
+        "useRef",
+        "useState",
+        "useWebSocket"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/balanceCalibration/BalanceWorkbench.tsx",
+        "line": 13
+      },
+      "description": "Coordina `([\"angle\", \"output\", \"terms\"] as const).map`, `([\"kp\", \"ki\", \"kd\"] as const).map`, `analysis.baselineCost?.toFixed` para Balance PID, sesiones y análisis.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "SessionChart",
+      "displayName": "SessionChart",
+      "signature": "SessionChart({ session, mode }: { session: BalanceSession; mode: \"angle\" | \"output\" | \"terms\" }): inferred-by-TypeScript",
+      "line": 207,
+      "endLine": 220,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "(duration / 1000).toFixed",
+        "Math.max",
+        "all.filter",
+        "labels.join",
+        "labels.map",
+        "max.toFixed",
+        "samples.map",
+        "series.flat",
+        "series.flat().map",
+        "series.map"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/balanceCalibration/BalanceWorkbench.tsx",
+        "line": 207
+      },
+      "description": "Coordina `(duration / 1000).toFixed`, `Math.max`, `all.filter` para Balance PID, sesiones y análisis.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "analyzeSession",
+      "displayName": "analyzeSession",
+      "signature": "analyzeSession(value: unknown): Analysis",
+      "line": 25,
+      "endLine": 85,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "([\"kp\", \"ki\", \"kd\"] as const).map",
+        "Array.from",
+        "Math.abs",
+        "Math.floor",
+        "Math.max",
+        "Math.sqrt",
+        "Number.isFinite",
+        "cost",
+        "model.some",
+        "p.slice",
+        "p.slice(1).some",
+        "p.some",
+        "parseSession",
+        "result.reasons.push",
+        "session.firmware.trim",
+        "solve",
+        "summarize"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/balanceCalibration/optimizer.ts",
+        "line": 25
+      },
+      "description": "Coordina `([\"kp\", \"ki\", \"kd\"] as const).map`, `Array.from`, `Math.abs` para Balance PID, sesiones y análisis.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "clamp",
+      "displayName": "clamp",
+      "signature": "clamp(v: number, min: number, max: number): inferred-by-TypeScript",
+      "line": 10,
+      "endLine": 10,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.max",
+        "Math.min"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/balanceCalibration/optimizer.ts",
+        "line": 10
+      },
+      "description": "Coordina `Math.max`, `Math.min` para Balance PID, sesiones y análisis.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "database",
+      "displayName": "database",
+      "signature": "database(): Promise<IDBDatabase>",
+      "line": 3,
+      "endLine": 11,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/balanceCalibration/storage.ts",
+        "line": 3
+      },
+      "description": "Operación database de Balance PID, sesiones y análisis; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "deleteSession",
+      "displayName": "deleteSession",
+      "signature": "deleteSession(id: string): inferred-by-TypeScript",
+      "line": 28,
+      "endLine": 30,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "operation"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/balanceCalibration/storage.ts",
+        "line": 28
+      },
+      "description": "Adapta la llamada a `operation` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "downloadSession",
+      "displayName": "downloadSession",
+      "signature": "downloadSession(session: BalanceSession): inferred-by-TypeScript",
+      "line": 100,
+      "endLine": 104,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "JSON.stringify",
+        "URL.createObjectURL",
+        "a.click",
+        "document.createElement",
+        "setTimeout"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/balanceCalibration/session.ts",
+        "line": 100
+      },
+      "description": "Coordina `JSON.stringify`, `URL.createObjectURL`, `a.click` para Balance PID, sesiones y análisis.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "finite",
+      "displayName": "finite",
+      "signature": "finite(value: unknown): number",
+      "line": 29,
+      "endLine": 32,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Number.isFinite"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/balanceCalibration/session.ts",
+        "line": 29
+      },
+      "description": "Adapta la llamada a `Number.isFinite` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "flag",
+      "displayName": "flag",
+      "signature": "flag(value: unknown): boolean",
+      "line": 33,
+      "endLine": 36,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/balanceCalibration/session.ts",
+        "line": 33
+      },
+      "description": "Operación flag de Balance PID, sesiones y análisis; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "gains",
+      "displayName": "gains",
+      "signature": "gains(value: unknown): Gains",
+      "line": 41,
+      "endLine": 43,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "finite",
+        "record"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/balanceCalibration/session.ts",
+        "line": 41
+      },
+      "description": "Coordina `finite`, `record` para Balance PID, sesiones y análisis.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "listSessions",
+      "displayName": "listSessions",
+      "signature": "listSessions(): Promise<BalanceSession[]>",
+      "line": 21,
+      "endLine": 24,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "operation",
+        "values.map",
+        "values.map(parseSession).sort"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/balanceCalibration/storage.ts",
+        "line": 21
+      },
+      "description": "Coordina `operation`, `values.map`, `values.map(parseSession).sort` para Balance PID, sesiones y análisis.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "newSession",
+      "displayName": "newSession",
+      "signature": "newSession(name: string, notes: string): BalanceSession",
+      "line": 20,
+      "endLine": 24,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "crypto.randomUUID",
+        "new Date().toISOString"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/balanceCalibration/session.ts",
+        "line": 20
+      },
+      "description": "Coordina `crypto.randomUUID`, `new Date().toISOString` para Balance PID, sesiones y análisis.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "numberOrNull",
+      "displayName": "numberOrNull",
+      "signature": "numberOrNull(v: unknown): inferred-by-TypeScript",
+      "line": 24,
+      "endLine": 24,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Number.isFinite"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/balanceCalibration/remote.ts",
+        "line": 24
+      },
+      "description": "Adapta la llamada a `Number.isFinite` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "operation",
+      "displayName": "operation",
+      "signature": "operation(mode: IDBTransactionMode, action: (store: IDBObjectStore) => IDBRequest<T>): Promise<T>",
+      "line": 12,
+      "endLine": 20,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "database"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/balanceCalibration/storage.ts",
+        "line": 12
+      },
+      "description": "Adapta la llamada a `database` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "parsePid",
+      "displayName": "parsePid",
+      "signature": "parsePid(value: unknown): Gains",
+      "line": 5,
+      "endLine": 13,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "String",
+        "values.every"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/balanceCalibration/useBalancePid.ts",
+        "line": 5
+      },
+      "description": "Coordina `String`, `values.every` para Balance PID, sesiones y análisis.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "parseSession",
+      "displayName": "parseSession",
+      "signature": "parseSession(value: unknown): BalanceSession",
+      "line": 44,
+      "endLine": 83,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Array.isArray",
+        "String",
+        "[\"web-arrival\", \"f4-control-cycle\"].includes",
+        "finite",
+        "flag",
+        "gains",
+        "record",
+        "s.samples.map",
+        "samples.forEach",
+        "text"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/balanceCalibration/session.ts",
+        "line": 44
+      },
+      "description": "Coordina `Array.isArray`, `String`, `[\"web-arrival\", \"f4-control-cycle\"].includes` para Balance PID, sesiones y análisis.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "record",
+      "displayName": "record",
+      "signature": "record(value: unknown): Record<string, unknown>",
+      "line": 25,
+      "endLine": 28,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Array.isArray"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/balanceCalibration/session.ts",
+        "line": 25
+      },
+      "description": "Adapta la llamada a `Array.isArray` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "remoteAnalysis",
+      "displayName": "remoteAnalysis",
+      "signature": "remoteAnalysis(session: BalanceSession, endpoint: string, token: string, signal: AbortSignal): Promise<Analysis>",
+      "line": 3,
+      "endLine": 23,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Array.isArray",
+        "JSON.stringify",
+        "[\"127.0.0.1\", \"localhost\"].includes",
+        "[\"insufficient-data\", \"no-candidate\", \"proposal\"].includes",
+        "[r.baselineCost, r.candidateCost, r.fitErrorDeg].every",
+        "[r.candidate.kp, r.candidate.ki, r.candidate.kd].every",
+        "fetch",
+        "r.reasons.every",
+        "r.sensitivity.every",
+        "response.json"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/balanceCalibration/remote.ts",
+        "line": 3
+      },
+      "description": "Coordina `Array.isArray`, `JSON.stringify`, `[\"127.0.0.1\", \"localhost\"].includes` para Balance PID, sesiones y análisis.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "saveSession",
+      "displayName": "saveSession",
+      "signature": "saveSession(session: BalanceSession): inferred-by-TypeScript",
+      "line": 25,
+      "endLine": 27,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "operation"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/balanceCalibration/storage.ts",
+        "line": 25
+      },
+      "description": "Adapta la llamada a `operation` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "simulate",
+      "displayName": "simulate",
+      "signature": "simulate(session: BalanceSession, m: number[], dt: number, gains: Gains): number",
+      "line": 86,
+      "endLine": 112,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.abs",
+        "Math.ceil",
+        "Math.max",
+        "Math.min",
+        "Number.isFinite",
+        "clamp"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/balanceCalibration/optimizer.ts",
+        "line": 86
+      },
+      "description": "Coordina `Math.abs`, `Math.ceil`, `Math.max` para Balance PID, sesiones y análisis.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "solve",
+      "displayName": "solve",
+      "signature": "solve(matrix: number[][], vector: number[]): number[] | null",
+      "line": 11,
+      "endLine": 24,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.abs",
+        "a.map",
+        "matrix.map"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/balanceCalibration/optimizer.ts",
+        "line": 11
+      },
+      "description": "Coordina `Math.abs`, `a.map`, `matrix.map` para Balance PID, sesiones y análisis.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "summarize",
+      "displayName": "summarize",
+      "signature": "summarize(session: BalanceSession): inferred-by-TypeScript",
+      "line": 93,
+      "endLine": 99,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.sqrt",
+        "p.reduce",
+        "p.slice",
+        "p.slice(1).filter"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/balanceCalibration/session.ts",
+        "line": 93
+      },
+      "description": "Coordina `Math.sqrt`, `p.reduce`, `p.slice` para Balance PID, sesiones y análisis.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "telemetrySample",
+      "displayName": "telemetrySample",
+      "signature": "telemetrySample(value: unknown, timeMs: number, sequence: number): BalanceSample",
+      "line": 84,
+      "endLine": 92,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "finite",
+        "flag",
+        "gains",
+        "record"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/balanceCalibration/session.ts",
+        "line": 84
+      },
+      "description": "Coordina `finite`, `flag`, `gains` para Balance PID, sesiones y análisis.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "text",
+      "displayName": "text",
+      "signature": "text(value: unknown): string",
+      "line": 37,
+      "endLine": 40,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/balanceCalibration/session.ts",
+        "line": 37
+      },
+      "description": "Operación text de Balance PID, sesiones y análisis; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "useBalancePid",
+      "displayName": "useBalancePid",
+      "signature": "useBalancePid(): inferred-by-TypeScript",
+      "line": 14,
+      "endLine": 50,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useCallback",
+        "useEffect",
+        "useState",
+        "useWebSocket"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/balanceCalibration/useBalancePid.ts",
+        "line": 14
+      },
+      "description": "Coordina `useCallback`, `useEffect`, `useState` para Balance PID, sesiones y análisis.",
+      "descriptionOrigin": "structural"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "BalanceWorkbench.analyze",
+      "displayName": "analyze",
+      "signature": "BalanceWorkbench.analyze(): inferred-by-TypeScript",
+      "line": 79,
+      "endLine": 90,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "setAnalysis",
+        "setAnalyzing",
+        "task.postMessage"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/balanceCalibration/BalanceWorkbench.tsx",
+        "line": 79
+      },
+      "description": "Coordina `setAnalysis`, `setAnalyzing`, `task.postMessage` para Balance PID, sesiones y análisis.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "BalanceWorkbench.importFile",
+      "displayName": "importFile",
+      "signature": "BalanceWorkbench.importFile(file: File | undefined): inferred-by-TypeScript",
+      "line": 121,
+      "endLine": 128,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "JSON.parse",
+        "file.text",
+        "parseSession",
+        "persist",
+        "setAnalysis",
+        "setFeedback",
+        "setSession"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/balanceCalibration/BalanceWorkbench.tsx",
+        "line": 121
+      },
+      "description": "Coordina `JSON.parse`, `file.text`, `parseSession` para Balance PID, sesiones y análisis.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "BalanceWorkbench.next",
+      "displayName": "next",
+      "signature": "BalanceWorkbench.next(): inferred-by-TypeScript",
+      "line": 47,
+      "endLine": 63,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "performance.now",
+        "persist",
+        "request",
+        "s.samples.push",
+        "setCapturing",
+        "setFeedback",
+        "setSession",
+        "setTimeout",
+        "telemetrySample"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/balanceCalibration/BalanceWorkbench.tsx",
+        "line": 47
+      },
+      "description": "Coordina `performance.now`, `persist`, `request` para Balance PID, sesiones y análisis.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "BalanceWorkbench.persist",
+      "displayName": "persist",
+      "signature": "BalanceWorkbench.persist(value: BalanceSession): inferred-by-TypeScript",
+      "line": 39,
+      "endLine": 42,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "listSessions",
+        "saveSession",
+        "setFeedback",
+        "setHistory"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/balanceCalibration/BalanceWorkbench.tsx",
+        "line": 39
+      },
+      "description": "Coordina `listSessions`, `saveSession`, `setFeedback` para Balance PID, sesiones y análisis.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "BalanceWorkbench.sendAnalysis",
+      "displayName": "sendAnalysis",
+      "signature": "BalanceWorkbench.sendAnalysis(): inferred-by-TypeScript",
+      "line": 91,
+      "endLine": 108,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "clearTimeout",
+        "endpoint.trim",
+        "new Date().toISOString",
+        "persist",
+        "processingName.trim",
+        "remoteAnalysis",
+        "setAnalysis",
+        "setAnalyzing",
+        "setFeedback",
+        "setSession",
+        "setTimeout"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/balanceCalibration/BalanceWorkbench.tsx",
+        "line": 91
+      },
+      "description": "Coordina `clearTimeout`, `endpoint.trim`, `new Date().toISOString` para Balance PID, sesiones y análisis.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "BalanceWorkbench.sendPid",
+      "displayName": "sendPid",
+      "signature": "BalanceWorkbench.sendPid(candidate: inferred-by-TypeScript): inferred-by-TypeScript",
+      "line": 109,
+      "endLine": 120,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Number",
+        "Object.values",
+        "Object.values(draft).some",
+        "new Date().toISOString",
+        "persist",
+        "pid.write",
+        "setFeedback",
+        "setModifyPid",
+        "setSession"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/balanceCalibration/BalanceWorkbench.tsx",
+        "line": 109
+      },
+      "description": "Coordina `Number`, `Object.values`, `Object.values(draft).some` para Balance PID, sesiones y análisis.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "BalanceWorkbench.start",
+      "displayName": "start",
+      "signature": "BalanceWorkbench.start(): inferred-by-TypeScript",
+      "line": 72,
+      "endLine": 78,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "name.trim",
+        "newSession",
+        "performance.now",
+        "setAnalysis",
+        "setCapturing",
+        "setFeedback",
+        "setSession"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/balanceCalibration/BalanceWorkbench.tsx",
+        "line": 72
+      },
+      "description": "Coordina `name.trim`, `newSession`, `performance.now` para Balance PID, sesiones y análisis.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "analyzeSession.cost",
+      "displayName": "cost",
+      "signature": "analyzeSession.cost(g: Gains): number",
+      "line": 66,
+      "endLine": 66,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "simulate"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/balanceCalibration/optimizer.ts",
+        "line": 66
+      },
+      "description": "Adapta la llamada a `simulate` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "useBalancePid.write",
+      "displayName": "write",
+      "signature": "useBalancePid.write(gains: Gains): Promise<Gains>",
+      "line": 36,
+      "endLine": 48,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "([\"kp\", \"ki\", \"kd\"] as const).some",
+        "[gains.kp, gains.ki, gains.kd].every",
+        "parsePid",
+        "request",
+        "setCurrent",
+        "setError",
+        "setPending"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/balanceCalibration/useBalancePid.ts",
+        "line": 36
+      },
+      "description": "Coordina `([\"kp\", \"ki\", \"kd\"] as const).some`, `[gains.kp, gains.ki, gains.kd].every`, `parsePid` para Balance PID, sesiones y análisis.",
+      "descriptionOrigin": "structural"
+    }
+  ],
+  "hooks": [
+    {
+      "callee": "useWebSocket",
+      "scope": "BalanceWorkbench",
+      "line": 14,
+      "arguments": 0,
+      "path": "src/features/balanceCalibration/BalanceWorkbench.tsx"
+    },
+    {
+      "callee": "useBalancePid",
+      "scope": "BalanceWorkbench",
+      "line": 15,
+      "arguments": 0,
+      "path": "src/features/balanceCalibration/BalanceWorkbench.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "BalanceWorkbench",
+      "line": 16,
+      "arguments": 1,
+      "path": "src/features/balanceCalibration/BalanceWorkbench.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "BalanceWorkbench",
+      "line": 17,
+      "arguments": 1,
+      "path": "src/features/balanceCalibration/BalanceWorkbench.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "BalanceWorkbench",
+      "line": 18,
+      "arguments": 1,
+      "path": "src/features/balanceCalibration/BalanceWorkbench.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "BalanceWorkbench",
+      "line": 19,
+      "arguments": 1,
+      "path": "src/features/balanceCalibration/BalanceWorkbench.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "BalanceWorkbench",
+      "line": 20,
+      "arguments": 1,
+      "path": "src/features/balanceCalibration/BalanceWorkbench.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "BalanceWorkbench",
+      "line": 21,
+      "arguments": 1,
+      "path": "src/features/balanceCalibration/BalanceWorkbench.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "BalanceWorkbench",
+      "line": 21,
+      "arguments": 1,
+      "path": "src/features/balanceCalibration/BalanceWorkbench.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "BalanceWorkbench",
+      "line": 22,
+      "arguments": 1,
+      "path": "src/features/balanceCalibration/BalanceWorkbench.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "BalanceWorkbench",
+      "line": 22,
+      "arguments": 1,
+      "path": "src/features/balanceCalibration/BalanceWorkbench.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "BalanceWorkbench",
+      "line": 23,
+      "arguments": 1,
+      "path": "src/features/balanceCalibration/BalanceWorkbench.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "BalanceWorkbench",
+      "line": 24,
+      "arguments": 1,
+      "path": "src/features/balanceCalibration/BalanceWorkbench.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "BalanceWorkbench",
+      "line": 25,
+      "arguments": 1,
+      "path": "src/features/balanceCalibration/BalanceWorkbench.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "BalanceWorkbench",
+      "line": 26,
+      "arguments": 1,
+      "path": "src/features/balanceCalibration/BalanceWorkbench.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "BalanceWorkbench",
+      "line": 27,
+      "arguments": 1,
+      "path": "src/features/balanceCalibration/BalanceWorkbench.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "BalanceWorkbench",
+      "line": 28,
+      "arguments": 1,
+      "path": "src/features/balanceCalibration/BalanceWorkbench.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "BalanceWorkbench",
+      "line": 29,
+      "arguments": 1,
+      "path": "src/features/balanceCalibration/BalanceWorkbench.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "BalanceWorkbench",
+      "line": 30,
+      "arguments": 1,
+      "path": "src/features/balanceCalibration/BalanceWorkbench.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "BalanceWorkbench",
+      "line": 30,
+      "arguments": 1,
+      "path": "src/features/balanceCalibration/BalanceWorkbench.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "BalanceWorkbench",
+      "line": 31,
+      "arguments": 1,
+      "path": "src/features/balanceCalibration/BalanceWorkbench.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "BalanceWorkbench",
+      "line": 35,
+      "arguments": 2,
+      "path": "src/features/balanceCalibration/BalanceWorkbench.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "BalanceWorkbench",
+      "line": 36,
+      "arguments": 2,
+      "path": "src/features/balanceCalibration/BalanceWorkbench.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "BalanceWorkbench",
+      "line": 37,
+      "arguments": 2,
+      "path": "src/features/balanceCalibration/BalanceWorkbench.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "BalanceWorkbench",
+      "line": 38,
+      "arguments": 2,
+      "path": "src/features/balanceCalibration/BalanceWorkbench.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "BalanceWorkbench",
+      "line": 43,
+      "arguments": 2,
+      "path": "src/features/balanceCalibration/BalanceWorkbench.tsx"
+    },
+    {
+      "callee": "useWebSocket",
+      "scope": "useBalancePid",
+      "line": 15,
+      "arguments": 0,
+      "path": "src/features/balanceCalibration/useBalancePid.ts"
+    },
+    {
+      "callee": "useState",
+      "scope": "useBalancePid",
+      "line": 16,
+      "arguments": 1,
+      "path": "src/features/balanceCalibration/useBalancePid.ts"
+    },
+    {
+      "callee": "useState",
+      "scope": "useBalancePid",
+      "line": 17,
+      "arguments": 1,
+      "path": "src/features/balanceCalibration/useBalancePid.ts"
+    },
+    {
+      "callee": "useState",
+      "scope": "useBalancePid",
+      "line": 17,
+      "arguments": 1,
+      "path": "src/features/balanceCalibration/useBalancePid.ts"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "useBalancePid",
+      "line": 18,
+      "arguments": 2,
+      "path": "src/features/balanceCalibration/useBalancePid.ts"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "useBalancePid",
+      "line": 27,
+      "arguments": 2,
+      "path": "src/features/balanceCalibration/useBalancePid.ts"
+    }
+  ]
+}

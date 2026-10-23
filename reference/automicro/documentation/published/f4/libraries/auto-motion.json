@@ -1,0 +1,1082 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "f4:module/Core/Inc/auto_motion.h",
+  "slug": "auto-motion",
+  "title": "GOTO y calibración de motores",
+  "target": "f4",
+  "kind": "núcleo",
+  "status": "source-documented",
+  "verification": "not-run-user-instruction",
+  "snapshotDate": "2026-10-20",
+  "responsibility": "Planifica desplazamientos GOTO relativos y calibra un perfil de avance del vehículo.",
+  "scope": "Perfil de cinco puntos PWM/velocidad/rampa y cinco canales IR, estimación de avance y manejo de obstáculos. No implementa odometría de ruedas ni un mapa global.",
+  "state": "AutoMotion_Handle posee copia del puerto, perfil, último input, objetivo, posición estimada, fases, tiempos y métricas. read copia guardas/IMU/PWM/IR; command pide forward/turn con tiempo; hold detiene; save persiste AutoMotion_Profile. La serialización pública define 128 bytes de estado, 88 de perfil y 186 de calibración IR, distintos del sizeof del struct.",
+  "lifecycle": [
+    "Init carga perfil persistido; Goto/Calibrate admiten una operación o devuelven razón de rechazo.",
+    "Task usa read, evolución temporal y command para avanzar; Cancel termina y solicita hold.",
+    "SetProfile/SetIr decodifican formatos binarios explícitos; State/GetProfile construyen salidas de protocolo."
+  ],
+  "interactions": [
+    "APP_AutoCommand traduce a MotionControl; APP_AutoRead reúne IMU, modo, motores e IR.",
+    "APP_AutoSave rechaza guardado en situaciones activas y persiste en preferencias.",
+    "ESP codifica las solicitudes 0x23..0x2A; Web presenta la misma misión y sus requisitos."
+  ],
+  "limitations": [
+    "Posición y velocidad son estimadas por modelo calibrado, no medidas absolutas.",
+    "Comprobar siempre reason y result_valid; recibir una respuesta de 128 bytes no implica éxito.",
+    "La calibración física y la exactitud de trayectoria no se comprobaron en esta entrega."
+  ],
+  "modularity": "Sin HAL y sin drivers concretos; callbacks de aplicación conectan sensores y movimiento. Los algoritmos y formatos siguen siendo del dominio AutoMicro.",
+  "files": [
+    {
+      "path": "Core/Inc/auto_motion.h",
+      "rootId": "f4",
+      "sha256": "c08909b2b723ceef1738cd050afa1908bd330482bd9de4c4179f2afb952b69a5",
+      "includes": [
+        "stdbool.h",
+        "stdint.h"
+      ]
+    },
+    {
+      "path": "Core/Src/auto_motion.c",
+      "rootId": "f4",
+      "sha256": "bb994b5b177e792e2a1a01da5bbd2a0a69719d545109b07fcec8aaed728e975b",
+      "includes": [
+        "auto_motion.h",
+        "math.h",
+        "string.h"
+      ]
+    }
+  ],
+  "findings": [
+    "AMDOC-F4-003",
+    "AMDOC-ESP-001"
+  ],
+  "types": [
+    {
+      "name": "AutoMotion_Point",
+      "fields": [
+        {
+          "name": "speed_cm_s",
+          "declaration": "float percent, speed_cm_s",
+          "callback": false,
+          "ownerType": "AutoMotion_Point",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/auto_motion.h",
+            "line": 9
+          },
+          "description": "Velocidad calibrada del punto en centímetros por segundo."
+        },
+        {
+          "name": "runs",
+          "declaration": "uint32_t ramp_ms, runs",
+          "callback": false,
+          "ownerType": "AutoMotion_Point",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/auto_motion.h",
+            "line": 9
+          },
+          "description": "Dato de estado/configuración `runs`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/auto_motion.h",
+        "line": 9
+      }
+    },
+    {
+      "name": "AutoMotion_IrPoint",
+      "fields": [
+        {
+          "name": "adc",
+          "declaration": "uint16_t distance_mm, adc",
+          "callback": false,
+          "ownerType": "AutoMotion_IrPoint",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/auto_motion.h",
+            "line": 10
+          },
+          "description": "Dato de estado/configuración `adc`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/auto_motion.h",
+        "line": 10
+      }
+    },
+    {
+      "name": "AutoMotion_IrChannel",
+      "fields": [
+        {
+          "name": "noise",
+          "declaration": "uint16_t baseline, noise",
+          "callback": false,
+          "ownerType": "AutoMotion_IrChannel",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/auto_motion.h",
+            "line": 11
+          },
+          "description": "Dato de estado/configuración `noise`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "count",
+          "declaration": "uint8_t count",
+          "callback": false,
+          "ownerType": "AutoMotion_IrChannel",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/auto_motion.h",
+            "line": 11
+          },
+          "description": "Dato de estado/configuración `count`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "points",
+          "declaration": "AutoMotion_IrPoint points[8]",
+          "callback": false,
+          "ownerType": "AutoMotion_IrChannel",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/auto_motion.h",
+            "line": 11
+          },
+          "description": "Dato de estado/configuración `points`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/auto_motion.h",
+        "line": 11
+      }
+    },
+    {
+      "name": "AutoMotion_Profile",
+      "fields": [
+        {
+          "name": "revision",
+          "declaration": "uint32_t revision",
+          "callback": false,
+          "ownerType": "AutoMotion_Profile",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/auto_motion.h",
+            "line": 12
+          },
+          "description": "Dato de estado/configuración `revision`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ir_valid",
+          "declaration": "uint8_t count, ir_valid",
+          "callback": false,
+          "ownerType": "AutoMotion_Profile",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/auto_motion.h",
+            "line": 13
+          },
+          "description": "Dato de estado/configuración `ir_valid`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "points",
+          "declaration": "AutoMotion_Point points[AUTO_MOTION_POINTS]",
+          "callback": false,
+          "ownerType": "AutoMotion_Profile",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/auto_motion.h",
+            "line": 13
+          },
+          "description": "Dato de estado/configuración `points`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ir",
+          "declaration": "AutoMotion_IrChannel ir[5]",
+          "callback": false,
+          "ownerType": "AutoMotion_Profile",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/auto_motion.h",
+            "line": 14
+          },
+          "description": "Dato de estado/configuración `ir`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/auto_motion.h",
+        "line": 12
+      }
+    },
+    {
+      "name": "AutoMotion_Input",
+      "fields": [
+        {
+          "name": "imu_seq",
+          "declaration": "uint32_t now_ms, imu_seq",
+          "callback": false,
+          "ownerType": "AutoMotion_Input",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/auto_motion.h",
+            "line": 17
+          },
+          "description": "Dato de estado/configuración `imu_seq`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "pwm_hz",
+          "declaration": "float yaw_deg, left_duty, right_duty, pwm_hz",
+          "callback": false,
+          "ownerType": "AutoMotion_Input",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/auto_motion.h",
+            "line": 18
+          },
+          "description": "Dato de estado/configuración `pwm_hz`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "objects",
+          "declaration": "uint16_t objects[5]",
+          "callback": false,
+          "ownerType": "AutoMotion_Input",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/auto_motion.h",
+            "line": 19
+          },
+          "description": "Cinco lecturas raw ADC de sensores de objetos."
+        },
+        {
+          "name": "safety",
+          "declaration": "uint8_t mode, mpu_ready, mpu_calibrated, armed, balance, settled, safety",
+          "callback": false,
+          "ownerType": "AutoMotion_Input",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/auto_motion.h",
+            "line": 20
+          },
+          "description": "Dato de estado/configuración `safety`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "lights",
+          "declaration": "uint8_t line_ready, line_fresh, center_black, objects_fresh, objects_enabled, lights",
+          "callback": false,
+          "ownerType": "AutoMotion_Input",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/auto_motion.h",
+            "line": 21
+          },
+          "description": "Dato de estado/configuración `lights`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/auto_motion.h",
+        "line": 17
+      }
+    },
+    {
+      "name": "AutoMotion_Port",
+      "fields": [
+        {
+          "name": "ctx",
+          "declaration": "void *ctx",
+          "callback": false,
+          "ownerType": "AutoMotion_Port",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/auto_motion.h",
+            "line": 24
+          },
+          "description": "Contexto opaco prestado al callback; el integrador conserva su almacenamiento."
+        },
+        {
+          "name": "read",
+          "declaration": "bool (*read)(void *, AutoMotion_Input *)",
+          "callback": true,
+          "ownerType": "AutoMotion_Port",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/auto_motion.h",
+            "line": 25
+          },
+          "description": "Copia estado coherente de modo, IMU, actuadores, IR y guardas."
+        },
+        {
+          "name": "command",
+          "declaration": "bool (*command)(void *, float, float, uint32_t)",
+          "callback": true,
+          "ownerType": "AutoMotion_Port",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/auto_motion.h",
+            "line": 26
+          },
+          "description": "Solicita avance/giro al árbitro y devuelve si fue aceptado."
+        },
+        {
+          "name": "hold",
+          "declaration": "void (*hold)(void *)",
+          "callback": true,
+          "ownerType": "AutoMotion_Port",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/auto_motion.h",
+            "line": 27
+          },
+          "description": "Solicita parada segura de la operación al integrador."
+        },
+        {
+          "name": "save",
+          "declaration": "bool (*save)(void *, const AutoMotion_Profile *)",
+          "callback": true,
+          "ownerType": "AutoMotion_Port",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/auto_motion.h",
+            "line": 28
+          },
+          "description": "Solicita persistir un perfil de motores; el retorno expresa éxito de almacenamiento."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/auto_motion.h",
+        "line": 24
+      }
+    },
+    {
+      "name": "AutoMotion_Handle",
+      "fields": [
+        {
+          "name": "port",
+          "declaration": "AutoMotion_Port port",
+          "callback": false,
+          "ownerType": "AutoMotion_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/auto_motion.h",
+            "line": 31
+          },
+          "description": "Tabla copiada de lectura, orden, hold y persistencia."
+        },
+        {
+          "name": "profile",
+          "declaration": "AutoMotion_Profile profile",
+          "callback": false,
+          "ownerType": "AutoMotion_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/auto_motion.h",
+            "line": 32
+          },
+          "description": "Copia del modelo calibrado de motores y cinco canales IR."
+        },
+        {
+          "name": "input",
+          "declaration": "AutoMotion_Input input",
+          "callback": false,
+          "ownerType": "AutoMotion_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/auto_motion.h",
+            "line": 32
+          },
+          "description": "Último snapshot leído desde la aplicación."
+        },
+        {
+          "name": "black_candidate",
+          "declaration": "uint8_t kind, state, phase, reason, obstacle_mask, persisted, result_valid, black_candidate",
+          "callback": false,
+          "ownerType": "AutoMotion_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/auto_motion.h",
+            "line": 33
+          },
+          "description": "Dato de estado/configuración `black_candidate`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "timeout_ms",
+          "declaration": "uint32_t id, started_ms, last_ms, measure_ms, measured_ms, ramp_ms, timeout_ms",
+          "callback": false,
+          "ownerType": "AutoMotion_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/auto_motion.h",
+            "line": 34
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "last_imu_seq",
+          "declaration": "uint32_t active_ms[2], forward_ms[2], reverse_ms[2], candidate_ms, last_imu_seq",
+          "callback": false,
+          "ownerType": "AutoMotion_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/auto_motion.h",
+            "line": 35
+          },
+          "description": "Memoria de la observación anterior usada por la máquina de estados."
+        },
+        {
+          "name": "speed",
+          "declaration": "float x, y, goal_x, goal_y, origin_yaw, heading, forward, speed",
+          "callback": false,
+          "ownerType": "AutoMotion_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/auto_motion.h",
+            "line": 36
+          },
+          "description": "Dato de estado/configuración `speed`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "yaw_error_max",
+          "declaration": "float duty_seconds[2], max_duty[2], cycles[2], yaw_error_max",
+          "callback": false,
+          "ownerType": "AutoMotion_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/auto_motion.h",
+            "line": 37
+          },
+          "description": "Dato de estado/configuración `yaw_error_max`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "avoid_y",
+          "declaration": "float avoid_heading, avoid_x, avoid_y",
+          "callback": false,
+          "ownerType": "AutoMotion_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/auto_motion.h",
+            "line": 38
+          },
+          "description": "Dato de estado/configuración `avoid_y`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "drive_elapsed",
+          "declaration": "uint32_t avoid_since, last_progress_ms, drive_elapsed",
+          "callback": false,
+          "ownerType": "AutoMotion_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/auto_motion.h",
+            "line": 39
+          },
+          "description": "Dato de estado/configuración `drive_elapsed`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "applied_forward",
+          "declaration": "float applied_forward",
+          "callback": false,
+          "ownerType": "AutoMotion_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/auto_motion.h",
+            "line": 40
+          },
+          "description": "Dato de estado/configuración `applied_forward`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "best_distance",
+          "declaration": "float best_distance",
+          "callback": false,
+          "ownerType": "AutoMotion_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/auto_motion.h",
+            "line": 41
+          },
+          "description": "Dato de estado/configuración `best_distance`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/auto_motion.h",
+        "line": 31
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "AutoMotion_Busy",
+      "signature": "bool AutoMotion_Busy(const AutoMotion_Handle *)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/auto_motion.h",
+        "line": 48
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Indica si una misión o calibración permanece activa.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/auto_motion.c",
+        "line": 11
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AutoMotion_Calibrate",
+      "signature": "uint8_t AutoMotion_Calibrate(AutoMotion_Handle *, uint8_t operation, float percent, uint32_t ramp_ms, uint32_t timeout_ms)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/auto_motion.h",
+        "line": 52
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "AutoMotion_Cancel",
+        "begin",
+        "fabsf",
+        "isfinite",
+        "obstacles",
+        "read",
+        "ready",
+        "save"
+      ],
+      "writes": [
+        "goal_x",
+        "goal_y",
+        "result_valid",
+        "speed",
+        "speed_cm_s"
+      ],
+      "description": "Procesa operación de calibración con porcentaje, rampa y timeout.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/auto_motion.c",
+        "line": 83
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AutoMotion_Cancel",
+      "signature": "void AutoMotion_Cancel(AutoMotion_Handle *)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/auto_motion.h",
+        "line": 49
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "AutoMotion_Busy",
+        "end"
+      ],
+      "writes": [],
+      "description": "Cancela la operación activa y solicita hold.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/auto_motion.c",
+        "line": 13
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AutoMotion_GetProfile",
+      "signature": "void AutoMotion_GetProfile(AutoMotion_Handle *, uint8_t *, uint8_t request_reason)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/auto_motion.h",
+        "line": 56
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "memset",
+        "put32",
+        "putf"
+      ],
+      "writes": [],
+      "description": "Serializa perfil en el buffer de salida de 88 bytes.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/auto_motion.c",
+        "line": 182
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AutoMotion_Goto",
+      "signature": "uint8_t AutoMotion_Goto(AutoMotion_Handle *, float x_cm, float y_cm)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/auto_motion.h",
+        "line": 51
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "begin",
+        "hypotf",
+        "isfinite",
+        "obstacles",
+        "ready"
+      ],
+      "writes": [
+        "goal_x",
+        "goal_y"
+      ],
+      "description": "Intenta iniciar un objetivo relativo x/y en centímetros y devuelve razón.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/auto_motion.c",
+        "line": 71
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AutoMotion_Init",
+      "signature": "void AutoMotion_Init(AutoMotion_Handle *, const AutoMotion_Port *, const AutoMotion_Profile *)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/auto_motion.h",
+        "line": 47
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "memset"
+      ],
+      "writes": [
+        "persisted",
+        "port",
+        "profile"
+      ],
+      "description": "Inicializa misión, callbacks y perfil de calibración.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/auto_motion.c",
+        "line": 14
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AutoMotion_SetIr",
+      "signature": "uint8_t AutoMotion_SetIr(AutoMotion_Handle *, const uint8_t *, uint8_t)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/auto_motion.h",
+        "line": 53
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "AutoMotion_Busy",
+        "read",
+        "save",
+        "u16"
+      ],
+      "writes": [
+        "baseline",
+        "count",
+        "noise"
+      ],
+      "description": "Decodifica y aplica el bloque de calibración IR del protocolo.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/auto_motion.c",
+        "line": 168
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AutoMotion_SetProfile",
+      "signature": "uint8_t AutoMotion_SetProfile(AutoMotion_Handle *, const uint8_t *, uint8_t)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/auto_motion.h",
+        "line": 54
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "AutoMotion_Busy",
+        "f32",
+        "isfinite",
+        "read",
+        "save",
+        "u32"
+      ],
+      "writes": [
+        "percent",
+        "ramp_ms",
+        "runs",
+        "speed_cm_s"
+      ],
+      "description": "Decodifica y aplica el perfil de motores serializado.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/auto_motion.c",
+        "line": 186
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AutoMotion_State",
+      "signature": "void AutoMotion_State(AutoMotion_Handle *, uint8_t *, uint8_t request_reason)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/auto_motion.h",
+        "line": 55
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "memset",
+        "put32",
+        "putf",
+        "read"
+      ],
+      "writes": [],
+      "description": "Serializa estado de misión/calibración en el buffer de salida de 128 bytes.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/auto_motion.c",
+        "line": 196
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AutoMotion_Task",
+      "signature": "void AutoMotion_Task(AutoMotion_Handle *)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/auto_motion.h",
+        "line": 50
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "AutoMotion_Busy",
+        "angle",
+        "atan2f",
+        "clamp",
+        "command",
+        "cosf",
+        "end",
+        "fabsf",
+        "fmaxf",
+        "hold",
+        "hypotf",
+        "model",
+        "obstacles",
+        "read",
+        "sinf"
+      ],
+      "writes": [
+        "applied_forward",
+        "avoid_heading",
+        "avoid_since",
+        "avoid_x",
+        "avoid_y",
+        "best_distance",
+        "black_candidate",
+        "candidate_ms",
+        "drive_elapsed",
+        "heading",
+        "last_imu_seq",
+        "last_ms",
+        "last_progress_ms",
+        "measure_ms",
+        "measured_ms",
+        "phase",
+        "result_valid",
+        "speed",
+        "state",
+        "x",
+        "y",
+        "yaw_error_max"
+      ],
+      "description": "Avanza misión/calibración con sensores, tiempos y guardas actuales.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/auto_motion.c",
+        "line": 101
+      },
+      "linkage": "header"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "clamp",
+      "signature": "static float clamp(float v,float lo,float hi)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/auto_motion.c",
+        "line": 4
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "fmaxf",
+        "fminf"
+      ],
+      "writes": [],
+      "description": "Coordina `fmaxf`, `fminf` para GOTO y calibración de motores.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "angle",
+      "signature": "static float angle(float a)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/auto_motion.c",
+        "line": 5
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación angle de GOTO y calibración de motores; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "u32",
+      "signature": "static uint32_t u32(const uint8_t *p)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/auto_motion.c",
+        "line": 6
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación u32 de GOTO y calibración de motores; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "u16",
+      "signature": "static uint16_t u16(const uint8_t *p)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/auto_motion.c",
+        "line": 7
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación u16 de GOTO y calibración de motores; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "f32",
+      "signature": "static float f32(const uint8_t *p)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/auto_motion.c",
+        "line": 8
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "memcpy",
+        "u32"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `u32` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "put32",
+      "signature": "static void put32(uint8_t *p,uint32_t v)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/auto_motion.c",
+        "line": 9
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación put32 de GOTO y calibración de motores; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "putf",
+      "signature": "static void putf(uint8_t *p,float f)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/auto_motion.c",
+        "line": 10
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "memcpy",
+        "put32"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `put32` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "end",
+      "signature": "static void end(AutoMotion_Handle *h,uint8_t state,uint8_t reason)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/auto_motion.c",
+        "line": 12
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "hold"
+      ],
+      "writes": [
+        "applied_forward",
+        "forward",
+        "reason",
+        "state"
+      ],
+      "description": "Adapta la llamada a `hold` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ready",
+      "signature": "static uint8_t ready(AutoMotion_Handle *h,bool calibration)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/auto_motion.c",
+        "line": 17
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "AutoMotion_Busy",
+        "read"
+      ],
+      "writes": [],
+      "description": "Coordina `AutoMotion_Busy`, `read` para GOTO y calibración de motores.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "obstacles",
+      "signature": "static bool obstacles(AutoMotion_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/auto_motion.c",
+        "line": 28
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "clamp",
+        "fabsf",
+        "fmaxf",
+        "fminf"
+      ],
+      "writes": [
+        "obstacle_mask"
+      ],
+      "description": "Coordina `clamp`, `fabsf`, `fmaxf` para GOTO y calibración de motores.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "model",
+      "signature": "static float model(const AutoMotion_Handle *h,float percent)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/auto_motion.c",
+        "line": 47
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación model de GOTO y calibración de motores; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "begin",
+      "signature": "static void begin(AutoMotion_Handle *h,uint8_t kind,float percent,uint32_t ramp,uint32_t timeout)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/auto_motion.c",
+        "line": 59
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "memset"
+      ],
+      "writes": [
+        "applied_forward",
+        "best_distance",
+        "black_candidate",
+        "candidate_ms",
+        "drive_elapsed",
+        "forward",
+        "heading",
+        "kind",
+        "last_imu_seq",
+        "last_ms",
+        "last_progress_ms",
+        "measure_ms",
+        "measured_ms",
+        "origin_yaw",
+        "phase",
+        "ramp_ms",
+        "reason",
+        "result_valid",
+        "started_ms",
+        "state",
+        "timeout_ms",
+        "x",
+        "y",
+        "yaw_error_max"
+      ],
+      "description": "Coordina `memset` para GOTO y calibración de motores.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "save",
+      "signature": "static bool save(AutoMotion_Handle *h,const AutoMotion_Profile *next)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/auto_motion.c",
+        "line": 78
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "AutoMotion_Busy",
+        "save"
+      ],
+      "writes": [
+        "persisted",
+        "profile"
+      ],
+      "description": "Coordina `AutoMotion_Busy`, `save` para GOTO y calibración de motores.",
+      "descriptionOrigin": "structural"
+    }
+  ]
+}

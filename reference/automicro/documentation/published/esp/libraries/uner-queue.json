@@ -1,0 +1,218 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "esp:module/src/uner_queue.h",
+  "slug": "uner-queue",
+  "title": "Cola UNER",
+  "target": "esp",
+  "kind": "núcleo",
+  "status": "source-documented",
+  "snapshotDate": "2026-10-20",
+  "verification": "not-run-user-instruction",
+  "responsibility": "Mantiene colas acotadas de datos/paquetes del protocolo.",
+  "scope": "Operaciones de inserción/extracción y estado de capacidad, sin radio ni sesiones.",
+  "state": "Índices y memoria pertenecen a la instancia/almacenamiento configurado; una cola llena debe propagarse como rechazo, no éxito de envío.",
+  "modularity": "Capa interna del protocolo, con dependencia de sus tipos; no es un servicio HTTP.",
+  "lifecycle": [
+    "Inicializar memoria/índices antes de producir.",
+    "Consumir y liberar según las operaciones de cola y la propiedad real del payload."
+  ],
+  "interactions": [
+    "El handle/dispositivo usa la cola para separar producción de consumo."
+  ],
+  "limitations": [
+    "No suponer seguridad multihilo ni copia profunda de cada puntero por ser una cola."
+  ],
+  "relationships": [],
+  "findings": [],
+  "files": [
+    {
+      "rootId": "esp",
+      "path": "src/uner_queue.c",
+      "sha256": "24b52687673efe2251a9910a94a537ebbbdd7faba1d725863dde25ff5863b877",
+      "imports": [
+        "uner_queue.h",
+        "string.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    },
+    {
+      "rootId": "esp",
+      "path": "src/uner_queue.h",
+      "sha256": "bd7cb6d852b00e1a88675051bc99c2f2fd8b06ace5a684b32fa9f05ab8c33df4",
+      "imports": [
+        "uner_v2.h",
+        "stdint.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    }
+  ],
+  "types": [
+    {
+      "name": "UNER_Queue",
+      "fields": [
+        {
+          "name": "pkt_slots",
+          "declaration": "UNER_Packet *pkt_slots",
+          "callback": false,
+          "ownerType": "UNER_Queue",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_queue.h",
+            "line": 9
+          },
+          "description": "Dato de estado/configuración `pkt_slots`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "payload_pool",
+          "declaration": "uint8_t *payload_pool",
+          "callback": false,
+          "ownerType": "UNER_Queue",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_queue.h",
+            "line": 10
+          },
+          "description": "Dato de estado/configuración `payload_pool`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "payload_stride",
+          "declaration": "uint16_t payload_stride",
+          "callback": false,
+          "ownerType": "UNER_Queue",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_queue.h",
+            "line": 11
+          },
+          "description": "Dato de estado/configuración `payload_stride`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "slot_count",
+          "declaration": "uint8_t slot_count",
+          "callback": false,
+          "ownerType": "UNER_Queue",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_queue.h",
+            "line": 12
+          },
+          "description": "Dato de estado/configuración `slot_count`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "q_head",
+          "declaration": "volatile uint8_t q_head",
+          "callback": false,
+          "ownerType": "UNER_Queue",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_queue.h",
+            "line": 13
+          },
+          "description": "Dato de estado/configuración `q_head`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "q_tail",
+          "declaration": "volatile uint8_t q_tail",
+          "callback": false,
+          "ownerType": "UNER_Queue",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_queue.h",
+            "line": 14
+          },
+          "description": "Dato de estado/configuración `q_tail`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "q_count",
+          "declaration": "volatile uint8_t q_count",
+          "callback": false,
+          "ownerType": "UNER_Queue",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_queue.h",
+            "line": 15
+          },
+          "description": "Dato de estado/configuración `q_count`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_queue.h",
+        "line": 9
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "UNER_Queue_Dequeue",
+      "signature": "uint8_t UNER_Queue_Dequeue(UNER_Queue *q, UNER_Packet *out)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_queue.c",
+        "line": 41
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [
+        "q_head"
+      ],
+      "description": "Operación Dequeue de Cola UNER; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_Queue_Enqueue",
+      "signature": "UNER_Status UNER_Queue_Enqueue(UNER_Queue *q, uint8_t src, uint8_t dst, uint8_t cmd, const uint8_t *payload, uint8_t len, uint8_t ver, uint8_t transport_id)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_queue.c",
+        "line": 19
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "memcpy"
+      ],
+      "writes": [
+        "cmd",
+        "dst",
+        "len",
+        "payload",
+        "q_tail",
+        "src",
+        "transport_id",
+        "ver"
+      ],
+      "description": "Coordina `memcpy` para Cola UNER.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_Queue_Init",
+      "signature": "UNER_Status UNER_Queue_Init(UNER_Queue *q, UNER_Packet *slots, uint8_t slot_count, uint8_t *payload_pool, uint16_t payload_pool_size)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_queue.c",
+        "line": 4
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "memset"
+      ],
+      "writes": [
+        "payload_pool",
+        "payload_stride",
+        "pkt_slots",
+        "q_count",
+        "q_head",
+        "q_tail",
+        "slot_count"
+      ],
+      "description": "Inicializa Cola UNER dentro de Cola UNER.",
+      "descriptionOrigin": "inferred-name"
+    }
+  ],
+  "internalFunctions": [],
+  "hooks": []
+}

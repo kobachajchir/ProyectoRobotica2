@@ -1,0 +1,3550 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "f4:module/Core/Inc/uner_app.h",
+  "slug": "uner-application",
+  "title": "UNER de aplicación y contrato del robot",
+  "target": "f4",
+  "kind": "integración",
+  "status": "source-documented",
+  "verification": "not-run-user-instruction",
+  "snapshotDate": "2026-10-20",
+  "responsibility": "Implementa comandos, eventos, autorización, serialización y políticas de transporte del robot.",
+  "scope": "Preferencias, movimiento, sensores/streams, UI, conectividad, firmware, assets, perfiles y reset diferido. La tabla de comandos describe registros; el switch/handler determina el efecto.",
+  "state": "Posee estado estático de aplicación: streams por endpoint, colas de respuestas de autenticación, reset pendiente, proxy ESP y assets. El origen se identifica con transporte+nodo; requestId JSON permanece en ESP. Los paquetes recibidos deben consumirse/copiarse antes de reutilizar slots del core.",
+  "lifecycle": [
+    "Init registra rutas/transportes/tabla; Poll atiende parser, streams, respuestas y operaciones diferidas.",
+    "Los handlers comprueban transporte, nodo, autorización, contexto, argumentos y estado antes del efecto.",
+    "ACK/NACK y respuesta con mismo ID son alternativas o etapas según comando; leer status y correlación.",
+    "Reset difiere la acción hasta condiciones de transmisión; no confundir ACK encolado con ACK físicamente enviado."
+  ],
+  "interactions": [
+    "Web → JSON ESP → broker UART → UNER F4; Qt usa USB UNER directo.",
+    "Streams MPU/IR se mantienen por transporte+nodo, con recepción/consumo independientes de una lectura puntual.",
+    "Consultar ../shared/wire-contracts.md y el catálogo de registro para tamaños y semántica de campos."
+  ],
+  "limitations": [
+    "No todos los IDs definidos tienen handler ni todos los declarados producen la misma respuesta.",
+    "Timeout de metadata F4, broker ESP y Promise Web son capas distintas.",
+    "No se acredita interoperabilidad por copiar el mismo catálogo."
+  ],
+  "modularity": "Capa de composición deliberadamente acoplada a sensores, control, menús y HAL/USB. No debe presentarse como core transportable ni importarse desde librerías genéricas.",
+  "files": [
+    {
+      "path": "Core/Inc/uner_app.h",
+      "rootId": "f4",
+      "sha256": "6fa521fb444dd9df546275a57da8acdebfd20e499b6c547b5636907f348265f0",
+      "includes": [
+        "stdint.h",
+        "uner_core.h",
+        "uner_handle.h",
+        "wifi_bridge_types.h",
+        "binary_asset_types.h"
+      ]
+    },
+    {
+      "path": "Core/Src/uner_app.c",
+      "rootId": "f4",
+      "sha256": "e1a1ba49bd011bd0a2a787ecad7e732226770d4c6220c44e5fc482521841694c",
+      "includes": [
+        "uner_app.h",
+        "stdbool.h",
+        "math.h",
+        "string.h",
+        "automicro_boot_contract.h",
+        "app_preferences_binding.h",
+        "app_ap_config.h",
+        "app_tasks.h",
+        "balance_control.h",
+        "globals.h",
+        "i2c_manager.h",
+        "line_follow_control.h",
+        "main.h",
+        "app_menu_binding.h",
+        "motion_control.h",
+        "motion_estimator.h",
+        "motor_control.h",
+        "mpu9250.h",
+        "oled_utils.h",
+        "oled_handle.h",
+        "oled_canvas.h",
+        "permissions.h",
+        "screenWrappers.h",
+        "ui_event_router.h",
+        "uner_handle.h",
+        "uner_transport_uart1_dma.h",
+        "uner_transport_usbcdc.h",
+        "usbd_cdc_if.h",
+        "uner_v2.h",
+        "app_wifi_binding.h"
+      ]
+    }
+  ],
+  "findings": [
+    "AMDOC-F4-003",
+    "AMDOC-F4-006",
+    "AMDOC-ESP-001",
+    "AMDOC-WEB-004"
+  ],
+  "types": [
+    {
+      "name": "UNER_EspProxyState",
+      "fields": [
+        {
+          "name": "active",
+          "declaration": "uint8_t active",
+          "callback": false,
+          "ownerType": "UNER_EspProxyState",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Src/uner_app.c",
+            "line": 134
+          },
+          "description": "Dato de estado/configuración `active`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "origin_transport_id",
+          "declaration": "uint8_t origin_transport_id",
+          "callback": false,
+          "ownerType": "UNER_EspProxyState",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Src/uner_app.c",
+            "line": 135
+          },
+          "description": "Dato de estado/configuración `origin_transport_id`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "origin_node",
+          "declaration": "uint8_t origin_node",
+          "callback": false,
+          "ownerType": "UNER_EspProxyState",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Src/uner_app.c",
+            "line": 136
+          },
+          "description": "Dato de estado/configuración `origin_node`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "cmd",
+          "declaration": "uint8_t cmd",
+          "callback": false,
+          "ownerType": "UNER_EspProxyState",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Src/uner_app.c",
+            "line": 137
+          },
+          "description": "Dato de estado/configuración `cmd`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "flags",
+          "declaration": "uint8_t flags",
+          "callback": false,
+          "ownerType": "UNER_EspProxyState",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Src/uner_app.c",
+            "line": 138
+          },
+          "description": "Bits de estado del módulo; conservar máscaras y distinguir estado de eventos pendientes."
+        },
+        {
+          "name": "ack_seen",
+          "declaration": "uint8_t ack_seen",
+          "callback": false,
+          "ownerType": "UNER_EspProxyState",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Src/uner_app.c",
+            "line": 139
+          },
+          "description": "Dato de estado/configuración `ack_seen`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 134
+      }
+    },
+    {
+      "name": "UNER_StreamState",
+      "fields": [
+        {
+          "name": "active",
+          "declaration": "uint8_t active",
+          "callback": false,
+          "ownerType": "UNER_StreamState",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Src/uner_app.c",
+            "line": 165
+          },
+          "description": "Dato de estado/configuración `active`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "transport_id",
+          "declaration": "uint8_t transport_id",
+          "callback": false,
+          "ownerType": "UNER_StreamState",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Src/uner_app.c",
+            "line": 166
+          },
+          "description": "Transporte de entrada/salida; forma parte de la identidad del endpoint."
+        },
+        {
+          "name": "dst_node",
+          "declaration": "uint8_t dst_node",
+          "callback": false,
+          "ownerType": "UNER_StreamState",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Src/uner_app.c",
+            "line": 167
+          },
+          "description": "Dato de estado/configuración `dst_node`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "period_ms",
+          "declaration": "uint16_t period_ms",
+          "callback": false,
+          "ownerType": "UNER_StreamState",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Src/uner_app.c",
+            "line": 168
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "last_seq",
+          "declaration": "uint16_t last_seq",
+          "callback": false,
+          "ownerType": "UNER_StreamState",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Src/uner_app.c",
+            "line": 169
+          },
+          "description": "Memoria de la observación anterior usada por la máquina de estados."
+        },
+        {
+          "name": "next_due_ms",
+          "declaration": "uint32_t next_due_ms",
+          "callback": false,
+          "ownerType": "UNER_StreamState",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Src/uner_app.c",
+            "line": 170
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 165
+      }
+    },
+    {
+      "name": "UNER_AuthReply",
+      "fields": [
+        {
+          "name": "transport_id",
+          "declaration": "uint8_t transport_id",
+          "callback": false,
+          "ownerType": "UNER_AuthReply",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Src/uner_app.c",
+            "line": 228
+          },
+          "description": "Transporte de entrada/salida; forma parte de la identidad del endpoint."
+        },
+        {
+          "name": "dst_node",
+          "declaration": "uint8_t dst_node",
+          "callback": false,
+          "ownerType": "UNER_AuthReply",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Src/uner_app.c",
+            "line": 229
+          },
+          "description": "Dato de estado/configuración `dst_node`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "cmd",
+          "declaration": "uint8_t cmd",
+          "callback": false,
+          "ownerType": "UNER_AuthReply",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Src/uner_app.c",
+            "line": 230
+          },
+          "description": "Dato de estado/configuración `cmd`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "len",
+          "declaration": "uint8_t len",
+          "callback": false,
+          "ownerType": "UNER_AuthReply",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Src/uner_app.c",
+            "line": 231
+          },
+          "description": "Dato de estado/configuración `len`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "payload",
+          "declaration": "uint8_t payload[UNER_AUTH_REPLY_MAX_PAYLOAD]",
+          "callback": false,
+          "ownerType": "UNER_AuthReply",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Src/uner_app.c",
+            "line": 232
+          },
+          "description": "Vista del payload; copiar antes de permitir la reutilización del slot del parser."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 228
+      }
+    },
+    {
+      "name": "UNER_AuthReplyQueue",
+      "fields": [
+        {
+          "name": "slots",
+          "declaration": "UNER_AuthReply slots[UNER_AUTH_REPLY_QUEUE_SLOTS]",
+          "callback": false,
+          "ownerType": "UNER_AuthReplyQueue",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Src/uner_app.c",
+            "line": 236
+          },
+          "description": "Dato de estado/configuración `slots`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "head",
+          "declaration": "uint8_t head",
+          "callback": false,
+          "ownerType": "UNER_AuthReplyQueue",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Src/uner_app.c",
+            "line": 237
+          },
+          "description": "Dato de estado/configuración `head`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "tail",
+          "declaration": "uint8_t tail",
+          "callback": false,
+          "ownerType": "UNER_AuthReplyQueue",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Src/uner_app.c",
+            "line": 238
+          },
+          "description": "Dato de estado/configuración `tail`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "count",
+          "declaration": "uint8_t count",
+          "callback": false,
+          "ownerType": "UNER_AuthReplyQueue",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Src/uner_app.c",
+            "line": 239
+          },
+          "description": "Dato de estado/configuración `count`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 236
+      }
+    },
+    {
+      "name": "v",
+      "fields": [
+        {
+          "name": "f",
+          "declaration": "float f",
+          "callback": false,
+          "ownerType": "v",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Src/uner_app.c",
+            "line": 3374
+          },
+          "description": "Dato de estado/configuración `f`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "b",
+          "declaration": "uint8_t b[4]",
+          "callback": false,
+          "ownerType": "v",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Src/uner_app.c",
+            "line": 3375
+          },
+          "description": "Dato de estado/configuración `b`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 3374
+      }
+    },
+    {
+      "name": "v",
+      "fields": [
+        {
+          "name": "f",
+          "declaration": "float f",
+          "callback": false,
+          "ownerType": "v",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Src/uner_app.c",
+            "line": 3600
+          },
+          "description": "Dato de estado/configuración `f`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "b",
+          "declaration": "uint8_t b[4]",
+          "callback": false,
+          "ownerType": "v",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Src/uner_app.c",
+            "line": 3601
+          },
+          "description": "Dato de estado/configuración `b`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 3600
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "UNER_App_FeedUart1Bytes",
+      "signature": "void UNER_App_FeedUart1Bytes(const uint8_t *data, uint16_t len)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_app.h",
+        "line": 183
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "UNER_Core_PushByte"
+      ],
+      "writes": [],
+      "description": "Entrega bytes recibidos al camino UNER de UART1.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 2334
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "UNER_App_GetBinaryAsset",
+      "signature": "uint8_t UNER_App_GetBinaryAsset(uint8_t asset_id, BinaryAssetView_t *asset)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_app.h",
+        "line": 173
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [
+        "asset_id",
+        "data",
+        "height",
+        "len",
+        "width"
+      ],
+      "description": "Expone una vista de asset binario disponible sin transferir propiedad de su memoria.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 2289
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "UNER_App_GetBootloaderVersion",
+      "signature": "uint8_t UNER_App_GetBootloaderVersion(uint32_t *version)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_app.h",
+        "line": 159
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Obtiene versión de bootloader si el contrato de arranque la hace disponible.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 2161
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "UNER_App_GetRouterPacketSnapshot",
+      "signature": "void UNER_App_GetRouterPacketSnapshot(uint8_t tx_view, uint8_t transport_id, UNER_RouterSnapshot *out)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_app.h",
+        "line": 177
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "UNER_Handle_GetRouterPacketSnapshot"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `UNER_Handle_GetRouterPacketSnapshot` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 2318
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "UNER_App_GetRouterSnapshot",
+      "signature": "void UNER_App_GetRouterSnapshot(UNER_RouterSnapshot *out)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_app.h",
+        "line": 176
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "UNER_Handle_GetRouterSnapshot"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `UNER_Handle_GetRouterSnapshot` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 2313
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "UNER_App_GetWaitingCommandId",
+      "signature": "uint8_t UNER_App_GetWaitingCommandId(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_app.h",
+        "line": 157
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Consulta el ID cuya finalización espera la capa de aplicación.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 2151
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "UNER_App_Init",
+      "signature": "UNER_Status UNER_App_Init(WifiBridge_Handle *bridge)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_app.h",
+        "line": 147
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "AutoMicroBootMailbox_Consume",
+        "OledCanvas_Init",
+        "UNER_App_ClearWaitingValidation",
+        "UNER_App_InitConfig",
+        "UNER_App_ResetUart1RxPos",
+        "UNER_Handle_Init",
+        "UNER_Handle_RegisterCommands",
+        "UNER_Handle_RegisterRoute",
+        "UNER_Handle_RegisterTransport",
+        "UNER_Handle_SetForwardGuard",
+        "UNER_TransportUart1Dma_Init",
+        "UNER_TransportUsbCdc_Init",
+        "memset"
+      ],
+      "writes": [],
+      "description": "Conecta bridge, transportes, rutas y contratos de aplicación.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 1832
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "UNER_App_IsMcuResetPending",
+      "signature": "uint8_t UNER_App_IsMcuResetPending(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_app.h",
+        "line": 158
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Consulta si existe un reset diferido aún pendiente.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 2156
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "UNER_App_IsRouterForwardingEnabled",
+      "signature": "uint8_t UNER_App_IsRouterForwardingEnabled(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_app.h",
+        "line": 175
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "UNER_Handle_IsForwardingEnabled"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `UNER_Handle_IsForwardingEnabled` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 2308
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "UNER_App_IsWaitingValidation",
+      "signature": "uint8_t UNER_App_IsWaitingValidation(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_app.h",
+        "line": 156
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Indica si una solicitud de aplicación sigue esperando su resultado.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 2146
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "UNER_App_NotifyUart1Rx",
+      "signature": "void UNER_App_NotifyUart1Rx(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_app.h",
+        "line": 182
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Marca recepción UART1 pendiente para el procesamiento de aplicación.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 2330
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "UNER_App_OnAtBridgeEvent",
+      "signature": "void UNER_App_OnAtBridgeEvent(const WifiBridge_Event *event)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_app.h",
+        "line": 16
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "UNER_App_Reply"
+      ],
+      "writes": [],
+      "description": "Integra un evento del backend AT en el estado de protocolo/aplicación.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 844
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "UNER_App_OnAtNetworkDisconnected",
+      "signature": "void UNER_App_OnAtNetworkDisconnected(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_app.h",
+        "line": 184
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "UNER_App_ClearWaitingValidation",
+        "UNER_App_ResetUart1RxPos",
+        "UNER_App_StopTransportStreams",
+        "memset"
+      ],
+      "writes": [],
+      "description": "Limpia el estado de enlace/sesiones correspondiente a desconexión AT.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 2346
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "UNER_App_OnNrfLinkChanged",
+      "signature": "void UNER_App_OnNrfLinkChanged(uint8_t connected)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_app.h",
+        "line": 152
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "AppPreferences_GetExtProfile",
+        "UNER_App_ServiceBootReport"
+      ],
+      "writes": [],
+      "description": "Actualiza estado de enlace NRF y sus reportes.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 2070
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "UNER_App_OnUart1TxComplete",
+      "signature": "void UNER_App_OnUart1TxComplete(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_app.h",
+        "line": 181
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "UNER_TransportUart1Dma_OnTxComplete"
+      ],
+      "writes": [],
+      "description": "Notifica fin de TX y habilita transiciones diferidas.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 2325
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "UNER_App_OnUsbDtrChanged",
+      "signature": "void UNER_App_OnUsbDtrChanged(uint8_t connected)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_app.h",
+        "line": 151
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "Permission_RevokeRemoteNode",
+        "UNER_App_ClearWaitingValidation",
+        "UNER_App_ServiceBootReport",
+        "UNER_App_StopTransportStreams",
+        "UNER_Send",
+        "UNER_TransportUsbCdc_OnDisconnect",
+        "UNER_TransportUsbCdc_SetNextTxPriority"
+      ],
+      "writes": [],
+      "description": "Actualiza sesión/estado USB al cambiar DTR.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 2042
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "UNER_App_Poll",
+      "signature": "void UNER_App_Poll(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_app.h",
+        "line": 148
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "CDC_IsDtrActive_FS",
+        "HAL_GetTick",
+        "MenuSys_FlushMenuSelectionReport",
+        "MenuSys_FlushScreenReport",
+        "OledCanvas_Poll",
+        "UNER_App_ClearWaitingValidation",
+        "UNER_App_IsConnectivityMutationCommand",
+        "UNER_App_ResetBinaryAssetState",
+        "UNER_App_SendCommandNack",
+        "UNER_App_ServiceAuthReplyQueue",
+        "UNER_App_ServiceBootReport",
+        "UNER_App_ServiceDeferredAuthNotification",
+        "UNER_App_ServiceDeferredMcuReset",
+        "UNER_App_ServiceIrStream",
+        "UNER_App_ServiceMpuStream",
+        "UNER_App_ServiceUsbQtState",
+        "UNER_App_ServiceWifiScanResults",
+        "UNER_App_ShowConnectivitySimpleNotification",
+        "UNER_App_StopUnauthorizedRemoteStreams",
+        "UNER_Handle_Poll",
+        "UNER_Handle_ProcessPending",
+        "UNER_Send",
+        "UNER_TransportUsbCdc_HasPendingRx",
+        "UNER_TransportUsbCdc_HasPendingTx",
+        "UNER_TransportUsbCdc_ServiceTx"
+      ],
+      "writes": [],
+      "description": "Atiende protocolos y servicios diferidos de la aplicación.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 1901
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "UNER_App_ReportCarModeChanged",
+      "signature": "UNER_Status UNER_App_ReportCarModeChanged(uint8_t mode)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_app.h",
+        "line": 170
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "UNER_Send"
+      ],
+      "writes": [],
+      "description": "Publica el modo de automóvil confirmado.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 2239
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "UNER_App_ReportMenuSelectionChanged",
+      "signature": "UNER_Status UNER_App_ReportMenuSelectionChanged(uint32_t screen_code, uint8_t selected_index, uint8_t item_count, uint8_t source)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_app.h",
+        "line": 166
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "UNER_App_WriteMenuSelectionReportPayload",
+        "UNER_Send"
+      ],
+      "writes": [],
+      "description": "Publica selección visible y cantidad vinculadas a screen code.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 2218
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "UNER_App_ReportNotificationChanged",
+      "signature": "UNER_Status UNER_App_ReportNotificationChanged(uint32_t screen_code, uint8_t source, uint16_t remaining_ms, uint16_t total_ms)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_app.h",
+        "line": 162
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledUtils_GetNotificationClientNumber",
+        "UNER_App_WriteScreenReportPayload",
+        "UNER_App_WriteU16Le",
+        "UNER_Send"
+      ],
+      "writes": [],
+      "description": "Publica identidad y tiempos de notificación.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 2189
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "UNER_App_ReportScreenChanged",
+      "signature": "UNER_Status UNER_App_ReportScreenChanged(uint32_t screen_code, uint8_t source)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_app.h",
+        "line": 161
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "UNER_App_WriteScreenReportPayload",
+        "UNER_Send"
+      ],
+      "writes": [],
+      "description": "Serializa identidad/origen de pantalla y publica evento.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 2171
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "UNER_App_ReportUsbQtState",
+      "signature": "UNER_Status UNER_App_ReportUsbQtState(uint8_t connected)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_app.h",
+        "line": 171
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "UNER_App_ServiceUsbQtState"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `UNER_App_ServiceUsbQtState` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 2252
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "UNER_App_RequestBinaryAsset",
+      "signature": "UNER_Status UNER_App_RequestBinaryAsset(uint8_t asset_id)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_app.h",
+        "line": 172
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "UNER_App_ResetBinaryAssetState",
+        "UNER_App_SendCommand"
+      ],
+      "writes": [],
+      "description": "Solicita al otro extremo un asset por su ID lógico.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 2260
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "UNER_App_RequestWifiNetworkDetail",
+      "signature": "UNER_Status UNER_App_RequestWifiNetworkDetail(const char *ssid)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_app.h",
+        "line": 154
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "UNER_App_SendCommand",
+        "memcpy",
+        "strlen"
+      ],
+      "writes": [],
+      "description": "Solicita detalle del SSID indicado mediante el backend de protocolo.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 2114
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "UNER_App_ResetUart1RxPos",
+      "signature": "void UNER_App_ResetUart1RxPos(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_app.h",
+        "line": 186
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "UNER_App_Uart1RxGetWritePos"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `UNER_App_Uart1RxGetWritePos` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 2376
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "UNER_App_SendCommand",
+      "signature": "UNER_Status UNER_App_SendCommand(uint8_t cmd, const uint8_t *payload, uint8_t len)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_app.h",
+        "line": 149
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "HAL_GetTick",
+        "UNER_App_ClearWaitingValidation",
+        "UNER_App_FindSpecById",
+        "UNER_App_ShowNotification",
+        "UNER_Send"
+      ],
+      "writes": [],
+      "description": "Envía un comando de aplicación por la ruta configurada.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 1986
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "UNER_App_SendEspReboot",
+      "signature": "UNER_Status UNER_App_SendEspReboot(uint8_t boot_mode)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_app.h",
+        "line": 155
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "UNER_App_SendCommand"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `UNER_App_SendCommand` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 2133
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "UNER_App_SendUsbAlive",
+      "signature": "UNER_Status UNER_App_SendUsbAlive(uint32_t alive_count)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_app.h",
+        "line": 150
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "UNER_App_WriteU32Le",
+        "UNER_Send",
+        "UNER_TransportUsbCdc_SetNextTxPriority"
+      ],
+      "writes": [],
+      "description": "Emite mantenimiento de presencia hacia el host USB según política de aplicación.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 2027
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "UNER_App_SendWifiCredentialRequest",
+      "signature": "UNER_Status UNER_App_SendWifiCredentialRequest(const char *ssid)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_app.h",
+        "line": 153
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "UNER_App_SendCommand",
+        "memcpy",
+        "strlen"
+      ],
+      "writes": [],
+      "description": "Inicia solicitud de ingreso de credenciales Wi-Fi; no transporta PIN de autorización como equivalente.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 2085
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "UNER_App_SetRouterForwardingEnabled",
+      "signature": "void UNER_App_SetRouterForwardingEnabled(uint8_t enabled)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_app.h",
+        "line": 174
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "UNER_Handle_SetForwardingEnabled"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `UNER_Handle_SetForwardingEnabled` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 2303
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "UNER_App_Uart1RxGetWritePos",
+      "signature": "uint16_t UNER_App_Uart1RxGetWritePos(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/uner_app.h",
+        "line": 185
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "__HAL_DMA_GET_COUNTER"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `__HAL_DMA_GET_COUNTER` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 2366
+      },
+      "linkage": "header"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "UNER_App_FindStream",
+      "signature": "static UNER_StreamState *UNER_App_FindStream(UNER_StreamState *streams, uint8_t transport_id, uint8_t node, uint8_t allocate)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 177
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Find Stream de UNER de aplicación y contrato del robot; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_StopStreamEndpoint",
+      "signature": "static void UNER_App_StopStreamEndpoint(UNER_StreamState *streams, uint8_t transport_id, uint8_t node)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 191
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_App_FindStream",
+        "memset"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `UNER_App_FindStream` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_App_StopTransportStreams",
+      "signature": "static void UNER_App_StopTransportStreams(uint8_t transport_id)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 198
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "memset"
+      ],
+      "writes": [],
+      "description": "Detiene Transport Streams dentro de UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_MinMpuStreamPeriod",
+      "signature": "static uint16_t UNER_App_MinMpuStreamPeriod(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 208
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Min Mpu Stream Period de UNER de aplicación y contrato del robot; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_AnyMpuStreamActive",
+      "signature": "static uint8_t UNER_App_AnyMpuStreamActive(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 221
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Any Mpu Stream Active de UNER de aplicación y contrato del robot; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_ClearEspProxy",
+      "signature": "static void UNER_App_ClearEspProxy(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 502
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "memset"
+      ],
+      "writes": [],
+      "description": "Limpia Esp Proxy dentro de UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_ClearWaitingValidation",
+      "signature": "static void UNER_App_ClearWaitingValidation(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 507
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_App_ClearEspProxy"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `UNER_App_ClearEspProxy` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_App_ShowNotification",
+      "signature": "static void UNER_App_ShowNotification(RenderFunction renderFn, uint16_t timeout_ms)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 516
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "OledUtils_ShowNotificationMs"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `OledUtils_ShowNotificationMs` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_App_ShowSimpleNotification",
+      "signature": "static void UNER_App_ShowSimpleNotification(OledSimpleNotificationId notificationId, uint16_t timeout_ms)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 521
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "OledUtils_ShowSimpleNotificationMs"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `OledUtils_ShowSimpleNotificationMs` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_App_ShowConnectivityNotification",
+      "signature": "static void UNER_App_ShowConnectivityNotification(RenderFunction renderFn, uint16_t timeout_ms)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 526
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Dashboard_InvalidateConnectivity",
+        "OledUtils_ShowNotificationMsEx"
+      ],
+      "writes": [],
+      "description": "Coordina `Dashboard_InvalidateConnectivity`, `OledUtils_ShowNotificationMsEx` para UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_App_ShowConnectivitySimpleNotification",
+      "signature": "static void UNER_App_ShowConnectivitySimpleNotification(OledSimpleNotificationId notificationId, uint16_t timeout_ms)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 535
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Dashboard_InvalidateConnectivity",
+        "OledUtils_ShowSimpleNotificationMsEx"
+      ],
+      "writes": [],
+      "description": "Coordina `Dashboard_InvalidateConnectivity`, `OledUtils_ShowSimpleNotificationMsEx` para UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_App_ShowClientNotification",
+      "signature": "static void UNER_App_ShowClientNotification(OledSimpleNotificationId notificationId, uint8_t clientNumber, uint16_t timeout_ms)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 545
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Dashboard_InvalidateConnectivity",
+        "OledUtils_ShowNumberedSimpleNotificationMsEx"
+      ],
+      "writes": [],
+      "description": "Coordina `Dashboard_InvalidateConnectivity`, `OledUtils_ShowNumberedSimpleNotificationMsEx` para UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_App_IsConnectivityMutationCommand",
+      "signature": "static uint8_t UNER_App_IsConnectivityMutationCommand(uint8_t cmd)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 554
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Indica si se cumple la condición Connectivity Mutation Command dentro de UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_QueueAuthReply",
+      "signature": "static bool UNER_App_QueueAuthReply(uint8_t transport_id, uint8_t dst_node, uint8_t cmd, const uint8_t *payload, uint8_t len)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 571
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "memcpy"
+      ],
+      "writes": [
+        "cmd",
+        "dst_node",
+        "len",
+        "transport_id"
+      ],
+      "description": "Coordina `memcpy` para UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_App_ServiceAuthReplyQueue",
+      "signature": "static void UNER_App_ServiceAuthReplyQueue(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 599
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_Send",
+        "memset"
+      ],
+      "writes": [],
+      "description": "Coordina `UNER_Send`, `memset` para UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_App_ServiceUsbQtState",
+      "signature": "static void UNER_App_ServiceUsbQtState(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 623
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_Send"
+      ],
+      "writes": [],
+      "description": "Coordina `UNER_Send` para UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_App_RequestAuthNotification",
+      "signature": "static void UNER_App_RequestAuthNotification(OledSimpleNotificationId notification_id)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 643
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Permission_GetRequestedPermission",
+        "Permission_ShowRemoteAuthNotice",
+        "UNER_App_ShowSimpleNotification"
+      ],
+      "writes": [],
+      "description": "Solicita Auth Notification dentro de UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_ServiceDeferredAuthNotification",
+      "signature": "static void UNER_App_ServiceDeferredAuthNotification(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 678
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Permission_GetRequestedPermission",
+        "UNER_App_ShowSimpleNotification"
+      ],
+      "writes": [],
+      "description": "Coordina `Permission_GetRequestedPermission`, `UNER_App_ShowSimpleNotification` para UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_App_ServiceDeferredMcuReset",
+      "signature": "static void UNER_App_ServiceDeferredMcuReset(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 689
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "CDC_IsDtrActive_FS",
+        "HAL_GetTick",
+        "NVIC_SystemReset",
+        "UNER_TransportUsbCdc_HasPendingTx",
+        "__DSB",
+        "__ISB",
+        "__NOP"
+      ],
+      "writes": [],
+      "description": "Coordina `CDC_IsDtrActive_FS`, `HAL_GetTick`, `NVIC_SystemReset` para UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_App_FindSpecById",
+      "signature": "static const UNER_CommandSpec *UNER_App_FindSpecById(uint8_t cmd)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 725
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Find Spec By Id de UNER de aplicación y contrato del robot; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_SendOledCanvasResponse",
+      "signature": "static uint8_t UNER_App_SendOledCanvasResponse(uint8_t transport_id, uint8_t destination_node, const uint8_t *payload, uint8_t len, void *ctx)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 736
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_Send"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `UNER_Send` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_App_IsEspEvent",
+      "signature": "static uint8_t UNER_App_IsEspEvent(uint8_t cmd)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 752
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Indica si se cumple la condición Esp Event dentro de UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_IsEspControlPlaneCommand",
+      "signature": "static uint8_t UNER_App_IsEspControlPlaneCommand(uint8_t cmd)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 760
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Indica si se cumple la condición Esp Control Plane Command dentro de UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_IsEspProxyCommand",
+      "signature": "static uint8_t UNER_App_IsEspProxyCommand(uint8_t cmd)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 793
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Indica si se cumple la condición Esp Proxy Command dentro de UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_RelayEspPacketToUsb",
+      "signature": "static uint8_t UNER_App_RelayEspPacketToUsb(const UNER_Packet *packet)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 823
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "CDC_IsDtrActive_FS",
+        "UNER_App_IsEspEvent",
+        "UNER_Send",
+        "UNER_TransportUsbCdc_SetNextTxPriority"
+      ],
+      "writes": [],
+      "description": "Coordina `CDC_IsDtrActive_FS`, `UNER_App_IsEspEvent`, `UNER_Send` para UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_App_ForwardUsbCommandToEsp",
+      "signature": "static uint8_t UNER_App_ForwardUsbCommandToEsp(const UNER_Packet *packet)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 878
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "HAL_GetTick",
+        "UNER_App_FindSpecById",
+        "UNER_App_IsEspProxyCommand",
+        "UNER_App_Reply",
+        "UNER_App_SendCommandNack",
+        "UNER_App_SendCommandStatus",
+        "UNER_Send",
+        "WifiBridge_Connect",
+        "WifiBridge_Disconnect",
+        "WifiBridge_GetActiveBackend",
+        "WifiBridge_SendCommand",
+        "WifiBridge_SendEspReboot",
+        "WifiBridge_SetCredentials",
+        "WifiBridge_SetModeAP",
+        "WifiBridge_SetModeSTA",
+        "WifiBridge_StartScan",
+        "WifiBridge_StopScan",
+        "else",
+        "memcmp",
+        "memcpy",
+        "strlen"
+      ],
+      "writes": [],
+      "description": "Coordina `HAL_GetTick`, `UNER_App_FindSpecById`, `UNER_App_IsEspProxyCommand` para UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_App_IsPublicRemoteCommand",
+      "signature": "static uint8_t UNER_App_IsPublicRemoteCommand(uint8_t cmd)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 1044
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Indica si se cumple la condición Public Remote Command dentro de UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_AllowForward",
+      "signature": "static uint8_t UNER_App_AllowForward(void *ctx, const UNER_Packet *packet, uint8_t out_transport_id)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 1065
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "HAL_GetTick",
+        "Permission_IsRemoteNodeAuthorizedNow",
+        "Permission_TouchRemoteNode",
+        "UNER_App_IsPublicRemoteCommand",
+        "UNER_App_SendCommandNack"
+      ],
+      "writes": [],
+      "description": "Coordina `HAL_GetTick`, `Permission_IsRemoteNodeAuthorizedNow`, `Permission_TouchRemoteNode` para UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_App_IsRemoteUiCommand",
+      "signature": "static uint8_t UNER_App_IsRemoteUiCommand(uint8_t cmd)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 1103
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Indica si se cumple la condición Remote Ui Command dentro de UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_OnAnyPacket",
+      "signature": "static void UNER_App_OnAnyPacket(void *ctx, const UNER_Packet *packet)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 1109
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Dashboard_InvalidateConnectivity",
+        "WifiBridge_GetActiveBackend",
+        "WifiBridge_IsConnected",
+        "WifiBridge_RegisterBackendAlive"
+      ],
+      "writes": [],
+      "description": "Atiende la notificación de Any Packet dentro de UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_BroadcastIrEmittersChanged",
+      "signature": "static void UNER_App_BroadcastIrEmittersChanged(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 1136
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "APP_IsIrLightsEnabled",
+        "APP_IsIrLineEnabled",
+        "APP_IsIrObjectsEnabled",
+        "CDC_IsDtrActive_FS",
+        "UNER_Send",
+        "UNER_TransportUsbCdc_SetNextTxPriority",
+        "WifiBridge_IsConnected"
+      ],
+      "writes": [],
+      "description": "Coordina `APP_IsIrLightsEnabled`, `APP_IsIrLineEnabled`, `APP_IsIrObjectsEnabled` para UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_App_ExecuteCommand",
+      "signature": "static void UNER_App_ExecuteCommand(void *ctx, const UNER_Packet *packet)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 1158
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "APP_AutoMotionRequest",
+        "APP_ESPWifiApFallbackResponse",
+        "APP_GetLineState",
+        "APP_GetWifiApFallbackSyncState",
+        "APP_IsIrLightsEnabled",
+        "APP_IsIrLineEnabled",
+        "APP_IsIrObjectsEnabled",
+        "APP_LineCalibrationBusy",
+        "APP_LineCalibrationControl",
+        "APP_LineFollowSetEnabled",
+        "APP_SetIrLightsEnabled",
+        "APP_SetIrLineEnabled",
+        "APP_SetIrObjectsEnabled",
+        "APP_TransitionCarMode",
+        "AppApConfig_OnEspApplyResponse",
+        "AppPreferences_IsWifiApFallbackEnabled",
+        "CLEAR_FLAG",
+        "GET_CAR_MODE",
+        "HAL_GetTick",
+        "IS_FLAG_SET",
+        "MenuSys_GetCurrentScreenCode",
+        "MenuSys_GetCurrentScreenSource",
+        "MenuSys_MoveVisiblePage",
+        "MenuSys_RequestCurrentMenuSelectionSnapshot",
+        "MenuSys_SelectVisibleItem",
+        "OledCanvas_HandlePacket",
+        "OledUtils_GetDashboardState",
+        "OledUtils_GetNotificationClientNumber",
+        "OledUtils_GetNotificationProgress",
+        "OledUtils_IsNotificationShowing",
+        "OledUtils_ShowRemoteModeChangedNotification",
+        "Permission_GetRequestedPermission",
+        "Permission_IsRemoteNodeAuthorizedNow",
+        "Permission_RevokeRemoteNode",
+        "Permission_TouchRemoteNode",
+        "SET_FLAG",
+        "UNER_App_BroadcastIrEmittersChanged",
+        "UNER_App_ClearWaitingValidation",
+        "UNER_App_CommandTransportAllowed",
+        "UNER_App_DispatchRemoteUiEvent",
+        "UNER_App_FindSpecById",
+        "UNER_App_ForwardUsbCommandToEsp",
+        "UNER_App_HandleAuthSession",
+        "UNER_App_HandleAuthValidatePin",
+        "UNER_App_HandleGetApConfig",
+        "UNER_App_HandleGetBalancePid",
+        "UNER_App_HandleGetBootReport",
+        "UNER_App_HandleGetBuildInfo",
+        "UNER_App_HandleGetControlSnapshot",
+        "UNER_App_HandleGetExtensionProfile",
+        "UNER_App_HandleGetFirmwareInfo",
+        "UNER_App_HandleGetI2CPolicy",
+        "UNER_App_HandleGetIrSnapshot",
+        "UNER_App_HandleGetMpuSnapshot",
+        "UNER_App_HandleGetPreferences",
+        "UNER_App_HandleGetStatusLocal",
+        "UNER_App_HandleGetTelemetrySnapshot",
+        "UNER_App_HandleMotion",
+        "UNER_App_HandleRebootIntoProfile",
+        "UNER_App_HandleRequestFirmwareCompat",
+        "UNER_App_HandleResetMcu",
+        "UNER_App_HandleSetBalancePid",
+        "UNER_App_HandleSetExtensionProfile",
+        "UNER_App_HandleSetI2CPolicy",
+        "UNER_App_HandleSetIrStream",
+        "UNER_App_HandleSetMpuStream",
+        "UNER_App_HandleSetPreferences",
+        "UNER_App_HandleStopIrStream",
+        "UNER_App_HandleStopMpuStream",
+        "UNER_App_HandleUpdateApConfig",
+        "UNER_App_IsConnectivityMutationCommand",
+        "UNER_App_IsEspControlPlaneCommand",
+        "UNER_App_IsEspEvent",
+        "UNER_App_IsPublicRemoteCommand",
+        "UNER_App_IsRemoteUiCommand",
+        "UNER_App_IsStaActive",
+        "UNER_App_MarkStaActive",
+        "UNER_App_PacketScreenMatchesCurrent",
+        "UNER_App_ParseBinaryAssetStream",
+        "UNER_App_ParseFirmwareResponse",
+        "UNER_App_ParseNetworkDetail",
+        "UNER_App_ParseScanResultsResponse",
+        "UNER_App_ParseStatusResponse",
+        "UNER_App_ParseWifiCredentialsWebResult",
+        "UNER_App_ParseWifiFinalizer",
+        "UNER_App_ReadEspBootResetReason",
+        "UNER_App_ReadU32Le",
+        "UNER_App_RelayEspPacketToUsb",
+        "UNER_App_Reply",
+        "UNER_App_ReportUsbQtState",
+        "UNER_App_RequestNetworkUiRefresh",
+        "UNER_App_SendCommandNack",
+        "UNER_App_SendCommandStatus",
+        "UNER_App_SetApIp",
+        "UNER_App_SetStaIp",
+        "UNER_App_ShowClientNotification",
+        "UNER_App_ShowConnectivityNotification",
+        "UNER_App_ShowConnectivitySimpleNotification",
+        "UNER_App_ShowSimpleNotification",
+        "UNER_App_ShowWifiConnectedNotification",
+        "UNER_App_StopTransportStreams",
+        "UNER_App_StoreNetworkIpPayload",
+        "UNER_App_StoreTargetCredentialsSsid",
+        "UNER_App_StoreWifiInfoSsid",
+        "UNER_App_UpdateModeFlags",
+        "UNER_App_WriteScreenReportPayload",
+        "UNER_App_WriteU16Le",
+        "WifiBridge_GetActiveBackend",
+        "WifiBridge_ReportCarModeChanged",
+        "memcpy",
+        "strnlen"
+      ],
+      "writes": [],
+      "description": "Coordina `APP_AutoMotionRequest`, `APP_ESPWifiApFallbackResponse`, `APP_GetLineState` para UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_App_InitConfig",
+      "signature": "static void UNER_App_InitConfig(UNER_CoreConfig *cfg)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 1821
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [
+        "accept_broadcast",
+        "accept_dst_mask",
+        "accept_src_mask",
+        "cb_ctx",
+        "default_max_payload",
+        "on_packet",
+        "this_node"
+      ],
+      "description": "Inicializa Config dentro de UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_SetStaIp",
+      "signature": "static void UNER_App_SetStaIp(uint8_t b1, uint8_t b2, uint8_t b3, uint8_t b4)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 2381
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Configura Sta Ip dentro de UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_SetApIp",
+      "signature": "static void UNER_App_SetApIp(uint8_t b1, uint8_t b2, uint8_t b3, uint8_t b4)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 2394
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Configura Ap Ip dentro de UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_UpdateModeFlags",
+      "signature": "static void UNER_App_UpdateModeFlags(uint8_t mode)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 2407
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "CLEAR_FLAG",
+        "SET_FLAG"
+      ],
+      "writes": [
+        "mode"
+      ],
+      "description": "Actualiza Mode Flags dentro de UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_SetOledSsidFromBytes",
+      "signature": "static void UNER_App_SetOledSsidFromBytes(const uint8_t *ssid, uint8_t len)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 2431
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "OledUtils_SetWiFiConnectedSsid",
+        "memcpy"
+      ],
+      "writes": [],
+      "description": "Configura Oled Ssid From Bytes dentro de UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_StoreWifiInfoSsid",
+      "signature": "static void UNER_App_StoreWifiInfoSsid(const uint8_t *payload, uint8_t len)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 2452
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_App_SetOledSsidFromBytes"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `UNER_App_SetOledSsidFromBytes` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_App_ReadEspBootResetReason",
+      "signature": "static uint8_t UNER_App_ReadEspBootResetReason(const UNER_Packet *packet)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 2466
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Lee Esp Boot Reset Reason dentro de UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_StoreTargetCredentialsSsid",
+      "signature": "static void UNER_App_StoreTargetCredentialsSsid(const uint8_t *payload, uint8_t len)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 2484
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_App_SetOledSsidFromBytes"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `UNER_App_SetOledSsidFromBytes` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_App_StoreNetworkIpPayload",
+      "signature": "static void UNER_App_StoreNetworkIpPayload(const uint8_t *payload, uint8_t len)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 2498
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "SET_FLAG",
+        "UNER_App_MarkStaActive",
+        "UNER_App_SetApIp",
+        "UNER_App_SetStaIp"
+      ],
+      "writes": [],
+      "description": "Coordina `SET_FLAG`, `UNER_App_MarkStaActive`, `UNER_App_SetApIp` para UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_App_SetWifiNetworkEncryptionText",
+      "signature": "static void UNER_App_SetWifiNetworkEncryptionText(uint8_t index, uint8_t encryption_type)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 2518
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "memcpy",
+        "strncpy"
+      ],
+      "writes": [],
+      "description": "Configura Wifi Network Encryption Text dentro de UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_FindWifiNetworkIndexBySsid",
+      "signature": "static int8_t UNER_App_FindWifiNetworkIndexBySsid(const uint8_t *ssid, uint8_t len)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 2563
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "memcmp",
+        "strlen"
+      ],
+      "writes": [],
+      "description": "Coordina `memcmp`, `strlen` para UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_App_IsStaActive",
+      "signature": "static uint8_t UNER_App_IsStaActive(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 2579
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "IS_FLAG_SET"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `IS_FLAG_SET` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_App_MarkStaActive",
+      "signature": "static void UNER_App_MarkStaActive(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 2584
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "CLEAR_FLAG",
+        "SET_FLAG"
+      ],
+      "writes": [],
+      "description": "Coordina `CLEAR_FLAG`, `SET_FLAG` para UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_App_ShowWifiConnectedNotification",
+      "signature": "static void UNER_App_ShowWifiConnectedNotification(uint8_t was_wifi_active)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 2593
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "OledUtils_IsNotificationShowing",
+        "OledUtils_IsSimpleNotificationShowing",
+        "UNER_App_ShowConnectivityNotification"
+      ],
+      "writes": [],
+      "description": "Coordina `OledUtils_IsNotificationShowing`, `OledUtils_IsSimpleNotificationShowing`, `UNER_App_ShowConnectivityNotification` para UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_App_RequestNetworkUiRefresh",
+      "signature": "static void UNER_App_RequestNetworkUiRefresh(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 2607
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Dashboard_InvalidateConnectivity"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `Dashboard_InvalidateConnectivity` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_App_ParseFirmwareResponse",
+      "signature": "static void UNER_App_ParseFirmwareResponse(const UNER_Packet *packet)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 2612
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "OledUtils_DismissNotification",
+        "SET_FLAG",
+        "memcpy"
+      ],
+      "writes": [],
+      "description": "Decodifica Firmware Response dentro de UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_HandleGetStatusLocal",
+      "signature": "static void UNER_App_HandleGetStatusLocal(const UNER_Packet *packet)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 2640
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "IS_FLAG_SET",
+        "UNER_App_Reply",
+        "UNER_App_WriteU32Le",
+        "memcpy",
+        "memset"
+      ],
+      "writes": [],
+      "description": "Procesa Get Status Local dentro de UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_ParseStatusResponse",
+      "signature": "static void UNER_App_ParseStatusResponse(const UNER_Packet *packet)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 2695
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "CLEAR_FLAG",
+        "IS_FLAG_SET",
+        "OledUtils_IsSimpleNotificationShowing",
+        "OledUtils_RemoveSimpleNotification",
+        "OledUtils_ShowNotificationMs",
+        "SET_FLAG",
+        "UNER_App_RequestNetworkUiRefresh",
+        "UNER_App_SetApIp",
+        "UNER_App_SetOledSsidFromBytes",
+        "UNER_App_SetStaIp",
+        "UNER_App_UpdateModeFlags",
+        "memcpy"
+      ],
+      "writes": [],
+      "description": "Decodifica Status Response dentro de UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_ParseWifiFinalizer",
+      "signature": "static void UNER_App_ParseWifiFinalizer(const UNER_Packet *packet)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 2802
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "CLEAR_FLAG",
+        "UNER_App_IsStaActive",
+        "UNER_App_MarkStaActive",
+        "UNER_App_RequestNetworkUiRefresh",
+        "UNER_App_SetApIp",
+        "UNER_App_SetStaIp",
+        "UNER_App_ShowConnectivityNotification",
+        "UNER_App_ShowConnectivitySimpleNotification",
+        "UNER_App_ShowWifiConnectedNotification",
+        "UNER_App_UpdateModeFlags"
+      ],
+      "writes": [],
+      "description": "Decodifica Wifi Finalizer dentro de UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_ServiceWifiScanResults",
+      "signature": "static void UNER_App_ServiceWifiScanResults(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 2857
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "HAL_GetTick",
+        "IS_FLAG_SET",
+        "UNER_App_SendCommand",
+        "WifiBridge_GetActiveBackend"
+      ],
+      "writes": [],
+      "description": "Coordina `HAL_GetTick`, `IS_FLAG_SET`, `UNER_App_SendCommand` para UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_App_ServiceMpuStream",
+      "signature": "static void UNER_App_ServiceMpuStream(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 2891
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "HAL_GetTick",
+        "Permission_TouchRemoteNode",
+        "UNER_App_BuildMpuSnapshotPayload",
+        "UNER_Send",
+        "UNER_TransportUsbCdc_SetNextTxPriority"
+      ],
+      "writes": [
+        "last_seq",
+        "next_due_ms"
+      ],
+      "description": "Coordina `HAL_GetTick`, `Permission_TouchRemoteNode`, `UNER_App_BuildMpuSnapshotPayload` para UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_App_ServiceIrStream",
+      "signature": "static void UNER_App_ServiceIrStream(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 2923
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "HAL_GetTick",
+        "Permission_TouchRemoteNode",
+        "UNER_App_BuildIrSnapshotPayload",
+        "UNER_Send",
+        "UNER_TransportUsbCdc_SetNextTxPriority"
+      ],
+      "writes": [
+        "last_seq",
+        "next_due_ms"
+      ],
+      "description": "Coordina `HAL_GetTick`, `Permission_TouchRemoteNode`, `UNER_App_BuildIrSnapshotPayload` para UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_App_StopUnauthorizedRemoteStreams",
+      "signature": "static void UNER_App_StopUnauthorizedRemoteStreams(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 2944
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "IS_FLAG_SET",
+        "Permission_IsRemoteNodeAuthorizedNow",
+        "WifiBridge_GetActiveBackend",
+        "memset"
+      ],
+      "writes": [],
+      "description": "Detiene Unauthorized Remote Streams dentro de UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_ParseScanResultsResponse",
+      "signature": "static void UNER_App_ParseScanResultsResponse(const UNER_Packet *packet)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 2963
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "CLEAR_FLAG",
+        "HAL_GetTick",
+        "IS_FLAG_SET",
+        "MenuSys_GetCurrentScreenCode",
+        "SET_FLAG",
+        "UNER_App_ShowNotification",
+        "WiFiScan_ClearResults",
+        "memcpy"
+      ],
+      "writes": [],
+      "description": "Decodifica Scan Results Response dentro de UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_ParseNetworkDetail",
+      "signature": "static void UNER_App_ParseNetworkDetail(const UNER_Packet *packet)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 3036
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "MenuSys_GetCurrentScreenCode",
+        "UNER_App_FindWifiNetworkIndexBySsid",
+        "UNER_App_SetWifiNetworkEncryptionText"
+      ],
+      "writes": [],
+      "description": "Decodifica Network Detail dentro de UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_ParseWifiCredentialsWebResult",
+      "signature": "static void UNER_App_ParseWifiCredentialsWebResult(const UNER_Packet *packet)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 3075
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "OledUtils_SetWiFiCredentialsWebResultStatus",
+        "UNER_App_MarkStaActive",
+        "UNER_App_SetOledSsidFromBytes",
+        "UNER_App_SetStaIp",
+        "UNER_App_ShowConnectivityNotification"
+      ],
+      "writes": [],
+      "description": "Decodifica Wifi Credentials Web Result dentro de UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_ResetBinaryAssetState",
+      "signature": "static void UNER_App_ResetBinaryAssetState(uint8_t asset_id)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 3131
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "memset"
+      ],
+      "writes": [],
+      "description": "Restablece Binary Asset State dentro de UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_ParseBinaryAssetStream",
+      "signature": "static void UNER_App_ParseBinaryAssetStream(const UNER_Packet *packet)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 3143
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_App_ResetBinaryAssetState",
+        "memcpy"
+      ],
+      "writes": [],
+      "description": "Decodifica Binary Asset Stream dentro de UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_WriteScreenReportPayload",
+      "signature": "static void UNER_App_WriteScreenReportPayload(uint8_t *payload, uint32_t screen_code, uint8_t source)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 3193
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Escribe Screen Report Payload dentro de UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_WriteMenuSelectionReportPayload",
+      "signature": "static void UNER_App_WriteMenuSelectionReportPayload(uint8_t *payload, uint32_t screen_code, uint8_t selected_index, uint8_t item_count, uint8_t source)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 3206
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Escribe Menu Selection Report Payload dentro de UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_HandleResetMcu",
+      "signature": "static void UNER_App_HandleResetMcu(const UNER_Packet *packet)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 3221
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "CLEAR_FLAG",
+        "HAL_GetTick",
+        "MotionControl_Disarm",
+        "MotionControl_EmergencyStop",
+        "MotorDrive_StopAll",
+        "UNER_App_Reply",
+        "UNER_App_SendCommandNack"
+      ],
+      "writes": [],
+      "description": "Procesa Reset Mcu dentro de UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_Reply",
+      "signature": "static UNER_Status UNER_App_Reply(const UNER_Packet *packet, uint8_t command_id, const uint8_t *payload, uint8_t length)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 3259
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_Send"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `UNER_Send` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_App_SendCommandStatus",
+      "signature": "static void UNER_App_SendCommandStatus(const UNER_Packet *packet, uint8_t status)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 3273
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_App_Reply"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `UNER_App_Reply` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_App_SendCommandNack",
+      "signature": "static void UNER_App_SendCommandNack(const UNER_Packet *packet, uint8_t status)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 3289
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_App_QueueAuthReply",
+        "UNER_App_Reply"
+      ],
+      "writes": [],
+      "description": "Envía Command Nack dentro de UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_CommandTransportAllowed",
+      "signature": "static uint8_t UNER_App_CommandTransportAllowed(uint8_t cmd, uint8_t transport_id)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 3316
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "AppPreferences_GetExtProfile",
+        "UNER_App_FindSpecById"
+      ],
+      "writes": [],
+      "description": "Coordina `AppPreferences_GetExtProfile`, `UNER_App_FindSpecById` para UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_App_PacketScreenMatchesCurrent",
+      "signature": "static uint8_t UNER_App_PacketScreenMatchesCurrent(const UNER_Packet *packet)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 3341
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "MenuSys_GetCurrentScreenCode",
+        "UNER_App_ReadU32Le"
+      ],
+      "writes": [],
+      "description": "Coordina `MenuSys_GetCurrentScreenCode`, `UNER_App_ReadU32Le` para UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_App_DispatchRemoteUiEvent",
+      "signature": "static uint8_t UNER_App_DispatchRemoteUiEvent(UserEvent_t event)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 3351
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UiEventRouter_HandleEvent"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `UiEventRouter_HandleEvent` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_App_ReadU32Le",
+      "signature": "static uint32_t UNER_App_ReadU32Le(const uint8_t *payload)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 3358
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Decodifica uint32 little endian desde payload.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "UNER_App_ReadU16Le",
+      "signature": "static uint16_t UNER_App_ReadU16Le(const uint8_t *payload)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 3366
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Decodifica uint16 little endian desde payload.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "UNER_App_ReadFloatLe",
+      "signature": "static float UNER_App_ReadFloatLe(const uint8_t *payload)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 3372
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Decodifica float de cuatro bytes según representación del target.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "UNER_App_WriteU16Le",
+      "signature": "static void UNER_App_WriteU16Le(uint8_t *payload, uint16_t value)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 3386
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Escribe uint16 en little endian.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "UNER_App_WriteU32Le",
+      "signature": "static void UNER_App_WriteU32Le(uint8_t *payload, uint32_t value)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 3392
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Escribe uint32 en little endian.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "UNER_App_AuthDigitsAreValid",
+      "signature": "static uint8_t UNER_App_AuthDigitsAreValid(const uint8_t *digits)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 3400
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Auth Digits Are Valid de UNER de aplicación y contrato del robot; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_SendAuthResponse",
+      "signature": "static void UNER_App_SendAuthResponse(const UNER_Packet *packet, uint8_t request_id, uint8_t scope, uint8_t granted, uint32_t ttl_ms, uint8_t attempts_left)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 3414
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_App_QueueAuthReply",
+        "UNER_App_WriteU32Le"
+      ],
+      "writes": [],
+      "description": "Envía Auth Response dentro de UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_HandleAuthValidatePin",
+      "signature": "static void UNER_App_HandleAuthValidatePin(const UNER_Packet *packet)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 3436
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "AppPreferences_ChangeAuthPin",
+        "AppPreferences_IsPinLockEnabled",
+        "AppPreferences_VerifyAuthPin",
+        "HAL_GetTick",
+        "MenuSys_GetCurrentScreenCode",
+        "Permission_CancelLocalRequest",
+        "Permission_GrantCurrentRequest",
+        "Permission_HasActiveLocalRequest",
+        "Permission_RemoteAuthenticate",
+        "Permission_RevokeAll",
+        "Permission_RevokeAllRemote",
+        "Permission_RevokeRemoteNode",
+        "UNER_App_AuthDigitsAreValid",
+        "UNER_App_ReadU32Le",
+        "UNER_App_RequestAuthNotification",
+        "UNER_App_SendAuthResponse",
+        "UNER_App_SendCommandNack"
+      ],
+      "writes": [],
+      "description": "Procesa Auth Validate Pin dentro de UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_HandleAuthSession",
+      "signature": "static void UNER_App_HandleAuthSession(const UNER_Packet *packet)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 3565
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "HAL_GetTick",
+        "Permission_GetRemoteTtlRemaining",
+        "Permission_IsRemoteNodeAuthorizedNow",
+        "Permission_RevokeRemoteNode",
+        "Permission_TouchRemoteNode",
+        "UNER_App_QueueAuthReply",
+        "UNER_App_SendCommandNack",
+        "UNER_App_StopStreamEndpoint",
+        "UNER_App_WriteU32Le"
+      ],
+      "writes": [],
+      "description": "Procesa Auth Session dentro de UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_WriteFloatLe",
+      "signature": "static void UNER_App_WriteFloatLe(uint8_t *payload, float value)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 3598
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Escribe float de cuatro bytes en little endian.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "UNER_App_AppendTextField",
+      "signature": "static uint8_t UNER_App_AppendTextField(uint8_t *payload, uint8_t payload_len, uint8_t *offset, const char *text, uint8_t max_text_len)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 3612
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "memcpy"
+      ],
+      "writes": [],
+      "description": "Coordina `memcpy` para UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_App_ParsePreferenceValue",
+      "signature": "static uint8_t UNER_App_ParsePreferenceValue(const uint8_t *payload, uint8_t len, uint8_t *offset, const AppPreferencesDescriptor_t *desc, AppPreferences_t *prefs)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 3638
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_App_ReadU16Le"
+      ],
+      "writes": [
+        "encoderInverted",
+        "lineBlackWidthMm",
+        "motorLeftMinPwm",
+        "motorRightMinPwm",
+        "oledAutoRotationEnabled",
+        "oledRotationDeg",
+        "pinLockEnabled",
+        "screenLockEnabled",
+        "screenLockTimeoutSec",
+        "systemActionTimeoutSec",
+        "unerRouterForwardingEnabled",
+        "usbAlivePeriodMs",
+        "webAlivePeriodMs",
+        "wifiApFallbackEnabled",
+        "wifiApPasswordProtected"
+      ],
+      "description": "Decodifica Preference Value dentro de UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_HandleGetPreferences",
+      "signature": "static void UNER_App_HandleGetPreferences(const UNER_Packet *packet)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 3719
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "AppPreferences_GetDescriptors",
+        "AppPreferences_GetRecordCapacity",
+        "AppPreferences_GetRecordSizeBytes",
+        "AppPreferences_GetSnapshot",
+        "UNER_App_Reply",
+        "UNER_App_WriteU16Le",
+        "UNER_App_WriteU32Le",
+        "memcpy"
+      ],
+      "writes": [],
+      "description": "Procesa Get Preferences dentro de UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_HandleSetPreferences",
+      "signature": "static void UNER_App_HandleSetPreferences(const UNER_Packet *packet)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 3807
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "APP_ApplyPreferenceRuntimeChanges",
+        "AppPreferences_ApplyPatch",
+        "AppPreferences_GetDescriptors",
+        "AppPreferences_GetSnapshot",
+        "UNER_App_ParsePreferenceValue",
+        "UNER_App_ReadU32Le",
+        "UNER_App_Reply",
+        "UNER_App_WriteU32Le"
+      ],
+      "writes": [],
+      "description": "Procesa Set Preferences dentro de UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_HandleGetApConfig",
+      "signature": "static void UNER_App_HandleGetApConfig(const UNER_Packet *packet)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 3869
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "AppApConfig_Get",
+        "AppPreferences_GetWifiApSsid",
+        "UNER_App_Reply",
+        "memcpy",
+        "strlen"
+      ],
+      "writes": [],
+      "description": "Procesa Get Ap Config dentro de UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_HandleUpdateApConfig",
+      "signature": "static void UNER_App_HandleUpdateApConfig(const UNER_Packet *packet)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 3893
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "AppApConfig_ApplyPatch",
+        "AppApConfig_Get",
+        "UNER_App_Reply",
+        "memcpy"
+      ],
+      "writes": [],
+      "description": "Procesa Update Ap Config dentro de UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_HandleSetI2CPolicy",
+      "signature": "static void UNER_App_HandleSetI2CPolicy(const UNER_Packet *packet)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 3974
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "I2C_Manager_GetPolicy",
+        "I2C_Manager_SetPolicy",
+        "UNER_App_Reply"
+      ],
+      "writes": [],
+      "description": "Procesa Set I2 CPolicy dentro de UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_HandleGetI2CPolicy",
+      "signature": "static void UNER_App_HandleGetI2CPolicy(const UNER_Packet *packet)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 3995
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "I2C_Manager_GetPolicy",
+        "UNER_App_Reply"
+      ],
+      "writes": [],
+      "description": "Procesa Get I2 CPolicy dentro de UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_BuildMpuSnapshotPayload",
+      "signature": "static uint8_t UNER_App_BuildMpuSnapshotPayload(uint8_t *payload, MPU9250_Snapshot_t *snapshot_out)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 4009
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "MPU9250_GetAttitude",
+        "MPU9250_GetLatest",
+        "UNER_App_WriteFloatLe",
+        "UNER_App_WriteU16Le",
+        "memset"
+      ],
+      "writes": [],
+      "description": "Construye Mpu Snapshot Payload dentro de UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_HandleGetMpuSnapshot",
+      "signature": "static void UNER_App_HandleGetMpuSnapshot(const UNER_Packet *packet)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 4077
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_App_BuildMpuSnapshotPayload",
+        "UNER_App_Reply"
+      ],
+      "writes": [],
+      "description": "Procesa Get Mpu Snapshot dentro de UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_MpuStreamTransportAllowed",
+      "signature": "static uint8_t UNER_App_MpuStreamTransportAllowed(uint8_t transport_id)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 4091
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Mpu Stream Transport Allowed de UNER de aplicación y contrato del robot; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_HandleSetMpuStream",
+      "signature": "static void UNER_App_HandleSetMpuStream(const UNER_Packet *packet)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 4097
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "HAL_GetTick",
+        "UNER_App_FindStream",
+        "UNER_App_MpuStreamTransportAllowed",
+        "UNER_App_ReadU16Le",
+        "UNER_App_Reply",
+        "UNER_App_SendCommandNack",
+        "UNER_App_ShowSimpleNotification",
+        "UNER_App_StopStreamEndpoint",
+        "UNER_App_WriteU16Le",
+        "memset"
+      ],
+      "writes": [
+        "active",
+        "dst_node",
+        "next_due_ms",
+        "period_ms",
+        "transport_id"
+      ],
+      "description": "Procesa Set Mpu Stream dentro de UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_HandleStopMpuStream",
+      "signature": "static void UNER_App_HandleStopMpuStream(const UNER_Packet *packet)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 4138
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_App_Reply",
+        "UNER_App_StopStreamEndpoint"
+      ],
+      "writes": [],
+      "description": "Procesa Stop Mpu Stream dentro de UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_NormalizeIrRaw",
+      "signature": "static uint16_t UNER_App_NormalizeIrRaw(uint8_t sensor_index, uint16_t raw)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 4146
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "TCRT5000_NormalizeForDisplay"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `TCRT5000_NormalizeForDisplay` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_App_BuildIrSnapshotPayload",
+      "signature": "static uint8_t UNER_App_BuildIrSnapshotPayload(uint8_t *payload, uint16_t sample_seq, uint16_t period_ms, uint32_t tick_ms)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 4158
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "APP_ReadIrRouteSnapshot",
+        "GET_CAR_MODE",
+        "HAL_GPIO_ReadPin",
+        "TCRT5000_EmittersGroup3IsOn",
+        "TCRT5000_EmittersGroup5IsOn",
+        "UNER_App_NormalizeIrRaw",
+        "UNER_App_WriteFloatLe",
+        "UNER_App_WriteU16Le",
+        "UNER_App_WriteU32Le",
+        "memset"
+      ],
+      "writes": [],
+      "description": "Construye Ir Snapshot Payload dentro de UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_IrStreamTransportAllowed",
+      "signature": "static uint8_t UNER_App_IrStreamTransportAllowed(uint8_t transport_id)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 4228
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Ir Stream Transport Allowed de UNER de aplicación y contrato del robot; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_HandleGetIrSnapshot",
+      "signature": "static void UNER_App_HandleGetIrSnapshot(const UNER_Packet *packet)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 4234
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "HAL_GetTick",
+        "UNER_App_BuildIrSnapshotPayload",
+        "UNER_App_FindStream",
+        "UNER_App_Reply"
+      ],
+      "writes": [],
+      "description": "Procesa Get Ir Snapshot dentro de UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_HandleSetIrStream",
+      "signature": "static void UNER_App_HandleSetIrStream(const UNER_Packet *packet)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 4253
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "HAL_GetTick",
+        "UNER_App_FindStream",
+        "UNER_App_IrStreamTransportAllowed",
+        "UNER_App_ReadU16Le",
+        "UNER_App_Reply",
+        "UNER_App_SendCommandNack",
+        "UNER_App_StopStreamEndpoint",
+        "UNER_App_WriteU16Le",
+        "memset"
+      ],
+      "writes": [
+        "active",
+        "dst_node",
+        "next_due_ms",
+        "period_ms",
+        "transport_id"
+      ],
+      "description": "Procesa Set Ir Stream dentro de UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_HandleStopIrStream",
+      "signature": "static void UNER_App_HandleStopIrStream(const UNER_Packet *packet)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 4291
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_App_Reply",
+        "UNER_App_StopStreamEndpoint"
+      ],
+      "writes": [],
+      "description": "Procesa Stop Ir Stream dentro de UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_HandleGetTelemetrySnapshot",
+      "signature": "static void UNER_App_HandleGetTelemetrySnapshot(const UNER_Packet *packet)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 4299
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "BalanceControl_GetStatus",
+        "I2C_Manager_GetPolicy",
+        "MPU9250_GetAttitude",
+        "MotionControl_GetStatus",
+        "MotionControl_IsArmed",
+        "UNER_App_AnyMpuStreamActive",
+        "UNER_App_MinMpuStreamPeriod",
+        "UNER_App_Reply",
+        "UNER_App_WriteFloatLe",
+        "UNER_App_WriteU16Le",
+        "UNER_App_WriteU32Le",
+        "WifiBridge_GetActiveBackend",
+        "WifiBridge_GetCapabilities",
+        "WifiBridge_GetMode",
+        "WifiBridge_IsConnected",
+        "memset"
+      ],
+      "writes": [],
+      "description": "Procesa Get Telemetry Snapshot dentro de UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_HandleGetControlSnapshot",
+      "signature": "static void UNER_App_HandleGetControlSnapshot(const UNER_Packet *packet)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 4378
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "APP_USB_GetAliveCount",
+        "AppPreferences_GetUsbAlivePeriodMs",
+        "GET_CAR_MODE",
+        "IS_FLAG_SET",
+        "LineFollowControl_GetStatus",
+        "MotionControl_GetStatus",
+        "MotionEstimator_GetStatus",
+        "UNER_App_Reply",
+        "UNER_App_WriteFloatLe",
+        "UNER_App_WriteU16Le",
+        "UNER_App_WriteU32Le",
+        "UNER_TransportUsbCdc_GetQueuedTxCount",
+        "UNER_TransportUsbCdc_GetRxOverflowCount",
+        "UNER_TransportUsbCdc_GetTxQueueDropCount",
+        "UNER_TransportUsbCdc_GetTxQueueFullCount",
+        "memset"
+      ],
+      "writes": [],
+      "description": "Procesa Get Control Snapshot dentro de UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_HandleGetFirmwareInfo",
+      "signature": "static void UNER_App_HandleGetFirmwareInfo(const UNER_Packet *packet)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 4449
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_App_AppendTextField",
+        "UNER_App_Reply"
+      ],
+      "writes": [],
+      "description": "Procesa Get Firmware Info dentro de UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_HandleRequestFirmwareCompat",
+      "signature": "static void UNER_App_HandleRequestFirmwareCompat(const UNER_Packet *packet)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 4473
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_App_Reply"
+      ],
+      "writes": [],
+      "description": "Procesa Request Firmware Compat dentro de UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_HandleGetBuildInfo",
+      "signature": "static void UNER_App_HandleGetBuildInfo(const UNER_Packet *packet)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 4503
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_App_AppendTextField",
+        "UNER_App_Reply"
+      ],
+      "writes": [],
+      "description": "Procesa Get Build Info dentro de UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_IsPidValueValid",
+      "signature": "static uint8_t UNER_App_IsPidValueValid(float value)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 4530
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Indica si se cumple la condición Pid Value Valid dentro de UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_HandleMotion",
+      "signature": "static void UNER_App_HandleMotion(const UNER_Packet *packet)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 4538
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "APP_AutoMotionBusy",
+        "APP_AutoMotionCancel",
+        "APP_BalanceSetEnabled",
+        "APP_LineCalibrationBusy",
+        "APP_LineFollowStop",
+        "APP_MotorTestIsActive",
+        "APP_MotorTestSet",
+        "APP_MotorTestStop",
+        "GET_CAR_MODE",
+        "HAL_GetTick",
+        "MotionControl_Disarm",
+        "MotionControl_GetDefaultCommand",
+        "MotionControl_GetStatus",
+        "MotionControl_IsArmed",
+        "MotionControl_SetCommand",
+        "MotionControl_Stop",
+        "UNER_App_ReadFloatLe",
+        "UNER_App_ReadU16Le",
+        "UNER_App_Reply",
+        "isfinite"
+      ],
+      "writes": [],
+      "description": "Procesa Motion dentro de UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_HandleGetBalancePid",
+      "signature": "static void UNER_App_HandleGetBalancePid(const UNER_Packet *packet)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 4591
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_App_Reply",
+        "UNER_App_WriteFloatLe"
+      ],
+      "writes": [],
+      "description": "Procesa Get Balance Pid dentro de UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_HandleSetBalancePid",
+      "signature": "static void UNER_App_HandleSetBalancePid(const UNER_Packet *packet)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 4607
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "AppPreferences_GetBalancePid",
+        "AppPreferences_SetBalancePid",
+        "BalanceControl_Reset",
+        "BalanceControl_SetPid",
+        "UNER_App_IsPidValueValid",
+        "UNER_App_ReadFloatLe",
+        "UNER_App_Reply",
+        "UNER_App_WriteFloatLe"
+      ],
+      "writes": [],
+      "description": "Procesa Set Balance Pid dentro de UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_BuildBootReportPayload",
+      "signature": "static uint8_t UNER_App_BuildBootReportPayload( uint8_t payload[WIFI_BRIDGE_BOOT_REPORT_PAYLOAD_SIZE])",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 4690
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "AppPreferences_GetExtProfile",
+        "UNER_App_WriteU32Le",
+        "memset"
+      ],
+      "writes": [],
+      "description": "Construye Boot Report Payload dentro de UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_SendBootReport",
+      "signature": "static UNER_Status UNER_App_SendBootReport(uint8_t transport_id, uint8_t destination_node)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 4722
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "AppPreferences_GetExtProfile",
+        "UNER_App_BuildBootReportPayload",
+        "UNER_Send",
+        "UNER_TransportUsbCdc_SetNextTxPriority"
+      ],
+      "writes": [],
+      "description": "Envía Boot Report dentro de UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_ServiceBootReport",
+      "signature": "static void UNER_App_ServiceBootReport(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 4748
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "AppPreferences_GetExtProfile",
+        "CDC_IsDtrActive_FS",
+        "UNER_App_SendBootReport",
+        "WifiBridge_GetActiveBackend",
+        "WifiBridge_IsConnected"
+      ],
+      "writes": [],
+      "description": "Coordina `AppPreferences_GetExtProfile`, `CDC_IsDtrActive_FS`, `UNER_App_SendBootReport` para UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_App_HandleGetBootReport",
+      "signature": "static void UNER_App_HandleGetBootReport(const UNER_Packet *packet)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 4775
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_App_BuildBootReportPayload",
+        "UNER_App_Reply"
+      ],
+      "writes": [],
+      "description": "Procesa Get Boot Report dentro de UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_HandleGetExtensionProfile",
+      "signature": "static void UNER_App_HandleGetExtensionProfile(const UNER_Packet *packet)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 4789
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "AppPreferences_GetExtProfile",
+        "UNER_App_Reply"
+      ],
+      "writes": [],
+      "description": "Procesa Get Extension Profile dentro de UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_HandleSetExtensionProfile",
+      "signature": "static void UNER_App_HandleSetExtensionProfile(const UNER_Packet *packet)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 4798
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "AppPreferences_SetExtProfile",
+        "UNER_App_Reply"
+      ],
+      "writes": [],
+      "description": "Guarda el perfil y responde por el mismo ID con status; revisar metadata ACK.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "UNER_App_HandleRebootIntoProfile",
+      "signature": "static void UNER_App_HandleRebootIntoProfile(const UNER_Packet *packet)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/uner_app.c",
+        "line": 4818
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "AppPreferences_SetExtProfile",
+        "UNER_App_HandleResetMcu",
+        "UNER_App_SendCommandNack"
+      ],
+      "writes": [],
+      "description": "Procesa Reboot Into Profile dentro de UNER de aplicación y contrato del robot.",
+      "descriptionOrigin": "inferred-name"
+    }
+  ]
+}

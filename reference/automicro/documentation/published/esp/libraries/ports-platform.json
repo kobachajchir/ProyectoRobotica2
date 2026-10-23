@@ -1,0 +1,1904 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "esp:module/src/bridge_ports.h",
+  "slug": "ports-platform",
+  "title": "Puertos y adaptadores de plataforma ESP",
+  "target": "esp",
+  "kind": "plataforma",
+  "status": "source-documented",
+  "snapshotDate": "2026-10-20",
+  "verification": "not-run-user-instruction",
+  "responsibility": "Define operaciones de radio, red, plataforma, almacenamiento y backend que consume la integración JSON/UNER.",
+  "scope": "Tablas BridgeWifiOps, BridgeBackendOps, BridgePlatformOps, UNER_AppServices y fachadas que prestan recursos.",
+  "state": "Los puertos contienen ops/context, funciones y referencias prestadas a estado de reinicio. No transfieren propiedad de credenciales, AppConfig, cliente AsyncWebSocket ni recursos SDK.",
+  "modularity": "Abstrae llamadas concretas, pero bridge_ports.h incluye Arduino, config, UNER y tipos Wi-Fi; los String y AsyncWebSocketClient mantienen dependencia de plataforma/modelo.",
+  "lifecycle": [
+    "La composición suministra tablas completas antes de consumidores.",
+    "Cada método de fachada reenvía context; algunos callbacks opcionales comprueban null y otros exigen un puerto completo."
+  ],
+  "interactions": [
+    "BridgeWifiPort concentra mutaciones de radio en WifiService.",
+    "BridgeBackendOps conecta envío/scan/config con UNER sin que el bridge conozca buffers UART."
+  ],
+  "limitations": [
+    "Un void* requiere emparejamiento correcto con su tabla.",
+    "La inyección no vuelve no bloqueantes restart, flush, filesystem ni operaciones de radio."
+  ],
+  "relationships": [],
+  "findings": [],
+  "files": [
+    {
+      "rootId": "esp",
+      "path": "src/bridge_platform_esp.cpp",
+      "sha256": "1a36cc8b22c014968772624ae4048e9823fab582a1d78645f28527c4a12da80d",
+      "imports": [
+        "bridge_ports.h",
+        "LittleFS.h",
+        "ESP8266WiFi.h",
+        "ESPAsyncWebServer.h",
+        "user_interface.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    },
+    {
+      "rootId": "esp",
+      "path": "src/bridge_ports.h",
+      "sha256": "552e5a00a21472b80b4d30e3893aeba34042507cba1e5716c19cb24744abe1df",
+      "imports": [
+        "Arduino.h",
+        "config.h",
+        "wifi_service_types.h",
+        "uner_handle.h",
+        "wifi_scan_arbiter.h",
+        "wifi_scan_snapshot.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    },
+    {
+      "rootId": "esp",
+      "path": "src/esp_platform.cpp",
+      "sha256": "c84d5f92724ebe3f9bbcdadb7a56c55102771a59e48aa73c89103f5470894129",
+      "imports": [
+        "esp_platform.h",
+        "Arduino.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    },
+    {
+      "rootId": "esp",
+      "path": "src/esp_platform.h",
+      "sha256": "3c5f3e2e9c94f41b4616dc09c9d9139f2c1abb6a1193bd0d1253bfc7b1bc6e7c",
+      "imports": [
+        "stdint.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    },
+    {
+      "rootId": "esp",
+      "path": "src/uner_app_ports.h",
+      "sha256": "856b7057900e6a6d42374fbd426dc778520f7a14e0d4a07c093d259abaaf80b8",
+      "imports": [
+        "stdint.h",
+        "stddef.h",
+        "bridge_ports.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    },
+    {
+      "rootId": "esp",
+      "path": "src/uner_platform_esp.h",
+      "sha256": "c1b58c5fa3692b335172a5cc3f69a5e2af1cfd282274eafcd3f8186d2e050596",
+      "imports": [
+        "esp_platform.h",
+        "uner_core.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    },
+    {
+      "rootId": "esp",
+      "path": "src/webserver_ports.h",
+      "sha256": "8a4509bf609a1e28ff471771498f1666b88414a211b8890ff5185b88bde2dee7",
+      "imports": [
+        "stdint.h",
+        "stddef.h",
+        "ESPAsyncWebServer.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    }
+  ],
+  "types": [
+    {
+      "name": "BridgeWifiOps",
+      "fields": [
+        {
+          "name": "SetSessionConfig",
+          "declaration": "void (*SetSessionConfig)(void *, const AppConfig *)",
+          "callback": true,
+          "ownerType": "BridgeWifiOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bridge_ports.h",
+            "line": 9
+          },
+          "description": "Presta la configuración al servicio Wi-Fi durante la sesión; la fachada de bridge la invoca con el contexto registrado."
+        },
+        {
+          "name": "BeginSessionMode",
+          "declaration": "bool (*BeginSessionMode)(void *, const AppConfig &, WifiRunMode)",
+          "callback": true,
+          "ownerType": "BridgeWifiOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bridge_ports.h",
+            "line": 10
+          },
+          "description": "Inicia en el servicio el modo de radio elegido para esta sesión; no confirma conectividad por sí solo."
+        },
+        {
+          "name": "StartScan",
+          "declaration": "int (*StartScan)(void *, bool async, bool show_hidden)",
+          "callback": true,
+          "ownerType": "BridgeWifiOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bridge_ports.h",
+            "line": 11
+          },
+          "description": "Solicita exploración a la única autoridad de radio; consumir resultado por ScanComplete/snapshot."
+        },
+        {
+          "name": "ScanComplete",
+          "declaration": "int (*ScanComplete)(void *)",
+          "callback": true,
+          "ownerType": "BridgeWifiOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bridge_ports.h",
+            "line": 12
+          },
+          "description": "Consulta avance o cantidad de resultados de la exploración del driver; distinguir pendiente y error según retorno."
+        },
+        {
+          "name": "DeleteScanResults",
+          "declaration": "void (*DeleteScanResults)(void *)",
+          "callback": true,
+          "ownerType": "BridgeWifiOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bridge_ports.h",
+            "line": 13
+          },
+          "description": "Libera resultados temporales del driver después de copiarlos o terminar su consumo."
+        },
+        {
+          "name": "RestoreModeAfterScan",
+          "declaration": "void (*RestoreModeAfterScan)(void *)",
+          "callback": true,
+          "ownerType": "BridgeWifiOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bridge_ports.h",
+            "line": 14
+          },
+          "description": "Pide restaurar la política de radio guardada antes del scan; no abrir otro propietario de Wi-Fi."
+        },
+        {
+          "name": "ConnectSTA",
+          "declaration": "WifiLinkStatus (*ConnectSTA)(void *, const char* ssid, const char* password, bool keep_ap, bool disconnect_first, const uint8_t* bssid)",
+          "callback": true,
+          "ownerType": "BridgeWifiOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bridge_ports.h",
+            "line": 15
+          },
+          "description": "Solicita conexión STA con los argumentos prestados del llamador; el estado se observa posteriormente."
+        },
+        {
+          "name": "DisconnectSTA",
+          "declaration": "bool (*DisconnectSTA)(void *, bool radio_off, bool erase_sdk_credentials)",
+          "callback": true,
+          "ownerType": "BridgeWifiOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bridge_ports.h",
+            "line": 16
+          },
+          "description": "Desconecta STA mediante el servicio de radio y su contexto, no mediante una segunda instancia de WiFi."
+        },
+        {
+          "name": "ApplySTAConfig",
+          "declaration": "bool (*ApplySTAConfig)(void *, const AppConfig& cfg)",
+          "callback": true,
+          "ownerType": "BridgeWifiOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bridge_ports.h",
+            "line": 17
+          },
+          "description": "Aplica direccionamiento/configuración STA antes de la conexión; retorno sigue la firma del puerto."
+        },
+        {
+          "name": "ApplyAPConfig",
+          "declaration": "bool (*ApplyAPConfig)(void *, const AppConfig& cfg)",
+          "callback": true,
+          "ownerType": "BridgeWifiOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bridge_ports.h",
+            "line": 18
+          },
+          "description": "Aplica configuración IP del AP mediante el driver compartido."
+        },
+        {
+          "name": "StartAP",
+          "declaration": "bool (*StartAP)(void *, const char* ssid, const char* password, bool keep_sta, uint8_t channel, bool hidden, uint8_t max_clients, bool ap_protected)",
+          "callback": true,
+          "ownerType": "BridgeWifiOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bridge_ports.h",
+            "line": 19
+          },
+          "description": "Solicita inicio SoftAP y conserva separada la observación de STA conectada."
+        },
+        {
+          "name": "StopAP",
+          "declaration": "bool (*StopAP)(void *, bool radio_off)",
+          "callback": true,
+          "ownerType": "BridgeWifiOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bridge_ports.h",
+            "line": 20
+          },
+          "description": "Detiene SoftAP mediante la autoridad común de radio."
+        },
+        {
+          "name": "SetSTAReconnectEnabled",
+          "declaration": "void (*SetSTAReconnectEnabled)(void *, bool enabled)",
+          "callback": true,
+          "ownerType": "BridgeWifiOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bridge_ports.h",
+            "line": 21
+          },
+          "description": "Configura la política de reconexión automática STA en el servicio."
+        },
+        {
+          "name": "IsSTAReconnectEnabled",
+          "declaration": "bool (*IsSTAReconnectEnabled)(void *)",
+          "callback": true,
+          "ownerType": "BridgeWifiOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bridge_ports.h",
+            "line": 22
+          },
+          "description": "Consulta la política de reconexión configurada, no el éxito de un intento actual."
+        },
+        {
+          "name": "GetState",
+          "declaration": "WifiServiceState (*GetState)(void *)",
+          "callback": true,
+          "ownerType": "BridgeWifiOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bridge_ports.h",
+            "line": 23
+          },
+          "description": "Obtiene la vista de estado del servicio Wi-Fi; no transfiere propiedad del handle."
+        },
+        {
+          "name": "GetAP_IP",
+          "declaration": "WifiIpv4 (*GetAP_IP)(void *)",
+          "callback": true,
+          "ownerType": "BridgeWifiOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bridge_ports.h",
+            "line": 24
+          },
+          "description": "Obtiene dirección AP del servicio para reportarla al bridge."
+        },
+        {
+          "name": "GetMode",
+          "declaration": "WifiRadioMode (*GetMode)(void *)",
+          "callback": true,
+          "ownerType": "BridgeWifiOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bridge_ports.h",
+            "line": 25
+          },
+          "description": "Consulta modo de radio actual para decidir/restaurar transiciones."
+        },
+        {
+          "name": "ConsumeAPFallbackReady",
+          "declaration": "bool (*ConsumeAPFallbackReady)(void *)",
+          "callback": true,
+          "ownerType": "BridgeWifiOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bridge_ports.h",
+            "line": 26
+          },
+          "description": "Consume la señal pendiente de fallback AP listo para notificar una sola vez."
+        },
+        {
+          "name": "ConsumeSTAAttemptFailure",
+          "declaration": "bool (*ConsumeSTAAttemptFailure)(void *)",
+          "callback": true,
+          "ownerType": "BridgeWifiOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bridge_ports.h",
+            "line": 27
+          },
+          "description": "Consume resultado pendiente de fallo del intento STA."
+        },
+        {
+          "name": "NotifySTAConfigurationFailure",
+          "declaration": "void (*NotifySTAConfigurationFailure)(void *)",
+          "callback": true,
+          "ownerType": "BridgeWifiOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bridge_ports.h",
+            "line": 28
+          },
+          "description": "Informa al servicio que la configuración STA falló y debe reflejarlo en su política/estado."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/bridge_ports.h",
+        "line": 9
+      }
+    },
+    {
+      "name": "BridgeWifiPort",
+      "fields": [
+        {
+          "name": "ops",
+          "declaration": "const BridgeWifiOps *ops",
+          "callback": false,
+          "ownerType": "BridgeWifiPort",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bridge_ports.h",
+            "line": 31
+          },
+          "description": "Contrato de operaciones externo; conservar la tabla y su contexto durante el uso."
+        },
+        {
+          "name": "context",
+          "declaration": "void *context",
+          "callback": false,
+          "ownerType": "BridgeWifiPort",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bridge_ports.h",
+            "line": 32
+          },
+          "description": "Dato de estado/configuración `context`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/bridge_ports.h",
+        "line": 31
+      }
+    },
+    {
+      "name": "BridgeBackendOps",
+      "fields": [
+        {
+          "name": "context",
+          "declaration": "void *context",
+          "callback": false,
+          "ownerType": "BridgeBackendOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bridge_ports.h",
+            "line": 55
+          },
+          "description": "Dato de estado/configuración `context`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "reboot_pending",
+          "declaration": "uint8_t *reboot_pending",
+          "callback": false,
+          "ownerType": "BridgeBackendOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bridge_ports.h",
+            "line": 56
+          },
+          "description": "Dato de estado/configuración `reboot_pending`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "reboot_boot_mode",
+          "declaration": "uint8_t *reboot_boot_mode",
+          "callback": false,
+          "ownerType": "BridgeBackendOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bridge_ports.h",
+            "line": 57
+          },
+          "description": "Dato de estado/configuración `reboot_boot_mode`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "reboot_not_before_ms",
+          "declaration": "uint32_t *reboot_not_before_ms",
+          "callback": false,
+          "ownerType": "BridgeBackendOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bridge_ports.h",
+            "line": 58
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "send_peer",
+          "declaration": "UNER_Status (*send_peer)(void *, uint8_t, const uint8_t *, uint8_t)",
+          "callback": true,
+          "ownerType": "BridgeBackendOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bridge_ports.h",
+            "line": 59
+          },
+          "description": "Entrega comando/payload al backend UNER para el peer elegido; admisión del envío no es respuesta del peer."
+        },
+        {
+          "name": "send_from_node",
+          "declaration": "UNER_Status (*send_from_node)(void *, uint8_t, uint8_t, uint8_t, const uint8_t *, uint8_t)",
+          "callback": true,
+          "ownerType": "BridgeBackendOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bridge_ports.h",
+            "line": 60
+          },
+          "description": "Envía desde una identidad de nodo explícita, preservando correlación de sesión/ruta."
+        },
+        {
+          "name": "web_page_ready",
+          "declaration": "uint8_t (*web_page_ready)(void *, uint32_t)",
+          "callback": true,
+          "ownerType": "BridgeBackendOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bridge_ports.h",
+            "line": 61
+          },
+          "description": "Notifica al backend la presencia/disponibilidad de página Web."
+        },
+        {
+          "name": "notify_ap_fallback",
+          "declaration": "void (*notify_ap_fallback)(void *)",
+          "callback": true,
+          "ownerType": "BridgeBackendOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bridge_ports.h",
+            "line": 62
+          },
+          "description": "Propaga al backend el resultado de fallback AP para actualizar estado F4."
+        },
+        {
+          "name": "intercept_packets",
+          "declaration": "void (*intercept_packets)(void *, UNER_PacketInterceptorFn, void *)",
+          "callback": true,
+          "ownerType": "BridgeBackendOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bridge_ports.h",
+            "line": 63
+          },
+          "description": "Activa/desactiva o instala intercepción de paquetes según firma del puerto; no sustituye el parser."
+        },
+        {
+          "name": "acquire_scan",
+          "declaration": "WifiScanAcquireResult (*acquire_scan)(void *, WifiScanOwner)",
+          "callback": true,
+          "ownerType": "BridgeBackendOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bridge_ports.h",
+            "line": 64
+          },
+          "description": "Adquiere la exploración compartida en el árbitro para el consumidor."
+        },
+        {
+          "name": "release_scan",
+          "declaration": "uint8_t (*release_scan)(void *, WifiScanOwner)",
+          "callback": true,
+          "ownerType": "BridgeBackendOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bridge_ports.h",
+            "line": 65
+          },
+          "description": "Libera la demanda/propiedad de scan del consumidor sin asumir que no quedan otros interesados."
+        },
+        {
+          "name": "scan_snapshot",
+          "declaration": "void (*scan_snapshot)(void *, WifiScanSnapshot *, int)",
+          "callback": true,
+          "ownerType": "BridgeBackendOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bridge_ports.h",
+            "line": 66
+          },
+          "description": "Entrega vista del resultado retenido de scan; respetar lifetime del almacenamiento dueño."
+        },
+        {
+          "name": "config",
+          "declaration": "const AppConfig *(*config)(void *)",
+          "callback": true,
+          "ownerType": "BridgeBackendOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bridge_ports.h",
+            "line": 67
+          },
+          "description": "Presta configuración vigente al bridge; un puntero retornado no concede propiedad ni persistencia implícita."
+        },
+        {
+          "name": "save_config",
+          "declaration": "bool (*save_config)(void *, const AppConfig &)",
+          "callback": true,
+          "ownerType": "BridgeBackendOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bridge_ports.h",
+            "line": 68
+          },
+          "description": "Solicita persistencia explícita de la configuración; conservar resultado de error."
+        },
+        {
+          "name": "storage_ready",
+          "declaration": "bool (*storage_ready)(void *)",
+          "callback": true,
+          "ownerType": "BridgeBackendOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bridge_ports.h",
+            "line": 69
+          },
+          "description": "Consulta si el backend de almacenamiento está disponible antes de usarlo."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/bridge_ports.h",
+        "line": 55
+      }
+    },
+    {
+      "name": "BridgePlatformOps",
+      "fields": [
+        {
+          "name": "now_ms",
+          "declaration": "uint32_t (*now_ms)()",
+          "callback": true,
+          "ownerType": "BridgePlatformOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bridge_ports.h",
+            "line": 74
+          },
+          "description": "Consulta reloj de plataforma en ms para deadlines; no usar como reloj de adquisición en us."
+        },
+        {
+          "name": "random_u32",
+          "declaration": "uint32_t (*random_u32)()",
+          "callback": true,
+          "ownerType": "BridgePlatformOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bridge_ports.h",
+            "line": 75
+          },
+          "description": "Obtiene una palabra aleatoria de plataforma; su origen/garantías pertenecen al adaptador."
+        },
+        {
+          "name": "free_heap",
+          "declaration": "uint32_t (*free_heap)()",
+          "callback": true,
+          "ownerType": "BridgePlatformOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bridge_ports.h",
+            "line": 76
+          },
+          "description": "Obtiene memoria heap libre para diagnóstico."
+        },
+        {
+          "name": "max_free_block",
+          "declaration": "uint32_t (*max_free_block)()",
+          "callback": true,
+          "ownerType": "BridgePlatformOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bridge_ports.h",
+            "line": 77
+          },
+          "description": "Obtiene el bloque contiguo máximo libre; no equivale a heap total."
+        },
+        {
+          "name": "heap_fragmentation",
+          "declaration": "uint8_t (*heap_fragmentation)()",
+          "callback": true,
+          "ownerType": "BridgePlatformOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bridge_ports.h",
+            "line": 78
+          },
+          "description": "Obtiene indicador de fragmentación del heap del backend."
+        },
+        {
+          "name": "core_version",
+          "declaration": "String (*core_version)()",
+          "callback": true,
+          "ownerType": "BridgePlatformOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bridge_ports.h",
+            "line": 79
+          },
+          "description": "Presta/entrega versión del core de plataforma para diagnóstico."
+        },
+        {
+          "name": "sdk_version",
+          "declaration": "const char *(*sdk_version)()",
+          "callback": true,
+          "ownerType": "BridgePlatformOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bridge_ports.h",
+            "line": 80
+          },
+          "description": "Presta/entrega versión SDK; no es versión de contrato UNER."
+        },
+        {
+          "name": "asset_exists",
+          "declaration": "bool (*asset_exists)(const char *)",
+          "callback": true,
+          "ownerType": "BridgePlatformOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bridge_ports.h",
+            "line": 81
+          },
+          "description": "Consulta existencia del recurso solicitado en almacenamiento."
+        },
+        {
+          "name": "radio_mode",
+          "declaration": "WifiRadioMode (*radio_mode)()",
+          "callback": true,
+          "ownerType": "BridgePlatformOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bridge_ports.h",
+            "line": 82
+          },
+          "description": "Consulta modo Wi-Fi desde el SDK para diagnóstico."
+        },
+        {
+          "name": "radio_status",
+          "declaration": "WifiLinkStatus (*radio_status)()",
+          "callback": true,
+          "ownerType": "BridgePlatformOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bridge_ports.h",
+            "line": 83
+          },
+          "description": "Consulta estado STA del SDK; requiere mapear su enum al modelo del servicio."
+        },
+        {
+          "name": "sta_ip",
+          "declaration": "WifiIpv4 (*sta_ip)()",
+          "callback": true,
+          "ownerType": "BridgePlatformOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bridge_ports.h",
+            "line": 84
+          },
+          "description": "Obtiene IP de estación actual."
+        },
+        {
+          "name": "ap_ip",
+          "declaration": "WifiIpv4 (*ap_ip)()",
+          "callback": true,
+          "ownerType": "BridgePlatformOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bridge_ports.h",
+            "line": 85
+          },
+          "description": "Obtiene IP SoftAP actual."
+        },
+        {
+          "name": "sta_ssid",
+          "declaration": "String (*sta_ssid)()",
+          "callback": true,
+          "ownerType": "BridgePlatformOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bridge_ports.h",
+            "line": 86
+          },
+          "description": "Obtiene SSID observado de la conexión STA, no una credencial de contraseña."
+        },
+        {
+          "name": "sta_rssi",
+          "declaration": "int32_t (*sta_rssi)()",
+          "callback": true,
+          "ownerType": "BridgePlatformOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bridge_ports.h",
+            "line": 87
+          },
+          "description": "Obtiene RSSI STA según unidad del SDK para diagnóstico de conexión."
+        },
+        {
+          "name": "ap_clients",
+          "declaration": "uint8_t (*ap_clients)()",
+          "callback": true,
+          "ownerType": "BridgePlatformOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bridge_ports.h",
+            "line": 88
+          },
+          "description": "Consulta cantidad de estaciones asociadas al AP; no equivale a sesiones WebSocket."
+        },
+        {
+          "name": "client_ip",
+          "declaration": "WifiIpv4 (*client_ip)(AsyncWebSocketClient *)",
+          "callback": true,
+          "ownerType": "BridgePlatformOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bridge_ports.h",
+            "line": 89
+          },
+          "description": "Obtiene IP del cliente WebSocket prestado al puerto."
+        },
+        {
+          "name": "station_first",
+          "declaration": "void *(*station_first)()",
+          "callback": true,
+          "ownerType": "BridgePlatformOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bridge_ports.h",
+            "line": 90
+          },
+          "description": "Obtiene primer elemento de la enumeración de estaciones AP; liberar con station_free según contrato del backend."
+        },
+        {
+          "name": "station_next",
+          "declaration": "void *(*station_next)(void *)",
+          "callback": true,
+          "ownerType": "BridgePlatformOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bridge_ports.h",
+            "line": 91
+          },
+          "description": "Avanza por la enumeración de estaciones AP sin transferir propiedad del nodo."
+        },
+        {
+          "name": "station_mac",
+          "declaration": "const uint8_t *(*station_mac)(void *)",
+          "callback": true,
+          "ownerType": "BridgePlatformOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bridge_ports.h",
+            "line": 92
+          },
+          "description": "Extrae identidad MAC de una entrada de estación."
+        },
+        {
+          "name": "station_ip",
+          "declaration": "uint32_t (*station_ip)(void *)",
+          "callback": true,
+          "ownerType": "BridgePlatformOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bridge_ports.h",
+            "line": 93
+          },
+          "description": "Extrae IP de una entrada de estación."
+        },
+        {
+          "name": "station_free",
+          "declaration": "void (*station_free)()",
+          "callback": true,
+          "ownerType": "BridgePlatformOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bridge_ports.h",
+            "line": 94
+          },
+          "description": "Libera recursos de enumeración de estaciones en el backend que los creó."
+        },
+        {
+          "name": "station_deauth",
+          "declaration": "bool (*station_deauth)(uint8_t *)",
+          "callback": true,
+          "ownerType": "BridgePlatformOps",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/bridge_ports.h",
+            "line": 95
+          },
+          "description": "Solicita desasociación de la estación AP identificada; no concede permisos de control F4."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/bridge_ports.h",
+        "line": 74
+      }
+    },
+    {
+      "name": "UNER_AppServices",
+      "fields": [
+        {
+          "name": "wifi",
+          "declaration": "BridgeWifiPort wifi",
+          "callback": false,
+          "ownerType": "UNER_AppServices",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_app_ports.h",
+            "line": 7
+          },
+          "description": "Dato de estado/configuración `wifi`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "platform",
+          "declaration": "const BridgePlatformOps *platform",
+          "callback": false,
+          "ownerType": "UNER_AppServices",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_app_ports.h",
+            "line": 8
+          },
+          "description": "Dato de estado/configuración `platform`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "config",
+          "declaration": "const AppConfig *(*config)()",
+          "callback": true,
+          "ownerType": "UNER_AppServices",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_app_ports.h",
+            "line": 9
+          },
+          "description": "Presta configuración de aplicación al handler UNER."
+        },
+        {
+          "name": "save_config",
+          "declaration": "bool (*save_config)(const AppConfig &)",
+          "callback": true,
+          "ownerType": "UNER_AppServices",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_app_ports.h",
+            "line": 10
+          },
+          "description": "Persiste cambios de configuración desde la capa de aplicación."
+        },
+        {
+          "name": "scan_entry",
+          "declaration": "bool (*scan_entry)(uint8_t, WifiScanSnapshotEntry *)",
+          "callback": true,
+          "ownerType": "UNER_AppServices",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_app_ports.h",
+            "line": 11
+          },
+          "description": "Obtiene entrada de resultados de scan para codificar una respuesta UNER."
+        },
+        {
+          "name": "reset_diagnostic",
+          "declaration": "void (*reset_diagnostic)(uint8_t *reason, uint8_t *exception)",
+          "callback": true,
+          "ownerType": "UNER_AppServices",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_app_ports.h",
+            "line": 12
+          },
+          "description": "Obtiene o aplica la operación diagnóstica de reset según firma del servicio inyectado."
+        },
+        {
+          "name": "flush_serial",
+          "declaration": "void (*flush_serial)()",
+          "callback": true,
+          "ownerType": "UNER_AppServices",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_app_ports.h",
+            "line": 13
+          },
+          "description": "Solicita vaciado del serial; puede bloquear según adaptador, no cambia la semántica ACK."
+        },
+        {
+          "name": "cooperate",
+          "declaration": "void (*cooperate)()",
+          "callback": true,
+          "ownerType": "UNER_AppServices",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_app_ports.h",
+            "line": 14
+          },
+          "description": "Cede ejecución al runtime para cooperar con Wi-Fi/watchdog; no sustituye una máquina de estados."
+        },
+        {
+          "name": "delay_ms",
+          "declaration": "void (*delay_ms)(uint32_t)",
+          "callback": true,
+          "ownerType": "UNER_AppServices",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_app_ports.h",
+            "line": 15
+          },
+          "description": "Espera solicitada en ms mediante plataforma; callback no vuelve asíncrona esa espera."
+        },
+        {
+          "name": "restart",
+          "declaration": "void (*restart)()",
+          "callback": true,
+          "ownerType": "UNER_AppServices",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_app_ports.h",
+            "line": 16
+          },
+          "description": "Solicita reinicio físico ESP; considerar orden de respuesta/flush y no seguir usando estado previo."
+        },
+        {
+          "name": "initialize_serial_transport",
+          "declaration": "void (*initialize_serial_transport)(UNER_Transport *)",
+          "callback": true,
+          "ownerType": "UNER_AppServices",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_app_ports.h",
+            "line": 17
+          },
+          "description": "Conecta/inicializa transporte serial de UNER desde la composición."
+        },
+        {
+          "name": "connected_count",
+          "declaration": "uint8_t (*connected_count)()",
+          "callback": true,
+          "ownerType": "UNER_AppServices",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_app_ports.h",
+            "line": 18
+          },
+          "description": "Consulta clientes conectados según servicio de servidor, separado de estaciones AP."
+        },
+        {
+          "name": "client_info",
+          "declaration": "bool (*client_info)(uint8_t, uint32_t *, uint8_t *)",
+          "callback": true,
+          "ownerType": "UNER_AppServices",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_app_ports.h",
+            "line": 19
+          },
+          "description": "Entrega información del cliente identificado para reportes."
+        },
+        {
+          "name": "request_credentials",
+          "declaration": "void (*request_credentials)(const char *)",
+          "callback": true,
+          "ownerType": "UNER_AppServices",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_app_ports.h",
+            "line": 20
+          },
+          "description": "Inicia petición de credenciales al flujo dueño; no devuelve una contraseña por inferencia."
+        },
+        {
+          "name": "credentials_state",
+          "declaration": "uint8_t (*credentials_state)(uint8_t *, char *, size_t, char *, size_t)",
+          "callback": true,
+          "ownerType": "UNER_AppServices",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_app_ports.h",
+            "line": 21
+          },
+          "description": "Consulta fase/resultado de la petición de credenciales."
+        },
+        {
+          "name": "submit_credentials",
+          "declaration": "uint8_t (*submit_credentials)(const char *, const char *, bool, const char *, const char *, const char *, const char *)",
+          "callback": true,
+          "ownerType": "UNER_AppServices",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_app_ports.h",
+            "line": 22
+          },
+          "description": "Entrega datos recibidos al flujo de credenciales con el contexto registrado."
+        },
+        {
+          "name": "cancel_credentials",
+          "declaration": "uint8_t (*cancel_credentials)(const char *)",
+          "callback": true,
+          "ownerType": "UNER_AppServices",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_app_ports.h",
+            "line": 24
+          },
+          "description": "Cancela petición de credenciales pendiente y su contexto de aplicación."
+        },
+        {
+          "name": "ap_clients_page",
+          "declaration": "uint8_t (*ap_clients_page)(uint8_t, uint8_t, uint8_t *, uint8_t, uint8_t *)",
+          "callback": true,
+          "ownerType": "UNER_AppServices",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_app_ports.h",
+            "line": 25
+          },
+          "description": "Codifica/consulta página de estaciones AP según argumentos de la operación."
+        },
+        {
+          "name": "disconnect_ap_client",
+          "declaration": "uint8_t (*disconnect_ap_client)(const uint8_t *)",
+          "callback": true,
+          "ownerType": "UNER_AppServices",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_app_ports.h",
+            "line": 26
+          },
+          "description": "Solicita desconexión de estación AP; no confundir con cerrar una sesión de autenticación F4."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_ports.h",
+        "line": 7
+      }
+    },
+    {
+      "name": "WebServerServices",
+      "fields": [
+        {
+          "name": "context",
+          "declaration": "void *context",
+          "callback": false,
+          "ownerType": "WebServerServices",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/webserver_ports.h",
+            "line": 6
+          },
+          "description": "Dato de estado/configuración `context`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "storage_ready",
+          "declaration": "bool (*storage_ready)()",
+          "callback": true,
+          "ownerType": "WebServerServices",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/webserver_ports.h",
+            "line": 7
+          },
+          "description": "Consulta disponibilidad de filesystem antes de servir recursos."
+        },
+        {
+          "name": "bridge_initialize",
+          "declaration": "void (*bridge_initialize)(void *, AsyncWebSocket *)",
+          "callback": true,
+          "ownerType": "WebServerServices",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/webserver_ports.h",
+            "line": 8
+          },
+          "description": "Inicializa bridge con servicios registrados antes de recibir solicitudes."
+        },
+        {
+          "name": "bridge_connect",
+          "declaration": "bool (*bridge_connect)(AsyncWebSocketClient *, const char *)",
+          "callback": true,
+          "ownerType": "WebServerServices",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/webserver_ports.h",
+            "line": 9
+          },
+          "description": "Informa al bridge apertura del cliente para crear sesión/generación."
+        },
+        {
+          "name": "bridge_disconnect",
+          "declaration": "bool (*bridge_disconnect)(uint32_t)",
+          "callback": true,
+          "ownerType": "WebServerServices",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/webserver_ports.h",
+            "line": 10
+          },
+          "description": "Informa al bridge cierre del cliente para limpiar pendientes, demanda y autoridad."
+        },
+        {
+          "name": "bridge_data",
+          "declaration": "void (*bridge_data)(AsyncWebSocketClient *, AwsFrameInfo *, uint8_t *, size_t)",
+          "callback": true,
+          "ownerType": "WebServerServices",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/webserver_ports.h",
+            "line": 11
+          },
+          "description": "Entrega bytes/mensaje recibido al bridge; copiar lo que deba sobrevivir al callback del servidor."
+        },
+        {
+          "name": "bridge_loop",
+          "declaration": "void (*bridge_loop)()",
+          "callback": true,
+          "ownerType": "WebServerServices",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/webserver_ports.h",
+            "line": 12
+          },
+          "description": "Presta el turno periódico de ejecución al bridge para deadlines/colas."
+        },
+        {
+          "name": "notify_connected",
+          "declaration": "void (*notify_connected)(void *, uint32_t)",
+          "callback": true,
+          "ownerType": "WebServerServices",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/webserver_ports.h",
+            "line": 13
+          },
+          "description": "Propaga evento de cliente Web conectado al resto del sistema."
+        },
+        {
+          "name": "notify_disconnected",
+          "declaration": "void (*notify_disconnected)(void *, uint32_t)",
+          "callback": true,
+          "ownerType": "WebServerServices",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/webserver_ports.h",
+            "line": 14
+          },
+          "description": "Propaga evento de cliente Web desconectado después de gestionar su identidad."
+        },
+        {
+          "name": "notify_page_ready",
+          "declaration": "void (*notify_page_ready)(void *, uint32_t, uint8_t)",
+          "callback": true,
+          "ownerType": "WebServerServices",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/webserver_ports.h",
+            "line": 15
+          },
+          "description": "Propaga que una página está lista; distinto de tener socket o radio asociados."
+        },
+        {
+          "name": "notify_page_closed",
+          "declaration": "void (*notify_page_closed)(void *, uint32_t, uint8_t)",
+          "callback": true,
+          "ownerType": "WebServerServices",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/webserver_ports.h",
+            "line": 16
+          },
+          "description": "Propaga cierre de página y su ciclo de vida."
+        },
+        {
+          "name": "notify_ap_join",
+          "declaration": "void (*notify_ap_join)(void *, uint8_t, uint8_t)",
+          "callback": true,
+          "ownerType": "WebServerServices",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/webserver_ports.h",
+            "line": 17
+          },
+          "description": "Propaga asociación de estación al AP; no implica login Web."
+        },
+        {
+          "name": "notify_ap_leave",
+          "declaration": "void (*notify_ap_leave)(void *, uint8_t, uint8_t)",
+          "callback": true,
+          "ownerType": "WebServerServices",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/webserver_ports.h",
+            "line": 18
+          },
+          "description": "Propaga salida de estación del AP; no inventar un resultado de comando F4."
+        },
+        {
+          "name": "notify_server_up",
+          "declaration": "void (*notify_server_up)(void *)",
+          "callback": true,
+          "ownerType": "WebServerServices",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/webserver_ports.h",
+            "line": 19
+          },
+          "description": "Informa servidor disponible para sincronizar estado con el peer."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/webserver_ports.h",
+        "line": 6
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "ApplyAPConfig",
+      "signature": "bool ApplyAPConfig(const AppConfig& cfg) const",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/bridge_ports.h",
+        "line": 43
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "ApplyAPConfig"
+      ],
+      "writes": [],
+      "description": "Aplica APConfig dentro de Puertos y adaptadores de plataforma ESP.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "ApplySTAConfig",
+      "signature": "bool ApplySTAConfig(const AppConfig& cfg) const",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/bridge_ports.h",
+        "line": 42
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "ApplySTAConfig"
+      ],
+      "writes": [],
+      "description": "Aplica STAConfig dentro de Puertos y adaptadores de plataforma ESP.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "BeginSessionMode",
+      "signature": "bool BeginSessionMode(const AppConfig &config, WifiRunMode mode) const",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/bridge_ports.h",
+        "line": 35
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "BeginSessionMode"
+      ],
+      "writes": [],
+      "description": "Coordina `BeginSessionMode` para Puertos y adaptadores de plataforma ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "BridgePlatform_ESP",
+      "signature": "const BridgePlatformOps &BridgePlatform_ESP()",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/bridge_platform_esp.cpp",
+        "line": 11
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "RSSI",
+        "SSID",
+        "STAILQ_NEXT",
+        "exists",
+        "getCoreVersion",
+        "getFreeHeap",
+        "getHeapFragmentation",
+        "getMaxFreeBlockSize",
+        "getMode",
+        "getSdkVersion",
+        "localIP",
+        "millis",
+        "neutralIP",
+        "os_random",
+        "remoteIP",
+        "softAPIP",
+        "softAPgetStationNum",
+        "status",
+        "wifi_softap_deauth",
+        "wifi_softap_free_station_info",
+        "wifi_softap_get_station_info"
+      ],
+      "writes": [
+        "ap_clients",
+        "ap_ip",
+        "asset_exists",
+        "client_ip",
+        "core_version",
+        "free_heap",
+        "heap_fragmentation",
+        "max_free_block",
+        "now_ms",
+        "radio_mode",
+        "radio_status",
+        "random_u32",
+        "sdk_version",
+        "sta_ip",
+        "sta_rssi",
+        "sta_ssid",
+        "station_deauth",
+        "station_first",
+        "station_free",
+        "station_ip",
+        "station_mac",
+        "station_next"
+      ],
+      "description": "Coordina `RSSI`, `SSID`, `STAILQ_NEXT` para Puertos y adaptadores de plataforma ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Bridge_DefaultBackend",
+      "signature": "const BridgeBackendOps &Bridge_DefaultBackend()",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/bridge_ports.h",
+        "line": 100
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Carga los valores predeterminados de Backend dentro de Puertos y adaptadores de plataforma ESP.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "Bridge_DefaultWifi",
+      "signature": "const BridgeWifiPort &Bridge_DefaultWifi()",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/bridge_ports.h",
+        "line": 101
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Carga los valores predeterminados de Wifi dentro de Puertos y adaptadores de plataforma ESP.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "ConnectSTA",
+      "signature": "WifiLinkStatus ConnectSTA(const char* ssid, const char* password, bool keep_ap, bool disconnect_first, const uint8_t* bssid) const",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/bridge_ports.h",
+        "line": 40
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "ConnectSTA"
+      ],
+      "writes": [],
+      "description": "Coordina `ConnectSTA` para Puertos y adaptadores de plataforma ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ConsumeAPFallbackReady",
+      "signature": "bool ConsumeAPFallbackReady() const",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/bridge_ports.h",
+        "line": 51
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "ConsumeAPFallbackReady"
+      ],
+      "writes": [],
+      "description": "Coordina `ConsumeAPFallbackReady` para Puertos y adaptadores de plataforma ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ConsumeSTAAttemptFailure",
+      "signature": "bool ConsumeSTAAttemptFailure() const",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/bridge_ports.h",
+        "line": 52
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "ConsumeSTAAttemptFailure"
+      ],
+      "writes": [],
+      "description": "Coordina `ConsumeSTAAttemptFailure` para Puertos y adaptadores de plataforma ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "DeleteScanResults",
+      "signature": "void DeleteScanResults() const",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/bridge_ports.h",
+        "line": 38
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "DeleteScanResults"
+      ],
+      "writes": [],
+      "description": "Coordina `DeleteScanResults` para Puertos y adaptadores de plataforma ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "DisconnectSTA",
+      "signature": "bool DisconnectSTA(bool radio_off, bool erase_sdk_credentials) const",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/bridge_ports.h",
+        "line": 41
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "DisconnectSTA"
+      ],
+      "writes": [],
+      "description": "Coordina `DisconnectSTA` para Puertos y adaptadores de plataforma ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "EspPlatform_Delay0",
+      "signature": "void EspPlatform_Delay0(void *)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/esp_platform.cpp",
+        "line": 12
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "delay"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `delay` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "EspPlatform_LedInit",
+      "signature": "void EspPlatform_LedInit(void *)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/esp_platform.cpp",
+        "line": 6
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "digitalWrite",
+        "pinMode"
+      ],
+      "writes": [],
+      "description": "Coordina `digitalWrite`, `pinMode` para Puertos y adaptadores de plataforma ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "EspPlatform_LedWrite",
+      "signature": "void EspPlatform_LedWrite(void *, bool on)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/esp_platform.cpp",
+        "line": 10
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "digitalWrite"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `digitalWrite` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "EspPlatform_LogUNERPacket",
+      "signature": "void EspPlatform_LogUNERPacket(void *context, const UNER_Packet *packet)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_platform_esp.h",
+        "line": 4
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Log UNERPacket de Puertos y adaptadores de plataforma ESP; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "EspPlatform_Millis",
+      "signature": "uint32_t EspPlatform_Millis(void *)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/esp_platform.cpp",
+        "line": 4
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "millis"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `millis` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "EspPlatform_Yield",
+      "signature": "void EspPlatform_Yield(void *)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/esp_platform.cpp",
+        "line": 5
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "yield"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `yield` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "GetAP_IP",
+      "signature": "WifiIpv4 GetAP_IP() const",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/bridge_ports.h",
+        "line": 49
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "GetAP_IP"
+      ],
+      "writes": [],
+      "description": "Consulta AP IP dentro de Puertos y adaptadores de plataforma ESP.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "GetMode",
+      "signature": "WifiRadioMode GetMode() const",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/bridge_ports.h",
+        "line": 50
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "GetMode"
+      ],
+      "writes": [],
+      "description": "Consulta Mode dentro de Puertos y adaptadores de plataforma ESP.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "GetState",
+      "signature": "WifiServiceState GetState() const",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/bridge_ports.h",
+        "line": 48
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "GetState"
+      ],
+      "writes": [],
+      "description": "Consulta State dentro de Puertos y adaptadores de plataforma ESP.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "IsSTAReconnectEnabled",
+      "signature": "bool IsSTAReconnectEnabled() const",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/bridge_ports.h",
+        "line": 47
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "IsSTAReconnectEnabled"
+      ],
+      "writes": [],
+      "description": "Indica si se cumple la condición STAReconnect Enabled dentro de Puertos y adaptadores de plataforma ESP.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "NotifySTAConfigurationFailure",
+      "signature": "void NotifySTAConfigurationFailure() const",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/bridge_ports.h",
+        "line": 53
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "NotifySTAConfigurationFailure"
+      ],
+      "writes": [],
+      "description": "Notifica STAConfiguration Failure dentro de Puertos y adaptadores de plataforma ESP.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "RestoreModeAfterScan",
+      "signature": "void RestoreModeAfterScan() const",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/bridge_ports.h",
+        "line": 39
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "RestoreModeAfterScan"
+      ],
+      "writes": [],
+      "description": "Coordina `RestoreModeAfterScan` para Puertos y adaptadores de plataforma ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ScanComplete",
+      "signature": "int ScanComplete() const",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/bridge_ports.h",
+        "line": 37
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "ScanComplete"
+      ],
+      "writes": [],
+      "description": "Coordina `ScanComplete` para Puertos y adaptadores de plataforma ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "SetSTAReconnectEnabled",
+      "signature": "void SetSTAReconnectEnabled(bool enabled) const",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/bridge_ports.h",
+        "line": 46
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "SetSTAReconnectEnabled"
+      ],
+      "writes": [],
+      "description": "Configura STAReconnect Enabled dentro de Puertos y adaptadores de plataforma ESP.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "SetSessionConfig",
+      "signature": "void SetSessionConfig(const AppConfig *config) const",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/bridge_ports.h",
+        "line": 34
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "SetSessionConfig"
+      ],
+      "writes": [],
+      "description": "Configura Session Config dentro de Puertos y adaptadores de plataforma ESP.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "StartAP",
+      "signature": "bool StartAP(const char* ssid, const char* password, bool keep_sta, uint8_t channel, bool hidden, uint8_t max_clients, bool ap_protected) const",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/bridge_ports.h",
+        "line": 44
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "StartAP"
+      ],
+      "writes": [],
+      "description": "Inicia AP dentro de Puertos y adaptadores de plataforma ESP.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "StartScan",
+      "signature": "int StartScan(bool async, bool show_hidden) const",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/bridge_ports.h",
+        "line": 36
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "StartScan"
+      ],
+      "writes": [],
+      "description": "Inicia Scan dentro de Puertos y adaptadores de plataforma ESP.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "StopAP",
+      "signature": "bool StopAP(bool radio_off) const",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/bridge_ports.h",
+        "line": 45
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "StopAP"
+      ],
+      "writes": [],
+      "description": "Detiene AP dentro de Puertos y adaptadores de plataforma ESP.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_DefaultServices",
+      "signature": "const UNER_AppServices &UNER_App_DefaultServices()",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_ports.h",
+        "line": 30
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación UNER App Default Services de Puertos y adaptadores de plataforma ESP; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_SetServices",
+      "signature": "void UNER_App_SetServices(const UNER_AppServices &services)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_ports.h",
+        "line": 29
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación UNER App Set Services de Puertos y adaptadores de plataforma ESP; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "WebServerWS_SetServices",
+      "signature": "void WebServerWS_SetServices(const WebServerServices &services)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/webserver_ports.h",
+        "line": 22
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Web Server WS Set Services de Puertos y adaptadores de plataforma ESP; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "WebServer_DefaultServices",
+      "signature": "const WebServerServices &WebServer_DefaultServices()",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/webserver_ports.h",
+        "line": 23
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Web Server Default Services de Puertos y adaptadores de plataforma ESP; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "wifi_softap_deauth",
+      "signature": "bool wifi_softap_deauth(uint8 *mac)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/bridge_platform_esp.cpp",
+        "line": 7
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación wifi softap deauth de Puertos y adaptadores de plataforma ESP; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "neutralIP",
+      "signature": "static WifiIpv4 neutralIP(IPAddress ip)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/bridge_platform_esp.cpp",
+        "line": 10
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "WifiIpv4"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `WifiIpv4` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    }
+  ],
+  "hooks": []
+}

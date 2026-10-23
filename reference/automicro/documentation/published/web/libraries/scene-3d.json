@@ -1,0 +1,2184 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "web:module/src/components/MpuIrScene3D.tsx",
+  "slug": "scene-3d",
+  "title": "Escena 3D y carga de modelos",
+  "target": "web",
+  "kind": "integración",
+  "status": "source-documented",
+  "snapshotDate": "2026-10-20",
+  "verification": "not-run-user-instruction",
+  "responsibility": "Carga el modelo del robot y aplica orientación/sensores a la escena WebGL.",
+  "scope": "Modelo, materiales, referencias y fallback de carga; no representa por sí mismo la pose física exacta sin datos válidos.",
+  "state": "Recursos GPU/modelo, refs y estado de carga tienen lifetime de la escena; liberar recursos/listeners al reemplazar.",
+  "modularity": "Adaptación React/Three.js con datos de telemetría separados.",
+  "lifecycle": [
+    "Cargar GLB y decodificador configurado, montar escena y aplicar datos.",
+    "Mostrar error/fallback cuando el asset no está disponible y limpiar al desmontar."
+  ],
+  "interactions": [
+    "ESP sirve asset y bundle; sensores/cámara usan sistemas de ejes que deben documentarse juntos."
+  ],
+  "limitations": [
+    "DRACO wasm no es un port wasm de la biblioteca OLED.",
+    "Carga/render WebGL exitoso no valida telemetría física."
+  ],
+  "relationships": [],
+  "findings": [],
+  "files": [
+    {
+      "rootId": "web",
+      "path": "src/components/ModelLoadBoundary.tsx",
+      "sha256": "41ef61acf8ae7e59af812d422801fe82f972f7826d66cf75d16ae7ac645278ec",
+      "imports": [
+        "./ModelLoadingScreen",
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/components/ModelLoadingScreen.tsx",
+      "sha256": "908a9ebb21533dbadf056a7a6758b59813ac61baef650ada65175edd8373eb4f",
+      "imports": [
+        "./AppLoadingScreen",
+        "@react-three/drei",
+        "@react-three/fiber",
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/components/MpuIrScene3D.tsx",
+      "sha256": "19ace22b558c1e492bb75e8c9e862e2b8cc943942772e726ce449d39f900e586",
+      "imports": [
+        "../api/UnerFrameV2",
+        "../contexts/IrEmittersContext",
+        "../features/ir/beamVisualSettings",
+        "../features/ir/irEmitterGeometry",
+        "../features/ir/irObjectModel",
+        "../features/ir/irSensorFrame",
+        "../features/ir/sensorCameraViews",
+        "../utils/dracoLoader",
+        "./IrObjectDetectionMarkers",
+        "./ModelLoadBoundary",
+        "./ModelLoadingScreen",
+        "./UnderbodySensorBeams",
+        "./WebGLCanvas",
+        "@react-three/drei",
+        "@react-three/fiber",
+        "react",
+        "three",
+        "three/addons/loaders/GLTFLoader.js"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/components/ThreeModelViewer.tsx",
+      "sha256": "6bb5436fd5e2a1164ac495c7d2ea85dd0b166ab297a6a2fb541e51597583f881",
+      "imports": [
+        "../utils/dracoLoader",
+        "./ModelLoadBoundary",
+        "./ModelLoadingScreen",
+        "./WebGLCanvas",
+        "@react-three/fiber",
+        "react",
+        "three",
+        "three/addons/controls/OrbitControls.js",
+        "three/addons/loaders/GLTFLoader.js"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/components/WebGLCanvas.tsx",
+      "sha256": "6c0b9dc36457141353f78b817f19e543d1f2b6e6e82a7e3314410ce59bb30af4",
+      "imports": [
+        "./AppLoadingScreen",
+        "@react-three/fiber",
+        "react",
+        "three"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/hooks/useModelLoadingState.ts",
+      "sha256": "fbdb9a194f07e04ce37aff7ee4eda3b3803e96b87fab9e9e660877858c122db4",
+      "imports": [
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/utils/dracoLoader.ts",
+      "sha256": "0e9606fe9606507a0ea291c898f1639ed6f696e2acb18df9b2d17561ace42310",
+      "imports": [
+        "three/addons/loaders/DRACOLoader.js",
+        "three/addons/loaders/GLTFLoader.js"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/utils/localModel.ts",
+      "sha256": "c6f5da578d5e232cc0d52a8d5e2111466fabdaa8286279d0c413337ff36c1581",
+      "imports": [],
+      "analysisLevel": "typescript-ast-static"
+    }
+  ],
+  "types": [
+    {
+      "name": "Props",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "modelUrl",
+          "declaration": "modelUrl: string",
+          "callback": false,
+          "ownerType": "Props",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/ModelLoadBoundary.tsx",
+            "line": 5
+          },
+          "description": "Dato de estado/configuración `modelUrl`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "children",
+          "declaration": "children: ReactNode",
+          "callback": false,
+          "ownerType": "Props",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/ModelLoadBoundary.tsx",
+            "line": 6
+          },
+          "description": "Dato de estado/configuración `children`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ModelLoadBoundary.tsx",
+        "line": 4
+      }
+    },
+    {
+      "name": "State",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "modelUrl",
+          "declaration": "modelUrl: string",
+          "callback": false,
+          "ownerType": "State",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/ModelLoadBoundary.tsx",
+            "line": 10
+          },
+          "description": "Dato de estado/configuración `modelUrl`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "failed",
+          "declaration": "failed: boolean",
+          "callback": false,
+          "ownerType": "State",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/ModelLoadBoundary.tsx",
+            "line": 11
+          },
+          "description": "Dato de estado/configuración `failed`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ModelLoadBoundary.tsx",
+        "line": 9
+      }
+    },
+    {
+      "name": "ModelLoadBoundary",
+      "kind": "ClassDeclaration",
+      "fields": [
+        {
+          "name": "state",
+          "declaration": "state: State",
+          "callback": false,
+          "ownerType": "ModelLoadBoundary",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/ModelLoadBoundary.tsx",
+            "line": 16
+          },
+          "description": "Dato de estado/configuración `state`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "getDerivedStateFromProps",
+          "declaration": "getDerivedStateFromProps(props: Props, state: State): inferred-by-TypeScript",
+          "callback": true,
+          "ownerType": "ModelLoadBoundary",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/ModelLoadBoundary.tsx",
+            "line": 18
+          },
+          "description": "Operación get Derived State From Props de Escena 3D y carga de modelos; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "getDerivedStateFromError",
+          "declaration": "getDerivedStateFromError(): inferred-by-TypeScript",
+          "callback": true,
+          "ownerType": "ModelLoadBoundary",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/ModelLoadBoundary.tsx",
+            "line": 24
+          },
+          "description": "Operación get Derived State From Error de Escena 3D y carga de modelos; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "componentDidCatch",
+          "declaration": "componentDidCatch(error: Error): inferred-by-TypeScript",
+          "callback": true,
+          "ownerType": "ModelLoadBoundary",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/ModelLoadBoundary.tsx",
+            "line": 28
+          },
+          "description": "Operación component Did Catch de Escena 3D y carga de modelos; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "render",
+          "declaration": "render(): inferred-by-TypeScript",
+          "callback": true,
+          "ownerType": "ModelLoadBoundary",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/ModelLoadBoundary.tsx",
+            "line": 37
+          },
+          "description": "Operación render de Escena 3D y carga de modelos; semántica fina pendiente de ampliación."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ModelLoadBoundary.tsx",
+        "line": 15
+      }
+    },
+    {
+      "name": "EulerDeg",
+      "kind": "TypeAliasDeclaration",
+      "type": "IrSensorRigEulerDeg",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/MpuIrScene3D.tsx",
+        "line": 58
+      }
+    },
+    {
+      "name": "MpuIrScene3DHandle",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "resetCamera",
+          "declaration": "resetCamera: () => void",
+          "callback": true,
+          "ownerType": "MpuIrScene3DHandle",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/MpuIrScene3D.tsx",
+            "line": 61
+          },
+          "description": "Operación reset Camera de Escena 3D y carga de modelos; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "setCameraPreset",
+          "declaration": "setCameraPreset: (preset: SensorCameraPreset) => void",
+          "callback": true,
+          "ownerType": "MpuIrScene3DHandle",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/MpuIrScene3D.tsx",
+            "line": 62
+          },
+          "description": "Operación set Camera Preset de Escena 3D y carga de modelos; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "clearIrTarget",
+          "declaration": "clearIrTarget: () => void",
+          "callback": true,
+          "ownerType": "MpuIrScene3DHandle",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/MpuIrScene3D.tsx",
+            "line": 63
+          },
+          "description": "Operación clear Ir Target de Escena 3D y carga de modelos; semántica fina pendiente de ampliación."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/MpuIrScene3D.tsx",
+        "line": 60
+      }
+    },
+    {
+      "name": "MpuIrScene3DProps",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "modelUrl",
+          "declaration": "modelUrl: string",
+          "callback": false,
+          "ownerType": "MpuIrScene3DProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/MpuIrScene3D.tsx",
+            "line": 67
+          },
+          "description": "Dato de estado/configuración `modelUrl`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "eulerDeg",
+          "declaration": "eulerDeg: EulerDeg",
+          "callback": false,
+          "ownerType": "MpuIrScene3DProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/MpuIrScene3D.tsx",
+            "line": 68
+          },
+          "description": "Ángulo en grados; respetar eje y referencia de esta librería."
+        },
+        {
+          "name": "irNorm",
+          "declaration": "irNorm: Record<IrSensorKey, number>",
+          "callback": false,
+          "ownerType": "MpuIrScene3DProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/MpuIrScene3D.tsx",
+            "line": 69
+          },
+          "description": "Dato de estado/configuración `irNorm`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "objectDetections",
+          "declaration": "objectDetections: IrObjectAxialDetections",
+          "callback": false,
+          "ownerType": "MpuIrScene3DProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/MpuIrScene3D.tsx",
+            "line": 70
+          },
+          "description": "Dato de estado/configuración `objectDetections`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "showGrid",
+          "declaration": "showGrid: boolean",
+          "callback": false,
+          "ownerType": "MpuIrScene3DProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/MpuIrScene3D.tsx",
+            "line": 71
+          },
+          "description": "Dato de estado/configuración `showGrid`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "showObjectAxes",
+          "declaration": "showObjectAxes: boolean",
+          "callback": false,
+          "ownerType": "MpuIrScene3DProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/MpuIrScene3D.tsx",
+            "line": 72
+          },
+          "description": "Dato de estado/configuración `showObjectAxes`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "showLineAxes",
+          "declaration": "showLineAxes: boolean",
+          "callback": false,
+          "ownerType": "MpuIrScene3DProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/MpuIrScene3D.tsx",
+            "line": 73
+          },
+          "description": "Dato de estado/configuración `showLineAxes`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "beamOpacities",
+          "declaration": "beamOpacities: BeamOpacities",
+          "callback": false,
+          "ownerType": "MpuIrScene3DProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/MpuIrScene3D.tsx",
+            "line": 74
+          },
+          "description": "Dato de estado/configuración `beamOpacities`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "showOrigin",
+          "declaration": "showOrigin: boolean",
+          "callback": false,
+          "ownerType": "MpuIrScene3DProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/MpuIrScene3D.tsx",
+            "line": 75
+          },
+          "description": "Dato de estado/configuración `showOrigin`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "sensorSensitivityCm",
+          "declaration": "sensorSensitivityCm: number",
+          "callback": false,
+          "ownerType": "MpuIrScene3DProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/MpuIrScene3D.tsx",
+            "line": 76
+          },
+          "description": "Dato de estado/configuración `sensorSensitivityCm`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "irSamplePeriodMs",
+          "declaration": "irSamplePeriodMs: number",
+          "callback": false,
+          "ownerType": "MpuIrScene3DProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/MpuIrScene3D.tsx",
+            "line": 77
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "renderLink",
+          "declaration": "renderLink: boolean",
+          "callback": false,
+          "ownerType": "MpuIrScene3DProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/MpuIrScene3D.tsx",
+            "line": 78
+          },
+          "description": "Dato de estado/configuración `renderLink`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "irEmu",
+          "declaration": "irEmu: boolean",
+          "callback": false,
+          "ownerType": "MpuIrScene3DProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/MpuIrScene3D.tsx",
+            "line": 79
+          },
+          "description": "Dato de estado/configuración `irEmu`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "irAutoMotion",
+          "declaration": "irAutoMotion?: boolean",
+          "callback": false,
+          "ownerType": "MpuIrScene3DProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/MpuIrScene3D.tsx",
+            "line": 80
+          },
+          "description": "Dato de estado/configuración `irAutoMotion`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "estimatedTarget",
+          "declaration": "estimatedTarget: IrObjectPositionEstimate | null",
+          "callback": false,
+          "ownerType": "MpuIrScene3DProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/MpuIrScene3D.tsx",
+            "line": 81
+          },
+          "description": "Dato de estado/configuración `estimatedTarget`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "onEmulatedTarget",
+          "declaration": "onEmulatedTarget: (point: IrObjectPoint) => void",
+          "callback": true,
+          "ownerType": "MpuIrScene3DProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/MpuIrScene3D.tsx",
+            "line": 82
+          },
+          "description": "Operación on Emulated Target de Escena 3D y carga de modelos; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "onManualCameraChange",
+          "declaration": "onManualCameraChange: () => void",
+          "callback": true,
+          "ownerType": "MpuIrScene3DProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/MpuIrScene3D.tsx",
+            "line": 83
+          },
+          "description": "Operación on Manual Camera Change de Escena 3D y carga de modelos; semántica fina pendiente de ampliación."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/MpuIrScene3D.tsx",
+        "line": 66
+      }
+    },
+    {
+      "name": "SceneCameraControllerHandle",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "resetCamera",
+          "declaration": "resetCamera: () => void",
+          "callback": true,
+          "ownerType": "SceneCameraControllerHandle",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/MpuIrScene3D.tsx",
+            "line": 292
+          },
+          "description": "Operación reset Camera de Escena 3D y carga de modelos; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "setCameraPreset",
+          "declaration": "setCameraPreset: (preset: SensorCameraPreset) => void",
+          "callback": true,
+          "ownerType": "SceneCameraControllerHandle",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/MpuIrScene3D.tsx",
+            "line": 293
+          },
+          "description": "Operación set Camera Preset de Escena 3D y carga de modelos; semántica fina pendiente de ampliación."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/MpuIrScene3D.tsx",
+        "line": 291
+      }
+    },
+    {
+      "name": "ThreeElements",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "orbitControls",
+          "declaration": "orbitControls: ThreeElements[\"primitive\"] & { args: ConstructorParameters<typeof OrbitControls>; }",
+          "callback": false,
+          "ownerType": "ThreeElements",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/ThreeModelViewer.tsx",
+            "line": 14
+          },
+          "description": "Dato de estado/configuración `orbitControls`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ThreeModelViewer.tsx",
+        "line": 13
+      }
+    },
+    {
+      "name": "ThreeModelViewerProps",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "modelUrl",
+          "declaration": "modelUrl: string",
+          "callback": false,
+          "ownerType": "ThreeModelViewerProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/ThreeModelViewer.tsx",
+            "line": 22
+          },
+          "description": "Dato de estado/configuración `modelUrl`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "eulerDeg",
+          "declaration": "eulerDeg: { yaw: number; pitch: number; roll: number; }",
+          "callback": false,
+          "ownerType": "ThreeModelViewerProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/ThreeModelViewer.tsx",
+            "line": 25
+          },
+          "description": "Ángulo en grados; respetar eje y referencia de esta librería."
+        },
+        {
+          "name": "allowControls",
+          "declaration": "allowControls?: boolean",
+          "callback": false,
+          "ownerType": "ThreeModelViewerProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/ThreeModelViewer.tsx",
+            "line": 32
+          },
+          "description": "Dato de estado/configuración `allowControls`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "exposure",
+          "declaration": "exposure?: number",
+          "callback": false,
+          "ownerType": "ThreeModelViewerProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/ThreeModelViewer.tsx",
+            "line": 35
+          },
+          "description": "Dato de estado/configuración `exposure`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "background",
+          "declaration": "background?: string",
+          "callback": false,
+          "ownerType": "ThreeModelViewerProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/ThreeModelViewer.tsx",
+            "line": 38
+          },
+          "description": "Dato de estado/configuración `background`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "classNames",
+          "declaration": "classNames?: string",
+          "callback": false,
+          "ownerType": "ThreeModelViewerProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/ThreeModelViewer.tsx",
+            "line": 39
+          },
+          "description": "Dato de estado/configuración `classNames`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "childrenInsideCanvas",
+          "declaration": "childrenInsideCanvas?: React.ReactNode",
+          "callback": false,
+          "ownerType": "ThreeModelViewerProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/ThreeModelViewer.tsx",
+            "line": 40
+          },
+          "description": "Dato de estado/configuración `childrenInsideCanvas`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ThreeModelViewer.tsx",
+        "line": 20
+      }
+    },
+    {
+      "name": "ModelProps",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "url",
+          "declaration": "url: string",
+          "callback": false,
+          "ownerType": "ModelProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/ThreeModelViewer.tsx",
+            "line": 44
+          },
+          "description": "Dato de estado/configuración `url`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "eulerDeg",
+          "declaration": "eulerDeg: { yaw: number; pitch: number; roll: number; }",
+          "callback": false,
+          "ownerType": "ModelProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/ThreeModelViewer.tsx",
+            "line": 45
+          },
+          "description": "Ángulo en grados; respetar eje y referencia de esta librería."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ThreeModelViewer.tsx",
+        "line": 43
+      }
+    },
+    {
+      "name": "ThreeModelViewerProps",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "modelUrl",
+          "declaration": "modelUrl: string",
+          "callback": false,
+          "ownerType": "ThreeModelViewerProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/ThreeModelViewer.tsx",
+            "line": 152
+          },
+          "description": "Dato de estado/configuración `modelUrl`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "eulerDeg",
+          "declaration": "eulerDeg: { yaw: number; pitch: number; roll: number }",
+          "callback": false,
+          "ownerType": "ThreeModelViewerProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/ThreeModelViewer.tsx",
+            "line": 153
+          },
+          "description": "Ángulo en grados; respetar eje y referencia de esta librería."
+        },
+        {
+          "name": "allowControls",
+          "declaration": "allowControls?: boolean",
+          "callback": false,
+          "ownerType": "ThreeModelViewerProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/ThreeModelViewer.tsx",
+            "line": 154
+          },
+          "description": "Dato de estado/configuración `allowControls`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "exposure",
+          "declaration": "exposure?: number",
+          "callback": false,
+          "ownerType": "ThreeModelViewerProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/ThreeModelViewer.tsx",
+            "line": 155
+          },
+          "description": "Dato de estado/configuración `exposure`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "background",
+          "declaration": "background?: string",
+          "callback": false,
+          "ownerType": "ThreeModelViewerProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/ThreeModelViewer.tsx",
+            "line": 156
+          },
+          "description": "Dato de estado/configuración `background`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "className",
+          "declaration": "className?: string",
+          "callback": false,
+          "ownerType": "ThreeModelViewerProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/ThreeModelViewer.tsx",
+            "line": 157
+          },
+          "description": "Dato de estado/configuración `className`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "childrenInsideCanvas",
+          "declaration": "childrenInsideCanvas?: React.ReactNode",
+          "callback": false,
+          "ownerType": "ThreeModelViewerProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/ThreeModelViewer.tsx",
+            "line": 158
+          },
+          "description": "Dato de estado/configuración `childrenInsideCanvas`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ThreeModelViewer.tsx",
+        "line": 151
+      }
+    },
+    {
+      "name": "RendererFactory",
+      "kind": "TypeAliasDeclaration",
+      "type": "Extract<NonNullable<CanvasProps[\"gl\"]>, (defaults: never) => unknown>",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/WebGLCanvas.tsx",
+        "line": 6
+      }
+    },
+    {
+      "name": "RendererDefaults",
+      "kind": "TypeAliasDeclaration",
+      "type": "Parameters<RendererFactory>[0]",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/WebGLCanvas.tsx",
+        "line": 7
+      }
+    },
+    {
+      "name": "RendererBoundary",
+      "kind": "ClassDeclaration",
+      "fields": [
+        {
+          "name": "state",
+          "declaration": "state: inferred-by-TypeScript",
+          "callback": false,
+          "ownerType": "RendererBoundary",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/WebGLCanvas.tsx",
+            "line": 9
+          },
+          "description": "Dato de estado/configuración `state`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "getDerivedStateFromError",
+          "declaration": "getDerivedStateFromError(): inferred-by-TypeScript",
+          "callback": true,
+          "ownerType": "RendererBoundary",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/WebGLCanvas.tsx",
+            "line": 10
+          },
+          "description": "Operación get Derived State From Error de Escena 3D y carga de modelos; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "componentDidCatch",
+          "declaration": "componentDidCatch(error: Error): inferred-by-TypeScript",
+          "callback": true,
+          "ownerType": "RendererBoundary",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/WebGLCanvas.tsx",
+            "line": 11
+          },
+          "description": "Operación component Did Catch de Escena 3D y carga de modelos; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "render",
+          "declaration": "render(): inferred-by-TypeScript",
+          "callback": true,
+          "ownerType": "RendererBoundary",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/WebGLCanvas.tsx",
+            "line": 12
+          },
+          "description": "Operación render de Escena 3D y carga de modelos; semántica fina pendiente de ampliación."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/WebGLCanvas.tsx",
+        "line": 8
+      }
+    },
+    {
+      "name": "DecoderResponseType",
+      "kind": "TypeAliasDeclaration",
+      "type": "\"arraybuffer\" | \"text\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/utils/dracoLoader.ts",
+        "line": 4
+      }
+    },
+    {
+      "name": "DecoderAsset",
+      "kind": "TypeAliasDeclaration",
+      "type": "ArrayBuffer | string",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/utils/dracoLoader.ts",
+        "line": 5
+      }
+    },
+    {
+      "name": "DracoLoaderInternals",
+      "kind": "TypeAliasDeclaration",
+      "type": "DRACOLoader & { _loadLibrary: ( fileName: string, responseType: DecoderResponseType, ) => Promise<DecoderAsset>; }",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/utils/dracoLoader.ts",
+        "line": 7
+      }
+    },
+    {
+      "name": "ResilientGLTFLoader",
+      "kind": "ClassDeclaration",
+      "fields": [
+        {
+          "name": "load",
+          "declaration": "load(url: string, onLoad: (data: GLTF) => void, onProgress?: (event: ProgressEvent) => void, onError?: (error: unknown) => void): void",
+          "callback": true,
+          "ownerType": "ResilientGLTFLoader",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/utils/dracoLoader.ts",
+            "line": 115
+          },
+          "description": "Operación load de Escena 3D y carga de modelos; semántica fina pendiente de ampliación."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/utils/dracoLoader.ts",
+        "line": 114
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "AxisArrow",
+      "displayName": "AxisArrow",
+      "signature": "AxisArrow({\n  color,\n  direction,\n  labelPosition,\n}: { color: string; direction: [number, number, number]; labelPosition: [number, number, number]; }): inferred-by-TypeScript",
+      "line": 638,
+      "endLine": 668,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useMemo"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/MpuIrScene3D.tsx",
+        "line": 638
+      },
+      "description": "Adapta la llamada a `useMemo` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "AxisGuides",
+      "displayName": "AxisGuides",
+      "signature": "AxisGuides(): inferred-by-TypeScript",
+      "line": 628,
+      "endLine": 636,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/MpuIrScene3D.tsx",
+        "line": 628
+      },
+      "description": "Operación Axis Guides de Escena 3D y carga de modelos; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "Controls",
+      "displayName": "Controls",
+      "signature": "Controls(): inferred-by-TypeScript",
+      "line": 115,
+      "endLine": 149,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useEffect",
+        "useRef",
+        "useThree"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ThreeModelViewer.tsx",
+        "line": 115
+      },
+      "description": "Coordina `useEffect`, `useRef`, `useThree` para Escena 3D y carga de modelos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "FallbackModel",
+      "displayName": "FallbackModel",
+      "signature": "FallbackModel({ eulerDeg }: { eulerDeg: ModelProps[\"eulerDeg\"] }): inferred-by-TypeScript",
+      "line": 96,
+      "endLine": 113,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useEffect",
+        "useRef"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ThreeModelViewer.tsx",
+        "line": 96
+      },
+      "description": "Coordina `useEffect`, `useRef` para Escena 3D y carga de modelos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "FallbackVehicle",
+      "displayName": "FallbackVehicle",
+      "signature": "FallbackVehicle(): inferred-by-TypeScript",
+      "line": 419,
+      "endLine": 426,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/MpuIrScene3D.tsx",
+        "line": 419
+      },
+      "description": "Operación Fallback Vehicle de Escena 3D y carga de modelos; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "IrEmulationSurface",
+      "displayName": "IrEmulationSurface",
+      "signature": "IrEmulationSurface({\n  sensitivityCm,\n  onTargetChange,\n}: { sensitivityCm: number; onTargetChange: (point: IrScenePoint) => void; }): inferred-by-TypeScript",
+      "line": 510,
+      "endLine": 552,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "IR_OBJECT_SENSOR_LAYOUT.map",
+        "Math.max",
+        "sensorCmToSceneUnits"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/MpuIrScene3D.tsx",
+        "line": 510
+      },
+      "description": "Coordina `IR_OBJECT_SENSOR_LAYOUT.map`, `Math.max`, `sensorCmToSceneUnits` para Escena 3D y carga de modelos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "IrEstimatedTargetMarker",
+      "displayName": "IrEstimatedTargetMarker",
+      "signature": "IrEstimatedTargetMarker({\n  estimate,\n}: { estimate: IrObjectPositionEstimate; }): inferred-by-TypeScript",
+      "line": 585,
+      "endLine": 626,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.max",
+        "scenePositionForObjectPoint"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/MpuIrScene3D.tsx",
+        "line": 585
+      },
+      "description": "Coordina `Math.max`, `scenePositionForObjectPoint` para Escena 3D y carga de modelos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "IrWorldTargetMarker",
+      "displayName": "IrWorldTargetMarker",
+      "signature": "IrWorldTargetMarker({\n  worldPosition,\n}: { worldPosition: IrScenePoint; }): inferred-by-TypeScript",
+      "line": 554,
+      "endLine": 583,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/MpuIrScene3D.tsx",
+        "line": 554
+      },
+      "description": "Operación Ir World Target Marker de Escena 3D y carga de modelos; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "Model",
+      "displayName": "Model",
+      "signature": "Model({ url, eulerDeg }: ModelProps): inferred-by-TypeScript",
+      "line": 52,
+      "endLine": 94,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useEffect",
+        "useLoader",
+        "useRef"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ThreeModelViewer.tsx",
+        "line": 52
+      },
+      "description": "Coordina `useEffect`, `useLoader`, `useRef` para Escena 3D y carga de modelos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ModelLoadingScreen",
+      "displayName": "ModelLoadingScreen",
+      "signature": "ModelLoadingScreen({\r\n  visible,\r\n  customLabel,\r\n  failed = false,\r\n}: { visible: boolean; customLabel?: string; failed?: boolean; }): inferred-by-TypeScript",
+      "line": 6,
+      "endLine": 33,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useMemo",
+        "useThree"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ModelLoadingScreen.tsx",
+        "line": 6
+      },
+      "description": "Coordina `useMemo`, `useThree` para Escena 3D y carga de modelos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "MpuIrScene3D",
+      "displayName": "MpuIrScene3D",
+      "signature": "MpuIrScene3D({\n      modelUrl,\n      eulerDeg,\n      irNorm,\n      objectDetections,\n      showGrid,\n      showObjectAxes,\n      showLineAxes,\n      beamOpacities,\n      showOrigin,\n      sensorSensitivityCm,\n      irSamplePeriodMs,\n      renderLink,\n      irEmu,\n      irAutoMotion = false,\n      estimatedTarget,\n      onEmulatedTarget,\n      onManualCameraChange,\n    }: inferred-by-TypeScript, ref: inferred-by-TypeScript): inferred-by-TypeScript",
+      "line": 112,
+      "endLine": 286,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useEffect",
+        "useImperativeHandle",
+        "useIrEmitters",
+        "useMemo",
+        "useRef",
+        "useState"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/MpuIrScene3D.tsx",
+        "line": 112
+      },
+      "description": "Coordina `useEffect`, `useImperativeHandle`, `useIrEmitters` para Escena 3D y carga de modelos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "SceneCameraController",
+      "displayName": "SceneCameraController",
+      "signature": "SceneCameraController({ onManualCameraChange }: inferred-by-TypeScript, ref: inferred-by-TypeScript): inferred-by-TypeScript",
+      "line": 297,
+      "endLine": 350,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useCallback",
+        "useEffect",
+        "useImperativeHandle",
+        "useRef",
+        "useThree"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/MpuIrScene3D.tsx",
+        "line": 297
+      },
+      "description": "Coordina `useCallback`, `useEffect`, `useImperativeHandle` para Escena 3D y carga de modelos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "SceneFloor",
+      "displayName": "SceneFloor",
+      "signature": "SceneFloor(): inferred-by-TypeScript",
+      "line": 428,
+      "endLine": 433,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/MpuIrScene3D.tsx",
+        "line": 428
+      },
+      "description": "Operación Scene Floor de Escena 3D y carga de modelos; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "SensorCones",
+      "displayName": "SensorCones",
+      "signature": "SensorCones({\n  irNorm,\n  renderLink,\n  sensitivityCm,\n  opacity,\n}: { irNorm: Record<IrSensorKey, number>; renderLink: boolean; sensitivityCm: number; opacity: number; }): inferred-by-TypeScript",
+      "line": 447,
+      "endLine": 508,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "IR_EMITTER_GEOMETRY.map",
+        "Math.tan",
+        "clamp01",
+        "sensorCmToModelMeters",
+        "useMemo"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/MpuIrScene3D.tsx",
+        "line": 447
+      },
+      "description": "Coordina `IR_EMITTER_GEOMETRY.map`, `Math.tan`, `clamp01` para Escena 3D y carga de modelos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "TechnicalGrid",
+      "displayName": "TechnicalGrid",
+      "signature": "TechnicalGrid(): inferred-by-TypeScript",
+      "line": 435,
+      "endLine": 445,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useMemo"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/MpuIrScene3D.tsx",
+        "line": 435
+      },
+      "description": "Adapta la llamada a `useMemo` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ThreeModelViewer",
+      "displayName": "ThreeModelViewer",
+      "signature": "ThreeModelViewer({\r\n  modelUrl,\r\n  eulerDeg,\r\n  allowControls = true,\r\n  exposure = 1.0,\r\n  className = \"\",\r\n  childrenInsideCanvas = null,\r\n}: ThreeModelViewerProps): inferred-by-TypeScript",
+      "line": 161,
+      "endLine": 226,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "[ \"relative w-full h-full\", \"transition-[opacity,transform,box-shadow] duration-300\", className, ].join"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ThreeModelViewer.tsx",
+        "line": 161
+      },
+      "description": "Adapta la llamada a `[ \"relative w-full h-full\", \"transition-[opacity,transform,box-shadow] duration-300\", className, ].join` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "VehicleModel",
+      "displayName": "VehicleModel",
+      "signature": "VehicleModel({\n  modelUrl,\n  children,\n}: { modelUrl: string; children: ReactNode; }): inferred-by-TypeScript",
+      "line": 380,
+      "endLine": 417,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useLoader",
+        "useMemo"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/MpuIrScene3D.tsx",
+        "line": 380
+      },
+      "description": "Coordina `useLoader`, `useMemo` para Escena 3D y carga de modelos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "VehicleSensorRig",
+      "displayName": "VehicleSensorRig",
+      "signature": "VehicleSensorRig({\n  eulerDeg,\n  children,\n}: { eulerDeg: EulerDeg; children: ReactNode; }): inferred-by-TypeScript",
+      "line": 353,
+      "endLine": 378,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useEffect",
+        "useRef"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/MpuIrScene3D.tsx",
+        "line": 353
+      },
+      "description": "Coordina `useEffect`, `useRef` para Escena 3D y carga de modelos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WebGLCanvas",
+      "displayName": "WebGLCanvas",
+      "signature": "WebGLCanvas({\r\n  children,\r\n  dpr = [1, 1.5],\r\n  ...props\r\n}: Omit<CanvasProps, \"gl\">): inferred-by-TypeScript",
+      "line": 15,
+      "endLine": 135,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "/GL_(?:VENDOR|RENDERER)\\s*=\\s*Disabled|WebGL.*disabled|disabled.*WebGL/i.test",
+        "useCallback",
+        "useState"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/WebGLCanvas.tsx",
+        "line": 15
+      },
+      "description": "Coordina `/GL_(?:VENDOR|RENDERER)\\s*=\\s*Disabled|WebGL.*disabled|disabled.*WebGL/i.test`, `useCallback`, `useState` para Escena 3D y carga de modelos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "clamp01",
+      "displayName": "clamp01",
+      "signature": "clamp01(value: number): inferred-by-TypeScript",
+      "line": 670,
+      "endLine": 676,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.max",
+        "Math.min",
+        "Number.isFinite"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/MpuIrScene3D.tsx",
+        "line": 670
+      },
+      "description": "Coordina `Math.max`, `Math.min`, `Number.isFinite` para Escena 3D y carga de modelos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "fetchAssetWithRetry",
+      "displayName": "fetchAssetWithRetry",
+      "signature": "fetchAssetWithRetry(url: string, responseType: DecoderResponseType, init: RequestInit): Promise<DecoderAsset>",
+      "line": 22,
+      "endLine": 52,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "fetch",
+        "response.arrayBuffer",
+        "response.text",
+        "wait"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/utils/dracoLoader.ts",
+        "line": 22
+      },
+      "description": "Coordina `fetch`, `response.arrayBuffer`, `response.text` para Escena 3D y carga de modelos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "fetchDecoderAsset",
+      "displayName": "fetchDecoderAsset",
+      "signature": "fetchDecoderAsset(url: string, responseType: DecoderResponseType): inferred-by-TypeScript",
+      "line": 54,
+      "endLine": 67,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "decoderAssets.get",
+        "decoderAssets.set",
+        "fetchAssetWithRetry",
+        "fetchAssetWithRetry(url, responseType) .catch"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/utils/dracoLoader.ts",
+        "line": 54
+      },
+      "description": "Coordina `decoderAssets.get`, `decoderAssets.set`, `fetchAssetWithRetry` para Escena 3D y carga de modelos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "getSharedDracoLoader",
+      "displayName": "getSharedDracoLoader",
+      "signature": "getSharedDracoLoader(): inferred-by-TypeScript",
+      "line": 74,
+      "endLine": 105,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "base.endsWith",
+        "loader.setDecoderConfig",
+        "loader.setDecoderPath",
+        "new URL(`${normalizedBase}draco/`, window.location.href).toString"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/utils/dracoLoader.ts",
+        "line": 74
+      },
+      "description": "Coordina `base.endsWith`, `loader.setDecoderConfig`, `loader.setDecoderPath` para Escena 3D y carga de modelos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "scenePositionForObjectPoint",
+      "displayName": "scenePositionForObjectPoint",
+      "signature": "scenePositionForObjectPoint(point: IrObjectPoint, yOffset: inferred-by-TypeScript): [number, number, number]",
+      "line": 690,
+      "endLine": 703,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "irObjectPointToLocalScenePoint"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/MpuIrScene3D.tsx",
+        "line": 690
+      },
+      "description": "Adapta la llamada a `irObjectPointToLocalScenePoint` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "sensorCmToModelMeters",
+      "displayName": "sensorCmToModelMeters",
+      "signature": "sensorCmToModelMeters(valueCm: number): inferred-by-TypeScript",
+      "line": 682,
+      "endLine": 688,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.max",
+        "Math.min",
+        "Number.isFinite"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/MpuIrScene3D.tsx",
+        "line": 682
+      },
+      "description": "Coordina `Math.max`, `Math.min`, `Number.isFinite` para Escena 3D y carga de modelos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "sensorCmToSceneUnits",
+      "displayName": "sensorCmToSceneUnits",
+      "signature": "sensorCmToSceneUnits(valueCm: number): inferred-by-TypeScript",
+      "line": 678,
+      "endLine": 680,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "sensorCmToModelMeters"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/MpuIrScene3D.tsx",
+        "line": 678
+      },
+      "description": "Adapta la llamada a `sensorCmToModelMeters` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "useModelLoadingState",
+      "displayName": "useModelLoadingState",
+      "signature": "useModelLoadingState(modelUrl: string): inferred-by-TypeScript",
+      "line": 5,
+      "endLine": 17,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "loadedModelUrls.has",
+        "useCallback",
+        "useState"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/hooks/useModelLoadingState.ts",
+        "line": 5
+      },
+      "description": "Coordina `loadedModelUrls.has`, `useCallback`, `useState` para Escena 3D y carga de modelos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "wait",
+      "displayName": "wait",
+      "signature": "wait(delayMs: number): inferred-by-TypeScript",
+      "line": 18,
+      "endLine": 20,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/utils/dracoLoader.ts",
+        "line": 18
+      },
+      "description": "Operación wait de Escena 3D y carga de modelos; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "IrEmulationSurface.updateTarget",
+      "displayName": "updateTarget",
+      "signature": "IrEmulationSurface.updateTarget(event: ThreeEvent<PointerEvent>): inferred-by-TypeScript",
+      "line": 525,
+      "endLine": 529,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "event.stopPropagation",
+        "onTargetChange"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/MpuIrScene3D.tsx",
+        "line": 525
+      },
+      "description": "Coordina `event.stopPropagation`, `onTargetChange` para Escena 3D y carga de modelos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ModelLoadBoundary.componentDidCatch",
+      "displayName": "componentDidCatch",
+      "signature": "ModelLoadBoundary.componentDidCatch(error: Error): inferred-by-TypeScript",
+      "line": 28,
+      "endLine": 35,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "console.error",
+        "error.message.replace",
+        "this.props.modelUrl.startsWith"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ModelLoadBoundary.tsx",
+        "line": 28
+      },
+      "description": "Coordina `console.error`, `error.message.replace`, `this.props.modelUrl.startsWith` para Escena 3D y carga de modelos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ModelLoadBoundary.getDerivedStateFromError",
+      "displayName": "getDerivedStateFromError",
+      "signature": "ModelLoadBoundary.getDerivedStateFromError(): inferred-by-TypeScript",
+      "line": 24,
+      "endLine": 26,
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ModelLoadBoundary.tsx",
+        "line": 24
+      },
+      "description": "Operación get Derived State From Error de Escena 3D y carga de modelos; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "ModelLoadBoundary.getDerivedStateFromProps",
+      "displayName": "getDerivedStateFromProps",
+      "signature": "ModelLoadBoundary.getDerivedStateFromProps(props: Props, state: State): inferred-by-TypeScript",
+      "line": 18,
+      "endLine": 22,
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ModelLoadBoundary.tsx",
+        "line": 18
+      },
+      "description": "Operación get Derived State From Props de Escena 3D y carga de modelos; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "ModelLoadBoundary.render",
+      "displayName": "render",
+      "signature": "ModelLoadBoundary.render(): inferred-by-TypeScript",
+      "line": 37,
+      "endLine": 45,
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ModelLoadBoundary.tsx",
+        "line": 37
+      },
+      "description": "Operación render de Escena 3D y carga de modelos; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "MpuIrScene3D.clearIrTarget",
+      "displayName": "clearIrTarget",
+      "signature": "MpuIrScene3D.clearIrTarget(): inferred-by-TypeScript",
+      "line": 215,
+      "endLine": 215,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "setWorldTarget"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/MpuIrScene3D.tsx",
+        "line": 215
+      },
+      "description": "Adapta la llamada a `setWorldTarget` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "MpuIrScene3D.moveTarget",
+      "displayName": "moveTarget",
+      "signature": "MpuIrScene3D.moveTarget(): inferred-by-TypeScript",
+      "line": 170,
+      "endLine": 179,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Math.cos",
+        "Math.max",
+        "Math.sin",
+        "irObjectPointToLocalScenePoint",
+        "performance.now",
+        "setWorldTarget"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/MpuIrScene3D.tsx",
+        "line": 170
+      },
+      "description": "Coordina `Math.cos`, `Math.max`, `Math.sin` para Escena 3D y carga de modelos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "MpuIrScene3D.resetCamera",
+      "displayName": "resetCamera",
+      "signature": "MpuIrScene3D.resetCamera(): inferred-by-TypeScript",
+      "line": 212,
+      "endLine": 212,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "cameraControllerRef.current?.resetCamera"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/MpuIrScene3D.tsx",
+        "line": 212
+      },
+      "description": "Adapta la llamada a `cameraControllerRef.current?.resetCamera` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "MpuIrScene3D.sampleTarget",
+      "displayName": "sampleTarget",
+      "signature": "MpuIrScene3D.sampleTarget(): inferred-by-TypeScript",
+      "line": 190,
+      "endLine": 195,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "onEmulatedTarget"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/MpuIrScene3D.tsx",
+        "line": 190
+      },
+      "description": "Adapta la llamada a `onEmulatedTarget` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "MpuIrScene3D.setCameraPreset",
+      "displayName": "setCameraPreset",
+      "signature": "MpuIrScene3D.setCameraPreset(preset: inferred-by-TypeScript): inferred-by-TypeScript",
+      "line": 213,
+      "endLine": 214,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "cameraControllerRef.current?.setCameraPreset"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/MpuIrScene3D.tsx",
+        "line": 213
+      },
+      "description": "Adapta la llamada a `cameraControllerRef.current?.setCameraPreset` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "RendererBoundary.componentDidCatch",
+      "displayName": "componentDidCatch",
+      "signature": "RendererBoundary.componentDidCatch(error: Error): inferred-by-TypeScript",
+      "line": 11,
+      "endLine": 11,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "this.props.onError"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/WebGLCanvas.tsx",
+        "line": 11
+      },
+      "description": "Adapta la llamada a `this.props.onError` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "RendererBoundary.getDerivedStateFromError",
+      "displayName": "getDerivedStateFromError",
+      "signature": "RendererBoundary.getDerivedStateFromError(): inferred-by-TypeScript",
+      "line": 10,
+      "endLine": 10,
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/WebGLCanvas.tsx",
+        "line": 10
+      },
+      "description": "Operación get Derived State From Error de Escena 3D y carga de modelos; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "RendererBoundary.render",
+      "displayName": "render",
+      "signature": "RendererBoundary.render(): inferred-by-TypeScript",
+      "line": 12,
+      "endLine": 12,
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/WebGLCanvas.tsx",
+        "line": 12
+      },
+      "description": "Operación render de Escena 3D y carga de modelos; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "ResilientGLTFLoader.load",
+      "displayName": "load",
+      "signature": "ResilientGLTFLoader.load(url: string, onLoad: (data: GLTF) => void, onProgress?: (event: ProgressEvent) => void, onError?: (error: unknown) => void): void",
+      "line": 115,
+      "endLine": 161,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "/^(data|blob):/.test",
+        "fetchAssetWithRetry",
+        "fetchAssetWithRetry(absoluteUrl, \"arraybuffer\", { headers: this.requestHeader, credentials: this.withCredentials ? \"include\" : \"same-origin\", }) .then",
+        "fetchAssetWithRetry(absoluteUrl, \"arraybuffer\", { headers: this.requestHeader, credentials: this.withCredentials ? \"include\" : \"same-origin\", }) .then((asset) => { const data = asset as ArrayBuffer; onProgress?.(new ProgressEvent(\"load\", { lengthComputable: true, loaded: data.byteLength, total: data.byteLength, })); this.parse( data, resourcePath, (gltf) => { onLoad(gltf); this.manager.itemEnd(absoluteUrl); }, (error) => { onError?.(error); this.manager.itemError(absoluteUrl); this.manager.itemEnd(absoluteUrl); }, ); }) .catch",
+        "new URL(\".\", resourceBaseUrl).toString",
+        "new URL(requestUrl, window.location.href).toString",
+        "this.manager.itemStart",
+        "this.manager.resolveURL"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/utils/dracoLoader.ts",
+        "line": 115
+      },
+      "description": "Coordina `/^(data|blob):/.test`, `fetchAssetWithRetry`, `fetchAssetWithRetry(absoluteUrl, \"arraybuffer\", { headers: this.requestHeader, credentials: this.withCredentials ? \"include\" : \"same-origin\", }) .then` para Escena 3D y carga de modelos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "SceneCameraController.resetCamera",
+      "displayName": "resetCamera",
+      "signature": "SceneCameraController.resetCamera(): inferred-by-TypeScript",
+      "line": 323,
+      "endLine": 323,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "moveTo"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/MpuIrScene3D.tsx",
+        "line": 323
+      },
+      "description": "Adapta la llamada a `moveTo` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WebGLCanvas.onCreationError",
+      "displayName": "onCreationError",
+      "signature": "WebGLCanvas.onCreationError(event: Event): inferred-by-TypeScript",
+      "line": 27,
+      "endLine": 29,
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/WebGLCanvas.tsx",
+        "line": 27
+      },
+      "description": "Operación on Creation Error de Escena 3D y carga de modelos; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "getSharedDracoLoader.loadWasm",
+      "displayName": "loadWasm",
+      "signature": "getSharedDracoLoader.loadWasm(): inferred-by-TypeScript",
+      "line": 86,
+      "endLine": 88,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "fetchDecoderAsset",
+        "new URL(\"draco_decoder.wasm\", decoderPath).toString"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/utils/dracoLoader.ts",
+        "line": 86
+      },
+      "description": "Coordina `fetchDecoderAsset`, `new URL(\"draco_decoder.wasm\", decoderPath).toString` para Escena 3D y carga de modelos.",
+      "descriptionOrigin": "structural"
+    }
+  ],
+  "hooks": [
+    {
+      "callee": "useThree",
+      "scope": "ModelLoadingScreen",
+      "line": 15,
+      "arguments": 0,
+      "path": "src/components/ModelLoadingScreen.tsx"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "ModelLoadingScreen",
+      "line": 16,
+      "arguments": 2,
+      "path": "src/components/ModelLoadingScreen.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "MpuIrScene3D",
+      "line": 134,
+      "arguments": 1,
+      "path": "src/components/MpuIrScene3D.tsx"
+    },
+    {
+      "callee": "useIrEmitters",
+      "scope": "MpuIrScene3D",
+      "line": 135,
+      "arguments": 0,
+      "path": "src/components/MpuIrScene3D.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "MpuIrScene3D",
+      "line": 136,
+      "arguments": 1,
+      "path": "src/components/MpuIrScene3D.tsx"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "MpuIrScene3D",
+      "line": 137,
+      "arguments": 2,
+      "path": "src/components/MpuIrScene3D.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "MpuIrScene3D",
+      "line": 152,
+      "arguments": 1,
+      "path": "src/components/MpuIrScene3D.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "MpuIrScene3D",
+      "line": 157,
+      "arguments": 2,
+      "path": "src/components/MpuIrScene3D.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "MpuIrScene3D",
+      "line": 161,
+      "arguments": 2,
+      "path": "src/components/MpuIrScene3D.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "MpuIrScene3D",
+      "line": 167,
+      "arguments": 2,
+      "path": "src/components/MpuIrScene3D.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "MpuIrScene3D",
+      "line": 185,
+      "arguments": 2,
+      "path": "src/components/MpuIrScene3D.tsx"
+    },
+    {
+      "callee": "useImperativeHandle",
+      "scope": "MpuIrScene3D",
+      "line": 209,
+      "arguments": 3,
+      "path": "src/components/MpuIrScene3D.tsx"
+    },
+    {
+      "callee": "useThree",
+      "scope": "SceneCameraController",
+      "line": 298,
+      "arguments": 0,
+      "path": "src/components/MpuIrScene3D.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "SceneCameraController",
+      "line": 299,
+      "arguments": 1,
+      "path": "src/components/MpuIrScene3D.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "SceneCameraController",
+      "line": 300,
+      "arguments": 1,
+      "path": "src/components/MpuIrScene3D.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "SceneCameraController",
+      "line": 302,
+      "arguments": 2,
+      "path": "src/components/MpuIrScene3D.tsx"
+    },
+    {
+      "callee": "useImperativeHandle",
+      "scope": "SceneCameraController",
+      "line": 320,
+      "arguments": 3,
+      "path": "src/components/MpuIrScene3D.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "SceneCameraController",
+      "line": 329,
+      "arguments": 2,
+      "path": "src/components/MpuIrScene3D.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "VehicleSensorRig",
+      "line": 360,
+      "arguments": 1,
+      "path": "src/components/MpuIrScene3D.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "VehicleSensorRig",
+      "line": 362,
+      "arguments": 2,
+      "path": "src/components/MpuIrScene3D.tsx"
+    },
+    {
+      "callee": "useLoader",
+      "scope": "VehicleModel",
+      "line": 387,
+      "arguments": 3,
+      "path": "src/components/MpuIrScene3D.tsx"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "VehicleModel",
+      "line": 391,
+      "arguments": 2,
+      "path": "src/components/MpuIrScene3D.tsx"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "TechnicalGrid",
+      "line": 436,
+      "arguments": 2,
+      "path": "src/components/MpuIrScene3D.tsx"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "SensorCones",
+      "line": 461,
+      "arguments": 2,
+      "path": "src/components/MpuIrScene3D.tsx"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "AxisArrow",
+      "line": 647,
+      "arguments": 2,
+      "path": "src/components/MpuIrScene3D.tsx"
+    },
+    {
+      "callee": "useLoader",
+      "scope": "Model",
+      "line": 54,
+      "arguments": 3,
+      "path": "src/components/ThreeModelViewer.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "Model",
+      "line": 57,
+      "arguments": 1,
+      "path": "src/components/ThreeModelViewer.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "Model",
+      "line": 59,
+      "arguments": 2,
+      "path": "src/components/ThreeModelViewer.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "Model",
+      "line": 81,
+      "arguments": 2,
+      "path": "src/components/ThreeModelViewer.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "FallbackModel",
+      "line": 97,
+      "arguments": 1,
+      "path": "src/components/ThreeModelViewer.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "FallbackModel",
+      "line": 99,
+      "arguments": 2,
+      "path": "src/components/ThreeModelViewer.tsx"
+    },
+    {
+      "callee": "useThree",
+      "scope": "Controls",
+      "line": 117,
+      "arguments": 0,
+      "path": "src/components/ThreeModelViewer.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "Controls",
+      "line": 118,
+      "arguments": 1,
+      "path": "src/components/ThreeModelViewer.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "Controls",
+      "line": 120,
+      "arguments": 2,
+      "path": "src/components/ThreeModelViewer.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "WebGLCanvas",
+      "line": 20,
+      "arguments": 1,
+      "path": "src/components/WebGLCanvas.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "WebGLCanvas",
+      "line": 21,
+      "arguments": 1,
+      "path": "src/components/WebGLCanvas.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "WebGLCanvas",
+      "line": 23,
+      "arguments": 2,
+      "path": "src/components/WebGLCanvas.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "useModelLoadingState",
+      "line": 6,
+      "arguments": 1,
+      "path": "src/hooks/useModelLoadingState.ts"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "useModelLoadingState",
+      "line": 11,
+      "arguments": 2,
+      "path": "src/hooks/useModelLoadingState.ts"
+    }
+  ]
+}

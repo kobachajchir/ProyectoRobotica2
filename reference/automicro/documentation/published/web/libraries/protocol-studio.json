@@ -1,0 +1,2143 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "web:module/src/features/protocolStudio/useProtocolStudioState.ts",
+  "slug": "protocol-studio",
+  "title": "Interfaz Protocol Studio",
+  "target": "web",
+  "kind": "integración",
+  "status": "source-documented",
+  "snapshotDate": "2026-10-20",
+  "verification": "not-run-user-instruction",
+  "responsibility": "Presenta catálogo, formularios y traducción/visualización de frames del protocolo.",
+  "scope": "Edición de request y diagnóstico visual, sin afirmar que todos los comandos están habilitados.",
+  "state": "Hook conserva comando, campos, bytes y salida; componentes reciben props derivadas.",
+  "modularity": "React sobre codecs/catalogo, separado del backend de firmware.",
+  "lifecycle": [
+    "Actualizar selección/inputs y mostrar serialización/interpretación.",
+    "No enviar una mutación por el solo hecho de cambiar campos de preview."
+  ],
+  "interactions": [
+    "Codecs producen datos; conexión/sesión controla envío cuando la herramienta lo permite."
+  ],
+  "limitations": [
+    "La salida local no es respuesta de un dispositivo hasta recibirla por transporte."
+  ],
+  "relationships": [],
+  "findings": [],
+  "files": [
+    {
+      "rootId": "web",
+      "path": "src/features/protocolStudio/components/BuilderColumn.tsx",
+      "sha256": "7826c2f36997c9e1bebe1d362357a2c1cd30011cb19407ec9588952625f55827",
+      "imports": [
+        "../catalog",
+        "../types",
+        "../ui"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/features/protocolStudio/components/FrameVisualizationShowcase.tsx",
+      "sha256": "d4f78c73a1ae4c01bb48334c1d386d140bfc1961ebb2efa6c93f4a60ce90e504",
+      "imports": [
+        "../catalog",
+        "../types",
+        "../ui",
+        "../utils"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/features/protocolStudio/components/OutputsColumn.tsx",
+      "sha256": "82428a26bc18011bdcdb23359625712d81aaef629ab58ad8b62b11cbcdd7b0dc",
+      "imports": [
+        "../catalog",
+        "../types",
+        "../ui",
+        "./FrameVisualizationShowcase"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/features/protocolStudio/components/ProtocolHelpModal.tsx",
+      "sha256": "b9431e8d09834cad952459b793f12ae8dd0d81b85e2579a0c0bf81ac8aec4f80",
+      "imports": [
+        "../../../components/modal"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/features/protocolStudio/components/ProtocolHero.tsx",
+      "sha256": "d41f849dbf26e274edc3381d265359595d5a80a8a80699059addb010f1efa9e5",
+      "imports": [],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/features/protocolStudio/components/TranslatorColumn.tsx",
+      "sha256": "3c428324177274849b719f0e7da0d3196d276ea964d6e4d784372ce1089b8c7f",
+      "imports": [
+        "../catalog",
+        "../types",
+        "../ui",
+        "../utils",
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/features/protocolStudio/ui.tsx",
+      "sha256": "ff8d70a3125693e3a56aebb931e089b76f191e23a8bd3bc22d91da47af2d7d83",
+      "imports": [
+        "./catalog",
+        "./types",
+        "./utils",
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/features/protocolStudio/useProtocolStudioState.ts",
+      "sha256": "1ba944ef5d6a44c9112d45c2f9db993666348751d0b06e8031531cf3cfaca708",
+      "imports": [
+        "./catalog",
+        "./types",
+        "./utils",
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/features/studio.css",
+      "sha256": "d649c5e9294c0383a2fde7c04ab78561e49c870a075dc36f9a70111e6e2d9924",
+      "imports": [],
+      "analysisLevel": "support-inventory"
+    },
+    {
+      "rootId": "web",
+      "path": "src/pages/ProtocolSection.tsx",
+      "sha256": "9a84347604c7d9bfd7696cecfbfdd76692cb51763ded7ed2965c1bea670869ba",
+      "imports": [
+        "../components/PageHeader",
+        "../components/modal",
+        "../features/oledEditor/OledStudioWorkspace",
+        "../features/protocolStudio/components/BuilderColumn",
+        "../features/protocolStudio/components/OutputsColumn",
+        "../features/protocolStudio/components/ProtocolHelpModal",
+        "../features/protocolStudio/components/ProtocolHero",
+        "../features/protocolStudio/components/TranslatorColumn",
+        "../features/protocolStudio/useProtocolStudioState",
+        "../features/studio.css",
+        "react",
+        "react-router-dom"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    }
+  ],
+  "types": [
+    {
+      "name": "BuilderColumnProps",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "source",
+          "declaration": "source: string",
+          "callback": false,
+          "ownerType": "BuilderColumnProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/components/BuilderColumn.tsx",
+            "line": 13
+          },
+          "description": "Dato de estado/configuración `source`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "destination",
+          "declaration": "destination: string",
+          "callback": false,
+          "ownerType": "BuilderColumnProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/components/BuilderColumn.tsx",
+            "line": 14
+          },
+          "description": "Dato de estado/configuración `destination`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "commandKey",
+          "declaration": "commandKey: string",
+          "callback": false,
+          "ownerType": "BuilderColumnProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/components/BuilderColumn.tsx",
+            "line": 15
+          },
+          "description": "Dato de estado/configuración `commandKey`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "currentCommand",
+          "declaration": "currentCommand?: CommandDefinition",
+          "callback": false,
+          "ownerType": "BuilderColumnProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/components/BuilderColumn.tsx",
+            "line": 16
+          },
+          "description": "Dato de estado/configuración `currentCommand`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "fieldValues",
+          "declaration": "fieldValues: Record<string, string>",
+          "callback": false,
+          "ownerType": "BuilderColumnProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/components/BuilderColumn.tsx",
+            "line": 17
+          },
+          "description": "Dato de estado/configuración `fieldValues`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "nonHexFields",
+          "declaration": "nonHexFields: CommandDefinition[\"fields\"]",
+          "callback": false,
+          "ownerType": "BuilderColumnProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/components/BuilderColumn.tsx",
+            "line": 18
+          },
+          "description": "Dato de estado/configuración `nonHexFields`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "hexFields",
+          "declaration": "hexFields: CommandDefinition[\"fields\"]",
+          "callback": false,
+          "ownerType": "BuilderColumnProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/components/BuilderColumn.tsx",
+            "line": 19
+          },
+          "description": "Dato de estado/configuración `hexFields`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "manualPayload",
+          "declaration": "manualPayload: string",
+          "callback": false,
+          "ownerType": "BuilderColumnProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/components/BuilderColumn.tsx",
+            "line": 20
+          },
+          "description": "Dato de estado/configuración `manualPayload`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "onSourceChange",
+          "declaration": "onSourceChange: (value: string) => void",
+          "callback": true,
+          "ownerType": "BuilderColumnProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/components/BuilderColumn.tsx",
+            "line": 21
+          },
+          "description": "Operación on Source Change de Interfaz Protocol Studio; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "onDestinationChange",
+          "declaration": "onDestinationChange: (value: string) => void",
+          "callback": true,
+          "ownerType": "BuilderColumnProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/components/BuilderColumn.tsx",
+            "line": 22
+          },
+          "description": "Operación on Destination Change de Interfaz Protocol Studio; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "onCommandChange",
+          "declaration": "onCommandChange: (value: string) => void",
+          "callback": true,
+          "ownerType": "BuilderColumnProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/components/BuilderColumn.tsx",
+            "line": 23
+          },
+          "description": "Operación on Command Change de Interfaz Protocol Studio; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "onFieldValueChange",
+          "declaration": "onFieldValueChange: (id: string, value: string) => void",
+          "callback": true,
+          "ownerType": "BuilderColumnProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/components/BuilderColumn.tsx",
+            "line": 24
+          },
+          "description": "Operación on Field Value Change de Interfaz Protocol Studio; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "onManualPayloadChange",
+          "declaration": "onManualPayloadChange: (value: string) => void",
+          "callback": true,
+          "ownerType": "BuilderColumnProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/components/BuilderColumn.tsx",
+            "line": 25
+          },
+          "description": "Operación on Manual Payload Change de Interfaz Protocol Studio; semántica fina pendiente de ampliación."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/protocolStudio/components/BuilderColumn.tsx",
+        "line": 12
+      }
+    },
+    {
+      "name": "FrameVisualizationShowcaseProps",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "builderData",
+          "declaration": "builderData: BuilderData | null",
+          "callback": false,
+          "ownerType": "FrameVisualizationShowcaseProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/components/FrameVisualizationShowcase.tsx",
+            "line": 7
+          },
+          "description": "Dato de estado/configuración `builderData`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "builderError",
+          "declaration": "builderError: string",
+          "callback": false,
+          "ownerType": "FrameVisualizationShowcaseProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/components/FrameVisualizationShowcase.tsx",
+            "line": 8
+          },
+          "description": "Dato de estado/configuración `builderError`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "commandKey",
+          "declaration": "commandKey: string",
+          "callback": false,
+          "ownerType": "FrameVisualizationShowcaseProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/components/FrameVisualizationShowcase.tsx",
+            "line": 9
+          },
+          "description": "Dato de estado/configuración `commandKey`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "currentCommand",
+          "declaration": "currentCommand?: CommandDefinition",
+          "callback": false,
+          "ownerType": "FrameVisualizationShowcaseProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/components/FrameVisualizationShowcase.tsx",
+            "line": 10
+          },
+          "description": "Dato de estado/configuración `currentCommand`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/protocolStudio/components/FrameVisualizationShowcase.tsx",
+        "line": 6
+      }
+    },
+    {
+      "name": "OutputsColumnProps",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "builderData",
+          "declaration": "builderData: BuilderData | null",
+          "callback": false,
+          "ownerType": "OutputsColumnProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/components/OutputsColumn.tsx",
+            "line": 7
+          },
+          "description": "Dato de estado/configuración `builderData`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "builderError",
+          "declaration": "builderError: string",
+          "callback": false,
+          "ownerType": "OutputsColumnProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/components/OutputsColumn.tsx",
+            "line": 8
+          },
+          "description": "Dato de estado/configuración `builderError`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "commandKey",
+          "declaration": "commandKey: string",
+          "callback": false,
+          "ownerType": "OutputsColumnProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/components/OutputsColumn.tsx",
+            "line": 9
+          },
+          "description": "Dato de estado/configuración `commandKey`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "currentCommand",
+          "declaration": "currentCommand?: CommandDefinition",
+          "callback": false,
+          "ownerType": "OutputsColumnProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/components/OutputsColumn.tsx",
+            "line": 10
+          },
+          "description": "Dato de estado/configuración `currentCommand`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "outputs",
+          "declaration": "outputs: { plain: string; realterm: string; c: string; py: string; }",
+          "callback": false,
+          "ownerType": "OutputsColumnProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/components/OutputsColumn.tsx",
+            "line": 11
+          },
+          "description": "Dato de estado/configuración `outputs`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "flashMessage",
+          "declaration": "flashMessage: string",
+          "callback": false,
+          "ownerType": "OutputsColumnProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/components/OutputsColumn.tsx",
+            "line": 17
+          },
+          "description": "Dato de estado/configuración `flashMessage`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "onCopyOutput",
+          "declaration": "onCopyOutput: (format: \"plain\" | \"realterm\" | \"c\" | \"py\") => void",
+          "callback": true,
+          "ownerType": "OutputsColumnProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/components/OutputsColumn.tsx",
+            "line": 18
+          },
+          "description": "Operación on Copy Output de Interfaz Protocol Studio; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "onValidateInTranslator",
+          "declaration": "onValidateInTranslator: () => void",
+          "callback": true,
+          "ownerType": "OutputsColumnProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/components/OutputsColumn.tsx",
+            "line": 19
+          },
+          "description": "Operación on Validate In Translator de Interfaz Protocol Studio; semántica fina pendiente de ampliación."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/protocolStudio/components/OutputsColumn.tsx",
+        "line": 6
+      }
+    },
+    {
+      "name": "ProtocolHelpModalProps",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "isOpen",
+          "declaration": "isOpen: boolean",
+          "callback": false,
+          "ownerType": "ProtocolHelpModalProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/components/ProtocolHelpModal.tsx",
+            "line": 4
+          },
+          "description": "Dato de estado/configuración `isOpen`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "onClose",
+          "declaration": "onClose: () => void",
+          "callback": true,
+          "ownerType": "ProtocolHelpModalProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/components/ProtocolHelpModal.tsx",
+            "line": 5
+          },
+          "description": "Operación on Close de Interfaz Protocol Studio; semántica fina pendiente de ampliación."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/protocolStudio/components/ProtocolHelpModal.tsx",
+        "line": 3
+      }
+    },
+    {
+      "name": "ProtocolHeroProps",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "activeSection",
+          "declaration": "activeSection: \"builder\" | \"translator\"",
+          "callback": false,
+          "ownerType": "ProtocolHeroProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/components/ProtocolHero.tsx",
+            "line": 2
+          },
+          "description": "Dato de estado/configuración `activeSection`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "onSectionChange",
+          "declaration": "onSectionChange: (section: \"builder\" | \"translator\") => void",
+          "callback": true,
+          "ownerType": "ProtocolHeroProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/components/ProtocolHero.tsx",
+            "line": 3
+          },
+          "description": "Operación on Section Change de Interfaz Protocol Studio; semántica fina pendiente de ampliación."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/protocolStudio/components/ProtocolHero.tsx",
+        "line": 1
+      }
+    },
+    {
+      "name": "StreamSegment",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "type",
+          "declaration": "type: \"gap\" | \"invalid\" | \"frame\"",
+          "callback": false,
+          "ownerType": "StreamSegment",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/components/TranslatorColumn.tsx",
+            "line": 15
+          },
+          "description": "Dato de estado/configuración `type`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "order",
+          "declaration": "order: number",
+          "callback": false,
+          "ownerType": "StreamSegment",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/components/TranslatorColumn.tsx",
+            "line": 16
+          },
+          "description": "Dato de estado/configuración `order`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "label",
+          "declaration": "label: string",
+          "callback": false,
+          "ownerType": "StreamSegment",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/components/TranslatorColumn.tsx",
+            "line": 17
+          },
+          "description": "Dato de estado/configuración `label`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "bytes",
+          "declaration": "bytes: number[]",
+          "callback": false,
+          "ownerType": "StreamSegment",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/components/TranslatorColumn.tsx",
+            "line": 18
+          },
+          "description": "Dato de estado/configuración `bytes`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "tone",
+          "declaration": "tone: string",
+          "callback": false,
+          "ownerType": "StreamSegment",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/components/TranslatorColumn.tsx",
+            "line": 19
+          },
+          "description": "Dato de estado/configuración `tone`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/protocolStudio/components/TranslatorColumn.tsx",
+        "line": 14
+      }
+    },
+    {
+      "name": "TranslatorColumnProps",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "translatorInput",
+          "declaration": "translatorInput: string",
+          "callback": false,
+          "ownerType": "TranslatorColumnProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/components/TranslatorColumn.tsx",
+            "line": 23
+          },
+          "description": "Dato de estado/configuración `translatorInput`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "translation",
+          "declaration": "translation: TranslationResult",
+          "callback": false,
+          "ownerType": "TranslatorColumnProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/components/TranslatorColumn.tsx",
+            "line": 24
+          },
+          "description": "Dato de estado/configuración `translation`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "scanResult",
+          "declaration": "scanResult: ScanBlockResult | null",
+          "callback": false,
+          "ownerType": "TranslatorColumnProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/components/TranslatorColumn.tsx",
+            "line": 25
+          },
+          "description": "Dato de estado/configuración `scanResult`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "translatorStatus",
+          "declaration": "translatorStatus: { tone: \"ok\" | \"warn\" | \"bad\"; label: string; summary: string; }",
+          "callback": false,
+          "ownerType": "TranslatorColumnProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/components/TranslatorColumn.tsx",
+            "line": 26
+          },
+          "description": "Dato de estado/configuración `translatorStatus`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "scanResultsPlaceholder",
+          "declaration": "scanResultsPlaceholder: string",
+          "callback": false,
+          "ownerType": "TranslatorColumnProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/components/TranslatorColumn.tsx",
+            "line": 31
+          },
+          "description": "Dato de estado/configuración `scanResultsPlaceholder`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "streamPlaceholder",
+          "declaration": "streamPlaceholder: string",
+          "callback": false,
+          "ownerType": "TranslatorColumnProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/components/TranslatorColumn.tsx",
+            "line": 32
+          },
+          "description": "Dato de estado/configuración `streamPlaceholder`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "streamSegments",
+          "declaration": "streamSegments: StreamSegment[]",
+          "callback": false,
+          "ownerType": "TranslatorColumnProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/components/TranslatorColumn.tsx",
+            "line": 33
+          },
+          "description": "Dato de estado/configuración `streamSegments`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "onTranslatorInputChange",
+          "declaration": "onTranslatorInputChange: (value: string) => void",
+          "callback": true,
+          "ownerType": "TranslatorColumnProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/components/TranslatorColumn.tsx",
+            "line": 34
+          },
+          "description": "Operación on Translator Input Change de Interfaz Protocol Studio; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "onTranslate",
+          "declaration": "onTranslate: () => void",
+          "callback": true,
+          "ownerType": "TranslatorColumnProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/components/TranslatorColumn.tsx",
+            "line": 35
+          },
+          "description": "Operación on Translate de Interfaz Protocol Studio; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "onLoadBuilderToTranslator",
+          "declaration": "onLoadBuilderToTranslator: () => void",
+          "callback": true,
+          "ownerType": "TranslatorColumnProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/components/TranslatorColumn.tsx",
+            "line": 36
+          },
+          "description": "Operación on Load Builder To Translator de Interfaz Protocol Studio; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "onResetTranslator",
+          "declaration": "onResetTranslator: () => void",
+          "callback": true,
+          "ownerType": "TranslatorColumnProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/components/TranslatorColumn.tsx",
+            "line": 37
+          },
+          "description": "Operación on Reset Translator de Interfaz Protocol Studio; semántica fina pendiente de ampliación."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/protocolStudio/components/TranslatorColumn.tsx",
+        "line": 22
+      }
+    },
+    {
+      "name": "DetailSectionKey",
+      "kind": "TypeAliasDeclaration",
+      "type": "\"analysis\" | \"payloads\" | \"validations\" | \"references\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/protocolStudio/components/TranslatorColumn.tsx",
+        "line": 40
+      }
+    },
+    {
+      "name": "AnalysisDetailCardProps",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "analysis",
+          "declaration": "analysis: TranslationResult",
+          "callback": false,
+          "ownerType": "AnalysisDetailCardProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/components/TranslatorColumn.tsx",
+            "line": 454
+          },
+          "description": "Dato de estado/configuración `analysis`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "frame",
+          "declaration": "frame: number[]",
+          "callback": false,
+          "ownerType": "AnalysisDetailCardProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/components/TranslatorColumn.tsx",
+            "line": 455
+          },
+          "description": "Dato de estado/configuración `frame`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "offset",
+          "declaration": "offset: number | null",
+          "callback": false,
+          "ownerType": "AnalysisDetailCardProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/components/TranslatorColumn.tsx",
+            "line": 456
+          },
+          "description": "Dato de estado/configuración `offset`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "openSections",
+          "declaration": "openSections: Record<DetailSectionKey, boolean>",
+          "callback": false,
+          "ownerType": "AnalysisDetailCardProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/components/TranslatorColumn.tsx",
+            "line": 457
+          },
+          "description": "Dato de estado/configuración `openSections`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "copiedKey",
+          "declaration": "copiedKey: string",
+          "callback": false,
+          "ownerType": "AnalysisDetailCardProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/components/TranslatorColumn.tsx",
+            "line": 458
+          },
+          "description": "Dato de estado/configuración `copiedKey`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "onToggleSection",
+          "declaration": "onToggleSection: (section: DetailSectionKey) => void",
+          "callback": true,
+          "ownerType": "AnalysisDetailCardProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/components/TranslatorColumn.tsx",
+            "line": 459
+          },
+          "description": "Operación on Toggle Section de Interfaz Protocol Studio; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "onClose",
+          "declaration": "onClose: () => void",
+          "callback": true,
+          "ownerType": "AnalysisDetailCardProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/components/TranslatorColumn.tsx",
+            "line": 460
+          },
+          "description": "Operación on Close de Interfaz Protocol Studio; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "onCopy",
+          "declaration": "onCopy: (key: string, value: string) => void",
+          "callback": true,
+          "ownerType": "AnalysisDetailCardProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/components/TranslatorColumn.tsx",
+            "line": 461
+          },
+          "description": "Operación on Copy de Interfaz Protocol Studio; semántica fina pendiente de ampliación."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/protocolStudio/components/TranslatorColumn.tsx",
+        "line": 453
+      }
+    },
+    {
+      "name": "PanelProps",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "title",
+          "declaration": "title: string",
+          "callback": false,
+          "ownerType": "PanelProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/ui.tsx",
+            "line": 7
+          },
+          "description": "Dato de estado/configuración `title`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "children",
+          "declaration": "children: ReactNode",
+          "callback": false,
+          "ownerType": "PanelProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/ui.tsx",
+            "line": 8
+          },
+          "description": "Dato de estado/configuración `children`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "className",
+          "declaration": "className?: string",
+          "callback": false,
+          "ownerType": "PanelProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/ui.tsx",
+            "line": 9
+          },
+          "description": "Dato de estado/configuración `className`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "headerRight",
+          "declaration": "headerRight?: ReactNode",
+          "callback": false,
+          "ownerType": "PanelProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/ui.tsx",
+            "line": 10
+          },
+          "description": "Dato de estado/configuración `headerRight`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/protocolStudio/ui.tsx",
+        "line": 6
+      }
+    },
+    {
+      "name": "InfoCellProps",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "label",
+          "declaration": "label: string",
+          "callback": false,
+          "ownerType": "InfoCellProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/ui.tsx",
+            "line": 14
+          },
+          "description": "Dato de estado/configuración `label`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "value",
+          "declaration": "value: string",
+          "callback": false,
+          "ownerType": "InfoCellProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/ui.tsx",
+            "line": 15
+          },
+          "description": "Dato de estado/configuración `value`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "tone",
+          "declaration": "tone?: \"cyan\" | \"emerald\" | \"violet\" | \"rose\"",
+          "callback": false,
+          "ownerType": "InfoCellProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/ui.tsx",
+            "line": 16
+          },
+          "description": "Dato de estado/configuración `tone`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "className",
+          "declaration": "className?: string",
+          "callback": false,
+          "ownerType": "InfoCellProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/ui.tsx",
+            "line": 17
+          },
+          "description": "Dato de estado/configuración `className`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/protocolStudio/ui.tsx",
+        "line": 13
+      }
+    },
+    {
+      "name": "DetailItemProps",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "label",
+          "declaration": "label: string",
+          "callback": false,
+          "ownerType": "DetailItemProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/ui.tsx",
+            "line": 21
+          },
+          "description": "Dato de estado/configuración `label`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "value",
+          "declaration": "value: string",
+          "callback": false,
+          "ownerType": "DetailItemProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/ui.tsx",
+            "line": 22
+          },
+          "description": "Dato de estado/configuración `value`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "className",
+          "declaration": "className?: string",
+          "callback": false,
+          "ownerType": "DetailItemProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/ui.tsx",
+            "line": 23
+          },
+          "description": "Dato de estado/configuración `className`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/protocolStudio/ui.tsx",
+        "line": 20
+      }
+    },
+    {
+      "name": "StatusPillProps",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "tone",
+          "declaration": "tone: \"ok\" | \"warn\" | \"bad\"",
+          "callback": false,
+          "ownerType": "StatusPillProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/ui.tsx",
+            "line": 27
+          },
+          "description": "Dato de estado/configuración `tone`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "children",
+          "declaration": "children: ReactNode",
+          "callback": false,
+          "ownerType": "StatusPillProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/protocolStudio/ui.tsx",
+            "line": 28
+          },
+          "description": "Dato de estado/configuración `children`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/protocolStudio/ui.tsx",
+        "line": 26
+      }
+    },
+    {
+      "name": "StudioView",
+      "kind": "TypeAliasDeclaration",
+      "type": "\"protocol\" | \"oled\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ProtocolSection.tsx",
+        "line": 14
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "AnalysisDetailCard",
+      "displayName": "AnalysisDetailCard",
+      "signature": "AnalysisDetailCard({\r\n analysis,\r\n frame,\r\n offset,\r\n openSections,\r\n copiedKey,\r\n onToggleSection,\r\n onClose,\r\n onCopy,\r\n}: AnalysisDetailCardProps): inferred-by-TypeScript",
+      "line": 464,
+      "endLine": 572,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "analysis.validations.map",
+        "analysis.validations.some",
+        "asciiPreview",
+        "bytesToHex",
+        "getPayloadBytes",
+        "payloadBytes.join"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/protocolStudio/components/TranslatorColumn.tsx",
+        "line": 464
+      },
+      "description": "Coordina `analysis.validations.map`, `analysis.validations.some`, `asciiPreview` para Interfaz Protocol Studio.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "BuilderColumn",
+      "displayName": "BuilderColumn",
+      "signature": "BuilderColumn(props: BuilderColumnProps): inferred-by-TypeScript",
+      "line": 28,
+      "endLine": 193,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "COMMAND_GROUPS.map",
+        "NODE_OPTIONS.map",
+        "hexFields.map",
+        "nonHexFields.map"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/protocolStudio/components/BuilderColumn.tsx",
+        "line": 28
+      },
+      "description": "Construye er Column dentro de Interfaz Protocol Studio.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "ChevronIcon",
+      "displayName": "ChevronIcon",
+      "signature": "ChevronIcon({ isOpen }: { isOpen: boolean }): inferred-by-TypeScript",
+      "line": 676,
+      "endLine": 692,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/protocolStudio/components/TranslatorColumn.tsx",
+        "line": 676
+      },
+      "description": "Operación Chevron Icon de Interfaz Protocol Studio; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "CloseIcon",
+      "displayName": "CloseIcon",
+      "signature": "CloseIcon(): inferred-by-TypeScript",
+      "line": 703,
+      "endLine": 709,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/protocolStudio/components/TranslatorColumn.tsx",
+        "line": 703
+      },
+      "description": "Operación Close Icon de Interfaz Protocol Studio; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "CollapsibleDetailSection",
+      "displayName": "CollapsibleDetailSection",
+      "signature": "CollapsibleDetailSection({\r\n title,\r\n isOpen,\r\n onToggle,\r\n children,\r\n}: { title: string; isOpen: boolean; onToggle: () => void; children: ReactNode; }): inferred-by-TypeScript",
+      "line": 602,
+      "endLine": 627,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/protocolStudio/components/TranslatorColumn.tsx",
+        "line": 602
+      },
+      "description": "Operación Collapsible Detail Section de Interfaz Protocol Studio; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "ColoredFrame",
+      "displayName": "ColoredFrame",
+      "signature": "ColoredFrame({ bytes }: { bytes: number[] }): inferred-by-TypeScript",
+      "line": 71,
+      "endLine": 83,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "bytes.map"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/protocolStudio/ui.tsx",
+        "line": 71
+      },
+      "description": "Adapta la llamada a `bytes.map` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "CopyIcon",
+      "displayName": "CopyIcon",
+      "signature": "CopyIcon(): inferred-by-TypeScript",
+      "line": 694,
+      "endLine": 701,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/protocolStudio/components/TranslatorColumn.tsx",
+        "line": 694
+      },
+      "description": "Operación Copy Icon de Interfaz Protocol Studio; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "CopyPill",
+      "displayName": "CopyPill",
+      "signature": "CopyPill({\r\n copyKey,\r\n value,\r\n copiedKey,\r\n onCopy,\r\n label = \"Copiar\",\r\n}: { copyKey: string; value: string; copiedKey: string; onCopy: (key: string, value: string) => void; label?: string; }): inferred-by-TypeScript",
+      "line": 629,
+      "endLine": 655,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/protocolStudio/components/TranslatorColumn.tsx",
+        "line": 629
+      },
+      "description": "Operación Copy Pill de Interfaz Protocol Studio; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "DetailItem",
+      "displayName": "DetailItem",
+      "signature": "DetailItem({ label, value, className = \"\" }: DetailItemProps): inferred-by-TypeScript",
+      "line": 54,
+      "endLine": 61,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/protocolStudio/ui.tsx",
+        "line": 54
+      },
+      "description": "Operación Detail Item de Interfaz Protocol Studio; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "FrameVisualizationShowcase",
+      "displayName": "FrameVisualizationShowcase",
+      "signature": "FrameVisualizationShowcase({ builderData, builderError, commandKey, currentCommand }: FrameVisualizationShowcaseProps): inferred-by-TypeScript",
+      "line": 13,
+      "endLine": 57,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "String",
+        "String(payloadEnd - 1).padStart",
+        "String(payloadEnd).padStart",
+        "hx",
+        "segments.map"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/protocolStudio/components/FrameVisualizationShowcase.tsx",
+        "line": 13
+      },
+      "description": "Coordina `String`, `String(payloadEnd - 1).padStart`, `String(payloadEnd).padStart` para Interfaz Protocol Studio.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "InfoCell",
+      "displayName": "InfoCell",
+      "signature": "InfoCell({ label, value, tone = \"cyan\", className = \"\" }: InfoCellProps): inferred-by-TypeScript",
+      "line": 45,
+      "endLine": 52,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/protocolStudio/ui.tsx",
+        "line": 45
+      },
+      "description": "Operación Info Cell de Interfaz Protocol Studio; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "OutputsColumn",
+      "displayName": "OutputsColumn",
+      "signature": "OutputsColumn(props: OutputsColumnProps): inferred-by-TypeScript",
+      "line": 22,
+      "endLine": 73,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "([ { key: \"plain\", label: \"Hexadecimal\" }, { key: \"realterm\", label: \"RealTerm\" }, { key: \"c\", label: \"C / Arduino\" }, { key: \"py\", label: \"Python\" }, ] as const).map"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/protocolStudio/components/OutputsColumn.tsx",
+        "line": 22
+      },
+      "description": "Adapta la llamada a `([ { key: \"plain\", label: \"Hexadecimal\" }, { key: \"realterm\", label: \"RealTerm\" }, { key: \"c\", label: \"C / Arduino\" }, { key: \"py\", label: \"Python\" }, ] as const).map` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Panel",
+      "displayName": "Panel",
+      "signature": "Panel({ title, children, className = \"\", headerRight }: PanelProps): inferred-by-TypeScript",
+      "line": 31,
+      "endLine": 43,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/protocolStudio/ui.tsx",
+        "line": 31
+      },
+      "description": "Operación Panel de Interfaz Protocol Studio; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "PayloadValue",
+      "displayName": "PayloadValue",
+      "signature": "PayloadValue({\r\n label,\r\n value,\r\n copyValue,\r\n copyKey,\r\n copiedKey,\r\n onCopy,\r\n}: { label: string; value: string; copyValue: string; copyKey: string; copiedKey: string; onCopy: (key: string, value: string) => void; }): inferred-by-TypeScript",
+      "line": 574,
+      "endLine": 600,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/protocolStudio/components/TranslatorColumn.tsx",
+        "line": 574
+      },
+      "description": "Operación Payload Value de Interfaz Protocol Studio; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "ProtocolHelpModal",
+      "displayName": "ProtocolHelpModal",
+      "signature": "ProtocolHelpModal({ isOpen, onClose }: ProtocolHelpModalProps): inferred-by-TypeScript",
+      "line": 8,
+      "endLine": 36,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/protocolStudio/components/ProtocolHelpModal.tsx",
+        "line": 8
+      },
+      "description": "Operación Protocol Help Modal de Interfaz Protocol Studio; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "ProtocolHero",
+      "displayName": "ProtocolHero",
+      "signature": "ProtocolHero({ activeSection, onSectionChange }: ProtocolHeroProps): inferred-by-TypeScript",
+      "line": 5,
+      "endLine": 15,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/protocolStudio/components/ProtocolHero.tsx",
+        "line": 5
+      },
+      "description": "Operación Protocol Hero de Interfaz Protocol Studio; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "ProtocolSection",
+      "displayName": "ProtocolSection",
+      "signature": "ProtocolSection(): inferred-by-TypeScript",
+      "line": 19,
+      "endLine": 205,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "searchParams.get",
+        "segmentedButtonStyle",
+        "useProtocolStudioState",
+        "useSearchParams",
+        "useState"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ProtocolSection.tsx",
+        "line": 19
+      },
+      "description": "Coordina `searchParams.get`, `segmentedButtonStyle`, `useProtocolStudioState` para Interfaz Protocol Studio.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "StatusPill",
+      "displayName": "StatusPill",
+      "signature": "StatusPill({ tone, children }: StatusPillProps): inferred-by-TypeScript",
+      "line": 63,
+      "endLine": 69,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/protocolStudio/ui.tsx",
+        "line": 63
+      },
+      "description": "Operación Status Pill de Interfaz Protocol Studio; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "StreamSegmentBody",
+      "displayName": "StreamSegmentBody",
+      "signature": "StreamSegmentBody({ segment }: { segment: StreamSegment }): inferred-by-TypeScript",
+      "line": 435,
+      "endLine": 451,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "segment.bytes.map"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/protocolStudio/components/TranslatorColumn.tsx",
+        "line": 435
+      },
+      "description": "Adapta la llamada a `segment.bytes.map` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "SummaryMetric",
+      "displayName": "SummaryMetric",
+      "signature": "SummaryMetric({ label, value, tone }: { label: string; value: number; tone: \"emerald\" | \"amber\" | \"rose\" }): inferred-by-TypeScript",
+      "line": 657,
+      "endLine": 667,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/protocolStudio/components/TranslatorColumn.tsx",
+        "line": 657
+      },
+      "description": "Operación Summary Metric de Interfaz Protocol Studio; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "TranslatorColumn",
+      "displayName": "TranslatorColumn",
+      "signature": "TranslatorColumn(props: TranslatorColumnProps): inferred-by-TypeScript",
+      "line": 49,
+      "endLine": 429,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "scanResult.gaps.map",
+        "scanResult.invalidCandidates.map",
+        "scanResult.validFrames.map",
+        "streamSegments.map",
+        "useEffect",
+        "useMemo",
+        "useRef",
+        "useState"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/protocolStudio/components/TranslatorColumn.tsx",
+        "line": 49
+      },
+      "description": "Coordina `scanResult.gaps.map`, `scanResult.invalidCandidates.map`, `scanResult.validFrames.map` para Interfaz Protocol Studio.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ValidationRow",
+      "displayName": "ValidationRow",
+      "signature": "ValidationRow({ item }: { item: ValidationItem }): inferred-by-TypeScript",
+      "line": 85,
+      "endLine": 96,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/protocolStudio/ui.tsx",
+        "line": 85
+      },
+      "description": "Operación Validation Row de Interfaz Protocol Studio; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "getPayloadBytes",
+      "displayName": "getPayloadBytes",
+      "signature": "getPayloadBytes(frame: number[]): inferred-by-TypeScript",
+      "line": 669,
+      "endLine": 674,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "frame.slice"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/protocolStudio/components/TranslatorColumn.tsx",
+        "line": 669
+      },
+      "description": "Adapta la llamada a `frame.slice` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "isTranslationIdle",
+      "displayName": "isTranslationIdle",
+      "signature": "isTranslationIdle(translation: TranslationResult): inferred-by-TypeScript",
+      "line": 431,
+      "endLine": 433,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/protocolStudio/components/TranslatorColumn.tsx",
+        "line": 431
+      },
+      "description": "Operación is Translation Idle de Interfaz Protocol Studio; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "segmentedButtonStyle",
+      "displayName": "segmentedButtonStyle",
+      "signature": "segmentedButtonStyle(active: boolean): inferred-by-TypeScript",
+      "line": 207,
+      "endLine": 218,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ProtocolSection.tsx",
+        "line": 207
+      },
+      "description": "Operación segmented Button Style de Interfaz Protocol Studio; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "useProtocolStudioState",
+      "displayName": "useProtocolStudioState",
+      "signature": "useProtocolStudioState(): inferred-by-TypeScript",
+      "line": 20,
+      "endLine": 283,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "createIdleTranslation",
+        "currentCommand?.fields.filter",
+        "useEffect",
+        "useMemo",
+        "useRef",
+        "useState"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/protocolStudio/useProtocolStudioState.ts",
+        "line": 20
+      },
+      "description": "Coordina `createIdleTranslation`, `currentCommand?.fields.filter`, `useEffect` para Interfaz Protocol Studio.",
+      "descriptionOrigin": "structural"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "ColoredFrame.role",
+      "displayName": "role",
+      "signature": "ColoredFrame.role(index: number): inferred-by-TypeScript",
+      "line": 73,
+      "endLine": 73,
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/protocolStudio/ui.tsx",
+        "line": 73
+      },
+      "description": "Operación role de Interfaz Protocol Studio; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "ProtocolSection.handleStudioChange",
+      "displayName": "handleStudioChange",
+      "signature": "ProtocolSection.handleStudioChange(nextStudio: StudioView): inferred-by-TypeScript",
+      "line": 34,
+      "endLine": 44,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "nextSearchParams.delete",
+        "nextSearchParams.set",
+        "setSearchParams"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ProtocolSection.tsx",
+        "line": 34
+      },
+      "description": "Coordina `nextSearchParams.delete`, `nextSearchParams.set`, `setSearchParams` para Interfaz Protocol Studio.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ProtocolSection.handleValidateInTranslator",
+      "displayName": "handleValidateInTranslator",
+      "signature": "ProtocolSection.handleValidateInTranslator(): inferred-by-TypeScript",
+      "line": 29,
+      "endLine": 32,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "setActiveSection",
+        "studio.loadBuilderToTranslator"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/ProtocolSection.tsx",
+        "line": 29
+      },
+      "description": "Coordina `setActiveSection`, `studio.loadBuilderToTranslator` para Interfaz Protocol Studio.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "TranslatorColumn.copyText",
+      "displayName": "copyText",
+      "signature": "TranslatorColumn.copyText(key: string, value: string): inferred-by-TypeScript",
+      "line": 134,
+      "endLine": 163,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "document.body.appendChild",
+        "document.body.removeChild",
+        "document.createElement",
+        "document.execCommand",
+        "navigator.clipboard.writeText",
+        "setCopiedKey",
+        "textarea.select",
+        "textarea.setAttribute",
+        "window.clearTimeout",
+        "window.setTimeout"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/protocolStudio/components/TranslatorColumn.tsx",
+        "line": 134
+      },
+      "description": "Coordina `document.body.appendChild`, `document.body.removeChild`, `document.createElement` para Interfaz Protocol Studio.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "TranslatorColumn.handleResetTranslator",
+      "displayName": "handleResetTranslator",
+      "signature": "TranslatorColumn.handleResetTranslator(): inferred-by-TypeScript",
+      "line": 165,
+      "endLine": 169,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "onResetTranslator",
+        "setSelectedFrameOffset",
+        "setShowAnalysisCard"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/protocolStudio/components/TranslatorColumn.tsx",
+        "line": 165
+      },
+      "description": "Coordina `onResetTranslator`, `setSelectedFrameOffset`, `setShowAnalysisCard` para Interfaz Protocol Studio.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "TranslatorColumn.selectFrame",
+      "displayName": "selectFrame",
+      "signature": "TranslatorColumn.selectFrame(frame: ValidFrameItem): inferred-by-TypeScript",
+      "line": 129,
+      "endLine": 132,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "setSelectedFrameOffset",
+        "setShowAnalysisCard"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/protocolStudio/components/TranslatorColumn.tsx",
+        "line": 129
+      },
+      "description": "Coordina `setSelectedFrameOffset`, `setShowAnalysisCard` para Interfaz Protocol Studio.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "TranslatorColumn.toggleDetailSection",
+      "displayName": "toggleDetailSection",
+      "signature": "TranslatorColumn.toggleDetailSection(section: DetailSectionKey): inferred-by-TypeScript",
+      "line": 122,
+      "endLine": 127,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "setOpenSections"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/protocolStudio/components/TranslatorColumn.tsx",
+        "line": 122
+      },
+      "description": "Adapta la llamada a `setOpenSections` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "useProtocolStudioState.copyOutput",
+      "displayName": "copyOutput",
+      "signature": "useProtocolStudioState.copyOutput(format: keyof typeof outputs): inferred-by-TypeScript",
+      "line": 178,
+      "endLine": 196,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "document.body.appendChild",
+        "document.body.removeChild",
+        "document.createElement",
+        "document.execCommand",
+        "navigator.clipboard.writeText",
+        "showFlash",
+        "textarea.select"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/protocolStudio/useProtocolStudioState.ts",
+        "line": 178
+      },
+      "description": "Coordina `document.body.appendChild`, `document.body.removeChild`, `document.createElement` para Interfaz Protocol Studio.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "useProtocolStudioState.handleTranslate",
+      "displayName": "handleTranslate",
+      "signature": "useProtocolStudioState.handleTranslate(rawValue: inferred-by-TypeScript): inferred-by-TypeScript",
+      "line": 205,
+      "endLine": 240,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "analyzeCommandOnly",
+        "analyzeFrame",
+        "countHeaders",
+        "createEmptyBlockTranslation",
+        "createErrorTranslation",
+        "detectInput",
+        "rawValue.trim",
+        "resetTranslator",
+        "scanBlock",
+        "setScanResult",
+        "setTranslation",
+        "setViewMode"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/protocolStudio/useProtocolStudioState.ts",
+        "line": 205
+      },
+      "description": "Coordina `analyzeCommandOnly`, `analyzeFrame`, `countHeaders` para Interfaz Protocol Studio.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "useProtocolStudioState.loadBuilderToTranslator",
+      "displayName": "loadBuilderToTranslator",
+      "signature": "useProtocolStudioState.loadBuilderToTranslator(): inferred-by-TypeScript",
+      "line": 242,
+      "endLine": 248,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "handleTranslate",
+        "setTranslatorInput"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/protocolStudio/useProtocolStudioState.ts",
+        "line": 242
+      },
+      "description": "Coordina `handleTranslate`, `setTranslatorInput` para Interfaz Protocol Studio.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "useProtocolStudioState.resetTranslator",
+      "displayName": "resetTranslator",
+      "signature": "useProtocolStudioState.resetTranslator(): inferred-by-TypeScript",
+      "line": 198,
+      "endLine": 203,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "createIdleTranslation",
+        "setScanResult",
+        "setTranslation",
+        "setTranslatorInput",
+        "setViewMode"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/protocolStudio/useProtocolStudioState.ts",
+        "line": 198
+      },
+      "description": "Coordina `createIdleTranslation`, `setScanResult`, `setTranslation` para Interfaz Protocol Studio.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "useProtocolStudioState.setFieldValue",
+      "displayName": "setFieldValue",
+      "signature": "useProtocolStudioState.setFieldValue(id: string, value: string): inferred-by-TypeScript",
+      "line": 164,
+      "endLine": 166,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "setFieldValues"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/protocolStudio/useProtocolStudioState.ts",
+        "line": 164
+      },
+      "description": "Adapta la llamada a `setFieldValues` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "useProtocolStudioState.showFlash",
+      "displayName": "showFlash",
+      "signature": "useProtocolStudioState.showFlash(text: string): inferred-by-TypeScript",
+      "line": 168,
+      "endLine": 176,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "setFlashMessage",
+        "window.clearTimeout",
+        "window.setTimeout"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/protocolStudio/useProtocolStudioState.ts",
+        "line": 168
+      },
+      "description": "Coordina `setFlashMessage`, `window.clearTimeout`, `window.setTimeout` para Interfaz Protocol Studio.",
+      "descriptionOrigin": "structural"
+    }
+  ],
+  "hooks": [
+    {
+      "callee": "useState",
+      "scope": "TranslatorColumn",
+      "line": 64,
+      "arguments": 1,
+      "path": "src/features/protocolStudio/components/TranslatorColumn.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "TranslatorColumn",
+      "line": 65,
+      "arguments": 1,
+      "path": "src/features/protocolStudio/components/TranslatorColumn.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "TranslatorColumn",
+      "line": 66,
+      "arguments": 1,
+      "path": "src/features/protocolStudio/components/TranslatorColumn.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "TranslatorColumn",
+      "line": 67,
+      "arguments": 1,
+      "path": "src/features/protocolStudio/components/TranslatorColumn.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "TranslatorColumn",
+      "line": 68,
+      "arguments": 1,
+      "path": "src/features/protocolStudio/components/TranslatorColumn.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "TranslatorColumn",
+      "line": 69,
+      "arguments": 1,
+      "path": "src/features/protocolStudio/components/TranslatorColumn.tsx"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "TranslatorColumn",
+      "line": 71,
+      "arguments": 2,
+      "path": "src/features/protocolStudio/components/TranslatorColumn.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "TranslatorColumn",
+      "line": 82,
+      "arguments": 2,
+      "path": "src/features/protocolStudio/components/TranslatorColumn.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "TranslatorColumn",
+      "line": 86,
+      "arguments": 2,
+      "path": "src/features/protocolStudio/components/TranslatorColumn.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "TranslatorColumn",
+      "line": 109,
+      "arguments": 2,
+      "path": "src/features/protocolStudio/components/TranslatorColumn.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "TranslatorColumn",
+      "line": 114,
+      "arguments": 2,
+      "path": "src/features/protocolStudio/components/TranslatorColumn.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "useProtocolStudioState",
+      "line": 21,
+      "arguments": 1,
+      "path": "src/features/protocolStudio/useProtocolStudioState.ts"
+    },
+    {
+      "callee": "useState",
+      "scope": "useProtocolStudioState",
+      "line": 22,
+      "arguments": 1,
+      "path": "src/features/protocolStudio/useProtocolStudioState.ts"
+    },
+    {
+      "callee": "useState",
+      "scope": "useProtocolStudioState",
+      "line": 23,
+      "arguments": 1,
+      "path": "src/features/protocolStudio/useProtocolStudioState.ts"
+    },
+    {
+      "callee": "useState",
+      "scope": "useProtocolStudioState",
+      "line": 24,
+      "arguments": 1,
+      "path": "src/features/protocolStudio/useProtocolStudioState.ts"
+    },
+    {
+      "callee": "useState",
+      "scope": "useProtocolStudioState",
+      "line": 25,
+      "arguments": 1,
+      "path": "src/features/protocolStudio/useProtocolStudioState.ts"
+    },
+    {
+      "callee": "useState",
+      "scope": "useProtocolStudioState",
+      "line": 26,
+      "arguments": 1,
+      "path": "src/features/protocolStudio/useProtocolStudioState.ts"
+    },
+    {
+      "callee": "useState",
+      "scope": "useProtocolStudioState",
+      "line": 27,
+      "arguments": 1,
+      "path": "src/features/protocolStudio/useProtocolStudioState.ts"
+    },
+    {
+      "callee": "useState",
+      "scope": "useProtocolStudioState",
+      "line": 28,
+      "arguments": 1,
+      "path": "src/features/protocolStudio/useProtocolStudioState.ts"
+    },
+    {
+      "callee": "useState",
+      "scope": "useProtocolStudioState",
+      "line": 29,
+      "arguments": 1,
+      "path": "src/features/protocolStudio/useProtocolStudioState.ts"
+    },
+    {
+      "callee": "useState",
+      "scope": "useProtocolStudioState",
+      "line": 30,
+      "arguments": 1,
+      "path": "src/features/protocolStudio/useProtocolStudioState.ts"
+    },
+    {
+      "callee": "useState",
+      "scope": "useProtocolStudioState",
+      "line": 31,
+      "arguments": 1,
+      "path": "src/features/protocolStudio/useProtocolStudioState.ts"
+    },
+    {
+      "callee": "useRef",
+      "scope": "useProtocolStudioState",
+      "line": 32,
+      "arguments": 1,
+      "path": "src/features/protocolStudio/useProtocolStudioState.ts"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "useProtocolStudioState",
+      "line": 38,
+      "arguments": 2,
+      "path": "src/features/protocolStudio/useProtocolStudioState.ts"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "useProtocolStudioState",
+      "line": 43,
+      "arguments": 2,
+      "path": "src/features/protocolStudio/useProtocolStudioState.ts"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "useProtocolStudioState",
+      "line": 51,
+      "arguments": 2,
+      "path": "src/features/protocolStudio/useProtocolStudioState.ts"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "useProtocolStudioState",
+      "line": 65,
+      "arguments": 2,
+      "path": "src/features/protocolStudio/useProtocolStudioState.ts"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "useProtocolStudioState",
+      "line": 79,
+      "arguments": 2,
+      "path": "src/features/protocolStudio/useProtocolStudioState.ts"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "useProtocolStudioState",
+      "line": 128,
+      "arguments": 2,
+      "path": "src/features/protocolStudio/useProtocolStudioState.ts"
+    },
+    {
+      "callee": "useProtocolStudioState",
+      "scope": "ProtocolSection",
+      "line": 20,
+      "arguments": 0,
+      "path": "src/pages/ProtocolSection.tsx"
+    },
+    {
+      "callee": "useSearchParams",
+      "scope": "ProtocolSection",
+      "line": 21,
+      "arguments": 0,
+      "path": "src/pages/ProtocolSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "ProtocolSection",
+      "line": 22,
+      "arguments": 1,
+      "path": "src/pages/ProtocolSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "ProtocolSection",
+      "line": 23,
+      "arguments": 1,
+      "path": "src/pages/ProtocolSection.tsx"
+    }
+  ]
+}

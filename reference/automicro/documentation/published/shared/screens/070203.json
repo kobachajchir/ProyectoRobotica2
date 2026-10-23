@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 1,
+  "id": "shared:screen/070203",
+  "symbol": "SCREEN_CODE_SERVICE_UNER_ROUTER_NRF",
+  "code": 459267,
+  "hex": "0x070203",
+  "decomposition": {
+    "menu": 7,
+    "submenu": 2,
+    "page": 3
+  },
+  "revision": "working-copy-hashes",
+  "confidence": "manual-review",
+  "family": "shared:screen-family/general",
+  "numericObservation": "same-literal",
+  "webDeclaration": {
+    "value": 459267,
+    "line": 150
+  },
+  "metadataEntryObserved": false,
+  "evidence": [
+    {
+      "repo": "f4",
+      "path": "Core/Inc/screen_codes.h",
+      "line": 189
+    },
+    {
+      "repo": "web",
+      "path": "src/screens/screenCodes.ts",
+      "line": 150
+    }
+  ],
+  "renderers": [
+    {
+      "kind": "identified-table",
+      "path": "src/screens/screenRenderRegistry.ts",
+      "line": 308,
+      "availability": "generic-builder-candidate"
+    }
+  ],
+  "callGraph": {
+    "status": "lexical-candidates-only",
+    "edges": []
+  },
+  "f4References": [
+    {
+      "repo": "f4",
+      "path": "Core/Src/menu_definition.c",
+      "line": 399,
+      "kind": "lexical-reference"
+    },
+    {
+      "repo": "f4",
+      "path": "Core/Src/oled_utils.c",
+      "line": 2896,
+      "kind": "lexical-reference"
+    },
+    {
+      "repo": "f4",
+      "path": "Core/Src/screenWrappers.c",
+      "line": 431,
+      "kind": "lexical-reference"
+    }
+  ],
+  "variants": [
+    "Identidad y comportamiento particular deben leerse en renderer, wrapper y router."
+  ],
+  "fields": [
+    {
+      "name": "screenCode/source",
+      "type": "u32/u8",
+      "units": "identidad",
+      "availability": "reported",
+      "note": "cuando existe un reporte de pantalla activa"
+    }
+  ],
+  "actions": [
+    "No atribuir acciones por el nombre del código: comprobar handler/permiso/contexto vigente."
+  ],
+  "transitions": [
+    "Las referencias de fuente son candidatas; no acreditan alcance en todos los modos."
+  ],
+  "missingData": [
+    "No se ha establecido modelo remoto completo ni igualdad de píxeles."
+  ],
+  "localOnly": [],
+  "findings": [
+    "AMDOC-WEB-003"
+  ],
+  "exactness": "not-established",
+  "notes": [
+    "Favoritos y confirmaciones compartidas pueden necesitar discriminantes adicionales."
+  ],
+  "role": "not-resolved"
+}

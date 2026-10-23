@@ -1,0 +1,1694 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "web:module/src/components/SegmentedControl.tsx",
+  "slug": "shared-ui",
+  "title": "Componentes comunes y estados visuales",
+  "target": "web",
+  "kind": "integración",
+  "status": "source-documented",
+  "snapshotDate": "2026-10-20",
+  "verification": "not-run-user-instruction",
+  "responsibility": "Ofrece controles y presentación compartidos para secciones del cliente.",
+  "scope": "Props, selección, disclosure/modal y estados visuales; no decide autoridad del dispositivo.",
+  "state": "Valor controlado y callbacks de props o estado local; definir dueño de selección para evitar desincronización.",
+  "modularity": "React con estilos compartidos; reutilización UI distinta de portabilidad de librería firmware.",
+  "lifecycle": [
+    "Montar con props válidas, emitir intención y reflejar valor confirmado/controlado.",
+    "Liberar foco/listeners y restaurar scroll/contexto cuando corresponda."
+  ],
+  "interactions": [
+    "Docs y paneles usan controles comunes; el selector de destino debe respetar el mismo contrato de valor/callback."
+  ],
+  "limitations": [
+    "Estado visual seleccionado no acredita éxito de una solicitud remota."
+  ],
+  "relationships": [],
+  "findings": [],
+  "files": [
+    {
+      "rootId": "web",
+      "path": "src/components/AppLoadingScreen.tsx",
+      "sha256": "d2847cd7625f43a8fd4f3fc46ccfe53d4bc8f995ee30229aeb818a5f953a204a",
+      "imports": [
+        "../assets/LogoDashboardV2.webp",
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/components/ConditionStatus.css",
+      "sha256": "af1f336b9587a0f6454737ff15d2bc6658d54a28795a4da4ae5be9d7c4fd88dd",
+      "imports": [],
+      "analysisLevel": "support-inventory"
+    },
+    {
+      "rootId": "web",
+      "path": "src/components/ConditionStatus.tsx",
+      "sha256": "c157a321af8d2add1c00926d7f4117e259b3671ad51d9f192ffe5b3ea39e3273",
+      "imports": [
+        "./ConditionStatus.css",
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/components/ConnectingScreen.tsx",
+      "sha256": "13a7c76fdf894ef7118b71e74493dec5b5b3bc6e698f1e7658f1260e7b3de41d",
+      "imports": [],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/components/SectionStatusStrip.tsx",
+      "sha256": "bc7117c4790849bae705b3943f9f535bd85298e1fb214ed6c607403048643e3d",
+      "imports": [],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/components/SegmentedControl.css",
+      "sha256": "91b04d78c7a574d3f3fc245ccb062b4315cdcf97933b06e7a96018f29c79693d",
+      "imports": [],
+      "analysisLevel": "support-inventory"
+    },
+    {
+      "rootId": "web",
+      "path": "src/components/SegmentedControl.tsx",
+      "sha256": "89c7c19373f9dfaef7baec2a1cbf9bf615fc1d43f8eba19427efd6c2ef5556b7",
+      "imports": [
+        "./SegmentedControl.css",
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/components/SensorDisclosure.tsx",
+      "sha256": "a4691082e5512a12f0da186bb1e9b9c583e42ccc63ffe50180130bca19447d85",
+      "imports": [
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/components/TimelineRow.tsx",
+      "sha256": "ec6f999b5b383a15bd4222a970d39052d2629007fc0e3c1854cdbfea96934116",
+      "imports": [
+        "../types/MotorTypes",
+        "./MotorBlock",
+        "@dnd-kit/core",
+        "@dnd-kit/sortable",
+        "@dnd-kit/utilities",
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/components/ToggleButton.tsx",
+      "sha256": "c830ca8cb82dbcffa4cea4afb77a038de18608f2deccf1ce8b7964ac5fb7be7f",
+      "imports": [
+        "framer-motion",
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/components/modal.tsx",
+      "sha256": "49811c5701c7cf1247b7b3ff3c46ae439fc84cc3da2051505804a52bd0fe9a9a",
+      "imports": [
+        "../hooks/useMediaQuery",
+        "../hooks/useModalScrollLock",
+        "framer-motion",
+        "react",
+        "react-dom"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    }
+  ],
+  "types": [
+    {
+      "name": "SectionStatusTone",
+      "kind": "TypeAliasDeclaration",
+      "type": "\"ok\" | \"error\" | \"info\" | \"warn\" | \"muted\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/SectionStatusStrip.tsx",
+        "line": 1
+      }
+    },
+    {
+      "name": "SectionStatusItem",
+      "kind": "TypeAliasDeclaration",
+      "fields": [
+        {
+          "name": "label",
+          "declaration": "label: string",
+          "callback": false,
+          "ownerType": "SectionStatusItem",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/SectionStatusStrip.tsx",
+            "line": 4
+          },
+          "description": "Dato de estado/configuración `label`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "value",
+          "declaration": "value: string",
+          "callback": false,
+          "ownerType": "SectionStatusItem",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/SectionStatusStrip.tsx",
+            "line": 5
+          },
+          "description": "Dato de estado/configuración `value`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "detail",
+          "declaration": "detail?: string",
+          "callback": false,
+          "ownerType": "SectionStatusItem",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/SectionStatusStrip.tsx",
+            "line": 6
+          },
+          "description": "Dato de estado/configuración `detail`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "tone",
+          "declaration": "tone?: SectionStatusTone",
+          "callback": false,
+          "ownerType": "SectionStatusItem",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/SectionStatusStrip.tsx",
+            "line": 7
+          },
+          "description": "Dato de estado/configuración `tone`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "title",
+          "declaration": "title?: string",
+          "callback": false,
+          "ownerType": "SectionStatusItem",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/SectionStatusStrip.tsx",
+            "line": 8
+          },
+          "description": "Dato de estado/configuración `title`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/SectionStatusStrip.tsx",
+        "line": 3
+      }
+    },
+    {
+      "name": "SectionStatusStripProps",
+      "kind": "TypeAliasDeclaration",
+      "fields": [
+        {
+          "name": "ariaLabel",
+          "declaration": "ariaLabel: string",
+          "callback": false,
+          "ownerType": "SectionStatusStripProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/SectionStatusStrip.tsx",
+            "line": 12
+          },
+          "description": "Dato de estado/configuración `ariaLabel`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "items",
+          "declaration": "items: SectionStatusItem[]",
+          "callback": false,
+          "ownerType": "SectionStatusStripProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/SectionStatusStrip.tsx",
+            "line": 13
+          },
+          "description": "Dato de estado/configuración `items`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "className",
+          "declaration": "className?: string",
+          "callback": false,
+          "ownerType": "SectionStatusStripProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/SectionStatusStrip.tsx",
+            "line": 14
+          },
+          "description": "Dato de estado/configuración `className`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/SectionStatusStrip.tsx",
+        "line": 11
+      }
+    },
+    {
+      "name": "SegmentOption",
+      "kind": "TypeAliasDeclaration",
+      "fields": [
+        {
+          "name": "value",
+          "declaration": "value: string",
+          "callback": false,
+          "ownerType": "SegmentOption",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/SegmentedControl.tsx",
+            "line": 3
+          },
+          "description": "Dato de estado/configuración `value`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "label",
+          "declaration": "label: string",
+          "callback": false,
+          "ownerType": "SegmentOption",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/SegmentedControl.tsx",
+            "line": 3
+          },
+          "description": "Dato de estado/configuración `label`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "disabled",
+          "declaration": "disabled?: boolean",
+          "callback": false,
+          "ownerType": "SegmentOption",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/SegmentedControl.tsx",
+            "line": 3
+          },
+          "description": "Dato de estado/configuración `disabled`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/SegmentedControl.tsx",
+        "line": 3
+      }
+    },
+    {
+      "name": "MinimalBlockProps",
+      "kind": "TypeAliasDeclaration",
+      "fields": [
+        {
+          "name": "fromPct",
+          "declaration": "fromPct?: number",
+          "callback": false,
+          "ownerType": "MinimalBlockProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/TimelineRow.tsx",
+            "line": 26
+          },
+          "description": "Dato de estado/configuración `fromPct`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "toPct",
+          "declaration": "toPct?: number",
+          "callback": false,
+          "ownerType": "MinimalBlockProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/TimelineRow.tsx",
+            "line": 27
+          },
+          "description": "Dato de estado/configuración `toPct`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "speed",
+          "declaration": "speed?: number",
+          "callback": false,
+          "ownerType": "MinimalBlockProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/TimelineRow.tsx",
+            "line": 28
+          },
+          "description": "Dato de estado/configuración `speed`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/TimelineRow.tsx",
+        "line": 25
+      }
+    },
+    {
+      "name": "TimelineRowProps",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "title",
+          "declaration": "title: string",
+          "callback": false,
+          "ownerType": "TimelineRowProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/TimelineRow.tsx",
+            "line": 32
+          },
+          "description": "Dato de estado/configuración `title`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "track",
+          "declaration": "track: TrackKey",
+          "callback": false,
+          "ownerType": "TimelineRowProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/TimelineRow.tsx",
+            "line": 33
+          },
+          "description": "Dato de estado/configuración `track`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "blocks",
+          "declaration": "blocks: Block[]",
+          "callback": false,
+          "ownerType": "TimelineRowProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/TimelineRow.tsx",
+            "line": 34
+          },
+          "description": "Dato de estado/configuración `blocks`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "totalMs",
+          "declaration": "totalMs: number",
+          "callback": false,
+          "ownerType": "TimelineRowProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/TimelineRow.tsx",
+            "line": 35
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "kindColor",
+          "declaration": "kindColor: Record<BlockKind, string>",
+          "callback": false,
+          "ownerType": "TimelineRowProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/TimelineRow.tsx",
+            "line": 36
+          },
+          "description": "Dato de estado/configuración `kindColor`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "activeIndex",
+          "declaration": "activeIndex: number",
+          "callback": false,
+          "ownerType": "TimelineRowProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/TimelineRow.tsx",
+            "line": 37
+          },
+          "description": "Dato de estado/configuración `activeIndex`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "activeProgress",
+          "declaration": "activeProgress: number",
+          "callback": false,
+          "ownerType": "TimelineRowProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/TimelineRow.tsx",
+            "line": 38
+          },
+          "description": "Dato de estado/configuración `activeProgress`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "selectedId",
+          "declaration": "selectedId: string | null",
+          "callback": false,
+          "ownerType": "TimelineRowProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/TimelineRow.tsx",
+            "line": 39
+          },
+          "description": "Dato de estado/configuración `selectedId`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "onSelect",
+          "declaration": "onSelect: (id: string | null) => void",
+          "callback": true,
+          "ownerType": "TimelineRowProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/TimelineRow.tsx",
+            "line": 40
+          },
+          "description": "Operación on Select de Componentes comunes y estados visuales; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "highlightIds",
+          "declaration": "highlightIds?: string[]",
+          "callback": false,
+          "ownerType": "TimelineRowProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/TimelineRow.tsx",
+            "line": 42
+          },
+          "description": "Dato de estado/configuración `highlightIds`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "blockProps",
+          "declaration": "blockProps?: Record<string, MinimalBlockProps>",
+          "callback": false,
+          "ownerType": "TimelineRowProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/TimelineRow.tsx",
+            "line": 44
+          },
+          "description": "Contrato de operaciones externo; conservar la tabla y su contexto durante el uso."
+        },
+        {
+          "name": "onReorder",
+          "declaration": "onReorder: (newOrder: Block[]) => void",
+          "callback": true,
+          "ownerType": "TimelineRowProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/TimelineRow.tsx",
+            "line": 46
+          },
+          "description": "Operación on Reorder de Componentes comunes y estados visuales; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "dndDisabled",
+          "declaration": "dndDisabled?: boolean",
+          "callback": false,
+          "ownerType": "TimelineRowProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/TimelineRow.tsx",
+            "line": 48
+          },
+          "description": "Dato de estado/configuración `dndDisabled`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "onUpdateLabel",
+          "declaration": "onUpdateLabel?: (blockId: string, newLabel: string) => void",
+          "callback": true,
+          "ownerType": "TimelineRowProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/TimelineRow.tsx",
+            "line": 50
+          },
+          "description": "Operación on Update Label de Componentes comunes y estados visuales; semántica fina pendiente de ampliación."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/TimelineRow.tsx",
+        "line": 31
+      }
+    },
+    {
+      "name": "Size",
+      "kind": "TypeAliasDeclaration",
+      "type": "\"sm\" | \"md\" | \"lg\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ToggleButton.tsx",
+        "line": 4
+      }
+    },
+    {
+      "name": "ToggleButtonProps",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "checked",
+          "declaration": "checked?: boolean",
+          "callback": false,
+          "ownerType": "ToggleButtonProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/ToggleButton.tsx",
+            "line": 8
+          },
+          "description": "Dato de estado/configuración `checked`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "defaultChecked",
+          "declaration": "defaultChecked?: boolean",
+          "callback": false,
+          "ownerType": "ToggleButtonProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/ToggleButton.tsx",
+            "line": 10
+          },
+          "description": "Dato de estado/configuración `defaultChecked`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "onChange",
+          "declaration": "onChange?: (checked: boolean) => void",
+          "callback": true,
+          "ownerType": "ToggleButtonProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/ToggleButton.tsx",
+            "line": 12
+          },
+          "description": "Operación on Change de Componentes comunes y estados visuales; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "onActivate",
+          "declaration": "onActivate?: () => void",
+          "callback": true,
+          "ownerType": "ToggleButtonProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/ToggleButton.tsx",
+            "line": 14
+          },
+          "description": "Operación on Activate de Componentes comunes y estados visuales; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "onDeactivate",
+          "declaration": "onDeactivate?: () => void",
+          "callback": true,
+          "ownerType": "ToggleButtonProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/ToggleButton.tsx",
+            "line": 15
+          },
+          "description": "Operación on Deactivate de Componentes comunes y estados visuales; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "disabled",
+          "declaration": "disabled?: boolean",
+          "callback": false,
+          "ownerType": "ToggleButtonProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/ToggleButton.tsx",
+            "line": 18
+          },
+          "description": "Dato de estado/configuración `disabled`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "size",
+          "declaration": "size?: Size",
+          "callback": false,
+          "ownerType": "ToggleButtonProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/ToggleButton.tsx",
+            "line": 20
+          },
+          "description": "Dato de estado/configuración `size`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "className",
+          "declaration": "className?: string",
+          "callback": false,
+          "ownerType": "ToggleButtonProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/ToggleButton.tsx",
+            "line": 22
+          },
+          "description": "Dato de estado/configuración `className`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ariaLabel",
+          "declaration": "ariaLabel?: string",
+          "callback": false,
+          "ownerType": "ToggleButtonProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/ToggleButton.tsx",
+            "line": 24
+          },
+          "description": "Dato de estado/configuración `ariaLabel`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "labels",
+          "declaration": "labels?: boolean",
+          "callback": false,
+          "ownerType": "ToggleButtonProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/ToggleButton.tsx",
+            "line": 25
+          },
+          "description": "Dato de estado/configuración `labels`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "labelOn",
+          "declaration": "labelOn?: string",
+          "callback": false,
+          "ownerType": "ToggleButtonProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/ToggleButton.tsx",
+            "line": 26
+          },
+          "description": "Dato de estado/configuración `labelOn`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "labelOff",
+          "declaration": "labelOff?: string",
+          "callback": false,
+          "ownerType": "ToggleButtonProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/ToggleButton.tsx",
+            "line": 27
+          },
+          "description": "Dato de estado/configuración `labelOff`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "labelClassName",
+          "declaration": "labelClassName?: string",
+          "callback": false,
+          "ownerType": "ToggleButtonProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/ToggleButton.tsx",
+            "line": 28
+          },
+          "description": "Dato de estado/configuración `labelClassName`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "title",
+          "declaration": "title?: string",
+          "callback": false,
+          "ownerType": "ToggleButtonProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/ToggleButton.tsx",
+            "line": 30
+          },
+          "description": "Dato de estado/configuración `title`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "thumbContent",
+          "declaration": "thumbContent?: (checked: boolean) => React.ReactNode",
+          "callback": true,
+          "ownerType": "ToggleButtonProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/ToggleButton.tsx",
+            "line": 32
+          },
+          "description": "Operación thumb Content de Componentes comunes y estados visuales; semántica fina pendiente de ampliación."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ToggleButton.tsx",
+        "line": 6
+      }
+    },
+    {
+      "name": "ModalProps",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "isOpen",
+          "declaration": "isOpen: boolean",
+          "callback": false,
+          "ownerType": "ModalProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/modal.tsx",
+            "line": 8
+          },
+          "description": "Dato de estado/configuración `isOpen`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "onClose",
+          "declaration": "onClose: () => void",
+          "callback": true,
+          "ownerType": "ModalProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/modal.tsx",
+            "line": 9
+          },
+          "description": "Operación on Close de Componentes comunes y estados visuales; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "children",
+          "declaration": "children: React.ReactNode",
+          "callback": false,
+          "ownerType": "ModalProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/modal.tsx",
+            "line": 10
+          },
+          "description": "Dato de estado/configuración `children`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "closeOnOverlayClick",
+          "declaration": "closeOnOverlayClick?: boolean",
+          "callback": false,
+          "ownerType": "ModalProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/modal.tsx",
+            "line": 12
+          },
+          "description": "Dato de estado/configuración `closeOnOverlayClick`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "keyboardNavigationEnabled",
+          "declaration": "keyboardNavigationEnabled?: boolean",
+          "callback": false,
+          "ownerType": "ModalProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/modal.tsx",
+            "line": 14
+          },
+          "description": "Dato de estado/configuración `keyboardNavigationEnabled`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "keyboardScopeRef",
+          "declaration": "keyboardScopeRef?: React.RefObject<HTMLDivElement | null>",
+          "callback": false,
+          "ownerType": "ModalProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/modal.tsx",
+            "line": 15
+          },
+          "description": "Dato de estado/configuración `keyboardScopeRef`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "containerClassnames",
+          "declaration": "containerClassnames?: string",
+          "callback": false,
+          "ownerType": "ModalProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/modal.tsx",
+            "line": 16
+          },
+          "description": "Dato de estado/configuración `containerClassnames`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ariaLabelledBy",
+          "declaration": "ariaLabelledBy?: string",
+          "callback": false,
+          "ownerType": "ModalProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/modal.tsx",
+            "line": 17
+          },
+          "description": "Dato de estado/configuración `ariaLabelledBy`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ariaDescribedBy",
+          "declaration": "ariaDescribedBy?: string",
+          "callback": false,
+          "ownerType": "ModalProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/modal.tsx",
+            "line": 18
+          },
+          "description": "Dato de estado/configuración `ariaDescribedBy`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "closeDisabled",
+          "declaration": "closeDisabled?: boolean",
+          "callback": false,
+          "ownerType": "ModalProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/modal.tsx",
+            "line": 19
+          },
+          "description": "Dato de estado/configuración `closeDisabled`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "motionPreset",
+          "declaration": "motionPreset?: \"default\" | \"motor\"",
+          "callback": false,
+          "ownerType": "ModalProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/modal.tsx",
+            "line": 20
+          },
+          "description": "Dato de estado/configuración `motionPreset`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/modal.tsx",
+        "line": 7
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "AppLoadingScreen",
+      "displayName": "AppLoadingScreen",
+      "signature": "AppLoadingScreen({\r\n  label,\r\n  children,\r\n  className = \"\",\r\n  showSpinner = true,\r\n}: { label: string; children?: ReactNode; className?: string; showSpinner?: boolean; }): inferred-by-TypeScript",
+      "line": 4,
+      "endLine": 46,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/AppLoadingScreen.tsx",
+        "line": 4
+      },
+      "description": "Operación App Loading Screen de Componentes comunes y estados visuales; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "ConditionCheckbox",
+      "displayName": "ConditionCheckbox",
+      "signature": "ConditionCheckbox({ checked, confirmed = true }: { checked: boolean; confirmed?: boolean }): inferred-by-TypeScript",
+      "line": 3,
+      "endLine": 9,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ConditionStatus.tsx",
+        "line": 3
+      },
+      "description": "Operación Condition Checkbox de Componentes comunes y estados visuales; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "ConditionStatus",
+      "displayName": "ConditionStatus",
+      "signature": "ConditionStatus({ label, detail, checked, confirmed = true, onResolve, pending = false }: { label: string; detail: string; checked: boolean; confirmed?: boolean; onResolve?: () => void; pending?: boolean; }): inferred-by-TypeScript",
+      "line": 10,
+      "endLine": 22,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useId"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ConditionStatus.tsx",
+        "line": 10
+      },
+      "description": "Adapta la llamada a `useId` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ConnectingScreen",
+      "displayName": "ConnectingScreen",
+      "signature": "ConnectingScreen(): inferred-by-TypeScript",
+      "line": 1,
+      "endLine": 22,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ConnectingScreen.tsx",
+        "line": 1
+      },
+      "description": "Operación Connecting Screen de Componentes comunes y estados visuales; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "Modal",
+      "displayName": "Modal",
+      "signature": "Modal({\n  isOpen,\n  onClose,\n  children,\n  closeOnOverlayClick = true,\n  keyboardNavigationEnabled = true,\n  keyboardScopeRef,\n  containerClassnames = \"\",\n  ariaLabelledBy,\n  ariaDescribedBy,\n  closeDisabled = false,\n  motionPreset = \"default\"\n}: inferred-by-TypeScript): inferred-by-TypeScript",
+      "line": 23,
+      "endLine": 197,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "createPortal",
+        "useEffect",
+        "useLayoutEffect",
+        "useMediaQuery",
+        "useModalScrollLock",
+        "useReducedMotion",
+        "useRef"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/modal.tsx",
+        "line": 23
+      },
+      "description": "Coordina `createPortal`, `useEffect`, `useLayoutEffect` para Componentes comunes y estados visuales.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "SectionStatusStrip",
+      "displayName": "SectionStatusStrip",
+      "signature": "SectionStatusStrip({\n  ariaLabel,\n  items,\n  className = \"\",\n}: SectionStatusStripProps): inferred-by-TypeScript",
+      "line": 17,
+      "endLine": 48,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "`section-status-strip ${className}`.trim",
+        "items.map"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/SectionStatusStrip.tsx",
+        "line": 17
+      },
+      "description": "Coordina ``section-status-strip ${className}`.trim`, `items.map` para Componentes comunes y estados visuales.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "SegmentedControl",
+      "displayName": "SegmentedControl",
+      "signature": "SegmentedControl({ label, value, options, onChange }: { label: string; value: string; options: readonly SegmentOption[]; onChange: (value: string) => void; }): inferred-by-TypeScript",
+      "line": 4,
+      "endLine": 26,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "options.map",
+        "useId",
+        "useRef"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/SegmentedControl.tsx",
+        "line": 4
+      },
+      "description": "Coordina `options.map`, `useId`, `useRef` para Componentes comunes y estados visuales.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "SensorDisclosure",
+      "displayName": "SensorDisclosure",
+      "signature": "SensorDisclosure({ title, icon, titleAccessory, headerActions, detail, className = \"\", defaultExpanded = false, disabled = false, disabledDescription, children }: { title: string; icon?: ReactNode; titleAccessory?: ReactNode; headerActions?: ReactNode; detail?: string; className?: string; defaultExpanded?: boolean; disabled?: boolean; disabledDescription?: string; children: ReactNode; }): inferred-by-TypeScript",
+      "line": 3,
+      "endLine": 45,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "title.toLowerCase",
+        "useEffect",
+        "useId",
+        "useState"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/SensorDisclosure.tsx",
+        "line": 3
+      },
+      "description": "Coordina `title.toLowerCase`, `useEffect`, `useId` para Componentes comunes y estados visuales.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "SortableBlock",
+      "displayName": "SortableBlock",
+      "signature": "SortableBlock({\n b,\r\n wPct,\r\n isActive,\r\n isPast,\r\n isSelected,\r\n isHighlighted,\r\n fill,\r\n onSelect,\r\n shapeStyles,\n title,\n disabled,\n onUpdateLabel,\n}: { b: Block; wPct: string; isActive: boolean; isPast: boolean; isSelected: boolean; isHighlighted: boolean; fill: number; onSelect: (id: string | null) => void; shapeStyles: React.CSSProperties; title: string; disabled: boolean; onUpdateLabel?: (newLabel: string) => void; }): inferred-by-TypeScript",
+      "line": 159,
+      "endLine": 346,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "CSS.Transform.toString",
+        "Math.round",
+        "clamp01",
+        "directionLabel.toLocaleLowerCase",
+        "timelineToneClass",
+        "useSortable",
+        "useState"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/TimelineRow.tsx",
+        "line": 159
+      },
+      "description": "Coordina `CSS.Transform.toString`, `Math.round`, `clamp01` para Componentes comunes y estados visuales.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "TimelineRow",
+      "displayName": "TimelineRow",
+      "signature": "TimelineRow({\n title,\n track,\n blocks,\n totalMs,\n kindColor,\r\n activeIndex,\r\n activeProgress,\r\n selectedId,\r\n onSelect,\r\n highlightIds = [],\r\n blockProps = {},\r\n onReorder,\r\n dndDisabled = false,\n onUpdateLabel,\n}: TimelineRowProps): inferred-by-TypeScript",
+      "line": 379,
+      "endLine": 576,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "(() => { const ab = blocks.find((x) => x.id === activeId); if (!ab) return null; return ( <div className=\"flex items-center justify-between gap-3 rounded-md border border-cyan-200/70 bg-[var(--ui-bg-0)]/95 px-3 py-2 text-xs text-[var(--ui-text)] shadow-[0_20px_50px_rgba(0,0,0,0.55),0_0_24px_rgba(34,211,238,0.28)]\" style={{ width: overlaySize?.w ?? 140, minWidth: 92, height: Math.min(overlaySize?.h ?? 72, 86), }} > <span className=\"min-w-0\"> <span className=\"block truncate font-black\">{ab.label}</span> <span className=\"mt-1 block text-[10px] text-[var(--ui-muted)]\"> {ab.durationMs} ms </span> </span> {ab.kind !== \"stop\" ? ( <span className={`shrink-0 rounded-full border px-1.5 py-0.5 text-[9px] font-black ${ ab.direction === 1 ? \"border-rose-300/45 text-rose-200\" : \"border-emerald-300/45 text-emerald-200\" }`} > {ab.direction === 1 ? \"ATRÁS\" : \"ADELANTE\"} </span> ) : null} </div> ); })",
+        "blocks.map",
+        "blocks.some",
+        "totalMs.toLocaleString",
+        "useSensor",
+        "useSensors",
+        "useState"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/TimelineRow.tsx",
+        "line": 379
+      },
+      "description": "Coordina `(() => { const ab = blocks.find((x) => x.id === activeId); if (!ab) return null; return ( <div className=\"flex items-center justify-between gap-3 rounded-md border border-cyan-200/70 bg-[var(--ui-bg-0)]/95 px-3 py-2 text-xs text-[var(--ui-text)] shadow-[0_20px_50px_rgba(0,0,0,0.55),0_0_24px_rgba(34,211,238,0.28)]\" style={{ width: overlaySize?.w ?? 140, minWidth: 92, height: Math.min(overlaySize?.h ?? 72, 86), }} > <span className=\"min-w-0\"> <span className=\"block truncate font-black\">{ab.label}</span> <span className=\"mt-1 block text-[10px] text-[var(--ui-muted)]\"> {ab.durationMs} ms </span> </span> {ab.kind !== \"stop\" ? ( <span className={`shrink-0 rounded-full border px-1.5 py-0.5 text-[9px] font-black ${ ab.direction === 1 ? \"border-rose-300/45 text-rose-200\" : \"border-emerald-300/45 text-emerald-200\" }`} > {ab.direction === 1 ? \"ATRÁS\" : \"ADELANTE\"} </span> ) : null} </div> ); })`, `blocks.map`, `blocks.some` para Componentes comunes y estados visuales.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ToggleButton",
+      "displayName": "ToggleButton",
+      "signature": "ToggleButton({\r\n checked,\r\n defaultChecked = false,\r\n onChange,\r\n onActivate,\r\n onDeactivate,\r\n disabled = false,\r\n size = \"md\",\r\n className = \"\",\r\n ariaLabel = \"Alternar\",\r\n labels = false, // Si se quieren mostrar etiquetas de \"On\" y \"Off\"\r\n labelOn = \"On\",\r\n labelOff = \"Off\",\r\n labelClassName = \"\",\r\n title = \"\",\r\n thumbContent,\r\n}: ToggleButtonProps): inferred-by-TypeScript",
+      "line": 36,
+      "endLine": 157,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "[ \"app-toggle inline-flex items-center rounded-full p-0.5 relative\", \"ring-1 ring-[var(--ui-ring)]\", cfg.track, disabled ? \"opacity-50 cursor-not-allowed\" : \"cursor-pointer\", // enfoque accesible en nuestra app \"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--ui-bg-0)]\", className, ].join",
+        "[ \"app-toggle__thumb rounded-full shadow-md\", cfg.thumb ].join",
+        "thumbContent",
+        "useCallback",
+        "useMemo",
+        "useReducedMotion",
+        "useState"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/ToggleButton.tsx",
+        "line": 36
+      },
+      "description": "Coordina `[ \"app-toggle inline-flex items-center rounded-full p-0.5 relative\", \"ring-1 ring-[var(--ui-ring)]\", cfg.track, disabled ? \"opacity-50 cursor-not-allowed\" : \"cursor-pointer\", // enfoque accesible en nuestra app \"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--ui-bg-0)]\", className, ].join`, `[ \"app-toggle__thumb rounded-full shadow-md\", cfg.thumb ].join`, `thumbContent` para Componentes comunes y estados visuales.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "TrackBadge",
+      "displayName": "TrackBadge",
+      "signature": "TrackBadge({ track }: { track: TrackKey }): inferred-by-TypeScript",
+      "line": 348,
+      "endLine": 355,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/TimelineRow.tsx",
+        "line": 348
+      },
+      "description": "Operación Track Badge de Componentes comunes y estados visuales; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "TrackMetric",
+      "displayName": "TrackMetric",
+      "signature": "TrackMetric({\n label,\n value,\n active = false,\n}: { label: string; value: string; active?: boolean; }): inferred-by-TypeScript",
+      "line": 357,
+      "endLine": 376,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/TimelineRow.tsx",
+        "line": 357
+      },
+      "description": "Operación Track Metric de Componentes comunes y estados visuales; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "clamp01",
+      "displayName": "clamp01",
+      "signature": "clamp01(v: number): inferred-by-TypeScript",
+      "line": 53,
+      "endLine": 53,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.max",
+        "Math.min"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/TimelineRow.tsx",
+        "line": 53
+      },
+      "description": "Coordina `Math.max`, `Math.min` para Componentes comunes y estados visuales.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "clampPct",
+      "displayName": "clampPct",
+      "signature": "clampPct(v: number, min: inferred-by-TypeScript, max: inferred-by-TypeScript): inferred-by-TypeScript",
+      "line": 54,
+      "endLine": 55,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.max",
+        "Math.min"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/TimelineRow.tsx",
+        "line": 54
+      },
+      "description": "Coordina `Math.max`, `Math.min` para Componentes comunes y estados visuales.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "getBlockStyles",
+      "displayName": "getBlockStyles",
+      "signature": "getBlockStyles(block: Block, p?: MinimalBlockProps): React.CSSProperties",
+      "line": 83,
+      "endLine": 156,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.max",
+        "Math.min",
+        "clamp01",
+        "clampPct"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/TimelineRow.tsx",
+        "line": 83
+      },
+      "description": "Coordina `Math.max`, `Math.min`, `clamp01` para Componentes comunes y estados visuales.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "timelineToneClass",
+      "displayName": "timelineToneClass",
+      "signature": "timelineToneClass(kind: BlockKind, highlighted: boolean, active: boolean): inferred-by-TypeScript",
+      "line": 58,
+      "endLine": 80,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/TimelineRow.tsx",
+        "line": 58
+      },
+      "description": "Operación timeline Tone Class de Componentes comunes y estados visuales; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "Modal.getFocusables",
+      "displayName": "getFocusables",
+      "signature": "Modal.getFocusables(): inferred-by-TypeScript",
+      "line": 94,
+      "endLine": 96,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Array.from",
+        "Array.from(dialog?.querySelectorAll<HTMLElement>( 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex=\"-1\"])', ) ?? []).filter",
+        "dialog?.querySelectorAll"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/modal.tsx",
+        "line": 94
+      },
+      "description": "Coordina `Array.from`, `Array.from(dialog?.querySelectorAll<HTMLElement>( 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex=\"-1\"])', ) ?? []).filter`, `dialog?.querySelectorAll` para Componentes comunes y estados visuales.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Modal.keepDialogFocus",
+      "displayName": "keepDialogFocus",
+      "signature": "Modal.keepDialogFocus(): inferred-by-TypeScript",
+      "line": 68,
+      "endLine": 68,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "dialog.focus"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/modal.tsx",
+        "line": 68
+      },
+      "description": "Adapta la llamada a `dialog.focus` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Modal.onFocusIn",
+      "displayName": "onFocusIn",
+      "signature": "Modal.onFocusIn(event: FocusEvent): inferred-by-TypeScript",
+      "line": 69,
+      "endLine": 71,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "keepDialogFocus"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/modal.tsx",
+        "line": 69
+      },
+      "description": "Adapta la llamada a `keepDialogFocus` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Modal.onKey",
+      "displayName": "onKey",
+      "signature": "Modal.onKey(e: KeyboardEvent): inferred-by-TypeScript",
+      "line": 98,
+      "endLine": 123,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "dialog.contains",
+        "dialog?.focus",
+        "document.querySelectorAll",
+        "e.preventDefault",
+        "first.focus",
+        "getFocusables",
+        "last.focus",
+        "onCloseRef.current"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/modal.tsx",
+        "line": 98
+      },
+      "description": "Coordina `dialog.contains`, `dialog?.focus`, `document.querySelectorAll` para Componentes comunes y estados visuales.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Modal.onPointerDown",
+      "displayName": "onPointerDown",
+      "signature": "Modal.onPointerDown(event: PointerEvent): inferred-by-TypeScript",
+      "line": 72,
+      "endLine": 75,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "event.preventDefault",
+        "keepDialogFocus"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/modal.tsx",
+        "line": 72
+      },
+      "description": "Coordina `event.preventDefault`, `keepDialogFocus` para Componentes comunes y estados visuales.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Modal.removeControlFocus",
+      "displayName": "removeControlFocus",
+      "signature": "Modal.removeControlFocus(): inferred-by-TypeScript",
+      "line": 58,
+      "endLine": 67,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "dialog.querySelectorAll",
+        "dialog.querySelectorAll<HTMLElement>( 'a[href], button, input, select, textarea, [tabindex], [contenteditable], summary, audio[controls], video[controls]', ).forEach"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/modal.tsx",
+        "line": 58
+      },
+      "description": "Coordina `dialog.querySelectorAll`, `dialog.querySelectorAll<HTMLElement>( 'a[href], button, input, select, textarea, [tabindex], [contenteditable], summary, audio[controls], video[controls]', ).forEach` para Componentes comunes y estados visuales.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "SortableBlock.handleFinishEdit",
+      "displayName": "handleFinishEdit",
+      "signature": "SortableBlock.handleFinishEdit(): inferred-by-TypeScript",
+      "line": 214,
+      "endLine": 219,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "onUpdateLabel",
+        "setIsEditingLabel"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/TimelineRow.tsx",
+        "line": 214
+      },
+      "description": "Coordina `onUpdateLabel`, `setIsEditingLabel` para Componentes comunes y estados visuales.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "SortableBlock.handleKeyDown",
+      "displayName": "handleKeyDown",
+      "signature": "SortableBlock.handleKeyDown(e: React.KeyboardEvent): inferred-by-TypeScript",
+      "line": 221,
+      "endLine": 228,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "handleFinishEdit",
+        "setEditValue",
+        "setIsEditingLabel"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/TimelineRow.tsx",
+        "line": 221
+      },
+      "description": "Coordina `handleFinishEdit`, `setEditValue`, `setIsEditingLabel` para Componentes comunes y estados visuales.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "SortableBlock.handleStartEdit",
+      "displayName": "handleStartEdit",
+      "signature": "SortableBlock.handleStartEdit(): inferred-by-TypeScript",
+      "line": 209,
+      "endLine": 212,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "setEditValue",
+        "setIsEditingLabel"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/TimelineRow.tsx",
+        "line": 209
+      },
+      "description": "Coordina `setEditValue`, `setIsEditingLabel` para Componentes comunes y estados visuales.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "TimelineRow.handleDragEnd",
+      "displayName": "handleDragEnd",
+      "signature": "TimelineRow.handleDragEnd(e: DragEndEvent): inferred-by-TypeScript",
+      "line": 415,
+      "endLine": 426,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "arrayMove",
+        "blocks.findIndex",
+        "onReorder",
+        "setActiveId"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/TimelineRow.tsx",
+        "line": 415
+      },
+      "description": "Coordina `arrayMove`, `blocks.findIndex`, `onReorder` para Componentes comunes y estados visuales.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "TimelineRow.handleDragStart",
+      "displayName": "handleDragStart",
+      "signature": "TimelineRow.handleDragStart(e: DragStartEvent): inferred-by-TypeScript",
+      "line": 411,
+      "endLine": 413,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "String",
+        "setActiveId"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/TimelineRow.tsx",
+        "line": 411
+      },
+      "description": "Coordina `String`, `setActiveId` para Componentes comunes y estados visuales.",
+      "descriptionOrigin": "structural"
+    }
+  ],
+  "hooks": [
+    {
+      "callee": "useId",
+      "scope": "ConditionStatus",
+      "line": 13,
+      "arguments": 0,
+      "path": "src/components/ConditionStatus.tsx"
+    },
+    {
+      "callee": "useId",
+      "scope": "ConditionStatus",
+      "line": 13,
+      "arguments": 0,
+      "path": "src/components/ConditionStatus.tsx"
+    },
+    {
+      "callee": "useId",
+      "scope": "SegmentedControl",
+      "line": 7,
+      "arguments": 0,
+      "path": "src/components/SegmentedControl.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "SegmentedControl",
+      "line": 7,
+      "arguments": 1,
+      "path": "src/components/SegmentedControl.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "SensorDisclosure",
+      "line": 15,
+      "arguments": 1,
+      "path": "src/components/SensorDisclosure.tsx"
+    },
+    {
+      "callee": "useId",
+      "scope": "SensorDisclosure",
+      "line": 16,
+      "arguments": 0,
+      "path": "src/components/SensorDisclosure.tsx"
+    },
+    {
+      "callee": "useId",
+      "scope": "SensorDisclosure",
+      "line": 17,
+      "arguments": 0,
+      "path": "src/components/SensorDisclosure.tsx"
+    },
+    {
+      "callee": "useId",
+      "scope": "SensorDisclosure",
+      "line": 18,
+      "arguments": 0,
+      "path": "src/components/SensorDisclosure.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "SensorDisclosure",
+      "line": 20,
+      "arguments": 2,
+      "path": "src/components/SensorDisclosure.tsx"
+    },
+    {
+      "callee": "useSortable",
+      "scope": "SortableBlock",
+      "line": 187,
+      "arguments": 1,
+      "path": "src/components/TimelineRow.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "SortableBlock",
+      "line": 190,
+      "arguments": 1,
+      "path": "src/components/TimelineRow.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "SortableBlock",
+      "line": 191,
+      "arguments": 1,
+      "path": "src/components/TimelineRow.tsx"
+    },
+    {
+      "callee": "useSensors",
+      "scope": "TimelineRow",
+      "line": 396,
+      "arguments": 2,
+      "path": "src/components/TimelineRow.tsx"
+    },
+    {
+      "callee": "useSensor",
+      "scope": "TimelineRow",
+      "line": 397,
+      "arguments": 2,
+      "path": "src/components/TimelineRow.tsx"
+    },
+    {
+      "callee": "useSensor",
+      "scope": "TimelineRow",
+      "line": 400,
+      "arguments": 2,
+      "path": "src/components/TimelineRow.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "TimelineRow",
+      "line": 405,
+      "arguments": 1,
+      "path": "src/components/TimelineRow.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "TimelineRow",
+      "line": 406,
+      "arguments": 1,
+      "path": "src/components/TimelineRow.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "ToggleButton",
+      "line": 54,
+      "arguments": 1,
+      "path": "src/components/ToggleButton.tsx"
+    },
+    {
+      "callee": "useReducedMotion",
+      "scope": "ToggleButton",
+      "line": 56,
+      "arguments": 0,
+      "path": "src/components/ToggleButton.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "ToggleButton",
+      "line": 58,
+      "arguments": 2,
+      "path": "src/components/ToggleButton.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "ToggleButton",
+      "line": 67,
+      "arguments": 2,
+      "path": "src/components/ToggleButton.tsx"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "ToggleButton",
+      "line": 73,
+      "arguments": 2,
+      "path": "src/components/ToggleButton.tsx"
+    },
+    {
+      "callee": "useMediaQuery",
+      "scope": "Modal",
+      "line": 36,
+      "arguments": 1,
+      "path": "src/components/modal.tsx"
+    },
+    {
+      "callee": "useReducedMotion",
+      "scope": "Modal",
+      "line": 37,
+      "arguments": 0,
+      "path": "src/components/modal.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "Modal",
+      "line": 38,
+      "arguments": 1,
+      "path": "src/components/modal.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "Modal",
+      "line": 40,
+      "arguments": 1,
+      "path": "src/components/modal.tsx"
+    },
+    {
+      "callee": "useModalScrollLock",
+      "scope": "Modal",
+      "line": 45,
+      "arguments": 1,
+      "path": "src/components/modal.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "Modal",
+      "line": 47,
+      "arguments": 2,
+      "path": "src/components/modal.tsx"
+    },
+    {
+      "callee": "useLayoutEffect",
+      "scope": "Modal",
+      "line": 52,
+      "arguments": 2,
+      "path": "src/components/modal.tsx"
+    }
+  ]
+}

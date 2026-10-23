@@ -1,0 +1,23 @@
+{
+  "id": "AMDOC-ROOT-NNN",
+  "title": "Diferencia concreta observada",
+  "priority": "alta | media | baja",
+  "category": "Tipo de inconsistencia o revisión",
+  "status": "abierto | revisar | reportado | resuelto | descartado",
+  "certainty": "observed | resolved | inferred | unknown | contradicted",
+  "modules": ["root:module/relative/anchor.h"],
+  "repositories": ["Nombre real del repositorio"],
+  "observation": "Qué muestran las fuentes; conservar ambas si hay contradicción.",
+  "impact": "Disparador, efecto y qué parte sigue sin comprobarse.",
+  "proposal": "Decisión o corrección acotada a considerar, sin aplicarla por implicación.",
+  "code": ["root:relative/file.c:ExactSymbol"],
+  "documentation": [
+    {
+      "label": "Nombre de la sección afectada",
+      "path": "published/root/libraries/slug.md#fn-exact_symbol",
+      "selector": "root:module/relative/anchor.h / functions[name=Exact_Symbol]"
+    }
+  ],
+  "closure": "Qué falta y qué documentación se actualiza junto al código.",
+  "history": [{"date": "YYYY-MM-DD", "action": "Registro inicial", "codeCommit": null, "documentationCommit": null}]
+}

@@ -1,0 +1,2622 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "web:module/src/features/lineFollow/useLineDevice.ts",
+  "slug": "line-follow",
+  "title": "Calibración y seguimiento de línea del dispositivo",
+  "target": "web",
+  "kind": "integración",
+  "status": "source-documented",
+  "snapshotDate": "2026-10-20",
+  "verification": "not-run-user-instruction",
+  "responsibility": "Presenta sesión de calibración blanco/pista y habilita seguimiento con estado del dispositivo.",
+  "scope": "Operaciones/sessionId y estado de 168 bytes convertido por ESP; no recalcula captura DMA en Web.",
+  "state": "Hook mantiene estado/progreso/rechazo; el ID de sesión confirma/cancela la operación del equipo, no la identidad de un componente.",
+  "modularity": "Integración de API y UI; separada de las herramientas de calibración local/simulada.",
+  "lifecycle": [
+    "Arrancar blanco/pista con sesión inicial; usar sessionId devuelto para confirmar/cancelar.",
+    "Mostrar estabilidad/calidad/frescura/rechazo sin convertir guardas en éxito."
+  ],
+  "interactions": [
+    "F4 posee perfiles y revisión blanco-pista; ESP decodifica y Web presenta.",
+    "Códigos OLED de esta familia requieren render/campos además de controles de página Web."
+  ],
+  "limitations": [
+    "Botón de seguimiento y pantalla OLED de seguimiento no son el mismo consumidor.",
+    "No asumir render exacto por tener una página de calibración operativa."
+  ],
+  "relationships": [],
+  "findings": [
+    "AMDOC-WEB-009"
+  ],
+  "files": [
+    {
+      "rootId": "web",
+      "path": "src/features/lineFollow/LineDeviceCalibration.tsx",
+      "sha256": "892057e0736bf8a4823da53a9b557cc570c8fe704d219529ddba663902c66960",
+      "imports": [
+        "../../components/ConditionStatus",
+        "../../components/TransportActionButton",
+        "./lineFollow.css",
+        "./useLineDevice",
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/features/lineFollow/LineFollowPanel.tsx",
+      "sha256": "1051126febe29e46693f4f4949093bf41ff244f36267fe7713db4a4df3370d7d",
+      "imports": [
+        "../../components/CarModeSelectorModal",
+        "../../components/ConditionStatus",
+        "../../components/TransportActionButton",
+        "../autoMotion/MotionReadiness",
+        "../autoMotion/MotorDialog",
+        "../autoMotion/useAutoMotion",
+        "./LineDeviceCalibration",
+        "./lineFollow.css",
+        "./useLineDevice",
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/features/lineFollow/lineFollow.css",
+      "sha256": "3ac7b6f84ac33b883a416e6143c3055afa719c120dd5119a5411eb0f5ef89cf8",
+      "imports": [],
+      "analysisLevel": "support-inventory"
+    },
+    {
+      "rootId": "web",
+      "path": "src/features/lineFollow/useLineDevice.ts",
+      "sha256": "679cb499155b751d9242e65d9af53b3fb4c264ec1c12af9c115b2addb2c5fbe5",
+      "imports": [
+        "../../contexts/UserContext",
+        "../../hooks/useWebSocket",
+        "../../protocol/wsApi",
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/pages/TrackFollowerSection.tsx",
+      "sha256": "ae100afc801f8fc22c75a643b8cefe4190b582fdcdbdc86a6f9d328c4d1415d8",
+      "imports": [
+        "../components/IrObjectDetectionMarkers",
+        "../components/ModelLoadBoundary",
+        "../components/ModelLoadingScreen",
+        "../components/PageHeader",
+        "../components/SectionStatusStrip",
+        "../components/SensorDisclosure",
+        "../components/SimulatedBadge",
+        "../components/ThemeModeToggleCard",
+        "../components/TransportActionButton",
+        "../components/WebGLCanvas",
+        "../components/modal",
+        "../contexts/EspWifiStatusContext",
+        "../contexts/IrEmittersContext",
+        "../contexts/UserContext",
+        "../features/ir/irCalibration",
+        "../features/ir/irCalibrationStorage",
+        "../features/ir/irEmitterGeometry",
+        "../features/ir/irObjectModel",
+        "../features/lineFollow/LineFollowPanel",
+        "../hooks/useSensorSubscription",
+        "../hooks/useWebSocket",
+        "../protocol/f4Payloads",
+        "../utils/dracoLoader",
+        "../utils/localModel",
+        "@react-three/drei",
+        "@react-three/fiber",
+        "react",
+        "sonner",
+        "three",
+        "three/addons/loaders/GLTFLoader.js"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    }
+  ],
+  "types": [
+    {
+      "name": "LineProfile",
+      "kind": "TypeAliasDeclaration",
+      "fields": [
+        {
+          "name": "means",
+          "declaration": "means: number[][]",
+          "callback": false,
+          "ownerType": "LineProfile",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/lineFollow/useLineDevice.ts",
+            "line": 6
+          },
+          "description": "Dato de estado/configuración `means`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "noise",
+          "declaration": "noise: number[][]",
+          "callback": false,
+          "ownerType": "LineProfile",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/lineFollow/useLineDevice.ts",
+            "line": 6
+          },
+          "description": "Dato de estado/configuración `noise`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "usefulScans",
+          "declaration": "usefulScans: number",
+          "callback": false,
+          "ownerType": "LineProfile",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/lineFollow/useLineDevice.ts",
+            "line": 6
+          },
+          "description": "Dato de estado/configuración `usefulScans`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "pitchDeg",
+          "declaration": "pitchDeg: number",
+          "callback": false,
+          "ownerType": "LineProfile",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/lineFollow/useLineDevice.ts",
+            "line": 6
+          },
+          "description": "Ángulo en grados; respetar eje y referencia de esta librería."
+        },
+        {
+          "name": "rollDeg",
+          "declaration": "rollDeg: number",
+          "callback": false,
+          "ownerType": "LineProfile",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/lineFollow/useLineDevice.ts",
+            "line": 6
+          },
+          "description": "Ángulo en grados; respetar eje y referencia de esta librería."
+        },
+        {
+          "name": "yawDeg",
+          "declaration": "yawDeg: number",
+          "callback": false,
+          "ownerType": "LineProfile",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/lineFollow/useLineDevice.ts",
+            "line": 6
+          },
+          "description": "Ángulo en grados; respetar eje y referencia de esta librería."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/lineFollow/useLineDevice.ts",
+        "line": 6
+      }
+    },
+    {
+      "name": "LineDeviceState",
+      "kind": "TypeAliasDeclaration",
+      "fields": [
+        {
+          "name": "status",
+          "declaration": "status: number",
+          "callback": false,
+          "ownerType": "LineDeviceState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/lineFollow/useLineDevice.ts",
+            "line": 8
+          },
+          "description": "Último resultado y guardas del módulo; los getters pueden devolver una vista de este almacenamiento."
+        },
+        {
+          "name": "version",
+          "declaration": "version: number",
+          "callback": false,
+          "ownerType": "LineDeviceState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/lineFollow/useLineDevice.ts",
+            "line": 8
+          },
+          "description": "Dato de estado/configuración `version`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "calibrationState",
+          "declaration": "calibrationState: number",
+          "callback": false,
+          "ownerType": "LineDeviceState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/lineFollow/useLineDevice.ts",
+            "line": 8
+          },
+          "description": "Dato de estado/configuración `calibrationState`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "target",
+          "declaration": "target: number",
+          "callback": false,
+          "ownerType": "LineDeviceState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/lineFollow/useLineDevice.ts",
+            "line": 8
+          },
+          "description": "Dato de estado/configuración `target`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "phase",
+          "declaration": "phase: number",
+          "callback": false,
+          "ownerType": "LineDeviceState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/lineFollow/useLineDevice.ts",
+            "line": 8
+          },
+          "description": "Dato de estado/configuración `phase`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "progress",
+          "declaration": "progress: number",
+          "callback": false,
+          "ownerType": "LineDeviceState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/lineFollow/useLineDevice.ts",
+            "line": 9
+          },
+          "description": "Dato de estado/configuración `progress`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "calibrationReason",
+          "declaration": "calibrationReason: number",
+          "callback": false,
+          "ownerType": "LineDeviceState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/lineFollow/useLineDevice.ts",
+            "line": 9
+          },
+          "description": "Dato de estado/configuración `calibrationReason`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "followReason",
+          "declaration": "followReason: number",
+          "callback": false,
+          "ownerType": "LineDeviceState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/lineFollow/useLineDevice.ts",
+            "line": 9
+          },
+          "description": "Dato de estado/configuración `followReason`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "whiteValid",
+          "declaration": "whiteValid: boolean",
+          "callback": false,
+          "ownerType": "LineDeviceState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/lineFollow/useLineDevice.ts",
+            "line": 10
+          },
+          "description": "Dato de estado/configuración `whiteValid`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "trackValid",
+          "declaration": "trackValid: boolean",
+          "callback": false,
+          "ownerType": "LineDeviceState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/lineFollow/useLineDevice.ts",
+            "line": 10
+          },
+          "description": "Dato de estado/configuración `trackValid`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "balanceSettled",
+          "declaration": "balanceSettled: boolean",
+          "callback": false,
+          "ownerType": "LineDeviceState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/lineFollow/useLineDevice.ts",
+            "line": 10
+          },
+          "description": "Dato de estado/configuración `balanceSettled`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "following",
+          "declaration": "following: boolean",
+          "callback": false,
+          "ownerType": "LineDeviceState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/lineFollow/useLineDevice.ts",
+            "line": 10
+          },
+          "description": "Dato de estado/configuración `following`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "motionArmed",
+          "declaration": "motionArmed: boolean",
+          "callback": false,
+          "ownerType": "LineDeviceState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/lineFollow/useLineDevice.ts",
+            "line": 11
+          },
+          "description": "Dato de estado/configuración `motionArmed`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "balanceActive",
+          "declaration": "balanceActive: boolean",
+          "callback": false,
+          "ownerType": "LineDeviceState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/lineFollow/useLineDevice.ts",
+            "line": 11
+          },
+          "description": "Dato de estado/configuración `balanceActive`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "safetyStop",
+          "declaration": "safetyStop: boolean",
+          "callback": false,
+          "ownerType": "LineDeviceState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/lineFollow/useLineDevice.ts",
+            "line": 11
+          },
+          "description": "Dato de estado/configuración `safetyStop`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "routeValid",
+          "declaration": "routeValid: boolean",
+          "callback": false,
+          "ownerType": "LineDeviceState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/lineFollow/useLineDevice.ts",
+            "line": 11
+          },
+          "description": "Dato de estado/configuración `routeValid`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "carMode",
+          "declaration": "carMode: number",
+          "callback": false,
+          "ownerType": "LineDeviceState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/lineFollow/useLineDevice.ts",
+            "line": 12
+          },
+          "description": "Dato de estado/configuración `carMode`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "pattern",
+          "declaration": "pattern: number",
+          "callback": false,
+          "ownerType": "LineDeviceState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/lineFollow/useLineDevice.ts",
+            "line": 12
+          },
+          "description": "Dato de estado/configuración `pattern`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "confidence",
+          "declaration": "confidence: number",
+          "callback": false,
+          "ownerType": "LineDeviceState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/lineFollow/useLineDevice.ts",
+            "line": 12
+          },
+          "description": "Dato de estado/configuración `confidence`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "sessionId",
+          "declaration": "sessionId: number",
+          "callback": false,
+          "ownerType": "LineDeviceState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/lineFollow/useLineDevice.ts",
+            "line": 12
+          },
+          "description": "Dato de estado/configuración `sessionId`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "whiteRevision",
+          "declaration": "whiteRevision: number",
+          "callback": false,
+          "ownerType": "LineDeviceState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/lineFollow/useLineDevice.ts",
+            "line": 13
+          },
+          "description": "Dato de estado/configuración `whiteRevision`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "trackWhiteRevision",
+          "declaration": "trackWhiteRevision: number",
+          "callback": false,
+          "ownerType": "LineDeviceState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/lineFollow/useLineDevice.ts",
+            "line": 13
+          },
+          "description": "Dato de estado/configuración `trackWhiteRevision`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "usefulScans",
+          "declaration": "usefulScans: number",
+          "callback": false,
+          "ownerType": "LineDeviceState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/lineFollow/useLineDevice.ts",
+            "line": 13
+          },
+          "description": "Dato de estado/configuración `usefulScans`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "neutralPitchDeg",
+          "declaration": "neutralPitchDeg: number",
+          "callback": false,
+          "ownerType": "LineDeviceState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/lineFollow/useLineDevice.ts",
+            "line": 14
+          },
+          "description": "Ángulo en grados; respetar eje y referencia de esta librería."
+        },
+        {
+          "name": "referenceRollDeg",
+          "declaration": "referenceRollDeg: number",
+          "callback": false,
+          "ownerType": "LineDeviceState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/lineFollow/useLineDevice.ts",
+            "line": 14
+          },
+          "description": "Ángulo en grados; respetar eje y referencia de esta librería."
+        },
+        {
+          "name": "referenceYawDeg",
+          "declaration": "referenceYawDeg: number",
+          "callback": false,
+          "ownerType": "LineDeviceState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/lineFollow/useLineDevice.ts",
+            "line": 14
+          },
+          "description": "Ángulo en grados; respetar eje y referencia de esta librería."
+        },
+        {
+          "name": "white",
+          "declaration": "white: LineProfile",
+          "callback": false,
+          "ownerType": "LineDeviceState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/lineFollow/useLineDevice.ts",
+            "line": 15
+          },
+          "description": "Dato de estado/configuración `white`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "track",
+          "declaration": "track: LineProfile",
+          "callback": false,
+          "ownerType": "LineDeviceState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/lineFollow/useLineDevice.ts",
+            "line": 15
+          },
+          "description": "Dato de estado/configuración `track`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/lineFollow/useLineDevice.ts",
+        "line": 7
+      }
+    },
+    {
+      "name": "LineDevice",
+      "kind": "TypeAliasDeclaration",
+      "type": "ReturnType<typeof useLineDevice>",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/lineFollow/useLineDevice.ts",
+        "line": 128
+      }
+    },
+    {
+      "name": "CameraMode",
+      "kind": "TypeAliasDeclaration",
+      "type": "\"top\" | \"iso\" | \"chase\" | \"orbit\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/TrackFollowerSection.tsx",
+        "line": 43
+      }
+    },
+    {
+      "name": "RenderMode",
+      "kind": "TypeAliasDeclaration",
+      "type": "\"points\" | \"ribbon\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/TrackFollowerSection.tsx",
+        "line": 44
+      }
+    },
+    {
+      "name": "SampleSource",
+      "kind": "TypeAliasDeclaration",
+      "type": "\"real\" | \"simulado\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/TrackFollowerSection.tsx",
+        "line": 45
+      }
+    },
+    {
+      "name": "TrackPose",
+      "kind": "TypeAliasDeclaration",
+      "fields": [
+        {
+          "name": "x",
+          "declaration": "x: number",
+          "callback": false,
+          "ownerType": "TrackPose",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/TrackFollowerSection.tsx",
+            "line": 48
+          },
+          "description": "Dato de estado/configuración `x`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "z",
+          "declaration": "z: number",
+          "callback": false,
+          "ownerType": "TrackPose",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/TrackFollowerSection.tsx",
+            "line": 49
+          },
+          "description": "Dato de estado/configuración `z`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "theta",
+          "declaration": "theta: number",
+          "callback": false,
+          "ownerType": "TrackPose",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/TrackFollowerSection.tsx",
+            "line": 50
+          },
+          "description": "Dato de estado/configuración `theta`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "seq",
+          "declaration": "seq: number",
+          "callback": false,
+          "ownerType": "TrackPose",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/TrackFollowerSection.tsx",
+            "line": 51
+          },
+          "description": "Dato de estado/configuración `seq`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/TrackFollowerSection.tsx",
+        "line": 47
+      }
+    },
+    {
+      "name": "TrackPoint",
+      "kind": "TypeAliasDeclaration",
+      "fields": [
+        {
+          "name": "id",
+          "declaration": "id: string",
+          "callback": false,
+          "ownerType": "TrackPoint",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/TrackFollowerSection.tsx",
+            "line": 55
+          },
+          "description": "Dato de estado/configuración `id`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "seq",
+          "declaration": "seq: number",
+          "callback": false,
+          "ownerType": "TrackPoint",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/TrackFollowerSection.tsx",
+            "line": 56
+          },
+          "description": "Dato de estado/configuración `seq`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "x",
+          "declaration": "x: number",
+          "callback": false,
+          "ownerType": "TrackPoint",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/TrackFollowerSection.tsx",
+            "line": 57
+          },
+          "description": "Dato de estado/configuración `x`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "z",
+          "declaration": "z: number",
+          "callback": false,
+          "ownerType": "TrackPoint",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/TrackFollowerSection.tsx",
+            "line": 58
+          },
+          "description": "Dato de estado/configuración `z`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "confidence",
+          "declaration": "confidence: number",
+          "callback": false,
+          "ownerType": "TrackPoint",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/TrackFollowerSection.tsx",
+            "line": 59
+          },
+          "description": "Dato de estado/configuración `confidence`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "lateralErrorMm",
+          "declaration": "lateralErrorMm: number",
+          "callback": false,
+          "ownerType": "TrackPoint",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/TrackFollowerSection.tsx",
+            "line": 60
+          },
+          "description": "Dato de estado/configuración `lateralErrorMm`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "source",
+          "declaration": "source: SampleSource",
+          "callback": false,
+          "ownerType": "TrackPoint",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/TrackFollowerSection.tsx",
+            "line": 61
+          },
+          "description": "Dato de estado/configuración `source`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "segmentId",
+          "declaration": "segmentId: number",
+          "callback": false,
+          "ownerType": "TrackPoint",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/TrackFollowerSection.tsx",
+            "line": 62
+          },
+          "description": "Dato de estado/configuración `segmentId`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "tsHostMs",
+          "declaration": "tsHostMs: number",
+          "callback": false,
+          "ownerType": "TrackPoint",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/TrackFollowerSection.tsx",
+            "line": 63
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/TrackFollowerSection.tsx",
+        "line": 54
+      }
+    },
+    {
+      "name": "ObstaclePoint",
+      "kind": "TypeAliasDeclaration",
+      "fields": [
+        {
+          "name": "id",
+          "declaration": "id: string",
+          "callback": false,
+          "ownerType": "ObstaclePoint",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/TrackFollowerSection.tsx",
+            "line": 67
+          },
+          "description": "Dato de estado/configuración `id`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "seq",
+          "declaration": "seq: number",
+          "callback": false,
+          "ownerType": "ObstaclePoint",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/TrackFollowerSection.tsx",
+            "line": 68
+          },
+          "description": "Dato de estado/configuración `seq`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "x",
+          "declaration": "x: number",
+          "callback": false,
+          "ownerType": "ObstaclePoint",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/TrackFollowerSection.tsx",
+            "line": 69
+          },
+          "description": "Dato de estado/configuración `x`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "z",
+          "declaration": "z: number",
+          "callback": false,
+          "ownerType": "ObstaclePoint",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/TrackFollowerSection.tsx",
+            "line": 70
+          },
+          "description": "Dato de estado/configuración `z`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "confidence",
+          "declaration": "confidence: number",
+          "callback": false,
+          "ownerType": "ObstaclePoint",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/TrackFollowerSection.tsx",
+            "line": 71
+          },
+          "description": "Dato de estado/configuración `confidence`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "label",
+          "declaration": "label: string",
+          "callback": false,
+          "ownerType": "ObstaclePoint",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/TrackFollowerSection.tsx",
+            "line": 72
+          },
+          "description": "Dato de estado/configuración `label`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "source",
+          "declaration": "source: SampleSource",
+          "callback": false,
+          "ownerType": "ObstaclePoint",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/TrackFollowerSection.tsx",
+            "line": 73
+          },
+          "description": "Dato de estado/configuración `source`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/TrackFollowerSection.tsx",
+        "line": 66
+      }
+    },
+    {
+      "name": "StreamState",
+      "kind": "TypeAliasDeclaration",
+      "fields": [
+        {
+          "name": "active",
+          "declaration": "active: boolean",
+          "callback": false,
+          "ownerType": "StreamState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/TrackFollowerSection.tsx",
+            "line": 77
+          },
+          "description": "Dato de estado/configuración `active`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "pending",
+          "declaration": "pending: boolean",
+          "callback": false,
+          "ownerType": "StreamState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/TrackFollowerSection.tsx",
+            "line": 78
+          },
+          "description": "Dato de estado/configuración `pending`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "packets",
+          "declaration": "packets: number",
+          "callback": false,
+          "ownerType": "StreamState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/TrackFollowerSection.tsx",
+            "line": 79
+          },
+          "description": "Dato de estado/configuración `packets`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "lastSeq",
+          "declaration": "lastSeq: number | null",
+          "callback": false,
+          "ownerType": "StreamState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/TrackFollowerSection.tsx",
+            "line": 80
+          },
+          "description": "Dato de estado/configuración `lastSeq`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "updatedAt",
+          "declaration": "updatedAt: number | null",
+          "callback": false,
+          "ownerType": "StreamState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/TrackFollowerSection.tsx",
+            "line": 81
+          },
+          "description": "Dato de estado/configuración `updatedAt`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "statusText",
+          "declaration": "statusText: string",
+          "callback": false,
+          "ownerType": "StreamState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/TrackFollowerSection.tsx",
+            "line": 82
+          },
+          "description": "Dato de estado/configuración `statusText`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "lastFrameHex",
+          "declaration": "lastFrameHex: string",
+          "callback": false,
+          "ownerType": "StreamState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/TrackFollowerSection.tsx",
+            "line": 83
+          },
+          "description": "Dato de estado/configuración `lastFrameHex`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/TrackFollowerSection.tsx",
+        "line": 76
+      }
+    },
+    {
+      "name": "LineObservation",
+      "kind": "TypeAliasDeclaration",
+      "fields": [
+        {
+          "name": "present",
+          "declaration": "present: boolean",
+          "callback": false,
+          "ownerType": "LineObservation",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/TrackFollowerSection.tsx",
+            "line": 707
+          },
+          "description": "Dato de estado/configuración `present`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "confidence",
+          "declaration": "confidence: number",
+          "callback": false,
+          "ownerType": "LineObservation",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/TrackFollowerSection.tsx",
+            "line": 708
+          },
+          "description": "Dato de estado/configuración `confidence`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "lateralM",
+          "declaration": "lateralM: number",
+          "callback": false,
+          "ownerType": "LineObservation",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/pages/TrackFollowerSection.tsx",
+            "line": 709
+          },
+          "description": "Dato de estado/configuración `lateralM`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/TrackFollowerSection.tsx",
+        "line": 706
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "ConsoleGroup",
+      "displayName": "ConsoleGroup",
+      "signature": "ConsoleGroup({\r\n  title,\r\n  children,\r\n}: { title: string; children: ReactNode; }): inferred-by-TypeScript",
+      "line": 1217,
+      "endLine": 1230,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/TrackFollowerSection.tsx",
+        "line": 1217
+      },
+      "description": "Operación Console Group de Calibración y seguimiento de línea del dispositivo; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "FallbackRobotBody",
+      "displayName": "FallbackRobotBody",
+      "signature": "FallbackRobotBody(): inferred-by-TypeScript",
+      "line": 1077,
+      "endLine": 1090,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/TrackFollowerSection.tsx",
+        "line": 1077
+      },
+      "description": "Operación Fallback Robot Body de Calibración y seguimiento de línea del dispositivo; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "FallbackRobotMarker",
+      "displayName": "FallbackRobotMarker",
+      "signature": "FallbackRobotMarker({\r\n  pose,\r\n  latestLine,\r\n}: { pose: TrackPose; latestLine: LineObservation; }): inferred-by-TypeScript",
+      "line": 1062,
+      "endLine": 1075,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/TrackFollowerSection.tsx",
+        "line": 1062
+      },
+      "description": "Operación Fallback Robot Marker de Calibración y seguimiento de línea del dispositivo; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "InlineToggle",
+      "displayName": "InlineToggle",
+      "signature": "InlineToggle({\r\n  label,\r\n  active,\r\n  onClick,\r\n}: { label: string; active: boolean; onClick: () => void; }): inferred-by-TypeScript",
+      "line": 1270,
+      "endLine": 1291,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/TrackFollowerSection.tsx",
+        "line": 1270
+      },
+      "description": "Operación Inline Toggle de Calibración y seguimiento de línea del dispositivo; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "LineDeviceCalibration",
+      "displayName": "LineDeviceCalibration",
+      "signature": "LineDeviceCalibration({ device, embedded=false }: { device: LineDevice; embedded?:boolean }): inferred-by-TypeScript",
+      "line": 9,
+      "endLine": 51,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.min",
+        "[s.white, s.track].map",
+        "lineReason",
+        "s.usefulScans.toLocaleString"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/lineFollow/LineDeviceCalibration.tsx",
+        "line": 9
+      },
+      "description": "Coordina `Math.min`, `[s.white, s.track].map`, `lineReason` para Calibración y seguimiento de línea del dispositivo.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "LineDeviceCalibrationPanel",
+      "displayName": "LineDeviceCalibrationPanel",
+      "signature": "LineDeviceCalibrationPanel({ onBusyChange }: { onBusyChange?: (busy: boolean) => void }): inferred-by-TypeScript",
+      "line": 53,
+      "endLine": 57,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useEffect",
+        "useLineDevice"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/lineFollow/LineDeviceCalibration.tsx",
+        "line": 53
+      },
+      "description": "Coordina `useEffect`, `useLineDevice` para Calibración y seguimiento de línea del dispositivo.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "LineFollowPanel",
+      "displayName": "LineFollowPanel",
+      "signature": "LineFollowPanel(): inferred-by-TypeScript",
+      "line": 12,
+      "endLine": 76,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "[!s.whiteValid ? \"Calibrar blanco: los tres sensores sobre blanco\" : null, !s.trackValid ? \"Calibrar sobre pista: blanco, negro, blanco\" : null].filter",
+        "[\"Iniciando\", \"Deteniendo\"].includes",
+        "lineReason",
+        "missing.map",
+        "new URLSearchParams(window.location.search).get",
+        "useAutoMotion",
+        "useLineDevice",
+        "useState"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/lineFollow/LineFollowPanel.tsx",
+        "line": 12
+      },
+      "description": "Coordina `[!s.whiteValid ? \"Calibrar blanco: los tres sensores sobre blanco\" : null, !s.trackValid ? \"Calibrar sobre pista: blanco, negro, blanco\" : null].filter`, `[\"Iniciando\", \"Deteniendo\"].includes`, `lineReason` para Calibración y seguimiento de línea del dispositivo.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ObstacleInstances",
+      "displayName": "ObstacleInstances",
+      "signature": "ObstacleInstances({ obstacles }: { obstacles: ObstaclePoint[] }): inferred-by-TypeScript",
+      "line": 989,
+      "endLine": 1000,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "obstacles.slice",
+        "obstacles.slice(-MAX_OBSTACLES).map"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/TrackFollowerSection.tsx",
+        "line": 989
+      },
+      "description": "Coordina `obstacles.slice`, `obstacles.slice(-MAX_OBSTACLES).map` para Calibración y seguimiento de línea del dispositivo.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "PanelCard",
+      "displayName": "PanelCard",
+      "signature": "PanelCard({\r\n  title,\r\n  kicker,\r\n  children,\r\n}: { title: string; kicker: string; children: ReactNode; }): inferred-by-TypeScript",
+      "line": 1197,
+      "endLine": 1215,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/TrackFollowerSection.tsx",
+        "line": 1197
+      },
+      "description": "Operación Panel Card de Calibración y seguimiento de línea del dispositivo; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "SegmentButton",
+      "displayName": "SegmentButton",
+      "signature": "SegmentButton({\r\n  active,\r\n  label,\r\n  onClick,\r\n}: { active: boolean; label: string; onClick: () => void; }): inferred-by-TypeScript",
+      "line": 1249,
+      "endLine": 1268,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/TrackFollowerSection.tsx",
+        "line": 1249
+      },
+      "description": "Operación Segment Button de Calibración y seguimiento de línea del dispositivo; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "SensorBars",
+      "displayName": "SensorBars",
+      "signature": "SensorBars({ snapshot }: { snapshot: IrSnapshot }): inferred-by-TypeScript",
+      "line": 1177,
+      "endLine": 1195,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "LINE_CHANNELS.map"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/TrackFollowerSection.tsx",
+        "line": 1177
+      },
+      "description": "Adapta la llamada a `LINE_CHANNELS.map` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "StatusPair",
+      "displayName": "StatusPair",
+      "signature": "StatusPair({\r\n  label,\r\n  value,\r\n  tone = \"muted\",\r\n}: { label: string; value: string; tone?: \"ok\" | \"error\" | \"info\" | \"warn\" | \"muted\"; }): inferred-by-TypeScript",
+      "line": 1232,
+      "endLine": 1247,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/TrackFollowerSection.tsx",
+        "line": 1232
+      },
+      "description": "Operación Status Pair de Calibración y seguimiento de línea del dispositivo; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "TrackActionButton",
+      "displayName": "TrackActionButton",
+      "signature": "TrackActionButton({\r\n  title,\r\n  subtitle,\r\n  tone,\r\n  disabled = false,\r\n  onClick,\r\n}: { title: string; subtitle: string; tone: \"cyan\" | \"emerald\" | \"rose\" | \"muted\"; disabled?: boolean; onClick: () => void; }): inferred-by-TypeScript",
+      "line": 1293,
+      "endLine": 1327,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "title.startsWith"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/TrackFollowerSection.tsx",
+        "line": 1293
+      },
+      "description": "Adapta la llamada a `title.startsWith` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "TrackCameraRig",
+      "displayName": "TrackCameraRig",
+      "signature": "TrackCameraRig({ pose, mode, onManualCameraChange }: { pose: TrackPose; mode: CameraMode | null; onManualCameraChange: () => void; }): inferred-by-TypeScript",
+      "line": 831,
+      "endLine": 878,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useEffect",
+        "useFrame",
+        "useRef",
+        "useThree"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/TrackFollowerSection.tsx",
+        "line": 831
+      },
+      "description": "Coordina `useEffect`, `useFrame`, `useRef` para Calibración y seguimiento de línea del dispositivo.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "TrackFollowerSection",
+      "displayName": "TrackFollowerSection",
+      "signature": "TrackFollowerSection(): inferred-by-TypeScript",
+      "line": 123,
+      "endLine": 704,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.round",
+        "String",
+        "formatDecimal",
+        "formatHexByte",
+        "useCallback",
+        "useEffect",
+        "useIrEmitters",
+        "useMemo",
+        "useRef",
+        "useSensorSubscription",
+        "useState",
+        "useUser",
+        "useWebSocket"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/TrackFollowerSection.tsx",
+        "line": 123
+      },
+      "description": "Coordina `Math.round`, `String`, `formatDecimal` para Calibración y seguimiento de línea del dispositivo.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "TrackGround",
+      "displayName": "TrackGround",
+      "signature": "TrackGround(): inferred-by-TypeScript",
+      "line": 895,
+      "endLine": 913,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useMemo"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/TrackFollowerSection.tsx",
+        "line": 895
+      },
+      "description": "Adapta la llamada a `useMemo` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "TrackMapScene",
+      "displayName": "TrackMapScene",
+      "signature": "TrackMapScene({\r\n  modelUrl,\r\n  points,\r\n  obstacles,\r\n  pose,\r\n  cameraMode,\r\n  onManualCameraChange,\r\n  renderMode,\r\n  debugSensors,\r\n  objectDetections,\r\n  latestLine,\r\n}: { modelUrl: string; points: TrackPoint[]; obstacles: ObstaclePoint[]; pose: TrackPose; cameraMode: CameraMode | null; onManualCameraChange: () => void; renderMode: RenderMode; debugSensors: boolean; objectDetections: IrObjectAxialDetections; latestLine: LineObservation; }): inferred-by-TypeScript",
+      "line": 772,
+      "endLine": 829,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/TrackFollowerSection.tsx",
+        "line": 772
+      },
+      "description": "Operación Track Map Scene de Calibración y seguimiento de línea del dispositivo; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "TrackPointInstances",
+      "displayName": "TrackPointInstances",
+      "signature": "TrackPointInstances({ points }: { points: TrackPoint[] }): inferred-by-TypeScript",
+      "line": 915,
+      "endLine": 949,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useEffect",
+        "useMemo",
+        "useRef"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/TrackFollowerSection.tsx",
+        "line": 915
+      },
+      "description": "Coordina `useEffect`, `useMemo`, `useRef` para Calibración y seguimiento de línea del dispositivo.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "TrackRibbon",
+      "displayName": "TrackRibbon",
+      "signature": "TrackRibbon({ points }: { points: TrackPoint[] }): inferred-by-TypeScript",
+      "line": 951,
+      "endLine": 987,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "segments.map",
+        "useMemo"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/TrackFollowerSection.tsx",
+        "line": 951
+      },
+      "description": "Coordina `segments.map`, `useMemo` para Calibración y seguimiento de línea del dispositivo.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "TrackSensorOverlay",
+      "displayName": "TrackSensorOverlay",
+      "signature": "TrackSensorOverlay({\r\n  latestLine,\r\n}: { latestLine: LineObservation; }): inferred-by-TypeScript",
+      "line": 1092,
+      "endLine": 1111,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/TrackFollowerSection.tsx",
+        "line": 1092
+      },
+      "description": "Operación Track Sensor Overlay de Calibración y seguimiento de línea del dispositivo; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "TrackStatusStrip",
+      "displayName": "TrackStatusStrip",
+      "signature": "TrackStatusStrip({\r\n  connected,\r\n  stream,\r\n  mappingMode,\r\n  mapQuality,\r\n  latestLine,\r\n  pointCount,\r\n  obstaclesCount,\r\n  seqGapCount,\r\n}: { connected: boolean; stream: StreamState; mappingMode: string; mapQuality: string; latestLine: LineObservation; pointCount: number; obstaclesCount: number; seqGapCount: number; }): inferred-by-TypeScript",
+      "line": 1113,
+      "endLine": 1175,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.round",
+        "String",
+        "getEspConnectionDetail",
+        "getEspConnectionLabel",
+        "useEspWifiStatus"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/TrackFollowerSection.tsx",
+        "line": 1113
+      },
+      "description": "Coordina `Math.round`, `String`, `getEspConnectionDetail` para Calibración y seguimiento de línea del dispositivo.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "TrackVehicleModel",
+      "displayName": "TrackVehicleModel",
+      "signature": "TrackVehicleModel({\r\n  modelUrl,\r\n  pose,\r\n  latestLine,\r\n  debugSensors,\r\n  objectDetections,\r\n}: { modelUrl: string; pose: TrackPose; latestLine: LineObservation; debugSensors: boolean; objectDetections: IrObjectAxialDetections; }): inferred-by-TypeScript",
+      "line": 1002,
+      "endLine": 1060,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useEffect",
+        "useLoader",
+        "useMemo",
+        "useRef"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/TrackFollowerSection.tsx",
+        "line": 1002
+      },
+      "description": "Coordina `useEffect`, `useLoader`, `useMemo` para Calibración y seguimiento de línea del dispositivo.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "calibrationBusy",
+      "displayName": "calibrationBusy",
+      "signature": "calibrationBusy(s: LineDeviceState | null): inferred-by-TypeScript",
+      "line": 29,
+      "endLine": 29,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/lineFollow/useLineDevice.ts",
+        "line": 29
+      },
+      "description": "Operación calibration Busy de Calibración y seguimiento de línea del dispositivo; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "clamp",
+      "displayName": "clamp",
+      "signature": "clamp(value: number, min: number, max: number): inferred-by-TypeScript",
+      "line": 1407,
+      "endLine": 1413,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.max",
+        "Math.min",
+        "Number.isFinite"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/TrackFollowerSection.tsx",
+        "line": 1407
+      },
+      "description": "Coordina `Math.max`, `Math.min`, `Number.isFinite` para Calibración y seguimiento de línea del dispositivo.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "clamp01",
+      "displayName": "clamp01",
+      "signature": "clamp01(value: number): inferred-by-TypeScript",
+      "line": 1403,
+      "endLine": 1405,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "clamp"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/TrackFollowerSection.tsx",
+        "line": 1403
+      },
+      "description": "Adapta la llamada a `clamp` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "createIdleTrackIrSnapshot",
+      "displayName": "createIdleTrackIrSnapshot",
+      "signature": "createIdleTrackIrSnapshot(periodMs: number): IrSnapshot",
+      "line": 1329,
+      "endLine": 1348,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "IR_SENSOR_ORDER.map",
+        "Object.fromEntries"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/TrackFollowerSection.tsx",
+        "line": 1329
+      },
+      "description": "Coordina `IR_SENSOR_ORDER.map`, `Object.fromEntries` para Calibración y seguimiento de línea del dispositivo.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "createSimulatedTrackIrSnapshot",
+      "displayName": "createSimulatedTrackIrSnapshot",
+      "signature": "createSimulatedTrackIrSnapshot(seq: number, periodMs: number, objectsEnabled: boolean): IrSnapshot",
+      "line": 1350,
+      "endLine": 1393,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "IR_SENSOR_ORDER.map",
+        "LINE_CHANNELS.filter",
+        "LINE_CHANNELS.forEach",
+        "LINE_CHANNELS.reduce",
+        "Math.max",
+        "Math.round",
+        "Math.sin",
+        "Object.fromEntries"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/TrackFollowerSection.tsx",
+        "line": 1350
+      },
+      "description": "Coordina `IR_SENSOR_ORDER.map`, `LINE_CHANNELS.filter`, `LINE_CHANNELS.forEach` para Calibración y seguimiento de línea del dispositivo.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "deriveLineObservation",
+      "displayName": "deriveLineObservation",
+      "signature": "deriveLineObservation(snapshot: IrSnapshot): LineObservation",
+      "line": 712,
+      "endLine": 734,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Number.isFinite",
+        "clamp",
+        "clamp01"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/TrackFollowerSection.tsx",
+        "line": 712
+      },
+      "description": "Coordina `Number.isFinite`, `clamp`, `clamp01` para Calibración y seguimiento de línea del dispositivo.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "formatDecimal",
+      "displayName": "formatDecimal",
+      "signature": "formatDecimal(value: number, digits: number): inferred-by-TypeScript",
+      "line": 1399,
+      "endLine": 1401,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Number.isFinite",
+        "value.toFixed"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/TrackFollowerSection.tsx",
+        "line": 1399
+      },
+      "description": "Coordina `Number.isFinite`, `value.toFixed` para Calibración y seguimiento de línea del dispositivo.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "formatHexByte",
+      "displayName": "formatHexByte",
+      "signature": "formatHexByte(value: number): inferred-by-TypeScript",
+      "line": 1395,
+      "endLine": 1397,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "value.toString",
+        "value.toString(16).toUpperCase",
+        "value.toString(16).toUpperCase().padStart"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/TrackFollowerSection.tsx",
+        "line": 1395
+      },
+      "description": "Coordina `value.toString`, `value.toString(16).toUpperCase`, `value.toString(16).toUpperCase().padStart` para Calibración y seguimiento de línea del dispositivo.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "lineReason",
+      "displayName": "lineReason",
+      "signature": "lineReason(code: number): inferred-by-TypeScript",
+      "line": 28,
+      "endLine": 28,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/lineFollow/useLineDevice.ts",
+        "line": 28
+      },
+      "description": "Operación line Reason de Calibración y seguimiento de línea del dispositivo; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "parseState",
+      "displayName": "parseState",
+      "signature": "parseState(value: unknown): LineDeviceState",
+      "line": 31,
+      "endLine": 39,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "[0, 1].includes",
+        "[s.calibrationState, s.target, s.phase, s.progress, s.calibrationReason, s.followReason, s.carMode, s.pattern, s.sessionId].every",
+        "[s.whiteValid, s.trackValid, s.balanceSettled, s.following, s.motionArmed, s.balanceActive, s.safetyStop, s.routeValid].every"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/lineFollow/useLineDevice.ts",
+        "line": 31
+      },
+      "description": "Coordina `[0, 1].includes`, `[s.calibrationState, s.target, s.phase, s.progress, s.calibrationReason, s.followReason, s.carMode, s.pattern, s.sessionId].every`, `[s.whiteValid, s.trackValid, s.balanceSettled, s.following, s.motionArmed, s.balanceActive, s.safetyStop, s.routeValid].every` para Calibración y seguimiento de línea del dispositivo.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "projectObstacle",
+      "displayName": "projectObstacle",
+      "signature": "projectObstacle(snapshot: IrSnapshot, source: SampleSource, pose: TrackPose): ObstaclePoint | null",
+      "line": 736,
+      "endLine": 770,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.cos",
+        "Math.sin",
+        "THREE.MathUtils.degToRad",
+        "clamp01"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/TrackFollowerSection.tsx",
+        "line": 736
+      },
+      "description": "Coordina `Math.cos`, `Math.sin`, `THREE.MathUtils.degToRad` para Calibración y seguimiento de línea del dispositivo.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "trackCameraView",
+      "displayName": "trackCameraView",
+      "signature": "trackCameraView(pose: TrackPose, mode: CameraMode): inferred-by-TypeScript",
+      "line": 880,
+      "endLine": 893,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.cos",
+        "Math.sin",
+        "new THREE.Vector3(pose.x, 0.08, pose.z).addScaledVector",
+        "position.set",
+        "position.set(pose.x, 0.95, pose.z).addScaledVector",
+        "position.set(pose.x, 0.95, pose.z).addScaledVector(forward, -1.35) .addScaledVector"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/TrackFollowerSection.tsx",
+        "line": 880
+      },
+      "description": "Coordina `Math.cos`, `Math.sin`, `new THREE.Vector3(pose.x, 0.08, pose.z).addScaledVector` para Calibración y seguimiento de línea del dispositivo.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "useLineDevice",
+      "displayName": "useLineDevice",
+      "signature": "useLineDevice(): inferred-by-TypeScript",
+      "line": 41,
+      "endLine": 127,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "calibrationBusy",
+        "useCallback",
+        "useEffect",
+        "useRef",
+        "useState",
+        "useUser",
+        "useWebSocket"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/lineFollow/useLineDevice.ts",
+        "line": 41
+      },
+      "description": "Coordina `calibrationBusy`, `useCallback`, `useEffect` para Calibración y seguimiento de línea del dispositivo.",
+      "descriptionOrigin": "structural"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "LineFollowPanel.toggleFollowing",
+      "displayName": "toggleFollowing",
+      "signature": "LineFollowPanel.toggleFollowing(): inferred-by-TypeScript",
+      "line": 23,
+      "endLine": 38,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "device.follow",
+        "device.refresh",
+        "lineReason",
+        "setFeedback",
+        "setMissingModal",
+        "setModeModal"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/lineFollow/LineFollowPanel.tsx",
+        "line": 23
+      },
+      "description": "Coordina `device.follow`, `device.refresh`, `lineReason` para Calibración y seguimiento de línea del dispositivo.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "TrackFollowerSection.exportNdjson",
+      "displayName": "exportNdjson",
+      "signature": "TrackFollowerSection.exportNdjson(): inferred-by-TypeScript",
+      "line": 432,
+      "endLine": 468,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "JSON.stringify",
+        "URL.createObjectURL",
+        "URL.revokeObjectURL",
+        "document.body.appendChild",
+        "document.createElement",
+        "lines.join",
+        "link.click",
+        "link.remove",
+        "new Date().toISOString",
+        "new Date().toISOString().replace",
+        "obstacles.map",
+        "toast.success",
+        "trackPoints.map"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/TrackFollowerSection.tsx",
+        "line": 432
+      },
+      "description": "Coordina `JSON.stringify`, `URL.createObjectURL`, `URL.revokeObjectURL` para Calibración y seguimiento de línea del dispositivo.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "TrackFollowerSection.handleSimulationToggle",
+      "displayName": "handleSimulationToggle",
+      "signature": "TrackFollowerSection.handleSimulationToggle(): inferred-by-TypeScript",
+      "line": 315,
+      "endLine": 334,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "createIdleTrackIrSnapshot",
+        "setLastIr",
+        "setObstacles",
+        "setPaused",
+        "setSimulationEnabled",
+        "setSimulationMotion",
+        "setSimulationObjects",
+        "setStream",
+        "setStreamRequested",
+        "setTrackPoints"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/TrackFollowerSection.tsx",
+        "line": 315
+      },
+      "description": "Coordina `createIdleTrackIrSnapshot`, `setLastIr`, `setObstacles` para Calibración y seguimiento de línea del dispositivo.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "TrackFollowerSection.integrateTrackPoint",
+      "displayName": "integrateTrackPoint",
+      "signature": "TrackFollowerSection.integrateTrackPoint(snapshot: IrSnapshot, observation: LineObservation, source: SampleSource): TrackPoint | null",
+      "line": 336,
+      "endLine": 397,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Date.now",
+        "Math.cos",
+        "Math.hypot",
+        "Math.sin",
+        "clamp",
+        "setPose"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/TrackFollowerSection.tsx",
+        "line": 336
+      },
+      "description": "Coordina `Date.now`, `Math.cos`, `Math.hypot` para Calibración y seguimiento de línea del dispositivo.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "TrackFollowerSection.resetSession",
+      "displayName": "resetSession",
+      "signature": "TrackFollowerSection.resetSession(): inferred-by-TypeScript",
+      "line": 419,
+      "endLine": 430,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "setLineLostCount",
+        "setObstacles",
+        "setPose",
+        "setRecording",
+        "setSeqGapCount",
+        "setTrackPoints",
+        "toast.info"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/TrackFollowerSection.tsx",
+        "line": 419
+      },
+      "description": "Coordina `setLineLostCount`, `setObstacles`, `setPose` para Calibración y seguimiento de línea del dispositivo.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "TrackFollowerSection.sendIrStream",
+      "displayName": "sendIrStream",
+      "signature": "TrackFollowerSection.sendIrStream(enable: boolean): inferred-by-TypeScript",
+      "line": 399,
+      "endLine": 417,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "normalizeIrStreamPeriodMs",
+        "setIrPeriodMs",
+        "setSimulationEnabled",
+        "setStream",
+        "setStreamRequested",
+        "toast.info"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/TrackFollowerSection.tsx",
+        "line": 399
+      },
+      "description": "Coordina `normalizeIrStreamPeriodMs`, `setIrPeriodMs`, `setSimulationEnabled` para Calibración y seguimiento de línea del dispositivo.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "useLineDevice.balance",
+      "displayName": "balance",
+      "signature": "useLineDevice.balance(on: boolean): inferred-by-TypeScript",
+      "line": 111,
+      "endLine": 111,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "commandBalance"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/lineFollow/useLineDevice.ts",
+        "line": 111
+      },
+      "description": "Adapta la llamada a `commandBalance` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "useLineDevice.calibrate",
+      "displayName": "calibrate",
+      "signature": "useLineDevice.calibrate(operation: 0 | 1 | 2 | 3): inferred-by-TypeScript",
+      "line": 104,
+      "endLine": 108,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "command",
+        "setError"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/lineFollow/useLineDevice.ts",
+        "line": 104
+      },
+      "description": "Coordina `command`, `setError` para Calibración y seguimiento de línea del dispositivo.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "useLineDevice.command",
+      "displayName": "command",
+      "signature": "useLineDevice.command(name: string, args: Record<string, unknown>, label: string): inferred-by-TypeScript",
+      "line": 83,
+      "endLine": 102,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Number",
+        "lineReason",
+        "parseState",
+        "request",
+        "setAction",
+        "setError",
+        "setPending",
+        "setState"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/lineFollow/useLineDevice.ts",
+        "line": 83
+      },
+      "description": "Coordina `Number`, `lineReason`, `parseState` para Calibración y seguimiento de línea del dispositivo.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "useLineDevice.commandBalance",
+      "displayName": "commandBalance",
+      "signature": "useLineDevice.commandBalance(on: boolean): inferred-by-TypeScript",
+      "line": 112,
+      "endLine": 122,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "refresh",
+        "request",
+        "setAction",
+        "setError",
+        "setPending"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/lineFollow/useLineDevice.ts",
+        "line": 112
+      },
+      "description": "Coordina `refresh`, `request`, `setAction` para Calibración y seguimiento de línea del dispositivo.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "useLineDevice.follow",
+      "displayName": "follow",
+      "signature": "useLineDevice.follow(on: boolean): inferred-by-TypeScript",
+      "line": 110,
+      "endLine": 110,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "command"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/lineFollow/useLineDevice.ts",
+        "line": 110
+      },
+      "description": "Adapta la llamada a `command` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "useLineDevice.poll",
+      "displayName": "poll",
+      "signature": "useLineDevice.poll(): inferred-by-TypeScript",
+      "line": 67,
+      "endLine": 78,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "refresh",
+        "setError",
+        "setState",
+        "setTimeout"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/lineFollow/useLineDevice.ts",
+        "line": 67
+      },
+      "description": "Coordina `refresh`, `setError`, `setState` para Calibración y seguimiento de línea del dispositivo.",
+      "descriptionOrigin": "structural"
+    }
+  ],
+  "hooks": [
+    {
+      "callee": "useLineDevice",
+      "scope": "LineDeviceCalibrationPanel",
+      "line": 54,
+      "arguments": 0,
+      "path": "src/features/lineFollow/LineDeviceCalibration.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "LineDeviceCalibrationPanel",
+      "line": 55,
+      "arguments": 2,
+      "path": "src/features/lineFollow/LineDeviceCalibration.tsx"
+    },
+    {
+      "callee": "useLineDevice",
+      "scope": "LineFollowPanel",
+      "line": 13,
+      "arguments": 0,
+      "path": "src/features/lineFollow/LineFollowPanel.tsx"
+    },
+    {
+      "callee": "useAutoMotion",
+      "scope": "LineFollowPanel",
+      "line": 14,
+      "arguments": 0,
+      "path": "src/features/lineFollow/LineFollowPanel.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "LineFollowPanel",
+      "line": 14,
+      "arguments": 1,
+      "path": "src/features/lineFollow/LineFollowPanel.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "LineFollowPanel",
+      "line": 15,
+      "arguments": 1,
+      "path": "src/features/lineFollow/LineFollowPanel.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "LineFollowPanel",
+      "line": 16,
+      "arguments": 1,
+      "path": "src/features/lineFollow/LineFollowPanel.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "LineFollowPanel",
+      "line": 17,
+      "arguments": 1,
+      "path": "src/features/lineFollow/LineFollowPanel.tsx"
+    },
+    {
+      "callee": "useWebSocket",
+      "scope": "useLineDevice",
+      "line": 42,
+      "arguments": 0,
+      "path": "src/features/lineFollow/useLineDevice.ts"
+    },
+    {
+      "callee": "useUser",
+      "scope": "useLineDevice",
+      "line": 43,
+      "arguments": 0,
+      "path": "src/features/lineFollow/useLineDevice.ts"
+    },
+    {
+      "callee": "useState",
+      "scope": "useLineDevice",
+      "line": 45,
+      "arguments": 1,
+      "path": "src/features/lineFollow/useLineDevice.ts"
+    },
+    {
+      "callee": "useState",
+      "scope": "useLineDevice",
+      "line": 46,
+      "arguments": 1,
+      "path": "src/features/lineFollow/useLineDevice.ts"
+    },
+    {
+      "callee": "useState",
+      "scope": "useLineDevice",
+      "line": 47,
+      "arguments": 1,
+      "path": "src/features/lineFollow/useLineDevice.ts"
+    },
+    {
+      "callee": "useState",
+      "scope": "useLineDevice",
+      "line": 48,
+      "arguments": 1,
+      "path": "src/features/lineFollow/useLineDevice.ts"
+    },
+    {
+      "callee": "useRef",
+      "scope": "useLineDevice",
+      "line": 49,
+      "arguments": 1,
+      "path": "src/features/lineFollow/useLineDevice.ts"
+    },
+    {
+      "callee": "useRef",
+      "scope": "useLineDevice",
+      "line": 50,
+      "arguments": 1,
+      "path": "src/features/lineFollow/useLineDevice.ts"
+    },
+    {
+      "callee": "useRef",
+      "scope": "useLineDevice",
+      "line": 51,
+      "arguments": 1,
+      "path": "src/features/lineFollow/useLineDevice.ts"
+    },
+    {
+      "callee": "useRef",
+      "scope": "useLineDevice",
+      "line": 52,
+      "arguments": 1,
+      "path": "src/features/lineFollow/useLineDevice.ts"
+    },
+    {
+      "callee": "useRef",
+      "scope": "useLineDevice",
+      "line": 53,
+      "arguments": 1,
+      "path": "src/features/lineFollow/useLineDevice.ts"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "useLineDevice",
+      "line": 55,
+      "arguments": 2,
+      "path": "src/features/lineFollow/useLineDevice.ts"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "useLineDevice",
+      "line": 63,
+      "arguments": 2,
+      "path": "src/features/lineFollow/useLineDevice.ts"
+    },
+    {
+      "callee": "useWebSocket",
+      "scope": "TrackFollowerSection",
+      "line": 124,
+      "arguments": 0,
+      "path": "src/pages/TrackFollowerSection.tsx"
+    },
+    {
+      "callee": "useUser",
+      "scope": "TrackFollowerSection",
+      "line": 125,
+      "arguments": 0,
+      "path": "src/pages/TrackFollowerSection.tsx"
+    },
+    {
+      "callee": "useIrEmitters",
+      "scope": "TrackFollowerSection",
+      "line": 126,
+      "arguments": 0,
+      "path": "src/pages/TrackFollowerSection.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "TrackFollowerSection",
+      "line": 128,
+      "arguments": 1,
+      "path": "src/pages/TrackFollowerSection.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "TrackFollowerSection",
+      "line": 129,
+      "arguments": 1,
+      "path": "src/pages/TrackFollowerSection.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "TrackFollowerSection",
+      "line": 130,
+      "arguments": 1,
+      "path": "src/pages/TrackFollowerSection.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "TrackFollowerSection",
+      "line": 131,
+      "arguments": 1,
+      "path": "src/pages/TrackFollowerSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "TrackFollowerSection",
+      "line": 133,
+      "arguments": 1,
+      "path": "src/pages/TrackFollowerSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "TrackFollowerSection",
+      "line": 134,
+      "arguments": 1,
+      "path": "src/pages/TrackFollowerSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "TrackFollowerSection",
+      "line": 135,
+      "arguments": 1,
+      "path": "src/pages/TrackFollowerSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "TrackFollowerSection",
+      "line": 136,
+      "arguments": 1,
+      "path": "src/pages/TrackFollowerSection.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "TrackFollowerSection",
+      "line": 137,
+      "arguments": 2,
+      "path": "src/pages/TrackFollowerSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "TrackFollowerSection",
+      "line": 138,
+      "arguments": 1,
+      "path": "src/pages/TrackFollowerSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "TrackFollowerSection",
+      "line": 139,
+      "arguments": 1,
+      "path": "src/pages/TrackFollowerSection.tsx"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "TrackFollowerSection",
+      "line": 140,
+      "arguments": 2,
+      "path": "src/pages/TrackFollowerSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "TrackFollowerSection",
+      "line": 141,
+      "arguments": 1,
+      "path": "src/pages/TrackFollowerSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "TrackFollowerSection",
+      "line": 142,
+      "arguments": 1,
+      "path": "src/pages/TrackFollowerSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "TrackFollowerSection",
+      "line": 143,
+      "arguments": 1,
+      "path": "src/pages/TrackFollowerSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "TrackFollowerSection",
+      "line": 144,
+      "arguments": 1,
+      "path": "src/pages/TrackFollowerSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "TrackFollowerSection",
+      "line": 145,
+      "arguments": 1,
+      "path": "src/pages/TrackFollowerSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "TrackFollowerSection",
+      "line": 146,
+      "arguments": 1,
+      "path": "src/pages/TrackFollowerSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "TrackFollowerSection",
+      "line": 147,
+      "arguments": 1,
+      "path": "src/pages/TrackFollowerSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "TrackFollowerSection",
+      "line": 148,
+      "arguments": 1,
+      "path": "src/pages/TrackFollowerSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "TrackFollowerSection",
+      "line": 149,
+      "arguments": 1,
+      "path": "src/pages/TrackFollowerSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "TrackFollowerSection",
+      "line": 150,
+      "arguments": 1,
+      "path": "src/pages/TrackFollowerSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "TrackFollowerSection",
+      "line": 153,
+      "arguments": 1,
+      "path": "src/pages/TrackFollowerSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "TrackFollowerSection",
+      "line": 162,
+      "arguments": 1,
+      "path": "src/pages/TrackFollowerSection.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "TrackFollowerSection",
+      "line": 163,
+      "arguments": 1,
+      "path": "src/pages/TrackFollowerSection.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "TrackFollowerSection",
+      "line": 164,
+      "arguments": 1,
+      "path": "src/pages/TrackFollowerSection.tsx"
+    },
+    {
+      "callee": "useSensorSubscription",
+      "scope": "TrackFollowerSection",
+      "line": 165,
+      "arguments": 3,
+      "path": "src/pages/TrackFollowerSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "TrackFollowerSection",
+      "line": 170,
+      "arguments": 1,
+      "path": "src/pages/TrackFollowerSection.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "TrackFollowerSection",
+      "line": 171,
+      "arguments": 1,
+      "path": "src/pages/TrackFollowerSection.tsx"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "TrackFollowerSection",
+      "line": 173,
+      "arguments": 2,
+      "path": "src/pages/TrackFollowerSection.tsx"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "TrackFollowerSection",
+      "line": 174,
+      "arguments": 2,
+      "path": "src/pages/TrackFollowerSection.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "TrackFollowerSection",
+      "line": 189,
+      "arguments": 2,
+      "path": "src/pages/TrackFollowerSection.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "TrackFollowerSection",
+      "line": 250,
+      "arguments": 2,
+      "path": "src/pages/TrackFollowerSection.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "TrackFollowerSection",
+      "line": 266,
+      "arguments": 2,
+      "path": "src/pages/TrackFollowerSection.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "TrackFollowerSection",
+      "line": 283,
+      "arguments": 2,
+      "path": "src/pages/TrackFollowerSection.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "TrackFollowerSection",
+      "line": 289,
+      "arguments": 2,
+      "path": "src/pages/TrackFollowerSection.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "TrackFollowerSection",
+      "line": 302,
+      "arguments": 2,
+      "path": "src/pages/TrackFollowerSection.tsx"
+    },
+    {
+      "callee": "useThree",
+      "scope": "TrackCameraRig",
+      "line": 836,
+      "arguments": 0,
+      "path": "src/pages/TrackFollowerSection.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "TrackCameraRig",
+      "line": 837,
+      "arguments": 1,
+      "path": "src/pages/TrackFollowerSection.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "TrackCameraRig",
+      "line": 838,
+      "arguments": 1,
+      "path": "src/pages/TrackFollowerSection.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "TrackCameraRig",
+      "line": 839,
+      "arguments": 1,
+      "path": "src/pages/TrackFollowerSection.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "TrackCameraRig",
+      "line": 842,
+      "arguments": 2,
+      "path": "src/pages/TrackFollowerSection.tsx"
+    },
+    {
+      "callee": "useFrame",
+      "scope": "TrackCameraRig",
+      "line": 861,
+      "arguments": 1,
+      "path": "src/pages/TrackFollowerSection.tsx"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "TrackGround",
+      "line": 896,
+      "arguments": 2,
+      "path": "src/pages/TrackFollowerSection.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "TrackPointInstances",
+      "line": 916,
+      "arguments": 1,
+      "path": "src/pages/TrackFollowerSection.tsx"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "TrackPointInstances",
+      "line": 917,
+      "arguments": 2,
+      "path": "src/pages/TrackFollowerSection.tsx"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "TrackPointInstances",
+      "line": 918,
+      "arguments": 2,
+      "path": "src/pages/TrackFollowerSection.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "TrackPointInstances",
+      "line": 920,
+      "arguments": 2,
+      "path": "src/pages/TrackFollowerSection.tsx"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "TrackRibbon",
+      "line": 952,
+      "arguments": 2,
+      "path": "src/pages/TrackFollowerSection.tsx"
+    },
+    {
+      "callee": "useLoader",
+      "scope": "TrackVehicleModel",
+      "line": 1015,
+      "arguments": 3,
+      "path": "src/pages/TrackFollowerSection.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "TrackVehicleModel",
+      "line": 1019,
+      "arguments": 1,
+      "path": "src/pages/TrackFollowerSection.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "TrackVehicleModel",
+      "line": 1020,
+      "arguments": 1,
+      "path": "src/pages/TrackFollowerSection.tsx"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "TrackVehicleModel",
+      "line": 1022,
+      "arguments": 2,
+      "path": "src/pages/TrackFollowerSection.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "TrackVehicleModel",
+      "line": 1024,
+      "arguments": 2,
+      "path": "src/pages/TrackFollowerSection.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "TrackVehicleModel",
+      "line": 1042,
+      "arguments": 2,
+      "path": "src/pages/TrackFollowerSection.tsx"
+    },
+    {
+      "callee": "useEspWifiStatus",
+      "scope": "TrackStatusStrip",
+      "line": 1132,
+      "arguments": 0,
+      "path": "src/pages/TrackFollowerSection.tsx"
+    }
+  ]
+}

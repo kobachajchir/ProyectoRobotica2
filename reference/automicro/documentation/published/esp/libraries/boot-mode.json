@@ -1,0 +1,105 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "esp:module/src/boot_mode.h",
+  "slug": "boot-mode",
+  "title": "Selección de modo de arranque ESP",
+  "target": "esp",
+  "kind": "integración",
+  "status": "source-documented",
+  "snapshotDate": "2026-10-20",
+  "verification": "not-run-user-instruction",
+  "responsibility": "Interpreta y conserva modo solicitado para el próximo arranque ESP.",
+  "scope": "AP-only frente a modo normal AP/STA y su relación con configuración persistida.",
+  "state": "Selección de modo y AppConfig; no usar el mismo dato como disparador de reinicio en cada boot.",
+  "modularity": "Política de aplicación ESP, separada del bucle del servicio Wi-Fi.",
+  "lifecycle": [
+    "GetRequested se consulta después de cargar NVS y antes de iniciar Wi-Fi.",
+    "Un comando explícito cambia selección/reinicio; el arranque consume la decisión sin bucle de reescritura."
+  ],
+  "interactions": [
+    "UNER/JSON solicita reboot; main decide WifiRunMode a partir del modo elegido."
+  ],
+  "limitations": [
+    "Modo deseado/persistido y modo de radio activo son observaciones diferentes."
+  ],
+  "relationships": [],
+  "findings": [],
+  "files": [
+    {
+      "rootId": "esp",
+      "path": "src/boot_mode.cpp",
+      "sha256": "9118457648f1d9d1007a071769bdb1667a9cca6f4210856c8a9cf1b69acfe77f",
+      "imports": [
+        "boot_mode.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    },
+    {
+      "rootId": "esp",
+      "path": "src/boot_mode.h",
+      "sha256": "1ec624c16bdc8602ded71565665fce3182ed90271f311b8476f25e6f10b93186",
+      "imports": [
+        "stdint.h",
+        "config.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    }
+  ],
+  "types": [],
+  "functions": [
+    {
+      "name": "BootMode_ApplyRequest",
+      "signature": "bool BootMode_ApplyRequest(const AppConfig *current, uint8_t mode, AppConfig *next)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/boot_mode.cpp",
+        "line": 15
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "BootMode_IsValid"
+      ],
+      "writes": [
+        "nextBootMode"
+      ],
+      "description": "Adapta la llamada a `BootMode_IsValid` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "BootMode_GetRequested",
+      "signature": "uint8_t BootMode_GetRequested(const AppConfig *config)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/boot_mode.cpp",
+        "line": 8
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "BootMode_IsValid"
+      ],
+      "writes": [],
+      "description": "Devuelve el campo `config->nextBootMode` del estado actual de la instancia.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "BootMode_IsValid",
+      "signature": "bool BootMode_IsValid(uint8_t mode)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/boot_mode.cpp",
+        "line": 3
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Indica si se cumple la condición Valid dentro de Selección de modo de arranque ESP.",
+      "descriptionOrigin": "inferred-name"
+    }
+  ],
+  "internalFunctions": [],
+  "hooks": []
+}

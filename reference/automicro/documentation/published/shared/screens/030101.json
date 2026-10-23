@@ -1,0 +1,149 @@
+{
+  "schemaVersion": 1,
+  "id": "shared:screen/030101",
+  "symbol": "SCREEN_CODE_SENSORS_MENU",
+  "code": 196865,
+  "hex": "0x030101",
+  "decomposition": {
+    "menu": 3,
+    "submenu": 1,
+    "page": 1
+  },
+  "revision": "working-copy-hashes",
+  "confidence": "manual-review",
+  "family": "shared:screen-family/menus",
+  "numericObservation": "same-literal",
+  "webDeclaration": {
+    "value": 196865,
+    "line": 73
+  },
+  "metadataEntryObserved": true,
+  "evidence": [
+    {
+      "repo": "f4",
+      "path": "Core/Inc/screen_codes.h",
+      "line": 101
+    },
+    {
+      "repo": "web",
+      "path": "src/screens/screenCodes.ts",
+      "line": 73
+    }
+  ],
+  "renderers": [
+    {
+      "kind": "switch-case",
+      "path": "src/screens/screenRenderRegistry.ts",
+      "line": 448,
+      "builders": [
+        "buildScreen030101SensorsMenuCommands"
+      ],
+      "availability": "parameterized-candidate"
+    }
+  ],
+  "callGraph": {
+    "status": "lexical-candidates-only",
+    "edges": []
+  },
+  "f4References": [
+    {
+      "repo": "f4",
+      "path": "Core/Src/menu_definition.c",
+      "line": 277,
+      "kind": "lexical-reference"
+    },
+    {
+      "repo": "f4",
+      "path": "Core/Src/menu_definition.c",
+      "line": 347,
+      "kind": "lexical-reference"
+    },
+    {
+      "repo": "f4",
+      "path": "Core/Src/menu_definition.c",
+      "line": 364,
+      "kind": "lexical-reference"
+    },
+    {
+      "repo": "f4",
+      "path": "Core/Src/menu_definition.c",
+      "line": 382,
+      "kind": "lexical-reference"
+    },
+    {
+      "repo": "f4",
+      "path": "Core/Src/menu_definition.c",
+      "line": 400,
+      "kind": "lexical-reference"
+    },
+    {
+      "repo": "f4",
+      "path": "Core/Src/menu_definition.c",
+      "line": 460,
+      "kind": "lexical-reference"
+    },
+    {
+      "repo": "f4",
+      "path": "Core/Src/menu_definition.c",
+      "line": 491,
+      "kind": "lexical-reference"
+    }
+  ],
+  "variants": [
+    "Menús ordinarios hasta tres filas; favoritos usa dos.",
+    "Visibilidad, disponibilidad por perfil y catálogo dinámico cambian qué ítems son navegables."
+  ],
+  "fields": [
+    {
+      "name": "screenCode/source",
+      "type": "u32/u8",
+      "units": "identidad",
+      "availability": "reported",
+      "note": "source MENU identifica contexto"
+    },
+    {
+      "name": "selectedIndex/itemCount",
+      "type": "u8/u8 → number",
+      "units": "índice 0-based/cantidad",
+      "availability": "reported",
+      "note": "0x96 de siete bytes o extensión GET_CURRENT_SCREEN de siete"
+    },
+    {
+      "name": "firstVisibleItem/max_visible_items",
+      "type": "índice/cantidad local",
+      "units": "ventana",
+      "availability": "unavailable-remotely",
+      "note": "los reportes actuales no transportan el origen/tamaño real de ventana"
+    },
+    {
+      "name": "labels/icons/visibility/favorites",
+      "type": "catálogo y estado local",
+      "units": "ítems",
+      "availability": "unavailable-remotely",
+      "note": "Web conserva listas locales parciales; favoritos es dinámico"
+    }
+  ],
+  "actions": [
+    "0x53: screenCode:u32 LE y posición visible u8 desde 1; F4 decide ítem de su ventana.",
+    "0x56: screenCode y dirección 0=up/1=down; 0x57/0x58: giro lógico.",
+    "Screen mismatch status2 requiere resincronizar y no repetir sobre contexto viejo."
+  ],
+  "transitions": [
+    "F4 desplaza firstVisibleItem hasta incluir selección; Web deriva bloques floor(index/3).",
+    "Después de click se ejecuta la acción/submenú del ítem realmente seleccionado en F4."
+  ],
+  "missingData": [
+    "Sin ventana real pueden diferir fila dibujada y fila ejecutada.",
+    "Las listas por modo/perfil y textos desplazados requieren datos/semántica comunes."
+  ],
+  "localOnly": [],
+  "findings": [
+    "AMDOC-ESP-002",
+    "AMDOC-WEB-004"
+  ],
+  "exactness": "not-established",
+  "notes": [
+    "Mismo selectedIndex no determina una única ventana física porque depende de la historia de scroll."
+  ],
+  "role": "not-resolved"
+}

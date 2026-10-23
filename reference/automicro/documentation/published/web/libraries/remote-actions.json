@@ -1,0 +1,925 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "web:module/src/types/RemoteBridgeTypes.ts",
+  "slug": "remote-actions",
+  "title": "Tipos y feedback de acciones remotas",
+  "target": "web",
+  "kind": "contrato",
+  "status": "source-documented",
+  "snapshotDate": "2026-10-20",
+  "verification": "not-run-user-instruction",
+  "responsibility": "Define nombres de acciones, modos de compatibilidad y traducción de status a feedback.",
+  "scope": "Payload/tipos, aceptación/rechazo y acciones de reinicio; efecto físico permanece en firmware.",
+  "state": "Estado pending/error pertenece al consumidor; las tablas de comandos/status son datos.",
+  "modularity": "Contrato compartido representado en TypeScript con adaptación UI.",
+  "lifecycle": [
+    "Elegir comando/args, esperar respuesta final y traducir status.",
+    "Ante screen mismatch solicitar estado actual antes de repetir una acción."
+  ],
+  "interactions": [
+    "ESP codifica nombres hacia UNER; F4 devuelve status tras su guarda/router."
+  ],
+  "limitations": [
+    "Status0 de evento consumido no demuestra que el handler produjo un cambio visible.",
+    "No reconstruir acciones especiales solo desde la categoría visual del código."
+  ],
+  "relationships": [],
+  "findings": [],
+  "files": [
+    {
+      "rootId": "web",
+      "path": "src/components/SystemResetActions.tsx",
+      "sha256": "c3be368edab7c6d11f0dbc9b3d8d8cae62843930d6e8cd649b31351be5067fc3",
+      "imports": [
+        "../api/UnerFrameV2",
+        "../contexts/UserContext",
+        "../hooks/useWebSocket",
+        "../protocol/wsApi",
+        "react",
+        "sonner"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/components/TransportActionButton.tsx",
+      "sha256": "8960c90d5ea3466fa6bea2ee88a12aa20f9c18b0eb4263b645a6f594c0dc7e7e",
+      "imports": [
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/types/RemoteBridgeTypes.ts",
+      "sha256": "c373df9ef4a2ec6a4831672deb15654533d970b0bd960fc16a232d0b8a866020",
+      "imports": [
+        "./UnerProtocolCMDTypes"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/utils/stmRemoteActionFeedback.ts",
+      "sha256": "c84330cc9d00856de6cbb0ddc0af14a90578ad7418d95c4d0a48aa8e9d556d49",
+      "imports": [
+        "../protocol/espClient.ts"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    }
+  ],
+  "types": [
+    {
+      "name": "ResetTarget",
+      "kind": "TypeAliasDeclaration",
+      "type": "\"esp\" | \"stm\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/SystemResetActions.tsx",
+        "line": 8
+      }
+    },
+    {
+      "name": "PendingAction",
+      "kind": "TypeAliasDeclaration",
+      "type": "ResetTarget | \"profile\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/SystemResetActions.tsx",
+        "line": 9
+      }
+    },
+    {
+      "name": "ExtensionProfileId",
+      "kind": "TypeAliasDeclaration",
+      "type": "0 | 1",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/SystemResetActions.tsx",
+        "line": 10
+      }
+    },
+    {
+      "name": "ExtensionProfileResponse",
+      "kind": "TypeAliasDeclaration",
+      "fields": [
+        {
+          "name": "success",
+          "declaration": "success?: boolean",
+          "callback": false,
+          "ownerType": "ExtensionProfileResponse",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/SystemResetActions.tsx",
+            "line": 13
+          },
+          "description": "Dato de estado/configuración `success`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "profileId",
+          "declaration": "profileId?: number",
+          "callback": false,
+          "ownerType": "ExtensionProfileResponse",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/SystemResetActions.tsx",
+            "line": 14
+          },
+          "description": "Dato de estado/configuración `profileId`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "profile",
+          "declaration": "profile?: string",
+          "callback": false,
+          "ownerType": "ExtensionProfileResponse",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/SystemResetActions.tsx",
+            "line": 15
+          },
+          "description": "Dato de estado/configuración `profile`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "rebootRequired",
+          "declaration": "rebootRequired?: boolean",
+          "callback": false,
+          "ownerType": "ExtensionProfileResponse",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/SystemResetActions.tsx",
+            "line": 16
+          },
+          "description": "Dato de estado/configuración `rebootRequired`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "rebooting",
+          "declaration": "rebooting?: boolean",
+          "callback": false,
+          "ownerType": "ExtensionProfileResponse",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/SystemResetActions.tsx",
+            "line": 17
+          },
+          "description": "Dato de estado/configuración `rebooting`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "reconnectDelayMs",
+          "declaration": "reconnectDelayMs?: number",
+          "callback": false,
+          "ownerType": "ExtensionProfileResponse",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/SystemResetActions.tsx",
+            "line": 18
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/SystemResetActions.tsx",
+        "line": 12
+      }
+    },
+    {
+      "name": "ResetStatus",
+      "kind": "TypeAliasDeclaration",
+      "fields": [
+        {
+          "name": "tone",
+          "declaration": "tone: \"idle\" | \"loading\" | \"success\" | \"error\"",
+          "callback": false,
+          "ownerType": "ResetStatus",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/SystemResetActions.tsx",
+            "line": 39
+          },
+          "description": "Dato de estado/configuración `tone`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "message",
+          "declaration": "message: string",
+          "callback": false,
+          "ownerType": "ResetStatus",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/SystemResetActions.tsx",
+            "line": 40
+          },
+          "description": "Dato de estado/configuración `message`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "frame",
+          "declaration": "frame?: string",
+          "callback": false,
+          "ownerType": "ResetStatus",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/SystemResetActions.tsx",
+            "line": 41
+          },
+          "description": "Dato de estado/configuración `frame`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/SystemResetActions.tsx",
+        "line": 38
+      }
+    },
+    {
+      "name": "TransportActionTone",
+      "kind": "TypeAliasDeclaration",
+      "type": "\"cyan\" | \"emerald\" | \"rose\" | \"muted\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/TransportActionButton.tsx",
+        "line": 3
+      }
+    },
+    {
+      "name": "TransportActionButtonProps",
+      "kind": "TypeAliasDeclaration",
+      "fields": [
+        {
+          "name": "label",
+          "declaration": "label: string",
+          "callback": false,
+          "ownerType": "TransportActionButtonProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/TransportActionButton.tsx",
+            "line": 6
+          },
+          "description": "Dato de estado/configuración `label`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "detail",
+          "declaration": "detail: string",
+          "callback": false,
+          "ownerType": "TransportActionButtonProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/TransportActionButton.tsx",
+            "line": 7
+          },
+          "description": "Dato de estado/configuración `detail`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "icon",
+          "declaration": "icon: ReactNode",
+          "callback": false,
+          "ownerType": "TransportActionButtonProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/TransportActionButton.tsx",
+            "line": 8
+          },
+          "description": "Dato de estado/configuración `icon`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "tone",
+          "declaration": "tone: TransportActionTone",
+          "callback": false,
+          "ownerType": "TransportActionButtonProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/TransportActionButton.tsx",
+            "line": 9
+          },
+          "description": "Dato de estado/configuración `tone`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "active",
+          "declaration": "active?: boolean",
+          "callback": false,
+          "ownerType": "TransportActionButtonProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/TransportActionButton.tsx",
+            "line": 10
+          },
+          "description": "Dato de estado/configuración `active`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "pressed",
+          "declaration": "pressed?: boolean",
+          "callback": false,
+          "ownerType": "TransportActionButtonProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/TransportActionButton.tsx",
+            "line": 11
+          },
+          "description": "Dato de estado/configuración `pressed`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "disabled",
+          "declaration": "disabled?: boolean",
+          "callback": false,
+          "ownerType": "TransportActionButtonProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/TransportActionButton.tsx",
+            "line": 12
+          },
+          "description": "Dato de estado/configuración `disabled`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "className",
+          "declaration": "className?: string",
+          "callback": false,
+          "ownerType": "TransportActionButtonProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/TransportActionButton.tsx",
+            "line": 13
+          },
+          "description": "Dato de estado/configuración `className`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "onClick",
+          "declaration": "onClick: () => void",
+          "callback": true,
+          "ownerType": "TransportActionButtonProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/TransportActionButton.tsx",
+            "line": 14
+          },
+          "description": "Emite intención de acción al dueño del botón cuando su estado permite activación; el feedback efectivo viene de la respuesta."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/TransportActionButton.tsx",
+        "line": 5
+      }
+    },
+    {
+      "name": "RemoteAuthBridgeMode",
+      "kind": "TypeAliasDeclaration",
+      "type": "(typeof REMOTE_AUTH_BRIDGE_MODE)[keyof typeof REMOTE_AUTH_BRIDGE_MODE]",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/types/RemoteBridgeTypes.ts",
+        "line": 8
+      }
+    },
+    {
+      "name": "StmRemoteCommandMode",
+      "kind": "TypeAliasDeclaration",
+      "type": "(typeof STM_REMOTE_COMMAND_MODE)[keyof typeof STM_REMOTE_COMMAND_MODE]",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/types/RemoteBridgeTypes.ts",
+        "line": 16
+      }
+    },
+    {
+      "name": "EspRemoteAuthParams",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "pin",
+          "declaration": "pin: string",
+          "callback": false,
+          "ownerType": "EspRemoteAuthParams",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/RemoteBridgeTypes.ts",
+            "line": 43
+          },
+          "description": "Dato de estado/configuración `pin`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/types/RemoteBridgeTypes.ts",
+        "line": 42
+      }
+    },
+    {
+      "name": "StmRemoteGrantParams",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "screenCode",
+          "declaration": "screenCode: number",
+          "callback": false,
+          "ownerType": "StmRemoteGrantParams",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/RemoteBridgeTypes.ts",
+            "line": 47
+          },
+          "description": "Dato de estado/configuración `screenCode`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/types/RemoteBridgeTypes.ts",
+        "line": 46
+      }
+    },
+    {
+      "name": "StmRemoteRotateParams",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "screenCode",
+          "declaration": "screenCode: number",
+          "callback": false,
+          "ownerType": "StmRemoteRotateParams",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/RemoteBridgeTypes.ts",
+            "line": 51
+          },
+          "description": "Dato de estado/configuración `screenCode`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/types/RemoteBridgeTypes.ts",
+        "line": 50
+      }
+    },
+    {
+      "name": "StmRemoteButtonParams",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "screenCode",
+          "declaration": "screenCode: number",
+          "callback": false,
+          "ownerType": "StmRemoteButtonParams",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/RemoteBridgeTypes.ts",
+            "line": 55
+          },
+          "description": "Dato de estado/configuración `screenCode`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "pressKind",
+          "declaration": "pressKind: \"short\" | \"long\"",
+          "callback": false,
+          "ownerType": "StmRemoteButtonParams",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/types/RemoteBridgeTypes.ts",
+            "line": 56
+          },
+          "description": "Dato de estado/configuración `pressKind`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/types/RemoteBridgeTypes.ts",
+        "line": 54
+      }
+    },
+    {
+      "name": "StmRemoteActionFeedback",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "message",
+          "declaration": "message: string",
+          "callback": false,
+          "ownerType": "StmRemoteActionFeedback",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/utils/stmRemoteActionFeedback.ts",
+            "line": 15
+          },
+          "description": "Dato de estado/configuración `message`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "status",
+          "declaration": "status?: number",
+          "callback": false,
+          "ownerType": "StmRemoteActionFeedback",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/utils/stmRemoteActionFeedback.ts",
+            "line": 16
+          },
+          "description": "Último resultado y guardas del módulo; los getters pueden devolver una vista de este almacenamiento."
+        },
+        {
+          "name": "refreshScreen",
+          "declaration": "refreshScreen: boolean",
+          "callback": false,
+          "ownerType": "StmRemoteActionFeedback",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/utils/stmRemoteActionFeedback.ts",
+            "line": 17
+          },
+          "description": "Dato de estado/configuración `refreshScreen`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "reauthenticationRequired",
+          "declaration": "reauthenticationRequired: boolean",
+          "callback": false,
+          "ownerType": "StmRemoteActionFeedback",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/utils/stmRemoteActionFeedback.ts",
+            "line": 18
+          },
+          "description": "Dato de estado/configuración `reauthenticationRequired`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/utils/stmRemoteActionFeedback.ts",
+        "line": 14
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "ResetStatusNote",
+      "displayName": "ResetStatusNote",
+      "signature": "ResetStatusNote({ status }: { status: ResetStatus }): inferred-by-TypeScript",
+      "line": 361,
+      "endLine": 377,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/SystemResetActions.tsx",
+        "line": 361
+      },
+      "description": "Restablece Status Note dentro de Tipos y feedback de acciones remotas.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "SystemResetActions",
+      "displayName": "SystemResetActions",
+      "signature": "SystemResetActions(): inferred-by-TypeScript",
+      "line": 44,
+      "endLine": 359,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "EXTENSION_PROFILES.map",
+        "profileLabel",
+        "useEffect",
+        "useState",
+        "useUser",
+        "useWebSocket"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/SystemResetActions.tsx",
+        "line": 44
+      },
+      "description": "Coordina `EXTENSION_PROFILES.map`, `profileLabel`, `useEffect` para Tipos y feedback de acciones remotas.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "TransportActionButton",
+      "displayName": "TransportActionButton",
+      "signature": "TransportActionButton({\n label,\n detail,\n icon,\n tone,\n active = false,\n pressed,\n disabled = false,\n className = \"\",\n onClick,\n}: TransportActionButtonProps): inferred-by-TypeScript",
+      "line": 17,
+      "endLine": 58,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/TransportActionButton.tsx",
+        "line": 17
+      },
+      "description": "Operación Transport Action Button de Tipos y feedback de acciones remotas; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "getRemoteAuthBridgeMode",
+      "displayName": "getRemoteAuthBridgeMode",
+      "signature": "getRemoteAuthBridgeMode(): RemoteAuthBridgeMode",
+      "line": 59,
+      "endLine": 64,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "import.meta.env.VITE_REMOTE_AUTH_BRIDGE_MODE?.trim",
+        "import.meta.env.VITE_REMOTE_AUTH_BRIDGE_MODE?.trim().toLowerCase"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/types/RemoteBridgeTypes.ts",
+        "line": 59
+      },
+      "description": "Coordina `import.meta.env.VITE_REMOTE_AUTH_BRIDGE_MODE?.trim`, `import.meta.env.VITE_REMOTE_AUTH_BRIDGE_MODE?.trim().toLowerCase` para Tipos y feedback de acciones remotas.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "getStmRemoteActionFeedback",
+      "displayName": "getStmRemoteActionFeedback",
+      "signature": "getStmRemoteActionFeedback(cause: unknown, description: string): StmRemoteActionFeedback",
+      "line": 21,
+      "endLine": 106,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "readF4Status"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/utils/stmRemoteActionFeedback.ts",
+        "line": 21
+      },
+      "description": "Adapta la llamada a `readF4Status` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "getStmRemoteCommandMode",
+      "displayName": "getStmRemoteCommandMode",
+      "signature": "getStmRemoteCommandMode(): StmRemoteCommandMode",
+      "line": 66,
+      "endLine": 71,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "import.meta.env.VITE_STM_REMOTE_COMMAND_MODE?.trim",
+        "import.meta.env.VITE_STM_REMOTE_COMMAND_MODE?.trim().toLowerCase"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/types/RemoteBridgeTypes.ts",
+        "line": 66
+      },
+      "description": "Coordina `import.meta.env.VITE_STM_REMOTE_COMMAND_MODE?.trim`, `import.meta.env.VITE_STM_REMOTE_COMMAND_MODE?.trim().toLowerCase` para Tipos y feedback de acciones remotas.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "isExtensionProfileId",
+      "displayName": "isExtensionProfileId",
+      "signature": "isExtensionProfileId(value: unknown): value is ExtensionProfileId",
+      "line": 30,
+      "endLine": 32,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/SystemResetActions.tsx",
+        "line": 30
+      },
+      "description": "Operación is Extension Profile Id de Tipos y feedback de acciones remotas; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "isRecord",
+      "displayName": "isRecord",
+      "signature": "isRecord(value: unknown): value is Record<string, unknown>",
+      "line": 119,
+      "endLine": 121,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Array.isArray"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/utils/stmRemoteActionFeedback.ts",
+        "line": 119
+      },
+      "description": "Adapta la llamada a `Array.isArray` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "profileLabel",
+      "displayName": "profileLabel",
+      "signature": "profileLabel(profileId: ExtensionProfileId | null): inferred-by-TypeScript",
+      "line": 34,
+      "endLine": 36,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "EXTENSION_PROFILES.find"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/SystemResetActions.tsx",
+        "line": 34
+      },
+      "description": "Adapta la llamada a `EXTENSION_PROFILES.find` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "readF4Status",
+      "displayName": "readF4Status",
+      "signature": "readF4Status(details: unknown): number | undefined",
+      "line": 108,
+      "endLine": 117,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Number.isInteger",
+        "isRecord"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/utils/stmRemoteActionFeedback.ts",
+        "line": 108
+      },
+      "description": "Coordina `Number.isInteger`, `isRecord` para Tipos y feedback de acciones remotas.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "resolveEspRemoteAuthCommand",
+      "displayName": "resolveEspRemoteAuthCommand",
+      "signature": "resolveEspRemoteAuthCommand(action: number): string | null",
+      "line": 73,
+      "endLine": 83,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/types/RemoteBridgeTypes.ts",
+        "line": 73
+      },
+      "description": "Operación resolve Esp Remote Auth Command de Tipos y feedback de acciones remotas; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "toRemotePressKindLabel",
+      "displayName": "toRemotePressKindLabel",
+      "signature": "toRemotePressKindLabel(pressKind: number): \"short\" | \"long\"",
+      "line": 85,
+      "endLine": 87,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/types/RemoteBridgeTypes.ts",
+        "line": 85
+      },
+      "description": "Operación to Remote Press Kind Label de Tipos y feedback de acciones remotas; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "SystemResetActions.applyExtensionProfile",
+      "displayName": "applyExtensionProfile",
+      "signature": "SystemResetActions.applyExtensionProfile(): inferred-by-TypeScript",
+      "line": 161,
+      "endLine": 228,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Math.max",
+        "Math.min",
+        "Number.isFinite",
+        "isExtensionProfileId",
+        "logout",
+        "profileLabel",
+        "request",
+        "setCurrentProfile",
+        "setPendingTarget",
+        "setProfileError",
+        "setStatus",
+        "toast.error",
+        "toast.loading",
+        "toast.success"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/SystemResetActions.tsx",
+        "line": 161
+      },
+      "description": "Coordina `Math.max`, `Math.min`, `Number.isFinite` para Tipos y feedback de acciones remotas.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "SystemResetActions.sendReset",
+      "displayName": "sendReset",
+      "signature": "SystemResetActions.sendReset(target: ResetTarget): inferred-by-TypeScript",
+      "line": 97,
+      "endLine": 159,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "logout",
+        "request",
+        "setPendingTarget",
+        "setStatus",
+        "toast.error",
+        "toast.loading",
+        "toast.success"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/SystemResetActions.tsx",
+        "line": 97
+      },
+      "description": "Coordina `logout`, `request`, `setPendingTarget` para Tipos y feedback de acciones remotas.",
+      "descriptionOrigin": "structural"
+    }
+  ],
+  "hooks": [
+    {
+      "callee": "useWebSocket",
+      "scope": "SystemResetActions",
+      "line": 45,
+      "arguments": 0,
+      "path": "src/components/SystemResetActions.tsx"
+    },
+    {
+      "callee": "useUser",
+      "scope": "SystemResetActions",
+      "line": 46,
+      "arguments": 0,
+      "path": "src/components/SystemResetActions.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "SystemResetActions",
+      "line": 47,
+      "arguments": 1,
+      "path": "src/components/SystemResetActions.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "SystemResetActions",
+      "line": 48,
+      "arguments": 1,
+      "path": "src/components/SystemResetActions.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "SystemResetActions",
+      "line": 49,
+      "arguments": 1,
+      "path": "src/components/SystemResetActions.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "SystemResetActions",
+      "line": 50,
+      "arguments": 1,
+      "path": "src/components/SystemResetActions.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "SystemResetActions",
+      "line": 51,
+      "arguments": 1,
+      "path": "src/components/SystemResetActions.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "SystemResetActions",
+      "line": 52,
+      "arguments": 1,
+      "path": "src/components/SystemResetActions.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "SystemResetActions",
+      "line": 53,
+      "arguments": 1,
+      "path": "src/components/SystemResetActions.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "SystemResetActions",
+      "line": 58,
+      "arguments": 2,
+      "path": "src/components/SystemResetActions.tsx"
+    }
+  ]
+}

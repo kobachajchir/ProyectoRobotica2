@@ -1,0 +1,1010 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "f4:module/Core/Inc/encoder.h",
+  "slug": "encoder",
+  "title": "Encoder rotativo y pulsador integrado",
+  "target": "f4",
+  "kind": "núcleo",
+  "status": "source-documented",
+  "verification": "not-run-user-instruction",
+  "snapshotDate": "2026-10-20",
+  "responsibility": "Convierte diferencias del contador de 16 bits en pasos, dirección, velocidad y aceleración del encoder.",
+  "scope": "Gestiona wrap, resto de pulsos y pulsador integrado; no conoce menús ni comandos remotos.",
+  "state": "ENC_Handle_t posee puerto copiado, prevCount, accumCount, pasos actuales/anteriores y btnState. Sus atributos son públicos en C; los getters evitan que el consumidor deba reconstruir el cálculo. calibrateCountPerStep debe representar una cantidad válida de pulsos por paso.",
+  "lifecycle": [
+    "Init configura la instancia; Start inicia el contador y restablece su referencia.",
+    "Task_N10ms calcula delta con corrección de wrap, aplica delta=-delta y luego invertDirection; después extrae pasos completos.",
+    "La tarea de muestreo también llama ENC_Button_Task_10ms: no duplicar ese muestreo sin revisar el planificador."
+  ],
+  "interactions": [
+    "app_stm32_ports.h conecta TIM4; app_tasks.c convierte pasos a eventos. Las acciones remotas llegan al router por otra entrada y no pasan por esta inversión física."
+  ],
+  "limitations": [
+    "GetVelocity/GetAcceleration devuelven uint16_t aunque el cálculo convierte pasos con signo; para dirección numérica usar getters Signed o StepDelta.",
+    "GetScaledSteps devuelve al menos magnitud 1 incluso si lastStepDelta es cero; el consumidor debe aplicar su guarda de actividad."
+  ],
+  "modularity": "No incluye HAL; read_count/reset_count/start/button_level aíslan el timer y GPIO. El sentido base del montaje está codificado dentro del cálculo: portable de plataforma, con convención física del proyecto.",
+  "files": [
+    {
+      "path": "Core/Inc/encoder.h",
+      "rootId": "f4",
+      "sha256": "51509c4ea3c16f78fa048152612da70995f486b9fa5b6a1a1063306815d28051",
+      "includes": [
+        "encoder_types.h"
+      ]
+    },
+    {
+      "path": "Core/Inc/encoder_types.h",
+      "rootId": "f4",
+      "sha256": "cc9d1b914e37d0c5c13a65aa73b0c985259ec57bcaf172cacc69724631ddd22e",
+      "includes": [
+        "am_port.h",
+        "stdbool.h"
+      ]
+    },
+    {
+      "path": "Core/Src/encoder.c",
+      "rootId": "f4",
+      "sha256": "a780282d4f007da6c707185062bcf904465ccf122edf8a69cc3ebdaf87abc26e",
+      "includes": [
+        "encoder.h"
+      ]
+    }
+  ],
+  "findings": [
+    "AMDOC-F4-001",
+    "AMDOC-F4-002",
+    "AMDOC-F4-009",
+    "AMDOC-F4-010"
+  ],
+  "types": [
+    {
+      "name": "ENC_Byte_Flag_Struct_t",
+      "fields": [
+        {
+          "name": "bitmap",
+          "declaration": "struct { estructura anidada } bitmap",
+          "callback": false,
+          "ownerType": "ENC_Byte_Flag_Struct_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/encoder_types.h",
+            "line": 18
+          },
+          "description": "Dato de estado/configuración `bitmap`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "bitPair",
+          "declaration": "struct { estructura anidada } bitPair",
+          "callback": false,
+          "ownerType": "ENC_Byte_Flag_Struct_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/encoder_types.h",
+            "line": 28
+          },
+          "description": "Dato de estado/configuración `bitPair`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "nibbles",
+          "declaration": "struct { estructura anidada } nibbles",
+          "callback": false,
+          "ownerType": "ENC_Byte_Flag_Struct_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/encoder_types.h",
+            "line": 34
+          },
+          "description": "Dato de estado/configuración `nibbles`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "byte",
+          "declaration": "uint8_t byte",
+          "callback": false,
+          "ownerType": "ENC_Byte_Flag_Struct_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/encoder_types.h",
+            "line": 38
+          },
+          "description": "Dato de estado/configuración `byte`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/encoder_types.h",
+        "line": 18
+      }
+    },
+    {
+      "name": "bitmap",
+      "fields": [
+        {
+          "name": "1",
+          "declaration": "uint8_t bit0: 1",
+          "callback": false,
+          "ownerType": "bitmap",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/encoder_types.h",
+            "line": 19
+          },
+          "description": "Dato de estado/configuración `1`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "1",
+          "declaration": "uint8_t bit1: 1",
+          "callback": false,
+          "ownerType": "bitmap",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/encoder_types.h",
+            "line": 20
+          },
+          "description": "Dato de estado/configuración `1`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "1",
+          "declaration": "uint8_t bit2: 1",
+          "callback": false,
+          "ownerType": "bitmap",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/encoder_types.h",
+            "line": 21
+          },
+          "description": "Dato de estado/configuración `1`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "1",
+          "declaration": "uint8_t bit3: 1",
+          "callback": false,
+          "ownerType": "bitmap",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/encoder_types.h",
+            "line": 22
+          },
+          "description": "Dato de estado/configuración `1`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "1",
+          "declaration": "uint8_t bit4: 1",
+          "callback": false,
+          "ownerType": "bitmap",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/encoder_types.h",
+            "line": 23
+          },
+          "description": "Dato de estado/configuración `1`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "1",
+          "declaration": "uint8_t bit5: 1",
+          "callback": false,
+          "ownerType": "bitmap",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/encoder_types.h",
+            "line": 24
+          },
+          "description": "Dato de estado/configuración `1`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "1",
+          "declaration": "uint8_t bit6: 1",
+          "callback": false,
+          "ownerType": "bitmap",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/encoder_types.h",
+            "line": 25
+          },
+          "description": "Dato de estado/configuración `1`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "1",
+          "declaration": "uint8_t bit7: 1",
+          "callback": false,
+          "ownerType": "bitmap",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/encoder_types.h",
+            "line": 26
+          },
+          "description": "Dato de estado/configuración `1`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/encoder_types.h",
+        "line": 19
+      }
+    },
+    {
+      "name": "bitPair",
+      "fields": [
+        {
+          "name": "2",
+          "declaration": "uint8_t bitPairL: 2",
+          "callback": false,
+          "ownerType": "bitPair",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/encoder_types.h",
+            "line": 29
+          },
+          "description": "Dato de estado/configuración `2`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "2",
+          "declaration": "uint8_t bitPairCL: 2",
+          "callback": false,
+          "ownerType": "bitPair",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/encoder_types.h",
+            "line": 30
+          },
+          "description": "Dato de estado/configuración `2`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "2",
+          "declaration": "uint8_t bitPairCH: 2",
+          "callback": false,
+          "ownerType": "bitPair",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/encoder_types.h",
+            "line": 31
+          },
+          "description": "Dato de estado/configuración `2`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "2",
+          "declaration": "uint8_t bitPairH: 2",
+          "callback": false,
+          "ownerType": "bitPair",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/encoder_types.h",
+            "line": 32
+          },
+          "description": "Dato de estado/configuración `2`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/encoder_types.h",
+        "line": 29
+      }
+    },
+    {
+      "name": "nibbles",
+      "fields": [
+        {
+          "name": "4",
+          "declaration": "uint8_t bitL: 4",
+          "callback": false,
+          "ownerType": "nibbles",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/encoder_types.h",
+            "line": 35
+          },
+          "description": "Dato de estado/configuración `4`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "4",
+          "declaration": "uint8_t bitH: 4",
+          "callback": false,
+          "ownerType": "nibbles",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/encoder_types.h",
+            "line": 36
+          },
+          "description": "Dato de estado/configuración `4`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/encoder_types.h",
+        "line": 35
+      }
+    },
+    {
+      "name": "ENC_ButtonState_t",
+      "fields": [
+        {
+          "name": "flags",
+          "declaration": "ENC_Byte_Flag_Struct_t flags",
+          "callback": false,
+          "ownerType": "ENC_ButtonState_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/encoder_types.h",
+            "line": 86
+          },
+          "description": "Bits de estado del módulo; conservar máscaras y distinguir estado de eventos pendientes."
+        },
+        {
+          "name": "counter",
+          "declaration": "uint8_t counter",
+          "callback": false,
+          "ownerType": "ENC_ButtonState_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/encoder_types.h",
+            "line": 87
+          },
+          "description": "Duración contada en invocaciones del muestreo; con cadencia 10 ms representa centésimas de segundo."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/encoder_types.h",
+        "line": 86
+      }
+    },
+    {
+      "name": "ENC_Data",
+      "fields": [
+        {
+          "name": "pair",
+          "declaration": "struct { estructura anidada } pair",
+          "callback": false,
+          "ownerType": "ENC_Data",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/encoder_types.h",
+            "line": 100
+          },
+          "description": "Dato de estado/configuración `pair`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "allData",
+          "declaration": "uint32_t allData",
+          "callback": false,
+          "ownerType": "ENC_Data",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/encoder_types.h",
+            "line": 104
+          },
+          "description": "Dato de estado/configuración `allData`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/encoder_types.h",
+        "line": 100
+      }
+    },
+    {
+      "name": "pair",
+      "fields": [
+        {
+          "name": "vel",
+          "declaration": "uint16_t vel",
+          "callback": false,
+          "ownerType": "pair",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/encoder_types.h",
+            "line": 101
+          },
+          "description": "Dato de estado/configuración `vel`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "acc",
+          "declaration": "uint16_t acc",
+          "callback": false,
+          "ownerType": "pair",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/encoder_types.h",
+            "line": 102
+          },
+          "description": "Dato de estado/configuración `acc`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/encoder_types.h",
+        "line": 101
+      }
+    },
+    {
+      "name": "ENC_Port",
+      "fields": [
+        {
+          "name": "ctx",
+          "declaration": "void *ctx",
+          "callback": false,
+          "ownerType": "ENC_Port",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/encoder_types.h",
+            "line": 108
+          },
+          "description": "Contexto opaco prestado al callback; el integrador conserva su almacenamiento."
+        },
+        {
+          "name": "read_count",
+          "declaration": "uint16_t (*read_count)(void *ctx)",
+          "callback": true,
+          "ownerType": "ENC_Port",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/encoder_types.h",
+            "line": 109
+          },
+          "description": "Lee el contador bruto de 16 bits del encoder."
+        },
+        {
+          "name": "reset_count",
+          "declaration": "void (*reset_count)(void *ctx)",
+          "callback": true,
+          "ownerType": "ENC_Port",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/encoder_types.h",
+            "line": 110
+          },
+          "description": "Reinicia el contador físico del encoder desde su adaptador."
+        },
+        {
+          "name": "start",
+          "declaration": "void (*start)(void *ctx)",
+          "callback": true,
+          "ownerType": "ENC_Port",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/encoder_types.h",
+            "line": 111
+          },
+          "description": "Operación start de Encoder rotativo y pulsador integrado; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "button_level",
+          "declaration": "bool (*button_level)(void *ctx)",
+          "callback": true,
+          "ownerType": "ENC_Port",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/encoder_types.h",
+            "line": 112
+          },
+          "description": "Lee el pulsador integrado del encoder."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/encoder_types.h",
+        "line": 108
+      }
+    },
+    {
+      "name": "ENC_Handle_t",
+      "fields": [
+        {
+          "name": "port",
+          "declaration": "ENC_Port port",
+          "callback": false,
+          "ownerType": "ENC_Handle_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/encoder_types.h",
+            "line": 117
+          },
+          "description": "Contrato de operaciones externo; conservar la tabla y su contexto durante el uso."
+        },
+        {
+          "name": "btnState",
+          "declaration": "ENC_ButtonState_t btnState",
+          "callback": false,
+          "ownerType": "ENC_Handle_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/encoder_types.h",
+            "line": 118
+          },
+          "description": "Estado y duración del pulsador integrado; el consumidor transforma sus flags en eventos."
+        },
+        {
+          "name": "sampleTenMs",
+          "declaration": "uint8_t sampleTenMs",
+          "callback": false,
+          "ownerType": "ENC_Handle_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/encoder_types.h",
+            "line": 119
+          },
+          "description": "Período declarado en unidades de 10 ms, almacenado en uint8_t; el planificador actual llama cada 10 ms sin consultar este campo."
+        },
+        {
+          "name": "dir",
+          "declaration": "ENC_Direction_t dir",
+          "callback": false,
+          "ownerType": "ENC_Handle_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/encoder_types.h",
+            "line": 120
+          },
+          "description": "Dirección lógica del último intervalo: NONE=0, CW=1, CCW=-1."
+        },
+        {
+          "name": "data",
+          "declaration": "ENC_Data data",
+          "callback": false,
+          "ownerType": "ENC_Handle_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/encoder_types.h",
+            "line": 121
+          },
+          "description": "Campos históricos uint16_t de velocidad/aceleración; pueden representar conversiones de valores firmados."
+        },
+        {
+          "name": "prevData",
+          "declaration": "ENC_Data prevData",
+          "callback": false,
+          "ownerType": "ENC_Handle_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/encoder_types.h",
+            "line": 122
+          },
+          "description": "Datos del intervalo anterior usados para calcular variación."
+        },
+        {
+          "name": "flags",
+          "declaration": "ENC_Byte_Flag_Struct_t flags",
+          "callback": false,
+          "ownerType": "ENC_Handle_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/encoder_types.h",
+            "line": 123
+          },
+          "description": "Bits de estado del módulo; conservar máscaras y distinguir estado de eventos pendientes."
+        },
+        {
+          "name": "prevCount",
+          "declaration": "uint16_t prevCount",
+          "callback": false,
+          "ownerType": "ENC_Handle_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/encoder_types.h",
+            "line": 124
+          },
+          "description": "Contador bruto anterior de 16 bits, referencia para corrección de wrap."
+        },
+        {
+          "name": "prevStepDelta",
+          "declaration": "int16_t prevStepDelta",
+          "callback": false,
+          "ownerType": "ENC_Handle_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/encoder_types.h",
+            "line": 125
+          },
+          "description": "Pasos completos del intervalo previo para calcular aceleración."
+        },
+        {
+          "name": "lastStepDelta",
+          "declaration": "int16_t lastStepDelta",
+          "callback": false,
+          "ownerType": "ENC_Handle_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/encoder_types.h",
+            "line": 126
+          },
+          "description": "Pasos completos firmados del intervalo más reciente."
+        },
+        {
+          "name": "lastStepAcc",
+          "declaration": "int16_t lastStepAcc",
+          "callback": false,
+          "ownerType": "ENC_Handle_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/encoder_types.h",
+            "line": 127
+          },
+          "description": "Diferencia firmada entre pasos actuales y anteriores."
+        },
+        {
+          "name": "calibrateCountPerStep",
+          "declaration": "uint8_t calibrateCountPerStep",
+          "callback": false,
+          "ownerType": "ENC_Handle_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/encoder_types.h",
+            "line": 128
+          },
+          "description": "Pulsos raw por paso; cero llega a división/módulo por cero (AMDOC-F4-001)."
+        },
+        {
+          "name": "accumCount",
+          "declaration": "int8_t accumCount",
+          "callback": false,
+          "ownerType": "ENC_Handle_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/encoder_types.h",
+            "line": 129
+          },
+          "description": "Resto/acumulación raw en int8_t; puede perder deltas grandes antes de extraer pasos (AMDOC-F4-002)."
+        },
+        {
+          "name": "invertDirection",
+          "declaration": "bool invertDirection",
+          "callback": false,
+          "ownerType": "ENC_Handle_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/encoder_types.h",
+            "line": 130
+          },
+          "description": "Preferencia de inversión aplicada después de la convención física base."
+        },
+        {
+          "name": "allowEncoderInput",
+          "declaration": "bool allowEncoderInput",
+          "callback": false,
+          "ownerType": "ENC_Handle_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/encoder_types.h",
+            "line": 131
+          },
+          "description": "Guarda que consulta la aplicación antes de entregar eventos de encoder a UI."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/encoder_types.h",
+        "line": 117
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "ENC_Button_Task_10ms",
+      "signature": "void ENC_Button_Task_10ms(ENC_Handle_t *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/encoder.h",
+        "line": 21
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "CLEAR_FLAG",
+        "IS_FLAG_SET",
+        "NIBBLEH_GET_STATE",
+        "NIBBLEH_SET_STATE",
+        "SET_FLAG",
+        "button_level"
+      ],
+      "writes": [
+        "counter"
+      ],
+      "description": "Actualiza duración y flags del pulsador integrado.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/encoder.c",
+        "line": 80
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "ENC_GetAcceleration",
+      "signature": "uint16_t ENC_GetAcceleration(ENC_Handle_t *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/encoder.h",
+        "line": 42
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Devuelve el campo histórico de aceleración como uint16_t.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/encoder.c",
+        "line": 192
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "ENC_GetDirection",
+      "signature": "ENC_Direction_t ENC_GetDirection(ENC_Handle_t *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/encoder.h",
+        "line": 32
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Devuelve NONE, CW o CCW según los últimos pasos.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/encoder.c",
+        "line": 182
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "ENC_GetScaledSteps",
+      "signature": "int16_t ENC_GetScaledSteps(ENC_Handle_t *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/encoder.h",
+        "line": 47
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Selecciona multiplicador firmado 1, 2 o 4 según la magnitud del último desplazamiento.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/encoder.c",
+        "line": 212
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "ENC_GetSignedAcceleration",
+      "signature": "int16_t ENC_GetSignedAcceleration(ENC_Handle_t *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/encoder.h",
+        "line": 46
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Devuelve la variación firmada de pasos respecto del intervalo anterior.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/encoder.c",
+        "line": 207
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "ENC_GetSignedVelocity",
+      "signature": "int16_t ENC_GetSignedVelocity(ENC_Handle_t *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/encoder.h",
+        "line": 45
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Devuelve lastStepDelta como velocidad firmada por intervalo.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/encoder.c",
+        "line": 202
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "ENC_GetStepDelta",
+      "signature": "int16_t ENC_GetStepDelta(ENC_Handle_t *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/encoder.h",
+        "line": 44
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Devuelve los últimos pasos completos con signo.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/encoder.c",
+        "line": 197
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "ENC_GetVelocity",
+      "signature": "uint16_t ENC_GetVelocity(ENC_Handle_t *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/encoder.h",
+        "line": 37
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Devuelve el campo histórico de velocidad como uint16_t.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/encoder.c",
+        "line": 187
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "ENC_Init",
+      "signature": "void ENC_Init(ENC_Handle_t *h, const ENC_Port *port, uint32_t sampleTenMs, uint8_t calibrateCountPerStep)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/encoder.h",
+        "line": 7
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "read_count"
+      ],
+      "writes": [
+        "accumCount",
+        "calibrateCountPerStep",
+        "dir",
+        "invertDirection",
+        "lastStepAcc",
+        "lastStepDelta",
+        "port",
+        "prevCount",
+        "prevStepDelta",
+        "sampleTenMs"
+      ],
+      "description": "Copia el puerto e inicializa período, escala y acumuladores del encoder.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/encoder.c",
+        "line": 12
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "ENC_IsDirectionInverted",
+      "signature": "bool ENC_IsDirectionInverted(const ENC_Handle_t *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/encoder.h",
+        "line": 14
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Consulta la preferencia de inversión aplicada a esta instancia.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/encoder.c",
+        "line": 72
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "ENC_SetDirectionInverted",
+      "signature": "void ENC_SetDirectionInverted(ENC_Handle_t *h, bool inverted)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/encoder.h",
+        "line": 13
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "read_count"
+      ],
+      "writes": [
+        "accumCount",
+        "dir",
+        "invertDirection",
+        "lastStepAcc",
+        "lastStepDelta",
+        "prevCount",
+        "prevStepDelta"
+      ],
+      "description": "Configura la inversión opcional posterior al sentido base físico.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/encoder.c",
+        "line": 52
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "ENC_Start",
+      "signature": "void ENC_Start(ENC_Handle_t *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/encoder.h",
+        "line": 11
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "reset_count",
+        "start"
+      ],
+      "writes": [
+        "accumCount",
+        "dir",
+        "lastStepAcc",
+        "lastStepDelta",
+        "prevCount",
+        "prevStepDelta"
+      ],
+      "description": "Arranca el contador externo y reinicia referencias de muestreo.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/encoder.c",
+        "line": 34
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "ENC_Task_N10ms",
+      "signature": "void ENC_Task_N10ms(ENC_Handle_t *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/encoder.h",
+        "line": 27
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "ENC_Button_Task_10ms",
+        "SET_FLAG",
+        "read_count"
+      ],
+      "writes": [
+        "accumCount",
+        "dir",
+        "lastStepAcc",
+        "lastStepDelta",
+        "prevCount",
+        "prevStepDelta"
+      ],
+      "description": "Calcula pasos y derivadas tras corregir wrap y aplicar las dos convenciones de dirección.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/encoder.c",
+        "line": 128
+      },
+      "linkage": "header"
+    }
+  ],
+  "internalFunctions": []
+}

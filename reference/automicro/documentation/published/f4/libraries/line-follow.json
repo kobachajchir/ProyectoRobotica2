@@ -1,0 +1,1568 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "f4:module/Core/Inc/line_follow_control.h",
+  "slug": "line-follow",
+  "title": "Calibración de línea y seguidor",
+  "target": "f4",
+  "kind": "núcleo",
+  "status": "source-documented",
+  "verification": "not-run-user-instruction",
+  "snapshotDate": "2026-10-20",
+  "responsibility": "Captura perfiles ópticos blanco/pista y convierte la línea calibrada en consignas de seguimiento.",
+  "scope": "Dos unidades lógicas comparten line_follow_control.c: LineCalibration_* y LineFollowControl_*. La primera usa fases de iluminación y ventanas DMA; la segunda evalúa ruta y gobierna una FSM SEARCH/TRACK/INTERSECTION/CROSS_COMMIT/RECOVER/FAULT.",
+  "state": "LineCalibration_Handle posee acumuladores volatile, ventanas[32][3], sesión, pose y perfil pendiente; store conserva perfiles blanco/pista y sus revisiones. LineFollowControl_Handle posee config/status, integral/derivada y secuencias. Config.read entrega una instantánea coherente de IR/IMU/guardas; command entrega forward/turn_ccw/lease_ms/now_ms; hold ordena detener.",
+  "lifecycle": [
+    "Init carga estado y puertos; Control usa operation y session para arrancar/confirmar/cancelar la calibración.",
+    "PushScan acumula enteros una vez por scan DMA; Task procesa pose, estabilidad, fases, calidad y persistencia fuera de esa acumulación.",
+    "Cada fase captura 32 ventanas de 40 scans útiles; conservar significado de las revisiones blanco/pista.",
+    "LineFollow_Evaluate obtiene oscuridad/error/confianza; Task del seguidor exige entradas válidas y manda órdenes con lease."
+  ],
+  "interactions": [
+    "La aplicación proporciona pose MPU, scans ADC y conmutación de emisores; AppPreferences persiste LineCalibration_Store.",
+    "El seguidor usa command/hold conectados a MotionControl, sin poseer sus motores o PID concreto.",
+    "UNER 0x1D/0x1E/0x1F controla sesión y publica estado de 168 bytes según el serializador de aplicación."
+  ],
+  "limitations": [
+    "Una pista basada en otra revisión de blanco no es intercambiable sin revisar las guardas.",
+    "La acumulación usa volatile entre DMA y tarea; eso no demuestra atomicidad completa ni portabilidad multihilo.",
+    "No confundir patrón ambiguo, pérdida de línea y datos IR vencidos: sus rechazos son distintos."
+  ],
+  "modularity": "Núcleo sin drivers concretos. Tiene conocimiento compartido del esquema de calibración; separación lógica entre calibración y seguidor, pero implementación compilada en el mismo archivo.",
+  "files": [
+    {
+      "path": "Core/Inc/line_follow_control.h",
+      "rootId": "f4",
+      "sha256": "8950bf74fc0e12b0c2decc5437a5dc87555fbe2b811894e642b2b3c24e5b90c7",
+      "includes": [
+        "line_follow_control_types.h"
+      ]
+    },
+    {
+      "path": "Core/Inc/line_follow_control_types.h",
+      "rootId": "f4",
+      "sha256": "e7a92ff809ec9b978602eddbfdf20cc19f2c77cb59bb06d51a081e40c3c92e9d",
+      "includes": [
+        "am_port.h",
+        "line_calibration.h",
+        "stdbool.h",
+        "stdint.h"
+      ]
+    },
+    {
+      "path": "Core/Inc/line_calibration.h",
+      "rootId": "f4",
+      "sha256": "8f821b5921b4a532ec580ec9dc3e60796228e8c9b800caa6f5e2cb7da4ecd065",
+      "includes": [
+        "stdint.h",
+        "stdbool.h"
+      ]
+    },
+    {
+      "path": "Core/Src/line_follow_control.c",
+      "rootId": "f4",
+      "sha256": "8ad3fb450f6ae0dee5dcd6654ccb765e1175485207e33c946d5776b74aa26434",
+      "includes": [
+        "line_follow_control.h",
+        "math.h",
+        "string.h"
+      ]
+    }
+  ],
+  "findings": [
+    "AMDOC-F4-003",
+    "AMDOC-WEB-009"
+  ],
+  "types": [
+    {
+      "name": "LineFollow_Route",
+      "fields": [
+        {
+          "name": "rightNorm",
+          "declaration": "uint16_t leftRaw, centerRaw, rightRaw, leftNorm, centerNorm, rightNorm",
+          "callback": false,
+          "ownerType": "LineFollow_Route",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_follow_control_types.h",
+            "line": 28
+          },
+          "description": "Dato de estado/configuración `rightNorm`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "rightDarkness",
+          "declaration": "float leftDarkness, centerDarkness, rightDarkness",
+          "callback": false,
+          "ownerType": "LineFollow_Route",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_follow_control_types.h",
+            "line": 29
+          },
+          "description": "Dato de estado/configuración `rightDarkness`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "centeredMarginMm",
+          "declaration": "float lateralErrorMm, lateralErrorNorm, centeredMarginMm",
+          "callback": false,
+          "ownerType": "LineFollow_Route",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_follow_control_types.h",
+            "line": 30
+          },
+          "description": "Dato de estado/configuración `centeredMarginMm`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "lineWidthMm",
+          "declaration": "uint16_t lineWidthMm",
+          "callback": false,
+          "ownerType": "LineFollow_Route",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_follow_control_types.h",
+            "line": 31
+          },
+          "description": "Dato de estado/configuración `lineWidthMm`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "alignment",
+          "declaration": "uint8_t pattern, confidence, alignment",
+          "callback": false,
+          "ownerType": "LineFollow_Route",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_follow_control_types.h",
+            "line": 32
+          },
+          "description": "Dato de estado/configuración `alignment`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "rightWhite",
+          "declaration": "bool ambiguous, leftBlack, centerBlack, rightBlack, leftWhite, rightWhite",
+          "callback": false,
+          "ownerType": "LineFollow_Route",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_follow_control_types.h",
+            "line": 33
+          },
+          "description": "Dato de estado/configuración `rightWhite`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/line_follow_control_types.h",
+        "line": 28
+      }
+    },
+    {
+      "name": "LineFollow_Geometry",
+      "fields": [
+        {
+          "name": "black_width_mm",
+          "declaration": "uint16_t black_width_mm",
+          "callback": false,
+          "ownerType": "LineFollow_Geometry",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_follow_control_types.h",
+            "line": 36
+          },
+          "description": "Dato de estado/configuración `black_width_mm`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "centered_margin_mm",
+          "declaration": "float sensor_position_mm[3], centered_margin_mm",
+          "callback": false,
+          "ownerType": "LineFollow_Geometry",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_follow_control_types.h",
+            "line": 37
+          },
+          "description": "Dato de estado/configuración `centered_margin_mm`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/line_follow_control_types.h",
+        "line": 36
+      }
+    },
+    {
+      "name": "LineFollow_Input",
+      "fields": [
+        {
+          "name": "route",
+          "declaration": "LineFollow_Route route",
+          "callback": false,
+          "ownerType": "LineFollow_Input",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_follow_control_types.h",
+            "line": 40
+          },
+          "description": "Dato de estado/configuración `route`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "imu_acquired_ms",
+          "declaration": "uint32_t ir_seq, ir_acquired_ms, imu_acquired_ms",
+          "callback": false,
+          "ownerType": "LineFollow_Input",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_follow_control_types.h",
+            "line": 41
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "imu_seq",
+          "declaration": "uint16_t imu_seq",
+          "callback": false,
+          "ownerType": "LineFollow_Input",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_follow_control_types.h",
+            "line": 42
+          },
+          "description": "Dato de estado/configuración `imu_seq`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "yaw_rate_ccw_dps",
+          "declaration": "float pitch_deg, roll_deg, yaw_deg, yaw_rate_ccw_dps",
+          "callback": false,
+          "ownerType": "LineFollow_Input",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_follow_control_types.h",
+            "line": 43
+          },
+          "description": "Dato de estado/configuración `yaw_rate_ccw_dps`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "roll_deviation_deg",
+          "declaration": "float pitch_error_deg, roll_deviation_deg",
+          "callback": false,
+          "ownerType": "LineFollow_Input",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_follow_control_types.h",
+            "line": 44
+          },
+          "description": "Ángulo en grados; respetar eje y referencia de esta librería."
+        },
+        {
+          "name": "illumination_settling",
+          "declaration": "uint8_t imu_valid, yaw_valid, ir_valid, illumination_settling",
+          "callback": false,
+          "ownerType": "LineFollow_Input",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_follow_control_types.h",
+            "line": 45
+          },
+          "description": "Dato de estado/configuración `illumination_settling`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "calibrated",
+          "declaration": "uint8_t armed, balance_active, mode_follow, calibrated",
+          "callback": false,
+          "ownerType": "LineFollow_Input",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_follow_control_types.h",
+            "line": 46
+          },
+          "description": "Dato de estado/configuración `calibrated`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/line_follow_control_types.h",
+        "line": 40
+      }
+    },
+    {
+      "name": "LineFollow_Config_t",
+      "fields": [
+        {
+          "name": "ctx",
+          "declaration": "void *ctx",
+          "callback": false,
+          "ownerType": "LineFollow_Config_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_follow_control_types.h",
+            "line": 49
+          },
+          "description": "Contexto prestado compartido por read, command y hold."
+        },
+        {
+          "name": "read",
+          "declaration": "bool (*read)(void *, LineFollow_Input *)",
+          "callback": true,
+          "ownerType": "LineFollow_Config_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_follow_control_types.h",
+            "line": 50
+          },
+          "description": "Copia entradas de sensores, secuencias, tiempos y guardas al snapshot del seguidor."
+        },
+        {
+          "name": "command",
+          "declaration": "bool (*command)(void *, float forward, float turn_ccw, uint16_t lease_ms, uint32_t now_ms)",
+          "callback": true,
+          "ownerType": "LineFollow_Config_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_follow_control_types.h",
+            "line": 51
+          },
+          "description": "Solicita marcha/giro CCW con lease y tiempo; false significa que el árbitro no aceptó."
+        },
+        {
+          "name": "hold",
+          "declaration": "void (*hold)(void *)",
+          "callback": true,
+          "ownerType": "LineFollow_Config_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_follow_control_types.h",
+            "line": 52
+          },
+          "description": "Solicita detener el movimiento a la aplicación."
+        },
+        {
+          "name": "line_config",
+          "declaration": "LineFollow_Geometry line_config",
+          "callback": false,
+          "ownerType": "LineFollow_Config_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_follow_control_types.h",
+            "line": 53
+          },
+          "description": "Dato de estado/configuración `line_config`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "max_turn_percent",
+          "declaration": "float forward_percent, recover_turn_percent, max_turn_percent",
+          "callback": false,
+          "ownerType": "LineFollow_Config_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_follow_control_types.h",
+            "line": 54
+          },
+          "description": "Magnitud porcentual; el rango y signo se fijan en la API de esta librería."
+        },
+        {
+          "name": "yaw_rate_damping",
+          "declaration": "float kp, ki, kd, yaw_rate_damping",
+          "callback": false,
+          "ownerType": "LineFollow_Config_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_follow_control_types.h",
+            "line": 55
+          },
+          "description": "Dato de estado/configuración `yaw_rate_damping`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "recover_timeout_ms",
+          "declaration": "uint16_t recover_timeout_ms",
+          "callback": false,
+          "ownerType": "LineFollow_Config_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_follow_control_types.h",
+            "line": 56
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "enabled",
+          "declaration": "uint8_t enabled",
+          "callback": false,
+          "ownerType": "LineFollow_Config_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_follow_control_types.h",
+            "line": 57
+          },
+          "description": "Dato de estado/configuración `enabled`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/line_follow_control_types.h",
+        "line": 49
+      }
+    },
+    {
+      "name": "LineFollow_Status_t",
+      "fields": [
+        {
+          "name": "fsm",
+          "declaration": "LineFollow_Fsm_t fsm",
+          "callback": false,
+          "ownerType": "LineFollow_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_follow_control_types.h",
+            "line": 60
+          },
+          "description": "Estado de seguimiento SEARCH/TRACK/INTERSECTION/CROSS_COMMIT/RECOVER/FAULT."
+        },
+        {
+          "name": "reject_reason",
+          "declaration": "LineFollow_RejectReason_t reject_reason",
+          "callback": false,
+          "ownerType": "LineFollow_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_follow_control_types.h",
+            "line": 61
+          },
+          "description": "Motivo de rechazo/guarda; no confundir con patrón óptico."
+        },
+        {
+          "name": "sample",
+          "declaration": "LineFollow_Route sample",
+          "callback": false,
+          "ownerType": "LineFollow_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_follow_control_types.h",
+            "line": 62
+          },
+          "description": "Dato de estado/configuración `sample`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "candidate_count",
+          "declaration": "uint8_t stable_pattern, candidate_pattern, candidate_count",
+          "callback": false,
+          "ownerType": "LineFollow_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_follow_control_types.h",
+            "line": 63
+          },
+          "description": "Dato de estado/configuración `candidate_count`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "sensors_valid",
+          "declaration": "uint8_t confidence_percent, ambiguous, sensors_valid",
+          "callback": false,
+          "ownerType": "LineFollow_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_follow_control_types.h",
+            "line": 64
+          },
+          "description": "Dato de estado/configuración `sensors_valid`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "line_width_mm",
+          "declaration": "uint16_t line_width_mm",
+          "callback": false,
+          "ownerType": "LineFollow_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_follow_control_types.h",
+            "line": 65
+          },
+          "description": "Dato de estado/configuración `line_width_mm`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "turn_percent",
+          "declaration": "float lateral_error_mm, lateral_error_norm, forward_percent, turn_percent",
+          "callback": false,
+          "ownerType": "LineFollow_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_follow_control_types.h",
+            "line": 66
+          },
+          "description": "Magnitud porcentual; el rango y signo se fijan en la API de esta librería."
+        },
+        {
+          "name": "last_track_error_mm",
+          "declaration": "float yaw_rate_dps, last_track_error_mm",
+          "callback": false,
+          "ownerType": "LineFollow_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_follow_control_types.h",
+            "line": 67
+          },
+          "description": "Memoria de la observación anterior usada por la máquina de estados."
+        },
+        {
+          "name": "last_update_ms",
+          "declaration": "uint32_t state_started_ms, last_update_ms",
+          "callback": false,
+          "ownerType": "LineFollow_Status_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_follow_control_types.h",
+            "line": 68
+          },
+          "description": "Memoria de la observación anterior usada por la máquina de estados."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/line_follow_control_types.h",
+        "line": 60
+      }
+    },
+    {
+      "name": "LineFollowControl_Handle",
+      "fields": [
+        {
+          "name": "config",
+          "declaration": "LineFollow_Config_t config",
+          "callback": false,
+          "ownerType": "LineFollowControl_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_follow_control_types.h",
+            "line": 71
+          },
+          "description": "Configuración copiada por la instancia; los punteros que contiene siguen siendo prestados."
+        },
+        {
+          "name": "status",
+          "declaration": "LineFollow_Status_t status",
+          "callback": false,
+          "ownerType": "LineFollowControl_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_follow_control_types.h",
+            "line": 72
+          },
+          "description": "Último resultado y guardas del módulo; los getters pueden devolver una vista de este almacenamiento."
+        },
+        {
+          "name": "filtered_derivative",
+          "declaration": "float integral, previous_error, filtered_derivative",
+          "callback": false,
+          "ownerType": "LineFollowControl_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_follow_control_types.h",
+            "line": 73
+          },
+          "description": "Dato de estado/configuración `filtered_derivative`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ambiguous_ms",
+          "declaration": "uint32_t last_ir_seq, candidate_ms, unstable_ms, ambiguous_ms",
+          "callback": false,
+          "ownerType": "LineFollowControl_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_follow_control_types.h",
+            "line": 74
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "ambiguity_pending",
+          "declaration": "uint8_t initialized, candidate_valid, unstable, ambiguity_pending",
+          "callback": false,
+          "ownerType": "LineFollowControl_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_follow_control_types.h",
+            "line": 75
+          },
+          "description": "Dato de estado/configuración `ambiguity_pending`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/line_follow_control_types.h",
+        "line": 71
+      }
+    },
+    {
+      "name": "LineCalibration_Profile",
+      "fields": [
+        {
+          "name": "mean",
+          "declaration": "uint16_t mean[LINE_CAL_PHASES][LINE_CAL_SENSORS]",
+          "callback": false,
+          "ownerType": "LineCalibration_Profile",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_calibration.h",
+            "line": 13
+          },
+          "description": "Dato de estado/configuración `mean`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "noise",
+          "declaration": "uint16_t noise[LINE_CAL_PHASES][LINE_CAL_SENSORS]",
+          "callback": false,
+          "ownerType": "LineCalibration_Profile",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_calibration.h",
+            "line": 14
+          },
+          "description": "Dato de estado/configuración `noise`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "yaw_deg",
+          "declaration": "float pitch_deg, roll_deg, yaw_deg",
+          "callback": false,
+          "ownerType": "LineCalibration_Profile",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_calibration.h",
+            "line": 15
+          },
+          "description": "Ángulo en grados; respetar eje y referencia de esta librería."
+        },
+        {
+          "name": "useful_scans",
+          "declaration": "uint32_t useful_scans",
+          "callback": false,
+          "ownerType": "LineCalibration_Profile",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_calibration.h",
+            "line": 16
+          },
+          "description": "Dato de estado/configuración `useful_scans`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "valid",
+          "declaration": "uint8_t valid",
+          "callback": false,
+          "ownerType": "LineCalibration_Profile",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_calibration.h",
+            "line": 17
+          },
+          "description": "Dato de estado/configuración `valid`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "reserved",
+          "declaration": "uint8_t reserved[3]",
+          "callback": false,
+          "ownerType": "LineCalibration_Profile",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_calibration.h",
+            "line": 18
+          },
+          "description": "Dato de estado/configuración `reserved`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/line_calibration.h",
+        "line": 13
+      }
+    },
+    {
+      "name": "LineCalibration_Store",
+      "fields": [
+        {
+          "name": "track_white_revision",
+          "declaration": "uint32_t white_revision, track_white_revision",
+          "callback": false,
+          "ownerType": "LineCalibration_Store",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_calibration.h",
+            "line": 21
+          },
+          "description": "Dato de estado/configuración `track_white_revision`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "track",
+          "declaration": "LineCalibration_Profile white, track",
+          "callback": false,
+          "ownerType": "LineCalibration_Store",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_calibration.h",
+            "line": 22
+          },
+          "description": "Dato de estado/configuración `track`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/line_calibration.h",
+        "line": 21
+      }
+    },
+    {
+      "name": "LineCalibration_Pose",
+      "fields": [
+        {
+          "name": "gyro_max_dps",
+          "declaration": "float pitch_deg, roll_deg, yaw_deg, gyro_max_dps",
+          "callback": false,
+          "ownerType": "LineCalibration_Pose",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_calibration.h",
+            "line": 31
+          },
+          "description": "Dato de estado/configuración `gyro_max_dps`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "acquired_ms",
+          "declaration": "uint32_t acquired_ms",
+          "callback": false,
+          "ownerType": "LineCalibration_Pose",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_calibration.h",
+            "line": 32
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "seq",
+          "declaration": "uint16_t seq",
+          "callback": false,
+          "ownerType": "LineCalibration_Pose",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_calibration.h",
+            "line": 33
+          },
+          "description": "Dato de estado/configuración `seq`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "valid",
+          "declaration": "uint8_t valid",
+          "callback": false,
+          "ownerType": "LineCalibration_Pose",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_calibration.h",
+            "line": 34
+          },
+          "description": "Dato de estado/configuración `valid`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/line_calibration.h",
+        "line": 31
+      }
+    },
+    {
+      "name": "LineCalibration_Port",
+      "fields": [
+        {
+          "name": "ctx",
+          "declaration": "void *ctx",
+          "callback": false,
+          "ownerType": "LineCalibration_Port",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_calibration.h",
+            "line": 37
+          },
+          "description": "Contexto opaco prestado al callback; el integrador conserva su almacenamiento."
+        },
+        {
+          "name": "lights",
+          "declaration": "void (*lights)(void *, bool, bool)",
+          "callback": true,
+          "ownerType": "LineCalibration_Port",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_calibration.h",
+            "line": 38
+          },
+          "description": "Selecciona ambos grupos de iluminación para una fase de calibración."
+        },
+        {
+          "name": "restore",
+          "declaration": "void (*restore)(void *)",
+          "callback": true,
+          "ownerType": "LineCalibration_Port",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_calibration.h",
+            "line": 39
+          },
+          "description": "Restaura la iluminación/contexto que existía antes de calibrar."
+        },
+        {
+          "name": "save",
+          "declaration": "bool (*save)(void *, const LineCalibration_Store *)",
+          "callback": true,
+          "ownerType": "LineCalibration_Port",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_calibration.h",
+            "line": 40
+          },
+          "description": "Persiste el store completo; false mantiene explícito el fallo de almacenamiento."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/line_calibration.h",
+        "line": 37
+      }
+    },
+    {
+      "name": "LineCalibration_Handle",
+      "fields": [
+        {
+          "name": "store",
+          "declaration": "LineCalibration_Store store",
+          "callback": false,
+          "ownerType": "LineCalibration_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_calibration.h",
+            "line": 43
+          },
+          "description": "Dato de estado/configuración `store`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "pending",
+          "declaration": "LineCalibration_Profile pending",
+          "callback": false,
+          "ownerType": "LineCalibration_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_calibration.h",
+            "line": 44
+          },
+          "description": "Dato de estado/configuración `pending`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "port",
+          "declaration": "LineCalibration_Port port",
+          "callback": false,
+          "ownerType": "LineCalibration_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_calibration.h",
+            "line": 45
+          },
+          "description": "Contrato de operaciones externo; conservar la tabla y su contexto durante el uso."
+        },
+        {
+          "name": "still_reference",
+          "declaration": "LineCalibration_Pose reference, still_reference",
+          "callback": false,
+          "ownerType": "LineCalibration_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_calibration.h",
+            "line": 46
+          },
+          "description": "Dato de estado/configuración `still_reference`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "state",
+          "declaration": "volatile LineCalibration_State state",
+          "callback": false,
+          "ownerType": "LineCalibration_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_calibration.h",
+            "line": 47
+          },
+          "description": "Fase volatile que arbitra captura DMA y procesamiento de tarea."
+        },
+        {
+          "name": "last_adc_seq",
+          "declaration": "uint32_t session_id, started_ms, still_ms, phase_ms, last_adc_seq",
+          "callback": false,
+          "ownerType": "LineCalibration_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_calibration.h",
+            "line": 48
+          },
+          "description": "Memoria de la observación anterior usada por la máquina de estados."
+        },
+        {
+          "name": "last_pose_seq",
+          "declaration": "uint16_t last_pose_seq",
+          "callback": false,
+          "ownerType": "LineCalibration_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_calibration.h",
+            "line": 49
+          },
+          "description": "Memoria de la observación anterior usada por la máquina de estados."
+        },
+        {
+          "name": "progress",
+          "declaration": "uint8_t target, phase, reason, progress",
+          "callback": false,
+          "ownerType": "LineCalibration_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_calibration.h",
+            "line": 50
+          },
+          "description": "Dato de estado/configuración `progress`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "scans",
+          "declaration": "volatile uint16_t scans",
+          "callback": false,
+          "ownerType": "LineCalibration_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_calibration.h",
+            "line": 51
+          },
+          "description": "Cantidad de scans útiles de la fase; hasta 1280."
+        },
+        {
+          "name": "sum",
+          "declaration": "volatile uint32_t sum[3]",
+          "callback": false,
+          "ownerType": "LineCalibration_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_calibration.h",
+            "line": 52
+          },
+          "description": "Dato de estado/configuración `sum`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "squares",
+          "declaration": "volatile uint64_t squares[3]",
+          "callback": false,
+          "ownerType": "LineCalibration_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_calibration.h",
+            "line": 53
+          },
+          "description": "Acumulación entera de cuadrados para estimar ruido; campos de 64 bits."
+        },
+        {
+          "name": "window_sum",
+          "declaration": "volatile uint32_t window_sum[3]",
+          "callback": false,
+          "ownerType": "LineCalibration_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_calibration.h",
+            "line": 54
+          },
+          "description": "Dato de estado/configuración `window_sum`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "windows",
+          "declaration": "volatile uint16_t windows[32][3]",
+          "callback": false,
+          "ownerType": "LineCalibration_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/line_calibration.h",
+            "line": 55
+          },
+          "description": "Medias de 32 ventanas × 3 sensores; cada ventana agrupa 40 scans."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/line_calibration.h",
+        "line": 43
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "LineCalibration_Busy",
+      "signature": "bool LineCalibration_Busy(const LineCalibration_Handle *)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/line_calibration.h",
+        "line": 61
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Indica si una fase de calibración sigue activa.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/line_follow_control.c",
+        "line": 22
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "LineCalibration_Control",
+      "signature": "uint8_t LineCalibration_Control(LineCalibration_Handle *, uint8_t operation, uint32_t session, uint32_t now_ms)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/line_calibration.h",
+        "line": 62
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "LineCalibration_Busy",
+        "cal_finish",
+        "memset"
+      ],
+      "writes": [
+        "last_pose_seq",
+        "phase",
+        "progress",
+        "reason",
+        "started_ms",
+        "state",
+        "still_ms",
+        "target"
+      ],
+      "description": "Procesa una operación de sesión con su ID y tiempo.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/line_follow_control.c",
+        "line": 31
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "LineCalibration_Init",
+      "signature": "void LineCalibration_Init(LineCalibration_Handle *, const LineCalibration_Port *, const LineCalibration_Store *)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/line_calibration.h",
+        "line": 59
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "memset"
+      ],
+      "writes": [
+        "port",
+        "store"
+      ],
+      "description": "Inicializa calibración con puerto y store previamente persistido.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/line_follow_control.c",
+        "line": 25
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "LineCalibration_PushScan",
+      "signature": "void LineCalibration_PushScan(LineCalibration_Handle *, const uint16_t raw[3], uint32_t seq, uint32_t now_ms)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/line_calibration.h",
+        "line": 65
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [
+        "last_adc_seq",
+        "scans"
+      ],
+      "description": "Acumula un scan ADC nuevo con secuencia/tiempo sin hacer trabajo de persistencia.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/line_follow_control.c",
+        "line": 56
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "LineCalibration_Ready",
+      "signature": "bool LineCalibration_Ready(const LineCalibration_Store *)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/line_calibration.h",
+        "line": 60
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Comprueba disponibilidad y correspondencia de perfiles blanco/pista.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/line_follow_control.c",
+        "line": 18
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "LineCalibration_Task",
+      "signature": "void LineCalibration_Task(LineCalibration_Handle *, const LineCalibration_Pose *, uint32_t now_ms)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/line_calibration.h",
+        "line": 63
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "cal_finish",
+        "cal_phase",
+        "cal_pose_ok",
+        "cal_quality",
+        "ceilf",
+        "fabsf",
+        "maxf",
+        "median32",
+        "save",
+        "sqrtf"
+      ],
+      "writes": [
+        "progress",
+        "reference",
+        "state",
+        "still_ms",
+        "still_reference",
+        "store"
+      ],
+      "description": "Avanza estabilidad, captura, calidad y guardado a partir de pose actual.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/line_follow_control.c",
+        "line": 92
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "LineFollowControl_GetDefaultConfig",
+      "signature": "void LineFollowControl_GetDefaultConfig(LineFollow_Config_t *config)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/line_follow_control.h",
+        "line": 7
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "memset"
+      ],
+      "writes": [
+        "forward_percent",
+        "kd",
+        "ki",
+        "kp",
+        "max_turn_percent",
+        "recover_timeout_ms",
+        "recover_turn_percent",
+        "yaw_rate_damping"
+      ],
+      "description": "Carga geometría, ganancias y límites del seguidor.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/line_follow_control.c",
+        "line": 178
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "LineFollowControl_GetFsmText",
+      "signature": "const char *LineFollowControl_GetFsmText(LineFollow_Fsm_t fsm)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/line_follow_control.h",
+        "line": 16
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Devuelve etiqueta de la fase del seguidor.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/line_follow_control.c",
+        "line": 276
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "LineFollowControl_GetStatus",
+      "signature": "const LineFollow_Status_t *LineFollowControl_GetStatus(const LineFollowControl_Handle *line)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/line_follow_control.h",
+        "line": 15
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Devuelve vista de FSM, muestra, error y rechazo actuales.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/line_follow_control.c",
+        "line": 275
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "LineFollowControl_Init",
+      "signature": "AM_Result LineFollowControl_Init(LineFollowControl_Handle *line, const LineFollow_Config_t *config)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/line_follow_control.h",
+        "line": 8
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "LineFollowControl_Reset",
+        "memset"
+      ],
+      "writes": [
+        "config",
+        "initialized"
+      ],
+      "description": "Inicializa la FSM con sus callbacks de lectura y movimiento.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/line_follow_control.c",
+        "line": 185
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "LineFollowControl_Reset",
+      "signature": "void LineFollowControl_Reset(LineFollowControl_Handle *line)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/line_follow_control.h",
+        "line": 10
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "memset"
+      ],
+      "writes": [
+        "ambiguity_pending",
+        "candidate_valid",
+        "filtered_derivative",
+        "integral",
+        "last_ir_seq",
+        "previous_error",
+        "unstable"
+      ],
+      "description": "Restablece historia de seguimiento y estabilidad de patrón.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/line_follow_control.c",
+        "line": 190
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "LineFollowControl_SetEnabled",
+      "signature": "void LineFollowControl_SetEnabled(LineFollowControl_Handle *line, uint8_t enabled)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/line_follow_control.h",
+        "line": 11
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "hold"
+      ],
+      "writes": [],
+      "description": "Activa o detiene la producción de consignas del seguidor.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/line_follow_control.c",
+        "line": 196
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "LineFollowControl_SetLineBlackWidth",
+      "signature": "void LineFollowControl_SetLineBlackWidth(LineFollowControl_Handle *line, uint16_t width_mm)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/line_follow_control.h",
+        "line": 12
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "maxf"
+      ],
+      "writes": [],
+      "description": "Actualiza ancho de línea usado por el modelo geométrico.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/line_follow_control.c",
+        "line": 201
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "LineFollowControl_Task",
+      "signature": "void LineFollowControl_Task(LineFollowControl_Handle *line, uint32_t now_ms)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/line_follow_control.h",
+        "line": 14
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "clampf",
+        "command",
+        "fabsf",
+        "hold",
+        "line_fault",
+        "read"
+      ],
+      "writes": [
+        "ambiguity_pending",
+        "ambiguous_ms",
+        "candidate_ms",
+        "candidate_valid",
+        "filtered_derivative",
+        "integral",
+        "last_ir_seq",
+        "previous_error",
+        "unstable",
+        "unstable_ms"
+      ],
+      "description": "Evalúa entradas/guardas, avanza FSM y solicita marcha/giro o hold.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/line_follow_control.c",
+        "line": 210
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "LineFollow_Evaluate",
+      "signature": "bool LineFollow_Evaluate(const LineCalibration_Store *, const uint16_t raw[3], bool lights, const LineFollow_Geometry *, LineFollow_Route *)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/line_follow_control_types.h",
+        "line": 79
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "LineCalibration_Ready",
+        "clampf",
+        "fabsf",
+        "maxf",
+        "memset"
+      ],
+      "writes": [
+        "alignment",
+        "ambiguous",
+        "centerBlack",
+        "centerDarkness",
+        "centerNorm",
+        "centerRaw",
+        "centeredMarginMm",
+        "confidence",
+        "lateralErrorMm",
+        "lateralErrorNorm",
+        "leftBlack",
+        "leftDarkness",
+        "leftNorm",
+        "leftRaw",
+        "leftWhite",
+        "lineWidthMm",
+        "pattern",
+        "rightBlack",
+        "rightDarkness",
+        "rightNorm",
+        "rightRaw",
+        "rightWhite"
+      ],
+      "description": "Transforma raw de tres sensores y perfiles en patrón, oscuridad y error lateral.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/line_follow_control.c",
+        "line": 140
+      },
+      "linkage": "header"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "clampf",
+      "signature": "static float clampf(float x, float lo, float hi)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/line_follow_control.c",
+        "line": 7
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación clampf de Calibración de línea y seguidor; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "maxf",
+      "signature": "static float maxf(float a, float b)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/line_follow_control.c",
+        "line": 8
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación maxf de Calibración de línea y seguidor; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "median32",
+      "signature": "static uint16_t median32(const volatile uint16_t values[32][3], unsigned channel)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/line_follow_control.c",
+        "line": 9
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación median32 de Calibración de línea y seguidor; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "cal_finish",
+      "signature": "static void cal_finish(LineCalibration_Handle *h, LineCalibration_State state, uint8_t reason)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/line_follow_control.c",
+        "line": 28
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "restore"
+      ],
+      "writes": [
+        "reason",
+        "state"
+      ],
+      "description": "Adapta la llamada a `restore` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "cal_phase",
+      "signature": "static void cal_phase(LineCalibration_Handle *h, uint32_t now)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/line_follow_control.c",
+        "line": 47
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "lights",
+        "memset"
+      ],
+      "writes": [
+        "phase_ms",
+        "scans",
+        "state"
+      ],
+      "description": "Coordina `lights`, `memset` para Calibración de línea y seguidor.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "cal_pose_ok",
+      "signature": "static bool cal_pose_ok(const LineCalibration_Pose *p, uint32_t now)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/line_follow_control.c",
+        "line": 68
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "fabsf",
+        "isfinite"
+      ],
+      "writes": [],
+      "description": "Coordina `fabsf`, `isfinite` para Calibración de línea y seguidor.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "cal_quality",
+      "signature": "static bool cal_quality(const LineCalibration_Handle *h, const LineCalibration_Store *next)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/line_follow_control.c",
+        "line": 73
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "fabsf",
+        "maxf"
+      ],
+      "writes": [],
+      "description": "Coordina `fabsf`, `maxf` para Calibración de línea y seguidor.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "line_fault",
+      "signature": "static void line_fault(LineFollowControl_Handle *h,uint8_t reason,uint32_t now)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/line_follow_control.c",
+        "line": 206
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "LineFollowControl_SetEnabled"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `LineFollowControl_SetEnabled` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    }
+  ]
+}

@@ -1,0 +1,975 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "web:module/src/components/CameraRig.tsx",
+  "slug": "camera-controls",
+  "title": "Cámara y controles de orientación",
+  "target": "web",
+  "kind": "integración",
+  "status": "source-documented",
+  "snapshotDate": "2026-10-20",
+  "verification": "not-run-user-instruction",
+  "responsibility": "Define vistas y manipulación de cámara de la escena del robot.",
+  "scope": "Presets, interacción y coordenadas visuales; cambiar cámara no modifica pose del equipo.",
+  "state": "Refs/estado local de cámara y controles; distinguir orientación de sensor de orientación de observador.",
+  "modularity": "UI/Three.js independiente de control físico.",
+  "lifecycle": [
+    "Inicializar vista, aplicar preset o gesto y liberar listeners/controles al salir."
+  ],
+  "interactions": [
+    "Escena IR y modelo usan transformaciones comunes para cámara, haces y marcadores."
+  ],
+  "limitations": [
+    "No comparar yaw visual con yaw físico sin aplicar la misma convención de ejes/referencia."
+  ],
+  "relationships": [],
+  "findings": [],
+  "files": [
+    {
+      "rootId": "web",
+      "path": "src/components/CameraPresets.tsx",
+      "sha256": "1add9ea9d668deec57102960f3ad3a0714bbcb636dfc8459a5304db9b7d87f47",
+      "imports": [
+        "@react-three/fiber",
+        "react",
+        "three"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/components/CameraPresetsPanel.tsx",
+      "sha256": "b031e649a8488e436aee07bb7c727128db3fa20a27cecf25b03a9304659f6cb6",
+      "imports": [
+        "./CameraRig"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/components/CameraRig.tsx",
+      "sha256": "28c7fc2fc3a25728e19898733f6cad953392c846aa87b103f4f061e54da45e9d",
+      "imports": [
+        "@react-three/fiber",
+        "react",
+        "three"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/components/OrientationControls.tsx",
+      "sha256": "ae9488a1a209ad06ddeffea47c157921b99690d3e747fc91092c64694bdacebf",
+      "imports": [
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/components/SensorCameraViewIcon.tsx",
+      "sha256": "54107a5d7aed48cd734764e81aa4b2e4dddc64840c8021eaea6a9cd3275bc150",
+      "imports": [],
+      "analysisLevel": "typescript-ast-static"
+    }
+  ],
+  "types": [
+    {
+      "name": "PresetKey",
+      "kind": "TypeAliasDeclaration",
+      "type": "| \"front\" | \"back\" | \"left\" | \"right\" | \"top\" | \"bottom\" | \"isoNE\" | \"isoNW\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/CameraPresets.tsx",
+        "line": 5
+      }
+    },
+    {
+      "name": "CameraPresetsProps",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "target",
+          "declaration": "target?: THREE.Vector3 | [number, number, number]",
+          "callback": false,
+          "ownerType": "CameraPresetsProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/CameraPresets.tsx",
+            "line": 17
+          },
+          "description": "Dato de estado/configuración `target`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "durationMs",
+          "declaration": "durationMs?: number",
+          "callback": false,
+          "ownerType": "CameraPresetsProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/CameraPresets.tsx",
+            "line": 19
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "className",
+          "declaration": "className?: string",
+          "callback": false,
+          "ownerType": "CameraPresetsProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/CameraPresets.tsx",
+            "line": 21
+          },
+          "description": "Dato de estado/configuración `className`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/CameraPresets.tsx",
+        "line": 15
+      }
+    },
+    {
+      "name": "PresetKey",
+      "kind": "TypeAliasDeclaration",
+      "type": "| \"front\" | \"back\" | \"left\" | \"right\" | \"top\" | \"bottom\" | \"isoNE\" | \"isoNW\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/CameraRig.tsx",
+        "line": 5
+      }
+    },
+    {
+      "name": "CameraRigHandle",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "goTo",
+          "declaration": "goTo: (preset: PresetKey) => void",
+          "callback": true,
+          "ownerType": "CameraRigHandle",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/CameraRig.tsx",
+            "line": 16
+          },
+          "description": "Operación go To de Cámara y controles de orientación; semántica fina pendiente de ampliación."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/CameraRig.tsx",
+        "line": 15
+      }
+    },
+    {
+      "name": "CameraRigProps",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "target",
+          "declaration": "target?: [number, number, number] | THREE.Vector3",
+          "callback": false,
+          "ownerType": "CameraRigProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/CameraRig.tsx",
+            "line": 20
+          },
+          "description": "Dato de estado/configuración `target`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "durationMs",
+          "declaration": "durationMs?: number",
+          "callback": false,
+          "ownerType": "CameraRigProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/CameraRig.tsx",
+            "line": 21
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/CameraRig.tsx",
+        "line": 19
+      }
+    },
+    {
+      "name": "OrientationControlsProps",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "eulerDeg",
+          "declaration": "eulerDeg: { yaw: number; pitch: number; roll: number }",
+          "callback": false,
+          "ownerType": "OrientationControlsProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/OrientationControls.tsx",
+            "line": 4
+          },
+          "description": "Ángulo en grados; respetar eje y referencia de esta librería."
+        },
+        {
+          "name": "isEmu",
+          "declaration": "isEmu: boolean",
+          "callback": false,
+          "ownerType": "OrientationControlsProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/OrientationControls.tsx",
+            "line": 5
+          },
+          "description": "Dato de estado/configuración `isEmu`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "onChange",
+          "declaration": "onChange: (euler: { yaw: number; pitch: number; roll: number }) => void",
+          "callback": true,
+          "ownerType": "OrientationControlsProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/OrientationControls.tsx",
+            "line": 6
+          },
+          "description": "Operación on Change de Cámara y controles de orientación; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "autoAxes",
+          "declaration": "autoAxes: Record<\"yaw\" | \"pitch\" | \"roll\", boolean>",
+          "callback": false,
+          "ownerType": "OrientationControlsProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/OrientationControls.tsx",
+            "line": 7
+          },
+          "description": "Dato de estado/configuración `autoAxes`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "onAutoAxisChange",
+          "declaration": "onAutoAxisChange: (axis: \"yaw\" | \"pitch\" | \"roll\", enabled: boolean) => void",
+          "callback": true,
+          "ownerType": "OrientationControlsProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/OrientationControls.tsx",
+            "line": 8
+          },
+          "description": "Operación on Auto Axis Change de Cámara y controles de orientación; semántica fina pendiente de ampliación."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/OrientationControls.tsx",
+        "line": 3
+      }
+    },
+    {
+      "name": "Vector",
+      "kind": "TypeAliasDeclaration",
+      "type": "readonly [number, number, number]",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/SensorCameraViewIcon.tsx",
+        "line": 1
+      }
+    },
+    {
+      "name": "Face",
+      "kind": "TypeAliasDeclaration",
+      "fields": [
+        {
+          "name": "normal",
+          "declaration": "normal: Vector",
+          "callback": false,
+          "ownerType": "Face",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/SensorCameraViewIcon.tsx",
+            "line": 2
+          },
+          "description": "Dato de estado/configuración `normal`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "corners",
+          "declaration": "corners: readonly Vector[]",
+          "callback": false,
+          "ownerType": "Face",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/SensorCameraViewIcon.tsx",
+            "line": 2
+          },
+          "description": "Dato de estado/configuración `corners`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "opacity",
+          "declaration": "opacity: number",
+          "callback": false,
+          "ownerType": "Face",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/SensorCameraViewIcon.tsx",
+            "line": 2
+          },
+          "description": "Dato de estado/configuración `opacity`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/SensorCameraViewIcon.tsx",
+        "line": 2
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "CameraPresets",
+      "displayName": "CameraPresets",
+      "signature": "CameraPresets({\r\n target = [0, 0, 0],\r\n durationMs = 450,\r\n className = \"\",\r\n}: CameraPresetsProps): inferred-by-TypeScript",
+      "line": 24,
+      "endLine": 132,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "[ \"rounded-2xl bg-[var(--ui-panel-hover)] dark:bg-[var(--ui-panel)]\", \"ring-1 ring-[var(--ui-ring)] shadow-sm backdrop-blur p-4\", \"transition-shadow hover:shadow-md\", className, ].join",
+        "useCallback",
+        "useFrame",
+        "useMemo",
+        "useRef",
+        "useThree"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/CameraPresets.tsx",
+        "line": 24
+      },
+      "description": "Coordina `[ \"rounded-2xl bg-[var(--ui-panel-hover)] dark:bg-[var(--ui-panel)]\", \"ring-1 ring-[var(--ui-ring)] shadow-sm backdrop-blur p-4\", \"transition-shadow hover:shadow-md\", className, ].join`, `useCallback`, `useFrame` para Cámara y controles de orientación.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "CameraPresetsPanel",
+      "displayName": "CameraPresetsPanel",
+      "signature": "CameraPresetsPanel({\n  onPick,\n  className = \"\",\n}: { onPick: (k: PresetKey) => void; className?: string; }): inferred-by-TypeScript",
+      "line": 3,
+      "endLine": 44,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/CameraPresetsPanel.tsx",
+        "line": 3
+      },
+      "description": "Operación Camera Presets Panel de Cámara y controles de orientación; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "OrientationControls",
+      "displayName": "OrientationControls",
+      "signature": "OrientationControls({\n eulerDeg,\n isEmu,\n onChange,\n autoAxes,\n onAutoAxisChange,\n}: OrientationControlsProps): inferred-by-TypeScript",
+      "line": 11,
+      "endLine": 154,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "React.useId",
+        "[ { label: \"Guiñada / Yaw (Y)\", key: \"yaw\", min: -180, max: 180, desc: \"Rotación horizontal\", }, { label: \"Cabeceo / Pitch (X)\", key: \"pitch\", min: -90, max: 90, desc: \"Inclinación vertical\", }, { label: \"Alabeo / Roll (Z)\", key: \"roll\", min: -180, max: 180, desc: \"Rotación sobre eje\", }, ].map"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/OrientationControls.tsx",
+        "line": 11
+      },
+      "description": "Coordina `React.useId`, `[ { label: \"Guiñada / Yaw (Y)\", key: \"yaw\", min: -180, max: 180, desc: \"Rotación horizontal\", }, { label: \"Cabeceo / Pitch (X)\", key: \"pitch\", min: -90, max: 90, desc: \"Inclinación vertical\", }, { label: \"Alabeo / Roll (Z)\", key: \"roll\", min: -180, max: 180, desc: \"Rotación sobre eje\", }, ].map` para Cámara y controles de orientación.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "SensorCameraViewIcon",
+      "displayName": "SensorCameraViewIcon",
+      "signature": "SensorCameraViewIcon({ position, up = [0, 1, 0] }: { position: Vector; up?: Vector; }): inferred-by-TypeScript",
+      "line": 15,
+      "endLine": 39,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "FACES.filter",
+        "FACES.filter((face) => dot(face.normal, direction) > .001).map",
+        "cross",
+        "normalize",
+        "projectPoints"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/SensorCameraViewIcon.tsx",
+        "line": 15
+      },
+      "description": "Coordina `FACES.filter`, `FACES.filter((face) => dot(face.normal, direction) > .001).map`, `cross` para Cámara y controles de orientación.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "cross",
+      "displayName": "cross",
+      "signature": "cross(a: Vector, b: Vector): Vector",
+      "line": 42,
+      "endLine": 44,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/SensorCameraViewIcon.tsx",
+        "line": 42
+      },
+      "description": "Operación cross de Cámara y controles de orientación; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "dirFor",
+      "displayName": "dirFor",
+      "signature": "dirFor(k: PresetKey): THREE.Vector3",
+      "line": 48,
+      "endLine": 69,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/CameraRig.tsx",
+        "line": 48
+      },
+      "description": "Operación dir For de Cámara y controles de orientación; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "dot",
+      "displayName": "dot",
+      "signature": "dot(a: Vector, b: Vector): inferred-by-TypeScript",
+      "line": 41,
+      "endLine": 41,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/SensorCameraViewIcon.tsx",
+        "line": 41
+      },
+      "description": "Operación dot de Cámara y controles de orientación; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "goTo",
+      "displayName": "goTo",
+      "signature": "goTo(preset: PresetKey): inferred-by-TypeScript",
+      "line": 75,
+      "endLine": 81,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.max",
+        "camera.position.clone",
+        "camera.position.clone().sub",
+        "camera.position.clone().sub(tgt).length",
+        "dir.normalize",
+        "dir.normalize().multiplyScalar",
+        "dir.normalize().multiplyScalar(dist).add",
+        "dirFor",
+        "startTweenTo"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/CameraRig.tsx",
+        "line": 75
+      },
+      "description": "Coordina `Math.max`, `camera.position.clone`, `camera.position.clone().sub` para Cámara y controles de orientación.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "normalize",
+      "displayName": "normalize",
+      "signature": "normalize(vector: Vector): Vector",
+      "line": 45,
+      "endLine": 48,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.hypot"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/SensorCameraViewIcon.tsx",
+        "line": 45
+      },
+      "description": "Adapta la llamada a `Math.hypot` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "startTweenTo",
+      "displayName": "startTweenTo",
+      "signature": "startTweenTo(to: THREE.Vector3): inferred-by-TypeScript",
+      "line": 41,
+      "endLine": 46,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "fromPos.current.copy",
+        "performance.now",
+        "toPos.current.copy"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/CameraRig.tsx",
+        "line": 41
+      },
+      "description": "Coordina `fromPos.current.copy`, `performance.now`, `toPos.current.copy` para Cámara y controles de orientación.",
+      "descriptionOrigin": "structural"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "CameraPresets.Btn",
+      "displayName": "Btn",
+      "signature": "CameraPresets.Btn(p: { onClick: () => void; label: string }): inferred-by-TypeScript",
+      "line": 86,
+      "endLine": 103,
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/CameraPresets.tsx",
+        "line": 86
+      },
+      "description": "Operación Btn de Cámara y controles de orientación; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "CameraPresets.back",
+      "displayName": "back",
+      "signature": "CameraPresets.back(): inferred-by-TypeScript",
+      "line": 76,
+      "endLine": 76,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "go"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/CameraPresets.tsx",
+        "line": 76
+      },
+      "description": "Adapta la llamada a `go` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "CameraPresets.bottom",
+      "displayName": "bottom",
+      "signature": "CameraPresets.bottom(): inferred-by-TypeScript",
+      "line": 80,
+      "endLine": 80,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "go"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/CameraPresets.tsx",
+        "line": 80
+      },
+      "description": "Adapta la llamada a `go` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "CameraPresets.front",
+      "displayName": "front",
+      "signature": "CameraPresets.front(): inferred-by-TypeScript",
+      "line": 75,
+      "endLine": 75,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "go"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/CameraPresets.tsx",
+        "line": 75
+      },
+      "description": "Adapta la llamada a `go` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "CameraPresets.isoNE",
+      "displayName": "isoNE",
+      "signature": "CameraPresets.isoNE(): inferred-by-TypeScript",
+      "line": 82,
+      "endLine": 82,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "go"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/CameraPresets.tsx",
+        "line": 82
+      },
+      "description": "Adapta la llamada a `go` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "CameraPresets.isoNW",
+      "displayName": "isoNW",
+      "signature": "CameraPresets.isoNW(): inferred-by-TypeScript",
+      "line": 83,
+      "endLine": 83,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "go"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/CameraPresets.tsx",
+        "line": 83
+      },
+      "description": "Adapta la llamada a `go` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "CameraPresets.left",
+      "displayName": "left",
+      "signature": "CameraPresets.left(): inferred-by-TypeScript",
+      "line": 77,
+      "endLine": 77,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "go"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/CameraPresets.tsx",
+        "line": 77
+      },
+      "description": "Adapta la llamada a `go` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "CameraPresets.right",
+      "displayName": "right",
+      "signature": "CameraPresets.right(): inferred-by-TypeScript",
+      "line": 78,
+      "endLine": 78,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "go"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/CameraPresets.tsx",
+        "line": 78
+      },
+      "description": "Adapta la llamada a `go` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "CameraPresets.top",
+      "displayName": "top",
+      "signature": "CameraPresets.top(): inferred-by-TypeScript",
+      "line": 79,
+      "endLine": 79,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "go"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/CameraPresets.tsx",
+        "line": 79
+      },
+      "description": "Adapta la llamada a `go` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "CameraPresetsPanel.Btn",
+      "displayName": "Btn",
+      "signature": "CameraPresetsPanel.Btn({ label, k }: { label: string; k: PresetKey }): inferred-by-TypeScript",
+      "line": 10,
+      "endLine": 18,
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/CameraPresetsPanel.tsx",
+        "line": 10
+      },
+      "description": "Operación Btn de Cámara y controles de orientación; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "OrientationControls.handleQuickRotation",
+      "displayName": "handleQuickRotation",
+      "signature": "OrientationControls.handleQuickRotation(axis: \"yaw\" | \"pitch\" | \"roll\", degrees: number): inferred-by-TypeScript",
+      "line": 29,
+      "endLine": 44,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Math.max",
+        "Math.min",
+        "onChange"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/OrientationControls.tsx",
+        "line": 29
+      },
+      "description": "Coordina `Math.max`, `Math.min`, `onChange` para Cámara y controles de orientación.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "OrientationControls.handleReset",
+      "displayName": "handleReset",
+      "signature": "OrientationControls.handleReset(): inferred-by-TypeScript",
+      "line": 25,
+      "endLine": 27,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "onChange"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/OrientationControls.tsx",
+        "line": 25
+      },
+      "description": "Adapta la llamada a `onChange` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "OrientationControls.handleSliderChange",
+      "displayName": "handleSliderChange",
+      "signature": "OrientationControls.handleSliderChange(axis: \"yaw\" | \"pitch\" | \"roll\"): inferred-by-TypeScript",
+      "line": 20,
+      "endLine": 23,
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/OrientationControls.tsx",
+        "line": 20
+      },
+      "description": "Operación handle Slider Change de Cámara y controles de orientación; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "SensorCameraViewIcon.project",
+      "displayName": "project",
+      "signature": "SensorCameraViewIcon.project(point: Vector): inferred-by-TypeScript",
+      "line": 22,
+      "endLine": 22,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "dot"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/SensorCameraViewIcon.tsx",
+        "line": 22
+      },
+      "description": "Adapta la llamada a `dot` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "SensorCameraViewIcon.projectPoints",
+      "displayName": "projectPoints",
+      "signature": "SensorCameraViewIcon.projectPoints(points: readonly Vector[]): inferred-by-TypeScript",
+      "line": 23,
+      "endLine": 23,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "points.map",
+        "points.map(project).join"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/SensorCameraViewIcon.tsx",
+        "line": 23
+      },
+      "description": "Coordina `points.map`, `points.map(project).join` para Cámara y controles de orientación.",
+      "descriptionOrigin": "structural"
+    }
+  ],
+  "hooks": [
+    {
+      "callee": "useThree",
+      "scope": "CameraPresets",
+      "line": 29,
+      "arguments": 0,
+      "path": "src/components/CameraPresets.tsx"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "CameraPresets",
+      "line": 30,
+      "arguments": 2,
+      "path": "src/components/CameraPresets.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "CameraPresets",
+      "line": 37,
+      "arguments": 1,
+      "path": "src/components/CameraPresets.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "CameraPresets",
+      "line": 38,
+      "arguments": 1,
+      "path": "src/components/CameraPresets.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "CameraPresets",
+      "line": 39,
+      "arguments": 1,
+      "path": "src/components/CameraPresets.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "CameraPresets",
+      "line": 40,
+      "arguments": 1,
+      "path": "src/components/CameraPresets.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "CameraPresets",
+      "line": 42,
+      "arguments": 2,
+      "path": "src/components/CameraPresets.tsx"
+    },
+    {
+      "callee": "useFrame",
+      "scope": "CameraPresets",
+      "line": 52,
+      "arguments": 1,
+      "path": "src/components/CameraPresets.tsx"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "CameraPresets",
+      "line": 64,
+      "arguments": 2,
+      "path": "src/components/CameraPresets.tsx"
+    },
+    {
+      "callee": "useThree",
+      "scope": "",
+      "line": 27,
+      "arguments": 0,
+      "path": "src/components/CameraRig.tsx"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "",
+      "line": 29,
+      "arguments": 2,
+      "path": "src/components/CameraRig.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "",
+      "line": 36,
+      "arguments": 1,
+      "path": "src/components/CameraRig.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "",
+      "line": 37,
+      "arguments": 1,
+      "path": "src/components/CameraRig.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "",
+      "line": 38,
+      "arguments": 1,
+      "path": "src/components/CameraRig.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "",
+      "line": 39,
+      "arguments": 1,
+      "path": "src/components/CameraRig.tsx"
+    },
+    {
+      "callee": "useImperativeHandle",
+      "scope": "",
+      "line": 72,
+      "arguments": 3,
+      "path": "src/components/CameraRig.tsx"
+    },
+    {
+      "callee": "useFrame",
+      "scope": "",
+      "line": 86,
+      "arguments": 1,
+      "path": "src/components/CameraRig.tsx"
+    },
+    {
+      "callee": "React.useId",
+      "scope": "OrientationControls",
+      "line": 18,
+      "arguments": 0,
+      "path": "src/components/OrientationControls.tsx"
+    }
+  ]
+}

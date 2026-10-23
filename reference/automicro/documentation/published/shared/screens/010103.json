@@ -1,0 +1,104 @@
+{
+  "schemaVersion": 1,
+  "id": "shared:screen/010103",
+  "symbol": "SCREEN_CODE_CORE_STABILIZE_PROMPT",
+  "code": 65795,
+  "hex": "0x010103",
+  "decomposition": {
+    "menu": 1,
+    "submenu": 1,
+    "page": 3
+  },
+  "revision": "working-copy-hashes",
+  "confidence": "manual-review",
+  "family": "shared:screen-family/dashboard",
+  "numericObservation": "same-literal",
+  "webDeclaration": {
+    "value": 65795,
+    "line": 30
+  },
+  "metadataEntryObserved": false,
+  "evidence": [
+    {
+      "repo": "f4",
+      "path": "Core/Inc/screen_codes.h",
+      "line": 50
+    },
+    {
+      "repo": "web",
+      "path": "src/screens/screenCodes.ts",
+      "line": 30
+    }
+  ],
+  "renderers": [
+    {
+      "kind": "identified-table",
+      "path": "src/screens/screenRenderRegistry.ts",
+      "line": 277,
+      "availability": "generic-builder-candidate"
+    }
+  ],
+  "callGraph": {
+    "status": "lexical-candidates-only",
+    "edges": []
+  },
+  "f4References": [
+    {
+      "repo": "f4",
+      "path": "Core/Src/oled_utils.c",
+      "line": 2002,
+      "kind": "lexical-reference"
+    },
+    {
+      "repo": "f4",
+      "path": "Core/Src/screenWrappers.c",
+      "line": 253,
+      "kind": "lexical-reference"
+    }
+  ],
+  "variants": [
+    "Dashboard, confirmación/selector de modo y estabilización son pantallas con estados distintos."
+  ],
+  "fields": [
+    {
+      "name": "dashboard connectivity extension",
+      "type": "flags/backend/mode/IP/SSID",
+      "units": "bits/número/texto",
+      "availability": "reported",
+      "note": "GET_CURRENT_SCREEN dashboard source RENDER incluye extensión; eventos cortos no siempre"
+    },
+    {
+      "name": "carMode",
+      "type": "u8 → number/string",
+      "units": "0 IDLE,1 FOLLOW,2 TEST,3 GOTO",
+      "availability": "reported",
+      "note": "los normalizadores Web del visor no admiten todos los valores"
+    },
+    {
+      "name": "scroll phase/draft/timeout context",
+      "type": "estado UI local",
+      "units": "píxeles/ms/elección",
+      "availability": "unavailable-remotely",
+      "note": "no basta SSID/IP para conocer la fase exacta de desplazamiento"
+    }
+  ],
+  "actions": [
+    "Giros y pulsaciones se envían con identidad actual y pasan por modo/permiso/router.",
+    "El cambio remoto de modo confirma respuesta antes de eventos derivados."
+  ],
+  "transitions": [
+    "F4 decide confirmación/estabilización y activa el modo; intención Web no equivale a modo aplicado."
+  ],
+  "missingData": [
+    "Ventana de texto, fase temporal y borradores/confirmación pueden permanecer locales."
+  ],
+  "localOnly": [],
+  "findings": [
+    "AMDOC-WEB-005"
+  ],
+  "exactness": "not-established",
+  "notes": [
+    "EspClient y CarModeContext sí conocen GOTO; hay normalizadores paralelos que requieren alineación."
+  ],
+  "role": "not-resolved"
+}

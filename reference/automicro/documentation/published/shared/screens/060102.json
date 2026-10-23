@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 1,
+  "id": "shared:screen/060102",
+  "symbol": "SCREEN_CODE_DIAG_CONTROLLER_DISCONNECTED",
+  "code": 393474,
+  "hex": "0x060102",
+  "decomposition": {
+    "menu": 6,
+    "submenu": 1,
+    "page": 2
+  },
+  "revision": "working-copy-hashes",
+  "confidence": "manual-review",
+  "family": "shared:screen-family/notifications",
+  "numericObservation": "same-literal",
+  "webDeclaration": {
+    "value": 393474,
+    "line": 140
+  },
+  "metadataEntryObserved": true,
+  "evidence": [
+    {
+      "repo": "f4",
+      "path": "Core/Inc/screen_codes.h",
+      "line": 178
+    },
+    {
+      "repo": "web",
+      "path": "src/screens/screenCodes.ts",
+      "line": 140
+    }
+  ],
+  "renderers": [
+    {
+      "kind": "switch-case",
+      "path": "src/screens/screenRenderRegistry.ts",
+      "line": 476,
+      "builders": [
+        "buildScreen060102ControllerDisconnectedNotificationCommands"
+      ],
+      "availability": "parameterized-candidate"
+    }
+  ],
+  "callGraph": {
+    "status": "lexical-candidates-only",
+    "edges": []
+  },
+  "f4References": [
+    {
+      "repo": "f4",
+      "path": "Core/Src/oled_utils.c",
+      "line": 291,
+      "kind": "lexical-reference"
+    }
+  ],
+  "variants": [
+    "El mismo código puede representar aviso/vista o variantes ON/OFF no distinguidas por su identidad."
+  ],
+  "fields": [
+    {
+      "name": "screenCode/source",
+      "type": "u32/u8",
+      "units": "identidad",
+      "availability": "reported",
+      "note": "source distingue aviso de render cuando el productor lo proporciona"
+    },
+    {
+      "name": "remainingMs/totalMs/clientNumber",
+      "type": "u16/u16/u8 opcional",
+      "units": "ms/número",
+      "availability": "reported",
+      "note": "extensión de aviso según longitud y source; no siempre presente"
+    },
+    {
+      "name": "texto/ON-OFF/event payload exacto",
+      "type": "modelo de aviso local",
+      "units": "texto/variante",
+      "availability": "unavailable-remotely",
+      "note": "un GET posterior del estado no prueba qué aviso transitorio estaba visible"
+    }
+  ],
+  "actions": [
+    "Encoder puede descartar aviso según prioridad del router.",
+    "Los hooks onShow/onHide pueden tener efectos; no basta simular desaparición en Web."
+  ],
+  "transitions": [
+    "Cola F4 conserva vista anterior y restaura al terminar; Web recibe eventos posteriores."
+  ],
+  "missingData": [
+    "No todas las líneas/textos/variantes y fase del refresco se transportan."
+  ],
+  "localOnly": [],
+  "findings": [
+    "AMDOC-WEB-002"
+  ],
+  "exactness": "not-established",
+  "notes": [
+    "Mismo ID y duración no certifican píxeles ni orden visible de todos los avisos."
+  ],
+  "role": "not-resolved"
+}

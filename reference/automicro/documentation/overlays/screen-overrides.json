@@ -1,0 +1,196 @@
+{
+  "schemaVersion": 1,
+  "screens": {
+    "SCREEN_CODE_NONE": {
+      "role": "sentinel",
+      "variants": [
+        "Centinela de identidad ausente; no es pantalla ni acción de usuario."
+      ],
+      "fields": [],
+      "actions": [],
+      "transitions": [],
+      "missingData": [],
+      "notes": [
+        "No exigir renderer, controles o snapshot para NONE."
+      ]
+    },
+    "SCREEN_CODE_CONNECTIVITY_WIFI_RETRY": {
+      "role": "menu-item-action",
+      "variants": [
+        "Identidad de ítem/acción localizada en menu_definition.c; no se localizó renderer exclusivo."
+      ],
+      "actions": [
+        "La selección del ítem invoca MenuAction_RetryWifi bajo las guardas del menú."
+      ],
+      "transitions": [
+        "Puede conservar el menú activo o generar su resultado; no deducir una vista dedicada por la constante."
+      ],
+      "missingData": [
+        "Falta declaración Web de identidad; no se demuestra por ello una vista activa perdida."
+      ],
+      "notes": [
+        "La acción depende del estado/perfil/visibilidad de su menú."
+      ],
+      "findings": [
+        "AMDOC-WEB-008"
+      ]
+    },
+    "SCREEN_CODE_SETTINGS_PREFS_WIFI_AP_FALLBACK": {
+      "role": "menu-item-action",
+      "variants": [
+        "Identidad de ítem/acción localizada en menu_definition.c; no se localizó renderer exclusivo."
+      ],
+      "actions": [
+        "La selección del ítem invoca Preferences_ToggleWifiApFallback bajo las guardas del menú."
+      ],
+      "transitions": [
+        "Puede conservar el menú activo o generar su resultado; no deducir una vista dedicada por la constante."
+      ],
+      "missingData": [
+        "Falta declaración Web de identidad; no se demuestra por ello una vista activa perdida."
+      ],
+      "notes": [
+        "La acción depende del estado/perfil/visibilidad de su menú."
+      ],
+      "findings": [
+        "AMDOC-WEB-008"
+      ]
+    },
+    "SCREEN_CODE_LINE_FOLLOW": {
+      "role": "menu-item-action",
+      "variants": [
+        "MenuAction_LineFollow alterna seguimiento; un rechazo activa MenuRender_LineNotice."
+      ],
+      "actions": [
+        "Seleccionar desde el menú físico/remoto ejecuta la política APP_LineFollowSetEnabled, con guardas de modo/estado."
+      ],
+      "transitions": [
+        "Resultado aceptado actualiza menú; motivo de rechazo puede publicar 0x030208."
+      ],
+      "missingData": [
+        "Falta asociación específica del visor; no se localizó renderer dedicado para 0x030207."
+      ],
+      "notes": [
+        "No confundir control Web de seguimiento con reproducción del menú/aviso F4."
+      ],
+      "findings": [
+        "AMDOC-WEB-009"
+      ]
+    },
+    "SCREEN_CODE_LINE_CAL_MENU": {
+      "role": "menu-view",
+      "family": "shared:screen-family/menus",
+      "variants": [
+        "SubMenu submenuLineCalibration: Calibrar blanco, Calibrar sobre pista, Volver."
+      ],
+      "notes": [
+        "Código declarado en Web sin binding específico localizado; no sustituirlo por la página Web de seguimiento."
+      ],
+      "findings": [
+        "AMDOC-WEB-009"
+      ]
+    },
+    "SCREEN_CODE_LINE_CAL_WHITE": {
+      "role": "render-view",
+      "variants": [
+        "MenuRender_LineCalibration usa APP_GetLineState y elige este código según target blanco."
+      ],
+      "actions": [
+        "Encoder largo cancela la sesión actual y vuelve.",
+        "Encoder/USER corto captura en fase PROMPT; fuera de busy puede volver."
+      ],
+      "transitions": [
+        "La sesión localLineCalSession se conserva al iniciar; el renderer es continuo durante calibración."
+      ],
+      "notes": [
+        "Renderer OledUtils_RenderLineCalibration requiere el estado y texto de motivo; no tiene binding específico de visor localizado."
+      ],
+      "findings": [
+        "AMDOC-WEB-009"
+      ]
+    },
+    "SCREEN_CODE_LINE_CAL_TRACK": {
+      "role": "render-view",
+      "variants": [
+        "MenuRender_LineCalibration usa APP_GetLineState y elige este código según target pista."
+      ],
+      "actions": [
+        "Encoder largo cancela la sesión actual y vuelve.",
+        "Encoder/USER corto captura en fase PROMPT; fuera de busy puede volver."
+      ],
+      "transitions": [
+        "La sesión localLineCalSession se conserva al iniciar; el renderer es continuo durante calibración."
+      ],
+      "notes": [
+        "Renderer OledUtils_RenderLineCalibration requiere el estado y texto de motivo; no tiene binding específico de visor localizado."
+      ],
+      "findings": [
+        "AMDOC-WEB-009"
+      ]
+    },
+    "SCREEN_CODE_LINE_NOTICE": {
+      "role": "notification-view",
+      "variants": [
+        "MenuRender_LineNotice dibuja LineNoticeText(localLineNotice) y texto secundario según motivo."
+      ],
+      "actions": [
+        "USER corto o encoder corto/largo vuelven al menú principal mediante MenuLineNoticeEvents."
+      ],
+      "transitions": [
+        "Rechazo de calibración/seguimiento establece renderer y handler de aviso."
+      ],
+      "notes": [
+        "Este aviso local no implica que OledUtils tenga una entrada temporizada en su cola; source NOTIFICATION solo identifica origen."
+      ],
+      "findings": [
+        "AMDOC-WEB-009"
+      ]
+    },
+    "SCREEN_CODE_SENSORS_KEYBOARD_MENU": {
+      "role": "menu-view",
+      "family": "shared:screen-family/menus",
+      "notes": [
+        "Menú de pruebas de teclado; no es la pantalla de edición OSK activa."
+      ]
+    },
+    "SCREEN_CODE_CORE_FAVORITES": {
+      "role": "dynamic-menu-view",
+      "family": "shared:screen-family/menus",
+      "notes": [
+        "Favoritos configura dos filas y catálogo dinámico; no usar bloques/controles fijos de tres."
+      ],
+      "findings": [
+        "AMDOC-WEB-004"
+      ]
+    },
+    "SCREEN_CODE_INPUT_KEYBOARD_ALPHA": {
+      "role": "osk-view",
+      "notes": [
+        "Código efectivo publicado por OSK_Integration; su contexto de edición sigue siendo local."
+      ],
+      "findings": [
+        "AMDOC-WEB-002",
+        "AMDOC-F4-011"
+      ]
+    },
+    "SCREEN_CODE_INPUT_KEYBOARD_NUMERIC": {
+      "role": "osk-view",
+      "notes": [
+        "Código efectivo publicado por OSK_Integration; su contexto de edición sigue siendo local."
+      ],
+      "findings": [
+        "AMDOC-WEB-002",
+        "AMDOC-F4-011"
+      ]
+    },
+    "SCREEN_CODE_WARNING_PIN_ENTRY": {
+      "role": "permission-or-notification-view",
+      "notes": [
+        "Source discrimina aviso/formulario; no deducir dígitos ni cursor. Ver modelo de permisos y autoridad F4."
+      ],
+      "findings": [
+        "AMDOC-WEB-002"
+      ]
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "modules": [
+    {
+      "id": "root:module/relative/anchor.h",
+      "slug": "expressive-library-name",
+      "title": "Nombre expresivo de la librería",
+      "kind": "núcleo | contrato | servicio | integración | composición | plataforma | datos",
+      "files": ["relative/anchor.h", "relative/implementation.c"],
+      "prefixes": ["ExactPrefix_"],
+      "responsibility": "Responsabilidad observable a partir del código.",
+      "scope": "Frontera de funciones, datos y efectos que pertenecen a la unidad.",
+      "state": "Handle; propietario de cada recurso; copia o préstamo; getters/snapshots; globals activos.",
+      "modularity": "Dependencias reales de plataforma, tipos, llamadas y estado; registrar acoplamientos.",
+      "lifecycle": ["Inicialización y quién la llama.", "Contexto, trigger, trabajo efectivo y finalización/error."],
+      "interactions": ["Productor → consumidor; control y datos; retorno, cola y backpressure."],
+      "limitations": ["Contextos no resueltos, variantes y límites de evidencia."],
+      "functions": {"ExactPrefix_Function": "Una línea con propósito, entrada/resultado y matiz importante."},
+      "attributes": {"callback_name": "Quién registra/invoca; argumentos, retorno y vida de contexto/buffers."}
+    }
+  ]
+}

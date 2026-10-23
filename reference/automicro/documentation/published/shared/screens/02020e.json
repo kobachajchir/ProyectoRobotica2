@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 1,
+  "id": "shared:screen/02020e",
+  "symbol": "SCREEN_CODE_CONNECTIVITY_OSK_WIFI_SSID",
+  "code": 131598,
+  "hex": "0x02020E",
+  "decomposition": {
+    "menu": 2,
+    "submenu": 2,
+    "page": 14
+  },
+  "revision": "working-copy-hashes",
+  "confidence": "manual-review",
+  "family": "shared:screen-family/osk",
+  "numericObservation": "same-literal",
+  "webDeclaration": {
+    "value": 131598,
+    "line": 246
+  },
+  "metadataEntryObserved": true,
+  "evidence": [
+    {
+      "repo": "f4",
+      "path": "Core/Inc/screen_codes.h",
+      "line": 71
+    },
+    {
+      "repo": "web",
+      "path": "src/screens/screenCodes.ts",
+      "line": 246
+    }
+  ],
+  "renderers": [
+    {
+      "kind": "remediated-priority",
+      "path": "src/screens/remediatedScreens.ts",
+      "availability": "identity-only-or-reported-menu"
+    }
+  ],
+  "callGraph": {
+    "status": "lexical-candidates-only",
+    "edges": []
+  },
+  "f4References": [
+    {
+      "repo": "f4",
+      "path": "Core/Src/menu_definition.c",
+      "line": 298,
+      "kind": "lexical-reference"
+    }
+  ],
+  "variants": [
+    "Alpha y numérico usan códigos efectivos 0x090101/0x090102, aunque el invocador declare códigos Wi-Fi o de test.",
+    "Shift, Symbols, validación, allow-list y restricciones numéricas pertenecen al estado OSK local."
+  ],
+  "fields": [
+    {
+      "name": "screenCode/source",
+      "type": "u32/u8 → number",
+      "units": "identidad",
+      "availability": "reported",
+      "note": "código efectivo publicado por integración"
+    },
+    {
+      "name": "buffer,row,col,mode,validationError",
+      "type": "estado OSK/strings/enums",
+      "units": "caracteres/selección",
+      "availability": "unavailable-remotely",
+      "note": "0x52/0x95/0x96 no transportan este snapshot"
+    }
+  ],
+  "actions": [
+    "0x57 CCW termina en OSK_OnRight y 0x58 CW en OSK_OnLeft según integración.",
+    "Encoder corto activa tecla; USER corto cancela por OnBack.",
+    "USER largo tiene prioridad global del router y vuelve al dashboard; no asumir cleanup equivalente a OSK_OnBack."
+  ],
+  "transitions": [
+    "La integración guarda renderer/handler previo y los restaura al completar/cancelar.",
+    "Symbols/ABC restablece fila/columna; Shift conserva/clampa; no inventar serpentina de filas."
+  ],
+  "missingData": [
+    "Buffer editado, fila/columna, layout actual, límites y validación no están disponibles en el reporte.",
+    "Copiar la librería de dibujo requiere además modelo/estado equivalente, o conservar identidad-only."
+  ],
+  "localOnly": [],
+  "findings": [
+    "AMDOC-F4-011",
+    "AMDOC-WEB-002"
+  ],
+  "exactness": "not-established",
+  "notes": [
+    "Se documentan invocador y pantalla efectiva por separado; no corregir códigos a partir de la apariencia del nombre."
+  ],
+  "role": "not-resolved"
+}

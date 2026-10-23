@@ -1,0 +1,131 @@
+{
+  "schemaVersion": 1,
+  "id": "shared:screen/010101",
+  "symbol": "SCREEN_CODE_CORE_DASHBOARD",
+  "code": 65793,
+  "hex": "0x010101",
+  "decomposition": {
+    "menu": 1,
+    "submenu": 1,
+    "page": 1
+  },
+  "revision": "working-copy-hashes",
+  "confidence": "manual-review",
+  "family": "shared:screen-family/dashboard",
+  "numericObservation": "same-literal",
+  "webDeclaration": {
+    "value": 65793,
+    "line": 28
+  },
+  "metadataEntryObserved": true,
+  "evidence": [
+    {
+      "repo": "f4",
+      "path": "Core/Inc/screen_codes.h",
+      "line": 48
+    },
+    {
+      "repo": "web",
+      "path": "src/screens/screenCodes.ts",
+      "line": 28
+    }
+  ],
+  "renderers": [
+    {
+      "kind": "switch-case",
+      "path": "src/screens/screenRenderRegistry.ts",
+      "line": 359,
+      "builders": [
+        "buildScreen010101DashboardCommands"
+      ],
+      "availability": "parameterized-candidate"
+    }
+  ],
+  "callGraph": {
+    "status": "lexical-candidates-only",
+    "edges": []
+  },
+  "f4References": [
+    {
+      "repo": "f4",
+      "path": "Core/Src/menu_definition.c",
+      "line": 280,
+      "kind": "lexical-reference"
+    },
+    {
+      "repo": "f4",
+      "path": "Core/Src/menu_favorites.c",
+      "line": 181,
+      "kind": "lexical-reference"
+    },
+    {
+      "repo": "f4",
+      "path": "Core/Src/oled_utils.c",
+      "line": 1917,
+      "kind": "lexical-reference"
+    },
+    {
+      "repo": "f4",
+      "path": "Core/Src/screenWrappers.c",
+      "line": 210,
+      "kind": "lexical-reference"
+    },
+    {
+      "repo": "f4",
+      "path": "Core/Src/screenWrappers.c",
+      "line": 221,
+      "kind": "lexical-reference"
+    },
+    {
+      "repo": "f4",
+      "path": "Core/Src/uner_app.c",
+      "line": 1509,
+      "kind": "lexical-reference"
+    }
+  ],
+  "variants": [
+    "Dashboard, confirmación/selector de modo y estabilización son pantallas con estados distintos."
+  ],
+  "fields": [
+    {
+      "name": "dashboard connectivity extension",
+      "type": "flags/backend/mode/IP/SSID",
+      "units": "bits/número/texto",
+      "availability": "reported",
+      "note": "GET_CURRENT_SCREEN dashboard source RENDER incluye extensión; eventos cortos no siempre"
+    },
+    {
+      "name": "carMode",
+      "type": "u8 → number/string",
+      "units": "0 IDLE,1 FOLLOW,2 TEST,3 GOTO",
+      "availability": "reported",
+      "note": "los normalizadores Web del visor no admiten todos los valores"
+    },
+    {
+      "name": "scroll phase/draft/timeout context",
+      "type": "estado UI local",
+      "units": "píxeles/ms/elección",
+      "availability": "unavailable-remotely",
+      "note": "no basta SSID/IP para conocer la fase exacta de desplazamiento"
+    }
+  ],
+  "actions": [
+    "Giros y pulsaciones se envían con identidad actual y pasan por modo/permiso/router.",
+    "El cambio remoto de modo confirma respuesta antes de eventos derivados."
+  ],
+  "transitions": [
+    "F4 decide confirmación/estabilización y activa el modo; intención Web no equivale a modo aplicado."
+  ],
+  "missingData": [
+    "Ventana de texto, fase temporal y borradores/confirmación pueden permanecer locales."
+  ],
+  "localOnly": [],
+  "findings": [
+    "AMDOC-WEB-005"
+  ],
+  "exactness": "not-established",
+  "notes": [
+    "EspClient y CarModeContext sí conocen GOTO; hay normalizadores paralelos que requieren alineación."
+  ],
+  "role": "not-resolved"
+}

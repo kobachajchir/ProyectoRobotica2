@@ -1,0 +1,2205 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "esp:module/src/uner_app_handlers.h",
+  "slug": "uner-application",
+  "title": "Handlers UNER de aplicación ESP",
+  "target": "esp",
+  "kind": "integración",
+  "status": "source-documented",
+  "snapshotDate": "2026-10-20",
+  "verification": "not-run-user-instruction",
+  "responsibility": "Ejecuta comandos cuyo dueño es ESP y coordina respuestas, red, estado y reinicio diferido.",
+  "scope": "Operaciones Wi-Fi/AP, credenciales, info de dispositivo, assets y sesiones vistas desde UART.",
+  "state": "UNER_App conserva estado de sus operaciones; UNER_AppServices presta Wi-Fi/config/server/restart. No emitir configuración privada completa como telemetría.",
+  "modularity": "Aplicación con operaciones inyectadas; depende de esquemas y semántica de ESP/robot, no es parser genérico.",
+  "lifecycle": [
+    "AppBindings conecta servicios antes de UNER_App_Init.",
+    "UNER_App_Loop atiende acciones diferidas y emisión de respuestas/eventos.",
+    "Reinicio se programa después de la aceptación/respuesta según el flujo implementado."
+  ],
+  "interactions": [
+    "Web/JSON y UART pueden solicitar servicios del mismo dispositivo; mantener dueño/correlación.",
+    "Wi-Fi, NVS y scan usan sus servicios en vez de duplicar sus máquinas de estados."
+  ],
+  "limitations": [
+    "ACK intermedio y respuesta final no son equivalentes.",
+    "Los guardas de transporte del ESP no sustituyen permisos F4."
+  ],
+  "relationships": [],
+  "findings": [],
+  "files": [
+    {
+      "rootId": "esp",
+      "path": "src/uner_app_handlers.cpp",
+      "sha256": "0327378d6e7cf26aeb1d61841fda7bf8319b725966d88a615b0907c84e03db0b",
+      "imports": [
+        "uner_app_handlers.h",
+        "string.h",
+        "config.h",
+        "boot_mode.h",
+        "uner_app_ports.h",
+        "wifi_scan_arbiter.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    },
+    {
+      "rootId": "esp",
+      "path": "src/uner_app_handlers.h",
+      "sha256": "04cafe686a80f9e7c3129e0dba8a3d6e592cecc0d71590051ba338b1a45c5f1f",
+      "imports": [
+        "config.h",
+        "uner_handle.h",
+        "wifi_scan_arbiter.h",
+        "wifi_scan_snapshot.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    }
+  ],
+  "types": [
+    {
+      "name": "UnerApplicationState",
+      "fields": [
+        {
+          "name": "scan_active",
+          "declaration": "bool scan_active",
+          "callback": false,
+          "ownerType": "UnerApplicationState",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_app_handlers.cpp",
+            "line": 10
+          },
+          "description": "Dato de estado/configuración `scan_active`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "scan_stopped_by_command",
+          "declaration": "bool scan_stopped_by_command",
+          "callback": false,
+          "ownerType": "UnerApplicationState",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_app_handlers.cpp",
+            "line": 11
+          },
+          "description": "Dato de estado/configuración `scan_stopped_by_command`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "scan_timed_out",
+          "declaration": "bool scan_timed_out",
+          "callback": false,
+          "ownerType": "UnerApplicationState",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_app_handlers.cpp",
+            "line": 12
+          },
+          "description": "Dato de estado/configuración `scan_timed_out`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "scan_started_ms",
+          "declaration": "uint32_t scan_started_ms",
+          "callback": false,
+          "ownerType": "UnerApplicationState",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_app_handlers.cpp",
+            "line": 13
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "scan_notify_dst",
+          "declaration": "uint8_t scan_notify_dst",
+          "callback": false,
+          "ownerType": "UnerApplicationState",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_app_handlers.cpp",
+            "line": 14
+          },
+          "description": "Dato de estado/configuración `scan_notify_dst`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "scan_notify_enabled",
+          "declaration": "uint8_t scan_notify_enabled",
+          "callback": false,
+          "ownerType": "UnerApplicationState",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_app_handlers.cpp",
+            "line": 15
+          },
+          "description": "Dato de estado/configuración `scan_notify_enabled`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "scan_finalizer_status",
+          "declaration": "uint8_t scan_finalizer_status",
+          "callback": false,
+          "ownerType": "UnerApplicationState",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_app_handlers.cpp",
+            "line": 16
+          },
+          "description": "Dato de estado/configuración `scan_finalizer_status`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "scan_last_count",
+          "declaration": "uint8_t scan_last_count",
+          "callback": false,
+          "ownerType": "UnerApplicationState",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_app_handlers.cpp",
+            "line": 17
+          },
+          "description": "Dato de estado/configuración `scan_last_count`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "scan_last_log_ms",
+          "declaration": "uint32_t scan_last_log_ms",
+          "callback": false,
+          "ownerType": "UnerApplicationState",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_app_handlers.cpp",
+            "line": 18
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "scan_cache",
+          "declaration": "WifiScanSnapshot scan_cache{ estructura anidada }",
+          "callback": false,
+          "ownerType": "UnerApplicationState",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_app_handlers.cpp",
+            "line": 19
+          },
+          "description": "Dato de estado/configuración `scan_cache`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "scan_arbiter",
+          "declaration": "WifiScanArbiter scan_arbiter{ estructura anidada }",
+          "callback": false,
+          "ownerType": "UnerApplicationState",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_app_handlers.cpp",
+            "line": 20
+          },
+          "description": "Dato de estado/configuración `scan_arbiter`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 10
+      }
+    },
+    {
+      "name": "UNER_App",
+      "fields": [
+        {
+          "name": "handle",
+          "declaration": "UNER_Handle handle",
+          "callback": false,
+          "ownerType": "UNER_App",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_app_handlers.h",
+            "line": 11
+          },
+          "description": "Dato de estado/configuración `handle`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "serial_transport",
+          "declaration": "UNER_Transport serial_transport",
+          "callback": false,
+          "ownerType": "UNER_App",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_app_handlers.h",
+            "line": 12
+          },
+          "description": "Dato de estado/configuración `serial_transport`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "this_node",
+          "declaration": "uint8_t this_node",
+          "callback": false,
+          "ownerType": "UNER_App",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_app_handlers.h",
+            "line": 13
+          },
+          "description": "Dato de estado/configuración `this_node`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "peer_node",
+          "declaration": "uint8_t peer_node",
+          "callback": false,
+          "ownerType": "UNER_App",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_app_handlers.h",
+            "line": 14
+          },
+          "description": "Dato de estado/configuración `peer_node`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "last_sta_status",
+          "declaration": "uint8_t last_sta_status",
+          "callback": false,
+          "ownerType": "UNER_App",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_app_handlers.h",
+            "line": 15
+          },
+          "description": "Memoria de la observación anterior usada por la máquina de estados."
+        },
+        {
+          "name": "last_wifi_mode",
+          "declaration": "uint8_t last_wifi_mode",
+          "callback": false,
+          "ownerType": "UNER_App",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_app_handlers.h",
+            "line": 16
+          },
+          "description": "Memoria de la observación anterior usada por la máquina de estados."
+        },
+        {
+          "name": "last_ap_clients",
+          "declaration": "uint8_t last_ap_clients",
+          "callback": false,
+          "ownerType": "UNER_App",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_app_handlers.h",
+            "line": 17
+          },
+          "description": "Memoria de la observación anterior usada por la máquina de estados."
+        },
+        {
+          "name": "boot_complete_sent",
+          "declaration": "uint8_t boot_complete_sent",
+          "callback": false,
+          "ownerType": "UNER_App",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_app_handlers.h",
+            "line": 18
+          },
+          "description": "Dato de estado/configuración `boot_complete_sent`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "reboot_pending",
+          "declaration": "uint8_t reboot_pending",
+          "callback": false,
+          "ownerType": "UNER_App",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_app_handlers.h",
+            "line": 19
+          },
+          "description": "Dato de estado/configuración `reboot_pending`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "reboot_boot_mode",
+          "declaration": "uint8_t reboot_boot_mode",
+          "callback": false,
+          "ownerType": "UNER_App",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_app_handlers.h",
+            "line": 20
+          },
+          "description": "Dato de estado/configuración `reboot_boot_mode`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "reboot_not_before_ms",
+          "declaration": "uint32_t reboot_not_before_ms",
+          "callback": false,
+          "ownerType": "UNER_App",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_app_handlers.h",
+            "line": 21
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.h",
+        "line": 11
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "UNER_App_FindScanCacheBySsid",
+      "signature": "uint8_t UNER_App_FindScanCacheBySsid(const char *ssid, UNER_WifiScanCacheEntry *out)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 111
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "WifiScanSnapshot_FindBySsid"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `WifiScanSnapshot_FindBySsid` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_App_GetScanCacheCount",
+      "signature": "uint8_t UNER_App_GetScanCacheCount(void)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 101
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "WifiScanSnapshot_Count"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `WifiScanSnapshot_Count` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_App_GetScanCacheEntry",
+      "signature": "uint8_t UNER_App_GetScanCacheEntry(uint8_t index, UNER_WifiScanCacheEntry *out)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 106
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "WifiScanSnapshot_Get"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `WifiScanSnapshot_Get` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_App_GetWifiScanOwner",
+      "signature": "WifiScanOwner UNER_App_GetWifiScanOwner(void)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 96
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "WifiScanArbiter_GetOwner"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `WifiScanArbiter_GetOwner` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_App_Init",
+      "signature": "void UNER_App_Init(UNER_App *app, uint8_t this_node, uint8_t peer_node)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 1648
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "UNER_App_OnCommandTable",
+        "UNER_Handle_AddTransport",
+        "UNER_Handle_Init",
+        "UNER_MutableCommandTable",
+        "WifiScanArbiter_Init",
+        "ap_clients",
+        "append_reset_diagnostic",
+        "append_wifi_info",
+        "current_network_interface",
+        "emit_network_ip_evt_and_cmd",
+        "flush_uner_tx",
+        "initialize_serial_transport",
+        "radio_mode",
+        "radio_status",
+        "send_evt",
+        "webServices"
+      ],
+      "writes": [
+        "accept_broadcast",
+        "accept_dst_mask",
+        "accept_src_mask",
+        "boot_complete_sent",
+        "default_max_payload",
+        "last_ap_clients",
+        "last_sta_status",
+        "last_wifi_mode",
+        "peer_node",
+        "reboot_boot_mode",
+        "reboot_not_before_ms",
+        "reboot_pending",
+        "this_node"
+      ],
+      "description": "Inicializa handlers, nodo propio y peer para la aplicación ESP.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "UNER_App_IsWifiScanOwner",
+      "signature": "uint8_t UNER_App_IsWifiScanOwner(WifiScanOwner owner)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 91
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "WifiScanArbiter_IsOwner"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `WifiScanArbiter_IsOwner` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_App_Loop",
+      "signature": "void UNER_App_Loop(UNER_App *app)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 1716
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "ConsumeSTAAttemptFailure",
+        "UNER_Handle_Dispatch",
+        "UNER_Handle_PollRx",
+        "UNER_Handle_SendRaw",
+        "UNER_Handle_Tick",
+        "UNER_Handle_TxPump",
+        "emit_mode_and_link_events",
+        "service_reboot_state_machine",
+        "service_scan_state_machine",
+        "webServices"
+      ],
+      "writes": [],
+      "description": "Atiende protocolo y operaciones diferidas de aplicación.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "UNER_App_NotifyApClientJoined",
+      "signature": "void UNER_App_NotifyApClientJoined(UNER_App *app, uint8_t ap_clients, uint8_t client_number)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 1788
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "send_evt"
+      ],
+      "writes": [
+        "last_ap_clients"
+      ],
+      "description": "Adapta la llamada a `send_evt` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_App_NotifyApClientLeft",
+      "signature": "void UNER_App_NotifyApClientLeft(UNER_App *app, uint8_t ap_clients, uint8_t client_number)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 1796
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "send_evt"
+      ],
+      "writes": [
+        "last_ap_clients"
+      ],
+      "description": "Adapta la llamada a `send_evt` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_App_NotifyApFallbackReady",
+      "signature": "void UNER_App_NotifyApFallbackReady(UNER_App *app)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 1804
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "UNER_Handle_SendRaw",
+        "ap_ip",
+        "append_wifi_info",
+        "emit_network_ip_evt_and_cmd",
+        "flush_uner_tx",
+        "radio_mode",
+        "radio_status",
+        "send_evt",
+        "webServices"
+      ],
+      "writes": [
+        "last_sta_status",
+        "last_wifi_mode"
+      ],
+      "description": "Notifica Ap Fallback Ready dentro de Handlers UNER de aplicación ESP.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_NotifyWebPageClosed",
+      "signature": "void UNER_App_NotifyWebPageClosed(UNER_App *app, uint32_t client_id, uint8_t client_number)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 1783
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "notify_web_page"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `notify_web_page` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_App_NotifyWebPageReady",
+      "signature": "void UNER_App_NotifyWebPageReady(UNER_App *app, uint32_t client_id, uint8_t client_number)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 1778
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "notify_web_page"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `notify_web_page` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_App_NotifyWebserverUp",
+      "signature": "void UNER_App_NotifyWebserverUp(UNER_App *app)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 1749
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "current_network_interface",
+        "flush_uner_tx",
+        "send_boot_complete_evt_and_cmd",
+        "send_evt"
+      ],
+      "writes": [],
+      "description": "Notifica Webserver Up dentro de Handlers UNER de aplicación ESP.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_NotifyWsClientConnected",
+      "signature": "void UNER_App_NotifyWsClientConnected(UNER_App *app, uint32_t client_id)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 1759
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "send_evt"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `send_evt` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_App_NotifyWsClientDisconnected",
+      "signature": "void UNER_App_NotifyWsClientDisconnected(UNER_App *app, uint32_t client_id)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 1765
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "send_evt"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `send_evt` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_App_OnCommandTable",
+      "signature": "void UNER_App_OnCommandTable(UNER_App *app)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 1606
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [
+        "handler"
+      ],
+      "description": "Atiende la notificación de Command Table dentro de Handlers UNER de aplicación ESP.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_ReleaseWifiScan",
+      "signature": "uint8_t UNER_App_ReleaseWifiScan(WifiScanOwner owner)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 86
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "WifiScanArbiter_Release"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `WifiScanArbiter_Release` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_App_SendEventToPeer",
+      "signature": "UNER_Status UNER_App_SendEventToPeer(UNER_App *app, uint8_t evt_cmd, const uint8_t *payload, uint8_t len)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 283
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "UNER_Handle_SendRaw"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `UNER_Handle_SendRaw` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_App_SendRawFromNode",
+      "signature": "UNER_Status UNER_App_SendRawFromNode(UNER_App *app, uint8_t src_node, uint8_t dst_node, uint8_t cmd, const uint8_t *payload, uint8_t len)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 277
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "UNER_Handle_SendRaw"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `UNER_Handle_SendRaw` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_App_SendRawToPeer",
+      "signature": "UNER_Status UNER_App_SendRawToPeer(UNER_App *app, uint8_t cmd, const uint8_t *payload, uint8_t len)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 271
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "UNER_Handle_SendRaw"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `UNER_Handle_SendRaw` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_App_SetServices",
+      "signature": "void UNER_App_SetServices(const UNER_AppServices &services)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 25
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Configura Services dentro de Handlers UNER de aplicación ESP.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_App_TryAcquireWifiScan",
+      "signature": "WifiScanAcquireResult UNER_App_TryAcquireWifiScan(WifiScanOwner owner)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 81
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "WifiScanArbiter_TryAcquire"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `WifiScanArbiter_TryAcquire` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_App_UpdateScanCacheFromDriver",
+      "signature": "void UNER_App_UpdateScanCacheFromDriver(int network_count)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 76
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "UNER_App_UpdateScanSnapshotFromDriver"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `UNER_App_UpdateScanSnapshotFromDriver` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_App_UpdateScanSnapshotFromDriver",
+      "signature": "void UNER_App_UpdateScanSnapshotFromDriver(WifiScanSnapshot *snapshot, int network_count)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 62
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "WifiScanSnapshot_Append",
+        "WifiScanSnapshot_Init",
+        "scan_entry",
+        "webServices"
+      ],
+      "writes": [],
+      "description": "Actualiza Scan Snapshot From Driver dentro de Handlers UNER de aplicación ESP.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "ip",
+      "signature": "WifiIpv4 ip(0, 0, 0, 0)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 133
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación ip de Handlers UNER de aplicación ESP; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "append_ipv4",
+      "signature": "static uint8_t append_ipv4(uint8_t *out, uint8_t max_len, WifiIpv4 ip)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 116
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación append ipv4 de Handlers UNER de aplicación ESP; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "append_reset_diagnostic",
+      "signature": "static uint8_t append_reset_diagnostic(uint8_t *out, uint8_t max_len)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 358
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "reset_diagnostic",
+        "webServices"
+      ],
+      "writes": [],
+      "description": "Coordina `reset_diagnostic`, `webServices` para Handlers UNER de aplicación ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "append_wifi_detail_payload",
+      "signature": "static uint8_t append_wifi_detail_payload(const UNER_WifiScanCacheEntry *entry, uint8_t *out, uint8_t max_len)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 385
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación append wifi detail payload de Handlers UNER de aplicación ESP; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "append_wifi_info",
+      "signature": "static uint8_t append_wifi_info(uint8_t *out, uint8_t max_len, bool prefer_sta)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 126
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "ap_ip",
+        "config",
+        "ip",
+        "radio_mode",
+        "radio_status",
+        "sta_ip",
+        "webServices"
+      ],
+      "writes": [],
+      "description": "Coordina `ap_ip`, `config`, `ip` para Handlers UNER de aplicación ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "auth_permission_id_supported",
+      "signature": "static bool auth_permission_id_supported(uint8_t permission_id)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 892
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación auth permission id supported de Handlers UNER de aplicación ESP; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "auth_ttl_for_permission",
+      "signature": "static uint32_t auth_ttl_for_permission(uint8_t permission_id)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 898
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación auth ttl for permission de Handlers UNER de aplicación ESP; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "build_scan_results_payload",
+      "signature": "static uint8_t build_scan_results_payload(uint8_t *out, uint8_t max_len)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 332
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "WifiScanSnapshot_Count",
+        "WifiScanSnapshot_Get"
+      ],
+      "writes": [],
+      "description": "Coordina `WifiScanSnapshot_Count`, `WifiScanSnapshot_Get` para Handlers UNER de aplicación ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "build_wifi_credentials_flow_data",
+      "signature": "static uint8_t build_wifi_credentials_flow_data(uint8_t action, uint8_t extra_flags, uint8_t *out, uint8_t capacity)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 1063
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "credentials_state",
+        "memcpy",
+        "strnlen",
+        "webServices"
+      ],
+      "writes": [],
+      "description": "Coordina `credentials_state`, `memcpy`, `strnlen` para Handlers UNER de aplicación ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "clear_scan_cache",
+      "signature": "static void clear_scan_cache()",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 57
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "WifiScanSnapshot_Init"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `WifiScanSnapshot_Init` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "current_config_copy",
+      "signature": "static AppConfig current_config_copy()",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 39
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "config",
+        "webServices"
+      ],
+      "writes": [],
+      "description": "Coordina `config`, `webServices` para Handlers UNER de aplicación ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "current_network_interface",
+      "signature": "static uint8_t current_network_interface(WifiIpv4 &ip)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 372
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "WifiIpv4",
+        "ap_ip",
+        "radio_mode",
+        "radio_status",
+        "sta_ip",
+        "webServices"
+      ],
+      "writes": [],
+      "description": "Coordina `WifiIpv4`, `ap_ip`, `radio_mode` para Handlers UNER de aplicación ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "emit_mode_and_link_events",
+      "signature": "static void emit_mode_and_link_events(UNER_App *app)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 483
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_Handle_SendRaw",
+        "ap_clients",
+        "ap_ip",
+        "append_wifi_info",
+        "emit_network_ip_evt_and_cmd",
+        "radio_mode",
+        "radio_status",
+        "send_boot_complete_evt_and_cmd",
+        "send_evt",
+        "sta_ip",
+        "webServices"
+      ],
+      "writes": [
+        "last_ap_clients",
+        "last_sta_status",
+        "last_wifi_mode"
+      ],
+      "description": "Coordina `UNER_Handle_SendRaw`, `ap_clients`, `ap_ip` para Handlers UNER de aplicación ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "emit_network_ip_evt_and_cmd",
+      "signature": "static void emit_network_ip_evt_and_cmd(UNER_App *app, uint8_t net_if, const WifiIpv4 &ip)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 304
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_Handle_SendRaw",
+        "fill_network_ip_payload",
+        "send_evt"
+      ],
+      "writes": [],
+      "description": "Coordina `UNER_Handle_SendRaw`, `fill_network_ip_payload`, `send_evt` para Handlers UNER de aplicación ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "fill_interfaces_connected",
+      "signature": "static void fill_interfaces_connected(uint8_t out[4])",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 323
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "connected_count",
+        "webServices"
+      ],
+      "writes": [],
+      "description": "Coordina `connected_count`, `webServices` para Handlers UNER de aplicación ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "fill_network_ip_payload",
+      "signature": "static uint8_t fill_network_ip_payload(uint8_t out[5], uint8_t net_if, const WifiIpv4 &ip)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 294
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación fill network ip payload de Handlers UNER de aplicación ESP; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "flush_uner_tx",
+      "signature": "static void flush_uner_tx(UNER_App *app, uint16_t timeout_ms)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 175
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_Handle_TxPump",
+        "cooperate",
+        "flush_serial",
+        "now_ms",
+        "webServices"
+      ],
+      "writes": [],
+      "description": "Coordina `UNER_Handle_TxPump`, `cooperate`, `flush_serial` para Handlers UNER de aplicación ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "h_ap_client_disconnect",
+      "signature": "static void h_ap_client_disconnect(void *ctx, const UNER_Packet *pkt)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 1152
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_Handle_SendResponse",
+        "disconnect_ap_client",
+        "webServices"
+      ],
+      "writes": [],
+      "description": "Coordina `UNER_Handle_SendResponse`, `disconnect_ap_client`, `webServices` para Handlers UNER de aplicación ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "h_ap_clients_page",
+      "signature": "static void h_ap_clients_page(void *ctx, const UNER_Packet *pkt)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 1141
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_Handle_SendResponse",
+        "ap_clients_page",
+        "webServices"
+      ],
+      "writes": [],
+      "description": "Coordina `UNER_Handle_SendResponse`, `ap_clients_page`, `webServices` para Handlers UNER de aplicación ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "h_app_pin_config",
+      "signature": "static void h_app_pin_config(void *ctx, const UNER_Packet *pkt)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 974
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "is_pin_ascii4_format_valid",
+        "log_cmd",
+        "save_test_pin_ascii4",
+        "send_app_pin_config_response",
+        "validate_test_pin_ascii4"
+      ],
+      "writes": [],
+      "description": "Coordina `is_pin_ascii4_format_valid`, `log_cmd`, `save_test_pin_ascii4` para Handlers UNER de aplicación ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "h_auth_validate_pin",
+      "signature": "static void h_auth_validate_pin(void *ctx, const UNER_Packet *pkt)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 904
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "auth_permission_id_supported",
+        "auth_ttl_for_permission",
+        "log_cmd",
+        "send_auth_validate_pin_response",
+        "send_response_with_retry",
+        "validate_test_pin_ascii4"
+      ],
+      "writes": [],
+      "description": "Coordina `auth_permission_id_supported`, `auth_ttl_for_permission`, `log_cmd` para Handlers UNER de aplicación ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "h_clear_credentials",
+      "signature": "static void h_clear_credentials(void *ctx, const UNER_Packet *pkt)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 729
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_Handle_SendResponse",
+        "log_cmd",
+        "save_config",
+        "strncpy",
+        "webServices"
+      ],
+      "writes": [
+        "initializedNvs",
+        "nextBootMode",
+        "schemaVersion"
+      ],
+      "description": "Coordina `UNER_Handle_SendResponse`, `log_cmd`, `save_config` para Handlers UNER de aplicación ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "h_connect_wifi",
+      "signature": "static void h_connect_wifi(void *ctx, const UNER_Packet *pkt)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 1367
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "ApplySTAConfig",
+        "ConnectSTA",
+        "ConsumeSTAAttemptFailure",
+        "NotifySTAConfigurationFailure",
+        "SetSTAReconnectEnabled",
+        "UNER_Handle_SendResponse",
+        "append_wifi_info",
+        "config",
+        "log_cmd",
+        "webServices"
+      ],
+      "writes": [],
+      "description": "Coordina `ApplySTAConfig`, `ConnectSTA`, `ConsumeSTAAttemptFailure` para Handlers UNER de aplicación ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "h_disconnect_wifi",
+      "signature": "static void h_disconnect_wifi(void *ctx, const UNER_Packet *pkt)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 1389
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "DisconnectSTA",
+        "SetSTAReconnectEnabled",
+        "UNER_Handle_SendResponse",
+        "append_wifi_info",
+        "log_cmd",
+        "webServices"
+      ],
+      "writes": [],
+      "description": "Coordina `DisconnectSTA`, `SetSTAReconnectEnabled`, `UNER_Handle_SendResponse` para Handlers UNER de aplicación ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "h_echo",
+      "signature": "static void h_echo(void *ctx, const UNER_Packet *pkt)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 555
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_Handle_SendResponse",
+        "log_cmd"
+      ],
+      "writes": [],
+      "description": "Coordina `UNER_Handle_SendResponse`, `log_cmd` para Handlers UNER de aplicación ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "h_factory_reset",
+      "signature": "static void h_factory_reset(void *ctx, const UNER_Packet *pkt)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 754
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "h_clear_credentials"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `h_clear_credentials` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "h_get_connected_users",
+      "signature": "static void h_get_connected_users(void *ctx, const UNER_Packet *pkt)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 1160
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_Handle_SendResponse",
+        "connected_count",
+        "log_cmd",
+        "webServices"
+      ],
+      "writes": [],
+      "description": "Coordina `UNER_Handle_SendResponse`, `connected_count`, `log_cmd` para Handlers UNER de aplicación ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "h_get_connected_users_mode",
+      "signature": "static void h_get_connected_users_mode(void *ctx, const UNER_Packet *pkt)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 1589
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_Handle_SendResponse",
+        "ap_clients",
+        "connected_count",
+        "log_cmd",
+        "radio_mode",
+        "webServices"
+      ],
+      "writes": [],
+      "description": "Coordina `UNER_Handle_SendResponse`, `ap_clients`, `connected_count` para Handlers UNER de aplicación ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "h_get_credentials",
+      "signature": "static void h_get_credentials(void *ctx, const UNER_Packet *pkt)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 1358
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_Handle_SendNack"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `UNER_Handle_SendNack` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "h_get_interfaces_connected",
+      "signature": "static void h_get_interfaces_connected(void *ctx, const UNER_Packet *pkt)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 1349
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_Handle_SendResponse",
+        "fill_interfaces_connected",
+        "log_cmd"
+      ],
+      "writes": [],
+      "description": "Coordina `UNER_Handle_SendResponse`, `fill_interfaces_connected`, `log_cmd` para Handlers UNER de aplicación ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "h_get_preferences",
+      "signature": "static void h_get_preferences(void *ctx, const UNER_Packet *pkt)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 607
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_Handle_SendResponse",
+        "config",
+        "log_cmd",
+        "webServices"
+      ],
+      "writes": [],
+      "description": "Coordina `UNER_Handle_SendResponse`, `config`, `log_cmd` para Handlers UNER de aplicación ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "h_get_scan_results",
+      "signature": "static void h_get_scan_results(void *ctx, const UNER_Packet *pkt)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 1256
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_App_GetWifiScanOwner",
+        "UNER_Handle_SendResponse",
+        "UNER_SCAN_LOG",
+        "UNER_SCAN_LOGLN",
+        "WifiScanSnapshot_Count",
+        "build_scan_results_payload",
+        "log_cmd"
+      ],
+      "writes": [
+        "scan_stopped_by_command",
+        "scan_timed_out"
+      ],
+      "description": "Coordina `UNER_App_GetWifiScanOwner`, `UNER_Handle_SendResponse`, `UNER_SCAN_LOG` para Handlers UNER de aplicación ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "h_get_status",
+      "signature": "static void h_get_status(void *ctx, const UNER_Packet *pkt)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 562
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_Handle_SendResponse",
+        "ap_clients",
+        "ap_ip",
+        "append_ipv4",
+        "append_wifi_info",
+        "config",
+        "log_cmd",
+        "memcpy",
+        "radio_mode",
+        "radio_status",
+        "sta_ip",
+        "webServices"
+      ],
+      "writes": [],
+      "description": "Coordina `UNER_Handle_SendResponse`, `ap_clients`, `ap_ip` para Handlers UNER de aplicación ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "h_get_user_info",
+      "signature": "static void h_get_user_info(void *ctx, const UNER_Packet *pkt)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 1167
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_Handle_SendResponse",
+        "client_info",
+        "log_cmd",
+        "webServices"
+      ],
+      "writes": [],
+      "description": "Coordina `UNER_Handle_SendResponse`, `client_info`, `log_cmd` para Handlers UNER de aplicación ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "h_get_wifi_detail",
+      "signature": "static void h_get_wifi_detail(void *ctx, const UNER_Packet *pkt)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 1307
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_App_FindScanCacheBySsid",
+        "UNER_Handle_SendNack",
+        "UNER_Handle_SendRaw",
+        "append_wifi_detail_payload",
+        "log_cmd"
+      ],
+      "writes": [],
+      "description": "Coordina `UNER_App_FindScanCacheBySsid`, `UNER_Handle_SendNack`, `UNER_Handle_SendRaw` para Handlers UNER de aplicación ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "h_ping",
+      "signature": "static void h_ping(void *ctx, const UNER_Packet *pkt)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 544
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_Handle_SendResponse",
+        "log_cmd"
+      ],
+      "writes": [],
+      "description": "Coordina `UNER_Handle_SendResponse`, `log_cmd` para Handlers UNER de aplicación ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "h_reboot_esp",
+      "signature": "static void h_reboot_esp(void *ctx, const UNER_Packet *pkt)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 759
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "BootMode_ApplyRequest",
+        "BootMode_IsValid",
+        "UNER_SCAN_LOG",
+        "current_config_copy",
+        "log_cmd",
+        "now_ms",
+        "save_config",
+        "send_evt",
+        "send_reboot_ack_and_flush",
+        "send_reboot_nack_and_flush",
+        "webServices"
+      ],
+      "writes": [
+        "reboot_boot_mode",
+        "reboot_not_before_ms",
+        "reboot_pending"
+      ],
+      "description": "Coordina `BootMode_ApplyRequest`, `BootMode_IsValid`, `UNER_SCAN_LOG` para Handlers UNER de aplicación ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "h_request_firmware",
+      "signature": "static void h_request_firmware(void *ctx, const UNER_Packet *pkt)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 818
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_Handle_SendResponse",
+        "log_cmd"
+      ],
+      "writes": [],
+      "description": "Coordina `UNER_Handle_SendResponse`, `log_cmd` para Handlers UNER de aplicación ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "h_set_ap_config",
+      "signature": "static void h_set_ap_config(void *ctx, const UNER_Packet *pkt)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 1399
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "ApplyAPConfig",
+        "StartAP",
+        "StopAP",
+        "UNER_Handle_SendResponse",
+        "current_config_copy",
+        "log_cmd",
+        "memcpy",
+        "radio_mode",
+        "save_config",
+        "snprintf",
+        "strncpy",
+        "webServices"
+      ],
+      "writes": [
+        "apProtected"
+      ],
+      "description": "Coordina `ApplyAPConfig`, `StartAP`, `StopAP` para Handlers UNER de aplicación ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "h_set_ap_fallback",
+      "signature": "static void h_set_ap_fallback(void *ctx, const UNER_Packet *pkt)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 1554
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_Handle_SendAck",
+        "UNER_Handle_SendResponse",
+        "config",
+        "save_config",
+        "webServices"
+      ],
+      "writes": [
+        "apFallbackEnabled"
+      ],
+      "description": "Coordina `UNER_Handle_SendAck`, `UNER_Handle_SendResponse`, `config` para Handlers UNER de aplicación ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "h_set_auto_reconnect",
+      "signature": "static void h_set_auto_reconnect(void *ctx, const UNER_Packet *pkt)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 1577
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "IsSTAReconnectEnabled",
+        "SetSTAReconnectEnabled",
+        "UNER_Handle_SendResponse",
+        "log_cmd",
+        "webServices"
+      ],
+      "writes": [],
+      "description": "Coordina `IsSTAReconnectEnabled`, `SetSTAReconnectEnabled`, `UNER_Handle_SendResponse` para Handlers UNER de aplicación ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "h_set_credentials",
+      "signature": "static void h_set_credentials(void *ctx, const UNER_Packet *pkt)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 666
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_Handle_SendResponse",
+        "current_config_copy",
+        "log_cmd",
+        "request_credentials",
+        "save_config",
+        "strcmp",
+        "strncpy",
+        "webServices"
+      ],
+      "writes": [],
+      "description": "Coordina `UNER_Handle_SendResponse`, `current_config_copy`, `log_cmd` para Handlers UNER de aplicación ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "h_set_encoder_fast",
+      "signature": "static void h_set_encoder_fast(void *ctx, const UNER_Packet *pkt)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 1341
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_Handle_SendResponse",
+        "log_cmd"
+      ],
+      "writes": [],
+      "description": "Coordina `UNER_Handle_SendResponse`, `log_cmd` para Handlers UNER de aplicación ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "h_set_mode_ap",
+      "signature": "static void h_set_mode_ap(void *ctx, const UNER_Packet *pkt)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 626
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "ApplyAPConfig",
+        "GetMode",
+        "StartAP",
+        "UNER_Handle_SendResponse",
+        "append_wifi_info",
+        "config",
+        "log_cmd",
+        "send_evt",
+        "webServices"
+      ],
+      "writes": [],
+      "description": "Coordina `ApplyAPConfig`, `GetMode`, `StartAP` para Handlers UNER de aplicación ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "h_set_mode_sta",
+      "signature": "static void h_set_mode_sta(void *ctx, const UNER_Packet *pkt)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 645
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "ApplySTAConfig",
+        "ConnectSTA",
+        "SetSTAReconnectEnabled",
+        "UNER_Handle_SendResponse",
+        "append_wifi_info",
+        "config",
+        "log_cmd",
+        "send_evt",
+        "webServices"
+      ],
+      "writes": [],
+      "description": "Coordina `ApplySTAConfig`, `ConnectSTA`, `SetSTAReconnectEnabled` para Handlers UNER de aplicación ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "h_start_ap",
+      "signature": "static void h_start_ap(void *ctx, const UNER_Packet *pkt)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 1528
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "ApplyAPConfig",
+        "GetMode",
+        "StartAP",
+        "UNER_Handle_SendResponse",
+        "append_wifi_info",
+        "config",
+        "log_cmd",
+        "webServices"
+      ],
+      "writes": [],
+      "description": "Coordina `ApplyAPConfig`, `GetMode`, `StartAP` para Handlers UNER de aplicación ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "h_start_scan",
+      "signature": "static void h_start_scan(void *ctx, const UNER_Packet *pkt)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 1179
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "DeleteScanResults",
+        "SetSTAReconnectEnabled",
+        "StartScan",
+        "UNER_App_ReleaseWifiScan",
+        "UNER_App_TryAcquireWifiScan",
+        "UNER_Handle_SendResponse",
+        "UNER_SCAN_LOG",
+        "UNER_SCAN_LOGLN",
+        "log_cmd",
+        "now_ms",
+        "webServices"
+      ],
+      "writes": [
+        "scan_active",
+        "scan_finalizer_status",
+        "scan_last_log_ms",
+        "scan_notify_dst",
+        "scan_notify_enabled",
+        "scan_started_ms",
+        "scan_stopped_by_command",
+        "scan_timed_out"
+      ],
+      "description": "Coordina `DeleteScanResults`, `SetSTAReconnectEnabled`, `StartScan` para Handlers UNER de aplicación ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "h_stop_ap",
+      "signature": "static void h_stop_ap(void *ctx, const UNER_Packet *pkt)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 1545
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "StopAP",
+        "UNER_Handle_SendResponse",
+        "append_wifi_info",
+        "log_cmd",
+        "webServices"
+      ],
+      "writes": [],
+      "description": "Coordina `StopAP`, `UNER_Handle_SendResponse`, `append_wifi_info` para Handlers UNER de aplicación ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "h_stop_scan",
+      "signature": "static void h_stop_scan(void *ctx, const UNER_Packet *pkt)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 1224
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "DeleteScanResults",
+        "UNER_App_GetWifiScanOwner",
+        "UNER_App_ReleaseWifiScan",
+        "UNER_Handle_SendResponse",
+        "UNER_SCAN_LOG",
+        "log_cmd",
+        "send_scan_results_async",
+        "webServices"
+      ],
+      "writes": [
+        "scan_active",
+        "scan_finalizer_status",
+        "scan_stopped_by_command"
+      ],
+      "description": "Coordina `DeleteScanResults`, `UNER_App_GetWifiScanOwner`, `UNER_App_ReleaseWifiScan` para Handlers UNER de aplicación ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "h_wifi_credentials_flow",
+      "signature": "static void h_wifi_credentials_flow(void *ctx, const UNER_Packet *pkt)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 1089
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_Handle_SendResponse",
+        "build_wifi_credentials_flow_data",
+        "cancel_credentials",
+        "read_uner_text_field",
+        "submit_credentials",
+        "webServices"
+      ],
+      "writes": [],
+      "description": "Coordina `UNER_Handle_SendResponse`, `build_wifi_credentials_flow_data`, `cancel_credentials` para Handlers UNER de aplicación ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "is_pin_ascii4_format_valid",
+      "signature": "static bool is_pin_ascii4_format_valid(const uint8_t *ascii4)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 859
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación is pin ascii4 format valid de Handlers UNER de aplicación ESP; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "log_cmd",
+      "signature": "static void log_cmd(const char* name, const UNER_Packet *pkt)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 289
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación log cmd de Handlers UNER de aplicación ESP; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "notify_web_page",
+      "signature": "static void notify_web_page(UNER_App *app, uint8_t event, uint32_t id, uint8_t number)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 1771
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "send_evt"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `send_evt` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "read_uner_text_field",
+      "signature": "static bool read_uner_text_field(const UNER_Packet *pkt, uint8_t *offset, char *out, uint8_t capacity, bool allow_empty)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 1047
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "memcpy"
+      ],
+      "writes": [],
+      "description": "Coordina `memcpy` para Handlers UNER de aplicación ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "save_test_pin_ascii4",
+      "signature": "static bool save_test_pin_ascii4(const uint8_t *ascii4)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 870
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación save test pin ascii4 de Handlers UNER de aplicación ESP; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "send_app_pin_config_response",
+      "signature": "static void send_app_pin_config_response(UNER_App *app, const UNER_Packet *pkt, uint8_t status, uint8_t action, uint8_t code)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 964
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "send_response_with_retry"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `send_response_with_retry` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "send_auth_validate_pin_response",
+      "signature": "static void send_auth_validate_pin_response(UNER_App *app, const UNER_Packet *pkt, uint8_t status, uint8_t request_id, uint8_t permission_id, bool granted, uint32_t ttl_ms, uint8_t attempts_left)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 876
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "send_response_with_retry"
+      ],
+      "writes": [],
+      "description": "Coordina `send_response_with_retry` para Handlers UNER de aplicación ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "send_boot_complete_evt_and_cmd",
+      "signature": "static void send_boot_complete_evt_and_cmd(UNER_App *app, uint8_t net_if, const WifiIpv4 &ip)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 312
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_Handle_SendRaw",
+        "fill_network_ip_payload",
+        "send_evt"
+      ],
+      "writes": [
+        "boot_complete_sent"
+      ],
+      "description": "Coordina `UNER_Handle_SendRaw`, `fill_network_ip_payload`, `send_evt` para Handlers UNER de aplicación ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "send_evt",
+      "signature": "static void send_evt(UNER_App *app, uint8_t evt_cmd, const uint8_t *payload, uint8_t len)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 169
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_Handle_SendRaw"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `UNER_Handle_SendRaw` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "send_reboot_ack_and_flush",
+      "signature": "static bool send_reboot_ack_and_flush(UNER_App *app, const UNER_Packet *pkt)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 188
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_Handle_SendAck",
+        "flush_uner_tx"
+      ],
+      "writes": [],
+      "description": "Coordina `UNER_Handle_SendAck`, `flush_uner_tx` para Handlers UNER de aplicación ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "send_reboot_nack_and_flush",
+      "signature": "static void send_reboot_nack_and_flush(UNER_App *app, const UNER_Packet *pkt, UNER_Status reason)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 206
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_Handle_SendNack",
+        "flush_uner_tx"
+      ],
+      "writes": [],
+      "description": "Coordina `UNER_Handle_SendNack`, `flush_uner_tx` para Handlers UNER de aplicación ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "send_response_with_retry",
+      "signature": "static bool send_response_with_retry(UNER_App *app, const UNER_Packet *pkt, uint8_t status, const uint8_t *data, uint8_t data_len, uint16_t flush_timeout_ms)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 246
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_Handle_SendResponse",
+        "flush_uner_tx"
+      ],
+      "writes": [],
+      "description": "Coordina `UNER_Handle_SendResponse`, `flush_uner_tx` para Handlers UNER de aplicación ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "send_scan_results_async",
+      "signature": "static void send_scan_results_async(UNER_App *app, uint8_t status)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 401
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_Handle_SendRaw",
+        "UNER_SCAN_LOG"
+      ],
+      "writes": [
+        "scan_finalizer_status",
+        "scan_notify_enabled"
+      ],
+      "description": "Coordina `UNER_Handle_SendRaw`, `UNER_SCAN_LOG` para Handlers UNER de aplicación ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "service_reboot_state_machine",
+      "signature": "static void service_reboot_state_machine(UNER_App *app)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 222
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_Handle_TxPump",
+        "UNER_SCAN_LOG",
+        "delay_ms",
+        "flush_serial",
+        "now_ms",
+        "restart",
+        "webServices"
+      ],
+      "writes": [],
+      "description": "Coordina `UNER_Handle_TxPump`, `UNER_SCAN_LOG`, `delay_ms` para Handlers UNER de aplicación ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "service_scan_state_machine",
+      "signature": "static void service_scan_state_machine(UNER_App *app)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 426
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "DeleteScanResults",
+        "ScanComplete",
+        "UNER_App_IsWifiScanOwner",
+        "UNER_App_ReleaseWifiScan",
+        "UNER_App_UpdateScanCacheFromDriver",
+        "UNER_SCAN_LOG",
+        "now_ms",
+        "send_scan_results_async",
+        "webServices"
+      ],
+      "writes": [
+        "scan_active",
+        "scan_last_count",
+        "scan_last_log_ms",
+        "scan_notify_enabled",
+        "scan_timed_out"
+      ],
+      "description": "Coordina `DeleteScanResults`, `ScanComplete`, `UNER_App_IsWifiScanOwner` para Handlers UNER de aplicación ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "stored_test_pin_matches",
+      "signature": "static bool stored_test_pin_matches(uint8_t d0, uint8_t d1, uint8_t d2, uint8_t d3)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 829
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación stored test pin matches de Handlers UNER de aplicación ESP; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "validate_test_pin_ascii4",
+      "signature": "static bool validate_test_pin_ascii4(const uint8_t *ascii4)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 838
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "stored_test_pin_matches"
+      ],
+      "writes": [],
+      "description": "Coordina `stored_test_pin_matches` para Handlers UNER de aplicación ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "webServices",
+      "signature": "static const UNER_AppServices &webServices()",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_app_handlers.cpp",
+        "line": 26
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_App_DefaultServices"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `UNER_App_DefaultServices` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    }
+  ],
+  "hooks": []
+}

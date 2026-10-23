@@ -1,0 +1,1950 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "web:module/src/features/autoMotion/useAutoMotion.ts",
+  "slug": "auto-motion",
+  "title": "GOTO y calibración de motores Web",
+  "target": "web",
+  "kind": "integración",
+  "status": "source-documented",
+  "snapshotDate": "2026-10-20",
+  "verification": "not-run-user-instruction",
+  "responsibility": "Edita objetivos y perfiles y presenta la evolución de misión/calibración AutoMotion.",
+  "scope": "Requests stm.goto.* y stm.motorCalibration.*, codec de respuestas y requisitos accionables.",
+  "state": "Hooks conservan estado remoto y pending; paneles conservan x/y y borradores. No equiparar un destino editado con misión aceptada.",
+  "modularity": "Codec de datos separado de UI; el algoritmo físico y perfil persistido son de F4.",
+  "lifecycle": [
+    "Consultar estado/perfil, editar y enviar argumentos específicos por operación.",
+    "Interpretar status de solicitud y reason/state/result_valid de la operación por separado."
+  ],
+  "interactions": [
+    "ESP traduce xCm/yCm a dos float32; calibración usa bloques de 13/88/186 bytes.",
+    "Cambios del formato deben actualizar codec, bridge y serializador F4."
+  ],
+  "limitations": [
+    "La posición mostrada es estimada; no es odometría medida.",
+    "El validador compartido ESP admite formas incorrectas por comando; ver AMDOC-ESP-001."
+  ],
+  "relationships": [],
+  "findings": [],
+  "files": [
+    {
+      "rootId": "web",
+      "path": "src/features/autoMotion/ControlNavigation.tsx",
+      "sha256": "213e67eabe94be54eba211923abc2114379613294a6aef0385beea27e16deb56",
+      "imports": [
+        "../../components/SegmentedControl",
+        "react-router-dom"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/features/autoMotion/ControlToolbar.tsx",
+      "sha256": "64e7392f8e61a84c41360d2f2ae58fee9d7f94688793744a3b1c29f5c7440181",
+      "imports": [
+        "../../components/CarModeSelectorModal",
+        "../../contexts/CarModeContext",
+        "../motion/MotionControlActions",
+        "../motion/MotionControlPanel",
+        "../motion/useMotionControl",
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/features/autoMotion/GotoPanel.tsx",
+      "sha256": "c73c4d684736c88c0423ef815341bb056c6de5e4e75c76b201f21b471dd2b184",
+      "imports": [
+        "../../components/ConditionStatus",
+        "../motion/useMotionControl",
+        "./ControlToolbar",
+        "./MotionReadiness",
+        "./MotorCalibration",
+        "./MotorDialog",
+        "./useAutoMotion",
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/features/autoMotion/MotionReadiness.tsx",
+      "sha256": "e4a874d07f861ad95d0dbb39941aa5ce40152c266cb106e55dbfa4dea467b2f3",
+      "imports": [
+        "../../components/CarModeSelectorModal",
+        "../../components/ConditionStatus",
+        "../../contexts/IrEmittersContext",
+        "../lineFollow/useLineDevice",
+        "../motion/MotionControlActions",
+        "../motion/MotionControlPanel",
+        "../motion/useMotionControl",
+        "./MotorDialog",
+        "./autoMotion.css",
+        "./motorCodec",
+        "./useAutoMotion",
+        "react",
+        "react-router-dom"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/features/autoMotion/MotorCalibration.tsx",
+      "sha256": "5df4ddbca5943f317c12fc12bb6f87b57cfb573e1df90eb19e4bac4f5e13b90f",
+      "imports": [
+        "../../components/SegmentedControl",
+        "../motion/useMotionControl",
+        "./MotionReadiness",
+        "./MotorDialog",
+        "./autoMotion.css",
+        "./motorCodec",
+        "./useAutoMotion",
+        "react",
+        "react-router-dom"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/features/autoMotion/MotorDialog.tsx",
+      "sha256": "2b9ab403a52999c176cf8ea97926deff9b2343309e036d2844a439b90e959bd5",
+      "imports": [
+        "../../components/modal",
+        "./motorDialog.css",
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/features/autoMotion/autoMotion.css",
+      "sha256": "8239cc0ebdfd255fd0f48a338569db97819356193319786997f03ed145309b45",
+      "imports": [],
+      "analysisLevel": "support-inventory"
+    },
+    {
+      "rootId": "web",
+      "path": "src/features/autoMotion/motorCodec.ts",
+      "sha256": "e5fd46722e8599394345a2c5b99b1df147628f45e1ca0d7eaf252d7fadb5b9a5",
+      "imports": [
+        "../ir/irCalibrationStorage",
+        "../ir/irObjectModel",
+        "./useAutoMotion"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/features/autoMotion/motorDialog.css",
+      "sha256": "38ce3e508d53eb14c486d088ae137f58041f5bcf71c10624f6424d554eaba9a3",
+      "imports": [],
+      "analysisLevel": "support-inventory"
+    },
+    {
+      "rootId": "web",
+      "path": "src/features/autoMotion/useAutoMotion.ts",
+      "sha256": "ba80570a8f685025b3b9bd50bc9573de1449d1d52eb20fdb5a260bf14ec9f023",
+      "imports": [
+        "../../contexts/UserContext",
+        "../../hooks/useWebSocket",
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/pages/MotorCalibrationSection.tsx",
+      "sha256": "34189bbe634433e1ad7b05e0250bd281dc96e0f4b62a0b697998b1a53a234d26",
+      "imports": [
+        "../components/PageHeader",
+        "../features/autoMotion/ControlNavigation",
+        "../features/autoMotion/ControlToolbar",
+        "../features/autoMotion/MotorCalibration",
+        "../features/autoMotion/autoMotion.css",
+        "../features/autoMotion/useAutoMotion",
+        "../features/motion/useMotionControl",
+        "react-router-dom"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    }
+  ],
+  "types": [
+    {
+      "name": "ControlView",
+      "kind": "TypeAliasDeclaration",
+      "type": "\"free\" | \"goto\" | \"calibration\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/autoMotion/ControlNavigation.tsx",
+        "line": 3
+      }
+    },
+    {
+      "name": "Run",
+      "kind": "TypeAliasDeclaration",
+      "fields": [
+        {
+          "name": "date",
+          "declaration": "date: string",
+          "callback": false,
+          "ownerType": "Run",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/MotorCalibration.tsx",
+            "line": 11
+          },
+          "description": "Dato de estado/configuración `date`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "notes",
+          "declaration": "notes: string",
+          "callback": false,
+          "ownerType": "Run",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/MotorCalibration.tsx",
+            "line": 11
+          },
+          "description": "Dato de estado/configuración `notes`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "state",
+          "declaration": "state: AutoState",
+          "callback": false,
+          "ownerType": "Run",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/MotorCalibration.tsx",
+            "line": 11
+          },
+          "description": "Dato de estado/configuración `state`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/autoMotion/MotorCalibration.tsx",
+        "line": 11
+      }
+    },
+    {
+      "name": "MotorDraft",
+      "kind": "TypeAliasDeclaration",
+      "fields": [
+        {
+          "name": "percent",
+          "declaration": "percent: number",
+          "callback": false,
+          "ownerType": "MotorDraft",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/MotorCalibration.tsx",
+            "line": 13
+          },
+          "description": "Dato de estado/configuración `percent`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ramp",
+          "declaration": "ramp: number",
+          "callback": false,
+          "ownerType": "MotorDraft",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/MotorCalibration.tsx",
+            "line": 13
+          },
+          "description": "Dato de estado/configuración `ramp`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "timeout",
+          "declaration": "timeout: number",
+          "callback": false,
+          "ownerType": "MotorDraft",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/MotorCalibration.tsx",
+            "line": 13
+          },
+          "description": "Dato de estado/configuración `timeout`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "notes",
+          "declaration": "notes: string",
+          "callback": false,
+          "ownerType": "MotorDraft",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/MotorCalibration.tsx",
+            "line": 13
+          },
+          "description": "Dato de estado/configuración `notes`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "curve",
+          "declaration": "curve: boolean",
+          "callback": false,
+          "ownerType": "MotorDraft",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/MotorCalibration.tsx",
+            "line": 13
+          },
+          "description": "Dato de estado/configuración `curve`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "levels",
+          "declaration": "levels: string",
+          "callback": false,
+          "ownerType": "MotorDraft",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/MotorCalibration.tsx",
+            "line": 13
+          },
+          "description": "Dato de estado/configuración `levels`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "repeats",
+          "declaration": "repeats: number",
+          "callback": false,
+          "ownerType": "MotorDraft",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/MotorCalibration.tsx",
+            "line": 13
+          },
+          "description": "Dato de estado/configuración `repeats`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "trial",
+          "declaration": "trial: number",
+          "callback": false,
+          "ownerType": "MotorDraft",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/MotorCalibration.tsx",
+            "line": 13
+          },
+          "description": "Dato de estado/configuración `trial`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/autoMotion/MotorCalibration.tsx",
+        "line": 13
+      }
+    },
+    {
+      "name": "MotorDialogIcon",
+      "kind": "TypeAliasDeclaration",
+      "type": "\"mode\" | \"balance\" | \"mpu\" | \"objects\" | \"connection\" | \"line\" | \"security\" | \"calibration\" | \"info\" | \"settings\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/autoMotion/MotorDialog.tsx",
+        "line": 5
+      }
+    },
+    {
+      "name": "AutoState",
+      "kind": "TypeAliasDeclaration",
+      "fields": [
+        {
+          "name": "status",
+          "declaration": "status: number",
+          "callback": false,
+          "ownerType": "AutoState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/useAutoMotion.ts",
+            "line": 5
+          },
+          "description": "Último resultado y guardas del módulo; los getters pueden devolver una vista de este almacenamiento."
+        },
+        {
+          "name": "version",
+          "declaration": "version: number",
+          "callback": false,
+          "ownerType": "AutoState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/useAutoMotion.ts",
+            "line": 5
+          },
+          "description": "Dato de estado/configuración `version`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "kind",
+          "declaration": "kind: number",
+          "callback": false,
+          "ownerType": "AutoState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/useAutoMotion.ts",
+            "line": 5
+          },
+          "description": "Dato de estado/configuración `kind`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "state",
+          "declaration": "state: number",
+          "callback": false,
+          "ownerType": "AutoState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/useAutoMotion.ts",
+            "line": 5
+          },
+          "description": "Dato de estado/configuración `state`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "reason",
+          "declaration": "reason: number",
+          "callback": false,
+          "ownerType": "AutoState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/useAutoMotion.ts",
+            "line": 5
+          },
+          "description": "Dato de estado/configuración `reason`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "carMode",
+          "declaration": "carMode: number",
+          "callback": false,
+          "ownerType": "AutoState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/useAutoMotion.ts",
+            "line": 5
+          },
+          "description": "Dato de estado/configuración `carMode`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "missionId",
+          "declaration": "missionId: number",
+          "callback": false,
+          "ownerType": "AutoState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/useAutoMotion.ts",
+            "line": 5
+          },
+          "description": "Dato de estado/configuración `missionId`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "elapsedMs",
+          "declaration": "elapsedMs: number",
+          "callback": false,
+          "ownerType": "AutoState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/useAutoMotion.ts",
+            "line": 5
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "mpuReady",
+          "declaration": "mpuReady: boolean",
+          "callback": false,
+          "ownerType": "AutoState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/useAutoMotion.ts",
+            "line": 6
+          },
+          "description": "Dato de estado/configuración `mpuReady`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "mpuCalibrated",
+          "declaration": "mpuCalibrated: boolean",
+          "callback": false,
+          "ownerType": "AutoState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/useAutoMotion.ts",
+            "line": 6
+          },
+          "description": "Dato de estado/configuración `mpuCalibrated`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "motorCalibrated",
+          "declaration": "motorCalibrated: boolean",
+          "callback": false,
+          "ownerType": "AutoState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/useAutoMotion.ts",
+            "line": 6
+          },
+          "description": "Dato de estado/configuración `motorCalibrated`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "irCalibrated",
+          "declaration": "irCalibrated: boolean",
+          "callback": false,
+          "ownerType": "AutoState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/useAutoMotion.ts",
+            "line": 6
+          },
+          "description": "Dato de estado/configuración `irCalibrated`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "balanceActive",
+          "declaration": "balanceActive: boolean",
+          "callback": false,
+          "ownerType": "AutoState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/useAutoMotion.ts",
+            "line": 6
+          },
+          "description": "Dato de estado/configuración `balanceActive`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "balanceSettled",
+          "declaration": "balanceSettled: boolean",
+          "callback": false,
+          "ownerType": "AutoState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/useAutoMotion.ts",
+            "line": 6
+          },
+          "description": "Dato de estado/configuración `balanceSettled`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "safetyStop",
+          "declaration": "safetyStop: boolean",
+          "callback": false,
+          "ownerType": "AutoState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/useAutoMotion.ts",
+            "line": 6
+          },
+          "description": "Dato de estado/configuración `safetyStop`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "lineCalibrated",
+          "declaration": "lineCalibrated: boolean",
+          "callback": false,
+          "ownerType": "AutoState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/useAutoMotion.ts",
+            "line": 6
+          },
+          "description": "Dato de estado/configuración `lineCalibrated`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "objectsEnabled",
+          "declaration": "objectsEnabled: boolean",
+          "callback": false,
+          "ownerType": "AutoState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/useAutoMotion.ts",
+            "line": 7
+          },
+          "description": "Dato de estado/configuración `objectsEnabled`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "objectsFresh",
+          "declaration": "objectsFresh: boolean",
+          "callback": false,
+          "ownerType": "AutoState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/useAutoMotion.ts",
+            "line": 7
+          },
+          "description": "Dato de estado/configuración `objectsFresh`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "lineFresh",
+          "declaration": "lineFresh: boolean",
+          "callback": false,
+          "ownerType": "AutoState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/useAutoMotion.ts",
+            "line": 7
+          },
+          "description": "Dato de estado/configuración `lineFresh`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "xCm",
+          "declaration": "xCm: number",
+          "callback": false,
+          "ownerType": "AutoState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/useAutoMotion.ts",
+            "line": 7
+          },
+          "description": "Dato de estado/configuración `xCm`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "yCm",
+          "declaration": "yCm: number",
+          "callback": false,
+          "ownerType": "AutoState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/useAutoMotion.ts",
+            "line": 7
+          },
+          "description": "Dato de estado/configuración `yCm`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "goalXCm",
+          "declaration": "goalXCm: number",
+          "callback": false,
+          "ownerType": "AutoState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/useAutoMotion.ts",
+            "line": 7
+          },
+          "description": "Dato de estado/configuración `goalXCm`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "goalYCm",
+          "declaration": "goalYCm: number",
+          "callback": false,
+          "ownerType": "AutoState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/useAutoMotion.ts",
+            "line": 7
+          },
+          "description": "Dato de estado/configuración `goalYCm`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "yawDeg",
+          "declaration": "yawDeg: number",
+          "callback": false,
+          "ownerType": "AutoState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/useAutoMotion.ts",
+            "line": 7
+          },
+          "description": "Ángulo en grados; respetar eje y referencia de esta librería."
+        },
+        {
+          "name": "speedCmS",
+          "declaration": "speedCmS: number",
+          "callback": false,
+          "ownerType": "AutoState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/useAutoMotion.ts",
+            "line": 7
+          },
+          "description": "Dato de estado/configuración `speedCmS`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "percent",
+          "declaration": "percent: number",
+          "callback": false,
+          "ownerType": "AutoState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/useAutoMotion.ts",
+            "line": 8
+          },
+          "description": "Dato de estado/configuración `percent`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "rampMs",
+          "declaration": "rampMs: number",
+          "callback": false,
+          "ownerType": "AutoState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/useAutoMotion.ts",
+            "line": 8
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "measurementMs",
+          "declaration": "measurementMs: number",
+          "callback": false,
+          "ownerType": "AutoState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/useAutoMotion.ts",
+            "line": 8
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "pwmHz",
+          "declaration": "pwmHz: number",
+          "callback": false,
+          "ownerType": "AutoState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/useAutoMotion.ts",
+            "line": 8
+          },
+          "description": "Dato de estado/configuración `pwmHz`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "leftDutyMean",
+          "declaration": "leftDutyMean: number",
+          "callback": false,
+          "ownerType": "AutoState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/useAutoMotion.ts",
+            "line": 8
+          },
+          "description": "Dato de estado/configuración `leftDutyMean`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "rightDutyMean",
+          "declaration": "rightDutyMean: number",
+          "callback": false,
+          "ownerType": "AutoState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/useAutoMotion.ts",
+            "line": 8
+          },
+          "description": "Dato de estado/configuración `rightDutyMean`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "leftDutyMax",
+          "declaration": "leftDutyMax: number",
+          "callback": false,
+          "ownerType": "AutoState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/useAutoMotion.ts",
+            "line": 8
+          },
+          "description": "Dato de estado/configuración `leftDutyMax`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "rightDutyMax",
+          "declaration": "rightDutyMax: number",
+          "callback": false,
+          "ownerType": "AutoState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/useAutoMotion.ts",
+            "line": 8
+          },
+          "description": "Dato de estado/configuración `rightDutyMax`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "leftDutySeconds",
+          "declaration": "leftDutySeconds: number",
+          "callback": false,
+          "ownerType": "AutoState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/useAutoMotion.ts",
+            "line": 9
+          },
+          "description": "Dato de estado/configuración `leftDutySeconds`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "rightDutySeconds",
+          "declaration": "rightDutySeconds: number",
+          "callback": false,
+          "ownerType": "AutoState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/useAutoMotion.ts",
+            "line": 9
+          },
+          "description": "Dato de estado/configuración `rightDutySeconds`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "leftPwmCycles",
+          "declaration": "leftPwmCycles: number",
+          "callback": false,
+          "ownerType": "AutoState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/useAutoMotion.ts",
+            "line": 9
+          },
+          "description": "Dato de estado/configuración `leftPwmCycles`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "rightPwmCycles",
+          "declaration": "rightPwmCycles: number",
+          "callback": false,
+          "ownerType": "AutoState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/useAutoMotion.ts",
+            "line": 9
+          },
+          "description": "Dato de estado/configuración `rightPwmCycles`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "leftForwardMs",
+          "declaration": "leftForwardMs: number",
+          "callback": false,
+          "ownerType": "AutoState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/useAutoMotion.ts",
+            "line": 10
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "leftReverseMs",
+          "declaration": "leftReverseMs: number",
+          "callback": false,
+          "ownerType": "AutoState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/useAutoMotion.ts",
+            "line": 10
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "rightForwardMs",
+          "declaration": "rightForwardMs: number",
+          "callback": false,
+          "ownerType": "AutoState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/useAutoMotion.ts",
+            "line": 10
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "rightReverseMs",
+          "declaration": "rightReverseMs: number",
+          "callback": false,
+          "ownerType": "AutoState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/useAutoMotion.ts",
+            "line": 10
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "pointCount",
+          "declaration": "pointCount: number",
+          "callback": false,
+          "ownerType": "AutoState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/useAutoMotion.ts",
+            "line": 10
+          },
+          "description": "Dato de estado/configuración `pointCount`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "phase",
+          "declaration": "phase: number",
+          "callback": false,
+          "ownerType": "AutoState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/useAutoMotion.ts",
+            "line": 10
+          },
+          "description": "Dato de estado/configuración `phase`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "resultValid",
+          "declaration": "resultValid: boolean",
+          "callback": false,
+          "ownerType": "AutoState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/useAutoMotion.ts",
+            "line": 10
+          },
+          "description": "Dato de estado/configuración `resultValid`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "revision",
+          "declaration": "revision: number",
+          "callback": false,
+          "ownerType": "AutoState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/useAutoMotion.ts",
+            "line": 10
+          },
+          "description": "Dato de estado/configuración `revision`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "yawErrorMax",
+          "declaration": "yawErrorMax: number",
+          "callback": false,
+          "ownerType": "AutoState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/useAutoMotion.ts",
+            "line": 10
+          },
+          "description": "Dato de estado/configuración `yawErrorMax`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/autoMotion/useAutoMotion.ts",
+        "line": 4
+      }
+    },
+    {
+      "name": "MotorPoint",
+      "kind": "TypeAliasDeclaration",
+      "fields": [
+        {
+          "name": "percent",
+          "declaration": "percent: number",
+          "callback": false,
+          "ownerType": "MotorPoint",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/useAutoMotion.ts",
+            "line": 12
+          },
+          "description": "Dato de estado/configuración `percent`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "speedCmS",
+          "declaration": "speedCmS: number",
+          "callback": false,
+          "ownerType": "MotorPoint",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/useAutoMotion.ts",
+            "line": 12
+          },
+          "description": "Dato de estado/configuración `speedCmS`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "rampMs",
+          "declaration": "rampMs: number",
+          "callback": false,
+          "ownerType": "MotorPoint",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/useAutoMotion.ts",
+            "line": 12
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "runs",
+          "declaration": "runs: number",
+          "callback": false,
+          "ownerType": "MotorPoint",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/useAutoMotion.ts",
+            "line": 12
+          },
+          "description": "Dato de estado/configuración `runs`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/autoMotion/useAutoMotion.ts",
+        "line": 12
+      }
+    },
+    {
+      "name": "MotorProfile",
+      "kind": "TypeAliasDeclaration",
+      "fields": [
+        {
+          "name": "status",
+          "declaration": "status: number",
+          "callback": false,
+          "ownerType": "MotorProfile",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/useAutoMotion.ts",
+            "line": 13
+          },
+          "description": "Último resultado y guardas del módulo; los getters pueden devolver una vista de este almacenamiento."
+        },
+        {
+          "name": "version",
+          "declaration": "version: number",
+          "callback": false,
+          "ownerType": "MotorProfile",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/useAutoMotion.ts",
+            "line": 13
+          },
+          "description": "Dato de estado/configuración `version`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "pointCount",
+          "declaration": "pointCount: number",
+          "callback": false,
+          "ownerType": "MotorProfile",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/useAutoMotion.ts",
+            "line": 13
+          },
+          "description": "Dato de estado/configuración `pointCount`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "revision",
+          "declaration": "revision: number",
+          "callback": false,
+          "ownerType": "MotorProfile",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/useAutoMotion.ts",
+            "line": 13
+          },
+          "description": "Dato de estado/configuración `revision`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "irCalibrated",
+          "declaration": "irCalibrated: boolean",
+          "callback": false,
+          "ownerType": "MotorProfile",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/useAutoMotion.ts",
+            "line": 13
+          },
+          "description": "Dato de estado/configuración `irCalibrated`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "points",
+          "declaration": "points: MotorPoint[]",
+          "callback": false,
+          "ownerType": "MotorProfile",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/autoMotion/useAutoMotion.ts",
+            "line": 13
+          },
+          "description": "Dato de estado/configuración `points`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/autoMotion/useAutoMotion.ts",
+        "line": 13
+      }
+    },
+    {
+      "name": "AutoDevice",
+      "kind": "TypeAliasDeclaration",
+      "type": "ReturnType<typeof useAutoMotion>",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/autoMotion/useAutoMotion.ts",
+        "line": 74
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "ControlNavigation",
+      "displayName": "ControlNavigation",
+      "signature": "ControlNavigation({ view, onModeChange }: { view: ControlView; onModeChange?: (view: \"free\" | \"goto\") => void; }): inferred-by-TypeScript",
+      "line": 4,
+      "endLine": 20,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useNavigate"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/autoMotion/ControlNavigation.tsx",
+        "line": 4
+      },
+      "description": "Adapta la llamada a `useNavigate` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ControlToolbar",
+      "displayName": "ControlToolbar",
+      "signature": "ControlToolbar({control,recommended=\"IDLE\",isSimulating=false,onStopSimulation}: { control:MotionController; recommended?:\"IDLE\"|\"GOTO\"; isSimulating?:boolean; onStopSimulation?:()=>void; }): inferred-by-TypeScript",
+      "line": 7,
+      "endLine": 20,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useCarMode",
+        "useState"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/autoMotion/ControlToolbar.tsx",
+        "line": 7
+      },
+      "description": "Coordina `useCarMode`, `useState` para GOTO y calibración de motores Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "GotoPanel",
+      "displayName": "GotoPanel",
+      "signature": "GotoPanel({device,control}: {device:AutoDevice;control:MotionController}): inferred-by-TypeScript",
+      "line": 10,
+      "endLine": 44,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "(s.elapsedMs/1000).toFixed",
+        "Math.hypot",
+        "Number.isFinite",
+        "autoReason",
+        "s.xCm.toFixed",
+        "s.yCm.toFixed",
+        "s.yawDeg.toFixed",
+        "useEffect",
+        "useRef",
+        "useState"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/autoMotion/GotoPanel.tsx",
+        "line": 10
+      },
+      "description": "Edita objetivo relativo y solicita inicio/cancelación de recorrido.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "MotionReadiness",
+      "displayName": "MotionReadiness",
+      "signature": "MotionReadiness({auto,mode,line,onMotors,onLine,control,calibration=false}: {auto:AutoDevice;mode:\"GOTO\"|\"FOLLOW\"; line?:LineDeviceState|null;onMotors?:()=>void;onLine?:()=>void;control?:MotionController;calibration?:boolean}): inferred-by-TypeScript",
+      "line": 14,
+      "endLine": 69,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "line.pattern.toString",
+        "line.pattern.toString(2).padStart",
+        "useIrEmitters",
+        "useMotionControl",
+        "useNavigate",
+        "useState"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/autoMotion/MotionReadiness.tsx",
+        "line": 14
+      },
+      "description": "Coordina `line.pattern.toString`, `line.pattern.toString(2).padStart`, `useIrEmitters` para GOTO y calibración de motores Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "MotorCalibration",
+      "displayName": "MotorCalibration",
+      "signature": "MotorCalibration({device,motorControl}: {device?:AutoDevice;motorControl?:MotionController}): inferred-by-TypeScript",
+      "line": 15,
+      "endLine": 116,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "([[\"Tiempo del metro\",`${s.measurementMs} ms`],[\"Velocidad media\",`${s.speedCmS.toFixed(2)} cm/s`],[\"PWM medio izq. / der.\",`${s.leftDutyMean.toFixed(1)} / ${s.rightDutyMean.toFixed(1)} %`],[\"Ciclos PWM izq. / der.\",`${s.leftPwmCycles.toFixed(1)} / ${s.rightPwmCycles.toFixed(1)}`],[\"Frecuencia PWM\",`${s.pwmHz.toFixed(2)} Hz`],[\"Desvío de rumbo\",`${s.yawErrorMax.toFixed(1)}°`]] as const).map",
+        "(auto.profile?.points??[]).map",
+        "Math.floor",
+        "Number.isFinite",
+        "Number.isInteger",
+        "[0,3].includes",
+        "auto.profile.points.map",
+        "auto.profile.points.map(p=>`${30+p.percent/20*350},${135-p.speedCmS/Math.max(...auto.profile!.points.map(p=>p.speedCmS),1)*110}`).join",
+        "autoReason",
+        "curveLevels.every",
+        "feedback.startsWith",
+        "levels.split",
+        "levels.split(\",\").map",
+        "s.leftDutyMean.toFixed",
+        "s.leftPwmCycles.toFixed",
+        "s.pwmHz.toFixed",
+        "s.rightDutyMean.toFixed",
+        "s.rightPwmCycles.toFixed",
+        "s.speedCmS.toFixed",
+        "s.yawErrorMax.toFixed",
+        "statistics.map",
+        "useAutoMotion",
+        "useEffect",
+        "useMotionControl",
+        "useNavigate",
+        "useRef",
+        "useState"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/autoMotion/MotorCalibration.tsx",
+        "line": 15
+      },
+      "description": "Coordina `([[\"Tiempo del metro\",`${s.measurementMs} ms`],[\"Velocidad media\",`${s.speedCmS.toFixed(2)} cm/s`],[\"PWM medio izq. / der.\",`${s.leftDutyMean.toFixed(1)} / ${s.rightDutyMean.toFixed(1)} %`],[\"Ciclos PWM izq. / der.\",`${s.leftPwmCycles.toFixed(1)} / ${s.rightPwmCycles.toFixed(1)}`],[\"Frecuencia PWM\",`${s.pwmHz.toFixed(2)} Hz`],[\"Desvío de rumbo\",`${s.yawErrorMax.toFixed(1)}°`]] as const).map`, `(auto.profile?.points??[]).map`, `Math.floor` para GOTO y calibración de motores Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "MotorCalibrationSection",
+      "displayName": "MotorCalibrationSection",
+      "signature": "MotorCalibrationSection(): inferred-by-TypeScript",
+      "line": 9,
+      "endLine": 19,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "search.get",
+        "useAutoMotion",
+        "useMotionControl",
+        "useSearchParams"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/MotorCalibrationSection.tsx",
+        "line": 9
+      },
+      "description": "Coordina `search.get`, `useAutoMotion`, `useMotionControl` para GOTO y calibración de motores Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "MotorDialog",
+      "displayName": "MotorDialog",
+      "signature": "MotorDialog({isOpen,onClose,title,description,icon,kicker=\"Control · AutoMicro\",badge,footer,children,size=\"compact\",closeDisabled=false,closeOnOverlayClick=true}: { isOpen:boolean;onClose:()=>void;title:string;description:string;icon:MotorDialogIcon;kicker?:string; badge?:ReactNode;footer?:ReactNode;children:ReactNode;size?:\"compact\"|\"wide\";closeDisabled?:boolean;closeOnOverlayClick?:boolean; }): inferred-by-TypeScript",
+      "line": 18,
+      "endLine": 32,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useId"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/autoMotion/MotorDialog.tsx",
+        "line": 18
+      },
+      "description": "Adapta la llamada a `useId` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "autoReason",
+      "displayName": "autoReason",
+      "signature": "autoReason(n: number): inferred-by-TypeScript",
+      "line": 14,
+      "endLine": 18,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/autoMotion/useAutoMotion.ts",
+        "line": 14
+      },
+      "description": "Operación auto Reason de GOTO y calibración de motores Web; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "destinationDraft",
+      "displayName": "destinationDraft",
+      "signature": "destinationDraft(): {x:number;y:number}",
+      "line": 9,
+      "endLine": 9,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "JSON.parse",
+        "Number.isFinite",
+        "sessionStorage.getItem"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/autoMotion/GotoPanel.tsx",
+        "line": 9
+      },
+      "description": "Coordina `JSON.parse`, `Number.isFinite`, `sessionStorage.getItem` para GOTO y calibración de motores Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "downloadMotorJson",
+      "displayName": "downloadMotorJson",
+      "signature": "downloadMotorJson(value: unknown): inferred-by-TypeScript",
+      "line": 22,
+      "endLine": 25,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "JSON.stringify",
+        "URL.createObjectURL",
+        "document.createElement",
+        "link.click",
+        "setTimeout"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/autoMotion/motorCodec.ts",
+        "line": 22
+      },
+      "description": "Coordina `JSON.stringify`, `URL.createObjectURL`, `document.createElement` para GOTO y calibración de motores Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "history",
+      "displayName": "history",
+      "signature": "history(): Run[]",
+      "line": 12,
+      "endLine": 12,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Array.isArray",
+        "JSON.parse",
+        "localStorage.getItem"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/autoMotion/MotorCalibration.tsx",
+        "line": 12
+      },
+      "description": "Coordina `Array.isArray`, `JSON.parse`, `localStorage.getItem` para GOTO y calibración de motores Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "motorDraft",
+      "displayName": "motorDraft",
+      "signature": "motorDraft(): MotorDraft",
+      "line": 14,
+      "endLine": 14,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "JSON.parse",
+        "[\"percent\",\"ramp\",\"timeout\",\"repeats\",\"trial\"].every",
+        "sessionStorage.getItem"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/autoMotion/MotorCalibration.tsx",
+        "line": 14
+      },
+      "description": "Coordina `JSON.parse`, `[\"percent\",\"ramp\",\"timeout\",\"repeats\",\"trial\"].every`, `sessionStorage.getItem` para GOTO y calibración de motores Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "packMotorProfile",
+      "displayName": "packMotorProfile",
+      "signature": "packMotorProfile(p: MotorProfile): number[]",
+      "line": 4,
+      "endLine": 9,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Array.from",
+        "Array.isArray",
+        "p.points.forEach"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/autoMotion/motorCodec.ts",
+        "line": 4
+      },
+      "description": "Coordina `Array.from`, `Array.isArray`, `p.points.forEach` para GOTO y calibración de motores Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "packStoredIr",
+      "displayName": "packStoredIr",
+      "signature": "packStoredIr(): number[]",
+      "line": 10,
+      "endLine": 21,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Array.from",
+        "IR_OBJECT_SENSOR_KEYS.forEach",
+        "loadStoredIrCalibrationProfile"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/autoMotion/motorCodec.ts",
+        "line": 10
+      },
+      "description": "Coordina `Array.from`, `IR_OBJECT_SENSOR_KEYS.forEach`, `loadStoredIrCalibrationProfile` para GOTO y calibración de motores Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "parse",
+      "displayName": "parse",
+      "signature": "parse(value: unknown): AutoState",
+      "line": 19,
+      "endLine": 25,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Number.isInteger",
+        "[\"mpuReady\",\"mpuCalibrated\",\"motorCalibrated\",\"irCalibrated\",\"balanceActive\",\"balanceSettled\",\"safetyStop\"].every",
+        "[0,1].includes"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/autoMotion/useAutoMotion.ts",
+        "line": 19
+      },
+      "description": "Coordina `Number.isInteger`, `[\"mpuReady\",\"mpuCalibrated\",\"motorCalibrated\",\"irCalibrated\",\"balanceActive\",\"balanceSettled\",\"safetyStop\"].every`, `[0,1].includes` para GOTO y calibración de motores Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "useAutoMotion",
+      "displayName": "useAutoMotion",
+      "signature": "useAutoMotion(active: inferred-by-TypeScript): inferred-by-TypeScript",
+      "line": 26,
+      "endLine": 73,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "[1,2].includes",
+        "useCallback",
+        "useEffect",
+        "useRef",
+        "useState",
+        "useUser",
+        "useWebSocket"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/autoMotion/useAutoMotion.ts",
+        "line": 26
+      },
+      "description": "Consulta/controla operación AutoMotion y conserva estado confirmado de requests.",
+      "descriptionOrigin": "editorial"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "MotionReadiness.showDialog",
+      "displayName": "showDialog",
+      "signature": "MotionReadiness.showDialog(next: NonNullable<typeof dialog>): inferred-by-TypeScript",
+      "line": 18,
+      "endLine": 18,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "setDetailDialog",
+        "setDialog"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/autoMotion/MotionReadiness.tsx",
+        "line": 18
+      },
+      "description": "Coordina `setDetailDialog`, `setDialog` para GOTO y calibración de motores Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "MotorCalibration.importFile",
+      "displayName": "importFile",
+      "signature": "MotorCalibration.importFile(file: File|undefined): inferred-by-TypeScript",
+      "line": 47,
+      "endLine": 55,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "JSON.parse",
+        "auto.send",
+        "file.text",
+        "packMotorProfile",
+        "setFeedback"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/autoMotion/MotorCalibration.tsx",
+        "line": 47
+      },
+      "description": "Coordina `JSON.parse`, `auto.send`, `file.text` para GOTO y calibración de motores Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "MotorCalibration.save",
+      "displayName": "save",
+      "signature": "MotorCalibration.save(): inferred-by-TypeScript",
+      "line": 38,
+      "endLine": 43,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "auto.send",
+        "control.run",
+        "setFeedback",
+        "setTrial"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/autoMotion/MotorCalibration.tsx",
+        "line": 38
+      },
+      "description": "Coordina `auto.send`, `control.run`, `setFeedback` para GOTO y calibración de motores Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "MotorCalibration.transferIr",
+      "displayName": "transferIr",
+      "signature": "MotorCalibration.transferIr(): inferred-by-TypeScript",
+      "line": 44,
+      "endLine": 46,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "auto.send",
+        "packStoredIr",
+        "setFeedback"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/autoMotion/MotorCalibration.tsx",
+        "line": 44
+      },
+      "description": "Coordina `auto.send`, `packStoredIr`, `setFeedback` para GOTO y calibración de motores Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "useAutoMotion.poll",
+      "displayName": "poll",
+      "signature": "useAutoMotion.poll(): inferred-by-TypeScript",
+      "line": 47,
+      "endLine": 52,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "refresh",
+        "refreshProfile",
+        "setError",
+        "setState",
+        "setTimeout"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/autoMotion/useAutoMotion.ts",
+        "line": 47
+      },
+      "description": "Coordina `refresh`, `refreshProfile`, `setError` para GOTO y calibración de motores Web.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "useAutoMotion.send",
+      "displayName": "send",
+      "signature": "useAutoMotion.send(name: string, args: Record<string,unknown>): inferred-by-TypeScript",
+      "line": 55,
+      "endLine": 71,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "autoReason",
+        "name.endsWith",
+        "parse",
+        "refresh",
+        "refreshProfile",
+        "request",
+        "setError",
+        "setPending",
+        "setProfile",
+        "setState"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/autoMotion/useAutoMotion.ts",
+        "line": 55
+      },
+      "description": "Coordina `autoReason`, `name.endsWith`, `parse` para GOTO y calibración de motores Web.",
+      "descriptionOrigin": "structural"
+    }
+  ],
+  "hooks": [
+    {
+      "callee": "useNavigate",
+      "scope": "ControlNavigation",
+      "line": 7,
+      "arguments": 0,
+      "path": "src/features/autoMotion/ControlNavigation.tsx"
+    },
+    {
+      "callee": "useCarMode",
+      "scope": "ControlToolbar",
+      "line": 10,
+      "arguments": 0,
+      "path": "src/features/autoMotion/ControlToolbar.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "ControlToolbar",
+      "line": 10,
+      "arguments": 1,
+      "path": "src/features/autoMotion/ControlToolbar.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "GotoPanel",
+      "line": 11,
+      "arguments": 1,
+      "path": "src/features/autoMotion/GotoPanel.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "GotoPanel",
+      "line": 11,
+      "arguments": 1,
+      "path": "src/features/autoMotion/GotoPanel.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "GotoPanel",
+      "line": 11,
+      "arguments": 1,
+      "path": "src/features/autoMotion/GotoPanel.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "GotoPanel",
+      "line": 11,
+      "arguments": 1,
+      "path": "src/features/autoMotion/GotoPanel.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "GotoPanel",
+      "line": 12,
+      "arguments": 2,
+      "path": "src/features/autoMotion/GotoPanel.tsx"
+    },
+    {
+      "callee": "useNavigate",
+      "scope": "MotionReadiness",
+      "line": 16,
+      "arguments": 0,
+      "path": "src/features/autoMotion/MotionReadiness.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "MotionReadiness",
+      "line": 16,
+      "arguments": 1,
+      "path": "src/features/autoMotion/MotionReadiness.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "MotionReadiness",
+      "line": 17,
+      "arguments": 1,
+      "path": "src/features/autoMotion/MotionReadiness.tsx"
+    },
+    {
+      "callee": "useIrEmitters",
+      "scope": "MotionReadiness",
+      "line": 19,
+      "arguments": 0,
+      "path": "src/features/autoMotion/MotionReadiness.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "MotionReadiness",
+      "line": 19,
+      "arguments": 1,
+      "path": "src/features/autoMotion/MotionReadiness.tsx"
+    },
+    {
+      "callee": "useMotionControl",
+      "scope": "MotionReadiness",
+      "line": 20,
+      "arguments": 1,
+      "path": "src/features/autoMotion/MotionReadiness.tsx"
+    },
+    {
+      "callee": "useAutoMotion",
+      "scope": "MotorCalibration",
+      "line": 16,
+      "arguments": 1,
+      "path": "src/features/autoMotion/MotorCalibration.tsx"
+    },
+    {
+      "callee": "useMotionControl",
+      "scope": "MotorCalibration",
+      "line": 16,
+      "arguments": 1,
+      "path": "src/features/autoMotion/MotorCalibration.tsx"
+    },
+    {
+      "callee": "useNavigate",
+      "scope": "MotorCalibration",
+      "line": 16,
+      "arguments": 0,
+      "path": "src/features/autoMotion/MotorCalibration.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "MotorCalibration",
+      "line": 17,
+      "arguments": 1,
+      "path": "src/features/autoMotion/MotorCalibration.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "MotorCalibration",
+      "line": 18,
+      "arguments": 1,
+      "path": "src/features/autoMotion/MotorCalibration.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "MotorCalibration",
+      "line": 18,
+      "arguments": 1,
+      "path": "src/features/autoMotion/MotorCalibration.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "MotorCalibration",
+      "line": 18,
+      "arguments": 1,
+      "path": "src/features/autoMotion/MotorCalibration.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "MotorCalibration",
+      "line": 18,
+      "arguments": 1,
+      "path": "src/features/autoMotion/MotorCalibration.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "MotorCalibration",
+      "line": 19,
+      "arguments": 1,
+      "path": "src/features/autoMotion/MotorCalibration.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "MotorCalibration",
+      "line": 19,
+      "arguments": 1,
+      "path": "src/features/autoMotion/MotorCalibration.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "MotorCalibration",
+      "line": 19,
+      "arguments": 1,
+      "path": "src/features/autoMotion/MotorCalibration.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "MotorCalibration",
+      "line": 19,
+      "arguments": 1,
+      "path": "src/features/autoMotion/MotorCalibration.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "MotorCalibration",
+      "line": 19,
+      "arguments": 1,
+      "path": "src/features/autoMotion/MotorCalibration.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "MotorCalibration",
+      "line": 20,
+      "arguments": 1,
+      "path": "src/features/autoMotion/MotorCalibration.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "MotorCalibration",
+      "line": 20,
+      "arguments": 1,
+      "path": "src/features/autoMotion/MotorCalibration.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "MotorCalibration",
+      "line": 20,
+      "arguments": 1,
+      "path": "src/features/autoMotion/MotorCalibration.tsx"
+    },
+    {
+      "callee": "useState",
+      "scope": "MotorCalibration",
+      "line": 21,
+      "arguments": 1,
+      "path": "src/features/autoMotion/MotorCalibration.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "MotorCalibration",
+      "line": 22,
+      "arguments": 2,
+      "path": "src/features/autoMotion/MotorCalibration.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "MotorCalibration",
+      "line": 30,
+      "arguments": 2,
+      "path": "src/features/autoMotion/MotorCalibration.tsx"
+    },
+    {
+      "callee": "useId",
+      "scope": "MotorDialog",
+      "line": 22,
+      "arguments": 0,
+      "path": "src/features/autoMotion/MotorDialog.tsx"
+    },
+    {
+      "callee": "useWebSocket",
+      "scope": "useAutoMotion",
+      "line": 27,
+      "arguments": 0,
+      "path": "src/features/autoMotion/useAutoMotion.ts"
+    },
+    {
+      "callee": "useUser",
+      "scope": "useAutoMotion",
+      "line": 27,
+      "arguments": 0,
+      "path": "src/features/autoMotion/useAutoMotion.ts"
+    },
+    {
+      "callee": "useState",
+      "scope": "useAutoMotion",
+      "line": 29,
+      "arguments": 1,
+      "path": "src/features/autoMotion/useAutoMotion.ts"
+    },
+    {
+      "callee": "useState",
+      "scope": "useAutoMotion",
+      "line": 29,
+      "arguments": 1,
+      "path": "src/features/autoMotion/useAutoMotion.ts"
+    },
+    {
+      "callee": "useState",
+      "scope": "useAutoMotion",
+      "line": 30,
+      "arguments": 1,
+      "path": "src/features/autoMotion/useAutoMotion.ts"
+    },
+    {
+      "callee": "useState",
+      "scope": "useAutoMotion",
+      "line": 30,
+      "arguments": 1,
+      "path": "src/features/autoMotion/useAutoMotion.ts"
+    },
+    {
+      "callee": "useRef",
+      "scope": "useAutoMotion",
+      "line": 31,
+      "arguments": 1,
+      "path": "src/features/autoMotion/useAutoMotion.ts"
+    },
+    {
+      "callee": "useRef",
+      "scope": "useAutoMotion",
+      "line": 31,
+      "arguments": 1,
+      "path": "src/features/autoMotion/useAutoMotion.ts"
+    },
+    {
+      "callee": "useRef",
+      "scope": "useAutoMotion",
+      "line": 31,
+      "arguments": 1,
+      "path": "src/features/autoMotion/useAutoMotion.ts"
+    },
+    {
+      "callee": "useRef",
+      "scope": "useAutoMotion",
+      "line": 31,
+      "arguments": 1,
+      "path": "src/features/autoMotion/useAutoMotion.ts"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "useAutoMotion",
+      "line": 32,
+      "arguments": 2,
+      "path": "src/features/autoMotion/useAutoMotion.ts"
+    },
+    {
+      "callee": "useCallback",
+      "scope": "useAutoMotion",
+      "line": 38,
+      "arguments": 2,
+      "path": "src/features/autoMotion/useAutoMotion.ts"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "useAutoMotion",
+      "line": 44,
+      "arguments": 2,
+      "path": "src/features/autoMotion/useAutoMotion.ts"
+    },
+    {
+      "callee": "useAutoMotion",
+      "scope": "MotorCalibrationSection",
+      "line": 10,
+      "arguments": 0,
+      "path": "src/pages/MotorCalibrationSection.tsx"
+    },
+    {
+      "callee": "useMotionControl",
+      "scope": "MotorCalibrationSection",
+      "line": 10,
+      "arguments": 0,
+      "path": "src/pages/MotorCalibrationSection.tsx"
+    },
+    {
+      "callee": "useSearchParams",
+      "scope": "MotorCalibrationSection",
+      "line": 10,
+      "arguments": 0,
+      "path": "src/pages/MotorCalibrationSection.tsx"
+    }
+  ]
+}

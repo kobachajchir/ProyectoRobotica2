@@ -1,0 +1,995 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "web:module/src/features/docs/docsContent.ts",
+  "slug": "documentation-ui",
+  "title": "Contenido Docs y selector de destino",
+  "target": "web",
+  "kind": "integración",
+  "status": "source-documented",
+  "snapshotDate": "2026-10-20",
+  "verification": "not-run-user-instruction",
+  "responsibility": "Organiza temas y variantes documentales por destino y presenta navegación de Docs.",
+  "scope": "Modelo actual F4/Web y selector; la fuente autocontenida AMDOC deberá incorporar ESP con cobertura real.",
+  "state": "Destino/tema seleccionados, query/ruta y contenido son estado de navegación; no son configuración del robot.",
+  "modularity": "Consumidor React de contenido; la metodología/IDs y hallazgos viven en Contracts y no deben duplicarse a mano sin procedencia.",
+  "lifecycle": [
+    "Resolver destino/tema desde navegación y construir variante.",
+    "Para añadir ESP adaptar unión, contenido y selector coherentemente, conservando URL/volver."
+  ],
+  "interactions": [
+    "Los JSON publicados por módulo permiten integrar contenido y enlaces de hallazgo sin releer firmware.",
+    "Selector de tres opciones/píldora móvil y divisor se registran para porteo posterior."
+  ],
+  "limitations": [
+    "La generación documental de esta entrega no modifica React/CSS de Docs.",
+    "No marcar como documentado un destino solo por mostrar su botón."
+  ],
+  "relationships": [],
+  "findings": [
+    "AMDOC-WEB-001"
+  ],
+  "files": [
+    {
+      "rootId": "web",
+      "path": "src/features/docs/DocsFirmwareSelector.tsx",
+      "sha256": "b36aee2ab79ef63032500a331b4053621a5856b8df55f54e4e3618d7c2ecc532",
+      "imports": [
+        "./docsContent"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/features/docs/docsCatalog.tsx",
+      "sha256": "ffb57ae59be57fd21751269f2ee4a7ef2ab262b447e69f193d3ed64410504118",
+      "imports": [
+        "./docsContent",
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/features/docs/docsContent.ts",
+      "sha256": "ac9ec651f81d01e58996736fe6b3808f0be6823da03d5f41853138c550c1e1d2",
+      "imports": [],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/pages/DocTopicSection.tsx",
+      "sha256": "40dbc22ae03f084b4f91c3ecb131a71d02ed89307355b565be6b406d55c8d140",
+      "imports": [
+        "../components/PageHeader",
+        "../features/docs/DocsFirmwareSelector",
+        "../features/docs/docsCatalog",
+        "../features/docs/docsContent",
+        "react-router-dom"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/pages/DocsSection.tsx",
+      "sha256": "6116c87045bfce8b460366ad3d57c7f3ae2c1e7b52a685f46abfdaecd5378267",
+      "imports": [
+        "../components/PageHeader",
+        "../features/docs/DocsFirmwareSelector",
+        "../features/docs/docsCatalog",
+        "../features/docs/docsContent",
+        "react-router-dom"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    }
+  ],
+  "types": [
+    {
+      "name": "DocsFirmwareSelectorProps",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "activeTarget",
+          "declaration": "activeTarget: DocFirmwareTarget",
+          "callback": false,
+          "ownerType": "DocsFirmwareSelectorProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/docs/DocsFirmwareSelector.tsx",
+            "line": 9
+          },
+          "description": "Dato de estado/configuración `activeTarget`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "onChange",
+          "declaration": "onChange: (target: DocFirmwareTarget) => void",
+          "callback": true,
+          "ownerType": "DocsFirmwareSelectorProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/docs/DocsFirmwareSelector.tsx",
+            "line": 10
+          },
+          "description": "Operación on Change de Contenido Docs y selector de destino; semántica fina pendiente de ampliación."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/docs/DocsFirmwareSelector.tsx",
+        "line": 8
+      }
+    },
+    {
+      "name": "DocFirmwareTarget",
+      "kind": "TypeAliasDeclaration",
+      "type": "\"web\" | \"f4\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/docs/docsContent.ts",
+        "line": 1
+      }
+    },
+    {
+      "name": "DocTopicSlug",
+      "kind": "TypeAliasDeclaration",
+      "type": "| \"motors\" | \"oled\" | \"mpu\" | \"ir\" | \"menu-system\" | \"render-3d\" | \"pcb\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/docs/docsContent.ts",
+        "line": 3
+      }
+    },
+    {
+      "name": "DocTopicSection",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "title",
+          "declaration": "title: string",
+          "callback": false,
+          "ownerType": "DocTopicSection",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/docs/docsContent.ts",
+            "line": 13
+          },
+          "description": "Dato de estado/configuración `title`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "body",
+          "declaration": "body: string",
+          "callback": false,
+          "ownerType": "DocTopicSection",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/docs/docsContent.ts",
+            "line": 14
+          },
+          "description": "Dato de estado/configuración `body`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "bullets",
+          "declaration": "bullets: string[]",
+          "callback": false,
+          "ownerType": "DocTopicSection",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/docs/docsContent.ts",
+            "line": 15
+          },
+          "description": "Dato de estado/configuración `bullets`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/docs/docsContent.ts",
+        "line": 12
+      }
+    },
+    {
+      "name": "DocFlowStep",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "layer",
+          "declaration": "layer: string",
+          "callback": false,
+          "ownerType": "DocFlowStep",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/docs/docsContent.ts",
+            "line": 19
+          },
+          "description": "Dato de estado/configuración `layer`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "title",
+          "declaration": "title: string",
+          "callback": false,
+          "ownerType": "DocFlowStep",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/docs/docsContent.ts",
+            "line": 20
+          },
+          "description": "Dato de estado/configuración `title`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "detail",
+          "declaration": "detail: string",
+          "callback": false,
+          "ownerType": "DocFlowStep",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/docs/docsContent.ts",
+            "line": 21
+          },
+          "description": "Dato de estado/configuración `detail`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "reference",
+          "declaration": "reference: string",
+          "callback": false,
+          "ownerType": "DocFlowStep",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/docs/docsContent.ts",
+            "line": 22
+          },
+          "description": "Dato de estado/configuración `reference`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/docs/docsContent.ts",
+        "line": 18
+      }
+    },
+    {
+      "name": "DocMediaItem",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "kind",
+          "declaration": "kind: \"captura\" | \"diagrama\" | \"foto\"",
+          "callback": false,
+          "ownerType": "DocMediaItem",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/docs/docsContent.ts",
+            "line": 26
+          },
+          "description": "Dato de estado/configuración `kind`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "title",
+          "declaration": "title: string",
+          "callback": false,
+          "ownerType": "DocMediaItem",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/docs/docsContent.ts",
+            "line": 27
+          },
+          "description": "Dato de estado/configuración `title`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "caption",
+          "declaration": "caption: string",
+          "callback": false,
+          "ownerType": "DocMediaItem",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/docs/docsContent.ts",
+            "line": 28
+          },
+          "description": "Dato de estado/configuración `caption`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "status",
+          "declaration": "status: \"disponible\" | \"planificada\"",
+          "callback": false,
+          "ownerType": "DocMediaItem",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/docs/docsContent.ts",
+            "line": 29
+          },
+          "description": "Último resultado y guardas del módulo; los getters pueden devolver una vista de este almacenamiento."
+        },
+        {
+          "name": "href",
+          "declaration": "href?: string",
+          "callback": false,
+          "ownerType": "DocMediaItem",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/docs/docsContent.ts",
+            "line": 30
+          },
+          "description": "Dato de estado/configuración `href`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "imageSrc",
+          "declaration": "imageSrc?: string",
+          "callback": false,
+          "ownerType": "DocMediaItem",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/docs/docsContent.ts",
+            "line": 31
+          },
+          "description": "Dato de estado/configuración `imageSrc`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/docs/docsContent.ts",
+        "line": 25
+      }
+    },
+    {
+      "name": "DocReference",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "label",
+          "declaration": "label: string",
+          "callback": false,
+          "ownerType": "DocReference",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/docs/docsContent.ts",
+            "line": 35
+          },
+          "description": "Dato de estado/configuración `label`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "path",
+          "declaration": "path: string",
+          "callback": false,
+          "ownerType": "DocReference",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/docs/docsContent.ts",
+            "line": 36
+          },
+          "description": "Dato de estado/configuración `path`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "note",
+          "declaration": "note: string",
+          "callback": false,
+          "ownerType": "DocReference",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/docs/docsContent.ts",
+            "line": 37
+          },
+          "description": "Dato de estado/configuración `note`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/docs/docsContent.ts",
+        "line": 34
+      }
+    },
+    {
+      "name": "DocTopicVariant",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "summary",
+          "declaration": "summary: string",
+          "callback": false,
+          "ownerType": "DocTopicVariant",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/docs/docsContent.ts",
+            "line": 41
+          },
+          "description": "Dato de estado/configuración `summary`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "scope",
+          "declaration": "scope: string",
+          "callback": false,
+          "ownerType": "DocTopicVariant",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/docs/docsContent.ts",
+            "line": 42
+          },
+          "description": "Dato de estado/configuración `scope`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "sections",
+          "declaration": "sections: DocTopicSection[]",
+          "callback": false,
+          "ownerType": "DocTopicVariant",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/docs/docsContent.ts",
+            "line": 43
+          },
+          "description": "Dato de estado/configuración `sections`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "flow",
+          "declaration": "flow: DocFlowStep[]",
+          "callback": false,
+          "ownerType": "DocTopicVariant",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/docs/docsContent.ts",
+            "line": 44
+          },
+          "description": "Dato de estado/configuración `flow`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "media",
+          "declaration": "media: DocMediaItem[]",
+          "callback": false,
+          "ownerType": "DocTopicVariant",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/docs/docsContent.ts",
+            "line": 45
+          },
+          "description": "Dato de estado/configuración `media`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "references",
+          "declaration": "references: DocReference[]",
+          "callback": false,
+          "ownerType": "DocTopicVariant",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/docs/docsContent.ts",
+            "line": 46
+          },
+          "description": "Dato de estado/configuración `references`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/docs/docsContent.ts",
+        "line": 40
+      }
+    },
+    {
+      "name": "DocTopic",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "slug",
+          "declaration": "slug: DocTopicSlug",
+          "callback": false,
+          "ownerType": "DocTopic",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/docs/docsContent.ts",
+            "line": 50
+          },
+          "description": "Dato de estado/configuración `slug`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "title",
+          "declaration": "title: string",
+          "callback": false,
+          "ownerType": "DocTopic",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/docs/docsContent.ts",
+            "line": 51
+          },
+          "description": "Dato de estado/configuración `title`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "kicker",
+          "declaration": "kicker: string",
+          "callback": false,
+          "ownerType": "DocTopic",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/docs/docsContent.ts",
+            "line": 52
+          },
+          "description": "Dato de estado/configuración `kicker`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "variants",
+          "declaration": "variants: Record<DocFirmwareTarget, DocTopicVariant>",
+          "callback": false,
+          "ownerType": "DocTopic",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/docs/docsContent.ts",
+            "line": 53
+          },
+          "description": "Dato de estado/configuración `variants`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/docs/docsContent.ts",
+        "line": 49
+      }
+    },
+    {
+      "name": "DocFirmwareProfile",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "id",
+          "declaration": "id: DocFirmwareTarget",
+          "callback": false,
+          "ownerType": "DocFirmwareProfile",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/docs/docsContent.ts",
+            "line": 57
+          },
+          "description": "Dato de estado/configuración `id`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "label",
+          "declaration": "label: string",
+          "callback": false,
+          "ownerType": "DocFirmwareProfile",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/docs/docsContent.ts",
+            "line": 58
+          },
+          "description": "Dato de estado/configuración `label`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "eyebrow",
+          "declaration": "eyebrow: string",
+          "callback": false,
+          "ownerType": "DocFirmwareProfile",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/docs/docsContent.ts",
+            "line": 59
+          },
+          "description": "Dato de estado/configuración `eyebrow`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "title",
+          "declaration": "title: string",
+          "callback": false,
+          "ownerType": "DocFirmwareProfile",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/docs/docsContent.ts",
+            "line": 60
+          },
+          "description": "Dato de estado/configuración `title`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "description",
+          "declaration": "description: string",
+          "callback": false,
+          "ownerType": "DocFirmwareProfile",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/docs/docsContent.ts",
+            "line": 61
+          },
+          "description": "Dato de estado/configuración `description`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "authority",
+          "declaration": "authority: string",
+          "callback": false,
+          "ownerType": "DocFirmwareProfile",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/docs/docsContent.ts",
+            "line": 62
+          },
+          "description": "Dato de estado/configuración `authority`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "transport",
+          "declaration": "transport: string",
+          "callback": false,
+          "ownerType": "DocFirmwareProfile",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/docs/docsContent.ts",
+            "line": 63
+          },
+          "description": "Dato de estado/configuración `transport`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "output",
+          "declaration": "output: string",
+          "callback": false,
+          "ownerType": "DocFirmwareProfile",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/docs/docsContent.ts",
+            "line": 64
+          },
+          "description": "Dato de estado/configuración `output`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/docs/docsContent.ts",
+        "line": 56
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "DocTopicSection",
+      "displayName": "DocTopicSection",
+      "signature": "DocTopicSection(): inferred-by-TypeScript",
+      "line": 16,
+      "endLine": 238,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "DOC_TOPICS.filter",
+        "DOC_TOPICS.filter( (entry) => entry.slug !== topic.slug, ).slice",
+        "docsTargetSearch",
+        "getDocFirmwareTarget",
+        "getDocTopic",
+        "relatedTopics.map",
+        "renderDocTopicIcon",
+        "searchParams.get",
+        "useNavigate",
+        "useParams",
+        "useSearchParams",
+        "variant.flow.map",
+        "variant.media.map",
+        "variant.references.map",
+        "variant.sections.map"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/DocTopicSection.tsx",
+        "line": 16
+      },
+      "description": "Coordina `DOC_TOPICS.filter`, `DOC_TOPICS.filter( (entry) => entry.slug !== topic.slug, ).slice`, `docsTargetSearch` para Contenido Docs y selector de destino.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "DocsFirmwareSelector",
+      "displayName": "DocsFirmwareSelector",
+      "signature": "DocsFirmwareSelector({\n  activeTarget,\n  onChange,\n}: DocsFirmwareSelectorProps): inferred-by-TypeScript",
+      "line": 13,
+      "endLine": 42,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "TARGETS.map"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/docs/DocsFirmwareSelector.tsx",
+        "line": 13
+      },
+      "description": "Adapta la llamada a `TARGETS.map` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "DocsSection",
+      "displayName": "DocsSection",
+      "signature": "DocsSection(): inferred-by-TypeScript",
+      "line": 13,
+      "endLine": 102,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "DOC_TOPICS.map",
+        "getDocFirmwareTarget",
+        "searchParams.get",
+        "useNavigate",
+        "useSearchParams"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/DocsSection.tsx",
+        "line": 13
+      },
+      "description": "Coordina `DOC_TOPICS.map`, `getDocFirmwareTarget`, `searchParams.get` para Contenido Docs y selector de destino.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "MediaCard",
+      "displayName": "MediaCard",
+      "signature": "MediaCard({\n item,\n onOpen,\n}: { item: DocMediaItem; onOpen: (href: string) => void; }): inferred-by-TypeScript",
+      "line": 240,
+      "endLine": 284,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "mediaKindLabel"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/DocTopicSection.tsx",
+        "line": 240
+      },
+      "description": "Adapta la llamada a `mediaKindLabel` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "ProfileFact",
+      "displayName": "ProfileFact",
+      "signature": "ProfileFact({ label, value }: { label: string; value: string }): inferred-by-TypeScript",
+      "line": 104,
+      "endLine": 111,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/DocsSection.tsx",
+        "line": 104
+      },
+      "description": "Operación Profile Fact de Contenido Docs y selector de destino; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "docsTargetSearch",
+      "displayName": "docsTargetSearch",
+      "signature": "docsTargetSearch(target: DocFirmwareTarget): string",
+      "line": 570,
+      "endLine": 572,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/docs/docsContent.ts",
+        "line": 570
+      },
+      "description": "Operación docs Target Search de Contenido Docs y selector de destino; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "docsTopicHref",
+      "displayName": "docsTopicHref",
+      "signature": "docsTopicHref(slug: DocTopicSlug, target: DocFirmwareTarget): string",
+      "line": 574,
+      "endLine": 576,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "docsTargetSearch"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/docs/docsContent.ts",
+        "line": 574
+      },
+      "description": "Adapta la llamada a `docsTargetSearch` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "f4Visual",
+      "displayName": "f4Visual",
+      "signature": "f4Visual(diagramTitle: string, photoTitle: string, evidenceTitle: string): DocMediaItem[]",
+      "line": 125,
+      "endLine": 151,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/docs/docsContent.ts",
+        "line": 125
+      },
+      "description": "Operación f4 Visual de Contenido Docs y selector de destino; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "getDocFirmwareTarget",
+      "displayName": "getDocFirmwareTarget",
+      "signature": "getDocFirmwareTarget(value: string | null | undefined): DocFirmwareTarget",
+      "line": 566,
+      "endLine": 568,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/docs/docsContent.ts",
+        "line": 566
+      },
+      "description": "Operación get Doc Firmware Target de Contenido Docs y selector de destino; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "getDocTopic",
+      "displayName": "getDocTopic",
+      "signature": "getDocTopic(slug?: string): inferred-by-TypeScript",
+      "line": 562,
+      "endLine": 564,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "DOC_TOPICS.find"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/docs/docsContent.ts",
+        "line": 562
+      },
+      "description": "Adapta la llamada a `DOC_TOPICS.find` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "mediaKindLabel",
+      "displayName": "mediaKindLabel",
+      "signature": "mediaKindLabel(kind: DocMediaItem[\"kind\"]): inferred-by-TypeScript",
+      "line": 286,
+      "endLine": 294,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/DocTopicSection.tsx",
+        "line": 286
+      },
+      "description": "Operación media Kind Label de Contenido Docs y selector de destino; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "renderDocTopicIcon",
+      "displayName": "renderDocTopicIcon",
+      "signature": "renderDocTopicIcon(slug: DocTopicSlug, className: inferred-by-TypeScript): ReactNode",
+      "line": 14,
+      "endLine": 63,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/docs/docsCatalog.tsx",
+        "line": 14
+      },
+      "description": "Operación render Doc Topic Icon de Contenido Docs y selector de destino; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "segmentedButtonStyle",
+      "displayName": "segmentedButtonStyle",
+      "signature": "segmentedButtonStyle(active: boolean): inferred-by-TypeScript",
+      "line": 44,
+      "endLine": 55,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/docs/DocsFirmwareSelector.tsx",
+        "line": 44
+      },
+      "description": "Operación segmented Button Style de Contenido Docs y selector de destino; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "webVisual",
+      "displayName": "webVisual",
+      "signature": "webVisual(liveTitle: string, href: string, diagramTitle: string, photoTitle: string): DocMediaItem[]",
+      "line": 95,
+      "endLine": 123,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/docs/docsContent.ts",
+        "line": 95
+      },
+      "description": "Operación web Visual de Contenido Docs y selector de destino; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "DocTopicSection.handleTargetChange",
+      "displayName": "handleTargetChange",
+      "signature": "DocTopicSection.handleTargetChange(nextTarget: DocFirmwareTarget): inferred-by-TypeScript",
+      "line": 33,
+      "endLine": 37,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "nextSearchParams.set",
+        "setSearchParams"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/DocTopicSection.tsx",
+        "line": 33
+      },
+      "description": "Coordina `nextSearchParams.set`, `setSearchParams` para Contenido Docs y selector de destino.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "DocsSection.handleTargetChange",
+      "displayName": "handleTargetChange",
+      "signature": "DocsSection.handleTargetChange(nextTarget: DocFirmwareTarget): inferred-by-TypeScript",
+      "line": 19,
+      "endLine": 23,
+      "definition": true,
+      "private": true,
+      "calls": [
+        "nextSearchParams.set",
+        "setSearchParams"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/pages/DocsSection.tsx",
+        "line": 19
+      },
+      "description": "Coordina `nextSearchParams.set`, `setSearchParams` para Contenido Docs y selector de destino.",
+      "descriptionOrigin": "structural"
+    }
+  ],
+  "hooks": [
+    {
+      "callee": "useNavigate",
+      "scope": "DocTopicSection",
+      "line": 17,
+      "arguments": 0,
+      "path": "src/pages/DocTopicSection.tsx"
+    },
+    {
+      "callee": "useParams",
+      "scope": "DocTopicSection",
+      "line": 18,
+      "arguments": 0,
+      "path": "src/pages/DocTopicSection.tsx"
+    },
+    {
+      "callee": "useSearchParams",
+      "scope": "DocTopicSection",
+      "line": 19,
+      "arguments": 0,
+      "path": "src/pages/DocTopicSection.tsx"
+    },
+    {
+      "callee": "useNavigate",
+      "scope": "DocsSection",
+      "line": 14,
+      "arguments": 0,
+      "path": "src/pages/DocsSection.tsx"
+    },
+    {
+      "callee": "useSearchParams",
+      "scope": "DocsSection",
+      "line": 15,
+      "arguments": 0,
+      "path": "src/pages/DocsSection.tsx"
+    }
+  ]
+}

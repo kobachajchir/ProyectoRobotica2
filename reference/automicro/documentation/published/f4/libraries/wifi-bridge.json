@@ -1,0 +1,5349 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "f4:module/Core/Inc/wifi_bridge.h",
+  "slug": "wifi-bridge",
+  "title": "Bridge Wi-Fi y backends UNER/AT",
+  "target": "f4",
+  "kind": "integración",
+  "status": "source-documented",
+  "verification": "not-run-user-instruction",
+  "snapshotDate": "2026-10-20",
+  "responsibility": "Ofrece operaciones de conectividad sobre el backend Web/UNER o un módem con firmware ESP-AT.",
+  "scope": "Detección de backend, UART y conectividad, exploración/red, capacidades, eventos y encaminamiento de operaciones. ESP-AT es una alternativa de firmware de módem; no es el mismo servidor Web de este proyecto.",
+  "state": "WifiBridge_Handle conserva contexto de hardware/servicios, backend, recepción/transmisión, temporizadores y estado de red. Las credenciales runtime son diferentes de un registro de preferencias. hardware y services son prestados; callbacks devuelven los eventos al integrador.",
+  "lifecycle": [
+    "Init/Start configura y detecta backend; Process/RxCheck atiende máquina de estados y recepción.",
+    "Callbacks IDLE, half/full RX, TX y error notifican actividad; el planificador completa el trabajo diferido.",
+    "Backend AT procesa comandos, prompt, +IPD y SEND OK/FAIL; QueueFrame puede esperar CIPSEND y fin de envío.",
+    "Alive y sus respuestas actualizan disponibilidad; conectividad de red no demuestra una sesión Web autenticada."
+  ],
+  "interactions": [
+    "Backend UNER delega en UNER_App por services; backend AT transporta frames por su servicio TCP/UDP.",
+    "AP, permisos y UI reciben eventos/estados desde la composición de la aplicación."
+  ],
+  "limitations": [
+    "Firmware ESP de este repositorio no debe describirse como intérprete AT.",
+    "Capacidad anunciada, backend elegido, socket abierto, frame aceptado y respuesta final son hitos distintos.",
+    "No hay tráfico físico demostrado por esta documentación."
+  ],
+  "modularity": "UART/reloj y UNER de aplicación se inyectan por WifiBridge_Hardware/Services. Persisten SystemHandle y tipos de aplicación en el contrato. Los backends comparten una fachada, no implementaciones idénticas.",
+  "files": [
+    {
+      "path": "Core/Inc/wifi_bridge.h",
+      "rootId": "f4",
+      "sha256": "344b4327fd45da23c92daa4068fdd31e5f8dc5e756217dcf4452a2be743f22d7",
+      "includes": [
+        "wifi_bridge_types.h"
+      ]
+    },
+    {
+      "path": "Core/Inc/wifi_bridge_types.h",
+      "rootId": "f4",
+      "sha256": "2aba0dc8b46c0298b9d2dea7860d6b8afcc65182136cd1f44c47cd355cb2d9bb",
+      "includes": [
+        "wifi_bridge_port.h",
+        "wifi_bridge_config.h",
+        "stdbool.h",
+        "stddef.h",
+        "stdint.h"
+      ]
+    },
+    {
+      "path": "Core/Inc/wifi_bridge_port.h",
+      "rootId": "f4",
+      "sha256": "cb4fca0e61ce93df11b087e37d43cae7cc86c0d1e55560c898050fd6bce87f15",
+      "includes": [
+        "am_port.h",
+        "system.h",
+        "app_ap_config_data.h",
+        "binary_asset_types.h",
+        "uner_v2.h",
+        "uner_status.h"
+      ]
+    },
+    {
+      "path": "Core/Inc/wifi_bridge_config.h",
+      "rootId": "f4",
+      "sha256": "d1103e933d06cbcf259d693bc0e199e1dfeff58fe06f2cb7a571f9e4b2dd8b36",
+      "includes": []
+    },
+    {
+      "path": "Core/Inc/wifi_bridge_uner.h",
+      "rootId": "f4",
+      "sha256": "3009d73ca4c37f78dab056a1e21dc586b9d40495ad3fda8785b914b57c54e708",
+      "includes": [
+        "wifi_bridge_types.h"
+      ]
+    },
+    {
+      "path": "Core/Inc/wifi_bridge_at.h",
+      "rootId": "f4",
+      "sha256": "3e18f4c656923057bdb49776b074e45f33bd909f74599ca6db4c9b2e3b40831e",
+      "includes": [
+        "wifi_bridge_types.h"
+      ]
+    },
+    {
+      "path": "Core/Src/wifi_bridge.c",
+      "rootId": "f4",
+      "sha256": "d915e6c87e93fca0828759d7523c61d5ea9fa3d9aff040d0686bc73f2da81ade",
+      "includes": [
+        "system_flags.h",
+        "utils/macros_utils.h",
+        "wifi_bridge.h",
+        "string.h",
+        "wifi_bridge_at.h",
+        "wifi_bridge_uner.h"
+      ]
+    },
+    {
+      "path": "Core/Src/wifi_bridge_uner.c",
+      "rootId": "f4",
+      "sha256": "2d51b5df5c01a743defb801ef7638c5b366cbc2f3c6fe2f1a8b66260cc181c13",
+      "includes": [
+        "utils/macros_utils.h",
+        "wifi_bridge_uner.h",
+        "wifi_bridge.h",
+        "string.h"
+      ]
+    },
+    {
+      "path": "Core/Src/wifi_bridge_at.c",
+      "rootId": "f4",
+      "sha256": "0add11ca300e375b946aa05c1baec815fb3753eb2822e533985ae43b14bf2edc",
+      "includes": [
+        "system_flags.h",
+        "utils/macros_utils.h",
+        "wifi_bridge_at.h",
+        "wifi_bridge.h",
+        "string.h",
+        "uner_v2.h"
+      ]
+    },
+    {
+      "path": "Core/Src/wifi_bridge_stub.c",
+      "rootId": "f4",
+      "sha256": "306f4d75a362ab64410a86458c87ccbe4389f172a6d61bd59e6a464ed622a8e2",
+      "includes": []
+    }
+  ],
+  "findings": [],
+  "types": [
+    {
+      "name": "WifiBridge_Event",
+      "fields": [
+        {
+          "name": "id",
+          "declaration": "WifiBridge_EventId id",
+          "callback": false,
+          "ownerType": "WifiBridge_Event",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 57
+          },
+          "description": "Dato de estado/configuración `id`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "mode",
+          "declaration": "uint8_t mode",
+          "callback": false,
+          "ownerType": "WifiBridge_Event",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 58
+          },
+          "description": "Dato de estado/configuración `mode`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "connected",
+          "declaration": "uint8_t connected",
+          "callback": false,
+          "ownerType": "WifiBridge_Event",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 59
+          },
+          "description": "Dato de estado/configuración `connected`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "got_ip",
+          "declaration": "uint8_t got_ip",
+          "callback": false,
+          "ownerType": "WifiBridge_Event",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 60
+          },
+          "description": "Dato de estado/configuración `got_ip`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ip",
+          "declaration": "uint8_t ip[WIFI_BRIDGE_IP_LEN]",
+          "callback": false,
+          "ownerType": "WifiBridge_Event",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 61
+          },
+          "description": "Dato de estado/configuración `ip`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ssid",
+          "declaration": "char ssid[WIFI_BRIDGE_SSID_MAX_LEN + 1u]",
+          "callback": false,
+          "ownerType": "WifiBridge_Event",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 62
+          },
+          "description": "Dato de estado/configuración `ssid`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "status",
+          "declaration": "uint8_t status",
+          "callback": false,
+          "ownerType": "WifiBridge_Event",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 63
+          },
+          "description": "Último resultado y guardas del módulo; los getters pueden devolver una vista de este almacenamiento."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_types.h",
+        "line": 57
+      }
+    },
+    {
+      "name": "WifiBridge_Flags",
+      "fields": [
+        {
+          "name": "raw",
+          "declaration": "uint8_t raw",
+          "callback": false,
+          "ownerType": "WifiBridge_Flags",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 67
+          },
+          "description": "Dato de estado/configuración `raw`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "bits",
+          "declaration": "struct { estructura anidada } bits",
+          "callback": false,
+          "ownerType": "WifiBridge_Flags",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 68
+          },
+          "description": "Dato de estado/configuración `bits`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_types.h",
+        "line": 67
+      }
+    },
+    {
+      "name": "bits",
+      "fields": [
+        {
+          "name": "1",
+          "declaration": "uint8_t busy : 1",
+          "callback": false,
+          "ownerType": "bits",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 69
+          },
+          "description": "Dato de estado/configuración `1`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "1",
+          "declaration": "uint8_t tx_busy : 1",
+          "callback": false,
+          "ownerType": "bits",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 70
+          },
+          "description": "Dato de estado/configuración `1`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "1",
+          "declaration": "uint8_t rx_pending : 1",
+          "callback": false,
+          "ownerType": "bits",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 71
+          },
+          "description": "Dato de estado/configuración `1`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "1",
+          "declaration": "uint8_t got_ok : 1",
+          "callback": false,
+          "ownerType": "bits",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 72
+          },
+          "description": "Dato de estado/configuración `1`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "1",
+          "declaration": "uint8_t got_error : 1",
+          "callback": false,
+          "ownerType": "bits",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 73
+          },
+          "description": "Dato de estado/configuración `1`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "1",
+          "declaration": "uint8_t got_ip : 1",
+          "callback": false,
+          "ownerType": "bits",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 74
+          },
+          "description": "Dato de estado/configuración `1`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "1",
+          "declaration": "uint8_t connected : 1",
+          "callback": false,
+          "ownerType": "bits",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 75
+          },
+          "description": "Dato de estado/configuración `1`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "1",
+          "declaration": "uint8_t reserved : 1",
+          "callback": false,
+          "ownerType": "bits",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 76
+          },
+          "description": "Dato de estado/configuración `1`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_types.h",
+        "line": 69
+      }
+    },
+    {
+      "name": "WifiBridge_BinaryAssetView",
+      "fields": [
+        {
+          "name": "asset_id",
+          "declaration": "uint8_t asset_id",
+          "callback": false,
+          "ownerType": "WifiBridge_BinaryAssetView",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 95
+          },
+          "description": "Dato de estado/configuración `asset_id`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "width",
+          "declaration": "uint8_t width",
+          "callback": false,
+          "ownerType": "WifiBridge_BinaryAssetView",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 96
+          },
+          "description": "Dato de estado/configuración `width`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "height",
+          "declaration": "uint8_t height",
+          "callback": false,
+          "ownerType": "WifiBridge_BinaryAssetView",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 97
+          },
+          "description": "Dato de estado/configuración `height`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "len",
+          "declaration": "uint16_t len",
+          "callback": false,
+          "ownerType": "WifiBridge_BinaryAssetView",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 98
+          },
+          "description": "Dato de estado/configuración `len`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "data",
+          "declaration": "const uint8_t *data",
+          "callback": false,
+          "ownerType": "WifiBridge_BinaryAssetView",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 99
+          },
+          "description": "Dato de estado/configuración `data`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_types.h",
+        "line": 95
+      }
+    },
+    {
+      "name": "WifiBridge_CredentialFlags",
+      "fields": [
+        {
+          "name": "raw",
+          "declaration": "uint8_t raw",
+          "callback": false,
+          "ownerType": "WifiBridge_CredentialFlags",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 103
+          },
+          "description": "Dato de estado/configuración `raw`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "bits",
+          "declaration": "struct { estructura anidada } bits",
+          "callback": false,
+          "ownerType": "WifiBridge_CredentialFlags",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 104
+          },
+          "description": "Dato de estado/configuración `bits`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_types.h",
+        "line": 103
+      }
+    },
+    {
+      "name": "bits",
+      "fields": [
+        {
+          "name": "1",
+          "declaration": "uint8_t ssid_set : 1",
+          "callback": false,
+          "ownerType": "bits",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 105
+          },
+          "description": "Dato de estado/configuración `1`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "1",
+          "declaration": "uint8_t password_set : 1",
+          "callback": false,
+          "ownerType": "bits",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 106
+          },
+          "description": "Dato de estado/configuración `1`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "6",
+          "declaration": "uint8_t reserved : 6",
+          "callback": false,
+          "ownerType": "bits",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 107
+          },
+          "description": "Dato de estado/configuración `6`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_types.h",
+        "line": 105
+      }
+    },
+    {
+      "name": "WifiBridge_Credentials",
+      "fields": [
+        {
+          "name": "flags",
+          "declaration": "WifiBridge_CredentialFlags flags",
+          "callback": false,
+          "ownerType": "WifiBridge_Credentials",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 112
+          },
+          "description": "Bits de estado del módulo; conservar máscaras y distinguir estado de eventos pendientes."
+        },
+        {
+          "name": "ssid",
+          "declaration": "char ssid[WIFI_BRIDGE_SSID_MAX_LEN + 1u]",
+          "callback": false,
+          "ownerType": "WifiBridge_Credentials",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 113
+          },
+          "description": "Dato de estado/configuración `ssid`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "password",
+          "declaration": "char password[WIFI_BRIDGE_PASS_MAX_LEN + 1u]",
+          "callback": false,
+          "ownerType": "WifiBridge_Credentials",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 114
+          },
+          "description": "Dato de estado/configuración `password`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_types.h",
+        "line": 112
+      }
+    },
+    {
+      "name": "WifiBridge_AT_NetworkCounters",
+      "fields": [
+        {
+          "name": "at_timeouts",
+          "declaration": "uint32_t at_timeouts",
+          "callback": false,
+          "ownerType": "WifiBridge_AT_NetworkCounters",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 194
+          },
+          "description": "Dato de estado/configuración `at_timeouts`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "send_failures",
+          "declaration": "uint32_t send_failures",
+          "callback": false,
+          "ownerType": "WifiBridge_AT_NetworkCounters",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 195
+          },
+          "description": "Dato de estado/configuración `send_failures`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "queue_drops",
+          "declaration": "uint32_t queue_drops",
+          "callback": false,
+          "ownerType": "WifiBridge_AT_NetworkCounters",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 196
+          },
+          "description": "Contrato de operaciones externo; conservar la tabla y su contexto durante el uso."
+        },
+        {
+          "name": "ipd_header_errors",
+          "declaration": "uint32_t ipd_header_errors",
+          "callback": false,
+          "ownerType": "WifiBridge_AT_NetworkCounters",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 197
+          },
+          "description": "Dato de estado/configuración `ipd_header_errors`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "udp_datagram_drops",
+          "declaration": "uint32_t udp_datagram_drops",
+          "callback": false,
+          "ownerType": "WifiBridge_AT_NetworkCounters",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 198
+          },
+          "description": "Contrato de operaciones externo; conservar la tabla y su contexto durante el uso."
+        },
+        {
+          "name": "rejected_peers",
+          "declaration": "uint32_t rejected_peers",
+          "callback": false,
+          "ownerType": "WifiBridge_AT_NetworkCounters",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 199
+          },
+          "description": "Dato de estado/configuración `rejected_peers`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_types.h",
+        "line": 194
+      }
+    },
+    {
+      "name": "WifiBridge_Handle",
+      "fields": [
+        {
+          "name": "huart",
+          "declaration": "void *huart",
+          "callback": false,
+          "ownerType": "WifiBridge_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 204
+          },
+          "description": "Dato de estado/configuración `huart`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "hardware",
+          "declaration": "const WifiBridge_Hardware *hardware",
+          "callback": false,
+          "ownerType": "WifiBridge_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 205
+          },
+          "description": "Contrato de operaciones externo; conservar la tabla y su contexto durante el uso."
+        },
+        {
+          "name": "services",
+          "declaration": "const WifiBridge_Services *services",
+          "callback": false,
+          "ownerType": "WifiBridge_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 206
+          },
+          "description": "Contrato de operaciones externo; conservar la tabla y su contexto durante el uso."
+        },
+        {
+          "name": "services_ctx",
+          "declaration": "void *services_ctx",
+          "callback": false,
+          "ownerType": "WifiBridge_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 207
+          },
+          "description": "Contexto opaco prestado al callback; el integrador conserva su almacenamiento."
+        },
+        {
+          "name": "system",
+          "declaration": "SystemHandle *system",
+          "callback": false,
+          "ownerType": "WifiBridge_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 208
+          },
+          "description": "Referencia al estado compartido AutoMicro; introduce dependencia del modelo de aplicación."
+        },
+        {
+          "name": "credentials",
+          "declaration": "WifiBridge_Credentials *credentials",
+          "callback": false,
+          "ownerType": "WifiBridge_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 209
+          },
+          "description": "Dato de estado/configuración `credentials`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "flags",
+          "declaration": "WifiBridge_Flags flags",
+          "callback": false,
+          "ownerType": "WifiBridge_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 210
+          },
+          "description": "Bits de estado del módulo; conservar máscaras y distinguir estado de eventos pendientes."
+        },
+        {
+          "name": "on_event",
+          "declaration": "WifiBridge_EventCallback on_event",
+          "callback": false,
+          "ownerType": "WifiBridge_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 211
+          },
+          "description": "Dato de estado/configuración `on_event`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "last_event",
+          "declaration": "WifiBridge_Event last_event",
+          "callback": false,
+          "ownerType": "WifiBridge_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 212
+          },
+          "description": "Memoria de la observación anterior usada por la máquina de estados."
+        },
+        {
+          "name": "mode",
+          "declaration": "uint8_t mode",
+          "callback": false,
+          "ownerType": "WifiBridge_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 213
+          },
+          "description": "Dato de estado/configuración `mode`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "status",
+          "declaration": "uint8_t status",
+          "callback": false,
+          "ownerType": "WifiBridge_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 214
+          },
+          "description": "Último resultado y guardas del módulo; los getters pueden devolver una vista de este almacenamiento."
+        },
+        {
+          "name": "ip",
+          "declaration": "uint8_t ip[WIFI_BRIDGE_IP_LEN]",
+          "callback": false,
+          "ownerType": "WifiBridge_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 215
+          },
+          "description": "Dato de estado/configuración `ip`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ssid",
+          "declaration": "char ssid[WIFI_BRIDGE_SSID_MAX_LEN + 1u]",
+          "callback": false,
+          "ownerType": "WifiBridge_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 216
+          },
+          "description": "Dato de estado/configuración `ssid`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "rx_dma",
+          "declaration": "uint8_t rx_dma[WIFI_BRIDGE_UART_RX_DMA_SIZE]",
+          "callback": false,
+          "ownerType": "WifiBridge_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 217
+          },
+          "description": "Dato de estado/configuración `rx_dma`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "rx_started",
+          "declaration": "uint8_t rx_started",
+          "callback": false,
+          "ownerType": "WifiBridge_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 219
+          },
+          "description": "Dato de estado/configuración `rx_started`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "tx_busy",
+          "declaration": "volatile uint8_t tx_busy",
+          "callback": false,
+          "ownerType": "WifiBridge_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 220
+          },
+          "description": "Dato de estado/configuración `tx_busy`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "active_backend",
+          "declaration": "WifiBridge_Backend active_backend",
+          "callback": false,
+          "ownerType": "WifiBridge_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 221
+          },
+          "description": "Dato de estado/configuración `active_backend`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "probe",
+          "declaration": "WifiBridge_Probe probe",
+          "callback": false,
+          "ownerType": "WifiBridge_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 223
+          },
+          "description": "Dato de estado/configuración `probe`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "last_probe_ms",
+          "declaration": "uint32_t last_probe_ms",
+          "callback": false,
+          "ownerType": "WifiBridge_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 224
+          },
+          "description": "Memoria de la observación anterior usada por la máquina de estados."
+        },
+        {
+          "name": "last_rx_ms",
+          "declaration": "uint32_t last_rx_ms",
+          "callback": false,
+          "ownerType": "WifiBridge_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 225
+          },
+          "description": "Memoria de la observación anterior usada por la máquina de estados."
+        },
+        {
+          "name": "alive_pending",
+          "declaration": "uint8_t alive_pending",
+          "callback": false,
+          "ownerType": "WifiBridge_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 226
+          },
+          "description": "Dato de estado/configuración `alive_pending`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "missed_alive_count",
+          "declaration": "uint8_t missed_alive_count",
+          "callback": false,
+          "ownerType": "WifiBridge_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 227
+          },
+          "description": "Dato de estado/configuración `missed_alive_count`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "connection_lost_event",
+          "declaration": "uint8_t connection_lost_event",
+          "callback": false,
+          "ownerType": "WifiBridge_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 228
+          },
+          "description": "Dato de estado/configuración `connection_lost_event`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "at_rx_last_pos",
+          "declaration": "uint16_t at_rx_last_pos",
+          "callback": false,
+          "ownerType": "WifiBridge_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 229
+          },
+          "description": "Dato de estado/configuración `at_rx_last_pos`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "at_line",
+          "declaration": "char at_line[WIFI_BRIDGE_AT_LINE_SIZE]",
+          "callback": false,
+          "ownerType": "WifiBridge_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 231
+          },
+          "description": "Dato de estado/configuración `at_line`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "at_line_len",
+          "declaration": "uint16_t at_line_len",
+          "callback": false,
+          "ownerType": "WifiBridge_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 232
+          },
+          "description": "Dato de estado/configuración `at_line_len`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "at_tx_buf",
+          "declaration": "char at_tx_buf[WIFI_BRIDGE_AT_TX_SIZE]",
+          "callback": false,
+          "ownerType": "WifiBridge_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 233
+          },
+          "description": "Dato de estado/configuración `at_tx_buf`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "at_tx_len",
+          "declaration": "uint16_t at_tx_len",
+          "callback": false,
+          "ownerType": "WifiBridge_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 234
+          },
+          "description": "Dato de estado/configuración `at_tx_len`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "at_deadline_ms",
+          "declaration": "uint32_t at_deadline_ms",
+          "callback": false,
+          "ownerType": "WifiBridge_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 235
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "at_active_op",
+          "declaration": "WifiBridge_AT_Operation at_active_op",
+          "callback": false,
+          "ownerType": "WifiBridge_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 236
+          },
+          "description": "Dato de estado/configuración `at_active_op`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "at_scan_count",
+          "declaration": "uint8_t at_scan_count",
+          "callback": false,
+          "ownerType": "WifiBridge_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 237
+          },
+          "description": "Dato de estado/configuración `at_scan_count`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "at_status_sta_ip_seen",
+          "declaration": "uint8_t at_status_sta_ip_seen",
+          "callback": false,
+          "ownerType": "WifiBridge_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 238
+          },
+          "description": "Dato de estado/configuración `at_status_sta_ip_seen`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "at_status_ap_ip_seen",
+          "declaration": "uint8_t at_status_ap_ip_seen",
+          "callback": false,
+          "ownerType": "WifiBridge_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 239
+          },
+          "description": "Dato de estado/configuración `at_status_ap_ip_seen`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "at_reboot_pending",
+          "declaration": "uint8_t at_reboot_pending",
+          "callback": false,
+          "ownerType": "WifiBridge_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 240
+          },
+          "description": "Dato de estado/configuración `at_reboot_pending`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "at_reboot_mode",
+          "declaration": "uint8_t at_reboot_mode",
+          "callback": false,
+          "ownerType": "WifiBridge_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 241
+          },
+          "description": "Dato de estado/configuración `at_reboot_mode`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "at_detected_capabilities",
+          "declaration": "WifiBridge_CapabilityMask_t at_detected_capabilities",
+          "callback": false,
+          "ownerType": "WifiBridge_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 242
+          },
+          "description": "Dato de estado/configuración `at_detected_capabilities`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "at_network_protocol",
+          "declaration": "WifiBridgeNetworkProtocol at_network_protocol",
+          "callback": false,
+          "ownerType": "WifiBridge_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 243
+          },
+          "description": "Dato de estado/configuración `at_network_protocol`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "at_network_stage",
+          "declaration": "uint8_t at_network_stage",
+          "callback": false,
+          "ownerType": "WifiBridge_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 244
+          },
+          "description": "Dato de estado/configuración `at_network_stage`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "at_network_restart_pending",
+          "declaration": "uint8_t at_network_restart_pending",
+          "callback": false,
+          "ownerType": "WifiBridge_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 245
+          },
+          "description": "Dato de estado/configuración `at_network_restart_pending`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "at_network_ready",
+          "declaration": "uint8_t at_network_ready",
+          "callback": false,
+          "ownerType": "WifiBridge_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 246
+          },
+          "description": "Dato de estado/configuración `at_network_ready`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "at_tcp_link_id",
+          "declaration": "int8_t at_tcp_link_id",
+          "callback": false,
+          "ownerType": "WifiBridge_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 247
+          },
+          "description": "Dato de estado/configuración `at_tcp_link_id`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "at_pending_close_link_id",
+          "declaration": "int8_t at_pending_close_link_id",
+          "callback": false,
+          "ownerType": "WifiBridge_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 248
+          },
+          "description": "Dato de estado/configuración `at_pending_close_link_id`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "at_udp_peer_valid",
+          "declaration": "uint8_t at_udp_peer_valid",
+          "callback": false,
+          "ownerType": "WifiBridge_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 249
+          },
+          "description": "Dato de estado/configuración `at_udp_peer_valid`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "at_udp_peer_ip",
+          "declaration": "uint8_t at_udp_peer_ip[WIFI_BRIDGE_IP_LEN]",
+          "callback": false,
+          "ownerType": "WifiBridge_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 250
+          },
+          "description": "Dato de estado/configuración `at_udp_peer_ip`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "at_udp_peer_port",
+          "declaration": "uint16_t at_udp_peer_port",
+          "callback": false,
+          "ownerType": "WifiBridge_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 251
+          },
+          "description": "Dato de estado/configuración `at_udp_peer_port`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "at_udp_peer_last_rx_ms",
+          "declaration": "uint32_t at_udp_peer_last_rx_ms",
+          "callback": false,
+          "ownerType": "WifiBridge_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 252
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "at_ipd_header",
+          "declaration": "char at_ipd_header[WIFI_BRIDGE_AT_IPD_HEADER_SIZE]",
+          "callback": false,
+          "ownerType": "WifiBridge_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 253
+          },
+          "description": "Dato de estado/configuración `at_ipd_header`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "at_ipd_header_len",
+          "declaration": "uint16_t at_ipd_header_len",
+          "callback": false,
+          "ownerType": "WifiBridge_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 254
+          },
+          "description": "Dato de estado/configuración `at_ipd_header_len`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "at_ipd_expected_len",
+          "declaration": "uint16_t at_ipd_expected_len",
+          "callback": false,
+          "ownerType": "WifiBridge_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 255
+          },
+          "description": "Dato de estado/configuración `at_ipd_expected_len`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "at_ipd_received_len",
+          "declaration": "uint16_t at_ipd_received_len",
+          "callback": false,
+          "ownerType": "WifiBridge_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 256
+          },
+          "description": "Dato de estado/configuración `at_ipd_received_len`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "at_ipd_link_id",
+          "declaration": "int8_t at_ipd_link_id",
+          "callback": false,
+          "ownerType": "WifiBridge_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 257
+          },
+          "description": "Dato de estado/configuración `at_ipd_link_id`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "at_ipd_peer_ip",
+          "declaration": "uint8_t at_ipd_peer_ip[WIFI_BRIDGE_IP_LEN]",
+          "callback": false,
+          "ownerType": "WifiBridge_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 258
+          },
+          "description": "Dato de estado/configuración `at_ipd_peer_ip`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "at_ipd_peer_port",
+          "declaration": "uint16_t at_ipd_peer_port",
+          "callback": false,
+          "ownerType": "WifiBridge_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 259
+          },
+          "description": "Dato de estado/configuración `at_ipd_peer_port`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "at_ipd_active",
+          "declaration": "uint8_t at_ipd_active",
+          "callback": false,
+          "ownerType": "WifiBridge_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 260
+          },
+          "description": "Dato de estado/configuración `at_ipd_active`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "at_ipd_payload",
+          "declaration": "uint8_t at_ipd_payload[WIFI_BRIDGE_AT_MAX_FRAME_SIZE]",
+          "callback": false,
+          "ownerType": "WifiBridge_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 261
+          },
+          "description": "Dato de estado/configuración `at_ipd_payload`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "at_frame_queue",
+          "declaration": "uint8_t at_frame_queue[WIFI_BRIDGE_AT_TX_QUEUE_SLOTS][WIFI_BRIDGE_AT_MAX_FRAME_SIZE]",
+          "callback": false,
+          "ownerType": "WifiBridge_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 262
+          },
+          "description": "Dato de estado/configuración `at_frame_queue`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "at_frame_queue_len",
+          "declaration": "uint16_t at_frame_queue_len[WIFI_BRIDGE_AT_TX_QUEUE_SLOTS]",
+          "callback": false,
+          "ownerType": "WifiBridge_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 263
+          },
+          "description": "Dato de estado/configuración `at_frame_queue_len`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "at_frame_queue_head",
+          "declaration": "uint8_t at_frame_queue_head",
+          "callback": false,
+          "ownerType": "WifiBridge_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 264
+          },
+          "description": "Dato de estado/configuración `at_frame_queue_head`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "at_frame_queue_tail",
+          "declaration": "uint8_t at_frame_queue_tail",
+          "callback": false,
+          "ownerType": "WifiBridge_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 265
+          },
+          "description": "Dato de estado/configuración `at_frame_queue_tail`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "at_frame_queue_count",
+          "declaration": "uint8_t at_frame_queue_count",
+          "callback": false,
+          "ownerType": "WifiBridge_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 266
+          },
+          "description": "Dato de estado/configuración `at_frame_queue_count`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "at_send_state",
+          "declaration": "WifiBridge_AT_SendState at_send_state",
+          "callback": false,
+          "ownerType": "WifiBridge_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 267
+          },
+          "description": "Dato de estado/configuración `at_send_state`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "at_send_payload_started",
+          "declaration": "uint8_t at_send_payload_started",
+          "callback": false,
+          "ownerType": "WifiBridge_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 268
+          },
+          "description": "Dato de estado/configuración `at_send_payload_started`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "at_network_counters",
+          "declaration": "WifiBridge_AT_NetworkCounters at_network_counters",
+          "callback": false,
+          "ownerType": "WifiBridge_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_types.h",
+            "line": 269
+          },
+          "description": "Dato de estado/configuración `at_network_counters`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_types.h",
+        "line": 203
+      }
+    },
+    {
+      "name": "WifiBridge_EventCallback",
+      "callbackType": "void (*WifiBridge_EventCallback)(const WifiBridge_Event *evt)",
+      "fields": [],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_types.h",
+        "line": 80
+      }
+    },
+    {
+      "name": "WifiBridge_Hardware",
+      "fields": [
+        {
+          "name": "now_ms",
+          "declaration": "uint32_t (*now_ms)(void *ctx)",
+          "callback": true,
+          "ownerType": "WifiBridge_Hardware",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_port.h",
+            "line": 10
+          },
+          "description": "Entrega reloj monotónico modular en milisegundos para deadlines y períodos."
+        },
+        {
+          "name": "rx_start",
+          "declaration": "AM_Result (*rx_start)(void *ctx, uint8_t *buffer, uint16_t length)",
+          "callback": true,
+          "ownerType": "WifiBridge_Hardware",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_port.h",
+            "line": 11
+          },
+          "description": "Operación rx start de Bridge Wi-Fi y backends UNER/AT; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "tx",
+          "declaration": "AM_Result (*tx)(void *ctx, const uint8_t *data, uint16_t length)",
+          "callback": true,
+          "ownerType": "WifiBridge_Hardware",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_port.h",
+            "line": 12
+          },
+          "description": "Operación tx de Bridge Wi-Fi y backends UNER/AT; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "enable_idle",
+          "declaration": "void (*enable_idle)(void *ctx)",
+          "callback": true,
+          "ownerType": "WifiBridge_Hardware",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_port.h",
+            "line": 13
+          },
+          "description": "Operación enable idle de Bridge Wi-Fi y backends UNER/AT; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "rx_ready",
+          "declaration": "bool (*rx_ready)(void *ctx)",
+          "callback": true,
+          "ownerType": "WifiBridge_Hardware",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_port.h",
+            "line": 14
+          },
+          "description": "Operación rx ready de Bridge Wi-Fi y backends UNER/AT; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "rx_remaining",
+          "declaration": "uint16_t (*rx_remaining)(void *ctx)",
+          "callback": true,
+          "ownerType": "WifiBridge_Hardware",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_port.h",
+            "line": 15
+          },
+          "description": "Operación rx remaining de Bridge Wi-Fi y backends UNER/AT; semántica fina pendiente de ampliación."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_port.h",
+        "line": 10
+      }
+    },
+    {
+      "name": "WifiBridge_Services",
+      "fields": [
+        {
+          "name": "AppApConfig_Get",
+          "declaration": "void (*AppApConfig_Get)(void *ctx, AppApConfig_t *out)",
+          "callback": true,
+          "ownerType": "WifiBridge_Services",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_port.h",
+            "line": 18
+          },
+          "description": "Copia configuración AP deseada."
+        },
+        {
+          "name": "AppApConfig_OnEspApplyResponse",
+          "declaration": "void (*AppApConfig_OnEspApplyResponse)(void *ctx, uint8_t status)",
+          "callback": true,
+          "ownerType": "WifiBridge_Services",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_port.h",
+            "line": 19
+          },
+          "description": "Procesa el status recibido del ESP para la aplicación AP."
+        },
+        {
+          "name": "AppPreferences_GetWifiAtProtocol",
+          "declaration": "uint8_t (*AppPreferences_GetWifiAtProtocol)(void *ctx)",
+          "callback": true,
+          "ownerType": "WifiBridge_Services",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_port.h",
+            "line": 20
+          },
+          "description": "Operación App Preferences Get Wifi At Protocol de Bridge Wi-Fi y backends UNER/AT; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "Permission_RevokeRemoteNode",
+          "declaration": "void (*Permission_RevokeRemoteNode)(void *ctx, uint8_t source_node)",
+          "callback": true,
+          "ownerType": "WifiBridge_Services",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_port.h",
+            "line": 21
+          },
+          "description": "Revoca autorización del nodo indicado."
+        },
+        {
+          "name": "UNER_App_FeedUart1Bytes",
+          "declaration": "void (*UNER_App_FeedUart1Bytes)(void *ctx, const uint8_t *data, uint16_t len)",
+          "callback": true,
+          "ownerType": "WifiBridge_Services",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_port.h",
+            "line": 22
+          },
+          "description": "Entrega bytes recibidos al camino UNER de UART1."
+        },
+        {
+          "name": "UNER_App_GetBinaryAsset",
+          "declaration": "uint8_t (*UNER_App_GetBinaryAsset)(void *ctx, uint8_t asset_id, BinaryAssetView_t *asset)",
+          "callback": true,
+          "ownerType": "WifiBridge_Services",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_port.h",
+            "line": 23
+          },
+          "description": "Expone una vista de asset binario disponible sin transferir propiedad de su memoria."
+        },
+        {
+          "name": "UNER_App_GetWaitingCommandId",
+          "declaration": "uint8_t (*UNER_App_GetWaitingCommandId)(void *ctx)",
+          "callback": true,
+          "ownerType": "WifiBridge_Services",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_port.h",
+            "line": 24
+          },
+          "description": "Consulta el ID cuya finalización espera la capa de aplicación."
+        },
+        {
+          "name": "UNER_App_Init",
+          "declaration": "UNER_Status (*UNER_App_Init)(void *ctx, WifiBridge_Handle *bridge)",
+          "callback": true,
+          "ownerType": "WifiBridge_Services",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_port.h",
+            "line": 25
+          },
+          "description": "Conecta bridge, transportes, rutas y contratos de aplicación."
+        },
+        {
+          "name": "UNER_App_IsWaitingValidation",
+          "declaration": "uint8_t (*UNER_App_IsWaitingValidation)(void *ctx)",
+          "callback": true,
+          "ownerType": "WifiBridge_Services",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_port.h",
+            "line": 26
+          },
+          "description": "Indica si una solicitud de aplicación sigue esperando su resultado."
+        },
+        {
+          "name": "UNER_App_NotifyUart1Rx",
+          "declaration": "void (*UNER_App_NotifyUart1Rx)(void *ctx)",
+          "callback": true,
+          "ownerType": "WifiBridge_Services",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_port.h",
+            "line": 27
+          },
+          "description": "Marca recepción UART1 pendiente para el procesamiento de aplicación."
+        },
+        {
+          "name": "UNER_App_OnAtNetworkDisconnected",
+          "declaration": "void (*UNER_App_OnAtNetworkDisconnected)(void *ctx)",
+          "callback": true,
+          "ownerType": "WifiBridge_Services",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_port.h",
+            "line": 28
+          },
+          "description": "Limpia el estado de enlace/sesiones correspondiente a desconexión AT."
+        },
+        {
+          "name": "UNER_App_OnUart1TxComplete",
+          "declaration": "void (*UNER_App_OnUart1TxComplete)(void *ctx)",
+          "callback": true,
+          "ownerType": "WifiBridge_Services",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_port.h",
+            "line": 29
+          },
+          "description": "Notifica fin de TX y habilita transiciones diferidas."
+        },
+        {
+          "name": "UNER_App_Poll",
+          "declaration": "void (*UNER_App_Poll)(void *ctx)",
+          "callback": true,
+          "ownerType": "WifiBridge_Services",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_port.h",
+            "line": 30
+          },
+          "description": "Atiende protocolos y servicios diferidos de la aplicación."
+        },
+        {
+          "name": "UNER_App_ReportCarModeChanged",
+          "declaration": "UNER_Status (*UNER_App_ReportCarModeChanged)(void *ctx, uint8_t mode)",
+          "callback": true,
+          "ownerType": "WifiBridge_Services",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_port.h",
+            "line": 31
+          },
+          "description": "Publica el modo de automóvil confirmado."
+        },
+        {
+          "name": "UNER_App_ReportMenuSelectionChanged",
+          "declaration": "UNER_Status (*UNER_App_ReportMenuSelectionChanged)(void *ctx, uint32_t screen_code, uint8_t selected_index, uint8_t item_count, uint8_t source)",
+          "callback": true,
+          "ownerType": "WifiBridge_Services",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_port.h",
+            "line": 32
+          },
+          "description": "Publica selección visible y cantidad vinculadas a screen code."
+        },
+        {
+          "name": "UNER_App_ReportScreenChanged",
+          "declaration": "UNER_Status (*UNER_App_ReportScreenChanged)(void *ctx, uint32_t screen_code, uint8_t source)",
+          "callback": true,
+          "ownerType": "WifiBridge_Services",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_port.h",
+            "line": 36
+          },
+          "description": "Serializa identidad/origen de pantalla y publica evento."
+        },
+        {
+          "name": "UNER_App_RequestBinaryAsset",
+          "declaration": "UNER_Status (*UNER_App_RequestBinaryAsset)(void *ctx, uint8_t asset_id)",
+          "callback": true,
+          "ownerType": "WifiBridge_Services",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_port.h",
+            "line": 37
+          },
+          "description": "Solicita al otro extremo un asset por su ID lógico."
+        },
+        {
+          "name": "UNER_App_RequestWifiNetworkDetail",
+          "declaration": "UNER_Status (*UNER_App_RequestWifiNetworkDetail)(void *ctx, const char *ssid)",
+          "callback": true,
+          "ownerType": "WifiBridge_Services",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_port.h",
+            "line": 38
+          },
+          "description": "Solicita detalle del SSID indicado mediante el backend de protocolo."
+        },
+        {
+          "name": "UNER_App_ResetUart1RxPos",
+          "declaration": "void (*UNER_App_ResetUart1RxPos)(void *ctx)",
+          "callback": true,
+          "ownerType": "WifiBridge_Services",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_port.h",
+            "line": 39
+          },
+          "description": "Operación UNER App Reset Uart1 Rx Pos de Bridge Wi-Fi y backends UNER/AT; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "UNER_App_SendCommand",
+          "declaration": "UNER_Status (*UNER_App_SendCommand)(void *ctx, uint8_t cmd, const uint8_t *payload, uint8_t len)",
+          "callback": true,
+          "ownerType": "WifiBridge_Services",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_port.h",
+            "line": 40
+          },
+          "description": "Envía un comando de aplicación por la ruta configurada."
+        },
+        {
+          "name": "UNER_App_SendEspReboot",
+          "declaration": "UNER_Status (*UNER_App_SendEspReboot)(void *ctx, uint8_t boot_mode)",
+          "callback": true,
+          "ownerType": "WifiBridge_Services",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_port.h",
+            "line": 41
+          },
+          "description": "Operación UNER App Send Esp Reboot de Bridge Wi-Fi y backends UNER/AT; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "UNER_App_SendWifiCredentialRequest",
+          "declaration": "UNER_Status (*UNER_App_SendWifiCredentialRequest)(void *ctx, const char *ssid)",
+          "callback": true,
+          "ownerType": "WifiBridge_Services",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_port.h",
+            "line": 42
+          },
+          "description": "Inicia solicitud de ingreso de credenciales Wi-Fi; no transporta PIN de autorización como equivalente."
+        },
+        {
+          "name": "checksum",
+          "declaration": "uint8_t (*checksum)(const uint8_t *data, uint16_t length)",
+          "callback": true,
+          "ownerType": "WifiBridge_Services",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_port.h",
+            "line": 43
+          },
+          "description": "Operación checksum de Bridge Wi-Fi y backends UNER/AT; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "clear_scan_results",
+          "declaration": "void (*clear_scan_results)(void)",
+          "callback": true,
+          "ownerType": "WifiBridge_Services",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/wifi_bridge_port.h",
+            "line": 44
+          },
+          "description": "Operación clear scan results de Bridge Wi-Fi y backends UNER/AT; semántica fina pendiente de ampliación."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_port.h",
+        "line": 18
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "WifiBridge_AT_Connect",
+      "signature": "WifiBridge_Result WifiBridge_AT_Connect(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_at.h",
+        "line": 33
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WifiBridge_AT_SendJoin"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `WifiBridge_AT_SendJoin` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 1510
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_AT_Disconnect",
+      "signature": "WifiBridge_Result WifiBridge_AT_Disconnect(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_at.h",
+        "line": 34
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WifiBridge_AT_Send"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `WifiBridge_AT_Send` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 1515
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_AT_GetBinaryAsset",
+      "signature": "uint8_t WifiBridge_AT_GetBinaryAsset(WifiBridge_Handle *h, uint8_t asset_id, WifiBridge_BinaryAssetView *asset)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_at.h",
+        "line": 59
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Consulta Binary Asset dentro de Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 1691
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_AT_GetScanResults",
+      "signature": "WifiBridge_Result WifiBridge_AT_GetScanResults(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_at.h",
+        "line": 37
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WifiBridge_AT_StartScan"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `WifiBridge_AT_StartScan` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 1535
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_AT_GetStatus",
+      "signature": "WifiBridge_Result WifiBridge_AT_GetStatus(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_at.h",
+        "line": 38
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WifiBridge_AT_ClearApIp",
+        "WifiBridge_AT_ClearStaIp",
+        "WifiBridge_AT_Send"
+      ],
+      "writes": [
+        "at_status_ap_ip_seen",
+        "at_status_sta_ip_seen",
+        "status"
+      ],
+      "description": "Consulta Status dentro de Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 1540
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_AT_GetWaitingCommandId",
+      "signature": "uint8_t WifiBridge_AT_GetWaitingCommandId(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_at.h",
+        "line": 63
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Consulta Waiting Command Id dentro de Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 1706
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_AT_Init",
+      "signature": "WifiBridge_Result WifiBridge_AT_Init(WifiBridge_Handle *h, void *huart)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_at.h",
+        "line": 13
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "AppPreferences_GetWifiAtProtocol",
+        "memset"
+      ],
+      "writes": [
+        "at_active_op",
+        "at_deadline_ms",
+        "at_detected_capabilities",
+        "at_line_len",
+        "at_network_protocol",
+        "at_network_restart_pending",
+        "at_pending_close_link_id",
+        "at_reboot_mode",
+        "at_reboot_pending",
+        "at_rx_last_pos",
+        "at_scan_count",
+        "at_send_state",
+        "at_status_ap_ip_seen",
+        "at_status_sta_ip_seen",
+        "at_tcp_link_id",
+        "at_tx_len",
+        "huart"
+      ],
+      "description": "Inicializa contexto de bridge o backend con sus puertos.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 1268
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_AT_IsWaitingValidation",
+      "signature": "uint8_t WifiBridge_AT_IsWaitingValidation(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_at.h",
+        "line": 62
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Indica si el backend espera finalizar una solicitud.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 1701
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_AT_OnTxComplete",
+      "signature": "void WifiBridge_AT_OnTxComplete(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_at.h",
+        "line": 17
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WIFI_FLAG_CLEAR",
+        "now_ms"
+      ],
+      "writes": [
+        "at_deadline_ms",
+        "at_send_state",
+        "tx_busy"
+      ],
+      "description": "Notifica final de transmisión UART y permite avanzar la cola.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 1390
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_AT_Process",
+      "signature": "void WifiBridge_AT_Process(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_at.h",
+        "line": 15
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WIFI_FLAG_CLEAR",
+        "WIFI_FLAG_IS_SET",
+        "WIFI_FLAG_SET",
+        "WifiBridge_AT_Emit",
+        "WifiBridge_AT_FinishQueuedSend",
+        "WifiBridge_AT_ProcessNetwork",
+        "WifiBridge_AT_RxCheck",
+        "now_ms"
+      ],
+      "writes": [
+        "at_active_op",
+        "at_network_restart_pending",
+        "at_reboot_pending",
+        "tx_busy"
+      ],
+      "description": "Avanza la máquina de estados y operaciones diferidas del backend.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 1308
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_AT_QueueFrame",
+      "signature": "WifiBridge_Result WifiBridge_AT_QueueFrame(WifiBridge_Handle *h, const uint8_t *frame, uint16_t len)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_at.h",
+        "line": 23
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "memcpy"
+      ],
+      "writes": [
+        "at_frame_queue_count",
+        "at_frame_queue_tail"
+      ],
+      "description": "Encola un frame para transporte de red AT.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 1235
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_AT_ReportCarModeChanged",
+      "signature": "WifiBridge_Result WifiBridge_AT_ReportCarModeChanged(WifiBridge_Handle *h, uint8_t mode)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_at.h",
+        "line": 57
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Publica el reporte de Car Mode Changed dentro de Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 1677
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_AT_ReportMenuSelectionChanged",
+      "signature": "WifiBridge_Result WifiBridge_AT_ReportMenuSelectionChanged(WifiBridge_Handle *h, uint32_t screen_code, uint8_t selected_index, uint8_t item_count, uint8_t source)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_at.h",
+        "line": 52
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Publica el reporte de Menu Selection Changed dentro de Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 1663
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_AT_ReportScreenChanged",
+      "signature": "WifiBridge_Result WifiBridge_AT_ReportScreenChanged(WifiBridge_Handle *h, uint32_t screen_code, uint8_t source)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_at.h",
+        "line": 49
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Publica el reporte de Screen Changed dentro de Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 1653
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_AT_RequestBinaryAsset",
+      "signature": "WifiBridge_Result WifiBridge_AT_RequestBinaryAsset(WifiBridge_Handle *h, uint8_t asset_id)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_at.h",
+        "line": 58
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Solicita Binary Asset dentro de Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 1684
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_AT_RequestWifiNetworkDetail",
+      "signature": "WifiBridge_Result WifiBridge_AT_RequestWifiNetworkDetail(WifiBridge_Handle *h, const char *ssid)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_at.h",
+        "line": 46
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WifiBridge_AT_FindNetwork"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `WifiBridge_AT_FindNetwork` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 1621
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_AT_ResetNetworkSession",
+      "signature": "void WifiBridge_AT_ResetNetworkSession(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_at.h",
+        "line": 19
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "Permission_RevokeRemoteNode",
+        "UNER_App_OnAtNetworkDisconnected",
+        "WIFI_FLAG_CLEAR",
+        "memset"
+      ],
+      "writes": [
+        "at_active_op",
+        "at_deadline_ms",
+        "at_detected_capabilities",
+        "at_frame_queue_count",
+        "at_frame_queue_head",
+        "at_frame_queue_tail",
+        "at_ipd_active",
+        "at_ipd_expected_len",
+        "at_ipd_header_len",
+        "at_ipd_received_len",
+        "at_network_ready",
+        "at_network_stage",
+        "at_pending_close_link_id",
+        "at_send_payload_started",
+        "at_send_state",
+        "at_tcp_link_id",
+        "at_tx_len",
+        "at_udp_peer_last_rx_ms",
+        "at_udp_peer_port",
+        "at_udp_peer_valid",
+        "tx_busy"
+      ],
+      "description": "Restablece Network Session dentro de Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 1172
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_AT_ResetRxPos",
+      "signature": "void WifiBridge_AT_ResetRxPos(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_at.h",
+        "line": 18
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "rx_ready",
+        "rx_remaining"
+      ],
+      "writes": [
+        "at_rx_last_pos"
+      ],
+      "description": "Restablece Rx Pos dentro de Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 1403
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_AT_RxCheck",
+      "signature": "void WifiBridge_AT_RxCheck(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_at.h",
+        "line": 16
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WIFI_FLAG_CLEAR",
+        "WifiBridge_AT_ConsumeBytes",
+        "WifiBridge_AT_ResetRxPos",
+        "rx_ready",
+        "rx_remaining"
+      ],
+      "writes": [
+        "at_rx_last_pos"
+      ],
+      "description": "Consume nuevos bytes del buffer circular de recepción.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 1350
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_AT_SendCommand",
+      "signature": "WifiBridge_Result WifiBridge_AT_SendCommand(WifiBridge_Handle *h, uint8_t cmd, const uint8_t *payload, uint8_t len)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_at.h",
+        "line": 40
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WifiBridge_AT_Connect",
+        "WifiBridge_AT_Disconnect",
+        "WifiBridge_AT_GetStatus",
+        "WifiBridge_AT_Send",
+        "WifiBridge_AT_SendEspReboot",
+        "WifiBridge_AT_SetModeAP",
+        "WifiBridge_AT_SetModeSTA",
+        "WifiBridge_AT_StartAP",
+        "WifiBridge_AT_StartScan",
+        "WifiBridge_AT_StopAP",
+        "WifiBridge_AT_StopScan"
+      ],
+      "writes": [],
+      "description": "Envía Command dentro de Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 1555
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_AT_SendEspReboot",
+      "signature": "WifiBridge_Result WifiBridge_AT_SendEspReboot(WifiBridge_Handle *h, uint8_t boot_mode)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_at.h",
+        "line": 48
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WifiBridge_AT_Send"
+      ],
+      "writes": [
+        "at_reboot_mode",
+        "at_reboot_pending"
+      ],
+      "description": "Envía Esp Reboot dentro de Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 1636
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_AT_SendWifiCredentialRequest",
+      "signature": "WifiBridge_Result WifiBridge_AT_SendWifiCredentialRequest(WifiBridge_Handle *h, const char *ssid)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_at.h",
+        "line": 44
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WifiBridge_AT_Connect",
+        "WifiBridge_AT_CopyText",
+        "WifiBridge_SetRuntimeSsid_H"
+      ],
+      "writes": [],
+      "description": "Envía Wifi Credential Request dentro de Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 1603
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_AT_SetCredentials",
+      "signature": "WifiBridge_Result WifiBridge_AT_SetCredentials(WifiBridge_Handle *h, const char *ssid, const char *pass)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_at.h",
+        "line": 30
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WifiBridge_AT_CopyText",
+        "WifiBridge_SetRuntimeCredentials_H"
+      ],
+      "writes": [],
+      "description": "Configura Credentials dentro de Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 1494
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_AT_SetModeAP",
+      "signature": "WifiBridge_Result WifiBridge_AT_SetModeAP(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_at.h",
+        "line": 29
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WifiBridge_AT_Send"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `WifiBridge_AT_Send` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 1421
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_AT_SetModeSTA",
+      "signature": "WifiBridge_Result WifiBridge_AT_SetModeSTA(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_at.h",
+        "line": 28
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WifiBridge_AT_Send"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `WifiBridge_AT_Send` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 1416
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_AT_SetNetworkProtocol",
+      "signature": "WifiBridge_Result WifiBridge_AT_SetNetworkProtocol(WifiBridge_Handle *h, WifiBridgeNetworkProtocol protocol)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_at.h",
+        "line": 21
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WifiBridge_AT_ResetNetworkSession"
+      ],
+      "writes": [
+        "at_network_protocol",
+        "at_network_restart_pending"
+      ],
+      "description": "Configura Network Protocol dentro de Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 1217
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_AT_Start",
+      "signature": "WifiBridge_Result WifiBridge_AT_Start(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_at.h",
+        "line": 14
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WifiBridge_AT_ResetRxPos"
+      ],
+      "writes": [],
+      "description": "Inicia recepción y negociación del backend.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 1298
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_AT_StartNetworkService",
+      "signature": "WifiBridge_Result WifiBridge_AT_StartNetworkService(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_at.h",
+        "line": 20
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WifiBridge_AT_ResetNetworkSession"
+      ],
+      "writes": [
+        "at_network_restart_pending"
+      ],
+      "description": "Adapta la llamada a `WifiBridge_AT_ResetNetworkSession` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 1207
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_AT_StartScan",
+      "signature": "WifiBridge_Result WifiBridge_AT_StartScan(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_at.h",
+        "line": 35
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WifiBridge_AT_Send",
+        "clear_scan_results"
+      ],
+      "writes": [
+        "at_scan_count"
+      ],
+      "description": "Inicia Scan dentro de Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 1520
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_AT_StopScan",
+      "signature": "WifiBridge_Result WifiBridge_AT_StopScan(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_at.h",
+        "line": 36
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Detiene Scan dentro de Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 1529
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_Connect",
+      "signature": "WifiBridge_Result WifiBridge_Connect(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge.h",
+        "line": 41
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WifiBridge_DispatchCommand"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `WifiBridge_DispatchCommand` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge.c",
+        "line": 472
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_ConsumeConnectionLostEvent",
+      "signature": "uint8_t WifiBridge_ConsumeConnectionLostEvent(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge.h",
+        "line": 65
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [
+        "connection_lost_event"
+      ],
+      "description": "Consume la señal pendiente de pérdida de conexión.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge.c",
+        "line": 691
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_Disconnect",
+      "signature": "WifiBridge_Result WifiBridge_Disconnect(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge.h",
+        "line": 42
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WifiBridge_DispatchCommand"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `WifiBridge_DispatchCommand` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge.c",
+        "line": 477
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_EmitEvent",
+      "signature": "void WifiBridge_EmitEvent(WifiBridge_Handle *h, const WifiBridge_Event *evt)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge.h",
+        "line": 30
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "on_event"
+      ],
+      "writes": [
+        "last_event"
+      ],
+      "description": "Entrega un evento al callback de la aplicación.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge.c",
+        "line": 392
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_GetActiveBackend",
+      "signature": "WifiBridge_Backend WifiBridge_GetActiveBackend(const WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge.h",
+        "line": 81
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Consulta backend seleccionado por la detección.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge.c",
+        "line": 831
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_GetBackendLabel",
+      "signature": "const char *WifiBridge_GetBackendLabel(const WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge.h",
+        "line": 87
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WifiBridge_IsConnected"
+      ],
+      "writes": [],
+      "description": "Consulta Backend Label dentro de Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge.c",
+        "line": 878
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_GetBinaryAsset",
+      "signature": "uint8_t WifiBridge_GetBinaryAsset(WifiBridge_Handle *h, uint8_t asset_id, WifiBridge_BinaryAssetView *asset)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge.h",
+        "line": 76
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WifiBridge_AT_GetBinaryAsset",
+        "WifiBridge_UNER_GetBinaryAsset"
+      ],
+      "writes": [],
+      "description": "Consulta Binary Asset dentro de Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge.c",
+        "line": 778
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_GetCapabilities",
+      "signature": "WifiBridge_CapabilityMask_t WifiBridge_GetCapabilities(const WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge.h",
+        "line": 82
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WifiBridge_IsConnected"
+      ],
+      "writes": [],
+      "description": "Consulta máscara de operaciones anunciadas por el backend.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge.c",
+        "line": 843
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_GetMode",
+      "signature": "uint8_t WifiBridge_GetMode(const WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge.h",
+        "line": 86
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Consulta Mode dentro de Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge.c",
+        "line": 873
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_GetRuntimeCredentials_H",
+      "signature": "const WifiBridge_Credentials *WifiBridge_GetRuntimeCredentials_H(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge.h",
+        "line": 34
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Consulta Runtime Credentials H dentro de Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge.c",
+        "line": 438
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_GetScanResults",
+      "signature": "WifiBridge_Result WifiBridge_GetScanResults(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge.h",
+        "line": 45
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WifiBridge_DispatchCommand"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `WifiBridge_DispatchCommand` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge.c",
+        "line": 492
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_GetStatus",
+      "signature": "WifiBridge_Result WifiBridge_GetStatus(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge.h",
+        "line": 46
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WifiBridge_DispatchCommand"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `WifiBridge_DispatchCommand` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge.c",
+        "line": 497
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_GetWaitingCommandId",
+      "signature": "uint8_t WifiBridge_GetWaitingCommandId(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge.h",
+        "line": 80
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WifiBridge_AT_GetWaitingCommandId",
+        "WifiBridge_UNER_GetWaitingCommandId"
+      ],
+      "writes": [],
+      "description": "Consulta Waiting Command Id dentro de Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge.c",
+        "line": 814
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_HasCapability",
+      "signature": "uint8_t WifiBridge_HasCapability(const WifiBridge_Handle *h, WifiBridge_CapabilityMask_t capability)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge.h",
+        "line": 83
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WifiBridge_GetCapabilities"
+      ],
+      "writes": [],
+      "description": "Comprueba un bit de capacidad del backend.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge.c",
+        "line": 860
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_Init",
+      "signature": "WifiBridge_Result WifiBridge_Init(WifiBridge_Handle *h, void *huart, const WifiBridge_Hardware *hardware, const WifiBridge_Services *services, void *services_ctx, SystemHandle *system, WifiBridge_Credentials *credentials)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge.h",
+        "line": 17
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WifiBridge_AT_Init",
+        "WifiBridge_UNER_Init",
+        "memset"
+      ],
+      "writes": [
+        "active_backend",
+        "credentials",
+        "hardware",
+        "huart",
+        "mode",
+        "probe",
+        "services",
+        "services_ctx",
+        "system"
+      ],
+      "description": "Inicializa contexto de bridge o backend con sus puertos.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge.c",
+        "line": 262
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_IsConnected",
+      "signature": "uint8_t WifiBridge_IsConnected(const WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge.h",
+        "line": 85
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Consulta estado de conectividad del bridge, distinto de sesión PIN.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge.c",
+        "line": 836
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_IsWaitingValidation",
+      "signature": "uint8_t WifiBridge_IsWaitingValidation(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge.h",
+        "line": 79
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WifiBridge_AT_IsWaitingValidation",
+        "WifiBridge_UNER_IsWaitingValidation"
+      ],
+      "writes": [],
+      "description": "Indica si el backend espera finalizar una solicitud.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge.c",
+        "line": 797
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_OnError",
+      "signature": "void WifiBridge_OnError(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge.h",
+        "line": 26
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WIFI_FLAG_CLEAR",
+        "WIFI_FLAG_SET"
+      ],
+      "writes": [
+        "rx_started",
+        "tx_busy"
+      ],
+      "description": "Atiende fallo del backend de comunicación.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge.c",
+        "line": 364
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_OnIdleIrq",
+      "signature": "void WifiBridge_OnIdleIrq(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge.h",
+        "line": 22
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WifiBridge_RxCheck"
+      ],
+      "writes": [],
+      "description": "Notifica detección IDLE para atender bytes recibidos.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge.c",
+        "line": 339
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_OnRxComplete",
+      "signature": "void WifiBridge_OnRxComplete(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge.h",
+        "line": 25
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WifiBridge_RxCheck"
+      ],
+      "writes": [],
+      "description": "Notifica el hito de recepción DMA completa.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge.c",
+        "line": 359
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_OnRxHalfComplete",
+      "signature": "void WifiBridge_OnRxHalfComplete(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge.h",
+        "line": 24
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WifiBridge_RxCheck"
+      ],
+      "writes": [],
+      "description": "Notifica el hito de media recepción DMA.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge.c",
+        "line": 354
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_OnTxComplete",
+      "signature": "void WifiBridge_OnTxComplete(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge.h",
+        "line": 23
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WifiBridge_AT_OnTxComplete",
+        "WifiBridge_UNER_OnTxComplete"
+      ],
+      "writes": [],
+      "description": "Notifica final de transmisión UART y permite avanzar la cola.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge.c",
+        "line": 344
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_Process",
+      "signature": "void WifiBridge_Process(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge.h",
+        "line": 20
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WifiBridge_AT_Process",
+        "WifiBridge_UNER_Process"
+      ],
+      "writes": [],
+      "description": "Avanza la máquina de estados y operaciones diferidas del backend.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge.c",
+        "line": 312
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_RegisterAliveResponse",
+      "signature": "void WifiBridge_RegisterAliveResponse(WifiBridge_Handle *h, uint8_t mode)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge.h",
+        "line": 61
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WifiBridge_ProbeBackend",
+        "WifiBridge_RegisterBackendAlive"
+      ],
+      "writes": [],
+      "description": "Registra respuesta de mantenimiento de conexión.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge.c",
+        "line": 640
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_RegisterBackendAlive",
+      "signature": "void WifiBridge_RegisterBackendAlive(WifiBridge_Handle *h, WifiBridge_Backend backend, uint8_t mode)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge.h",
+        "line": 62
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "CLEAR_FLAG",
+        "SET_FLAG",
+        "WifiBridge_AT_ResetNetworkSession",
+        "WifiBridge_AT_StartNetworkService",
+        "WifiBridge_SetModeFlags",
+        "now_ms"
+      ],
+      "writes": [
+        "active_backend",
+        "alive_pending",
+        "connection_lost_event",
+        "last_rx_ms",
+        "missed_alive_count",
+        "mode"
+      ],
+      "description": "Registra evidencia de actividad del backend.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge.c",
+        "line": 654
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_ReportCarModeChanged",
+      "signature": "WifiBridge_Result WifiBridge_ReportCarModeChanged(WifiBridge_Handle *h, uint8_t mode)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge.h",
+        "line": 74
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WifiBridge_AT_ReportCarModeChanged",
+        "WifiBridge_UNER_ReportCarModeChanged"
+      ],
+      "writes": [],
+      "description": "Publica el reporte de Car Mode Changed dentro de Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge.c",
+        "line": 744
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_ReportMenuSelectionChanged",
+      "signature": "WifiBridge_Result WifiBridge_ReportMenuSelectionChanged(WifiBridge_Handle *h, uint32_t screen_code, uint8_t selected_index, uint8_t item_count, uint8_t source)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge.h",
+        "line": 69
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WifiBridge_AT_ReportMenuSelectionChanged",
+        "WifiBridge_UNER_ReportMenuSelectionChanged"
+      ],
+      "writes": [],
+      "description": "Publica el reporte de Menu Selection Changed dentro de Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge.c",
+        "line": 723
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_ReportScreenChanged",
+      "signature": "WifiBridge_Result WifiBridge_ReportScreenChanged(WifiBridge_Handle *h, uint32_t screen_code, uint8_t source)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge.h",
+        "line": 66
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WifiBridge_AT_ReportScreenChanged",
+        "WifiBridge_UNER_ReportScreenChanged"
+      ],
+      "writes": [],
+      "description": "Publica el reporte de Screen Changed dentro de Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge.c",
+        "line": 704
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_RequestBinaryAsset",
+      "signature": "WifiBridge_Result WifiBridge_RequestBinaryAsset(WifiBridge_Handle *h, uint8_t asset_id)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge.h",
+        "line": 75
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WifiBridge_AT_RequestBinaryAsset",
+        "WifiBridge_UNER_RequestBinaryAsset"
+      ],
+      "writes": [],
+      "description": "Solicita Binary Asset dentro de Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge.c",
+        "line": 761
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_RequestWifiNetworkDetail",
+      "signature": "WifiBridge_Result WifiBridge_RequestWifiNetworkDetail(WifiBridge_Handle *h, const char *ssid)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge.h",
+        "line": 55
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WifiBridge_AT_RequestWifiNetworkDetail",
+        "WifiBridge_UNER_RequestWifiNetworkDetail"
+      ],
+      "writes": [],
+      "description": "Solicita Wifi Network Detail dentro de Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge.c",
+        "line": 551
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_ResetRxPos",
+      "signature": "void WifiBridge_ResetRxPos(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge.h",
+        "line": 27
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WifiBridge_AT_ResetRxPos",
+        "WifiBridge_UNER_ResetRxPos"
+      ],
+      "writes": [],
+      "description": "Restablece Rx Pos dentro de Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge.c",
+        "line": 375
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_RxCheck",
+      "signature": "void WifiBridge_RxCheck(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge.h",
+        "line": 21
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WIFI_FLAG_SET",
+        "WifiBridge_UNER_RxCheck"
+      ],
+      "writes": [],
+      "description": "Consume nuevos bytes del buffer circular de recepción.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge.c",
+        "line": 329
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_SendAlive",
+      "signature": "WifiBridge_Result WifiBridge_SendAlive(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge.h",
+        "line": 58
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WifiBridge_SendAliveWithWebPeriod"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `WifiBridge_SendAliveWithWebPeriod` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge.c",
+        "line": 586
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_SendAliveWithWebPeriod",
+      "signature": "WifiBridge_Result WifiBridge_SendAliveWithWebPeriod(WifiBridge_Handle *h, uint16_t web_period_ms)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge.h",
+        "line": 59
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WifiBridge_GetAliveMaxMisses",
+        "WifiBridge_MarkConnectionLost",
+        "WifiBridge_ProbeBackend",
+        "WifiBridge_Process",
+        "WifiBridge_RxCheck",
+        "WifiBridge_SendAliveForBackend",
+        "WifiBridge_ToggleProbe",
+        "now_ms"
+      ],
+      "writes": [
+        "alive_pending",
+        "last_probe_ms",
+        "missed_alive_count"
+      ],
+      "description": "Envía Alive With Web Period dentro de Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge.c",
+        "line": 591
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_SendCommand",
+      "signature": "WifiBridge_Result WifiBridge_SendCommand(WifiBridge_Handle *h, uint8_t cmd, const uint8_t *payload, uint8_t len)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge.h",
+        "line": 49
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WifiBridge_DispatchCommand",
+        "WifiBridge_SendAliveWithWebPeriod"
+      ],
+      "writes": [],
+      "description": "Envía Command dentro de Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge.c",
+        "line": 512
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_SendEspReboot",
+      "signature": "WifiBridge_Result WifiBridge_SendEspReboot(WifiBridge_Handle *h, uint8_t boot_mode)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge.h",
+        "line": 57
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WifiBridge_AT_SendEspReboot",
+        "WifiBridge_UNER_SendEspReboot"
+      ],
+      "writes": [],
+      "description": "Envía Esp Reboot dentro de Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge.c",
+        "line": 569
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_SendWifiCredentialRequest",
+      "signature": "WifiBridge_Result WifiBridge_SendWifiCredentialRequest(WifiBridge_Handle *h, const char *ssid)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge.h",
+        "line": 53
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WifiBridge_AT_SendWifiCredentialRequest",
+        "WifiBridge_UNER_SendWifiCredentialRequest"
+      ],
+      "writes": [],
+      "description": "Envía Wifi Credential Request dentro de Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge.c",
+        "line": 533
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_SetCredentials",
+      "signature": "WifiBridge_Result WifiBridge_SetCredentials(WifiBridge_Handle *h, const char *ssid, const char *pass)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge.h",
+        "line": 38
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WifiBridge_AT_SetCredentials",
+        "WifiBridge_UNER_SetCredentials"
+      ],
+      "writes": [],
+      "description": "Configura Credentials dentro de Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge.c",
+        "line": 453
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_SetEventCallback",
+      "signature": "void WifiBridge_SetEventCallback(WifiBridge_Handle *h, WifiBridge_EventCallback cb)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge.h",
+        "line": 29
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [
+        "on_event"
+      ],
+      "description": "Registra receptor de eventos de bridge.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge.c",
+        "line": 385
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_SetModeAP",
+      "signature": "WifiBridge_Result WifiBridge_SetModeAP(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge.h",
+        "line": 37
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WifiBridge_DispatchCommand"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `WifiBridge_DispatchCommand` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge.c",
+        "line": 448
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_SetModeSTA",
+      "signature": "WifiBridge_Result WifiBridge_SetModeSTA(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge.h",
+        "line": 36
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WifiBridge_DispatchCommand"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `WifiBridge_DispatchCommand` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge.c",
+        "line": 443
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_SetRuntimeCredentials_H",
+      "signature": "WifiBridge_Result WifiBridge_SetRuntimeCredentials_H(WifiBridge_Handle *h, const char *ssid, const char *password)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge.h",
+        "line": 31
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WifiBridge_SetRuntimePassword_H",
+        "WifiBridge_SetRuntimeSsid_H"
+      ],
+      "writes": [],
+      "description": "Configura Runtime Credentials H dentro de Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge.c",
+        "line": 404
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_SetRuntimePassword_H",
+      "signature": "WifiBridge_Result WifiBridge_SetRuntimePassword_H(WifiBridge_Handle *h, const char *password)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge.h",
+        "line": 33
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WifiBridge_CopyRuntimeText"
+      ],
+      "writes": [],
+      "description": "Configura Runtime Password H dentro de Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge.c",
+        "line": 426
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_SetRuntimeSsid_H",
+      "signature": "WifiBridge_Result WifiBridge_SetRuntimeSsid_H(WifiBridge_Handle *h, const char *ssid)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge.h",
+        "line": 32
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WifiBridge_CopyRuntimeText"
+      ],
+      "writes": [],
+      "description": "Configura Runtime Ssid H dentro de Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge.c",
+        "line": 414
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_Start",
+      "signature": "WifiBridge_Result WifiBridge_Start(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge.h",
+        "line": 19
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WifiBridge_AT_Start",
+        "WifiBridge_ResetRxPos",
+        "WifiBridge_UNER_Start",
+        "enable_idle",
+        "rx_start"
+      ],
+      "writes": [
+        "rx_started"
+      ],
+      "description": "Inicia recepción y negociación del backend.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge.c",
+        "line": 292
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_StartAP",
+      "signature": "WifiBridge_Result WifiBridge_StartAP(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge.h",
+        "line": 47
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WifiBridge_DispatchCommand"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `WifiBridge_DispatchCommand` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge.c",
+        "line": 502
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_StartScan",
+      "signature": "WifiBridge_Result WifiBridge_StartScan(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge.h",
+        "line": 43
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WifiBridge_DispatchCommand"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `WifiBridge_DispatchCommand` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge.c",
+        "line": 482
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_StopAP",
+      "signature": "WifiBridge_Result WifiBridge_StopAP(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge.h",
+        "line": 48
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WifiBridge_DispatchCommand"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `WifiBridge_DispatchCommand` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge.c",
+        "line": 507
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_StopScan",
+      "signature": "WifiBridge_Result WifiBridge_StopScan(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge.h",
+        "line": 44
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WifiBridge_DispatchCommand"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `WifiBridge_DispatchCommand` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge.c",
+        "line": 487
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_UNER_Connect",
+      "signature": "WifiBridge_Result WifiBridge_UNER_Connect(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_uner.h",
+        "line": 25
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WifiBridge_UNER_SendCommand"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `WifiBridge_UNER_SendCommand` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_uner.c",
+        "line": 118
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_UNER_Disconnect",
+      "signature": "WifiBridge_Result WifiBridge_UNER_Disconnect(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_uner.h",
+        "line": 26
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WifiBridge_UNER_SendCommand"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `WifiBridge_UNER_SendCommand` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_uner.c",
+        "line": 123
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_UNER_GetBinaryAsset",
+      "signature": "uint8_t WifiBridge_UNER_GetBinaryAsset(WifiBridge_Handle *h, uint8_t asset_id, WifiBridge_BinaryAssetView *asset)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_uner.h",
+        "line": 51
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "UNER_App_GetBinaryAsset"
+      ],
+      "writes": [
+        "asset_id",
+        "data",
+        "height",
+        "len",
+        "width"
+      ],
+      "description": "Consulta Binary Asset dentro de Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_uner.c",
+        "line": 202
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_UNER_GetScanResults",
+      "signature": "WifiBridge_Result WifiBridge_UNER_GetScanResults(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_uner.h",
+        "line": 29
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WifiBridge_UNER_SendCommand"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `WifiBridge_UNER_SendCommand` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_uner.c",
+        "line": 138
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_UNER_GetStatus",
+      "signature": "WifiBridge_Result WifiBridge_UNER_GetStatus(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_uner.h",
+        "line": 30
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WifiBridge_UNER_SendCommand"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `WifiBridge_UNER_SendCommand` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_uner.c",
+        "line": 143
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_UNER_GetWaitingCommandId",
+      "signature": "uint8_t WifiBridge_UNER_GetWaitingCommandId(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_uner.h",
+        "line": 55
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "UNER_App_GetWaitingCommandId"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `UNER_App_GetWaitingCommandId` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_uner.c",
+        "line": 232
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_UNER_Init",
+      "signature": "WifiBridge_Result WifiBridge_UNER_Init(WifiBridge_Handle *h, void *huart)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_uner.h",
+        "line": 13
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "UNER_App_Init",
+        "WifiBridge_UNER_Result"
+      ],
+      "writes": [
+        "huart"
+      ],
+      "description": "Inicializa contexto de bridge o backend con sus puertos.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_uner.c",
+        "line": 27
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_UNER_IsWaitingValidation",
+      "signature": "uint8_t WifiBridge_UNER_IsWaitingValidation(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_uner.h",
+        "line": 54
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "UNER_App_IsWaitingValidation"
+      ],
+      "writes": [],
+      "description": "Indica si el backend espera finalizar una solicitud.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_uner.c",
+        "line": 226
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_UNER_OnTxComplete",
+      "signature": "void WifiBridge_UNER_OnTxComplete(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_uner.h",
+        "line": 17
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "UNER_App_OnUart1TxComplete"
+      ],
+      "writes": [],
+      "description": "Notifica final de transmisión UART y permite avanzar la cola.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_uner.c",
+        "line": 55
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_UNER_Process",
+      "signature": "void WifiBridge_UNER_Process(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_uner.h",
+        "line": 15
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "UNER_App_Poll"
+      ],
+      "writes": [],
+      "description": "Avanza la máquina de estados y operaciones diferidas del backend.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_uner.c",
+        "line": 43
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_UNER_ReportCarModeChanged",
+      "signature": "WifiBridge_Result WifiBridge_UNER_ReportCarModeChanged(WifiBridge_Handle *h, uint8_t mode)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_uner.h",
+        "line": 49
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "UNER_App_ReportCarModeChanged",
+        "WifiBridge_UNER_Result"
+      ],
+      "writes": [],
+      "description": "Publica el reporte de Car Mode Changed dentro de Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_uner.c",
+        "line": 190
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_UNER_ReportMenuSelectionChanged",
+      "signature": "WifiBridge_Result WifiBridge_UNER_ReportMenuSelectionChanged(WifiBridge_Handle *h, uint32_t screen_code, uint8_t selected_index, uint8_t item_count, uint8_t source)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_uner.h",
+        "line": 44
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "UNER_App_ReportMenuSelectionChanged",
+        "WifiBridge_UNER_Result"
+      ],
+      "writes": [],
+      "description": "Publica el reporte de Menu Selection Changed dentro de Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_uner.c",
+        "line": 177
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_UNER_ReportScreenChanged",
+      "signature": "WifiBridge_Result WifiBridge_UNER_ReportScreenChanged(WifiBridge_Handle *h, uint32_t screen_code, uint8_t source)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_uner.h",
+        "line": 41
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "UNER_App_ReportScreenChanged",
+        "WifiBridge_UNER_Result"
+      ],
+      "writes": [],
+      "description": "Publica el reporte de Screen Changed dentro de Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_uner.c",
+        "line": 169
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_UNER_RequestBinaryAsset",
+      "signature": "WifiBridge_Result WifiBridge_UNER_RequestBinaryAsset(WifiBridge_Handle *h, uint8_t asset_id)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_uner.h",
+        "line": 50
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "UNER_App_RequestBinaryAsset",
+        "WifiBridge_UNER_Result"
+      ],
+      "writes": [],
+      "description": "Solicita Binary Asset dentro de Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_uner.c",
+        "line": 196
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_UNER_RequestWifiNetworkDetail",
+      "signature": "WifiBridge_Result WifiBridge_UNER_RequestWifiNetworkDetail(WifiBridge_Handle *h, const char *ssid)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_uner.h",
+        "line": 38
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "UNER_App_RequestWifiNetworkDetail",
+        "WifiBridge_UNER_Result"
+      ],
+      "writes": [],
+      "description": "Solicita Wifi Network Detail dentro de Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_uner.c",
+        "line": 156
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_UNER_ResetRxPos",
+      "signature": "void WifiBridge_UNER_ResetRxPos(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_uner.h",
+        "line": 18
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "UNER_App_ResetUart1RxPos"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `UNER_App_ResetUart1RxPos` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_uner.c",
+        "line": 61
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_UNER_RxCheck",
+      "signature": "void WifiBridge_UNER_RxCheck(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_uner.h",
+        "line": 16
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "UNER_App_NotifyUart1Rx"
+      ],
+      "writes": [],
+      "description": "Consume nuevos bytes del buffer circular de recepción.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_uner.c",
+        "line": 49
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_UNER_SendCommand",
+      "signature": "WifiBridge_Result WifiBridge_UNER_SendCommand(WifiBridge_Handle *h, uint8_t cmd, const uint8_t *payload, uint8_t len)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_uner.h",
+        "line": 32
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "UNER_App_SendCommand",
+        "WifiBridge_UNER_Result"
+      ],
+      "writes": [],
+      "description": "Envía Command dentro de Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_uner.c",
+        "line": 67
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_UNER_SendEspReboot",
+      "signature": "WifiBridge_Result WifiBridge_UNER_SendEspReboot(WifiBridge_Handle *h, uint8_t boot_mode)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_uner.h",
+        "line": 40
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "UNER_App_SendEspReboot",
+        "WifiBridge_UNER_Result"
+      ],
+      "writes": [],
+      "description": "Envía Esp Reboot dentro de Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_uner.c",
+        "line": 163
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_UNER_SendWifiCredentialRequest",
+      "signature": "WifiBridge_Result WifiBridge_UNER_SendWifiCredentialRequest(WifiBridge_Handle *h, const char *ssid)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_uner.h",
+        "line": 36
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "UNER_App_SendWifiCredentialRequest",
+        "WifiBridge_SetRuntimeSsid_H",
+        "WifiBridge_UNER_Result"
+      ],
+      "writes": [],
+      "description": "Envía Wifi Credential Request dentro de Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_uner.c",
+        "line": 148
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_UNER_SetCredentials",
+      "signature": "WifiBridge_Result WifiBridge_UNER_SetCredentials(WifiBridge_Handle *h, const char *ssid, const char *pass)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_uner.h",
+        "line": 22
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WifiBridge_SetRuntimeCredentials_H",
+        "WifiBridge_UNER_SendCommand",
+        "memcpy"
+      ],
+      "writes": [],
+      "description": "Configura Credentials dentro de Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_uner.c",
+        "line": 86
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_UNER_SetModeAP",
+      "signature": "WifiBridge_Result WifiBridge_UNER_SetModeAP(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_uner.h",
+        "line": 21
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WifiBridge_UNER_SendCommand"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `WifiBridge_UNER_SendCommand` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_uner.c",
+        "line": 81
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_UNER_SetModeSTA",
+      "signature": "WifiBridge_Result WifiBridge_UNER_SetModeSTA(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_uner.h",
+        "line": 20
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WifiBridge_UNER_SendCommand"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `WifiBridge_UNER_SendCommand` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_uner.c",
+        "line": 76
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_UNER_Start",
+      "signature": "WifiBridge_Result WifiBridge_UNER_Start(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_uner.h",
+        "line": 14
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Inicia recepción y negociación del backend.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_uner.c",
+        "line": 37
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_UNER_StartScan",
+      "signature": "WifiBridge_Result WifiBridge_UNER_StartScan(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_uner.h",
+        "line": 27
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WifiBridge_UNER_SendCommand"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `WifiBridge_UNER_SendCommand` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_uner.c",
+        "line": 128
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "WifiBridge_UNER_StopScan",
+      "signature": "WifiBridge_Result WifiBridge_UNER_StopScan(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/wifi_bridge_uner.h",
+        "line": 28
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WifiBridge_UNER_SendCommand"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `WifiBridge_UNER_SendCommand` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_uner.c",
+        "line": 133
+      },
+      "linkage": "header"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "WifiBridge_CopyRuntimeText",
+      "signature": "static WifiBridge_Result WifiBridge_CopyRuntimeText(char *dst, size_t dst_len, const char *src)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge.c",
+        "line": 34
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Copy Runtime Text de Bridge Wi-Fi y backends UNER/AT; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "WifiBridge_SetModeFlags",
+      "signature": "static void WifiBridge_SetModeFlags(WifiBridge_Handle *h, uint8_t mode)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge.c",
+        "line": 61
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "CLEAR_FLAG",
+        "SET_FLAG"
+      ],
+      "writes": [],
+      "description": "Configura Mode Flags dentro de Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "WifiBridge_ClearModeFlags",
+      "signature": "static void WifiBridge_ClearModeFlags(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge.c",
+        "line": 75
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "CLEAR_FLAG"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `CLEAR_FLAG` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiBridge_MarkConnectionLost",
+      "signature": "static void WifiBridge_MarkConnectionLost(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge.c",
+        "line": 82
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "IS_FLAG_SET",
+        "WifiBridge_AT_ResetNetworkSession",
+        "WifiBridge_ClearModeFlags"
+      ],
+      "writes": [
+        "active_backend",
+        "alive_pending",
+        "connection_lost_event",
+        "missed_alive_count",
+        "mode",
+        "probe"
+      ],
+      "description": "Coordina `IS_FLAG_SET`, `WifiBridge_AT_ResetNetworkSession`, `WifiBridge_ClearModeFlags` para Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiBridge_ProbeBackend",
+      "signature": "static WifiBridge_Backend WifiBridge_ProbeBackend(const WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge.c",
+        "line": 105
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Probe Backend de Bridge Wi-Fi y backends UNER/AT; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "WifiBridge_ToggleProbe",
+      "signature": "static void WifiBridge_ToggleProbe(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge.c",
+        "line": 112
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [
+        "probe"
+      ],
+      "description": "Operación Toggle Probe de Bridge Wi-Fi y backends UNER/AT; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "WifiBridge_SendAliveForBackend",
+      "signature": "static WifiBridge_Result WifiBridge_SendAliveForBackend(WifiBridge_Handle *h, WifiBridge_Backend backend, uint16_t web_period_ms)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge.c",
+        "line": 123
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "WifiBridge_AT_SendCommand",
+        "WifiBridge_UNER_SendCommand"
+      ],
+      "writes": [],
+      "description": "Envía Alive For Backend dentro de Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "WifiBridge_CommandRequiredCapability",
+      "signature": "static WifiBridge_CapabilityMask_t WifiBridge_CommandRequiredCapability(uint8_t cmd)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge.c",
+        "line": 145
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Command Required Capability de Bridge Wi-Fi y backends UNER/AT; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "WifiBridge_DispatchCommand",
+      "signature": "static WifiBridge_Result WifiBridge_DispatchCommand(WifiBridge_Handle *h, uint8_t cmd, const uint8_t *payload, uint8_t len)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge.c",
+        "line": 235
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "WifiBridge_AT_SendCommand",
+        "WifiBridge_CommandRequiredCapability",
+        "WifiBridge_HasCapability",
+        "WifiBridge_UNER_SendCommand"
+      ],
+      "writes": [],
+      "description": "Coordina `WifiBridge_AT_SendCommand`, `WifiBridge_CommandRequiredCapability`, `WifiBridge_HasCapability` para Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiBridge_GetAliveMaxMisses",
+      "signature": "static uint8_t WifiBridge_GetAliveMaxMisses(const WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge.c",
+        "line": 322
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Consulta Alive Max Misses dentro de Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "WifiBridge_AT_StrLenBounded",
+      "signature": "static size_t WifiBridge_AT_StrLenBounded(const char *text, size_t max_len)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 27
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Str Len Bounded de Bridge Wi-Fi y backends UNER/AT; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "WifiBridge_AT_CopyText",
+      "signature": "static void WifiBridge_AT_CopyText(char *dst, size_t dst_len, const char *src)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 42
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Copy Text de Bridge Wi-Fi y backends UNER/AT; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "WifiBridge_AT_AppendText",
+      "signature": "static uint8_t WifiBridge_AT_AppendText(char *buf, size_t buf_len, uint16_t *pos, const char *text)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 60
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Append Text de Bridge Wi-Fi y backends UNER/AT; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "WifiBridge_AT_AppendQuoted",
+      "signature": "static uint8_t WifiBridge_AT_AppendQuoted(char *buf, size_t buf_len, uint16_t *pos, const char *text)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 79
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "WifiBridge_AT_AppendText"
+      ],
+      "writes": [],
+      "description": "Coordina `WifiBridge_AT_AppendText` para Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiBridge_AT_AppendU8",
+      "signature": "static uint8_t WifiBridge_AT_AppendU8(WifiBridge_Handle *h, char *buf, size_t buf_len, uint16_t *pos, uint8_t value)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 107
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Append U8 de Bridge Wi-Fi y backends UNER/AT; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "WifiBridge_AT_AppendU16",
+      "signature": "static uint8_t WifiBridge_AT_AppendU16(char *buf, size_t buf_len, uint16_t *pos, uint16_t value)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 137
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Append U16 de Bridge Wi-Fi y backends UNER/AT; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "WifiBridge_AT_AppendIp",
+      "signature": "static uint8_t WifiBridge_AT_AppendIp(char *buf, size_t buf_len, uint16_t *pos, const uint8_t ip[WIFI_BRIDGE_IP_LEN])",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 163
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "WifiBridge_AT_AppendText",
+        "WifiBridge_AT_AppendU16"
+      ],
+      "writes": [],
+      "description": "Coordina `WifiBridge_AT_AppendText`, `WifiBridge_AT_AppendU16` para Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiBridge_AT_ParseSigned",
+      "signature": "static int16_t WifiBridge_AT_ParseSigned(const char **cursor)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 180
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Decodifica Signed dentro de Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "WifiBridge_AT_ParseIp",
+      "signature": "static uint8_t WifiBridge_AT_ParseIp(const char *line, uint8_t ip[WIFI_BRIDGE_IP_LEN])",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 205
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "WifiBridge_AT_ParseSigned"
+      ],
+      "writes": [],
+      "description": "Decodifica Ip dentro de Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "WifiBridge_AT_IpIsZero",
+      "signature": "static uint8_t WifiBridge_AT_IpIsZero(const uint8_t ip[WIFI_BRIDGE_IP_LEN])",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 236
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Ip Is Zero de Bridge Wi-Fi y backends UNER/AT; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "WifiBridge_AT_ClearStaIp",
+      "signature": "static void WifiBridge_AT_ClearStaIp(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 242
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "memset"
+      ],
+      "writes": [],
+      "description": "Limpia Sta Ip dentro de Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "WifiBridge_AT_ClearApIp",
+      "signature": "static void WifiBridge_AT_ClearApIp(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 249
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "memset"
+      ],
+      "writes": [],
+      "description": "Limpia Ap Ip dentro de Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "WifiBridge_AT_StoreFirmwareVersion",
+      "signature": "static void WifiBridge_AT_StoreFirmwareVersion(WifiBridge_Handle *h, const char *line)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 256
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "strncmp"
+      ],
+      "writes": [],
+      "description": "Coordina `strncmp` para Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiBridge_AT_EncryptionText",
+      "signature": "static const char *WifiBridge_AT_EncryptionText(uint8_t enc)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 275
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Encryption Text de Bridge Wi-Fi y backends UNER/AT; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "WifiBridge_AT_FindNetwork",
+      "signature": "static int8_t WifiBridge_AT_FindNetwork(WifiBridge_Handle *h, const char *ssid)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 290
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "strncmp"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `strncmp` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiBridge_AT_StoreScanResult",
+      "signature": "static void WifiBridge_AT_StoreScanResult(WifiBridge_Handle *h, const char *ssid, uint8_t enc, int8_t rssi, uint8_t channel)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 305
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "WifiBridge_AT_CopyText",
+        "WifiBridge_AT_EncryptionText",
+        "WifiBridge_AT_FindNetwork"
+      ],
+      "writes": [],
+      "description": "Coordina `WifiBridge_AT_CopyText`, `WifiBridge_AT_EncryptionText`, `WifiBridge_AT_FindNetwork` para Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiBridge_AT_ParseCwlap",
+      "signature": "static void WifiBridge_AT_ParseCwlap(WifiBridge_Handle *h, const char *line)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 339
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "WifiBridge_AT_ParseSigned",
+        "WifiBridge_AT_StoreScanResult",
+        "memcpy",
+        "strchr"
+      ],
+      "writes": [],
+      "description": "Decodifica Cwlap dentro de Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "WifiBridge_AT_SetStaIp",
+      "signature": "static void WifiBridge_AT_SetStaIp(WifiBridge_Handle *h, const uint8_t ip[WIFI_BRIDGE_IP_LEN])",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 394
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Configura Sta Ip dentro de Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "WifiBridge_AT_SetApIp",
+      "signature": "static void WifiBridge_AT_SetApIp(WifiBridge_Handle *h, const uint8_t ip[WIFI_BRIDGE_IP_LEN])",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 407
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Configura Ap Ip dentro de Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "WifiBridge_AT_Emit",
+      "signature": "static void WifiBridge_AT_Emit(WifiBridge_Handle *h, WifiBridge_EventId id, uint8_t status)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 420
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "WIFI_FLAG_IS_SET",
+        "WifiBridge_AT_CopyText",
+        "WifiBridge_EmitEvent",
+        "memcpy",
+        "memset"
+      ],
+      "writes": [],
+      "description": "Coordina `WIFI_FLAG_IS_SET`, `WifiBridge_AT_CopyText`, `WifiBridge_EmitEvent` para Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiBridge_AT_CommandDone",
+      "signature": "static void WifiBridge_AT_CommandDone(WifiBridge_Handle *h, uint8_t ok)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 439
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "AppApConfig_OnEspApplyResponse",
+        "IS_FLAG_SET",
+        "WIFI_FLAG_CLEAR",
+        "WIFI_FLAG_SET",
+        "WifiBridge_AT_Emit",
+        "WifiBridge_AT_FinishQueuedSend",
+        "WifiBridge_AT_NetworkAdvance",
+        "WifiBridge_AT_Send",
+        "WifiBridge_AT_SendApConfig",
+        "WifiBridge_AT_SendApIpConfig",
+        "WifiBridge_RegisterBackendAlive",
+        "WifiBridge_SetRuntimeCredentials_H"
+      ],
+      "writes": [
+        "at_active_op",
+        "mode"
+      ],
+      "description": "Coordina `AppApConfig_OnEspApplyResponse`, `IS_FLAG_SET`, `WIFI_FLAG_CLEAR` para Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiBridge_AT_ParseUnsigned",
+      "signature": "static uint8_t WifiBridge_AT_ParseUnsigned(const char **cursor, uint32_t *value)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 571
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Decodifica Unsigned dentro de Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "WifiBridge_AT_FrameIsValid",
+      "signature": "static uint8_t WifiBridge_AT_FrameIsValid(WifiBridge_Handle *h, const uint8_t *frame, uint16_t len)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 591
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "checksum"
+      ],
+      "writes": [],
+      "description": "Coordina `checksum` para Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiBridge_AT_PeerMatches",
+      "signature": "static uint8_t WifiBridge_AT_PeerMatches(const uint8_t a[WIFI_BRIDGE_IP_LEN], uint16_t a_port, const uint8_t b[WIFI_BRIDGE_IP_LEN], uint16_t b_port)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 611
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "memcmp"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `memcmp` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiBridge_AT_ParseIpdHeader",
+      "signature": "static uint8_t WifiBridge_AT_ParseIpdHeader(WifiBridge_Handle *h, const char *header)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 619
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "WifiBridge_AT_CopyText",
+        "WifiBridge_AT_ParseIp",
+        "WifiBridge_AT_ParseUnsigned",
+        "memset",
+        "strlen",
+        "strncmp"
+      ],
+      "writes": [
+        "at_ipd_active",
+        "at_ipd_expected_len",
+        "at_ipd_link_id",
+        "at_ipd_peer_port",
+        "at_ipd_received_len"
+      ],
+      "description": "Decodifica Ipd Header dentro de Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "WifiBridge_AT_CompleteIpd",
+      "signature": "static void WifiBridge_AT_CompleteIpd(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 680
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_App_FeedUart1Bytes",
+        "WifiBridge_AT_FrameIsValid",
+        "WifiBridge_AT_PeerMatches",
+        "memcpy",
+        "now_ms"
+      ],
+      "writes": [
+        "at_ipd_active",
+        "at_ipd_expected_len",
+        "at_ipd_received_len",
+        "at_udp_peer_last_rx_ms",
+        "at_udp_peer_port",
+        "at_udp_peer_valid"
+      ],
+      "description": "Coordina `UNER_App_FeedUart1Bytes`, `WifiBridge_AT_FrameIsValid`, `WifiBridge_AT_PeerMatches` para Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiBridge_AT_NetworkAdvance",
+      "signature": "static void WifiBridge_AT_NetworkAdvance(WifiBridge_Handle *h, uint8_t ok)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 713
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "WifiBridge_AT_Send"
+      ],
+      "writes": [
+        "at_active_op",
+        "at_detected_capabilities",
+        "at_network_ready",
+        "at_network_restart_pending",
+        "at_network_stage"
+      ],
+      "description": "Coordina `WifiBridge_AT_Send` para Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiBridge_AT_FinishQueuedSend",
+      "signature": "static void WifiBridge_AT_FinishQueuedSend(WifiBridge_Handle *h, uint8_t ok)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 786
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "WIFI_FLAG_CLEAR"
+      ],
+      "writes": [
+        "at_active_op",
+        "at_deadline_ms",
+        "at_frame_queue_count",
+        "at_frame_queue_head",
+        "at_send_payload_started",
+        "at_send_state",
+        "tx_busy"
+      ],
+      "description": "Coordina `WIFI_FLAG_CLEAR` para Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiBridge_AT_StartQueuedSend",
+      "signature": "static WifiBridge_Result WifiBridge_AT_StartQueuedSend(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 809
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "WifiBridge_AT_AppendIp",
+        "WifiBridge_AT_AppendText",
+        "WifiBridge_AT_AppendU16",
+        "WifiBridge_AT_AppendU8",
+        "WifiBridge_AT_Send"
+      ],
+      "writes": [
+        "at_send_payload_started",
+        "at_send_state"
+      ],
+      "description": "Inicia Queued Send dentro de Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "WifiBridge_AT_ProcessNetwork",
+      "signature": "static void WifiBridge_AT_ProcessNetwork(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 856
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Permission_RevokeRemoteNode",
+        "UNER_App_OnAtNetworkDisconnected",
+        "WIFI_FLAG_IS_SET",
+        "WifiBridge_AT_AppendText",
+        "WifiBridge_AT_AppendU8",
+        "WifiBridge_AT_NetworkAdvance",
+        "WifiBridge_AT_Send",
+        "WifiBridge_AT_StartQueuedSend",
+        "now_ms"
+      ],
+      "writes": [
+        "at_network_restart_pending",
+        "at_network_stage",
+        "at_pending_close_link_id",
+        "at_udp_peer_valid"
+      ],
+      "description": "Coordina `Permission_RevokeRemoteNode`, `UNER_App_OnAtNetworkDisconnected`, `WIFI_FLAG_IS_SET` para Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiBridge_AT_ParseLine",
+      "signature": "static void WifiBridge_AT_ParseLine(WifiBridge_Handle *h, const char *line)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 899
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Permission_RevokeRemoteNode",
+        "SET_FLAG",
+        "UNER_App_OnAtNetworkDisconnected",
+        "WIFI_FLAG_CLEAR",
+        "WIFI_FLAG_SET",
+        "WifiBridge_AT_ClearApIp",
+        "WifiBridge_AT_ClearStaIp",
+        "WifiBridge_AT_CommandDone",
+        "WifiBridge_AT_Emit",
+        "WifiBridge_AT_FinishQueuedSend",
+        "WifiBridge_AT_IpIsZero",
+        "WifiBridge_AT_ParseCwlap",
+        "WifiBridge_AT_ParseIp",
+        "WifiBridge_AT_ParseSigned",
+        "WifiBridge_AT_ResetNetworkSession",
+        "WifiBridge_AT_SetApIp",
+        "WifiBridge_AT_SetStaIp",
+        "WifiBridge_AT_StartAP",
+        "WifiBridge_AT_StoreFirmwareVersion",
+        "WifiBridge_RegisterBackendAlive",
+        "memcpy",
+        "strcmp",
+        "strncmp",
+        "strstr"
+      ],
+      "writes": [
+        "at_network_restart_pending",
+        "at_pending_close_link_id",
+        "at_reboot_pending",
+        "at_scan_count",
+        "at_status_ap_ip_seen",
+        "at_status_sta_ip_seen",
+        "at_tcp_link_id",
+        "mode",
+        "status"
+      ],
+      "description": "Decodifica Line dentro de Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "WifiBridge_AT_ConsumeBytes",
+      "signature": "static void WifiBridge_AT_ConsumeBytes(WifiBridge_Handle *h, const uint8_t *data, uint16_t len)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 1026
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_App_FeedUart1Bytes",
+        "WIFI_FLAG_SET",
+        "WifiBridge_AT_CompleteIpd",
+        "WifiBridge_AT_FinishQueuedSend",
+        "WifiBridge_AT_ParseIpdHeader",
+        "WifiBridge_AT_ParseLine",
+        "now_ms",
+        "strncmp",
+        "tx"
+      ],
+      "writes": [
+        "at_deadline_ms",
+        "at_ipd_received_len",
+        "at_line_len",
+        "at_send_payload_started",
+        "at_send_state",
+        "tx_busy"
+      ],
+      "description": "Coordina `UNER_App_FeedUart1Bytes`, `WIFI_FLAG_SET`, `WifiBridge_AT_CompleteIpd` para Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiBridge_AT_Send",
+      "signature": "static WifiBridge_Result WifiBridge_AT_Send(WifiBridge_Handle *h, WifiBridge_AT_Operation op, const char *cmd)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 1096
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "WIFI_FLAG_CLEAR",
+        "WIFI_FLAG_IS_SET",
+        "WIFI_FLAG_SET",
+        "WifiBridge_AT_StrLenBounded",
+        "memcpy",
+        "now_ms",
+        "tx"
+      ],
+      "writes": [
+        "at_active_op",
+        "at_deadline_ms",
+        "at_tx_len",
+        "tx_busy"
+      ],
+      "description": "Envía Bridge Wi-Fi y backends UNER/AT dentro de Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "WifiBridge_AT_SendJoin",
+      "signature": "static WifiBridge_Result WifiBridge_AT_SendJoin(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 1147
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "WifiBridge_AT_AppendQuoted",
+        "WifiBridge_AT_AppendText",
+        "WifiBridge_AT_CopyText",
+        "WifiBridge_AT_Send",
+        "WifiBridge_GetRuntimeCredentials_H"
+      ],
+      "writes": [],
+      "description": "Envía Join dentro de Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "WifiBridge_AT_SendApConfig",
+      "signature": "static WifiBridge_Result WifiBridge_AT_SendApConfig(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 1426
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "AppApConfig_Get",
+        "WifiBridge_AT_AppendQuoted",
+        "WifiBridge_AT_AppendText",
+        "WifiBridge_AT_AppendU8",
+        "WifiBridge_AT_Send"
+      ],
+      "writes": [],
+      "description": "Envía Ap Config dentro de Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "WifiBridge_AT_SendApIpConfig",
+      "signature": "static WifiBridge_Result WifiBridge_AT_SendApIpConfig(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 1456
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "AppApConfig_Get",
+        "WifiBridge_AT_AppendText",
+        "WifiBridge_AT_AppendU8",
+        "WifiBridge_AT_Send",
+        "memcpy"
+      ],
+      "writes": [],
+      "description": "Envía Ap Ip Config dentro de Bridge Wi-Fi y backends UNER/AT.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "WifiBridge_AT_StartAP",
+      "signature": "static WifiBridge_Result WifiBridge_AT_StartAP(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 1484
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "WifiBridge_AT_Send"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `WifiBridge_AT_Send` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiBridge_AT_StopAP",
+      "signature": "static WifiBridge_Result WifiBridge_AT_StopAP(WifiBridge_Handle *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_at.c",
+        "line": 1489
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "WifiBridge_AT_Send"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `WifiBridge_AT_Send` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiBridge_UNER_Result",
+      "signature": "static WifiBridge_Result WifiBridge_UNER_Result(UNER_Status status)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/wifi_bridge_uner.c",
+        "line": 11
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Result de Bridge Wi-Fi y backends UNER/AT; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    }
+  ]
+}

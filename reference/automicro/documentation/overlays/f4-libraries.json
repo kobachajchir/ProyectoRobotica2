@@ -1,0 +1,686 @@
+{
+  "schemaVersion": 1,
+  "modules": [
+    {
+      "id": "f4:module/Core/Inc/am_port.h",
+      "slug": "ports",
+      "title": "Contratos neutrales de plataforma y control",
+      "kind": "contrato",
+      "files": [
+        "Core/Inc/am_port.h",
+        "Core/Inc/i2c_port.h",
+        "Core/Inc/control_ports.h"
+      ],
+      "prefixes": [],
+      "responsibility": "Define resultados, relojes y tablas de operaciones para conectar implementaciones sin incluir sus APIs concretas.",
+      "scope": "AM_Result conserva 0=OK, 1=ERROR, 2=BUSY y 3=TIMEOUT. Las tablas AM_PidOps, AM_OrientationOps, AM_BalanceOps, AM_DriveOps y AM_LineOps describen servicios de control. No ejecutan hardware por sí mismas.",
+      "state": "Las tablas son prestadas y los void* apuntan a instancias de la aplicación. El tipo opaco no comprueba en ejecución que el objeto corresponda a la tabla: el integrador debe emparejarlos. Los tipos *_data.h son vocabulario compartido, no dependencias de enlace con los drivers.",
+      "modularity": "Sin HAL. control_ports.h reúne varios modelos de datos del dominio: independencia de implementación, pero no independencia del esquema de datos AutoMicro.",
+      "lifecycle": [
+        "Construir tablas con duración suficiente y contextos válidos antes de inicializar consumidores.",
+        "AM_OrientationOps separa ready, calibrating, fresh, sequence y snapshot; no sustituir estas condiciones entre sí."
+      ],
+      "interactions": [
+        "app_control_ports.h conecta estas tablas con PID, MPU, balance y motores.",
+        "AM_LineOps permanece declarado; el seguidor actual usa LineFollow_Config_t.read/command/hold. No atribuirle un uso activo solo por existir."
+      ],
+      "limitations": [
+        "La ausencia de HAL en un header no prueba ausencia de dependencias transitivas.",
+        "No hay contrato general de exclusión mutua o reentrada; depende del consumidor."
+      ],
+      "attributes": {
+        "defaults": "Carga configuración PID por defecto en la estructura del llamador.",
+        "init": "Inicializa la instancia opaca con la configuración provista.",
+        "reset": "Reinicia memoria dinámica del controlador sin reemplazar su almacenamiento.",
+        "setpoint": "Configura la referencia escalar del PID.",
+        "gains": "Configura Kp, Ki y Kd del PID.",
+        "update": "Calcula el controlador con sus argumentos de medida/tiempo.",
+        "output": "Consulta la salida calculada; no ejecuta el control.",
+        "status": "Devuelve una vista prestada del estado del PID.",
+        "fresh": "Comprueba frescura de la orientación en el tiempo indicado.",
+        "front_tilt": "Consulta inclinación frontal del robot en grados.",
+        "sequence": "Consulta número de muestra para evitar reprocesar la misma adquisición.",
+        "attitude_ms": "Consulta tiempo de última actitud calculada.",
+        "snapshot": "Copia el snapshot de orientación a la estructura de salida.",
+        "stop": "Ordena parada de la tracción sin delegar el cálculo de seguridad al PWM.",
+        "brake": "Ordena frenado de la tracción.",
+        "apply": "Aplica porcentajes firmados izquierdo y derecho."
+      }
+    },
+    {
+      "id": "f4:module/Core/Inc/user_button.h",
+      "slug": "user-button",
+      "title": "Botón de usuario",
+      "kind": "núcleo",
+      "files": [
+        "Core/Inc/user_button.h",
+        "Core/Inc/types/button_state.h",
+        "Core/Src/user_button.c"
+      ],
+      "prefixes": [
+        "UserButton_"
+      ],
+      "responsibility": "Convierte un nivel eléctrico periódico en estado y banderas de pulsación del botón.",
+      "scope": "No configura GPIO ni decide navegación; interpreta activeLevel y mantiene contadores del pulsador.",
+      "state": "UserButton_Handle_t posee una copia de UserButton_Port, ButtonState_t y la polaridad activa. read_level recibe port.ctx. La aplicación consume state y sus flags; no existe una cola de eventos propia del botón.",
+      "modularity": "Lectura de GPIO inyectada y sin HAL en el núcleo. Usa tipos y macros de bits compartidos.",
+      "lifecycle": [
+        "UserButton_Init copia el puerto e inicializa el estado.",
+        "La aplicación llama Task10ms con cadencia de 10 ms y traduce flags a UserEvent_t."
+      ],
+      "interactions": [
+        "app_stm32_ports.h realiza la lectura HAL; app_tasks.c integra el muestreo con UiEventRouter."
+      ],
+      "limitations": [
+        "Cambiar la cadencia cambia la interpretación temporal de contadores y pulsaciones.",
+        "No llamar desde dos productores sin definir quién consume/limpia las banderas."
+      ],
+      "functions": {
+        "Init": "Copia puerto y polaridad e inicializa el estado del botón.",
+        "Task10ms": "Muestrea el nivel y actualiza contadores y flags de pulsación cada 10 ms."
+      }
+    },
+    {
+      "id": "f4:module/Core/Inc/encoder.h",
+      "slug": "encoder",
+      "title": "Encoder rotativo y pulsador integrado",
+      "kind": "núcleo",
+      "files": [
+        "Core/Inc/encoder.h",
+        "Core/Inc/encoder_types.h",
+        "Core/Src/encoder.c"
+      ],
+      "prefixes": [
+        "ENC_"
+      ],
+      "responsibility": "Convierte diferencias del contador de 16 bits en pasos, dirección, velocidad y aceleración del encoder.",
+      "scope": "Gestiona wrap, resto de pulsos y pulsador integrado; no conoce menús ni comandos remotos.",
+      "state": "ENC_Handle_t posee puerto copiado, prevCount, accumCount, pasos actuales/anteriores y btnState. Sus atributos son públicos en C; los getters evitan que el consumidor deba reconstruir el cálculo. calibrateCountPerStep debe representar una cantidad válida de pulsos por paso.",
+      "modularity": "No incluye HAL; read_count/reset_count/start/button_level aíslan el timer y GPIO. El sentido base del montaje está codificado dentro del cálculo: portable de plataforma, con convención física del proyecto.",
+      "lifecycle": [
+        "Init configura la instancia; Start inicia el contador y restablece su referencia.",
+        "Task_N10ms calcula delta con corrección de wrap, aplica delta=-delta y luego invertDirection; después extrae pasos completos.",
+        "La tarea de muestreo también llama ENC_Button_Task_10ms: no duplicar ese muestreo sin revisar el planificador."
+      ],
+      "interactions": [
+        "app_stm32_ports.h conecta TIM4; app_tasks.c convierte pasos a eventos. Las acciones remotas llegan al router por otra entrada y no pasan por esta inversión física."
+      ],
+      "limitations": [
+        "GetVelocity/GetAcceleration devuelven uint16_t aunque el cálculo convierte pasos con signo; para dirección numérica usar getters Signed o StepDelta.",
+        "GetScaledSteps devuelve al menos magnitud 1 incluso si lastStepDelta es cero; el consumidor debe aplicar su guarda de actividad."
+      ],
+      "functions": {
+        "Init": "Copia el puerto e inicializa período, escala y acumuladores del encoder.",
+        "Start": "Arranca el contador externo y reinicia referencias de muestreo.",
+        "SetDirectionInverted": "Configura la inversión opcional posterior al sentido base físico.",
+        "IsDirectionInverted": "Consulta la preferencia de inversión aplicada a esta instancia.",
+        "Button_Task_10ms": "Actualiza duración y flags del pulsador integrado.",
+        "Task_N10ms": "Calcula pasos y derivadas tras corregir wrap y aplicar las dos convenciones de dirección.",
+        "GetDirection": "Devuelve NONE, CW o CCW según los últimos pasos.",
+        "GetVelocity": "Devuelve el campo histórico de velocidad como uint16_t.",
+        "GetAcceleration": "Devuelve el campo histórico de aceleración como uint16_t.",
+        "GetStepDelta": "Devuelve los últimos pasos completos con signo.",
+        "GetSignedVelocity": "Devuelve lastStepDelta como velocidad firmada por intervalo.",
+        "GetSignedAcceleration": "Devuelve la variación firmada de pasos respecto del intervalo anterior.",
+        "GetScaledSteps": "Selecciona multiplicador firmado 1, 2 o 4 según la magnitud del último desplazamiento."
+      }
+    },
+    {
+      "id": "f4:module/Core/Inc/motor_control.h",
+      "slug": "motors",
+      "title": "Motores y tracción diferencial",
+      "kind": "núcleo",
+      "files": [
+        "Core/Inc/motor_control.h",
+        "Core/Inc/motor_control_types.h",
+        "Core/Src/motor_control.c"
+      ],
+      "prefixes": [
+        "MotorDrive_",
+        "Motor_"
+      ],
+      "responsibility": "Traduce porcentajes y dirección a los dos canales PWM de cada motor DRV8833.",
+      "scope": "Control de actuadores y prueba directa; no calcula equilibrio, trayectoria, frescura MPU ni permisos.",
+      "state": "Motor_Handle_t conserva recurso opaco htim, Motor_Port prestado, canales, mínimos por dirección, máximo y última consigna. MotorControl_Handle agrupa leftMotor/rightMotor y motorData para TEST. Los atributos describen orden aplicada, no velocidad medida.",
+      "modularity": "Hardware aislado por start y set_compare. Conserva semántica DRV8833 y dos canales por motor.",
+      "lifecycle": [
+        "Motor_Init configura canales y límites; Motor_Start habilita PWM a través del puerto.",
+        "Los setters limitan porcentajes y escriben compares; Stop y Brake representan acciones distintas sobre el puente."
+      ],
+      "interactions": [
+        "AM_DriveOps conecta el árbitro MotionControl a ambos motores.",
+        "La aplicación reserva control PWM directo para TEST y aplica permisos/guardas antes de invocarlo."
+      ],
+      "limitations": [
+        "Un retorno aceptado no demuestra movimiento físico.",
+        "PWM mínimo compensa zona muerta; porcentaje no equivale a cm/s. AutoMotion usa un perfil aparte."
+      ],
+      "functions": {
+        "Init": "Configura los motores o la pareja de tracción con canales y límites suministrados.",
+        "Start": "Inicia los canales PWM del motor mediante el puerto externo.",
+        "SetSpeedPercent": "Aplica magnitud porcentual limitada y dirección explícita.",
+        "SetSignedPercent": "Aplica porcentajes firmados; el signo selecciona el sentido de cada motor.",
+        "Forward": "Aplica avance con magnitud porcentual.",
+        "Backward": "Aplica retroceso con magnitud porcentual.",
+        "Stop": "Lleva ambos canales a parada libre.",
+        "Brake": "Aplica la combinación de canales usada para frenado.",
+        "SetMinPwm": "Actualiza los mínimos PWM de avance y retroceso.",
+        "SpeedPercentToPwm": "Convierte porcentaje a PWM usando mínimo direccional y máximo configurado.",
+        "ClampSpeedPercent": "Limita la magnitud de velocidad al rango porcentual del driver.",
+        "SpeedPercentToDisplay": "Convierte el porcentaje a un valor entero para presentación.",
+        "StopAll": "Detiene ambos motores de la tracción.",
+        "SetLeftPercent": "Aplica magnitud y dirección al motor izquierdo.",
+        "SetRightPercent": "Aplica magnitud y dirección al motor derecho.",
+        "SetBothPercent": "Aplica la misma magnitud y dirección a ambos motores.",
+        "SetLeftMinPwm": "Actualiza el mínimo PWM del motor izquierdo.",
+        "SetRightMinPwm": "Actualiza el mínimo PWM del motor derecho.",
+        "ApplyTestState": "Traslada motorData a PWM directo de ambos motores para TEST."
+      }
+    },
+    {
+      "id": "f4:module/Core/Inc/tcrt5000.h",
+      "slug": "infrared",
+      "title": "Sensores IR TCRT5000",
+      "kind": "núcleo",
+      "files": [
+        "Core/Inc/tcrt5000.h",
+        "Core/Inc/tcrt5000_types.h",
+        "Core/Inc/tcrt5000_data.h",
+        "Core/Src/tcrt5000.c"
+      ],
+      "prefixes": [
+        "TCRT5000_"
+      ],
+      "responsibility": "Da identidad y polaridad a ocho sensores ADC y controla semánticamente los emisores IR de grupos 5 y 3.",
+      "scope": "Incluye lecturas raw, normalización de presentación y evaluación geométrica de línea. La adquisición DMA y la calibración por sesión pertenecen a la aplicación y LineCalibration.",
+      "state": "TCRT5000_Handle posee puerto copiado y dos booleanos de emisores; el array volatile de ocho lecturas se recibe prestado. Las definiciones SensorDef relacionan identidad lógica, índice ADC y geometría; no reordenar el array por su posición visual.",
+      "modularity": "Sin HAL, pero el modelo de ocho sensores y dos grupos es específico del robot. initialize y set_emitters encapsulan plataforma.",
+      "lifecycle": [
+        "Init llama initialize y establece los estados de emisores.",
+        "Los cambios de iluminación necesitan asentamiento; leer ADC no acredita que corresponda al nuevo estado óptico.",
+        "ReadRouteSensorsEx transforma lecturas con configuración; el seguidor actual añade evaluación calibrada por LineFollow_Evaluate."
+      ],
+      "interactions": [
+        "app_stm32_ports.h conecta ADC y emisores activos bajos.",
+        "LineCalibration captura con distintas fases de luz; LineFollow consume error y confianza junto a frescura MPU."
+      ],
+      "limitations": [
+        "Distinguir raw ADC, normalizado de presentación y darkness calibrada.",
+        "Los umbrales estáticos de RouteProfile no sustituyen una calibración blanco/pista válida."
+      ],
+      "functions": {
+        "Init": "Inicializa el puerto y el estado lógico de los dos grupos de emisores.",
+        "GetLineSensorDef": "Devuelve la definición e índice ADC de un sensor de línea.",
+        "GetObjectSensorDef": "Devuelve la definición e índice ADC de un sensor de objetos.",
+        "GetSensorLabel": "Devuelve la etiqueta del identificador lógico IR.",
+        "GetRaw": "Lee el canal ADC indicado por una definición de sensor.",
+        "GetRawById": "Resuelve un ID lógico y devuelve su lectura raw.",
+        "NormalizeForDisplay": "Normaliza el valor ADC según polaridad para su presentación.",
+        "GetRouteProfile": "Elige umbrales estáticos según estado lógico de iluminación.",
+        "IsBlack": "Clasifica la lectura como negro usando el perfil recibido.",
+        "IsWhite": "Clasifica la lectura como blanco usando el perfil recibido.",
+        "GetDefaultLineConfig": "Carga geometría y anchura de línea predeterminadas.",
+        "SetLineBlackWidth": "Actualiza anchura negra y margen geométrico derivado.",
+        "GetRouteSensorPositionMm": "Devuelve la posición transversal del sensor de línea en milímetros.",
+        "ReadRouteSensors": "Evalúa los tres sensores de línea con configuración predeterminada.",
+        "ReadRouteSensorsEx": "Evalúa patrón, error lateral y alineación con configuración explícita.",
+        "GetRouteAlignmentText": "Devuelve el texto de la clasificación de alineación."
+      }
+    },
+    {
+      "id": "f4:module/Core/Inc/i2c_manager.h",
+      "slug": "i2c-manager",
+      "title": "I2C Manager",
+      "kind": "servicio",
+      "files": [
+        "Core/Inc/i2c_manager.h",
+        "Core/Src/i2c_manager.c"
+      ],
+      "prefixes": [
+        "I2C_Manager_"
+      ],
+      "responsibility": "Arbitra una concesión exclusiva de bus entre clientes y enruta finalizaciones y errores al propietario actual.",
+      "scope": "Dos entradas de dispositivo, solicitudes pendientes, política, desempate y watchdog de lease; no interpreta registros OLED/MPU.",
+      "state": "I2C_ManagerHandle conserva hardware prestado, recurso opaco hi2c, tabla devices, owner/last_owner, lease y contadores de callbacks espurios. Cada I2C_DeviceEntry contiene callbacks y ctx del cliente. El registro de dirección usa addr_7bit; las operaciones de hardware siguen la convención del adaptador, por lo que no se debe desplazar dos veces la dirección.",
+      "modularity": "No depende de HAL. Sí contiene IDs DEVICE_ID_OLED/MPU y políticas que favorecen esos IDs: desacoplado de implementaciones, con conocimiento del dominio. Prioridad efectiva se calcula desde pending_prio y policy; el campo priority registrado no basta para explicar la selección.",
+      "lifecycle": [
+        "Init prepara tabla y lease; RegisterDevice instala callbacks de cada cliente.",
+        "RequestBusPrio deja una solicitud pendiente o concede el bus; on_granted puede ocurrir durante la solicitud.",
+        "OnTxCplt/OnRxCplt/OnError se llaman desde el adaptador HAL y notifican al propietario.",
+        "ReleaseBus cede a otro pendiente; Tick aplica el watchdog de concesión."
+      ],
+      "interactions": [
+        "OLED y MPU se conectan a través de AppI2cBinding; no se llaman directamente.",
+        "app_tasks.c reenvía callbacks de memoria/master I2C al mismo gestor."
+      ],
+      "limitations": [
+        "Lease por defecto 120 ms; la operación del cliente debe finalizar o liberar el bus.",
+        "Callbacks de concesión pueden ejecutarse en el llamador y finalizaciones en contexto de IRQ; no se garantiza reentrada o exclusión RTOS.",
+        "Probe/read/write síncronos de arranque no se convierten en transferencias asíncronas por existir el gestor."
+      ],
+      "functions": {
+        "Init": "Inicializa árbitro, backend y timeout de concesión.",
+        "RegisterDevice": "Registra ID, dirección, prioridad y callbacks de un cliente.",
+        "RequestBusPrio": "Solicita el bus con prioridad acumulable y concede cuando corresponde.",
+        "RequestBus": "Solicita el bus usando la prioridad regular.",
+        "ReleaseBus": "Libera la propiedad del cliente y busca la siguiente solicitud pendiente.",
+        "SetPolicy": "Selecciona política balanced, priorizar MPU o priorizar OLED.",
+        "GetPolicy": "Consulta la política actual de arbitraje.",
+        "GetOwner": "Consulta el ID propietario o NONE.",
+        "GetAddress7": "Consulta la dirección registrada de siete bits.",
+        "IsAddressReady": "Sondea disponibilidad de dirección mediante el backend síncrono.",
+        "OnTxCplt": "Enruta finalización TX al propietario del recurso de bus.",
+        "OnRxCplt": "Enruta finalización RX al propietario del recurso de bus.",
+        "OnError": "Enruta error de bus al cliente propietario.",
+        "Tick": "Detecta vencimiento de lease y aplica la recuperación/notificación prevista."
+      }
+    },
+    {
+      "id": "f4:module/Core/Inc/mpu9250.h",
+      "slug": "mpu9250",
+      "title": "MPU9250 y estimación de actitud",
+      "kind": "núcleo",
+      "files": [
+        "Core/Inc/mpu9250.h",
+        "Core/Inc/mpu9250_types.h",
+        "Core/Inc/mpu9250_data.h",
+        "Core/Src/mpu9250.c"
+      ],
+      "prefixes": [
+        "MPU9250_",
+        "MPU_"
+      ],
+      "responsibility": "Adquiere aceleración, giro, temperatura y magnetómetro, calibra sesgos y produce orientación/snapshots del robot.",
+      "scope": "Driver MPU9250/AK8963, conversión de unidades y filtro de actitud. No acciona motores ni publica directamente WebSocket.",
+      "state": "MPU9250_Handle_t conserva AM_I2C_DevicePort prestado, buffers TX/RX persistentes, transfer_state, datos, latest, calibración, filtro y tiempos. trigger es una bandera externa; on_data_ready_cb es un callback histórico sin ctx. GetLatest copia; GetData devuelve una vista del almacenamiento de la instancia.",
+      "modularity": "Sin handle HAL ni dependencia del tipo I2C_ManagerHandle. Comparte modelos de datos y macros AutoMicro. El montaje fija Y/pitch como inclinación frontal y X/roll como lateral.",
+      "lifecycle": [
+        "Init enlaza estado y puerto; BindPort registra callbacks ante el backend.",
+        "Configure programa registros con operaciones síncronas y delay de arranque; adquisición posterior usa DMA.",
+        "Request* pasa IDLE → WAIT_GRANT → TX_REG → RX_DATA → IDLE; finalización RX libera bus y marca datos disponibles.",
+        "Process convierte/calibra/actualiza estimación y después invoca on_data_ready_cb; consultar frescura con tiempo real y secuencia."
+      ],
+      "interactions": [
+        "Comparte bus con SSD1306 mediante el gestor. AM_OrientationOps adapta sus lecturas para MotionControl y MotionEstimator.",
+        "AppPreferences conserva calibración; UNER_App serializa snapshots, no el layout crudo del handle."
+      ],
+      "limitations": [
+        "DMA de adquisición no elimina los delays y accesos síncronos de Configure.",
+        "IsCalibrated, flags válidos y IsSampleFresh son condiciones diferentes.",
+        "No tomar yaw integrado ni MotionEstimator como posición absoluta."
+      ],
+      "functions": {
+        "Init": "Inicializa instancia, puerto, callback de muestra y bandera de trigger.",
+        "BindPort": "Registra callbacks y dirección del sensor en el puerto I2C.",
+        "Configure": "Configura MPU/AK8963 mediante transferencias y esperas síncronas.",
+        "CalibrateGyro": "Inicia calibración de giroscopio con objetivo de muestras.",
+        "StartCalibration": "Inicia calentamiento y ventana temporal de calibración.",
+        "CheckTrigger": "Consume trigger y solicita adquisición completa cuando corresponde.",
+        "Process": "Procesa una adquisición terminada y publica el nuevo estado de muestra.",
+        "RequestAllData": "Solicita la adquisición agrupada de los datos del sensor.",
+        "RequestAccel": "Solicita lectura de acelerómetro.",
+        "RequestGyro": "Solicita lectura de giroscopio.",
+        "RequestTemp": "Solicita lectura de temperatura.",
+        "RequestOrientation": "Solicita los datos usados por la orientación.",
+        "GetData": "Devuelve vista prestada de datos enteros internos.",
+        "GetLatest": "Copia el último snapshot disponible a la salida del llamador.",
+        "IsSampleFresh": "Comprueba edad y validez de muestra frente a now_ms.",
+        "HasNewSample": "Compara secuencia actual con la última consumida.",
+        "ClearNewFlag": "Limpia la marca de nuevo dato sin producir otra muestra.",
+        "SetReferenceNow": "Fija la referencia angular a partir de la orientación actual.",
+        "GetOrientation": "Copia la orientación con la referencia vigente.",
+        "AttitudeInit": "Inicializa el filtro de actitud con ganancias y dt fijo.",
+        "AttitudeSetOffsets": "Configura correcciones de orientación del filtro.",
+        "AttitudeResetYaw": "Restablece la referencia yaw del filtro.",
+        "AttitudeUpdate": "Actualiza actitud con datos físicos normalizados.",
+        "ApplyCalibrationData": "Carga sesgos y referencias de calibración en la instancia.",
+        "GetCalibrationData": "Copia los datos de calibración que pueden persistirse.",
+        "GetNormalizedData": "Copia magnitudes convertidas a unidades físicas.",
+        "GetAttitude": "Copia la actitud calculada si está disponible.",
+        "GetMagCalibration": "Copia calibración del magnetómetro.",
+        "SetMagCalibration": "Aplica calibración del magnetómetro.",
+        "GetFrontTiltDeg": "Consulta inclinación frontal según el montaje Y/pitch del robot.",
+        "GetLateralTiltDeg": "Consulta inclinación lateral según el montaje X/roll del robot.",
+        "GetPitchDeg": "Consulta pitch mediante la convención pública del driver.",
+        "IsCalibrating": "Indica si hay una calibración en curso.",
+        "IsCalibrated": "Indica si la instancia tiene calibración disponible.",
+        "GetCalibrationProgressPercent": "Consulta avance porcentual de la calibración.",
+        "Convert": "Convierte lectura raw a las magnitudes internas del driver.",
+        "ReadWhoAmI": "Lee síncronamente el registro de identidad del dispositivo."
+      }
+    },
+    {
+      "id": "f4:module/Core/Inc/ssd1306.h",
+      "slug": "ssd1306",
+      "title": "OLED SSD1306",
+      "kind": "núcleo",
+      "files": [
+        "Core/Inc/ssd1306.h",
+        "Core/Inc/ssd1306_types.h",
+        "Core/Inc/ssd1306_defines.h",
+        "Core/Src/ssd1306.c"
+      ],
+      "prefixes": [
+        "ssd1306_",
+        "OLED_"
+      ],
+      "responsibility": "Rasteriza primitivas y texto en framebuffer y agenda su presentación por páginas/comandos al SSD1306.",
+      "scope": "Geometría 128×64/128×32, color lógico, cursor, rotación 0/180, cola de páginas y puerto I2C. No contiene navegación ni políticas PIN.",
+      "state": "SSD1306_Handle posee framebuffer, cola g_page_q[8], comandos persistentes, geometría y errores; presta bus y callback_ctx. Las operaciones _H reciben instancia explícita. on_page/on_raster/on_presented/on_empty informan distintos hitos, no son intercambiables.",
+      "modularity": "Usa AM_I2C_DevicePort y no incluye I2C_ManagerHandle ni MPU. Fuentes y tipos gráficos son contratos de datos. Los callbacks de UI sin argumento se adaptan fuera del driver.",
+      "lifecycle": [
+        "BindPort_H enlaza puerto y callbacks de bus; Init_H sondea y configura con esperas síncronas.",
+        "Init_H devuelve 1 para éxito y 0 para fallo: no interpretar ese resultado como AM_OK=0.",
+        "Dibujar modifica RAM; RequestPageUpdate_H/UpdateScreen_H solicitan envío y el avance DMA llega por callbacks.",
+        "La cola actualiza solicitudes por página, conserva prioridades y estado de transferencia; no se puede reutilizar buffers DMA arbitrariamente."
+      ],
+      "interactions": [
+        "OLED y MPU comparten arbitraje, no estado ni llamadas de dispositivo a dispositivo.",
+        "app_display.h y app_screens_ports.h conectan primitivas con UI. OledCanvas espera presentación y vigila errores."
+      ],
+      "limitations": [
+        "Presentar en RAM, aceptar la cola y terminar el envío son etapas distintas.",
+        "Existen ramas condicionales de DMA/manager/actualización continua; esta documentación no acredita todas las combinaciones.",
+        "La precisión de now_us del adaptador actual es milisegundos multiplicados por 1000.",
+        "Inverse diverge entre DrawPixel_H (borra salvo White) y líneas horizontal/vertical (XOR); AMDOC-F4-012 impide asumir semántica uniforme al portar."
+      ],
+      "functions": {
+        "Init_H": "Configura síncronamente el panel y solicita el primer refresco; devuelve 1/0.",
+        "BindPort_H": "Conecta el puerto I2C y registra callbacks del driver.",
+        "PresentFramebuffer_H": "Copia/presenta el framebuffer externo mediante la ruta de refresco del driver.",
+        "RequestPageUpdate_H": "Encola o actualiza una página con prioridad y decisión de conservar bus.",
+        "UpdateScreen_H": "Solicita el refresco del framebuffer según la configuración compilada.",
+        "UpdateScreenCompleted_H": "Consulta la marca de finalización de refresco.",
+        "GetErrorCount_H": "Consulta el contador acumulado de errores del driver.",
+        "SetContrast_H": "Solicita un comando de contraste al panel.",
+        "SetRotation_H": "Configura orientación de panel 0 o 180 grados.",
+        "Clear_H": "Limpia framebuffer y estado gráfico asociado sin demostrar envío físico.",
+        "WriteChar_H": "Rasteriza un carácter con FontDef y avanza el cursor.",
+        "WriteString_H": "Rasteriza una cadena con FontDef hasta final o falta de espacio.",
+        "DrawBitmap_H": "Rasteriza bitmap con el orden de bits esperado por esta entrada.",
+        "DrawBitmap_MSB_H": "Rasteriza bitmap con bits más significativos primero.",
+        "DrawQR_Fixed_H": "Rasteriza el QR con la geometría fija de esta API."
+      }
+    },
+    {
+      "id": "f4:module/Core/Inc/pid_controller.h",
+      "slug": "pid",
+      "title": "Controlador PID",
+      "kind": "núcleo",
+      "files": [
+        "Core/Inc/pid_controller.h",
+        "Core/Inc/pid_controller_types.h",
+        "Core/Inc/pid_controller_data.h",
+        "Core/Src/pid_controller.c"
+      ],
+      "prefixes": [
+        "PidController_"
+      ],
+      "responsibility": "Calcula control proporcional, integral y derivativo con límites, filtro derivativo y anti-windup.",
+      "scope": "Cálculo escalar con medida y dt entregados por el llamador; no adquiere sensores ni manda PWM.",
+      "state": "PidController_Handle contiene config y status. Status conserva error, contribuciones, salida raw/limitada, historia y saturación. GetStatus devuelve una vista const prestada, no una copia inmutable en el tiempo.",
+      "modularity": "Solo tipos estándar, AM_Result y matemáticas; no conoce balance, motores o MPU.",
+      "lifecycle": [
+        "GetDefaultConfig carga límites y dt predeterminados; Init prepara la instancia.",
+        "Update recibe valores/tiempo; Reset limpia memoria del controlador para evitar reutilizar acumulación anterior."
+      ],
+      "interactions": [
+        "BalanceControl usa AM_PidOps; la aplicación conserva la instancia PID separada de BalanceControl_Handle."
+      ],
+      "limitations": [
+        "dt en segundos; no entregar milisegundos directamente.",
+        "Cambiar ganancias o límites no implica reinicio de historia salvo que la API lo haga expresamente."
+      ],
+      "functions": {
+        "GetDefaultConfig": "Carga ganancias, límites, dt y filtro predeterminados.",
+        "Init": "Inicializa configuración e historia de la instancia PID.",
+        "Reset": "Limpia términos e historia del controlador.",
+        "SetGains": "Actualiza Kp, Ki y Kd.",
+        "SetOutputLimits": "Actualiza el intervalo permitido para salida.",
+        "SetIntegralLimits": "Actualiza el intervalo permitido para el término integral.",
+        "SetSetpoint": "Configura la referencia que comparará la siguiente actualización.",
+        "Update": "Calcula términos PID y salida limitada con la medida y dt recibidos.",
+        "GetOutput": "Consulta la última salida limitada.",
+        "GetStatus": "Devuelve vista const prestada del estado del cálculo."
+      }
+    },
+    {
+      "id": "f4:module/Core/Inc/balance_control.h",
+      "slug": "balance",
+      "title": "Balance de inclinación",
+      "kind": "núcleo",
+      "files": [
+        "Core/Inc/balance_control.h",
+        "Core/Inc/balance_control_types.h",
+        "Core/Inc/balance_control_data.h",
+        "Core/Src/balance_control.c"
+      ],
+      "prefixes": [
+        "BalanceControl_"
+      ],
+      "responsibility": "Convierte inclinación frontal filtrada y objetivo angular en esfuerzo motor porcentual común.",
+      "scope": "Configura el PID inyectado, tiempo, límites e inversión de salida. No accede a I2C ni a motores.",
+      "state": "BalanceControl_Handle conserva config/status; config.pid_ops y pid_ctx apuntan al PID externo. status expone referencia, medida, contribuciones y enabled. La aplicación es dueña de ambos handles.",
+      "modularity": "Desacoplado de la implementación PID a través de AM_PidOps; comparte sus modelos numéricos.",
+      "lifecycle": [
+        "Init configura el PID externo; SetEnabled y Reset controlan acumulación/historia.",
+        "Update recibe pitch en grados y reloj en ms, calcula dt y consulta salida PID."
+      ],
+      "interactions": [
+        "MotionControl desplaza target_pitch_deg para marcha y mezcla este esfuerzo común con el giro diferencial."
+      ],
+      "limitations": [
+        "Un BalanceControl enabled no acredita que el robot esté armado o que la muestra sea fresca: esas guardas las aplica MotionControl.",
+        "No compartir pid_ctx entre controles activos sin una política explícita."
+      ],
+      "functions": {
+        "GetDefaultConfig": "Carga ganancias y límites predeterminados del balance.",
+        "Init": "Configura el balance y su PID externo a partir del puerto recibido.",
+        "Reset": "Reinicia memoria de balance y PID.",
+        "SetEnabled": "Habilita o deshabilita cálculo del balance.",
+        "SetTargetPitchDeg": "Configura inclinación frontal objetivo en grados.",
+        "SetPid": "Actualiza ganancias PID del balance.",
+        "Update": "Calcula esfuerzo común a partir de pitch y tiempo actuales.",
+        "GetOutputPercent": "Consulta esfuerzo porcentual calculado.",
+        "GetStatus": "Devuelve vista prestada del estado de balance."
+      }
+    },
+    {
+      "id": "f4:module/Core/Inc/motion_control.h",
+      "slug": "motion",
+      "title": "Árbitro de movimiento",
+      "kind": "núcleo",
+      "files": [
+        "Core/Inc/motion_control.h",
+        "Core/Inc/motion_control_types.h",
+        "Core/Inc/motion_control_data.h",
+        "Core/Src/motion_control.c"
+      ],
+      "prefixes": [
+        "MotionControl_"
+      ],
+      "responsibility": "Arbitra intención de marcha/giro, balance y seguridad antes de aplicar salidas diferenciales a motores.",
+      "scope": "Armado, desarmado, rechazo, rampas, duración, inclinación segura, frescura de orientación y enclavamiento de seguridad.",
+      "state": "MotionControl_Handle posee config, command, status, consignas rampadas y secuencia procesada. config.motors/balance/mpu son contextos opacos de drive_ops/balance_ops/orientation. GetStatus expone guardas, motivo de rechazo, saturación y salida aplicada; command no es prueba de movimiento.",
+      "modularity": "Depende de operaciones y datos neutrales, sin llamar drivers concretos. El arbitraje y valores de fuente son semántica del robot.",
+      "lifecycle": [
+        "Init establece dependencias y estado seguro; Arm exige condiciones del sensor y orientación.",
+        "SetCommand registra intención temporal; Task revisa frescura/seguridad y calcula rampas, balance y mezcla.",
+        "EmergencyStop enclava seguridad; no equivale a una parada ordinaria y no se revierte por enviar otra consigna."
+      ],
+      "interactions": [
+        "LineFollow, Web, NRF y GOTO producen MotionControl_Command_t; la aplicación decide qué modo puede producirlo.",
+        "El puerto de orientación conserva ready/calibrating/fresh y secuencia por separado."
+      ],
+      "limitations": [
+        "Stop con COAST/BRAKE, Disarm y EmergencyStop tienen efectos distintos.",
+        "No llamar MotorDrive directo en modos normales para eludir guardas.",
+        "duration_ms/ramp_up_ms/ramp_down_ms son uint16_t, con límites de representación propios."
+      ],
+      "functions": {
+        "GetDefaultCommand": "Carga una orden de movimiento neutra con valores predeterminados.",
+        "Init": "Conecta operaciones externas e inicializa el árbitro en estado seguro.",
+        "SetCommand": "Evalúa y registra una intención de movimiento y su tiempo de inicio.",
+        "Arm": "Intenta armar el movimiento comprobando las guardas vigentes.",
+        "Disarm": "Desarma el movimiento y lleva la tracción a estado detenido.",
+        "IsArmed": "Consulta el estado de armado del árbitro.",
+        "Stop": "Detiene la orden con la modalidad de parada recibida.",
+        "EmergencyStop": "Aplica parada de seguridad con enclavamiento.",
+        "Task": "Actualiza seguridad, balance, rampas y mezcla diferencial con now_ms.",
+        "GetStatus": "Devuelve vista del estado aplicado y del motivo de rechazo."
+      }
+    },
+    {
+      "id": "f4:module/Core/Inc/motion_estimator.h",
+      "slug": "motion-estimator",
+      "title": "Estimador de movimiento relativo",
+      "kind": "núcleo",
+      "files": [
+        "Core/Inc/motion_estimator.h",
+        "Core/Inc/motion_estimator_types.h",
+        "Core/Inc/motion_estimator_data.h",
+        "Core/Src/motion_estimator.c"
+      ],
+      "prefixes": [
+        "MotionEstimator_"
+      ],
+      "responsibility": "Estima velocidad longitudinal relativa a corto plazo desde aceleración lineal de la IMU.",
+      "scope": "Filtrado, deadband, integración con fuga, confianza y flags de frescura/vibración/referencia. No es odometría absoluta ni mide ruedas.",
+      "state": "MotionEstimator_Handle conserva config/status y última secuencia; config.orientation/mpu prestan el proveedor. Status combina mg, m/s², m/s, grados y dps: no confundir unidades entre campos.",
+      "modularity": "Consume AM_OrientationOps y snapshot, sin incluir implementación MPU ni HAL.",
+      "lifecycle": [
+        "Init configura el modelo; Reset elimina historia.",
+        "Update usa muestra nueva, dt y condiciones de movimiento para actualizar estimación y confianza.",
+        "MarkExternalReference registra una referencia temporal del llamador."
+      ],
+      "interactions": [
+        "app_tasks.c actualiza estimación dentro de la secuencia de control; los reportes la exponen como estimación.",
+        "GOTO actual usa AutoMotion y perfiles de motor; no asumir que integra directamente velocity_mps de este módulo."
+      ],
+      "limitations": [
+        "La integración acumula deriva aun con fugas y guardas.",
+        "El indicador de confianza es heurístico, no precisión física certificada."
+      ],
+      "functions": {
+        "GetDefaultConfig": "Carga filtro, fugas, deadband y límites de confianza predeterminados.",
+        "Init": "Inicializa el estimador y conecta proveedor de orientación.",
+        "Reset": "Borra velocidad, tiempos e historia de muestras.",
+        "MarkExternalReference": "Registra una referencia externa con marca temporal.",
+        "Update": "Integra una muestra nueva y actualiza flags/confianza según el contexto recibido.",
+        "GetStatus": "Devuelve vista de velocidad estimada, unidades y flags de calidad."
+      }
+    },
+    {
+      "id": "f4:module/Core/Inc/line_follow_control.h",
+      "slug": "line-follow",
+      "title": "Calibración de línea y seguidor",
+      "kind": "núcleo",
+      "files": [
+        "Core/Inc/line_follow_control.h",
+        "Core/Inc/line_follow_control_types.h",
+        "Core/Inc/line_calibration.h",
+        "Core/Src/line_follow_control.c"
+      ],
+      "prefixes": [
+        "LineFollowControl_",
+        "LineCalibration_",
+        "LineFollow_"
+      ],
+      "responsibility": "Captura perfiles ópticos blanco/pista y convierte la línea calibrada en consignas de seguimiento.",
+      "scope": "Dos unidades lógicas comparten line_follow_control.c: LineCalibration_* y LineFollowControl_*. La primera usa fases de iluminación y ventanas DMA; la segunda evalúa ruta y gobierna una FSM SEARCH/TRACK/INTERSECTION/CROSS_COMMIT/RECOVER/FAULT.",
+      "state": "LineCalibration_Handle posee acumuladores volatile, ventanas[32][3], sesión, pose y perfil pendiente; store conserva perfiles blanco/pista y sus revisiones. LineFollowControl_Handle posee config/status, integral/derivada y secuencias. Config.read entrega una instantánea coherente de IR/IMU/guardas; command entrega forward/turn_ccw/lease_ms/now_ms; hold ordena detener.",
+      "modularity": "Núcleo sin drivers concretos. Tiene conocimiento compartido del esquema de calibración; separación lógica entre calibración y seguidor, pero implementación compilada en el mismo archivo.",
+      "lifecycle": [
+        "Init carga estado y puertos; Control usa operation y session para arrancar/confirmar/cancelar la calibración.",
+        "PushScan acumula enteros una vez por scan DMA; Task procesa pose, estabilidad, fases, calidad y persistencia fuera de esa acumulación.",
+        "Cada fase captura 32 ventanas de 40 scans útiles; conservar significado de las revisiones blanco/pista.",
+        "LineFollow_Evaluate obtiene oscuridad/error/confianza; Task del seguidor exige entradas válidas y manda órdenes con lease."
+      ],
+      "interactions": [
+        "La aplicación proporciona pose MPU, scans ADC y conmutación de emisores; AppPreferences persiste LineCalibration_Store.",
+        "El seguidor usa command/hold conectados a MotionControl, sin poseer sus motores o PID concreto.",
+        "UNER 0x1D/0x1E/0x1F controla sesión y publica estado de 168 bytes según el serializador de aplicación."
+      ],
+      "limitations": [
+        "Una pista basada en otra revisión de blanco no es intercambiable sin revisar las guardas.",
+        "La acumulación usa volatile entre DMA y tarea; eso no demuestra atomicidad completa ni portabilidad multihilo.",
+        "No confundir patrón ambiguo, pérdida de línea y datos IR vencidos: sus rechazos son distintos."
+      ],
+      "attributes": {
+        "read": "Copia entradas de sensores, secuencias, tiempos y guardas al snapshot del seguidor.",
+        "command": "Solicita marcha/giro CCW con lease y tiempo; false significa que el árbitro no aceptó.",
+        "hold": "Solicita detener el movimiento a la aplicación.",
+        "lights": "Selecciona ambos grupos de iluminación para una fase de calibración.",
+        "restore": "Restaura la iluminación/contexto que existía antes de calibrar.",
+        "save": "Persiste el store completo; false mantiene explícito el fallo de almacenamiento."
+      },
+      "functions": {
+        "LineCalibration_Init": "Inicializa calibración con puerto y store previamente persistido.",
+        "LineCalibration_Ready": "Comprueba disponibilidad y correspondencia de perfiles blanco/pista.",
+        "LineCalibration_Busy": "Indica si una fase de calibración sigue activa.",
+        "LineCalibration_Control": "Procesa una operación de sesión con su ID y tiempo.",
+        "LineCalibration_Task": "Avanza estabilidad, captura, calidad y guardado a partir de pose actual.",
+        "LineCalibration_PushScan": "Acumula un scan ADC nuevo con secuencia/tiempo sin hacer trabajo de persistencia.",
+        "LineFollow_Evaluate": "Transforma raw de tres sensores y perfiles en patrón, oscuridad y error lateral.",
+        "GetDefaultConfig": "Carga geometría, ganancias y límites del seguidor.",
+        "Init": "Inicializa la FSM con sus callbacks de lectura y movimiento.",
+        "Reset": "Restablece historia de seguimiento y estabilidad de patrón.",
+        "SetEnabled": "Activa o detiene la producción de consignas del seguidor.",
+        "SetLineBlackWidth": "Actualiza ancho de línea usado por el modelo geométrico.",
+        "Task": "Evalúa entradas/guardas, avanza FSM y solicita marcha/giro o hold.",
+        "GetStatus": "Devuelve vista de FSM, muestra, error y rechazo actuales.",
+        "GetFsmText": "Devuelve etiqueta de la fase del seguidor."
+      }
+    },
+    {
+      "id": "f4:module/Core/Inc/auto_motion.h",
+      "slug": "auto-motion",
+      "title": "GOTO y calibración de motores",
+      "kind": "núcleo",
+      "files": [
+        "Core/Inc/auto_motion.h",
+        "Core/Src/auto_motion.c"
+      ],
+      "prefixes": [
+        "AutoMotion_"
+      ],
+      "responsibility": "Planifica desplazamientos GOTO relativos y calibra un perfil de avance del vehículo.",
+      "scope": "Perfil de cinco puntos PWM/velocidad/rampa y cinco canales IR, estimación de avance y manejo de obstáculos. No implementa odometría de ruedas ni un mapa global.",
+      "state": "AutoMotion_Handle posee copia del puerto, perfil, último input, objetivo, posición estimada, fases, tiempos y métricas. read copia guardas/IMU/PWM/IR; command pide forward/turn con tiempo; hold detiene; save persiste AutoMotion_Profile. La serialización pública define 128 bytes de estado, 88 de perfil y 186 de calibración IR, distintos del sizeof del struct.",
+      "modularity": "Sin HAL y sin drivers concretos; callbacks de aplicación conectan sensores y movimiento. Los algoritmos y formatos siguen siendo del dominio AutoMicro.",
+      "lifecycle": [
+        "Init carga perfil persistido; Goto/Calibrate admiten una operación o devuelven razón de rechazo.",
+        "Task usa read, evolución temporal y command para avanzar; Cancel termina y solicita hold.",
+        "SetProfile/SetIr decodifican formatos binarios explícitos; State/GetProfile construyen salidas de protocolo."
+      ],
+      "interactions": [
+        "APP_AutoCommand traduce a MotionControl; APP_AutoRead reúne IMU, modo, motores e IR.",
+        "APP_AutoSave rechaza guardado en situaciones activas y persiste en preferencias.",
+        "ESP codifica las solicitudes 0x23..0x2A; Web presenta la misma misión y sus requisitos."
+      ],
+      "limitations": [
+        "Posición y velocidad son estimadas por modelo calibrado, no medidas absolutas.",
+        "Comprobar siempre reason y result_valid; recibir una respuesta de 128 bytes no implica éxito.",
+        "La calibración física y la exactitud de trayectoria no se comprobaron en esta entrega."
+      ],
+      "attributes": {
+        "read": "Copia estado coherente de modo, IMU, actuadores, IR y guardas.",
+        "command": "Solicita avance/giro al árbitro y devuelve si fue aceptado.",
+        "hold": "Solicita parada segura de la operación al integrador.",
+        "save": "Solicita persistir un perfil de motores; el retorno expresa éxito de almacenamiento."
+      },
+      "functions": {
+        "Init": "Inicializa misión, callbacks y perfil de calibración.",
+        "Busy": "Indica si una misión o calibración permanece activa.",
+        "Cancel": "Cancela la operación activa y solicita hold.",
+        "Task": "Avanza misión/calibración con sensores, tiempos y guardas actuales.",
+        "Goto": "Intenta iniciar un objetivo relativo x/y en centímetros y devuelve razón.",
+        "Calibrate": "Procesa operación de calibración con porcentaje, rampa y timeout.",
+        "SetIr": "Decodifica y aplica el bloque de calibración IR del protocolo.",
+        "SetProfile": "Decodifica y aplica el perfil de motores serializado.",
+        "State": "Serializa estado de misión/calibración en el buffer de salida de 128 bytes.",
+        "GetProfile": "Serializa perfil en el buffer de salida de 88 bytes."
+      }
+    }
+  ]
+}

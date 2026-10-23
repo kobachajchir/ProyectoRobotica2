@@ -1,0 +1,626 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "f4:module/Core/Inc/app_ap_config.h",
+  "slug": "ap-configuration",
+  "title": "Configuración deseada y aplicación de AP",
+  "target": "f4",
+  "kind": "integración",
+  "status": "source-documented",
+  "verification": "not-run-user-instruction",
+  "snapshotDate": "2026-10-20",
+  "responsibility": "Gestiona configuración AP persistida y su aplicación diferida al ESP con deadlines y reintento.",
+  "scope": "SSID, protección y reglas IPv4, patch deseado y estado de aplicación; no implementa el servidor Wi-Fi físico.",
+  "state": "ApHandle presta servicios, SystemHandle y bridge; posee applyState, notBefore y deadline. Ap_Context selecciona el contexto activo. Configuración deseada y conectividad observada son datos separados.",
+  "lifecycle": [
+    "Init establece estado; ApplyPatch revisa valores y actualiza preferencia deseada.",
+    "Task envía cuando el backend/estado lo permite; OnEspApplyResponse completa la operación.",
+    "RequestRetry reabre un intento sin inventar que la configuración ya está activa."
+  ],
+  "interactions": [
+    "AppPreferences conserva applyPending; WifiBridge envía al ESP y entrega resultado.",
+    "Web/Qt deben presentar deseado/pendiente/aplicado según respuesta real."
+  ],
+  "limitations": [
+    "No publicar el valor real de contraseñas en ejemplos.",
+    "La API histórica usa contexto global y requiere ciclo periódico para completar reintentos."
+  ],
+  "modularity": "Servicios externos para persistencia/envío, con tipos concretos de sistema/bridge y contexto global.",
+  "files": [
+    {
+      "path": "Core/Inc/app_ap_config.h",
+      "rootId": "f4",
+      "sha256": "ccb0571e22daee98f3952dc06f7806b81fe7e383bb04170daa45f9eea7332d17",
+      "includes": [
+        "stdbool.h",
+        "stdint.h",
+        "app_ap_config_data.h"
+      ]
+    },
+    {
+      "path": "Core/Inc/app_ap_config_data.h",
+      "rootId": "f4",
+      "sha256": "36780103f18e0ecdcc86572744bf8dc4ebe14037991d6c74814b0a9d3e7011ca",
+      "includes": [
+        "am_port.h"
+      ]
+    },
+    {
+      "path": "Core/Inc/ap_context.h",
+      "rootId": "f4",
+      "sha256": "a942da15f7860ea6606019192cbd0f48d6dede488d975dcff4a496cd021d0f9e",
+      "includes": [
+        "app_ap_config_data.h",
+        "app_preferences_types.h",
+        "wifi_bridge_types.h",
+        "system.h",
+        "system_flags.h"
+      ]
+    },
+    {
+      "path": "Core/Src/app_ap_config.c",
+      "rootId": "f4",
+      "sha256": "a1dd8db15e8ef144a46ce8cfa9d75361c6e53546d6482cc7c7355f3f2de73d83",
+      "includes": [
+        "ap_context.h",
+        "app_ap_config.h",
+        "string.h",
+        "utils/macros_utils.h"
+      ]
+    }
+  ],
+  "findings": [
+    "AMDOC-F4-007"
+  ],
+  "types": [
+    {
+      "name": "AppApConfig_t",
+      "fields": [
+        {
+          "name": "ssid",
+          "declaration": "char ssid[APP_AP_SSID_MAX_BYTES + 1u]",
+          "callback": false,
+          "ownerType": "AppApConfig_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/app_ap_config_data.h",
+            "line": 31
+          },
+          "description": "Dato de estado/configuración `ssid`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "password",
+          "declaration": "char password[APP_AP_PASSWORD_MAX_BYTES + 1u]",
+          "callback": false,
+          "ownerType": "AppApConfig_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/app_ap_config_data.h",
+            "line": 32
+          },
+          "description": "Dato de estado/configuración `password`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "protected",
+          "declaration": "bool protected",
+          "callback": false,
+          "ownerType": "AppApConfig_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/app_ap_config_data.h",
+            "line": 33
+          },
+          "description": "Dato de estado/configuración `protected`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ipv4",
+          "declaration": "uint8_t ipv4[4]",
+          "callback": false,
+          "ownerType": "AppApConfig_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/app_ap_config_data.h",
+            "line": 34
+          },
+          "description": "Dato de estado/configuración `ipv4`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "applyState",
+          "declaration": "AppApApplyState_t applyState",
+          "callback": false,
+          "ownerType": "AppApConfig_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/app_ap_config_data.h",
+            "line": 35
+          },
+          "description": "Dato de estado/configuración `applyState`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_ap_config_data.h",
+        "line": 31
+      }
+    },
+    {
+      "name": "AppApConfigPatch_t",
+      "fields": [
+        {
+          "name": "fieldMask",
+          "declaration": "uint8_t fieldMask",
+          "callback": false,
+          "ownerType": "AppApConfigPatch_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/app_ap_config_data.h",
+            "line": 39
+          },
+          "description": "Dato de estado/configuración `fieldMask`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "values",
+          "declaration": "AppApConfig_t values",
+          "callback": false,
+          "ownerType": "AppApConfigPatch_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/app_ap_config_data.h",
+            "line": 40
+          },
+          "description": "Dato de estado/configuración `values`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_ap_config_data.h",
+        "line": 39
+      }
+    },
+    {
+      "name": "ApServices",
+      "fields": [
+        {
+          "name": "now_ms",
+          "declaration": "uint32_t (*now_ms)(void)",
+          "callback": true,
+          "ownerType": "ApServices",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/ap_context.h",
+            "line": 8
+          },
+          "description": "Entrega reloj monotónico modular en milisegundos para deadlines y períodos."
+        },
+        {
+          "name": "AppPreferences_Get",
+          "declaration": "const AppPreferences_t * (*AppPreferences_Get)(void)",
+          "callback": true,
+          "ownerType": "ApServices",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/ap_context.h",
+            "line": 9
+          },
+          "description": "Operación App Preferences Get de Configuración deseada y aplicación de AP; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "AppPreferences_GetWifiApConfig",
+          "declaration": "void (*AppPreferences_GetWifiApConfig)(AppApConfig_t *out)",
+          "callback": true,
+          "ownerType": "ApServices",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/ap_context.h",
+            "line": 10
+          },
+          "description": "Operación App Preferences Get Wifi Ap Config de Configuración deseada y aplicación de AP; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "AppPreferences_SetWifiApApplyPending",
+          "declaration": "AM_Result (*AppPreferences_SetWifiApApplyPending)(bool pending)",
+          "callback": true,
+          "ownerType": "ApServices",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/ap_context.h",
+            "line": 11
+          },
+          "description": "Operación App Preferences Set Wifi Ap Apply Pending de Configuración deseada y aplicación de AP; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "AppPreferences_SetWifiApConfig",
+          "declaration": "AM_Result (*AppPreferences_SetWifiApConfig)(const AppApConfig_t *config, bool applyPending)",
+          "callback": true,
+          "ownerType": "ApServices",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/ap_context.h",
+            "line": 12
+          },
+          "description": "Operación App Preferences Set Wifi Ap Config de Configuración deseada y aplicación de AP; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "WifiBridge_GetActiveBackend",
+          "declaration": "WifiBridge_Backend (*WifiBridge_GetActiveBackend)(const WifiBridge_Handle *h)",
+          "callback": true,
+          "ownerType": "ApServices",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/ap_context.h",
+            "line": 13
+          },
+          "description": "Consulta backend seleccionado por la detección."
+        },
+        {
+          "name": "WifiBridge_IsWaitingValidation",
+          "declaration": "uint8_t (*WifiBridge_IsWaitingValidation)(WifiBridge_Handle *h)",
+          "callback": true,
+          "ownerType": "ApServices",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/ap_context.h",
+            "line": 14
+          },
+          "description": "Indica si el backend espera finalizar una solicitud."
+        },
+        {
+          "name": "WifiBridge_SendCommand",
+          "declaration": "WifiBridge_Result (*WifiBridge_SendCommand)(WifiBridge_Handle *h, uint8_t cmd, const uint8_t *payload, uint8_t len)",
+          "callback": true,
+          "ownerType": "ApServices",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/ap_context.h",
+            "line": 15
+          },
+          "description": "Operación Wifi Bridge Send Command de Configuración deseada y aplicación de AP; semántica fina pendiente de ampliación."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/ap_context.h",
+        "line": 8
+      }
+    },
+    {
+      "name": "ApHandle",
+      "fields": [
+        {
+          "name": "services",
+          "declaration": "const ApServices *services",
+          "callback": false,
+          "ownerType": "ApHandle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/ap_context.h",
+            "line": 21
+          },
+          "description": "Contrato de operaciones externo; conservar la tabla y su contexto durante el uso."
+        },
+        {
+          "name": "system",
+          "declaration": "SystemHandle *system",
+          "callback": false,
+          "ownerType": "ApHandle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/ap_context.h",
+            "line": 22
+          },
+          "description": "Referencia al estado compartido AutoMicro; introduce dependencia del modelo de aplicación."
+        },
+        {
+          "name": "wifiBridge",
+          "declaration": "WifiBridge_Handle *wifiBridge",
+          "callback": false,
+          "ownerType": "ApHandle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/ap_context.h",
+            "line": 23
+          },
+          "description": "Referencia al bridge concreto AutoMicro; su acceso está mediado por servicios."
+        },
+        {
+          "name": "appApApplyState",
+          "declaration": "AppApApplyState_t appApApplyState",
+          "callback": false,
+          "ownerType": "ApHandle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/ap_context.h",
+            "line": 24
+          },
+          "description": "Dato de estado/configuración `appApApplyState`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "appApNotBeforeMs",
+          "declaration": "uint32_t appApNotBeforeMs",
+          "callback": false,
+          "ownerType": "ApHandle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/ap_context.h",
+            "line": 25
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        },
+        {
+          "name": "appApApplyDeadlineMs",
+          "declaration": "uint32_t appApApplyDeadlineMs",
+          "callback": false,
+          "ownerType": "ApHandle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/ap_context.h",
+            "line": 26
+          },
+          "description": "Tiempo, período o marca temporal en milisegundos; ver el tipo y la operación que lo escribe."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/ap_context.h",
+        "line": 21
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "AppApConfig_ApplyPatch",
+      "signature": "AppApStatus_t AppApConfig_ApplyPatch(const AppApConfigPatch_t *patch, uint8_t *changedMask)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_ap_config.h",
+        "line": 14
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "AppApConfig_Get",
+        "AppApConfig_Ipv4IsValid",
+        "AppApConfig_PasswordIsValid",
+        "AppApConfig_SsidIsValid",
+        "AppPreferences_SetWifiApConfig",
+        "memcmp",
+        "memcpy",
+        "now_ms",
+        "strcmp"
+      ],
+      "writes": [],
+      "description": "Revisa un patch, guarda cambios y marca aplicación pendiente.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/app_ap_config.c",
+        "line": 143
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppApConfig_Get",
+      "signature": "void AppApConfig_Get(AppApConfig_t *out)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_ap_config.h",
+        "line": 13
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "AppPreferences_GetWifiApConfig"
+      ],
+      "writes": [
+        "applyState"
+      ],
+      "description": "Copia configuración AP deseada.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/app_ap_config.c",
+        "line": 134
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppApConfig_Init",
+      "signature": "void AppApConfig_Init(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_ap_config.h",
+        "line": 12
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "AppPreferences_Get",
+        "now_ms"
+      ],
+      "writes": [],
+      "description": "Inicializa estado de aplicación AP desde preferencias.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/app_ap_config.c",
+        "line": 124
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppApConfig_Ipv4IsValid",
+      "signature": "bool AppApConfig_Ipv4IsValid(const uint8_t ipv4[4])",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_ap_config.h",
+        "line": 17
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Consulta si los octetos cumplen las reglas AP.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/app_ap_config.c",
+        "line": 73
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppApConfig_OnEspApplyResponse",
+      "signature": "void AppApConfig_OnEspApplyResponse(uint8_t status)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_ap_config.h",
+        "line": 19
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "AppPreferences_SetWifiApApplyPending",
+        "now_ms"
+      ],
+      "writes": [],
+      "description": "Procesa el status recibido del ESP para la aplicación AP.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/app_ap_config.c",
+        "line": 224
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppApConfig_ParseIpv4",
+      "signature": "AppApStatus_t AppApConfig_ParseIpv4(const char *text, uint8_t out[4])",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_ap_config.h",
+        "line": 16
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "AppApConfig_Ipv4IsValid",
+        "memcpy"
+      ],
+      "writes": [],
+      "description": "Convierte IPv4 textual a cuatro octetos con reglas del módulo.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/app_ap_config.c",
+        "line": 85
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppApConfig_RequestRetry",
+      "signature": "void AppApConfig_RequestRetry(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_ap_config.h",
+        "line": 20
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "AppPreferences_Get",
+        "now_ms"
+      ],
+      "writes": [],
+      "description": "Programa un nuevo intento de aplicar la configuración deseada.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/app_ap_config.c",
+        "line": 216
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "AppApConfig_Task",
+      "signature": "void AppApConfig_Task(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/app_ap_config.h",
+        "line": 18
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "AppApConfig_Get",
+        "AppPreferences_Get",
+        "IS_FLAG_SET",
+        "WifiBridge_GetActiveBackend",
+        "WifiBridge_IsWaitingValidation",
+        "WifiBridge_SendCommand",
+        "memcpy",
+        "now_ms",
+        "strlen"
+      ],
+      "writes": [],
+      "description": "Avanza envío, timeout y aplicación pendiente de configuración.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/app_ap_config.c",
+        "line": 240
+      },
+      "linkage": "header"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "AppApConfig_StrLen",
+      "signature": "static size_t AppApConfig_StrLen(const char *text, size_t capacity)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/app_ap_config.c",
+        "line": 30
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Str Len de Configuración deseada y aplicación de AP; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "AppApConfig_SsidIsValid",
+      "signature": "static bool AppApConfig_SsidIsValid(const char *ssid)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/app_ap_config.c",
+        "line": 43
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "AppApConfig_StrLen"
+      ],
+      "writes": [],
+      "description": "Coordina `AppApConfig_StrLen` para Configuración deseada y aplicación de AP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "AppApConfig_PasswordIsValid",
+      "signature": "static bool AppApConfig_PasswordIsValid(const char *password, bool protected)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/app_ap_config.c",
+        "line": 59
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "AppApConfig_StrLen"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `AppApConfig_StrLen` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    }
+  ]
+}

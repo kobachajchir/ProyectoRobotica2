@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "id": "shared:screen/030208",
+  "symbol": "SCREEN_CODE_LINE_NOTICE",
+  "code": 197128,
+  "hex": "0x030208",
+  "decomposition": {
+    "menu": 3,
+    "submenu": 2,
+    "page": 8
+  },
+  "revision": "working-copy-hashes",
+  "confidence": "manual-review",
+  "family": "shared:screen-family/line",
+  "numericObservation": "same-literal",
+  "webDeclaration": {
+    "value": 197128,
+    "line": 81
+  },
+  "metadataEntryObserved": false,
+  "evidence": [
+    {
+      "repo": "f4",
+      "path": "Core/Inc/screen_codes.h",
+      "line": 42
+    },
+    {
+      "repo": "web",
+      "path": "src/screens/screenCodes.ts",
+      "line": 81
+    }
+  ],
+  "renderers": [],
+  "callGraph": {
+    "status": "lexical-candidates-only",
+    "edges": []
+  },
+  "f4References": [
+    {
+      "repo": "f4",
+      "path": "Core/Src/menu_definition.c",
+      "line": 214,
+      "kind": "lexical-reference"
+    }
+  ],
+  "variants": [
+    "MenuRender_LineNotice dibuja LineNoticeText(localLineNotice) y texto secundario según motivo."
+  ],
+  "fields": [
+    {
+      "name": "screenCode/source",
+      "type": "u32/u8 → number",
+      "units": "identidad",
+      "availability": "reported",
+      "note": "identifica pantalla/origen, no el perfil completo"
+    },
+    {
+      "name": "lineState/sessionId",
+      "type": "168 bytes → objeto JSON",
+      "units": "mixtas según campo",
+      "availability": "separately-queryable",
+      "note": "consultar stm.ir.lineCalibration.get; no se incorpora automáticamente al visor OLED"
+    }
+  ],
+  "actions": [
+    "USER corto o encoder corto/largo vuelven al menú principal mediante MenuLineNoticeEvents."
+  ],
+  "transitions": [
+    "Rechazo de calibración/seguimiento establece renderer y handler de aviso."
+  ],
+  "missingData": [
+    "El visor necesita parámetros del renderer, variante, borradores y selección efectiva; una página Web de calibración separada no es esa misma pantalla."
+  ],
+  "localOnly": [],
+  "findings": [
+    "AMDOC-WEB-009"
+  ],
+  "exactness": "not-established",
+  "notes": [
+    "Este aviso local no implica que OledUtils tenga una entrada temporizada en su cola; source NOTIFICATION solo identifica origen."
+  ],
+  "role": "notification-view"
+}

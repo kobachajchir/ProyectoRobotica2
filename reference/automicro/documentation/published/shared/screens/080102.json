@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "id": "shared:screen/080102",
+  "symbol": "SCREEN_CODE_WARNING_PIN_INCORRECT",
+  "code": 524546,
+  "hex": "0x080102",
+  "decomposition": {
+    "menu": 8,
+    "submenu": 1,
+    "page": 2
+  },
+  "revision": "working-copy-hashes",
+  "confidence": "manual-review",
+  "family": "shared:screen-family/permissions",
+  "numericObservation": "same-literal",
+  "webDeclaration": {
+    "value": 524546,
+    "line": 153
+  },
+  "metadataEntryObserved": true,
+  "evidence": [
+    {
+      "repo": "f4",
+      "path": "Core/Inc/screen_codes.h",
+      "line": 194
+    },
+    {
+      "repo": "web",
+      "path": "src/screens/screenCodes.ts",
+      "line": 153
+    }
+  ],
+  "renderers": [
+    {
+      "kind": "switch-case",
+      "path": "src/screens/screenRenderRegistry.ts",
+      "line": 490,
+      "builders": [
+        "buildScreen080102PinIncorrectLockCommands"
+      ],
+      "availability": "parameterized-candidate"
+    }
+  ],
+  "callGraph": {
+    "status": "lexical-candidates-only",
+    "edges": []
+  },
+  "f4References": [
+    {
+      "repo": "f4",
+      "path": "Core/Src/oled_utils.c",
+      "line": 271,
+      "kind": "lexical-reference"
+    },
+    {
+      "repo": "f4",
+      "path": "Core/Src/permissions_stub.c",
+      "line": 338,
+      "kind": "lexical-reference"
+    }
+  ],
+  "variants": [
+    "0x080104 distingue aviso de ingreso y formulario de permiso mediante source.",
+    "Input/waiting/denied/timeout/blocked y resultado de sesión son fases diferentes."
+  ],
+  "fields": [
+    {
+      "name": "screenCode/source",
+      "type": "u32/u8 → number",
+      "units": "identidad/fase",
+      "availability": "reported",
+      "note": "el source participa del discriminante"
+    },
+    {
+      "name": "pinDigits/pinIndex",
+      "type": "dígitos/índice local",
+      "units": "edición PIN",
+      "availability": "unavailable-remotely",
+      "note": "no se publican en el reporte de identidad; no usar ceros como observación"
+    },
+    {
+      "name": "estado de autenticación/TTL",
+      "type": "status/TTL",
+      "units": "ms/boolean",
+      "availability": "separately-queryable",
+      "note": "autoridad de sesión no es cursor local de edición"
+    }
+  ],
+  "actions": [
+    "Validación JSON usa screenCode/ámbito y espera resultado F4; los datos sensibles no se copian a documentación.",
+    "Los eventos de encoder/USER pasan antes por la prioridad Permission del router."
+  ],
+  "transitions": [
+    "Concesión ejecuta continuación registrada; cancelación/timeout/bloqueo siguen políticas propias.",
+    "Formulario PIN Web es entrada local y no una captura del framebuffer F4."
+  ],
+  "missingData": [
+    "La réplica del formulario físico no puede inferir dígitos/posición desde 0x52/0x95.",
+    "No confundir ACK de input consumido con permiso concedido."
+  ],
+  "localOnly": [],
+  "findings": [
+    "AMDOC-WEB-002"
+  ],
+  "exactness": "not-established",
+  "notes": [
+    "Una futura exposición de datos/píxeles debe definir permiso y enmascarado según el comportamiento deseado, mediante contrato explícito."
+  ],
+  "role": "not-resolved"
+}

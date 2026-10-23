@@ -1,0 +1,213 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "web:module/src/main.tsx",
+  "slug": "application",
+  "title": "Arranque, proveedores y rutas Web",
+  "target": "web",
+  "kind": "composición",
+  "status": "source-documented",
+  "snapshotDate": "2026-10-20",
+  "verification": "not-run-user-instruction",
+  "responsibility": "Monta React, proveedores y rutas que organizan el cliente del robot.",
+  "scope": "Composición de UI/estado; no ejecuta adquisición F4 ni sirve HTTP desde el navegador.",
+  "state": "Providers establecen ámbitos de socket, usuario, modo, sensores y pantalla; montar un provider dos veces crea estados distintos.",
+  "modularity": "Composición dependiente de React y router; las librerías de codecs/dibujo pueden ser puras fuera de esa composición.",
+  "lifecycle": [
+    "main monta aplicación; App crea árbol de proveedores/rutas.",
+    "Effects deben liberar listeners, timers y recursos al desmontar o cambiar dependencias."
+  ],
+  "interactions": [
+    "WebSocketContext conecta servicios remotos y las rutas consumen sus contextos.",
+    "Bundle generado se copia/serve desde ESP en otra etapa."
+  ],
+  "limitations": [
+    "Cambiar fuente no actualiza el bundle que ya sirve la placa.",
+    "No se abrió navegador ni se ejecutó build en esta entrega."
+  ],
+  "relationships": [],
+  "findings": [],
+  "files": [
+    {
+      "rootId": "web",
+      "path": "src/App.css",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "imports": [],
+      "analysisLevel": "support-inventory"
+    },
+    {
+      "rootId": "web",
+      "path": "src/App.tsx",
+      "sha256": "d7970b9dde5c51a919d47f82b59c78291a899472ee4f518314de83b00877e556",
+      "imports": [
+        "./App.css",
+        "./components/AppLoadingScreen",
+        "./components/ProtectedRoute",
+        "./components/PublicRoute",
+        "./components/RedirectRoot",
+        "./components/RootLayout",
+        "./components/StartupWelcome",
+        "./pages/NotFound",
+        "./utils/theme",
+        "react",
+        "react-router-dom",
+        "sonner"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/index.css",
+      "sha256": "65fcc24133b0ece47adf986a049f88fcc89f6d9fd2a9abce454c833b92fc76d7",
+      "imports": [],
+      "analysisLevel": "support-inventory"
+    },
+    {
+      "rootId": "web",
+      "path": "src/main.tsx",
+      "sha256": "b5fbfaa3ae523d1086f49f7cb3634ed797617669f6e07bde10b962b55043dd72",
+      "imports": [
+        "./App.tsx",
+        "./contexts/CarModeContext.tsx",
+        "./contexts/EspWifiStatusContext.tsx",
+        "./contexts/IrEmittersContext",
+        "./contexts/SavedOledScreensContext.tsx",
+        "./contexts/ScreenContext.tsx",
+        "./contexts/ScreenStreamModalContext.tsx",
+        "./contexts/UserContext.tsx",
+        "./contexts/WebSocketContext.tsx",
+        "./contexts/WifiCredentialsContext.tsx",
+        "./index.css",
+        "./protocol/wsApi.ts",
+        "react",
+        "react-dom/client"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/vite-env.d.ts",
+      "sha256": "001ae61186ec1298fb71b62db9fa0567d8ae4100bd6e6f0ebb446b1535726d4c",
+      "imports": [],
+      "analysisLevel": "typescript-ast-static"
+    }
+  ],
+  "types": [
+    {
+      "name": "ImportMetaEnv",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "VITE_REMOTE_AUTH_BRIDGE_MODE",
+          "declaration": "VITE_REMOTE_AUTH_BRIDGE_MODE?: \"uner\" | \"json\"",
+          "callback": false,
+          "ownerType": "ImportMetaEnv",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/vite-env.d.ts",
+            "line": 4
+          },
+          "description": "Dato de estado/configuración `VITE_REMOTE_AUTH_BRIDGE_MODE`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "VITE_STM_REMOTE_COMMAND_MODE",
+          "declaration": "VITE_STM_REMOTE_COMMAND_MODE?: \"legacy-hex\" | \"json\"",
+          "callback": false,
+          "ownerType": "ImportMetaEnv",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/vite-env.d.ts",
+            "line": 5
+          },
+          "description": "Dato de estado/configuración `VITE_STM_REMOTE_COMMAND_MODE`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/vite-env.d.ts",
+        "line": 3
+      }
+    },
+    {
+      "name": "ImportMeta",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "env",
+          "declaration": "env: ImportMetaEnv",
+          "callback": false,
+          "ownerType": "ImportMeta",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/vite-env.d.ts",
+            "line": 9
+          },
+          "description": "Dato de estado/configuración `env`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/vite-env.d.ts",
+        "line": 8
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "App",
+      "displayName": "App",
+      "signature": "App(): inferred-by-TypeScript",
+      "line": 35,
+      "endLine": 151,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useEffect",
+        "useMemo"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/App.tsx",
+        "line": 35
+      },
+      "description": "Compone proveedores, navegación y rutas de la aplicación.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "routeLoader",
+      "displayName": "routeLoader",
+      "signature": "routeLoader(label: string, children: ReactNode): inferred-by-TypeScript",
+      "line": 31,
+      "endLine": 33,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/App.tsx",
+        "line": 31
+      },
+      "description": "Operación route Loader de Arranque, proveedores y rutas Web; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    }
+  ],
+  "internalFunctions": [],
+  "hooks": [
+    {
+      "callee": "useEffect",
+      "scope": "App",
+      "line": 36,
+      "arguments": 2,
+      "path": "src/App.tsx"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "App",
+      "line": 42,
+      "arguments": 2,
+      "path": "src/App.tsx"
+    }
+  ]
+}

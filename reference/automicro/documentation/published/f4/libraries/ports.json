@@ -1,0 +1,822 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "f4:module/Core/Inc/am_port.h",
+  "slug": "ports",
+  "title": "Contratos neutrales de plataforma y control",
+  "target": "f4",
+  "kind": "contrato",
+  "status": "source-documented",
+  "verification": "not-run-user-instruction",
+  "snapshotDate": "2026-10-20",
+  "responsibility": "Define resultados, relojes y tablas de operaciones para conectar implementaciones sin incluir sus APIs concretas.",
+  "scope": "AM_Result conserva 0=OK, 1=ERROR, 2=BUSY y 3=TIMEOUT. Las tablas AM_PidOps, AM_OrientationOps, AM_BalanceOps, AM_DriveOps y AM_LineOps describen servicios de control. No ejecutan hardware por sí mismas.",
+  "state": "Las tablas son prestadas y los void* apuntan a instancias de la aplicación. El tipo opaco no comprueba en ejecución que el objeto corresponda a la tabla: el integrador debe emparejarlos. Los tipos *_data.h son vocabulario compartido, no dependencias de enlace con los drivers.",
+  "lifecycle": [
+    "Construir tablas con duración suficiente y contextos válidos antes de inicializar consumidores.",
+    "AM_OrientationOps separa ready, calibrating, fresh, sequence y snapshot; no sustituir estas condiciones entre sí."
+  ],
+  "interactions": [
+    "app_control_ports.h conecta estas tablas con PID, MPU, balance y motores.",
+    "AM_LineOps permanece declarado; el seguidor actual usa LineFollow_Config_t.read/command/hold. No atribuirle un uso activo solo por existir."
+  ],
+  "limitations": [
+    "La ausencia de HAL en un header no prueba ausencia de dependencias transitivas.",
+    "No hay contrato general de exclusión mutua o reentrada; depende del consumidor."
+  ],
+  "modularity": "Sin HAL. control_ports.h reúne varios modelos de datos del dominio: independencia de implementación, pero no independencia del esquema de datos AutoMicro.",
+  "files": [
+    {
+      "path": "Core/Inc/am_port.h",
+      "rootId": "f4",
+      "sha256": "4c7a59825d57ef7e6cf6251c4706178b023da85e8e6b8346f32d6c0851444aeb",
+      "includes": [
+        "stdint.h",
+        "stdbool.h",
+        "stddef.h"
+      ]
+    },
+    {
+      "path": "Core/Inc/i2c_port.h",
+      "rootId": "f4",
+      "sha256": "1460cd0929d23a042e6a001538c762c5a6670e904fd4fc6c6a24cb59380a8a6e",
+      "includes": [
+        "am_port.h"
+      ]
+    },
+    {
+      "path": "Core/Inc/control_ports.h",
+      "rootId": "f4",
+      "sha256": "0a8b36d5f5ccb03a2601356c80b367b6a7f0c167743e15820a83df702a83c8d2",
+      "includes": [
+        "pid_controller_data.h",
+        "mpu9250_data.h",
+        "balance_control_data.h",
+        "motion_control_data.h",
+        "motion_estimator_data.h",
+        "tcrt5000_data.h"
+      ]
+    }
+  ],
+  "findings": [],
+  "types": [
+    {
+      "name": "AM_Clock",
+      "fields": [
+        {
+          "name": "ctx",
+          "declaration": "void *ctx",
+          "callback": false,
+          "ownerType": "AM_Clock",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/am_port.h",
+            "line": 9
+          },
+          "description": "Contexto opaco prestado al callback; el integrador conserva su almacenamiento."
+        },
+        {
+          "name": "now_ms",
+          "declaration": "uint32_t (*now_ms)(void *ctx)",
+          "callback": true,
+          "ownerType": "AM_Clock",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/am_port.h",
+            "line": 10
+          },
+          "description": "Entrega reloj monotónico modular en milisegundos para deadlines y períodos."
+        },
+        {
+          "name": "now_us",
+          "declaration": "uint32_t (*now_us)(void *ctx)",
+          "callback": true,
+          "ownerType": "AM_Clock",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/am_port.h",
+            "line": 11
+          },
+          "description": "Entrega reloj en microsegundos; el adaptador actual deriva ms × 1000."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/am_port.h",
+        "line": 9
+      }
+    },
+    {
+      "name": "AM_I2C_Hardware",
+      "fields": [
+        {
+          "name": "now_ms",
+          "declaration": "uint32_t (*now_ms)(void *ctx)",
+          "callback": true,
+          "ownerType": "AM_I2C_Hardware",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/i2c_port.h",
+            "line": 39
+          },
+          "description": "Entrega reloj monotónico modular en milisegundos para deadlines y períodos."
+        },
+        {
+          "name": "now_us",
+          "declaration": "uint32_t (*now_us)(void *ctx)",
+          "callback": true,
+          "ownerType": "AM_I2C_Hardware",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/i2c_port.h",
+            "line": 40
+          },
+          "description": "Entrega reloj en microsegundos; el adaptador actual deriva ms × 1000."
+        },
+        {
+          "name": "delay_ms",
+          "declaration": "void (*delay_ms)(void *ctx,uint32_t ms)",
+          "callback": true,
+          "ownerType": "AM_I2C_Hardware",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/i2c_port.h",
+            "line": 41
+          },
+          "description": "Realiza una espera síncrona de inicialización; no vuelve asíncrona la configuración."
+        },
+        {
+          "name": "ready",
+          "declaration": "bool (*ready)(void *ctx)",
+          "callback": true,
+          "ownerType": "AM_I2C_Hardware",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/i2c_port.h",
+            "line": 42
+          },
+          "description": "Consulta si el recurso de hardware acepta una transferencia."
+        },
+        {
+          "name": "probe",
+          "declaration": "AM_Result (*probe)(void *ctx,uint16_t address,uint32_t trials,uint32_t timeout)",
+          "callback": true,
+          "ownerType": "AM_I2C_Hardware",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/i2c_port.h",
+            "line": 43
+          },
+          "description": "Sondea presencia del dispositivo; el backend actual ejecuta una operación síncrona."
+        },
+        {
+          "name": "mem_write",
+          "declaration": "AM_Result (*mem_write)(void *ctx,uint16_t address,uint16_t reg,uint16_t reg_size,uint8_t *data,uint16_t len,uint32_t timeout)",
+          "callback": true,
+          "ownerType": "AM_I2C_Hardware",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/i2c_port.h",
+            "line": 44
+          },
+          "description": "Escribe un registro de forma síncrona; el llamador entrega dirección, buffer y timeout."
+        },
+        {
+          "name": "mem_read",
+          "declaration": "AM_Result (*mem_read)(void *ctx,uint16_t address,uint16_t reg,uint16_t reg_size,uint8_t *data,uint16_t len,uint32_t timeout)",
+          "callback": true,
+          "ownerType": "AM_I2C_Hardware",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/i2c_port.h",
+            "line": 45
+          },
+          "description": "Lee registros de forma síncrona al buffer provisto."
+        },
+        {
+          "name": "mem_write_dma",
+          "declaration": "AM_Result (*mem_write_dma)(void *ctx,uint16_t address,uint16_t reg,uint16_t reg_size,uint8_t *data,uint16_t len)",
+          "callback": true,
+          "ownerType": "AM_I2C_Hardware",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/i2c_port.h",
+            "line": 46
+          },
+          "description": "Inicia escritura DMA; conservar el buffer hasta el callback final o error."
+        },
+        {
+          "name": "tx_dma",
+          "declaration": "AM_Result (*tx_dma)(void *ctx,uint16_t address,uint8_t *data,uint16_t len)",
+          "callback": true,
+          "ownerType": "AM_I2C_Hardware",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/i2c_port.h",
+            "line": 47
+          },
+          "description": "Inicia transmisión DMA al dispositivo; aceptación no equivale a transferencia finalizada."
+        },
+        {
+          "name": "rx_dma",
+          "declaration": "AM_Result (*rx_dma)(void *ctx,uint16_t address,uint8_t *data,uint16_t len)",
+          "callback": true,
+          "ownerType": "AM_I2C_Hardware",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/i2c_port.h",
+            "line": 48
+          },
+          "description": "Inicia recepción DMA al buffer persistente del cliente."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/i2c_port.h",
+        "line": 39
+      }
+    },
+    {
+      "name": "AM_I2C_DevicePort",
+      "fields": [
+        {
+          "name": "ctx",
+          "declaration": "void *ctx",
+          "callback": false,
+          "ownerType": "AM_I2C_DevicePort",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/i2c_port.h",
+            "line": 51
+          },
+          "description": "Contexto opaco prestado al callback; el integrador conserva su almacenamiento."
+        },
+        {
+          "name": "hardware",
+          "declaration": "const AM_I2C_Hardware *hardware",
+          "callback": false,
+          "ownerType": "AM_I2C_DevicePort",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/i2c_port.h",
+            "line": 52
+          },
+          "description": "Contrato de operaciones externo; conservar la tabla y su contexto durante el uso."
+        },
+        {
+          "name": "hardware_ctx",
+          "declaration": "void *hardware_ctx",
+          "callback": false,
+          "ownerType": "AM_I2C_DevicePort",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/i2c_port.h",
+            "line": 53
+          },
+          "description": "Recurso opaco de plataforma usado por las operaciones de hardware."
+        },
+        {
+          "name": "bind",
+          "declaration": "AM_Result (*bind)(void *ctx,uint16_t address,uint8_t priority,void *client, I2C_OnGrantedCb,I2C_OnTxDoneCb,I2C_OnRxDoneCb,I2C_OnErrorCb)",
+          "callback": true,
+          "ownerType": "AM_I2C_DevicePort",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/i2c_port.h",
+            "line": 54
+          },
+          "description": "Registra identidad, dirección y callbacks del cliente en el backend I2C."
+        },
+        {
+          "name": "request",
+          "declaration": "AM_Result (*request)(void *ctx,I2C_RequestPrio priority)",
+          "callback": true,
+          "ownerType": "AM_I2C_DevicePort",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/i2c_port.h",
+            "line": 56
+          },
+          "description": "Solicita propiedad del bus con prioridad; la concesión llega por on_granted."
+        },
+        {
+          "name": "release",
+          "declaration": "AM_Result (*release)(void *ctx)",
+          "callback": true,
+          "ownerType": "AM_I2C_DevicePort",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/i2c_port.h",
+            "line": 57
+          },
+          "description": "Libera la concesión I2C para permitir atender otros clientes."
+        },
+        {
+          "name": "is_owner",
+          "declaration": "bool (*is_owner)(void *ctx)",
+          "callback": true,
+          "ownerType": "AM_I2C_DevicePort",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/i2c_port.h",
+            "line": 58
+          },
+          "description": "Consulta la propiedad del bus del cliente conectado a este puerto."
+        },
+        {
+          "name": "policy",
+          "declaration": "I2C_PolicyMode (*policy)(void *ctx)",
+          "callback": true,
+          "ownerType": "AM_I2C_DevicePort",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/i2c_port.h",
+            "line": 59
+          },
+          "description": "Consulta la política del árbitro sin conocer su handle concreto."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/i2c_port.h",
+        "line": 51
+      }
+    },
+    {
+      "name": "I2C_OnGrantedCb",
+      "callbackType": "void (*I2C_OnGrantedCb)(void *ctx)",
+      "fields": [],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/i2c_port.h",
+        "line": 15
+      }
+    },
+    {
+      "name": "I2C_OnTxDoneCb",
+      "callbackType": "void (*I2C_OnTxDoneCb)(void *ctx)",
+      "fields": [],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/i2c_port.h",
+        "line": 18
+      }
+    },
+    {
+      "name": "I2C_OnRxDoneCb",
+      "callbackType": "void (*I2C_OnRxDoneCb)(void *ctx)",
+      "fields": [],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/i2c_port.h",
+        "line": 19
+      }
+    },
+    {
+      "name": "I2C_OnErrorCb",
+      "callbackType": "void (*I2C_OnErrorCb)(void *ctx, I2C_ManagerError err)",
+      "fields": [],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/i2c_port.h",
+        "line": 20
+      }
+    },
+    {
+      "name": "AM_PidOps",
+      "fields": [
+        {
+          "name": "defaults",
+          "declaration": "void (*defaults)(PidController_Config_t *)",
+          "callback": true,
+          "ownerType": "AM_PidOps",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/control_ports.h",
+            "line": 9
+          },
+          "description": "Carga configuración PID por defecto en la estructura del llamador."
+        },
+        {
+          "name": "init",
+          "declaration": "AM_Result (*init)(void *,const PidController_Config_t *)",
+          "callback": true,
+          "ownerType": "AM_PidOps",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/control_ports.h",
+            "line": 10
+          },
+          "description": "Inicializa la instancia opaca con la configuración provista."
+        },
+        {
+          "name": "reset",
+          "declaration": "void (*reset)(void *)",
+          "callback": true,
+          "ownerType": "AM_PidOps",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/control_ports.h",
+            "line": 11
+          },
+          "description": "Reinicia memoria dinámica del controlador sin reemplazar su almacenamiento."
+        },
+        {
+          "name": "setpoint",
+          "declaration": "void (*setpoint)(void *,float)",
+          "callback": true,
+          "ownerType": "AM_PidOps",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/control_ports.h",
+            "line": 12
+          },
+          "description": "Configura la referencia escalar del PID."
+        },
+        {
+          "name": "gains",
+          "declaration": "void (*gains)(void *,float,float,float)",
+          "callback": true,
+          "ownerType": "AM_PidOps",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/control_ports.h",
+            "line": 13
+          },
+          "description": "Configura Kp, Ki y Kd del PID."
+        },
+        {
+          "name": "update",
+          "declaration": "AM_Result (*update)(void *,float,float,float)",
+          "callback": true,
+          "ownerType": "AM_PidOps",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/control_ports.h",
+            "line": 14
+          },
+          "description": "Calcula el controlador con sus argumentos de medida/tiempo."
+        },
+        {
+          "name": "output",
+          "declaration": "float (*output)(const void *)",
+          "callback": true,
+          "ownerType": "AM_PidOps",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/control_ports.h",
+            "line": 15
+          },
+          "description": "Consulta la salida calculada; no ejecuta el control."
+        },
+        {
+          "name": "status",
+          "declaration": "const PidController_Status_t *(*status)(const void *)",
+          "callback": true,
+          "ownerType": "AM_PidOps",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/control_ports.h",
+            "line": 16
+          },
+          "description": "Devuelve una vista prestada del estado del PID."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/control_ports.h",
+        "line": 9
+      }
+    },
+    {
+      "name": "AM_OrientationOps",
+      "fields": [
+        {
+          "name": "ready",
+          "declaration": "bool (*ready)(const void *)",
+          "callback": true,
+          "ownerType": "AM_OrientationOps",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/control_ports.h",
+            "line": 19
+          },
+          "description": "Consulta si el recurso de hardware acepta una transferencia."
+        },
+        {
+          "name": "calibrating",
+          "declaration": "uint8_t (*calibrating)(const void *)",
+          "callback": true,
+          "ownerType": "AM_OrientationOps",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/control_ports.h",
+            "line": 20
+          },
+          "description": "Operación calibrating de Contratos neutrales de plataforma y control; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "fresh",
+          "declaration": "uint8_t (*fresh)(const void *,uint32_t)",
+          "callback": true,
+          "ownerType": "AM_OrientationOps",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/control_ports.h",
+            "line": 21
+          },
+          "description": "Comprueba frescura de la orientación en el tiempo indicado."
+        },
+        {
+          "name": "front_tilt",
+          "declaration": "float (*front_tilt)(const void *)",
+          "callback": true,
+          "ownerType": "AM_OrientationOps",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/control_ports.h",
+            "line": 22
+          },
+          "description": "Consulta inclinación frontal del robot en grados."
+        },
+        {
+          "name": "sequence",
+          "declaration": "uint16_t (*sequence)(const void *)",
+          "callback": true,
+          "ownerType": "AM_OrientationOps",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/control_ports.h",
+            "line": 23
+          },
+          "description": "Consulta número de muestra para evitar reprocesar la misma adquisición."
+        },
+        {
+          "name": "attitude_ms",
+          "declaration": "uint32_t (*attitude_ms)(const void *)",
+          "callback": true,
+          "ownerType": "AM_OrientationOps",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/control_ports.h",
+            "line": 24
+          },
+          "description": "Consulta tiempo de última actitud calculada."
+        },
+        {
+          "name": "snapshot",
+          "declaration": "AM_Result (*snapshot)(void *,MPU9250_Snapshot_t *)",
+          "callback": true,
+          "ownerType": "AM_OrientationOps",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/control_ports.h",
+            "line": 25
+          },
+          "description": "Copia el snapshot de orientación a la estructura de salida."
+        },
+        {
+          "name": "now_ms",
+          "declaration": "uint32_t (*now_ms)(const void *)",
+          "callback": true,
+          "ownerType": "AM_OrientationOps",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/control_ports.h",
+            "line": 26
+          },
+          "description": "Entrega reloj monotónico modular en milisegundos para deadlines y períodos."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/control_ports.h",
+        "line": 19
+      }
+    },
+    {
+      "name": "AM_BalanceOps",
+      "fields": [
+        {
+          "name": "target",
+          "declaration": "void (*target)(void *,float)",
+          "callback": true,
+          "ownerType": "AM_BalanceOps",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/control_ports.h",
+            "line": 29
+          },
+          "description": "Operación target de Contratos neutrales de plataforma y control; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "enable",
+          "declaration": "void (*enable)(void *,uint8_t)",
+          "callback": true,
+          "ownerType": "AM_BalanceOps",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/control_ports.h",
+            "line": 30
+          },
+          "description": "Operación enable de Contratos neutrales de plataforma y control; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "reset",
+          "declaration": "void (*reset)(void *)",
+          "callback": true,
+          "ownerType": "AM_BalanceOps",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/control_ports.h",
+            "line": 31
+          },
+          "description": "Reinicia memoria dinámica del controlador sin reemplazar su almacenamiento."
+        },
+        {
+          "name": "update",
+          "declaration": "AM_Result (*update)(void *,float,uint32_t)",
+          "callback": true,
+          "ownerType": "AM_BalanceOps",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/control_ports.h",
+            "line": 32
+          },
+          "description": "Calcula el controlador con sus argumentos de medida/tiempo."
+        },
+        {
+          "name": "output",
+          "declaration": "float (*output)(const void *)",
+          "callback": true,
+          "ownerType": "AM_BalanceOps",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/control_ports.h",
+            "line": 33
+          },
+          "description": "Consulta la salida calculada; no ejecuta el control."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/control_ports.h",
+        "line": 29
+      }
+    },
+    {
+      "name": "AM_DriveOps",
+      "fields": [
+        {
+          "name": "stop",
+          "declaration": "void (*stop)(void *)",
+          "callback": true,
+          "ownerType": "AM_DriveOps",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/control_ports.h",
+            "line": 36
+          },
+          "description": "Ordena parada de la tracción sin delegar el cálculo de seguridad al PWM."
+        },
+        {
+          "name": "brake",
+          "declaration": "void (*brake)(void *)",
+          "callback": true,
+          "ownerType": "AM_DriveOps",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/control_ports.h",
+            "line": 37
+          },
+          "description": "Ordena frenado de la tracción."
+        },
+        {
+          "name": "apply",
+          "declaration": "void (*apply)(void *,float,float)",
+          "callback": true,
+          "ownerType": "AM_DriveOps",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/control_ports.h",
+            "line": 38
+          },
+          "description": "Aplica porcentajes firmados izquierdo y derecho."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/control_ports.h",
+        "line": 36
+      }
+    },
+    {
+      "name": "AM_LineOps",
+      "fields": [
+        {
+          "name": "command_defaults",
+          "declaration": "void (*command_defaults)(MotionControl_Command_t *)",
+          "callback": true,
+          "ownerType": "AM_LineOps",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/control_ports.h",
+            "line": 41
+          },
+          "description": "Operación command defaults de Contratos neutrales de plataforma y control; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "command",
+          "declaration": "AM_Result (*command)(void *,const MotionControl_Command_t *,uint32_t)",
+          "callback": true,
+          "ownerType": "AM_LineOps",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/control_ports.h",
+            "line": 42
+          },
+          "description": "Operación command de Contratos neutrales de plataforma y control; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "armed",
+          "declaration": "uint8_t (*armed)(const void *)",
+          "callback": true,
+          "ownerType": "AM_LineOps",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/control_ports.h",
+            "line": 43
+          },
+          "description": "Operación armed de Contratos neutrales de plataforma y control; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "estimate",
+          "declaration": "const MotionEstimator_Status_t *(*estimate)(const void *)",
+          "callback": true,
+          "ownerType": "AM_LineOps",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/control_ports.h",
+            "line": 44
+          },
+          "description": "Operación estimate de Contratos neutrales de plataforma y control; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "line_defaults",
+          "declaration": "void (*line_defaults)(TCRT5000_LineConfig_t *)",
+          "callback": true,
+          "ownerType": "AM_LineOps",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/control_ports.h",
+            "line": 45
+          },
+          "description": "Operación line defaults de Contratos neutrales de plataforma y control; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "line_width",
+          "declaration": "void (*line_width)(TCRT5000_LineConfig_t *,uint16_t)",
+          "callback": true,
+          "ownerType": "AM_LineOps",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/control_ports.h",
+            "line": 46
+          },
+          "description": "Operación line width de Contratos neutrales de plataforma y control; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "emitters_on",
+          "declaration": "bool (*emitters_on)(void *)",
+          "callback": true,
+          "ownerType": "AM_LineOps",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/control_ports.h",
+            "line": 47
+          },
+          "description": "Operación emitters on de Contratos neutrales de plataforma y control; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "read_line",
+          "declaration": "void (*read_line)(const volatile uint16_t *,bool,const TCRT5000_LineConfig_t *,TCRT5000_RouteSample_t *)",
+          "callback": true,
+          "ownerType": "AM_LineOps",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/control_ports.h",
+            "line": 48
+          },
+          "description": "Operación read line de Contratos neutrales de plataforma y control; semántica fina pendiente de ampliación."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/control_ports.h",
+        "line": 41
+      }
+    }
+  ],
+  "functions": [],
+  "internalFunctions": []
+}

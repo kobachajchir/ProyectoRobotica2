@@ -1,0 +1,709 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "esp:module/src/uner_core.h",
+  "slug": "uner-core",
+  "title": "Parser UNER v2 ESP",
+  "target": "esp",
+  "kind": "núcleo",
+  "status": "source-documented",
+  "snapshotDate": "2026-10-20",
+  "verification": "not-run-user-instruction",
+  "responsibility": "Reconoce frames UNER y construye su representación binaria con longitud, ruta, ID y checksum.",
+  "scope": "Parser/serializador; no autentica sesiones Web ni interpreta acciones físicas.",
+  "state": "El core mantiene FSM y almacenamiento de recepción según sus tipos; los payloads son bytes de protocolo, no structs F4 compartidos por dirección.",
+  "modularity": "Núcleo C separado del transporte Arduino; revisar callbacks y almacenamiento suministrado, sin asumir que el handle ESP es idéntico al F4.",
+  "lifecycle": [
+    "Inicializar antes de entregar bytes del transporte.",
+    "Procesar por byte, completar/descarte por estructura y entregar paquetes a la capa dispositivo/handle."
+  ],
+  "interactions": [
+    "Serial entrega bytes; device/handle conectan callbacks y comandos.",
+    "El esquema wire es común a F4, pero funciones y organización internas pueden diferir."
+  ],
+  "limitations": [
+    "Checksum válido no acredita argumentos válidos ni autorización.",
+    "La vida del payload termina según su dueño; copiar si se difiere el procesamiento."
+  ],
+  "relationships": [],
+  "findings": [],
+  "files": [
+    {
+      "rootId": "esp",
+      "path": "src/uner_core.c",
+      "sha256": "2af4d9f75a7d83e7f6c4fc270671f0b7bcb6eb9865b3de235edd27545b4d6e70",
+      "imports": [
+        "uner_core.h",
+        "string.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    },
+    {
+      "rootId": "esp",
+      "path": "src/uner_core.h",
+      "sha256": "50eb06b7f10210d7a14fdb42a562e93d0930431fa289d78fcea28b2addc4cc26",
+      "imports": [
+        "uner_queue.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    },
+    {
+      "rootId": "esp",
+      "path": "src/uner_v2.h",
+      "sha256": "da8f5d054d25643c8b4547fa3d1517ed54631a0c03975051bcd4c553acdeb50d",
+      "imports": [
+        "stdint.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    }
+  ],
+  "types": [
+    {
+      "name": "UNER_CoreConfig",
+      "fields": [
+        {
+          "name": "this_node",
+          "declaration": "uint8_t this_node",
+          "callback": false,
+          "ownerType": "UNER_CoreConfig",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_core.h",
+            "line": 11
+          },
+          "description": "Dato de estado/configuración `this_node`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "accept_src_mask",
+          "declaration": "uint16_t accept_src_mask",
+          "callback": false,
+          "ownerType": "UNER_CoreConfig",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_core.h",
+            "line": 12
+          },
+          "description": "Dato de estado/configuración `accept_src_mask`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "accept_dst_mask",
+          "declaration": "uint16_t accept_dst_mask",
+          "callback": false,
+          "ownerType": "UNER_CoreConfig",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_core.h",
+            "line": 13
+          },
+          "description": "Dato de estado/configuración `accept_dst_mask`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "accept_broadcast",
+          "declaration": "uint8_t accept_broadcast",
+          "callback": false,
+          "ownerType": "UNER_CoreConfig",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_core.h",
+            "line": 14
+          },
+          "description": "Dato de estado/configuración `accept_broadcast`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "default_max_payload",
+          "declaration": "uint8_t default_max_payload",
+          "callback": false,
+          "ownerType": "UNER_CoreConfig",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_core.h",
+            "line": 15
+          },
+          "description": "Dato de estado/configuración `default_max_payload`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "on_packet",
+          "declaration": "UNER_OnPacketCb on_packet",
+          "callback": false,
+          "ownerType": "UNER_CoreConfig",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_core.h",
+            "line": 16
+          },
+          "description": "Dato de estado/configuración `on_packet`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "cb_ctx",
+          "declaration": "void *cb_ctx",
+          "callback": false,
+          "ownerType": "UNER_CoreConfig",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_core.h",
+            "line": 17
+          },
+          "description": "Contexto opaco prestado al callback; el integrador conserva su almacenamiento."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_core.h",
+        "line": 11
+      }
+    },
+    {
+      "name": "UNER_Core",
+      "fields": [
+        {
+          "name": "cfg",
+          "declaration": "UNER_CoreConfig cfg",
+          "callback": false,
+          "ownerType": "UNER_Core",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_core.h",
+            "line": 35
+          },
+          "description": "Dato de estado/configuración `cfg`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "queue",
+          "declaration": "UNER_Queue queue",
+          "callback": false,
+          "ownerType": "UNER_Core",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_core.h",
+            "line": 36
+          },
+          "description": "Dato de estado/configuración `queue`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "state",
+          "declaration": "UNER_ParserState state",
+          "callback": false,
+          "ownerType": "UNER_Core",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_core.h",
+            "line": 37
+          },
+          "description": "Dato de estado/configuración `state`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "len_expected",
+          "declaration": "uint8_t len_expected",
+          "callback": false,
+          "ownerType": "UNER_Core",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_core.h",
+            "line": 39
+          },
+          "description": "Dato de estado/configuración `len_expected`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "payload_index",
+          "declaration": "uint8_t payload_index",
+          "callback": false,
+          "ownerType": "UNER_Core",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_core.h",
+            "line": 40
+          },
+          "description": "Dato de estado/configuración `payload_index`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "chk_acc",
+          "declaration": "uint8_t chk_acc",
+          "callback": false,
+          "ownerType": "UNER_Core",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_core.h",
+            "line": 41
+          },
+          "description": "Dato de estado/configuración `chk_acc`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "route",
+          "declaration": "uint8_t route",
+          "callback": false,
+          "ownerType": "UNER_Core",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_core.h",
+            "line": 42
+          },
+          "description": "Dato de estado/configuración `route`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "cmd",
+          "declaration": "uint8_t cmd",
+          "callback": false,
+          "ownerType": "UNER_Core",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_core.h",
+            "line": 43
+          },
+          "description": "Dato de estado/configuración `cmd`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ver",
+          "declaration": "uint8_t ver",
+          "callback": false,
+          "ownerType": "UNER_Core",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_core.h",
+            "line": 44
+          },
+          "description": "Dato de estado/configuración `ver`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "transport_id",
+          "declaration": "uint8_t transport_id",
+          "callback": false,
+          "ownerType": "UNER_Core",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_core.h",
+            "line": 45
+          },
+          "description": "Transporte de entrada/salida; forma parte de la identidad del endpoint."
+        },
+        {
+          "name": "max_payload_transport",
+          "declaration": "uint8_t max_payload_transport",
+          "callback": false,
+          "ownerType": "UNER_Core",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_core.h",
+            "line": 46
+          },
+          "description": "Dato de estado/configuración `max_payload_transport`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "drop_frame",
+          "declaration": "uint8_t drop_frame",
+          "callback": false,
+          "ownerType": "UNER_Core",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_core.h",
+            "line": 47
+          },
+          "description": "Dato de estado/configuración `drop_frame`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "payload_buf",
+          "declaration": "uint8_t payload_buf[UNER_MAX_PAYLOAD]",
+          "callback": false,
+          "ownerType": "UNER_Core",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_core.h",
+            "line": 48
+          },
+          "description": "Dato de estado/configuración `payload_buf`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ok_frames",
+          "declaration": "uint32_t ok_frames",
+          "callback": false,
+          "ownerType": "UNER_Core",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_core.h",
+            "line": 49
+          },
+          "description": "Dato de estado/configuración `ok_frames`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "chk_fail",
+          "declaration": "uint32_t chk_fail",
+          "callback": false,
+          "ownerType": "UNER_Core",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_core.h",
+            "line": 51
+          },
+          "description": "Dato de estado/configuración `chk_fail`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "len_fail",
+          "declaration": "uint32_t len_fail",
+          "callback": false,
+          "ownerType": "UNER_Core",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_core.h",
+            "line": 52
+          },
+          "description": "Dato de estado/configuración `len_fail`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "header_resync",
+          "declaration": "uint32_t header_resync",
+          "callback": false,
+          "ownerType": "UNER_Core",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_core.h",
+            "line": 53
+          },
+          "description": "Dato de estado/configuración `header_resync`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "token_fail",
+          "declaration": "uint32_t token_fail",
+          "callback": false,
+          "ownerType": "UNER_Core",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_core.h",
+            "line": 54
+          },
+          "description": "Dato de estado/configuración `token_fail`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ver_fail",
+          "declaration": "uint32_t ver_fail",
+          "callback": false,
+          "ownerType": "UNER_Core",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_core.h",
+            "line": 55
+          },
+          "description": "Dato de estado/configuración `ver_fail`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "queue_overflow",
+          "declaration": "uint32_t queue_overflow",
+          "callback": false,
+          "ownerType": "UNER_Core",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_core.h",
+            "line": 56
+          },
+          "description": "Dato de estado/configuración `queue_overflow`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "filter_drop",
+          "declaration": "uint32_t filter_drop",
+          "callback": false,
+          "ownerType": "UNER_Core",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_core.h",
+            "line": 57
+          },
+          "description": "Dato de estado/configuración `filter_drop`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_core.h",
+        "line": 35
+      }
+    },
+    {
+      "name": "UNER_OnPacketCb",
+      "callbackType": "void (*UNER_OnPacketCb)(void *ctx, const UNER_Packet *p)",
+      "fields": [],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_core.h",
+        "line": 8
+      },
+      "description": "El parser invoca este callback cuando completa un paquete válido; packet/buffer son vistas del parser y user pertenece al registrador. Consumir o copiar antes de reutilizar almacenamiento."
+    },
+    {
+      "name": "UNER_Packet",
+      "fields": [
+        {
+          "name": "ver",
+          "declaration": "uint8_t ver",
+          "callback": false,
+          "ownerType": "UNER_Packet",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_v2.h",
+            "line": 46
+          },
+          "description": "Dato de estado/configuración `ver`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "src",
+          "declaration": "uint8_t src",
+          "callback": false,
+          "ownerType": "UNER_Packet",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_v2.h",
+            "line": 47
+          },
+          "description": "Dato de estado/configuración `src`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "dst",
+          "declaration": "uint8_t dst",
+          "callback": false,
+          "ownerType": "UNER_Packet",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_v2.h",
+            "line": 48
+          },
+          "description": "Dato de estado/configuración `dst`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "cmd",
+          "declaration": "uint8_t cmd",
+          "callback": false,
+          "ownerType": "UNER_Packet",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_v2.h",
+            "line": 49
+          },
+          "description": "Dato de estado/configuración `cmd`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "len",
+          "declaration": "uint8_t len",
+          "callback": false,
+          "ownerType": "UNER_Packet",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_v2.h",
+            "line": 50
+          },
+          "description": "Dato de estado/configuración `len`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "payload",
+          "declaration": "uint8_t *payload",
+          "callback": false,
+          "ownerType": "UNER_Packet",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_v2.h",
+            "line": 51
+          },
+          "description": "Vista del payload; copiar antes de permitir la reutilización del slot del parser."
+        },
+        {
+          "name": "transport_id",
+          "declaration": "uint8_t transport_id",
+          "callback": false,
+          "ownerType": "UNER_Packet",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/uner_v2.h",
+            "line": 52
+          },
+          "description": "Transporte de entrada/salida; forma parte de la identidad del endpoint."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_v2.h",
+        "line": 46
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "UNER_BuildFrame",
+      "signature": "UNER_Status UNER_BuildFrame(uint8_t *out, uint16_t out_max, uint8_t src, uint8_t dst, uint8_t cmd, const uint8_t *payload, uint8_t len)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_core.c",
+        "line": 130
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "UNER_Core_ComputeChecksum",
+        "UNER_ROUTE_MAKE"
+      ],
+      "writes": [],
+      "description": "Construye un frame UNER v2 en el buffer suministrado.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "UNER_Core_ComputeChecksum",
+      "signature": "uint8_t UNER_Core_ComputeChecksum(const uint8_t *data, uint16_t len)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_core.c",
+        "line": 124
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Compute Checksum de Parser UNER v2 ESP; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_Core_Dequeue",
+      "signature": "uint8_t UNER_Core_Dequeue(UNER_Core *core, UNER_Packet *out)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_core.c",
+        "line": 122
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "UNER_Queue_Dequeue"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `UNER_Queue_Dequeue` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_Core_Init",
+      "signature": "UNER_Status UNER_Core_Init(UNER_Core *core, const UNER_CoreConfig *cfg, UNER_Packet *slots, uint8_t slot_count, uint8_t *payload_pool_bytes, uint16_t payload_pool_size)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_core.c",
+        "line": 23
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "UNER_Core_ResetParser",
+        "UNER_Queue_Init",
+        "memset"
+      ],
+      "writes": [
+        "cfg"
+      ],
+      "description": "Inicializa Parser UNER v2 ESP dentro de Parser UNER v2 ESP.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UNER_Core_PushByte",
+      "signature": "UNER_Status UNER_Core_PushByte(UNER_Core *core, uint8_t transport_id, uint8_t max_payload_for_transport, uint8_t byte)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_core.c",
+        "line": 44
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "UNER_Core_ResetParser",
+        "UNER_Queue_Enqueue",
+        "UNER_ROUTE_DST",
+        "UNER_ROUTE_SRC",
+        "acc",
+        "on_packet",
+        "resync_from_byte",
+        "should_accept"
+      ],
+      "writes": [
+        "chk_acc",
+        "cmd",
+        "drop_frame",
+        "len_expected",
+        "max_payload_transport",
+        "payload_index",
+        "route",
+        "state",
+        "transport_id",
+        "ver"
+      ],
+      "description": "Coordina `UNER_Core_ResetParser`, `UNER_Queue_Enqueue`, `UNER_ROUTE_DST` para Parser UNER v2 ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "UNER_Core_ResetParser",
+      "signature": "void UNER_Core_ResetParser(UNER_Core *core)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_core.c",
+        "line": 32
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [
+        "chk_acc",
+        "cmd",
+        "drop_frame",
+        "len_expected",
+        "payload_index",
+        "route",
+        "state",
+        "transport_id",
+        "ver"
+      ],
+      "description": "Restablece Parser dentro de Parser UNER v2 ESP.",
+      "descriptionOrigin": "inferred-name"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "acc",
+      "signature": "static void acc(UNER_Core *core, uint8_t b)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_core.c",
+        "line": 4
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación acc de Parser UNER v2 ESP; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "resync_from_byte",
+      "signature": "static void resync_from_byte(UNER_Core *core, uint8_t byte)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_core.c",
+        "line": 6
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "UNER_Core_ResetParser",
+        "acc"
+      ],
+      "writes": [
+        "state"
+      ],
+      "description": "Coordina `UNER_Core_ResetParser`, `acc` para Parser UNER v2 ESP.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "should_accept",
+      "signature": "static uint8_t should_accept(const UNER_Core *core, uint8_t src, uint8_t dst)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/uner_core.c",
+        "line": 14
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación should accept de Parser UNER v2 ESP; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    }
+  ],
+  "hooks": []
+}

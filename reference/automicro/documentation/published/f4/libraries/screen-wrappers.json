@@ -1,0 +1,1616 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "f4:module/Core/Inc/screenWrappers.h",
+  "slug": "screen-wrappers",
+  "title": "Preparación y navegación de pantallas",
+  "target": "f4",
+  "kind": "integración",
+  "status": "source-documented",
+  "verification": "not-run-user-instruction",
+  "snapshotDate": "2026-10-20",
+  "responsibility": "Prepara modo de vista, renderer, event manager, flags de redibujado y screen code de cada pantalla.",
+  "scope": "Coordina entrada/salida de pantallas de sensores, motores, preferencias, router, red y dashboard. Los detalles de raster se delegan al renderer.",
+  "state": "Opera sobre Screens_Context->state y el MenuSystem prestado; las sesiones IR guardan/restauran iluminación. Los flags first draw/refresh no son respuestas remotas.",
+  "lifecycle": [
+    "Un evento o acción de menú llama al wrapper.",
+    "El wrapper configura renderer y handler, publica identidad y solicita dibujo.",
+    "Al volver se restaura navegación y, cuando corresponde, iluminación o vista previa."
+  ],
+  "interactions": [
+    "oled_utils.c dibuja el contenido seleccionado; MenuSystem mantiene reportes de pantalla/selección.",
+    "Las vistas de router alternan RX/TX y transporte; no modifican el parser."
+  ],
+  "limitations": [
+    "La existencia de un wrapper no demuestra que sea alcanzable desde el menú actual.",
+    "No equiparar un reporte screen code con réplica exacta Web de la pantalla."
+  ],
+  "modularity": "Integración con ScreensServices y dependencias dentro del conjunto de pantallas. No es núcleo independiente de menús o sensores.",
+  "files": [
+    {
+      "path": "Core/Inc/screenWrappers.h",
+      "rootId": "f4",
+      "sha256": "95a93774f9723451eb07696316ad55940b8fb8e853eba33e23f5c993f46a1f16",
+      "includes": [
+        "stdbool.h",
+        "types/menu_types.h"
+      ]
+    },
+    {
+      "path": "Core/Src/screenWrappers.c",
+      "rootId": "f4",
+      "sha256": "617db2ed83da25f4696dc95cb5ee9963b2257f7116c531142c7cc914440c38de",
+      "includes": [
+        "screens_internal.h",
+        "screenWrappers.h",
+        "types/menu_types.h",
+        "oled_utils.h",
+        "oled_canvas.h",
+        "fonts.h",
+        "encoder_types.h",
+        "uner_v2.h",
+        "string.h"
+      ]
+    }
+  ],
+  "findings": [],
+  "types": [],
+  "functions": [
+    {
+      "name": "Dashboard_InvalidateConnectivity",
+      "signature": "void Dashboard_InvalidateConnectivity(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/screenWrappers.h",
+        "line": 16
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Marca datos de conectividad del dashboard para redibujado.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screenWrappers.c",
+        "line": 160
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "Dashboard_ReturnAfterConnectivityNotification",
+      "signature": "void Dashboard_ReturnAfterConnectivityNotification(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/screenWrappers.h",
+        "line": 17
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "AppPreferences_IsWifiApFallbackEnabled",
+        "IS_FLAG_SET",
+        "MenuSys_SetCurrentScreenCode",
+        "WifiBridge_GetActiveBackend"
+      ],
+      "writes": [],
+      "description": "Restaura dashboard tras una notificación de conectividad.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screenWrappers.c",
+        "line": 171
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MenuSys_GoBack_Wrapper",
+      "signature": "void MenuSys_GoBack_Wrapper(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/screenWrappers.h",
+        "line": 27
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MenuSys_NavigateBack"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `MenuSys_NavigateBack` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screenWrappers.c",
+        "line": 337
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MenuSys_RenderMenu_Wrapper",
+      "signature": "void MenuSys_RenderMenu_Wrapper(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/screenWrappers.h",
+        "line": 26
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MenuSys_IsFavoritesMenu",
+        "MenuSys_IsItemVisible",
+        "MenuSys_RenderMenu",
+        "MenuSys_VisibleOffset",
+        "OledUtils_DisableContinuousRender",
+        "OledUtils_DrawItem",
+        "ssd1306_DrawBitmap",
+        "ssd1306_SetColor",
+        "ssd1306_SetCursor",
+        "ssd1306_WriteString"
+      ],
+      "writes": [
+        "lastSelectedItemIndex"
+      ],
+      "description": "Prepara el contexto de UI y selecciona la vista Menu Sys Render Menu.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screenWrappers.c",
+        "line": 278
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_AboutBootloader_Wrapper",
+      "signature": "void OledUtils_AboutBootloader_Wrapper(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/screenWrappers.h",
+        "line": 24
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MenuSys_SetCurrentScreenCode",
+        "OledUtils_Clear",
+        "OledUtils_DisableContinuousRender",
+        "OledUtils_RenderAboutBootloaderScreen"
+      ],
+      "writes": [],
+      "description": "Prepara el contexto de UI y selecciona la vista About Bootloader.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screenWrappers.c",
+        "line": 504
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_AboutBuild_Wrapper",
+      "signature": "void OledUtils_AboutBuild_Wrapper(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/screenWrappers.h",
+        "line": 23
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MenuSys_SetCurrentScreenCode",
+        "OledUtils_Clear",
+        "OledUtils_DisableContinuousRender",
+        "OledUtils_RenderBuildInfoScreen"
+      ],
+      "writes": [],
+      "description": "Prepara el contexto de UI y selecciona la vista About Build.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screenWrappers.c",
+        "line": 491
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_AboutInfo_Wrapper",
+      "signature": "void OledUtils_AboutInfo_Wrapper(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/screenWrappers.h",
+        "line": 21
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MenuSys_SetCurrentScreenCode",
+        "OledUtils_Clear",
+        "OledUtils_DisableContinuousRender",
+        "OledUtils_RenderProyectScreen"
+      ],
+      "writes": [],
+      "description": "Prepara el contexto de UI y selecciona la vista About Info.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screenWrappers.c",
+        "line": 465
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_AboutRepo_Wrapper",
+      "signature": "void OledUtils_AboutRepo_Wrapper(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/screenWrappers.h",
+        "line": 22
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MenuSys_SetCurrentScreenCode",
+        "OledUtils_Clear",
+        "OledUtils_DisableContinuousRender",
+        "OledUtils_RenderProyectInfoScreen"
+      ],
+      "writes": [],
+      "description": "Prepara el contexto de UI y selecciona la vista About Repo.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screenWrappers.c",
+        "line": 478
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_About_Wrapper",
+      "signature": "void OledUtils_About_Wrapper(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/screenWrappers.h",
+        "line": 20
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "IS_FLAG_SET",
+        "MenuSys_SetCurrentScreenCode",
+        "OledUtils_Clear",
+        "OledUtils_DisableContinuousRender",
+        "OledUtils_RenderProyectInfoScreen",
+        "OledUtils_RenderProyectScreen"
+      ],
+      "writes": [],
+      "description": "Prepara el contexto de UI y selecciona la vista About.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screenWrappers.c",
+        "line": 438
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_BeginUnerRouterNrf",
+      "signature": "void OledUtils_BeginUnerRouterNrf(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/screenWrappers.h",
+        "line": 39
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledUtils_BeginUnerRouterTransport"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `OledUtils_BeginUnerRouterTransport` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screenWrappers.c",
+        "line": 398
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_BeginUnerRouterUart",
+      "signature": "void OledUtils_BeginUnerRouterUart(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/screenWrappers.h",
+        "line": 38
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledUtils_BeginUnerRouterTransport"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `OledUtils_BeginUnerRouterTransport` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screenWrappers.c",
+        "line": 393
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_BeginUnerRouterUsb",
+      "signature": "void OledUtils_BeginUnerRouterUsb(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/screenWrappers.h",
+        "line": 37
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledUtils_BeginUnerRouterTransport"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `OledUtils_BeginUnerRouterTransport` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screenWrappers.c",
+        "line": 388
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_DrawItem_Wrapper",
+      "signature": "void OledUtils_DrawItem_Wrapper(const MenuItem *item, int y, bool selected)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/screenWrappers.h",
+        "line": 14
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledUtils_DrawItem"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `OledUtils_DrawItem` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screenWrappers.c",
+        "line": 152
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_EndIRValuesSession",
+      "signature": "void OledUtils_EndIRValuesSession(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/screenWrappers.h",
+        "line": 31
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "APP_LineCalibrationBusy",
+        "OledUtils_DisableContinuousRender",
+        "TCRT5000_EmittersGroup3Set",
+        "TCRT5000_EmittersGroup5Set"
+      ],
+      "writes": [],
+      "description": "Coordina `APP_LineCalibrationBusy`, `OledUtils_DisableContinuousRender`, `TCRT5000_EmittersGroup3Set` para Preparación y navegación de pantallas.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screenWrappers.c",
+        "line": 559
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_GetUnerRouterTransportId",
+      "signature": "uint8_t OledUtils_GetUnerRouterTransportId(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/screenWrappers.h",
+        "line": 43
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Consulta Uner Router Transport Id dentro de Preparación y navegación de pantallas.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screenWrappers.c",
+        "line": 420
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_IsUnerRouterTxView",
+      "signature": "bool OledUtils_IsUnerRouterTxView(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/screenWrappers.h",
+        "line": 42
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Indica si se cumple la condición Uner Router Tx View dentro de Preparación y navegación de pantallas.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screenWrappers.c",
+        "line": 415
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_NextUnerRouterPacketView",
+      "signature": "void OledUtils_NextUnerRouterPacketView(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/screenWrappers.h",
+        "line": 40
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Next Uner Router Packet View de Preparación y navegación de pantallas; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screenWrappers.c",
+        "line": 403
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_PreviousUnerRouterPacketView",
+      "signature": "void OledUtils_PreviousUnerRouterPacketView(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/screenWrappers.h",
+        "line": 41
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledUtils_NextUnerRouterPacketView"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `OledUtils_NextUnerRouterPacketView` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screenWrappers.c",
+        "line": 410
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderBalancePidGain_Wrapper",
+      "signature": "void OledUtils_RenderBalancePidGain_Wrapper(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/screenWrappers.h",
+        "line": 56
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "BalancePid_GetCurrentGainScreenCode",
+        "MenuSys_SetCurrentScreenCode",
+        "OledUtils_Clear",
+        "OledUtils_DisableContinuousRender",
+        "OledUtils_RenderBalancePidGain_Full",
+        "OledUtils_RenderBalancePidGain_ValueOnly"
+      ],
+      "writes": [],
+      "description": "Renderiza Balance Pid Gain Wrapper dentro de Preparación y navegación de pantallas.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screenWrappers.c",
+        "line": 914
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderBalancePidLog_Wrapper",
+      "signature": "void OledUtils_RenderBalancePidLog_Wrapper(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/screenWrappers.h",
+        "line": 55
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MenuSys_SetCurrentScreenCode",
+        "OledUtils_Clear",
+        "OledUtils_DisableContinuousRender",
+        "OledUtils_RenderBalancePidLog_Full",
+        "OledUtils_RenderBalancePidLog_ValueOnly"
+      ],
+      "writes": [],
+      "description": "Renderiza Balance Pid Log Wrapper dentro de Preparación y navegación de pantallas.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screenWrappers.c",
+        "line": 894
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderBalancePidStatus_Wrapper",
+      "signature": "void OledUtils_RenderBalancePidStatus_Wrapper(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/screenWrappers.h",
+        "line": 54
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MenuSys_SetCurrentScreenCode",
+        "OledUtils_Clear",
+        "OledUtils_EnableContinuousRender",
+        "OledUtils_RenderBalancePidStatus",
+        "ssd1306_Clear"
+      ],
+      "writes": [],
+      "description": "Renderiza Balance Pid Status Wrapper dentro de Preparación y navegación de pantallas.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screenWrappers.c",
+        "line": 875
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderDashboard_Wrapper",
+      "signature": "void OledUtils_RenderDashboard_Wrapper(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/screenWrappers.h",
+        "line": 15
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "Dashboard_RequestWebStatusIfNeeded",
+        "Dashboard_ResetModeConfirmState",
+        "IS_FLAG_SET",
+        "MenuSys_SetCurrentScreenCode",
+        "OledUtils_Clear",
+        "OledUtils_DisableContinuousRender",
+        "OledUtils_RenderDashboard"
+      ],
+      "writes": [],
+      "description": "Renderiza Dashboard Wrapper dentro de Preparación y navegación de pantallas.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screenWrappers.c",
+        "line": 217
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderESPFirmwareScreen_Wrapper",
+      "signature": "void OledUtils_RenderESPFirmwareScreen_Wrapper(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/screenWrappers.h",
+        "line": 64
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MenuSys_SetCurrentScreenCode",
+        "OledUtils_DisableContinuousRender",
+        "OledUtils_RenderESPFirmwareScreen"
+      ],
+      "writes": [],
+      "description": "Renderiza ESPFirmware Screen Wrapper dentro de Preparación y navegación de pantallas.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screenWrappers.c",
+        "line": 1015
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderGenericConfirm_Wrapper",
+      "signature": "void OledUtils_RenderGenericConfirm_Wrapper(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/screenWrappers.h",
+        "line": 25
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "GenericConfirm_GetScreenCode",
+        "MenuSys_SetCurrentScreenCode",
+        "OledUtils_Clear",
+        "OledUtils_DisableContinuousRender",
+        "OledUtils_RenderGenericConfirm"
+      ],
+      "writes": [],
+      "description": "Renderiza Generic Confirm Wrapper dentro de Preparación y navegación de pantallas.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screenWrappers.c",
+        "line": 517
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderIRAmbiente_Wrapper",
+      "signature": "void OledUtils_RenderIRAmbiente_Wrapper(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/screenWrappers.h",
+        "line": 30
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "APP_LineCalibrationBusy",
+        "OledUtils_RenderIRValuesMode"
+      ],
+      "writes": [],
+      "description": "Renderiza IRAmbiente Wrapper dentro de Preparación y navegación de pantallas.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screenWrappers.c",
+        "line": 610
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderLineBlackWidth_Wrapper",
+      "signature": "void OledUtils_RenderLineBlackWidth_Wrapper(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/screenWrappers.h",
+        "line": 48
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MenuSys_SetCurrentScreenCode",
+        "OledUtils_Clear",
+        "OledUtils_DisableContinuousRender",
+        "OledUtils_RenderLineBlackWidth_Full",
+        "OledUtils_RenderLineBlackWidth_ValueOnly"
+      ],
+      "writes": [],
+      "description": "Renderiza Line Black Width Wrapper dentro de Preparación y navegación de pantallas.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screenWrappers.c",
+        "line": 763
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderMPUCalibration_Wrapper",
+      "signature": "void OledUtils_RenderMPUCalibration_Wrapper(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/screenWrappers.h",
+        "line": 44
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MenuSys_SetCurrentScreenCode",
+        "OledUtils_Clear",
+        "OledUtils_EnableContinuousRender",
+        "OledUtils_RenderMPUCalibration_Full",
+        "OledUtils_RenderMPUCalibration_ValueOnly"
+      ],
+      "writes": [],
+      "description": "Renderiza MPUCalibration Wrapper dentro de Preparación y navegación de pantallas.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screenWrappers.c",
+        "line": 686
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderModePrompt_Wrapper",
+      "signature": "void OledUtils_RenderModePrompt_Wrapper(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/screenWrappers.h",
+        "line": 19
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MenuSys_SetCurrentScreenCode",
+        "OledUtils_Clear",
+        "OledUtils_DisableContinuousRender",
+        "OledUtils_RenderModePrompt"
+      ],
+      "writes": [],
+      "description": "Renderiza Mode Prompt Wrapper dentro de Preparación y navegación de pantallas.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screenWrappers.c",
+        "line": 264
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderMotorMinPwm_Wrapper",
+      "signature": "void OledUtils_RenderMotorMinPwm_Wrapper(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/screenWrappers.h",
+        "line": 52
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MenuSys_SetCurrentScreenCode",
+        "OledUtils_Clear",
+        "OledUtils_DisableContinuousRender",
+        "OledUtils_RenderMotorMinPwm_Full",
+        "OledUtils_RenderMotorMinPwm_ValueOnly",
+        "Preferences_GetMotorMinPwmEditScreenCode"
+      ],
+      "writes": [],
+      "description": "Renderiza Motor Min Pwm Wrapper dentro de Preparación y navegación de pantallas.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screenWrappers.c",
+        "line": 837
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderMotorTest_Wrapper",
+      "signature": "void OledUtils_RenderMotorTest_Wrapper(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/screenWrappers.h",
+        "line": 28
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MenuSys_SetCurrentScreenCode",
+        "OledUtils_Clear",
+        "OledUtils_DisableContinuousRender",
+        "OledUtils_MotorTest_Changes",
+        "OledUtils_MotorTest_Complete",
+        "SET_FLAG"
+      ],
+      "writes": [],
+      "description": "Renderiza Motor Test Wrapper dentro de Preparación y navegación de pantallas.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screenWrappers.c",
+        "line": 341
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderOledCanvas_Wrapper",
+      "signature": "void OledUtils_RenderOledCanvas_Wrapper(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/screenWrappers.h",
+        "line": 51
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MenuSys_SetCurrentScreenCode",
+        "OledCanvas_RenderReadyScreen",
+        "OledUtils_DisableContinuousRender"
+      ],
+      "writes": [],
+      "description": "Renderiza Oled Canvas Wrapper dentro de Preparación y navegación de pantallas.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screenWrappers.c",
+        "line": 824
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderOledRotationMpuTest_Wrapper",
+      "signature": "void OledUtils_RenderOledRotationMpuTest_Wrapper(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/screenWrappers.h",
+        "line": 50
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MenuSys_SetCurrentScreenCode",
+        "OledUtils_Clear",
+        "OledUtils_EnableContinuousRender",
+        "OledUtils_RenderOledRotationMpuTest_Full",
+        "OledUtils_RenderOledRotationMpuTest_ValueOnly",
+        "Preferences_UpdateOledRotationFromMpuTest"
+      ],
+      "writes": [],
+      "description": "Renderiza Oled Rotation Mpu Test Wrapper dentro de Preparación y navegación de pantallas.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screenWrappers.c",
+        "line": 802
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderOledRotationTest_Wrapper",
+      "signature": "void OledUtils_RenderOledRotationTest_Wrapper(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/screenWrappers.h",
+        "line": 49
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MenuSys_SetCurrentScreenCode",
+        "OledUtils_Clear",
+        "OledUtils_DisableContinuousRender",
+        "OledUtils_RenderOledRotationTest_Full",
+        "OledUtils_RenderOledRotationTest_ValueOnly"
+      ],
+      "writes": [],
+      "description": "Renderiza Oled Rotation Test Wrapper dentro de Preparación y navegación de pantallas.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screenWrappers.c",
+        "line": 782
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderScreenLockTimeout_Wrapper",
+      "signature": "void OledUtils_RenderScreenLockTimeout_Wrapper(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/screenWrappers.h",
+        "line": 45
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MenuSys_SetCurrentScreenCode",
+        "OledUtils_Clear",
+        "OledUtils_DisableContinuousRender",
+        "OledUtils_RenderScreenLockTimeout_Full",
+        "OledUtils_RenderScreenLockTimeout_ValueOnly"
+      ],
+      "writes": [],
+      "description": "Renderiza Screen Lock Timeout Wrapper dentro de Preparación y navegación de pantallas.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screenWrappers.c",
+        "line": 706
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderScreenLocked_Wrapper",
+      "signature": "void OledUtils_RenderScreenLocked_Wrapper(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/screenWrappers.h",
+        "line": 58
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MenuSys_SetCurrentScreenCode",
+        "OledUtils_Clear",
+        "OledUtils_DisableContinuousRender",
+        "OledUtils_RenderScreenLocked"
+      ],
+      "writes": [],
+      "description": "Renderiza Screen Locked Wrapper dentro de Preparación y navegación de pantallas.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screenWrappers.c",
+        "line": 955
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderSingleMotorTest_Wrapper",
+      "signature": "void OledUtils_RenderSingleMotorTest_Wrapper(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/screenWrappers.h",
+        "line": 53
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MenuSys_SetCurrentScreenCode",
+        "MotorSingleTest_GetScreenCode",
+        "OledUtils_Clear",
+        "OledUtils_DisableContinuousRender",
+        "OledUtils_RenderSingleMotorTest_Full",
+        "OledUtils_RenderSingleMotorTest_ValueOnly"
+      ],
+      "writes": [],
+      "description": "Renderiza Single Motor Test Wrapper dentro de Preparación y navegación de pantallas.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screenWrappers.c",
+        "line": 856
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderStabilizationPrompt_Wrapper",
+      "signature": "void OledUtils_RenderStabilizationPrompt_Wrapper(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/screenWrappers.h",
+        "line": 18
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MenuSys_SetCurrentScreenCode",
+        "OledUtils_Clear",
+        "OledUtils_DisableContinuousRender",
+        "OledUtils_RenderStabilizationPrompt"
+      ],
+      "writes": [],
+      "description": "Renderiza Stabilization Prompt Wrapper dentro de Preparación y navegación de pantallas.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screenWrappers.c",
+        "line": 250
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderSystemActionTimeout_Wrapper",
+      "signature": "void OledUtils_RenderSystemActionTimeout_Wrapper(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/screenWrappers.h",
+        "line": 46
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MenuSys_SetCurrentScreenCode",
+        "OledUtils_Clear",
+        "OledUtils_DisableContinuousRender",
+        "OledUtils_RenderSystemActionTimeout_Full",
+        "OledUtils_RenderSystemActionTimeout_ValueOnly"
+      ],
+      "writes": [],
+      "description": "Renderiza System Action Timeout Wrapper dentro de Preparación y navegación de pantallas.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screenWrappers.c",
+        "line": 725
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderTestCamino_Wrapper",
+      "signature": "void OledUtils_RenderTestCamino_Wrapper(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/screenWrappers.h",
+        "line": 33
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MenuSys_SetCurrentScreenCode",
+        "OledUtils_Clear",
+        "OledUtils_EnableContinuousRender",
+        "OledUtils_RenderRouteAlignmentScene",
+        "OledUtils_RenderRouteAlignmentVisualScene",
+        "OledUtils_UpdateRouteAlignment",
+        "OledUtils_UpdateRouteAlignmentVisual"
+      ],
+      "writes": [],
+      "description": "Renderiza Test Camino Wrapper dentro de Preparación y navegación de pantallas.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screenWrappers.c",
+        "line": 619
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderUnerRouterTest_Wrapper",
+      "signature": "void OledUtils_RenderUnerRouterTest_Wrapper(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/screenWrappers.h",
+        "line": 57
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MenuSys_SetCurrentScreenCode",
+        "OledUtils_Clear",
+        "OledUtils_EnableContinuousRender",
+        "OledUtils_GetUnerRouterScreenCode",
+        "OledUtils_RenderUnerRouterTest_Full",
+        "OledUtils_RenderUnerRouterTest_ValueOnly"
+      ],
+      "writes": [],
+      "description": "Renderiza Uner Router Test Wrapper dentro de Preparación y navegación de pantallas.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screenWrappers.c",
+        "line": 934
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderUsbAlivePeriod_Wrapper",
+      "signature": "void OledUtils_RenderUsbAlivePeriod_Wrapper(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/screenWrappers.h",
+        "line": 47
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MenuSys_SetCurrentScreenCode",
+        "OledUtils_Clear",
+        "OledUtils_DisableContinuousRender",
+        "OledUtils_RenderUsbAlivePeriod_Full",
+        "OledUtils_RenderUsbAlivePeriod_ValueOnly"
+      ],
+      "writes": [],
+      "description": "Renderiza Usb Alive Period Wrapper dentro de Preparación y navegación de pantallas.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screenWrappers.c",
+        "line": 744
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderValoresIR_Wrapper",
+      "signature": "void OledUtils_RenderValoresIR_Wrapper(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/screenWrappers.h",
+        "line": 29
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "APP_LineCalibrationBusy",
+        "OledUtils_RenderIRValuesMode"
+      ],
+      "writes": [],
+      "description": "Renderiza Valores IR Wrapper dentro de Preparación y navegación de pantallas.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screenWrappers.c",
+        "line": 604
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderValoresMPU_Wrapper",
+      "signature": "void OledUtils_RenderValoresMPU_Wrapper(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/screenWrappers.h",
+        "line": 35
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MenuSys_SetCurrentScreenCode",
+        "OledUtils_Clear",
+        "OledUtils_EnableContinuousRender",
+        "OledUtils_RenderMPUCompassScene",
+        "OledUtils_RenderMPUOrientationScene",
+        "OledUtils_RenderMPUScene",
+        "OledUtils_UpdateMPUCompass",
+        "OledUtils_UpdateMPUOrientation",
+        "OledUtils_UpdateMPUValues"
+      ],
+      "writes": [],
+      "description": "Renderiza Valores MPU Wrapper dentro de Preparación y navegación de pantallas.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screenWrappers.c",
+        "line": 651
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderWiFiAtPassword_Wrapper",
+      "signature": "void OledUtils_RenderWiFiAtPassword_Wrapper(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/screenWrappers.h",
+        "line": 62
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MenuSys_SetCurrentScreenCode",
+        "OledUtils_DisableContinuousRender",
+        "OledUtils_RenderWiFiAtPassword",
+        "WiFiAtPassword_GetLength",
+        "WiFiAtPassword_GetSelectedCharacter"
+      ],
+      "writes": [],
+      "description": "Renderiza Wi Fi At Password Wrapper dentro de Preparación y navegación de pantallas.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screenWrappers.c",
+        "line": 1072
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderWiFiConnectionStatus_Wrapper",
+      "signature": "void OledUtils_RenderWiFiConnectionStatus_Wrapper(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/screenWrappers.h",
+        "line": 63
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "APP_ESPStatusRefreshRequested",
+        "OledUtils_RenderWiFiStatus",
+        "WifiBridge_GetActiveBackend",
+        "WifiBridge_GetStatus"
+      ],
+      "writes": [],
+      "description": "Renderiza Wi Fi Connection Status Wrapper dentro de Preparación y navegación de pantallas.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screenWrappers.c",
+        "line": 999
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderWiFiDetails_Wrapper",
+      "signature": "void OledUtils_RenderWiFiDetails_Wrapper(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/screenWrappers.h",
+        "line": 61
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MenuSys_SetCurrentScreenCode",
+        "OledUtils_DisableContinuousRender",
+        "OledUtils_RenderWiFiDetails"
+      ],
+      "writes": [],
+      "description": "Renderiza Wi Fi Details Wrapper dentro de Preparación y navegación de pantallas.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screenWrappers.c",
+        "line": 1045
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderWiFiSearchResults_Wrapper",
+      "signature": "void OledUtils_RenderWiFiSearchResults_Wrapper(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/screenWrappers.h",
+        "line": 60
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "CLEAR_FLAG",
+        "MenuSys_RenderMenu",
+        "MenuSys_SetCurrentScreenCode",
+        "OledUtils_DisableContinuousRender",
+        "WiFiResults_BuildMenu"
+      ],
+      "writes": [],
+      "description": "Renderiza Wi Fi Search Results Wrapper dentro de Preparación y navegación de pantallas.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screenWrappers.c",
+        "line": 1028
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderWiFiSearching_Wrapper",
+      "signature": "void OledUtils_RenderWiFiSearching_Wrapper(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/screenWrappers.h",
+        "line": 59
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MenuSys_SetCurrentScreenCode",
+        "OledUtils_Clear",
+        "OledUtils_DisableContinuousRender",
+        "OledUtils_RenderWiFiSearchScene",
+        "OledUtils_UpdateWiFiSearchTimer",
+        "SET_FLAG",
+        "WiFiScan_ClearResults",
+        "WifiBridge_StartScan"
+      ],
+      "writes": [],
+      "description": "Renderiza Wi Fi Searching Wrapper dentro de Preparación y navegación de pantallas.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screenWrappers.c",
+        "line": 972
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_ToggleTestCaminoView",
+      "signature": "void OledUtils_ToggleTestCaminoView(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/screenWrappers.h",
+        "line": 34
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Toggle Test Camino View de Preparación y navegación de pantallas; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screenWrappers.c",
+        "line": 367
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_ToggleValoresIRView",
+      "signature": "void OledUtils_ToggleValoresIRView(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/screenWrappers.h",
+        "line": 32
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Toggle Valores IRView de Preparación y navegación de pantallas; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screenWrappers.c",
+        "line": 360
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_ToggleValoresMPUView",
+      "signature": "void OledUtils_ToggleValoresMPUView(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/screenWrappers.h",
+        "line": 36
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Toggle Valores MPUView de Preparación y navegación de pantallas; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screenWrappers.c",
+        "line": 374
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "Screens_Init_screenWrappers",
+      "signature": "void Screens_Init_screenWrappers(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/screenWrappers.c",
+        "line": 1110
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Inicializa estado de navegación y vistas preparadas por wrappers.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screenWrappers.c",
+        "line": 1110
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "WiFiScan_ClearResults",
+      "signature": "void WiFiScan_ClearResults(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/screenWrappers.h",
+        "line": 65
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "WiFiResults_ResetMenuState",
+        "memset"
+      ],
+      "writes": [],
+      "description": "Limpia resultados y estado de la sesión de exploración Wi-Fi.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screenWrappers.c",
+        "line": 66
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "onRenderComplete",
+      "signature": "void onRenderComplete(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/screenWrappers.h",
+        "line": 66
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "GET_CAR_MODE",
+        "IS_FLAG_SET",
+        "WifiBridge_ReportCarModeChanged"
+      ],
+      "writes": [],
+      "description": "Atiende finalización de render para actualizar el estado de UI.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/screenWrappers.c",
+        "line": 1097
+      },
+      "linkage": "header"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "Dashboard_RequestWebStatusIfNeeded",
+      "signature": "static void Dashboard_RequestWebStatusIfNeeded(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/screenWrappers.c",
+        "line": 34
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Screens_NowMs",
+        "WifiBridge_GetActiveBackend",
+        "WifiBridge_GetStatus",
+        "WifiBridge_IsConnected",
+        "WifiBridge_IsWaitingValidation"
+      ],
+      "writes": [],
+      "description": "Solicita Web Status If Needed dentro de Preparación y navegación de pantallas.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "WiFiResults_ResetMenuState",
+      "signature": "static void WiFiResults_ResetMenuState(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/screenWrappers.c",
+        "line": 55
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "memset"
+      ],
+      "writes": [],
+      "description": "Coordina `memset` para Preparación y navegación de pantallas.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WiFiResults_SetDefaultSelection",
+      "signature": "static void WiFiResults_SetDefaultSelection(SubMenu *menu)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/screenWrappers.c",
+        "line": 79
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [
+        "currentItemIndex",
+        "firstVisibleItem",
+        "lastSelectedItemIndex",
+        "lastVisibleItem"
+      ],
+      "description": "Operación Wi Fi Results Set Default Selection de Preparación y navegación de pantallas; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "WiFiResults_BuildMenu",
+      "signature": "static void WiFiResults_BuildMenu(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/screenWrappers.c",
+        "line": 105
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "WiFiResults_SetDefaultSelection",
+        "memset"
+      ],
+      "writes": [],
+      "description": "Coordina `WiFiResults_SetDefaultSelection`, `memset` para Preparación y navegación de pantallas.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "MenuSys_VisibleOffset",
+      "signature": "static uint8_t MenuSys_VisibleOffset(const SubMenu *menu, int8_t firstVisible, int8_t itemIndex)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/screenWrappers.c",
+        "line": 140
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "MenuSys_IsItemVisible"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `MenuSys_IsItemVisible` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "OledUtils_BeginUnerRouterTransport",
+      "signature": "static void OledUtils_BeginUnerRouterTransport(uint8_t transport_id)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/screenWrappers.c",
+        "line": 381
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Begin Uner Router Transport de Preparación y navegación de pantallas; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "OledUtils_GetUnerRouterScreenCode",
+      "signature": "static ScreenCode_t OledUtils_GetUnerRouterScreenCode(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/screenWrappers.c",
+        "line": 425
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Consulta Uner Router Screen Code dentro de Preparación y navegación de pantallas.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "OledUtils_BeginIRValuesSession",
+      "signature": "static void OledUtils_BeginIRValuesSession(bool ambientMode)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/screenWrappers.c",
+        "line": 533
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "APP_IsIrLineEnabled",
+        "APP_IsIrObjectsEnabled",
+        "APP_LineCalibrationBusy",
+        "TCRT5000_EmittersGroup3Off",
+        "TCRT5000_EmittersGroup3On",
+        "TCRT5000_EmittersGroup5Off",
+        "TCRT5000_EmittersGroup5On"
+      ],
+      "writes": [],
+      "description": "Coordina `APP_IsIrLineEnabled`, `APP_IsIrObjectsEnabled`, `APP_LineCalibrationBusy` para Preparación y navegación de pantallas.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "OledUtils_RenderIRValuesMode",
+      "signature": "static void OledUtils_RenderIRValuesMode(bool ambientMode)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/screenWrappers.c",
+        "line": 571
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "MenuSys_SetCurrentScreenCode",
+        "OledUtils_BeginIRValuesSession",
+        "OledUtils_Clear",
+        "OledUtils_EnableContinuousRender",
+        "OledUtils_RenderIRGraphScene",
+        "OledUtils_RenderIRRawScene",
+        "OledUtils_UpdateIRBars",
+        "OledUtils_UpdateIRRawValues"
+      ],
+      "writes": [],
+      "description": "Renderiza IRValues Mode dentro de Preparación y navegación de pantallas.",
+      "descriptionOrigin": "inferred-name"
+    }
+  ]
+}

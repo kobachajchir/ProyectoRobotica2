@@ -1,0 +1,2152 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "web:module/src/features/ir/irSensorFrame.ts",
+  "slug": "ir-visual-model",
+  "title": "Geometría y modelo visual de sensores IR",
+  "target": "web",
+  "kind": "núcleo",
+  "status": "source-documented",
+  "snapshotDate": "2026-10-20",
+  "verification": "not-run-user-instruction",
+  "responsibility": "Relaciona posiciones/ejes IR y magnitudes de sensor con haces/marcadores/lecturas visuales.",
+  "scope": "Modelo geométrico y representación de detección, separado del umbral/calibración efectiva F4.",
+  "state": "Configuración visual local, geometría y arrays de muestras; los valores simulados conservan procedencia.",
+  "modularity": "Cálculos separables de componentes de escena, con convenciones del montaje del proyecto.",
+  "lifecycle": [
+    "Transformar referencia del sensor a robot/escena y aplicar muestra válida.",
+    "Conservar magnitud/unidad antes de decidir marcador o alcance visual."
+  ],
+  "interactions": [
+    "Telemetría ADC y calibración determinan interpretación; los efectos visuales no cambian emisores sin request explícito."
+  ],
+  "limitations": [
+    "Un haz dibujado no mide distancia ni certifica modelo óptico.",
+    "No confundir luces blancas y grupos emisores IR."
+  ],
+  "relationships": [],
+  "findings": [],
+  "files": [
+    {
+      "rootId": "web",
+      "path": "src/components/IrObjectDetectionMarkers.tsx",
+      "sha256": "30d23c2b3de719e94ce6749ef3a770385a13fdcb42724251f04479f22005b16a",
+      "imports": [
+        "../features/ir/irEmitterGeometry",
+        "../features/ir/irObjectModel",
+        "three"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/components/SensorBeamControls.tsx",
+      "sha256": "a76aa5f75e4046c27899a1d875a5e43834797da279fda8dc36821b893190ecf2",
+      "imports": [
+        "../features/ir/beamVisualSettings",
+        "./SensorDisclosure",
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/components/StopDiscontinuityGlyph.tsx",
+      "sha256": "101c6ed650ac3af56fbef9f42670f68a9b6ba8cdf91032accd51755c8bb32cd9",
+      "imports": [],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/components/UnderbodySensorBeams.tsx",
+      "sha256": "6fe5b0d70f75aaafa455ce8649143a3cd1785c28e445c38a3347c6557126bf5e",
+      "imports": [
+        "../features/ir/irEmitterGeometry",
+        "@react-three/fiber",
+        "react",
+        "three"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/features/ir/beamVisualSettings.ts",
+      "sha256": "67dabdb64004a1df71b457e73fe30e4c61271aa461ffe12099831fb61a3e64d9",
+      "imports": [],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/features/ir/irEmitterGeometry.ts",
+      "sha256": "192a5237bd90009883fc6db9e91828b4cdcc248d5ed374263aad927c3efe3f4b",
+      "imports": [],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/features/ir/irObjectModel.ts",
+      "sha256": "588412b462e95a3306be01e1355111a5ed51d9ccc53cd97d30d738d036923553",
+      "imports": [
+        "../../api/UnerFrameV2",
+        "./irEmitterGeometry"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/features/ir/irSensorFrame.ts",
+      "sha256": "8899eb0b7f8b4850d41c64a3f51c4ba15d9354745bcee7add57f5c0e76e9070a",
+      "imports": [
+        "./irObjectModel",
+        "three"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/features/ir/sensorCameraViews.ts",
+      "sha256": "df8d3ebdc95607c97d04152b076d9afc06dd1bb59d418fdd1512fa85a72c7834",
+      "imports": [],
+      "analysisLevel": "typescript-ast-static"
+    }
+  ],
+  "types": [
+    {
+      "name": "StopDiscontinuityGlyphProps",
+      "kind": "TypeAliasDeclaration",
+      "fields": [
+        {
+          "name": "className",
+          "declaration": "className?: string",
+          "callback": false,
+          "ownerType": "StopDiscontinuityGlyphProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/StopDiscontinuityGlyph.tsx",
+            "line": 2
+          },
+          "description": "Dato de estado/configuración `className`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/StopDiscontinuityGlyph.tsx",
+        "line": 1
+      }
+    },
+    {
+      "name": "BeamGroup",
+      "kind": "TypeAliasDeclaration",
+      "type": "\"objects\" | \"line\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/beamVisualSettings.ts",
+        "line": 1
+      }
+    },
+    {
+      "name": "BeamOpacities",
+      "kind": "TypeAliasDeclaration",
+      "type": "Record<BeamGroup, number>",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/beamVisualSettings.ts",
+        "line": 2
+      }
+    },
+    {
+      "name": "BeamVisibility",
+      "kind": "TypeAliasDeclaration",
+      "type": "Record<BeamGroup, boolean>",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/beamVisualSettings.ts",
+        "line": 3
+      }
+    },
+    {
+      "name": "IrObjectSensorKey",
+      "kind": "TypeAliasDeclaration",
+      "type": "(typeof IR_OBJECT_SENSOR_KEYS)[number]",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irObjectModel.ts",
+        "line": 17
+      }
+    },
+    {
+      "name": "IrObjectPoint",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "lateralCm",
+          "declaration": "lateralCm: number",
+          "callback": false,
+          "ownerType": "IrObjectPoint",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irObjectModel.ts",
+            "line": 20
+          },
+          "description": "Dato de estado/configuración `lateralCm`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "forwardCm",
+          "declaration": "forwardCm: number",
+          "callback": false,
+          "ownerType": "IrObjectPoint",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irObjectModel.ts",
+            "line": 21
+          },
+          "description": "Dato de estado/configuración `forwardCm`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "verticalCm",
+          "declaration": "verticalCm?: number",
+          "callback": false,
+          "ownerType": "IrObjectPoint",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irObjectModel.ts",
+            "line": 22
+          },
+          "description": "Dato de estado/configuración `verticalCm`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irObjectModel.ts",
+        "line": 19
+      }
+    },
+    {
+      "name": "IrObjectSensorGeometry",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "key",
+          "declaration": "key: IrObjectSensorKey",
+          "callback": false,
+          "ownerType": "IrObjectSensorGeometry",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irObjectModel.ts",
+            "line": 26
+          },
+          "description": "Dato de estado/configuración `key`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "label",
+          "declaration": "label: string",
+          "callback": false,
+          "ownerType": "IrObjectSensorGeometry",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irObjectModel.ts",
+            "line": 27
+          },
+          "description": "Dato de estado/configuración `label`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "offsetCm",
+          "declaration": "offsetCm: number",
+          "callback": false,
+          "ownerType": "IrObjectSensorGeometry",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irObjectModel.ts",
+            "line": 28
+          },
+          "description": "Dato de estado/configuración `offsetCm`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "forwardOffsetCm",
+          "declaration": "forwardOffsetCm?: number",
+          "callback": false,
+          "ownerType": "IrObjectSensorGeometry",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irObjectModel.ts",
+            "line": 29
+          },
+          "description": "Dato de estado/configuración `forwardOffsetCm`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "verticalOffsetCm",
+          "declaration": "verticalOffsetCm?: number",
+          "callback": false,
+          "ownerType": "IrObjectSensorGeometry",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irObjectModel.ts",
+            "line": 30
+          },
+          "description": "Dato de estado/configuración `verticalOffsetCm`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "bearingDeg",
+          "declaration": "bearingDeg: number",
+          "callback": false,
+          "ownerType": "IrObjectSensorGeometry",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irObjectModel.ts",
+            "line": 31
+          },
+          "description": "Ángulo en grados; respetar eje y referencia de esta librería."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irObjectModel.ts",
+        "line": 25
+      }
+    },
+    {
+      "name": "IrObjectCalibrationCurvePoint",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "distanceCm",
+          "declaration": "distanceCm: number",
+          "callback": false,
+          "ownerType": "IrObjectCalibrationCurvePoint",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irObjectModel.ts",
+            "line": 35
+          },
+          "description": "Dato de estado/configuración `distanceCm`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "adc",
+          "declaration": "adc: number",
+          "callback": false,
+          "ownerType": "IrObjectCalibrationCurvePoint",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irObjectModel.ts",
+            "line": 36
+          },
+          "description": "Dato de estado/configuración `adc`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irObjectModel.ts",
+        "line": 34
+      }
+    },
+    {
+      "name": "IrObjectForwardCalibration",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "polarity",
+          "declaration": "polarity: \"higher-is-closer\" | \"lower-is-closer\"",
+          "callback": false,
+          "ownerType": "IrObjectForwardCalibration",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irObjectModel.ts",
+            "line": 40
+          },
+          "description": "Dato de estado/configuración `polarity`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "baselineAdc",
+          "declaration": "baselineAdc: Record<IrObjectSensorKey, number>",
+          "callback": false,
+          "ownerType": "IrObjectForwardCalibration",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irObjectModel.ts",
+            "line": 41
+          },
+          "description": "Dato de estado/configuración `baselineAdc`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "curves",
+          "declaration": "curves: Record< IrObjectSensorKey, readonly IrObjectCalibrationCurvePoint[] >",
+          "callback": false,
+          "ownerType": "IrObjectForwardCalibration",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irObjectModel.ts",
+            "line": 42
+          },
+          "description": "Dato de estado/configuración `curves`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irObjectModel.ts",
+        "line": 39
+      }
+    },
+    {
+      "name": "IrObjectForwardOptions",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "reflectivity",
+          "declaration": "reflectivity?: number",
+          "callback": false,
+          "ownerType": "IrObjectForwardOptions",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irObjectModel.ts",
+            "line": 49
+          },
+          "description": "Dato de estado/configuración `reflectivity`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ambientAdc",
+          "declaration": "ambientAdc?: number",
+          "callback": false,
+          "ownerType": "IrObjectForwardOptions",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irObjectModel.ts",
+            "line": 50
+          },
+          "description": "Dato de estado/configuración `ambientAdc`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "gain",
+          "declaration": "gain?: number",
+          "callback": false,
+          "ownerType": "IrObjectForwardOptions",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irObjectModel.ts",
+            "line": 51
+          },
+          "description": "Dato de estado/configuración `gain`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "distanceExponent",
+          "declaration": "distanceExponent?: number",
+          "callback": false,
+          "ownerType": "IrObjectForwardOptions",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irObjectModel.ts",
+            "line": 52
+          },
+          "description": "Dato de estado/configuración `distanceExponent`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "angularExponent",
+          "declaration": "angularExponent?: number",
+          "callback": false,
+          "ownerType": "IrObjectForwardOptions",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irObjectModel.ts",
+            "line": 53
+          },
+          "description": "Dato de estado/configuración `angularExponent`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "detectionThreshold",
+          "declaration": "detectionThreshold?: number",
+          "callback": false,
+          "ownerType": "IrObjectForwardOptions",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irObjectModel.ts",
+            "line": 54
+          },
+          "description": "Dato de estado/configuración `detectionThreshold`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "calibration",
+          "declaration": "calibration?: IrObjectForwardCalibration | null",
+          "callback": false,
+          "ownerType": "IrObjectForwardOptions",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irObjectModel.ts",
+            "line": 55
+          },
+          "description": "Dato de estado/configuración `calibration`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irObjectModel.ts",
+        "line": 48
+      }
+    },
+    {
+      "name": "IrObjectForwardResult",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "readings",
+          "declaration": "readings: Record<IrObjectSensorKey, number>",
+          "callback": false,
+          "ownerType": "IrObjectForwardResult",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irObjectModel.ts",
+            "line": 59
+          },
+          "description": "Dato de estado/configuración `readings`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "strengths",
+          "declaration": "strengths: Record<IrObjectSensorKey, number>",
+          "callback": false,
+          "ownerType": "IrObjectForwardResult",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irObjectModel.ts",
+            "line": 60
+          },
+          "description": "Dato de estado/configuración `strengths`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "activeMask",
+          "declaration": "activeMask: number",
+          "callback": false,
+          "ownerType": "IrObjectForwardResult",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irObjectModel.ts",
+            "line": 61
+          },
+          "description": "Dato de estado/configuración `activeMask`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "supportCount",
+          "declaration": "supportCount: number",
+          "callback": false,
+          "ownerType": "IrObjectForwardResult",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irObjectModel.ts",
+            "line": 62
+          },
+          "description": "Dato de estado/configuración `supportCount`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irObjectModel.ts",
+        "line": 58
+      }
+    },
+    {
+      "name": "IrObjectPositionEstimate",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "detected",
+          "declaration": "detected: boolean",
+          "callback": false,
+          "ownerType": "IrObjectPositionEstimate",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irObjectModel.ts",
+            "line": 66
+          },
+          "description": "Dato de estado/configuración `detected`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "rangeCm",
+          "declaration": "rangeCm: number",
+          "callback": false,
+          "ownerType": "IrObjectPositionEstimate",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irObjectModel.ts",
+            "line": 67
+          },
+          "description": "Dato de estado/configuración `rangeCm`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "bearingDeg",
+          "declaration": "bearingDeg: number",
+          "callback": false,
+          "ownerType": "IrObjectPositionEstimate",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irObjectModel.ts",
+            "line": 68
+          },
+          "description": "Ángulo en grados; respetar eje y referencia de esta librería."
+        },
+        {
+          "name": "confidence",
+          "declaration": "confidence: number",
+          "callback": false,
+          "ownerType": "IrObjectPositionEstimate",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irObjectModel.ts",
+            "line": 69
+          },
+          "description": "Dato de estado/configuración `confidence`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ambiguous",
+          "declaration": "ambiguous: boolean",
+          "callback": false,
+          "ownerType": "IrObjectPositionEstimate",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irObjectModel.ts",
+            "line": 70
+          },
+          "description": "Dato de estado/configuración `ambiguous`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "supportCount",
+          "declaration": "supportCount: number",
+          "callback": false,
+          "ownerType": "IrObjectPositionEstimate",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irObjectModel.ts",
+            "line": 71
+          },
+          "description": "Dato de estado/configuración `supportCount`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "activeMask",
+          "declaration": "activeMask: number",
+          "callback": false,
+          "ownerType": "IrObjectPositionEstimate",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irObjectModel.ts",
+            "line": 72
+          },
+          "description": "Dato de estado/configuración `activeMask`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "activeSensors",
+          "declaration": "activeSensors: IrObjectSensorKey[]",
+          "callback": false,
+          "ownerType": "IrObjectPositionEstimate",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irObjectModel.ts",
+            "line": 73
+          },
+          "description": "Dato de estado/configuración `activeSensors`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "estimatedReflectivity",
+          "declaration": "estimatedReflectivity: number",
+          "callback": false,
+          "ownerType": "IrObjectPositionEstimate",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irObjectModel.ts",
+            "line": 74
+          },
+          "description": "Dato de estado/configuración `estimatedReflectivity`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "residual",
+          "declaration": "residual: number",
+          "callback": false,
+          "ownerType": "IrObjectPositionEstimate",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irObjectModel.ts",
+            "line": 75
+          },
+          "description": "Dato de estado/configuración `residual`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "uncertaintyCm",
+          "declaration": "uncertaintyCm: number",
+          "callback": false,
+          "ownerType": "IrObjectPositionEstimate",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irObjectModel.ts",
+            "line": 76
+          },
+          "description": "Dato de estado/configuración `uncertaintyCm`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irObjectModel.ts",
+        "line": 65
+      }
+    },
+    {
+      "name": "IrObjectAxialDetection",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "detected",
+          "declaration": "detected: boolean",
+          "callback": false,
+          "ownerType": "IrObjectAxialDetection",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irObjectModel.ts",
+            "line": 80
+          },
+          "description": "Dato de estado/configuración `detected`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "distanceCm",
+          "declaration": "distanceCm: number | null",
+          "callback": false,
+          "ownerType": "IrObjectAxialDetection",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irObjectModel.ts",
+            "line": 81
+          },
+          "description": "Dato de estado/configuración `distanceCm`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "strength",
+          "declaration": "strength: number",
+          "callback": false,
+          "ownerType": "IrObjectAxialDetection",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irObjectModel.ts",
+            "line": 82
+          },
+          "description": "Dato de estado/configuración `strength`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "source",
+          "declaration": "source: \"model\" | \"calibration\" | \"ambiguous\" | \"outside-calibration\" | \"outside-range\"",
+          "callback": false,
+          "ownerType": "IrObjectAxialDetection",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irObjectModel.ts",
+            "line": 83
+          },
+          "description": "Dato de estado/configuración `source`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irObjectModel.ts",
+        "line": 79
+      }
+    },
+    {
+      "name": "IrObjectAxialDetections",
+      "kind": "TypeAliasDeclaration",
+      "type": "Record<IrObjectSensorKey, IrObjectAxialDetection>",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irObjectModel.ts",
+        "line": 86
+      }
+    },
+    {
+      "name": "SearchOptions",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "minX",
+          "declaration": "minX: number",
+          "callback": false,
+          "ownerType": "SearchOptions",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irObjectModel.ts",
+            "line": 417
+          },
+          "description": "Dato de estado/configuración `minX`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "maxX",
+          "declaration": "maxX: number",
+          "callback": false,
+          "ownerType": "SearchOptions",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irObjectModel.ts",
+            "line": 418
+          },
+          "description": "Dato de estado/configuración `maxX`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "minForward",
+          "declaration": "minForward: number",
+          "callback": false,
+          "ownerType": "SearchOptions",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irObjectModel.ts",
+            "line": 419
+          },
+          "description": "Dato de estado/configuración `minForward`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "maxForward",
+          "declaration": "maxForward: number",
+          "callback": false,
+          "ownerType": "SearchOptions",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irObjectModel.ts",
+            "line": 420
+          },
+          "description": "Dato de estado/configuración `maxForward`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "step",
+          "declaration": "step: number",
+          "callback": false,
+          "ownerType": "SearchOptions",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irObjectModel.ts",
+            "line": 421
+          },
+          "description": "Dato de estado/configuración `step`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "observed",
+          "declaration": "observed: number[]",
+          "callback": false,
+          "ownerType": "SearchOptions",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irObjectModel.ts",
+            "line": 422
+          },
+          "description": "Dato de estado/configuración `observed`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ambient",
+          "declaration": "ambient: number",
+          "callback": false,
+          "ownerType": "SearchOptions",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irObjectModel.ts",
+            "line": 423
+          },
+          "description": "Dato de estado/configuración `ambient`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "rangeCm",
+          "declaration": "rangeCm: number",
+          "callback": false,
+          "ownerType": "SearchOptions",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irObjectModel.ts",
+            "line": 424
+          },
+          "description": "Dato de estado/configuración `rangeCm`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "distanceExponent",
+          "declaration": "distanceExponent: number",
+          "callback": false,
+          "ownerType": "SearchOptions",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irObjectModel.ts",
+            "line": 425
+          },
+          "description": "Dato de estado/configuración `distanceExponent`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "angularExponent",
+          "declaration": "angularExponent: number",
+          "callback": false,
+          "ownerType": "SearchOptions",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irObjectModel.ts",
+            "line": 426
+          },
+          "description": "Dato de estado/configuración `angularExponent`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "activeSensors",
+          "declaration": "activeSensors: IrObjectSensorKey[]",
+          "callback": false,
+          "ownerType": "SearchOptions",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irObjectModel.ts",
+            "line": 427
+          },
+          "description": "Dato de estado/configuración `activeSensors`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "detectionThresholdNormalized",
+          "declaration": "detectionThresholdNormalized: number[]",
+          "callback": false,
+          "ownerType": "SearchOptions",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irObjectModel.ts",
+            "line": 428
+          },
+          "description": "Dato de estado/configuración `detectionThresholdNormalized`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "calibration",
+          "declaration": "calibration?: IrObjectForwardCalibration | null",
+          "callback": false,
+          "ownerType": "SearchOptions",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irObjectModel.ts",
+            "line": 429
+          },
+          "description": "Dato de estado/configuración `calibration`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irObjectModel.ts",
+        "line": 416
+      }
+    },
+    {
+      "name": "Candidate",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "point",
+          "declaration": "point: IrObjectPoint",
+          "callback": false,
+          "ownerType": "Candidate",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irObjectModel.ts",
+            "line": 433
+          },
+          "description": "Dato de estado/configuración `point`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "score",
+          "declaration": "score: number",
+          "callback": false,
+          "ownerType": "Candidate",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irObjectModel.ts",
+            "line": 434
+          },
+          "description": "Dato de estado/configuración `score`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "reflectivity",
+          "declaration": "reflectivity: number",
+          "callback": false,
+          "ownerType": "Candidate",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irObjectModel.ts",
+            "line": 435
+          },
+          "description": "Dato de estado/configuración `reflectivity`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irObjectModel.ts",
+        "line": 432
+      }
+    },
+    {
+      "name": "SensorResponse",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "inside",
+          "declaration": "inside: boolean",
+          "callback": false,
+          "ownerType": "SensorResponse",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irObjectModel.ts",
+            "line": 533
+          },
+          "description": "Dato de estado/configuración `inside`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "distanceCm",
+          "declaration": "distanceCm: number",
+          "callback": false,
+          "ownerType": "SensorResponse",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irObjectModel.ts",
+            "line": 534
+          },
+          "description": "Dato de estado/configuración `distanceCm`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "angularGain",
+          "declaration": "angularGain: number",
+          "callback": false,
+          "ownerType": "SensorResponse",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irObjectModel.ts",
+            "line": 535
+          },
+          "description": "Dato de estado/configuración `angularGain`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "strength",
+          "declaration": "strength: number",
+          "callback": false,
+          "ownerType": "SensorResponse",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irObjectModel.ts",
+            "line": 536
+          },
+          "description": "Dato de estado/configuración `strength`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irObjectModel.ts",
+        "line": 532
+      }
+    },
+    {
+      "name": "IrSensorRigEulerDeg",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "yaw",
+          "declaration": "yaw: number",
+          "callback": false,
+          "ownerType": "IrSensorRigEulerDeg",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irSensorFrame.ts",
+            "line": 5
+          },
+          "description": "Dato de estado/configuración `yaw`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "pitch",
+          "declaration": "pitch: number",
+          "callback": false,
+          "ownerType": "IrSensorRigEulerDeg",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irSensorFrame.ts",
+            "line": 6
+          },
+          "description": "Dato de estado/configuración `pitch`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "roll",
+          "declaration": "roll: number",
+          "callback": false,
+          "ownerType": "IrSensorRigEulerDeg",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irSensorFrame.ts",
+            "line": 7
+          },
+          "description": "Dato de estado/configuración `roll`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irSensorFrame.ts",
+        "line": 4
+      }
+    },
+    {
+      "name": "IrScenePoint",
+      "kind": "TypeAliasDeclaration",
+      "type": "[number, number, number]",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irSensorFrame.ts",
+        "line": 10
+      }
+    },
+    {
+      "name": "IrSensorFrameProjection",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "pivotScene",
+          "declaration": "pivotScene: IrScenePoint",
+          "callback": false,
+          "ownerType": "IrSensorFrameProjection",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irSensorFrame.ts",
+            "line": 13
+          },
+          "description": "Dato de estado/configuración `pivotScene`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "sensorOriginScene",
+          "declaration": "sensorOriginScene: IrScenePoint",
+          "callback": false,
+          "ownerType": "IrSensorFrameProjection",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irSensorFrame.ts",
+            "line": 14
+          },
+          "description": "Dato de estado/configuración `sensorOriginScene`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "sceneUnitsPerCm",
+          "declaration": "sceneUnitsPerCm: number",
+          "callback": false,
+          "ownerType": "IrSensorFrameProjection",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irSensorFrame.ts",
+            "line": 15
+          },
+          "description": "Dato de estado/configuración `sceneUnitsPerCm`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "beamVisualScale",
+          "declaration": "beamVisualScale: number",
+          "callback": false,
+          "ownerType": "IrSensorFrameProjection",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/irSensorFrame.ts",
+            "line": 16
+          },
+          "description": "Dato de estado/configuración `beamVisualScale`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irSensorFrame.ts",
+        "line": 12
+      }
+    },
+    {
+      "name": "CameraView",
+      "kind": "TypeAliasDeclaration",
+      "fields": [
+        {
+          "name": "key",
+          "declaration": "key: string",
+          "callback": false,
+          "ownerType": "CameraView",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/sensorCameraViews.ts",
+            "line": 2
+          },
+          "description": "Dato de estado/configuración `key`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "label",
+          "declaration": "label: string",
+          "callback": false,
+          "ownerType": "CameraView",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/sensorCameraViews.ts",
+            "line": 3
+          },
+          "description": "Dato de estado/configuración `label`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "shortLabel",
+          "declaration": "shortLabel: string",
+          "callback": false,
+          "ownerType": "CameraView",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/sensorCameraViews.ts",
+            "line": 4
+          },
+          "description": "Dato de estado/configuración `shortLabel`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "position",
+          "declaration": "position: readonly [number, number, number]",
+          "callback": false,
+          "ownerType": "CameraView",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/sensorCameraViews.ts",
+            "line": 5
+          },
+          "description": "Dato de estado/configuración `position`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "up",
+          "declaration": "up?: readonly [number, number, number]",
+          "callback": false,
+          "ownerType": "CameraView",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/features/ir/sensorCameraViews.ts",
+            "line": 6
+          },
+          "description": "Dato de estado/configuración `up`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/sensorCameraViews.ts",
+        "line": 1
+      }
+    },
+    {
+      "name": "SensorCameraPreset",
+      "kind": "TypeAliasDeclaration",
+      "type": "(typeof SENSOR_CAMERA_VIEW_GROUPS)[number][\"views\"][number][\"key\"]",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/sensorCameraViews.ts",
+        "line": 33
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "DetectionMarker",
+      "displayName": "DetectionMarker",
+      "signature": "DetectionMarker({ config, detection, sensitivityCm, opacity }: { config: (typeof IR_EMITTER_GEOMETRY)[number]; detection: IrObjectAxialDetection; sensitivityCm: number; opacity: number; }): inferred-by-TypeScript",
+      "line": 15,
+      "endLine": 51,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.max",
+        "Math.min",
+        "Math.tan",
+        "Number.isFinite",
+        "THREE.MathUtils.degToRad"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/IrObjectDetectionMarkers.tsx",
+        "line": 15
+      },
+      "description": "Coordina `Math.max`, `Math.min`, `Math.tan` para Geometría y modelo visual de sensores IR.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "IrObjectDetectionMarkers",
+      "displayName": "IrObjectDetectionMarkers",
+      "signature": "IrObjectDetectionMarkers({ detections, sensitivityCm, opacity }: { detections: IrObjectAxialDetections; sensitivityCm: number; opacity: number; }): inferred-by-TypeScript",
+      "line": 6,
+      "endLine": 13,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "IR_EMITTER_GEOMETRY.map"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/IrObjectDetectionMarkers.tsx",
+        "line": 6
+      },
+      "description": "Adapta la llamada a `IR_EMITTER_GEOMETRY.map` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "OpticalBeam",
+      "displayName": "OpticalBeam",
+      "signature": "OpticalBeam({ positionM, direction, halfAngleDeg, color, opacity, illuminate = false, glowTexture }: { positionM: readonly [number, number, number]; direction: readonly [number, number, number]; halfAngleDeg: number; color: string; opacity: number; illuminate?: boolean; glowTexture: THREE.Texture; }): inferred-by-TypeScript",
+      "line": 56,
+      "endLine": 192,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.tan",
+        "THREE.MathUtils.degToRad",
+        "createPortal",
+        "useEffect",
+        "useFrame",
+        "useMemo",
+        "useRef",
+        "useThree"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/UnderbodySensorBeams.tsx",
+        "line": 56
+      },
+      "description": "Coordina `Math.tan`, `THREE.MathUtils.degToRad`, `createPortal` para Geometría y modelo visual de sensores IR.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "SensorBeamControls",
+      "displayName": "SensorBeamControls",
+      "signature": "SensorBeamControls({ opacities, visibility, onOpacityChange, onVisibilityChange }: { opacities: BeamOpacities; visibility: BeamVisibility; onOpacityChange: (group: BeamGroup, opacity: number) => void; onVisibilityChange: (group: BeamGroup, visible: boolean) => void; }): inferred-by-TypeScript",
+      "line": 10,
+      "endLine": 38,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "GROUPS.map",
+        "useId"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/SensorBeamControls.tsx",
+        "line": 10
+      },
+      "description": "Coordina `GROUPS.map`, `useId` para Geometría y modelo visual de sensores IR.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "StopDiscontinuityGlyph",
+      "displayName": "StopDiscontinuityGlyph",
+      "signature": "StopDiscontinuityGlyph({\n  className = \"\",\n}: StopDiscontinuityGlyphProps): inferred-by-TypeScript",
+      "line": 5,
+      "endLine": 18,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/StopDiscontinuityGlyph.tsx",
+        "line": 5
+      },
+      "description": "Detiene Discontinuity Glyph dentro de Geometría y modelo visual de sensores IR.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "UnderbodySensorBeams",
+      "displayName": "UnderbodySensorBeams",
+      "signature": "UnderbodySensorBeams({ lineEnabled, lightsEnabled, lineOpacity }: { lineEnabled: boolean | null; lightsEnabled: boolean; lineOpacity: number; }): inferred-by-TypeScript",
+      "line": 37,
+      "endLine": 54,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "IR_LINE_EMITTER_GEOMETRY.map",
+        "WHITE_LED_GEOMETRY.map",
+        "useEffect",
+        "useMemo"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/UnderbodySensorBeams.tsx",
+        "line": 37
+      },
+      "description": "Coordina `IR_LINE_EMITTER_GEOMETRY.map`, `WHITE_LED_GEOMETRY.map`, `useEffect` para Geometría y modelo visual de sensores IR.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "calibratedAdcForResponse",
+      "displayName": "calibratedAdcForResponse",
+      "signature": "calibratedAdcForResponse(key: IrObjectSensorKey, response: SensorResponse, amplitude: number, calibration: IrObjectForwardCalibration): inferred-by-TypeScript",
+      "line": 598,
+      "endLine": 629,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.max",
+        "Math.round",
+        "clamp",
+        "interpolateCalibrationCurve"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irObjectModel.ts",
+        "line": 598
+      },
+      "description": "Coordina `Math.max`, `Math.round`, `clamp` para Geometría y modelo visual de sensores IR.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "calibratedDistanceStrength",
+      "displayName": "calibratedDistanceStrength",
+      "signature": "calibratedDistanceStrength(key: IrObjectSensorKey, distanceCm: number, calibration: IrObjectForwardCalibration): inferred-by-TypeScript",
+      "line": 631,
+      "endLine": 647,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "calibrationMaximumSignal",
+        "clamp01",
+        "interpolateCalibrationCurve"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irObjectModel.ts",
+        "line": 631
+      },
+      "description": "Coordina `calibrationMaximumSignal`, `clamp01`, `interpolateCalibrationCurve` para Geometría y modelo visual de sensores IR.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "calibrationMaximumSignal",
+      "displayName": "calibrationMaximumSignal",
+      "signature": "calibrationMaximumSignal(key: IrObjectSensorKey, calibration: IrObjectForwardCalibration): inferred-by-TypeScript",
+      "line": 701,
+      "endLine": 713,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "calibration.curves[key].reduce"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irObjectModel.ts",
+        "line": 701
+      },
+      "description": "Adapta la llamada a `calibration.curves[key].reduce` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "clamp",
+      "displayName": "clamp",
+      "signature": "clamp(value: number, min: number, max: number): inferred-by-TypeScript",
+      "line": 781,
+      "endLine": 783,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.max",
+        "Math.min"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irObjectModel.ts",
+        "line": 781
+      },
+      "description": "Coordina `Math.max`, `Math.min` para Geometría y modelo visual de sensores IR.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "clamp01",
+      "displayName": "clamp01",
+      "signature": "clamp01(value: number): inferred-by-TypeScript",
+      "line": 785,
+      "endLine": 787,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "clamp"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irObjectModel.ts",
+        "line": 785
+      },
+      "description": "Adapta la llamada a `clamp` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "cleanAngle",
+      "displayName": "cleanAngle",
+      "signature": "cleanAngle(value: number): inferred-by-TypeScript",
+      "line": 114,
+      "endLine": 116,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.abs"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irSensorFrame.ts",
+        "line": 114
+      },
+      "description": "Adapta la llamada a `Math.abs` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "collectCandidates",
+      "displayName": "collectCandidates",
+      "signature": "collectCandidates(options: SearchOptions): Candidate[]",
+      "line": 446,
+      "endLine": 470,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "candidates.push",
+        "evaluateCandidate"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irObjectModel.ts",
+        "line": 446
+      },
+      "description": "Coordina `candidates.push`, `evaluateCandidate` para Geometría y modelo visual de sensores IR.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "createObjectSensorRecord",
+      "displayName": "createObjectSensorRecord",
+      "signature": "createObjectSensorRecord(value: inferred-by-TypeScript): Record<IrObjectSensorKey, number>",
+      "line": 340,
+      "endLine": 350,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "IR_OBJECT_SENSOR_KEYS.reduce"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irObjectModel.ts",
+        "line": 340
+      },
+      "description": "Adapta la llamada a `IR_OBJECT_SENSOR_KEYS.reduce` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "createRigQuaternion",
+      "displayName": "createRigQuaternion",
+      "signature": "createRigQuaternion(eulerDeg: IrSensorRigEulerDeg): inferred-by-TypeScript",
+      "line": 103,
+      "endLine": 112,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "THREE.MathUtils.degToRad",
+        "new THREE.Quaternion().setFromEuler"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irSensorFrame.ts",
+        "line": 103
+      },
+      "description": "Coordina `THREE.MathUtils.degToRad`, `new THREE.Quaternion().setFromEuler` para Geometría y modelo visual de sensores IR.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "createWhiteGlowTexture",
+      "displayName": "createWhiteGlowTexture",
+      "signature": "createWhiteGlowTexture(): inferred-by-TypeScript",
+      "line": 17,
+      "endLine": 35,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "canvas.getContext",
+        "context.createRadialGradient",
+        "context.fillRect",
+        "document.createElement",
+        "gradient.addColorStop"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/UnderbodySensorBeams.tsx",
+        "line": 17
+      },
+      "description": "Coordina `canvas.getContext`, `context.createRadialGradient`, `context.fillRect` para Geometría y modelo visual de sensores IR.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "degToRad",
+      "displayName": "degToRad",
+      "signature": "degToRad(value: number): inferred-by-TypeScript",
+      "line": 789,
+      "endLine": 791,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irObjectModel.ts",
+        "line": 789
+      },
+      "description": "Operación deg To Rad de Geometría y modelo visual de sensores IR; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "emptyEstimate",
+      "displayName": "emptyEstimate",
+      "signature": "emptyEstimate(activeMask: number, activeSensors: IrObjectSensorKey[]): IrObjectPositionEstimate",
+      "line": 760,
+      "endLine": 779,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irObjectModel.ts",
+        "line": 760
+      },
+      "description": "Operación empty Estimate de Geometría y modelo visual de sensores IR; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "estimateIrObjectAxialDetections",
+      "displayName": "estimateIrObjectAxialDetections",
+      "signature": "estimateIrObjectAxialDetections(readings: Readonly<Record<IrObjectSensorKey, number>>, sensitivityCm: number, calibration?: IrObjectForwardCalibration | null, available: inferred-by-TypeScript): IrObjectAxialDetections",
+      "line": 362,
+      "endLine": 414,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "IR_OBJECT_SENSOR_KEYS.reduce",
+        "Number.isFinite",
+        "clamp"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irObjectModel.ts",
+        "line": 362
+      },
+      "description": "Coordina `IR_OBJECT_SENSOR_KEYS.reduce`, `Number.isFinite`, `clamp` para Geometría y modelo visual de sensores IR.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "estimateIrObjectPosition",
+      "displayName": "estimateIrObjectPosition",
+      "signature": "estimateIrObjectPosition(readings: Readonly<Record<IrObjectSensorKey, number>>, sensitivityCm: number, options: Pick< IrObjectForwardOptions, | \"ambientAdc\" | \"distanceExponent\" | \"angularExponent\" | \"detectionThreshold\" | \"calibration\" >): IrObjectPositionEstimate",
+      "line": 203,
+      "endLine": 338,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "IR_OBJECT_SENSOR_KEYS.filter",
+        "IR_OBJECT_SENSOR_KEYS.map",
+        "IR_OBJECT_SENSOR_LAYOUT.map",
+        "Math.atan2",
+        "Math.hypot",
+        "Math.max",
+        "Math.min",
+        "Math.sqrt",
+        "activeSensors.reduce",
+        "clamp",
+        "clamp01",
+        "collectCandidates",
+        "collectCandidates({ minX: coarseBest.point.lateralCm - fineRadius, maxX: coarseBest.point.lateralCm + fineRadius, minForward: Math.max(0, coarseBest.point.forwardCm - fineRadius), maxForward: Math.min(rangeCm, coarseBest.point.forwardCm + fineRadius), step: fineStep, observed, ambient, rangeCm, distanceExponent, angularExponent, activeSensors, detectionThresholdNormalized, calibration: options.calibration, }).sort",
+        "emptyEstimate",
+        "fineCandidates.find",
+        "radToDeg",
+        "searchBestCandidate"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irObjectModel.ts",
+        "line": 203
+      },
+      "description": "Coordina `IR_OBJECT_SENSOR_KEYS.filter`, `IR_OBJECT_SENSOR_KEYS.map`, `IR_OBJECT_SENSOR_LAYOUT.map` para Geometría y modelo visual de sensores IR.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "evaluateCandidate",
+      "displayName": "evaluateCandidate",
+      "signature": "evaluateCandidate(point: IrObjectPoint, options: Pick< SearchOptions, | \"observed\" | \"ambient\" | \"rangeCm\" | \"distanceExponent\" | \"angularExponent\" | \"activeSensors\" | \"detectionThresholdNormalized\" | \"calibration\" >): Candidate | null",
+      "line": 472,
+      "endLine": 530,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "IR_OBJECT_SENSOR_LAYOUT.map",
+        "centeredObserved.reduce",
+        "clamp",
+        "options.observed.map",
+        "predicted.forEach",
+        "predicted.reduce"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irObjectModel.ts",
+        "line": 472
+      },
+      "description": "Coordina `IR_OBJECT_SENSOR_LAYOUT.map`, `centeredObserved.reduce`, `clamp` para Geometría y modelo visual de sensores IR.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "interpolateCalibrationCurve",
+      "displayName": "interpolateCalibrationCurve",
+      "signature": "interpolateCalibrationCurve(curve: readonly IrObjectCalibrationCurvePoint[], distanceCm: number): inferred-by-TypeScript",
+      "line": 715,
+      "endLine": 748,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.max",
+        "[...curve].sort",
+        "linearCurveValue"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irObjectModel.ts",
+        "line": 715
+      },
+      "description": "Coordina `Math.max`, `[...curve].sort`, `linearCurveValue` para Geometría y modelo visual de sensores IR.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "inverseRotateScenePointAroundPivot",
+      "displayName": "inverseRotateScenePointAroundPivot",
+      "signature": "inverseRotateScenePointAroundPivot(worldScenePoint: readonly [number, number, number], eulerDeg: IrSensorRigEulerDeg, pivotScene: readonly [number, number, number]): IrScenePoint",
+      "line": 32,
+      "endLine": 43,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "createRigQuaternion",
+        "createRigQuaternion(eulerDeg).invert",
+        "new THREE.Vector3(...worldScenePoint) .sub",
+        "new THREE.Vector3(...worldScenePoint) .sub(pivot) .applyQuaternion",
+        "new THREE.Vector3(...worldScenePoint) .sub(pivot) .applyQuaternion(createRigQuaternion(eulerDeg).invert()) .add"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irSensorFrame.ts",
+        "line": 32
+      },
+      "description": "Coordina `createRigQuaternion`, `createRigQuaternion(eulerDeg).invert`, `new THREE.Vector3(...worldScenePoint) .sub` para Geometría y modelo visual de sensores IR.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "irObjectPointToLocalScenePoint",
+      "displayName": "irObjectPointToLocalScenePoint",
+      "signature": "irObjectPointToLocalScenePoint(point: IrObjectPoint, projection: IrSensorFrameProjection): IrScenePoint",
+      "line": 69,
+      "endLine": 82,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irSensorFrame.ts",
+        "line": 69
+      },
+      "description": "Operación ir Object Point To Local Scene Point de Geometría y modelo visual de sensores IR; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "isPointInsideIrCone",
+      "displayName": "isPointInsideIrCone",
+      "signature": "isPointInsideIrCone(point: IrObjectPoint, sensor: IrObjectSensorGeometry, sensitivityCm: number): boolean",
+      "line": 130,
+      "endLine": 136,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "sensorResponseAtPoint"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irObjectModel.ts",
+        "line": 130
+      },
+      "description": "Adapta la llamada a `sensorResponseAtPoint` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "linearCurveValue",
+      "displayName": "linearCurveValue",
+      "signature": "linearCurveValue(left: IrObjectCalibrationCurvePoint, right: IrObjectCalibrationCurvePoint, distanceCm: number): inferred-by-TypeScript",
+      "line": 750,
+      "endLine": 758,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.max"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irObjectModel.ts",
+        "line": 750
+      },
+      "description": "Adapta la llamada a `Math.max` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "normalizeIrObjectReading",
+      "displayName": "normalizeIrObjectReading",
+      "signature": "normalizeIrObjectReading(key: IrObjectSensorKey, adc: number, calibration?: IrObjectForwardCalibration | null): inferred-by-TypeScript",
+      "line": 352,
+      "endLine": 358,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "normalizeObservedReading"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irObjectModel.ts",
+        "line": 352
+      },
+      "description": "Adapta la llamada a `normalizeObservedReading` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "normalizeObservedReading",
+      "displayName": "normalizeObservedReading",
+      "signature": "normalizeObservedReading(key: IrObjectSensorKey, adc: number, calibration: IrObjectForwardCalibration | null | undefined, ambient: number): inferred-by-TypeScript",
+      "line": 649,
+      "endLine": 668,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "calibrationMaximumSignal",
+        "clamp",
+        "clamp01"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irObjectModel.ts",
+        "line": 649
+      },
+      "description": "Coordina `calibrationMaximumSignal`, `clamp`, `clamp01` para Geometría y modelo visual de sensores IR.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "normalizedDetectionThreshold",
+      "displayName": "normalizedDetectionThreshold",
+      "signature": "normalizedDetectionThreshold(key: IrObjectSensorKey, thresholdAdc: number, calibration: IrObjectForwardCalibration | null | undefined): inferred-by-TypeScript",
+      "line": 686,
+      "endLine": 699,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "calibrationMaximumSignal"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irObjectModel.ts",
+        "line": 686
+      },
+      "description": "Adapta la llamada a `calibrationMaximumSignal` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "radToDeg",
+      "displayName": "radToDeg",
+      "signature": "radToDeg(value: number): inferred-by-TypeScript",
+      "line": 793,
+      "endLine": 795,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irObjectModel.ts",
+        "line": 793
+      },
+      "description": "Operación rad To Deg de Geometría y modelo visual de sensores IR; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "relativeRigEulerDeg",
+      "displayName": "relativeRigEulerDeg",
+      "signature": "relativeRigEulerDeg(current: IrSensorRigEulerDeg, zero: IrSensorRigEulerDeg): IrSensorRigEulerDeg",
+      "line": 84,
+      "endLine": 101,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "THREE.MathUtils.radToDeg",
+        "cleanAngle",
+        "createRigQuaternion",
+        "createRigQuaternion(zero) .invert",
+        "createRigQuaternion(zero) .invert() .multiply",
+        "new THREE.Euler().setFromQuaternion"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irSensorFrame.ts",
+        "line": 84
+      },
+      "description": "Coordina `THREE.MathUtils.radToDeg`, `cleanAngle`, `createRigQuaternion` para Geometría y modelo visual de sensores IR.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "rotateScenePointAroundPivot",
+      "displayName": "rotateScenePointAroundPivot",
+      "signature": "rotateScenePointAroundPivot(localScenePoint: readonly [number, number, number], eulerDeg: IrSensorRigEulerDeg, pivotScene: readonly [number, number, number]): IrScenePoint",
+      "line": 19,
+      "endLine": 30,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "createRigQuaternion",
+        "new THREE.Vector3(...localScenePoint) .sub",
+        "new THREE.Vector3(...localScenePoint) .sub(pivot) .applyQuaternion",
+        "new THREE.Vector3(...localScenePoint) .sub(pivot) .applyQuaternion(createRigQuaternion(eulerDeg)) .add"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irSensorFrame.ts",
+        "line": 19
+      },
+      "description": "Coordina `createRigQuaternion`, `new THREE.Vector3(...localScenePoint) .sub`, `new THREE.Vector3(...localScenePoint) .sub(pivot) .applyQuaternion` para Geometría y modelo visual de sensores IR.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "searchBestCandidate",
+      "displayName": "searchBestCandidate",
+      "signature": "searchBestCandidate(options: SearchOptions): Candidate | null",
+      "line": 438,
+      "endLine": 444,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "candidates.reduce",
+        "collectCandidates"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irObjectModel.ts",
+        "line": 438
+      },
+      "description": "Coordina `candidates.reduce`, `collectCandidates` para Geometría y modelo visual de sensores IR.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "sensorResponseAtPoint",
+      "displayName": "sensorResponseAtPoint",
+      "signature": "sensorResponseAtPoint(point: IrObjectPoint, sensor: IrObjectSensorGeometry, sensitivityCm: number, distanceExponent: inferred-by-TypeScript, angularExponent: inferred-by-TypeScript, calibration?: IrObjectForwardCalibration | null): SensorResponse",
+      "line": 539,
+      "endLine": 596,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.cos",
+        "Math.hypot",
+        "Math.max",
+        "Math.pow",
+        "Math.sin",
+        "Math.tan",
+        "calibratedDistanceStrength",
+        "clamp01",
+        "degToRad"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irObjectModel.ts",
+        "line": 539
+      },
+      "description": "Coordina `Math.cos`, `Math.hypot`, `Math.max` para Geometría y modelo visual de sensores IR.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "signalAdcAboveBaseline",
+      "displayName": "signalAdcAboveBaseline",
+      "signature": "signalAdcAboveBaseline(key: IrObjectSensorKey, adc: number, calibration: IrObjectForwardCalibration | null | undefined, ambientAdc: number): inferred-by-TypeScript",
+      "line": 670,
+      "endLine": 684,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.max",
+        "clamp"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irObjectModel.ts",
+        "line": 670
+      },
+      "description": "Coordina `Math.max`, `clamp` para Geometría y modelo visual de sensores IR.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "simulateIrObjectReadings",
+      "displayName": "simulateIrObjectReadings",
+      "signature": "simulateIrObjectReadings(point: IrObjectPoint, sensitivityCm: number, options: IrObjectForwardOptions): IrObjectForwardResult",
+      "line": 138,
+      "endLine": 201,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "IR_OBJECT_SENSOR_LAYOUT.forEach",
+        "Math.max",
+        "clamp",
+        "createObjectSensorRecord"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irObjectModel.ts",
+        "line": 138
+      },
+      "description": "Coordina `IR_OBJECT_SENSOR_LAYOUT.forEach`, `Math.max`, `clamp` para Geometría y modelo visual de sensores IR.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "worldScenePointToIrObjectPoint",
+      "displayName": "worldScenePointToIrObjectPoint",
+      "signature": "worldScenePointToIrObjectPoint(worldScenePoint: readonly [number, number, number], eulerDeg: IrSensorRigEulerDeg, projection: IrSensorFrameProjection): IrObjectPoint",
+      "line": 45,
+      "endLine": 67,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "inverseRotateScenePointAroundPivot"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/features/ir/irSensorFrame.ts",
+        "line": 45
+      },
+      "description": "Adapta la llamada a `inverseRotateScenePointAroundPivot` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    }
+  ],
+  "internalFunctions": [],
+  "hooks": [
+    {
+      "callee": "useId",
+      "scope": "SensorBeamControls",
+      "line": 16,
+      "arguments": 0,
+      "path": "src/components/SensorBeamControls.tsx"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "UnderbodySensorBeams",
+      "line": 42,
+      "arguments": 2,
+      "path": "src/components/UnderbodySensorBeams.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "UnderbodySensorBeams",
+      "line": 43,
+      "arguments": 2,
+      "path": "src/components/UnderbodySensorBeams.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "OpticalBeam",
+      "line": 65,
+      "arguments": 1,
+      "path": "src/components/UnderbodySensorBeams.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "OpticalBeam",
+      "line": 66,
+      "arguments": 1,
+      "path": "src/components/UnderbodySensorBeams.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "OpticalBeam",
+      "line": 67,
+      "arguments": 1,
+      "path": "src/components/UnderbodySensorBeams.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "OpticalBeam",
+      "line": 68,
+      "arguments": 1,
+      "path": "src/components/UnderbodySensorBeams.tsx"
+    },
+    {
+      "callee": "useRef",
+      "scope": "OpticalBeam",
+      "line": 69,
+      "arguments": 1,
+      "path": "src/components/UnderbodySensorBeams.tsx"
+    },
+    {
+      "callee": "useThree",
+      "scope": "OpticalBeam",
+      "line": 70,
+      "arguments": 1,
+      "path": "src/components/UnderbodySensorBeams.tsx"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "OpticalBeam",
+      "line": 73,
+      "arguments": 2,
+      "path": "src/components/UnderbodySensorBeams.tsx"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "OpticalBeam",
+      "line": 75,
+      "arguments": 2,
+      "path": "src/components/UnderbodySensorBeams.tsx"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "OpticalBeam",
+      "line": 78,
+      "arguments": 2,
+      "path": "src/components/UnderbodySensorBeams.tsx"
+    },
+    {
+      "callee": "useMemo",
+      "scope": "OpticalBeam",
+      "line": 83,
+      "arguments": 2,
+      "path": "src/components/UnderbodySensorBeams.tsx"
+    },
+    {
+      "callee": "useEffect",
+      "scope": "OpticalBeam",
+      "line": 96,
+      "arguments": 2,
+      "path": "src/components/UnderbodySensorBeams.tsx"
+    },
+    {
+      "callee": "useFrame",
+      "scope": "OpticalBeam",
+      "line": 100,
+      "arguments": 1,
+      "path": "src/components/UnderbodySensorBeams.tsx"
+    }
+  ]
+}

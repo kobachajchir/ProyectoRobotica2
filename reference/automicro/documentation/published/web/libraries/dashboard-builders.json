@@ -1,0 +1,313 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "web:module/src/screens/dashboardScreens.ts",
+  "slug": "dashboard-builders",
+  "title": "Renderers Web de dashboard y modos",
+  "target": "web",
+  "kind": "núcleo",
+  "status": "source-documented",
+  "snapshotDate": "2026-10-20",
+  "verification": "not-run-user-instruction",
+  "responsibility": "Construye pantallas de arranque, dashboard, selector de modo y test.",
+  "scope": "Modelos visuales y geometría adaptada del dominio F4; no adquiere conectividad directamente.",
+  "state": "Argumentos prestados de backend, conexión, SSID/IP y modo; texto y scroll necesitan valores/tiempo/ref exactos para coincidir con el equipo.",
+  "modularity": "Builder de comandos puro, con convenciones de fuente/montaje del proyecto.",
+  "lifecycle": [
+    "Recibir modelo confirmado y construir comandos.",
+    "No convertir ausencia de dato en un estado físico afirmado."
+  ],
+  "interactions": [
+    "Extensión GET_CURRENT_SCREEN transporta datos dashboard; ScreenContext normaliza y registry adapta.",
+    "F4 reserva carriles de scroll y banda de indicadores; replicar requiere misma ventana y fase temporal."
+  ],
+  "limitations": [
+    "Los lectores de modo del visor conservan casos incompletos para GOTO.",
+    "Igual etiqueta no prueba igual fase de desplazamiento del SSID."
+  ],
+  "relationships": [],
+  "findings": [],
+  "files": [
+    {
+      "rootId": "web",
+      "path": "src/screens/dashboardScreens.ts",
+      "sha256": "5a0247aea336c412265265e4a39da818c54a837e11f8134827afae31e1c6ed51",
+      "imports": [
+        "./helpers",
+        "./screenCodes",
+        "./types"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    }
+  ],
+  "types": [
+    {
+      "name": "DashboardConnectionState",
+      "kind": "TypeAliasDeclaration",
+      "type": "\"none\" | \"sta\" | \"ap\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/dashboardScreens.ts",
+        "line": 19
+      }
+    },
+    {
+      "name": "CarModeLabel",
+      "kind": "TypeAliasDeclaration",
+      "type": "\"IDLE\" | \"FOLLOW\" | \"TEST\" | \"GOTO\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/dashboardScreens.ts",
+        "line": 20
+      }
+    },
+    {
+      "name": "DashboardScreenArgs",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "espPresent",
+          "declaration": "espPresent?: boolean",
+          "callback": false,
+          "ownerType": "DashboardScreenArgs",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/dashboardScreens.ts",
+            "line": 23
+          },
+          "description": "Dato de estado/configuración `espPresent`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "connection",
+          "declaration": "connection: DashboardConnectionState",
+          "callback": false,
+          "ownerType": "DashboardScreenArgs",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/dashboardScreens.ts",
+            "line": 24
+          },
+          "description": "Dato de estado/configuración `connection`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ssid",
+          "declaration": "ssid?: string",
+          "callback": false,
+          "ownerType": "DashboardScreenArgs",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/dashboardScreens.ts",
+            "line": 25
+          },
+          "description": "Dato de estado/configuración `ssid`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ipAddress",
+          "declaration": "ipAddress?: string",
+          "callback": false,
+          "ownerType": "DashboardScreenArgs",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/dashboardScreens.ts",
+            "line": 26
+          },
+          "description": "Dato de estado/configuración `ipAddress`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "backend",
+          "declaration": "backend?: \"WEB\" | \"AT\" | \"No ESP\"",
+          "callback": false,
+          "ownerType": "DashboardScreenArgs",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/dashboardScreens.ts",
+            "line": 27
+          },
+          "description": "Dato de estado/configuración `backend`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "usbActive",
+          "declaration": "usbActive?: boolean",
+          "callback": false,
+          "ownerType": "DashboardScreenArgs",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/dashboardScreens.ts",
+            "line": 28
+          },
+          "description": "Dato de estado/configuración `usbActive`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "rfActive",
+          "declaration": "rfActive?: boolean",
+          "callback": false,
+          "ownerType": "DashboardScreenArgs",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/dashboardScreens.ts",
+            "line": 29
+          },
+          "description": "Dato de estado/configuración `rfActive`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "carMode",
+          "declaration": "carMode: CarModeLabel",
+          "callback": false,
+          "ownerType": "DashboardScreenArgs",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/dashboardScreens.ts",
+            "line": 30
+          },
+          "description": "Dato de estado/configuración `carMode`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/dashboardScreens.ts",
+        "line": 22
+      }
+    },
+    {
+      "name": "ModeChangeScreenArgs",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "mode",
+          "declaration": "mode: \"IDLE\" | \"FOLLOW\" | \"TEST\" | \"GOTO\"",
+          "callback": false,
+          "ownerType": "ModeChangeScreenArgs",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/dashboardScreens.ts",
+            "line": 34
+          },
+          "description": "Dato de estado/configuración `mode`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/dashboardScreens.ts",
+        "line": 33
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "buildScreen010001StartupCommands",
+      "displayName": "buildScreen010001StartupCommands",
+      "signature": "buildScreen010001StartupCommands(): OledCommand[]",
+      "line": 39,
+      "endLine": 45,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "clear",
+        "drawXbmMsb",
+        "setWhite"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/dashboardScreens.ts",
+        "line": 39
+      },
+      "description": "Coordina `clear`, `drawXbmMsb`, `setWhite` para Renderers Web de dashboard y modos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen010101DashboardCommands",
+      "displayName": "buildScreen010101DashboardCommands",
+      "signature": "buildScreen010101DashboardCommands(args: DashboardScreenArgs): OledCommand[]",
+      "line": 49,
+      "endLine": 94,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "clear",
+        "commands.push",
+        "drawXbm",
+        "textAt",
+        "textMaxAt"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/dashboardScreens.ts",
+        "line": 49
+      },
+      "description": "Coordina `clear`, `commands.push`, `drawXbm` para Renderers Web de dashboard y modos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen010102ModeChangeCommands",
+      "displayName": "buildScreen010102ModeChangeCommands",
+      "signature": "buildScreen010102ModeChangeCommands(args: ModeChangeScreenArgs): OledCommand[]",
+      "line": 98,
+      "endLine": 108,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "buildScreen010102ModeOnlyPatchCommands",
+        "clear",
+        "drawXbm",
+        "textAt"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/dashboardScreens.ts",
+        "line": 98
+      },
+      "description": "Coordina `buildScreen010102ModeOnlyPatchCommands`, `clear`, `drawXbm` para Renderers Web de dashboard y modos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen010102ModeOnlyPatchCommands",
+      "displayName": "buildScreen010102ModeOnlyPatchCommands",
+      "signature": "buildScreen010102ModeOnlyPatchCommands(args: ModeChangeScreenArgs): OledCommand[]",
+      "line": 110,
+      "endLine": 118,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.floor",
+        "baselineY",
+        "clearBox",
+        "textAt"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/dashboardScreens.ts",
+        "line": 110
+      },
+      "description": "Coordina `Math.floor`, `baselineY`, `clearBox` para Renderers Web de dashboard y modos.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "buildScreen070101TestScreenCommands",
+      "displayName": "buildScreen070101TestScreenCommands",
+      "signature": "buildScreen070101TestScreenCommands(): OledCommand[]",
+      "line": 122,
+      "endLine": 124,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "clear"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/dashboardScreens.ts",
+        "line": 122
+      },
+      "description": "Adapta la llamada a `clear` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    }
+  ],
+  "internalFunctions": [],
+  "hooks": []
+}

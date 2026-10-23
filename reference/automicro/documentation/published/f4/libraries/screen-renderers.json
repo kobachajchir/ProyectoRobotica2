@@ -1,0 +1,5432 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "f4:module/Core/Inc/oled_utils.h",
+  "slug": "screen-renderers",
+  "title": "Renderers y cola de notificaciones",
+  "target": "f4",
+  "kind": "integración",
+  "status": "source-documented",
+  "verification": "not-run-user-instruction",
+  "snapshotDate": "2026-10-20",
+  "responsibility": "Dibuja vistas AutoMicro y administra notificaciones temporales con restauración de la vista anterior.",
+  "scope": "Dashboard, sensores, ajustes, diagnóstico y avisos; render completo y parcial, scroll y cola de notificaciones.",
+  "state": "ScreensState conserva scroll y modo de vista; OledNotificationState posee una cola de ocho avisos, aviso suspendido, pantalla y handlers anteriores. Cada aviso conserva renderFn, simpleId, clientNumber, timeoutTicks/totalTicks y hooks onShow/onHide.",
+  "lifecycle": [
+    "Render* transforma datos consultados en primitivas de dibujo.",
+    "ShowNotification* encola; NotificationTick10ms gobierna tiempos y transición entre avisos.",
+    "Dismiss/Next/Remove modifican cola y pueden restaurar renderer, eventos y screen code anteriores."
+  ],
+  "interactions": [
+    "Los hooks disparan acciones al mostrar/ocultar; no confundir encolado con presentación.",
+    "Avisos numerados conservan identidad de cliente Wi-Fi/Web; reportes UNER informan código y duración, no una captura de framebuffer."
+  ],
+  "limitations": [
+    "Los renderers ValueOnly requieren un contexto de pantalla ya preparado.",
+    "La cola finita puede rechazar o reorganizar avisos según sus reglas; no tratarla como almacenamiento ilimitado.",
+    "Los textos con credenciales no deben copiarse a documentación o capturas públicas."
+  ],
+  "modularity": "Se desacopla del dibujo HAL por ScreensServices, pero consulta modelos concretos y trabaja con wrappers y estado UI compartido.",
+  "files": [
+    {
+      "path": "Core/Inc/oled_utils.h",
+      "rootId": "f4",
+      "sha256": "fc70dbe9323cb16eb72e4fc2f2074f873911d56e7d9560c08ad360e4cbd11234",
+      "includes": [
+        "types/menu_types.h",
+        "mpu9250_types.h",
+        "oled_handle.h",
+        "ssd1306_types.h",
+        "stdbool.h",
+        "stdint.h"
+      ]
+    },
+    {
+      "path": "Core/Inc/notificationWrappers.h",
+      "rootId": "f4",
+      "sha256": "571fc7fae0ed757573458ea5366410c444ca8466419331d3687b2cfcd1b915fe",
+      "includes": []
+    },
+    {
+      "path": "Core/Src/oled_utils.c",
+      "rootId": "f4",
+      "sha256": "2abbadfc0b4ed13cfeb76a130973c6d10df378123309d6ec83b28c27883137f9",
+      "includes": [
+        "screens_internal.h",
+        "fonts.h",
+        "oled_utils.h",
+        "oled_canvas.h",
+        "screen_lock.h",
+        "screenWrappers.h",
+        "automicro_boot_contract.h",
+        "math.h",
+        "stdio.h",
+        "string.h"
+      ]
+    },
+    {
+      "path": "Core/Src/notificationWrappers.c",
+      "rootId": "f4",
+      "sha256": "21241c97db9bf2b12c3ac343cd8bc8f96cb6762b465acea53908c8f2e1f0c172",
+      "includes": [
+        "screens_internal.h",
+        "notificationWrappers.h",
+        "screenWrappers.h",
+        "types/menu_types.h",
+        "oled_utils.h",
+        "oled_handle.h",
+        "fonts.h",
+        "encoder_types.h",
+        "osk_integration.h",
+        "stdio.h",
+        "string.h"
+      ]
+    }
+  ],
+  "findings": [],
+  "types": [
+    {
+      "name": "OledDashboardState",
+      "fields": [
+        {
+          "name": "espPresent",
+          "declaration": "bool espPresent",
+          "callback": false,
+          "ownerType": "OledDashboardState",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/oled_utils.h",
+            "line": 21
+          },
+          "description": "Dato de estado/configuración `espPresent`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "staActive",
+          "declaration": "bool staActive",
+          "callback": false,
+          "ownerType": "OledDashboardState",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/oled_utils.h",
+            "line": 22
+          },
+          "description": "Dato de estado/configuración `staActive`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "apActive",
+          "declaration": "bool apActive",
+          "callback": false,
+          "ownerType": "OledDashboardState",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/oled_utils.h",
+            "line": 23
+          },
+          "description": "Dato de estado/configuración `apActive`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "usbActive",
+          "declaration": "bool usbActive",
+          "callback": false,
+          "ownerType": "OledDashboardState",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/oled_utils.h",
+            "line": 24
+          },
+          "description": "Dato de estado/configuración `usbActive`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "rfActive",
+          "declaration": "bool rfActive",
+          "callback": false,
+          "ownerType": "OledDashboardState",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/oled_utils.h",
+            "line": 25
+          },
+          "description": "Dato de estado/configuración `rfActive`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "backend",
+          "declaration": "uint8_t backend",
+          "callback": false,
+          "ownerType": "OledDashboardState",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/oled_utils.h",
+            "line": 26
+          },
+          "description": "Dato de estado/configuración `backend`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "carMode",
+          "declaration": "uint8_t carMode",
+          "callback": false,
+          "ownerType": "OledDashboardState",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/oled_utils.h",
+            "line": 27
+          },
+          "description": "Dato de estado/configuración `carMode`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ip",
+          "declaration": "uint8_t ip[4]",
+          "callback": false,
+          "ownerType": "OledDashboardState",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/oled_utils.h",
+            "line": 28
+          },
+          "description": "Dato de estado/configuración `ip`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "ssid",
+          "declaration": "char ssid[OLED_DASHBOARD_SSID_MAX_LEN + 1u]",
+          "callback": false,
+          "ownerType": "OledDashboardState",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/oled_utils.h",
+            "line": 29
+          },
+          "description": "Dato de estado/configuración `ssid`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 21
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "MenuScroll_Stop",
+      "signature": "void MenuScroll_Stop(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 86
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Detiene el desplazamiento de texto de menú conservado en estado de pantallas.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 1680
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MenuScroll_Tick",
+      "signature": "void MenuScroll_Tick(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 87
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "Oled_ClearBox",
+        "Oled_DrawStrScrolled",
+        "Oled_SetFont",
+        "Screens_NowMs",
+        "ssd1306_RequestPageUpdate",
+        "ssd1306_SetColor",
+        "ssd1306_UpdateScreenCompleted"
+      ],
+      "writes": [],
+      "description": "Coordina `Oled_ClearBox`, `Oled_DrawStrScrolled`, `Oled_SetFont` para Renderers y cola de notificaciones.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 1688
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OLED_DrawAnglePanel",
+      "signature": "void OLED_DrawAnglePanel(uint8_t x, uint8_t y, uint8_t w, uint8_t h, const char *title, const char *axis, float angle_deg)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 116
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OLED_DrawMiniDegree",
+        "OLED_DrawMiniText",
+        "OLED_DrawMiniTextCentered",
+        "OLED_DrawPixelSafe",
+        "OLED_DrawRotatedBitmap",
+        "OLED_DrawRotatedLine",
+        "OLED_FormatPanelAngle",
+        "OLED_GetMPUAxisBitmap",
+        "OLED_MPU_Clamp",
+        "OLED_MPU_Normalize180",
+        "OLED_MiniTextWidth",
+        "Oled_ClearBox",
+        "Oled_DrawFrame",
+        "ssd1306_SetColor"
+      ],
+      "writes": [],
+      "description": "Coordina `OLED_DrawMiniDegree`, `OLED_DrawMiniText`, `OLED_DrawMiniTextCentered` para Renderers y cola de notificaciones.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 3664
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OLED_DrawMPUScreen",
+      "signature": "void OLED_DrawMPUScreen(float angle_z, float angle_front, float angle_lateral)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 115
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OLED_DrawAnglePanel"
+      ],
+      "writes": [],
+      "description": "Coordina `OLED_DrawAnglePanel` para Renderers y cola de notificaciones.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 3718
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OLED_DrawRotatedLine",
+      "signature": "void OLED_DrawRotatedLine(int cx, int cy, int length, float angle_deg)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 117
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OLED_MPU_Round",
+        "cosf",
+        "sinf",
+        "ssd1306_DrawLine",
+        "ssd1306_SetColor"
+      ],
+      "writes": [],
+      "description": "Coordina `OLED_MPU_Round`, `cosf`, `sinf` para Renderers y cola de notificaciones.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 3619
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_Clear",
+      "signature": "void OledUtils_Clear(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 79
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MenuScroll_Stop",
+        "ssd1306_Clear"
+      ],
+      "writes": [],
+      "description": "Solicita limpiar dibujo a través del servicio gráfico de pantalla.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 1738
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_DashboardScrollTick",
+      "signature": "void OledUtils_DashboardScrollTick(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 88
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "DashboardScroll_Offset",
+        "Oled_ClearBox",
+        "Oled_DrawStrScrolled",
+        "Oled_SetFont",
+        "Screens_NowMs",
+        "ssd1306_RequestPageUpdate",
+        "ssd1306_SetColor",
+        "ssd1306_UpdateScreenCompleted"
+      ],
+      "writes": [
+        "lastOffset"
+      ],
+      "description": "Coordina `DashboardScroll_Offset`, `Oled_ClearBox`, `Oled_DrawStrScrolled` para Renderers y cola de notificaciones.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 1883
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_DisableContinuousRender",
+      "signature": "void OledUtils_DisableContinuousRender(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 96
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Deshabilita el refresco periódico de la vista activa.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 906
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_DismissNotification",
+      "signature": "void OledUtils_DismissNotification(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 218
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledUtils_ClearDeferredNotification",
+        "OledUtils_NextNotification"
+      ],
+      "writes": [],
+      "description": "Descarta el aviso actual y avanza/restaura la vista correspondiente.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 1403
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_DrawActionTimeoutBar",
+      "signature": "void OledUtils_DrawActionTimeoutBar(uint32_t startedMs, uint32_t timeoutMs)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 39
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "Oled_ClearBox",
+        "Screens_NowMs",
+        "ssd1306_FillRect",
+        "ssd1306_SetColor"
+      ],
+      "writes": [],
+      "description": "Dibuja progreso temporal de una confirmación de acción.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 112
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_DrawItem",
+      "signature": "void OledUtils_DrawItem(const MenuItem *item, uint8_t y, bool selected)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 81
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MenuSys_IsFavorite",
+        "MenuSys_IsFavoritesMenu",
+        "Oled_ClearBox",
+        "Oled_DrawFrame",
+        "Oled_DrawStrMax",
+        "Oled_DrawXBM",
+        "Oled_SetFont",
+        "Screens_NowMs",
+        "dynamicIconFn",
+        "dynamicNameFn",
+        "ssd1306_SetCursor",
+        "strlen"
+      ],
+      "writes": [],
+      "description": "Dibuja texto, icono y estado seleccionado de un ítem de menú.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 1748
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_EnableContinuousRender",
+      "signature": "void OledUtils_EnableContinuousRender(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 95
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Habilita el refresco periódico de la vista activa.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 901
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_GetDashboardState",
+      "signature": "bool OledUtils_GetDashboardState(OledDashboardState *state)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 36
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "GET_CAR_MODE",
+        "IS_FLAG_SET",
+        "Oled_CopyText",
+        "Oled_GetDashboardStaSsid",
+        "WifiBridge_GetActiveBackend",
+        "memset"
+      ],
+      "writes": [
+        "apActive",
+        "backend",
+        "carMode",
+        "espPresent",
+        "rfActive",
+        "staActive",
+        "usbActive"
+      ],
+      "description": "Reúne el modelo que usa el renderer del dashboard.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 3230
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_GetNotificationClientNumber",
+      "signature": "uint8_t OledUtils_GetNotificationClientNumber(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 216
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Consulta el número asociado al aviso activo.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 1350
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_GetNotificationCount",
+      "signature": "uint8_t OledUtils_GetNotificationCount(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 222
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Consulta la cantidad de avisos conservados por la cola.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 1469
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_GetNotificationProgress",
+      "signature": "bool OledUtils_GetNotificationProgress(uint16_t *remaining_ms, uint16_t *total_ms)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 225
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Copia progreso y duración del aviso activo.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 2023
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_IsMenuScrollActive",
+      "signature": "bool OledUtils_IsMenuScrollActive(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 82
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Consulta si el texto de menú tiene desplazamiento activo.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 4323
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_IsNotificationShowing",
+      "signature": "bool OledUtils_IsNotificationShowing(RenderFunction renderFn)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 205
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Consulta si el renderer indicado corresponde al aviso activo.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 1302
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_IsSimpleNotificationShowing",
+      "signature": "bool OledUtils_IsSimpleNotificationShowing(OledSimpleNotificationId notificationId)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 217
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Consulta si el aviso simple indicado está activo.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 1356
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_MotorTest_Changes",
+      "signature": "void OledUtils_MotorTest_Changes(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 91
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "IS_FLAG_SET",
+        "Motor_SpeedPercentToDisplay",
+        "NIBBLEH_GET_STATE",
+        "Oled_ClearBox",
+        "Oled_CopyText",
+        "Oled_DrawBox",
+        "Oled_DrawFrame",
+        "Oled_DrawStr",
+        "Oled_FontHeight",
+        "Oled_FormatPercent3",
+        "Oled_SetFont",
+        "ssd1306_SetCursor"
+      ],
+      "writes": [],
+      "description": "Coordina `IS_FLAG_SET`, `Motor_SpeedPercentToDisplay`, `NIBBLEH_GET_STATE` para Renderers y cola de notificaciones.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 1569
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_MotorTest_Complete",
+      "signature": "void OledUtils_MotorTest_Complete(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 89
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "IS_FLAG_SET",
+        "Motor_SpeedPercentToDisplay",
+        "NIBBLEH_GET_STATE",
+        "Oled_CopyText",
+        "Oled_DrawBox",
+        "Oled_DrawFrame",
+        "Oled_DrawStr",
+        "Oled_FontHeight",
+        "Oled_FormatPercent3",
+        "Oled_SetFont",
+        "ssd1306_SetCursor"
+      ],
+      "writes": [],
+      "description": "Coordina `IS_FLAG_SET`, `Motor_SpeedPercentToDisplay`, `NIBBLEH_GET_STATE` para Renderers y cola de notificaciones.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 1507
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_NextNotification",
+      "signature": "void OledUtils_NextNotification(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 219
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledUtils_ExecuteNotificationHook",
+        "OledUtils_GetSimpleNotificationDef",
+        "OledUtils_NotificationRestore",
+        "OledUtils_SetScreenCode"
+      ],
+      "writes": [
+        "count",
+        "head"
+      ],
+      "description": "Avanza al siguiente aviso pendiente.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 1369
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_NotificationRestore",
+      "signature": "void OledUtils_NotificationRestore(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 228
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MenuSys_GetCurrentScreenCode",
+        "MenuSys_GetCurrentScreenSource",
+        "MenuSys_SetCurrentScreenCode",
+        "OledUtils_ClearDeferredNotification",
+        "OledUtils_ExecuteNotificationHook",
+        "clearScreen"
+      ],
+      "writes": [
+        "active",
+        "count",
+        "head",
+        "tail"
+      ],
+      "description": "Restaura contexto de vista previo al aviso.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 1101
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_NotificationTick10ms",
+      "signature": "void OledUtils_NotificationTick10ms(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 224
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledUtils_NextNotification",
+        "OledUtils_NotificationRestore",
+        "OledUtils_ReplayDeferredNotification"
+      ],
+      "writes": [
+        "timeoutTicks"
+      ],
+      "description": "Actualiza duración y transición de los avisos cada 10 ms.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 1479
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RemoveNotification",
+      "signature": "void OledUtils_RemoveNotification(RenderFunction renderFn)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 220
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledUtils_NextNotification"
+      ],
+      "writes": [
+        "count",
+        "tail"
+      ],
+      "description": "Retira de la cola un aviso identificado por renderer.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 1414
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RemoveSimpleNotification",
+      "signature": "void OledUtils_RemoveSimpleNotification(OledSimpleNotificationId notificationId)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 221
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledUtils_NextNotification"
+      ],
+      "writes": [
+        "count",
+        "tail"
+      ],
+      "description": "Retira avisos con el identificador simple indicado.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 1441
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderAboutBootloaderScreen",
+      "signature": "void OledUtils_RenderAboutBootloaderScreen(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 44
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "AUTOMICRO_VERSION_MAJOR",
+        "AUTOMICRO_VERSION_MINOR",
+        "AUTOMICRO_VERSION_PATCH",
+        "OledUtils_SetScreenCode",
+        "Oled_DrawStr",
+        "Oled_DrawStrMax",
+        "Oled_DrawXBM",
+        "Oled_FontHeight",
+        "Oled_SetFont",
+        "UNER_App_GetBootloaderVersion",
+        "snprintf",
+        "ssd1306_SetColor",
+        "ssd1306_SetCursor"
+      ],
+      "writes": [],
+      "description": "Renderiza About Bootloader Screen dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 2185
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderBalancePidGain_Full",
+      "signature": "void OledUtils_RenderBalancePidGain_Full(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 69
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "BalancePid_GetCurrentGainLabel",
+        "BalancePid_GetCurrentGainScreenCode",
+        "OledUtils_RenderBalancePidGain_ValueOnly",
+        "OledUtils_SetScreenCode",
+        "Oled_DrawStr",
+        "Oled_DrawTitleLine",
+        "Oled_DrawXBM",
+        "Oled_FontHeight",
+        "Oled_SetFont",
+        "ssd1306_SetCursor"
+      ],
+      "writes": [],
+      "description": "Renderiza Balance Pid Gain Full dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 2764
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderBalancePidGain_ValueOnly",
+      "signature": "void OledUtils_RenderBalancePidGain_ValueOnly(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 70
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "BalancePid_GetCurrentGainDraft",
+        "Oled_ClearBox",
+        "Oled_DrawCenteredLine",
+        "Oled_FontHeight",
+        "Oled_FormatFixed",
+        "Oled_SetFont"
+      ],
+      "writes": [],
+      "description": "Renderiza Balance Pid Gain Value Only dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 2781
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderBalancePidLog_Full",
+      "signature": "void OledUtils_RenderBalancePidLog_Full(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 67
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledUtils_RenderBalancePidLog_ValueOnly",
+        "OledUtils_SetScreenCode",
+        "Oled_DrawStr",
+        "Oled_DrawTitleLine",
+        "Oled_DrawXBM",
+        "Oled_FontHeight",
+        "Oled_SetFont",
+        "ssd1306_SetCursor"
+      ],
+      "writes": [],
+      "description": "Renderiza Balance Pid Log Full dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 2724
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderBalancePidLog_ValueOnly",
+      "signature": "void OledUtils_RenderBalancePidLog_ValueOnly(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 68
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "BalancePid_GetLogAvailableBytes",
+        "BalancePid_GetLogDurationSec",
+        "BalancePid_GetLogEstimatedBytes",
+        "Oled_AppendText",
+        "Oled_ClearBox",
+        "Oled_DrawCenteredLine",
+        "Oled_DrawUnsignedSettingValue",
+        "Oled_FontHeight",
+        "Oled_FormatBytesCompact",
+        "Oled_SetFont",
+        "Oled_Terminate"
+      ],
+      "writes": [],
+      "description": "Renderiza Balance Pid Log Value Only dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 2740
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderBalancePidStatus",
+      "signature": "void OledUtils_RenderBalancePidStatus(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 66
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "BalanceControl_GetStatus",
+        "MotionControl_GetStatus",
+        "OledUtils_BalanceRejectText",
+        "OledUtils_SetScreenCode",
+        "Oled_AppendText",
+        "Oled_ClearBox",
+        "Oled_DrawStr",
+        "Oled_DrawTitleLine",
+        "Oled_DrawXBM",
+        "Oled_FontHeight",
+        "Oled_FormatFixed",
+        "Oled_SetFont",
+        "Oled_Terminate",
+        "ssd1306_Clear",
+        "ssd1306_SetColor",
+        "ssd1306_SetCursor"
+      ],
+      "writes": [],
+      "description": "Renderiza Balance Pid Status dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 2662
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderBuildInfoScreen",
+      "signature": "void OledUtils_RenderBuildInfoScreen(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 43
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledUtils_SetScreenCode",
+        "Oled_DrawStr",
+        "Oled_DrawStrMax",
+        "Oled_DrawXBM",
+        "Oled_FontHeight",
+        "Oled_SetFont",
+        "ssd1306_SetColor",
+        "ssd1306_SetCursor"
+      ],
+      "writes": [],
+      "description": "Renderiza Build Info Screen dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 2162
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderDashboard",
+      "signature": "void OledUtils_RenderDashboard(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 35
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "DashboardScroll_DrawLane",
+        "GET_CAR_MODE",
+        "IS_FLAG_SET",
+        "MenuScroll_Stop",
+        "OledUtils_SetScreenCode",
+        "Oled_DrawStr",
+        "Oled_DrawXBM",
+        "Oled_FontHeight",
+        "Oled_FormatIp",
+        "Oled_GetDashboardStaSsid",
+        "Oled_SetFont",
+        "WifiBridge_GetBackendLabel",
+        "ssd1306_DrawHorizontalLine",
+        "ssd1306_SetCursor"
+      ],
+      "writes": [],
+      "description": "Renderiza Dashboard dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 1914
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderESPAPStartedNotification",
+      "signature": "void OledUtils_RenderESPAPStartedNotification(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 201
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledUtils_SetScreenCode",
+        "Oled_DrawStr",
+        "Oled_DrawXBM",
+        "Oled_FontHeight",
+        "Oled_FormatIp",
+        "Oled_SetFont",
+        "ssd1306_Clear",
+        "ssd1306_SetColor",
+        "ssd1306_SetCursor"
+      ],
+      "writes": [],
+      "description": "Renderiza ESPAPStarted Notification dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 4213
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderESPCheckConnection_Wrapper",
+      "signature": "void OledUtils_RenderESPCheckConnection_Wrapper(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/notificationWrappers.h",
+        "line": 11
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "APP_ESPStatusRefreshRequested",
+        "OledUtils_DisableContinuousRender",
+        "OledUtils_ShowSimpleNotificationMs",
+        "WifiBridge_GetActiveBackend",
+        "WifiBridge_GetStatus"
+      ],
+      "writes": [],
+      "description": "Renderiza ESPCheck Connection Wrapper dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/notificationWrappers.c",
+        "line": 222
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderESPFirmwareRequestNotification",
+      "signature": "void OledUtils_RenderESPFirmwareRequestNotification(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 191
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledUtils_SetScreenCode",
+        "Oled_DrawStr",
+        "Oled_DrawXBM",
+        "Oled_FontHeight",
+        "Oled_SetFont",
+        "ssd1306_Clear",
+        "ssd1306_SetColor",
+        "ssd1306_SetCursor"
+      ],
+      "writes": [],
+      "description": "Renderiza ESPFirmware Request Notification dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 4233
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderESPFirmwareRequest_Wrapper",
+      "signature": "void OledUtils_RenderESPFirmwareRequest_Wrapper(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/notificationWrappers.h",
+        "line": 12
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "IS_FLAG_SET",
+        "OledUtils_DisableContinuousRender",
+        "OledUtils_ShowESPNotificationReturningTo",
+        "OledUtils_ShowSimpleNotificationMs"
+      ],
+      "writes": [],
+      "description": "Renderiza ESPFirmware Request Wrapper dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/notificationWrappers.c",
+        "line": 235
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderESPFirmwareScreen",
+      "signature": "void OledUtils_RenderESPFirmwareScreen(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 192
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledUtils_SetScreenCode",
+        "Oled_DrawStr",
+        "Oled_DrawStrMax",
+        "Oled_DrawXBM",
+        "Oled_FontHeight",
+        "Oled_SetFont",
+        "ssd1306_Clear",
+        "ssd1306_SetColor",
+        "ssd1306_SetCursor"
+      ],
+      "writes": [],
+      "description": "Renderiza ESPFirmware Screen dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 4262
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderESPResetModeNotification",
+      "signature": "void OledUtils_RenderESPResetModeNotification(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 195
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Renderiza ESPReset Mode Notification dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": null,
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderESPResetMode_Wrapper",
+      "signature": "void OledUtils_RenderESPResetMode_Wrapper(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 194
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "IS_FLAG_SET",
+        "OledUtils_DisableContinuousRender",
+        "OledUtils_ShowSimpleNotificationMs",
+        "Permission_Request"
+      ],
+      "writes": [],
+      "description": "Renderiza ESPReset Mode Wrapper dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/notificationWrappers.c",
+        "line": 253
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderESPResetSentNotification",
+      "signature": "void OledUtils_RenderESPResetSentNotification(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 193
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledUtils_SetScreenCode",
+        "Oled_DrawStr",
+        "Oled_DrawXBM",
+        "Oled_FontHeight",
+        "Oled_SetFont",
+        "ssd1306_Clear",
+        "ssd1306_SetColor",
+        "ssd1306_SetCursor"
+      ],
+      "writes": [],
+      "description": "Renderiza ESPReset Sent Notification dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 4286
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderESPWifiConnectedNotification",
+      "signature": "void OledUtils_RenderESPWifiConnectedNotification(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 200
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledUtils_RenderWiFiConnected",
+        "Oled_FormatIp"
+      ],
+      "writes": [],
+      "description": "Renderiza ESPWifi Connected Notification dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 4206
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderESPWifiConnectingNotification",
+      "signature": "void OledUtils_RenderESPWifiConnectingNotification(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 190
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledUtils_RenderWiFiConnecting"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `OledUtils_RenderWiFiConnecting` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 4107
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderEspNotifWatchdogLimit_Full",
+      "signature": "void OledUtils_RenderEspNotifWatchdogLimit_Full(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 71
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledUtils_RenderEspNotifWatchdogLimit_ValueOnly",
+        "Oled_DrawSaveFooter",
+        "Oled_DrawSettingHeader"
+      ],
+      "writes": [],
+      "description": "Renderiza Esp Notif Watchdog Limit Full dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 2410
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderEspNotifWatchdogLimit_ValueOnly",
+      "signature": "void OledUtils_RenderEspNotifWatchdogLimit_ValueOnly(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 72
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "Oled_ClearSettingValue",
+        "Oled_DrawUnsignedSettingValue"
+      ],
+      "writes": [],
+      "description": "Renderiza Esp Notif Watchdog Limit Value Only dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 2417
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderGenericConfirm",
+      "signature": "void OledUtils_RenderGenericConfirm(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 45
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "GenericConfirm_GetLine1",
+        "GenericConfirm_GetLine2",
+        "Oled_DrawStr",
+        "Oled_DrawStrMax",
+        "Oled_DrawXBM",
+        "Oled_FontHeight",
+        "Oled_SetFont",
+        "ssd1306_SetColor",
+        "ssd1306_SetCursor"
+      ],
+      "writes": [],
+      "description": "Renderiza Generic Confirm dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 2216
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderIRGraphScene",
+      "signature": "void OledUtils_RenderIRGraphScene(bool emittersOn)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 99
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledUtils_DrawIRGroupFrame",
+        "OledUtils_SetScreenCode",
+        "Oled_DrawCenteredLine",
+        "Oled_SetFont",
+        "ssd1306_SetColor"
+      ],
+      "writes": [],
+      "description": "Renderiza IRGraph Scene dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 3110
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderIRRawScene",
+      "signature": "void OledUtils_RenderIRRawScene(bool emittersOn)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 101
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledUtils_SetScreenCode",
+        "Oled_DrawCenteredLine",
+        "Oled_SetFont",
+        "ssd1306_DrawLine",
+        "ssd1306_SetColor"
+      ],
+      "writes": [],
+      "description": "Renderiza IRRaw Scene dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 3266
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderLineBlackWidth_Full",
+      "signature": "void OledUtils_RenderLineBlackWidth_Full(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 55
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledUtils_RenderLineBlackWidth_ValueOnly",
+        "Oled_DrawSaveFooter",
+        "Oled_DrawSettingHeader"
+      ],
+      "writes": [],
+      "description": "Renderiza Line Black Width Full dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 2473
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderLineBlackWidth_ValueOnly",
+      "signature": "void OledUtils_RenderLineBlackWidth_ValueOnly(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 56
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "Oled_ClearSettingValue",
+        "Oled_DrawUnsignedSettingValue",
+        "Preferences_GetLineBlackWidthDraftMm"
+      ],
+      "writes": [],
+      "description": "Renderiza Line Black Width Value Only dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 2480
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderLineCalibration",
+      "signature": "void OledUtils_RenderLineCalibration(const uint8_t *state, const char *failure)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 94
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledUtils_Clear",
+        "Oled_DrawCenteredLine",
+        "Oled_SetFont",
+        "snprintf",
+        "ssd1306_DrawLinearProgress"
+      ],
+      "writes": [],
+      "description": "Renderiza Line Calibration dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 4332
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderLineNotice",
+      "signature": "void OledUtils_RenderLineNotice(const char *message, const char *detail)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 93
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledUtils_Clear",
+        "Oled_DrawCenteredLine",
+        "Oled_SetFont"
+      ],
+      "writes": [],
+      "description": "Renderiza Line Notice dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 4326
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderMPUCalibration_Full",
+      "signature": "void OledUtils_RenderMPUCalibration_Full(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 75
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledUtils_RenderMPUCalibration_ValueOnly",
+        "OledUtils_SetScreenCode",
+        "Oled_DrawCenteredLine",
+        "Oled_SetFont",
+        "ssd1306_DrawLine"
+      ],
+      "writes": [],
+      "description": "Renderiza MPUCalibration Full dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 2984
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderMPUCalibration_ValueOnly",
+      "signature": "void OledUtils_RenderMPUCalibration_ValueOnly(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 76
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "APP_MPU_GetCalibrationProgressPercent",
+        "APP_MPU_IsCalibrationDoneNoticeActive",
+        "APP_MPU_IsCalibrationPromptActive",
+        "APP_MPU_IsCalibrationRunning",
+        "Oled_AppendText",
+        "Oled_ClearBox",
+        "Oled_DrawBox",
+        "Oled_DrawCenteredLine",
+        "Oled_DrawFrame",
+        "Oled_DrawStr",
+        "Oled_DrawXBM",
+        "Oled_FontHeight",
+        "Oled_FormatUnsigned",
+        "Oled_SetFont",
+        "Oled_Terminate",
+        "ssd1306_SetCursor",
+        "strlen"
+      ],
+      "writes": [],
+      "description": "Renderiza MPUCalibration Value Only dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 2994
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderMPUCompassScene",
+      "signature": "void OledUtils_RenderMPUCompassScene(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 113
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Renderiza MPUCompass Scene dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 390
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderMPUOrientationScene",
+      "signature": "void OledUtils_RenderMPUOrientationScene(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 111
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledUtils_SetScreenCode",
+        "ssd1306_SetColor"
+      ],
+      "writes": [],
+      "description": "Renderiza MPUOrientation Scene dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 3743
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderMPUScene",
+      "signature": "void OledUtils_RenderMPUScene(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 109
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledUtils_SetScreenCode",
+        "Oled_DrawStr",
+        "Oled_DrawTitleLine",
+        "Oled_FontHeight",
+        "Oled_SetFont",
+        "ssd1306_SetColor",
+        "ssd1306_SetCursor"
+      ],
+      "writes": [],
+      "description": "Renderiza MPUScene dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 3511
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderModeChange_Full",
+      "signature": "void OledUtils_RenderModeChange_Full(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 47
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledUtils_DrawDashboardActionTimeoutBar",
+        "OledUtils_RenderModeChange_ModeOnly",
+        "OledUtils_SetScreenCode",
+        "Oled_DrawStr",
+        "Oled_DrawXBM",
+        "Oled_FontHeight",
+        "Oled_FontWidth",
+        "Oled_SetFont",
+        "ssd1306_SetCursor"
+      ],
+      "writes": [],
+      "description": "Renderiza Mode Change Full dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 2248
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderModeChange_ModeOnly",
+      "signature": "void OledUtils_RenderModeChange_ModeOnly(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 48
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledUtils_DrawDashboardActionTimeoutBar",
+        "OledUtils_SetScreenCode",
+        "Oled_ClearBox",
+        "Oled_DrawStr",
+        "Oled_FontHeight",
+        "Oled_FontWidth",
+        "Oled_SetFont",
+        "ssd1306_SetCursor"
+      ],
+      "writes": [],
+      "description": "Renderiza Mode Change Mode Only dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 2297
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderModePrompt",
+      "signature": "void OledUtils_RenderModePrompt(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 38
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "GET_CAR_MODE",
+        "OledUtils_DrawDashboardActionTimeoutBar",
+        "OledUtils_SetScreenCode",
+        "Oled_DrawCenteredLine",
+        "Oled_DrawStr",
+        "Oled_DrawXBM",
+        "Oled_FontHeight",
+        "Oled_SetFont",
+        "ssd1306_SetColor",
+        "ssd1306_SetCursor"
+      ],
+      "writes": [],
+      "description": "Renderiza Mode Prompt dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 2059
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderMotorCalibration",
+      "signature": "void OledUtils_RenderMotorCalibration(const uint8_t *,uint8_t,float,uint32_t,uint8_t)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 18
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledUtils_Clear",
+        "Oled_DrawCenteredLine",
+        "Oled_SetFont",
+        "memcpy",
+        "snprintf"
+      ],
+      "writes": [],
+      "description": "Renderiza Motor Calibration dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 4351
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderMotorMinPwm_Full",
+      "signature": "void OledUtils_RenderMotorMinPwm_Full(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 62
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledUtils_RenderMotorMinPwm_ValueOnly",
+        "OledUtils_SetScreenCode",
+        "Oled_DrawCenteredLine",
+        "Oled_DrawSaveFooter",
+        "Oled_DrawTitleLine",
+        "Oled_DrawXBM",
+        "Oled_SetFont",
+        "Preferences_GetMotorMinPwmEditLabel",
+        "Preferences_GetMotorMinPwmEditScreenCode"
+      ],
+      "writes": [],
+      "description": "Renderiza Motor Min Pwm Full dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 2552
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderMotorMinPwm_ValueOnly",
+      "signature": "void OledUtils_RenderMotorMinPwm_ValueOnly(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 63
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "Oled_ClearSettingValue",
+        "Oled_DrawUnsignedSettingValue",
+        "Preferences_GetMotorMinPwmDraft"
+      ],
+      "writes": [],
+      "description": "Renderiza Motor Min Pwm Value Only dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 2567
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderOledRotationMpuTest_Full",
+      "signature": "void OledUtils_RenderOledRotationMpuTest_Full(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 60
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledUtils_RenderOledRotationMpuTest_ValueOnly",
+        "OledUtils_SetScreenCode",
+        "Oled_DrawStr",
+        "Oled_DrawTitleLine",
+        "Oled_DrawXBM",
+        "Oled_FontHeight",
+        "Oled_SetFont",
+        "ssd1306_SetCursor"
+      ],
+      "writes": [],
+      "description": "Renderiza Oled Rotation Mpu Test Full dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 2516
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderOledRotationMpuTest_ValueOnly",
+      "signature": "void OledUtils_RenderOledRotationMpuTest_ValueOnly(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 61
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "Oled_AppendText",
+        "Oled_ClearBox",
+        "Oled_DrawCenteredLine",
+        "Oled_DrawUnsignedSettingValue",
+        "Oled_FormatSigned",
+        "Oled_SetFont",
+        "Oled_Terminate",
+        "Preferences_GetOledRotationMpuTestDeg",
+        "Preferences_GetOledRotationMpuTestYawDeg",
+        "Preferences_IsOledRotationMpuTestReady"
+      ],
+      "writes": [],
+      "description": "Renderiza Oled Rotation Mpu Test Value Only dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 2529
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderOledRotationTest_Full",
+      "signature": "void OledUtils_RenderOledRotationTest_Full(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 58
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledUtils_RenderOledRotationTest_ValueOnly",
+        "Oled_DrawSaveFooter",
+        "Oled_DrawSettingHeader"
+      ],
+      "writes": [],
+      "description": "Renderiza Oled Rotation Test Full dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 2501
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderOledRotationTest_ValueOnly",
+      "signature": "void OledUtils_RenderOledRotationTest_ValueOnly(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 59
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "Oled_ClearSettingValue",
+        "Oled_DrawUnsignedSettingValue",
+        "Preferences_GetOledRotationDraftDeg"
+      ],
+      "writes": [],
+      "description": "Renderiza Oled Rotation Test Value Only dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 2508
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderProyectInfoScreen",
+      "signature": "void OledUtils_RenderProyectInfoScreen(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 42
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledUtils_SetScreenCode",
+        "Oled_DrawStr",
+        "Oled_DrawXBM",
+        "Oled_DrawXBM_MSB",
+        "Oled_FontHeight",
+        "Oled_SetFont",
+        "ssd1306_SetColor",
+        "ssd1306_SetCursor"
+      ],
+      "writes": [],
+      "description": "Renderiza Proyect Info Screen dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 2136
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderProyectScreen",
+      "signature": "void OledUtils_RenderProyectScreen(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 41
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledUtils_SetScreenCode",
+        "Oled_DrawStr",
+        "Oled_DrawXBM",
+        "Oled_FontHeight",
+        "Oled_SetFont",
+        "ssd1306_SetColor",
+        "ssd1306_SetCursor"
+      ],
+      "writes": [],
+      "description": "Renderiza Proyect Screen dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 2097
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderRouteAlignmentScene",
+      "signature": "void OledUtils_RenderRouteAlignmentScene(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 103
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledUtils_SetScreenCode",
+        "Oled_DrawCenteredLine",
+        "Oled_DrawFrame",
+        "Oled_SetFont",
+        "ssd1306_DrawLine",
+        "ssd1306_SetColor"
+      ],
+      "writes": [],
+      "description": "Renderiza Route Alignment Scene dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 3457
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderRouteAlignmentVisualScene",
+      "signature": "void OledUtils_RenderRouteAlignmentVisualScene(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 105
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledUtils_SetScreenCode",
+        "Oled_DrawCenteredLine",
+        "Oled_SetFont",
+        "ssd1306_DrawLine",
+        "ssd1306_SetColor"
+      ],
+      "writes": [],
+      "description": "Renderiza Route Alignment Visual Scene dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 3421
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderScreenLockTimeout_Full",
+      "signature": "void OledUtils_RenderScreenLockTimeout_Full(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 49
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledUtils_RenderScreenLockTimeout_ValueOnly",
+        "Oled_DrawSaveFooter",
+        "Oled_DrawSettingHeader"
+      ],
+      "writes": [],
+      "description": "Renderiza Screen Lock Timeout Full dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 2426
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderScreenLockTimeout_ValueOnly",
+      "signature": "void OledUtils_RenderScreenLockTimeout_ValueOnly(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 50
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "Oled_ClearSettingValue",
+        "Oled_DrawUnsignedSettingValue",
+        "ScreenLock_GetTimeoutDraftSec"
+      ],
+      "writes": [],
+      "description": "Renderiza Screen Lock Timeout Value Only dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 2433
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderScreenLocked",
+      "signature": "void OledUtils_RenderScreenLocked(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 77
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledUtils_SetScreenCode",
+        "Oled_DrawCenteredLine",
+        "Oled_DrawStr",
+        "Oled_DrawXBM",
+        "Oled_FontHeight",
+        "Oled_SetFont",
+        "ssd1306_SetColor",
+        "ssd1306_SetCursor"
+      ],
+      "writes": [],
+      "description": "Renderiza Screen Locked dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 3047
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderSingleMotorTest_Full",
+      "signature": "void OledUtils_RenderSingleMotorTest_Full(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 64
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MotorSingleTest_GetLabel",
+        "MotorSingleTest_GetScreenCode",
+        "OledUtils_RenderSingleMotorTest_ValueOnly",
+        "OledUtils_SetScreenCode",
+        "Oled_DrawCenteredLine",
+        "Oled_DrawStr",
+        "Oled_DrawXBM",
+        "Oled_FontHeight",
+        "Oled_SetFont",
+        "ssd1306_SetCursor"
+      ],
+      "writes": [],
+      "description": "Renderiza Single Motor Test Full dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 2575
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderSingleMotorTest_ValueOnly",
+      "signature": "void OledUtils_RenderSingleMotorTest_ValueOnly(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 65
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MotorSingleTest_GetDirectionLabel",
+        "MotorSingleTest_GetMaxPwm",
+        "MotorSingleTest_GetMinPwm",
+        "MotorSingleTest_GetPwm",
+        "MotorSingleTest_GetSpeedPercentDisplay",
+        "Oled_AppendText",
+        "Oled_ClearBox",
+        "Oled_DrawBox",
+        "Oled_DrawCenteredLine",
+        "Oled_DrawFrame",
+        "Oled_FormatPercent3",
+        "Oled_FormatUnsigned",
+        "Oled_SetFont",
+        "Oled_Terminate",
+        "ssd1306_DrawLine"
+      ],
+      "writes": [],
+      "description": "Renderiza Single Motor Test Value Only dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 2592
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderStabilizationPrompt",
+      "signature": "void OledUtils_RenderStabilizationPrompt(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 37
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MotionControl_IsArmed",
+        "OledUtils_DrawDashboardActionTimeoutBar",
+        "OledUtils_SetScreenCode",
+        "Oled_DrawCenteredLine",
+        "Oled_DrawStr",
+        "Oled_DrawXBM",
+        "Oled_FontHeight",
+        "Oled_SetFont",
+        "ssd1306_SetColor",
+        "ssd1306_SetCursor"
+      ],
+      "writes": [],
+      "description": "Renderiza Stabilization Prompt dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 1997
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderStartupNotification_Wrapper",
+      "signature": "void OledUtils_RenderStartupNotification_Wrapper(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/notificationWrappers.h",
+        "line": 10
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MenuSys_SetCurrentScreenCode",
+        "OledUtils_DisableContinuousRender"
+      ],
+      "writes": [],
+      "description": "Renderiza Startup Notification Wrapper dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/notificationWrappers.c",
+        "line": 208
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderSystemActionTimeout_Full",
+      "signature": "void OledUtils_RenderSystemActionTimeout_Full(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 51
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledUtils_RenderSystemActionTimeout_ValueOnly",
+        "Oled_DrawSaveFooter",
+        "Oled_DrawSettingHeader"
+      ],
+      "writes": [],
+      "description": "Renderiza System Action Timeout Full dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 2442
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderSystemActionTimeout_ValueOnly",
+      "signature": "void OledUtils_RenderSystemActionTimeout_ValueOnly(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 52
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "Oled_ClearSettingValue",
+        "Oled_DrawUnsignedSettingValue",
+        "Preferences_GetSystemActionTimeoutDraft"
+      ],
+      "writes": [],
+      "description": "Renderiza System Action Timeout Value Only dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 2449
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderUnerRouterTest_Full",
+      "signature": "void OledUtils_RenderUnerRouterTest_Full(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 73
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledUtils_GetUnerRouterTransportId",
+        "OledUtils_RenderUnerRouterTest_ValueOnly",
+        "OledUtils_SetScreenCode",
+        "Oled_UnerRouterScreenCode"
+      ],
+      "writes": [],
+      "description": "Renderiza Uner Router Test Full dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 2924
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderUnerRouterTest_ValueOnly",
+      "signature": "void OledUtils_RenderUnerRouterTest_ValueOnly(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 74
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledUtils_GetUnerRouterTransportId",
+        "OledUtils_IsUnerRouterTxView",
+        "Oled_AppendChar",
+        "Oled_AppendHex2",
+        "Oled_AppendText",
+        "Oled_AppendUnsigned",
+        "Oled_ClearBox",
+        "Oled_SetFont",
+        "Oled_Terminate",
+        "Oled_UnerDrawLine",
+        "Oled_UnerDrawRouterTitle",
+        "Oled_UnerFormatPayloadPreview",
+        "Oled_UnerNodeLabel",
+        "Oled_UnerRouterStatusLabel",
+        "Oled_UnerTransportLabel",
+        "UNER_App_GetRouterPacketSnapshot"
+      ],
+      "writes": [],
+      "description": "Renderiza Uner Router Test Value Only dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 2933
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderUsbAlivePeriod_Full",
+      "signature": "void OledUtils_RenderUsbAlivePeriod_Full(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 53
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledUtils_RenderUsbAlivePeriod_ValueOnly",
+        "Oled_DrawSaveFooter",
+        "Oled_DrawSettingHeader"
+      ],
+      "writes": [],
+      "description": "Renderiza Usb Alive Period Full dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 2458
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderUsbAlivePeriod_ValueOnly",
+      "signature": "void OledUtils_RenderUsbAlivePeriod_ValueOnly(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 54
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "Oled_ClearSettingValue",
+        "Oled_DrawUnsignedSettingValue",
+        "Preferences_GetUsbAlivePeriodDraftMs"
+      ],
+      "writes": [],
+      "description": "Renderiza Usb Alive Period Value Only dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 2465
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderWiFiAtPassword",
+      "signature": "void OledUtils_RenderWiFiAtPassword(const char *ssid, uint8_t password_length, char selected_character)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 127
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledUtils_SetScreenCode",
+        "Oled_DrawStr",
+        "Oled_DrawStrMax",
+        "Oled_DrawXBM",
+        "Oled_FontHeight",
+        "Oled_SetFont",
+        "memset",
+        "snprintf",
+        "ssd1306_Clear",
+        "ssd1306_SetColor",
+        "ssd1306_SetCursor"
+      ],
+      "writes": [],
+      "description": "Renderiza Wi Fi At Password dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 3936
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderWiFiCredentialsFailedNotification",
+      "signature": "void OledUtils_RenderWiFiCredentialsFailedNotification(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 186
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledUtils_SetScreenCode",
+        "Oled_DrawStr",
+        "Oled_DrawXBM",
+        "Oled_FontHeight",
+        "Oled_SetFont",
+        "ssd1306_Clear",
+        "ssd1306_SetColor",
+        "ssd1306_SetCursor"
+      ],
+      "writes": [],
+      "description": "Renderiza Wi Fi Credentials Failed Notification dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 4020
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderWiFiCredentialsSucceededNotification",
+      "signature": "void OledUtils_RenderWiFiCredentialsSucceededNotification(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 185
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledUtils_SetScreenCode",
+        "Oled_DrawStr",
+        "Oled_DrawXBM",
+        "Oled_FontHeight",
+        "Oled_SetFont",
+        "ssd1306_Clear",
+        "ssd1306_SetColor",
+        "ssd1306_SetCursor"
+      ],
+      "writes": [],
+      "description": "Renderiza Wi Fi Credentials Succeeded Notification dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 4005
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderWiFiCredentialsWebNotification",
+      "signature": "void OledUtils_RenderWiFiCredentialsWebNotification(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 183
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledUtils_SetScreenCode",
+        "Oled_DrawStr",
+        "Oled_DrawXBM",
+        "Oled_FontHeight",
+        "Oled_SetFont",
+        "ssd1306_Clear",
+        "ssd1306_SetColor",
+        "ssd1306_SetCursor"
+      ],
+      "writes": [],
+      "description": "Renderiza Wi Fi Credentials Web Notification dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 3980
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderWiFiDetails",
+      "signature": "void OledUtils_RenderWiFiDetails(const char *ssid, const char *encryption, int8_t signal_strength, uint8_t channel, uint8_t detail_valid)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 122
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledUtils_SetScreenCode",
+        "Oled_DrawStr",
+        "Oled_DrawStrMax",
+        "Oled_DrawXBM",
+        "Oled_FontHeight",
+        "Oled_FormatWiFiMeta",
+        "Oled_FormatWiFiSignal",
+        "Oled_SetFont",
+        "ssd1306_Clear",
+        "ssd1306_SetColor",
+        "ssd1306_SetCursor"
+      ],
+      "writes": [],
+      "description": "Renderiza Wi Fi Details dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 3896
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderWiFiNotConnected",
+      "signature": "void OledUtils_RenderWiFiNotConnected(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 187
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledUtils_SetScreenCode",
+        "Oled_DrawStr",
+        "Oled_DrawXBM",
+        "Oled_FontHeight",
+        "Oled_SetFont",
+        "ssd1306_SetColor",
+        "ssd1306_SetCursor"
+      ],
+      "writes": [],
+      "description": "Renderiza Wi Fi Not Connected dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 3877
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderWiFiSearchScene",
+      "signature": "void OledUtils_RenderWiFiSearchScene(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 119
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledUtils_SetScreenCode",
+        "Oled_DrawStr",
+        "Oled_DrawXBM",
+        "Oled_FontHeight",
+        "Oled_SetFont",
+        "ssd1306_SetColor",
+        "ssd1306_SetCursor"
+      ],
+      "writes": [],
+      "description": "Renderiza Wi Fi Search Scene dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 3813
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_RenderWiFiStatus",
+      "signature": "void OledUtils_RenderWiFiStatus(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 188
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "IS_FLAG_SET",
+        "OledUtils_SetScreenCode",
+        "Oled_DrawCenteredLine",
+        "Oled_DrawStr",
+        "Oled_DrawStrMax",
+        "Oled_DrawXBM",
+        "Oled_FontHeight",
+        "Oled_FormatIp",
+        "Oled_GetDashboardStaSsid",
+        "Oled_SetFont",
+        "WifiBridge_GetActiveBackend",
+        "snprintf",
+        "ssd1306_Clear",
+        "ssd1306_SetColor",
+        "ssd1306_SetCursor"
+      ],
+      "writes": [],
+      "description": "Renderiza Wi Fi Status dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 4112
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_SetNotificationsBlocked",
+      "signature": "void OledUtils_SetNotificationsBlocked(bool blocked)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 223
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Bloquea o habilita la presentación de avisos durante flujos prioritarios.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 1474
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_SetRotationAndRefresh",
+      "signature": "AM_Result OledUtils_SetRotationAndRefresh(OledRotation_t rotation)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 57
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledUtils_Clear",
+        "ssd1306_SetRotation"
+      ],
+      "writes": [],
+      "description": "Aplica orientación de OLED y solicita refresco de la pantalla.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 2488
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_SetWiFiConnectedSsid",
+      "signature": "void OledUtils_SetWiFiConnectedSsid(const char *ssid)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 189
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "strncpy"
+      ],
+      "writes": [],
+      "description": "Configura Wi Fi Connected Ssid dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 4054
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_SetWiFiCredentialsWebResultStatus",
+      "signature": "void OledUtils_SetWiFiCredentialsWebResultStatus(uint8_t status)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 184
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Configura Wi Fi Credentials Web Result Status dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 4000
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_ShowNotificationMs",
+      "signature": "void OledUtils_ShowNotificationMs(RenderFunction renderFn, uint16_t timeout_ms)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 203
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledUtils_ShowNotificationMsEx"
+      ],
+      "writes": [],
+      "description": "Encola un aviso con renderer y duración en milisegundos.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 1297
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_ShowNotificationMsEx",
+      "signature": "void OledUtils_ShowNotificationMsEx(RenderFunction renderFn, uint16_t timeout_ms, OledNotificationHook onShow, OledNotificationHook onHide)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 204
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledUtils_ShowNotificationTicks10msInternal"
+      ],
+      "writes": [],
+      "description": "Encola aviso con hooks de entrada y salida.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 1288
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_ShowNumberedSimpleNotificationMsEx",
+      "signature": "void OledUtils_ShowNumberedSimpleNotificationMsEx(OledSimpleNotificationId notificationId, uint8_t clientNumber, uint16_t timeout_ms, OledNotificationHook onShow, OledNotificationHook onHide)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 211
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledUtils_GetSimpleNotificationDef",
+        "OledUtils_ShowNotificationTicks10msInternal"
+      ],
+      "writes": [],
+      "description": "Encola aviso simple conservando número de cliente y hooks.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 1321
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_ShowRemoteModeChangedNotification",
+      "signature": "void OledUtils_ShowRemoteModeChangedNotification(uint8_t mode, uint16_t timeout_ms)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 226
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledUtils_ShowSimpleNotificationMs",
+        "Oled_CopyText"
+      ],
+      "writes": [],
+      "description": "Coordina `OledUtils_ShowSimpleNotificationMs`, `Oled_CopyText` para Renderers y cola de notificaciones.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 2040
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_ShowSimpleNotificationMs",
+      "signature": "void OledUtils_ShowSimpleNotificationMs(OledSimpleNotificationId notificationId, uint16_t timeout_ms)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 210
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledUtils_ShowSimpleNotificationMsEx"
+      ],
+      "writes": [],
+      "description": "Encola un aviso identificado por su definición simple.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 1342
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_ShowSimpleNotificationMsEx",
+      "signature": "void OledUtils_ShowSimpleNotificationMsEx(OledSimpleNotificationId notificationId, uint16_t timeout_ms, OledNotificationHook onShow, OledNotificationHook onHide)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 206
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledUtils_ShowNumberedSimpleNotificationMsEx"
+      ],
+      "writes": [],
+      "description": "Encola aviso simple con hooks de ciclo de vida.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 1313
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_ShowWifiResults",
+      "signature": "void OledUtils_ShowWifiResults(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 121
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledUtils_SetScreenCode",
+        "Oled_DrawStr",
+        "Oled_DrawXBM",
+        "Oled_FontHeight",
+        "Oled_SetFont",
+        "ssd1306_Clear",
+        "ssd1306_SetColor",
+        "ssd1306_SetCursor"
+      ],
+      "writes": [],
+      "description": "Coordina `OledUtils_SetScreenCode`, `Oled_DrawStr`, `Oled_DrawXBM` para Renderers y cola de notificaciones.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 3859
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_StartESPAP_Wrapper",
+      "signature": "void OledUtils_StartESPAP_Wrapper(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/notificationWrappers.h",
+        "line": 14
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "IS_FLAG_SET",
+        "OledUtils_DisableContinuousRender",
+        "OledUtils_ShowSimpleNotificationMs",
+        "Permission_Request"
+      ],
+      "writes": [],
+      "description": "Inicia ESPAP Wrapper dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/notificationWrappers.c",
+        "line": 137
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_ToggleESPWebMode_Wrapper",
+      "signature": "void OledUtils_ToggleESPWebMode_Wrapper(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/notificationWrappers.h",
+        "line": 15
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledUtils_DisableContinuousRender",
+        "OledUtils_ShowSimpleNotificationMs",
+        "Permission_Request",
+        "WifiBridge_GetActiveBackend",
+        "WifiBridge_IsConnected"
+      ],
+      "writes": [],
+      "description": "Prepara el contexto de UI y selecciona la vista Toggle ESPWeb Mode.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/notificationWrappers.c",
+        "line": 152
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_UpdateIRBars",
+      "signature": "void OledUtils_UpdateIRBars(volatile uint16_t *sensorData)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 100
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledUtils_DrawIRBar",
+        "TCRT5000_GetLineSensorDef",
+        "TCRT5000_GetObjectSensorDef",
+        "TCRT5000_GetRaw",
+        "TCRT5000_NormalizeForDisplay"
+      ],
+      "writes": [],
+      "description": "Actualiza IRBars dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 3136
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_UpdateIRRawValues",
+      "signature": "void OledUtils_UpdateIRRawValues(volatile uint16_t *sensorData)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 102
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledUtils_FormatIRRawPair",
+        "Oled_ClearBox",
+        "Oled_DrawStr",
+        "Oled_FontHeight",
+        "Oled_SetFont",
+        "TCRT5000_GetRawById",
+        "ssd1306_SetCursor"
+      ],
+      "writes": [],
+      "description": "Actualiza IRRaw Values dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 3278
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_UpdateMPUCompass",
+      "signature": "void OledUtils_UpdateMPUCompass(MPU9250_Handle_t *mpu)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 114
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Actualiza MPUCompass dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 394
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_UpdateMPUOrientation",
+      "signature": "void OledUtils_UpdateMPUOrientation(MPU9250_Handle_t *mpu)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 112
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MPU9250_GetLatest",
+        "OLED_DrawMPUScreen"
+      ],
+      "writes": [],
+      "description": "Actualiza MPUOrientation dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 3749
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_UpdateMPUValues",
+      "signature": "void OledUtils_UpdateMPUValues(MPU9250_Handle_t *mpu)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 110
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "IS_FLAG_SET",
+        "Oled_ClearBox",
+        "Oled_DrawCenteredLine",
+        "Oled_DrawStr",
+        "Oled_FontHeight",
+        "Oled_FontWidth",
+        "Oled_FormatSigned",
+        "Oled_SetFont",
+        "ssd1306_SetColor",
+        "ssd1306_SetCursor"
+      ],
+      "writes": [],
+      "description": "Actualiza MPUValues dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 3548
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_UpdateRouteAlignment",
+      "signature": "void OledUtils_UpdateRouteAlignment(volatile uint16_t *sensorData)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 104
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "APP_EvaluateRoute",
+        "OledUtils_AreRouteIrLightsOn",
+        "Oled_ClearBox",
+        "Oled_DrawCenteredLine",
+        "Oled_DrawStr",
+        "Oled_FontHeight",
+        "Oled_FormatRouteValues",
+        "Oled_SetFont",
+        "TCRT5000_EmittersGroup3IsOn",
+        "TCRT5000_GetRouteAlignmentText",
+        "ssd1306_DrawLine",
+        "ssd1306_SetCursor"
+      ],
+      "writes": [],
+      "description": "Actualiza Route Alignment dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 3468
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_UpdateRouteAlignmentVisual",
+      "signature": "void OledUtils_UpdateRouteAlignmentVisual(volatile uint16_t *sensorData)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 106
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "APP_EvaluateRoute",
+        "OledUtils_DrawRouteAlignmentVisual",
+        "Oled_ClearBox",
+        "Oled_DrawCenteredLine",
+        "Oled_SetFont",
+        "TCRT5000_EmittersGroup3IsOn",
+        "TCRT5000_GetRouteAlignmentText"
+      ],
+      "writes": [],
+      "description": "Actualiza Route Alignment Visual dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 3431
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_UpdateWiFiSearchTimer",
+      "signature": "void OledUtils_UpdateWiFiSearchTimer(uint8_t secondsRemaining)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 120
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "Oled_ClearBox",
+        "Oled_DrawStr",
+        "Oled_FontHeight",
+        "Oled_FontWidth",
+        "Oled_FormatUnsigned",
+        "Oled_SetFont",
+        "ssd1306_SetCursor"
+      ],
+      "writes": [],
+      "description": "Actualiza Wi Fi Search Timer dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 3842
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_WifiApEnableProtection_Wrapper",
+      "signature": "void OledUtils_WifiApEnableProtection_Wrapper(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 199
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "OledUtils_WifiApPasswordEdit_Wrapper"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `OledUtils_WifiApPasswordEdit_Wrapper` con el contexto de esta integración.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/notificationWrappers.c",
+        "line": 356
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_WifiApIpv4Edit_Wrapper",
+      "signature": "void OledUtils_WifiApIpv4Edit_Wrapper(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 198
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "AppApConfig_Get",
+        "OSK_Integration_OpenAlpha",
+        "snprintf"
+      ],
+      "writes": [],
+      "description": "Prepara el contexto de UI y selecciona la vista Wifi Ap Ipv4 Edit.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/notificationWrappers.c",
+        "line": 363
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_WifiApPasswordEdit_Wrapper",
+      "signature": "void OledUtils_WifiApPasswordEdit_Wrapper(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 197
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "AppPreferences_GetWifiApPassword",
+        "OSK_Integration_OpenAlpha"
+      ],
+      "writes": [],
+      "description": "Prepara el contexto de UI y selecciona la vista Wifi Ap Password Edit.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/notificationWrappers.c",
+        "line": 343
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "OledUtils_WifiApSsidEdit_Wrapper",
+      "signature": "void OledUtils_WifiApSsidEdit_Wrapper(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/oled_utils.h",
+        "line": 196
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "AppPreferences_GetWifiApSsid",
+        "OSK_Integration_OpenAlpha"
+      ],
+      "writes": [],
+      "description": "Prepara el contexto de UI y selecciona la vista Wifi Ap Ssid Edit.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/notificationWrappers.c",
+        "line": 330
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "Preferences_BeginEspNotifWatchdogLimitEdit",
+      "signature": "void Preferences_BeginEspNotifWatchdogLimitEdit(void *param)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 2354
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "AppPreferences_GetEspNotifWatchdogLimit",
+        "OledUtils_RenderEspNotifWatchdogLimit_Full",
+        "clearScreen"
+      ],
+      "writes": [],
+      "description": "Coordina `AppPreferences_GetEspNotifWatchdogLimit`, `OledUtils_RenderEspNotifWatchdogLimit_Full`, `clearScreen` para Renderers y cola de notificaciones.",
+      "descriptionOrigin": "structural",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 2354
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "Preferences_GetEspNotifWatchdogLimitDraft",
+      "signature": "uint8_t Preferences_GetEspNotifWatchdogLimitDraft(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 2364
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Preferences Get Esp Notif Watchdog Limit Draft de Renderers y cola de notificaciones; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 2364
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "Preferences_SetEspNotifWatchdogLimitDraft",
+      "signature": "void Preferences_SetEspNotifWatchdogLimitDraft(uint8_t limit)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 2369
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Preferences Set Esp Notif Watchdog Limit Draft de Renderers y cola de notificaciones; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 2369
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "Screens_Init_notificationWrappers",
+      "signature": "void Screens_Init_notificationWrappers(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/notificationWrappers.c",
+        "line": 381
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "memcpy"
+      ],
+      "writes": [],
+      "description": "Inicializa el estado propio de wrappers de notificaciones en Screens_Context.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/notificationWrappers.c",
+        "line": 381
+      },
+      "linkage": "extern-no-header"
+    },
+    {
+      "name": "Screens_Init_oled_utils",
+      "signature": "void Screens_Init_oled_utils(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 4314
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "memcpy"
+      ],
+      "writes": [],
+      "description": "Inicializa estado de render, scroll y notificaciones del contexto activo.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 4314
+      },
+      "linkage": "extern-no-header"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "OledUtils_SendFirmwareRequest",
+      "signature": "static void OledUtils_SendFirmwareRequest(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/notificationWrappers.c",
+        "line": 39
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "APP_ESPFirmwareRequestRequested",
+        "WifiBridge_GetActiveBackend",
+        "WifiBridge_SendCommand"
+      ],
+      "writes": [],
+      "description": "Envía Firmware Request dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "OledUtils_ReturnToESPMenu",
+      "signature": "static void OledUtils_ReturnToESPMenu(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/notificationWrappers.c",
+        "line": 49
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Return To ESPMenu de Renderers y cola de notificaciones; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "OledUtils_ReturnToWifiMenu",
+      "signature": "static void OledUtils_ReturnToWifiMenu(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/notificationWrappers.c",
+        "line": 62
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Return To Wifi Menu de Renderers y cola de notificaciones; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "OledUtils_SendESPResetWithMode",
+      "signature": "static void OledUtils_SendESPResetWithMode(uint8_t boot_mode)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/notificationWrappers.c",
+        "line": 76
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "OledUtils_ReturnToESPMenu",
+        "OledUtils_ShowNotificationMs",
+        "WifiBridge_SendEspReboot"
+      ],
+      "writes": [],
+      "description": "Envía ESPReset With Mode dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "OledUtils_SendESPResetNormal",
+      "signature": "static void OledUtils_SendESPResetNormal(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/notificationWrappers.c",
+        "line": 86
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "OledUtils_SendESPResetWithMode"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `OledUtils_SendESPResetWithMode` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "OledUtils_SendESPResetApMode",
+      "signature": "static void OledUtils_SendESPResetApMode(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/notificationWrappers.c",
+        "line": 91
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "OledUtils_SendESPResetWithMode"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `OledUtils_SendESPResetWithMode` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "OledUtils_ToggleESPModeAfterPermission",
+      "signature": "static void OledUtils_ToggleESPModeAfterPermission(void *ctx)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/notificationWrappers.c",
+        "line": 96
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "APP_ESPModeChangeCommandAccepted",
+        "Dashboard_InvalidateConnectivity",
+        "IS_FLAG_SET",
+        "OledUtils_DismissNotification",
+        "OledUtils_ReturnToWifiMenu",
+        "OledUtils_ShowSimpleNotificationMsEx",
+        "WifiBridge_StartAP",
+        "WifiBridge_StopAP"
+      ],
+      "writes": [],
+      "description": "Coordina `APP_ESPModeChangeCommandAccepted`, `Dashboard_InvalidateConnectivity`, `IS_FLAG_SET` para Renderers y cola de notificaciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "OledUtils_ToggleESPWebModeAfterPermission",
+      "signature": "static void OledUtils_ToggleESPWebModeAfterPermission(void *ctx)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/notificationWrappers.c",
+        "line": 122
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "IS_FLAG_SET",
+        "OledUtils_ReturnToWifiMenu",
+        "OledUtils_ShowNotificationMs",
+        "WifiBridge_SendEspReboot"
+      ],
+      "writes": [],
+      "description": "Coordina `IS_FLAG_SET`, `OledUtils_ReturnToWifiMenu`, `OledUtils_ShowNotificationMs` para Renderers y cola de notificaciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "OledUtils_OpenESPResetModeMenu",
+      "signature": "static void OledUtils_OpenESPResetModeMenu(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/notificationWrappers.c",
+        "line": 168
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Open ESPReset Mode Menu de Renderers y cola de notificaciones; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "OledUtils_ShowESPResetModeAfterPermission",
+      "signature": "static void OledUtils_ShowESPResetModeAfterPermission(void *ctx)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/notificationWrappers.c",
+        "line": 188
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "OledUtils_OpenESPResetModeMenu"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `OledUtils_OpenESPResetModeMenu` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "OledUtils_ShowESPNotificationReturningTo",
+      "signature": "static void OledUtils_ShowESPNotificationReturningTo(RenderFunction renderFn, RenderFunction restoreFn, OledNotificationHook onShow, OledNotificationHook onHide)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/notificationWrappers.c",
+        "line": 194
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "OledUtils_DisableContinuousRender",
+        "OledUtils_ShowNotificationMsEx"
+      ],
+      "writes": [],
+      "description": "Coordina `OledUtils_DisableContinuousRender`, `OledUtils_ShowNotificationMsEx` para Renderers y cola de notificaciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiAp_ShowResult",
+      "signature": "static void WifiAp_ShowResult(AppApStatus_t status)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/notificationWrappers.c",
+        "line": 271
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "OledUtils_ShowSimpleNotificationMs"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `OledUtils_ShowSimpleNotificationMs` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiApSsid_OnComplete",
+      "signature": "static void WifiApSsid_OnComplete(OSK_State *st, void *ctx)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/notificationWrappers.c",
+        "line": 280
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "AppApConfig_ApplyPatch",
+        "OSK_GetText",
+        "WifiAp_ShowResult",
+        "strncpy"
+      ],
+      "writes": [],
+      "description": "Coordina `AppApConfig_ApplyPatch`, `OSK_GetText`, `WifiAp_ShowResult` para Renderers y cola de notificaciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiApPassword_OnComplete",
+      "signature": "static void WifiApPassword_OnComplete(OSK_State *st, void *ctx)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/notificationWrappers.c",
+        "line": 290
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "AppApConfig_ApplyPatch",
+        "OSK_GetText",
+        "WifiAp_ShowResult",
+        "strncpy"
+      ],
+      "writes": [],
+      "description": "Coordina `AppApConfig_ApplyPatch`, `OSK_GetText`, `WifiAp_ShowResult` para Renderers y cola de notificaciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiApIpv4_OnComplete",
+      "signature": "static void WifiApIpv4_OnComplete(OSK_State *st, void *ctx)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/notificationWrappers.c",
+        "line": 310
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "AppApConfig_ApplyPatch",
+        "AppApConfig_ParseIpv4",
+        "OSK_GetText",
+        "WifiAp_ShowResult"
+      ],
+      "writes": [],
+      "description": "Coordina `AppApConfig_ApplyPatch`, `AppApConfig_ParseIpv4`, `OSK_GetText` para Renderers y cola de notificaciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiApEdit_OnCancel",
+      "signature": "static void WifiApEdit_OnCancel(void *ctx)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/notificationWrappers.c",
+        "line": 324
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Wifi Ap Edit On Cancel de Renderers y cola de notificaciones; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "OledUtils_SetScreenCode",
+      "signature": "static void OledUtils_SetScreenCode(ScreenCode_t screen_code, ScreenReportSource_t source)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 61
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "MenuSys_SetCurrentScreenCode"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `MenuSys_SetCurrentScreenCode` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Oled_SetFont",
+      "signature": "static void Oled_SetFont(const FontDef *font)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 66
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Oled Set Font de Renderers y cola de notificaciones; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "Oled_FontHeight",
+      "signature": "static uint8_t Oled_FontHeight(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 71
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Devuelve el campo `oled_font->FontHeight` del estado actual de la instancia.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Oled_FontWidth",
+      "signature": "static uint8_t Oled_FontWidth(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 76
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Devuelve el campo `oled_font->FontWidth` del estado actual de la instancia.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Oled_DrawStr",
+      "signature": "static void Oled_DrawStr(const char *text)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 81
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "ssd1306_SetColor",
+        "ssd1306_WriteString"
+      ],
+      "writes": [],
+      "description": "Coordina `ssd1306_SetColor`, `ssd1306_WriteString` para Renderers y cola de notificaciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Oled_DrawStrMax",
+      "signature": "static void Oled_DrawStrMax(const char *text, uint8_t maxChars)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 88
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Oled_DrawStr"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `Oled_DrawStr` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Oled_ClearBox",
+      "signature": "static void Oled_ClearBox(uint8_t x, uint8_t y, uint8_t w, uint8_t h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 105
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "ssd1306_FillRect",
+        "ssd1306_SetColor"
+      ],
+      "writes": [],
+      "description": "Coordina `ssd1306_FillRect`, `ssd1306_SetColor` para Renderers y cola de notificaciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "OledUtils_DrawDashboardActionTimeoutBar",
+      "signature": "static void OledUtils_DrawDashboardActionTimeoutBar(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 148
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Dashboard_GetActionTimeoutContext",
+        "OledUtils_DrawActionTimeoutBar"
+      ],
+      "writes": [],
+      "description": "Dibuja Dashboard Action Timeout Bar dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "Oled_IpIsValid",
+      "signature": "static uint8_t Oled_IpIsValid(const volatile IPStruct_t *ip)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 400
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Oled Ip Is Valid de Renderers y cola de notificaciones; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "Oled_Terminate",
+      "signature": "static void Oled_Terminate(char *buf, size_t len, size_t pos)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 409
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Oled Terminate de Renderers y cola de notificaciones; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "Oled_AppendChar",
+      "signature": "static size_t Oled_AppendChar(char *buf, size_t len, size_t pos, char ch)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 418
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Oled Append Char de Renderers y cola de notificaciones; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "Oled_AppendText",
+      "signature": "static size_t Oled_AppendText(char *buf, size_t len, size_t pos, const char *text)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 427
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Oled_AppendChar"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `Oled_AppendChar` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Oled_AppendUnsigned",
+      "signature": "static size_t Oled_AppendUnsigned(char *buf, size_t len, size_t pos, uint32_t value)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 441
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Oled_AppendChar"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `Oled_AppendChar` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Oled_CopyText",
+      "signature": "static void Oled_CopyText(char *buf, size_t len, const char *text)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 458
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Oled_AppendText",
+        "Oled_Terminate"
+      ],
+      "writes": [],
+      "description": "Coordina `Oled_AppendText`, `Oled_Terminate` para Renderers y cola de notificaciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Oled_FormatUnsigned",
+      "signature": "static void Oled_FormatUnsigned(char *buf, size_t len, uint32_t value)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 464
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Oled_AppendUnsigned",
+        "Oled_Terminate"
+      ],
+      "writes": [],
+      "description": "Coordina `Oled_AppendUnsigned`, `Oled_Terminate` para Renderers y cola de notificaciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Oled_FormatSigned",
+      "signature": "static void Oled_FormatSigned(char *buf, size_t len, int32_t value)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 470
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Oled_AppendChar",
+        "Oled_AppendUnsigned",
+        "Oled_Terminate"
+      ],
+      "writes": [],
+      "description": "Coordina `Oled_AppendChar`, `Oled_AppendUnsigned`, `Oled_Terminate` para Renderers y cola de notificaciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Oled_FormatFixed",
+      "signature": "static void Oled_FormatFixed(char *buf, size_t len, float value, uint8_t decimals)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 486
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Oled_AppendChar",
+        "Oled_AppendUnsigned",
+        "Oled_Terminate"
+      ],
+      "writes": [],
+      "description": "Coordina `Oled_AppendChar`, `Oled_AppendUnsigned`, `Oled_Terminate` para Renderers y cola de notificaciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Oled_AppendHex2",
+      "signature": "static size_t Oled_AppendHex2(char *buf, size_t len, size_t pos, uint8_t value)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 529
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Oled_AppendChar"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `Oled_AppendChar` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Oled_AppendHexByteCompact",
+      "signature": "static size_t Oled_AppendHexByteCompact(char *buf, size_t len, size_t pos, uint8_t value)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 540
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Oled_AppendChar"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `Oled_AppendChar` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Oled_FormatBytesCompact",
+      "signature": "static void Oled_FormatBytesCompact(char *buf, size_t len, uint32_t bytes)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 549
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Oled_AppendChar",
+        "Oled_AppendText",
+        "Oled_AppendUnsigned",
+        "Oled_Terminate"
+      ],
+      "writes": [],
+      "description": "Coordina `Oled_AppendChar`, `Oled_AppendText`, `Oled_AppendUnsigned` para Renderers y cola de notificaciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "OLED_MPU_Normalize180",
+      "signature": "static float OLED_MPU_Normalize180(float angle)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 565
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación OLED MPU Normalize180 de Renderers y cola de notificaciones; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "OLED_MPU_Clamp",
+      "signature": "static float OLED_MPU_Clamp(float value, float minValue, float maxValue)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 577
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación OLED MPU Clamp de Renderers y cola de notificaciones; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "OLED_MPU_Round",
+      "signature": "static int16_t OLED_MPU_Round(float value)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 589
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación OLED MPU Round de Renderers y cola de notificaciones; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "OLED_DrawPixelSafe",
+      "signature": "static void OLED_DrawPixelSafe(int16_t x, int16_t y)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 594
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "ssd1306_DrawPixel"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `ssd1306_DrawPixel` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "OLED_ReadXbmPixel",
+      "signature": "static bool OLED_ReadXbmPixel(const uint8_t *bits, uint8_t w, uint8_t x, uint8_t y)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 603
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación OLED Read Xbm Pixel de Renderers y cola de notificaciones; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "OLED_DrawRotatedBitmap",
+      "signature": "static void OLED_DrawRotatedBitmap(int cx, int cy, uint8_t w, uint8_t h, const uint8_t *bits, float angle_deg)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 612
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "OLED_DrawPixelSafe",
+        "OLED_MPU_Round",
+        "OLED_ReadXbmPixel",
+        "cosf",
+        "sinf"
+      ],
+      "writes": [],
+      "description": "Coordina `OLED_DrawPixelSafe`, `OLED_MPU_Round`, `OLED_ReadXbmPixel` para Renderers y cola de notificaciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "OLED_MiniGlyphRow",
+      "signature": "static uint8_t OLED_MiniGlyphRow(char c, uint8_t row)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 639
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación OLED Mini Glyph Row de Renderers y cola de notificaciones; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "OLED_MiniTextWidth",
+      "signature": "static uint8_t OLED_MiniTextWidth(const char *text)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 693
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación OLED Mini Text Width de Renderers y cola de notificaciones; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "OLED_DrawMiniChar",
+      "signature": "static void OLED_DrawMiniChar(uint8_t x, uint8_t y, char c)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 708
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "OLED_DrawPixelSafe",
+        "OLED_MiniGlyphRow"
+      ],
+      "writes": [],
+      "description": "Coordina `OLED_DrawPixelSafe`, `OLED_MiniGlyphRow` para Renderers y cola de notificaciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "OLED_DrawMiniText",
+      "signature": "static void OLED_DrawMiniText(uint8_t x, uint8_t y, const char *text)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 721
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "OLED_DrawMiniChar"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `OLED_DrawMiniChar` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "OLED_DrawMiniTextCentered",
+      "signature": "static void OLED_DrawMiniTextCentered(const char *text, uint8_t x, uint8_t w, uint8_t y)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 736
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "OLED_DrawMiniText",
+        "OLED_MiniTextWidth"
+      ],
+      "writes": [],
+      "description": "Coordina `OLED_DrawMiniText`, `OLED_MiniTextWidth` para Renderers y cola de notificaciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "OLED_DrawMiniDegree",
+      "signature": "static void OLED_DrawMiniDegree(uint8_t x, uint8_t y)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 744
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "OLED_DrawPixelSafe"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `OLED_DrawPixelSafe` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "OLED_FormatPanelAngle",
+      "signature": "static void OLED_FormatPanelAngle(char *buf, size_t len, const char *axis, float angle_deg)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 752
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "OLED_MPU_Round",
+        "Oled_AppendChar",
+        "Oled_AppendUnsigned",
+        "Oled_Terminate"
+      ],
+      "writes": [],
+      "description": "Coordina `OLED_MPU_Round`, `Oled_AppendChar`, `Oled_AppendUnsigned` para Renderers y cola de notificaciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Oled_FormatWiFiSignal",
+      "signature": "static void Oled_FormatWiFiSignal(char *buf, size_t len, int8_t signal_strength, uint8_t detail_valid)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 780
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Oled_AppendChar",
+        "Oled_AppendText",
+        "Oled_AppendUnsigned",
+        "Oled_CopyText",
+        "Oled_Terminate"
+      ],
+      "writes": [],
+      "description": "Coordina `Oled_AppendChar`, `Oled_AppendText`, `Oled_AppendUnsigned` para Renderers y cola de notificaciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Oled_FormatWiFiMeta",
+      "signature": "static void Oled_FormatWiFiMeta(char *buf, size_t len, const char *encryption, uint8_t channel, uint8_t detail_valid)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 804
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Oled_AppendText",
+        "Oled_AppendUnsigned",
+        "Oled_CopyText",
+        "Oled_Terminate"
+      ],
+      "writes": [],
+      "description": "Coordina `Oled_AppendText`, `Oled_AppendUnsigned`, `Oled_CopyText` para Renderers y cola de notificaciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Oled_FormatPercent3",
+      "signature": "static void Oled_FormatPercent3(char *buf, size_t len, uint8_t value)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 831
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Oled_AppendChar",
+        "Oled_AppendUnsigned",
+        "Oled_Terminate"
+      ],
+      "writes": [],
+      "description": "Coordina `Oled_AppendChar`, `Oled_AppendUnsigned`, `Oled_Terminate` para Renderers y cola de notificaciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Oled_FormatIp",
+      "signature": "static void Oled_FormatIp(const volatile IPStruct_t *ip, char *buf, size_t len)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 847
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Oled_AppendChar",
+        "Oled_AppendUnsigned",
+        "Oled_CopyText",
+        "Oled_IpIsValid",
+        "Oled_Terminate"
+      ],
+      "writes": [],
+      "description": "Coordina `Oled_AppendChar`, `Oled_AppendUnsigned`, `Oled_CopyText` para Renderers y cola de notificaciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Oled_DrawBox",
+      "signature": "static void Oled_DrawBox(uint8_t x, uint8_t y, uint8_t w, uint8_t h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 870
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "ssd1306_FillRect",
+        "ssd1306_SetColor"
+      ],
+      "writes": [],
+      "description": "Coordina `ssd1306_FillRect`, `ssd1306_SetColor` para Renderers y cola de notificaciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Oled_DrawFrame",
+      "signature": "static void Oled_DrawFrame(uint8_t x, uint8_t y, uint8_t w, uint8_t h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 876
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "ssd1306_DrawRect",
+        "ssd1306_SetColor"
+      ],
+      "writes": [],
+      "description": "Coordina `ssd1306_DrawRect`, `ssd1306_SetColor` para Renderers y cola de notificaciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Oled_DrawXBM",
+      "signature": "static void Oled_DrawXBM(uint8_t x, uint8_t y, uint8_t w, uint8_t h, const uint8_t *bits)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 882
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "ssd1306_DrawBitmap",
+        "ssd1306_SetColor"
+      ],
+      "writes": [],
+      "description": "Coordina `ssd1306_DrawBitmap`, `ssd1306_SetColor` para Renderers y cola de notificaciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Oled_DrawXBM_MSB",
+      "signature": "static void Oled_DrawXBM_MSB(uint8_t x, uint8_t y, uint8_t w, uint8_t h, const uint8_t *bits)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 889
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "ssd1306_DrawBitmap_MSB",
+        "ssd1306_SetColor"
+      ],
+      "writes": [],
+      "description": "Coordina `ssd1306_DrawBitmap_MSB`, `ssd1306_SetColor` para Renderers y cola de notificaciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "OledUtils_RenderNotificationProgress",
+      "signature": "static void OledUtils_RenderNotificationProgress(const OledNotificationData *data, uint8_t count)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 910
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Oled_ClearBox",
+        "Oled_FontHeight",
+        "Oled_SetFont",
+        "Oled_TextPixelWidth",
+        "snprintf",
+        "ssd1306_DrawLinearProgress",
+        "ssd1306_SetColor",
+        "ssd1306_SetCursor",
+        "ssd1306_WriteString"
+      ],
+      "writes": [],
+      "description": "Renderiza Notification Progress dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "OledUtils_ExecuteNotificationHook",
+      "signature": "static void OledUtils_ExecuteNotificationHook(OledNotificationHook hook)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 953
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "hook"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `hook` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "OledUtils_GetSimpleNotificationDef",
+      "signature": "static const OledSimpleNotificationDef *OledUtils_GetSimpleNotificationDef(uint8_t simpleId)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 960
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Consulta Simple Notification Def dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "OledUtils_DrawSimpleNotificationIcon",
+      "signature": "static void OledUtils_DrawSimpleNotificationIcon(const OledSimpleNotificationDef *def, uint8_t x, uint8_t y)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 969
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Oled_DrawXBM",
+        "Oled_DrawXBM_MSB",
+        "ssd1306_SetColor"
+      ],
+      "writes": [],
+      "description": "Dibuja Simple Notification Icon dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "OledUtils_DrawSimpleNotificationStrike",
+      "signature": "static void OledUtils_DrawSimpleNotificationStrike(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint8_t strikeCount)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 988
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "ssd1306_DrawLine"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `ssd1306_DrawLine` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "OledUtils_RenderSimpleNotification",
+      "signature": "static void OledUtils_RenderSimpleNotification(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 998
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "OledUtils_DrawSimpleNotificationIcon",
+        "OledUtils_DrawSimpleNotificationStrike",
+        "OledUtils_GetSimpleNotificationDef",
+        "OledUtils_SetScreenCode",
+        "Oled_DrawCenteredLine",
+        "Oled_SetFont",
+        "snprintf",
+        "ssd1306_Clear",
+        "ssd1306_SetColor"
+      ],
+      "writes": [],
+      "description": "Renderiza Simple Notification dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "OledUtils_RenderNotification_Wrapper",
+      "signature": "static void OledUtils_RenderNotification_Wrapper(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 1069
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "MenuSys_GetCurrentScreenCode",
+        "OledUtils_RenderNotificationProgress",
+        "UNER_App_ReportNotificationChanged",
+        "renderFn"
+      ],
+      "writes": [
+        "needsFullRender"
+      ],
+      "description": "Renderiza Notification Wrapper dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "OledUtils_ClearDeferredNotification",
+      "signature": "static void OledUtils_ClearDeferredNotification(OledNotificationState *notif)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 1092
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Limpia Deferred Notification dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "OledUtils_NotificationScreenCodeForRenderer",
+      "signature": "static ScreenCode_t OledUtils_NotificationScreenCodeForRenderer(RenderFunction renderFn)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 1145
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Notification Screen Code For Renderer de Renderers y cola de notificaciones; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "OledUtils_ShowNotificationTicks10msInternal",
+      "signature": "static void OledUtils_ShowNotificationTicks10msInternal(RenderFunction renderFn, uint8_t simpleId, uint8_t clientNumber, uint16_t timeout_ticks, OledNotificationHook onShow, OledNotificationHook onHide)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 1180
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "MenuScroll_Stop",
+        "MenuSys_GetCurrentScreenCode",
+        "MenuSys_GetCurrentScreenSource",
+        "MenuSys_SetCurrentScreenCode",
+        "OledCanvas_IsActiveScreen",
+        "OledUtils_ClearDeferredNotification",
+        "OledUtils_ExecuteNotificationHook",
+        "OledUtils_GetSimpleNotificationDef",
+        "OledUtils_NotificationScreenCodeForRenderer"
+      ],
+      "writes": [
+        "active",
+        "count",
+        "previousAllowPeriodicRefresh",
+        "previousEventManagerFn",
+        "previousRenderFlag",
+        "previousRenderFn",
+        "previousScreenCode",
+        "previousScreenSource",
+        "tail"
+      ],
+      "description": "Coordina `MenuScroll_Stop`, `MenuSys_GetCurrentScreenCode`, `MenuSys_GetCurrentScreenSource` para Renderers y cola de notificaciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "OledUtils_ReplayDeferredNotification",
+      "signature": "static uint8_t OledUtils_ReplayDeferredNotification(OledNotificationState *notif)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 1269
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "OledCanvas_IsActiveScreen",
+        "OledUtils_ClearDeferredNotification",
+        "OledUtils_ShowNotificationTicks10msInternal"
+      ],
+      "writes": [],
+      "description": "Coordina `OledCanvas_IsActiveScreen`, `OledUtils_ClearDeferredNotification`, `OledUtils_ShowNotificationTicks10msInternal` para Renderers y cola de notificaciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Oled_DrawStrScrolled",
+      "signature": "static void Oled_DrawStrScrolled(const char *text, uint8_t min_x, uint8_t max_x, uint8_t y, int16_t offset_x)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 1639
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "ssd1306_DrawPixel",
+        "strlen"
+      ],
+      "writes": [],
+      "description": "Coordina `ssd1306_DrawPixel`, `strlen` para Renderers y cola de notificaciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "DashboardScroll_Offset",
+      "signature": "static int16_t DashboardScroll_Offset(const DashboardScrollLane *lane, uint32_t now)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 1852
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "strlen"
+      ],
+      "writes": [],
+      "description": "Coordina `strlen` para Renderers y cola de notificaciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "DashboardScroll_DrawLane",
+      "signature": "static void DashboardScroll_DrawLane(uint8_t index, const char *text, uint8_t x, uint8_t right)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 1865
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "DashboardScroll_Offset",
+        "Oled_CopyText",
+        "Oled_DrawStrScrolled",
+        "Screens_NowMs",
+        "strcmp"
+      ],
+      "writes": [
+        "lastOffset",
+        "right",
+        "startedMs",
+        "x"
+      ],
+      "description": "Coordina `DashboardScroll_Offset`, `Oled_CopyText`, `Oled_DrawStrScrolled` para Renderers y cola de notificaciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Oled_DrawSettingHeader",
+      "signature": "static void Oled_DrawSettingHeader(ScreenCode_t screenCode, const char *title)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 2375
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "OledUtils_SetScreenCode",
+        "Oled_DrawTitleLine",
+        "Oled_DrawXBM"
+      ],
+      "writes": [],
+      "description": "Coordina `OledUtils_SetScreenCode`, `Oled_DrawTitleLine`, `Oled_DrawXBM` para Renderers y cola de notificaciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Oled_DrawSaveFooter",
+      "signature": "static void Oled_DrawSaveFooter(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 2383
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Oled_DrawStr",
+        "Oled_DrawXBM",
+        "Oled_FontHeight",
+        "Oled_SetFont",
+        "ssd1306_SetCursor"
+      ],
+      "writes": [],
+      "description": "Coordina `Oled_DrawStr`, `Oled_DrawXBM`, `Oled_FontHeight` para Renderers y cola de notificaciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Oled_ClearSettingValue",
+      "signature": "static void Oled_ClearSettingValue(const FontDef *font, uint8_t baselineY)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 2391
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Oled_ClearBox",
+        "Oled_FontHeight",
+        "Oled_SetFont"
+      ],
+      "writes": [],
+      "description": "Coordina `Oled_ClearBox`, `Oled_FontHeight`, `Oled_SetFont` para Renderers y cola de notificaciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Oled_DrawUnsignedSettingValue",
+      "signature": "static void Oled_DrawUnsignedSettingValue(char *value, size_t capacity, uint32_t number, const char *unit, uint8_t baselineY)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 2398
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Oled_AppendText",
+        "Oled_DrawCenteredLine",
+        "Oled_FormatUnsigned",
+        "Oled_Terminate",
+        "strlen"
+      ],
+      "writes": [],
+      "description": "Coordina `Oled_AppendText`, `Oled_DrawCenteredLine`, `Oled_FormatUnsigned` para Renderers y cola de notificaciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "OledUtils_BalanceRejectText",
+      "signature": "static const char *OledUtils_BalanceRejectText(MotionControl_RejectReason_t reason)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 2640
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Balance Reject Text de Renderers y cola de notificaciones; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "Oled_UnerNodeLabel",
+      "signature": "static const char *Oled_UnerNodeLabel(uint8_t node)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 2791
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Oled Uner Node Label de Renderers y cola de notificaciones; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "Oled_UnerTransportLabel",
+      "signature": "static const char *Oled_UnerTransportLabel(uint8_t transport)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 2809
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Oled Uner Transport Label de Renderers y cola de notificaciones; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "Oled_UnerTransportTitleLabel",
+      "signature": "static const char *Oled_UnerTransportTitleLabel(uint8_t transport)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 2823
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "WifiBridge_GetActiveBackend"
+      ],
+      "writes": [],
+      "description": "Coordina `WifiBridge_GetActiveBackend` para Renderers y cola de notificaciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Oled_UnerRouterStatusLabel",
+      "signature": "static const char *Oled_UnerRouterStatusLabel(uint8_t status)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 2839
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Oled Uner Router Status Label de Renderers y cola de notificaciones; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "Oled_UnerDrawLine",
+      "signature": "static void Oled_UnerDrawLine(uint8_t y, const char *text)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 2863
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Oled_DrawStrMax",
+        "ssd1306_SetCursor"
+      ],
+      "writes": [],
+      "description": "Coordina `Oled_DrawStrMax`, `ssd1306_SetCursor` para Renderers y cola de notificaciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Oled_UnerFormatPayloadPreview",
+      "signature": "static void Oled_UnerFormatPayloadPreview(char *line, size_t len, const UNER_RouterSnapshot *snapshot)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 2869
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Oled_AppendChar",
+        "Oled_AppendHexByteCompact",
+        "Oled_AppendText",
+        "Oled_Terminate"
+      ],
+      "writes": [],
+      "description": "Coordina `Oled_AppendChar`, `Oled_AppendHexByteCompact`, `Oled_AppendText` para Renderers y cola de notificaciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Oled_UnerRouterScreenCode",
+      "signature": "static ScreenCode_t Oled_UnerRouterScreenCode(uint8_t transport_id)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 2890
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Oled Uner Router Screen Code de Renderers y cola de notificaciones; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "Oled_UnerDrawRouterTitle",
+      "signature": "static void Oled_UnerDrawRouterTitle(uint8_t transport_id, bool tx_view)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 2903
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Oled_AppendChar",
+        "Oled_AppendText",
+        "Oled_ClearBox",
+        "Oled_DrawTitleLine",
+        "Oled_DrawXBM",
+        "Oled_Terminate",
+        "Oled_UnerTransportTitleLabel",
+        "ssd1306_DrawHorizontalLine"
+      ],
+      "writes": [],
+      "description": "Coordina `Oled_AppendChar`, `Oled_AppendText`, `Oled_ClearBox` para Renderers y cola de notificaciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "OledUtils_DrawIRGroupFrame",
+      "signature": "static void OledUtils_DrawIRGroupFrame(uint8_t x, uint8_t y, uint8_t w, uint8_t h, const char *title)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 3083
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "OLED_DrawMiniTextCentered",
+        "Oled_DrawFrame",
+        "ssd1306_DrawLine",
+        "ssd1306_SetColor"
+      ],
+      "writes": [],
+      "description": "Dibuja IRGroup Frame dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "OledUtils_DrawIRBar",
+      "signature": "static void OledUtils_DrawIRBar(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint16_t value)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 3093
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Oled_ClearBox",
+        "Oled_DrawBox"
+      ],
+      "writes": [],
+      "description": "Dibuja IRBar dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "OledUtils_FormatIRRawPair",
+      "signature": "static void OledUtils_FormatIRRawPair(char *buf, size_t len, const char *labelA, uint16_t valueA, const char *labelB, uint16_t valueB)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 3161
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Oled_AppendChar",
+        "Oled_AppendText",
+        "Oled_AppendUnsigned",
+        "Oled_Terminate"
+      ],
+      "writes": [],
+      "description": "Coordina `Oled_AppendChar`, `Oled_AppendText`, `Oled_AppendUnsigned` para Renderers y cola de notificaciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Oled_SsidIsUseful",
+      "signature": "static bool Oled_SsidIsUseful(const char *ssid)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 3182
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Oled Ssid Is Useful de Renderers y cola de notificaciones; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "Oled_GetDashboardStaSsid",
+      "signature": "static const char *Oled_GetDashboardStaSsid(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 3204
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Oled_SsidIsUseful",
+        "WifiBridge_GetActiveBackend",
+        "WifiBridge_GetRuntimeCredentials"
+      ],
+      "writes": [],
+      "description": "Coordina `Oled_SsidIsUseful`, `WifiBridge_GetActiveBackend`, `WifiBridge_GetRuntimeCredentials` para Renderers y cola de notificaciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "OledUtils_AreRouteIrLightsOn",
+      "signature": "static bool OledUtils_AreRouteIrLightsOn(void)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 3311
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "route_emitters_on"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `route_emitters_on` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Oled_FormatRouteValues",
+      "signature": "static void Oled_FormatRouteValues(char *buf, size_t len, const char *labelA, uint16_t valueA, const char *labelB, uint16_t valueB)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 3316
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Oled_AppendChar",
+        "Oled_AppendText",
+        "Oled_AppendUnsigned",
+        "Oled_Terminate"
+      ],
+      "writes": [],
+      "description": "Coordina `Oled_AppendChar`, `Oled_AppendText`, `Oled_AppendUnsigned` para Renderers y cola de notificaciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "OledUtils_RouteStrongestCenterX",
+      "signature": "static uint8_t OledUtils_RouteStrongestCenterX(const TCRT5000_RouteSample_t *route)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 3336
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Route Strongest Center X de Renderers y cola de notificaciones; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "OledUtils_DrawRouteSensorBox",
+      "signature": "static void OledUtils_DrawRouteSensorBox(uint8_t x, bool active, const char *label)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 3368
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Oled_ClearBox",
+        "Oled_DrawBox",
+        "Oled_DrawFrame",
+        "Oled_DrawStrMax",
+        "Oled_SetFont",
+        "ssd1306_SetCursor"
+      ],
+      "writes": [],
+      "description": "Dibuja Route Sensor Box dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "OledUtils_DrawRouteStrip",
+      "signature": "static void OledUtils_DrawRouteStrip(uint8_t centerX, uint8_t width, bool found)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 3384
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Oled_DrawBox",
+        "ssd1306_DrawLine"
+      ],
+      "writes": [],
+      "description": "Dibuja Route Strip dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "OledUtils_DrawRouteAlignmentVisual",
+      "signature": "static void OledUtils_DrawRouteAlignmentVisual(const TCRT5000_RouteSample_t *route)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 3400
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "OledUtils_DrawRouteSensorBox",
+        "OledUtils_DrawRouteStrip",
+        "OledUtils_RouteStrongestCenterX",
+        "Oled_DrawFrame",
+        "Oled_DrawXBM"
+      ],
+      "writes": [],
+      "description": "Dibuja Route Alignment Visual dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "OLED_GetMPUAxisBitmap",
+      "signature": "static bool OLED_GetMPUAxisBitmap(const char *axis, const uint8_t **bits, uint8_t *w, uint8_t *h)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 3634
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación OLED Get MPUAxis Bitmap de Renderers y cola de notificaciones; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "Oled_TextPixelWidth",
+      "signature": "static uint8_t Oled_TextPixelWidth(const char *text)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 3768
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Oled_FontWidth",
+        "strlen"
+      ],
+      "writes": [],
+      "description": "Coordina `Oled_FontWidth`, `strlen` para Renderers y cola de notificaciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Oled_CenterTextX",
+      "signature": "static uint8_t Oled_CenterTextX(const char *text, uint8_t areaX, uint8_t areaW)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 3782
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Oled_TextPixelWidth"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `Oled_TextPixelWidth` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Oled_DrawCenteredLine",
+      "signature": "static void Oled_DrawCenteredLine(const char *text, uint8_t areaX, uint8_t areaW, uint8_t baselineY)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 3793
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Oled_CenterTextX",
+        "Oled_DrawStr",
+        "Oled_FontHeight",
+        "ssd1306_SetCursor"
+      ],
+      "writes": [],
+      "description": "Coordina `Oled_CenterTextX`, `Oled_DrawStr`, `Oled_FontHeight` para Renderers y cola de notificaciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "Oled_DrawTitleLine",
+      "signature": "static void Oled_DrawTitleLine(const char *text, uint8_t areaX, uint8_t areaW, uint8_t baselineY)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 3800
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "Oled_DrawCenteredLine",
+        "Oled_SetFont",
+        "Oled_TextPixelWidth"
+      ],
+      "writes": [],
+      "description": "Coordina `Oled_DrawCenteredLine`, `Oled_SetFont`, `Oled_TextPixelWidth` para Renderers y cola de notificaciones.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "OledUtils_RenderWiFiConnecting",
+      "signature": "static void OledUtils_RenderWiFiConnecting(const char *ssid)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 4069
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "OledUtils_SetScreenCode",
+        "Oled_DrawStr",
+        "Oled_DrawStrMax",
+        "Oled_DrawXBM",
+        "Oled_FontHeight",
+        "Oled_SetFont",
+        "ssd1306_Clear",
+        "ssd1306_SetColor",
+        "ssd1306_SetCursor"
+      ],
+      "writes": [],
+      "description": "Renderiza Wi Fi Connecting dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "OledUtils_RenderWiFiConnected",
+      "signature": "static void OledUtils_RenderWiFiConnected(const char *ssid, const char *ipAddress)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/oled_utils.c",
+        "line": 4085
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "OledUtils_SetScreenCode",
+        "Oled_DrawStr",
+        "Oled_DrawStrMax",
+        "Oled_DrawXBM",
+        "Oled_FontHeight",
+        "Oled_SetFont",
+        "ssd1306_Clear",
+        "ssd1306_SetColor",
+        "ssd1306_SetCursor"
+      ],
+      "writes": [],
+      "description": "Renderiza Wi Fi Connected dentro de Renderers y cola de notificaciones.",
+      "descriptionOrigin": "inferred-name"
+    }
+  ]
+}

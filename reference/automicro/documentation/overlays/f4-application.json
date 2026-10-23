@@ -1,0 +1,563 @@
+{
+  "schemaVersion": 1,
+  "modules": [
+    {
+      "id": "f4:module/Core/Inc/menusystem.h",
+      "slug": "menus",
+      "title": "Sistema de menús",
+      "kind": "núcleo",
+      "files": [
+        "Core/Inc/menusystem.h",
+        "Core/Inc/types/menu_types.h",
+        "Core/Src/menusystem.c"
+      ],
+      "prefixes": [
+        "MenuSys_",
+        "Menu_"
+      ],
+      "responsibility": "Navega el árbol de menús, selecciona ítems y mantiene reportes de pantalla y selección.",
+      "scope": "Modelo MenuItem/SubMenu, visibilidad, disponibilidad, cursor, páginas y callbacks de render/acción. El catálogo concreto vive en menu_definition.c.",
+      "state": "MenuSystem presta root/currentMenu, MenuServices, fast_scroll_enabled e insideMenuFlag; posee flags de render y reportes pendientes. MenuItem presta texto, bitmap, acción, submenú y proveedores dinámicos. SubMenu guarda índices y padre: cambiarlo afecta la navegación de todas las referencias al mismo objeto.",
+      "modularity": "No incluye HAL ni bridge concreto. Comparte screen_codes y UserEvent_t. Varias funciones de render/visibilidad son callbacks sin ctx, por lo que el contexto se obtiene externamente.",
+      "lifecycle": [
+        "La aplicación conecta raíz, servicios y callbacks antes de navegar.",
+        "Se resuelve visibilidad y disponibilidad antes de seleccionar; no son la misma condición.",
+        "FlushScreenReport precede a FlushMenuSelectionReport; la selección espera mientras quede una pantalla pendiente."
+      ],
+      "interactions": [
+        "MenuServices.report_screen/report_selection delega a WiFi/UNER desde app_menu_services.h.",
+        "Favoritos conserva referencias a MenuItem y reconstruye un submenú; Screens dibuja usando los callbacks instalados."
+      ],
+      "limitations": [
+        "MAX_VISIBLE_ITEMS del header tiene valor histórico 2, pero la implementación usa max_visible_items o 3; consumidores no deben inferir filas desde esa macro.",
+        "0x96 transmite selección/cantidad, no buffer de teclado ni imagen física."
+      ],
+      "functions": {
+        "Init": "Inicializa navegación y estado de reportes a partir de la raíz suministrada.",
+        "SetCallbacks": "Conecta primitivas de dibujo, renderers y bandera externa de menú.",
+        "MoveCursorDown": "Avanza a la siguiente selección navegable y ajusta ventana visible.",
+        "MoveCursorUp": "Retrocede a la selección navegable anterior y ajusta ventana.",
+        "SelectVisibleItem": "Selecciona una fila visible numerada desde uno.",
+        "MoveVisiblePage": "Desplaza una página visible según dirección.",
+        "RenderMenu": "Dibuja los ítems visibles con los callbacks del menú.",
+        "NavigateBack": "Vuelve al padre o al dashboard según la posición actual.",
+        "NavigateToMain": "Navega al menú raíz.",
+        "ResetMenu": "Restablece contexto de navegación del menú.",
+        "OpenSubMenu": "Abre el submenú recibido y actualiza identidad de pantalla.",
+        "HandleClick": "Ejecuta acción, pantalla o entrada a submenú del ítem seleccionado.",
+        "SetCurrentScreenCode": "Actualiza identidad/origen de pantalla y marca reporte pendiente.",
+        "NotifyScreenContentChanged": "Solicita reportar cambio de contenido sin inventar un framebuffer remoto.",
+        "FlushScreenReport": "Intenta enviar pantalla pendiente y conserva el pendiente si falla.",
+        "FlushMenuSelectionReport": "Envía selección pendiente solo después de completar el reporte de pantalla.",
+        "IsItemVisible": "Evalúa visibilityFn o considera visible al ítem sin condición.",
+        "IsItemAvailable_H": "Consulta política item_available del servicio externo.",
+        "Menu_IsCurrentItem": "Compara el ítem con la selección actual; requiere menú e índices válidos."
+      }
+    },
+    {
+      "id": "f4:module/Core/Inc/menu_favorites.h",
+      "slug": "favorites",
+      "title": "Favoritos de menú",
+      "kind": "integración",
+      "files": [
+        "Core/Inc/menu_favorites.h",
+        "Core/Inc/favorites_context.h",
+        "Core/Src/menu_favorites.c"
+      ],
+      "prefixes": [
+        "MenuSys_"
+      ],
+      "responsibility": "Mantiene hasta tres accesos favoritos y construye su submenú con referencias a los ítems originales.",
+      "scope": "Selección, persistencia de screen codes y reconstrucción visual; no duplica el motor de navegación.",
+      "state": "FavoritesHandle conserva services, encoder, originales, copia de ítems favoritos, submenú y MenuSystem. Favorites_Context es una referencia global activa; el handle posee estado pero la API histórica no recibe instancia explícita.",
+      "modularity": "Servicios externos evitan llamadas directas a persistencia, pero el handle usa ENC_Handle_t/MenuSystem y globals de contexto. Integración AutoMicro, no biblioteca independiente de tipos del proyecto.",
+      "lifecycle": [
+        "FavoritesInit reconstruye favoritos desde preferencias y catálogo.",
+        "ToggleFavorite agrega/quita y solicita persistencia; la capacidad y elegibilidad deben respetarse."
+      ],
+      "interactions": [
+        "FavoritesServices resuelve screen code → MenuItem y guarda un patch en AppPreferences.",
+        "El menú ordinario muestra tres filas por defecto; favoritos configura dos filas."
+      ],
+      "limitations": [
+        "Los MenuItem originales deben vivir mientras se usen sus referencias.",
+        "El contexto global no garantiza varias instancias activas simultáneas."
+      ],
+      "functions": {
+        "FavoritesInit": "Carga favoritos persistidos y prepara el submenú asociado.",
+        "ToggleFavorite": "Agrega o elimina el ítem favorito y solicita guardar la nueva lista.",
+        "IsFavorite": "Indica si el ítem está en la lista actual.",
+        "CanBeFavorite": "Comprueba si el ítem es elegible para favorito.",
+        "IsFavoritesMenu": "Identifica el submenú de favoritos activo."
+      }
+    },
+    {
+      "id": "f4:module/Core/Inc/osk.h",
+      "slug": "osk",
+      "title": "Teclado en pantalla OSK",
+      "kind": "núcleo",
+      "files": [
+        "Core/Inc/osk.h",
+        "Core/Inc/osk_types.h",
+        "Core/Src/osk.c"
+      ],
+      "prefixes": [
+        "OSK_"
+      ],
+      "responsibility": "Edita texto y valores numéricos con navegación explícita y primitivas gráficas inyectadas.",
+      "scope": "QWERTY, mayúsculas/símbolos, teclado numérico y límites de entrada. Geometría de diseño 128×64 y texto máximo 63 caracteres más terminador.",
+      "state": "OSK_State conserva configuración, buffer y selección. OSK_Config incorpora copia de OSK_DrawHandle, onComplete/onCancel y callbackCtx; los dibujos no reciben ctx y usan el backend que el integrador deje activo. GetText devuelve memoria del estado; copiar antes de reutilizarlo.",
+      "modularity": "No depende de SSD1306, encoder ni HAL. Sí fija geometría y contrato de dibujo sin contexto por operación; no se promete un backend arbitrario sin adaptación.",
+      "lifecycle": [
+        "Open configura contenido y layout; los punteros de dibujo necesarios deben estar conectados.",
+        "OnLeft/OnRight/OnSelect/OnBack procesan entradas; Render invoca el backend de dibujo.",
+        "onComplete entrega estado y contexto; onCancel entrega contexto. Close termina la sesión."
+      ],
+      "interactions": [
+        "osk_integration.c salva/restaura navegación y adapta SSD1306; el núcleo no conoce esa composición."
+      ],
+      "limitations": [
+        "OSK_SUPPORT_FLOAT altera la API disponible por compilación.",
+        "Una referencia de pantalla o selección remota no reconstruye por sí sola cursor/buffer/Shift."
+      ],
+      "functions": {
+        "Open": "Inicializa una sesión de edición alfanumérica o numérica.",
+        "Close": "Cierra el teclado con el resultado recibido.",
+        "OnLeft": "Mueve selección hacia la opción anterior del layout.",
+        "OnRight": "Mueve selección hacia la opción siguiente del layout.",
+        "OnSelect": "Ejecuta la tecla seleccionada, edición o confirmación.",
+        "OnBack": "Procesa retroceso/cancelación de la sesión.",
+        "Render": "Dibuja el estado del teclado usando OSK_DrawHandle.",
+        "IsActive": "Consulta si la sesión de teclado permanece abierta.",
+        "GetText": "Devuelve una vista del buffer terminado en cero.",
+        "GetNumericValueInt": "Interpreta el contenido numérico como entero.",
+        "GetNumericValueFloat": "Interpreta el contenido numérico como float si está habilitado."
+      }
+    },
+    {
+      "id": "f4:module/Core/Inc/screen_context.h",
+      "slug": "screen-context",
+      "title": "Contexto y servicios de pantallas",
+      "kind": "integración",
+      "files": [
+        "Core/Inc/screen_context.h",
+        "Core/Inc/screens_internal.h",
+        "Core/Inc/oled_handle.h"
+      ],
+      "prefixes": [
+        "Screens_"
+      ],
+      "responsibility": "Reúne el estado de las pantallas y las operaciones que las conectan con los servicios de AutoMicro.",
+      "scope": "ScreensState, ScreensServices, Screens_Handle y macros que adaptan las entradas históricas sin argumento a un contexto activo.",
+      "state": "Screens_Handle presta SystemHandle, menú, encoder, WiFi, IR, motores, controles, MPU, submenús y OledHandle; posee ScreensState. Screens_Context selecciona una instancia global activa. OledHandle es estado de notificaciones y es distinto de SSD1306_Handle, que es el driver físico.",
+      "modularity": "Los punteros a función eliminan muchas llamadas enlazadas directamente, pero Screens_Handle conserva tipos concretos y screens_internal.h accede al estado a través de macros. Cohesión de UI del proyecto, no independencia completa entre librerías.",
+      "lifecycle": [
+        "La aplicación construye servicios y asigna Screens_Context antes de cualquier renderer.",
+        "Screens_Init_* prepara cada submódulo de UI sobre ese contexto.",
+        "Los callbacks de dibujo/reportes se resuelven mediante services; el contexto debe permanecer válido durante callbacks y tareas."
+      ],
+      "interactions": [
+        "Wrappers seleccionan vista y eventos; oled_utils dibuja; lock/OSK/canvas conservan su estado dentro de ScreensState.",
+        "ScreensServices comprende consulta de sensores, preferencias, acciones, dibujo y reportes UNER; la tabla expuesta no prueba ejecución de todos sus miembros."
+      ],
+      "limitations": [
+        "No hay garantía de reentrada ni de varios Screens_Context simultáneos.",
+        "Cambiar un campo del modelo de vista puede obligar a adaptar productor, renderer y representación remota."
+      ],
+      "attributes": {
+        "encoder": "Instancia concreta del encoder prestada a la UI.",
+        "irSensors": "Instancia concreta de sensores IR usada por operaciones de pantalla.",
+        "motorTask": "Instancia de tracción para vistas de pruebas; no contiene telemetría de ruedas.",
+        "mpuTask": "Instancia MPU concreta; la lectura se canaliza por ScreensServices.",
+        "oledHandle": "Estado de cola de notificaciones, distinto del framebuffer SSD1306.",
+        "s_oskState": "Estado del teclado integrado en esta instancia de pantallas.",
+        "oled_canvas": "Estado de transferencia, framebuffer y respuesta pendientes del canvas."
+      }
+    },
+    {
+      "id": "f4:module/Core/Inc/screenWrappers.h",
+      "slug": "screen-wrappers",
+      "title": "Preparación y navegación de pantallas",
+      "kind": "integración",
+      "files": [
+        "Core/Inc/screenWrappers.h",
+        "Core/Src/screenWrappers.c"
+      ],
+      "prefixes": [
+        "OledUtils_",
+        "Dashboard_"
+      ],
+      "responsibility": "Prepara modo de vista, renderer, event manager, flags de redibujado y screen code de cada pantalla.",
+      "scope": "Coordina entrada/salida de pantallas de sensores, motores, preferencias, router, red y dashboard. Los detalles de raster se delegan al renderer.",
+      "state": "Opera sobre Screens_Context->state y el MenuSystem prestado; las sesiones IR guardan/restauran iluminación. Los flags first draw/refresh no son respuestas remotas.",
+      "modularity": "Integración con ScreensServices y dependencias dentro del conjunto de pantallas. No es núcleo independiente de menús o sensores.",
+      "lifecycle": [
+        "Un evento o acción de menú llama al wrapper.",
+        "El wrapper configura renderer y handler, publica identidad y solicita dibujo.",
+        "Al volver se restaura navegación y, cuando corresponde, iluminación o vista previa."
+      ],
+      "interactions": [
+        "oled_utils.c dibuja el contenido seleccionado; MenuSystem mantiene reportes de pantalla/selección.",
+        "Las vistas de router alternan RX/TX y transporte; no modifican el parser."
+      ],
+      "limitations": [
+        "La existencia de un wrapper no demuestra que sea alcanzable desde el menú actual.",
+        "No equiparar un reporte screen code con réplica exacta Web de la pantalla."
+      ],
+      "functions": {
+        "Dashboard_InvalidateConnectivity": "Marca datos de conectividad del dashboard para redibujado.",
+        "Dashboard_ReturnAfterConnectivityNotification": "Restaura dashboard tras una notificación de conectividad.",
+        "WiFiScan_ClearResults": "Limpia resultados y estado de la sesión de exploración Wi-Fi.",
+        "onRenderComplete": "Atiende finalización de render para actualizar el estado de UI."
+      }
+    },
+    {
+      "id": "f4:module/Core/Inc/oled_utils.h",
+      "slug": "screen-renderers",
+      "title": "Renderers y cola de notificaciones",
+      "kind": "integración",
+      "files": [
+        "Core/Inc/oled_utils.h",
+        "Core/Inc/notificationWrappers.h",
+        "Core/Src/oled_utils.c",
+        "Core/Src/notificationWrappers.c"
+      ],
+      "prefixes": [
+        "OledUtils_"
+      ],
+      "responsibility": "Dibuja vistas AutoMicro y administra notificaciones temporales con restauración de la vista anterior.",
+      "scope": "Dashboard, sensores, ajustes, diagnóstico y avisos; render completo y parcial, scroll y cola de notificaciones.",
+      "state": "ScreensState conserva scroll y modo de vista; OledNotificationState posee una cola de ocho avisos, aviso suspendido, pantalla y handlers anteriores. Cada aviso conserva renderFn, simpleId, clientNumber, timeoutTicks/totalTicks y hooks onShow/onHide.",
+      "modularity": "Se desacopla del dibujo HAL por ScreensServices, pero consulta modelos concretos y trabaja con wrappers y estado UI compartido.",
+      "lifecycle": [
+        "Render* transforma datos consultados en primitivas de dibujo.",
+        "ShowNotification* encola; NotificationTick10ms gobierna tiempos y transición entre avisos.",
+        "Dismiss/Next/Remove modifican cola y pueden restaurar renderer, eventos y screen code anteriores."
+      ],
+      "interactions": [
+        "Los hooks disparan acciones al mostrar/ocultar; no confundir encolado con presentación.",
+        "Avisos numerados conservan identidad de cliente Wi-Fi/Web; reportes UNER informan código y duración, no una captura de framebuffer."
+      ],
+      "limitations": [
+        "Los renderers ValueOnly requieren un contexto de pantalla ya preparado.",
+        "La cola finita puede rechazar o reorganizar avisos según sus reglas; no tratarla como almacenamiento ilimitado.",
+        "Los textos con credenciales no deben copiarse a documentación o capturas públicas."
+      ],
+      "functions": {
+        "ShowNotificationMs": "Encola un aviso con renderer y duración en milisegundos.",
+        "ShowNotificationMsEx": "Encola aviso con hooks de entrada y salida.",
+        "ShowSimpleNotificationMs": "Encola un aviso identificado por su definición simple.",
+        "ShowSimpleNotificationMsEx": "Encola aviso simple con hooks de ciclo de vida.",
+        "ShowNumberedSimpleNotificationMsEx": "Encola aviso simple conservando número de cliente y hooks.",
+        "GetNotificationClientNumber": "Consulta el número asociado al aviso activo.",
+        "DismissNotification": "Descarta el aviso actual y avanza/restaura la vista correspondiente.",
+        "NextNotification": "Avanza al siguiente aviso pendiente.",
+        "RemoveNotification": "Retira de la cola un aviso identificado por renderer.",
+        "RemoveSimpleNotification": "Retira avisos con el identificador simple indicado.",
+        "GetNotificationCount": "Consulta la cantidad de avisos conservados por la cola.",
+        "SetNotificationsBlocked": "Bloquea o habilita la presentación de avisos durante flujos prioritarios.",
+        "NotificationTick10ms": "Actualiza duración y transición de los avisos cada 10 ms.",
+        "GetNotificationProgress": "Copia progreso y duración del aviso activo.",
+        "NotificationRestore": "Restaura contexto de vista previo al aviso.",
+        "SetRotationAndRefresh": "Aplica orientación de OLED y solicita refresco de la pantalla."
+      }
+    },
+    {
+      "id": "f4:module/Core/Inc/osk_integration.h",
+      "slug": "osk-integration",
+      "title": "Integración del teclado con UI",
+      "kind": "integración",
+      "files": [
+        "Core/Inc/osk_integration.h",
+        "Core/Src/osk_integration.c"
+      ],
+      "prefixes": [
+        "OSK_Integration_"
+      ],
+      "responsibility": "Conecta el teclado agnóstico con dibujo OLED, eventos del encoder y restauración de navegación AutoMicro.",
+      "scope": "Adaptación de primitivas, apertura alpha/numérica y callbacks finales del editor.",
+      "state": "ScreensState contiene s_oskState, s_savedCtx, tabla de dibujo y callbacks/contexto del usuario. La integración conserva el renderer, gestor de eventos y flags de la vista anterior.",
+      "modularity": "Es el adaptador explícito entre OSK y Screens; está permitido que conozca ambas APIs.",
+      "lifecycle": [
+        "Init instala adaptadores gráficos.",
+        "OpenAlpha/OpenNumeric salvan contexto y abren el teclado.",
+        "EventManager traduce entradas; callbacks internos restauran UI y llaman al consumidor final."
+      ],
+      "interactions": [
+        "OSK mantiene edición; ScreensServices ejecuta dibujo. Los editores Wi-Fi y PID reciben resultado mediante callbacks."
+      ],
+      "limitations": [
+        "Un único contexto activo de pantallas; no abrir otra edición sobre la primera sin considerar savedCtx.",
+        "Copiar texto confirmado si el consumidor lo conserva después de cerrar/reabrir.",
+        "USER largo global retorna al dashboard antes del handler OSK y sin OnBack/cleanup explícito; ver AMDOC-F4-011 antes de asumir cancelación equivalente."
+      ],
+      "functions": {
+        "Init": "Conecta primitivas gráficas y estado del adaptador OSK.",
+        "OpenAlpha": "Salva la vista anterior y abre edición de texto con sus restricciones.",
+        "OpenNumeric": "Salva la vista anterior y abre edición numérica configurada.",
+        "EventManager": "Traduce eventos de usuario a navegación/acción del teclado.",
+        "Render": "Invoca render del teclado integrado.",
+        "IsActive": "Consulta si el teclado integrado permanece abierto."
+      }
+    },
+    {
+      "id": "f4:module/Core/Inc/screen_lock.h",
+      "slug": "screen-lock",
+      "title": "Bloqueo de pantalla por inactividad",
+      "kind": "integración",
+      "files": [
+        "Core/Inc/screen_lock.h",
+        "Core/Src/screen_lock.c"
+      ],
+      "prefixes": [
+        "ScreenLock_"
+      ],
+      "responsibility": "Aplica bloqueo visual por inactividad y controla edición del tiempo de bloqueo.",
+      "scope": "Temporización y filtrado de eventos locales; no sustituye las sesiones PIN remotas de Permission.",
+      "state": "El estado vive en ScreensState: locked, ticks de inactividad, borrador y renderer/eventos anteriores. El API usa Screens_Context implícito.",
+      "modularity": "Pertenece a UI AutoMicro y depende de menús, preferencias y servicios de pantalla.",
+      "lifecycle": [
+        "Init restablece estado; Task10ms cuenta inactividad.",
+        "ProcessEvent decide consumo/desbloqueo de entrada antes del gestor de la vista.",
+        "OnPreferencesChanged aplica nuevas reglas; SaveTimeoutDraft solicita persistencia."
+      ],
+      "interactions": [
+        "UiEventRouter consulta bloqueo antes de propagar eventos ordinarios.",
+        "Permission puede mantener un flujo de PIN distinto al bloqueo por inactividad."
+      ],
+      "limitations": [
+        "Bloqueo visual y autorización de comandos son políticas distintas.",
+        "Requiere cadencia de 10 ms para interpretar correctamente el timeout."
+      ],
+      "functions": {
+        "Init": "Inicializa estado de bloqueo visual.",
+        "Task10ms": "Actualiza inactividad y activa bloqueo cuando corresponde.",
+        "OnPreferencesChanged": "Aplica cambios de habilitación/tiempo de bloqueo.",
+        "ProcessEvent": "Filtra un evento y devuelve si el bloqueo lo consumió.",
+        "IsLocked": "Consulta si la pantalla está bloqueada.",
+        "GetTimeoutDraftSec": "Consulta el borrador de timeout en segundos.",
+        "BeginTimeoutEdit": "Inicializa edición del timeout desde preferencias.",
+        "AdjustTimeoutDraft": "Ajusta el borrador dentro de límites configurados.",
+        "SaveTimeoutDraft": "Persiste el timeout editado.",
+        "CancelTimeoutDraft": "Descarta la edición pendiente del timeout.",
+        "Unlock": "Desbloquea y restaura la vista guardada."
+      }
+    },
+    {
+      "id": "f4:module/Core/Inc/oled_canvas.h",
+      "slug": "oled-canvas",
+      "title": "Transferencia transaccional OLED Canvas",
+      "kind": "integración",
+      "files": [
+        "Core/Inc/oled_canvas.h",
+        "Core/Src/oled_canvas.c"
+      ],
+      "prefixes": [
+        "OledCanvas_"
+      ],
+      "responsibility": "Recibe un framebuffer por operaciones BEGIN/CHUNK/COMMIT/CANCEL y completa después de su presentación.",
+      "scope": "Transacción de 1024 bytes 128×64 page-major LSB, correlación por transporte/nodo/transfer_id, orden y CRC32.",
+      "state": "OledCanvasContext_t vive en ScreensState y posee framebuffer, metadatos, respuesta pendiente, estado y callback send_response/send_ctx. No conserva punteros al payload recibido: el ensamblaje pertenece al contexto.",
+      "modularity": "Usa paquetes UNER, reglas TEST/pantalla activa y servicios de UI. Es integración de protocolo y presentación, no extensión del core UNER.",
+      "lifecycle": [
+        "Init instala envío; BeginFromMenu prepara pantalla receptora.",
+        "HandlePacket comprueba endpoint, operación y datos y ensambla el framebuffer.",
+        "COMMIT pasa a presentación diferida; Poll resuelve finalización, errores, timeout y reintentos de respuesta.",
+        "HandleLocalEvent puede cancelar la transacción y restaurar navegación."
+      ],
+      "interactions": [
+        "UNER_App enruta 0x6D; ESP coordina transferencia y Web empaqueta bitmap.",
+        "SSD1306 presenta la imagen; recibir todos los chunks no prueba presentación física."
+      ],
+      "limitations": [
+        "Chunk UART máximo 112 bytes; ensamblaje 3000 ms y presentación 1000 ms según las constantes del header.",
+        "Respuesta de 10 bytes incluye resultado; diferenciar error CRC, orden, contexto y E/S.",
+        "Los reportes de pantalla ordinarios no transportan esta imagen."
+      ],
+      "functions": {
+        "Init": "Inicializa estado y callback de respuesta de canvas.",
+        "BeginFromMenu": "Abre la pantalla local receptora de canvas.",
+        "RenderReadyScreen": "Dibuja la vista de espera para transferencia.",
+        "HandleLocalEvent": "Procesa cancelación/navegación local durante el canvas.",
+        "HandlePacket": "Procesa una operación de transferencia y sus metadatos.",
+        "Poll": "Avanza presentación y resuelve timeouts/respuestas diferidas.",
+        "IsActiveScreen": "Indica si la pantalla actual acepta la operación canvas."
+      }
+    },
+    {
+      "id": "f4:module/Core/Inc/permissions.h",
+      "slug": "permissions",
+      "title": "Permisos y sesiones PIN",
+      "kind": "integración",
+      "files": [
+        "Core/Inc/permissions.h",
+        "Core/Inc/permissions_types.h",
+        "Core/Inc/permission_context.h",
+        "Core/Src/permissions_stub.c"
+      ],
+      "prefixes": [
+        "Permission_"
+      ],
+      "responsibility": "Gestiona permiso local con continuación y autenticación remota independiente por nodo.",
+      "scope": "Máquina AUTH_*, intentos, bloqueo, expiración, autorización y revocación; el archivo conserva el nombre histórico permissions_stub.c aunque contiene lógica efectiva.",
+      "state": "PermissionHandle presta services, SystemHandle y MenuSystem y posee PermissionManager_t. El manager guarda solicitud local, continuation+ctx, dígitos, deadlines y remote[16]. Permission_Context es contexto global activo; el evento usa un callback distinto a la continuación.",
+      "modularity": "Reloj/verificación PIN/dibujo son inyectados, pero el handle conoce tipos de menú/sistema y la API usa contexto global. No es política totalmente independiente del modelo UI.",
+      "lifecycle": [
+        "Init prepara estados; Request acepta o rechaza una solicitud local y conserva continuación.",
+        "Task aplica expiraciones y transiciones; HandleUserEvent edita/confirma PIN local.",
+        "RemoteAuthenticate opera sobre nodo autorizado por remote_node_valid; Touch renueva sesión y Revoke la invalida."
+      ],
+      "interactions": [
+        "UNER_App comprueba transporte y nodo además de consultar Permission; la sesión del navegador no hereda autorización Qt.",
+        "UiEventRouter entrega primero los eventos que corresponden al PIN; UI bloquea notificaciones durante flujos prioritarios."
+      ],
+      "limitations": [
+        "No publicar PIN, credenciales ni contenido real de sesiones en el manual.",
+        "TTL y bloqueo usan reloj modular en ms; autorización histórica no equivale a autorización vigente.",
+        "El nombre stub no implica ausencia de implementación."
+      ],
+      "functions": {
+        "Init": "Inicializa permisos locales y sesiones por nodo.",
+        "Task": "Procesa vencimientos, bloqueo y transiciones temporales.",
+        "Request": "Solicita permiso local y registra continuación con su contexto.",
+        "IsAuthorized": "Consulta autorización con el tiempo recibido.",
+        "IsAuthorizedNow": "Consulta autorización usando el reloj del servicio.",
+        "Revoke": "Revoca el permiso local indicado.",
+        "RevokeAll": "Revoca todos los permisos locales.",
+        "CancelLocalRequest": "Cancela la solicitud local y restaura contexto UI.",
+        "HandleUserEvent": "Procesa entradas de PIN del flujo local activo.",
+        "RenderPinEntry": "Dibuja entrada PIN y estado de intentos.",
+        "GrantCurrentRequest": "Concede solicitud actual y ejecuta la continuación registrada.",
+        "SetEventCallback": "Registra receptor de eventos del ciclo de permisos.",
+        "RemoteAuthenticate": "Comprueba PIN/intentos y abre o rechaza sesión del nodo.",
+        "IsRemoteNodeAuthorized": "Comprueba sesión del nodo frente al tiempo recibido.",
+        "IsRemoteNodeAuthorizedNow": "Comprueba sesión remota con el reloj del servicio.",
+        "TouchRemoteNode": "Renueva actividad de la sesión remota autorizada.",
+        "RevokeRemoteNode": "Revoca autorización del nodo indicado.",
+        "RevokeAllRemote": "Revoca todas las sesiones remotas.",
+        "GetRemoteTtlRemaining": "Consulta tiempo restante de sesión del nodo."
+      }
+    },
+    {
+      "id": "f4:module/Core/Inc/ui_event_router.h",
+      "slug": "ui-router",
+      "title": "Router de eventos de usuario",
+      "kind": "integración",
+      "files": [
+        "Core/Inc/ui_event_router.h",
+        "Core/Inc/uirouter_context.h",
+        "Core/Src/ui_event_router.c"
+      ],
+      "prefixes": [
+        "UiEventRouter_"
+      ],
+      "responsibility": "Decide qué flujo UI consume un evento de usuario antes del handler de la pantalla.",
+      "scope": "Prioridades de PIN, bloqueo, notificaciones, exploración Wi-Fi y navegación global.",
+      "state": "UiRouterHandle presta services, SystemHandle, MenuSystem y WifiBridge_Handle. UiRouter_Context selecciona contexto activo; no posee el estado de cada pantalla.",
+      "modularity": "Enrutador de aplicación con callbacks, pero dependiente de modelos concretos y contexto global.",
+      "lifecycle": [
+        "La composición conecta contexto y tabla; HandleEvent consulta guardas y entrega el evento al consumidor correspondiente."
+      ],
+      "interactions": [
+        "Recibe eventos físicos desde app_tasks.c y eventos remotos desde UNER_App; comparten semántica lógica de UserEvent_t.",
+        "Cambiar prioridad de consumo puede alterar ambas interfaces sin cambiar números de comando."
+      ],
+      "limitations": [
+        "La rotación física del encoder y un comando lógico CW/CCW no son el mismo punto de entrada.",
+        "Un evento aceptado no implica que una acción restringida haya sido autorizada.",
+        "USER largo global retorna al dashboard antes del handler OSK y sin OnBack/cleanup explícito; ver AMDOC-F4-011 antes de asumir cancelación equivalente."
+      ],
+      "functions": {
+        "HandleEvent": "Aplica prioridad de flujos UI y despacha el evento al consumidor activo."
+      }
+    },
+    {
+      "id": "f4:module/Core/Inc/app_preferences.h",
+      "slug": "preferences",
+      "title": "Preferencias y persistencia",
+      "kind": "servicio",
+      "files": [
+        "Core/Inc/app_preferences.h",
+        "Core/Inc/app_preferences_types.h",
+        "Core/Src/app_preferences.c"
+      ],
+      "prefixes": [
+        "AppPreferences_"
+      ],
+      "responsibility": "Mantiene preferencias en RAM y registros persistidos versionados con migración, validación de valores y patches por máscara.",
+      "scope": "Configuración UI, motor, sesiones, red, calibraciones, perfiles y PIN; la geometría/operaciones Flash están en el adaptador STM32.",
+      "state": "AppPreferences_Handle posee copia RAM, dígitos secretos, próxima dirección/secuencia e información de almacenamiento; storage es puerto prestado. Get_H devuelve vista const, GetSnapshot_H copia. Patch.fields determina qué miembros values se aplican: los demás no se deben sobrescribir.",
+      "modularity": "Sin llamadas Flash HAL en el núcleo; comparte esquemas de AP, calibración y AutoMotion. Los setters históricos sin _H se adaptan por app_preferences_binding.h.",
+      "lifecycle": [
+        "Init_H explora registros, decide defaults/migración y prepara la siguiente escritura.",
+        "ApplyPatch_H limita valores y persiste cambios según campos; los setters delegan en el mecanismo común.",
+        "Storage.view/unlock/erase/program/lock son operaciones del backend; una tabla de callbacks no vuelve asíncrona la escritura."
+      ],
+      "interactions": [
+        "APP aplica preferencias a encoder, display, control y red. Guardar valor no implica que todos los consumidores lo hayan aplicado ya.",
+        "AP conserva bandera applyPending para diferenciar configuración deseada de estado aplicado al ESP."
+      ],
+      "limitations": [
+        "Sector activo y legado, formato y límites deben leerse en adaptador/implementación actuales; el documento de refactor 3.0.0 precede a la expansión posterior.",
+        "No serializar AppPreferences_t completo por sizeof para Web: contiene padding, bool, estructuras y secretos.",
+        "Persistencia síncrona puede pausar atención de tareas; no se midió duración en placa."
+      ],
+      "functions": {
+        "Init_H": "Carga registros/defaults y prepara estado de almacenamiento de la instancia.",
+        "Get_H": "Devuelve vista const prestada de preferencias actuales.",
+        "GetSnapshot_H": "Copia preferencias actuales a una estructura del llamador.",
+        "GetDefaults": "Carga configuración de fábrica en la salida.",
+        "GetDescriptors": "Expone descriptores de campos y restricciones.",
+        "ApplyPatch_H": "Aplica campos seleccionados y solicita persistencia transaccional.",
+        "ResetFields_H": "Restablece los campos indicados a valores predeterminados.",
+        "VerifyAuthPin_H": "Compara los dígitos recibidos con el PIN privado de la instancia.",
+        "ChangeAuthPin_H": "Solicita cambio del PIN siguiendo las reglas de persistencia.",
+        "SetLineCalibration_H": "Persiste el store de calibración de línea recibido.",
+        "SetAutoMotionProfile_H": "Persiste el perfil de motores/IR recibido.",
+        "GetStorageInfo_H": "Copia origen, estado, versión y secuencia del almacenamiento."
+      }
+    },
+    {
+      "id": "f4:module/Core/Inc/app_ap_config.h",
+      "slug": "ap-configuration",
+      "title": "Configuración deseada y aplicación de AP",
+      "kind": "integración",
+      "files": [
+        "Core/Inc/app_ap_config.h",
+        "Core/Inc/app_ap_config_data.h",
+        "Core/Inc/ap_context.h",
+        "Core/Src/app_ap_config.c"
+      ],
+      "prefixes": [
+        "AppApConfig_"
+      ],
+      "responsibility": "Gestiona configuración AP persistida y su aplicación diferida al ESP con deadlines y reintento.",
+      "scope": "SSID, protección y reglas IPv4, patch deseado y estado de aplicación; no implementa el servidor Wi-Fi físico.",
+      "state": "ApHandle presta servicios, SystemHandle y bridge; posee applyState, notBefore y deadline. Ap_Context selecciona el contexto activo. Configuración deseada y conectividad observada son datos separados.",
+      "modularity": "Servicios externos para persistencia/envío, con tipos concretos de sistema/bridge y contexto global.",
+      "lifecycle": [
+        "Init establece estado; ApplyPatch revisa valores y actualiza preferencia deseada.",
+        "Task envía cuando el backend/estado lo permite; OnEspApplyResponse completa la operación.",
+        "RequestRetry reabre un intento sin inventar que la configuración ya está activa."
+      ],
+      "interactions": [
+        "AppPreferences conserva applyPending; WifiBridge envía al ESP y entrega resultado.",
+        "Web/Qt deben presentar deseado/pendiente/aplicado según respuesta real."
+      ],
+      "limitations": [
+        "No publicar el valor real de contraseñas en ejemplos.",
+        "La API histórica usa contexto global y requiere ciclo periódico para completar reintentos."
+      ],
+      "functions": {
+        "Init": "Inicializa estado de aplicación AP desde preferencias.",
+        "Get": "Copia configuración AP deseada.",
+        "ApplyPatch": "Revisa un patch, guarda cambios y marca aplicación pendiente.",
+        "ParseIpv4": "Convierte IPv4 textual a cuatro octetos con reglas del módulo.",
+        "Ipv4IsValid": "Consulta si los octetos cumplen las reglas AP.",
+        "Task": "Avanza envío, timeout y aplicación pendiente de configuración.",
+        "OnEspApplyResponse": "Procesa el status recibido del ESP para la aplicación AP.",
+        "RequestRetry": "Programa un nuevo intento de aplicar la configuración deseada."
+      }
+    }
+  ]
+}

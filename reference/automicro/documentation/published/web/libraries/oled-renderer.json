@@ -1,0 +1,1275 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "web:module/src/components/OledCommandPreview.tsx",
+  "slug": "oled-renderer",
+  "title": "Primitivas OLED, fuentes y representación SVG",
+  "target": "web",
+  "kind": "núcleo",
+  "status": "source-documented",
+  "snapshotDate": "2026-10-20",
+  "verification": "not-run-user-instruction",
+  "responsibility": "Transforma comandos de dibujo en la representación de una OLED de 128×64 y rasteriza fuentes/bitmaps disponibles.",
+  "scope": "Puerto gráfico Web actual: unión OledCommand y nodos SVG. El objetivo del proyecto es portar íntegramente semántica y renderers F4; este consumidor no ejecuta directamente la librería C completa.",
+  "state": "renderCommands crea cursor/color/inverted por render; elements conserva orden de dibujo. Assets/fuentes son tablas estáticas, no snapshot físico.",
+  "modularity": "Helpers de comandos separan geometría de React; OledCommandPreview implementa SVG, con semántica distinta de un framebuffer binario en algunos casos.",
+  "lifecycle": [
+    "Builders generan comandos; preview recorre en orden y crea elementos.",
+    "Texto usa fuente bitmap disponible; faltantes de asset producen un marcador SVG.",
+    "Clear restablece estado local; el driver F4 tiene sus propias reglas y buffers."
+  ],
+  "interactions": [
+    "F4 SSD1306 rasteriza en RAM; Web debe conservar orden de bits, clipping, XOR, fuente y rotación si busca equivalencia exacta.",
+    "OledCanvasRasterizer es otro rasterizador usado para enviar dibujos a F4; no es automáticamente el motor del visor en vivo."
+  ],
+  "limitations": [
+    "Color Inverse en paint no ejecuta XOR del píxel previo.",
+    "SVG con línea/arco/trazo no acredita igualdad píxel a píxel con algoritmos C.",
+    "Portar dibujo sin todo el estado del renderer no completa una réplica exacta.",
+    "F4 aplica Inverse de forma diferente según primitiva (AMDOC-F4-012); un port literal debe conservar esa observación hasta decidir una corrección explícita."
+  ],
+  "relationships": [],
+  "findings": [
+    "AMDOC-WEB-003",
+    "AMDOC-F4-012"
+  ],
+  "files": [
+    {
+      "rootId": "web",
+      "path": "src/components/OledBitmapText.tsx",
+      "sha256": "5452b3961b2bdc72a619211337f90174de4dd2e40f3764b63b1d4ca3742dc47d",
+      "imports": [
+        "../screens",
+        "../screens/oledBitmapFont",
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/components/OledCommandPreview.tsx",
+      "sha256": "6144334d642755d296add0f2bddf6fbe5fd47a1fc777a4c92ff45eca36321d4a",
+      "imports": [
+        "../screens",
+        "../screens/bitmapAssets",
+        "./OledBitmapText",
+        "react"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/screens/bitmapAssets.ts",
+      "sha256": "5a49e864b4e24ec46a7154b537378b7fe45d33d0a2e48a4cd0f1adb9b48f5596",
+      "imports": [],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/screens/helpers.ts",
+      "sha256": "803f276eb35092d94b11c8f0b26011097a199f4cc23fecec35b497839cabf029",
+      "imports": [
+        "./types"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/screens/oledBitmapFont.ts",
+      "sha256": "d6990090664076b8a297f67f419200266e8d2be030f5aa1d21749f1ff78bc06b",
+      "imports": [
+        "./types"
+      ],
+      "analysisLevel": "typescript-ast-static"
+    },
+    {
+      "rootId": "web",
+      "path": "src/screens/types.ts",
+      "sha256": "beae5e78fa5e7f7f009a118cad426136731ffbacef1af0a72c14e03c1115bf8c",
+      "imports": [],
+      "analysisLevel": "typescript-ast-static"
+    }
+  ],
+  "types": [
+    {
+      "name": "OledBitmapTextProps",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "x",
+          "declaration": "x: number",
+          "callback": false,
+          "ownerType": "OledBitmapTextProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/OledBitmapText.tsx",
+            "line": 6
+          },
+          "description": "Dato de estado/configuración `x`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "y",
+          "declaration": "y: number",
+          "callback": false,
+          "ownerType": "OledBitmapTextProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/OledBitmapText.tsx",
+            "line": 7
+          },
+          "description": "Dato de estado/configuración `y`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "text",
+          "declaration": "text: string",
+          "callback": false,
+          "ownerType": "OledBitmapTextProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/OledBitmapText.tsx",
+            "line": 8
+          },
+          "description": "Dato de estado/configuración `text`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "font",
+          "declaration": "font: OledFont",
+          "callback": false,
+          "ownerType": "OledBitmapTextProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/OledBitmapText.tsx",
+            "line": 9
+          },
+          "description": "Dato de estado/configuración `font`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "fill",
+          "declaration": "fill: string",
+          "callback": false,
+          "ownerType": "OledBitmapTextProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/OledBitmapText.tsx",
+            "line": 10
+          },
+          "description": "Dato de estado/configuración `fill`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "align",
+          "declaration": "align?: \"left\" | \"center\" | \"right\"",
+          "callback": false,
+          "ownerType": "OledBitmapTextProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/OledBitmapText.tsx",
+            "line": 11
+          },
+          "description": "Dato de estado/configuración `align`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/OledBitmapText.tsx",
+        "line": 5
+      }
+    },
+    {
+      "name": "OledCommandPreviewProps",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "commands",
+          "declaration": "commands: OledCommand[]",
+          "callback": false,
+          "ownerType": "OledCommandPreviewProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/OledCommandPreview.tsx",
+            "line": 14
+          },
+          "description": "Dato de estado/configuración `commands`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "className",
+          "declaration": "className?: string",
+          "callback": false,
+          "ownerType": "OledCommandPreviewProps",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/OledCommandPreview.tsx",
+            "line": 15
+          },
+          "description": "Dato de estado/configuración `className`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/OledCommandPreview.tsx",
+        "line": 13
+      }
+    },
+    {
+      "name": "RenderState",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "cursorX",
+          "declaration": "cursorX: number",
+          "callback": false,
+          "ownerType": "RenderState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/OledCommandPreview.tsx",
+            "line": 19
+          },
+          "description": "Dato de estado/configuración `cursorX`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "cursorY",
+          "declaration": "cursorY: number",
+          "callback": false,
+          "ownerType": "RenderState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/OledCommandPreview.tsx",
+            "line": 20
+          },
+          "description": "Dato de estado/configuración `cursorY`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "color",
+          "declaration": "color: SSD1306Color",
+          "callback": false,
+          "ownerType": "RenderState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/OledCommandPreview.tsx",
+            "line": 21
+          },
+          "description": "Dato de estado/configuración `color`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "inverted",
+          "declaration": "inverted: boolean",
+          "callback": false,
+          "ownerType": "RenderState",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/components/OledCommandPreview.tsx",
+            "line": 22
+          },
+          "description": "Dato de estado/configuración `inverted`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/OledCommandPreview.tsx",
+        "line": 18
+      }
+    },
+    {
+      "name": "OledBitmapName",
+      "kind": "TypeAliasDeclaration",
+      "type": "string",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/bitmapAssets.ts",
+        "line": 1
+      }
+    },
+    {
+      "name": "OledBitmapAsset",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "name",
+          "declaration": "name: OledBitmapName",
+          "callback": false,
+          "ownerType": "OledBitmapAsset",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/bitmapAssets.ts",
+            "line": 4
+          },
+          "description": "Dato de estado/configuración `name`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "bytes",
+          "declaration": "bytes: readonly number[]",
+          "callback": false,
+          "ownerType": "OledBitmapAsset",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/bitmapAssets.ts",
+            "line": 5
+          },
+          "description": "Dato de estado/configuración `bytes`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/bitmapAssets.ts",
+        "line": 3
+      }
+    },
+    {
+      "name": "ScreenCode",
+      "kind": "TypeAliasDeclaration",
+      "type": "number",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/types.ts",
+        "line": 1
+      }
+    },
+    {
+      "name": "SSD1306Color",
+      "kind": "EnumDeclaration",
+      "fields": [
+        {
+          "name": "Black",
+          "declaration": "Black: inferred-by-TypeScript",
+          "callback": false,
+          "ownerType": "SSD1306Color",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/types.ts",
+            "line": 4
+          },
+          "description": "Dato de estado/configuración `Black`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "White",
+          "declaration": "White: inferred-by-TypeScript",
+          "callback": false,
+          "ownerType": "SSD1306Color",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/types.ts",
+            "line": 5
+          },
+          "description": "Dato de estado/configuración `White`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "Inverse",
+          "declaration": "Inverse: inferred-by-TypeScript",
+          "callback": false,
+          "ownerType": "SSD1306Color",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/types.ts",
+            "line": 6
+          },
+          "description": "Dato de estado/configuración `Inverse`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/types.ts",
+        "line": 3
+      }
+    },
+    {
+      "name": "OledFont",
+      "kind": "TypeAliasDeclaration",
+      "type": "\"Font7x10\" | \"Font11x18\"",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/types.ts",
+        "line": 9
+      }
+    },
+    {
+      "name": "OledCommand",
+      "kind": "TypeAliasDeclaration",
+      "type": "| { type: \"clear\" } | { type: \"fill\" } | { type: \"setColor\"; color: SSD1306Color } | { type: \"setInverted\"; value: boolean } | { type: \"setCursor\"; x: number; y: number } | { type: \"drawText\"; text: string; font: OledFont } | { type: \"drawTextMax\"; text: string; maxChars: number; font: OledFont } | { type: \"drawPixel\"; x: number; y: number } | { type: \"drawLine\"; x0: number; y0: number; x1: number; y1: number } | { type: \"drawHorizontalLine\"; x: number; y: number; length: number } | { type: \"drawVerticalLine\"; x: number; y: number; length: number } | { type: \"drawRect\"; x: number; y: number; w: number; h: number } | { type: \"fillRect\"; x: number; y: number; w: number; h: number } | { type: \"drawTriangle\"; x1: number; y1: number; x2: number; y2: number; x3: number; y3: number } | { type: \"drawFillTriangle\"; x1: number; y1: number; x2: number; y2: number; x3: number; y3: number } | { type: \"drawCircle\"; x: number; y: number; radius: number } | { type: \"fillCircle\"; x: number; y: number; radius: number } | { type: \"drawCircleQuads\"; x: number; y: number; radius: number; quads: number } | { type: \"drawArc\"; x: number; y: number; radius: number; startAngle: number; sweep: number } | { type: \"drawProgressBar\"; x: number; y: number; barWidth: number; barHeight: number; progress: number } | { type: \"drawBitmap\"; x: number; y: number; width: number; height: number; dataRef: string } | { type: \"drawBitmapMSB\"; x: number; y: number; width: number; height: number; dataRef: string } | { type: \"polyline\"; vertices: Array<{ x: number; y: number }> }",
+      "fields": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/types.ts",
+        "line": 11
+      }
+    },
+    {
+      "name": "NotificationProgressArgs",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "elapsedTicks",
+          "declaration": "elapsedTicks?: number",
+          "callback": false,
+          "ownerType": "NotificationProgressArgs",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/types.ts",
+            "line": 37
+          },
+          "description": "Dato de estado/configuración `elapsedTicks`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "totalTicks",
+          "declaration": "totalTicks?: number",
+          "callback": false,
+          "ownerType": "NotificationProgressArgs",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/types.ts",
+            "line": 38
+          },
+          "description": "Dato de estado/configuración `totalTicks`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "includeProgressOverlay",
+          "declaration": "includeProgressOverlay?: boolean",
+          "callback": false,
+          "ownerType": "NotificationProgressArgs",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/types.ts",
+            "line": 39
+          },
+          "description": "Dato de estado/configuración `includeProgressOverlay`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/types.ts",
+        "line": 36
+      }
+    },
+    {
+      "name": "MenuScreenItem",
+      "kind": "InterfaceDeclaration",
+      "fields": [
+        {
+          "name": "label",
+          "declaration": "label: string",
+          "callback": false,
+          "ownerType": "MenuScreenItem",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/types.ts",
+            "line": 43
+          },
+          "description": "Dato de estado/configuración `label`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "iconRef",
+          "declaration": "iconRef?: string",
+          "callback": false,
+          "ownerType": "MenuScreenItem",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/types.ts",
+            "line": 44
+          },
+          "description": "Dato de estado/configuración `iconRef`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "visible",
+          "declaration": "visible?: boolean",
+          "callback": false,
+          "ownerType": "MenuScreenItem",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/types.ts",
+            "line": 45
+          },
+          "description": "Dato de estado/configuración `visible`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "screenCode",
+          "declaration": "screenCode?: ScreenCode",
+          "callback": false,
+          "ownerType": "MenuScreenItem",
+          "evidence": {
+            "rootId": "web",
+            "path": "src/screens/types.ts",
+            "line": 46
+          },
+          "description": "Dato de estado/configuración `screenCode`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/types.ts",
+        "line": 42
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "OledBitmapText",
+      "displayName": "OledBitmapText",
+      "signature": "OledBitmapText({\n  x,\n  y,\n  text,\n  font,\n  fill,\n  align = \"left\",\n}: OledBitmapTextProps): inferred-by-TypeScript",
+      "line": 14,
+      "endLine": 38,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "useMemo"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/OledBitmapText.tsx",
+        "line": 14
+      },
+      "description": "Dibuja glifos bitmap según fuente disponible.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "OledCommandPreview",
+      "displayName": "OledCommandPreview",
+      "signature": "OledCommandPreview({\n  commands,\n  className = \"\",\n}: OledCommandPreviewProps): inferred-by-TypeScript",
+      "line": 29,
+      "endLine": 53,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "reactId.replace",
+        "renderCommands",
+        "useId"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/OledCommandPreview.tsx",
+        "line": 29
+      },
+      "description": "Presenta comandos OLED como SVG con clipping 128×64.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "barWidthFromByte",
+      "displayName": "barWidthFromByte",
+      "signature": "barWidthFromByte(speed: number, width: number): number",
+      "line": 89,
+      "endLine": 91,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.floor",
+        "Math.max",
+        "Math.min"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/helpers.ts",
+        "line": 89
+      },
+      "description": "Coordina `Math.floor`, `Math.max`, `Math.min` para Primitivas OLED, fuentes y representación SVG.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "baselineY",
+      "displayName": "baselineY",
+      "signature": "baselineY(baseline: number, font: OledFont): number",
+      "line": 80,
+      "endLine": 82,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/helpers.ts",
+        "line": 80
+      },
+      "description": "Operación baseline Y de Primitivas OLED, fuentes y representación SVG; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "bitmapNode",
+      "displayName": "bitmapNode",
+      "signature": "bitmapNode(command: Extract<OledCommand, { type: \"drawBitmap\" | \"drawBitmapMSB\" }>, state: RenderState, key: number): inferred-by-TypeScript",
+      "line": 258,
+      "endLine": 305,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.min",
+        "bitmapPath",
+        "command.dataRef .replace",
+        "command.dataRef .replace(/^Icon_/, \"\") .replace",
+        "command.dataRef .replace(/^Icon_/, \"\") .replace(/^QRCode_/, \"QR_\") .replace",
+        "command.dataRef .replace(/^Icon_/, \"\") .replace(/^QRCode_/, \"QR_\") .replace(/_bits$/, \"\") .replace",
+        "command.dataRef .replace(/^Icon_/, \"\") .replace(/^QRCode_/, \"QR_\") .replace(/_bits$/, \"\") .replace(/_/g, \" \") .slice",
+        "getOledBitmapAsset",
+        "paint"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/OledCommandPreview.tsx",
+        "line": 258
+      },
+      "description": "Dibuja asset conocido o marcador de referencia cuando falta.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "bitmapPath",
+      "displayName": "bitmapPath",
+      "signature": "bitmapPath(command: Extract<OledCommand, { type: \"drawBitmap\" | \"drawBitmapMSB\" }>, bitmap: readonly number[]): inferred-by-TypeScript",
+      "line": 307,
+      "endLine": 339,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.ceil",
+        "segments.join",
+        "segments.push"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/OledCommandPreview.tsx",
+        "line": 307
+      },
+      "description": "Convierte bits de un bitmap row-major LSB/MSB a trazos de píxel SVG.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "buildBitmapTextPath",
+      "displayName": "buildBitmapTextPath",
+      "signature": "buildBitmapTextPath(text: string, font: OledFont, x: number, y: number, align: \"left\" | \"center\" | \"right\"): inferred-by-TypeScript",
+      "line": 240,
+      "endLine": 293,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "(text || \"\").split",
+        "Math.max",
+        "lines.forEach",
+        "lines.map",
+        "segments.join"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/oledBitmapFont.ts",
+        "line": 240
+      },
+      "description": "Coordina `(text || \"\").split`, `Math.max`, `lines.forEach` para Primitivas OLED, fuentes y representación SVG.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "bytes",
+      "displayName": "bytes",
+      "signature": "bytes(hex: string): readonly number[]",
+      "line": 8,
+      "endLine": 14,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "hex .trim",
+        "hex .trim() .split",
+        "hex .trim() .split(/\\s+/) .filter",
+        "hex .trim() .split(/\\s+/) .filter(Boolean) .map"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/bitmapAssets.ts",
+        "line": 8
+      },
+      "description": "Coordina `hex .trim`, `hex .trim() .split`, `hex .trim() .split(/\\s+/) .filter` para Primitivas OLED, fuentes y representación SVG.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "clear",
+      "displayName": "clear",
+      "signature": "clear(): OledCommand",
+      "line": 20,
+      "endLine": 22,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/helpers.ts",
+        "line": 20
+      },
+      "description": "Operación clear de Primitivas OLED, fuentes y representación SVG; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "clearBox",
+      "displayName": "clearBox",
+      "signature": "clearBox(x: number, y: number, w: number, h: number): OledCommand[]",
+      "line": 60,
+      "endLine": 62,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "setBlack",
+        "setWhite"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/helpers.ts",
+        "line": 60
+      },
+      "description": "Coordina `setBlack`, `setWhite` para Primitivas OLED, fuentes y representación SVG.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "drawBox",
+      "displayName": "drawBox",
+      "signature": "drawBox(x: number, y: number, w: number, h: number): OledCommand[]",
+      "line": 64,
+      "endLine": 66,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "setWhite"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/helpers.ts",
+        "line": 64
+      },
+      "description": "Adapta la llamada a `setWhite` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "drawFrame",
+      "displayName": "drawFrame",
+      "signature": "drawFrame(x: number, y: number, w: number, h: number): OledCommand[]",
+      "line": 68,
+      "endLine": 70,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "setWhite"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/helpers.ts",
+        "line": 68
+      },
+      "description": "Adapta la llamada a `setWhite` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "drawText",
+      "displayName": "drawText",
+      "signature": "drawText(text: string, font: OledFont): OledCommand",
+      "line": 44,
+      "endLine": 46,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/helpers.ts",
+        "line": 44
+      },
+      "description": "Operación draw Text de Primitivas OLED, fuentes y representación SVG; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "drawTextMax",
+      "displayName": "drawTextMax",
+      "signature": "drawTextMax(text: string, maxChars: number, font: OledFont): OledCommand",
+      "line": 48,
+      "endLine": 50,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/helpers.ts",
+        "line": 48
+      },
+      "description": "Operación draw Text Max de Primitivas OLED, fuentes y representación SVG; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "drawXbm",
+      "displayName": "drawXbm",
+      "signature": "drawXbm(x: number, y: number, width: number, height: number, dataRef: string): OledCommand[]",
+      "line": 72,
+      "endLine": 74,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "setWhite"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/helpers.ts",
+        "line": 72
+      },
+      "description": "Adapta la llamada a `setWhite` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "drawXbmMsb",
+      "displayName": "drawXbmMsb",
+      "signature": "drawXbmMsb(x: number, y: number, width: number, height: number, dataRef: string): OledCommand[]",
+      "line": 76,
+      "endLine": 78,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "setWhite"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/helpers.ts",
+        "line": 76
+      },
+      "description": "Adapta la llamada a `setWhite` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "getGlyphRows",
+      "displayName": "getGlyphRows",
+      "signature": "getGlyphRows(font: OledFont, char: string): inferred-by-TypeScript",
+      "line": 295,
+      "endLine": 301,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "config.data.slice",
+        "normalizeGlyphChar",
+        "safeChar.charCodeAt"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/oledBitmapFont.ts",
+        "line": 295
+      },
+      "description": "Coordina `config.data.slice`, `normalizeGlyphChar`, `safeChar.charCodeAt` para Primitivas OLED, fuentes y representación SVG.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "getOledBitmapAsset",
+      "displayName": "getOledBitmapAsset",
+      "signature": "getOledBitmapAsset(name: string): OledBitmapAsset | undefined",
+      "line": 271,
+      "endLine": 273,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/bitmapAssets.ts",
+        "line": 271
+      },
+      "description": "Operación get Oled Bitmap Asset de Primitivas OLED, fuentes y representación SVG; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "irBarHeight",
+      "displayName": "irBarHeight",
+      "signature": "irBarHeight(value: number, maxHeight: number): number",
+      "line": 93,
+      "endLine": 95,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.floor",
+        "Math.max",
+        "Math.min"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/helpers.ts",
+        "line": 93
+      },
+      "description": "Coordina `Math.floor`, `Math.max`, `Math.min` para Primitivas OLED, fuentes y representación SVG.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "lineNode",
+      "displayName": "lineNode",
+      "signature": "lineNode(x1: number, y1: number, x2: number, y2: number, state: RenderState, key: number): inferred-by-TypeScript",
+      "line": 245,
+      "endLine": 256,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "paint"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/OledCommandPreview.tsx",
+        "line": 245
+      },
+      "description": "Adapta la llamada a `paint` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "normalizeGlyphChar",
+      "displayName": "normalizeGlyphChar",
+      "signature": "normalizeGlyphChar(char: string): inferred-by-TypeScript",
+      "line": 303,
+      "endLine": 308,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Array.from",
+        "candidate.charCodeAt"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/oledBitmapFont.ts",
+        "line": 303
+      },
+      "description": "Coordina `Array.from`, `candidate.charCodeAt` para Primitivas OLED, fuentes y representación SVG.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "notificationProgressOverlayCommands",
+      "displayName": "notificationProgressOverlayCommands",
+      "signature": "notificationProgressOverlayCommands(args: NotificationProgressArgs): OledCommand[]",
+      "line": 97,
+      "endLine": 111,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.floor",
+        "Math.max",
+        "Math.min",
+        "clearBox",
+        "setWhite"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/helpers.ts",
+        "line": 97
+      },
+      "description": "Coordina `Math.floor`, `Math.max`, `Math.min` para Primitivas OLED, fuentes y representación SVG.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "paint",
+      "displayName": "paint",
+      "signature": "paint(state: RenderState): inferred-by-TypeScript",
+      "line": 341,
+      "endLine": 347,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/OledCommandPreview.tsx",
+        "line": 341
+      },
+      "description": "Selecciona color SVG; actualmente no reproduce XOR de SSD1306_COLOR Inverse.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "parseHexNumbers",
+      "displayName": "parseHexNumbers",
+      "signature": "parseHexNumbers(source: string): inferred-by-TypeScript",
+      "line": 310,
+      "endLine": 314,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "(source.match(/0x[0-9a-fA-F]+/g) ?? []).map",
+        "source.match"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/oledBitmapFont.ts",
+        "line": 310
+      },
+      "description": "Coordina `(source.match(/0x[0-9a-fA-F]+/g) ?? []).map`, `source.match` para Primitivas OLED, fuentes y representación SVG.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "percentTextFromByte",
+      "displayName": "percentTextFromByte",
+      "signature": "percentTextFromByte(speed: number): string",
+      "line": 84,
+      "endLine": 87,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Math.floor",
+        "Math.max",
+        "Math.min",
+        "String",
+        "String(pct).padStart"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/helpers.ts",
+        "line": 84
+      },
+      "description": "Coordina `Math.floor`, `Math.max`, `Math.min` para Primitivas OLED, fuentes y representación SVG.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "renderCommands",
+      "displayName": "renderCommands",
+      "signature": "renderCommands(commands: OledCommand[]): ReactNode[]",
+      "line": 55,
+      "endLine": 230,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "Array.from",
+        "Math.max",
+        "Math.min",
+        "bitmapNode",
+        "command.text.slice",
+        "command.vertices.map",
+        "command.vertices.map((point) => `${point.x},${point.y}`).join",
+        "elements.push",
+        "lineNode",
+        "paint",
+        "textNode"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/OledCommandPreview.tsx",
+        "line": 55
+      },
+      "description": "Interpreta comandos en orden usando cursor, color e inversión locales.",
+      "descriptionOrigin": "editorial"
+    },
+    {
+      "name": "setBlack",
+      "displayName": "setBlack",
+      "signature": "setBlack(): OledCommand",
+      "line": 32,
+      "endLine": 34,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "setColor"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/helpers.ts",
+        "line": 32
+      },
+      "description": "Adapta la llamada a `setColor` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "setColor",
+      "displayName": "setColor",
+      "signature": "setColor(color: SSD1306Color): OledCommand",
+      "line": 24,
+      "endLine": 26,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/helpers.ts",
+        "line": 24
+      },
+      "description": "Operación set Color de Primitivas OLED, fuentes y representación SVG; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "setCursor",
+      "displayName": "setCursor",
+      "signature": "setCursor(x: number, y: number): OledCommand",
+      "line": 40,
+      "endLine": 42,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/helpers.ts",
+        "line": 40
+      },
+      "description": "Operación set Cursor de Primitivas OLED, fuentes y representación SVG; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "setInverse",
+      "displayName": "setInverse",
+      "signature": "setInverse(): OledCommand",
+      "line": 36,
+      "endLine": 38,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "setColor"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/helpers.ts",
+        "line": 36
+      },
+      "description": "Adapta la llamada a `setColor` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "setWhite",
+      "displayName": "setWhite",
+      "signature": "setWhite(): OledCommand",
+      "line": 28,
+      "endLine": 30,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "setColor"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/helpers.ts",
+        "line": 28
+      },
+      "description": "Adapta la llamada a `setColor` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "textAt",
+      "displayName": "textAt",
+      "signature": "textAt(x: number, y: number, text: string, font: OledFont): OledCommand[]",
+      "line": 52,
+      "endLine": 54,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "drawText",
+        "setCursor",
+        "setWhite"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/helpers.ts",
+        "line": 52
+      },
+      "description": "Coordina `drawText`, `setCursor`, `setWhite` para Primitivas OLED, fuentes y representación SVG.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "textMaxAt",
+      "displayName": "textMaxAt",
+      "signature": "textMaxAt(x: number, y: number, text: string, maxChars: number, font: OledFont): OledCommand[]",
+      "line": 56,
+      "endLine": 58,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "drawTextMax",
+        "setCursor",
+        "setWhite"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/helpers.ts",
+        "line": 56
+      },
+      "description": "Coordina `drawTextMax`, `setCursor`, `setWhite` para Primitivas OLED, fuentes y representación SVG.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "textNode",
+      "displayName": "textNode",
+      "signature": "textNode(text: string, font: OledFont, state: RenderState, key: number): inferred-by-TypeScript",
+      "line": 232,
+      "endLine": 243,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "paint"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/components/OledCommandPreview.tsx",
+        "line": 232
+      },
+      "description": "Adapta la llamada a `paint` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "u8",
+      "displayName": "u8",
+      "signature": "u8(value: number): number",
+      "line": 16,
+      "endLine": 18,
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/helpers.ts",
+        "line": 16
+      },
+      "description": "Operación u8 de Primitivas OLED, fuentes y representación SVG; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "withNotificationProgress",
+      "displayName": "withNotificationProgress",
+      "signature": "withNotificationProgress(commands: OledCommand[], args: NotificationProgressArgs): OledCommand[]",
+      "line": 113,
+      "endLine": 115,
+      "definition": true,
+      "private": false,
+      "calls": [
+        "notificationProgressOverlayCommands"
+      ],
+      "writes": [],
+      "evidence": {
+        "rootId": "web",
+        "path": "src/screens/helpers.ts",
+        "line": 113
+      },
+      "description": "Adapta la llamada a `notificationProgressOverlayCommands` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    }
+  ],
+  "internalFunctions": [],
+  "hooks": [
+    {
+      "callee": "useMemo",
+      "scope": "OledBitmapText",
+      "line": 22,
+      "arguments": 2,
+      "path": "src/components/OledBitmapText.tsx"
+    },
+    {
+      "callee": "useId",
+      "scope": "OledCommandPreview",
+      "line": 33,
+      "arguments": 0,
+      "path": "src/components/OledCommandPreview.tsx"
+    }
+  ]
+}

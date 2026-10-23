@@ -1,0 +1,224 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "esp:module/src/f4_extension_profiles.h",
+  "slug": "extension-profiles",
+  "title": "Perfiles de extensión F4",
+  "target": "esp",
+  "kind": "contrato",
+  "status": "source-documented",
+  "snapshotDate": "2026-10-20",
+  "verification": "not-run-user-instruction",
+  "responsibility": "Construye e interpreta operaciones de selección y reinicio en perfil de extensión F4.",
+  "scope": "Perfil 0/1 y comandos 0x73/0x74/0x76; no redefine pinout de placa desde el ESP.",
+  "state": "Datos pequeños del request/response pertenecen al llamador; configuración deseada y perfil activo pueden diferir hasta reinicio.",
+  "modularity": "Helper de contrato compartido, independiente de UI pero específico de perfiles F4.",
+  "lifecycle": [
+    "Construir request correcto, esperar la política final y revisar status.",
+    "Distinguir seleccionar perfil de seleccionar y reiniciar."
+  ],
+  "interactions": [
+    "El bridge traduce nombres stm.extensionProfile.* y usa el registro de comandos."
+  ],
+  "limitations": [
+    "0x75 no debe confundirse con reboot 0x76.",
+    "Un cambio persistido no acredita que el reinicio se completó."
+  ],
+  "relationships": [],
+  "findings": [],
+  "files": [
+    {
+      "rootId": "esp",
+      "path": "src/f4_extension_profiles.c",
+      "sha256": "ef0e775646cdd9e16609247069000359f77e1d8ffa59e5c986dab4820c26b061",
+      "imports": [
+        "f4_extension_profiles.h",
+        "stddef.h",
+        "uner_cmdspec.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    },
+    {
+      "rootId": "esp",
+      "path": "src/f4_extension_profiles.h",
+      "sha256": "b8071f6f0382f7ecaac4067841acb9b9170a939f88125fdb4c0040ee0ffa9c5a",
+      "imports": [
+        "stdbool.h",
+        "stdint.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    }
+  ],
+  "types": [
+    {
+      "name": "F4_ExtensionProfileRequest",
+      "fields": [
+        {
+          "name": "command_id",
+          "declaration": "uint8_t command_id",
+          "callback": false,
+          "ownerType": "F4_ExtensionProfileRequest",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_extension_profiles.h",
+            "line": 15
+          },
+          "description": "Dato de estado/configuración `command_id`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "payload",
+          "declaration": "uint8_t payload[1]",
+          "callback": false,
+          "ownerType": "F4_ExtensionProfileRequest",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_extension_profiles.h",
+            "line": 16
+          },
+          "description": "Vista del payload; copiar antes de permitir la reutilización del slot del parser."
+        },
+        {
+          "name": "payload_len",
+          "declaration": "uint8_t payload_len",
+          "callback": false,
+          "ownerType": "F4_ExtensionProfileRequest",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/f4_extension_profiles.h",
+            "line": 17
+          },
+          "description": "Dato de estado/configuración `payload_len`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/f4_extension_profiles.h",
+        "line": 15
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "F4_ExtensionProfile_BuildGetRequest",
+      "signature": "bool F4_ExtensionProfile_BuildGetRequest(F4_ExtensionProfileRequest *out)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/f4_extension_profiles.c",
+        "line": 23
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [
+        "command_id",
+        "payload_len"
+      ],
+      "description": "Construye Get Request dentro de Perfiles de extensión F4.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "F4_ExtensionProfile_BuildRebootRequest",
+      "signature": "bool F4_ExtensionProfile_BuildRebootRequest(uint8_t profile_id, F4_ExtensionProfileRequest *out)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/f4_extension_profiles.c",
+        "line": 39
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "build_selection_request"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `build_selection_request` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "F4_ExtensionProfile_BuildSetRequest",
+      "signature": "bool F4_ExtensionProfile_BuildSetRequest(uint8_t profile_id, F4_ExtensionProfileRequest *out)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/f4_extension_profiles.c",
+        "line": 32
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "build_selection_request"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `build_selection_request` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "F4_ExtensionProfile_DecodeCurrent",
+      "signature": "bool F4_ExtensionProfile_DecodeCurrent(const uint8_t *payload, uint8_t len, uint8_t *profile_id)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/f4_extension_profiles.c",
+        "line": 46
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "F4_ExtensionProfile_IsValid"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `F4_ExtensionProfile_IsValid` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "F4_ExtensionProfile_DecodeResult",
+      "signature": "bool F4_ExtensionProfile_DecodeResult(const uint8_t *payload, uint8_t len, bool *success)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/f4_extension_profiles.c",
+        "line": 55
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Decode Result de Perfiles de extensión F4; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "F4_ExtensionProfile_IsValid",
+      "signature": "bool F4_ExtensionProfile_IsValid(uint8_t profile_id)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/f4_extension_profiles.c",
+        "line": 7
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Indica si se cumple la condición Valid dentro de Perfiles de extensión F4.",
+      "descriptionOrigin": "inferred-name"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "build_selection_request",
+      "signature": "static bool build_selection_request(uint8_t command_id, uint8_t profile_id, F4_ExtensionProfileRequest *out)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/f4_extension_profiles.c",
+        "line": 13
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "F4_ExtensionProfile_IsValid"
+      ],
+      "writes": [
+        "command_id",
+        "payload_len"
+      ],
+      "description": "Adapta la llamada a `F4_ExtensionProfile_IsValid` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    }
+  ],
+  "hooks": []
+}

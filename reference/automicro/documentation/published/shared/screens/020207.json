@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "id": "shared:screen/020207",
+  "symbol": "SCREEN_CODE_CONNECTIVITY_WIFI_SEARCH_COMPLETE",
+  "code": 131591,
+  "hex": "0x020207",
+  "decomposition": {
+    "menu": 2,
+    "submenu": 2,
+    "page": 7
+  },
+  "revision": "working-copy-hashes",
+  "confidence": "manual-review",
+  "family": "shared:screen-family/general",
+  "numericObservation": "same-literal",
+  "webDeclaration": {
+    "value": 131591,
+    "line": 42
+  },
+  "metadataEntryObserved": true,
+  "evidence": [
+    {
+      "repo": "f4",
+      "path": "Core/Inc/screen_codes.h",
+      "line": 64
+    },
+    {
+      "repo": "web",
+      "path": "src/screens/screenCodes.ts",
+      "line": 42
+    }
+  ],
+  "renderers": [
+    {
+      "kind": "switch-case",
+      "path": "src/screens/screenRenderRegistry.ts",
+      "line": 382,
+      "builders": [
+        "buildScreen020207WifiSearchCompleteNotificationCommands"
+      ],
+      "availability": "parameterized-candidate"
+    }
+  ],
+  "callGraph": {
+    "status": "lexical-candidates-only",
+    "edges": []
+  },
+  "f4References": [],
+  "variants": [
+    "Identidad y comportamiento particular deben leerse en renderer, wrapper y router."
+  ],
+  "fields": [
+    {
+      "name": "screenCode/source",
+      "type": "u32/u8",
+      "units": "identidad",
+      "availability": "reported",
+      "note": "cuando existe un reporte de pantalla activa"
+    }
+  ],
+  "actions": [
+    "No atribuir acciones por el nombre del código: comprobar handler/permiso/contexto vigente."
+  ],
+  "transitions": [
+    "Las referencias de fuente son candidatas; no acreditan alcance en todos los modos."
+  ],
+  "missingData": [
+    "No se ha establecido modelo remoto completo ni igualdad de píxeles."
+  ],
+  "localOnly": [],
+  "findings": [
+    "AMDOC-WEB-003"
+  ],
+  "exactness": "not-established",
+  "notes": [
+    "Favoritos y confirmaciones compartidas pueden necesitar discriminantes adicionales."
+  ],
+  "role": "not-resolved"
+}

@@ -1,0 +1,824 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "f4:module/Core/Inc/i2c_manager.h",
+  "slug": "i2c-manager",
+  "title": "I2C Manager",
+  "target": "f4",
+  "kind": "servicio",
+  "status": "source-documented",
+  "verification": "not-run-user-instruction",
+  "snapshotDate": "2026-10-20",
+  "responsibility": "Arbitra una concesión exclusiva de bus entre clientes y enruta finalizaciones y errores al propietario actual.",
+  "scope": "Dos entradas de dispositivo, solicitudes pendientes, política, desempate y watchdog de lease; no interpreta registros OLED/MPU.",
+  "state": "I2C_ManagerHandle conserva hardware prestado, recurso opaco hi2c, tabla devices, owner/last_owner, lease y contadores de callbacks espurios. Cada I2C_DeviceEntry contiene callbacks y ctx del cliente. El registro de dirección usa addr_7bit; las operaciones de hardware siguen la convención del adaptador, por lo que no se debe desplazar dos veces la dirección.",
+  "lifecycle": [
+    "Init prepara tabla y lease; RegisterDevice instala callbacks de cada cliente.",
+    "RequestBusPrio deja una solicitud pendiente o concede el bus; on_granted puede ocurrir durante la solicitud.",
+    "OnTxCplt/OnRxCplt/OnError se llaman desde el adaptador HAL y notifican al propietario.",
+    "ReleaseBus cede a otro pendiente; Tick aplica el watchdog de concesión."
+  ],
+  "interactions": [
+    "OLED y MPU se conectan a través de AppI2cBinding; no se llaman directamente.",
+    "app_tasks.c reenvía callbacks de memoria/master I2C al mismo gestor."
+  ],
+  "limitations": [
+    "Lease por defecto 120 ms; la operación del cliente debe finalizar o liberar el bus.",
+    "Callbacks de concesión pueden ejecutarse en el llamador y finalizaciones en contexto de IRQ; no se garantiza reentrada o exclusión RTOS.",
+    "Probe/read/write síncronos de arranque no se convierten en transferencias asíncronas por existir el gestor."
+  ],
+  "modularity": "No depende de HAL. Sí contiene IDs DEVICE_ID_OLED/MPU y políticas que favorecen esos IDs: desacoplado de implementaciones, con conocimiento del dominio. Prioridad efectiva se calcula desde pending_prio y policy; el campo priority registrado no basta para explicar la selección.",
+  "files": [
+    {
+      "path": "Core/Inc/i2c_manager.h",
+      "rootId": "f4",
+      "sha256": "fc14fbea88360501d241076df6e5b22525395732dee8781e75045849cfefa92d",
+      "includes": [
+        "i2c_port.h",
+        "stdint.h"
+      ]
+    },
+    {
+      "path": "Core/Src/i2c_manager.c",
+      "rootId": "f4",
+      "sha256": "1c72a357bb2ad860d4888673a8fc670a91e41071c76dc31d411bba54dab75895",
+      "includes": [
+        "i2c_manager.h"
+      ]
+    }
+  ],
+  "findings": [
+    "AMDOC-F4-005"
+  ],
+  "types": [
+    {
+      "name": "I2C_DeviceEntry",
+      "fields": [
+        {
+          "name": "id",
+          "declaration": "I2C_DeviceID id",
+          "callback": false,
+          "ownerType": "I2C_DeviceEntry",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/i2c_manager.h",
+            "line": 32
+          },
+          "description": "Identificador lógico que usa el árbitro, independiente de la dirección I2C."
+        },
+        {
+          "name": "addr_7bit",
+          "declaration": "uint16_t addr_7bit",
+          "callback": false,
+          "ownerType": "I2C_DeviceEntry",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/i2c_manager.h",
+            "line": 33
+          },
+          "description": "Dirección registrada de siete bits; el adaptador resuelve la convención exigida por hardware."
+        },
+        {
+          "name": "priority",
+          "declaration": "uint8_t priority",
+          "callback": false,
+          "ownerType": "I2C_DeviceEntry",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/i2c_manager.h",
+            "line": 34
+          },
+          "description": "Prioridad base registrada; no confundir con pending_prio ni asumir que gobierna la selección."
+        },
+        {
+          "name": "enabled",
+          "declaration": "uint8_t enabled",
+          "callback": false,
+          "ownerType": "I2C_DeviceEntry",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/i2c_manager.h",
+            "line": 35
+          },
+          "description": "Marca de entrada registrada/habilitada."
+        },
+        {
+          "name": "pending",
+          "declaration": "uint8_t pending",
+          "callback": false,
+          "ownerType": "I2C_DeviceEntry",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/i2c_manager.h",
+            "line": 36
+          },
+          "description": "Marca que el cliente solicita una próxima concesión."
+        },
+        {
+          "name": "pending_prio",
+          "declaration": "I2C_RequestPrio pending_prio",
+          "callback": false,
+          "ownerType": "I2C_DeviceEntry",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/i2c_manager.h",
+            "line": 37
+          },
+          "description": "Prioridad de solicitud acumulada para el próximo arbitraje."
+        },
+        {
+          "name": "ctx",
+          "declaration": "void *ctx",
+          "callback": false,
+          "ownerType": "I2C_DeviceEntry",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/i2c_manager.h",
+            "line": 38
+          },
+          "description": "Contexto opaco prestado al callback; el integrador conserva su almacenamiento."
+        },
+        {
+          "name": "on_granted",
+          "declaration": "I2C_OnGrantedCb on_granted",
+          "callback": false,
+          "ownerType": "I2C_DeviceEntry",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/i2c_manager.h",
+            "line": 40
+          },
+          "description": "Callback del cliente invocado al conceder propiedad; recibe ctx y puede iniciar DMA."
+        },
+        {
+          "name": "on_tx_done",
+          "declaration": "I2C_OnTxDoneCb on_tx_done",
+          "callback": false,
+          "ownerType": "I2C_DeviceEntry",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/i2c_manager.h",
+            "line": 41
+          },
+          "description": "Callback del propietario al completar TX del backend."
+        },
+        {
+          "name": "on_rx_done",
+          "declaration": "I2C_OnRxDoneCb on_rx_done",
+          "callback": false,
+          "ownerType": "I2C_DeviceEntry",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/i2c_manager.h",
+            "line": 42
+          },
+          "description": "Callback del propietario al completar RX del backend."
+        },
+        {
+          "name": "on_error",
+          "declaration": "I2C_OnErrorCb on_error",
+          "callback": false,
+          "ownerType": "I2C_DeviceEntry",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/i2c_manager.h",
+            "line": 43
+          },
+          "description": "Callback del propietario con motivo de error del gestor."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/i2c_manager.h",
+        "line": 32
+      }
+    },
+    {
+      "name": "I2C_ManagerHandle",
+      "fields": [
+        {
+          "name": "hi2c",
+          "declaration": "void *hi2c",
+          "callback": false,
+          "ownerType": "I2C_ManagerHandle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/i2c_manager.h",
+            "line": 48
+          },
+          "description": "Recurso opaco del bus; la aplicación STM32 entrega el handle HAL."
+        },
+        {
+          "name": "hardware",
+          "declaration": "const AM_I2C_Hardware *hardware",
+          "callback": false,
+          "ownerType": "I2C_ManagerHandle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/i2c_manager.h",
+            "line": 49
+          },
+          "description": "Contrato de operaciones externo; conservar la tabla y su contexto durante el uso."
+        },
+        {
+          "name": "devices",
+          "declaration": "I2C_DeviceEntry devices[I2C_MANAGER_MAX_DEVICES]",
+          "callback": false,
+          "ownerType": "I2C_ManagerHandle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/i2c_manager.h",
+            "line": 50
+          },
+          "description": "Entradas de los dos clientes con dirección, pendientes, contexto y callbacks."
+        },
+        {
+          "name": "owner_id",
+          "declaration": "I2C_DeviceID owner_id",
+          "callback": false,
+          "ownerType": "I2C_ManagerHandle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/i2c_manager.h",
+            "line": 52
+          },
+          "description": "ID lógico del propietario actual del bus; NONE significa libre."
+        },
+        {
+          "name": "last_owner_id",
+          "declaration": "I2C_DeviceID last_owner_id",
+          "callback": false,
+          "ownerType": "I2C_ManagerHandle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/i2c_manager.h",
+            "line": 54
+          },
+          "description": "Propietario previo usado en el desempate de solicitudes."
+        },
+        {
+          "name": "owner_index",
+          "declaration": "uint8_t owner_index",
+          "callback": false,
+          "ownerType": "I2C_ManagerHandle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/i2c_manager.h",
+            "line": 55
+          },
+          "description": "Índice cacheado de propietario en devices o índice inválido."
+        },
+        {
+          "name": "lease_start_tick",
+          "declaration": "uint32_t lease_start_tick",
+          "callback": false,
+          "ownerType": "I2C_ManagerHandle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/i2c_manager.h",
+            "line": 56
+          },
+          "description": "Dato de estado/configuración `lease_start_tick`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "lease_timeout_ms",
+          "declaration": "uint32_t lease_timeout_ms",
+          "callback": false,
+          "ownerType": "I2C_ManagerHandle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/i2c_manager.h",
+            "line": 58
+          },
+          "description": "Duración máxima de concesión; cero deshabilita el watchdog."
+        },
+        {
+          "name": "policy",
+          "declaration": "I2C_PolicyMode policy",
+          "callback": false,
+          "ownerType": "I2C_ManagerHandle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/i2c_manager.h",
+            "line": 59
+          },
+          "description": "Política de arbitraje con preferencias explícitas OLED/MPU."
+        },
+        {
+          "name": "recover_cb",
+          "declaration": "void (*recover_cb)(void *hi2c)",
+          "callback": true,
+          "ownerType": "I2C_ManagerHandle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/i2c_manager.h",
+            "line": 60
+          },
+          "description": "Hook opcional para recuperar el bus tras fallo; recibe el recurso opaco de hardware."
+        },
+        {
+          "name": "spurious_tx",
+          "declaration": "uint32_t spurious_tx",
+          "callback": false,
+          "ownerType": "I2C_ManagerHandle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/i2c_manager.h",
+            "line": 61
+          },
+          "description": "Número de callbacks TX sin propietario/recurso esperado."
+        },
+        {
+          "name": "spurious_rx",
+          "declaration": "uint32_t spurious_rx",
+          "callback": false,
+          "ownerType": "I2C_ManagerHandle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/i2c_manager.h",
+            "line": 63
+          },
+          "description": "Número de callbacks RX sin propietario/recurso esperado."
+        },
+        {
+          "name": "spurious_err",
+          "declaration": "uint32_t spurious_err",
+          "callback": false,
+          "ownerType": "I2C_ManagerHandle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/i2c_manager.h",
+            "line": 64
+          },
+          "description": "Número de callbacks de error sin propietario/recurso esperado."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/i2c_manager.h",
+        "line": 48
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "I2C_Manager_GetAddress7",
+      "signature": "uint16_t I2C_Manager_GetAddress7(I2C_ManagerHandle *hmgr, I2C_DeviceID id)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/i2c_manager.h",
+        "line": 94
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "find_index"
+      ],
+      "writes": [],
+      "description": "Consulta la dirección registrada de siete bits.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/i2c_manager.c",
+        "line": 263
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "I2C_Manager_GetOwner",
+      "signature": "I2C_DeviceID I2C_Manager_GetOwner(I2C_ManagerHandle *hmgr)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/i2c_manager.h",
+        "line": 93
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Consulta el ID propietario o NONE.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/i2c_manager.c",
+        "line": 257
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "I2C_Manager_GetPolicy",
+      "signature": "I2C_PolicyMode I2C_Manager_GetPolicy(const I2C_ManagerHandle *hmgr)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/i2c_manager.h",
+        "line": 91
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Consulta la política actual de arbitraje.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/i2c_manager.c",
+        "line": 251
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "I2C_Manager_Init",
+      "signature": "AM_Result I2C_Manager_Init(I2C_ManagerHandle *hmgr, const AM_I2C_Hardware *hardware, void *hi2c, uint32_t lease_timeout_ms)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/i2c_manager.h",
+        "line": 70
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "clear_device_entry"
+      ],
+      "writes": [
+        "hardware",
+        "hi2c",
+        "last_owner_id",
+        "lease_start_tick",
+        "lease_timeout_ms",
+        "owner_id",
+        "owner_index",
+        "policy",
+        "recover_cb",
+        "spurious_err",
+        "spurious_rx",
+        "spurious_tx"
+      ],
+      "description": "Inicializa árbitro, backend y timeout de concesión.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/i2c_manager.c",
+        "line": 115
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "I2C_Manager_IsAddressReady",
+      "signature": "AM_Result I2C_Manager_IsAddressReady(I2C_ManagerHandle *hmgr, uint16_t addr_7bit)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/i2c_manager.h",
+        "line": 96
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "probe"
+      ],
+      "writes": [],
+      "description": "Sondea disponibilidad de dirección mediante el backend síncrono.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/i2c_manager.c",
+        "line": 271
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "I2C_Manager_OnError",
+      "signature": "void I2C_Manager_OnError(I2C_ManagerHandle *hmgr, void *hi2c)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/i2c_manager.h",
+        "line": 101
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "grant_to_index",
+        "on_error",
+        "pick_next_pending_index",
+        "recover_cb"
+      ],
+      "writes": [
+        "last_owner_id",
+        "lease_start_tick",
+        "owner_id",
+        "owner_index",
+        "spurious_err"
+      ],
+      "description": "Enruta error de bus al cliente propietario.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/i2c_manager.c",
+        "line": 312
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "I2C_Manager_OnRxCplt",
+      "signature": "void I2C_Manager_OnRxCplt(I2C_ManagerHandle *hmgr, void *hi2c)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/i2c_manager.h",
+        "line": 100
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "on_rx_done"
+      ],
+      "writes": [
+        "spurious_rx"
+      ],
+      "description": "Enruta finalización RX al propietario del recurso de bus.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/i2c_manager.c",
+        "line": 295
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "I2C_Manager_OnTxCplt",
+      "signature": "void I2C_Manager_OnTxCplt(I2C_ManagerHandle *hmgr, void *hi2c)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/i2c_manager.h",
+        "line": 99
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "on_tx_done"
+      ],
+      "writes": [
+        "spurious_tx"
+      ],
+      "description": "Enruta finalización TX al propietario del recurso de bus.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/i2c_manager.c",
+        "line": 278
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "I2C_Manager_RegisterDevice",
+      "signature": "AM_Result I2C_Manager_RegisterDevice(I2C_ManagerHandle *hmgr, I2C_DeviceID id, uint16_t addr_7bit, uint8_t priority, void *ctx, I2C_OnGrantedCb on_granted, I2C_OnTxDoneCb on_tx_done, I2C_OnRxDoneCb on_rx_done, I2C_OnErrorCb on_error)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/i2c_manager.h",
+        "line": 75
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "find_index"
+      ],
+      "writes": [],
+      "description": "Registra ID, dirección, prioridad y callbacks de un cliente.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/i2c_manager.c",
+        "line": 142
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "I2C_Manager_ReleaseBus",
+      "signature": "AM_Result I2C_Manager_ReleaseBus(I2C_ManagerHandle *hmgr, I2C_DeviceID id)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/i2c_manager.h",
+        "line": 89
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "grant_to_index",
+        "pick_next_pending_index"
+      ],
+      "writes": [
+        "last_owner_id",
+        "lease_start_tick",
+        "owner_id",
+        "owner_index"
+      ],
+      "description": "Libera la propiedad del cliente y busca la siguiente solicitud pendiente.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/i2c_manager.c",
+        "line": 213
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "I2C_Manager_RequestBus",
+      "signature": "AM_Result I2C_Manager_RequestBus(I2C_ManagerHandle *hmgr, I2C_DeviceID id)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/i2c_manager.h",
+        "line": 88
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "I2C_Manager_RequestBusPrio"
+      ],
+      "writes": [],
+      "description": "Solicita el bus usando la prioridad regular.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/i2c_manager.c",
+        "line": 179
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "I2C_Manager_RequestBusPrio",
+      "signature": "AM_Result I2C_Manager_RequestBusPrio(I2C_ManagerHandle *hmgr, I2C_DeviceID id, I2C_RequestPrio prio)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/i2c_manager.h",
+        "line": 85
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "find_index",
+        "grant_to_index"
+      ],
+      "writes": [],
+      "description": "Solicita el bus con prioridad acumulable y concede cuando corresponde.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/i2c_manager.c",
+        "line": 184
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "I2C_Manager_SetPolicy",
+      "signature": "AM_Result I2C_Manager_SetPolicy(I2C_ManagerHandle *hmgr, I2C_PolicyMode policy)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/i2c_manager.h",
+        "line": 90
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [
+        "policy"
+      ],
+      "description": "Selecciona política balanced, priorizar MPU o priorizar OLED.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/i2c_manager.c",
+        "line": 237
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "I2C_Manager_Tick",
+      "signature": "void I2C_Manager_Tick(I2C_ManagerHandle *hmgr)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/i2c_manager.h",
+        "line": 104
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "grant_to_index",
+        "now_ms",
+        "on_error",
+        "pick_next_pending_index",
+        "recover_cb"
+      ],
+      "writes": [
+        "last_owner_id",
+        "lease_start_tick",
+        "owner_id",
+        "owner_index"
+      ],
+      "description": "Detecta vencimiento de lease y aplica la recuperación/notificación prevista.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/i2c_manager.c",
+        "line": 346
+      },
+      "linkage": "header"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "find_index",
+      "signature": "static uint8_t find_index(I2C_ManagerHandle *hmgr, I2C_DeviceID id)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/i2c_manager.c",
+        "line": 19
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación find index de I2C Manager; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "effective_prio",
+      "signature": "static uint8_t effective_prio(I2C_ManagerHandle *hmgr, const I2C_DeviceEntry *dev)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/i2c_manager.c",
+        "line": 30
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación effective prio de I2C Manager; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "clear_device_entry",
+      "signature": "static void clear_device_entry(I2C_DeviceEntry *e)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/i2c_manager.c",
+        "line": 48
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [
+        "addr_7bit",
+        "ctx",
+        "enabled",
+        "id",
+        "on_error",
+        "on_granted",
+        "on_rx_done",
+        "on_tx_done",
+        "pending",
+        "pending_prio",
+        "priority"
+      ],
+      "description": "Operación clear device entry de I2C Manager; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "pick_next_pending_index",
+      "signature": "static uint8_t pick_next_pending_index(I2C_ManagerHandle *hmgr)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/i2c_manager.c",
+        "line": 64
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "effective_prio"
+      ],
+      "writes": [],
+      "description": "Coordina `effective_prio` para I2C Manager.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "grant_to_index",
+      "signature": "static void grant_to_index(I2C_ManagerHandle *hmgr, uint8_t idx)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/i2c_manager.c",
+        "line": 93
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "now_ms",
+        "on_granted",
+        "ready"
+      ],
+      "writes": [
+        "lease_start_tick",
+        "owner_id",
+        "owner_index"
+      ],
+      "description": "Coordina `now_ms`, `on_granted`, `ready` para I2C Manager.",
+      "descriptionOrigin": "structural"
+    }
+  ]
+}

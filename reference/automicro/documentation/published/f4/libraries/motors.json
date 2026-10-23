@@ -1,0 +1,1020 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "f4:module/Core/Inc/motor_control.h",
+  "slug": "motors",
+  "title": "Motores y tracción diferencial",
+  "target": "f4",
+  "kind": "núcleo",
+  "status": "source-documented",
+  "verification": "not-run-user-instruction",
+  "snapshotDate": "2026-10-20",
+  "responsibility": "Traduce porcentajes y dirección a los dos canales PWM de cada motor DRV8833.",
+  "scope": "Control de actuadores y prueba directa; no calcula equilibrio, trayectoria, frescura MPU ni permisos.",
+  "state": "Motor_Handle_t conserva recurso opaco htim, Motor_Port prestado, canales, mínimos por dirección, máximo y última consigna. MotorControl_Handle agrupa leftMotor/rightMotor y motorData para TEST. Los atributos describen orden aplicada, no velocidad medida.",
+  "lifecycle": [
+    "Motor_Init configura canales y límites; Motor_Start habilita PWM a través del puerto.",
+    "Los setters limitan porcentajes y escriben compares; Stop y Brake representan acciones distintas sobre el puente."
+  ],
+  "interactions": [
+    "AM_DriveOps conecta el árbitro MotionControl a ambos motores.",
+    "La aplicación reserva control PWM directo para TEST y aplica permisos/guardas antes de invocarlo."
+  ],
+  "limitations": [
+    "Un retorno aceptado no demuestra movimiento físico.",
+    "PWM mínimo compensa zona muerta; porcentaje no equivale a cm/s. AutoMotion usa un perfil aparte."
+  ],
+  "modularity": "Hardware aislado por start y set_compare. Conserva semántica DRV8833 y dos canales por motor.",
+  "files": [
+    {
+      "path": "Core/Inc/motor_control.h",
+      "rootId": "f4",
+      "sha256": "faf5cd2eade8b7a5ec9bc20606b6debb1aa1829c321286a613be9b2795b6f689",
+      "includes": [
+        "motor_control_types.h"
+      ]
+    },
+    {
+      "path": "Core/Inc/motor_control_types.h",
+      "rootId": "f4",
+      "sha256": "ee595e7e47e784f26ae3edd24eb35a16a88fabfea2637deeb343daae8566551f",
+      "includes": [
+        "am_port.h",
+        "types/bitmap_type.h",
+        "stdint.h"
+      ]
+    },
+    {
+      "path": "Core/Src/motor_control.c",
+      "rootId": "f4",
+      "sha256": "dda5288c2aecf76886696fcf983b3be8586a7de3bfa4a53a36afc94a231484c2",
+      "includes": [
+        "motor_control.h",
+        "stddef.h",
+        "math.h"
+      ]
+    }
+  ],
+  "findings": [],
+  "types": [
+    {
+      "name": "Motor_Config_t",
+      "fields": [
+        {
+          "name": "speedPercent",
+          "declaration": "float speedPercent",
+          "callback": false,
+          "ownerType": "Motor_Config_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motor_control_types.h",
+            "line": 36
+          },
+          "description": "Magnitud porcentual; el rango y signo se fijan en la API de esta librería."
+        },
+        {
+          "name": "motorDirection",
+          "declaration": "Motor_Direction_t motorDirection",
+          "callback": false,
+          "ownerType": "Motor_Config_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motor_control_types.h",
+            "line": 37
+          },
+          "description": "Dato de estado/configuración `motorDirection`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/motor_control_types.h",
+        "line": 36
+      }
+    },
+    {
+      "name": "Motor_Data_t",
+      "fields": [
+        {
+          "name": "flags",
+          "declaration": "Byte_Flag_Struct flags",
+          "callback": false,
+          "ownerType": "Motor_Data_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motor_control_types.h",
+            "line": 41
+          },
+          "description": "Bits de estado del módulo; conservar máscaras y distinguir estado de eventos pendientes."
+        },
+        {
+          "name": "motorLeft",
+          "declaration": "Motor_Config_t motorLeft",
+          "callback": false,
+          "ownerType": "Motor_Data_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motor_control_types.h",
+            "line": 42
+          },
+          "description": "Dato de estado/configuración `motorLeft`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "motorRight",
+          "declaration": "Motor_Config_t motorRight",
+          "callback": false,
+          "ownerType": "Motor_Data_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motor_control_types.h",
+            "line": 43
+          },
+          "description": "Dato de estado/configuración `motorRight`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/motor_control_types.h",
+        "line": 41
+      }
+    },
+    {
+      "name": "Motor_Port",
+      "fields": [
+        {
+          "name": "start",
+          "declaration": "AM_Result (*start)(void *ctx, uint32_t channel)",
+          "callback": true,
+          "ownerType": "Motor_Port",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motor_control_types.h",
+            "line": 47
+          },
+          "description": "Operación start de Motores y tracción diferencial; semántica fina pendiente de ampliación."
+        },
+        {
+          "name": "set_compare",
+          "declaration": "void (*set_compare)(void *ctx, uint32_t channel, uint16_t value)",
+          "callback": true,
+          "ownerType": "Motor_Port",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motor_control_types.h",
+            "line": 48
+          },
+          "description": "Escribe el compare del canal PWM; no aplica por sí mismo las guardas de movimiento."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/motor_control_types.h",
+        "line": 47
+      }
+    },
+    {
+      "name": "Motor_InitConfig_t",
+      "fields": [
+        {
+          "name": "htim",
+          "declaration": "void *htim",
+          "callback": false,
+          "ownerType": "Motor_InitConfig_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motor_control_types.h",
+            "line": 52
+          },
+          "description": "Recurso opaco del PWM; la aplicación STM32 entrega el timer HAL."
+        },
+        {
+          "name": "port",
+          "declaration": "const Motor_Port *port",
+          "callback": false,
+          "ownerType": "Motor_InitConfig_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motor_control_types.h",
+            "line": 53
+          },
+          "description": "Contrato de operaciones externo; conservar la tabla y su contexto durante el uso."
+        },
+        {
+          "name": "forward_channel",
+          "declaration": "uint32_t forward_channel",
+          "callback": false,
+          "ownerType": "Motor_InitConfig_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motor_control_types.h",
+            "line": 54
+          },
+          "description": "Dato de estado/configuración `forward_channel`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "backward_channel",
+          "declaration": "uint32_t backward_channel",
+          "callback": false,
+          "ownerType": "Motor_InitConfig_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motor_control_types.h",
+            "line": 55
+          },
+          "description": "Dato de estado/configuración `backward_channel`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "min_pwm_forward",
+          "declaration": "uint16_t min_pwm_forward",
+          "callback": false,
+          "ownerType": "Motor_InitConfig_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motor_control_types.h",
+            "line": 56
+          },
+          "description": "Dato de estado/configuración `min_pwm_forward`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "min_pwm_backward",
+          "declaration": "uint16_t min_pwm_backward",
+          "callback": false,
+          "ownerType": "Motor_InitConfig_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motor_control_types.h",
+            "line": 57
+          },
+          "description": "Dato de estado/configuración `min_pwm_backward`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "max_pwm",
+          "declaration": "uint16_t max_pwm",
+          "callback": false,
+          "ownerType": "Motor_InitConfig_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motor_control_types.h",
+            "line": 58
+          },
+          "description": "Dato de estado/configuración `max_pwm`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/motor_control_types.h",
+        "line": 52
+      }
+    },
+    {
+      "name": "Motor_Handle_t",
+      "fields": [
+        {
+          "name": "htim",
+          "declaration": "void *htim",
+          "callback": false,
+          "ownerType": "Motor_Handle_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motor_control_types.h",
+            "line": 62
+          },
+          "description": "Recurso opaco del PWM; la aplicación STM32 entrega el timer HAL."
+        },
+        {
+          "name": "port",
+          "declaration": "const Motor_Port *port",
+          "callback": false,
+          "ownerType": "Motor_Handle_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motor_control_types.h",
+            "line": 63
+          },
+          "description": "Contrato de operaciones externo; conservar la tabla y su contexto durante el uso."
+        },
+        {
+          "name": "forward_channel",
+          "declaration": "uint32_t forward_channel",
+          "callback": false,
+          "ownerType": "Motor_Handle_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motor_control_types.h",
+            "line": 64
+          },
+          "description": "Identificador de canal PWM usado para avance."
+        },
+        {
+          "name": "backward_channel",
+          "declaration": "uint32_t backward_channel",
+          "callback": false,
+          "ownerType": "Motor_Handle_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motor_control_types.h",
+            "line": 65
+          },
+          "description": "Identificador de canal PWM usado para retroceso."
+        },
+        {
+          "name": "min_pwm_forward",
+          "declaration": "uint16_t min_pwm_forward",
+          "callback": false,
+          "ownerType": "Motor_Handle_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motor_control_types.h",
+            "line": 66
+          },
+          "description": "Compare mínimo aplicado al avance para compensar zona muerta."
+        },
+        {
+          "name": "min_pwm_backward",
+          "declaration": "uint16_t min_pwm_backward",
+          "callback": false,
+          "ownerType": "Motor_Handle_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motor_control_types.h",
+            "line": 67
+          },
+          "description": "Compare mínimo aplicado al retroceso para compensar zona muerta."
+        },
+        {
+          "name": "max_pwm",
+          "declaration": "uint16_t max_pwm",
+          "callback": false,
+          "ownerType": "Motor_Handle_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motor_control_types.h",
+            "line": 68
+          },
+          "description": "Compare máximo de conversión porcentual; debe corresponder a la configuración del timer."
+        },
+        {
+          "name": "speedPercent",
+          "declaration": "float speedPercent",
+          "callback": false,
+          "ownerType": "Motor_Handle_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motor_control_types.h",
+            "line": 69
+          },
+          "description": "Magnitud porcentual; el rango y signo se fijan en la API de esta librería."
+        },
+        {
+          "name": "direction",
+          "declaration": "Motor_Direction_t direction",
+          "callback": false,
+          "ownerType": "Motor_Handle_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motor_control_types.h",
+            "line": 70
+          },
+          "description": "Sentido lógico de la última orden; no mide dirección física real."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/motor_control_types.h",
+        "line": 62
+      }
+    },
+    {
+      "name": "MotorDrive_InitConfig_t",
+      "fields": [
+        {
+          "name": "left",
+          "declaration": "Motor_InitConfig_t left",
+          "callback": false,
+          "ownerType": "MotorDrive_InitConfig_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motor_control_types.h",
+            "line": 74
+          },
+          "description": "Dato de estado/configuración `left`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "right",
+          "declaration": "Motor_InitConfig_t right",
+          "callback": false,
+          "ownerType": "MotorDrive_InitConfig_t",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motor_control_types.h",
+            "line": 75
+          },
+          "description": "Dato de estado/configuración `right`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/motor_control_types.h",
+        "line": 74
+      }
+    },
+    {
+      "name": "MotorControl_Handle",
+      "fields": [
+        {
+          "name": "leftMotor",
+          "declaration": "Motor_Handle_t leftMotor",
+          "callback": false,
+          "ownerType": "MotorControl_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motor_control_types.h",
+            "line": 79
+          },
+          "description": "Handle del actuador izquierdo, con canales y límites propios."
+        },
+        {
+          "name": "rightMotor",
+          "declaration": "Motor_Handle_t rightMotor",
+          "callback": false,
+          "ownerType": "MotorControl_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motor_control_types.h",
+            "line": 80
+          },
+          "description": "Handle del actuador derecho, con canales y límites propios."
+        },
+        {
+          "name": "motorData",
+          "declaration": "Motor_Data_t motorData",
+          "callback": false,
+          "ownerType": "MotorControl_Handle",
+          "evidence": {
+            "rootId": "f4",
+            "path": "Core/Inc/motor_control_types.h",
+            "line": 81
+          },
+          "description": "Consignas/flags del modo de prueba directa, separadas de medida física."
+        }
+      ],
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/motor_control_types.h",
+        "line": 79
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "MotorDrive_ApplyTestState",
+      "signature": "void MotorDrive_ApplyTestState(MotorControl_Handle *drive)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/motor_control.h",
+        "line": 44
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MotorDrive_SetLeftPercent",
+        "MotorDrive_SetRightPercent",
+        "MotorDrive_StopAll",
+        "Motor_Stop"
+      ],
+      "writes": [],
+      "description": "Traslada motorData a PWM directo de ambos motores para TEST.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/motor_control.c",
+        "line": 305
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MotorDrive_Init",
+      "signature": "AM_Result MotorDrive_Init(MotorControl_Handle *drive, const MotorDrive_InitConfig_t *config)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/motor_control.h",
+        "line": 27
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "Motor_Init",
+        "Motor_Start"
+      ],
+      "writes": [],
+      "description": "Configura los motores o la pareja de tracción con canales y límites suministrados.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/motor_control.c",
+        "line": 204
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MotorDrive_SetBothPercent",
+      "signature": "void MotorDrive_SetBothPercent(MotorControl_Handle *drive, float speed_percent, Motor_Direction_t direction)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/motor_control.h",
+        "line": 36
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MotorDrive_SetLeftPercent",
+        "MotorDrive_SetRightPercent"
+      ],
+      "writes": [],
+      "description": "Aplica la misma magnitud y dirección a ambos motores.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/motor_control.c",
+        "line": 259
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MotorDrive_SetLeftMinPwm",
+      "signature": "void MotorDrive_SetLeftMinPwm(MotorControl_Handle *drive, uint16_t min_pwm)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/motor_control.h",
+        "line": 42
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "Motor_SetMinPwm"
+      ],
+      "writes": [],
+      "description": "Actualiza el mínimo PWM del motor izquierdo.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/motor_control.c",
+        "line": 287
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MotorDrive_SetLeftPercent",
+      "signature": "void MotorDrive_SetLeftPercent(MotorControl_Handle *drive, float speed_percent, Motor_Direction_t direction)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/motor_control.h",
+        "line": 30
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "Motor_SetSpeedPercent"
+      ],
+      "writes": [],
+      "description": "Aplica magnitud y dirección al motor izquierdo.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/motor_control.c",
+        "line": 237
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MotorDrive_SetRightMinPwm",
+      "signature": "void MotorDrive_SetRightMinPwm(MotorControl_Handle *drive, uint16_t min_pwm)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/motor_control.h",
+        "line": 43
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "Motor_SetMinPwm"
+      ],
+      "writes": [],
+      "description": "Actualiza el mínimo PWM del motor derecho.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/motor_control.c",
+        "line": 296
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MotorDrive_SetRightPercent",
+      "signature": "void MotorDrive_SetRightPercent(MotorControl_Handle *drive, float speed_percent, Motor_Direction_t direction)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/motor_control.h",
+        "line": 33
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "Motor_SetSpeedPercent"
+      ],
+      "writes": [],
+      "description": "Aplica magnitud y dirección al motor derecho.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/motor_control.c",
+        "line": 248
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MotorDrive_SetSignedPercent",
+      "signature": "void MotorDrive_SetSignedPercent(MotorControl_Handle *drive, float left_percent, float right_percent)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/motor_control.h",
+        "line": 39
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "MotorDrive_StopAll",
+        "Motor_SetSignedPercent",
+        "isfinite"
+      ],
+      "writes": [],
+      "description": "Aplica porcentajes firmados; el signo selecciona el sentido de cada motor.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/motor_control.c",
+        "line": 271
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "MotorDrive_StopAll",
+      "signature": "void MotorDrive_StopAll(MotorControl_Handle *drive)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/motor_control.h",
+        "line": 29
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "Motor_Stop"
+      ],
+      "writes": [],
+      "description": "Detiene ambos motores de la tracción.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/motor_control.c",
+        "line": 227
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "Motor_Backward",
+      "signature": "AM_Result Motor_Backward(Motor_Handle_t *motor, float speed_percent)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/motor_control.h",
+        "line": 15
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "Motor_SetSpeedPercent"
+      ],
+      "writes": [],
+      "description": "Aplica retroceso con magnitud porcentual.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/motor_control.c",
+        "line": 159
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "Motor_Brake",
+      "signature": "void Motor_Brake(Motor_Handle_t *motor)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/motor_control.h",
+        "line": 17
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "Motor_NormalizeMaxPwm",
+        "set_compare"
+      ],
+      "writes": [
+        "speedPercent"
+      ],
+      "description": "Aplica la combinación de canales usada para frenado.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/motor_control.c",
+        "line": 175
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "Motor_ClampSpeedPercent",
+      "signature": "float Motor_ClampSpeedPercent(float speed_percent)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/motor_control.h",
+        "line": 24
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "isfinite"
+      ],
+      "writes": [],
+      "description": "Limita la magnitud de velocidad al rango porcentual del driver.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/motor_control.c",
+        "line": 22
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "Motor_Forward",
+      "signature": "AM_Result Motor_Forward(Motor_Handle_t *motor, float speed_percent)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/motor_control.h",
+        "line": 14
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "Motor_SetSpeedPercent"
+      ],
+      "writes": [],
+      "description": "Aplica avance con magnitud porcentual.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/motor_control.c",
+        "line": 154
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "Motor_Init",
+      "signature": "AM_Result Motor_Init(Motor_Handle_t *motor, const Motor_InitConfig_t *config)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/motor_control.h",
+        "line": 7
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "Motor_NormalizeMaxPwm",
+        "Motor_Stop"
+      ],
+      "writes": [
+        "backward_channel",
+        "direction",
+        "forward_channel",
+        "htim",
+        "max_pwm",
+        "min_pwm_backward",
+        "min_pwm_forward",
+        "port",
+        "speedPercent"
+      ],
+      "description": "Configura los motores o la pareja de tracción con canales y límites suministrados.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/motor_control.c",
+        "line": 74
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "Motor_SetMinPwm",
+      "signature": "void Motor_SetMinPwm(Motor_Handle_t *motor, uint16_t min_pwm_forward, uint16_t min_pwm_backward)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/motor_control.h",
+        "line": 18
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "Motor_NormalizeMaxPwm"
+      ],
+      "writes": [
+        "min_pwm_backward",
+        "min_pwm_forward"
+      ],
+      "description": "Actualiza los mínimos PWM de avance y retroceso.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/motor_control.c",
+        "line": 189
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "Motor_SetSignedPercent",
+      "signature": "AM_Result Motor_SetSignedPercent(Motor_Handle_t *motor, float signed_percent)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/motor_control.h",
+        "line": 12
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "Motor_AbsPercent",
+        "Motor_SetSpeedPercent"
+      ],
+      "writes": [],
+      "description": "Aplica porcentajes firmados; el signo selecciona el sentido de cada motor.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/motor_control.c",
+        "line": 141
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "Motor_SetSpeedPercent",
+      "signature": "AM_Result Motor_SetSpeedPercent(Motor_Handle_t *motor, float speed_percent, Motor_Direction_t direction)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/motor_control.h",
+        "line": 9
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "Motor_ClampSpeedPercent",
+        "Motor_SpeedPercentToPwm",
+        "Motor_Stop",
+        "isfinite",
+        "set_compare"
+      ],
+      "writes": [
+        "direction",
+        "speedPercent"
+      ],
+      "description": "Aplica magnitud porcentual limitada y dirección explícita.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/motor_control.c",
+        "line": 111
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "Motor_SpeedPercentToDisplay",
+      "signature": "uint8_t Motor_SpeedPercentToDisplay(float speed_percent)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/motor_control.h",
+        "line": 25
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "Motor_ClampSpeedPercent"
+      ],
+      "writes": [],
+      "description": "Convierte el porcentaje a un valor entero para presentación.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/motor_control.c",
+        "line": 33
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "Motor_SpeedPercentToPwm",
+      "signature": "uint16_t Motor_SpeedPercentToPwm(const Motor_Handle_t *motor, float speed_percent, Motor_Direction_t direction)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/motor_control.h",
+        "line": 21
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "Motor_ClampSpeedPercent",
+        "Motor_NormalizeMaxPwm"
+      ],
+      "writes": [],
+      "description": "Convierte porcentaje a PWM usando mínimo direccional y máximo configurado.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/motor_control.c",
+        "line": 39
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "Motor_Start",
+      "signature": "AM_Result Motor_Start(Motor_Handle_t *motor)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/motor_control.h",
+        "line": 8
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "Motor_Stop",
+        "start"
+      ],
+      "writes": [],
+      "description": "Inicia los canales PWM del motor mediante el puerto externo.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/motor_control.c",
+        "line": 94
+      },
+      "linkage": "header"
+    },
+    {
+      "name": "Motor_Stop",
+      "signature": "void Motor_Stop(Motor_Handle_t *motor)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Inc/motor_control.h",
+        "line": 16
+      },
+      "definition": false,
+      "private": false,
+      "calls": [
+        "set_compare"
+      ],
+      "writes": [
+        "speedPercent"
+      ],
+      "description": "Lleva ambos canales a parada libre.",
+      "descriptionOrigin": "editorial",
+      "implementation": {
+        "rootId": "f4",
+        "path": "Core/Src/motor_control.c",
+        "line": 164
+      },
+      "linkage": "header"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "Motor_NormalizeMaxPwm",
+      "signature": "static uint16_t Motor_NormalizeMaxPwm(uint16_t max_pwm)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/motor_control.c",
+        "line": 12
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Normalize Max Pwm de Motores y tracción diferencial; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "Motor_AbsPercent",
+      "signature": "static float Motor_AbsPercent(float signed_percent)",
+      "evidence": {
+        "rootId": "f4",
+        "path": "Core/Src/motor_control.c",
+        "line": 17
+      },
+      "definition": true,
+      "private": true,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Abs Percent de Motores y tracción diferencial; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    }
+  ]
+}

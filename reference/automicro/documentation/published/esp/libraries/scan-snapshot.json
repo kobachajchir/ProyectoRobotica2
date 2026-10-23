@@ -1,0 +1,239 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "esp:module/src/wifi_scan_snapshot.h",
+  "slug": "scan-snapshot",
+  "title": "Snapshot de resultados Wi-Fi",
+  "target": "esp",
+  "kind": "datos",
+  "status": "source-documented",
+  "snapshotDate": "2026-10-20",
+  "verification": "not-run-user-instruction",
+  "responsibility": "Conserva resultados de scan en un modelo estable para consumidores del SDK y protocolo.",
+  "scope": "Entradas SSID, señal, canal y seguridad; no iniciar ni cancelar radio.",
+  "state": "El snapshot posee copia acotada de resultados; cadenas y contadores respetan capacidades declaradas.",
+  "modularity": "Datos neutrales del scan y operaciones de lectura, separados de lifetime del SDK.",
+  "lifecycle": [
+    "Capturar desde resultados válidos antes de borrar recursos de scan.",
+    "Consumir el snapshot para reportes/páginas sin depender de punteros del SDK liberados."
+  ],
+  "interactions": [
+    "Bridge y handlers UNER comparten el mismo resultado observado."
+  ],
+  "limitations": [
+    "No inventar detalles de red no disponibles; respetar cantidad/capacidad real."
+  ],
+  "relationships": [],
+  "findings": [],
+  "files": [
+    {
+      "rootId": "esp",
+      "path": "src/wifi_scan_snapshot.c",
+      "sha256": "7886501167f74ec241ef78c285db9dbe283e0207db72cbbf04174e1f41e6c704",
+      "imports": [
+        "wifi_scan_snapshot.h",
+        "string.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    },
+    {
+      "rootId": "esp",
+      "path": "src/wifi_scan_snapshot.h",
+      "sha256": "08d4dee6da614d8a014f4d30fac05cac5f14179b1f11851721fc4c3e7e413472",
+      "imports": [
+        "stdint.h",
+        "config.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    }
+  ],
+  "types": [
+    {
+      "name": "WifiScanSnapshotEntry",
+      "fields": [
+        {
+          "name": "ssid",
+          "declaration": "char ssid[SSID_MAX_LEN + 1]",
+          "callback": false,
+          "ownerType": "WifiScanSnapshotEntry",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/wifi_scan_snapshot.h",
+            "line": 14
+          },
+          "description": "Dato de estado/configuración `ssid`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "bssid",
+          "declaration": "uint8_t bssid[6]",
+          "callback": false,
+          "ownerType": "WifiScanSnapshotEntry",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/wifi_scan_snapshot.h",
+            "line": 15
+          },
+          "description": "Dato de estado/configuración `bssid`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "signal_strength",
+          "declaration": "int8_t signal_strength",
+          "callback": false,
+          "ownerType": "WifiScanSnapshotEntry",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/wifi_scan_snapshot.h",
+            "line": 16
+          },
+          "description": "Dato de estado/configuración `signal_strength`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "encryption_type",
+          "declaration": "uint8_t encryption_type",
+          "callback": false,
+          "ownerType": "WifiScanSnapshotEntry",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/wifi_scan_snapshot.h",
+            "line": 17
+          },
+          "description": "Dato de estado/configuración `encryption_type`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "channel",
+          "declaration": "uint8_t channel",
+          "callback": false,
+          "ownerType": "WifiScanSnapshotEntry",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/wifi_scan_snapshot.h",
+            "line": 18
+          },
+          "description": "Dato de estado/configuración `channel`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_scan_snapshot.h",
+        "line": 13
+      }
+    },
+    {
+      "name": "WifiScanSnapshot",
+      "fields": [
+        {
+          "name": "entries",
+          "declaration": "WifiScanSnapshotEntry entries[WIFI_SCAN_SNAPSHOT_MAX]",
+          "callback": false,
+          "ownerType": "WifiScanSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/wifi_scan_snapshot.h",
+            "line": 23
+          },
+          "description": "Dato de estado/configuración `entries`; declaración estructural, interpretación específica pendiente de ampliar."
+        },
+        {
+          "name": "count",
+          "declaration": "uint8_t count",
+          "callback": false,
+          "ownerType": "WifiScanSnapshot",
+          "evidence": {
+            "rootId": "esp",
+            "path": "src/wifi_scan_snapshot.h",
+            "line": 24
+          },
+          "description": "Dato de estado/configuración `count`; declaración estructural, interpretación específica pendiente de ampliar."
+        }
+      ],
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_scan_snapshot.h",
+        "line": 22
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "WifiScanSnapshot_Append",
+      "signature": "uint8_t WifiScanSnapshot_Append(WifiScanSnapshot *snapshot, const WifiScanSnapshotEntry *entry)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_scan_snapshot.c",
+        "line": 11
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Append de Snapshot de resultados Wi-Fi; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "WifiScanSnapshot_Count",
+      "signature": "uint8_t WifiScanSnapshot_Count(const WifiScanSnapshot *snapshot)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_scan_snapshot.c",
+        "line": 20
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación Count de Snapshot de resultados Wi-Fi; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "WifiScanSnapshot_FindBySsid",
+      "signature": "uint8_t WifiScanSnapshot_FindBySsid(const WifiScanSnapshot *snapshot, const char *ssid, WifiScanSnapshotEntry *out)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_scan_snapshot.c",
+        "line": 33
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "strcmp"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `strcmp` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "WifiScanSnapshot_Get",
+      "signature": "uint8_t WifiScanSnapshot_Get(const WifiScanSnapshot *snapshot, uint8_t index, WifiScanSnapshotEntry *out)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_scan_snapshot.c",
+        "line": 25
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Consulta Snapshot de resultados Wi-Fi dentro de Snapshot de resultados Wi-Fi.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "WifiScanSnapshot_Init",
+      "signature": "void WifiScanSnapshot_Init(WifiScanSnapshot *snapshot)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/wifi_scan_snapshot.c",
+        "line": 5
+      },
+      "definition": true,
+      "private": false,
+      "calls": [
+        "memset"
+      ],
+      "writes": [],
+      "description": "Inicializa Snapshot de resultados Wi-Fi dentro de Snapshot de resultados Wi-Fi.",
+      "descriptionOrigin": "inferred-name"
+    }
+  ],
+  "internalFunctions": [],
+  "hooks": []
+}

@@ -1,0 +1,68 @@
+# Carpeta reference/automicro/documentation/published/esp/libraries
+
+[Maestro](../../../../../../../INFORME_MAESTRO.md) · [Informe del repositorio](../../../../../../INFORME_ADAPTACION.md).
+
+Documentación y evidencia; distinguir propuesta, fuente parcial y antecedentes históricos. No son resultados de ejecución.
+
+Actualizar decisiones/código y secciones vinculadas de forma focalizada; preservar evidencia/historial. Wire nuevo requiere ficha AFR2 solo en esta central. [Método](../../../../../../documentation/METHOD.md).
+
+## Archivos vecinos
+
+- [application.json](<application.json>)
+- [application.md](<application.md>)
+- [boot-mode.json](<boot-mode.json>)
+- [boot-mode.md](<boot-mode.md>)
+- [command-catalog.json](<command-catalog.json>)
+- [command-catalog.md](<command-catalog.md>)
+- [configuration-types.json](<configuration-types.json>)
+- [configuration-types.md](<configuration-types.md>)
+- [extension-profiles.json](<extension-profiles.json>)
+- [extension-profiles.md](<extension-profiles.md>)
+- [http-websocket.json](<http-websocket.json>)
+- [http-websocket.md](<http-websocket.md>)
+- [json-bridge.json](<json-bridge.json>)
+- [json-bridge.md](<json-bridge.md>)
+- [littlefs-adapter.json](<littlefs-adapter.json>)
+- [littlefs-adapter.md](<littlefs-adapter.md>)
+- [oled-canvas.json](<oled-canvas.json>)
+- [oled-canvas.md](<oled-canvas.md>)
+- [payload-decoders.json](<payload-decoders.json>)
+- [payload-decoders.md](<payload-decoders.md>)
+- [ports-platform.json](<ports-platform.json>)
+- [ports-platform.md](<ports-platform.md>)
+- [preferences-store.json](<preferences-store.json>)
+- [preferences-store.md](<preferences-store.md>)
+- [scan-arbiter.json](<scan-arbiter.json>)
+- [scan-arbiter.md](<scan-arbiter.md>)
+- [scan-snapshot.json](<scan-snapshot.json>)
+- [scan-snapshot.md](<scan-snapshot.md>)
+- [sensors-facade.json](<sensors-facade.json>)
+- [sensors-facade.md](<sensors-facade.md>)
+- [serial-transport.json](<serial-transport.json>)
+- [serial-transport.md](<serial-transport.md>)
+- [sessions.json](<sessions.json>)
+- [sessions.md](<sessions.md>)
+- [status-led.json](<status-led.json>)
+- [status-led.md](<status-led.md>)
+- [streams.json](<streams.json>)
+- [streams.md](<streams.md>)
+- [timebase.json](<timebase.json>)
+- [timebase.md](<timebase.md>)
+- [uart-transactions.json](<uart-transactions.json>)
+- [uart-transactions.md](<uart-transactions.md>)
+- [uner-application.json](<uner-application.json>)
+- [uner-application.md](<uner-application.md>)
+- [uner-core.json](<uner-core.json>)
+- [uner-core.md](<uner-core.md>)
+- [uner-device.json](<uner-device.json>)
+- [uner-device.md](<uner-device.md>)
+- [uner-handle.json](<uner-handle.json>)
+- [uner-handle.md](<uner-handle.md>)
+- [uner-queue.json](<uner-queue.json>)
+- [uner-queue.md](<uner-queue.md>)
+- [wifi-facade.json](<wifi-facade.json>)
+- [wifi-facade.md](<wifi-facade.md>)
+- [wifi-service.json](<wifi-service.json>)
+- [wifi-service.md](<wifi-service.md>)
+
+Estado: material preparado sin build, tests, validadores ni prueba física. Los hashes de fuentes copiadas están en [manifest](../../../../../../provenance/files.json).

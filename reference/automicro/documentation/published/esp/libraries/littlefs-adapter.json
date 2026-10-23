@@ -1,0 +1,232 @@
+{
+  "schemaVersion": 1,
+  "format": "amdoc-1",
+  "id": "esp:module/src/nvs_littlefs.h",
+  "slug": "littlefs-adapter",
+  "title": "Codec y almacenamiento LittleFS",
+  "target": "esp",
+  "kind": "plataforma",
+  "status": "source-documented",
+  "snapshotDate": "2026-10-20",
+  "verification": "not-run-user-instruction",
+  "responsibility": "Implementa archivos y codificación de configuración sobre LittleFS del ESP.",
+  "scope": "Mount, load/write/rename/remove y traducción AppConfig; separado del bundle Web servido.",
+  "state": "Recursos de filesystem y buffers temporales pertenecen al adaptador; los strings de configuración se copian al modelo.",
+  "modularity": "Dependencia Arduino/FS/codec esperada; NvsStore recibe la tabla para no importar filesystem directamente.",
+  "lifecycle": [
+    "Montar antes de lectura/escritura.",
+    "Conservar semántica de archivo temporal/respaldo y resultado al sustituir backend."
+  ],
+  "interactions": [
+    "NvsStore recibe operaciones; servidor también usa LittleFS pero con ciclo y recursos propios."
+  ],
+  "limitations": [
+    "Espacio total se comparte con assets Web; escribir configuración no debe suponer disponibilidad ilimitada.",
+    "No se montó ni verificó filesystem físico en esta entrega."
+  ],
+  "relationships": [],
+  "findings": [],
+  "files": [
+    {
+      "rootId": "esp",
+      "path": "src/nvs_littlefs.cpp",
+      "sha256": "27675fea9eb2dc6f68be1d1b8bf09e525d898c7b9e1f40217b3bcf09af43e979",
+      "imports": [
+        "nvs_littlefs.h",
+        "LittleFS.h",
+        "ArduinoJson.h",
+        "string.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    },
+    {
+      "rootId": "esp",
+      "path": "src/nvs_littlefs.h",
+      "sha256": "d4ed8400806dd869a5c9cbd4d542085259a3b7670e07e38debb5d3e55fc444e9",
+      "imports": [
+        "nvs_store.h"
+      ],
+      "analysisLevel": "c-cpp-structural"
+    }
+  ],
+  "types": [],
+  "functions": [
+    {
+      "name": "NVS_LittleFSOps",
+      "signature": "const NvsStoreOps &NVS_LittleFSOps()",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/nvs_littlefs.cpp",
+        "line": 123
+      },
+      "definition": true,
+      "private": false,
+      "calls": [],
+      "writes": [
+        "exists",
+        "load",
+        "mount",
+        "remove",
+        "rename",
+        "write"
+      ],
+      "description": "Operación NVS Little FSOps de Codec y almacenamiento LittleFS; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    },
+    {
+      "name": "doc",
+      "signature": "DynamicJsonDocument doc(768)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/nvs_littlefs.cpp",
+        "line": 37
+      },
+      "definition": false,
+      "private": false,
+      "calls": [],
+      "writes": [],
+      "description": "Operación doc de Codec y almacenamiento LittleFS; semántica fina pendiente de ampliación.",
+      "descriptionOrigin": "inferred-name"
+    }
+  ],
+  "internalFunctions": [
+    {
+      "name": "cpy",
+      "signature": "static void cpy(char *dst, const char *src, size_t n)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/nvs_littlefs.cpp",
+        "line": 6
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "memcpy"
+      ],
+      "writes": [],
+      "description": "Coordina `memcpy` para Codec y almacenamiento LittleFS.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "exists",
+      "signature": "static bool exists(void *, const char *path)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/nvs_littlefs.cpp",
+        "line": 120
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "exists"
+      ],
+      "writes": [],
+      "description": "Coordina `exists` para Codec y almacenamiento LittleFS.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "loadConfigFile",
+      "signature": "static bool loadConfigFile(void *, const char *path, AppConfig &out, bool *requires_migration)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/nvs_littlefs.cpp",
+        "line": 23
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "close",
+        "cpy",
+        "deserializeJson",
+        "doc",
+        "exists",
+        "isNull",
+        "open",
+        "size"
+      ],
+      "writes": [
+        "apFallbackEnabled",
+        "apProtected",
+        "initializedNvs",
+        "nextBootMode",
+        "schemaVersion"
+      ],
+      "description": "Coordina `close`, `cpy`, `deserializeJson` para Codec y almacenamiento LittleFS.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "mount",
+      "signature": "static bool mount(void *)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/nvs_littlefs.cpp",
+        "line": 119
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "begin"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `begin` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "removeFile",
+      "signature": "static bool removeFile(void *, const char *path)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/nvs_littlefs.cpp",
+        "line": 121
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "remove"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `remove` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "renameFile",
+      "signature": "static bool renameFile(void *, const char *from, const char *to)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/nvs_littlefs.cpp",
+        "line": 122
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "rename"
+      ],
+      "writes": [],
+      "description": "Adapta la llamada a `rename` con el contexto de esta integración.",
+      "descriptionOrigin": "structural"
+    },
+    {
+      "name": "writeConfigFile",
+      "signature": "static bool writeConfigFile(void *, const char *path, const AppConfig &cfg)",
+      "evidence": {
+        "rootId": "esp",
+        "path": "src/nvs_littlefs.cpp",
+        "line": 86
+      },
+      "definition": true,
+      "private": true,
+      "calls": [
+        "close",
+        "exists",
+        "flush",
+        "open",
+        "remove",
+        "serializeJson"
+      ],
+      "writes": [],
+      "description": "Coordina `close`, `exists`, `flush` para Codec y almacenamiento LittleFS.",
+      "descriptionOrigin": "structural"
+    }
+  ],
+  "hooks": []
+}
