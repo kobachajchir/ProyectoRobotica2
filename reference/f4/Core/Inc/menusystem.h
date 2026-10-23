@@ -1,0 +1,80 @@
+/*
+ * menuSystem.h
+ *
+ *  Created on: Jun 11, 2025
+ *      Author: kobac
+ */
+
+#ifndef INC_MENUSYSTEM_H_
+#define INC_MENUSYSTEM_H_
+
+#include "types/menu_types.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#ifndef MAX_VISIBLE_ITEMS
+#define MAX_VISIBLE_ITEMS 2  // se puede redefinir externamente si se desea
+#endif
+
+/**
+ * @brief Inicializa el sistema de menú apuntando al menú actual.
+ * @param system Puntero al sistema de menú
+ */
+void MenuSys_Init(MenuSystem *system);
+
+/**
+ * @brief Configura los callbacks del sistema de menú.
+ * @param system Puntero al sistema de menú
+ * @param clear Función para limpiar pantalla
+ * @param draw Función para dibujar cada ítem
+ * @param render Función para renderizar la pantalla completa
+ * @param insideFlag Puntero a la bandera de estado dentro del menú
+ */
+void MenuSys_SetCallbacks(MenuSystem *ms,
+                          ClearFunction clear,
+                          DrawItemFunction draw,
+                          RenderFunction render,
+                          volatile uint8_t *insideFlag,
+                          RenderFunction dashboardRender);
+
+void MenuSys_MoveCursorDown(MenuSystem *ms);
+void MenuSys_MoveCursorUp(MenuSystem *ms);
+bool MenuSys_SelectVisibleItem(MenuSystem *ms, uint8_t visible_position_one_based);
+bool MenuSys_MoveVisiblePage(MenuSystem *ms, int8_t direction);
+
+void MenuSys_RenderMenu(MenuSystem *ms);
+void MenuSys_NavigateBack(MenuSystem *ms);
+void MenuSys_NavigateToMain(MenuSystem *ms);
+void MenuSys_ResetMenu(MenuSystem *ms);
+void MenuSys_OpenSubMenu(MenuSystem *ms, SubMenu *submenu);
+void MenuSys_HandleClick(MenuSystem *ms);
+void MenuSys_SetCurrentScreenCode(MenuSystem *ms, ScreenCode_t screen_code, ScreenReportSource_t source);
+void MenuSys_NotifyScreenContentChanged(MenuSystem *ms, ScreenReportSource_t source);
+void MenuSys_SetCurrentMenuScreenCode(MenuSystem *ms);
+ScreenCode_t MenuSys_GetCurrentScreenCode(const MenuSystem *ms);
+uint8_t MenuSys_GetCurrentScreenSource(const MenuSystem *ms);
+void MenuSys_FlushScreenReport(MenuSystem *ms);
+void MenuSys_SetCurrentMenuSelection(MenuSystem *ms,
+                                     uint8_t selected_index,
+                                     uint8_t item_count,
+                                     ScreenReportSource_t source);
+void MenuSys_ReportCurrentMenuSelection(MenuSystem *ms, ScreenReportSource_t source);
+bool MenuSys_RequestCurrentMenuSelectionSnapshot(MenuSystem *ms);
+void MenuSys_ClearCurrentMenuSelection(MenuSystem *ms, ScreenReportSource_t source);
+void MenuSys_FlushMenuSelectionReport(MenuSystem *ms);
+
+bool MenuSys_IsItemVisible(const MenuItem *item);
+bool MenuSys_IsItemAvailable_H(const MenuSystem *ms, const MenuItem *item);
+
+static inline bool Menu_IsCurrentItem(const MenuSystem *sys, const MenuItem *item)
+{
+    return &sys->currentMenu->items[sys->currentMenu->currentItemIndex] == item;
+}
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* INC_MENUSYSTEM_H_ */

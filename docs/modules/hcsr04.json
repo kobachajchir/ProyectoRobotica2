@@ -1,0 +1,15 @@
+{
+  "schema": "afr2-module-1",
+  "id": "atmega:module/include/board_pinmap.h",
+  "title": "Nuevo driver HC-SR04",
+  "responsibility": "No se localizó un driver reusable directo en la fuente F4. El pinout recibido asigna TRIG D30 y ECHO D31.",
+  "changes_required": "Implementar idle, trigger, wait-rise, wait-fall, publish y timeout con reloj fino; no delay/pulseIn. D31 requiere muestreo periódico de resolución suficiente o recableado a captura con ficha. Publicar distancia/validez/edad/error; timeout no significa camino libre. Si se usa servo D13, medir solo después de estabilización y marcar orientación. Cobertura frontal no protege lateral/retroceso.",
+  "evidence": [
+    "include/board_pinmap.h",
+    "../AutoFinalRobo2-Contracts/hardware/supplied/Pinout_OSOYOO_Mecanum.csv"
+  ],
+  "findings": [
+    "AFRDOC-004"
+  ],
+  "status": "source-documented-not-built"
+}
