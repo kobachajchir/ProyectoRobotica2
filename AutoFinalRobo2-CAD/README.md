@@ -19,6 +19,8 @@ Leer [AGENTS.md](AGENTS.md), [adaptación](INFORME_ADAPTACION.md) y [requisitos 
 
 Los insumos de reference/supplied provienen de la antigua carpeta CADS. Sus nombres no acreditan medidas, componentes ni ajuste al auto real. El origen de descarga, autoría y licencia siguen pendientes. El GLB del robot anterior en Web/reference no representa este Mecanum.
 
-Versionar fuentes editables y scripts de generación, junto con parámetros, manifests y bibliotecas propias. Dependencias descargables y salidas se mantienen fuera de Git con procedencia y pasos de recuperación documentados. No ejecutar herramientas de diseño/validación ni generar geometría hasta recibir los planos e indicaciones correspondientes.
+Versionar fuentes editables y scripts de generación, junto con parámetros, manifests y bibliotecas propias. Dependencias descargables y salidas se mantienen fuera de Git con procedencia y pasos de recuperación documentados. El [plan de Fusion](docs/PLAN_MODELO_3D_FUSION.md) define la ejecución futura del auto base sin cables; permite inferencias documentadas y CAD de Internet. La pieza nueva, soporte y PCB siguen pendientes; preparar OLED 0,96 pulgadas/encoder sin breakout y reservar espacio. La entrega actual solo documenta/publica el plan; no genera geometría ni ejecuta validadores.
 
 [Organización Git e historial](../AutoFinalRobo2-Contracts/docs/ESTRUCTURA_Y_GIT.md) · [Registro AFR2-20261023-04](../AutoFinalRobo2-Contracts/changes/2026-10-23-04-cad-and-monorepo.md).
+
+[Plan completo para continuar en la otra PC](docs/PLAN_MODELO_3D_FUSION.md). Estado AFR2-20261023-05: planificación registrada; búsqueda/descarga de modelos y ensamble todavía no iniciados.

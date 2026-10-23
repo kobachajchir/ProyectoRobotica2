@@ -35,3 +35,9 @@ No hay .ino completo del proveedor entre los ocho adjuntos. El PDF conceptual mu
 - ADR-019: AutoFinalRobo2-CAD reúne esquema/PCB KiCad, pieza nueva/soporte/cubierta y ensamblaje completo del auto. Los nueve insumos existentes de CADS se trasladan sin cambiar su contenido a CAD/reference/supplied. La autoría, licencia y URL de esos modelos siguen por identificar; no acreditan geometría del robot real.
 - ADR-020: versionar fuentes, manifests, lockfiles y bibliotecas CAD propias. Excluir dependencias instaladas, descargas recuperables, cachés, builds, backups automáticos y exportaciones regenerables. Conservar evidencia e insumos sin recuperación documentada. [Política](ESTRUCTURA_Y_GIT.md).
 - Crear la estructura no resuelve cotas, huellas, alimentación ni tornillería. El diseño nuevo y cualquier ERC/DRC, build, test o prueba física siguen pendientes de indicaciones/autorización según las reglas del proyecto.
+
+## Plan Fusion y origin / AFR2-20261023-05
+
+- ADR-021: modelo futuro del auto base mediante el MCP de Fusion existente. Usar inventario/manual local de la variante Model Y, mejores CAD correspondientes y descargas Web; inferencias justificadas, explícitas y editables. Sin cables, mazos ni jumpers; conectores físicos conservados.
+- ADR-022: pieza nueva/soporte/PCB y cubierta modificada pendientes. Reservar espacio; preparar referencias OLED 0,96 pulgadas y encoder mecánico KY-040 sin placa breakout, más perilla. No declarar esos componentes instalados.
+- ADR-023: destino aprobado privado kobachajchir/ProyectoRobotica2, origin HTTPS y rama remota main, con los cuatro historiales/etiquetas conservados. La entrega solo guarda/publica el [plan](../../AutoFinalRobo2-CAD/docs/PLAN_MODELO_3D_FUSION.md); no inicia el modelado.

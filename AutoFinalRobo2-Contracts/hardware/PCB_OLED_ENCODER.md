@@ -27,3 +27,7 @@ Cuando el usuario continúe: leer la skill de ruteo que indique y los archivos m
 Datos para esa etapa: contorno y cotas/unidades de cubierta, agujeros y zonas disponibles, espesor/material, dimensiones/modelos/pines del OLED y encoder, altura del eje/perilla, tensión VCC, orientación de Dupont, tornillería y espacio inferior. No pedirlos ahora como bloqueo del trabajo documental. Ubicación decidida por el usuario en AFR2-20261023-04: [AutoFinalRobo2-CAD](../../AutoFinalRobo2-CAD/README.md), quinto módulo del único Git en D:/ProyectoRobotica2. KiCad irá en kicad/oled-encoder, la pieza nueva en mecanica/pieza-nueva y el ensamblaje del vehículo en mecanica/auto-completo. Estructura preparada; diseño todavía pendiente.
 
 La regulación/traducción UART declarada en el shield Wi-Fi no fija VCC ni pull-ups de esta placa OLED/encoder. No tomar VIN/VOUT como salida regulada para J2. KEY/RST pertenecen al ESP y no agregan botones a la navegación del usuario.
+
+## Contexto del plan 3D / AFR2-20261023-05
+
+El usuario identifica OLED 0,96 pulgadas y encoder mecánico KY-040 sin placa breakout, con perilla. Esta identificación orienta la búsqueda de modelos, pero no determina controlador, VCC, huellas ni cotas exactas. El [plan de Fusion](../../AutoFinalRobo2-CAD/docs/PLAN_MODELO_3D_FUSION.md) reserva espacio y prepara esas referencias; pieza nueva, soporte, PCB y modificación de cubierta siguen pendientes de planos. El ensamble base se planifica sin cables/mazos/jumpers, conservando conectores físicos.

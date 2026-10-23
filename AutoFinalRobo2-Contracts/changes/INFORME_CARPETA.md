@@ -21,3 +21,5 @@ Estado: material preparado sin build, tests, validadores ni prueba física. Los 
 - [AFR2-20261023-03](2026-10-23-03-wifi-shield-evidence.md)
 
 - [AFR2-20261023-04: CAD y Git global](2026-10-23-04-cad-and-monorepo.md)
+
+- [AFR2-20261023-05: plan Fusion y origin privado](2026-10-23-05-fusion-plan-and-origin.md).

@@ -17,7 +17,7 @@ Estado: preparación y fuente parcial; sin build/test/flash. Próximo paso: back
 - [Menús y submenús objetivo](documentation/MENU_PLAN.md), pendientes de implementar.
 - [PCB OLED/encoder y soporte futuro](hardware/PCB_OLED_ENCODER.md): cabeceras SDA/SCL del shield, señales 1x5 y VCC/GND 1x2, ambos paso 2,54 mm.
 
-La raíz de trabajo y de Git es ahora D:/ProyectoRobotica2; Contracts sigue siendo la central documental. El usuario agregará esa raíz como proyecto en Codex. [Organización, exclusiones y conservación del historial](docs/ESTRUCTURA_Y_GIT.md). La creación del módulo CAD prepara su ubicación; el esquema, ruteo y modelado nuevo siguen pendientes de planos e indicaciones.
+La raíz de trabajo y de Git es ahora D:/ProyectoRobotica2; Contracts sigue siendo la central documental. El usuario agregará esa raíz como proyecto en Codex. [Organización, exclusiones y conservación del historial](docs/ESTRUCTURA_Y_GIT.md). El [plan de Fusion](../AutoFinalRobo2-CAD/docs/PLAN_MODELO_3D_FUSION.md) define el futuro ensamble del auto base sin cables y con CAD/inferencias documentadas; la pieza nueva, soporte y PCB siguen pendientes. Esta entrega guarda/publica el plan y no inicia el modelado.
 
 ## Shield Wi-Fi documentado
 

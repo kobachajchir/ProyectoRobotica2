@@ -1,12 +1,12 @@
 # Alcance y datos pendientes
 
-Este módulo concentra el diseño interno del vehículo y la electrónica asociada. La organización está creada; los diseños nuevos están pendientes.
+Este módulo concentra el diseño interno del vehículo y la electrónica asociada. La organización está creada y el [plan de Fusion](PLAN_MODELO_3D_FUSION.md) define el ensamble futuro del auto base, sin cables y con inferencias documentadas. Pieza nueva/soporte/PCB siguen pendientes. La entrega actual solo guarda/publica el plan.
 
 | Área | Entregables futuros | Datos pendientes |
 | --- | --- | --- |
 | PCB OLED/encoder | Proyecto KiCad editable, esquema, PCB, bibliotecas propias | Módulos y pinouts reales, VCC/pull-ups, huellas, contorno, orientación J1/J2 y reglas de fabricación |
 | Pieza nueva | Fuente paramétrica editable, soporte/cubierta y plano acotado | Planos del usuario, material, espesores, espacio libre y fijación |
-| Auto completo | Ensamblaje editable con componentes y referencias relativas | Chasis real, posición de placas/motores/ruedas/batería, envolventes y cableado |
+| Auto completo | Ensamblaje editable con componentes y referencias relativas | Reconstrucción documental de chasis y posición de placas/motores/ruedas/batería; inferencias explícitas; sin cables |
 | Fabricación/impresión | Exportaciones derivadas de una revisión identificada | Formatos, tolerancias, proceso y autorización de verificaciones |
 
 La [especificación PCB](../../AutoFinalRobo2-Contracts/hardware/PCB_OLED_ENCODER.md) establece dos conectores 2,54 mm (señales 1x5 y VCC/GND comunes 1x2) y fijación con dos tornillos/tuercas. No determina tamaños de tornillo, altura, espesor, tensión ni huellas. Leer también [pinout](../../AutoFinalRobo2-Contracts/hardware/PINOUT.md), [shield](../../AutoFinalRobo2-Contracts/hardware/WIFI_SHIELD.md) y [carga](../../AutoFinalRobo2-Contracts/hardware/FLASHING.md).

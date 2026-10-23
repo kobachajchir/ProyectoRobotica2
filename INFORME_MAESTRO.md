@@ -14,7 +14,7 @@ Continuar desde [AutoFinalRobo2-Contracts](AutoFinalRobo2-Contracts/README.md). 
 | AutoFinalRobo2-Contracts | Contratos, hardware, pantallas y coordinación | [Inicio](AutoFinalRobo2-Contracts/README.md), contracts, hardware, documentation, changes |
 | AutoFinalRobo2-CAD | KiCad, pieza nueva y modelo completo del auto | [Inicio](AutoFinalRobo2-CAD/README.md), kicad, mecanica, reference, docs |
 
-Un único Git en D:/ProyectoRobotica2 administra cinco módulos, incluido AutoFinalRobo2-CAD. Sin remotos. Los cuatro historiales anteriores se conservan como ancestros y etiquetas; los metadatos originales están resguardados dentro de .git/legacy-repositories. Ver [organización y exclusiones](AutoFinalRobo2-Contracts/docs/ESTRUCTURA_Y_GIT.md). No se crean dependencias Git ni escrituras hacia AutoMicro. [Estado de entrega](AutoFinalRobo2-Contracts/provenance/ENTREGA.md).
+Un único Git en D:/ProyectoRobotica2 administra cinco módulos, incluido AutoFinalRobo2-CAD. Origin privado: [kobachajchir/ProyectoRobotica2](https://github.com/kobachajchir/ProyectoRobotica2), rama remota main. Los cuatro historiales anteriores se conservan como ancestros y etiquetas; los metadatos originales están resguardados dentro de .git/legacy-repositories. Ver [organización y exclusiones](AutoFinalRobo2-Contracts/docs/ESTRUCTURA_Y_GIT.md). No se crean dependencias Git ni escrituras hacia AutoMicro. [Estado de entrega](AutoFinalRobo2-Contracts/provenance/ENTREGA.md).
 
 ## Arquitectura acordada
 
@@ -76,3 +76,5 @@ El shield expone SDA/SCL. [PCB OLED/encoder](AutoFinalRobo2-Contracts/hardware/P
 Actualización AFR2-20261023-03: [informe del shield](AutoFinalRobo2-Contracts/hardware/WIFI_SHIELD.md) y [prompt actualizado](AutoFinalRobo2-Contracts/docs/PROMPT_CONTINUIDAD.md). Evidencia adicional con procedencia propia; código de los tres consumidores sin cambio.
 
 AFR2-20261023-04: AutoFinalRobo2-CAD y Git único en la raíz. Los nueve insumos de CADS se trasladan con inventario; no se modifica su contenido ni se crea diseño nuevo. Fuentes de firmware/Web y documentos originales preservados. [Registro](AutoFinalRobo2-Contracts/changes/2026-10-23-04-cad-and-monorepo.md).
+
+AFR2-20261023-05: [plan 3D en Fusion](AutoFinalRobo2-CAD/docs/PLAN_MODELO_3D_FUSION.md), inventario/CAD de Internet y ensamble sin cables. Pieza nueva/soporte/PCB pendientes, espacio reservado, OLED 0,96 pulgadas y encoder KY-040 sin breakout/perilla como referencias. Origin privado ProyectoRobotica2 y main para continuar en otra PC; esta entrega no inicia el modelo.

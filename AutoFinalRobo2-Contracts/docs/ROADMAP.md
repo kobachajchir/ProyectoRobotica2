@@ -2,7 +2,7 @@
 
 ## 0. Hardware
 
-El módulo [AutoFinalRobo2-CAD](../../AutoFinalRobo2-CAD/README.md) ya reúne la ubicación de KiCad, pieza nueva y modelo completo del auto bajo el Git global. Sus insumos existentes no son un diseño adaptado. Recibir planos, cerrar dimensiones/huellas y documentar procedencia antes de modelar; [organización y pendientes](../../AutoFinalRobo2-CAD/docs/ALCANCE_Y_PENDIENTES.md).
+El módulo [AutoFinalRobo2-CAD](../../AutoFinalRobo2-CAD/README.md) ya reúne la ubicación de KiCad, pieza nueva y modelo completo del auto bajo el Git global. Sus insumos existentes no son un diseño adaptado. Seguir el [plan de Fusion](../../AutoFinalRobo2-CAD/docs/PLAN_MODELO_3D_FUSION.md) para reconstruir el auto base sin cables, con documentación/CAD e inferencias explícitas. Pieza nueva, soporte y PCB pendientes de planos; [organización y pendientes](../../AutoFinalRobo2-CAD/docs/ALCANCE_Y_PENDIENTES.md).
 
 Identificar OLED/controlador/tensión, pull-ups y encoder UI. La documentación del shield UART V1.3 y regulación/traducción declaradas están en [WIFI_SHIELD](../hardware/WIFI_SHIELD.md); faltan revisión física, recorrido por selector/puerto directo, flash real y configuración SPI/LittleFS. Confirmar rueda/canal/polaridad. Elegir captura HC-SR04 en D31 o documentar recableado. Definir Hall de cuatro ruedas sin ocupar la nueva UI/TWI.
 

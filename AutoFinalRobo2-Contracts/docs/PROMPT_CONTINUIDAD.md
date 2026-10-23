@@ -1,6 +1,6 @@
 # Prompt de continuidad: AutoFinalRobo2
 
-Contexto consolidado al 23/10/2026, incluida la evidencia del shield OSOYOO UART V1.3 de AFR2-20261023-03 y la organización CAD/Git de AFR2-20261023-04. Este texto reemplaza el prompt anterior.
+Contexto consolidado al 23/10/2026, incluida la evidencia del shield OSOYOO UART V1.3 de AFR2-20261023-03 la organización CAD/Git de AFR2-20261023-04 y el plan de Fusion de AFR2-20261023-05. Este texto reemplaza el prompt anterior.
 
 Estamos trabajando en AutoFinalRobo2, un proyecto independiente de AutoMicro ubicado en D:\ProyectoRobotica2. Yo agrego el proyecto a Codex; no crees otro chat por este pedido. La raíz de trabajo y de Git es D:\ProyectoRobotica2; el punto de entrada documental sigue siendo AutoFinalRobo2-Contracts.
 
@@ -187,7 +187,7 @@ La placa nueva tendrá OLED y encoder, con dos conectores externos Dupont de pas
 
 El orden descrito es propuesta; confirmar pin1/orientación al diseñar. VCC común está acordado, su tensión numérica sigue pendiente de los módulos y pull-ups. SW se plantea activo bajo. No convertir el puerto UART 3V3 del ESP en entrada del bus I2C.
 
-Más adelante entregaré planos de la cubierta superior, informe/idea y la skill de ruteo. Entonces prepararemos esquema y PCB KiCad editables, plano acotado y soporte 3D paramétrico, fijados con DOS tornillos y tuercas que sujeten placa, soporte y cubierta. Todavía no se eligieron dimensiones, posiciones, tornillería, huellas ni altura. La ubicación ya está creada: AutoFinalRobo2-CAD, dentro del Git global, con kicad/oled-encoder, mecanica/pieza-nueva y mecanica/auto-completo. No iniciar diseño nuevo por este prompt ni inferir las cotas desde los insumos existentes. Mantener manifests/lockfiles, bibliotecas propias y fuentes editables en Git; dependencias, descargas recuperables, caches y exportaciones regenerables quedan excluidas.
+Más adelante entregaré planos de la cubierta superior, informe/idea y la skill de ruteo. Entonces prepararemos esquema y PCB KiCad editables, plano acotado y soporte 3D paramétrico, fijados con DOS tornillos y tuercas que sujeten placa, soporte y cubierta. Todavía no se eligieron dimensiones, posiciones, tornillería, huellas ni altura. La ubicación ya está creada: AutoFinalRobo2-CAD, dentro del Git global, con kicad/oled-encoder, mecanica/pieza-nueva y mecanica/auto-completo. El plan de Fusion en ../AutoFinalRobo2-CAD/docs/PLAN_MODELO_3D_FUSION.md define el ensamble futuro del auto base sin cables, con CAD locales/descargados e inferencias explícitas. Pieza nueva/soporte/PCB siguen pendientes de planos; reservar espacio y preparar referencias OLED 0,96 pulgadas y encoder mecánico KY-040 sin breakout/perilla. La entrega actual solo guarda/publica el plan; no inicia CAD. Mantener manifests/lockfiles, bibliotecas propias y fuentes editables en Git; dependencias, descargas recuperables, caches y exportaciones regenerables quedan excluidas.
 
 ## Forma de continuar
 
@@ -204,3 +204,9 @@ En tu primera respuesta, después de leer, resumí el estado real, las decisione
 - [LittleFS/Core Arduino ESP8266](https://arduino-esp8266.readthedocs.io/en/latest/filesystem.html).
 
 Las fuentes completas y sus límites están en hardware/wifi-shield/FUENTES.md y provenance/wifi-shield.json; no hace falta volver a descargarlas para iniciar la lectura local.
+
+## Retoma del modelo 3D / AFR2-20261023-05
+
+Leer ../AutoFinalRobo2-CAD/docs/PLAN_MODELO_3D_FUSION.md antes de continuar. Esa especificación incorpora las decisiones del usuario para ensamble base, búsqueda Web, correspondencia de CAD, inferencias y ausencia de cables. La pieza nueva/PCB quedan pendientes; OLED 0,96 pulgadas y encoder KY-040 sin breakout/perilla son referencias de la etapa futura. Usar el MCP de Fusion existente en la PC de trabajo. La entrega actual documenta/publica el plan; no implementa el modelo.
+
+Repositorio de continuidad: https://github.com/kobachajchir/ProyectoRobotica2, privado, origin HTTPS y rama remota main. La publicación fue pedida explícitamente por el usuario para esta entrega; no supone permiso general para nuevos remotos/publicaciones. Un clone nuevo usa main; la rama local original codex/monorepo-cad sigue origin/main. El plan se conserva en el repo y el modelado comienza como tarea posterior en la otra PC.

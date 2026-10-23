@@ -22,3 +22,7 @@ Estado: material preparado sin build, tests, validadores ni prueba física. Los 
 
 - [Módulos, Git único, exclusiones y recuperación](ESTRUCTURA_Y_GIT.md)
 - [Módulo CAD/KiCad](../../AutoFinalRobo2-CAD/README.md)
+
+## AFR2-20261023-05
+
+- [Plan completo de Fusion y retoma en otra PC](../../AutoFinalRobo2-CAD/docs/PLAN_MODELO_3D_FUSION.md).

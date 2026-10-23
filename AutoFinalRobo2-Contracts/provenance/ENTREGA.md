@@ -28,3 +28,9 @@ Evidencia OSOYOO UART V1.3, rutas UART/niveles/arranque, distinción UNO-Mega, f
 Git único en D:/ProyectoRobotica2, rama codex/monorepo-cad. Los cuatro historiales anteriores se conservan como padres del commit de integración y etiquetas archive/pre-monorepo/{atmega,contracts,esp,web}; los .git originales quedan en .git/legacy-repositories, fuera del contenido versionado. [Detalle y recuperación](../docs/ESTRUCTURA_Y_GIT.md).
 
 AutoFinalRobo2-CAD incorpora documentación y estructura para KiCad, pieza nueva y auto completo. Nueve archivos CAD existentes trasladados desde CADS sin adaptación, con inventario de procedencia en CAD. Fuentes de firmware/Web y reference/ histórico intactos; Documentacion/ original intacta. Se excluyen dependencias y productos regenerables mediante .gitignore global. No se ejecutaron tests, compilaciones, validadores, ERC/DRC, flasheos ni pruebas físicas; no se diseñaron piezas nuevas.
+
+## Entrega del plan / AFR2-20261023-05
+
+Plan completo en AutoFinalRobo2-CAD/docs/PLAN_MODELO_3D_FUSION.md. Documenta el ensamble futuro mediante el MCP de Fusion existente, selección de CAD por inventario, descargas Web, inferencias explícitas y ausencia de cables. Pieza nueva/soporte/PCB pendientes y espacio reservado; referencias OLED 0,96 pulgadas y encoder KY-040 sin breakout/perilla.
+
+Origin privado creado/vinculado: https://github.com/kobachajchir/ProyectoRobotica2, destino main y cuatro etiquetas de conservación para recuperar el proyecto en otra PC. Operaciones de esta entrega: autoría documental, API GitHub y Git, sin modelado ni descarga de CAD. Estados atmega/esp/web intactos. Sin tests, compilaciones, validadores, ERC/DRC, simulaciones, flasheos ni pruebas físicas; hooks deshabilitados para el commit/push. Esta ampliación no reescribe los manifests históricos.

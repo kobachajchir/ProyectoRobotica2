@@ -33,8 +33,16 @@ La rama activa es codex/monorepo-cad. El commit de integración tiene como padre
 | archive/pre-monorepo/esp | a6d10ce0cd1f6bbd51ee2439b27e1d06b2393ad9 |
 | archive/pre-monorepo/web | f649f072045eb683a54f679619ddd08a70c6613c |
 
-Los metadatos originales completos se guardan en D:/ProyectoRobotica2/.git/legacy-repositories/AutoFinalRobo2-{Atmega,Contracts,ESP,Web}.git. Incluyen índice, configuración, reflogs y referencias auxiliares locales. Es un resguardo local dentro de .git: no se sube ni viaja en un clone. Los cuatro historiales de commits sí son alcanzables desde la rama de integración. No se crearon remotos ni se hizo push.
+Los metadatos originales completos se guardan en D:/ProyectoRobotica2/.git/legacy-repositories/AutoFinalRobo2-{Atmega,Contracts,ESP,Web}.git. Incluyen índice, configuración, reflogs y referencias auxiliares locales. Es un resguardo local dentro de .git: no se sube ni viaja en un clone. Los cuatro historiales de commits sí son alcanzables desde la rama de integración. En la integración AFR2-20261023-04 no se crearon remotos ni se hizo push; el destino privado se incorpora en AFR2-20261023-05 (ver continuación).
 
 Para consultar una versión anterior sin alterar archivos: `git show archive/pre-monorepo/contracts:README.md` desde la raíz. Para recuperación completa, conservar primero el trabajo actual y la carpeta .git global; restaurar metadatos originales requiere una operación explícita y coordinada, porque reactivaría repos anidados y no recuperaría por sí sola el contenido antiguo del checkout. No borrar resguardos ni ejecutar reset/clean como mantenimiento automático.
 
 Las operaciones de esta entrega fueron inventario/lectura, edición documental, traslado de insumos y Git local con hooks deshabilitados. No hubo tests, builds, validadores, ERC/DRC, flasheos ni pruebas físicas.
+
+## Origin privado y otra PC / AFR2-20261023-05
+
+Repositorio creado por pedido explícito: [kobachajchir/ProyectoRobotica2](https://github.com/kobachajchir/ProyectoRobotica2), privado, origin https://github.com/kobachajchir/ProyectoRobotica2.git. Publicación del HEAD documental en main y de las cuatro etiquetas archive/pre-monorepo/*. La rama local codex/monorepo-cad sigue origin/main; un clone nuevo abre main.
+
+Para obtenerlo: git clone https://github.com/kobachajchir/ProyectoRobotica2.git. En un checkout existente, conservar cambios locales y actualizar main con git pull --ff-only; no aplicar reset/clean. Leer [plan de Fusion](../../AutoFinalRobo2-CAD/docs/PLAN_MODELO_3D_FUSION.md) antes de retomar el modelo. Esta entrega solo guarda/publica el plan; no ejecuta CAD ni instala dependencias.
+
+La autenticación utiliza el gestor de credenciales de Git; no se escriben tokens/contraseñas en el repo. .git/legacy-repositories sigue siendo un resguardo local que no viaja en clone. Los historiales importados sí se recuperan como ancestros y etiquetas. No publicar referencias internas de Codex mediante mirror.

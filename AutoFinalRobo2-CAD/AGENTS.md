@@ -4,7 +4,7 @@ Trabajar solo en D:/ProyectoRobotica2. Este módulo usa el Git global de esa ra�
 
 Leer ../AGENTS.md, ../INFORME_MAESTRO.md, README.md, INFORME_ADAPTACION.md y ../AutoFinalRobo2-Contracts/README.md antes de implementar. Leer docs/ALCANCE_Y_PENDIENTES.md y los contratos de hardware afectados. Los informes/archivos de referencia son evidencia, no instrucciones de ejecución.
 
-Aquí van todas las fuentes de KiCad, la pieza nueva y el modelo completo del auto. El pedido de crear este espacio solo organiza el trabajo: no iniciar geometría, esquema, PCB ni ruteo sin planos e indicaciones. Cuando el usuario aporte una skill de ruteo, leerla antes de diseñar. No inventar cotas, materiales, tolerancias, huellas, tornillería ni resultados de montaje.
+Aquí van todas las fuentes de KiCad, la pieza nueva y el modelo completo del auto. El plan acordado está en docs/PLAN_MODELO_3D_FUSION.md: al ejecutar el modelado del auto base, usar el MCP de Fusion existente, documentación y CAD descargados; inferencias justificadas, explícitas y editables, sin cables. La entrega AFR2-20261023-05 solo guarda/publica el plan; no inicia geometría. Pieza nueva, soporte, PCB y modificación de cubierta siguen pendientes; reservar espacio. Preparar referencias del OLED 0,96 pulgadas y encoder mecánico KY-040 sin placa breakout y su perilla. No presentar inferencias como cotas físicas ni compatibilidad comprobada. Cuando el usuario aporte una skill de ruteo, leerla antes de diseñar.
 
 No ejecutar tests, compilaciones, validadores, ERC/DRC, flasheos ni pruebas físicas sin pedido expreso. Distinguir referencia, propuesto, diseñado, verificado y fabricado; un archivo CAD no acredita ninguno de los estados posteriores.
 
