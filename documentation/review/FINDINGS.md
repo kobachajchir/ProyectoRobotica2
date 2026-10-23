@@ -47,7 +47,7 @@ Código: `atmega:reference/f4/Core/Inc/tcrt5000_types.h:TCRT5000_Port`. [Informe
 <a id="afrdoc-007"></a>
 ## AFRDOC-007 - Reset Mega no conecta USB con UART1
 
-Conmutación física al puente USB y niveles 3,3 V pendientes.
+Shield documentado con regulación/traducción y KEY/RST. Reset Mega no une USB con USART1; selector normal E_RX-D1/E_TX-D0 no corresponde al bypass USB D0-RX ESP/TX ESP-D1. Ruta física de niveles y conexión real pendientes. [Procedimiento afectado](../../hardware/FLASHING.md). Se conserva el estado abierto y el historial en JSON.
 
 Código: `esp:reference/esp01/src/main.cpp:setup`. [Informe afectado](../../../AutoFinalRobo2-ESP/docs/modules/wifi.md). Estado abierto; fuente sin ejecución.
 
@@ -71,3 +71,24 @@ Código: `web:reference/web/src/screens`. [Informe afectado](../../../AutoFinalR
 Corto confirma, largo abre menú, atrás solo ítem; sin user_button dedicado.
 
 Código: `atmega:src/input/afr2_encoder_ui.c:Afr2EncoderUi_Poll`. [Informe afectado](../../../AutoFinalRobo2-Atmega/docs/modules/screens.md). Estado abierto; fuente sin ejecución.
+
+<a id="afrdoc-011"></a>
+## AFRDOC-011 - Mapa del shield referido a UNO no define pines del Mega
+
+Imagen muestra A4/A5 y D18/D19 como I2C UNO; en Mega se conservan D20/PD1 y D21/PD0, A4 es IR1. Selectores a D4/D5 se aíslan: D5 es motor RR.
+
+Código afectado por la futura adaptación: `atmega:include/board_pinmap.h`. [Documento afectado](../../hardware/PINOUT.md), sección Adiciones acordadas y conectores. Abierto; documentación, no prueba física. AFR2-20261023-03.
+
+<a id="afrdoc-012"></a>
+## AFRDOC-012 - Puerto directo ESP y selector no tienen tolerancia eléctrica demostrada equivalente
+
+Regulación/traducción integradas declaradas por OSOYOO, pero la ruta interna por conector no está acreditada. Puerto directo rotulado 3V3. Fritzing no contiene netlist interna suficiente.
+
+Código afectado por la futura adaptación: `esp:platformio.ini`, `esp:src/main.cpp`. [Documento afectado](../../hardware/WIFI_SHIELD.md), sección Alimentación y niveles. Abierto; documentación, no prueba física. AFR2-20261023-03.
+
+<a id="afrdoc-013"></a>
+## AFRDOC-013 - Datos nominales ESP y AT antiguo no fijan flash ni baud del producto
+
+ESP-12S V1.1 nominal 4 MiB; variante ESP8285/2MB diferenciada. Lectura real, modo SPI/layout pendientes. Baud AT de fábrica, UART propia y upload son distintos; DOUT en archivo AT no prueba modo para firmware nuevo.
+
+Código afectado por la futura adaptación: `esp:platformio.ini`, `esp:src/main.cpp`. [Documento afectado](../../hardware/WIFI_SHIELD.md), sección Firmware, velocidad y flash. Abierto; documentación, no prueba física. AFR2-20261023-03.

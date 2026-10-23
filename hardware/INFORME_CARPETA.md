@@ -24,3 +24,8 @@ Estado: material preparado sin build, tests, validadores ni prueba física. Los 
 ## Ampliación 2026-10-23
 
 - [PCB_OLED_ENCODER.md](PCB_OLED_ENCODER.md)
+
+## Actualización Wi-Fi 2026-10-23
+
+- [WIFI_SHIELD.md](WIFI_SHIELD.md)
+- [Evidencia del shield](wifi-shield/INFORME_CARPETA.md)

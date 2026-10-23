@@ -27,3 +27,5 @@ Encoder UI 1 ms, debounce SW 20 ms, largo 800 ms; control 10 ms; línea 5-10 ms;
 115200 8N1 equivale a unos 11520 B/s; RX 256 B cubre unos 22 ms. A 16 MHz, U2X=1/UBRR=16 da aproximadamente 117647 baud (+2,12 %): evaluar margen o negociar 57600. Es cálculo, no ensayo de robustez.
 
 Hipótesis Hall H1 del anexo: 11 ciclos/vuelta de rotor, 75:1 y x4 → 3300 cuentas/vuelta salida. A 150 rpm: 8250 eventos/s por rueda, 33000 en cuatro; unos 485 ciclos CPU entre eventos a 16 MHz. Evaluar x1/x2, PCINT o contador externo antes de comprometer x4. PPR/reducción/variante instalada no confirmados.
+
+Baud propio de aplicación separado del AT de fábrica y de upload: [shield](WIFI_SHIELD.md). La ficha ESP-12S indica nominalmente 4 MiB; no es un presupuesto de Web/LittleFS aprobado hasta identificar flash real y reparto. El `esp12e` candidato no realiza esa identificación.

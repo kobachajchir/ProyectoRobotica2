@@ -15,3 +15,7 @@ Estado: material preparado sin build, tests, validadores ni prueba física. Los 
 ## Ampliación 2026-10-23
 
 - [2026-10-23-02-navigation-and-interface-board.md](2026-10-23-02-navigation-and-interface-board.md)
+
+## Actualización Wi-Fi 2026-10-23
+
+- [AFR2-20261023-03](2026-10-23-03-wifi-shield-evidence.md)

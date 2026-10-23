@@ -18,3 +18,7 @@ Se crearon 96 informes de carpeta. provenance/files.json conserva el detalle de 
 ## Ampliación documental AFR2-20261023-02
 
 Cabeceras SDA/SCL expuestas, dos conectores paso2,54mm, VCC/GND comunes, montaje con dos tornillos/tuercas y árbol de menús. Solo Contracts y maestro raíz actualizados; código de los tres consumidores intacto. CAD diferido. Commit local adicional sin remoto/push; sin tests/build/validadores.
+
+## Ampliación documental AFR2-20261023-03
+
+Evidencia OSOYOO UART V1.3, rutas UART/niveles/arranque, distinción UNO-Mega, flash nominal y prompt completo. Tres imágenes y ficha/Fritzing preservados en hardware/wifi-shield, con manifest incremental. Solo Contracts y maestro raíz actualizados; atmega/esp/web sin cambios. No tests/build/validadores/flash/CAD. Commit local, sin remoto ni push.

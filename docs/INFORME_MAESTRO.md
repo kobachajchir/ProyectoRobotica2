@@ -56,7 +56,7 @@ El [plan de recursos](../../AutoFinalRobo2-Contracts/hardware/RECURSOS_Y_TIEMPOS
 
 El [pinout ampliado](../../AutoFinalRobo2-Contracts/hardware/PINOUT.md) propone SDA D20/SCL D21 y CLK D40/DT D41/SW D42. No afirma que ya estén conectados. VCC y GND externos serán comunes; identificar la tensión compatible con ambos módulos y sus pull-ups antes de cerrar el esquema.
 
-El [procedimiento de carga](../../AutoFinalRobo2-Contracts/hardware/FLASHING.md) distingue UART0 del puente USB y UART1 operativa: mantener Mega en reset no conecta automáticamente USB con Serial1. Hay que conmutar al puente real con niveles compatibles. Jumpers del shield y flash ESP quedan pendientes de identificación física.
+El [shield documentado](../hardware/WIFI_SHIELD.md) incorpora regulación/traducción declaradas y distingue selector E_RX/E_TX de puerto directo ESP de 3,3 V. Operación por D18/D19, sin jumpers a D4/D5 ni D0/D1. Para [carga con USB Mega](../hardware/FLASHING.md), D0→RX ESP y TX ESP→D1 requieren cruce físico y niveles correctos: reset no conecta USB con USART1 ni hace válido el emparejamiento normal del selector. Flash nominal 4 MiB según ficha; chip real, SPI y LittleFS siguen pendientes.
 
 ## Continuación
 
@@ -71,3 +71,5 @@ El [procedimiento de carga](../../AutoFinalRobo2-Contracts/hardware/FLASHING.md)
 ## Actualización de contexto: interfaz física y menús
 
 El usuario confirma SDA/SCL disponibles con esos rótulos en el shield. La nueva PCB usa un conector 1x5 para CLK/DT/SW/SDA/SCL y otro 1x2 para VCC/GND comunes, paso 2,54 mm; VCC numérica por identificar. La especificación vigente está en [PCB OLED/encoder](../hardware/PCB_OLED_ENCODER.md), y el [árbol de menús](../documentation/MENU_PLAN.md) amplía el diseño futuro sin cambiar el prototipo. KiCad/soporte3D se abordarán al recibir planos; fijación con dos tornillos y tuercas.
+
+Actualización AFR2-20261023-03: [evidencia Wi-Fi](../hardware/wifi-shield/INFORME_CARPETA.md) incorpora tres imágenes aportadas, ficha actual y Fritzing; [prompt de continuidad](PROMPT_CONTINUIDAD.md) consolida arquitectura, navegación y conexiones. El mapa UNO del proveedor no cambia SDA/SCL Mega D20/D21. Código de atmega/esp/web sin cambios.

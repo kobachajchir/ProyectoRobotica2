@@ -13,3 +13,7 @@ Actualizar decisiones/código y secciones vinculadas de forma focalizada; preser
 - [README.md](<README.md>)
 
 Estado: material preparado sin build, tests, validadores ni prueba física. Los hashes de fuentes copiadas están en [manifest](files.json).
+
+## Actualización Wi-Fi 2026-10-23
+
+- [Evidencia incremental del shield](wifi-shield.json)

@@ -148,17 +148,32 @@
       "code": [
         "reference/esp01/src/main.cpp:setup"
       ],
-      "observation": "Conmutación física al puente USB y niveles 3,3 V pendientes.",
+      "observation": "Shield documentado con regulación/traducción y KEY/RST. Reset Mega no une USB con USART1; selector normal E_RX-D1/E_TX-D0 no corresponde al bypass USB D0-RX ESP/TX ESP-D1. Ruta física de niveles y conexión real pendientes.",
       "documentation": [
         {
           "path": "../../../AutoFinalRobo2-ESP/docs/modules/wifi.md",
           "selector": "esp:wifi / adaptation"
+        },
+        {
+          "path": "../../hardware/FLASHING.md",
+          "selector": "Tres modos distintos / Por qué no basta mover los jumpers a RX/TX"
+        },
+        {
+          "path": "../../hardware/WIFI_SHIELD.md",
+          "selector": "Pendientes concretos"
         }
       ],
       "history": [
         {
           "date": "2026-10-23",
           "action": "registered"
+        },
+        {
+          "date": "2026-10-23",
+          "action": "refined-with-shield-evidence",
+          "change": "AFR2-20261023-03",
+          "previous_observation": "Conmutación física al puente USB y niveles 3,3 V pendientes.",
+          "note": "Regulación/traducción declaradas conocidas; hallazgo sigue abierto por ruta y hardware no probados."
         }
       ]
     },
@@ -228,6 +243,80 @@
         {
           "date": "2026-10-23",
           "action": "registered"
+        }
+      ]
+    },
+    {
+      "id": "AFRDOC-011",
+      "title": "Mapa del shield referido a UNO no define pines del Mega",
+      "status": "open",
+      "certainty": "documented-hardware-design-gap",
+      "repository": "atmega",
+      "code": [
+        "include/board_pinmap.h"
+      ],
+      "observation": "Imagen muestra A4/A5 y D18/D19 como I2C UNO; en Mega se conservan D20/PD1 y D21/PD0, A4 es IR1. Selectores a D4/D5 se aíslan: D5 es motor RR.",
+      "documentation": [
+        {
+          "path": "../../hardware/PINOUT.md",
+          "selector": "Adiciones acordadas y conectores"
+        }
+      ],
+      "history": [
+        {
+          "date": "2026-10-23",
+          "action": "registered",
+          "change": "AFR2-20261023-03"
+        }
+      ]
+    },
+    {
+      "id": "AFRDOC-012",
+      "title": "Puerto directo ESP y selector no tienen tolerancia eléctrica demostrada equivalente",
+      "status": "open",
+      "certainty": "documented-hardware-design-gap",
+      "repository": "esp",
+      "code": [
+        "platformio.ini",
+        "src/main.cpp"
+      ],
+      "observation": "Regulación/traducción integradas declaradas por OSOYOO, pero la ruta interna por conector no está acreditada. Puerto directo rotulado 3V3. Fritzing no contiene netlist interna suficiente.",
+      "documentation": [
+        {
+          "path": "../../hardware/WIFI_SHIELD.md",
+          "selector": "Alimentación y niveles"
+        }
+      ],
+      "history": [
+        {
+          "date": "2026-10-23",
+          "action": "registered",
+          "change": "AFR2-20261023-03"
+        }
+      ]
+    },
+    {
+      "id": "AFRDOC-013",
+      "title": "Datos nominales ESP y AT antiguo no fijan flash ni baud del producto",
+      "status": "open",
+      "certainty": "documented-hardware-design-gap",
+      "repository": "esp",
+      "code": [
+        "platformio.ini",
+        "src/main.cpp"
+      ],
+      "observation": "ESP-12S V1.1 nominal 4 MiB; variante ESP8285/2MB diferenciada. Lectura real, modo SPI/layout pendientes. Baud AT de fábrica, UART propia y upload son distintos; DOUT en archivo AT no prueba modo para firmware nuevo.",
+      "documentation": [
+        {
+          "path": "../../hardware/WIFI_SHIELD.md",
+          "selector": "Firmware, velocidad y flash"
+        }
+      ],
+      "history": [
+        {
+          "date": "2026-10-23",
+          "action": "registered",
+          "change": "AFR2-20261023-03"
         }
       ]
     }

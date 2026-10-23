@@ -18,3 +18,7 @@ Estado: preparación y fuente parcial; sin build/test/flash. Próximo paso: back
 - [PCB OLED/encoder y soporte futuro](hardware/PCB_OLED_ENCODER.md): cabeceras SDA/SCL del shield, señales 1x5 y VCC/GND 1x2, ambos paso 2,54 mm.
 
 La carpeta de este repo ya existe y tiene Git local; agregarla como proyecto en Codex es una acción aparte que realizará el usuario. Mantener Contracts como carpeta principal, y adjuntar los otros tres repos hermanos si se desea acceso desde el mismo proyecto. Fuente de ese comportamiento: [proyectos y carpetas en Codex](https://learn.chatgpt.com/docs/projects).
+
+## Shield Wi-Fi documentado
+
+[Informe OSOYOO UART V1.3](hardware/WIFI_SHIELD.md), [carga ESP/Mega](hardware/FLASHING.md), [evidencia](hardware/wifi-shield/INFORME_CARPETA.md) y [prompt completo de continuidad](docs/PROMPT_CONTINUIDAD.md). Mapa UNO no sustituye pinout Mega; selector y UART directo se distinguen. Firmware propio Arduino/LittleFS sigue sin AT. [Registro AFR2-20261023-03](changes/2026-10-23-03-wifi-shield-evidence.md).

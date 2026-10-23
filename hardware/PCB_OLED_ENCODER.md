@@ -2,7 +2,7 @@
 
 Actualización del usuario 2026-10-23. [Pinout](PINOUT.md). Estado: requisitos; no esquemático/PCB/modelo mecánico creados.
 
-El shield Mega ya expone las cabeceras rotuladas SDA y SCL. Los cables I2C se conectarán allí; D20/PD1 y D21/PD0 son las equivalencias lógicas de Mega, no rótulos que deban estar impresos en el shield. No se necesita duplicar ni recablear sus puntos I2C.
+El shield Mega ya expone las cabeceras rotuladas SDA y SCL. Los cables I2C se conectarán allí; D20/PD1 y D21/PD0 son las equivalencias lógicas de Mega, no rótulos que deban estar impresos en el shield. El mapa ilustrado del shield corresponde a UNO: no adoptar A4/A5 ni D18/D19 como I2C del Mega. La ruta física de la revisión instalada queda por identificar; conservar A4 para IR1. [Evidencia del shield](WIFI_SHIELD.md).
 
 La PCB nueva monta OLED y encoder de interfaz. Debe exponer DOS conectores externos de paso 2,54 mm:
 
@@ -25,3 +25,5 @@ La cubierta superior la aportará el usuario mediante planos/informe/idea. El ob
 Cuando el usuario continúe: leer la skill de ruteo que indique y los archivos mecánicos. Preparar esquema/PCB KiCad editables, plano acotado, ensamblaje de referencia y soporte 3D paramétrico editable con exportaciones de fabricación/impresión acordadas. Planear ERC/DRC y comprobación mecánica como actividades separadas que requieren pedido expreso según las reglas actuales; no afirmar manufacturabilidad por tener archivos.
 
 Datos para esa etapa: contorno y cotas/unidades de cubierta, agujeros y zonas disponibles, espesor/material, dimensiones/modelos/pines del OLED y encoder, altura del eje/perilla, tensión VCC, orientación de Dupont, tornillería y espacio inferior. No pedirlos ahora como bloqueo del trabajo documental. No crear aún un quinto repo de hardware: decidir ubicación cuando comience esa etapa.
+
+La regulación/traducción UART declarada en el shield Wi-Fi no fija VCC ni pull-ups de esta placa OLED/encoder. No tomar VIN/VOUT como salida regulada para J2. KEY/RST pertenecen al ESP y no agregan botones a la navegación del usuario.

@@ -12,3 +12,5 @@ Para pantallas usar la skill local AutoFinalRobo2-Contracts/.agents/skills/afr2-
 
 ## Contexto ampliado
 Leer documentation/MENU_PLAN.md para el árbol objetivo (diseño, no implementado) y hardware/PCB_OLED_ENCODER.md para el trabajo CAD futuro. El usuario agregará el proyecto a Codex. No crear aún diseño KiCad/3D sin los planos e indicaciones que enviará. Conectores externos: señales 1x5 y VCC/GND común 1x2 de 2,54 mm; usar SDA/SCL expuestos por el shield.
+
+Leer hardware/WIFI_SHIELD.md y hardware/FLASHING.md para cableado: mapa de referencia UNO distinto del Mega; selector E_RX/E_TX distinto de cabecera ESP UART 3V3. Operación D18/D19; carga por puente USB requiere cruce D0/D1. No inferir tamaño de flash real, modo SPI o tolerancia eléctrica de una foto/configuración candidata. docs/PROMPT_CONTINUIDAD.md consolida el contexto para el proyecto que cargará el usuario.

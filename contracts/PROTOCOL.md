@@ -15,3 +15,5 @@ Namespace candidato robot.*, wifi.*, system.* con discriminador de producto Auto
 Antes de implementar cada comando: ID/versión/propietario, campos y offsets, longitudes, tipos, endian, unidades/rangos, permisos, timeout, respuesta/eventos/idempotencia y errores. Unidades propuestas mm, mm/s, mrad/s, ms, cuentas int32; precisión/saturación por cerrar. STOP/lease y límites son de Mega.
 
 IDs del prototipo OLED son locales (documentation/screens.json), no reporte wire implementado. Réplica Web exige framebuffer o motor/recursos equivalentes con snapshot idéntico; SVG anterior no prueba fidelidad.
+
+Transporte físico documentado en [WIFI_SHIELD](../hardware/WIFI_SHIELD.md): UART0 ESP ↔ USART1 Mega D18/D19 mediante selector E_RX/E_TX aislado de D4/D5 y D0/D1. 115200 8N1 sigue siendo candidato propio, independiente de AT de fábrica/upload. No hay comandos AT en este enlace ni un comando Web que sustituya jumpers/KEY/RST. Identificación de versiones/capabilities posterior al arranque, sin logs intercalados en frames.

@@ -2,7 +2,7 @@
 
 ## 0. Hardware
 
-Identificar OLED/controlador/tensión, pull-ups, encoder UI, shield ESP12S, flash y niveles UART. Confirmar rueda/canal/polaridad. Elegir captura HC-SR04 en D31 o documentar recableado. Definir Hall de cuatro ruedas sin ocupar la nueva UI/TWI.
+Identificar OLED/controlador/tensión, pull-ups y encoder UI. La documentación del shield UART V1.3 y regulación/traducción declaradas están en [WIFI_SHIELD](../hardware/WIFI_SHIELD.md); faltan revisión física, recorrido por selector/puerto directo, flash real y configuración SPI/LittleFS. Confirmar rueda/canal/polaridad. Elegir captura HC-SR04 en D31 o documentar recableado. Definir Hall de cuatro ruedas sin ocupar la nueva UI/TWI.
 
 ## 1. AVR y UI
 

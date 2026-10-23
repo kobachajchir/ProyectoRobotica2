@@ -45,6 +45,24 @@
       ],
       "state": "design-not-implemented",
       "note": "SDA/SCL expuestos; J1 1x5 y J2 1x2. Largo menu; Volver por item."
+    },
+    {
+      "id": "shared:flow/shield-uart-flashing",
+      "path": [
+        "shared:hardware/WIFI_SHIELD.md",
+        "shared:hardware/FLASHING.md",
+        "esp:uart-broker",
+        "atmega:uner-core",
+        "shared:hardware/PINOUT.md"
+      ],
+      "state": "documented-hardware-path-not-tested",
+      "findings": [
+        "AFRDOC-007",
+        "AFRDOC-011",
+        "AFRDOC-012",
+        "AFRDOC-013"
+      ],
+      "note": "Selector E_RX/E_TX y puerto directo separados; USART1 operación; cruce D0/D1 para puente USB. No cambio wire."
     }
   ]
 }
