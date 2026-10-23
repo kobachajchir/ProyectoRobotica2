@@ -1,0 +1,153 @@
+// src/App.tsx
+import { lazy, Suspense, useEffect, useMemo, type ReactNode } from "react";
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import { Toaster } from "sonner";
+import "./App.css";
+import NotFound from "./pages/NotFound";
+import { ProtectedRoute } from "./components/ProtectedRoute";
+import { PublicRoute } from "./components/PublicRoute";
+import AppLoadingScreen from "./components/AppLoadingScreen";
+import StartupWelcome from "./components/StartupWelcome";
+//import AppFooter from "./components/AppFooter";
+import RedirectRoot from "./components/RedirectRoot";
+import RootLayout from "./components/RootLayout";
+import {
+  applyThemeMode,
+  loadThemeMode,
+} from "./utils/theme";
+
+const Home = lazy(() => import("./pages/Home"));
+const Login = lazy(() => import("./pages/Login"));
+const WifiSection = lazy(() => import("./pages/WifiSection"));
+const MotorCalibrationSection = lazy(() => import("./pages/MotorCalibrationSection"));
+const ControlSection = lazy(() => import("./pages/ControlSection"));
+const EstadoSection = lazy(() => import("./pages/EstadoSection"));
+const DocsSection = lazy(() => import("./pages/DocsSection"));
+const DocTopicSection = lazy(() => import("./pages/DocTopicSection"));
+const OledEditorSection = lazy(() => import("./pages/OledEditorSection"));
+const ProtocolSection = lazy(() => import("./pages/ProtocolSection"));
+const TrackFollowerSection = lazy(() => import("./pages/TrackFollowerSection"));
+
+function routeLoader(label: string, children: ReactNode) {
+  return <Suspense fallback={<AppLoadingScreen label={label} />}>{children}</Suspense>;
+}
+
+const App: React.FC = () => {
+  useEffect(() => {
+    applyThemeMode(loadThemeMode());
+  }, []);
+
+  // Conservar el mismo router durante toda la sesion. Recrearlo cuando cambia
+  // `user` desmontaba la navegacion justo en el redirect login -> home.
+  const router = useMemo(() => createBrowserRouter([
+    {
+      path: "/",
+      element: <RootLayout />,
+      errorElement: <NotFound />, // ⬅️ cualquier ruta no matcheada cae acá
+      children: [
+        { index: true, element: <RedirectRoot /> }, // equivale a path="/"
+        {
+          path: "login",
+          element: (
+            <PublicRoute>
+              {routeLoader("Cargando login", <Login />)}
+            </PublicRoute>
+          ),
+        },
+        {
+          path: "home",
+          element: (
+            <ProtectedRoute loadingLabel="Cargando dashboard">
+              {routeLoader("Cargando dashboard", <Home />)}
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "wifi",
+          element: (
+            <ProtectedRoute loadingLabel="Cargando WiFi">
+              {routeLoader("Cargando WiFi", <WifiSection />)}
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "statics",
+          element: (
+            <ProtectedRoute loadingLabel="Cargando sensores">
+              {routeLoader("Cargando sensores", <EstadoSection />)}
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "control/calibracion",
+          element: <ProtectedRoute loadingLabel="Cargando calibración de motores">{routeLoader("Cargando calibración de motores", <MotorCalibrationSection />)}</ProtectedRoute>,
+        },
+        {
+          path: "control",
+          element: (
+            <ProtectedRoute loadingLabel="Cargando control">
+              {routeLoader("Cargando control", <ControlSection />)}
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "provision",
+          element: routeLoader("Cargando WiFi", <WifiSection provisioning />),
+        },
+        {
+          path: "seguidor-pista",
+          element: (
+            <ProtectedRoute loadingLabel="Cargando seguidor">
+              {routeLoader("Cargando seguidor", <TrackFollowerSection />)}
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "protocol",
+          element: (
+            <ProtectedRoute loadingLabel="Cargando UNER Studio">
+              {routeLoader("Cargando UNER Studio", <ProtocolSection />)}
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "docs",
+          element: (
+            <ProtectedRoute loadingLabel="Cargando documentacion">
+              {routeLoader("Cargando documentacion", <DocsSection />)}
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "docs/:topicSlug",
+          element: (
+            <ProtectedRoute loadingLabel="Cargando documentacion">
+              {routeLoader("Cargando documentacion", <DocTopicSection />)}
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "oled-editor",
+          element: (
+            <ProtectedRoute loadingLabel="Cargando OLED Studio">
+              {routeLoader("Cargando OLED Studio", <OledEditorSection />)}
+            </ProtectedRoute>
+          ),
+        },
+        { path: "notFound", element: <NotFound /> }, // opcional
+      ],
+    },
+  ]), []);
+
+  return (
+    <StartupWelcome>
+      <div className="flex flex-col h-full w-full relative">
+        <RouterProvider router={router} />
+        <Toaster position="bottom-right" richColors theme="system" closeButton duration={3500} />
+        <div className="mt-auto">{/*<AppFooter />*/}</div>
+      </div>
+    </StartupWelcome>
+  );
+};
+
+export default App;
