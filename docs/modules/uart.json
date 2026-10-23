@@ -1,0 +1,18 @@
+{
+  "schema": "afr2-module-1",
+  "id": "esp:module/reference/esp01/src/uner_core.c",
+  "title": "UART, parser y transacciones",
+  "responsibility": "Parser/cola/transporte Arduino y broker separan aceptación, respuesta y timeout. Tablas f4_* son del robot anterior; no basta cambiar su nombre.",
+  "changes_required": "Nuevo catálogo/payloads Mega con capabilities. Mantener FIFO y una transacción correlacionable en vuelo; resolver ACK tardíos. Revisar try_send que exige availableForWrite>=frame completo; si buffer es menor que frame, segmentar TX sin intercalar tramas. No reutilizar streams MPU ni IR8. UART0 ESP limpia de logs; residuos ROM resincronizados. Reutilizar decoders solo tras fijar wire propio.",
+  "evidence": [
+    "reference/esp01/src/uner_core.c",
+    "reference/esp01/src/uner_transport_serial.cpp",
+    "reference/esp01/src/uart_transaction_manager.c",
+    "reference/esp01/src/f4_command_registry.c"
+  ],
+  "findings": [
+    "AFRDOC-006",
+    "AFRDOC-008"
+  ],
+  "status": "source-documented-not-built"
+}

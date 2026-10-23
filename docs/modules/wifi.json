@@ -1,0 +1,17 @@
+{
+  "schema": "afr2-module-1",
+  "id": "esp:module/reference/esp01/src/wifi_service.cpp",
+  "title": "Wi-Fi y preferencias LittleFS",
+  "responsibility": "Conservar estados STA/AP, scan asíncrono, reintento/fallback, cache de preferencias y escrituras temporales. Sin comandos AT.",
+  "changes_required": "Configurar identidad AutoFinalRobo2 y provisioning sin defaults privados. ESP12S flash/mode/partición pendientes; no heredar combinación board esp01_1m con linker4m3m a ciegas. Preservar configuración al actualizar assets; evitar formato automático ante fallo FS. Confirmar GPIO LED/boot del shield. Los ajustes de red no bloquean control AVR.",
+  "evidence": [
+    "reference/esp01/src/wifi_service.cpp",
+    "reference/esp01/src/wifi_scan_arbiter.c",
+    "reference/esp01/src/nvs_littlefs.cpp",
+    "reference/esp01/src/boot_mode.cpp"
+  ],
+  "findings": [
+    "AFRDOC-007"
+  ],
+  "status": "source-documented-not-built"
+}
