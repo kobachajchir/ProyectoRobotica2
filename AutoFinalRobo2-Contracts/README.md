@@ -1,5 +1,9 @@
 # AutoFinalRobo2-Contracts
 
+Hito AFR2-20261024-01: [Fusion v16 con ruedas y Blender](changes/2026-10-24-01-wheels-blender.md), GLB 827.232 bytes, Draco y materiales PBR. Atmega/ESP/Web sin cambios. Hitos anteriores históricos.
+
+Hito CAD AFR2-20261023-07: [ensamble parcial Fusion guardado/exportado](../AutoFinalRobo2-CAD/docs/ARMADO_FUSION_PASO_A_PASO.md), versión 15, con modelos aportados por el usuario y Model Y esencial. Ruedas 80 mm y acoples pendientes; sin construir ruedas ni cambiar código/contratos eléctricos. [Registro](changes/2026-10-23-07-fusion-assembly.md).
+
 Central independiente. Empezar por [maestro](docs/INFORME_MAESTRO.md), [decisiones](docs/DECISIONES.md) y [plan](docs/ROADMAP.md).
 
 - [Pinout/PCB](hardware/PINOUT.md), [recursos](hardware/RECURSOS_Y_TIEMPOS.md), [carga](hardware/FLASHING.md).

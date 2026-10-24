@@ -1,6 +1,6 @@
 # Dependencias recuperables
 
-No se instaló ni descargó ninguna dependencia en esta entrega. La versión de KiCad y la herramienta de modelado se definirán cuando comience el diseño.
+Actualización 23/10/2026, AFR2-20261023-06: se descargó un primer lote CAD para aprobación, sin instalar herramientas ni comenzar el modelado. [Lista y diferencias](../docs/REVISION_CANDIDATOS_3D.md), [manifiesto por archivo](candidatos-2026-10-23.json) y [recuperación](Recuperar-Candidatos.ps1). Ejecutar el script de recuperación con PowerShell desde cualquier checkout; resuelve rutas relativas al módulo y conserva archivos existentes. No importa modelos ni ejecuta pruebas. Las descargas se guardan en vendor/revision-2026-10-23, ignorado por Git. Fusion sigue siendo la herramienta prevista.
 
 Para una biblioteca, modelo o herramienta que se descargará fuera de Git, registrar:
 

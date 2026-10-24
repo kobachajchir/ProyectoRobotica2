@@ -1,5 +1,11 @@
 # AutoFinalRobo2-CAD
 
+AFR2-20261024-01: [ruedas y Blender](docs/RUEDAS_Y_BLENDER_20261024.md). Fusion v16 y Blender guardados; fotos/renders y GLB **827.232 bytes**, materiales PBR y Draco. Casquillos Ø6→Ø4 de referencia autorizados. Estados anteriores históricos.
+
+Actualización AFR2-20261023-07: [armado paso a paso en Fusion](docs/ARMADO_FUSION_PASO_A_PASO.md), versión 15 guardada y [maestro F3D exportado](mecanica/auto-completo/AutoFinalRobo2.f3d). Ensamble parcial de los CAD aportados en CADS; Model Y esencial al final. Ruedas de 80 mm y acoples pendientes, sin generar ruedas. Capas del chasis conservadas; inferencias y ejes documentados. Las secciones anteriores de entrega que siguen son históricas.
+
+Actualización AFR2-20261023-06: [primer lote de candidatos CAD para aprobación](docs/REVISION_CANDIDATOS_3D.md), [estado de continuidad](docs/ESTADO_MODELO_3D.md). Descargas realizadas, sin iniciar modelado. El usuario indica modelar el chasis a mano. Los párrafos de entrega AFR2-20261023-05 de abajo describen el hito anterior.
+
 Módulo interno para todo el diseño eléctrico y mecánico de AutoFinalRobo2: esquemas y PCB KiCad, pieza nueva/soporte/cubierta y modelo completo del auto. Pertenece al único Git de D:/ProyectoRobotica2; no tiene .git independiente.
 
 Estado al 23/10/2026: estructura y documentación creadas; nueve insumos CAD existentes conservados sin adaptación. No hay esquema, PCB ni pieza nueva diseñados, ni ensamblaje del robot real comprobado.

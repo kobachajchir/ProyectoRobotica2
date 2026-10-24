@@ -1,0 +1,23 @@
+id,componente,cantidad_objetivo,fuente_local_o_fusion,modelo_elegido,estado,diferencias_o_inferencias,autor_licencia,unidades
+CH-01,Capas del chasis,2,Fusion AutoFinalRobo2,CapaInferior y CapaSuperior,montado conservado,Posiciones originales Y=0..3 y 23..26 mm,Usuario; licencia no indicada,mm de Fusion
+TR-01,Motorreductor,4,CADS/GM25-370/gm25-370.ipt,GM25_370,montado,Variante y encoder Hall fisicos no identificados; posiciones inferidas,Aportado por usuario; autor/licencia remotos pendientes,mm de Fusion
+TR-02,Ruedas Mecanum 80 mm,4,Fusion Wheel80mm aportado por usuario,Rueda80_ManoA y Rueda80_ManoB,montado v16,Sin escala; mano opuesta reflejada; dos por mano en diagonales,Aportado por usuario; autor/licencia pendientes,mm de Fusion
+TR-03,Acoples,4,Fusion Wheel80mm acople incluido,Rueda80_ManoA y Rueda80_ManoB,montado v16,Agujero6mm y eje4mm; prisionero alineado con cara plana; casquillo de referencia autorizado,Aportado por usuario; autor/licencia pendientes,mm de Fusion
+TR-05,Casquillos reductores,4,Referencia autorizada por usuario,Casquillos_Ruedas_6a4_Referencia,referencia montada v16,Exterior6 interior4 longitud10mm; ventana al prisionero; sin tolerancias de fabricacion,Generado en esta tarea,mm
+TR-04,Soportes motor,4,Script fusion_etapa2.py,Soportes_Motores_Referencia,referencia montada,Escuadras simplificadas de montaje; tornilleria incompleta,Generado en esta tarea,mm
+EL-01,Mega2560,1,CADS/MEGA2560/arduinoMegaDetailed.STEP,Mega2560_CAD,montado,No se usa variante simplificada; caras grandes PCB coloreadas; revision fisica pendiente,Aportado por usuario; autor/licencia pendientes,mm de Fusion
+EL-02,WiFi Shield,1,Fusion OSOYOOWifiShield,OSOYOOWifiShield,montado,Modelo armado por usuario; 103 cuerpos; ESP_12_E no prueba variante ESP12S,Usuario y referencias Fusion; licencias por pieza pendientes,mm de Fusion
+EL-03,OSOYOO Model Y V2.0,1,CADS/MotorDriver/DriverDimensions.png y Driver.png,OSOYOOMotorDriver_ModelY_V2,modelo esencial montado,Contorno62x43 y agujeros3.5 documentados; espesor1.6 y alturas inferidos,Geometria generada desde referencias del usuario,mm
+EL-04,Voltimetro tres digitos,1,Manual M2 pagina PDF9,Voltimetro_Referencia,referencia montada,Envolvente35x15 inferida; variante real pendiente,Generado en esta tarea,mm
+AL-01,Portabaterias doble,1,CADS/18650BatteryHolder/18650 Battery Holder 2x v1.step,Portabaterias_SinCableExterior,derivado montado,Cable exterior recortado; modelo abierto diferente de caja cerrada fotografiada,Aportado por usuario y recorte propio; licencia origen pendiente,mm de Fusion
+AL-02,Celda18650,2,CADS/18650/18650 Battery.STEP,Celda_18650,montado,Polaridades geometricas opuestas; marca/variante real sin identificar,Aportado por usuario; autor/licencia pendientes,mm de Fusion
+SE-01,Sensor linea cinco canales,1,CADS/5IRTracker/5 Channel IR Tracker.step,SensorLinea_5IR,montado,Opticas hacia suelo; separadores40mm del manual; fijacion inferida,Aportado por usuario; autor/licencia pendientes,mm de Fusion
+SE-02,Microservo SG90,1,CADS/SG90/SG90 - Micro Servo 9g - Tower Pro.STEP,SG90,montado,Cuerpo y brazo simple; crucetas alternativas ocultas; discrepancia MG90 documental,Aportado por usuario; autor/licencia pendientes,mm de Fusion
+SE-03,Ultrasonido,1,CADS/HCSR04/HC-SR04 Sensor.stp,HC_SR04,montado,Pose frontal estatica; modelo de soporte simplificado,Aportado por usuario; autor/licencia pendientes,mm de Fusion
+SE-04,Soporte ultrasonido,1,Script fusion_etapa2.py y Manual M2 PDF25-26,Soporte_HCSR04_Referencia,referencia montada,Representa soporte original del kit; no pieza nueva OLED,Generado en esta tarea,mm
+FI-01,Separadores chasis,4,Chasis Fusion del usuario,Separadores_Montaje,referencia montada,Altura20mm para mantener capas existentes; centros inferidos,Generado en esta tarea,mm
+FI-02,Separadores IR40mm,2,Manual M2 PDF7-8,Separadores_Montaje,referencia montada,Altura documental; posicion inferida,Generado en esta tarea,mm
+FI-03,Apoyos y tornilleria placas,8,Script fusion_etapa3.py,Fijaciones_Placas,referencia parcial,Altura6.5mm y centros Mega inferidos; no toda tornilleria representada,Generado en esta tarea,mm
+UI-01,OLED096,1,Fusion OLED0.96CAD,OLED0.96CAD,fuera del ensamble,Integracion futura pendiente,Usuario y fuente no identificada,no inspeccionado en este hito
+UI-02,Encoder sin breakout,1,Fusion KY040RotaryEncoderCAD,KY040RotaryEncoderCAD,fuera del ensamble,Integracion futura pendiente,Usuario y fuente no identificada,no inspeccionado en este hito
+UI-03,Perilla encoder,1,Fusion KY040RotaryEncoderKnobCAD,KY040RotaryEncoderKnobCAD,fuera del ensamble,Integracion futura pendiente,Usuario y fuente no identificada,no inspeccionado en este hito

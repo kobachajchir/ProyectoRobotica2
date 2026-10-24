@@ -4,6 +4,9 @@ Independiente del AMI AutoMicro.
 
 | Fecha | ID | Cambio | Atmega | ESP | Web | Detalle |
 | --- | --- | --- | --- | --- | --- | --- |
+| 2026-10-24 | AFR2-20261024-01 | Fusion v16 con ruedas y Blender; GLB 827.232 bytes | fuente parcial; sin cambio | esqueleto; sin cambio | esqueleto; sin cambio | [Ficha](changes/2026-10-24-01-wheels-blender.md) |
+| 2026-10-23 | AFR2-20261023-07 | Ensamble Fusion parcial guardado/exportado; ruedas 80 mm pendientes | fuente parcial; sin cambio | esqueleto; sin cambio | esqueleto; sin cambio | [Ficha](changes/2026-10-23-07-fusion-assembly.md) |
+| 2026-10-23 | AFR2-20261023-06 | Primer lote de candidatos CAD para aprobación; chasis manual | fuente parcial; sin cambio | esqueleto; sin cambio | esqueleto; sin cambio | [Ficha](changes/2026-10-23-06-cad-candidates.md) |
 | 2026-10-23 | AFR2-20261023-05 | Plan Fusion, reserva UI y origin privado para continuar en otra PC | fuente parcial; código sin cambio | esqueleto; código sin cambio | esqueleto; código sin cambio | [Ficha](changes/2026-10-23-05-fusion-plan-and-origin.md) |
 | 2026-10-23 | AFR2-20261023-04 | Módulo CAD/KiCad y Git global con historial conservado | fuente parcial; código sin cambio | esqueleto; código sin cambio | esqueleto; código sin cambio | [Ficha](changes/2026-10-23-04-cad-and-monorepo.md) |
 | 2026-10-23 | AFR2-20261023-03 | Shield UART V1.3: evidencia, niveles, cruce USB, I2C Mega y prompt | pendiente; código sin cambio | pendiente; código sin cambio | pendiente; código sin cambio | [Ficha](changes/2026-10-23-03-wifi-shield-evidence.md) |

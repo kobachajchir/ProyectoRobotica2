@@ -1,5 +1,9 @@
 # AutoFinalRobo2 - informe maestro
 
+Hito CAD AFR2-20261024-01: [ruedas y Blender](AutoFinalRobo2-CAD/docs/RUEDAS_Y_BLENDER_20261024.md). Fusion v16, casquillos de referencia autorizados, fotos/renders y GLB 827.232 bytes. Atmega/ESP/Web sin cambios. Estados anteriores históricos.
+
+Actualización CAD AFR2-20261023-07: [ensamble parcial en Fusion, paso a paso](AutoFinalRobo2-CAD/docs/ARMADO_FUSION_PASO_A_PASO.md), versión 15 guardada con descripciones y exportada como F3D. Chasis del usuario conservado; CADS aportados incorporados y Model Y esencial reconstruido. Ruedas correctas de 80 mm/acoples pendientes, sin generar ruedas. Atmega/ESP/Web sin cambios; sin pruebas ni validadores. Los estados de entregas anteriores de abajo conservan su contexto histórico.
+
 Fecha: 23 de octubre de 2026. Base de trabajo y migración; no firmware completo ni puesta en marcha. Proyecto independiente: las fuentes originales y su registro AMI no se modificaron.
 
 ## Punto de entrada y cinco módulos en un Git

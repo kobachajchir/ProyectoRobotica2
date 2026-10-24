@@ -1,0 +1,916 @@
+--- PDF 1 ---
+ 
+ 
+ 
+ 
+More information:  http://osoyoo.com/?p=49235 
+  
+
+--- PDF 2 ---
+ 
+Mecanum wheels, also known as omni wheels or Ilon wheels, consist of a hub with rollers 
+oriented 45°  to the axis of rotation.The mecanum wheels are wheel hubs fitted with integrated 
+rollers that move passively and independently. 
+ 
+Depending on which wheels rotate in which direction, the platform will move forward, 
+backward, sideways, diagonally, or spin in place. This range of maneuverability enables the 
+Omni Platform to efficiently navigate any space, particularly around tight corners, narrow 
+lanes, and complex pathways. 
+ 
+This Arduino Omini Direction Robot Car learning kit is developed our Japan and Canada 
+engineer team. It has all features a traditional Arduino Robot car should have, including remote 
+control by Bluetooth, IoT through Wifi, Line tracking and Obstacle Avoidance auto driving. 
+With the help of powerful Mecanum wheels, the car can make much more complicated 
+movement such as sideway shifting and digaonally movement controlled by Cell phone APP. 
+ 
+The kit comes with OSOYOO mega2560 board (fully compatiable with Arduino Mega2560) 
+and OSOYOO Esp8266 Wifi Shield. Besides, we have designed five step by step lessons which 
+help students to learn Arduino robot programming from scratch. If you are an experience DIY 
+player or Arduino programmer, you can also get a lot of knowledge from this kit’s open source 
+code and hardware to make interesting DIY project of your own. 
+ 
+Mecanum Wheel Robot Car Full Package 
+Buy from US Buy from UK Buy from DE Buy from IT Buy from FR Buy from ES Buy from JP 
+       
+  
+
+--- PDF 3 ---
+CONTENT 
+Lesson 1 Basic Robot Car Assembling ..................... - 1 - 
+Lesson 2 Obstacle Avoidance Robot Car ................ - 22 - 
+Lesson 3 Line Following Robot Car ....................... - 29 - 
+Lesson 4 Bluetooth Controlled Imitation Driving .. - 34 - 
+Lesson 5 Wifi Controlled Robot Car ...................... - 40 - 
+--- PDF 4 ---
+- 1 - 
+ 
+Lesson 1 Basic Robot Car Assembling 
+ 
+Mecanum Omni wheel is a very powerful wheel technology which allows robot car make 
+omni-directional movement (parallel shift to left and right). 
+ 
+In this project, we will show how to use Arduino to control an OSOYOO Brand mecanum 
+wheel robot car.
+ 
+OSOYOO Mecanum Wheels Robotic Car Chassis x 1 (2x left-wheels/2x right-wheels and 4x Motor) 
+OSOYOO MEGA2560 board fully compatible with Arduino 
+OSOYOO Wifi Shield x 1 
+OSOYOO Model Y motor driver x 1 
+OSOYOO battery box x 1 
+18650 Batteries x2 
+Specifications: 
+ 
+
+--- PDF 5 ---
+- 2 - 
+ 
+ 
+STEP1. Install the metal holder on metal chassis with 16pcs M3.5*12 screws, M3.5 rubber 
+rings and M3.5 nuts 
+ 
+STEP2. Installing 8pcs M3*6 screws as per the following red box. 
+ 
+STEP3. Install the jackscrews on al-alloy coupling, please tighten jackscrews to fix the al-alloy 
+
+--- PDF 6 ---
+- 3 - 
+ 
+coupling on motor. 
+ 
+The shaft from the motor has a flat area on it. Make sure that the jackscrew was 
+positioned on this flat, and tightened both screws on the shaft. 
+ 
+ 
+STEP4. Install the 4 mecanum wheels on al-alloy coupling with 4pcs M2.5*10. 
+ 
+ 
+The Mecanum wheel has some sub-wheels on the main wheel. The four Mecanum wheels have 
+
+--- PDF 7 ---
+- 4 - 
+ 
+two types by the sub -wheel directions. Check the type left wheel and right w heel by following 
+picture left side. You must 100% sure that correct type of wheel is installed into correct position 
+as per   picture right side , the rolling direction of each wheel will determine the wh ole car 
+moving directions showed in the picture. 
+ 
+A correct configuration requires each of four wheels is set in the way as shown below, where 
+the rotation axis of each wheel’s top roller points to the center of the platform. Please notice that 
+all the dynamic analysis and prewritten codes are based on this configuration. 
+ 
+Two types of mecanum wheel and their installation position in the car. 
+ 
+Different rotation combination of 4 wheels will result in different car movement directions. 
+Following pictures shows how they works. 
+ 
+STEP5.Install 2pcs M3x40 copper pillars with 2pcs M3 screws and 2pcs M3.5 rubber rings 
+
+--- PDF 8 ---
+- 5 - 
+ 
+on tracking sensor as following pictures. 
+ 
+STEP6. We will add a 5-Point tracking sensor module to the car chassis with M3 nuts as 
+following pictures. 
+ 
+STEP7. Install 12pcs M3 plastic pillars and nuts on acrylic board as following pictures. 
+ 
+
+--- PDF 9 ---
+- 6 - 
+ 
+STEP8. Install 1pcs osoyoo Mega2560 board, 1pcs model Y motor driver board and 1pcs 
+voltage meter on acrylic chassis with 8pcs M3 plastic screws as following pictures. 
+ 
+STEP7. Install battery box with 4pcs M3x10 screws and nuts as following pictures. 
+ 
+
+--- PDF 10 ---
+- 7 - 
+ 
+STEP8.Install SG90 servo on the acrylic chassis with 2pcs M2.2*8 self tapping screws as 
+following pictures. 
+ 
+STEP9. Remove the red jumper cap from wifi shield and insert OSOYOO wifi shield into 
+Arduino Mega2560 board as following pictures. 
+ 
+
+--- PDF 11 ---
+- 8 - 
+ 
+ 
+STEP10.Install the acrylic chassis on metal chassis. Please note the front and back of acrylic 
+chassis and metal chassis. 
+ 
+ 
+Before connect wires, make sure you have inserted OSOYOO WIFI Shield onto MEGA2560 
+board already. 
+
+--- PDF 12 ---
+- 9 - 
+ 
+ 
+ 
+
+--- PDF 13 ---
+- 10 - 
+ 
+ 
+
+--- PDF 14 ---
+- 11 - 
+ 
+STEP11. Connect 4 motors to model Y driver board as per the following pictures. 
+ 
+
+--- PDF 15 ---
+- 12 - 
+ 
+STEP12. 
+Model Y board M_A  IN1,IN2,IN3,IN4  pin connect to D5,D6,D7,D8. 
+Model Y board M_B IN1,IN2,IN3,IN4 pin connect to D22,D24,D26,D28. 
+M_A ENA ,ENB pin connect to D11,D12. 
+M_B ENA ,ENB pin connect to D9, D10. 
+ 
+ 
+
+--- PDF 16 ---
+- 13 - 
+ 
+ 
+ 
+Caution: 
+When insert/remove the 6-pin parallel cable plug into Model Y 6-pin male 
+socket,  please hold the white plastic pin-holder to do operation. Never drag the 
+wires to pull the plug out of the socket, otherwise it will damage the wires. 
+
+--- PDF 17 ---
+- 14 - 
+ 
+STEP12. 
+Connect the voltage meter to model Y motor driver board with 3pin female to female cable as 
+following picture. 
+Connect model Y motor driver board to wifi shield with 2pin XH2.54 female cable. 
+Connect 18650 battery box to model Y motor driver board as following picture. 
+ 
+
+--- PDF 18 ---
+- 15 - 
+ 
+ 
+ 
+ 
+ 
+
+--- PDF 19 ---
+- 16 - 
+ 
+ 
+
+--- PDF 20 ---
+- 17 - 
+ 
+ 
+ 
+
+--- PDF 21 ---
+- 18 - 
+ 
+Open-source Arduino 
+Software(IDE) 
+ 
+Download Arduino IDE here: 
+https://www.arduino.cc/en/Main/Software?setlang=en 
+7 zip is a free zip 
+utility that un-zips zip 
+files 
+ 
+Download 7zip here for free 
+https://www.7-zip.org/ 
+Step 1: Install latest Arduino IDE (If you have Arduino IDE version after 1.1.16, please skip 
+this step). Download Arduino IDE from https://www.arduino.cc/en/Main/Software?setlang=en , 
+then install the software. 
+ 
+Step 2: Download https://osoyoo.com/driver/mecanum_metal_chassis_m2/m2-lesson1.zip, 
+unzip the download zip file called m2-lesson1.zip , you will see a folder called m2-lesson1. 
+ 
+Step 3: Connect Mega2560 board to PC with USB cable, Open Arduino IDE -> click file -> 
+click Open -> choose code “m2-lesson1.ino” in m2-lesson1 folder, load the code into arduino. 
+ 
+
+--- PDF 22 ---
+- 19 - 
+ 
+Step 4: Choose corresponding board/port for your project, upload the sketch to the board.
+ 
+
+--- PDF 23 ---
+- 20 - 
+ 
+ 
+ 
+Disconnect Arduino from PC, put battery into battery box. When you put the car on the 
+ground and turn on the switch on OSOYOO Uart WIFI shield and the switch on battery box if 
+you install battery box for 18650. 
+After running Lesson 1 code, the car will move 
+Forward→Backward→Left turn→Right turn→ 
+Right Parallel Shift→Left Parallel Shift→ 
+Up Right Diagonal→Down Left Diagonal→ 
+Up Left Diagonal → Down Right Diagonal 
+ 
+In next lessons, if you want to change the speed performance of the robot car, you need to 
+change the constants in lesson.ino sketch file: 
+#define MIN_SPEED  
+#define TURN_SPEED 
+
+--- PDF 24 ---
+- 21 - 
+ 
+#define SLOW_TURN_SPEED  
+#define BACK_SPEED 
+#define SHIFT_SPEED 
+#define SPEED 
+#define FAST_SPEED 
+ MIN_SPEED is the minimum power required to start the car. If when APP engine toggle 
+is switched to RED, but your car does not move, you need increase this value , if the car 
+runs too fast at engine start moment, you need reduce this value. 
+ TURN_SPEED and SLOW_TURN_SPEED value determines the turning speed of your 
+car. If your car turning too fast, you need reduce these two values, if turning too slow or 
+not turning,increase these two values. 
+ SLOW_TURN_SPEED about 20 to 30 lower than TURN_SPEED value. 
+ BACK_SPEED value determines the reverse back running speed. 
+ SHIFT_SPEED value determines parallel shifting speed. 
+ SPEED value determines forward moving speed 
+ FAST_SPEED: The difference between FAST_SPEED and SPEED determines the slight 
+turning sharpness. The max value of FAST_SPEED is 255. 
+  To get better running performance result, motor power(speed) value should be adjusted 
+properly as per battery level. If motor power(speed) value is too high, your car might run 
+too fast and easy to out of control. If motor power(speed) is too low, the car might not even 
+move. 
+ 
+ 
+  
+--- PDF 25 ---
+- 22 - 
+ 
+Lesson 2 Obstacle Avoidance Robot Car 
+ 
+In this lesson, you must complete lesson 1 before you continue on with this lesson. we use 
+the ultrasonic module to “see” obstacle and measure the distance. If the distance is less than 
+predefined threshold value, the buzzer will beep and the car will turn around from the obstacle 
+automatically. 
+ 
+OSOYOO Mecanum Wheels Robotic Car Chassis x 1 (2xleft-wheels/2xright-wheels and Motor x 4) 
+OSOYOO Mega2560 board fully compatible with Arduino x 1 
+OSOYOO WiFi shield x 1 
+OSOYOO Model Y motor driver x 1 
+OSOYOO MG90 servo motor x 1 
+OSOYOO Ultrasonic sensor module x1 
+OSOYOO Ultrasonic mount holder 
+OSOYOO Battery box x 1 
+OSOYOO 3pin female to female jumper wire x1 
+OSOYOO 6pin male to female jumper wire x2 
+OSOYOO 2 pin XH.25 female to female x1 
+OSOYOO 10 pin jumper wire male to female x1 
+18650 Batteries (3.7V) x 2 
+ 
+You must complete lesson 1 (assembling the car) before you continue on with this lesson. 
+In this lesson3, we will add a servo motor and to the robotic car built in Lesson 1. 
+ 
+STEP1: Install Ultrasonic Module to mount holder with 4pcs M1.4*8 screw and M1.4 nuts. 
+ 
+STEP2: Install mount holder for ultrasonic module on servo motor with M2*4 Self Tapping 
+screw. 
+When placing the ultrasonic underneath,as the self tapping screws screws easily strip. 
+A.Support the motor from underneath,as the self tapping screws easily strip. 
+B.Do not insert the screw until after the alignment process. 
+
+--- PDF 26 ---
+- 23 - 
+ 
+ 
+ 
+ 
+You must complete lesson 1 (assembling the car) circuit connection. No need change anything, 
+just keep the hardware wire connection as it is. 
+STEP3:Please keep all lesson 1 connections same as it is. Before connecting wires, make sure 
+that you have connect SG90 servo motor to model Y board and OSOYOO uart wifi shield as 
+follows. 
+(Note: You need split 1 pcs of male-to-female jumper wires from our 10-pc jumper wire 
+bundle. Any color from the bundle will be ok. The rest of wires are as spare parts for potential 
+broken or damaged wires.) 
+ 
+
+--- PDF 27 ---
+- 24 - 
+ 
+STEP4: Connect VCC,Trig,Echo,GND of ultrasonic module to 5V ,D30,D31,GND of wifi 
+shield with 4 pcs of male-to-female jumper wires. 
+(Note: You need split 4 pcs of male-to-female jumper wires from our 10-pc jumper wire 
+bundle. Any color from the bundle will be ok. The rest of wires are as spare parts for potential 
+broken or damaged wires.) 
+ 
+ 
+Open-
+source 
+Arduino 
+Software(IDE
+)  
+Download Arduino IDE here: 
+https://www.arduino.cc/en/Main/Software?setlang=e
+n 
+7 zip is a 
+free zip 
+utility that un-
+zips zip files 
+ 
+Download 7zip here for free 
+https://www.7-zip.org/ 
+Step 1: Install latest Arduino IDE (If you have Arduino IDE version after 1.1.16, please skip this 
+step). Download Arduino IDE from https://www.arduino.cc/en/Main/Software?setlang=en , then 
+install the software. 
+ 
+Step2: Download https://osoyoo.com/driver/mecanum_metal_chassis_m2/m2-
+lesson2.zip , unzip the download zip file m2-lesson2.zip, you will see a folder called m2-lesson2 .） 
+ 
+
+--- PDF 28 ---
+- 25 - 
+ 
+Step3: Connect Mega2560 board to PC with USB cable, Open Arduino IDE -> click file -> click 
+Open -> choose code “m2-lesson2” in lesson folder, load the code into Arduino as following. 
+ 
+Step4: Choose corresponding board/port for your project, upload the sketch to the board. 
+ 
+
+--- PDF 29 ---
+- 26 - 
+ 
+ 
+Step5: Ultrasonic sensor servo initial direction alignment 
+After turning on the battery, the servo will make some movement and finally stops at a 
+direction for 5 seconds.During this first 5 seconds, you must make sure the Ultrasonic sensor(two 
+eyes) is facing straight forward. 
+ 
+If it is not straight forward, you should turn off battery immedia tely and remove the sensor 
+from servo, reinstall it and make it facing straight forward direction as following picture. 
+Otherwise the obstacle avoidance program will not work properly. 
+ 
+After adjusting sensor direction, turn on battery again. If its direct ion is not straight 
+forward, turn off battery and do direction alignment again. 
+
+--- PDF 30 ---
+- 27 - 
+ 
+ 
+ 
+If the ultrasonic module turn to front view position, that means you no need adjust sensor 
+position anymore. Just wait 5 seconds. 
+ 
+If no obstacle is detected, the car will go forward. If any obstacles is detected, the car will stop, 
+the ultrasonic module will turn from right to left to detect surrounding obstacle.  
+ 
+The robot car will decide to make left turn, right turn or backward according to obstacle sensor 
+data and our obstacle avoidance algorithm. 
+ 
+Sometimes your car might have collision and make your Ultrasonic sensor position change, 
+you must remember to do sensor direction alignment again. 
+ 
+The robot car will decide to make left turn, right turn or backward according to obstacle sensor 
+data and our obstacle avoidance algorithm. Sometimes your car might have collision and make 
+your Ultrasonic sensor position change, you must remember to do sensor direction alignment 
+again. 
+Important parameters in the sketch file 
+Following parameters in Line 35 to 39 of m2-lesson2.ino are very important to 
+make performance tuning. See the comments in the #define statements: 
+#define FAST_SPEED 170 //both sides of the motor speed 
+#define SPEED 100 //both sides of the motor speed 
+
+--- PDF 31 ---
+- 28 - 
+ 
+#define TURN_SPEED 150 //both sides of the motor speed 
+#define BACK_SPEED1 150 //back speed 
+#define BACK_SPEED2 100 //back speed 
+  
+--- PDF 32 ---
+- 29 - 
+ 
+Lesson 3 Line Following Robot Car 
+ 
+In this lesson3, we will add a 5-Point tracking sensor module to the robotic car built in Lesson1.  
+ 
+The software in this lesson will read data from the 5 -Point Tracking sensor module and 
+automatically guide the smart car to move along the black track line in the white ground. 
+ 
+OSOYOO Mecanum wheels robotic car chassis x 1 (2x left-wheels/2x right-wheels and Motor x 4) 
+OSOYOO Mega2560 board fully compatible with Arduino  x 1 
+OSOYOO WiFi shield x 1 
+OSOYOO Model Y motor driver x 1 
+OSOYOO 5-Point Tracking sensor module 
+OSOYOO 3pin female to female jumper wire x1 
+OSOYOO 6pin male to female jumper wire x2 
+OSOYOO 7pin female to female jumper wire x1 
+OSOYOO 2 pin XH.25 female to female x1 
+OSOYOO Battery box x 1 
+18650 Batteries(3.7V) x 2 
+ 
+You must complete lesson 1 (assembling the car) before you continue on with this lesson. 
+STEP1: We have install 2pcs M3x40 copper pillars with 2pcs M3 screws and 2pcs M3.5 rubber 
+rings on tracking sensor in lesson1 as following pictures. 
+ 
+
+--- PDF 33 ---
+- 30 - 
+ 
+STEP2. We have added a 5-Point tracking sensor module to the car chassis with M3 nuts in 
+lesson1 as following pictures. 
+ 
+ 
+Start the installation from previous status of Lesson 1. If you have installed Lesson 1, no need 
+change anything, just keep the hardware wire connection as it is. 
+STEP3 : Connect 5-point tracking sensor board to WIFI Shield as per following picture. 
+Connect GND pin of tracking sensor module to GND of wifi shield; 
+Connect VCC pin of tracking sensor module to 5V of wifi shield; 
+Connect IR1,IR2,IR3,IR4,IR5 pins to A4, A3, A2,A1,A0 with 7pin female to female cable as 
+the following photo shows (Remember: DO NOT remove any existing wires installed in Lesson 
+1). 
+
+--- PDF 34 ---
+- 31 - 
+ 
+ 
+ 
+Open-source 
+Arduino 
+Software(IDE) 
+ 
+Download Arduino IDE here: 
+https://www.arduino.cc/en/Main/Software?setlang=en 
+7 zip is a free zip 
+utility that un-zips 
+zip files 
+ 
+Download 7zip here for free 
+https://www.7-zip.org/ 
+ 
+Adjust the sensitivity of tracking sensor modules. 
+Turn on and hold the car and adjust the potentiometer on the tracking sensor with cross 
+screwdriver until you get the best sensitiv ity status: the signal indicate LED light will turn off 
+when sensor is above white ground, and the signal LED will turn on when the sensor is above 
+black track. 
+ 
+Step 1: Install latest Arduino IDE (If you have Arduino IDE version after 1.1.16, please skip 
+this step). Download Arduino IDE from https://www.arduino.cc/en/Main/Software?setlang=en , 
+then install the software. 
+ 
+Step 2: Download https://osoyoo.com/driver/mecanum_metal_chassis_m2/m2-lesson3.zip , 
+unzip the download zip file m2-lesson3.zip, you will see a folder called m2-lesson3 . 
+ 
+
+--- PDF 35 ---
+- 32 - 
+ 
+Step 3: Connect Mega2560 board to PC with USB cable, Open Arduino IDE -> click file -> 
+click Open -> choose code “m2 -lesson3.ino” in lesson folder, load the code into Arduino as 
+following. 
+ 
+Step 4: Choose corresponding board/port for your project, upload the sketch to the board. 
+ 
+Step 5: Adjust the sensitivity of tracking sensor modules. 
+
+--- PDF 36 ---
+- 33 - 
+ 
+ Turn on and hold the car and adjust the potentiometer on the tracking sensor with cross 
+screwdriver until you get the best sensitivit y status: the signal indicate LED light will turn off 
+when sensor is above white ground, and the signal LED will turn on when the sensor is above 
+black track. 
+ 
+ 
+ 
+Prepare a black track (the width of the black track must be between 20mm and 30mm) in white 
+ground. Please be noted that the bend angle of track can’t be too sharp otherwise the car will 
+move out of the track. 
+ 
+Turn on the car and put the middle of tracking sensor module facing over black track, and then 
+the car will move along the black track automatically. 
+ 
+Motor Speed Tuning for better tracking performance 
+ 
+To get better tracking performance result, motor power(speed) value should be adjusted 
+properly as per battery level. If motor power(speed) value is too high, your car might run too fast 
+and easy to get out of track. If motor power(speed) is too low, the car might not even move. 
+To adjust the motor power value, you need change the 3 constants : MID_SPEED, 
+HIGH_SPEED,LOW_SPEED in line 14,15,16 in m2-lesson3.ino sketch file. Their default values 
+are 100,120,80 which are good when batteries are fully charged. 
+ 
+After batteries are running low, you might need to increase the value of these 3 constants. You 
+can gradually add or reduce 10 each time on these values and compare which values have best  
+tracking performance.  
+
+--- PDF 37 ---
+- 34 - 
+ 
+Lesson 4 Bluetooth Controlled Imitation Driving 
+Mecanum Omni wheel is a very powerful wheel technology which allows robot car make 
+omni-directional movement ( parallel shift to left and right). 
+ 
+In this project, we will show how to use Arduino to control an Osoyoo Brand mecanum 
+wheel robot car.
+ 
+OSOYOO Mecanum Wheels Robotic Car Chassis x 1 (2xleft-wheels/2xright-wheels and Motor x 4) 
+OSOYOO Mega2560 board fully compatible with Arduino x 1 
+OSOYOO WiFi shield x 1 
+OSOYOO Model Y motor driver x 1 
+OSOYOO MG90 servo motor x 1 
+OSOYOO Ultrasonic sensor module x1 
+OSOYOO Ultrasonic mount holder 
+OSOYOO Battery box x 1 
+OSOYOO 3pin female to female jumper wire x1 
+OSOYOO 6pin male to female jumper wire x2 
+OSOYOO 2 pin XH.25 female to female x1 
+OSOYOO 10 pin jumper wire male to female x1 
+18650 Batteries (3.7V) x 2 
+ 
+You must complete lesson 1 (assembling the car) before you continue on with this lesson. 
+No need change anything, just keep the hardware wire connection as it is. 
+ 
+STEP1: Connect B_TX and B_RX to D19 and D18. 
+(Note: You need split 2 pcs of male-to-female jumper wires from our 10-pc jumper wire 
+bundle. Any color from the bundle will be ok. The rest of wires are as spare parts for potential 
+broken or damaged wires.)  
+ 
+
+--- PDF 38 ---
+- 35 - 
+ 
+ 
+STEP2: Bluetooth Module should be inserted into bluetooth 6-pin slot in OSOYOO Wifi 
+Board 
+ 
+ 
+Open-
+source 
+Arduino 
+Software(IDE
+)  
+Download Arduino IDE here: 
+https://www.arduino.cc/en/Main/Software?setlang=e
+n 
+
+--- PDF 39 ---
+- 36 - 
+ 
+7 zip is a 
+free zip 
+utility that un-
+zips zip files 
+ 
+Download 7zip here for free 
+https://www.7-zip.org/ 
+Step 1: Install latest Arduino IDE (If you have Arduino IDE version after 1.1.16, please 
+skip this step). Download Arduino IDE from 
+https://www.arduino.cc/en/Main/Software?setlang=en , then install the software. 
+ 
+Step 2: Download https://osoyoo.com/driver/mecanum_metal_chassis_m2/m2-
+lesson4.zip, unzip the download zip file m2-lesson4.zip, you will see a folder called m2-
+lesson4 . 
+ 
+Step 3: Connect mega2560 board to PC with USB cable, Open Arduino IDE -> click file 
+-> click Open -> choose code “lesson4.ino” in lesson4 folder, load the code into arduino. 
+ 
+
+--- PDF 40 ---
+- 37 - 
+ 
+Step 4: Choose corresponding board/port for your project,upload the sketch to the board. 
+ 
+Mobile APP: 
+Go to your Google Play or Apple APP store and search APP name “OSOYOO imitation 
+driving”, Download the APP as following and install it in your smart phone.
+ 
+
+--- PDF 41 ---
+- 38 - 
+ 
+ 
+ 
+Power on the robot, and open APP. 
+1) If you have not paired Bluetooth module with your cell phone, please pair the bluetooth 
+module first before open the APP. In your cell phone Setting-> Bluetooth ,find a Bluetooth 
+device called HC02, pair it with password 1234 
+2) After bluetooth HC02 device is paired, open the APP. If you are using Android APP, Click 
+BT Search Button to connect APP to HC02 device, if it is iOS APP, just click connect 
+3) Click Engine Switch to start/stop the car 
+4) Click Speed +/- button to accelerate or reduce speed 
+5) Rotate the mobile phone to change direction (steering wheel will rotate while you are turning 
+the phone). 
+6) Click Gear button to change gear to Forward or Backward direction. 
+7) Press F1 to Shift to left way, F5 to shift to right way, F3 to up left diagonal, F4 to up right 
+diagonal. 
+ 
+Motor Speed Tuning for better performance 
+ 
+To get better running performance result, motor power(speed) value should be adjusted 
+properly as per battery level. If motor power(speed) value is too high, your car might run too 
+fast and easy to out of control. If motor power(speed) is too low, the car might not even move. 
+
+--- PDF 42 ---
+- 39 - 
+ 
+ 
+To adjust the motor power value, you need change the 3 constants line 27,28,29 in mecanum-
+2560-lesson4.ino sketch file: 
+ 
+#define MIN_SPEED  50  
+#define TURN_SPEED  70  
+#define SLOW_TURN_SPEED  50  
+#define BACK_SPEED 60 
+ 
+MIN_SPEED is the minimum power required to start the car. If when APP engine toggle is 
+switched to RED, but your car does not move, you need increase this value , if the car runs too 
+fast at engine start moment, you need reduce this value. 
+ 
+TURN_SPEED AND, SLOW_TURN_SPEED value determines the turning speed of your 
+car. If your car turning too fast, you need reduce these two values, if turning too slow or not 
+turning, increase these two values. Always make  
+ 
+SLOW_TURN_SPEED about 20 to 30 lower than TURN_SPEED value. 
+ 
+BACK_SPEED value determines the reverse back running speed. 
+ 
+After batteries are running low, you might need to increase the value of these 3 constants. 
+You can gradually add or reduce 10 each time on these values and compare which values have 
+best tracking performance. 
+  
+--- PDF 43 ---
+- 40 - 
+ 
+Lesson 5 Wifi Controlled Robot Car  
+ 
+In this project we will connect Robot Car to Wifi and Use an APP to control the car 
+through Internet. This is a typical Internet of Things (IoT) Application. 
+ 
+OSOYOO Mecanum wheels robotic car chassis x 1 (2x left-wheels/2x right-wheels and Motor x 4) 
+OSOYOO Mega2560 board fully compatible with Arduino  x 1  
+OSOYOO WiFi shield x 1 
+OSOYOO Model Y motor driver x 1 
+OSOYOO MG90 servo motor x 1 
+OSOYOO Ultrasonic sensor module x1 
+OSOYOO Ultrasonic mount holder 
+OSOYOO 5-Point Tracking sensor module 
+OSOYOO 3pin female to female jumper wire x1 
+OSOYOO 6pin male to female jumper wire x2 
+OSOYOO 7pin female to female jumper wire x1 
+OSOYOO 2 pin XH.25 female to female x1 
+OSOYOO Battery box x 1 
+18650 Batteries(3.7V) x 2
+ 
+If you just finishes all lesson 1 (assembling the car) and lesson 4( bluetooth imitation 
+driver), please keep all lesson connections same as it is. Then plug out bluetooth from Wifi 
+Shield. 
+ 
+Remove the connection B_TX to D18 and B_RX to D19. 
+Connect E_RX to D18(TX1) and E_TX to D19(RX1). 
+ 
+(Note: You need split 2 pcs of male-to-female jumper wires from our 10-pc jumper wire 
+bundle. Any color from the bundle will be ok. The rest of 8 pcs wires are as spare parts for 
+potential broken or damaged wires.)  
+
+--- PDF 44 ---
+- 41 - 
+ 
+ 
+ 
+Open-source Arduino 
+Software(IDE) 
+ 
+Download Arduino IDE here: 
+https://www.arduino.cc/en/Main/Software?setlang=en 
+7 zip is a free zip 
+utility that un-zips 
+zip files 
+ 
+Download 7zip here for free 
+https://www.7-zip.org/ 
+Step 1: Install latest Arduino IDE (If you have Arduino IDE version after 1.1.16, please 
+skip this step). Download Arduino IDE from 
+https://www.arduino.cc/en/Main/Software?setlang=en , then install the software. 
+ 
+Step 2: Please download the library zip file from WiFiEsp-master.zip .Open Arduino IDE 
+->click Sketch ->Include Library ->Add .ZIP library , then load above zip file into Arduino.  
+
+--- PDF 45 ---
+- 42 - 
+ 
+ 
+Step 3: APP installation-you need search “OSOYOO Wifi UDP Robot Car Controller ” 
+in Google Play or Apple Store, and then install this APP. DOWNLOAD APP 
+FROM https://osoyoo.com/driver/arduino-udp/udp-robot.apk 
+
+--- PDF 46 ---
+- 43 - 
+ 
+-
+ 
+YOU CAN ALSO DOWNLOAD APP DIRECTLY FROM 
+https://osoyoo.com/driver/arduino-udp/udp-robot.apk 
+ 
+Step 4: Arduino Sketch code Installation: 
+ 
+Downloadhttps://osoyoo.com/driver/mecanum_metal_chassis_m2/m2-lesson5.zip 
+ 
+Unzip the downloaded file, enter the m2-lesson5 folder, you will see two sub-folder : m2-
+lesson5A and m2-lesson5B.These two folders have program for two Wifi modes: AP mode and 
+STA mode. The Arduino sketches for these two modes are different. Let’s explain these two 
+modes one by one. 
+ 
+When working in AP mode, our robot car itself will become a Wifi Hot Spot. Our cell phone 
+can connect to Robot Car as its wifi client. The IP address of Robot is fixed as 192.168.4.1 and 
+It is not connected to W AN. 
+ 
+(1)  Unzip the m2-lesson5 file and you will see a folder named m2-lesson5a, upload the 
+code into Arduino. 
+
+--- PDF 47 ---
+- 44 - 
+ 
+ 
+(2) Open your Arduino Serial monitor, and you will see a similar result as AP mode. A new Wifi 
+SSID “osoyoo_robot” with IP address 192.168.4.1 will show up in the window.  
+ 
+This means your Robot car has a Wifi Hot Spot name “osoyoo_robot” , its IP address is 
+192.168.4.1 
+
+--- PDF 48 ---
+- 45 - 
+ 
+ 
+(3) Now your Robot car become a Wifi Hot Spot and set IP address as “192.168.4.1” to your 
+APP Setting section. Port number keep default value 8888. 
+ 
+(4) Connect your cell phone to “osoyoo robot” Wifi hotspot, you can use Mobile phone control 
+the robot car. 
+
+--- PDF 49 ---
+- 46 - 
+ 
+ 
+(5)You can click the ◄ ► ▲ ▼  direction keys to make the car move. Use “||” pause key to stop 
+the car movement. 
+ 
+Click Obstacle to shift left side, Click Tracking to shift right side. 
+ 
+Click F1 to make upper -left diagonal movement,  Click F3 to make upper -right diagonal 
+movement. 
+ 
+Click F4 to make back -left diagonal movement, Click F6 to make back -right diagonal 
+movement. 
+ 
+In STA mode, robot car does not work as a wifi hotspot. Instead, it will become an internet 
+node in your LAN. You need tell Arduino sketch what is your local router’s Wifi SSID and 
+password, then Arduino talks to router and get its own LAN IP address from DHCP server. You 
+can use Mobile APP to access the robot car’s IP address and control its movement. 
+ 
+(1) Unzip the m2-lesson5 file and you will see a folder named m2-lesson5b, then load the 
+m2-lesson5b.ino code into Arduino. 
+
+--- PDF 50 ---
+- 47 - 
+ 
+ 
+(2) You need change the code Line 180 and Line 181 : 
+char ssid[] = “YOUR_ROUTER_SSID”; // replace this with your router wifi SSID 
+char pass[] = “YOUR_ROUTER_WIFI_P ASSWORD”; // replace with 
+your wifi  password 
+
+--- PDF 51 ---
+- 48 - 
+ 
+ 
+(3) Upload the sketch to Arduino. click the Serial monitor window in upper right corner of 
+Arduino IDE, you will see following result: 
+
+--- PDF 52 ---
+- 49 - 
+ 
+ 
+ 
+(4) In this mode, your will see an IP address which is our LAN IP address assigned by my 
+router.  
+Please write down this IP address and click Setting to set up robot IP address and set this IP 
+address to your APP Setting section (no need change default port 80 in APP). 
+
+--- PDF 53 ---
+- 50 - 
+ 
+ 
+(5)Now your Robot car is connected to your LAN, you can use Mobile phone under same LAN 
+to control the robot car. 
+  
+If your APP is in W AN, you need to go to your Router Control Panel, forward Port 80 to Robot 
+car LAN IP address, then you can use Router IP to control the car. This feature makes our robot 
+car A REAL INTERNET OF THING device 
+ 
+(6)You can click the ◄ ► ▲ ▼ direction keys to make the car move. Use “||” pause key to stop 
+the car movement. 
+ 
+ Click Obstacle to shift left side, Click Tracking to shift right side. 
+ 
+ Click F1 to make upper -left diagonal movement, Click F3 to make upper -right diagonal 
+movement. 
+ 
+ Click F4 to make back -left diagonal movement, Click F6 to make back -right diagonal 
+movement. 
+ 
+FAQ about the Wifi UDP APP and sketch Code: 
+ 
+Q1)How to tune the robot car speed? 
+ 
+A: If you want change the speed performance of the robot car, please following parameters in 
+line 11 to 13: 
+ 
+
+--- PDF 54 ---
+- 51 - 
+ 
+#define SPEED 85 
+#define TURN_SPEED 90 
+#define SHIFT_SPEED 130 
+ 
+SPEED value determines forward moving speed 
+TURN_SPEED value determines turning speed 
+SHIFT_SPEED value determines parallel shifting speed 
+ 
+Q2)What happened when you press  buttons in OSOYOO WiFi UDP Robot Car APP ? 
+ 
+A: When you press a button of the APP, APP will send a single-letter message through UDP 
+protocol to target device (in this example, our Arduino Wifi Shield) 
+ 
+Q3) How does Arduino handle the UDP command? 
+ 
+A: Line 230 to line 245 in m2-lesson5a.ino file are the codes which react to Cell phone 
+command. For example, when ▲ is pressed, according to Q1 table, a letter “A” command was 
+sent from Cell phone to Arduino.  Line 233 case ‘A’ …. statement will make the car make car 
+moving forward. 
+      char c=packetBuffer[0]; 
+      switch (c)    //serial control instructions  
+      {   
+        case 'A':go_advance(SPEED);;break; 
+        case 'L':left_turn(TURN_SPEED);break; 
+        case 'R':right_turn(TURN_SPEED);break; 
+        case 'B':go_back(SPEED);break; 
+        case 'E':stop_Stop();break; 
+        case 'F':left_shift(0,150,0,150);break; //left ahead 
+        case 'H':right_shift(180,0,150,0);break; //right ahead 
+        case 'I':left_shift(150,0,150,0); break;//left back 
+        case 'K':right_shift(0,130,0,130); break;//right back 
+        case 'O':left_shift(200,150,150,200); break;//left shift 
+        case 'T':right_shift(200,200,200,200); break;//left shift 
+        default:break; 
+
+--- PDF 55 ---
+- 52 - 
+ 
+      } 

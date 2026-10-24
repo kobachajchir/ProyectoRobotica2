@@ -1,7 +1,11 @@
 # Plan de creación del modelo 3D de AutoFinalRobo2 en Fusion
 
+AFR2-20261024-01: [Fusion v16 con ruedas y Blender](RUEDAS_Y_BLENDER_20261024.md). Fotos/renders y GLB 827.232 bytes. Casquillos Ø6→Ø4 de referencia aprobados. Pendientes de ruedas de apartados históricos superados.
+
+Actualización AFR2-20261023-07: [ejecución parcial documentada paso a paso](ARMADO_FUSION_PASO_A_PASO.md), Fusion versión 15 guardada/exportada. Usuario aporta CADS/chasis y autoriza Model Y simple al final. Conservar ruedas de 80 mm **sin construir ruedas**; ruedas/acoples pendientes. Ejes del chasis existente conservados y conversión documentada. Los estados anteriores del plan que siguen son históricos.
+
 Fecha: 23/10/2026. Registro: AFR2-20261023-05.
-Estado: plan documentado; modelo y búsqueda/descarga de CAD pendientes de ejecución en la otra PC.
+Estado actualizado AFR2-20261023-06: búsqueda iniciada y primer lote descargado, [pendiente de aprobación del usuario](REVISION_CANDIDATOS_3D.md). No comenzó el modelado. El chasis se modelará a mano, por indicación del usuario; se retira de la búsqueda de modelos. Antes de modelar o adaptar, el usuario revisará los candidatos y podrá aportar reemplazos. Las referencias a la entrega del plan y otra PC de los apartados siguientes conservan el contexto del hito AFR2-20261023-05.
 Herramienta: **MCP de Fusion existente**. No crear otro MCP ni implementar uno como parte de este trabajo.
 
 ## 1. Objetivo y alcance acordado
