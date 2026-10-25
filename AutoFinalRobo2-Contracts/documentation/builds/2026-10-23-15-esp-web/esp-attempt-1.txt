@@ -1,0 +1,245 @@
+Processing esp12s_candidate (platform: espressif8266 @ 4.2.1; board: esp12e; framework: arduino)
+--------------------------------------------------------------------------------
+Library Manager: Installing ESP32Async/ESPAsyncTCP @ 2.0.0
+Downloading 0% 10% 20% 30% 40% 50%
+Unpacking 0% 10% 20% 30% 40% 50% 60% 70% 80% 90% 100%
+Library Manager: ESPAsyncTCP@2.0.0 has been installed!
+Library Manager: Installing ESP32Async/ESPAsyncWebServer @ 3.10.3
+Downloading 0% 10% 20% 30% 40% 50% 60% 70% 80% 90% 100%
+Unpacking 0% 10% 20% 30% 40% 50% 60% 70% 80% 90% 100%
+Library Manager: ESPAsyncWebServer@3.10.3 has been installed!
+Library Manager: Resolving dependencies...
+Library Manager: Installing bblanchon/ArduinoJson @ 7.4.2
+Downloading 0% 10% 20% 30% 40% 50% 60% 70% 80% 90%
+Unpacking 0% 10% 20% 30% 40% 50% 60% 70% 80% 90% 100%
+Library Manager: ArduinoJson@7.4.2 has been installed!
+Verbose mode can be enabled via `-v, --verbose` option
+CONFIGURATION: https://docs.platformio.org/page/boards/espressif8266/esp12e.html
+PLATFORM: Espressif 8266 (4.2.1) > Espressif ESP8266 ESP-12E
+HARDWARE: ESP8266 80MHz, 80KB RAM, 4MB Flash
+PACKAGES: 
+ - framework-arduinoespressif8266 @ 3.30102.0 (3.1.2) 
+ - tool-esptool @ 1.413.0 (4.13) 
+ - tool-esptoolpy @ 1.30000.201119 (3.0.0) 
+ - toolchain-xtensa @ 2.100300.220621 (10.3.0)
+LDF: Library Dependency Finder -> https://bit.ly/configure-pio-ldf
+LDF Modes: Finder ~ chain, Compatibility ~ strict
+Found 40 compatible libraries
+Scanning dependencies...
+Dependency Graph
+|-- ESPAsyncTCP @ 2.0.0
+|-- ESPAsyncWebServer @ 3.10.3
+|-- ArduinoJson @ 7.4.2
+|-- LittleFS @ 0.1.0
+|-- ESP8266WiFi @ 1.0
+Building in release mode
+Compiling .pio\build\esp12s_candidate\src\broker.cpp.o
+Compiling .pio\build\esp12s_candidate\src\main.cpp.o
+Compiling .pio\build\esp12s_candidate\src\mega_link.cpp.o
+Compiling .pio\build\esp12s_candidate\src\storage.cpp.o
+Compiling .pio\build\esp12s_candidate\src\wifi_service.cpp.o
+Generating LD script .pio\build\esp12s_candidate\ld\local.eagle.app.v6.common.ld
+Compiling .pio\build\esp12s_candidate\lib443\ESPAsyncTCP\AsyncPrinter.cpp.o
+Compiling .pio\build\esp12s_candidate\lib443\ESPAsyncTCP\ESPAsyncTCP.cpp.o
+Compiling .pio\build\esp12s_candidate\lib443\ESPAsyncTCP\ESPAsyncTCPbuffer.cpp.o
+Compiling .pio\build\esp12s_candidate\lib443\ESPAsyncTCP\SyncClient.cpp.o
+Compiling .pio\build\esp12s_candidate\lib443\ESPAsyncTCP\tcp_axtls.c.o
+Compiling .pio\build\esp12s_candidate\libad8\Hash\Hash.cpp.o
+Compiling .pio\build\esp12s_candidate\libe0b\ESP8266WiFi\BearSSLHelpers.cpp.o
+Compiling .pio\build\esp12s_candidate\libe0b\ESP8266WiFi\CertStoreBearSSL.cpp.o
+Archiving .pio\build\esp12s_candidate\libad8\libHash.a
+Compiling .pio\build\esp12s_candidate\libe0b\ESP8266WiFi\ESP8266WiFi.cpp.o
+Compiling .pio\build\esp12s_candidate\libe0b\ESP8266WiFi\ESP8266WiFiAP.cpp.o
+Compiling .pio\build\esp12s_candidate\libe0b\ESP8266WiFi\ESP8266WiFiGeneric.cpp.o
+Compiling .pio\build\esp12s_candidate\libe0b\ESP8266WiFi\ESP8266WiFiGratuitous.cpp.o
+Archiving .pio\build\esp12s_candidate\lib443\libESPAsyncTCP.a
+Indexing .pio\build\esp12s_candidate\libad8\libHash.a
+Indexing .pio\build\esp12s_candidate\lib443\libESPAsyncTCP.a
+Compiling .pio\build\esp12s_candidate\libe0b\ESP8266WiFi\ESP8266WiFiMulti.cpp.o
+src\wifi_service.cpp: In member function 'void WifiService::begin()':
+src\wifi_service.cpp:29:76: warning: 'void* memset(void*, int, size_t)' clearing an object of non-trivial type 'struct WifiConfig'; use assignment or value-initialization instead [-Wclass-memaccess]
+   29 |         if (valid(config)) { apply(config); memset(&config,0,sizeof(config)); return; }
+      |                                                                            ^
+In file included from src\wifi_service.cpp:2:
+src\wifi_service.h:4:8: note: 'struct WifiConfig' declared here
+    4 | struct WifiConfig {
+      |        ^~~~~~~~~~
+src\wifi_service.cpp: In member function 'void WifiService::tick(uint32_t)':
+src\wifi_service.cpp:66:82: warning: 'void* memset(void*, int, size_t)' clearing an object of non-trivial type 'struct WifiConfig'; use assignment or value-initialization instead [-Wclass-memaccess]
+   66 |         applyPending_=false; apply(pending_); memset(&pending_,0,sizeof(pending_));
+      |                                                                                  ^
+In file included from src\wifi_service.cpp:2:
+src\wifi_service.h:4:8: note: 'struct WifiConfig' declared here
+    4 | struct WifiConfig {
+      |        ^~~~~~~~~~
+Compiling .pio\build\esp12s_candidate\libe0b\ESP8266WiFi\ESP8266WiFiSTA-WPS.cpp.o
+Compiling .pio\build\esp12s_candidate\libe0b\ESP8266WiFi\ESP8266WiFiSTA.cpp.o
+src\broker.cpp: In member function 'void Broker::event(AsyncWebSocketClient*, AwsEventType, void*, uint8_t*, size_t)':
+src\broker.cpp:28:30: warning: 'void* memset(void*, int, size_t)' clearing an object of non-trivial type 'struct Broker::Session'; use assignment or value-initialization instead [-Wclass-memaccess]
+   28 |         memset(s,0,sizeof(*s)); return; // no lease is granted in this firmware
+      |                              ^
+In file included from src\broker.cpp:2:
+src\broker.h:18:12: note: 'struct Broker::Session' declared here
+   18 |     struct Session {
+      |            ^~~~~~~
+src\broker.cpp: In member function 'void Broker::ingest(Broker::Session&)':
+src\broker.cpp:109:40: warning: 'void* memset(void*, int, size_t)' clearing an object of non-trivial type 'struct WifiConfig'; use assignment or value-initialization instead [-Wclass-memaccess]
+  109 |     memset(&req.wifi,0,sizeof(req.wifi));
+      |                                        ^
+In file included from src\broker.h:5,
+                 from src\broker.cpp:2:
+src\wifi_service.h:4:8: note: 'struct WifiConfig' declared here
+    4 | struct WifiConfig {
+      |        ^~~~~~~~~~
+src\broker.cpp: In member function 'void Broker::tick(uint32_t)':
+src\broker.cpp:252:87: warning: 'void* memset(void*, int, size_t)' clearing an object of non-trivial type 'struct BrokerRequest'; use assignment or value-initialization instead [-Wclass-memaccess]
+  252 |         BrokerRequest req=queue_[tail_]; memset(&queue_[tail_],0,sizeof(BrokerRequest));
+      |                                                                                       ^
+In file included from src\broker.cpp:2:
+src\broker.h:6:8: note: 'struct BrokerRequest' declared here
+    6 | struct BrokerRequest {
+      |        ^~~~~~~~~~~~~
+src\broker.cpp:253:92: warning: 'void* memset(void*, int, size_t)' clearing an object of non-trivial type 'struct WifiConfig'; use assignment or value-initialization instead [-Wclass-memaccess]
+  253 |         tail_=(tail_+1)%4; --count_; dispatch(req,now); memset(&req.wifi,0,sizeof(req.wifi));
+      |                                                                                            ^
+In file included from src\broker.h:5,
+                 from src\broker.cpp:2:
+src\wifi_service.h:4:8: note: 'struct WifiConfig' declared here
+    4 | struct WifiConfig {
+      |        ^~~~~~~~~~
+Compiling .pio\build\esp12s_candidate\libe0b\ESP8266WiFi\ESP8266WiFiScan.cpp.o
+Compiling .pio\build\esp12s_candidate\libe0b\ESP8266WiFi\WiFiClient.cpp.o
+Compiling .pio\build\esp12s_candidate\libe0b\ESP8266WiFi\WiFiClientSecureBearSSL.cpp.o
+Compiling .pio\build\esp12s_candidate\libe0b\ESP8266WiFi\WiFiServer.cpp.o
+Compiling .pio\build\esp12s_candidate\libe0b\ESP8266WiFi\WiFiServerSecureBearSSL.cpp.o
+Compiling .pio\build\esp12s_candidate\libe0b\ESP8266WiFi\WiFiUdp.cpp.o
+Compiling .pio\build\esp12s_candidate\libe0b\ESP8266WiFi\enable_wifi_at_boot_time.cpp.o
+Compiling .pio\build\esp12s_candidate\lib0f9\ESPAsyncWebServer\AsyncEventSource.cpp.o
+Compiling .pio\build\esp12s_candidate\lib0f9\ESPAsyncWebServer\AsyncJson.cpp.o
+Compiling .pio\build\esp12s_candidate\lib0f9\ESPAsyncWebServer\AsyncWebHeader.cpp.o
+Compiling .pio\build\esp12s_candidate\lib0f9\ESPAsyncWebServer\AsyncWebServerRequest.cpp.o
+Compiling .pio\build\esp12s_candidate\lib0f9\ESPAsyncWebServer\AsyncWebSocket.cpp.o
+Compiling .pio\build\esp12s_candidate\lib0f9\ESPAsyncWebServer\BackPort_SHA1Builder.cpp.o
+Compiling .pio\build\esp12s_candidate\lib0f9\ESPAsyncWebServer\ChunkPrint.cpp.o
+Compiling .pio\build\esp12s_candidate\lib0f9\ESPAsyncWebServer\Middleware.cpp.o
+Compiling .pio\build\esp12s_candidate\lib0f9\ESPAsyncWebServer\WebAuthentication.cpp.o
+Compiling .pio\build\esp12s_candidate\lib0f9\ESPAsyncWebServer\WebHandlers.cpp.o
+Compiling .pio\build\esp12s_candidate\lib0f9\ESPAsyncWebServer\WebRequest.cpp.o
+Compiling .pio\build\esp12s_candidate\lib0f9\ESPAsyncWebServer\WebResponses.cpp.o
+Archiving .pio\build\esp12s_candidate\libe0b\libESP8266WiFi.a
+Indexing .pio\build\esp12s_candidate\libe0b\libESP8266WiFi.a
+Compiling .pio\build\esp12s_candidate\lib0f9\ESPAsyncWebServer\WebServer.cpp.o
+Compiling .pio\build\esp12s_candidate\libd0a\LittleFS\LittleFS.cpp.o
+Compiling .pio\build\esp12s_candidate\libd0a\LittleFS\lfs.c.o
+Compiling .pio\build\esp12s_candidate\libd0a\LittleFS\lfs_util.c.o
+Archiving .pio\build\esp12s_candidate\libFrameworkArduinoVariant.a
+Indexing .pio\build\esp12s_candidate\libFrameworkArduinoVariant.a
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\Crypto.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\Esp-frag.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\Esp-version.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\Esp.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\FS.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\FSnoop.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\FunctionalInterrupt.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\HardwareSerial.cpp.o
+Archiving .pio\build\esp12s_candidate\libd0a\libLittleFS.a
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\IPAddress.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\LwipDhcpServer-NonOS.cpp.o
+Indexing .pio\build\esp12s_candidate\libd0a\libLittleFS.a
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\LwipDhcpServer.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\LwipIntf.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\LwipIntfCB.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\MD5Builder.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\Print.cpp.o
+Archiving .pio\build\esp12s_candidate\lib0f9\libESPAsyncWebServer.a
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\Schedule.cpp.o
+Indexing .pio\build\esp12s_candidate\lib0f9\libESPAsyncWebServer.a
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\StackThunk.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\Stream.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\StreamSend.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\Tone.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\TypeConversion.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\Updater.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\WMath.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\WString.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\abi.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\aes_unwrap.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\base64.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\cbuf.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\cont.S.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\cont_util.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_app_entry_noextra4k.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_eboot_command.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_features.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_flash_quirks.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_flash_utils.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_i2s.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_main.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_non32xfer.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_noniso.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_phy.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_postmortem.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_si2c.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_sigma_delta.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_spi_utils.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_timer.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_vm.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_waveform_phase.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_waveform_pwm.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_wiring.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_wiring_analog.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_wiring_digital.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_wiring_pulse.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_wiring_pwm.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_wiring_shift.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\crc32.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\debug.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\exc-c-wrapper-handler.S.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\exc-sethandler.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\flash_hal.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\gdb_hooks.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\heap.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\hwdt_app_entry.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\libb64\cdecode.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\libb64\cencode.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\libc_replacements.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\mmu_iram.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\reboot_uart_dwnld.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\spiffs\spiffs_cache.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\spiffs\spiffs_check.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\spiffs\spiffs_gc.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\spiffs\spiffs_hydrogen.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\spiffs\spiffs_nucleus.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\spiffs_api.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\sqrt32.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\stdlib_noniso.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\time.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\uart.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\umm_malloc\umm_info.c.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\umm_malloc\umm_integrity.c.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\umm_malloc\umm_local.c.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\umm_malloc\umm_malloc.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\umm_malloc\umm_poison.c.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\wpa2_eap_patch.cpp.o
+Archiving .pio\build\esp12s_candidate\libFrameworkArduino.a
+Indexing .pio\build\esp12s_candidate\libFrameworkArduino.a
+Linking .pio\build\esp12s_candidate\firmware.elf
+Retrieving maximum program size .pio\build\esp12s_candidate\firmware.elf
+Checking size .pio\build\esp12s_candidate\firmware.elf
+Advanced Memory Usage is available via "PlatformIO Home > Project Inspect"
+RAM:   [=====     ]  48.8% (used 39980 bytes from 81920 bytes)
+Flash: [====      ]  36.9% (used 385465 bytes from 1044464 bytes)
+Building .pio\build\esp12s_candidate\firmware.bin
+Creating BIN file ".pio\build\esp12s_candidate\firmware.bin" using "C:\Users\kobac\.platformio\packages\framework-arduinoespressif8266\bootloaders\eboot\eboot.elf" and ".pio\build\esp12s_candidate\firmware.elf"
+========================= [SUCCESS] Took 52.35 seconds =========================
+
+********************************************************************************
+There is a new version 6.2.0 of PlatformIO available.
+Please upgrade it via `platformio upgrade` or `python -m pip install -U platformio` command.
+Changes: https://docs.platformio.org/en/latest/history.html
+********************************************************************************
+
+
+********************************************************************************
+We found 154.06MB of unnecessary PlatformIO system data (temporary files, unnecessary packages, etc.).
+Use `pio system prune --dry-run` to list them or `pio system prune` to save disk space.

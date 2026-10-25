@@ -1,7 +1,21 @@
-# Backend TWI AVR pendiente
+# Backend TWI AVR escrito — AFR2-20261023-15
 
-[Maestro](../../../INFORME_MAESTRO.md) · [Informe Atmega](../../INFORME_ADAPTACION.md).
+`afr2_twi.c`/`include/afr2_twi.h`: reemplazo nuevo C/avr-libc de la dependencia
+HAL/DMA F4. El define sin DMA F4 conserva mem_write bloqueante y no se usa.
+Un master, OLED único; start/poll/abort implementan Afr2I2cHardware para Manager.
+TWI_vect avanza START, SLA+W y DATA. Buffer prestado estable, resultado diferido
+a main. poll solo informa OK al despejarse TWSTO, sin esperar otra IRQ de STOP.
+NACK/bus error fallan; arbitraje perdido libera sin emitir STOP como master.
 
-Implementar Afr2I2cHardware.start/poll/abort para registros TWBR/TWSR/TWCR/TWDR. El Manager preparado acepta dirección 7 bits; desplazar solo al construir SLA+W. start debe aceptar y conservar el buffer o devolver BUSY sin retenerlo; nunca bloquear. IRQ TWI avanza START/SLA/DATA/STOP y publica resultado. poll devuelve OK solo tras completar STOP; NACK/bus error son ERROR. abort desactiva transferencia/IRQ antes de liberar el buffer y agenda recuperación acotada. No escribir OLED fuera del Manager.
+Manager impone deadline40 ms. abort desactiva TWCR/IRQ y suelta punteros antes
+de retornar. Afr2Twi_Task recupera bus en pasos de1 ms en main: comprueba SCL,
+hasta9 pulsos y STOP open drain; total<=50 ms. Nunca conduce línea alta ni
+habilita pull-ups internos I2C. Si falla, deja líneas liberadas; siguiente
+reintento OLED agenda nueva recuperación. Sin spin/delay, DMA ni callbacks ISR.
+Multi-master no soportado. Los límites son política fuente sin medición.
 
-El ejemplo de composición describe orden, pero no existe main ni reloj/GPIO/TWI productivo. Se eligió biblioteca parcial para no generar firmware aparentemente utilizable con drivers vacíos. No se ejecutó compilación.
+Referencia de registros/estados: [Microchip ATmega2560, sección24](https://ww1.microchip.com/downloads/aemDocuments/documents/OTH/ProductDocuments/DataSheets/ATmega640-1280-1281-2560-2561-Datasheet-DS40002211A.pdf).
+Bitrate100 kHz/16 MHz, sin detección de controlador/dirección. SSD1306 0x3C es
+candidato; tensión, pull-ups y conexión física aún pendientes. Ver
+[composición](../../docs/COMPOSICION.md). Fuente no compilada ni probada; no se
+ejecutaron validadores/tests/flasheos ni se acredita recovery físico.

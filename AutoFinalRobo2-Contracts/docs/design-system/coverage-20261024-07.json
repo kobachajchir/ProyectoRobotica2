@@ -1,0 +1,20 @@
+{
+  "changeId": "AFR2-20261024-07",
+  "mode": "APLICAR",
+  "manualVersion": "0.1.9",
+  "status": "draft",
+  "authorization": "Pedido humano explícito de aplicar la identidad propia al alcance Control, Sistema y Desarrollador.",
+  "canonicalIdentity": ["index.md", "manual.md", "tokens.json", "components.md"],
+  "coverage": [
+    {"target": "Control y secuencias", "direction": "Confirmada", "composition": "Propuesta", "implementation": "compilada", "verification": "No verificada"},
+    {"target": "Chevron, Disclosure y select compartidos", "direction": "Confirmada", "sourceFinding": "Observada", "implementation": "compilada", "verification": "No verificada"},
+    {"target": "Sistema, boot y reinicios", "direction": "Confirmada", "composition": "Propuesta", "implementation": "tres módulos compilados", "verification": "No verificada en placas"},
+    {"target": "Desarrollador en AppShell", "direction": "Confirmada", "referenceStructure": "Observada en ST Radal", "composition": "Propuesta con identidad AFR2", "implementation": "compilada", "verification": "No verificada"},
+    {"target": "Apoyo del GLB y mapa simulado", "direction": "Confirmada", "sourceFinding": "Observada", "implementation": "vértices precisos, escala original", "verification": "No verificada visualmente"},
+    {"target": "OLED de secuencias", "direction": "Confirmada", "composition": "Propuesta", "implementation": "renderer puro y firmware compilados", "verification": "No verificada en placas; memoria gated"}
+  ],
+  "browser": "Acceso a localhost rechazado por la herramienta. No se intentó eludirlo mediante otra superficie.",
+  "executed": ["compilación AVR producto/comunicación/biblioteca", "compilación ESP candidata", "TypeScript/Vite y empaquetado/promoción Web", "inspección de fuente y artefactos"],
+  "notExecuted": ["scanner de deriva", "validador de skill", "suite de tests", "revisión visual", "imagen LittleFS", "flasheo", "pruebas físicas"],
+  "pending": ["cotejo visual claro/oscuro, móvil/escritorio y teclado", "contacto visual del GLB", "medición de pila y calibración", "boot y reinicios en placas"]
+}

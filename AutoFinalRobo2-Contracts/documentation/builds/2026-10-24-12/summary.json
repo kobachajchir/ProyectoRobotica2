@@ -1,0 +1,157 @@
+{
+  "changeId": "AFR2-20261024-12",
+  "date": "2026-10-24",
+  "extensionVersion": 6,
+  "firmwareVersion": "0.8.0",
+  "webBuildExitCode": 0,
+  "espBuildExitCode": 0,
+  "atmegaBuildExitCode": 0,
+  "atmegaIncludesChange11IrqSource": true,
+  "atmega": {
+    "flash": 64406,
+    "bss": 4072,
+    "artifacts": [
+      {
+        "path": "AutoFinalRobo2-Atmega/build/afr2.elf",
+        "bytes": 96044,
+        "sha256": "bba78eb1d62ba081b7de83b07ea34cca3627b9cfefe872aa2bf2e43946f4a97c"
+      },
+      {
+        "path": "AutoFinalRobo2-Atmega/build/afr2.hex",
+        "bytes": 181163,
+        "sha256": "118ef09f9e04b4b2591e4bcb8e76f1d5f9d032a463ad506bd7dae45bf6441081"
+      },
+      {
+        "path": "AutoFinalRobo2-Atmega/build/afr2-communication.elf",
+        "bytes": 17880,
+        "sha256": "98796a9d4fbfd8a1e54249b62cb1af9bd04ab8e6c0648d98c4b72410906ecbb0"
+      },
+      {
+        "path": "AutoFinalRobo2-Atmega/libafr2_ui.a",
+        "bytes": 170278,
+        "sha256": "f46abef1bf326a82d0c17734af65a33f9d1ed978b205db9fdaee29f8fc62fdc3"
+      }
+    ],
+    "noinit": 9,
+    "enabledBranchCompiled": false,
+    "hallConnected": false,
+    "staticSramIncludingNoinit": 4891,
+    "memoryApproved": false,
+    "data": 810,
+    "text": 63596,
+    "physicalEvidence": false
+  },
+  "esp": {
+    "flash": 424869,
+    "linker": "eagle.flash.4m3m.ld",
+    "ram": 46088,
+    "artifacts": [
+      {
+        "path": "AutoFinalRobo2-ESP/.pio/build/esp12s_candidate/firmware.elf",
+        "bytes": 1608584,
+        "sha256": "0d167596ff3ccf223296b5e87de68d351ef264766a56303d7f5a31b09b3c64fa"
+      },
+      {
+        "path": "AutoFinalRobo2-ESP/.pio/build/esp12s_candidate/firmware.bin",
+        "bytes": 429024,
+        "sha256": "e5d7ae045cbb0bad9be0a49c35f06f1508a4d780ecde55867b3d1f9f81026961"
+      }
+    ],
+    "physicalFlashIdentified": false
+  },
+  "web": {
+    "gzipBytes": 1472196,
+    "promotion": [
+      {
+        "route": "/brand/favicon.webp",
+        "webGzipSha256": "8b09232de5bb978d3a5b27d73f1bfbbd9d23f87ce7d6afc45d81a39e67e9c02f",
+        "espGzipSha256": "8b09232de5bb978d3a5b27d73f1bfbbd9d23f87ce7d6afc45d81a39e67e9c02f",
+        "identical": true
+      },
+      {
+        "route": "/brand/Logo-1024.webp",
+        "webGzipSha256": "7a9d0a4da4327b952708ebab7ddc1a287af6ef0dc33dd93f382869e1e19414c5",
+        "espGzipSha256": "7a9d0a4da4327b952708ebab7ddc1a287af6ef0dc33dd93f382869e1e19414c5",
+        "identical": true
+      },
+      {
+        "route": "/brand/Logo-256.webp",
+        "webGzipSha256": "d273952807d216a6ca629cdeb6e13739b7fff23d1dd32fd4b50390c6453fd9f3",
+        "espGzipSha256": "d273952807d216a6ca629cdeb6e13739b7fff23d1dd32fd4b50390c6453fd9f3",
+        "identical": true
+      },
+      {
+        "route": "/draco/draco_decoder.wasm",
+        "webGzipSha256": "d2ea825f06f391962a850da94d68aa9778688a57cc7a79424938cc461ae1e759",
+        "espGzipSha256": "d2ea825f06f391962a850da94d68aa9778688a57cc7a79424938cc461ae1e759",
+        "identical": true
+      },
+      {
+        "route": "/draco/draco_wasm_wrapper.js",
+        "webGzipSha256": "5065d3fcaba12f33fea4dc9886646f6ad1f94e53a71407a92db52c4e8b4a440d",
+        "espGzipSha256": "5065d3fcaba12f33fea4dc9886646f6ad1f94e53a71407a92db52c4e8b4a440d",
+        "identical": true
+      },
+      {
+        "route": "/index.html",
+        "webGzipSha256": "d978038dbd2380877d8e37ca7cd0f15ab0335a9dff18bf9bf30f088a8dcfdeab",
+        "espGzipSha256": "d978038dbd2380877d8e37ca7cd0f15ab0335a9dff18bf9bf30f088a8dcfdeab",
+        "identical": true
+      },
+      {
+        "route": "/models/AutoFinalRobo2.glb",
+        "webGzipSha256": "30d0245bc9ed858a3d93ed8d25ae8f86d7434a9c219334cf25349da76a061e5f",
+        "espGzipSha256": "30d0245bc9ed858a3d93ed8d25ae8f86d7434a9c219334cf25349da76a061e5f",
+        "identical": true
+      }
+    ],
+    "manifestSha256": "6c6b95386329d46a817f82fbfaa236e82176b5dccbd9c6b3ac4929eef39b321d",
+    "rawBytes": 3006111,
+    "filesystemBudgetBytes": 2867200,
+    "espManifestSha256": "6c6b95386329d46a817f82fbfaa236e82176b5dccbd9c6b3ac4929eef39b321d",
+    "estimatedFilesystemBytes": 1556480,
+    "profile": "esp",
+    "assetCount": 7
+  },
+  "model": {
+    "path": "AutoFinalRobo2-Web/public/models/AutoFinalRobo2.glb",
+    "bytes": 827232,
+    "sha256": "d10684704200caa4da0a6a98715e52abc446b9dee9cccdde32f33ee05fc927c7"
+  },
+  "protocol": {
+    "maxWheelDistanceMm": 10000,
+    "mask": "0x7fff",
+    "storageUnionBytes": 640,
+    "progressIsCompletedRecords": true,
+    "maxWatchdogMs": 120000,
+    "distanceBit": "0x4000",
+    "beginNewBodyBytes": 14,
+    "timedAppendBytes": 30,
+    "appendWheelBodyBytes": 28,
+    "maxRecords": 32
+  },
+  "ui": {
+    "sidebarWidthPx": 230,
+    "secondaryFormsCollapsed": true,
+    "sharedIdentityTokens": true,
+    "browserVerified": false,
+    "trackDeleteUsesExistingFloatingModal": true,
+    "newDependencies": false,
+    "mapHeightPx": [
+      220,
+      300
+    ],
+    "collapsedRowHeightPx": 72,
+    "collapsedRouteHeightPx": 160,
+    "coordinateSidebarDesktop": true
+  },
+  "verification": "Authorized compiler/build generation and local packaging plus source/artifact reads. No tests, standalone validators, browser/gesture/motion, physical/serial/reset, filesystem image or flash. Gates0 may remove physical branches; no memory approval.",
+  "testsRun": false,
+  "independentValidators": false,
+  "browserRender": false,
+  "physicalTests": false,
+  "flashed": false,
+  "cadModified": false,
+  "committed": false,
+  "remotePublished": false
+}

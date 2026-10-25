@@ -1,0 +1,1138 @@
+{
+  "changeId": "AFR2-20261025-01",
+  "date": "2026-10-25",
+  "authorization": "Human explicitly selected removal of internal Web permission, beyond the initial terminology cleanup.",
+  "authorship": "Existing AFR2/F4/AutoMicro/ST credits retained. Own direct-control adaptation under human request; no new external source or license.",
+  "beforeTerminology": [
+    {
+      "path": "AutoFinalRobo2-Atmega/docs/COMUNICACION_ESP.md",
+      "bytes": 5469,
+      "sha256": "1cf0550624858f8f88e4f1ead5bea93eb4180f0b7112eb4f150e887d246c5af7"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/docs/modules/encoder-ui.json",
+      "bytes": 2283,
+      "sha256": "bac7639ef0ec601c09d2a0ff64830c10597a8ca949356dd9b14cc5294275c499"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/docs/modules/encoder-ui.md",
+      "bytes": 2370,
+      "sha256": "69b6a41e9e7f44747890b3024f1014a488a5f21e895575af46c8e863064850e3"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/docs/PRODUCTO_ATMEGA.md",
+      "bytes": 4258,
+      "sha256": "3574f87587c1056d5ab5a4638e8d8a82b04b74d59dd87166a9f39b8f06be1d22"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/INFORME_ADAPTACION.md",
+      "bytes": 10175,
+      "sha256": "71427676cfc8b9339dbe75ebdf0b90ff32f8a615bda819ffdddb3534f767fdf6"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/README.md",
+      "bytes": 7987,
+      "sha256": "36ba944abf02d1db54725c7f65ad2e86a0eecb0361453cc07e5d306c1d24786f"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/INFORME_CARPETA.md",
+      "bytes": 3536,
+      "sha256": "a95979a7c910964c0e4dc3929e2e1987df239b7b89fe52bb2d5797d7c6900b98"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/input/INFORME_CARPETA.md",
+      "bytes": 1662,
+      "sha256": "6fbfe2420faf2003179260172099a01fce71882d09e8ec9ec6a114dcbf9a9fa8"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/services/afr2_app.c",
+      "bytes": 23364,
+      "sha256": "c9eccf4a7f2e7602c792a3470496b89acb8aea60a57aed2a28e9f76fe86f9dbd"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/ui/afr2_menu_catalog.c",
+      "bytes": 13585,
+      "sha256": "bff087c0d3f87194cc2cfbf729e64d131061272dcdd8c878e6b4d9395361edab"
+    },
+    {
+      "path": "AutoFinalRobo2-CAD/INFORME_ADAPTACION.md",
+      "bytes": 2308,
+      "sha256": "685a33c25419b1f8b3907abf01406676437f6f27603751bfb30e226d5ca3126f"
+    },
+    {
+      "path": "AutoFinalRobo2-CAD/README.md",
+      "bytes": 4420,
+      "sha256": "8cc4250e26606a6c57e284f284bbb7bf34427668aee3c1f6d29f0c4fbadada36"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/ATMEGA_CONFIG_ACTIONS.json",
+      "bytes": 10772,
+      "sha256": "1bd19f62538db14ef46cb9aa707094a3705f783431b6aa27c8ac840ac5958d0c"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/commands.json",
+      "bytes": 35942,
+      "sha256": "e41aa5428ba2f9a484b89fa20ee112f591315ffafaa306d2007c996efd4b78f5"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/EX01_ALIGNMENT_3.md",
+      "bytes": 6249,
+      "sha256": "63b4a771da6b81492abbd72d549f2cbbf58e080b66adf16eeedd923ad3efc839"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/EX01_NETWORK_UI_5.md",
+      "bytes": 7134,
+      "sha256": "9fe67fe0989582ffb1311b7b2765c899e77e3a52c1a8286ac04f1ffeb2f7bbe7"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/EX01_SYSTEM_SEQUENCE_4.md",
+      "bytes": 5360,
+      "sha256": "2096f7d2da72e59c54e8a3697b566bee62103a4c67bade2ad34712075a5c172a"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/EX01_WEB_INTEGRATION.md",
+      "bytes": 7316,
+      "sha256": "a6125eee6c6eff50bf04fe4edd99a0e19b06bc3a362f22bb45ce4f40d7b0dd36"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/PROTOCOL.md",
+      "bytes": 17795,
+      "sha256": "5addce33b534869ff26ee2769bd1680ae44d906639cc4bfaa328886906520790"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/ROBO2_PRODUCT_EXTENSION.md",
+      "bytes": 15692,
+      "sha256": "f80a76714203b15d4f8230f46f33479f01f47994551d2f9d24905d4bf1612763"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/SYSTEM_INFO_FILESYSTEM_15.md",
+      "bytes": 2536,
+      "sha256": "f5a455ff00b710e56fc84e4377ae036c9d0a40dc29a76626e32c0e3911cb91a0"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/UART_PROFILE_3.md",
+      "bytes": 6548,
+      "sha256": "91c5b9c4a78389b98b57981d03488acfbac68c8dc52d18b173eb512120b2b055"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/WEB_ASSETS.md",
+      "bytes": 2670,
+      "sha256": "c098fd85bd70a9e208c48fd867934cbd5f0975a288f7ca25574d584b729423e1"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/WEB_CONTROL_MAP.md",
+      "bytes": 10721,
+      "sha256": "cf658fb913967acc84f8e1a47dfc993776831b50610442fd0bdd3853dd2578f3"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/ALINEACION_MAESTRO.md",
+      "bytes": 9271,
+      "sha256": "e7588f42f97028a6aa172eb544011a6944740bbac11be3cad7f88ed0e630f5e7"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/ATMEGA_IMPLEMENTACION_19.md",
+      "bytes": 8856,
+      "sha256": "7dd49713a1ff090d4d0debd12915abbf67416c0d152e6c3fae69665a331c0f6d"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/DECISIONES.md",
+      "bytes": 7783,
+      "sha256": "b3f25c65f7f00e82d6be8a750d2bee1886fcdb0a2afbc0ef275a1baa7cc429c2"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/ESTADO_IMPLEMENTACION.md",
+      "bytes": 12594,
+      "sha256": "d125bab4cc063e491a7351cde10b2d08883bc954779dc75f1e6c7ad44d69c677"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/PLAN_WEB.md",
+      "bytes": 3545,
+      "sha256": "de1c9581dfa1d373c431113a99b298eab9c78662b23a8227ac230f3ff235108f"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/PROMPT_CONTINUIDAD.md",
+      "bytes": 29600,
+      "sha256": "e83d53aa0c477bedf578eb2cf4d19b384cbc788f2476714c654909c0cab9f1c7"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/ROADMAP.md",
+      "bytes": 2686,
+      "sha256": "dabf43f97e02d3a5ac4ba61b0820326105fb87b41419367fd86329fb8cf54764"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/WEB_FLOATING_UI.md",
+      "bytes": 5393,
+      "sha256": "e7b6aaf3e14757335237417571b5c6234495403ee2807ef1a44a49000b54f966"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/MENU_PLAN.md",
+      "bytes": 5966,
+      "sha256": "d1bfef34bb0dbf5d5a701ea5b2514d64428838a1f90c4f8a985ba035dbe371f7"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/review/findings.json",
+      "bytes": 24131,
+      "sha256": "f367f4009a66b223e4e2e32062ca0b2ab30c6380f98e0ce5a500b5646ff05778"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/screens.json",
+      "bytes": 61240,
+      "sha256": "342813febf349ea728d670606d8c1ac3727da1be6a580175e172cd6d24a5ab53"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/INFORME_ADAPTACION.md",
+      "bytes": 8450,
+      "sha256": "da12ff8a8047406aa96c66241f488a3723880cdbd5cf5ce1db7ff83a6a365d48"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/README.md",
+      "bytes": 14039,
+      "sha256": "94dba2a088117ed32b38c829b243374ec41df4573b7773e0f015070e7cd67729"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/docs/PROTOCOLO_ROBO2.md",
+      "bytes": 11781,
+      "sha256": "fcefa8ad10d43f71da34f66f1c6babf23d88e246050325b548353e4889270d84"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/docs/ROBO2_EX01_ATMEGA.md",
+      "bytes": 3120,
+      "sha256": "b2a949f7aba015300f36c4c98c48fb26124ad1b2276bee1142e224099a62141b"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/INFORME_ADAPTACION.md",
+      "bytes": 10719,
+      "sha256": "f0d3fd366bc95622b3bddf664f5a60a522b1a6257ba6b9f4fe8904b8d508d23f"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/README.md",
+      "bytes": 11322,
+      "sha256": "61c22ce35a5d8cbc495367e9b1d8d0efc0651c90dd8941c865a27a9bd55c1352"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/broker_product.cpp",
+      "bytes": 21566,
+      "sha256": "a1b10d0cea2f27662fb572ac65f5287c3f933df68597b1a01cfaa4977d7d073e"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/broker_system.cpp",
+      "bytes": 4635,
+      "sha256": "5bbc662b97d7708cf4e2566460aabe6e57f13986558bb5703628fce48674e09b"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/broker.cpp",
+      "bytes": 20464,
+      "sha256": "34fdeaf2948ff2bb18febff6ab7a985134ad9db887134a10a57c12ac32c6d5d4"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/docs/modules/control.md",
+      "bytes": 1866,
+      "sha256": "2a80fc7e9648fc8559e72eb4eb7c0121eca52331c1547b0f5d3a41cacab718bd"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/docs/modules/goto-simulation.md",
+      "bytes": 2346,
+      "sha256": "357f14d6d9a7a05b5da7334d9ad5758234364893603b2db8fd85ddf4c77e3fa1"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/docs/modules/manual-touch-drive.md",
+      "bytes": 1971,
+      "sha256": "8a6bdb21dcee818d8dbf7eeccb6ecfdf16658b7b55a0080988e32df708917ec8"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/docs/modules/protocol.json",
+      "bytes": 861,
+      "sha256": "7bc1212f4abd765109265b9206ee98140cc13c5ff0f05aa6cbdf26b6ecb1b8b2"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/docs/modules/protocol.md",
+      "bytes": 1873,
+      "sha256": "b207f304707cfdb1bc8c66975dedc0046b5f7c7a04d12a5ff438ab38cb46dfbf"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/docs/modules/sequence-editor.md",
+      "bytes": 2130,
+      "sha256": "fc16a8be27cdc8807e07d8e393b91c7309cb87b04c09b426a1b0079a7a52fff9"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/INFORME_ADAPTACION.md",
+      "bytes": 20651,
+      "sha256": "978d99143d8049164a0f7ca8b3ab477d2738c39920561262dab45e961bf0cdec"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/README.md",
+      "bytes": 21896,
+      "sha256": "360dde1bca1052dea98293b35d8887f6f83294eb798af9022c55ea591999d27e"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/components/ui/DismissibleNotice.tsx",
+      "bytes": 1768,
+      "sha256": "97cc446b0210cd154fbda628e87f7b40a391e454d9564dc319ca4e4c547ceafa"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/connection/ConnectionContext.tsx",
+      "bytes": 25270,
+      "sha256": "e5ad1302167ca79e7afba321832a954a1ece3c0f0201e317e2c6a297cb6ab4bb"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/CalibrationPanel.tsx",
+      "bytes": 8351,
+      "sha256": "ed7dd4119c5da67c1522e415604cf292510d176fcc1699554e9c50b1e94e8511"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/ControlPage.tsx",
+      "bytes": 42836,
+      "sha256": "9719521c5aa885e18b8436a9e3a4c899ca2ed08f68bccc219aa3605d371a94ab"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/manual/ManualDriveOverlay.tsx",
+      "bytes": 10304,
+      "sha256": "8f24a1a5cf88d4acc4fb5d8688e0cdd31cd17b7853546fd3881ec9a9d17dd9c6"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/sequences/SequenceEditorPanel.tsx",
+      "bytes": 77765,
+      "sha256": "6bcff5bf2263a1e2ea4fdf0da85627115ac0997d5386086e86d723fd4a31252d"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/docs/DocsPage.tsx",
+      "bytes": 14828,
+      "sha256": "1e9db0b9490051340ca53e2e94da04e98e6cfd6733875c5ffaf7468eb1a470e3"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/protocol/afr2Client.ts",
+      "bytes": 18108,
+      "sha256": "cd6e9268e25b3392ff309acbb19d47f37a65d80317417a8ae5ee775a2de3461f"
+    },
+    {
+      "path": "INFORME_MAESTRO.md",
+      "bytes": 2669,
+      "sha256": "50ffc6fb7e9cf48e3d337dd6d6d1bf5d8cd30226bdb858e09387a839c8f05516"
+    },
+    {
+      "path": "README.md",
+      "bytes": 5948,
+      "sha256": "4a907c8f106b882560c31a67e200560f6230d787a4b39b78a77f2d148f366356"
+    },
+    {
+      "bytes": 11213,
+      "sha256": "003c98125921fddc8e85775d847daf12a69aa249fbfb4d2e6fba48fa460dcfde",
+      "path": "AutoFinalRobo2-Contracts/docs/design-system/index.md"
+    },
+    {
+      "bytes": 19951,
+      "sha256": "a1a10d6b9a96837ffe7fd95e019bdc2adb93a6798e56c627af5b5a8429173df9",
+      "path": "AutoFinalRobo2-Contracts/docs/design-system/manual.md"
+    },
+    {
+      "bytes": 19916,
+      "sha256": "36e211be241f69fd11fceabed725f50d37624f8723b6fbedcaa564af1cc0155e",
+      "path": "AutoFinalRobo2-Contracts/docs/design-system/decisions.md"
+    },
+    {
+      "bytes": 16652,
+      "sha256": "4431a4729285d4b67cad355691a5327ca19ade49248b37dd9123213b126ee182",
+      "path": "AutoFinalRobo2-Contracts/docs/design-system/components.md"
+    }
+  ],
+  "beforePermissionRemoval": [
+    {
+      "path": "AutoFinalRobo2-Atmega/include/afr2_menu_catalog.h",
+      "sha256": "cdc9fb226a466249f11cd58096dacbc4086e001b03a754b51bee7d5ab21680e1"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/include/afr2_product.h",
+      "sha256": "d9ee59c5f40684fef5bb86a48a8132d3f355dce766866d31a9b34401e639dbce"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/include/afr2_sequence.h",
+      "sha256": "01b2c374c05dc154678da0f068a0aba11bb0cc7a7fc8d6f0dc2ce145ca7ae1e0"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/services/afr2_app_wire.c",
+      "sha256": "e72bac94145e6ba66cf0c04df4f037af375de4d7c6534d859e18071b2b4e5a75"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/services/afr2_app.c",
+      "sha256": "d7b32b94d0e4653f3df0860e5f2e6e532235260f7d046101d3c4b8320737b1fb"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/services/afr2_product.c",
+      "sha256": "5c77b7de63f301eabc2b66f803ce31bc357e814c3f393aac66f5ec5ba2112345"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/services/afr2_sequence.c",
+      "sha256": "cda9a405141298576b32bdd1822239a66f2da343398a7cae480875d7d504d1bf"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/ui/afr2_menu_catalog.c",
+      "sha256": "375b3d0ffdca7d8f116fb9c03010f60a9b2dedf18bcbd2cad97465dd98eacdeb"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/afr2_build_info.h",
+      "sha256": "c79b53cd41097fe5be21ac6b8992e2d1543e492cca57ef507046047a162fc8e0"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/afr2_product_wire.h",
+      "sha256": "6ed84ae220b47f1ac34e8485b3e983b5d92a80af0122b2a38c3f04ee8856d15c"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/broker_product.cpp",
+      "sha256": "98e26db5f23c1e15be5805d87dbde66b7525034422942d6a89daf8abd6a0c8fa"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/broker_system.cpp",
+      "sha256": "af494d4a7967aafe2abf974cb0d149601e34ea78447746e5148cc64d9e6cf351"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/broker_wifi.cpp",
+      "sha256": "c95b9dac301ac585ece0e3834a263c8fc8ff7d14702d8b9f5e2644166ef1cde3"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/broker.cpp",
+      "sha256": "a3ea84c12a91d8be66d2cd83cb7b8a5daf2e15a722e74e0c054d123513116b1f"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/broker.h",
+      "sha256": "6b9db340ccf3f1da33ccc0db2dd9e250052d103072526c66138d297dd7dbb7cb"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/mega_link.cpp",
+      "sha256": "2b9d3bc5f84adf310b4a8133a0a13bf669a30e70a8b404c026b4e8badc910c61"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/package-lock.json",
+      "sha256": "ca5397bf2c1c04cb4e1fccf23a33c30a1de1c51fb73c113257684b372ea9606b"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/package.json",
+      "sha256": "6085e4b5fee53d1e2d9073448641edb2328450c3c88ba7b7a237403f0d9aa65a"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/connection/ConnectionContext.tsx",
+      "sha256": "620cbc4d7368a4187cbff98f5e251da92d2f23c82540f5b84b896909d0d11886"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/CalibrationPanel.tsx",
+      "sha256": "ab127d4b189af1bf003ce3403dcc8abd1446fe622317888dec83f97e9f3bd2f1"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/ControlPage.tsx",
+      "sha256": "d98cb44435d05fe6fc7e331ad3095cb37723e267b75d7db64a81edff320f3a99"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/manual/ManualDriveOverlay.tsx",
+      "sha256": "54986bb36b8bc1825c732df2e41ceb7487a775fed703a24f0410b16140a4ebe0"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/sequences/SequenceEditorPanel.tsx",
+      "sha256": "bb330165785b1f29597892e2da106f97b04075ed63024c20c1b98a38becca46e"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/oled/firmwareRenderer.ts",
+      "sha256": "2190d3d7dff1bc05b92d8cc9af5acc9b7cf0f44173b0e6299748dfba53c3aab5"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/wifi/WifiDraftModal.tsx",
+      "sha256": "f16d1eaa5695b533457adcc6c3684bd32bddb8d86334dfc3993f2e82cf055d84"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/protocol/afr2Client.ts",
+      "sha256": "5e5edadb32a785c0e9bbb5d1f22980f104dace1825368bbe02b8119b22392ac0"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/protocol/robotState.ts",
+      "sha256": "2aa38be9b7c1fd8d8a8fd019dba6b9e176ce9f81c783c948525c4c140f9ba8e6"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/protocol/wsEnvelope.ts",
+      "sha256": "f42fef2a7a1bc745d35c6dea49dd55243deda6465cfab790b6c3acf95c43c4d9"
+    }
+  ],
+  "files": [
+    {
+      "path": "AutoFinalRobo2-Atmega/docs/COMUNICACION_ESP.md",
+      "bytes": 5471,
+      "sha256": "034c987026686eb3f0bce64f2d2784789f1d754dbbfef8c17aba753ba1c73bc8",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/docs/modules/encoder-ui.json",
+      "bytes": 2285,
+      "sha256": "348230ec92e79ce1348f5c81e8380028966a789d4dbc029cc8ec0e28814fe0fc",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/docs/modules/encoder-ui.md",
+      "bytes": 2372,
+      "sha256": "af7eabe1929a7c6132afc90ca3ab5ef7accb1a9b903ee8d84b0d0354e34fb840",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/docs/PRODUCTO_ATMEGA.md",
+      "bytes": 4426,
+      "sha256": "6f70bfd757ea8ce0437a17a7775d9e0d53204828c8269be7121fb1a0c7f4e4ef",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/include/afr2_menu_catalog.h",
+      "bytes": 2758,
+      "sha256": "8b4c9edc3c97899c08d883883c155ccd5e0a71906f1b5d3d4b8b575b54abab3c",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/include/afr2_product.h",
+      "bytes": 4533,
+      "sha256": "da420ae7a16b76cc03c43f1d47c9ce85eab64cd92c8a887f60a4aa6a4452808c",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/include/afr2_sequence.h",
+      "bytes": 1299,
+      "sha256": "33132b5692847c1a98a3b0ecc43c0e559b1565901f47c081f65ffc71c7f0e14d",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/INFORME_ADAPTACION.md",
+      "bytes": 10455,
+      "sha256": "b16df961b44e9f82b158583d64c4b8c2868f7590b0a3a84afc7c36d56c262a7d",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/README.md",
+      "bytes": 8276,
+      "sha256": "d01362fffe01d55f959221420e3ba4ca2da98aced13bb96b7ff0ae6ac860cb5d",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/INFORME_CARPETA.md",
+      "bytes": 3538,
+      "sha256": "93f7233b29b33858048771e554b3cf12be28186caf89b693d381e9753f158cd1",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/input/INFORME_CARPETA.md",
+      "bytes": 1664,
+      "sha256": "e905c6c84905e482ab88c7bca097ac205c5365157c6bba3c10a819d7a06ec69f",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/services/afr2_app_wire.c",
+      "bytes": 14001,
+      "sha256": "22e1eff39bd67bfa053d60bff3a2bcd0e7b8a9a19145b40685f19b01d4cc32ea",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/services/afr2_app.c",
+      "bytes": 22693,
+      "sha256": "5805ac5ce91de85a4a97c0fbae5336eb302c9938f6cd15524f9faa42546e67b2",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/services/afr2_product.c",
+      "bytes": 14075,
+      "sha256": "72300b4021991ba70696d64a1e75b6067e7f59c7b5ed6cb3b9148e4a795c1829",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/services/afr2_sequence.c",
+      "bytes": 9471,
+      "sha256": "5e0a81eb96a719dc24a4ce878783b4a2640405bd5c98d9c6d875595ee5f51dfe",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/ui/afr2_menu_catalog.c",
+      "bytes": 13422,
+      "sha256": "b4e5c1c3ff78401d644c578403ad84498f00ee3ace40c3e89af6474d8efa1416",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/ui/afr2_screens.c",
+      "bytes": 11085,
+      "sha256": "9381aecceb0547900c230823a3b415bd21172311e199ea57ab8dc85bfc523265",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-CAD/INFORME_ADAPTACION.md",
+      "bytes": 2310,
+      "sha256": "9af8dd58b661880b492f26d4a50a78bd4b77aa987f644ff2361f9c80c591246a",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-CAD/README.md",
+      "bytes": 4422,
+      "sha256": "f66e6f8453d6bc1b1e865d10733e29687f65247decde227256e76393f862701f",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/CHANGELOG.md",
+      "bytes": 11851,
+      "sha256": "7417e606ceab61a31aa56af78702d29919ff097d7faaab7ac732aaf1a4538dd7",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/changes/2026-10-25-01-direct-web-control.md",
+      "bytes": 2171,
+      "sha256": "37a374ae1e91ad7cefe820f09338c9c3d01ecc7bf7fa08836e57d730c4925892",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/afr2_build_info.h",
+      "bytes": 419,
+      "sha256": "7f7f98e572fedea860278e60071d9a818435e03775d5bfea22f812cb56a680df",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/afr2_product_wire.h",
+      "bytes": 1988,
+      "sha256": "7d6d7642b9e845cdd452b553425c27e419cccd094a163ee09b5304256a4278df",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/ATMEGA_CONFIG_ACTIONS.json",
+      "bytes": 9923,
+      "sha256": "762943a4cfd08cd94a0fc5cf0332847ba80a0ccd563b75d018062b51edc846fe",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/commands.json",
+      "bytes": 31537,
+      "sha256": "233fec618d6187ff227c9dc84c6381ecf5255181575defe1cd379d81faed8435",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/DIRECT_CONTROL_7.md",
+      "bytes": 4910,
+      "sha256": "f1dc23ae45b4942921f1c29055b739774818b5dfd00e471ec5f1f29876ed16ca",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/EX01_ALIGNMENT_3.md",
+      "bytes": 6444,
+      "sha256": "10bdfc6f5e40686589daeaecbe557270bc08aad7c141b499af50005b20b77326",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/EX01_NETWORK_UI_5.md",
+      "bytes": 7136,
+      "sha256": "9000c280d436540f9036b3bd4fadc1a4313730ef2412063653a464150e4225c7",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/EX01_SYSTEM_SEQUENCE_4.md",
+      "bytes": 5641,
+      "sha256": "97e3bc53062ea08eabf3c01b145e4e7225e9ce400fcda1755651ccc28f8001a2",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/EX01_WEB_INTEGRATION.md",
+      "bytes": 7501,
+      "sha256": "e967cb8a37424d1cfb3ccb1e15549648d1e1114b47a39c930ce79047fb7bf5f5",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/PROTOCOL.md",
+      "bytes": 2699,
+      "sha256": "38521b60340a5201fb4c13a5a0a18ba310b48fc13e8e8a67286eeec4b43ec984",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/ROBO2_PRODUCT_EXTENSION.md",
+      "bytes": 15754,
+      "sha256": "0b6029afd0e4bc86dc0d1d084f3dc8ea2878f68ed5fe6f2ad2fd7983cbec3ada",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/SYSTEM_INFO_FILESYSTEM_15.md",
+      "bytes": 2819,
+      "sha256": "02e54ca4eb1e3ded1bbc71df728e3f5ec1de254b71820a2153bab6df472a1388",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/UART_PROFILE_3.md",
+      "bytes": 6775,
+      "sha256": "50b00bb04cb4a8e8fee66e7d0b51ca91c0a1b890b86c32fd6eccfd4eee3e5d6f",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/WEB_ASSETS.md",
+      "bytes": 2672,
+      "sha256": "f7a9c12d64487ec37205ed33a4c981028bff3363436bd6c34b746e1321cfeb9a",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/WEB_CONTROL_MAP.md",
+      "bytes": 10870,
+      "sha256": "1de2080f52c05a46a22f8c9db7e67647a3b575cdbfc38d9e93b31f75cc86838d",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/ALINEACION_MAESTRO.md",
+      "bytes": 3345,
+      "sha256": "57f73760c7035f4dc70f3fe964847215ed4e2eeb83aee60ae084a627e57eb592",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/ATMEGA_IMPLEMENTACION_19.md",
+      "bytes": 8859,
+      "sha256": "ef79e4eab5d8d6ec121cbed41c751a03b49336bee31bc2dcb2915b723375c17b",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/DECISIONES.md",
+      "bytes": 7793,
+      "sha256": "337bfba92d3fc01e8ffc5702b92387fde53dc46602a7ca61f02ce14ae7a6d9f9",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/design-system/components.md",
+      "bytes": 16656,
+      "sha256": "912da328353f09c10a09fa4e42a8ab6756f93610f12b9e8c040619e4190109c9",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/design-system/coverage-20261025-01.json",
+      "bytes": 433,
+      "sha256": "a3ec3313a7cfa4df5cbf8373f5213fe36179763ce0be7db3d405e59717f04797",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/design-system/decisions.md",
+      "bytes": 20434,
+      "sha256": "6701c3dc5efe96719d30836a551c1c4b1a3a85744933e48d55897eab59d11d3e",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/design-system/index.md",
+      "bytes": 11500,
+      "sha256": "877a0d4ef6a30b7eb7c15cde668433bef8d97930feb87e2d256f534347e1405a",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/design-system/manual.md",
+      "bytes": 19953,
+      "sha256": "dfd5bc451d6f3f5f0bb16805abf2d35ba84491479179cfa3350baeab4a82c3db",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/ESTADO_IMPLEMENTACION.md",
+      "bytes": 1428,
+      "sha256": "edf7092d33da1e70319d750fd448104f6d40a55e788c4c7c69f2c75e16ed1412",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/history/direct-control7/docs__ALINEACION_MAESTRO.md",
+      "bytes": 9281,
+      "sha256": "dcdd2964a2e3b6c6c8fec3e8c192b3919a16882fa9c04091991498d7cddc0093",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/history/direct-control7/docs__INFORME_MAESTRO.md",
+      "bytes": 1637,
+      "sha256": "74d9a7a695c1135ed7060bccee9502d4e011135564aa602f56342964898d81c2",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/history/direct-control7/docs__PLAN_ATMEGA.md",
+      "bytes": 3926,
+      "sha256": "c16dc01cc122eb73e07f7ee29588fb5de0b2c5ae1a10073f11fc5776feb9ea7e",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/history/direct-control7/docs__PLAN_ESP.md",
+      "bytes": 3035,
+      "sha256": "6f845942bd459fbbdaa742bc1dfeb3f89175cccd3bb16d89bb1f9ca35873e0c6",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/history/direct-control7/docs__PLAN_WEB.md",
+      "bytes": 3549,
+      "sha256": "1d588561ba673ae1da1a6ebabfdd078b17ff8a7905dc9cdbb4c31166c8e3f7f9",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/history/direct-control7/docs__ROADMAP.md",
+      "bytes": 2688,
+      "sha256": "78e1af06bae76d4ae8f4e32728ee8836accf586145ea8e3a4dcb62f0e8b10439",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/history/direct-control7/PROTOCOL-before-v7.md",
+      "bytes": 17822,
+      "sha256": "1fdb5fed18c0b497985cdc1c4671963d8fd8e110f658d9c94f01b9149c7fd43e",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/PLAN_WEB.md",
+      "bytes": 1245,
+      "sha256": "ecc90d71528628ed3702e62fc973bb6a19833ed19a5257a509c259f2e0bedf29",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/PROMPT_CONTINUIDAD.md",
+      "bytes": 29765,
+      "sha256": "058ba76420f3cfdb67cd738900528776ff9e4864002ac18e77605d51046efddd",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/ROADMAP.md",
+      "bytes": 1696,
+      "sha256": "784ee9ae8505894a1723fe88cbd2424ccb044e23716631e7d64562cc0e358bb2",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/WEB_FLOATING_UI.md",
+      "bytes": 5400,
+      "sha256": "73e3169800520f6cdcc2dab1563a46453b2984c30ca4c234aebe0c38f9b6c0be",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-25-01/atmega-build.txt",
+      "bytes": 1920,
+      "sha256": "5a4d31c548dfb6af767210f7001fa3c3e18a7260253fb6f170b8144c7a6525ab",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-25-01/atmega-exit.txt",
+      "bytes": 3,
+      "sha256": "13bf7b3039c63bf5a50491fa3cfd8eb4e699d1ba1436315aef9cbe5711530354",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-25-01/atmega-size.txt",
+      "bytes": 585,
+      "sha256": "94a28207cc4c93f74a35c0073a23c951791471e4b67252436a34c23f5e960bcb",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-25-01/esp-build.txt",
+      "bytes": 2122,
+      "sha256": "99a38c4cacefd88bd74074f537589bc090bd734438f611b250ecf84226fd2536",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-25-01/esp-exit.txt",
+      "bytes": 3,
+      "sha256": "13bf7b3039c63bf5a50491fa3cfd8eb4e699d1ba1436315aef9cbe5711530354",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-25-01/manifest.json",
+      "bytes": 2631,
+      "sha256": "b6aea794f94135d729cb999fb3878b6539aabdc832c554fbdf299dcfdb98ed98",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-25-01/README.md",
+      "bytes": 1760,
+      "sha256": "7958a8f2b02845b84fabca0c19ad8cc07460a9a865c894909061e6d4ce43b434",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-25-01/summary.json",
+      "bytes": 5672,
+      "sha256": "6e7846d27ac75618b30731511fec426e9735164a14691fb6ec930dd88e4bdf36",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-25-01/web-build.txt",
+      "bytes": 1754,
+      "sha256": "07e48a9ea21d29d29d2fe090cff08670f82838b1b6c7e458475751ffb2bbf085",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-25-01/web-exit.txt",
+      "bytes": 3,
+      "sha256": "13bf7b3039c63bf5a50491fa3cfd8eb4e699d1ba1436315aef9cbe5711530354",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/MENU_PLAN.md",
+      "bytes": 6015,
+      "sha256": "3ea69b500f53f008f2239edea4cb62a3f145888b0770ed304128c033704c3fac",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/overlays/connections.json",
+      "bytes": 9523,
+      "sha256": "e5f208a0e70bfb2c400e480284e5b6aec2169a985efc04c7342d130d0ee615a6",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/review/findings.json",
+      "bytes": 25985,
+      "sha256": "acfb99b1f83574098bddb1f1536f5ad09210edefca00599d9478bf6fc0841200",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/screens.json",
+      "bytes": 59649,
+      "sha256": "df8d874119764586c14b7c04a3a1cc6cc5656d8b20febf3e44c5eb3e80dffd18",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/INFORME_ADAPTACION.md",
+      "bytes": 8722,
+      "sha256": "950e55c09349c5fa65247bbe2bcf972453ce9facdd3ed880b24217bf216675f4",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/provenance/README.md",
+      "bytes": 5352,
+      "sha256": "56bd9c9b4adf0c0b7d38a57e85c17a3ae3f478b95374de4e739b08a2a800a33e",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/README.md",
+      "bytes": 14265,
+      "sha256": "ece1094b862caf80bb818b7c53b37867152b901a781ff0777b023e625c1601bf",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/data/README.md",
+      "bytes": 3935,
+      "sha256": "b7c182b16bc043eb2846ae89930238db66f6ea23be53b64f8d65e79d3885cfa2",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/docs/PROTOCOLO_ROBO2.md",
+      "bytes": 11830,
+      "sha256": "b0e55f7b2b0ca97e3e6c89ccd50d94eb7af29814427401107f5edee5f2b024b9",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/docs/ROBO2_EX01_ATMEGA.md",
+      "bytes": 3299,
+      "sha256": "9139275ca1b48d702164c0cb8c1c6284c6d218174da95786a0712c589eae8ee8",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/INFORME_ADAPTACION.md",
+      "bytes": 11001,
+      "sha256": "3f708b855e148eeeeb121f6328842878f96dc06443d6d47c4b3888dd401d8866",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/README.md",
+      "bytes": 11605,
+      "sha256": "766bb3fd2ccd7a0aeac0b004b67fe1ab6602276a2ada9e622303cf097bb04d1e",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/broker_product.cpp",
+      "bytes": 20185,
+      "sha256": "8dbd2184a9f7d8af30628b1dac0f531cbfe73f2d7d6062c7b976462fb8cb9974",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/broker_system.cpp",
+      "bytes": 4567,
+      "sha256": "3f5ace4b9329cba3ac7999f7207112b61663efa633e5a5caa09471648ffaf4b3",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/broker_wifi.cpp",
+      "bytes": 9638,
+      "sha256": "c8131382d235d3e64d36557af0f1ce15abef118881ae4dc49a0ce8d30be7c81b",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/broker.cpp",
+      "bytes": 20713,
+      "sha256": "49852dbeeefb3965dd218700f23704461dd64fe107ae833d42b1856e9167dbe6",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/broker.h",
+      "bytes": 4769,
+      "sha256": "adbc027c0ffe38fbe84a760153469718e8a10001a611567286c0b935b4162e13",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/mega_link.cpp",
+      "bytes": 11130,
+      "sha256": "03b355df0be428d9c62c6eaab83a1f5af9c57d99963897559332a5989ed5d248",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/docs/modules/assets.json",
+      "bytes": 1487,
+      "sha256": "62e7d926c0e89c334859b588c112b4142176eed00a19fa3fcc26e4f9cce609c5",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/docs/modules/control.md",
+      "bytes": 2259,
+      "sha256": "1b7d796bde8b32738ab3be6dd15ca41387bb87b262ab8be1d4fefd85290e9c2d",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/docs/modules/goto-simulation.md",
+      "bytes": 2348,
+      "sha256": "70ab4a7513b1e2fcf4aa5b0536f900d5c4ac25e6691eb2cbe25acfc73121d9fb",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/docs/modules/manual-touch-drive.md",
+      "bytes": 2364,
+      "sha256": "d59c7aa5b8d53aef454aa2c84a2aa41e2cbf51c6af16ede2c0581cb980bee4f8",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/docs/modules/oled-ui.json",
+      "bytes": 1252,
+      "sha256": "494be2152f98b442fbe09b8fc2ac10d116d4515860d8d0f1e7fda0ca962ee764",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/docs/modules/protocol.json",
+      "bytes": 818,
+      "sha256": "54788b36c9ab9e088c84bffe4cbb7e2bd766392a6c364dde7bcc149932559370",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/docs/modules/protocol.md",
+      "bytes": 2272,
+      "sha256": "c98daffd9df40c5d140e81cbd98ff711df72d5747ead5488a43a085dd2a192d2",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/docs/modules/sequence-editor.md",
+      "bytes": 2523,
+      "sha256": "3e8a3212fce17e391074dd4448241153a1a70a6894a77f09dd5f52caf11ceef1",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/INFORME_ADAPTACION.md",
+      "bytes": 20836,
+      "sha256": "5c21e6147d92fe2eb7c9359cf94fc41ef5377c69f234e205198d7628d5f3fa4a",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/package-lock.json",
+      "bytes": 100731,
+      "sha256": "826eac32def6bf19e9aac7b6aa42cf443a532795d859fa2cd170dc3ba2116cc4",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/package.json",
+      "bytes": 1347,
+      "sha256": "ec2bcdf180f7d2c5cdac4f5fcf7e64a8482de2743819d968b388fadec7f24292",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/README.md",
+      "bytes": 22074,
+      "sha256": "eb72904f9b1d88f8c9e642c47648282413c22e1fd99e807d3481d28760af9e37",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/components/ui/DismissibleNotice.tsx",
+      "bytes": 1770,
+      "sha256": "a4dfcd9c195fb6f89b7a327ff0a4208252b51f832f7c12be9bded77c9c0a2606",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/connection/ConnectionContext.tsx",
+      "bytes": 23685,
+      "sha256": "03aa925d7463541e0031ef872b0c8bde5387bb2cfb1833deeb3908dc32b332ef",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/CalibrationPanel.tsx",
+      "bytes": 8017,
+      "sha256": "8b3b13cf45cfd19b1908f952e6c3ac39b8a8cb43a0a2c69015a09c86a28d7de9",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/ControlPage.tsx",
+      "bytes": 40852,
+      "sha256": "ed38eb975c2d086e0636871005a1cd35429414e55aa9b58036660a02a7842a0f",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/manual/ManualDriveOverlay.tsx",
+      "bytes": 10135,
+      "sha256": "4874a849ccb54d01551dbc9163a01c0cf81173ac6d9fdee762cd4a59cd73fd27",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/sequences/SequenceEditorPanel.tsx",
+      "bytes": 77466,
+      "sha256": "2405a56a3901e08974194ff21b5419f649bfe49908ee576ce6fb8cfa595213c0",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/docs/DocsPage.tsx",
+      "bytes": 14809,
+      "sha256": "82fac27d609827937cef3315090b830a5c1a8ff57a1f36f3bfd619bfa007b6fd",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/oled/firmwareRenderer.sources.json",
+      "bytes": 746,
+      "sha256": "6dbfa0ed8625f740cead0742c3bdec991f6383f1f43220561d58f4ba0b9179d0",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/oled/firmwareRenderer.ts",
+      "bytes": 13084,
+      "sha256": "d1c172f5ff0e18d786e1e2f46ae4cc0eecf89f93db4df94a4f47b1295ef15e3d",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/oled/generated/firmwareLibrary.ts",
+      "bytes": 16363,
+      "sha256": "58993b6e599b1f2546a661511e38ba06b6dbef78300a5a0ad82c4cba84df2390",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/wifi/WifiDraftModal.tsx",
+      "bytes": 2482,
+      "sha256": "a9638ce1706a24ba976f5981eaf4ef5d663c0db892c887cf555593aaa0de7764",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/protocol/afr2Client.ts",
+      "bytes": 16993,
+      "sha256": "002dabe2ed1bfc4578344a1624d3d7296f9e58ef040d03bc42cad1e8d266ad82",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/protocol/robotState.ts",
+      "bytes": 2914,
+      "sha256": "08125833c5ab018ac8568dcf4fd5fe4319892c71b758f5b787311322c3582be8",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/protocol/wsEnvelope.ts",
+      "bytes": 9011,
+      "sha256": "787326033cf46e0bbfeb825a5e935573a36e992798a9774baa5625a5e9925b51",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "INFORME_MAESTRO.md",
+      "bytes": 2913,
+      "sha256": "9fe6211e48d7fba2c11aeea028f77ef050bda603bd32d8f39ada1e7a8daae213",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    },
+    {
+      "path": "README.md",
+      "bytes": 6140,
+      "sha256": "ef2c741625f85a15480769c11bcf6b35eb33f71744535902f52027a128b8f485",
+      "adaptation": "25/01: own AFR2 direct-control7 implementation and paired C/TS menu/resources, current terminology/contracts/docs/evidence; earlier authors preserved. No external-controller driver was imported."
+    }
+  ],
+  "verification": "Authorized compiler generation, static memory reports, local package promotion and source/artifact inspection only. No protocol/differential tests or standalone validators, browser, serial, device resets, physical operation, filesystem image, upload or publication. Prior browser denial respected; Hall/memory0 maintained.",
+  "retiredActionIds": [
+    2,
+    3,
+    56
+  ],
+  "newScreenCodes": false,
+  "newDependencies": false,
+  "cadModified": false,
+  "physicalEvidence": false,
+  "committed": false,
+  "published": false
+}

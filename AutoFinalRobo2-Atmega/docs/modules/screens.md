@@ -1,4 +1,12 @@
+> **AFR2-20261024-08:** IP/AP y avisos con iconos F4, scroll seleccionado y reinicio local por Sistema → Reinicio, compilados. [EX01v5](../../../AutoFinalRobo2-Contracts/contracts/EX01_NETWORK_UI_5.md) · [Estado real](../../../AutoFinalRobo2-Contracts/docs/ESTADO_IMPLEMENTACION.md). APIs nuevas FillRect/TextWindow, iconos y snapshot de red separados del transporte/I2C. Sin prueba de placa ni flasheo; estados inferiores históricos.
+
 # Wrappers, menús y pantallas
+
+AFR2-20261023-19, fuente integrada sin compilar/probar: 44 nodos, historial8, editores/teclado y cola4, renderer puro; fidelidad F4 no acreditada.
+[Producto vigente](../PRODUCTO_ATMEGA.md). El diseño histórico siguiente conserva su evidencia.
+
+
+Estado vigente AFR2-20261023-15: backend/composición integrados en fuente; el texto anterior de migración se conserva debajo como antecedente. Sin compilar/probar.
 
 [Maestro](../../../INFORME_MAESTRO.md) · [Informe del repositorio](../../INFORME_ADAPTACION.md).
 
@@ -21,3 +29,6 @@ Nueva UI usa snapshot explícito sin consultas de hardware en renderer. Mantener
 Hallazgos: AFRDOC-009, AFRDOC-010. [Registro](../../../AutoFinalRobo2-Contracts/documentation/review/FINDINGS.md).
 
 Estado: lectura/copia o fuente parcial indicada; sin compilación, tests ni prueba física. La API detallada de origen está en el corpus AMDOC importado; no equivale a API AVR adaptada.
+
+
+AFR2-20261023-15: TWI AVR por IRQ y composición OLED/encoder/USART1 implementados en fuente, sin DMA ni Arduino. Ver docs/COMPOSICION.md y Contracts/changes/2026-10-23-15-robo2-atmega-ui.md. Sin builds/tests/validadores/flasheos; hardware y recursos finales pendientes.

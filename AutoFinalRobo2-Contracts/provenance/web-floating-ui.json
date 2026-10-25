@@ -1,0 +1,334 @@
+{
+  "schema": "afr2-web-adaptations-1",
+  "changeId": "AFR2-20261023-14",
+  "date": "2026-10-23",
+  "sourceRevision": "335d3edb2f5f39457ae82c82ded6f0403bbbec65",
+  "verification": "Fuente revisada; sin compilación, tests, validadores, servidor, render ni hardware",
+  "sources": [
+    {
+      "origin": "D:/ST2026-Radal/src/presentation/components/layout/app-shell.tsx",
+      "sha256": "fbdc9c398cd2cd357ce76c78c016c09bdc41459999228082a30b727816374200",
+      "preservedAs": "reference/st2026/src/presentation/components/layout/app-shell.tsx",
+      "role": "direct",
+      "authorship": "Autoría original del repositorio ST2026-Radal; archivo conservado íntegro, historial en revisión 335d3edb2f5f39457ae82c82ded6f0403bbbec65. No se asigna autor nuevo al original."
+    },
+    {
+      "origin": "D:/ST2026-Radal/src/presentation/styles/app-shell-sidebar.css",
+      "sha256": "6edd55c6881dd47492e5b4025d555827df3fe75f0da5fca81f2fb9c7430fd31a",
+      "preservedAs": "reference/st2026/src/presentation/styles/app-shell-sidebar.css",
+      "role": "direct",
+      "authorship": "Autoría original del repositorio ST2026-Radal; archivo conservado íntegro, historial en revisión 335d3edb2f5f39457ae82c82ded6f0403bbbec65. No se asigna autor nuevo al original."
+    },
+    {
+      "origin": "D:/ST2026-Radal/src/presentation/components/catalog/public-catalog-search.tsx",
+      "sha256": "ad33d112651c06e80aa4cca9b7733313faac031d778f6328c5b3abcc1dcca718",
+      "preservedAs": "reference/st2026/src/presentation/components/catalog/public-catalog-search.tsx",
+      "role": "direct",
+      "authorship": "Autoría original del repositorio ST2026-Radal; archivo conservado íntegro, historial en revisión 335d3edb2f5f39457ae82c82ded6f0403bbbec65. No se asigna autor nuevo al original."
+    },
+    {
+      "origin": "D:/ST2026-Radal/src/presentation/styles/public-catalog-search.css",
+      "sha256": "78f662baf13132cb3f3390a7faaebe801443ed6dd1464cb7c39cfe28dac06987",
+      "preservedAs": "reference/st2026/src/presentation/styles/public-catalog-search.css",
+      "role": "direct",
+      "authorship": "Autoría original del repositorio ST2026-Radal; archivo conservado íntegro, historial en revisión 335d3edb2f5f39457ae82c82ded6f0403bbbec65. No se asigna autor nuevo al original."
+    },
+    {
+      "origin": "D:/ST2026-Radal/src/presentation/styles/radal-floating-controls.css",
+      "sha256": "ff524bf1a077b8c65db417cab85bf3facf099476248509dceea143c74824ddd2",
+      "preservedAs": "reference/st2026/src/presentation/styles/radal-floating-controls.css",
+      "role": "dependency",
+      "authorship": "Autoría original del repositorio ST2026-Radal; archivo conservado íntegro, historial en revisión 335d3edb2f5f39457ae82c82ded6f0403bbbec65. No se asigna autor nuevo al original."
+    }
+  ],
+  "files": [
+    {
+      "target": "src/app/providers/OverlayContext.tsx",
+      "beforeSha256": null,
+      "adaptedSha256": "d61e580a11ef2510d028023260411230b5dbd158719992d9623343fc66404b22",
+      "origins": [
+        "AutoFinalRobo2-Contracts/docs/WEB_FLOATING_UI.md",
+        "AutoFinalRobo2-Contracts/contracts/WEB_OLED_CONSUMER.md"
+      ],
+      "adaptation": "Adaptación propia de composición/consumidor Web; ver docs/WEB_FLOATING_UI.md",
+      "authorship": "Autores originales conservados en fuentes/historial; adaptación para AutoFinalRobo2 con asistencia Codex."
+    },
+    {
+      "target": "src/components/navigation/RouteNav.tsx",
+      "beforeSha256": "3d320b9c029ebd7255d916efe70e5c0a19b6890ebdeb2662c1cee6f1a4e567ec",
+      "adaptedSha256": "c807c9616ec9824c21485cd17a1f4641904e55b28b3010aa7d608ed2d5efd81a",
+      "origins": [
+        "src/presentation/components/layout/app-shell.tsx",
+        "src/presentation/styles/app-shell-sidebar.css"
+      ],
+      "adaptation": "Adaptación propia de composición/consumidor Web; ver docs/WEB_FLOATING_UI.md",
+      "authorship": "Autores originales conservados en fuentes/historial; adaptación para AutoFinalRobo2 con asistencia Codex."
+    },
+    {
+      "target": "src/components/notifications/notify.tsx",
+      "beforeSha256": "124d68ef385ea7b04c74dd505c24a9e8ba8afd80f646bda169add90f221a8fe9",
+      "adaptedSha256": "60ed192b739d1a3c96b3decf706b2be6049c3b477e87730741b59b2b210cf916",
+      "origins": [
+        "D:/ProyectoRobotica2/AutoFinalRobo2-Web/src/components/notifications/notify.tsx"
+      ],
+      "adaptation": "Adaptación propia de composición/consumidor Web; ver docs/WEB_FLOATING_UI.md",
+      "authorship": "Autores originales conservados en fuentes/historial; adaptación para AutoFinalRobo2 con asistencia Codex."
+    },
+    {
+      "target": "src/components/ui/FloatingModal.tsx",
+      "beforeSha256": null,
+      "adaptedSha256": "65ce996c26c7ce72bfd4dd74ff100aa9b00c2a508339025ca84039ed552b861a",
+      "origins": [
+        "src/presentation/components/catalog/public-catalog-search.tsx",
+        "src/presentation/styles/public-catalog-search.css"
+      ],
+      "adaptation": "Adaptación propia de composición/consumidor Web; ver docs/WEB_FLOATING_UI.md",
+      "authorship": "Autores originales conservados en fuentes/historial; adaptación para AutoFinalRobo2 con asistencia Codex."
+    },
+    {
+      "target": "src/components/ui/UiIcon.tsx",
+      "beforeSha256": null,
+      "adaptedSha256": "4c37a9327daa4d924b9633074eb2239b0e9471a1a96e454019488f06a93e95c4",
+      "origins": [
+        "AutoFinalRobo2-Contracts/docs/WEB_FLOATING_UI.md",
+        "AutoFinalRobo2-Contracts/contracts/WEB_OLED_CONSUMER.md"
+      ],
+      "adaptation": "Adaptación propia de composición/consumidor Web; ver docs/WEB_FLOATING_UI.md",
+      "authorship": "Autores originales conservados en fuentes/historial; adaptación para AutoFinalRobo2 con asistencia Codex."
+    },
+    {
+      "target": "src/features/connection/ConnectionContext.tsx",
+      "beforeSha256": "5595e0aac4cfef075d375438c9d13be4897851f83764cbe4969076687c739c04",
+      "adaptedSha256": "bb9f15a521b8e62ad6c04caf93b5530499f85272df2d4c29448acb86d270144a",
+      "origins": [
+        "D:/ProyectoRobotica2/AutoFinalRobo2-Web/src/features/connection/ConnectionContext.tsx"
+      ],
+      "adaptation": "Adaptación propia de composición/consumidor Web; ver docs/WEB_FLOATING_UI.md",
+      "authorship": "Autores originales conservados en fuentes/historial; adaptación para AutoFinalRobo2 con asistencia Codex."
+    },
+    {
+      "target": "src/features/connection/useRobotMode.ts",
+      "beforeSha256": null,
+      "adaptedSha256": "32a13c458e8369f81ebc80ef5313ecd65931849eced623680c95ceea771cbf00",
+      "origins": [
+        "AutoFinalRobo2-Contracts/docs/WEB_FLOATING_UI.md",
+        "AutoFinalRobo2-Contracts/contracts/WEB_OLED_CONSUMER.md"
+      ],
+      "adaptation": "Adaptación propia de composición/consumidor Web; ver docs/WEB_FLOATING_UI.md",
+      "authorship": "Autores originales conservados en fuentes/historial; adaptación para AutoFinalRobo2 con asistencia Codex."
+    },
+    {
+      "target": "src/features/control/ControlPage.tsx",
+      "beforeSha256": "5ba172bda5d412fa4f984d336a5121bff8498177c2af739c3d93353953d14252",
+      "adaptedSha256": "e2d1ed84966e5d4b544f75801740cb18c2ff5c9fdc4b853847329eea87e61604",
+      "origins": [
+        "D:/ProyectoRobotica2/AutoFinalRobo2-Web/src/features/control/ControlPage.tsx"
+      ],
+      "adaptation": "Adaptación propia de composición/consumidor Web; ver docs/WEB_FLOATING_UI.md",
+      "authorship": "Autores originales conservados en fuentes/historial; adaptación para AutoFinalRobo2 con asistencia Codex."
+    },
+    {
+      "target": "src/features/docs/DocsPage.tsx",
+      "beforeSha256": "9bc405ddfa19aaeb49a52ef74cc3fd08e9d28024e1039c1ab390f4bb7f9720dc",
+      "origins": [
+        "D:/ProyectoRobotica2/AutoFinalRobo2-Web/src/features/docs/DocsPage.tsx"
+      ],
+      "adaptation": "Adaptación propia de presentación compacta/documentación de interfaz",
+      "authorship": "Autores originales conservados; adaptación AutoFinalRobo2 con asistencia Codex.",
+      "adaptedSha256": "00e73ed44fcbf9c0c75ea8b9406bccbd9054d1b92f5617afdc2c986577e25cd5"
+    },
+    {
+      "target": "src/features/home/HomePage.tsx",
+      "beforeSha256": "efc27ee0995c395a0d78e6ee8da85fe89eac9ee389dcee572d350e704638f95b",
+      "adaptedSha256": "670f1a5b3eef64964dc0953a244f7325dd9dbe058a5cffef7736e7e98d1b07ed",
+      "origins": [
+        "D:/ProyectoRobotica2/AutoFinalRobo2-Web/src/features/home/HomePage.tsx"
+      ],
+      "adaptation": "Adaptación propia de composición/consumidor Web; ver docs/WEB_FLOATING_UI.md",
+      "authorship": "Autores originales conservados en fuentes/historial; adaptación para AutoFinalRobo2 con asistencia Codex.",
+      "visualSources": [
+        "1000917115.jpg",
+        "1000917116.png",
+        "VIS-015; ilustración simbólica propia"
+      ]
+    },
+    {
+      "target": "src/features/home/SectionArtwork.tsx",
+      "beforeSha256": null,
+      "adaptedSha256": "eb9af370d03742a301c3592dc327e7e7dd829fcce2b61a5968a885ca49107040",
+      "origins": [
+        "AutoFinalRobo2-Contracts/docs/WEB_FLOATING_UI.md",
+        "AutoFinalRobo2-Contracts/contracts/WEB_OLED_CONSUMER.md"
+      ],
+      "adaptation": "Adaptación propia de composición/consumidor Web; ver docs/WEB_FLOATING_UI.md",
+      "authorship": "Autores originales conservados en fuentes/historial; adaptación para AutoFinalRobo2 con asistencia Codex.",
+      "visualSources": [
+        "1000917115.jpg",
+        "1000917116.png",
+        "VIS-015; ilustración simbólica propia"
+      ]
+    },
+    {
+      "target": "src/features/oled/EncoderControl.tsx",
+      "beforeSha256": "dffffa1aa6db57fd47bb888d6306fc8a26823edfb873d794b034db9397014f31",
+      "adaptedSha256": "6c04a60525303c0286dd366b06c2c128aff0c924ec859f817c2136c20bd77d71",
+      "origins": [
+        "D:/ProyectoRobotica2/AutoFinalRobo2-Web/src/features/oled/EncoderControl.tsx"
+      ],
+      "adaptation": "Adaptación propia de composición/consumidor Web; ver docs/WEB_FLOATING_UI.md",
+      "authorship": "Autores originales conservados en fuentes/historial; adaptación para AutoFinalRobo2 con asistencia Codex."
+    },
+    {
+      "target": "src/features/oled/LiveOledViewer.tsx",
+      "beforeSha256": null,
+      "adaptedSha256": "ce0955daba99629b4a7d8ac85f5d7db1b4bd41fb5eeb0eaa199c9afd885f4923",
+      "origins": [
+        "AutoFinalRobo2-Contracts/docs/WEB_FLOATING_UI.md",
+        "AutoFinalRobo2-Contracts/contracts/WEB_OLED_CONSUMER.md"
+      ],
+      "adaptation": "Adaptación propia de composición/consumidor Web; ver docs/WEB_FLOATING_UI.md",
+      "authorship": "Autores originales conservados en fuentes/historial; adaptación para AutoFinalRobo2 con asistencia Codex."
+    },
+    {
+      "target": "src/features/oled/OledCanvas128x64.tsx",
+      "beforeSha256": "fa1132cdaa0fb86cd23d7f7263dc34a5e9fe5a602babb2dee9f77b8328cf136e",
+      "origins": [
+        "D:/ProyectoRobotica2/AutoFinalRobo2-Web/src/features/oled/OledCanvas128x64.tsx"
+      ],
+      "adaptation": "Adaptación propia de presentación compacta/documentación de interfaz",
+      "authorship": "Autores originales conservados; adaptación AutoFinalRobo2 con asistencia Codex.",
+      "adaptedSha256": "65246bcfa8b2fcfafdd92188bda85cff14b4376961b3f388e7d6847f5251b58e"
+    },
+    {
+      "target": "src/features/oled/OledPage.tsx",
+      "beforeSha256": "025d7c43beafade2682755bdaf0c1d3b9f84923572f3690fbbe19cde02396625",
+      "adaptedSha256": "492b329842a60c007b364d946429403dc387b4605f13e2e56f9ac177a12b1d06",
+      "origins": [
+        "D:/ProyectoRobotica2/AutoFinalRobo2-Web/src/features/oled/OledPage.tsx"
+      ],
+      "adaptation": "Adaptación propia de composición/consumidor Web; ver docs/WEB_FLOATING_UI.md",
+      "authorship": "Autores originales conservados en fuentes/historial; adaptación para AutoFinalRobo2 con asistencia Codex."
+    },
+    {
+      "target": "src/features/oled/remoteSnapshot.ts",
+      "beforeSha256": null,
+      "adaptedSha256": "335807e6ca45ca91001b16434cbb3f5bfce44748fd52d3f78852bfcd215939ec",
+      "origins": [
+        "AutoFinalRobo2-Contracts/docs/WEB_FLOATING_UI.md",
+        "AutoFinalRobo2-Contracts/contracts/WEB_OLED_CONSUMER.md"
+      ],
+      "adaptation": "Adaptación propia de composición/consumidor Web; ver docs/WEB_FLOATING_UI.md",
+      "authorship": "Autores originales conservados en fuentes/historial; adaptación para AutoFinalRobo2 con asistencia Codex."
+    },
+    {
+      "target": "src/styles/index.css",
+      "beforeSha256": "897e0bc69adf6f55d6532a9ad73e93f2b77d8261d6d83da87bbb79a245bd7f89",
+      "adaptedSha256": "10fe2e6d86d7a397490e7b9969e39927a71332413d93ba600ee52b079bb855b6",
+      "origins": [
+        "D:/ProyectoRobotica2/AutoFinalRobo2-Web/src/styles/index.css"
+      ],
+      "adaptation": "Adaptación propia de composición/consumidor Web; ver docs/WEB_FLOATING_UI.md",
+      "authorship": "Autores originales conservados en fuentes/historial; adaptación para AutoFinalRobo2 con asistencia Codex."
+    },
+    {
+      "target": "src/styles/tokens.css",
+      "beforeSha256": "29f7c3e718dbd6e8706879641cc078f637d638fcb4f1e2d874b94e62a1f35c22",
+      "adaptedSha256": "64d0b6fdde42607ca7339a1a0de6f82348a7985510de318036b66ae1f4c14263",
+      "origins": [
+        "D:/ProyectoRobotica2/AutoFinalRobo2-Web/src/styles/tokens.css"
+      ],
+      "adaptation": "Adaptación propia de composición/consumidor Web; ver docs/WEB_FLOATING_UI.md",
+      "authorship": "Autores originales conservados en fuentes/historial; adaptación para AutoFinalRobo2 con asistencia Codex."
+    },
+    {
+      "target": "src/styles/workspace.css",
+      "beforeSha256": null,
+      "adaptedSha256": "e2cf1fbbe893590701667d66f815124ba0305e81cf829ce6465cb5b1e58572ff",
+      "origins": [
+        "src/presentation/components/layout/app-shell.tsx",
+        "src/presentation/styles/app-shell-sidebar.css",
+        "src/presentation/components/catalog/public-catalog-search.tsx",
+        "src/presentation/styles/public-catalog-search.css",
+        "src/presentation/styles/radal-floating-controls.css"
+      ],
+      "adaptation": "Adaptación propia de composición/consumidor Web; ver docs/WEB_FLOATING_UI.md",
+      "authorship": "Autores originales conservados en fuentes/historial; adaptación para AutoFinalRobo2 con asistencia Codex."
+    },
+    {
+      "target": "reference/st2026/README.md",
+      "beforeSha256": null,
+      "adaptedSha256": "3ae44296adcf5fc4224ff0c61631614f2a53f82e19551fe6f061c74842555c74",
+      "origins": [
+        "README.md"
+      ],
+      "adaptation": "Copia histórica íntegra, inactiva",
+      "authorship": "Autores originales conservados en fuentes/historial; adaptación para AutoFinalRobo2 con asistencia Codex."
+    },
+    {
+      "target": "reference/st2026/src/presentation/components/catalog/public-catalog-search.tsx",
+      "beforeSha256": null,
+      "adaptedSha256": "ad33d112651c06e80aa4cca9b7733313faac031d778f6328c5b3abcc1dcca718",
+      "origins": [
+        "src/presentation/components/catalog/public-catalog-search.tsx"
+      ],
+      "adaptation": "Copia histórica íntegra, inactiva",
+      "authorship": "Autores originales conservados en fuentes/historial; adaptación para AutoFinalRobo2 con asistencia Codex."
+    },
+    {
+      "target": "reference/st2026/src/presentation/components/layout/app-shell.tsx",
+      "beforeSha256": null,
+      "adaptedSha256": "fbdc9c398cd2cd357ce76c78c016c09bdc41459999228082a30b727816374200",
+      "origins": [
+        "src/presentation/components/layout/app-shell.tsx"
+      ],
+      "adaptation": "Copia histórica íntegra, inactiva",
+      "authorship": "Autores originales conservados en fuentes/historial; adaptación para AutoFinalRobo2 con asistencia Codex."
+    },
+    {
+      "target": "reference/st2026/src/presentation/styles/app-shell-sidebar.css",
+      "beforeSha256": null,
+      "adaptedSha256": "6edd55c6881dd47492e5b4025d555827df3fe75f0da5fca81f2fb9c7430fd31a",
+      "origins": [
+        "src/presentation/styles/app-shell-sidebar.css"
+      ],
+      "adaptation": "Copia histórica íntegra, inactiva",
+      "authorship": "Autores originales conservados en fuentes/historial; adaptación para AutoFinalRobo2 con asistencia Codex."
+    },
+    {
+      "target": "reference/st2026/src/presentation/styles/public-catalog-search.css",
+      "beforeSha256": null,
+      "adaptedSha256": "78f662baf13132cb3f3390a7faaebe801443ed6dd1464cb7c39cfe28dac06987",
+      "origins": [
+        "src/presentation/styles/public-catalog-search.css"
+      ],
+      "adaptation": "Copia histórica íntegra, inactiva",
+      "authorship": "Autores originales conservados en fuentes/historial; adaptación para AutoFinalRobo2 con asistencia Codex."
+    },
+    {
+      "target": "reference/st2026/src/presentation/styles/radal-floating-controls.css",
+      "beforeSha256": null,
+      "adaptedSha256": "ff524bf1a077b8c65db417cab85bf3facf099476248509dceea143c74824ddd2",
+      "origins": [
+        "src/presentation/styles/radal-floating-controls.css"
+      ],
+      "adaptation": "Copia histórica íntegra, inactiva",
+      "authorship": "Autores originales conservados en fuentes/historial; adaptación para AutoFinalRobo2 con asistencia Codex."
+    },
+    {
+      "target": "README.md",
+      "beforeSha256": "37347ab346a5f6c381122983c0dc34cb7210e725a5bff81d79b7391b076acf9d",
+      "adaptedSha256": "16f8aa209f3b4c97c78cd091c2bc9d44879a15f33f09b1bd4b81d10ab5002469",
+      "origins": [],
+      "adaptation": "Apéndice de estado y límites",
+      "authorship": "Documentación propia AutoFinalRobo2 con asistencia Codex."
+    },
+    {
+      "target": "INFORME_ADAPTACION.md",
+      "beforeSha256": "8d919e627a7a77969160173b0096b708b42089264d7acb524d3197adc55c0487",
+      "adaptedSha256": "dad634704e514856203d6a467579665bd395b1e52925ad767f1b85d3fc9cc47c",
+      "origins": [],
+      "adaptation": "Apéndice de estado y límites",
+      "authorship": "Documentación propia AutoFinalRobo2 con asistencia Codex."
+    }
+  ]
+}

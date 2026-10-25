@@ -1,5 +1,11 @@
 # Comandos, parser y transporte
 
+AFR2-20261023-19, fuente integrada sin compilar/probar: Perfil2 preservado; extensión EX01 opt-in en afr2_app_wire. ESP no negocia EX01 todavía; no confundir perfil3/secuencias diseñado21.
+[Producto vigente](../PRODUCTO_ATMEGA.md). El diseño histórico siguiente conserva su evidencia.
+
+
+Estado vigente AFR2-20261023-15: backend/composición integrados en fuente; el texto anterior de migración se conserva debajo como antecedente. Sin compilar/probar.
+
 [Maestro](../../../INFORME_MAESTRO.md) · [Informe del repositorio](../../INFORME_ADAPTACION.md).
 
 ## Utilidad
@@ -20,3 +26,6 @@ Reemplazar UART DMA por USART1 con ISR RX/UDRE y rings estáticos. ISR solo muev
 Hallazgos: AFRDOC-001, AFRDOC-005, AFRDOC-008. [Registro](../../../AutoFinalRobo2-Contracts/documentation/review/FINDINGS.md).
 
 Estado: lectura/copia o fuente parcial indicada; sin compilación, tests ni prueba física. La API detallada de origen está en el corpus AMDOC importado; no equivale a API AVR adaptada.
+
+
+AFR2-20261023-15: TWI AVR por IRQ y composición OLED/encoder/USART1 implementados en fuente, sin DMA ni Arduino. Ver docs/COMPOSICION.md y Contracts/changes/2026-10-23-15-robo2-atmega-ui.md. Sin builds/tests/validadores/flasheos; hardware y recursos finales pendientes.

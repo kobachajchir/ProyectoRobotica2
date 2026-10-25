@@ -1,0 +1,128 @@
+> **Fuente vigente AFR2-20261024-11:** encoder CLK/DT en D2/D3 por INT4/INT5, SW D42; cola y acciones en main. Hall PCINT2 A8–A15 con preferencia de captura por software, macro0. **Esta adaptación no está compilada ni probada**; build08 corresponde a la fuente anterior. ESP/Web conservan su estado10. [Ficha11](../changes/2026-10-24-11-encoder-hall-interrupts.md). Los estados previos inferiores son históricos.
+
+> Vigente **AFR2-20261024-04**: **modelo final incluido en ESP**, paquete **1.450.201 bytes gzip** (49,96% menos que los 2,90 MB iniciales). WebP, JS/CSS minificados y dependencias/componentes optimizados. Layout candidato: flash 4 MiB / LittleFS nominal 3 MiB, solicitado por el usuario; flash fisica sin identificar. Web full/esp y firmware ESP compilados; activos promovidos a data/dist. Sin navegador, imagen FS ni flasheo. Atmega y comandos conservan el estado de02. [Evidencia](../changes/2026-10-24-04-final-model-littlefs.md). Los estados previos inferiores son historicos.
+
+> Estado vigente **AFR2-20261024-02**, 24/10/2026: integración ROBO2/perfil2 + EX01v3 compilada en Atmega/ESP/Web; GOTO completo, configuración por catálogo compartido y jobs Wi-Fi OLED conectados. Paquete Web actualizado en ESP/data/dist. Sin pruebas de navegador/hardware ni flasheo; secuencias físicas mantienen bloqueo de memoria. Ver [matriz vigente](../contracts/EX01_ALIGNMENT_3.md) y [evidencia](../changes/2026-10-24-02-project-alignment.md). Los estados previos que siguen son históricos.
+
+# AutoFinalRobo2 - informe maestro
+
+Actualización ATmega19,24/10/2026: [fuente y límites](ATMEGA_IMPLEMENTACION_19.md),
+[matriz M01..M19](PLAN_ATMEGA.md) y [EX01 para ESP/Web](../contracts/ROBO2_PRODUCT_EXTENSION.md).
+M01..M18 cubiertos en fuente, sin build/ejecución; Hall/calibración/hardware y
+complemento ESP/Web pendientes. Perfil3/secuencias de21 permanece diseñado.
+Las menciones previas a menús/motores/sensores como fuente pendiente son históricas.
+
+
+Actualización ESP/Web AFR2-20261023-20: completado y compilado el flujo Wi-Fi independiente del Mega: scan asíncrono, estado real y persistencia elegible. [Ficha](../changes/2026-10-23-20-wifi-esp-web.md) · [pendientes ESP sin enlace Mega](PLAN_ESP.md#pendientes-independientes-del-mega--afr2-20261023-20). UART/ROBO2, broker y ATmega no se editaron en esta ficha. Builds correctos, sin prueba radio/hardware ni flasheo; las afirmaciones de no compilación anteriores son históricas.
+
+Estado histórico AFR2-20261023-15: ROBO2/perfil2 sustituye UNER/perfil1 en fuente
+de ambos extremos; framing único compartido, ruta alto=emisor/bajo=receptor.
+AVR integra UART1/Timer0/TWI/I2C Manager/OLED/encoder en main.c. Backend ya
+escrito; faltan compilación, recursos reales, tiempos y hardware. Motores,
+sensores, STOP autoritativo, lease, Hall/GOTO, UI remota y menús completos siguen
+pendientes. No se ejecutaron builds/tests/validadores/flasheos. El texto anterior
+se conserva como evolución del proyecto. Leer [ficha15](../changes/2026-10-23-15-robo2-atmega-ui.md),
+[perfil2](../contracts/UART_PROFILE_2.md), [criterios comunes](../contracts/ROBO2_VALIDACION.md)
+y **[ESP/docs/PROTOCOLO_ROBO2.md](../../AutoFinalRobo2-ESP/docs/PROTOCOLO_ROBO2.md)**
+para retomar firmware ESP sin duplicar lo ya escrito.
+
+
+Fecha: 23 de octubre de 2026. Base de trabajo y migración; no firmware completo ni puesta en marcha. Proyecto independiente: las fuentes originales y su registro AMI no se modificaron.
+
+Estado vigente AFR2-20261023-11: ESP con HTTP/WS, LittleFS/Wi-Fi y broker UART en fuente; AVR con endpoint/USART1 y composición opcional de comunicaciones. [Ficha y límites](../changes/2026-10-23-11-esp-server-and-mega-link.md) · [Plan ESP](PLAN_ESP.md). Sustituye las menciones históricas al esqueleto ESP de este informe. Firmware nuevo sin compilar/probar; motores, sensores reales, lease, TWI e integración de producto pendientes. Web fuente ajustada para capacidades/STOP; bundle previo sin reconstruir.
+
+## Punto de entrada y cinco módulos en un Git
+
+Continuar desde [AutoFinalRobo2-Contracts](../../AutoFinalRobo2-Contracts/README.md). Allí están decisiones, pinout, contratos, pendientes y trazabilidad.
+
+| Módulo | Responsabilidad | Código e informe |
+| --- | --- | --- |
+| AutoFinalRobo2-Atmega | ATmega2560 C/avr-libc, cerebro y autoridad de movimiento | [Informe](../../AutoFinalRobo2-Atmega/INFORME_ADAPTACION.md), reference/f4/Core, src, include |
+| AutoFinalRobo2-ESP | ESP12S Arduino ESP8266, Wi-Fi/HTTP/WebSocket, LittleFS | [Informe](../../AutoFinalRobo2-ESP/INFORME_ADAPTACION.md), reference/esp01, src, data |
+| AutoFinalRobo2-Web | React + Vite, control, GOTO, pruebas, sensores y Wi-Fi | [Informe](../../AutoFinalRobo2-Web/INFORME_ADAPTACION.md), reference/web, src |
+| AutoFinalRobo2-Contracts | Contratos, hardware, pantallas y coordinación | [Inicio](../../AutoFinalRobo2-Contracts/README.md), contracts, hardware, documentation, changes |
+| AutoFinalRobo2-CAD | KiCad, pieza nueva y modelo completo del auto | [Inicio](../../AutoFinalRobo2-CAD/README.md), kicad, mecanica, reference, docs |
+
+Un único Git en D:/ProyectoRobotica2 administra cinco módulos, incluido AutoFinalRobo2-CAD. Origin privado: [kobachajchir/ProyectoRobotica2](https://github.com/kobachajchir/ProyectoRobotica2), rama remota main. Los cuatro historiales anteriores se conservan como ancestros y etiquetas; los metadatos originales están resguardados dentro de .git/legacy-repositories. Ver [organización y exclusiones](ESTRUCTURA_Y_GIT.md). No se crean dependencias Git ni escrituras hacia AutoMicro. [Estado de entrega](../../AutoFinalRobo2-Contracts/provenance/ENTREGA.md).
+
+## Arquitectura acordada
+
+Navegador React → JSON WebSocket /ws → ESP12S → UNER candidato por UART → ATmega2560. El Mega posee movimiento, sensores, odometría, seguridad y UI; ESP posee radio, archivos Web, traducción y correlación.
+
+- ATmega C sin Arduino ni DMA; interrupciones breves y máquinas de estados.
+- ESP con firmware propio Arduino y LittleFS, sin comandos AT ni WiFiEsp.
+- Cuatro motores Mecanum, cinco canales de línea, HC-SR04, OLED I2C y encoder de interfaz añadido. Sin MPU ni control de balance de dos ruedas.
+- I2C Manager como acceso único al bus; OLED es su único cliente.
+- Giro selecciona/ajusta, clic corto confirma, largo de SW abre menú; atrás solo por opción explícita de submenú. No existe botón menú separado.
+
+## Entrega y procedencia
+
+Se copiaron fuentes propias F4/ESP/Web, recursos y corpus documental de Contracts a reference/. Los ocho adjuntos están en Contracts/hardware/supplied; Documentacion/ original queda intacta. Extracciones PDF y figuras consultadas quedan como evidencia auxiliar.
+
+Hay informes junto al código y guías por subsistema. provenance/files.json registra hashes de origen/copia y transformaciones; origins.json distingue HEAD y checkout modificado. F4 tenía modificaciones locales previas: la copia no se presenta como un HEAD limpio. No se copiaron .git, dependencias instaladas, compilados ni preferencias Wi-Fi persistidas. Los defaults de credenciales identificados se vaciaron en las copias.
+
+La base fuente nueva incluye dibujo OLED, fuente 7x10 extraída del F4 en PROGMEM para AVR, envío por páginas con I2C Manager asíncrono, wrappers y eventos de encoder. Es parcial: faltan backend TWI AVR y composición real. ESP y Web incluyen esqueletos independientes que todavía no controlan el vehículo.
+
+La skill [afr2-screen-authoring](../../AutoFinalRobo2-Contracts/.agents/skills/afr2-screen-authoring/SKILL.md) guía nuevas pantallas y adaptaciones desde Contracts.
+
+## Reformas necesarias
+
+| Área | Evidencia de origen | Reforma |
+| --- | --- | --- |
+| UART/UNER | Parser separado; transporte F4 DMA | RX/TX por IRQ USART1, buffers estables, parser/dispatch en main, colas y timeout |
+| I2C/OLED | Define DMA existente; rama sin DMA bloquea | Backend TWI asíncrono, deadlines/NACK/STOP/recovery; no basta cambiar el define |
+| Pantallas | Wrappers, renderers, menús, OSK, permisos | Snapshots explícitos, navegación sin botón menú; quitar MPU/balance; portar por prioridad |
+| Encoder UI | encoder.c es mando de usuario | Adaptar CLK/DT/SW, largo exclusivo, Volver por ítem; no confundir con encoders de rueda |
+| Línea | Modelo F4 de ocho muestras y emisores | Cinco entradas OSOYOO A4..A0; confirmar tipo/polaridad; retirar tres IR de objetos |
+| HC-SR04 | Driver equivalente no localizado | TRIG/espera subida/espera bajada/timeout; D31 exige decisión de captura |
+| Motores | F4 diferencial de dos motores | Cuatro PWM, signos, rampas, inversión y cinemática Mecanum |
+| GOTO | Requiere MPU, balance y yaw | Nuevo planificador relativo por odometría; no simular MPU listo; deshabilitado hasta posición válida |
+| Hall por rueda | Sin cableado en manual; 11 PPR es hipótesis | Elegir pines/decodificación y comprobar carga IRQ, resolución/signos/niveles |
+| ESP/Web | Catálogo stm.*, balance, MPU | Capabilities, nuevos codecs de cuatro ruedas/ultrasonido y propietario robot |
+
+## Límites y conexión
+
+El [plan de recursos](../../AutoFinalRobo2-Contracts/hardware/RECURSOS_Y_TIEMPOS.md) contempla SRAM, interrupciones, PWM, UART, atomicidad y PROGMEM. Un framebuffer 128×64 ocupa 1024 bytes. Fuentes y tablas const del F4 no deben copiarse a SRAM AVR sin revisar su almacenamiento.
+
+El [pinout ampliado](../../AutoFinalRobo2-Contracts/hardware/PINOUT.md) propone SDA D20/SCL D21 y CLK D40/DT D41/SW D42. No afirma que ya estén conectados. VCC y GND externos serán comunes; identificar la tensión compatible con ambos módulos y sus pull-ups antes de cerrar el esquema.
+
+El [shield documentado](../hardware/WIFI_SHIELD.md) incorpora regulación/traducción declaradas y distingue selector E_RX/E_TX de puerto directo ESP de 3,3 V. Operación por D18/D19, sin jumpers a D4/D5 ni D0/D1. Para [carga con USB Mega](../hardware/FLASHING.md), D0→RX ESP y TX ESP→D1 requieren cruce físico y niveles correctos: reset no conecta USB con USART1 ni hace válido el emparejamiento normal del selector. Flash nominal 4 MiB según ficha; chip real, SPI y LittleFS siguen pendientes.
+
+## Continuación
+
+1. Cerrar hardware y recursos en Contracts.
+2. Implementar reloj/UART/TWI e integrar OLED/encoder.
+3. Cerrar contrato mínimo, enlazar Web/ESP/Mega con diagnóstico y STOP.
+4. Añadir sensores, motores, Hall, odometría, línea y GOTO.
+5. Portar pantallas con la skill y verificar cuando se autorice.
+
+[Plan detallado](../../AutoFinalRobo2-Contracts/docs/ROADMAP.md). No se ejecutaron builds, tests, validadores, flasheos ni pruebas físicas por instrucción del usuario. Copias e informes no acreditan compatibilidad.
+
+## Actualización de contexto: interfaz física y menús
+
+El usuario confirma SDA/SCL disponibles con esos rótulos en el shield. La nueva PCB usa un conector 1x5 para CLK/DT/SW/SDA/SCL y otro 1x2 para VCC/GND comunes, paso 2,54 mm; VCC numérica por identificar. La especificación vigente está en [PCB OLED/encoder](../hardware/PCB_OLED_ENCODER.md), y el [árbol de menús](../documentation/MENU_PLAN.md) amplía el diseño futuro sin cambiar el prototipo. KiCad/soporte3D se abordarán al recibir planos; fijación con dos tornillos y tuercas.
+
+Actualización AFR2-20261023-03: [evidencia Wi-Fi](../hardware/wifi-shield/INFORME_CARPETA.md) incorpora tres imágenes aportadas, ficha actual y Fritzing; [prompt de continuidad](PROMPT_CONTINUIDAD.md) consolida arquitectura, navegación y conexiones. El mapa UNO del proveedor no cambia SDA/SCL Mega D20/D21. Código de atmega/esp/web sin cambios.
+
+AFR2-20261023-04: [módulo CAD](../../AutoFinalRobo2-CAD/README.md) y Git único en la raíz. Insumos de CADS trasladados con inventario; documentos originales y fuentes de firmware/Web preservados. La estructura no acredita diseño adaptado ni pruebas. [Ficha](../changes/2026-10-23-04-cad-and-monorepo.md).
+
+AFR2-20261023-05: [plan 3D en Fusion](../../AutoFinalRobo2-CAD/docs/PLAN_MODELO_3D_FUSION.md), inventario/CAD de Internet y ensamble sin cables. Pieza nueva/soporte/PCB pendientes, espacio reservado, OLED 0,96 pulgadas y encoder KY-040 sin breakout/perilla como referencias. Origin privado ProyectoRobotica2 y main para continuar en otra PC; esta entrega no inicia el modelo.
+
+AFR2-20261023-14: Web adaptada en fuente con rail flotante de ST2026-Radal, modales comunes, Home ilustrada y visor OLED global sin datos simulados. [Ficha](../changes/2026-10-23-14-floating-web-shell.md), [interfaz](WEB_FLOATING_UI.md), [consumidor](../contracts/WEB_OLED_CONSUMER.md). Sin cambios firmware, builds, validadores, tests o renderizado; empaquetado previo no actualizado.
+
+AFR2-20261023-16: [inicio ST, logo sin contenedor y Sonner inferior derecho](../changes/2026-10-23-16-startup-and-unframed-logo.md). Fuente Web adaptada; original y procedencia en [web-startup.json](../provenance/web-startup.json). Firmware/API sin cambios; esta revisión no está compilada ni renderizada.
+
+AFR2-20261023-18: [intro/toast/mapa Control](../changes/2026-10-23-18-control-map-and-ui-polish.md), [perfil pose](../contracts/WEB_CONTROL_MAP.md). Web adaptada en fuente, sin build/render. Productores pose ESP/AVR pendientes; ningún cambio binario/capability por esta ficha. Modos y mapa comparten una consulta de estado.
+
+
+## Integración vigente — AFR2-20261024-01
+
+Revisadas fichas19/20/21. La Web21 ya contiene los cambios visuales/editor/simulador;
+Wi-Fi20 se conserva. La integración de firmware pendiente se adapta en fuente:
+ROBO2/perfil2 + EX01 v2, estado/pose, mando supervisado, framebuffer OLED y
+secuencias0x40..0x45 sin colisión con comandos de producto19.
+Sin nuevo build, validador, tests, flasheo o promoción LittleFS. Secuencias físicas
+permanecen bloqueadas por defecto hasta aprobar SRAM/pila y calibración real.
+Contrato en AutoFinalRobo2-Contracts/contracts/EX01_WEB_INTEGRATION.md y ficha
+AutoFinalRobo2-Contracts/changes/2026-10-24-01-firmware-web-integration.md.
+

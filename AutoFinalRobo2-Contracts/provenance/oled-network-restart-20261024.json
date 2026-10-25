@@ -1,0 +1,771 @@
+{
+  "changeId": "AFR2-20261024-08",
+  "date": "2026-10-24",
+  "origin": "User-selected AutoMicro F4, read-only; existing AFR2 code and authors preserved.",
+  "authorship": "Original resources/semantics by kobac and existing AFR2 authors; new AVR/ESP presentation transport, renderers and local restart integration adapted with Codex.",
+  "scope": "Atmega, ESP, Web, Contracts and root continuity note only. No CAD/reference edits, nested Git, commit or publication.",
+  "references": [
+    {
+      "path": "D:/AutoProyecto/FirmwareF4/Core/Src/oled_utils.c",
+      "use": "Diseño de avisos simples y Wi-Fi/AP, ventanas de texto y MenuScroll. Adaptación a snapshot/avr-libc, sin DMA/System.",
+      "sha256": "3b50bd2496ef9d1afae38608f62fb36f93dd525b00edd362fa58514f39bf17dd",
+      "modified": false
+    },
+    {
+      "path": "D:/AutoProyecto/FirmwareF4/Core/Src/fonts.c",
+      "use": "14recursos XBM seleccionados sin redibujarlos; autor kobac, acceso PROGMEM propio.",
+      "sha256": "ae39599174c06d70852ab2fd1f58aa820d233c0ba756bed34c8ee90ac48d7995",
+      "modified": false
+    },
+    {
+      "path": "D:/AutoProyecto/FirmwareF4/Core/Inc/fonts.h",
+      "use": "Identidad y dimensiones de recursos F4.",
+      "sha256": "82d728f8527f8f4a8cc684745e515b41f1b21a2051d63c3d4eb35ed97f08168e",
+      "modified": false
+    },
+    {
+      "path": "D:/AutoProyecto/FirmwareF4/Core/Src/menu_definition.c",
+      "use": "Iconos por opción y Volver, referencia de estructura.",
+      "sha256": "006707de3325e76d26a3794c12a3bfdb3446835657bcdc06f875213701644ad8",
+      "modified": false
+    },
+    {
+      "path": "D:/AutoProyecto/FirmwareF4/Core/Src/menusystem.c",
+      "use": "Contexto/selección y separación del render.",
+      "sha256": "305d434e463bd82700d50f6f2abff868e58facbc0a7b59bcc645b924ae7c1a96",
+      "modified": false
+    },
+    {
+      "path": "D:/AutoProyecto/FirmwareF4/Core/Src/notificationWrappers.c",
+      "use": "Cadena de reinicio/avisos, adaptada sin permisos PIN ni destinos STM.",
+      "sha256": "dbaf33ca963831b06c3fdce3c4c8504c067973c60f79909b92320709204dc172",
+      "modified": false
+    },
+    {
+      "path": "D:/AutoProyecto/FirmwareF4/Docs/numbered-connectivity-notifications-20261005.md",
+      "use": "Diferencia entre dispositivo Wi-Fi, transporte WS y documento Web; evidencia, no instrucciones.",
+      "sha256": "6fdc315ae46050cef1ac6a795f3abae0cfad407984eb536a15acda4ed256f8ea",
+      "modified": false
+    },
+    {
+      "path": "D:/ProyectoRobotica2/AutoFinalRobo2-Contracts/.agents/skills/afr2-screen-authoring/SKILL.md",
+      "use": "Skill obligatoria OLED: snapshot/renderer/I2C Manager, SW y Volver, documentación y límites.",
+      "sha256": "be0615ea5a7e1c09d1b48ac1f7e9c170aa6fb19d71d14b5a460907ca04e6447e",
+      "modified": false
+    }
+  ],
+  "resources": [
+    {
+      "source": "D:/AutoProyecto/FirmwareF4/Core/Src/fonts.c",
+      "symbol": "Icon_Info_bits",
+      "width": 16,
+      "height": 16,
+      "bytes": 32,
+      "sha256": "dd0c0518efb741eb05f4848a06115a20be2f914c0bdddbbcce012ddd2e210261",
+      "destination": "AutoFinalRobo2-Atmega/src/ui/afr2_icons.c",
+      "adaptation": "Literal XBM data retained. static/PROGMEM, pgm_read_byte, bounded aspect-preserving fit; no HAL/DMA.",
+      "author": "kobac"
+    },
+    {
+      "source": "D:/AutoProyecto/FirmwareF4/Core/Src/fonts.c",
+      "symbol": "Icon_Wifi_bits",
+      "width": 19,
+      "height": 16,
+      "bytes": 48,
+      "sha256": "203031110dba362789da15f42bebeec92d50ee6c8236808ba0c1292494ffda0b",
+      "destination": "AutoFinalRobo2-Atmega/src/ui/afr2_icons.c",
+      "adaptation": "Literal XBM data retained. static/PROGMEM, pgm_read_byte, bounded aspect-preserving fit; no HAL/DMA.",
+      "author": "kobac"
+    },
+    {
+      "source": "D:/AutoProyecto/FirmwareF4/Core/Src/fonts.c",
+      "symbol": "Icon_Volver_bits",
+      "width": 16,
+      "height": 16,
+      "bytes": 32,
+      "sha256": "667c842616af24c741478ed74371d334dbe2c290d4344bb4cc2f2d5ef3116c7b",
+      "destination": "AutoFinalRobo2-Atmega/src/ui/afr2_icons.c",
+      "adaptation": "Literal XBM data retained. static/PROGMEM, pgm_read_byte, bounded aspect-preserving fit; no HAL/DMA.",
+      "author": "kobac"
+    },
+    {
+      "source": "D:/AutoProyecto/FirmwareF4/Core/Src/fonts.c",
+      "symbol": "Icon_Sensors_bits",
+      "width": 14,
+      "height": 16,
+      "bytes": 32,
+      "sha256": "c077917be6e7c9668510dd938d85791569dbfa629aadbece0d7a9241b291e2b5",
+      "destination": "AutoFinalRobo2-Atmega/src/ui/afr2_icons.c",
+      "adaptation": "Literal XBM data retained. static/PROGMEM, pgm_read_byte, bounded aspect-preserving fit; no HAL/DMA.",
+      "author": "kobac"
+    },
+    {
+      "source": "D:/AutoProyecto/FirmwareF4/Core/Src/fonts.c",
+      "symbol": "Icon_Config_bits",
+      "width": 16,
+      "height": 16,
+      "bytes": 32,
+      "sha256": "075f5baa917f69e882ca13e731851eef278b5d8c8790660d48704d1c1fa9a2b6",
+      "destination": "AutoFinalRobo2-Atmega/src/ui/afr2_icons.c",
+      "adaptation": "Literal XBM data retained. static/PROGMEM, pgm_read_byte, bounded aspect-preserving fit; no HAL/DMA.",
+      "author": "kobac"
+    },
+    {
+      "source": "D:/AutoProyecto/FirmwareF4/Core/Src/fonts.c",
+      "symbol": "Icon_Refrescar_bits",
+      "width": 16,
+      "height": 16,
+      "bytes": 32,
+      "sha256": "9831bdda51404bcfeab5d1a7d7d849bd7625831d52c7942220ca20ee2d616dda",
+      "destination": "AutoFinalRobo2-Atmega/src/ui/afr2_icons.c",
+      "adaptation": "Literal XBM data retained. static/PROGMEM, pgm_read_byte, bounded aspect-preserving fit; no HAL/DMA.",
+      "author": "kobac"
+    },
+    {
+      "source": "D:/AutoProyecto/FirmwareF4/Core/Src/fonts.c",
+      "symbol": "Icon_Link_bits",
+      "width": 16,
+      "height": 16,
+      "bytes": 32,
+      "sha256": "95cd408efe47c9e7a0f5589c964bf7acfb4e0a429b0e7bc93832377528cbdf1e",
+      "destination": "AutoFinalRobo2-Atmega/src/ui/afr2_icons.c",
+      "adaptation": "Literal XBM data retained. static/PROGMEM, pgm_read_byte, bounded aspect-preserving fit; no HAL/DMA.",
+      "author": "kobac"
+    },
+    {
+      "source": "D:/AutoProyecto/FirmwareF4/Core/Src/fonts.c",
+      "symbol": "Icon_Encoder_bits",
+      "width": 13,
+      "height": 13,
+      "bytes": 26,
+      "sha256": "a940a13b257af6c17ce368db32c4523bb080b895adb99d28e7218c01aa64edb2",
+      "destination": "AutoFinalRobo2-Atmega/src/ui/afr2_icons.c",
+      "adaptation": "Literal XBM data retained. static/PROGMEM, pgm_read_byte, bounded aspect-preserving fit; no HAL/DMA.",
+      "author": "kobac"
+    },
+    {
+      "source": "D:/AutoProyecto/FirmwareF4/Core/Src/fonts.c",
+      "symbol": "Icon_Tool_bits",
+      "width": 16,
+      "height": 16,
+      "bytes": 32,
+      "sha256": "82cb51232f1866e479ded3af01a522a5f0451320c290093fab8b43b094aeaecb",
+      "destination": "AutoFinalRobo2-Atmega/src/ui/afr2_icons.c",
+      "adaptation": "Literal XBM data retained. static/PROGMEM, pgm_read_byte, bounded aspect-preserving fit; no HAL/DMA.",
+      "author": "kobac"
+    },
+    {
+      "source": "D:/AutoProyecto/FirmwareF4/Core/Src/fonts.c",
+      "symbol": "Icon_Smartphone_bits",
+      "width": 9,
+      "height": 16,
+      "bytes": 32,
+      "sha256": "0fd40078b3db8127e7459708ae75c2206e0d3427634da1ca955bf86421a72a2e",
+      "destination": "AutoFinalRobo2-Atmega/src/ui/afr2_icons.c",
+      "adaptation": "Literal XBM data retained. static/PROGMEM, pgm_read_byte, bounded aspect-preserving fit; no HAL/DMA.",
+      "author": "kobac"
+    },
+    {
+      "source": "D:/AutoProyecto/FirmwareF4/Core/Src/fonts.c",
+      "symbol": "Icon_APWifi_bits",
+      "width": 15,
+      "height": 16,
+      "bytes": 32,
+      "sha256": "ba0fdf750b747feee607b443b931d205d11a44fd5ba57d01c70aa301f7adbe40",
+      "destination": "AutoFinalRobo2-Atmega/src/ui/afr2_icons.c",
+      "adaptation": "Literal XBM data retained. static/PROGMEM, pgm_read_byte, bounded aspect-preserving fit; no HAL/DMA.",
+      "author": "kobac"
+    },
+    {
+      "source": "D:/AutoProyecto/FirmwareF4/Core/Src/fonts.c",
+      "symbol": "Icon_OperationWarning_bits",
+      "width": 16,
+      "height": 16,
+      "bytes": 32,
+      "sha256": "b737defcf10ceafc1be4122a2f92c602be64fd5c08a4b698fcf5242b966ee311",
+      "destination": "AutoFinalRobo2-Atmega/src/ui/afr2_icons.c",
+      "adaptation": "Literal XBM data retained. static/PROGMEM, pgm_read_byte, bounded aspect-preserving fit; no HAL/DMA.",
+      "author": "kobac"
+    },
+    {
+      "source": "D:/AutoProyecto/FirmwareF4/Core/Src/fonts.c",
+      "symbol": "Icon_Motor_bits",
+      "width": 16,
+      "height": 16,
+      "bytes": 32,
+      "sha256": "984a558620705c01343bf81358ba580f49b5205515cdc636b4c11dda0eea8dcb",
+      "destination": "AutoFinalRobo2-Atmega/src/ui/afr2_icons.c",
+      "adaptation": "Literal XBM data retained. static/PROGMEM, pgm_read_byte, bounded aspect-preserving fit; no HAL/DMA.",
+      "author": "kobac"
+    },
+    {
+      "source": "D:/AutoProyecto/FirmwareF4/Core/Src/fonts.c",
+      "symbol": "Icon_Prefs_bits",
+      "width": 16,
+      "height": 16,
+      "bytes": 32,
+      "sha256": "a5377f751297536c742828c5b2f9ec0180b6473ed220dabeaf43b722d2549492",
+      "destination": "AutoFinalRobo2-Atmega/src/ui/afr2_icons.c",
+      "adaptation": "Literal XBM data retained. static/PROGMEM, pgm_read_byte, bounded aspect-preserving fit; no HAL/DMA.",
+      "author": "kobac"
+    }
+  ],
+  "files": [
+    {
+      "path": "AutoFinalRobo2-Atmega/Makefile",
+      "bytes": 2075,
+      "sha256": "797a750268b149ff0edf25e10c01fcb59086a7e7d149abf2ac061b2f1c75d2e3",
+      "adaptation": "AFR2-08: red y avisos con snapshot/renderer puro, iconos PROGMEM, texto recortado/scroll, menús Volver y reinicio local, o documentación de esos cambios. Origen/autorías previas preservados.",
+      "previousRecordedSha256": "e714eb6ed56b27427416f038d4d008d6e16d771253cf6dee05d6afe846251d77",
+      "previousRecord": "AFR2-20261024-07"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/include/afr2_oled.h",
+      "bytes": 1812,
+      "sha256": "c19c80d890c98ff92ef07925d1ce462223fad406b7b6b71e905b71a0b52c0e6e",
+      "adaptation": "AFR2-08: red y avisos con snapshot/renderer puro, iconos PROGMEM, texto recortado/scroll, menús Volver y reinicio local, o documentación de esos cambios. Origen/autorías previas preservados."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/include/afr2_icons.h",
+      "bytes": 575,
+      "sha256": "8fa35bc5976d6ca27c35abe11dfbdbcd2410c236723b576ce303ee7106ee9c3f",
+      "adaptation": "AFR2-08: red y avisos con snapshot/renderer puro, iconos PROGMEM, texto recortado/scroll, menús Volver y reinicio local, o documentación de esos cambios. Origen/autorías previas preservados."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/include/afr2_screens.h",
+      "bytes": 3076,
+      "sha256": "77907906c128e2428f385406a5ead438d2f2df258f2ea256d10c8607a5dad173",
+      "adaptation": "AFR2-08: red y avisos con snapshot/renderer puro, iconos PROGMEM, texto recortado/scroll, menús Volver y reinicio local, o documentación de esos cambios. Origen/autorías previas preservados.",
+      "previousRecordedSha256": "994ec6cff887f81a9e4e3ec685422a6a932967ab3101f47df0626705bd8655c6",
+      "previousRecord": "AFR2-20261024-07"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/include/afr2_menu_catalog.h",
+      "bytes": 2763,
+      "sha256": "cdc9fb226a466249f11cd58096dacbc4086e001b03a754b51bee7d5ab21680e1",
+      "adaptation": "AFR2-08: red y avisos con snapshot/renderer puro, iconos PROGMEM, texto recortado/scroll, menús Volver y reinicio local, o documentación de esos cambios. Origen/autorías previas preservados.",
+      "previousRecordedSha256": "1a8cd343c17d1a2ac065480649ecd0a32b0e082f00c7cc9688d41d1341a72fd1",
+      "previousRecord": "AFR2-20261024-07"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/include/afr2_product.h",
+      "bytes": 4548,
+      "sha256": "d9ee59c5f40684fef5bb86a48a8132d3f355dce766866d31a9b34401e639dbce",
+      "adaptation": "AFR2-08: red y avisos con snapshot/renderer puro, iconos PROGMEM, texto recortado/scroll, menús Volver y reinicio local, o documentación de esos cambios. Origen/autorías previas preservados.",
+      "previousRecordedSha256": "b7bd06114a06f96861c334dba2a506f31b24154b23b5f0fe1c7755d4cd6a20c9",
+      "previousRecord": "AFR2-20261024-07"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/include/afr2_app.h",
+      "bytes": 1062,
+      "sha256": "864bf3c2bed3e6492dfeaad702fc8c1ebc19189d36d82cfa997bf14202a53bbf",
+      "adaptation": "AFR2-08: red y avisos con snapshot/renderer puro, iconos PROGMEM, texto recortado/scroll, menús Volver y reinicio local, o documentación de esos cambios. Origen/autorías previas preservados.",
+      "previousRecordedSha256": "c8594edac736d0fb84837a6c70e224bd879a0d86a821f67f358c6c9e69c6a14d",
+      "previousRecord": "AFR2-20261024-07"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/main.c",
+      "bytes": 3803,
+      "sha256": "17ac06d01a6660fc2d125ee0d1f83738b9514a25d4b82638efca64211706a802",
+      "adaptation": "AFR2-08: red y avisos con snapshot/renderer puro, iconos PROGMEM, texto recortado/scroll, menús Volver y reinicio local, o documentación de esos cambios. Origen/autorías previas preservados.",
+      "previousRecordedSha256": "e3a75c0559f6652c4f89509a7901f1d27cf6e003c49c5e4a5877fff86b5e3a0d",
+      "previousRecord": "AFR2-20261024-07"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/display/afr2_oled.c",
+      "bytes": 5579,
+      "sha256": "394bd0cc2c9cf2121bd7f920bc1e44c096ba7d2b2cd7ee1b2d04e1acb8ca36db",
+      "adaptation": "AFR2-08: red y avisos con snapshot/renderer puro, iconos PROGMEM, texto recortado/scroll, menús Volver y reinicio local, o documentación de esos cambios. Origen/autorías previas preservados."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/ui/afr2_icons.c",
+      "bytes": 6171,
+      "sha256": "9a72ea1221bf8b04ad8fb767773b492aef951a339b235994d323007702fa33f7",
+      "adaptation": "AFR2-08: red y avisos con snapshot/renderer puro, iconos PROGMEM, texto recortado/scroll, menús Volver y reinicio local, o documentación de esos cambios. Origen/autorías previas preservados."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/ui/afr2_network_screen.c",
+      "bytes": 4288,
+      "sha256": "2325db016325050e77e4f0bf033a0c2e0c754e7e633d9eccf4b365f10ea17f9b",
+      "adaptation": "AFR2-08: red y avisos con snapshot/renderer puro, iconos PROGMEM, texto recortado/scroll, menús Volver y reinicio local, o documentación de esos cambios. Origen/autorías previas preservados."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/ui/afr2_menu_catalog.c",
+      "bytes": 13585,
+      "sha256": "bff087c0d3f87194cc2cfbf729e64d131061272dcdd8c878e6b4d9395361edab",
+      "adaptation": "AFR2-08: red y avisos con snapshot/renderer puro, iconos PROGMEM, texto recortado/scroll, menús Volver y reinicio local, o documentación de esos cambios. Origen/autorías previas preservados.",
+      "previousRecordedSha256": "04d031bbc9746795b8326cf9405e716e66aa620725fd87b3d64dd126fa1a3d34",
+      "previousRecord": "AFR2-20261024-07"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/ui/afr2_screens.c",
+      "bytes": 11078,
+      "sha256": "05924ef35cc4b77559402502de7b4ecc391594db1535c135aeb60c7e7f3a9771",
+      "adaptation": "AFR2-08: red y avisos con snapshot/renderer puro, iconos PROGMEM, texto recortado/scroll, menús Volver y reinicio local, o documentación de esos cambios. Origen/autorías previas preservados.",
+      "previousRecordedSha256": "e9ed480363e456c980f452ed3f6bdc55fd19aa2de99e12b3c3f11e244a89654c",
+      "previousRecord": "AFR2-20261024-07"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/ui/afr2_sequence_screen.c",
+      "bytes": 2647,
+      "sha256": "29c21a31c609764be9f305b2d20e521be362f9b36277a5673a83a8d8af10952f",
+      "adaptation": "AFR2-08: red y avisos con snapshot/renderer puro, iconos PROGMEM, texto recortado/scroll, menús Volver y reinicio local, o documentación de esos cambios. Origen/autorías previas preservados.",
+      "previousRecordedSha256": "83fb62af9f9429536f58d50026c2f9dcefd1a44d61139cd8e17bd2baf3fbd9f4",
+      "previousRecord": "AFR2-20261024-07"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/services/afr2_network.c",
+      "bytes": 4766,
+      "sha256": "9b270a5abf3edeed0655fd94fc4fec61f8d99e01b6b2b0692b754227cf21ed72",
+      "adaptation": "AFR2-08: red y avisos con snapshot/renderer puro, iconos PROGMEM, texto recortado/scroll, menús Volver y reinicio local, o documentación de esos cambios. Origen/autorías previas preservados."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/services/afr2_app.c",
+      "bytes": 23217,
+      "sha256": "1ad49bb8453e23a9ede89d37ac23766122b8840ef8a948e822ed001fbe5fe6f4",
+      "adaptation": "AFR2-08: red y avisos con snapshot/renderer puro, iconos PROGMEM, texto recortado/scroll, menús Volver y reinicio local, o documentación de esos cambios. Origen/autorías previas preservados.",
+      "previousRecordedSha256": "d643642f56fe9e7a5284d2c7885614af36b2a201b045abdea02b191fca3af595",
+      "previousRecord": "AFR2-20261024-07"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/services/afr2_app_wire.c",
+      "bytes": 14979,
+      "sha256": "b61c07f15deadda128ee64ed01fce3effa3bfd58002717a1bd5ffc90d8f47080",
+      "adaptation": "AFR2-08: red y avisos con snapshot/renderer puro, iconos PROGMEM, texto recortado/scroll, menús Volver y reinicio local, o documentación de esos cambios. Origen/autorías previas preservados.",
+      "previousRecordedSha256": "5380c97646a996825a1661593b310d2873e4d47b1dbcd044ea57c5c8b127693d",
+      "previousRecord": "AFR2-20261024-07"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/README.md",
+      "bytes": 6536,
+      "sha256": "0c698a879a4fc24f2ccdc8b136b7761fd9ea8d5c6da5d423b0f38e2062391146",
+      "adaptation": "AFR2-08: red y avisos con snapshot/renderer puro, iconos PROGMEM, texto recortado/scroll, menús Volver y reinicio local, o documentación de esos cambios. Origen/autorías previas preservados.",
+      "previousRecordedSha256": "25ecfa1aca848fdbcf086ef13581df8276efaaac8590cbe3ec195d317cc13e27",
+      "previousRecord": "AFR2-20261024-07"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/INFORME_ADAPTACION.md",
+      "bytes": 8724,
+      "sha256": "5caec0f4930a5dad39bd3040d28a92f63e95e446b5e8e2eef7fa295c3d3eca4d",
+      "adaptation": "AFR2-08: red y avisos con snapshot/renderer puro, iconos PROGMEM, texto recortado/scroll, menús Volver y reinicio local, o documentación de esos cambios. Origen/autorías previas preservados.",
+      "previousRecordedSha256": "1022907e261163459a3b2a0c0102d7a24fc29634cee37ca0fdb4f01866e40177",
+      "previousRecord": "AFR2-20261024-07"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/docs/PRODUCTO_ATMEGA.md",
+      "bytes": 3269,
+      "sha256": "3db496c492bd5433f353adc8cbbe368d482e78308a384bb524c3a2d98b1f6155",
+      "adaptation": "AFR2-08: red y avisos con snapshot/renderer puro, iconos PROGMEM, texto recortado/scroll, menús Volver y reinicio local, o documentación de esos cambios. Origen/autorías previas preservados.",
+      "previousRecordedSha256": "bab8a2e42b1c93ef2eec88101726b469ddc1a79f55f6fb46727ef1843beedfc2",
+      "previousRecord": "AFR2-20261024-07"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/docs/COMUNICACION_ESP.md",
+      "bytes": 5469,
+      "sha256": "1cf0550624858f8f88e4f1ead5bea93eb4180f0b7112eb4f150e887d246c5af7",
+      "adaptation": "AFR2-08: red y avisos con snapshot/renderer puro, iconos PROGMEM, texto recortado/scroll, menús Volver y reinicio local, o documentación de esos cambios. Origen/autorías previas preservados.",
+      "previousRecordedSha256": "ee1181ab2dc65d0ec3bf91881d181007d8d6a945b4e682f2f90bb2e950181a8b",
+      "previousRecord": "AFR2-20261024-07"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/docs/API_NUEVA.md",
+      "bytes": 3995,
+      "sha256": "d1687a9d0dff6c2891931538d6ab0cd7a1798064ef4e06bc34a6c1013051aae8",
+      "adaptation": "AFR2-08: red y avisos con snapshot/renderer puro, iconos PROGMEM, texto recortado/scroll, menús Volver y reinicio local, o documentación de esos cambios. Origen/autorías previas preservados."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/docs/modules/screens.md",
+      "bytes": 2797,
+      "sha256": "f480f9caf795c2046165961b8e4931ec8acf9834d924e605534247494fbc869a",
+      "adaptation": "AFR2-08: red y avisos con snapshot/renderer puro, iconos PROGMEM, texto recortado/scroll, menús Volver y reinicio local, o documentación de esos cambios. Origen/autorías previas preservados."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/docs/modules/screens.json",
+      "bytes": 2273,
+      "sha256": "350f93da6c59a447088268dfdcea7e7217b48d44b5949b85f701d5e45a1f7003",
+      "adaptation": "AFR2-08: red y avisos con snapshot/renderer puro, iconos PROGMEM, texto recortado/scroll, menús Volver y reinicio local, o documentación de esos cambios. Origen/autorías previas preservados."
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/wifi_service.h",
+      "bytes": 1519,
+      "sha256": "515bbc8fb3f33a58121a734efa00982cebc8dc326dfc3453fd794d2dd1f8b0f1",
+      "adaptation": "AFR2-08: instantánea local de red/AP sin publicar claves, eventos SDK/HTTP/WS, cola/ACK EX01v5, job8 reinicio local y negociación/supervisión, o documentación de esos cambios. Origen/autorías previas preservados."
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/wifi_service.cpp",
+      "bytes": 7628,
+      "sha256": "09ca57cfd56026ce98efa4278a2e660bc5eea2fd61e8fa58bdd943b183a08318",
+      "adaptation": "AFR2-08: instantánea local de red/AP sin publicar claves, eventos SDK/HTTP/WS, cola/ACK EX01v5, job8 reinicio local y negociación/supervisión, o documentación de esos cambios. Origen/autorías previas preservados."
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/broker.h",
+      "bytes": 4798,
+      "sha256": "6b9db340ccf3f1da33ccc0db2dd9e250052d103072526c66138d297dd7dbb7cb",
+      "adaptation": "AFR2-08: instantánea local de red/AP sin publicar claves, eventos SDK/HTTP/WS, cola/ACK EX01v5, job8 reinicio local y negociación/supervisión, o documentación de esos cambios. Origen/autorías previas preservados.",
+      "previousRecordedSha256": "d73bc92bb732ee62932827528aba343bb00215af43f5261529aa0e63d1271394",
+      "previousRecord": "AFR2-20261024-07"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/broker.cpp",
+      "bytes": 20382,
+      "sha256": "05132b8d6ecb640a2fb2fb140c18a0df473f9214208734d8ed6b530891539bd0",
+      "adaptation": "AFR2-08: instantánea local de red/AP sin publicar claves, eventos SDK/HTTP/WS, cola/ACK EX01v5, job8 reinicio local y negociación/supervisión, o documentación de esos cambios. Origen/autorías previas preservados.",
+      "previousRecordedSha256": "beb5b9bafde9918dc359211ed817cca584851f1707fdfc3618d52dcc1a309ade",
+      "previousRecord": "AFR2-20261024-07"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/broker_network.cpp",
+      "bytes": 5498,
+      "sha256": "60a031d5541b70d8819c3b8baf331ff59cdb3a4d4c35b2f2206253881d45de84",
+      "adaptation": "AFR2-08: instantánea local de red/AP sin publicar claves, eventos SDK/HTTP/WS, cola/ACK EX01v5, job8 reinicio local y negociación/supervisión, o documentación de esos cambios. Origen/autorías previas preservados."
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/broker_wifi.cpp",
+      "bytes": 9654,
+      "sha256": "c95b9dac301ac585ece0e3834a263c8fc8ff7d14702d8b9f5e2644166ef1cde3",
+      "adaptation": "AFR2-08: instantánea local de red/AP sin publicar claves, eventos SDK/HTTP/WS, cola/ACK EX01v5, job8 reinicio local y negociación/supervisión, o documentación de esos cambios. Origen/autorías previas preservados.",
+      "previousRecordedSha256": "1f825b3a1b586319f1255e168885429da3f8e750af7e37e3ace2d6260a4dc84f",
+      "previousRecord": "AFR2-20261024-07"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/broker_product.cpp",
+      "bytes": 19520,
+      "sha256": "c9f357017d90729e850cafa730a71c0137ff1896db46ebc0dba585992abf6e19",
+      "adaptation": "AFR2-08: instantánea local de red/AP sin publicar claves, eventos SDK/HTTP/WS, cola/ACK EX01v5, job8 reinicio local y negociación/supervisión, o documentación de esos cambios. Origen/autorías previas preservados.",
+      "previousRecordedSha256": "8af2f874ec53d2731f8100cc2a02f9ce5cc65b7b3b6a3fe62cd4a2a9ab11f428",
+      "previousRecord": "AFR2-20261024-07"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/main.cpp",
+      "bytes": 4346,
+      "sha256": "fc91622057e5354980f9dc847e7b1063e7f04f3ef9df612be2ceb42f245346ec",
+      "adaptation": "AFR2-08: instantánea local de red/AP sin publicar claves, eventos SDK/HTTP/WS, cola/ACK EX01v5, job8 reinicio local y negociación/supervisión, o documentación de esos cambios. Origen/autorías previas preservados.",
+      "previousRecordedSha256": "0c1fee929bbd45e8e4ccd5368120b5a85d6bf412b844d995a1536aacbbc6f84d",
+      "previousRecord": "AFR2-20261024-07"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/mega_link.cpp",
+      "bytes": 11156,
+      "sha256": "f068afa0637a77374e1e1069999bd2009860cbe9c08001917b24f9f57633f136",
+      "adaptation": "AFR2-08: instantánea local de red/AP sin publicar claves, eventos SDK/HTTP/WS, cola/ACK EX01v5, job8 reinicio local y negociación/supervisión, o documentación de esos cambios. Origen/autorías previas preservados.",
+      "previousRecordedSha256": "2c39cd933a82896f8d1186a5c4b661f63bbb36affa74a8b8c48cc1d796b30aaa",
+      "previousRecord": "AFR2-20261024-07"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/README.md",
+      "bytes": 9555,
+      "sha256": "e0eb2ec8cac39da2fa1cd56fcac491ee23cc0afbdb9678d623e12e2a5bf67114",
+      "adaptation": "AFR2-08: instantánea local de red/AP sin publicar claves, eventos SDK/HTTP/WS, cola/ACK EX01v5, job8 reinicio local y negociación/supervisión, o documentación de esos cambios. Origen/autorías previas preservados.",
+      "previousRecordedSha256": "4cd71f0ae5f25f58258450cc998f6cf64774edbb4d7b279acb5551b51b2ed0ae",
+      "previousRecord": "AFR2-20261024-07"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/INFORME_ADAPTACION.md",
+      "bytes": 8952,
+      "sha256": "5aefdb8f4ec3e044fea8eb2ff6288fc06d979b107b36f223e51df8cfd4872266",
+      "adaptation": "AFR2-08: instantánea local de red/AP sin publicar claves, eventos SDK/HTTP/WS, cola/ACK EX01v5, job8 reinicio local y negociación/supervisión, o documentación de esos cambios. Origen/autorías previas preservados.",
+      "previousRecordedSha256": "c415c4e2ddd663f180098bd2ae173a820f4299dace721bb363af768e0ebeadbc",
+      "previousRecord": "AFR2-20261024-07"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/docs/ROBO2_EX01_ATMEGA.md",
+      "bytes": 2582,
+      "sha256": "d2c7421f885a5c900d4212ad8d38810226f08ad2ac70a034e017436026e1bf4b",
+      "adaptation": "AFR2-08: instantánea local de red/AP sin publicar claves, eventos SDK/HTTP/WS, cola/ACK EX01v5, job8 reinicio local y negociación/supervisión, o documentación de esos cambios. Origen/autorías previas preservados.",
+      "previousRecordedSha256": "b9d3b93bec8082fef28d223931bc503a01a05eb514631198414fe41d69adafd3",
+      "previousRecord": "AFR2-20261024-07"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/docs/PROTOCOLO_ROBO2.md",
+      "bytes": 11243,
+      "sha256": "5d76487ac22ee00f07f13ba3c5e4da64b040dfa308dc2669c5e61e9a0a99dfb2",
+      "adaptation": "AFR2-08: instantánea local de red/AP sin publicar claves, eventos SDK/HTTP/WS, cola/ACK EX01v5, job8 reinicio local y negociación/supervisión, o documentación de esos cambios. Origen/autorías previas preservados."
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/docs/modules/uart.md",
+      "bytes": 2435,
+      "sha256": "6223b08b50eac4ce026214e5b6c188b8a8de7d88442d11eaa5c2d5f5f84827a3",
+      "adaptation": "AFR2-08: instantánea local de red/AP sin publicar claves, eventos SDK/HTTP/WS, cola/ACK EX01v5, job8 reinicio local y negociación/supervisión, o documentación de esos cambios. Origen/autorías previas preservados."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/docs/DocsPage.tsx",
+      "bytes": 7992,
+      "sha256": "9ea9aa023ec1ceef75ebed72e25849e237773ff488b392e04ced8b61bca888f0",
+      "adaptation": "AFR2-08: guía de red/avisos/reinicio OLED actualizada a v5; consumidor remoto de framebuffer conservado, sin duplicar renderer ni transportar clave AP por Web.",
+      "previousRecordedSha256": "40e6aa52d43092216863b473e1b8285c10fbadb8d535a66ab26aed99df035678",
+      "previousRecord": "AFR2-20261024-07"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/README.md",
+      "bytes": 19738,
+      "sha256": "f0599d29ae9ea6d4fb384b1f48e4aa4001ed22bfe7e0fa216e91597f28916010",
+      "adaptation": "AFR2-08: guía de red/avisos/reinicio OLED actualizada a v5; consumidor remoto de framebuffer conservado, sin duplicar renderer ni transportar clave AP por Web.",
+      "previousRecordedSha256": "b0fa9b2eb53e1c514eb69e2d0633bb7518ae4dfdbc231c3286bf556ef4e30601",
+      "previousRecord": "AFR2-20261024-07"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/INFORME_ADAPTACION.md",
+      "bytes": 18520,
+      "sha256": "fdcf6491c8e0e5a587602c0c186ecd5e6e156ff7f16f37f1c6fe564f4bf54a9c",
+      "adaptation": "AFR2-08: guía de red/avisos/reinicio OLED actualizada a v5; consumidor remoto de framebuffer conservado, sin duplicar renderer ni transportar clave AP por Web.",
+      "previousRecordedSha256": "df192eb89a01a6311d0bd34add658089d46fd565faf019f56ce56c734a338c31",
+      "previousRecord": "AFR2-20261024-07"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/afr2_network_wire.h",
+      "bytes": 660,
+      "sha256": "d77361e68c59a2329b4ca5f813c0089e5ea0dc1c7eb8832b8e16895eb62b1e26",
+      "adaptation": "AFR2-08: contrato v5 y estado real compilado/no probado, catálogo conservado, flujos, hallazgos, memoria/evidencia y procedencia. No aprobación de memoria/Hall ni CAD."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/afr2_product_wire.h",
+      "bytes": 2005,
+      "sha256": "67fcbe7bc292b546e724843d67fe3351e2592b059e203d6d8316aeb729d107c7",
+      "adaptation": "AFR2-08: contrato v5 y estado real compilado/no probado, catálogo conservado, flujos, hallazgos, memoria/evidencia y procedencia. No aprobación de memoria/Hall ni CAD.",
+      "previousRecordedSha256": "79ca9e62dbf9b35278c11827c6c409e535a34268661bdec578eb3f096344fc0c",
+      "previousRecord": "AFR2-20261024-07"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/afr2_build_info.h",
+      "bytes": 419,
+      "sha256": "227286bb6646513f93d18c457bd64598610846dd1fae8e33ba1906a7be47b3d3",
+      "adaptation": "AFR2-08: contrato v5 y estado real compilado/no probado, catálogo conservado, flujos, hallazgos, memoria/evidencia y procedencia. No aprobación de memoria/Hall ni CAD.",
+      "previousRecordedSha256": "5690e23367813510b716b0e761afe691dd2f5c241611177f996f036ac2e73226",
+      "previousRecord": "AFR2-20261024-07"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/EX01_NETWORK_UI_5.md",
+      "bytes": 7134,
+      "sha256": "9fe67fe0989582ffb1311b7b2765c899e77e3a52c1a8286ac04f1ffeb2f7bbe7",
+      "adaptation": "AFR2-08: contrato v5 y estado real compilado/no probado, catálogo conservado, flujos, hallazgos, memoria/evidencia y procedencia. No aprobación de memoria/Hall ni CAD."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/commands.json",
+      "bytes": 34558,
+      "sha256": "1e8a46391acfa88f0ae9400df74cdb60181496da682b35d02d9ed01cacd6e1ea",
+      "adaptation": "AFR2-08: contrato v5 y estado real compilado/no probado, catálogo conservado, flujos, hallazgos, memoria/evidencia y procedencia. No aprobación de memoria/Hall ni CAD.",
+      "previousRecordedSha256": "0b9d52e3c63ebd43a0451d2edacd46d5f9c01d01b7e7de84081c70d844cc64d7",
+      "previousRecord": "AFR2-20261024-07"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/capabilities.json",
+      "bytes": 7771,
+      "sha256": "b68bd3c0769b4389dc45c2cc66ca2c6bb5635b498989b0ce01c19f3db965fb04",
+      "adaptation": "AFR2-08: contrato v5 y estado real compilado/no probado, catálogo conservado, flujos, hallazgos, memoria/evidencia y procedencia. No aprobación de memoria/Hall ni CAD.",
+      "previousRecordedSha256": "531a23a36fdaf56efcbc1f4b86b33abf3546ff95a767b69e497f7b2f685fa8bd",
+      "previousRecord": "AFR2-20261024-07"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/PROTOCOL.md",
+      "bytes": 17464,
+      "sha256": "c7000a78193cb39a7a96a234653b7d45ec7db13e1eb2bd38f55f40558d806672",
+      "adaptation": "AFR2-08: contrato v5 y estado real compilado/no probado, catálogo conservado, flujos, hallazgos, memoria/evidencia y procedencia. No aprobación de memoria/Hall ni CAD.",
+      "previousRecordedSha256": "2d23b5811efd6dbcd7287cbc5b6c165a3490a161a04530f18b82e12fe7d1f5ff",
+      "previousRecord": "AFR2-20261024-07"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/WEB_OLED_CONSUMER.md",
+      "bytes": 6883,
+      "sha256": "786c486a2149ee9eaf654d26314cfdbd019830cc5497004c430b599561537fd4",
+      "adaptation": "AFR2-08: contrato v5 y estado real compilado/no probado, catálogo conservado, flujos, hallazgos, memoria/evidencia y procedencia. No aprobación de memoria/Hall ni CAD.",
+      "previousRecordedSha256": "cb478f1cdf226beb88d6e26f8d98223880269e0b2b3ae29664b2e30bebbac5b8",
+      "previousRecord": "AFR2-20261024-07"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/screens.json",
+      "bytes": 52889,
+      "sha256": "b7fc5dc1aee1c0b07589e005e7322690ecc627d846b6d19467ef2722fa978453",
+      "adaptation": "AFR2-08: contrato v5 y estado real compilado/no probado, catálogo conservado, flujos, hallazgos, memoria/evidencia y procedencia. No aprobación de memoria/Hall ni CAD.",
+      "previousRecordedSha256": "0ebc87f4396c949b694c255d0a41b119893a8776a1beb7cc8f6bb38cb43ff163",
+      "previousRecord": "AFR2-20261024-07"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/overlays/connections.json",
+      "bytes": 5776,
+      "sha256": "216fc991171ff59773d27367b34c7b245655c83ca8eba36a44cd14a94fe90635",
+      "adaptation": "AFR2-08: contrato v5 y estado real compilado/no probado, catálogo conservado, flujos, hallazgos, memoria/evidencia y procedencia. No aprobación de memoria/Hall ni CAD.",
+      "previousRecordedSha256": "294905bcdf6f439c973458b6d7021b98a92056fe6a8911e6c9128b6a07cb9983",
+      "previousRecord": "AFR2-20261024-07"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/MENU_PLAN.md",
+      "bytes": 5966,
+      "sha256": "d1bfef34bb0dbf5d5a701ea5b2514d64428838a1f90c4f8a985ba035dbe371f7",
+      "adaptation": "AFR2-08: contrato v5 y estado real compilado/no probado, catálogo conservado, flujos, hallazgos, memoria/evidencia y procedencia. No aprobación de memoria/Hall ni CAD.",
+      "previousRecordedSha256": "54ef993631154d528998b1378b0ac88b9b81be85a79e38a81e143d1eb0cf2ee8",
+      "previousRecord": "AFR2-20261024-07"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/NAVIGATION.md",
+      "bytes": 4311,
+      "sha256": "b4e382b5afd596d6192ee0dc578bd3d85925b6016c650206c3313b306b1fc124",
+      "adaptation": "AFR2-08: contrato v5 y estado real compilado/no probado, catálogo conservado, flujos, hallazgos, memoria/evidencia y procedencia. No aprobación de memoria/Hall ni CAD.",
+      "previousRecordedSha256": "a1eeb4d0d4c22f10d3fb7b539f33ead9db6723ad4b8c6669e4461761eadf0aad",
+      "previousRecord": "AFR2-20261024-07"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/SCREEN_SYSTEM.md",
+      "bytes": 5666,
+      "sha256": "2ea76114213f53fd1eeb80e56daad94ad946383b17342819979823a8eb996782",
+      "adaptation": "AFR2-08: contrato v5 y estado real compilado/no probado, catálogo conservado, flujos, hallazgos, memoria/evidencia y procedencia. No aprobación de memoria/Hall ni CAD.",
+      "previousRecordedSha256": "93c293b047b44f1b92f8f8f17a970515abc908f109bfa4208e3e6fda698fad5e",
+      "previousRecord": "AFR2-20261024-07"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/review/FINDINGS.md",
+      "bytes": 7069,
+      "sha256": "f9f4c414318c82d3c3329fe8cc9cf391765d098934bbc77d32c80a48b28a86fd",
+      "adaptation": "AFR2-08: contrato v5 y estado real compilado/no probado, catálogo conservado, flujos, hallazgos, memoria/evidencia y procedencia. No aprobación de memoria/Hall ni CAD."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/review/findings.json",
+      "bytes": 17340,
+      "sha256": "24e336f4d36b3cc40e4a10941ef57b41318ec711b0849853ed51f6b0d2f0b7d3",
+      "adaptation": "AFR2-08: contrato v5 y estado real compilado/no probado, catálogo conservado, flujos, hallazgos, memoria/evidencia y procedencia. No aprobación de memoria/Hall ni CAD."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/README.md",
+      "bytes": 11759,
+      "sha256": "54dbc3d60852fbf8356b31ecf1db78c35d6501e299b97db7dc42c468a1258fb3",
+      "adaptation": "AFR2-08: contrato v5 y estado real compilado/no probado, catálogo conservado, flujos, hallazgos, memoria/evidencia y procedencia. No aprobación de memoria/Hall ni CAD.",
+      "previousRecordedSha256": "2b4e476741ec7ebd0b4755dab205f744e5536e506477a211f5184630924fe6ff",
+      "previousRecord": "AFR2-20261024-07"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/INFORME_ADAPTACION.md",
+      "bytes": 6172,
+      "sha256": "2181e813b7f53b9c49bc7d9bc0cfc30f0a0874ec96ce39a72b3737d848f4fa6e",
+      "adaptation": "AFR2-08: contrato v5 y estado real compilado/no probado, catálogo conservado, flujos, hallazgos, memoria/evidencia y procedencia. No aprobación de memoria/Hall ni CAD.",
+      "previousRecordedSha256": "a0d5286a18ba07d5eeeddb61a04005371ccfb3ca29b392dc96654e900764e81a",
+      "previousRecord": "AFR2-20261024-07"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/CHANGELOG.md",
+      "bytes": 9489,
+      "sha256": "3026123de489732bf88e1de9c25885e81f4c24b34d7dcb568fcc49e25d21a525",
+      "adaptation": "AFR2-08: contrato v5 y estado real compilado/no probado, catálogo conservado, flujos, hallazgos, memoria/evidencia y procedencia. No aprobación de memoria/Hall ni CAD.",
+      "previousRecordedSha256": "1406f884c0f9aed9753a66be40158f23feb4e0767bbf50287c077c38df87d892",
+      "previousRecord": "AFR2-20261024-07"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/ESTADO_IMPLEMENTACION.md",
+      "bytes": 6629,
+      "sha256": "7b4849f4714a28cad891674c9615da172da5955b2d321cf3eecfe07650a5900d",
+      "adaptation": "AFR2-08: contrato v5 y estado real compilado/no probado, catálogo conservado, flujos, hallazgos, memoria/evidencia y procedencia. No aprobación de memoria/Hall ni CAD.",
+      "previousRecordedSha256": "f519b16738b0f2ea7681e3911be4f0c0fff7de9165cc0288736b20239fa56b70",
+      "previousRecord": "AFR2-20261024-07"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/PROMPT_CONTINUIDAD.md",
+      "bytes": 26436,
+      "sha256": "60616cce48bb28588b003f95c9f110fe56ff82b0ba67d8e4b25565bab78b9073",
+      "adaptation": "AFR2-08: contrato v5 y estado real compilado/no probado, catálogo conservado, flujos, hallazgos, memoria/evidencia y procedencia. No aprobación de memoria/Hall ni CAD.",
+      "previousRecordedSha256": "93797b57ac269469988877361236a123f3ebd15f56dd4c708aba4d5bf4508337",
+      "previousRecord": "AFR2-20261024-07"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/PLAN_ATMEGA.md",
+      "bytes": 8579,
+      "sha256": "0fcea050f8f138ac2d356d237fb5f44287aa3aee5ea00b7537bc7f58aab2ee9e",
+      "adaptation": "AFR2-08: contrato v5 y estado real compilado/no probado, catálogo conservado, flujos, hallazgos, memoria/evidencia y procedencia. No aprobación de memoria/Hall ni CAD.",
+      "previousRecordedSha256": "9c896beff894658ad153ce2aef5c0294972c826b3c186d31aaa5e9a5cb5896e1",
+      "previousRecord": "AFR2-20261024-07"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/PLAN_ESP.md",
+      "bytes": 10428,
+      "sha256": "3929cd59a0d5000ad9b807a63093f3ec15943712f3d7596a16ea9d06316dd2b3",
+      "adaptation": "AFR2-08: contrato v5 y estado real compilado/no probado, catálogo conservado, flujos, hallazgos, memoria/evidencia y procedencia. No aprobación de memoria/Hall ni CAD.",
+      "previousRecordedSha256": "fbee35e7db5e3bb1dd73d39ae61663a0d289a7ce1af9ef5f964c1c54f151d058",
+      "previousRecord": "AFR2-20261024-07"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/PLAN_WEB.md",
+      "bytes": 9257,
+      "sha256": "d3a397c0b7b95f6a9acf307ca7ba8e40dab2c680dda4429c233b9e91b1523ea9",
+      "adaptation": "AFR2-08: contrato v5 y estado real compilado/no probado, catálogo conservado, flujos, hallazgos, memoria/evidencia y procedencia. No aprobación de memoria/Hall ni CAD.",
+      "previousRecordedSha256": "f64a68c8123ed3a6bacd3d7e5e935a4609eda46fbaa88fc6aca92abd09240947",
+      "previousRecord": "AFR2-20261024-07"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/provenance/README.md",
+      "bytes": 3604,
+      "sha256": "cec9d720a47880b6ad8516302e584e3a8ab25894aa9cfa4075fef7b1f12b3765",
+      "adaptation": "AFR2-08: contrato v5 y estado real compilado/no probado, catálogo conservado, flujos, hallazgos, memoria/evidencia y procedencia. No aprobación de memoria/Hall ni CAD.",
+      "previousRecordedSha256": "37fa36d1a6470c255c8181f0e69788a142c20ae866a5b1ebef0992e7cc05f134",
+      "previousRecord": "AFR2-20261024-07"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/changes/2026-10-24-08-oled-network-restart.md",
+      "bytes": 3911,
+      "sha256": "8bb6b9efa76901d35318a4b3c4d8772cae6e041c84cb3fa924046cfbdf70d5ae",
+      "adaptation": "AFR2-08: contrato v5 y estado real compilado/no probado, catálogo conservado, flujos, hallazgos, memoria/evidencia y procedencia. No aprobación de memoria/Hall ni CAD."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-24-08/README.md",
+      "bytes": 1984,
+      "sha256": "8145f044d0cac312efdc1cf582d9c008b3dcc900e9f3087941fbc90ee5ec136f",
+      "adaptation": "AFR2-08: contrato v5 y estado real compilado/no probado, catálogo conservado, flujos, hallazgos, memoria/evidencia y procedencia. No aprobación de memoria/Hall ni CAD."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-24-08/manifest.json",
+      "bytes": 2562,
+      "sha256": "396d667adb55341349c9ac84147736a3befdaac0457e8dc172cde8c16ef23e44",
+      "adaptation": "AFR2-08: contrato v5 y estado real compilado/no probado, catálogo conservado, flujos, hallazgos, memoria/evidencia y procedencia. No aprobación de memoria/Hall ni CAD."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-24-08/summary.json",
+      "bytes": 4802,
+      "sha256": "26bb3a863ac7f8575dc8a6438669a1410beaf849bff502b2535dc1af42183810",
+      "adaptation": "AFR2-08: contrato v5 y estado real compilado/no probado, catálogo conservado, flujos, hallazgos, memoria/evidencia y procedencia. No aprobación de memoria/Hall ni CAD."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-24-08/atmega-build.txt",
+      "bytes": 2539,
+      "sha256": "e1d59dee317d8ec71fc968f5de6ed6e98a3629df46b996377d548a23bf6a3d17",
+      "adaptation": "AFR2-08: contrato v5 y estado real compilado/no probado, catálogo conservado, flujos, hallazgos, memoria/evidencia y procedencia. No aprobación de memoria/Hall ni CAD."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-24-08/esp-build.txt",
+      "bytes": 1826,
+      "sha256": "9e1bb8b7419d758c4d149b144057dc55be160a2c3d174e32e05ccbb9c92227d6",
+      "adaptation": "AFR2-08: contrato v5 y estado real compilado/no probado, catálogo conservado, flujos, hallazgos, memoria/evidencia y procedencia. No aprobación de memoria/Hall ni CAD."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-24-08/web-build.txt",
+      "bytes": 1574,
+      "sha256": "44107e2d1995b6eb5f3fa4c4029c01ee01094e996839c11fe086c1018b0f9d09",
+      "adaptation": "AFR2-08: contrato v5 y estado real compilado/no probado, catálogo conservado, flujos, hallazgos, memoria/evidencia y procedencia. No aprobación de memoria/Hall ni CAD."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-24-08/atmega-size.txt",
+      "bytes": 610,
+      "sha256": "671edfecc4d31eac1523ad5ee20873ebaa64b5c23aa0ad6393352c9b611c314c",
+      "adaptation": "AFR2-08: contrato v5 y estado real compilado/no probado, catálogo conservado, flujos, hallazgos, memoria/evidencia y procedencia. No aprobación de memoria/Hall ni CAD."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-24-08/avr-flash-resources.txt",
+      "bytes": 737,
+      "sha256": "b4f2915ae08a9a98d4019c3a6ec6d27f8b4c24d8efe51254a64a53beabb90cbb",
+      "adaptation": "AFR2-08: contrato v5 y estado real compilado/no probado, catálogo conservado, flujos, hallazgos, memoria/evidencia y procedencia. No aprobación de memoria/Hall ni CAD."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-24-08/avr-stack-frames.txt",
+      "bytes": 1843,
+      "sha256": "963446c807bf8db920b1f42d24b8f0f342c38219bd1d02fe08f2fad31ce9a004",
+      "adaptation": "AFR2-08: contrato v5 y estado real compilado/no probado, catálogo conservado, flujos, hallazgos, memoria/evidencia y procedencia. No aprobación de memoria/Hall ni CAD."
+    },
+    {
+      "path": "INFORME_MAESTRO.md",
+      "bytes": 12449,
+      "sha256": "dde684d097f0e7896d2cf1d016eac4d6108a24db0336fc1b848e1d52ca83f332",
+      "adaptation": "Puntero al estado08, historial anterior preservado."
+    }
+  ],
+  "verification": "Product/communication/library AVR, ESP candidate and Web package compiled. Source/artifact inspection only; no tests, independent validators, OLED/browser render, serial/radio/reset, FS image or flashing.",
+  "hardwareValidated": false,
+  "f4PixelParity": false,
+  "sequenceMemoryApproved": false,
+  "hallConnected": false,
+  "cadModified": false
+}

@@ -2,8 +2,8 @@
   "schema": "afr2-module-1",
   "id": "atmega:module/reference/f4/Core/Src/uner_core.c",
   "title": "Comandos, parser y transporte",
-  "responsibility": "Reutilizar parser de bytes, framing, cola, tablas de handlers y separación de transporte. UNER_CoreConfig permite aportar slots/pool; no hace falta HAL para el núcleo. uner_app.c es composición del robot anterior, no biblioteca neutra.",
-  "changes_required": "Reemplazar UART DMA por USART1 con ISR RX/UDRE y rings estáticos. ISR solo mueve bytes/contadores; PushByte/dispatch en main con presupuesto. Tratar overflow y resincronización. Reducir router/transportes/snapshots a lo necesario, conservar lifetime de payloads hasta ReleasePacket. Serializar LE con tipos de tamaño fijo y evitar shifts promocionados a int AVR de 16 bits. No copiar sizeof(struct). Elegir IDs/longitudes en Contracts antes de activar handlers. Retirar STM32 USB CDC, NRF, bootloader y comandos MPU/balance.",
+  "responsibility": "Active ROBO2/profile2 EX01v7 direct Web actions, no grant/token/access switch. Session/transaction/generation correlation and automatic liveness; legacy reference is historical.",
+  "changes_required": "Protocol/failure/runtime and physical acceptance pending. Hall/geometry/calibration/memory0 preserved; no permission to implement or enable.",
   "evidence": [
     "reference/f4/Core/Src/uner_core.c",
     "reference/f4/Core/Src/uner_handle.c",
@@ -15,5 +15,15 @@
     "AFRDOC-005",
     "AFRDOC-008"
   ],
-  "status": "source-documented-not-built"
+  "status": "source-compiled-runtime-unverified",
+  "updated_by": "AFR2-20261023-15",
+  "current_implementation": "ROBO2 perfil2 y composición main UART1/Timer0/TWI/Manager/OLED/encoder; cuatro vistas locales; sin tests/builds/validadores/hardware. Ver docs/COMPOSICION.md y docs/COMUNICACION_ESP.md.",
+  "delivery19": {
+    "change_id": "AFR2-20261023-19",
+    "date": "2026-10-24",
+    "status": "source-integrated-uncompiled-unverified",
+    "note": "Perfil2 preservado; extensión EX01 opt-in en afr2_app_wire. ESP no negocia EX01 todavía; no confundir perfil3/secuencias diseñado21.",
+    "contract": "../../../AutoFinalRobo2-Contracts/contracts/ROBO2_PRODUCT_EXTENSION.md"
+  },
+  "direct_control_change": "AFR2-20261025-01"
 }

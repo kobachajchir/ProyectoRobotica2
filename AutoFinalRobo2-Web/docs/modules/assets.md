@@ -1,3 +1,7 @@
+> AFR2-20261024-15: versión/fecha de empaquetado en manifiesto, identidad del índice y diagnóstico FS mostrados desde ESP; no hash recalculado en placa. Paquete ESP 1480773 bytes gzip, siete activos. [Contrato](../../../AutoFinalRobo2-Contracts/contracts/SYSTEM_INFO_FILESYSTEM_15.md). Cifras inferiores históricas.
+
+> Vigente **AFR2-20261024-04**: **modelo final incluido en ESP**, paquete **1.450.201 bytes gzip** (49,96% menos que los 2,90 MB iniciales). WebP, JS/CSS minificados y dependencias/componentes optimizados. Layout candidato: flash 4 MiB / LittleFS nominal 3 MiB, solicitado por el usuario; flash fisica sin identificar. Web full/esp y firmware ESP compilados; activos promovidos a data/dist. Sin navegador, imagen FS ni flasheo. Atmega y comandos conservan el estado de02. [Evidencia](../../../AutoFinalRobo2-Contracts/changes/2026-10-24-04-final-model-littlefs.md). Los estados previos inferiores son historicos.
+
 # Recursos, estilos y empaquetado
 
 [Maestro](../../../INFORME_MAESTRO.md) · [Informe del repositorio](../../INFORME_ADAPTACION.md).

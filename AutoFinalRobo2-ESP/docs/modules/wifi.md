@@ -20,3 +20,6 @@ Configurar identidad AutoFinalRobo2 y provisioning sin defaults privados. ESP12S
 Hallazgos: AFRDOC-007. [Registro](../../../AutoFinalRobo2-Contracts/documentation/review/FINDINGS.md).
 
 Estado: lectura/copia o fuente parcial indicada; sin compilación, tests ni prueba física. La API detallada de origen está en el corpus AMDOC importado; no equivale a API AVR adaptada.
+
+
+Fuente vigente AFR2-20261023-11: src/wifi_service.* y storage.* implementan STA/AP/AP_STA, scan, fallback y persistencia propia con temporal+rename y autoformat=false. Ver PROTOCOL.md secciones 8/9. El AP de aprovisionamiento inicial es abierto y no contiene secretos. Sin compilar ni probar; flash/layout siguen pendientes.

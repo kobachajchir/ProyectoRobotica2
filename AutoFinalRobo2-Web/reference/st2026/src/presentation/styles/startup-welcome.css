@@ -1,0 +1,156 @@
+.startup-welcome-content {
+  display: contents;
+}
+
+/* Keep existing modal scroll locks independent of the startup overlay. */
+body:has(.startup-welcome) {
+  overflow: hidden;
+}
+
+.startup-welcome {
+  --welcome-ink: color-mix(in srgb, var(--brand-accent) 28%, var(--color-navy-950));
+  --welcome-tint: color-mix(in srgb, var(--welcome-ink) 86%, transparent);
+  --welcome-halo: color-mix(in srgb, var(--brand-accent) 28%, transparent);
+  --welcome-sheen: color-mix(in srgb, var(--color-white) 8%, transparent);
+  --welcome-logo-enter: var(--motion-slow);
+  --welcome-hold: calc(var(--motion-slow) * 2);
+  --welcome-logo-exit: var(--motion-standard);
+  --welcome-veil-exit: var(--motion-slow);
+  --welcome-logo-exit-delay: calc(var(--welcome-logo-enter) + var(--welcome-hold));
+  --welcome-veil-exit-delay: calc(var(--welcome-logo-exit-delay) + var(--welcome-logo-exit) / 2);
+
+  position: fixed;
+  inset: 0;
+  z-index: 2147483647;
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow: hidden;
+  padding: max(1.5rem, env(safe-area-inset-top)) max(1.5rem, env(safe-area-inset-right)) max(1.5rem, env(safe-area-inset-bottom)) max(1.5rem, env(safe-area-inset-left));
+  background: var(--welcome-ink);
+  isolation: isolate;
+  overscroll-behavior: none;
+  touch-action: none;
+  -webkit-backdrop-filter: blur(24px) saturate(1.2);
+  backdrop-filter: blur(24px) saturate(1.2);
+  will-change: opacity;
+}
+
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .startup-welcome {
+    background: var(--welcome-tint);
+  }
+}
+
+.startup-welcome::before {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(ellipse at 50% 42%, var(--welcome-halo), transparent 64%),
+    linear-gradient(135deg, var(--welcome-sheen), transparent 45%);
+  content: "";
+  pointer-events: none;
+}
+
+.startup-welcome__logo {
+  width: min(76vw, 32rem);
+  max-width: 100%;
+  opacity: 0;
+  transform: scale(0.97);
+  will-change: opacity, transform;
+}
+
+.startup-welcome__logo img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+/* 300ms entrance + 600ms hold; the veil finishes its fade at 1300ms. */
+.startup-welcome[data-ready="true"] {
+  animation: startup-welcome-veil-out var(--welcome-veil-exit) var(--ease-enter) var(--welcome-veil-exit-delay) forwards;
+}
+
+.startup-welcome[data-ready="true"] .startup-welcome__logo {
+  animation:
+    startup-welcome-logo-in var(--welcome-logo-enter) var(--ease-enter) both,
+    startup-welcome-logo-out var(--welcome-logo-exit) var(--ease-enter) var(--welcome-logo-exit-delay) forwards;
+}
+
+@keyframes startup-welcome-logo-in {
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes startup-welcome-logo-out {
+  from { opacity: 1; transform: scale(1); }
+  to { opacity: 0; transform: scale(0.97); }
+}
+
+@keyframes startup-welcome-veil-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes startup-welcome-logo-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes startup-welcome-logo-fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+/* Desktop holds the existing welcome until startup/shutdown work completes. */
+.startup-welcome[data-activity="true"] {
+  z-index: 2147483000;
+  animation: startup-welcome-logo-fade-in var(--motion-standard) var(--ease-enter) both;
+}
+.startup-welcome[data-activity="true"][data-active="false"] {
+  animation: startup-welcome-veil-out var(--motion-slow) var(--ease-enter) forwards;
+  pointer-events: none;
+}
+.startup-welcome__activity { display: grid; justify-items: center; gap: 2.5rem; width: min(76vw, 32rem); }
+.startup-welcome__activity .startup-welcome__logo { width: 100%; }
+.startup-welcome[data-activity="true"][data-ready="true"] .startup-welcome__logo {
+  animation: startup-welcome-logo-in var(--welcome-logo-enter) var(--ease-enter) both;
+}
+.startup-welcome__status { width: 100%; color: var(--text-on-strong); text-align: center; }
+.startup-welcome__status h1 { margin: 0 0 1rem; font-size: 1.125rem; font-weight: 600; letter-spacing: -.02em; }
+.startup-welcome__step { display: flex; align-items: center; justify-content: center; gap: .75rem; margin: 0; font-size: .9375rem; line-height: 1.5; }
+.startup-welcome__detail { max-width: 27rem; margin: .875rem auto 0; color: color-mix(in srgb, var(--text-on-strong) 72%, transparent); font-size: .8125rem; line-height: 1.6; }
+.startup-welcome__spinner { flex: 0 0 auto; width: 1rem; height: 1rem; border: 2px solid color-mix(in srgb, currentColor 25%, transparent); border-top-color: currentColor; border-radius: 50%; animation: startup-welcome-spin .8s linear infinite; }
+@keyframes startup-welcome-spin { to { transform: rotate(360deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .startup-welcome {
+    --welcome-logo-enter: var(--motion-fast);
+    --welcome-hold: var(--motion-standard);
+    --welcome-logo-exit: var(--motion-fast);
+    --welcome-veil-exit: var(--motion-fast);
+  }
+
+  /* These brief fades intentionally override the global motion reset. */
+  .startup-welcome[data-ready="true"] {
+    animation-duration: var(--welcome-veil-exit) !important;
+  }
+
+  .startup-welcome__logo {
+    transform: none;
+    will-change: opacity;
+  }
+
+  .startup-welcome[data-ready="true"] .startup-welcome__logo {
+    animation-name: startup-welcome-logo-fade-in, startup-welcome-logo-fade-out;
+    animation-duration: var(--welcome-logo-enter), var(--welcome-logo-exit) !important;
+  }
+  .startup-welcome[data-activity="true"][data-ready="true"] .startup-welcome__logo {
+    animation-name: startup-welcome-logo-fade-in;
+    animation-duration: var(--motion-fast) !important;
+  }
+  .startup-welcome__spinner { animation: none; }
+}

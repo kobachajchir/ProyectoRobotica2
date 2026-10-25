@@ -1,0 +1,35 @@
+
+> autofinalrobo2-web@0.2.0 build:esp
+> node tools/sync-oled-library.mjs && tsc -b && vite build --mode esp && node tools/package-web.mjs --profile esp && npm run copy:esp
+
+OLED library: 48 AVR nodes, 14 icons, 950 font bytes -> D:\ProyectoRobotica2\AutoFinalRobo2-Web\src\features\oled\generated\firmwareLibrary.ts
+vite v7.3.7 building client environment for esp...
+transforming...
+✓ 147 modules transformed.
+rendering chunks...
+[plugin vite:singlefile] 
+
+[plugin vite:singlefile] Inlining: bundle.js
+[plugin vite:singlefile] Inlining: style-DTkWoC_B.css
+[plugin vite:singlefile] NOTE: asset not inlined: .afr2-build.json
+[plugin vite:singlefile] NOTE: asset not inlined: brand/Logo-1024.webp
+[plugin vite:singlefile] NOTE: asset not inlined: brand/Logo-256.webp
+[plugin vite:singlefile] NOTE: asset not inlined: brand/favicon.webp
+[plugin vite:singlefile] NOTE: asset not inlined: models/AutoFinalRobo2.glb
+[plugin vite:singlefile] NOTE: asset not inlined: draco/draco_decoder.wasm
+dist/.afr2-build.json                 0.02 kB
+dist/brand/favicon.webp               2.95 kB
+dist/brand/Logo-256.webp             23.05 kB
+dist/draco/draco_wasm_wrapper.js     58.57 kB
+dist/draco/draco_decoder.wasm       192.42 kB
+dist/brand/Logo-1024.webp           204.69 kB
+dist/models/AutoFinalRobo2.glb      827.23 kB
+dist/index.html                   1,732.51 kB
+✓ built in 16.09s
+[AutoFinalRobo2-Web] Publicación por archivos (EPERM); manifest escrito al final.
+[AutoFinalRobo2-Web] Paquete esp generado (7 archivos, 1481675 bytes gzip; estimación FS 1572864 bytes).
+
+> autofinalrobo2-web@0.2.0 copy:esp
+> node tools/copy-web-to-esp.mjs
+
+[AutoFinalRobo2-Web] Activos promovidos a AutoFinalRobo2-ESP/data/dist (7 archivos).

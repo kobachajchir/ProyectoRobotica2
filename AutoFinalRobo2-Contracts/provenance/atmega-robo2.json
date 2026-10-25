@@ -1,0 +1,206 @@
+{
+  "schema": "afr2-adaptations-1",
+  "change_id": "AFR2-20261023-15",
+  "date": "2026-10-23",
+  "verification": "source-only; no builds/tests/validators/flashing/hardware",
+  "authorship": "No se sustituyen autores/licencias históricos. Referencias originales preservadas y hashed. SSD1306 conserva Andriy Honcharenko/Roberto Benjami/Koba en su original; nuevos backends son reimplementación para AVR, no una atribución de esos autores.",
+  "reference_hashes": [
+    {
+      "path": "AutoFinalRobo2-Atmega/reference/f4/Core/Src/uner_core.c",
+      "sha256": "c4f768dfe3bfd01a1e2e7ab5b4949a0e76dbe797c66acf26750de931740bd058"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/reference/f4/Core/Inc/uner_v2.h",
+      "sha256": "d0282827fc27ebebc6c8482d2374df7c9bd61c3d9d52a3df6a5513259eb956c5"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/reference/f4/Core/Src/uner_handle.c",
+      "sha256": "886659f129dd7c84c088f99766d1dc856c99b46267b513fe16a4f0590430ddda"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/reference/f4/Core/Src/uner_transport_uart1_dma.c",
+      "sha256": "953e708b541afb0eaf7755e37d271eeac8f3f5fae29d12df00e4af60cf415ceb"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/reference/f4/Core/Src/ssd1306.c",
+      "sha256": "cfa6982875c05ab593bf29c0a5bbe1710c825568f26fe89f0ae0dcb25f331411"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/reference/f4/Core/Inc/i2c_port.h",
+      "sha256": "0684895de834492c1d77501fecae0a4d75dbbd7e4843e01addd24a46bc3366b4"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/reference/f4/Core/Src/encoder.c",
+      "sha256": "42ac2a52138d2792f5fe87625ce710c49ad234698e1d175b6d4adb2fcff93d6c"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/reference/f4/Core/Src/screenWrappers.c",
+      "sha256": "617db2ed83da25f4696dc95cb5ee9963b2257f7116c531142c7cc914440c38de"
+    }
+  ],
+  "files": [
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/afr2_wire.h",
+      "sources": [
+        "AutoFinalRobo2-Atmega/reference/f4/Core/Src/uner_core.c",
+        "AutoFinalRobo2-Atmega/reference/f4/Core/Inc/uner_v2.h",
+        "AutoFinalRobo2-Atmega/reference/f4/Core/Src/uner_handle.c",
+        "AutoFinalRobo2-Atmega/reference/f4/Core/Src/uner_transport_uart1_dma.c"
+      ],
+      "adaptation": "ROBO2 de5bytes, dos tokens, versión/perfil propios, ruta emisor/receptor, parser compartido acotado y contadores. Conceptos UNER reimplementados, sin tabla F4.",
+      "status": "source-written-uncompiled-unverified"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/include/afr2_link.h",
+      "sources": [
+        "AutoFinalRobo2-Atmega/reference/f4/Core/Src/uner_core.c",
+        "AutoFinalRobo2-Atmega/reference/f4/Core/Inc/uner_v2.h",
+        "AutoFinalRobo2-Atmega/reference/f4/Core/Src/uner_handle.c",
+        "AutoFinalRobo2-Atmega/reference/f4/Core/Src/uner_transport_uart1_dma.c"
+      ],
+      "adaptation": "Endpoint ROBO2, ruta exacta, longitudes, sesión/transacción creciente, normalización snapshot y respuesta autoritativa sin hardware en handlers.",
+      "status": "source-written-uncompiled-unverified"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/services/afr2_link.c",
+      "sources": [
+        "AutoFinalRobo2-Atmega/reference/f4/Core/Src/uner_core.c",
+        "AutoFinalRobo2-Atmega/reference/f4/Core/Inc/uner_v2.h",
+        "AutoFinalRobo2-Atmega/reference/f4/Core/Src/uner_handle.c",
+        "AutoFinalRobo2-Atmega/reference/f4/Core/Src/uner_transport_uart1_dma.c"
+      ],
+      "adaptation": "Endpoint ROBO2, ruta exacta, longitudes, sesión/transacción creciente, normalización snapshot y respuesta autoritativa sin hardware en handlers.",
+      "status": "source-written-uncompiled-unverified"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/include/afr2_twi.h",
+      "sources": [
+        "AutoFinalRobo2-Atmega/reference/f4/Core/Src/ssd1306.c",
+        "AutoFinalRobo2-Atmega/reference/f4/Core/Inc/i2c_port.h"
+      ],
+      "adaptation": "Backend AVR nuevo de registros TWI. START/SLA/DATA/STOP IRQ, abort seguro, recovery open drain acotado y callbacks por Manager en main; no copia rama bloqueante ni DMA.",
+      "status": "source-written-uncompiled-unverified"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/platform/afr2_twi.c",
+      "sources": [
+        "AutoFinalRobo2-Atmega/reference/f4/Core/Src/ssd1306.c",
+        "AutoFinalRobo2-Atmega/reference/f4/Core/Inc/i2c_port.h"
+      ],
+      "adaptation": "Backend AVR nuevo de registros TWI. START/SLA/DATA/STOP IRQ, abort seguro, recovery open drain acotado y callbacks por Manager en main; no copia rama bloqueante ni DMA.",
+      "status": "source-written-uncompiled-unverified"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/platform/afr2_uart1.c",
+      "sources": [
+        "AutoFinalRobo2-Atmega/reference/f4/Core/Src/uner_transport_uart1_dma.c"
+      ],
+      "adaptation": "Rings IRQ AVR, barrera de error RX y publicación TX tras copia sin enmascarar todas las interrupciones; sustituye transporte DMA.",
+      "status": "source-written-uncompiled-unverified"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/include/afr2_board.h",
+      "sources": [],
+      "adaptation": "Composición propia C/avr-libc, board/tick compartidos, GPIO inactivo, OLED/Manager/TWI/encoder local y targets preparados sin ejecutar.",
+      "status": "source-written-uncompiled-unverified"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/platform/afr2_board.c",
+      "sources": [],
+      "adaptation": "Composición propia C/avr-libc, board/tick compartidos, GPIO inactivo, OLED/Manager/TWI/encoder local y targets preparados sin ejecutar.",
+      "status": "source-written-uncompiled-unverified"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/main.c",
+      "sources": [],
+      "adaptation": "Composición propia C/avr-libc, board/tick compartidos, GPIO inactivo, OLED/Manager/TWI/encoder local y targets preparados sin ejecutar.",
+      "status": "source-written-uncompiled-unverified"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/communication_main.c",
+      "sources": [],
+      "adaptation": "Composición propia C/avr-libc, board/tick compartidos, GPIO inactivo, OLED/Manager/TWI/encoder local y targets preparados sin ejecutar.",
+      "status": "source-written-uncompiled-unverified"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/Makefile",
+      "sources": [],
+      "adaptation": "Composición propia C/avr-libc, board/tick compartidos, GPIO inactivo, OLED/Manager/TWI/encoder local y targets preparados sin ejecutar.",
+      "status": "source-written-uncompiled-unverified"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/input/afr2_encoder_ui.c",
+      "sources": [
+        "AutoFinalRobo2-Atmega/reference/f4/Core/Src/encoder.c"
+      ],
+      "adaptation": "Conserva decoder AVR y exclusión largo/corto; mide desde flanco estabilizado y trata liberación al umbral largo como menú.",
+      "status": "source-written-uncompiled-unverified"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/mega_link.h",
+      "sources": [
+        "AutoFinalRobo2-Atmega/reference/f4/Core/Src/uner_core.c",
+        "AutoFinalRobo2-Atmega/reference/f4/Core/Inc/uner_v2.h"
+      ],
+      "adaptation": "Consume ROBO2 compartido, valida emisor/receptor/cuerpos/correlación, conserva TX parcial/STOP y proyecta fallo RX a MEGA_LINK_DOWN.",
+      "status": "source-written-uncompiled-unverified"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/mega_link.cpp",
+      "sources": [
+        "AutoFinalRobo2-Atmega/reference/f4/Core/Src/uner_core.c",
+        "AutoFinalRobo2-Atmega/reference/f4/Core/Inc/uner_v2.h"
+      ],
+      "adaptation": "Consume ROBO2 compartido, valida emisor/receptor/cuerpos/correlación, conserva TX parcial/STOP y proyecta fallo RX a MEGA_LINK_DOWN.",
+      "status": "source-written-uncompiled-unverified"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/broker.cpp",
+      "sources": [
+        "AutoFinalRobo2-Atmega/reference/f4/Core/Src/uner_core.c",
+        "AutoFinalRobo2-Atmega/reference/f4/Core/Inc/uner_v2.h"
+      ],
+      "adaptation": "Consume ROBO2 compartido, valida emisor/receptor/cuerpos/correlación, conserva TX parcial/STOP y proyecta fallo RX a MEGA_LINK_DOWN.",
+      "status": "source-written-uncompiled-unverified"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/docs/PROTOCOLO_ROBO2.md",
+      "sources": [],
+      "adaptation": "Documentación de lo escrito y contrato de envío/recepción/validación por rol, con límites/presupuestos/pendientes explícitos y casos no ejecutados.",
+      "status": "source-written-uncompiled-unverified"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/docs/COMUNICACION_ESP.md",
+      "sources": [],
+      "adaptation": "Documentación de lo escrito y contrato de envío/recepción/validación por rol, con límites/presupuestos/pendientes explícitos y casos no ejecutados.",
+      "status": "source-written-uncompiled-unverified"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/docs/COMPOSICION.md",
+      "sources": [],
+      "adaptation": "Documentación de lo escrito y contrato de envío/recepción/validación por rol, con límites/presupuestos/pendientes explícitos y casos no ejecutados.",
+      "status": "source-written-uncompiled-unverified"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/platform/INFORME_BACKEND_TWI.md",
+      "sources": [],
+      "adaptation": "Documentación de lo escrito y contrato de envío/recepción/validación por rol, con límites/presupuestos/pendientes explícitos y casos no ejecutados.",
+      "status": "source-written-uncompiled-unverified"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/UART_PROFILE_2.md",
+      "sources": [],
+      "adaptation": "Documentación de lo escrito y contrato de envío/recepción/validación por rol, con límites/presupuestos/pendientes explícitos y casos no ejecutados.",
+      "status": "source-written-uncompiled-unverified"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/ROBO2_VALIDACION.md",
+      "sources": [],
+      "adaptation": "Documentación de lo escrito y contrato de envío/recepción/validación por rol, con límites/presupuestos/pendientes explícitos y casos no ejecutados.",
+      "status": "source-written-uncompiled-unverified"
+    }
+  ],
+  "documentation_updates": [
+    "README/INFORME_ADAPTACION de Atmega/ESP/Contracts, maestro raíz/Contracts, informes de carpetas y guías de módulos, API, contrato general/perfil1 histórico, catálogo/capabilities, pantallas/connections, findings MD/JSON, recursos, decisiones, roadmap/continuidad/plan ESP, changelog y esta ficha."
+  ]
+}

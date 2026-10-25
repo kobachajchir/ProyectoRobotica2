@@ -1,0 +1,242 @@
+/* Only active sources: historical reference/ must not generate utilities. */
+@import "tailwindcss" source(none);
+@source "../";
+@source "../../index.html";
+@import "./tokens.css";
+@import "./workspace.css";
+@import "./startup.css";
+@import "./notifications.css";
+@import "./control-map.css";
+@import "./control-workspace.css";
+@import "./goto-simulator.css";
+@import "./control-refinements.css";
+@import "./manual-drive.css";
+@import "./oled-catalogue.css";
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100dvh;
+  background-color: var(--canvas);
+  background-image: var(--canvas-gradient);
+  background-attachment: fixed;
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background-color: var(--selection);
+  color: var(--text-strong);
+}
+
+#root {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Regla mobile-native: sin delay de 300ms en controles táctiles */
+button,
+a,
+input,
+select,
+textarea,
+[role="button"],
+[role="tab"] {
+  touch-action: manipulation;
+}
+
+/* Regla iOS Safari: inputs >= 16px para evitar auto-zoom al enfocar */
+input,
+select,
+textarea {
+  font-size: max(1rem, 16px);
+}
+
+/* Anillo de foco accesible de 2px con offset 2px */
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* Acciones iniciadas por teclado: 0ms sin animación superflua (§9.2) */
+html[data-input="keyboard"] *,
+html[data-input="keyboard"] *::before,
+html[data-input="keyboard"] *::after {
+  transition-duration: 0ms !important;
+}
+
+/* 6 densidades de vidrio autorizadas (máximo 1 backdrop-filter por región) */
+.afr2-glass-chrome {
+  background: var(--glass-chrome-bg);
+  border: 1px solid var(--glass-chrome-border);
+  box-shadow:
+    inset 0 1px 0 var(--glass-chrome-highlight),
+    var(--glass-chrome-shadow);
+  backdrop-filter: blur(var(--glass-chrome-blur)) saturate(var(--glass-chrome-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-chrome-blur)) saturate(var(--glass-chrome-saturate));
+}
+
+.afr2-glass-panel {
+  background: var(--glass-panel-bg);
+  border: 1px solid var(--glass-panel-border);
+  border-radius: var(--radius-lg);
+  box-shadow:
+    inset 0 1px 0 var(--glass-panel-highlight),
+    var(--glass-panel-shadow);
+  backdrop-filter: blur(var(--glass-panel-blur)) saturate(var(--glass-panel-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-panel-blur)) saturate(var(--glass-panel-saturate));
+}
+
+.afr2-glass-dense {
+  background: var(--glass-dense-bg);
+  border: 1px solid var(--glass-dense-border);
+  border-radius: var(--radius-md);
+  box-shadow:
+    inset 0 1px 0 var(--glass-dense-highlight),
+    var(--glass-dense-shadow);
+  backdrop-filter: blur(var(--glass-dense-blur)) saturate(var(--glass-dense-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-dense-blur)) saturate(var(--glass-dense-saturate));
+}
+
+/* Celdas internas dentro de un panel: NUNCA repiten backdrop-filter (§3) */
+.afr2-surface-cell {
+  background: var(--surface-subtle);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+}
+
+.afr2-glass-field {
+  background: var(--glass-field-bg);
+  border: 1px solid var(--glass-field-border);
+  border-radius: var(--radius-sm);
+  color: var(--text-strong);
+  transition:
+    background-color var(--duration-fast) var(--ease-standard),
+    border-color var(--duration-fast) var(--ease-standard),
+    box-shadow var(--duration-fast) var(--ease-standard);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .afr2-glass-field:hover:not(:disabled) {
+    background: var(--glass-field-bg-hover);
+    border-color: var(--glass-field-border-hover);
+  }
+}
+
+.afr2-glass-field:focus-visible {
+  background: var(--glass-field-bg-focus);
+  border-color: var(--focus);
+}
+
+.afr2-glass-popover {
+  background: var(--glass-popover-bg);
+  border: 1px solid var(--glass-popover-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--glass-popover-shadow);
+  backdrop-filter: blur(var(--glass-popover-blur)) saturate(var(--glass-popover-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-popover-blur)) saturate(var(--glass-popover-saturate));
+}
+
+.afr2-glass-dialog {
+  background: var(--glass-dialog-bg);
+  border: 1px solid var(--glass-dialog-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--glass-dialog-shadow);
+  backdrop-filter: blur(var(--glass-dialog-blur)) saturate(var(--glass-dialog-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-dialog-blur)) saturate(var(--glass-dialog-saturate));
+}
+
+/* Superficie de emergencia / STOP sobre surfaceSolid con borde bermellón fuerte (VIS-013) */
+.afr2-surface-emergency {
+  background: var(--surface-solid);
+  border: 2px solid var(--error);
+  color: var(--error);
+  box-shadow: 0 6px 18px var(--error-subtle);
+}
+
+/* Tipografía numérica tabular para telemetría, RSSI, edades y contadores */
+.afr2-tabular {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Feedback táctil de botones: scale(0.97) en 150ms ease-out */
+.afr2-pressable {
+  transition:
+    transform var(--duration-button-press) var(--ease-out),
+    background-color var(--duration-fast) var(--ease-standard),
+    border-color var(--duration-fast) var(--ease-standard),
+    color var(--duration-fast) var(--ease-standard),
+    box-shadow var(--duration-fast) var(--ease-standard);
+}
+
+.afr2-pressable:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .afr2-pressable:active:not(:disabled) {
+    transform: none;
+  }
+}
+
+/* Transición suave de página / vista (180ms ease-out) */
+@keyframes afr2-route-enter {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @keyframes afr2-route-enter {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+}
+
+.afr2-route-view {
+  animation: afr2-route-enter var(--duration-route) var(--ease-out) both;
+}
+
+/* Acordeón accesible con grid-template-rows: 0fr -> 1fr (200ms) */
+.afr2-accordion-grid {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--duration-accordion) var(--ease-out);
+}
+
+.afr2-accordion-grid[data-open="true"] {
+  grid-template-rows: 1fr;
+}
+
+.afr2-accordion-inner {
+  overflow: hidden;
+}
+
+/* Safe area padding para barra inferior móvil */
+.afr2-safe-bottom {
+  padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+}
+

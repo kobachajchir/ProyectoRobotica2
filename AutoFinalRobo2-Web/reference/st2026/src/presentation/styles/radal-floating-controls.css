@@ -1,0 +1,147 @@
+.radal-floating-controls {
+  position: fixed;
+  top: clamp(1rem, 2vw, 1.5rem);
+  left: clamp(1rem, 3vw, 3rem);
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  pointer-events: none;
+}
+
+.radal-floating-controls__back {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.875rem;
+  border: 1px solid color-mix(in srgb, var(--public-ink) 18%, transparent);
+  border-radius: var(--radius-pill);
+  background: var(--surface-elevated);
+  color: var(--public-ink);
+  box-shadow: var(--shadow-control);
+  font-size: 0.875rem;
+  font-weight: 650;
+  line-height: 1;
+  text-decoration: none;
+  pointer-events: auto;
+  transition: transform var(--motion-fast) var(--ease-standard), box-shadow var(--motion-fast) var(--ease-standard);
+}
+
+.radal-floating-controls__back:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card);
+}
+
+.radal-floating-controls__back > svg {
+  width: 1.125rem;
+  height: 1.125rem;
+  flex: none;
+}
+
+.radal-floating-controls__divider {
+  width: 1px;
+  height: 1.5rem;
+  background: currentColor;
+  opacity: 0.28;
+}
+
+.radal-floating-controls__logo {
+  display: block;
+  width: auto;
+  max-width: 5.5rem;
+  height: 1.375rem;
+  object-fit: contain;
+}
+
+.radal-floating-controls__theme.public-theme-toggle {
+  width: 2.75rem;
+  height: 2.75rem;
+  min-height: 2.75rem;
+  border: 1px solid color-mix(in srgb, var(--public-ink) 18%, transparent);
+  border-radius: var(--radius-pill);
+  background: var(--surface-elevated);
+  color: var(--public-ink);
+  box-shadow: var(--shadow-control);
+  pointer-events: auto;
+}
+
+.radal-floating-controls__theme.public-theme-toggle:hover {
+  background: var(--surface-elevated);
+  color: var(--public-ink);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card);
+}
+
+.radal-floating-controls__back:focus-visible,
+.radal-floating-controls__theme.public-theme-toggle:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 6px var(--surface-strong);
+}
+
+/* Opt-in variant using the public navigation's existing expansion motion. */
+.radal-floating-controls--expandable .radal-floating-controls__back,
+.radal-floating-controls--expandable .radal-floating-controls__theme.public-theme-toggle {
+  border-color: var(--border-strong);
+  background: var(--surface-glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  color: var(--text-primary);
+}
+
+.radal-floating-controls--expandable .radal-floating-controls__back {
+  gap: 0;
+  padding-inline: 1rem;
+}
+
+.radal-floating-controls--expandable .radal-floating-controls__label {
+  display: block;
+}
+
+.radal-floating-controls--expandable .radal-floating-controls__divider {
+  margin-inline: 0.875rem;
+}
+
+.radal-floating-controls--expandable .radal-floating-controls__logo {
+  max-width: 5.5rem;
+}
+
+@media (hover: none) {
+  .radal-floating-controls--expandable .expandable-back-link:not(:focus-visible) .expandable-back-link__label {
+    max-width: 0;
+    margin-left: 0;
+    opacity: 0;
+  }
+}
+
+@media (max-width: 520px) {
+  .radal-floating-controls:not(.radal-floating-controls--expandable) .radal-floating-controls__label {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .radal-floating-controls__back,
+  .radal-floating-controls__theme.public-theme-toggle {
+    transition: none;
+  }
+
+  .radal-floating-controls--expandable .expandable-back-link__label {
+    transition: none;
+  }
+
+  .radal-floating-controls__back:hover,
+  .radal-floating-controls__theme.public-theme-toggle:hover {
+    transform: none;
+  }
+}
+
+.radal-floating-controls .public-radal-logo__mark:not(img) { display: none; }
+@media (max-width: 520px) {
+  .radal-floating-controls .public-radal-logo__full:not(img) { display: none; }
+  .radal-floating-controls .public-radal-logo__mark:not(img) { display: inline-flex; }
+  .radal-floating-controls .public-radal-logo__mark img { width: 28px; height: 28px; object-fit: contain; }
+  .radal-floating-controls__back { flex-shrink: 0; }
+}

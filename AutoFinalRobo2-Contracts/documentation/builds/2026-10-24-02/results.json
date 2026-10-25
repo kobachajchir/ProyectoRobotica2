@@ -1,0 +1,96 @@
+{
+  "change_id": "AFR2-20261024-02",
+  "date": "2026-10-24",
+  "commands": {
+    "atmega": "make firmware communication-firmware library",
+    "esp": "python -m platformio run -e esp12s_candidate",
+    "web": "npm run build:esp"
+  },
+  "exit_codes": {
+    "atmega": 0,
+    "esp": 0,
+    "web": 0
+  },
+  "atmega": {
+    "text": 50258,
+    "data": 448,
+    "bss": 3808,
+    "noinit": 1,
+    "static_sram": 4257,
+    "sram_remaining_before_stack": 3935,
+    "max_own_function_frame": 152,
+    "total_stack_bound": null,
+    "sequence_memory_approved": false,
+    "hall_connected": false
+  },
+  "esp": {
+    "ram_static": 44396,
+    "ram_profile": 81920,
+    "program": 414281,
+    "program_profile": 1044464,
+    "physical_flash_identified": false,
+    "filesystem_layout_approved": false
+  },
+  "web": {
+    "assets": 6,
+    "gzip_bytes": 2897959,
+    "promoted_to_esp": true,
+    "browser_run": false
+  },
+  "not_performed": [
+    "tests",
+    "standalone validators",
+    "browser runtime",
+    "filesystem image",
+    "serial access",
+    "flashing",
+    "physical trials"
+  ],
+  "artifacts": [
+    {
+      "path": "AutoFinalRobo2-Atmega/build/afr2.elf",
+      "bytes": 79356,
+      "sha256": "a26612565401c4f34339faa34007a7d587dd88cf872c860001323412a98af4db"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/build/afr2.hex",
+      "bytes": 142635,
+      "sha256": "debb9ceb93f0ec75880ca0a464550a82fa744c4a3182f623f991f452d7f507c9"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/build/afr2-communication.elf",
+      "bytes": 17248,
+      "sha256": "5264c1649af512c11e1c7d451574972ab54818e722968fae8036c9e4fdc8ab6c"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/build/afr2-communication.hex",
+      "bytes": 10732,
+      "sha256": "810d3881ff184351b0ae44fe546c0e6a3a79742e01961ebee52e9bd613daa090"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/libafr2_ui.a",
+      "bytes": 131986,
+      "sha256": "4fb58284631197442a368700120e0fdbaa3395e5958c5d804a499166527e2a13"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/.pio/build/esp12s_candidate/firmware.elf",
+      "bytes": 1585608,
+      "sha256": "fa2b1bcb12f6b4741776662ae57196f16ba579b7765c6ed960e789796072c39c"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/.pio/build/esp12s_candidate/firmware.bin",
+      "bytes": 418432,
+      "sha256": "9cd8da28f3620c1c192b9f4a767f3118f9704a1f4d2d453035c4b80c0d0d1d52"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/artifacts/littlefs/dist/manifest.json",
+      "bytes": 2155,
+      "sha256": "2114e1157eb21a917f03f95f283bb32f612a934f4836eb5a08ec75617f8b973d"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/data/dist/manifest.json",
+      "bytes": 2155,
+      "sha256": "2114e1157eb21a917f03f95f283bb32f612a934f4836eb5a08ec75617f8b973d"
+    }
+  ]
+}

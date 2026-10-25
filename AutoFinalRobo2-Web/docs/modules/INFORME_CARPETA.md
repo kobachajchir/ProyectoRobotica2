@@ -18,3 +18,8 @@ Portar datos/componentes al nuevo contrato con unknown/capabilities, cuatro rued
 - [protocol.md](<protocol.md>)
 
 Estado: material preparado sin build, tests, validadores ni prueba física. Los hashes de fuentes copiadas están en [manifest](../../../AutoFinalRobo2-Contracts/provenance/files.json).
+
+- [goto-simulation.md](goto-simulation.md)
+- [sequence-editor.md](sequence-editor.md)
+
+- [manual-touch-drive.md](manual-touch-drive.md)

@@ -1,0 +1,251 @@
+{
+  "changeId": "AFR2-20261024-10",
+  "date": "2026-10-24",
+  "authorship": "Existing AFR2 map/model/components by their recorded authors retained; local planner, queue, interaction/FLIP/opacity and final layout adapted with Codex under explicit user direction.",
+  "previousMapEvidence": "provenance/control-system-sequence-20261024.json",
+  "references": [
+    {
+      "path": "C:/Users/kobac/.agents/skills/animate/SKILL.md",
+      "use": "User-invoked animation gate, tool choice, token curves, interruption, keyboard/reduced motion.",
+      "sha256": "6e7a0d28864bd9cb658913049df6944ce320a3646ac0e339ba8c7d99a9e764e5",
+      "modified": false
+    },
+    {
+      "path": "C:/Users/kobac/.agents/skills/animate/RECIPES.md",
+      "use": "Programmatic WAAPI recipe; adapted to scroll FLIP/opacity layers without new dependency.",
+      "sha256": "7b835d46748f13e05048ef1a7f3b49587a1b7fee4a72854c788992e184af9cf5",
+      "modified": false
+    },
+    {
+      "path": "D:/ProyectoRobotica2/AutoFinalRobo2-Web/src/features/control/sequences/mecanumKinematics.ts",
+      "use": "Existing local UID helper and kinematic semantics; unchanged10.",
+      "sha256": "4a97172fc69470ea881f792354cf7df3969143742a4f8068be79d4c54aee743f",
+      "modified": false
+    },
+    {
+      "path": "D:/ProyectoRobotica2/AutoFinalRobo2-Web/src/features/control/sequences/sequenceTypes.ts",
+      "use": "Reuse local editor64command/10minute bounds; unchanged10.",
+      "sha256": "59cf419236ff8cde66fda9d7b8c0be2e6faa1cb9aaf0f4b8efb12395ce20b52c",
+      "modified": false
+    },
+    {
+      "path": "D:/ProyectoRobotica2/AutoFinalRobo2-Web/src/components/three/RobotModel.tsx",
+      "use": "Final shared GLB and exact floor positioning; unchanged10.",
+      "sha256": "42e7ce14baff2c8f5a5d99b5b2cd75e6d8883caf607caf3fe200541c75703df2",
+      "modified": false
+    },
+    {
+      "path": "D:/ProyectoRobotica2/AutoFinalRobo2-Web/src/styles/tokens.css",
+      "use": "Existing identity and motion tokens; unchanged10.",
+      "sha256": "59a49ca95486ce3e5971ffabb7d488798438dba15aaad09b54c14a4e2b4caae9",
+      "modified": false
+    }
+  ],
+  "files": [
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/ControlPage.tsx",
+      "bytes": 39672,
+      "sha256": "d9acf40c266e0f5824360225981b5b0ba9fc9634337438765106ee56107cdb8a",
+      "adaptation": "10: local GOTO point/cardinal queue, bounded analytic simulation, map pick/waypoints/scale/cameras, active row/FLIP motion, final requested full-width map/lower list/lateral buttons, or docs. Existing AFR2 authors/assets retained."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/ControlMap.tsx",
+      "bytes": 6930,
+      "sha256": "b29d7c69c05edd285e82df0cd77a5385d686b08fa5ad3afd97643d60d1328f5f",
+      "adaptation": "10: local GOTO point/cardinal queue, bounded analytic simulation, map pick/waypoints/scale/cameras, active row/FLIP motion, final requested full-width map/lower list/lateral buttons, or docs. Existing AFR2 authors/assets retained."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/ControlMapScene.tsx",
+      "bytes": 6519,
+      "sha256": "bfaa1f18c488a13dc90eb2e00308c8154002a4c4c1faf21900c91095faaaea7e",
+      "adaptation": "10: local GOTO point/cardinal queue, bounded analytic simulation, map pick/waypoints/scale/cameras, active row/FLIP motion, final requested full-width map/lower list/lateral buttons, or docs. Existing AFR2 authors/assets retained."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/TopMap.tsx",
+      "bytes": 5744,
+      "sha256": "6346a30120fdd6588f7b40b61079ef0b449afed4e44613b4e3e0eb312e80d762",
+      "adaptation": "10: local GOTO point/cardinal queue, bounded analytic simulation, map pick/waypoints/scale/cameras, active row/FLIP motion, final requested full-width map/lower list/lateral buttons, or docs. Existing AFR2 authors/assets retained."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/controlMapTypes.ts",
+      "bytes": 705,
+      "sha256": "766a4079d46addfbc05b1ed434ea63b45d3ea7efe9fb846d6dde8725d5d2607a",
+      "adaptation": "10: local GOTO point/cardinal queue, bounded analytic simulation, map pick/waypoints/scale/cameras, active row/FLIP motion, final requested full-width map/lower list/lateral buttons, or docs. Existing AFR2 authors/assets retained."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/goto/gotoSimulation.ts",
+      "bytes": 5105,
+      "sha256": "caffff281ae3618925894151a5ef1e75f6b9c9e8494d07d787ea263d3d215f1c",
+      "adaptation": "10: local GOTO point/cardinal queue, bounded analytic simulation, map pick/waypoints/scale/cameras, active row/FLIP motion, final requested full-width map/lower list/lateral buttons, or docs. Existing AFR2 authors/assets retained."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/goto/GotoSimulatorPanel.tsx",
+      "bytes": 10094,
+      "sha256": "f74ed77e0d8fac6feff66a834e22c5697df1963e0efd4c79b942828e694a16c8",
+      "adaptation": "10: local GOTO point/cardinal queue, bounded analytic simulation, map pick/waypoints/scale/cameras, active row/FLIP motion, final requested full-width map/lower list/lateral buttons, or docs. Existing AFR2 authors/assets retained."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/goto/GotoCommandList.tsx",
+      "bytes": 3125,
+      "sha256": "bfe32b12e25427c2b1c82e17ddb4629e7092d760118ddd08e6a887c5f8693ab9",
+      "adaptation": "10: local GOTO point/cardinal queue, bounded analytic simulation, map pick/waypoints/scale/cameras, active row/FLIP motion, final requested full-width map/lower list/lateral buttons, or docs. Existing AFR2 authors/assets retained."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/goto/useActiveCommandScroll.ts",
+      "bytes": 3028,
+      "sha256": "324bc29a77d14ecb482005edca24e4ac2e77fe79f11d525fce767fad07dbcc91",
+      "adaptation": "10: local GOTO point/cardinal queue, bounded analytic simulation, map pick/waypoints/scale/cameras, active row/FLIP motion, final requested full-width map/lower list/lateral buttons, or docs. Existing AFR2 authors/assets retained."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/docs/DocsPage.tsx",
+      "bytes": 9692,
+      "sha256": "5c9149e04e6c868b330ec494490ddf60dda3636f35dd6d1e735b6a1c87cd6490",
+      "adaptation": "10: local GOTO point/cardinal queue, bounded analytic simulation, map pick/waypoints/scale/cameras, active row/FLIP motion, final requested full-width map/lower list/lateral buttons, or docs. Existing AFR2 authors/assets retained."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/styles/index.css",
+      "bytes": 6749,
+      "sha256": "748f50005a97b6d2a14bdd0a4f94aff08badb7f0468ea31f24c0726ee5e13296",
+      "adaptation": "10: local GOTO point/cardinal queue, bounded analytic simulation, map pick/waypoints/scale/cameras, active row/FLIP motion, final requested full-width map/lower list/lateral buttons, or docs. Existing AFR2 authors/assets retained."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/styles/goto-simulator.css",
+      "bytes": 6461,
+      "sha256": "b6c6dc14aa5f7434842e656e82e5d62884362aefcadec8a5265d41b645783fa6",
+      "adaptation": "10: local GOTO point/cardinal queue, bounded analytic simulation, map pick/waypoints/scale/cameras, active row/FLIP motion, final requested full-width map/lower list/lateral buttons, or docs. Existing AFR2 authors/assets retained."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/docs/modules/goto-simulation.md",
+      "bytes": 2028,
+      "sha256": "6e1635f2d70ae9f2fdf1bec08b2f63cce02c259d54cbd2823da919df030b8e3a",
+      "adaptation": "10: local GOTO point/cardinal queue, bounded analytic simulation, map pick/waypoints/scale/cameras, active row/FLIP motion, final requested full-width map/lower list/lateral buttons, or docs. Existing AFR2 authors/assets retained."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/README.md",
+      "bytes": 20895,
+      "sha256": "682ded37916c691ea82d3a5b9071fb73de77bf50ab907ae200f2584318faf1e5",
+      "adaptation": "10: local GOTO point/cardinal queue, bounded analytic simulation, map pick/waypoints/scale/cameras, active row/FLIP motion, final requested full-width map/lower list/lateral buttons, or docs. Existing AFR2 authors/assets retained."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/INFORME_ADAPTACION.md",
+      "bytes": 19650,
+      "sha256": "da71769df292b59af053321e9ac0d5b5c3b744461220975a5e1580c0094ec436",
+      "adaptation": "10: local GOTO point/cardinal queue, bounded analytic simulation, map pick/waypoints/scale/cameras, active row/FLIP motion, final requested full-width map/lower list/lateral buttons, or docs. Existing AFR2 authors/assets retained."
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/README.md",
+      "bytes": 10321,
+      "sha256": "568c23cfe056a9cdc9551eeb6914b8823e312c38e48f0156e68cdc1bef98a444",
+      "adaptation": "10: document latest local Web package; no firmware/wire changes or flash."
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/INFORME_ADAPTACION.md",
+      "bytes": 9718,
+      "sha256": "7e86bb2aa55bcfec0f7dc4eafba289b3dcf08a94e2dea088be66eb80235f5a1e",
+      "adaptation": "10: document latest local Web package; no firmware/wire changes or flash."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/WEB_CONTROL_MAP.md",
+      "bytes": 9698,
+      "sha256": "b54be5918d37daad8b84eb6b7bc48b95692d5f55be08d64ee7cdcb85140d9d74",
+      "adaptation": "10: Web-only simulation semantics, final requested disposition, real source/build/runtime limits, shared flow, continuity and evidence."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/overlays/connections.json",
+      "bytes": 6384,
+      "sha256": "dd2777d57ab0db060ca500706d901b9534f4214f9e822867ca955ff56731ff70",
+      "adaptation": "10: Web-only simulation semantics, final requested disposition, real source/build/runtime limits, shared flow, continuity and evidence."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/ESTADO_IMPLEMENTACION.md",
+      "bytes": 8103,
+      "sha256": "aa332deadb8527b1022196346d30697991b29d0a117edc5d1bf3f1aa86f9f4f3",
+      "adaptation": "10: Web-only simulation semantics, final requested disposition, real source/build/runtime limits, shared flow, continuity and evidence."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/PROMPT_CONTINUIDAD.md",
+      "bytes": 28228,
+      "sha256": "82eb639a01e27d2a26207d97e3e2a2b6aa23616bb70bced826b3aea188df8734",
+      "adaptation": "10: Web-only simulation semantics, final requested disposition, real source/build/runtime limits, shared flow, continuity and evidence."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/PLAN_WEB.md",
+      "bytes": 9565,
+      "sha256": "44e3a398efd2a8639af49c08eae9a8c8218785564e500f8d7674cd4512dfa67f",
+      "adaptation": "10: Web-only simulation semantics, final requested disposition, real source/build/runtime limits, shared flow, continuity and evidence."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/design-system/decisions.md",
+      "bytes": 15821,
+      "sha256": "eeb4347e6015c6e98382fcdb4b077cc87f22c009fc1459ed1768dab3a81d48f5",
+      "adaptation": "10: Web-only simulation semantics, final requested disposition, real source/build/runtime limits, shared flow, continuity and evidence."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/README.md",
+      "bytes": 12668,
+      "sha256": "e0b227e21a0ef874b341a3367a8625fab4a7558f590ae56e1c4849d3f4b1a1f7",
+      "adaptation": "10: Web-only simulation semantics, final requested disposition, real source/build/runtime limits, shared flow, continuity and evidence."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/INFORME_ADAPTACION.md",
+      "bytes": 7081,
+      "sha256": "32427f09f51c04a87b26104e36d0a411a4de5f9231d1b5dea6a4ba0d382bd070",
+      "adaptation": "10: Web-only simulation semantics, final requested disposition, real source/build/runtime limits, shared flow, continuity and evidence."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/CHANGELOG.md",
+      "bytes": 10100,
+      "sha256": "e5eb0ddb0443121c5e20b2ea818825ebbc44a59980d166edd48c71a13c2dc45b",
+      "adaptation": "10: Web-only simulation semantics, final requested disposition, real source/build/runtime limits, shared flow, continuity and evidence."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/provenance/README.md",
+      "bytes": 4321,
+      "sha256": "c9464003018e52df2db632284ad5ab64f8839287172414dc034083972c8eb3ed",
+      "adaptation": "10: Web-only simulation semantics, final requested disposition, real source/build/runtime limits, shared flow, continuity and evidence."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/changes/2026-10-24-10-goto-map-queue.md",
+      "bytes": 4127,
+      "sha256": "05237532fe4be9c880e209bdc38e9947f3b5b818f710623bca14f7bbac360720",
+      "adaptation": "10: Web-only simulation semantics, final requested disposition, real source/build/runtime limits, shared flow, continuity and evidence."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-24-10/README.md",
+      "bytes": 1592,
+      "sha256": "f0d6cac98103af3d7bf6a6c69b96ca60265b54e692948bec59e32be291514013",
+      "adaptation": "10: Web-only simulation semantics, final requested disposition, real source/build/runtime limits, shared flow, continuity and evidence."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-24-10/web-build.txt",
+      "bytes": 1754,
+      "sha256": "6e9ec417e749e40e5b8c04e8a4cdfeca5a5fd775a98872409cdf79d7696a691a",
+      "adaptation": "10: Web-only simulation semantics, final requested disposition, real source/build/runtime limits, shared flow, continuity and evidence."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-24-10/manifest.json",
+      "bytes": 2562,
+      "sha256": "b2d5c1c1bc1d65196db58d4c58f35b387f654efa7cf1d38b5dfcaf47f1b5fdfc",
+      "adaptation": "10: Web-only simulation semantics, final requested disposition, real source/build/runtime limits, shared flow, continuity and evidence."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-24-10/summary.json",
+      "bytes": 4049,
+      "sha256": "952f92c6b191beacb09473f8ae18b1e579105ae6c306089564a5b6e27c6f1c74",
+      "adaptation": "10: Web-only simulation semantics, final requested disposition, real source/build/runtime limits, shared flow, continuity and evidence."
+    },
+    {
+      "path": "INFORME_MAESTRO.md",
+      "bytes": 13178,
+      "sha256": "adf2355809fa14f32c2bc8a1ff8baa73251695057952e07864aebce1a456d261",
+      "adaptation": "Current10 pointer; previous history preserved."
+    }
+  ],
+  "verification": "TypeScript/Vite/Web packaging and source/artifact inspection. No suite, independent validators, browser/gesture/motion/physical evaluation, serial/reset, FS image or flashing.",
+  "browserVerified": false,
+  "physicalParityVerified": false,
+  "firmwareChanged": false,
+  "cadModified": false,
+  "committed": false,
+  "remotePublished": false
+}

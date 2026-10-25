@@ -1,0 +1,657 @@
+{
+  "changeId": "AFR2-20261024-07",
+  "date": "2026-10-24",
+  "authorship": "Autores originales de AFR2/AutoMicro/ST preservados; adaptaciones y nuevas piezas AFR2 con Codex por pedido humano. Sin escritura en referencias ni CAD.",
+  "scope": "Web, ESP, ATmega y Contracts bajo el único Git D:/ProyectoRobotica2. No se crean repositorios ni se publica/commitea.",
+  "references": [
+    {
+      "path": "D:/ST2026-Radal/src/presentation/components/modals/developer-modal.tsx",
+      "use": "Estructura del perfil de desarrollador, adaptada con identidad AFR2; solo lectura.",
+      "sha256": "d3c02a05b054931de53e1c78c1dab1bbdffbe0bab0f4b6026fff9de777de9982",
+      "modified": false
+    },
+    {
+      "path": "D:/ST2026-Radal/src/shared/app-info.ts",
+      "use": "Nombre/contacto/enlaces del desarrollador seleccionados por el usuario; solo lectura.",
+      "sha256": "a7902e26d8d3077a2d02ca5fdc8a6ae012db45f93561474d3125a7b6ada9d82d",
+      "modified": false
+    },
+    {
+      "path": "D:/AutoProyecto/Web ESP01/WebESP01AutoMicro2025/src/components/SystemResetActions.tsx",
+      "use": "Referencia de comandos de reinicio; no se copian destinos STM/perfiles ni autenticación.",
+      "sha256": "c3be368edab7c6d11f0dbc9b3d8d8cae62843930d6e8cd649b31351be5067fc3",
+      "modified": false
+    },
+    {
+      "path": "D:/AutoProyecto/Web ESP01/WebESP01AutoMicro2025/src/components/AboutProjectPanel.tsx",
+      "use": "Referencia de información de compilación/runtime por dispositivo; no se copian marcas ni protocolo UNER.",
+      "sha256": "2cba61476ead1a3bf356ca38c4b8fd0f84a7019acfe8a653302aec0ade41a951",
+      "modified": false
+    },
+    {
+      "path": "C:/Users/kobac/.agents/skills/emil-design-eng/SKILL.md",
+      "use": "Skill explícita: composición, ritmo, foco, teclado y comparación antes/después.",
+      "sha256": "a2ee9da0840c23b509a27e742edbc8f8fdb4416ca7d6ffde67d79023bfb8a5bf",
+      "modified": false
+    },
+    {
+      "path": "C:/Users/kobac/.agents/skills/apple-design/SKILL.md",
+      "use": "Skill explícita: jerarquía y movimiento funcional reducido.",
+      "sha256": "bcab965ec01d05101b817714f8ccaf68632d1697b822f65718e811119a77c049",
+      "modified": false
+    },
+    {
+      "path": "C:/Users/kobac/.codex/skills/visual-identity-system/SKILL.md",
+      "use": "Skill explícita: aplicar borrador propio autorizado, matriz de cobertura y límites reales.",
+      "sha256": "7b3ad28467992efd22cbb116befd582d103a760948a2aa24e0b0148819cab36e",
+      "modified": false
+    },
+    {
+      "path": "D:/ProyectoRobotica2/AutoFinalRobo2-Contracts/.agents/skills/afr2-screen-authoring/SKILL.md",
+      "use": "Skill OLED requerida: renderer puro, snapshot, SW/Volver e I2C Manager.",
+      "sha256": "be0615ea5a7e1c09d1b48ac1f7e9c170aa6fb19d71d14b5a460907ca04e6447e",
+      "modified": false
+    }
+  ],
+  "files": [
+    {
+      "path": "AutoFinalRobo2-Web/src/components/three/RobotModel.tsx",
+      "bytes": 1853,
+      "sha256": "42e7ce14baff2c8f5a5d99b5b2cd75e6d8883caf607caf3fe200541c75703df2",
+      "adaptation": "AFR2 Web: geometría precisa, Control/editor, STOP y ciclo de mando, Chevron compartido, conexión/sistema, desarrollador o documentación, según ficha07. Base y autorías previas preservadas."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/components/ui/Chevron.tsx",
+      "bytes": 359,
+      "sha256": "e587ee23c756528c0d5e3f452a6ff6daf79352de645d5160b1d6429f3532b09b",
+      "adaptation": "AFR2 Web: geometría precisa, Control/editor, STOP y ciclo de mando, Chevron compartido, conexión/sistema, desarrollador o documentación, según ficha07. Base y autorías previas preservadas."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/components/ui/Disclosure.tsx",
+      "bytes": 578,
+      "sha256": "21130347dd5dc3c2ea4f37e0d837b9e59239c0b054e699809b5681fd1769a28a",
+      "adaptation": "AFR2 Web: geometría precisa, Control/editor, STOP y ciclo de mando, Chevron compartido, conexión/sistema, desarrollador o documentación, según ficha07. Base y autorías previas preservadas."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/components/ui/FloatingModal.tsx",
+      "bytes": 8584,
+      "sha256": "3b1d2faa745ae4d4a5b58f95908be930915a8a9edcb2609e12e08d9b07d5c2e1",
+      "adaptation": "AFR2 Web: geometría precisa, Control/editor, STOP y ciclo de mando, Chevron compartido, conexión/sistema, desarrollador o documentación, según ficha07. Base y autorías previas preservadas."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/components/ui/StartupWelcome.tsx",
+      "bytes": 3083,
+      "sha256": "72606fb9b5cab0b16448874280c9b7119ce979287c3383cc374d993438628fe3",
+      "adaptation": "AFR2 Web: geometría precisa, Control/editor, STOP y ciclo de mando, Chevron compartido, conexión/sistema, desarrollador o documentación, según ficha07. Base y autorías previas preservadas."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/components/navigation/RouteNav.tsx",
+      "bytes": 11203,
+      "sha256": "94f5e5120df6de7c849468374b8428c3274b7a89bc5d58a32d0b47a0d7698851",
+      "adaptation": "AFR2 Web: geometría precisa, Control/editor, STOP y ciclo de mando, Chevron compartido, conexión/sistema, desarrollador o documentación, según ficha07. Base y autorías previas preservadas."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/app/App.tsx",
+      "bytes": 2620,
+      "sha256": "b61bfb0b55dc4a4a5cd2acee0a73b12e79cb49756f3c5e2936d0c0beae6bcce5",
+      "adaptation": "AFR2 Web: geometría precisa, Control/editor, STOP y ciclo de mando, Chevron compartido, conexión/sistema, desarrollador o documentación, según ficha07. Base y autorías previas preservadas."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/home/HomePage.tsx",
+      "bytes": 2651,
+      "sha256": "2c8978e72dafd2f68033b908658ac62b1c7019eec6f85d3366f2cbe07b1679ac",
+      "adaptation": "AFR2 Web: geometría precisa, Control/editor, STOP y ciclo de mando, Chevron compartido, conexión/sistema, desarrollador o documentación, según ficha07. Base y autorías previas preservadas."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/developer/DeveloperPage.tsx",
+      "bytes": 1159,
+      "sha256": "9f21f9f609f20f04edc63dc93033be32b43b7230a8d87de3ee3502b6652cf675",
+      "adaptation": "AFR2 Web: geometría precisa, Control/editor, STOP y ciclo de mando, Chevron compartido, conexión/sistema, desarrollador o documentación, según ficha07. Base y autorías previas preservadas."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/connection/ConnectionContext.tsx",
+      "bytes": 24720,
+      "sha256": "0df347ec8cab332d9de7ada2a58c56fb660d34215cf3b26dd0a31d377b36ec39",
+      "adaptation": "AFR2 Web: geometría precisa, Control/editor, STOP y ciclo de mando, Chevron compartido, conexión/sistema, desarrollador o documentación, según ficha07. Base y autorías previas preservadas."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/connection/SystemPanel.tsx",
+      "bytes": 3306,
+      "sha256": "b7012bcfa0e0b724284ef515ea48b17368d38af7729b40d2687cd8d515e92e2e",
+      "adaptation": "AFR2 Web: geometría precisa, Control/editor, STOP y ciclo de mando, Chevron compartido, conexión/sistema, desarrollador o documentación, según ficha07. Base y autorías previas preservadas."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/docs/DocsPage.tsx",
+      "bytes": 7093,
+      "sha256": "40e6aa52d43092216863b473e1b8285c10fbadb8d535a66ab26aed99df035678",
+      "adaptation": "AFR2 Web: geometría precisa, Control/editor, STOP y ciclo de mando, Chevron compartido, conexión/sistema, desarrollador o documentación, según ficha07. Base y autorías previas preservadas."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/ControlPage.tsx",
+      "bytes": 39064,
+      "sha256": "7d0d14cc4ad22912be862d565c7dfa01a58500031dfa3849a6aa383733e947d3",
+      "adaptation": "AFR2 Web: geometría precisa, Control/editor, STOP y ciclo de mando, Chevron compartido, conexión/sistema, desarrollador o documentación, según ficha07. Base y autorías previas preservadas."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/ControlMap.tsx",
+      "bytes": 5152,
+      "sha256": "c9d40471fbf3e35ff05fdb363c0ccc1f08c62a3e747a467476ca6162acb43f63",
+      "adaptation": "AFR2 Web: geometría precisa, Control/editor, STOP y ciclo de mando, Chevron compartido, conexión/sistema, desarrollador o documentación, según ficha07. Base y autorías previas preservadas."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/CalibrationPanel.tsx",
+      "bytes": 4811,
+      "sha256": "40e434c225480c38e14467c5ada5c1f8b5bb600d324b560d4e72f9ee05dd0a6d",
+      "adaptation": "AFR2 Web: geometría precisa, Control/editor, STOP y ciclo de mando, Chevron compartido, conexión/sistema, desarrollador o documentación, según ficha07. Base y autorías previas preservadas."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/sequences/SequenceEditorPanel.tsx",
+      "bytes": 72844,
+      "sha256": "08418e6d940eabec0271c841bc3baf309b81703654c212214a80212b725ffcbf",
+      "adaptation": "AFR2 Web: geometría precisa, Control/editor, STOP y ciclo de mando, Chevron compartido, conexión/sistema, desarrollador o documentación, según ficha07. Base y autorías previas preservadas."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/sequences/TimelineRow.tsx",
+      "bytes": 9671,
+      "sha256": "b743081e7c46045290b6e3f46d962b39ab731f5f393ef1de1c457f0fe5498414",
+      "adaptation": "AFR2 Web: geometría precisa, Control/editor, STOP y ciclo de mando, Chevron compartido, conexión/sistema, desarrollador o documentación, según ficha07. Base y autorías previas preservadas."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/sequences/MotorBlock.tsx",
+      "bytes": 8257,
+      "sha256": "fd05be128b05c7538ef172b73d16fb637d09d224908e3a966607d32525490abe",
+      "adaptation": "AFR2 Web: geometría precisa, Control/editor, STOP y ciclo de mando, Chevron compartido, conexión/sistema, desarrollador o documentación, según ficha07. Base y autorías previas preservadas."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/sequences/sequenceTypes.ts",
+      "bytes": 3887,
+      "sha256": "59cf419236ff8cde66fda9d7b8c0be2e6faa1cb9aaf0f4b8efb12395ce20b52c",
+      "adaptation": "AFR2 Web: geometría precisa, Control/editor, STOP y ciclo de mando, Chevron compartido, conexión/sistema, desarrollador o documentación, según ficha07. Base y autorías previas preservadas."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/sequences/mecanumKinematics.ts",
+      "bytes": 30250,
+      "sha256": "4a97172fc69470ea881f792354cf7df3969143742a4f8068be79d4c54aee743f",
+      "adaptation": "AFR2 Web: geometría precisa, Control/editor, STOP y ciclo de mando, Chevron compartido, conexión/sistema, desarrollador o documentación, según ficha07. Base y autorías previas preservadas."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/wifi/WifiPage.tsx",
+      "bytes": 11720,
+      "sha256": "f67becdc2f08c0fd09ba3d54bc4c7194f2510d5165f8bdcb01fe127de68e8d79",
+      "adaptation": "AFR2 Web: geometría precisa, Control/editor, STOP y ciclo de mando, Chevron compartido, conexión/sistema, desarrollador o documentación, según ficha07. Base y autorías previas preservadas."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/protocol/wsEnvelope.ts",
+      "bytes": 9620,
+      "sha256": "771c4eb7cfb2e6c8f618887a61884caca54b5eb48a85122174cafb8e55bfea31",
+      "adaptation": "AFR2 Web: geometría precisa, Control/editor, STOP y ciclo de mando, Chevron compartido, conexión/sistema, desarrollador o documentación, según ficha07. Base y autorías previas preservadas."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/styles/index.css",
+      "bytes": 6716,
+      "sha256": "dca4217e536f1b2e3c8e39346cef1a735ef560f920d309d96e2e7464a09e28b9",
+      "adaptation": "AFR2 Web: geometría precisa, Control/editor, STOP y ciclo de mando, Chevron compartido, conexión/sistema, desarrollador o documentación, según ficha07. Base y autorías previas preservadas."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/styles/workspace.css",
+      "bytes": 27953,
+      "sha256": "9fb27f238edd483c059eed51c4544cb0584a1d2f2e6da41b9f6110b67782cbcb",
+      "adaptation": "AFR2 Web: geometría precisa, Control/editor, STOP y ciclo de mando, Chevron compartido, conexión/sistema, desarrollador o documentación, según ficha07. Base y autorías previas preservadas."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/styles/control-workspace.css",
+      "bytes": 2790,
+      "sha256": "41cd89824ad79613edfdfcb9d154668d51386583e7d54c817ad813c6b72a82f3",
+      "adaptation": "AFR2 Web: geometría precisa, Control/editor, STOP y ciclo de mando, Chevron compartido, conexión/sistema, desarrollador o documentación, según ficha07. Base y autorías previas preservadas."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/README.md",
+      "bytes": 19335,
+      "sha256": "b0fa9b2eb53e1c514eb69e2d0633bb7518ae4dfdbc231c3286bf556ef4e30601",
+      "adaptation": "AFR2 Web: geometría precisa, Control/editor, STOP y ciclo de mando, Chevron compartido, conexión/sistema, desarrollador o documentación, según ficha07. Base y autorías previas preservadas."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/INFORME_ADAPTACION.md",
+      "bytes": 18117,
+      "sha256": "df192eb89a01a6311d0bd34add658089d46fd565faf019f56ce56c734a338c31",
+      "adaptation": "AFR2 Web: geometría precisa, Control/editor, STOP y ciclo de mando, Chevron compartido, conexión/sistema, desarrollador o documentación, según ficha07. Base y autorías previas preservadas."
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/broker_system.cpp",
+      "bytes": 4578,
+      "sha256": "d9182fc7b9f9faa1992b543583c612a69d755ebf680a7eb43bac2d639a313b99",
+      "adaptation": "AFR2 ESP: EX01v4, etiquetas OLED, servicios info/reset/boot y supervisión de reinicio/negociación, sin AT ni logs UART. Base y autorías previas preservadas."
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/broker.h",
+      "bytes": 4017,
+      "sha256": "d73bc92bb732ee62932827528aba343bb00215af43f5261529aa0e63d1271394",
+      "adaptation": "AFR2 ESP: EX01v4, etiquetas OLED, servicios info/reset/boot y supervisión de reinicio/negociación, sin AT ni logs UART. Base y autorías previas preservadas."
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/broker.cpp",
+      "bytes": 19778,
+      "sha256": "beb5b9bafde9918dc359211ed817cca584851f1707fdfc3618d52dcc1a309ade",
+      "adaptation": "AFR2 ESP: EX01v4, etiquetas OLED, servicios info/reset/boot y supervisión de reinicio/negociación, sin AT ni logs UART. Base y autorías previas preservadas."
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/broker_product.cpp",
+      "bytes": 19479,
+      "sha256": "8af2f874ec53d2731f8100cc2a02f9ce5cc65b7b3b6a3fe62cd4a2a9ab11f428",
+      "adaptation": "AFR2 ESP: EX01v4, etiquetas OLED, servicios info/reset/boot y supervisión de reinicio/negociación, sin AT ni logs UART. Base y autorías previas preservadas."
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/broker_wifi.cpp",
+      "bytes": 8865,
+      "sha256": "1f825b3a1b586319f1255e168885429da3f8e750af7e37e3ace2d6260a4dc84f",
+      "adaptation": "AFR2 ESP: EX01v4, etiquetas OLED, servicios info/reset/boot y supervisión de reinicio/negociación, sin AT ni logs UART. Base y autorías previas preservadas."
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/mega_link.h",
+      "bytes": 1969,
+      "sha256": "d465e4f7a07cde61f1cb54bf74bac864b48adb4bf1f69ef45360d229787f04fd",
+      "adaptation": "AFR2 ESP: EX01v4, etiquetas OLED, servicios info/reset/boot y supervisión de reinicio/negociación, sin AT ni logs UART. Base y autorías previas preservadas."
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/mega_link.cpp",
+      "bytes": 10978,
+      "sha256": "2c39cd933a82896f8d1186a5c4b661f63bbb36affa74a8b8c48cc1d796b30aaa",
+      "adaptation": "AFR2 ESP: EX01v4, etiquetas OLED, servicios info/reset/boot y supervisión de reinicio/negociación, sin AT ni logs UART. Base y autorías previas preservadas."
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/main.cpp",
+      "bytes": 4200,
+      "sha256": "0c1fee929bbd45e8e4ccd5368120b5a85d6bf412b844d995a1536aacbbc6f84d",
+      "adaptation": "AFR2 ESP: EX01v4, etiquetas OLED, servicios info/reset/boot y supervisión de reinicio/negociación, sin AT ni logs UART. Base y autorías previas preservadas."
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/README.md",
+      "bytes": 9065,
+      "sha256": "4cd71f0ae5f25f58258450cc998f6cf64774edbb4d7b279acb5551b51b2ed0ae",
+      "adaptation": "AFR2 ESP: EX01v4, etiquetas OLED, servicios info/reset/boot y supervisión de reinicio/negociación, sin AT ni logs UART. Base y autorías previas preservadas."
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/INFORME_ADAPTACION.md",
+      "bytes": 8462,
+      "sha256": "c415c4e2ddd663f180098bd2ae173a820f4299dace721bb363af768e0ebeadbc",
+      "adaptation": "AFR2 ESP: EX01v4, etiquetas OLED, servicios info/reset/boot y supervisión de reinicio/negociación, sin AT ni logs UART. Base y autorías previas preservadas."
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/docs/ROBO2_EX01_ATMEGA.md",
+      "bytes": 2142,
+      "sha256": "b9d3b93bec8082fef28d223931bc503a01a05eb514631198414fe41d69adafd3",
+      "adaptation": "AFR2 ESP: EX01v4, etiquetas OLED, servicios info/reset/boot y supervisión de reinicio/negociación, sin AT ni logs UART. Base y autorías previas preservadas."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/include/afr2_sequence.h",
+      "bytes": 914,
+      "sha256": "756a1eef9470a86e9cec45bd981378faeee377f4a96e84fc7f9f3cc1afd1a35d",
+      "adaptation": "AFR2 AVR: snapshot/renderer puro de secuencias y etiquetas PROGMEM, navegación, servicios info/boot/reset y drenaje UART. Memoria/Hall0 conservados. Base y autorías previas preservadas."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/include/afr2_app.h",
+      "bytes": 884,
+      "sha256": "c8594edac736d0fb84837a6c70e224bd879a0d86a821f67f358c6c9e69c6a14d",
+      "adaptation": "AFR2 AVR: snapshot/renderer puro de secuencias y etiquetas PROGMEM, navegación, servicios info/boot/reset y drenaje UART. Memoria/Hall0 conservados. Base y autorías previas preservadas."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/include/afr2_screens.h",
+      "bytes": 2350,
+      "sha256": "994ec6cff887f81a9e4e3ec685422a6a932967ab3101f47df0626705bd8655c6",
+      "adaptation": "AFR2 AVR: snapshot/renderer puro de secuencias y etiquetas PROGMEM, navegación, servicios info/boot/reset y drenaje UART. Memoria/Hall0 conservados. Base y autorías previas preservadas."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/include/afr2_menu_catalog.h",
+      "bytes": 2667,
+      "sha256": "1a8cd343c17d1a2ac065480649ecd0a32b0e082f00c7cc9688d41d1341a72fd1",
+      "adaptation": "AFR2 AVR: snapshot/renderer puro de secuencias y etiquetas PROGMEM, navegación, servicios info/boot/reset y drenaje UART. Memoria/Hall0 conservados. Base y autorías previas preservadas."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/include/afr2_uart1.h",
+      "bytes": 343,
+      "sha256": "e47780400b7ab12cec36e8a26a8ef3ce0ed40389b36e4c5bc50eeb2729f02687",
+      "adaptation": "AFR2 AVR: snapshot/renderer puro de secuencias y etiquetas PROGMEM, navegación, servicios info/boot/reset y drenaje UART. Memoria/Hall0 conservados. Base y autorías previas preservadas."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/include/afr2_product.h",
+      "bytes": 4334,
+      "sha256": "b7bd06114a06f96861c334dba2a506f31b24154b23b5f0fe1c7755d4cd6a20c9",
+      "adaptation": "AFR2 AVR: snapshot/renderer puro de secuencias y etiquetas PROGMEM, navegación, servicios info/boot/reset y drenaje UART. Memoria/Hall0 conservados. Base y autorías previas preservadas."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/main.c",
+      "bytes": 3781,
+      "sha256": "e3a75c0559f6652c4f89509a7901f1d27cf6e003c49c5e4a5877fff86b5e3a0d",
+      "adaptation": "AFR2 AVR: snapshot/renderer puro de secuencias y etiquetas PROGMEM, navegación, servicios info/boot/reset y drenaje UART. Memoria/Hall0 conservados. Base y autorías previas preservadas."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/services/afr2_sequence.c",
+      "bytes": 4978,
+      "sha256": "2b1a06812b33cdd24f67f8f0a8b5254f76cfd9d2179615aaa9a49651655fd65c",
+      "adaptation": "AFR2 AVR: snapshot/renderer puro de secuencias y etiquetas PROGMEM, navegación, servicios info/boot/reset y drenaje UART. Memoria/Hall0 conservados. Base y autorías previas preservadas."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/services/afr2_app.c",
+      "bytes": 21026,
+      "sha256": "d643642f56fe9e7a5284d2c7885614af36b2a201b045abdea02b191fca3af595",
+      "adaptation": "AFR2 AVR: snapshot/renderer puro de secuencias y etiquetas PROGMEM, navegación, servicios info/boot/reset y drenaje UART. Memoria/Hall0 conservados. Base y autorías previas preservadas."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/services/afr2_app_wire.c",
+      "bytes": 14537,
+      "sha256": "5380c97646a996825a1661593b310d2873e4d47b1dbcd044ea57c5c8b127693d",
+      "adaptation": "AFR2 AVR: snapshot/renderer puro de secuencias y etiquetas PROGMEM, navegación, servicios info/boot/reset y drenaje UART. Memoria/Hall0 conservados. Base y autorías previas preservadas."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/services/afr2_link.c",
+      "bytes": 5943,
+      "sha256": "b50a05aa1c6d021774d7e1f1ccf547ff21bb20f519ddace7bf94619f9f3e04a5",
+      "adaptation": "AFR2 AVR: snapshot/renderer puro de secuencias y etiquetas PROGMEM, navegación, servicios info/boot/reset y drenaje UART. Memoria/Hall0 conservados. Base y autorías previas preservadas."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/platform/afr2_uart1.c",
+      "bytes": 2157,
+      "sha256": "426e14c963b9990a8d925b35c6278173d7430a0fa3453334cf6f02ba4e786d23",
+      "adaptation": "AFR2 AVR: snapshot/renderer puro de secuencias y etiquetas PROGMEM, navegación, servicios info/boot/reset y drenaje UART. Memoria/Hall0 conservados. Base y autorías previas preservadas."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/platform/afr2_watchdog.c",
+      "bytes": 1036,
+      "sha256": "58895247119965ed1ebad6470cf4ead1bdd1ae0c21b9ad343174e445640a57c8",
+      "adaptation": "AFR2 AVR: snapshot/renderer puro de secuencias y etiquetas PROGMEM, navegación, servicios info/boot/reset y drenaje UART. Memoria/Hall0 conservados. Base y autorías previas preservadas."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/ui/afr2_screens.c",
+      "bytes": 8927,
+      "sha256": "e9ed480363e456c980f452ed3f6bdc55fd19aa2de99e12b3c3f11e244a89654c",
+      "adaptation": "AFR2 AVR: snapshot/renderer puro de secuencias y etiquetas PROGMEM, navegación, servicios info/boot/reset y drenaje UART. Memoria/Hall0 conservados. Base y autorías previas preservadas."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/ui/afr2_sequence_screen.c",
+      "bytes": 2639,
+      "sha256": "83fb62af9f9429536f58d50026c2f9dcefd1a44d61139cd8e17bd2baf3fbd9f4",
+      "adaptation": "AFR2 AVR: snapshot/renderer puro de secuencias y etiquetas PROGMEM, navegación, servicios info/boot/reset y drenaje UART. Memoria/Hall0 conservados. Base y autorías previas preservadas."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/ui/afr2_menu_catalog.c",
+      "bytes": 12460,
+      "sha256": "04d031bbc9746795b8326cf9405e716e66aa620725fd87b3d64dd126fa1a3d34",
+      "adaptation": "AFR2 AVR: snapshot/renderer puro de secuencias y etiquetas PROGMEM, navegación, servicios info/boot/reset y drenaje UART. Memoria/Hall0 conservados. Base y autorías previas preservadas."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/Makefile",
+      "bytes": 1998,
+      "sha256": "e714eb6ed56b27427416f038d4d008d6e16d771253cf6dee05d6afe846251d77",
+      "adaptation": "AFR2 AVR: snapshot/renderer puro de secuencias y etiquetas PROGMEM, navegación, servicios info/boot/reset y drenaje UART. Memoria/Hall0 conservados. Base y autorías previas preservadas."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/README.md",
+      "bytes": 6046,
+      "sha256": "25ecfa1aca848fdbcf086ef13581df8276efaaac8590cbe3ec195d317cc13e27",
+      "adaptation": "AFR2 AVR: snapshot/renderer puro de secuencias y etiquetas PROGMEM, navegación, servicios info/boot/reset y drenaje UART. Memoria/Hall0 conservados. Base y autorías previas preservadas."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/INFORME_ADAPTACION.md",
+      "bytes": 8234,
+      "sha256": "1022907e261163459a3b2a0c0102d7a24fc29634cee37ca0fdb4f01866e40177",
+      "adaptation": "AFR2 AVR: snapshot/renderer puro de secuencias y etiquetas PROGMEM, navegación, servicios info/boot/reset y drenaje UART. Memoria/Hall0 conservados. Base y autorías previas preservadas."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/docs/PRODUCTO_ATMEGA.md",
+      "bytes": 2835,
+      "sha256": "bab8a2e42b1c93ef2eec88101726b469ddc1a79f55f6fb46727ef1843beedfc2",
+      "adaptation": "AFR2 AVR: snapshot/renderer puro de secuencias y etiquetas PROGMEM, navegación, servicios info/boot/reset y drenaje UART. Memoria/Hall0 conservados. Base y autorías previas preservadas."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/docs/COMUNICACION_ESP.md",
+      "bytes": 5035,
+      "sha256": "ee1181ab2dc65d0ec3bf91881d181007d8d6a945b4e682f2f90bb2e950181a8b",
+      "adaptation": "AFR2 AVR: snapshot/renderer puro de secuencias y etiquetas PROGMEM, navegación, servicios info/boot/reset y drenaje UART. Memoria/Hall0 conservados. Base y autorías previas preservadas."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/afr2_product_wire.h",
+      "bytes": 1933,
+      "sha256": "79ca9e62dbf9b35278c11827c6c409e535a34268661bdec578eb3f096344fc0c",
+      "adaptation": "Contrato/documentación/evidencia AFR2-20261024-07, estado real por módulo y aplicación visual0.1.9; no acredita runtime ni hardware."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/afr2_build_info.h",
+      "bytes": 419,
+      "sha256": "5690e23367813510b716b0e761afe691dd2f5c241611177f996f036ac2e73226",
+      "adaptation": "Contrato/documentación/evidencia AFR2-20261024-07, estado real por módulo y aplicación visual0.1.9; no acredita runtime ni hardware."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/afr2_sequence_labels.h",
+      "bytes": 383,
+      "sha256": "67ad0587e1832c5b0a6a39b1238ffd6edc212949d619129bb5ada6fd089c63c0",
+      "adaptation": "Contrato/documentación/evidencia AFR2-20261024-07, estado real por módulo y aplicación visual0.1.9; no acredita runtime ni hardware."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/commands.json",
+      "bytes": 33824,
+      "sha256": "0b9d52e3c63ebd43a0451d2edacd46d5f9c01d01b7e7de84081c70d844cc64d7",
+      "adaptation": "Contrato/documentación/evidencia AFR2-20261024-07, estado real por módulo y aplicación visual0.1.9; no acredita runtime ni hardware."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/capabilities.json",
+      "bytes": 7364,
+      "sha256": "531a23a36fdaf56efcbc1f4b86b33abf3546ff95a767b69e497f7b2f685fa8bd",
+      "adaptation": "Contrato/documentación/evidencia AFR2-20261024-07, estado real por módulo y aplicación visual0.1.9; no acredita runtime ni hardware."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/EX01_SYSTEM_SEQUENCE_4.md",
+      "bytes": 5360,
+      "sha256": "2096f7d2da72e59c54e8a3697b566bee62103a4c67bade2ad34712075a5c172a",
+      "adaptation": "Contrato/documentación/evidencia AFR2-20261024-07, estado real por módulo y aplicación visual0.1.9; no acredita runtime ni hardware."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/PROTOCOL.md",
+      "bytes": 17219,
+      "sha256": "2d23b5811efd6dbcd7287cbc5b6c165a3490a161a04530f18b82e12fe7d1f5ff",
+      "adaptation": "Contrato/documentación/evidencia AFR2-20261024-07, estado real por módulo y aplicación visual0.1.9; no acredita runtime ni hardware."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/WEB_CONTROL_MAP.md",
+      "bytes": 7217,
+      "sha256": "ce658ad974392e69a32af824eacaa4c0e6b6c4f0fb63ed067a21ec2f2e102fae",
+      "adaptation": "Contrato/documentación/evidencia AFR2-20261024-07, estado real por módulo y aplicación visual0.1.9; no acredita runtime ni hardware."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/WEB_OLED_CONSUMER.md",
+      "bytes": 6516,
+      "sha256": "cb478f1cdf226beb88d6e26f8d98223880269e0b2b3ae29664b2e30bebbac5b8",
+      "adaptation": "Contrato/documentación/evidencia AFR2-20261024-07, estado real por módulo y aplicación visual0.1.9; no acredita runtime ni hardware."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/EX01_WEB_INTEGRATION.md",
+      "bytes": 7316,
+      "sha256": "a6125eee6c6eff50bf04fe4edd99a0e19b06bc3a362f22bb45ce4f40d7b0dd36",
+      "adaptation": "Contrato/documentación/evidencia AFR2-20261024-07, estado real por módulo y aplicación visual0.1.9; no acredita runtime ni hardware."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/screens.json",
+      "bytes": 41369,
+      "sha256": "0ebc87f4396c949b694c255d0a41b119893a8776a1beb7cc8f6bb38cb43ff163",
+      "adaptation": "Contrato/documentación/evidencia AFR2-20261024-07, estado real por módulo y aplicación visual0.1.9; no acredita runtime ni hardware."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/overlays/connections.json",
+      "bytes": 4665,
+      "sha256": "294905bcdf6f439c973458b6d7021b98a92056fe6a8911e6c9128b6a07cb9983",
+      "adaptation": "Contrato/documentación/evidencia AFR2-20261024-07, estado real por módulo y aplicación visual0.1.9; no acredita runtime ni hardware."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/SCREEN_SYSTEM.md",
+      "bytes": 5130,
+      "sha256": "93c293b047b44f1b92f8f8f17a970515abc908f109bfa4208e3e6fda698fad5e",
+      "adaptation": "Contrato/documentación/evidencia AFR2-20261024-07, estado real por módulo y aplicación visual0.1.9; no acredita runtime ni hardware."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/NAVIGATION.md",
+      "bytes": 3870,
+      "sha256": "a1eeb4d0d4c22f10d3fb7b539f33ead9db6723ad4b8c6669e4461761eadf0aad",
+      "adaptation": "Contrato/documentación/evidencia AFR2-20261024-07, estado real por módulo y aplicación visual0.1.9; no acredita runtime ni hardware."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/MENU_PLAN.md",
+      "bytes": 5466,
+      "sha256": "54ef993631154d528998b1378b0ac88b9b81be85a79e38a81e143d1eb0cf2ee8",
+      "adaptation": "Contrato/documentación/evidencia AFR2-20261024-07, estado real por módulo y aplicación visual0.1.9; no acredita runtime ni hardware."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/ESTADO_IMPLEMENTACION.md",
+      "bytes": 5349,
+      "sha256": "f519b16738b0f2ea7681e3911be4f0c0fff7de9165cc0288736b20239fa56b70",
+      "adaptation": "Contrato/documentación/evidencia AFR2-20261024-07, estado real por módulo y aplicación visual0.1.9; no acredita runtime ni hardware."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/PROMPT_CONTINUIDAD.md",
+      "bytes": 25939,
+      "sha256": "93797b57ac269469988877361236a123f3ebd15f56dd4c708aba4d5bf4508337",
+      "adaptation": "Contrato/documentación/evidencia AFR2-20261024-07, estado real por módulo y aplicación visual0.1.9; no acredita runtime ni hardware."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/PLAN_WEB.md",
+      "bytes": 8760,
+      "sha256": "f64a68c8123ed3a6bacd3d7e5e935a4609eda46fbaa88fc6aca92abd09240947",
+      "adaptation": "Contrato/documentación/evidencia AFR2-20261024-07, estado real por módulo y aplicación visual0.1.9; no acredita runtime ni hardware."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/PLAN_ESP.md",
+      "bytes": 9931,
+      "sha256": "fbee35e7db5e3bb1dd73d39ae61663a0d289a7ce1af9ef5f964c1c54f151d058",
+      "adaptation": "Contrato/documentación/evidencia AFR2-20261024-07, estado real por módulo y aplicación visual0.1.9; no acredita runtime ni hardware."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/PLAN_ATMEGA.md",
+      "bytes": 8082,
+      "sha256": "9c896beff894658ad153ce2aef5c0294972c826b3c186d31aaa5e9a5cb5896e1",
+      "adaptation": "Contrato/documentación/evidencia AFR2-20261024-07, estado real por módulo y aplicación visual0.1.9; no acredita runtime ni hardware."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/design-system/index.md",
+      "bytes": 9771,
+      "sha256": "f5b766acec28e4fa643f90ad6338d537eeaf0b9f5b8d043c97a1152af6165c80",
+      "adaptation": "Contrato/documentación/evidencia AFR2-20261024-07, estado real por módulo y aplicación visual0.1.9; no acredita runtime ni hardware."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/design-system/manual.md",
+      "bytes": 19951,
+      "sha256": "a1a10d6b9a96837ffe7fd95e019bdc2adb93a6798e56c627af5b5a8429173df9",
+      "adaptation": "Contrato/documentación/evidencia AFR2-20261024-07, estado real por módulo y aplicación visual0.1.9; no acredita runtime ni hardware."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/design-system/components.md",
+      "bytes": 16652,
+      "sha256": "4431a4729285d4b67cad355691a5327ca19ade49248b37dd9123213b126ee182",
+      "adaptation": "Contrato/documentación/evidencia AFR2-20261024-07, estado real por módulo y aplicación visual0.1.9; no acredita runtime ni hardware."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/design-system/decisions.md",
+      "bytes": 14803,
+      "sha256": "a5497039511979ad9d7b430bc4e34d44df16e91b2459f9db70686c2ee0ca8b95",
+      "adaptation": "Contrato/documentación/evidencia AFR2-20261024-07, estado real por módulo y aplicación visual0.1.9; no acredita runtime ni hardware."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/design-system/sources.md",
+      "bytes": 7890,
+      "sha256": "f91757ec8d6f17382258f89857ad6f6909ed0c12398679ca3ea67c93369a880d",
+      "adaptation": "Contrato/documentación/evidencia AFR2-20261024-07, estado real por módulo y aplicación visual0.1.9; no acredita runtime ni hardware."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/design-system/tokens.json",
+      "bytes": 51993,
+      "sha256": "9496f3ecde5b20db86212d594059812e5f6f68d208934169f8a7816ecc380259",
+      "adaptation": "Contrato/documentación/evidencia AFR2-20261024-07, estado real por módulo y aplicación visual0.1.9; no acredita runtime ni hardware."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/design-system/coverage-20261024-07.json",
+      "bytes": 2125,
+      "sha256": "ef863925d7dd18ff3c07fcfbc26c8e2feb26c501e3f90c4c18844a3c13f81c86",
+      "adaptation": "Contrato/documentación/evidencia AFR2-20261024-07, estado real por módulo y aplicación visual0.1.9; no acredita runtime ni hardware."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/README.md",
+      "bytes": 11338,
+      "sha256": "2b4e476741ec7ebd0b4755dab205f744e5536e506477a211f5184630924fe6ff",
+      "adaptation": "Contrato/documentación/evidencia AFR2-20261024-07, estado real por módulo y aplicación visual0.1.9; no acredita runtime ni hardware."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/INFORME_ADAPTACION.md",
+      "bytes": 5751,
+      "sha256": "a0d5286a18ba07d5eeeddb61a04005371ccfb3ca29b392dc96654e900764e81a",
+      "adaptation": "Contrato/documentación/evidencia AFR2-20261024-07, estado real por módulo y aplicación visual0.1.9; no acredita runtime ni hardware."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/CHANGELOG.md",
+      "bytes": 9146,
+      "sha256": "1406f884c0f9aed9753a66be40158f23feb4e0767bbf50287c077c38df87d892",
+      "adaptation": "Contrato/documentación/evidencia AFR2-20261024-07, estado real por módulo y aplicación visual0.1.9; no acredita runtime ni hardware."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/provenance/README.md",
+      "bytes": 3362,
+      "sha256": "37fa36d1a6470c255c8181f0e69788a142c20ae866a5b1ebef0992e7cc05f134",
+      "adaptation": "Contrato/documentación/evidencia AFR2-20261024-07, estado real por módulo y aplicación visual0.1.9; no acredita runtime ni hardware."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/changes/2026-10-24-07-control-system-sequence.md",
+      "bytes": 6242,
+      "sha256": "2872b97d2b886e1e63041fccb94eba12608421fdf3aa6b397ec148c252dd5287",
+      "adaptation": "Contrato/documentación/evidencia AFR2-20261024-07, estado real por módulo y aplicación visual0.1.9; no acredita runtime ni hardware."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-24-07/README.md",
+      "bytes": 2138,
+      "sha256": "cdc0a4b761a67a9db125903ab7c3d66f1dc87ae36238fd7f225d978cb8bcd7ad",
+      "adaptation": "Contrato/documentación/evidencia AFR2-20261024-07, estado real por módulo y aplicación visual0.1.9; no acredita runtime ni hardware."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-24-07/summary.json",
+      "bytes": 4512,
+      "sha256": "7ee53316d038b3b39945689685e84144de6aa0e0d560321d0ae4d74d22a25f47",
+      "adaptation": "Contrato/documentación/evidencia AFR2-20261024-07, estado real por módulo y aplicación visual0.1.9; no acredita runtime ni hardware."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-24-07/manifest.json",
+      "bytes": 2562,
+      "sha256": "dc8771626db31f9b221ab943a6a6952d71c110bd235291260a4d88ef6642595f",
+      "adaptation": "Contrato/documentación/evidencia AFR2-20261024-07, estado real por módulo y aplicación visual0.1.9; no acredita runtime ni hardware."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-24-07/atmega-build.txt",
+      "bytes": 2059,
+      "sha256": "6969e40e63eebe92c1d012dbbb048bcecb53593e399fbbc73e9a49b045aad1c4",
+      "adaptation": "Contrato/documentación/evidencia AFR2-20261024-07, estado real por módulo y aplicación visual0.1.9; no acredita runtime ni hardware."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-24-07/atmega-size.txt",
+      "bytes": 610,
+      "sha256": "f91e88414f5cc244a704f70309d019588b1765a9beff57cd3c3e442425a7d76d",
+      "adaptation": "Contrato/documentación/evidencia AFR2-20261024-07, estado real por módulo y aplicación visual0.1.9; no acredita runtime ni hardware."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-24-07/esp-build.txt",
+      "bytes": 1507,
+      "sha256": "779525b58774ec7c8acf7b08a0052d0fcbf982d361427c868bd3a14652f6e10c",
+      "adaptation": "Contrato/documentación/evidencia AFR2-20261024-07, estado real por módulo y aplicación visual0.1.9; no acredita runtime ni hardware."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-24-07/web-build.txt",
+      "bytes": 1574,
+      "sha256": "197cb0b323a301d191e0e97102df583d57674094860e141b45af183ae1f4efec",
+      "adaptation": "Contrato/documentación/evidencia AFR2-20261024-07, estado real por módulo y aplicación visual0.1.9; no acredita runtime ni hardware."
+    },
+    {
+      "path": "INFORME_MAESTRO.md",
+      "bytes": 12042,
+      "sha256": "142fdad1edb00701fb861ae97aa5cedd70f94e30475cf62865586d5b6b64712e",
+      "adaptation": "Puntero al estado07 actual; historia preservada."
+    }
+  ],
+  "verification": "Tres módulos compilados, paquete promovido e inspección de fuente/artefactos. Herramienta de navegador denegó localhost; sin vía alternativa, render ni pruebas físicas.",
+  "runtimeValidated": false,
+  "cadModified": false,
+  "memoryGateEnabled": false,
+  "hallEnabled": false
+}

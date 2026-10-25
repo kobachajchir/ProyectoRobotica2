@@ -1,0 +1,64 @@
+{
+  "schema": "afr2-esp-probe-1",
+  "change_id": "AFR2-20261023-13",
+  "timestamp": "2026-10-23T15:55:40.554529-03:00",
+  "status": "tools-ok-no-device-opened",
+  "steps": [
+    {
+      "command": [
+        "C:\\Users\\kobac\\.platformio\\penv\\Scripts\\python.exe",
+        "-m",
+        "esptool",
+        "--help"
+      ],
+      "exit_code": 0,
+      "log": "esptool_help.txt",
+      "opens_device": false
+    }
+  ],
+  "partition": {
+    "status": "not-determined",
+    "filesystem_offsets": null
+  },
+  "connection": false,
+  "port": null,
+  "python": "C:\\Users\\kobac\\.platformio\\penv\\Scripts\\python.exe",
+  "python_version": "3.11.7",
+  "local_context": {
+    "filesystem_layout": "not-confirmed",
+    "source": "host-files-not-device",
+    "candidate_environments": {
+      "env:esp12s_candidate": {
+        "platform": "espressif8266 @ 4.2.1",
+        "board": "esp12e",
+        "board_build.filesystem": "littlefs"
+      }
+    },
+    "web_gzip_bytes": 2925405
+  },
+  "ports": [
+    {
+      "port": "COM4",
+      "description": "Standard Serial over Bluetooth link (COM4)",
+      "hwid": "BTHENUM\\{00001101-0000-1000-8000-00805F9B34FB}_VID&00010075_PID&A013\\7&2AC49BED&0&DC69E2D024DF_C00000000"
+    },
+    {
+      "port": "COM3",
+      "description": "Standard Serial over Bluetooth link (COM3)",
+      "hwid": "BTHENUM\\{00001101-0000-1000-8000-00805F9B34FB}_LOCALMFG&0000\\7&2AC49BED&0&000000000000_00000000"
+    },
+    {
+      "port": "COM6",
+      "description": "Standard Serial over Bluetooth link (COM6)",
+      "hwid": "BTHENUM\\{00001101-0000-1000-8000-00805F9B34FB}_LOCALMFG&0000\\7&2AC49BED&0&000000000000_00000001"
+    },
+    {
+      "port": "COM7",
+      "description": "Standard Serial over Bluetooth link (COM7)",
+      "hwid": "BTHENUM\\{00001101-0000-1000-8000-00805F9B34FB}_LOCALMFG&0002\\7&2AC49BED&0&B8F653A0DAC0_C00000000"
+    }
+  ],
+  "pyserial_version": "3.5",
+  "esptool_version": "4.5.1",
+  "esptool_path": "C:\\Users\\kobac\\.platformio\\packages\\tool-esptoolpy\\esptool\\__init__.py"
+}

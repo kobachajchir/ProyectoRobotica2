@@ -1,0 +1,287 @@
+{
+  "changeId": "AFR2-20261024-04",
+  "date": "2026-10-24",
+  "origin": "AutoFinalRobo2 existing sources and final CAD export approved by human user. Earlier uncommitted advances preserved; this list is not an exclusive diff against HEAD.",
+  "authorship": "Original CAD/authors/licenses retained as documented in CAD. Web integration and build policy adapted for AutoFinalRobo2 with Codex.",
+  "verification": "Web full/esp and ESP candidate firmware compiled; no test runner, browser, standalone validators, filesystem image, flash or hardware.",
+  "files": [
+    {
+      "path": "AutoFinalRobo2-Web/vite.config.ts",
+      "adaptation": "Publish final GLB and only necessary Draco files in both profiles; remove schematic-only viewer alias.",
+      "bytes": 1558,
+      "sha256": "756919f7353293bfd436be823eec4d58620e52f4464a67316bae374161f3107c"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/app/App.tsx",
+      "adaptation": "Single shared model page in both profiles.",
+      "bytes": 2473,
+      "sha256": "af705bd1c77b674c37bb24c9964dcb9aa9f57777254da5015af32fdc136f182e"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/tsconfig.app.json",
+      "adaptation": "Remove obsolete embedded-model alias.",
+      "bytes": 712,
+      "sha256": "93ea5b5cd6ae2d19133e89826035cdb111ec97677c756f38420f9823c1d42884"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/model3d/Model3DPage.tsx",
+      "adaptation": "Load final model; normalize display framing without editing source units/geometry; final-model labels and demand rendering.",
+      "bytes": 6680,
+      "sha256": "be9cb616fd51a0186a1064b11ea280a47a181f5d4c1e67c9b23c4f6ee9bcafce"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/model3d/Model3DEmbeddedPage.tsx",
+      "adaptation": "Removed temporary schematic-only page after user requested final model in ESP.",
+      "state": "removed-from-runtime-or-superseded"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/tools/web-budget.mjs",
+      "adaptation": "Shared user-authorized 3 MiB candidate FS policy, 2800 KiB budget and block/reserve estimate.",
+      "bytes": 628,
+      "sha256": "e99d0d597831e698c3f1636cc01ee8d09443bb49c700a1c0c2d32c1abf2eacf5"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/tools/package-web.mjs",
+      "adaptation": "Apply shared 3 MiB policy and record candidate linker in manifest.",
+      "bytes": 7303,
+      "sha256": "1e1f6034ff6433be180d55299066e2ff132ac1cedacfdd8077e7592848eeeadb"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/tools/copy-web-to-esp.mjs",
+      "adaptation": "Check shared policy and candidate layout before promoting managed assets.",
+      "bytes": 3348,
+      "sha256": "fb7aba5c4cc94d7f4055ea04451782f4e79195c7cec4a94f1d0a6a391e620845"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/public/models/AutoFinalRobo2.glb",
+      "adaptation": "Exact final CAD export, no geometry or material edits.",
+      "bytes": 827232,
+      "sha256": "d10684704200caa4da0a6a98715e52abc446b9dee9cccdde32f33ee05fc927c7"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/reference/legacy-model/auto_micro.glb",
+      "adaptation": "Legacy preserved outside runtime assets.",
+      "bytes": 883260,
+      "sha256": "96703139261dc917fd5ed953e3d119bfaad59d367bbe49de28b38ed83f2014be"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/reference/legacy-model/draco_decoder.js",
+      "adaptation": "Unused JS-only fallback archived outside runtime assets.",
+      "bytes": 512498,
+      "sha256": "a47cd7c84911c5175bb0511c01ba41ddafb71873fd391f055def514398f5e7c4"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/public/models/auto_micro.glb",
+      "adaptation": "Removed from public; exact archive retained.",
+      "state": "removed-from-runtime-or-superseded"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/public/draco/draco_decoder.js",
+      "adaptation": "Removed from public; archive retained; WASM wrapper/decoder remain active.",
+      "state": "removed-from-runtime-or-superseded"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/public/brand/Logo-transparent.png",
+      "adaptation": "Removed unused public PNG; exact RGBA master retained in reference/brand.",
+      "state": "removed-from-runtime-or-superseded"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/docs/model-asset-20261024.json",
+      "adaptation": "Final CAD asset source, target, hash and known authorship record.",
+      "bytes": 680,
+      "sha256": "a01357a846aa859a3fcce7f3dafb663fbad06988e5e0fa2796b0590973429a5a"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/README.md",
+      "adaptation": "Final package, model, commands, budget and verification status.",
+      "bytes": 17860,
+      "sha256": "05ad1eeb4be2c3e9ad3516f25128d7702bcacc9b922892ba980889c31fb91c7d"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/INFORME_ADAPTACION.md",
+      "adaptation": "Final package, model, commands and actual verification status.",
+      "bytes": 16730,
+      "sha256": "0ba6fdcb0c4a72dc225eac3d706ac808e0841710e4e40a14cec749d56094a160"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/docs/modules/assets.json",
+      "adaptation": "Current asset/module state and final measured profiles.",
+      "bytes": 1390,
+      "sha256": "698a51b22cab90f9a0d58f01a0e8b2d14b0f3ca66d2638121c304bdc79cd9390"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/docs/modules/assets.md",
+      "adaptation": "Current asset/module state and final measured profiles.",
+      "bytes": 1854,
+      "sha256": "5982bb62562e4a3dfd5cf65f9f77217c205f9f58240d3b99ec1faff528345838"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/platformio.ini",
+      "adaptation": "User-requested candidate linker 4 MiB flash / 3 MiB LittleFS, not physically identified.",
+      "bytes": 1153,
+      "sha256": "519533a025e552ff2a813e0a8dc77c2beb7f1c94e23c91ab431bd38c8126ed61"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/README.md",
+      "adaptation": "Final model package and compiled candidate layout.",
+      "bytes": 8519,
+      "sha256": "f4ec90c16867df10847c995b22023c12b1448082254c4b17aa4b58d282b3b5e4"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/INFORME_ADAPTACION.md",
+      "adaptation": "Final model package and compiled candidate layout.",
+      "bytes": 7958,
+      "sha256": "ad763fc63af3b8ab33f911580191507bb0e2d1d8a312f7a441c3054e3308a45b"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/data/README.md",
+      "adaptation": "Actual promoted model package and candidate layout.",
+      "bytes": 1804,
+      "sha256": "9901f83c920bf4256dde4d42fcb22fff72cd1fb0a456d10cd535e56ef703ea1b"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/WEB_ASSETS.md",
+      "adaptation": "Shared source of asset delivery/profile/layout/budget contract.",
+      "bytes": 1963,
+      "sha256": "755382e1872b6d33a1c66c33f74311431589d3863b35fa158e1eb53eb9cf7cf0"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/changes/2026-10-24-04-final-model-littlefs.md",
+      "adaptation": "Human authorization, changes, evidence and real module states.",
+      "bytes": 4775,
+      "sha256": "16840e3099ea80a2c35b14c7ec1cd624113d7fbce58963a09f6934bca95c233d"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/changes/2026-10-24-03-web-payload.md",
+      "adaptation": "Mark no-GLB size as intermediate, superseded by04.",
+      "bytes": 6480,
+      "sha256": "9889cfa662307284a5c5ba64cb4e7b3ac6e759b53e188d12f9871dbb08bf1e05"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/CHANGELOG.md",
+      "adaptation": "Register03 and04 with actual module states.",
+      "bytes": 8254,
+      "sha256": "f809257a9389a302bdc69a6f978226c7e856f542f83395980c691fd4e32dfe70"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/README.md",
+      "adaptation": "Current delivery summary with history retained.",
+      "bytes": 9941,
+      "sha256": "00095f5db00edd3b209bf2194c1e18d39c71e09dc247ce512f6562c8d9b2f36c"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/INFORME_ADAPTACION.md",
+      "adaptation": "Current delivery and real verification status.",
+      "bytes": 5232,
+      "sha256": "147a41ea38294bcbb69bbd85970484c52fc7adb0bfda209127f8b68db0b7cbd5"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/PROMPT_CONTINUIDAD.md",
+      "adaptation": "Current model, size and candidate layout for continuation.",
+      "bytes": 24383,
+      "sha256": "f51533474620c3a3a81e207dc084d78d03ab9bc363bce0c593df84b29a0fb77a"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/PLAN_WEB.md",
+      "adaptation": "Update active model, scripts and 2800 KiB budget.",
+      "bytes": 7892,
+      "sha256": "0321aae32bcb6db18b5309909975b5d67547f987524e03e84acf6bfc6f8f51f7"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/PLAN_ESP.md",
+      "adaptation": "Compiled candidate layout and new package.",
+      "bytes": 9578,
+      "sha256": "744e795598b5b4c07c8098dc31eec56ac9e1a8e215eadd3e1eebd50ccbf8ded8"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/ROADMAP.md",
+      "adaptation": "Current delivery and remaining physical/runtime checks.",
+      "bytes": 5542,
+      "sha256": "2c88aebf2010b567ef8c640b353e7ed1d4205591993cf7d987fc91545b214654"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/INFORME_MAESTRO.md",
+      "adaptation": "Current delivery and real module states.",
+      "bytes": 13685,
+      "sha256": "37315082147009a5b5a0513ea494609ca0262437ce3ab00febfce9e4f6b74c2e"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/hardware/RECURSOS_Y_TIEMPOS.md",
+      "adaptation": "Candidate FS and actual compile/package memory.",
+      "bytes": 5060,
+      "sha256": "bd60ce258079375f9e5d75252cda98b1fbfafa0637898cd4c8ecf152c6273d21"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/hardware/FLASHING.md",
+      "adaptation": "Record user-selected candidate layout; no flash or image performed.",
+      "bytes": 5129,
+      "sha256": "c7ef4770d81bc12bfa83e26b30f3a82ac7b4282646e25a7da917ba9a4f35ee59"
+    },
+    {
+      "path": "README.md",
+      "adaptation": "Final integrated delivery pointer.",
+      "bytes": 4973,
+      "sha256": "79429ec943f4617d0c20c1c514075ef02d48ef01b21f8afe22844eafc7875086"
+    },
+    {
+      "path": "INFORME_MAESTRO.md",
+      "adaptation": "Final integrated delivery pointer.",
+      "bytes": 11535,
+      "sha256": "ddcd2699f719c886de0d6fa170ffc279aedf1c3f8507eeb34f7dbaf166b35f6a"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-24-04/elf-layout.txt",
+      "bytes": 89,
+      "sha256": "d2d2fdba229cd53604d0bce4e4b17b31bee86d7fbc50d9a8afb840056aea5354",
+      "adaptation": "Build log, manifest or static size/layout evidence for final delivery."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-24-04/esp-firmware-build.log",
+      "bytes": 12510,
+      "sha256": "1e663855d8bf2985b6ee6380bf7d929f84320251bf1a5d32b34eb8d59a13ee06",
+      "adaptation": "Build log, manifest or static size/layout evidence for final delivery."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-24-04/esp-manifest.json",
+      "bytes": 2562,
+      "sha256": "e0cbeebf37719ac2e2549c6153e631fd6b5d3e537da531a4d27af54451f18633",
+      "adaptation": "Build log, manifest or static size/layout evidence for final delivery."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-24-04/esp-web-build.log",
+      "bytes": 1574,
+      "sha256": "afdd64348d82e8b87ee4e8ea7ed9b9695f522066b9f9acdff175e780d316fbe6",
+      "adaptation": "Build log, manifest or static size/layout evidence for final delivery."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-24-04/full-build.log",
+      "bytes": 1429,
+      "sha256": "9dac7ccf32ea7ecae82ff64e9a893c7983f0f517e8c7447c5c1fb10d3b4956f9",
+      "adaptation": "Build log, manifest or static size/layout evidence for final delivery."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-24-04/full-manifest.json",
+      "bytes": 2560,
+      "sha256": "b5e0de3330fe310fa8e9aef089dbe2708e57de79384b4b17012a7d7cf1a6a206",
+      "adaptation": "Build log, manifest or static size/layout evidence for final delivery."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-24-04/inline-sizes.json",
+      "bytes": 129,
+      "sha256": "f9025deeca3ba67fb6710b1be2cd1d466da39359f30f0be1fe3b2bd9c9649ef5",
+      "adaptation": "Build log, manifest or static size/layout evidence for final delivery."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-24-04/README.md",
+      "bytes": 1300,
+      "sha256": "fceb8456deae88ec16f22a4810058893cd21f6295490f4bbd44fe87424e698a4",
+      "adaptation": "Build log, manifest or static size/layout evidence for final delivery."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-24-04/sizes.json",
+      "bytes": 1985,
+      "sha256": "2ab80766b8b7d4143ca3dc3d8fb6772287488f048dee4ffbc384a96253e6ca53",
+      "adaptation": "Build log, manifest or static size/layout evidence for final delivery."
+    }
+  ]
+}

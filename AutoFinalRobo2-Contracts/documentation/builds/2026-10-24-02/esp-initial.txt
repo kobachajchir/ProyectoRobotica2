@@ -1,0 +1,218 @@
+Processing esp12s_candidate (platform: espressif8266 @ 4.2.1; board: esp12e; framework: arduino)
+--------------------------------------------------------------------------------
+Verbose mode can be enabled via `-v, --verbose` option
+CONFIGURATION: https://docs.platformio.org/page/boards/espressif8266/esp12e.html
+PLATFORM: Espressif 8266 (4.2.1) > Espressif ESP8266 ESP-12E
+HARDWARE: ESP8266 80MHz, 80KB RAM, 4MB Flash
+PACKAGES: 
+ - framework-arduinoespressif8266 @ 3.30102.0 (3.1.2) 
+ - tool-esptool @ 1.413.0 (4.13) 
+ - tool-esptoolpy @ 1.30000.201119 (3.0.0) 
+ - toolchain-xtensa @ 2.100300.220621 (10.3.0)
+LDF: Library Dependency Finder -> https://bit.ly/configure-pio-ldf
+LDF Modes: Finder ~ chain, Compatibility ~ strict
+Found 40 compatible libraries
+Scanning dependencies...
+Dependency Graph
+|-- ESPAsyncTCP @ 2.0.0
+|-- ESPAsyncWebServer @ 3.10.3
+|-- ArduinoJson @ 7.4.2
+|-- ESP8266WiFi @ 1.0
+|-- LittleFS @ 0.1.0
+Building in release mode
+Compiling .pio\build\esp12s_candidate\src\broker.cpp.o
+Compiling .pio\build\esp12s_candidate\src\broker_product.cpp.o
+Compiling .pio\build\esp12s_candidate\src\broker_wifi.cpp.o
+Compiling .pio\build\esp12s_candidate\src\main.cpp.o
+Compiling .pio\build\esp12s_candidate\src\mega_link.cpp.o
+Compiling .pio\build\esp12s_candidate\src\storage.cpp.o
+Compiling .pio\build\esp12s_candidate\src\wifi_service.cpp.o
+Generating LD script .pio\build\esp12s_candidate\ld\local.eagle.app.v6.common.ld
+Compiling .pio\build\esp12s_candidate\lib443\ESPAsyncTCP\AsyncPrinter.cpp.o
+Compiling .pio\build\esp12s_candidate\lib443\ESPAsyncTCP\ESPAsyncTCP.cpp.o
+Compiling .pio\build\esp12s_candidate\lib443\ESPAsyncTCP\ESPAsyncTCPbuffer.cpp.o
+Compiling .pio\build\esp12s_candidate\lib443\ESPAsyncTCP\SyncClient.cpp.o
+Compiling .pio\build\esp12s_candidate\lib443\ESPAsyncTCP\tcp_axtls.c.o
+Compiling .pio\build\esp12s_candidate\libad8\Hash\Hash.cpp.o
+Archiving .pio\build\esp12s_candidate\libad8\libHash.a
+Compiling .pio\build\esp12s_candidate\libe0b\ESP8266WiFi\BearSSLHelpers.cpp.o
+Compiling .pio\build\esp12s_candidate\libe0b\ESP8266WiFi\CertStoreBearSSL.cpp.o
+Indexing .pio\build\esp12s_candidate\libad8\libHash.a
+Compiling .pio\build\esp12s_candidate\libe0b\ESP8266WiFi\ESP8266WiFi.cpp.o
+Compiling .pio\build\esp12s_candidate\libe0b\ESP8266WiFi\ESP8266WiFiAP.cpp.o
+Compiling .pio\build\esp12s_candidate\libe0b\ESP8266WiFi\ESP8266WiFiGeneric.cpp.o
+Archiving .pio\build\esp12s_candidate\lib443\libESPAsyncTCP.a
+Indexing .pio\build\esp12s_candidate\lib443\libESPAsyncTCP.a
+Compiling .pio\build\esp12s_candidate\libe0b\ESP8266WiFi\ESP8266WiFiGratuitous.cpp.o
+Compiling .pio\build\esp12s_candidate\libe0b\ESP8266WiFi\ESP8266WiFiMulti.cpp.o
+Compiling .pio\build\esp12s_candidate\libe0b\ESP8266WiFi\ESP8266WiFiSTA-WPS.cpp.o
+Compiling .pio\build\esp12s_candidate\libe0b\ESP8266WiFi\ESP8266WiFiSTA.cpp.o
+Compiling .pio\build\esp12s_candidate\libe0b\ESP8266WiFi\ESP8266WiFiScan.cpp.o
+Compiling .pio\build\esp12s_candidate\libe0b\ESP8266WiFi\WiFiClient.cpp.o
+src\broker_product.cpp: In member function 'bool Broker::encodeProduct(BrokerRequest&, ArduinoJson::V742PB22::JsonObjectConst)':
+src\broker_product.cpp:15:9: warning: this 'if' clause does not guard... [-Wmisleading-indentation]
+   15 |         if(!p["jobId"].is<uint32_t>() || !p["jobId"].as<uint32_t>())return fail();afr2_put_u32(q.body,p["jobId"].as<uint32_t>());
+      |         ^~
+src\broker_product.cpp:15:83: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the 'if'
+   15 |         if(!p["jobId"].is<uint32_t>() || !p["jobId"].as<uint32_t>())return fail();afr2_put_u32(q.body,p["jobId"].as<uint32_t>());
+      |                                                                                   ^~~~~~~~~~~~
+src\broker_product.cpp:35:9: warning: this 'if' clause does not guard... [-Wmisleading-indentation]
+   35 |         if(value==255)return fail();q.wireCommand=AFR2_EXT_MODE;q.bodyLength=5;q.body[4]=value;
+      |         ^~
+src\broker_product.cpp:35:37: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the 'if'
+   35 |         if(value==255)return fail();q.wireCommand=AFR2_EXT_MODE;q.bodyLength=5;q.body[4]=value;
+      |                                     ^
+src\broker_product.cpp:49:9: warning: this 'if' clause does not guard... [-Wmisleading-indentation]
+   49 |         if(!p["confirm"].is<bool>())return fail();q.wireCommand=AFR2_EXT_LINE_CAL;q.bodyLength=5;q.body[4]=p["confirm"].as<bool>()?0:1;
+      |         ^~
+src\broker_product.cpp:49:51: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the 'if'
+   49 |         if(!p["confirm"].is<bool>())return fail();q.wireCommand=AFR2_EXT_LINE_CAL;q.bodyLength=5;q.body[4]=p["confirm"].as<bool>()?0:1;
+      |                                                   ^
+src\broker_product.cpp:58:9: warning: this 'if' clause does not guard... [-Wmisleading-indentation]
+   58 |         if(!textId(p["sequenceId"]))return fail();strlcpy(q.sequenceId,p["sequenceId"].as<const char *>(),sizeof(q.sequenceId));
+      |         ^~
+src\broker_product.cpp:58:51: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the 'if'
+   58 |         if(!textId(p["sequenceId"]))return fail();strlcpy(q.sequenceId,p["sequenceId"].as<const char *>(),sizeof(q.sequenceId));
+      |                                                   ^~~~~~~
+src\broker_product.cpp:71:13: warning: this 'if' clause does not guard... [-Wmisleading-indentation]
+   71 |             if(!textId(p["executionId"]))return fail();strlcpy(q.executionId,p["executionId"].as<const char *>(),sizeof(q.executionId));
+      |             ^~
+src\broker_product.cpp:71:56: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the 'if'
+   71 |             if(!textId(p["executionId"]))return fail();strlcpy(q.executionId,p["executionId"].as<const char *>(),sizeof(q.executionId));
+      |                                                        ^~~~~~~
+src\broker_product.cpp:73:13: warning: this 'if' clause does not guard... [-Wmisleading-indentation]
+   73 |             if(!q.wireCommand)return fail();q.bodyLength=q.wireCommand==AFR2_EXT_SEQ_STATUS?8:q.wireCommand==AFR2_EXT_SEQ_CANCEL?13:12;
+      |             ^~
+src\broker_product.cpp:73:45: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the 'if'
+   73 |             if(!q.wireCommand)return fail();q.bodyLength=q.wireCommand==AFR2_EXT_SEQ_STATUS?8:q.wireCommand==AFR2_EXT_SEQ_CANCEL?13:12;
+      |                                             ^
+src\broker_product.cpp: In member function 'bool Broker::finishProduct(const BrokerRequest&, const MegaResult&)':
+src\broker_product.cpp:134:13: warning: this 'if' clause does not guard... [-Wmisleading-indentation]
+  134 |             if(i+1<1024)v|=(uint32_t)oledData_[i+1]<<8;if(i+2<1024)v|=oledData_[i+2];
+      |             ^~
+src\broker_product.cpp:134:56: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the 'if'
+  134 |             if(i+1<1024)v|=(uint32_t)oledData_[i+1]<<8;if(i+2<1024)v|=oledData_[i+2];
+      |                                                        ^~
+Compiling .pio\build\esp12s_candidate\libe0b\ESP8266WiFi\WiFiClientSecureBearSSL.cpp.o
+Compiling .pio\build\esp12s_candidate\libe0b\ESP8266WiFi\WiFiServer.cpp.o
+Compiling .pio\build\esp12s_candidate\libe0b\ESP8266WiFi\WiFiServerSecureBearSSL.cpp.o
+Compiling .pio\build\esp12s_candidate\libe0b\ESP8266WiFi\WiFiUdp.cpp.o
+Compiling .pio\build\esp12s_candidate\libe0b\ESP8266WiFi\enable_wifi_at_boot_time.cpp.o
+Compiling .pio\build\esp12s_candidate\lib0f9\ESPAsyncWebServer\AsyncEventSource.cpp.o
+Compiling .pio\build\esp12s_candidate\lib0f9\ESPAsyncWebServer\AsyncJson.cpp.o
+Compiling .pio\build\esp12s_candidate\lib0f9\ESPAsyncWebServer\AsyncWebHeader.cpp.o
+Compiling .pio\build\esp12s_candidate\lib0f9\ESPAsyncWebServer\AsyncWebServerRequest.cpp.o
+Compiling .pio\build\esp12s_candidate\lib0f9\ESPAsyncWebServer\AsyncWebSocket.cpp.o
+Compiling .pio\build\esp12s_candidate\lib0f9\ESPAsyncWebServer\BackPort_SHA1Builder.cpp.o
+Compiling .pio\build\esp12s_candidate\lib0f9\ESPAsyncWebServer\ChunkPrint.cpp.o
+Compiling .pio\build\esp12s_candidate\lib0f9\ESPAsyncWebServer\Middleware.cpp.o
+Compiling .pio\build\esp12s_candidate\lib0f9\ESPAsyncWebServer\WebAuthentication.cpp.o
+Archiving .pio\build\esp12s_candidate\libe0b\libESP8266WiFi.a
+Compiling .pio\build\esp12s_candidate\lib0f9\ESPAsyncWebServer\WebHandlers.cpp.o
+Indexing .pio\build\esp12s_candidate\libe0b\libESP8266WiFi.a
+Compiling .pio\build\esp12s_candidate\lib0f9\ESPAsyncWebServer\WebRequest.cpp.o
+Compiling .pio\build\esp12s_candidate\lib0f9\ESPAsyncWebServer\WebResponses.cpp.o
+Compiling .pio\build\esp12s_candidate\lib0f9\ESPAsyncWebServer\WebServer.cpp.o
+Compiling .pio\build\esp12s_candidate\libd0a\LittleFS\LittleFS.cpp.o
+Compiling .pio\build\esp12s_candidate\libd0a\LittleFS\lfs.c.o
+Compiling .pio\build\esp12s_candidate\libd0a\LittleFS\lfs_util.c.o
+Archiving .pio\build\esp12s_candidate\libFrameworkArduinoVariant.a
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\Crypto.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\Esp-frag.cpp.o
+Indexing .pio\build\esp12s_candidate\libFrameworkArduinoVariant.a
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\Esp-version.cpp.o
+Archiving .pio\build\esp12s_candidate\libd0a\libLittleFS.a
+Indexing .pio\build\esp12s_candidate\libd0a\libLittleFS.a
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\Esp.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\FS.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\FSnoop.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\FunctionalInterrupt.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\HardwareSerial.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\IPAddress.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\LwipDhcpServer-NonOS.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\LwipDhcpServer.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\LwipIntf.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\LwipIntfCB.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\MD5Builder.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\Print.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\Schedule.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\StackThunk.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\Stream.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\StreamSend.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\Tone.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\TypeConversion.cpp.o
+Archiving .pio\build\esp12s_candidate\lib0f9\libESPAsyncWebServer.a
+Indexing .pio\build\esp12s_candidate\lib0f9\libESPAsyncWebServer.a
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\Updater.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\WMath.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\WString.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\abi.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\aes_unwrap.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\base64.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\cbuf.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\cont.S.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\cont_util.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_app_entry_noextra4k.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_eboot_command.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_features.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_flash_quirks.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_flash_utils.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_i2s.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_main.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_non32xfer.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_noniso.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_phy.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_postmortem.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_si2c.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_sigma_delta.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_spi_utils.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_timer.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_vm.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_waveform_phase.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_waveform_pwm.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_wiring.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_wiring_analog.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_wiring_digital.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_wiring_pulse.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_wiring_pwm.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_wiring_shift.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\crc32.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\debug.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\exc-c-wrapper-handler.S.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\exc-sethandler.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\flash_hal.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\gdb_hooks.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\heap.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\hwdt_app_entry.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\libb64\cdecode.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\libb64\cencode.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\libc_replacements.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\mmu_iram.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\reboot_uart_dwnld.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\spiffs\spiffs_cache.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\spiffs\spiffs_check.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\spiffs\spiffs_gc.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\spiffs\spiffs_hydrogen.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\spiffs\spiffs_nucleus.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\spiffs_api.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\sqrt32.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\stdlib_noniso.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\time.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\uart.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\umm_malloc\umm_info.c.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\umm_malloc\umm_integrity.c.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\umm_malloc\umm_local.c.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\umm_malloc\umm_malloc.cpp.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\umm_malloc\umm_poison.c.o
+Compiling .pio\build\esp12s_candidate\FrameworkArduino\wpa2_eap_patch.cpp.o
+Archiving .pio\build\esp12s_candidate\libFrameworkArduino.a
+Indexing .pio\build\esp12s_candidate\libFrameworkArduino.a
+Linking .pio\build\esp12s_candidate\firmware.elf
+Retrieving maximum program size .pio\build\esp12s_candidate\firmware.elf
+Checking size .pio\build\esp12s_candidate\firmware.elf
+Advanced Memory Usage is available via "PlatformIO Home > Project Inspect"
+RAM:   [=====     ]  54.1% (used 44288 bytes from 81920 bytes)
+Flash: [====      ]  39.6% (used 413501 bytes from 1044464 bytes)
+Building .pio\build\esp12s_candidate\firmware.bin
+Creating BIN file ".pio\build\esp12s_candidate\firmware.bin" using "C:\Users\kobac\.platformio\packages\framework-arduinoespressif8266\bootloaders\eboot\eboot.elf" and ".pio\build\esp12s_candidate\firmware.elf"
+========================= [SUCCESS] Took 47.69 seconds =========================

@@ -1,0 +1,26 @@
+{
+  "changeId": "AFR2-20261025-03",
+  "decision": "VIS-027",
+  "manual": "0.1.9",
+  "direction": "Confirmada",
+  "composition": "Propuesta",
+  "verification": "No verificada",
+  "targets": [
+    "ManualDriveOverlay",
+    "ManualDriveModel",
+    "FloatingModal initialFocusRef (opt-in)",
+    "manual-drive.css"
+  ],
+  "sourceFindings": [
+    "Modal focuses Close, old arrow handler was stage-local",
+    "Canvas wrapper explicitly enables pointer events"
+  ],
+  "input": "Dedicated overlay; modal-scoped capture listeners; slider native keys preserved;12/8px dead zone; release/second pointer/blur/STOP cancel",
+  "motion": "Active arrow opacity/scale140ms; hold icon +/-3px800ms; model CSS8px per axis; keyboard instant; reduced motion disables secondary movement",
+  "newDependencies": false,
+  "newPalette": false,
+  "newAssets": false,
+  "browser": false,
+  "phone": false,
+  "physicalFeedback": false
+}

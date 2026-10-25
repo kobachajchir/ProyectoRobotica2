@@ -1,3 +1,5 @@
+> AFR2-20261024-11: J1 conserva orden y formato; CLK/DT ahora D2/D3 por IRQ. [Captura y Hall](INTERRUPCIONES_ENCODER_HALL.md). Requisitos documentales; CAD pendiente.
+
 # Placa OLED/encoder y soporte: requisitos para la próxima etapa
 
 Actualización del usuario 2026-10-23. [Pinout](PINOUT.md). Estado: requisitos; no esquemático/PCB/modelo mecánico creados.
@@ -8,8 +10,8 @@ La PCB nueva monta OLED y encoder de interfaz. Debe exponer DOS conectores exter
 
 | Conector | Pin propuesto | Red | Destino externo |
 | --- | --- | --- | --- |
-| J1 señales 1x5 | 1 | CLK | Mega D40 / PG1 |
-| J1 señales 1x5 | 2 | DT | Mega D41 / PG0 |
+| J1 señales 1x5 | 1 | CLK | Mega D2 / PE4 / INT4 |
+| J1 señales 1x5 | 2 | DT | Mega D3 / PE5 / INT5 |
 | J1 señales 1x5 | 3 | SW | Mega D42 / PL7 |
 | J1 señales 1x5 | 4 | SDA | Cabecera SDA del shield (Mega D20 / PD1) |
 | J1 señales 1x5 | 5 | SCL | Cabecera SCL del shield (Mega D21 / PD0) |

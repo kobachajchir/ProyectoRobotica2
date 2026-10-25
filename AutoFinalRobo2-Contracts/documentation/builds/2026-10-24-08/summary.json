@@ -1,0 +1,131 @@
+{
+  "changeId": "AFR2-20261024-08",
+  "date": "2026-10-24",
+  "firmwareVersion": "0.7.0",
+  "extension": 5,
+  "buildExitCodes": {
+    "web": 0,
+    "atmega": 0,
+    "esp": 0
+  },
+  "avr": {
+    "sramCapacity": 8192,
+    "staticMargin": 3395,
+    "renderFrame": 120,
+    "stackCertified": false,
+    "enumeratedProgmemEnd": "0x3494",
+    "mainFrame": 237,
+    "bss": 3978,
+    "staticSramBytes": 4797,
+    "text": 63422,
+    "renderFrameQualifier": "dynamic,bounded",
+    "noinit": 9,
+    "flashBytes": 64232,
+    "data": 810
+  },
+  "esp": {
+    "programCapacity": 1044464,
+    "ramCapacity": 81920,
+    "staticRamBytes": 45852,
+    "programBytes": 423665,
+    "physicalFlashIdentified": false,
+    "candidateLinkerScript": "eagle.flash.4m3m.ld"
+  },
+  "web": {
+    "filesystemBudgetBytes": 2867200,
+    "promotion": [
+      {
+        "route": "/brand/favicon.webp",
+        "webGzipSha256": "8b09232de5bb978d3a5b27d73f1bfbbd9d23f87ce7d6afc45d81a39e67e9c02f",
+        "espGzipSha256": "8b09232de5bb978d3a5b27d73f1bfbbd9d23f87ce7d6afc45d81a39e67e9c02f",
+        "identical": true
+      },
+      {
+        "route": "/brand/Logo-1024.webp",
+        "webGzipSha256": "7a9d0a4da4327b952708ebab7ddc1a287af6ef0dc33dd93f382869e1e19414c5",
+        "espGzipSha256": "7a9d0a4da4327b952708ebab7ddc1a287af6ef0dc33dd93f382869e1e19414c5",
+        "identical": true
+      },
+      {
+        "route": "/brand/Logo-256.webp",
+        "webGzipSha256": "d273952807d216a6ca629cdeb6e13739b7fff23d1dd32fd4b50390c6453fd9f3",
+        "espGzipSha256": "d273952807d216a6ca629cdeb6e13739b7fff23d1dd32fd4b50390c6453fd9f3",
+        "identical": true
+      },
+      {
+        "route": "/draco/draco_decoder.wasm",
+        "webGzipSha256": "d2ea825f06f391962a850da94d68aa9778688a57cc7a79424938cc461ae1e759",
+        "espGzipSha256": "d2ea825f06f391962a850da94d68aa9778688a57cc7a79424938cc461ae1e759",
+        "identical": true
+      },
+      {
+        "route": "/draco/draco_wasm_wrapper.js",
+        "webGzipSha256": "5065d3fcaba12f33fea4dc9886646f6ad1f94e53a71407a92db52c4e8b4a440d",
+        "espGzipSha256": "5065d3fcaba12f33fea4dc9886646f6ad1f94e53a71407a92db52c4e8b4a440d",
+        "identical": true
+      },
+      {
+        "route": "/index.html",
+        "webGzipSha256": "65f0d0921da51e7fd8708b60d1a8c06be6f4dc6ba4ce5a141ca27010a5acca8b",
+        "espGzipSha256": "65f0d0921da51e7fd8708b60d1a8c06be6f4dc6ba4ce5a141ca27010a5acca8b",
+        "identical": true
+      },
+      {
+        "route": "/models/AutoFinalRobo2.glb",
+        "webGzipSha256": "30d0245bc9ed858a3d93ed8d25ae8f86d7434a9c219334cf25349da76a061e5f",
+        "espGzipSha256": "30d0245bc9ed858a3d93ed8d25ae8f86d7434a9c219334cf25349da76a061e5f",
+        "identical": true
+      }
+    ],
+    "estimatedFilesystemBytes": 1540096,
+    "rawBytes": 2906939,
+    "gzipBytes": 1452714,
+    "assetCount": 7,
+    "profile": "esp",
+    "manifestSha256": "396d667adb55341349c9ac84147736a3befdaac0457e8dc172cde8c16ef23e44",
+    "espManifestSha256": "396d667adb55341349c9ac84147736a3befdaac0457e8dc172cde8c16ef23e44"
+  },
+  "artifacts": [
+    {
+      "path": "AutoFinalRobo2-Atmega/build/afr2.elf",
+      "bytes": 95536,
+      "sha256": "ea24c3b1ff84fab184582a38c659a15725b0a4122b5dfed34ab70c10372429ce"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/build/afr2.hex",
+      "bytes": 180672,
+      "sha256": "253ec3f49ac20f33e87077feb17f6d189d44e62ff8379f9e51bbcd04b27f6fbc"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/build/afr2-communication.elf",
+      "bytes": 17448,
+      "sha256": "60f19bc15e1dfec826ac5c21c5d9eddd40602f4fd08b1ea4a835812408f283cf"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/libafr2_ui.a",
+      "bytes": 167818,
+      "sha256": "9b24e1ea7814aee09c05661de6747ad0a7de4f65d4cbf445c0bc9dc9d47c1fa7"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/.pio/build/esp12s_candidate/firmware.elf",
+      "bytes": 1607360,
+      "sha256": "24b56c737d81864bcf8f358afa74f56fade6699797480ec2f40806ad50e1852a"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/.pio/build/esp12s_candidate/firmware.bin",
+      "bytes": 427824,
+      "sha256": "443ade3dd0089742662b802c62e511e840672870e8f7ed31e7094dd3c777ac8d"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/public/models/AutoFinalRobo2.glb",
+      "bytes": 827232,
+      "sha256": "d10684704200caa4da0a6a98715e52abc446b9dee9cccdde32f33ee05fc927c7"
+    }
+  ],
+  "sequenceMemoryApproved": false,
+  "hallConnected": false,
+  "physicalTests": false,
+  "flashed": false,
+  "resetExecuted": false,
+  "verification": "Compilaciones e inspección de fuente/artefactos. Sin tests, validadores independientes, render de navegador/OLED, radio/UART, imagen LittleFS, reinicios ni flasheos."
+}

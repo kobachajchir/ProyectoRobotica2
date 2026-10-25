@@ -7,10 +7,12 @@
         "web:protocol-client",
         "esp:json-bridge",
         "esp:uart-broker",
-        "atmega:uner-core",
+        "atmega:robo2-core",
         "atmega:handlers"
       ],
-      "state": "migration-design"
+      "state": "source-integrated-compiled-runtime-unverified",
+      "note": "ROBO2/profile2 EX01v6 compiled source, backward timed and OLED compatibility. Distance path gated by negotiated feature, memory/Hall/calibration. No electrical/runtime/physical evidence; CAD unchanged.",
+      "changeId": "AFR2-20261024-02"
     },
     {
       "id": "shared:flow/local-ui",
@@ -22,7 +24,9 @@
         "atmega:i2c-manager",
         "atmega:twi-backend"
       ],
-      "state": "partial-source-backend-pending"
+      "state": "source-integrated-uncompiled-runtime-unverified",
+      "note": "Fuente11: encoder INT4/5 D2/D3, FIFO/main; Hall PCINT2 A8–A15 x1 macro0, preferencia de captura software. Sin nueva compilación ni hardware; CAD pendiente.",
+      "changeId": "AFR2-20261024-11"
     },
     {
       "id": "shared:flow/sensors-control",
@@ -33,7 +37,9 @@
         "atmega:mecanum",
         "atmega:motors4"
       ],
-      "state": "planned"
+      "state": "source-integrated-uncompiled-runtime-unverified",
+      "note": "Fuente11: encoder INT4/5 D2/D3, FIFO/main; Hall PCINT2 A8–A15 x1 macro0, preferencia de captura software. Sin nueva compilación ni hardware; CAD pendiente.",
+      "changeId": "AFR2-20261024-11"
     },
     {
       "id": "shared:flow/menu-plan-ui-pcb",
@@ -43,8 +49,9 @@
         "atmega:ui-wrapper",
         "shared:hardware/PCB_OLED_ENCODER.md"
       ],
-      "state": "design-not-implemented",
-      "note": "SDA/SCL expuestos; J1 1x5 y J2 1x2. Largo menu; Volver por item."
+      "state": "source-integrated-uncompiled-runtime-unverified",
+      "note": "Fuente11: encoder INT4/5 D2/D3, FIFO/main; Hall PCINT2 A8–A15 x1 macro0, preferencia de captura software. Sin nueva compilación ni hardware; CAD pendiente.",
+      "changeId": "AFR2-20261024-11"
     },
     {
       "id": "shared:flow/shield-uart-flashing",
@@ -52,7 +59,7 @@
         "shared:hardware/WIFI_SHIELD.md",
         "shared:hardware/FLASHING.md",
         "esp:uart-broker",
-        "atmega:uner-core",
+        "atmega:robo2-core",
         "shared:hardware/PINOUT.md"
       ],
       "state": "documented-hardware-path-not-tested",
@@ -63,6 +70,169 @@
         "AFRDOC-013"
       ],
       "note": "Selector E_RX/E_TX y puerto directo separados; USART1 operación; cruce D0/D1 para puente USB. No cambio wire."
+    },
+    {
+      "id": "shared:flow/web-global-oled",
+      "path": [
+        "web:AppShell/FloatingModal",
+        "web:LiveOledViewer",
+        "web:ConnectionProvider/Afr2Client",
+        "esp:robot.screen.get/robot.ui.action",
+        "atmega:ui-wrapper"
+      ],
+      "state": "source-integrated-compiled-runtime-unverified",
+      "changeId": "AFR2-20261024-09",
+      "note": "EX01v5; catálogo59 en Web, copia AVR y visor framebuffer sin reconstrucción heredada. Sin prueba física."
+    },
+    {
+      "id": "shared:flow/web-control-map",
+      "path": [
+        "web:sequence-library",
+        "web:mecanum-simulation",
+        "web:ControlMap/TopMap/ControlMapScene",
+        "web:shared-final-GLB-meter-scale"
+      ],
+      "state": "source-integrated-compiled-runtime-unverified",
+      "changeId": "AFR2-20261024-07",
+      "note": "Solo simulación local, sin pose física ni inferencia de orientación desde consignas. GLB a escala nativa; suelo por vértices precisos. Compilado, render no verificado."
+    },
+    {
+      "id": "shared:flow/car-wifi-draft",
+      "path": [
+        "atmega:wifi-outbox",
+        "esp:EX01-wifi-jobs",
+        "web:WifiDraftModal",
+        "esp:ram-draft",
+        "atmega:physical-connect-review"
+      ],
+      "state": "source-integrated-compiled-runtime-unverified",
+      "changeId": "AFR2-20261024-02",
+      "note": "ROBO2/perfil2 EX01v3; productores y consumidores en fuente compilada. Sin prueba electrica/fisica; CAD sigue pendiente."
+    },
+    {
+      "id": "shared:flow/sequence-oled-progress",
+      "path": [
+        "web:sequence-semantic-kind",
+        "esp:EX01v4-append",
+        "atmega:packed-kind",
+        "atmega:sequence-snapshot",
+        "atmega:pure-sequence-renderer",
+        "atmega:i2c-manager"
+      ],
+      "state": "compiled-runtime-unverified-memory-gated",
+      "changeId": "AFR2-20261024-07",
+      "note": "No physical sequence enabled. Snapshot-only renderer; long SW and explicit Volver retained."
+    },
+    {
+      "path": [
+        "esp:wifi-sdk-and-HTTP-WS-events",
+        "esp:bounded-network-queue",
+        "esp:EX01v5-state-pages-and-event-ACK",
+        "atmega:network-presentation-state",
+        "atmega:prepared-snapshot",
+        "atmega:pure-network-renderers",
+        "atmega:i2c-manager"
+      ],
+      "note": "STA key excluded. AP key local only; protected capture unavailable. No physical evidence.",
+      "id": "shared:flow/network-oled-notices",
+      "state": "compiled-runtime-unverified",
+      "changeId": "AFR2-20261024-08"
+    },
+    {
+      "path": [
+        "atmega:Sistema-Reinicio",
+        "atmega:physical-invoke-and-stopped-EEPROM-guards",
+        "atmega:local-watchdog-or-wifi-job8",
+        "esp:job-result-ACK-and-generation-fence",
+        "esp:deferred-restart",
+        "shared:BT01-and-network-boot-report"
+      ],
+      "note": "No reboot executed by authoring/compilation. ACK is not boot completion.",
+      "id": "shared:flow/local-restart-menu",
+      "state": "compiled-runtime-unverified",
+      "changeId": "AFR2-20261024-08"
+    },
+    {
+      "id": "shared:flow/web-goto-simulation",
+      "state": "source-compiled-runtime-unverified",
+      "path": [
+        "web:floor-pick-or-keyboard-command",
+        "web:local-goto-command-list",
+        "web:bounded-analytic-plan",
+        "web:simulated-pose-and-trail",
+        "web:shared-final-GLB-map-and-active-command-scroll"
+      ],
+      "note": "12: local simulation only; map/current command main column, stacked coordinate sidebar, collapsed route carousel and secondary builder. No UART/WS movement or new ScreenCodes. No browser evidence.",
+      "changeId": "AFR2-20261024-12"
+    },
+    {
+      "id": "shared:flow/sequence-distance-v6",
+      "changeId": "AFR2-20261024-12",
+      "state": "source-compiled-gates0-runtime-unverified",
+      "path": [
+        "web:sequence-editor-v2",
+        "web:wheel-program-compiler",
+        "esp:EX01v6-broker",
+        "atmega:bounded-wheel-step-buffer",
+        "atmega:calibrated-hall-distance-and-watchdog"
+      ],
+      "note": "Timed compatibility retained; distance uses1..10000mm wheel travel and32records/120s watchdog. Chassis barriers or independent wheels. Memory/Hall gates0; no physical evidence."
+    },
+    {
+      "id": "shared:flow/fullscreen-manual-drive",
+      "changeId": "AFR2-20261024-13",
+      "state": "web-compiled-runtime-unverified-firmware-unchanged",
+      "path": [
+        "web:pointer-or-held-key-direction",
+        "web:shared-manual-target-and180ms-heartbeat",
+        "web:existing-robot.drive-ttl400",
+        "esp:direct-control7-broker",
+        "atmega:existing-bounded-mecanum-controller"
+      ],
+      "note": "Open does not drive. Release/close/cancel sends zero; STOP/focus/error fences input. New authoritative state read required before hiding STOP. Reference GLB only; no pose/ScreenCode or new UART format. Gestures and physical runtime unverified."
+    },
+    {
+      "id": "shared:flow/oled-catalogue-tree-controls",
+      "changeId": "AFR2-20261024-14",
+      "state": "web-compiled-runtime-parity-unverified-firmware-unchanged",
+      "path": [
+        "contracts:shared59-screen-parent-metadata",
+        "web:catalogue-tree",
+        "web:static-library-selection-and-scroll",
+        "web:remote-framebuffer-and-side-controls",
+        "esp:existing-robot.ui.action",
+        "atmega:revision-guarded-encoder"
+      ],
+      "note": "Numbered rows highlight, SW confirms. Existing delta±1 wire, up to3steps with fresh capture between steps. Dynamic count unknown uses basic encoder. No renderer/resource change or fabricated telemetry; no physical evidence."
+    },
+    {
+      "id": "shared:flow/filesystem-package-diagnostic",
+      "changeId": "AFR2-20261024-15",
+      "state": "source-compiled-runtime-unverified",
+      "path": [
+        "web:package-manifest-optional-version-and-time",
+        "esp:accepted-manifest-and-file-sizes",
+        "esp:Storage-health-system.info-hello-api.health",
+        "web:Hardware-LittleFS-package"
+      ],
+      "note": "Legacy manifests compatible; missing identity unknown. Index hash declared only, not recomputed on device. No credentials, formatting or new UART."
+    },
+    {
+      "id": "shared:flow/direct-web-control7",
+      "changeId": "AFR2-20261025-01",
+      "state": "compiled-runtime-unverified",
+      "path": [
+        "web:direct-action",
+        "esp:no-permission-dispatch",
+        "atmega:reserved-zero-prefix-and-device-conditions"
+      ],
+      "supervision": [
+        "web:interactive-alive500ms",
+        "esp:age-relay",
+        "atmega:1500ms-caducity"
+      ],
+      "note": "No grant/token/access switch; heartbeat cannot start or resume outputs. OLED and Web tables aligned,30commands/59codes."
     }
-  ]
+  ],
+  "updated_by": "AFR2-20261025-01"
 }

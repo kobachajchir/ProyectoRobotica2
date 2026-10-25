@@ -2,8 +2,8 @@
   "schema": "afr2-module-1",
   "id": "web:module/reference/web/src/protocol/espClient.ts",
   "title": "Cliente WebSocket y estado",
-  "responsibility": "Reutilizar promesas por requestId, respuesta/error/evento, cancelación al desconectar y estados de conexión. Contextos capturan APIs históricas y simulación.",
-  "changes_required": "Crear cliente de producto/capabilities nuevo; no mandar stm.* antes del port ESP/Mega. Separar aceptación y final. Unknown/stale no se rellena con datos de demo. Adaptar dueño de mando/lease, reconexión y permisos. No inferir compatibilidad del catálogo TypeScript.",
+  "responsibility": "Active ROBO2/profile2 EX01v7 direct Web actions, no grant/token/access switch. Session/transaction/generation correlation and automatic liveness; legacy reference is historical.",
+  "changes_required": "Protocol/failure/runtime and physical acceptance pending. Hall/geometry/calibration/memory0 preserved; no permission to implement or enable.",
   "evidence": [
     "reference/web/src/protocol/espClient.ts",
     "reference/web/src/protocol/wsApi.ts",
@@ -12,5 +12,6 @@
   "findings": [
     "AFRDOC-008"
   ],
-  "status": "source-documented-not-built"
+  "status": "source-compiled-runtime-unverified",
+  "direct_control_change": "AFR2-20261025-01"
 }

@@ -122,20 +122,36 @@
 #define AFR2_OLED_SCL_PORT PORTD
 #define AFR2_OLED_SCL_PIN PIND
 #define AFR2_OLED_SCL_BIT 0u
-/* ENC_UI_CLK: D40/PG1, proposed-new */
-#define AFR2_ENC_UI_CLK_DDR DDRG
-#define AFR2_ENC_UI_CLK_PORT PORTG
-#define AFR2_ENC_UI_CLK_PIN PING
-#define AFR2_ENC_UI_CLK_BIT 1u
-/* ENC_UI_DT: D41/PG0, proposed-new */
-#define AFR2_ENC_UI_DT_DDR DDRG
-#define AFR2_ENC_UI_DT_PORT PORTG
-#define AFR2_ENC_UI_DT_PIN PING
-#define AFR2_ENC_UI_DT_BIT 0u
+/* AFR2-20261024-11. UI pin change: requires rewiring, not physically verified. */
+/* ENC_UI_CLK: D2/PE4/INT4, proposed-new */
+#define AFR2_ENC_UI_CLK_DDR DDRE
+#define AFR2_ENC_UI_CLK_PORT PORTE
+#define AFR2_ENC_UI_CLK_PIN PINE
+#define AFR2_ENC_UI_CLK_BIT 4u
+/* ENC_UI_DT: D3/PE5/INT5, proposed-new */
+#define AFR2_ENC_UI_DT_DDR DDRE
+#define AFR2_ENC_UI_DT_PORT PORTE
+#define AFR2_ENC_UI_DT_PIN PINE
+#define AFR2_ENC_UI_DT_BIT 5u
 /* ENC_UI_SW: D42/PL7, proposed-new */
 #define AFR2_ENC_UI_SW_DDR DDRL
 #define AFR2_ENC_UI_SW_PORT PORTL
 #define AFR2_ENC_UI_SW_PIN PINL
 #define AFR2_ENC_UI_SW_BIT 7u
+
+/* Proposed Hall bank, x1 rising A + B direction; levels/wiring unverified.
+ * Wheel order matches Afr2Sensors.counts: FL, FR, RL, RR. */
+#define AFR2_HALL_DDR DDRK
+#define AFR2_HALL_PORT PORTK
+#define AFR2_HALL_PIN PINK
+#define AFR2_HALL_A_MASK 0x55u
+#define AFR2_HALL_FL_A_BIT 0u /* A8 / D62 / PK0 / PCINT16 */
+#define AFR2_HALL_FL_B_BIT 1u /* A9 / D63 / PK1 / PCINT17 */
+#define AFR2_HALL_FR_A_BIT 2u /* A10 / D64 / PK2 / PCINT18 */
+#define AFR2_HALL_FR_B_BIT 3u /* A11 / D65 / PK3 / PCINT19 */
+#define AFR2_HALL_RL_A_BIT 4u /* A12 / D66 / PK4 / PCINT20 */
+#define AFR2_HALL_RL_B_BIT 5u /* A13 / D67 / PK5 / PCINT21 */
+#define AFR2_HALL_RR_A_BIT 6u /* A14 / D68 / PK6 / PCINT22 */
+#define AFR2_HALL_RR_B_BIT 7u /* A15 / D69 / PK7 / PCINT23 */
 
 #endif

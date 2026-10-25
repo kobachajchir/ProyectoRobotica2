@@ -1,0 +1,224 @@
+{
+  "changeId": "AFR2-20261025-04",
+  "date": "2026-10-25",
+  "authorization": "Human requests offline simulation still failing and confirms footer Modelo 3D no disponible; existing compilation/correction request remains active.",
+  "authorship": "Own adaptation of current AFR2 sources; previous ST/F4/AutoMicro credits retained. No new external source, asset or dependency; installed R3F read-only evidence, not modified or copied.",
+  "before": [
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/manual/ManualDriveOverlay.tsx",
+      "sha256": "358cd21e1f85e205422a6626d87e0d7f5c65255b4fb0ffc0d6a1867ce9f86cb8"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/ControlPage.tsx",
+      "sha256": "488af0388bf7f1b440430a756bc577e916144f7b9357a399d1afebf9eaffe397"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/WEB_TOUCH_SIMULATION.md",
+      "sha256": "9ce4145be7694264131304992822095613be54e700183a37b1fa6b6b4c0607b6"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/ESTADO_IMPLEMENTACION.md",
+      "sha256": "ca7ba670c51640f96a40e6ab02d3475f4cdc1e5fa0370bb83d8eb35e5ea5d472"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/ALINEACION_MAESTRO.md",
+      "sha256": "49cd7a2b51db00387d5558a32ed2b477b6953b937b1b24f26ef6176026dfcb1a"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/PLAN_WEB.md",
+      "sha256": "6fae8134396e178a9a42e5ec92ea312d2c9e95a8a641c27188e4f6586c1d0ead"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/PROMPT_CONTINUIDAD.md",
+      "sha256": "e40f11a1d9642ed5d71a66ac7b89b8168fcbf0e3d06fd89c6795c11cde930f9e"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/README.md",
+      "sha256": "515a9ecaeae917ca4a92b8ef11e22397e5861338529e85127a2578eec4403bf1"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/CHANGELOG.md",
+      "sha256": "6ec4a2c114f2bb599857151cc5f9173ed8c60ebff42ebafbb0a7818eecf38c9d"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/provenance/README.md",
+      "sha256": "b750d9402e27e329866ea481ace53f9f310914ca0330d97c5abd1d5e9e06746e"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/README.md",
+      "sha256": "f122ead06b5fb4af82ddce876d1db92f47ead93449ec6b6af9352e4aa1c83cde"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/INFORME_ADAPTACION.md",
+      "sha256": "b116e0486864d149d495641f69204e428618e21a9adeb9cd9dc83454b1da5b51"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/docs/modules/manual-touch-drive.md",
+      "sha256": "dc850fb792195f26a306ce0dd961c7700f07f188201c3b40ab04fc744270d728"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/docs/modules/assets.json",
+      "sha256": "e23fb540ca977d5867c1a6619df0abb854f5a05b1ea019370e800bf954e73ff0"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/data/README.md",
+      "sha256": "434603d92115c5a4a776801b41c732a324a7ada12baaff06207ee53aa9c48146"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/manual/ManualDriveModel.tsx",
+      "sha256": "764287b1d10f1100adf10059194b5a8b5367add8a16bdf9d17917b0ddb7c3ad0"
+    }
+  ],
+  "files": [
+    {
+      "path": "AutoFinalRobo2-Contracts/CHANGELOG.md",
+      "bytes": 12549,
+      "sha256": "11ae4621612ef4ef13b97e8bd4c75692589c22798747f44839cd063da294204e",
+      "adaptation": "Current04 behavior/status/source-cause/build evidence, history preserved; no visual/physical acceptance claim."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/changes/2026-10-25-04-local-input-independent.md",
+      "bytes": 2185,
+      "sha256": "4b249b48a7a7b87be66a4df1fdaf8af2fffc20c850556a4fe544726ae746ff71",
+      "adaptation": "Current04 behavior/status/source-cause/build evidence, history preserved; no visual/physical acceptance claim."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/WEB_TOUCH_SIMULATION.md",
+      "bytes": 7123,
+      "sha256": "e5728da781019adff6df0769530338763fd13eac65342bb40b2dbbaf038cc889",
+      "adaptation": "Current04 behavior/status/source-cause/build evidence, history preserved; no visual/physical acceptance claim."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/ALINEACION_MAESTRO.md",
+      "bytes": 3792,
+      "sha256": "24b0f092219e5315fbf895417285fdf9b4c99c3eae270b1e422d2de310d81504",
+      "adaptation": "Current04 behavior/status/source-cause/build evidence, history preserved; no visual/physical acceptance claim."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/ESTADO_IMPLEMENTACION.md",
+      "bytes": 2067,
+      "sha256": "ed6b5590e5b4addb9fb3de4e690ee0be53795c738ab145f832df2525c7ec8ba0",
+      "adaptation": "Current04 behavior/status/source-cause/build evidence, history preserved; no visual/physical acceptance claim."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/PLAN_WEB.md",
+      "bytes": 1721,
+      "sha256": "48d76f4df66bc4abdc757a2f0f003fea159fa97201ce33a0767b4000de4ab96d",
+      "adaptation": "Current04 behavior/status/source-cause/build evidence, history preserved; no visual/physical acceptance claim."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/PROMPT_CONTINUIDAD.md",
+      "bytes": 30501,
+      "sha256": "d0529438f6e6767e5289cb96f7c12583c05d1b719b32dd8f4a91836d17748e97",
+      "adaptation": "Current04 behavior/status/source-cause/build evidence, history preserved; no visual/physical acceptance claim."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-25-04/manifest.json",
+      "bytes": 2631,
+      "sha256": "51847c8c75abbe9e4e343cede1c5fcdbb6651c94630dd18306b4ad7609024286",
+      "adaptation": "Current04 behavior/status/source-cause/build evidence, history preserved; no visual/physical acceptance claim."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-25-04/README.md",
+      "bytes": 1536,
+      "sha256": "ee32477eb2c715b47b50866ad1866f66b33f6fcf9cda09c330e45b6dfc700d39",
+      "adaptation": "Current04 behavior/status/source-cause/build evidence, history preserved; no visual/physical acceptance claim."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-25-04/summary.json",
+      "bytes": 4406,
+      "sha256": "f6ea8d9e498293c7ee8ecb9f5d69518ed0190cfabbfdcfaac9f55252bfa7dca8",
+      "adaptation": "Current04 behavior/status/source-cause/build evidence, history preserved; no visual/physical acceptance claim."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-25-04/web-build.txt",
+      "bytes": 1754,
+      "sha256": "93b10e7dca0282fc6a14da60b74858076ac4f85b5a01b799e0388009a328d8ba",
+      "adaptation": "Current04 behavior/status/source-cause/build evidence, history preserved; no visual/physical acceptance claim."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-25-04/web-exit.txt",
+      "bytes": 3,
+      "sha256": "13bf7b3039c63bf5a50491fa3cfd8eb4e699d1ba1436315aef9cbe5711530354",
+      "adaptation": "Current04 behavior/status/source-cause/build evidence, history preserved; no visual/physical acceptance claim."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/provenance/README.md",
+      "bytes": 6070,
+      "sha256": "34b7d35f9a5c206e79441a1e02a51dec2abad52fac743af86e8e75b203c268c3",
+      "adaptation": "Current04 behavior/status/source-cause/build evidence, history preserved; no visual/physical acceptance claim."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/README.md",
+      "bytes": 14978,
+      "sha256": "d821b1ae0bc3e9a1206d4dcb69d6986c9299ab2fceb9c25d8df60067bf5c2fcb",
+      "adaptation": "Current04 behavior/status/source-cause/build evidence, history preserved; no visual/physical acceptance claim."
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/data/README.md",
+      "bytes": 4298,
+      "sha256": "4d372c7baf41273f487c8ee26d5feaef3c1822c6a92bfc1bd0502a42777e1d0a",
+      "adaptation": "Current04 behavior/status/source-cause/build evidence, history preserved; no visual/physical acceptance claim."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/docs/modules/assets.json",
+      "bytes": 1487,
+      "sha256": "4bd7c3d043f275a64431d87467c9fbe16ed0fb55a506099f1f6a7a1049b6b51f",
+      "adaptation": "Current04 behavior/status/source-cause/build evidence, history preserved; no visual/physical acceptance claim."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/docs/modules/manual-touch-drive.md",
+      "bytes": 3164,
+      "sha256": "910ac2a8fcb6f94b6058ea08c37f8479c8626dbacfdd01a09e69571568da15d7",
+      "adaptation": "Current04 behavior/status/source-cause/build evidence, history preserved; no visual/physical acceptance claim."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/INFORME_ADAPTACION.md",
+      "bytes": 21682,
+      "sha256": "e6a9f6e7c92e908b53c58e1ae346dfc6a7ac90ac5c327fdaf264f474b6e3e61f",
+      "adaptation": "Current04 behavior/status/source-cause/build evidence, history preserved; no visual/physical acceptance claim."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/README.md",
+      "bytes": 22936,
+      "sha256": "9f5721b557648ca142d1750d64a509601c7cbc57dd044c6850a1bdaadb8b91b6",
+      "adaptation": "Current04 behavior/status/source-cause/build evidence, history preserved; no visual/physical acceptance claim."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/ControlPage.tsx",
+      "bytes": 41132,
+      "sha256": "15fd6b41152da260fc9230c1a49c807ff3e2581b8934f6d2de7d0635c2cdba4e",
+      "adaptation": "Existing StatusNotice indicates local simulation availability without robot; physical controls and command processing unchanged."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/manual/ManualDriveModel.tsx",
+      "bytes": 2251,
+      "sha256": "9f3479529ad0f875612b590bdbc04010372bfd306234bfb89edc4ba67345931b",
+      "adaptation": "Removed side-effecting Unavailable from native Canvas fallback, now passive text; existing model/renderer/top view/wheel simulation retained, actual errors handled by parent RenderBoundary."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/manual/ManualDriveOverlay.tsx",
+      "bytes": 15135,
+      "sha256": "14f028f4d4204c871f476c08ea09230fb8c5eb18fd16c02274ffc6a5dd00a1d7",
+      "adaptation": "Own AFR2 separation of local input from model/connection readiness, physical readiness fence retained, real model failure demotes safely to local, local direction status independent of visor state."
+    }
+  ],
+  "libraryEvidence": {
+    "path": "AutoFinalRobo2-Web/node_modules/@react-three/fiber/dist/react-three-fiber.esm.js",
+    "bytes": 7067,
+    "sha256": "cc26a8452be261edbeb210365f754784fef2b2d5a8caf1f81f18ea2c305b86f2"
+  },
+  "model": {
+    "path": "AutoFinalRobo2-Web/public/models/AutoFinalRobo2.glb",
+    "bytes": 827232,
+    "sha256": "d10684704200caa4da0a6a98715e52abc446b9dee9cccdde32f33ee05fc927c7"
+  },
+  "rootCause": "Canvas.fallback mounts native canvas children even with WebGL. Unavailable effect called onFailure there, falsely latched modelFailed and disabled input.",
+  "verification": "Human symptom: Modelo 3D no disponible. Source inspection traced fallback lifecycle to false failure state; authorized Web compile/package/local promotion and artifact hashes only. No browser reproduction, tests/standalone validators, phone, serial, FS image, flashing or physical operation; prior browser denial respected.",
+  "protocolChanged": false,
+  "newScreenCodes": false,
+  "newDependencies": false,
+  "cadModified": false,
+  "committed": false,
+  "published": false
+}

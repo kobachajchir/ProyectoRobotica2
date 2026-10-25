@@ -1,3 +1,5 @@
+> **Vigente AFR2-20261024-15:** [Matriz del maestro](../AutoFinalRobo2-Contracts/docs/ALINEACION_MAESTRO.md):33comandos y59identidades OLED con fuentes complementarias. Calibración Web adquiere control al escribir; ESP/Web informan FS/paquete. Web/ESP compilados15; AVR sin nueva fuente, build12/EX01v6/firmware0.8.0/gates0. Sin brecha software definida identificada tras lectura; aceptación física, memoria dinámica, flash/SPI y planos CAD pendientes. Solo documentación en CAD, sin diseño nuevo. Estados inferiores históricos.
+
 # AutoFinalRobo2-CAD
 
 AFR2-20261024-01: [ruedas y Blender](docs/RUEDAS_Y_BLENDER_20261024.md). Fusion v16 y Blender guardados; fotos/renders y GLB **827.232 bytes**, materiales PBR y Draco. Casquillos Ø6→Ø4 de referencia autorizados. Estados anteriores históricos.

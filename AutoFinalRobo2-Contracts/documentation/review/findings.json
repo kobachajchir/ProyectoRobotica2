@@ -10,7 +10,7 @@
       "code": [
         "reference/f4/Core/Src/ssd1306.c:ssd1306_UpdateScreen_H"
       ],
-      "observation": "Rama sin DMA usa mem_write bloqueante; backend TWI nuevo pendiente.",
+      "observation": "Backend TWI/Manager IRQ integrado15; settings19. Carga/recuperación física sin verificar.",
       "documentation": [
         {
           "path": "../../../AutoFinalRobo2-Atmega/docs/modules/i2c-oled.md",
@@ -21,8 +21,37 @@
         {
           "date": "2026-10-23",
           "action": "registered"
+        },
+        {
+          "date": "2026-10-23",
+          "action": "source-implementation-unverified",
+          "change_id": "AFR2-20261023-15"
+        },
+        {
+          "date": "2026-10-24",
+          "action": "source-implemented-acceptance-pending",
+          "change_id": "AFR2-20261023-19"
+        },
+        {
+          "date": "2026-10-24",
+          "action": "integration-compiled-not-physically-closed",
+          "change": "AFR2-20261024-02",
+          "note": "Backend TWI por IRQ integrado y compilado; no se usa rama F4 bloqueante. Recuperacion fisica no ensayada."
+        },
+        {
+          "note": "See docs/ALINEACION_MAESTRO.md; open status retains unperformed acceptance, not an unimplemented port.",
+          "change": "AFR2-20261024-15",
+          "date": "2026-10-24",
+          "action": "master-reconciled-source-and-acceptance-separated"
+        },
+        {
+          "date": "2026-10-25",
+          "action": "direct-control7-no-permission-source-compiled",
+          "change": "AFR2-20261025-01"
         }
-      ]
+      ],
+      "source_resolution": "Backend TWI por IRQ integrado y compilado; no se usa rama F4 bloqueante. Recuperacion fisica no ensayada.",
+      "implementation_review15": "source-implemented-acceptance-pending"
     },
     {
       "id": "AFRDOC-002",
@@ -33,7 +62,7 @@
       "code": [
         "reference/f4/Core/Src/auto_motion.c:ready"
       ],
-      "observation": "Cambiar planificador/guardas para odometría Mecanum, no falsear señales ready.",
+      "observation": "GOTO relativo nuevo19 usa Hall, sin MPU/balance. Fuente sin compilar; deshabilitado hasta calibrar odometría.",
       "documentation": [
         {
           "path": "../../../AutoFinalRobo2-Atmega/docs/modules/motion.md",
@@ -44,8 +73,32 @@
         {
           "date": "2026-10-23",
           "action": "registered"
+        },
+        {
+          "date": "2026-10-24",
+          "action": "source-implemented-acceptance-pending",
+          "change_id": "AFR2-20261023-19"
+        },
+        {
+          "date": "2026-10-24",
+          "action": "integration-compiled-not-physically-closed",
+          "change": "AFR2-20261024-02",
+          "note": "GOTO propio Mecanum XY/theta/velocidad compilado en AVR y puente Web/ESP EX01v3; sin MPU. Hall/calibracion pendientes."
+        },
+        {
+          "note": "See docs/ALINEACION_MAESTRO.md; open status retains unperformed acceptance, not an unimplemented port.",
+          "change": "AFR2-20261024-15",
+          "date": "2026-10-24",
+          "action": "master-reconciled-source-and-acceptance-separated"
+        },
+        {
+          "date": "2026-10-25",
+          "action": "direct-control7-no-permission-source-compiled",
+          "change": "AFR2-20261025-01"
         }
-      ]
+      ],
+      "source_resolution": "GOTO propio Mecanum XY/theta/velocidad compilado en AVR y puente Web/ESP EX01v3; sin MPU. Hall/calibracion pendientes.",
+      "implementation_review15": "source-implemented-acceptance-pending"
     },
     {
       "id": "AFRDOC-003",
@@ -56,7 +109,7 @@
       "code": [
         "reference/f4/Core/Inc/encoder.h:ENC_Task_N10ms"
       ],
-      "observation": "UI D40-D42 propuesta; Hall de cuatro ruedas siguen sin asignar.",
+      "observation": "Encoder UI separado de Hall PCINT2 x1; propuesta A8..A15 macro0 y test manual por vuelta. Hall sin conectar.",
       "documentation": [
         {
           "path": "../../../AutoFinalRobo2-Atmega/docs/modules/encoder-ui.md",
@@ -67,8 +120,32 @@
         {
           "date": "2026-10-23",
           "action": "registered"
+        },
+        {
+          "date": "2026-10-24",
+          "action": "source-implemented-acceptance-pending",
+          "change_id": "AFR2-20261023-19"
+        },
+        {
+          "date": "2026-10-24",
+          "action": "integration-compiled-not-physically-closed",
+          "change": "AFR2-20261024-02",
+          "note": "Encoder UI separado de Hall; Hall macro0 preservada. Integracion compilada; cableado/calibracion sin evidencia."
+        },
+        {
+          "note": "See docs/ALINEACION_MAESTRO.md; open status retains unperformed acceptance, not an unimplemented port.",
+          "change": "AFR2-20261024-15",
+          "date": "2026-10-24",
+          "action": "master-reconciled-source-and-acceptance-separated"
+        },
+        {
+          "date": "2026-10-25",
+          "action": "direct-control7-no-permission-source-compiled",
+          "change": "AFR2-20261025-01"
         }
-      ]
+      ],
+      "source_resolution": "Encoder UI separado de Hall; Hall macro0 preservada. Integracion compilada; cableado/calibracion sin evidencia.",
+      "implementation_review15": "source-implemented-acceptance-pending"
     },
     {
       "id": "AFRDOC-004",
@@ -79,7 +156,7 @@
       "code": [
         "include/board_pinmap.h:AFR2_HCSR04_ECHO_BIT"
       ],
-      "observation": "No asumir entrada de captura/INT/PCINT; resolver timing o recableado.",
+      "observation": "Timer3 CTC25us/timeout32ms implementado19 para PC6/D31. Latencia/resolución reales sin medir.",
       "documentation": [
         {
           "path": "../../../AutoFinalRobo2-Atmega/docs/modules/hcsr04.md",
@@ -90,8 +167,32 @@
         {
           "date": "2026-10-23",
           "action": "registered"
+        },
+        {
+          "date": "2026-10-24",
+          "action": "source-implemented-acceptance-pending",
+          "change_id": "AFR2-20261023-19"
+        },
+        {
+          "date": "2026-10-24",
+          "action": "integration-compiled-not-physically-closed",
+          "change": "AFR2-20261024-02",
+          "note": "Muestreo ECHO Timer3 25us compilado en producto; sin ensayo temporal/fisico."
+        },
+        {
+          "note": "See docs/ALINEACION_MAESTRO.md; open status retains unperformed acceptance, not an unimplemented port.",
+          "change": "AFR2-20261024-15",
+          "date": "2026-10-24",
+          "action": "master-reconciled-source-and-acceptance-separated"
+        },
+        {
+          "date": "2026-10-25",
+          "action": "direct-control7-no-permission-source-compiled",
+          "change": "AFR2-20261025-01"
         }
-      ]
+      ],
+      "source_resolution": "Muestreo ECHO Timer3 25us compilado en producto; sin ensayo temporal/fisico.",
+      "implementation_review15": "source-implemented-acceptance-pending"
     },
     {
       "id": "AFRDOC-005",
@@ -102,7 +203,7 @@
       "code": [
         "reference/f4/Core/Inc/uner_handle_types.h:UNER_Handle"
       ],
-      "observation": "Presupuesto SRAM/pila/flash, PROGMEM y colas por cerrar.",
+      "observation": "44 nodos PROGMEM, framebuffer único/captura retenida; EEPROM/estado/control añadidos. Sin mapa SRAM/pila ni prueba de recursos.",
       "documentation": [
         {
           "path": "../../../AutoFinalRobo2-Atmega/docs/modules/protocol.md",
@@ -113,8 +214,37 @@
         {
           "date": "2026-10-23",
           "action": "registered"
+        },
+        {
+          "date": "2026-10-24",
+          "action": "source-implemented-acceptance-pending",
+          "change_id": "AFR2-20261023-19"
+        },
+        {
+          "date": "2026-10-24",
+          "action": "integration-compiled-not-physically-closed",
+          "change": "AFR2-20261024-02",
+          "note": "Mapa SRAM y .su disponibles tras build AVR; no son cota dinamica completa de pila. Secuencias siguen bloqueadas por aprobacion."
+        },
+        {
+          "note": "See docs/ALINEACION_MAESTRO.md; open status retains unperformed acceptance, not an unimplemented port.",
+          "change": "AFR2-20261024-15",
+          "date": "2026-10-24",
+          "action": "master-reconciled-source-and-acceptance-separated"
+        },
+        {
+          "date": "2026-10-25",
+          "action": "direct-control7-no-permission-source-compiled",
+          "change": "AFR2-20261025-01"
         }
-      ]
+      ],
+      "source_resolution": "Mapa SRAM y .su disponibles tras build AVR; no son cota dinamica completa de pila. Secuencias siguen bloqueadas por aprobacion.",
+      "update08": {
+        "changeId": "AFR2-20261024-08",
+        "status": "open-runtime-acceptance-pending",
+        "detail": "AVR flash64232, SRAM statica4797; recursos PROGMEM enumerados bajo64KiB. No peor pila/ISR ni tiempos físicos."
+      },
+      "implementation_review15": "source-implemented-acceptance-pending"
     },
     {
       "id": "AFRDOC-006",
@@ -125,7 +255,7 @@
       "code": [
         "reference/f4/Core/Inc/tcrt5000_types.h:TCRT5000_Port"
       ],
-      "observation": "Confirmar salida/polaridad; retirar objetos IR y no fabricar distancias.",
+      "observation": "Cinco canales digital/ADC con mayoría/umbral/inversión; confirmación manual, sin copiar IR8/emisores F4.",
       "documentation": [
         {
           "path": "../../../AutoFinalRobo2-Atmega/docs/modules/line-ir.md",
@@ -136,8 +266,32 @@
         {
           "date": "2026-10-23",
           "action": "registered"
+        },
+        {
+          "date": "2026-10-24",
+          "action": "source-implemented-acceptance-pending",
+          "change_id": "AFR2-20261023-19"
+        },
+        {
+          "date": "2026-10-24",
+          "action": "integration-compiled-not-physically-closed",
+          "change": "AFR2-20261024-02",
+          "note": "Productores linea5 y configuracion por catalogo compilados; tipo/polaridad/calibracion fisica pendientes."
+        },
+        {
+          "note": "See docs/ALINEACION_MAESTRO.md; open status retains unperformed acceptance, not an unimplemented port.",
+          "change": "AFR2-20261024-15",
+          "date": "2026-10-24",
+          "action": "master-reconciled-source-and-acceptance-separated"
+        },
+        {
+          "date": "2026-10-25",
+          "action": "direct-control7-no-permission-source-compiled",
+          "change": "AFR2-20261025-01"
         }
-      ]
+      ],
+      "source_resolution": "Productores linea5 y configuracion por catalogo compilados; tipo/polaridad/calibracion fisica pendientes.",
+      "implementation_review15": "source-implemented-acceptance-pending"
     },
     {
       "id": "AFRDOC-007",
@@ -174,8 +328,20 @@
           "change": "AFR2-20261023-03",
           "previous_observation": "Conmutación física al puente USB y niveles 3,3 V pendientes.",
           "note": "Regulación/traducción declaradas conocidas; hallazgo sigue abierto por ruta y hardware no probados."
+        },
+        {
+          "note": "See docs/ALINEACION_MAESTRO.md; open status retains unperformed acceptance, not an unimplemented port.",
+          "change": "AFR2-20261024-15",
+          "date": "2026-10-24",
+          "action": "master-reconciled-source-and-acceptance-separated"
+        },
+        {
+          "date": "2026-10-25",
+          "action": "direct-control7-no-permission-source-compiled",
+          "change": "AFR2-20261025-01"
         }
-      ]
+      ],
+      "implementation_review15": "hardware-evidence-pending"
     },
     {
       "id": "AFRDOC-008",
@@ -186,7 +352,7 @@
       "code": [
         "reference/esp01/src/uart_transaction_manager.c"
       ],
-      "observation": "Definir cuarentena/resync o versión con correlación; evitar ACK viejo para pedido nuevo.",
+      "observation": "ROBO2/perfil2 implementa sesión/transacción, rechazo de duplicados y correlación exacta en ambos roles. Fuente sin compilar ni probar; robustez/interoperabilidad pendientes.",
       "documentation": [
         {
           "path": "../../../AutoFinalRobo2-ESP/docs/modules/uart.md",
@@ -197,8 +363,32 @@
         {
           "date": "2026-10-23",
           "action": "registered"
+        },
+        {
+          "date": "2026-10-23",
+          "action": "source-implementation-unverified",
+          "change_id": "AFR2-20261023-15"
+        },
+        {
+          "date": "2026-10-24",
+          "action": "integration-compiled-not-physically-closed",
+          "change": "AFR2-20261024-02",
+          "note": "ROBO2/perfil2 incorpora sesion/transaccion monotona, validacion correlacionada y barreras de STOP; compilado, sin pruebas de protocolo."
+        },
+        {
+          "note": "See docs/ALINEACION_MAESTRO.md; open status retains unperformed acceptance, not an unimplemented port.",
+          "change": "AFR2-20261024-15",
+          "date": "2026-10-24",
+          "action": "master-reconciled-source-and-acceptance-separated"
+        },
+        {
+          "date": "2026-10-25",
+          "action": "direct-control7-no-permission-source-compiled",
+          "change": "AFR2-20261025-01"
         }
-      ]
+      ],
+      "source_resolution": "ROBO2/perfil2 incorpora sesion/transaccion monotona, validacion correlacionada y barreras de STOP; compilado, sin pruebas de protocolo.",
+      "implementation_review15": "source-implemented-acceptance-pending"
     },
     {
       "id": "AFRDOC-009",
@@ -207,9 +397,11 @@
       "certainty": "source-observed-or-design-gap",
       "repository": "web",
       "code": [
-        "reference/web/src/screens"
+        "web:src/features/oled/firmwareRenderer.ts",
+        "web:src/features/oled/remoteSnapshot.ts",
+        "web:tools/sync-oled-library.mjs"
       ],
-      "observation": "Referencia histórica tiene distinta semántica Inverse y datos parciales; la base nueva declara XOR.",
+      "observation": "UI nueva requiere framebuffer EX01 para réplica. No afirma fidelidad de todos los recursos F4 ni integración ESP.",
       "documentation": [
         {
           "path": "../../../AutoFinalRobo2-Web/docs/modules/oled-ui.md",
@@ -220,8 +412,42 @@
         {
           "date": "2026-10-23",
           "action": "registered"
+        },
+        {
+          "date": "2026-10-24",
+          "action": "source-implemented-acceptance-pending",
+          "change_id": "AFR2-20261023-19"
+        },
+        {
+          "date": "2026-10-24",
+          "action": "integration-compiled-not-physically-closed",
+          "change": "AFR2-20261024-02",
+          "note": "Web consume framebuffer ampliado EX01v3 sin reconstruir renderer erroneo; compilado, sin revision visual/fisica."
+        },
+        {
+          "note": "See docs/ALINEACION_MAESTRO.md; open status retains unperformed acceptance, not an unimplemented port.",
+          "change": "AFR2-20261024-15",
+          "date": "2026-10-24",
+          "action": "master-reconciled-source-and-acceptance-separated"
+        },
+        {
+          "date": "2026-10-25",
+          "action": "direct-control7-no-permission-source-compiled",
+          "change": "AFR2-20261025-01"
         }
-      ]
+      ],
+      "source_resolution": "Catálogo59 compartido y copia actual AVR en Web. Recursos generados del C; visor conectado usa1024bytes originales. Comparación diferencial y aceptación visual/física pendientes.",
+      "update08": {
+        "changeId": "AFR2-20261024-08",
+        "status": "open-runtime-acceptance-pending",
+        "detail": "14XBM F4 portados, clipping/scroll/menu y red/avisos compilados; consumidor de framebuffer sin réplica. Sin comparación visual/pixel ni OLED física."
+      },
+      "update09": {
+        "changeId": "AFR2-20261024-09",
+        "status": "open-physical-and-differential-acceptance-pending",
+        "detail": "Catálogo59 compartido y copia actual AVR en Web. Recursos generados del C; visor conectado usa1024bytes originales. Comparación diferencial y aceptación visual/física pendientes."
+      },
+      "implementation_review15": "source-implemented-acceptance-pending"
     },
     {
       "id": "AFRDOC-010",
@@ -232,7 +458,7 @@
       "code": [
         "src/input/afr2_encoder_ui.c:Afr2EncoderUi_Poll"
       ],
-      "observation": "Corto confirma, largo abre menú, atrás solo ítem; sin user_button dedicado.",
+      "observation": "Corto confirma, largo menú, Volver explícito. Usuario exceptúa teclado: largo cancela. Fuente44 nodos sin prueba gestual.",
       "documentation": [
         {
           "path": "../../../AutoFinalRobo2-Atmega/docs/modules/screens.md",
@@ -243,8 +469,42 @@
         {
           "date": "2026-10-23",
           "action": "registered"
+        },
+        {
+          "date": "2026-10-23",
+          "action": "source-implementation-unverified",
+          "change_id": "AFR2-20261023-15"
+        },
+        {
+          "date": "2026-10-24",
+          "action": "source-implemented-acceptance-pending",
+          "change_id": "AFR2-20261023-19"
+        },
+        {
+          "date": "2026-10-24",
+          "action": "integration-compiled-not-physically-closed",
+          "change": "AFR2-20261024-02",
+          "note": "Giro/corto/largo/Volver compilados en ambos consumidores; largo abre principal tambien desde teclado. Sin ensayo de gestos."
+        },
+        {
+          "note": "See docs/ALINEACION_MAESTRO.md; open status retains unperformed acceptance, not an unimplemented port.",
+          "change": "AFR2-20261024-15",
+          "date": "2026-10-24",
+          "action": "master-reconciled-source-and-acceptance-separated"
+        },
+        {
+          "date": "2026-10-25",
+          "action": "direct-control7-no-permission-source-compiled",
+          "change": "AFR2-20261025-01"
         }
-      ]
+      ],
+      "source_resolution": "Giro/corto/largo/Volver compilados en ambos consumidores; largo abre principal tambien desde teclado. Sin ensayo de gestos.",
+      "update08": {
+        "changeId": "AFR2-20261024-08",
+        "status": "open-runtime-acceptance-pending",
+        "detail": "48nodos preservan Volver; SW largo principal. Reinicio local y scroll seleccionado compilados. Sin ensayo físico de encoder."
+      },
+      "implementation_review15": "source-implemented-acceptance-pending"
     },
     {
       "id": "AFRDOC-011",
@@ -267,8 +527,20 @@
           "date": "2026-10-23",
           "action": "registered",
           "change": "AFR2-20261023-03"
+        },
+        {
+          "note": "See docs/ALINEACION_MAESTRO.md; open status retains unperformed acceptance, not an unimplemented port.",
+          "change": "AFR2-20261024-15",
+          "date": "2026-10-24",
+          "action": "master-reconciled-source-and-acceptance-separated"
+        },
+        {
+          "date": "2026-10-25",
+          "action": "direct-control7-no-permission-source-compiled",
+          "change": "AFR2-20261025-01"
         }
-      ]
+      ],
+      "implementation_review15": "hardware-evidence-pending"
     },
     {
       "id": "AFRDOC-012",
@@ -292,8 +564,20 @@
           "date": "2026-10-23",
           "action": "registered",
           "change": "AFR2-20261023-03"
+        },
+        {
+          "note": "See docs/ALINEACION_MAESTRO.md; open status retains unperformed acceptance, not an unimplemented port.",
+          "change": "AFR2-20261024-15",
+          "date": "2026-10-24",
+          "action": "master-reconciled-source-and-acceptance-separated"
+        },
+        {
+          "date": "2026-10-25",
+          "action": "direct-control7-no-permission-source-compiled",
+          "change": "AFR2-20261025-01"
         }
-      ]
+      ],
+      "implementation_review15": "hardware-evidence-pending"
     },
     {
       "id": "AFRDOC-013",
@@ -317,6 +601,68 @@
           "date": "2026-10-23",
           "action": "registered",
           "change": "AFR2-20261023-03"
+        },
+        {
+          "note": "See docs/ALINEACION_MAESTRO.md; open status retains unperformed acceptance, not an unimplemented port.",
+          "change": "AFR2-20261024-15",
+          "date": "2026-10-24",
+          "action": "master-reconciled-source-and-acceptance-separated"
+        },
+        {
+          "date": "2026-10-25",
+          "action": "direct-control7-no-permission-source-compiled",
+          "change": "AFR2-20261025-01"
+        }
+      ],
+      "implementation_review15": "hardware-evidence-pending"
+    },
+    {
+      "id": "AFRDOC-014",
+      "title": "Calibración dependía del botón de control retirado",
+      "status": "open",
+      "certainty": "source-observed",
+      "repository": "web",
+      "code": [
+        "src/features/control/CalibrationPanel.tsx",
+        "src/features/control/ControlPage.tsx"
+      ],
+      "source_resolution": "25-01: permission operations and access switch removed end to end; direct configuration still verifies stopped outputs and fresh parameter. Compiled; runtime acceptance pending.",
+      "history": [
+        {
+          "change": "AFR2-20261024-15",
+          "date": "2026-10-24",
+          "action": "source-fixed-acceptance-pending"
+        },
+        {
+          "date": "2026-10-25",
+          "action": "direct-control7-no-permission-source-compiled",
+          "change": "AFR2-20261025-01"
+        }
+      ]
+    },
+    {
+      "id": "AFRDOC-015",
+      "title": "Diagnóstico FS/paquete sin consumidor Web y estado de control ficticio en health",
+      "status": "open",
+      "certainty": "source-observed",
+      "repository": "esp/web",
+      "code": [
+        "esp:src/storage.cpp",
+        "esp:src/broker_system.cpp",
+        "esp:src/main.cpp",
+        "web:src/features/connection/SystemPanel.tsx"
+      ],
+      "source_resolution": "15: optional package identity plus Storage::health in system.info/Hardware; removed fixed none lease from HTTP health. Compiled; filesystem/failure/browser acceptance pending.",
+      "history": [
+        {
+          "change": "AFR2-20261024-15",
+          "date": "2026-10-24",
+          "action": "source-fixed-acceptance-pending"
+        },
+        {
+          "date": "2026-10-25",
+          "action": "direct-control7-no-permission-source-compiled",
+          "change": "AFR2-20261025-01"
         }
       ]
     }

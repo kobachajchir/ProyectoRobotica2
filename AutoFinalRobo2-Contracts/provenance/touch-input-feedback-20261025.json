@@ -1,0 +1,273 @@
+{
+  "changeId": "AFR2-20261025-03",
+  "date": "2026-10-25",
+  "authorization": "Human reports failed robot drag and arrow-key navigation; requests directional animated arrows. Existing compile/correct authorization remains active.",
+  "authorship": "Own adaptation of current AFR2 sources. Existing ST/F4/AutoMicro credits retained; no new external source, dependency, image or CAD change.",
+  "before": [
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/manual/ManualDriveOverlay.tsx",
+      "bytes": 12624,
+      "sha256": "2466f72eea91f21c22eb2a36347f30c7c2388121a5e9987d713a8bb86ce66a11"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/manual/ManualDriveModel.tsx",
+      "bytes": 2061,
+      "sha256": "dd51ab8426cabd82f1b83085421313d98d850a5e72c42932c55ea27816732c33"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/components/ui/FloatingModal.tsx",
+      "bytes": 9099,
+      "sha256": "030263fbee2d19297b1e5aeaa7e07a6144fef25cc876a4dfaa5a4bffd7735586"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/styles/manual-drive.css",
+      "bytes": 5747,
+      "sha256": "2d316128ebbbf7772dc8a6c31d101cf90af2cb30085e2900fe425917659adf97"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/WEB_TOUCH_SIMULATION.md",
+      "bytes": 4646,
+      "sha256": "acc5e0b9e85d48aff9b13e6adabb8e559a5193f1698203be8f8853c7450d8d10"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/ESTADO_IMPLEMENTACION.md",
+      "bytes": 1903,
+      "sha256": "a93448b1c25bd6ee352c74b269c37707d7920df0d9bdb1f9078f7c65f10a6fd6"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/ALINEACION_MAESTRO.md",
+      "bytes": 3677,
+      "sha256": "1188c6a066fbe72265e908b195b5cd0e624d3510894b04b304f1e71530afa1e2"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/PLAN_WEB.md",
+      "bytes": 1591,
+      "sha256": "652c2b614d52674802be59ee34abe0f667cedb3c1d437ef1df09bbed3454ecaa"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/PROMPT_CONTINUIDAD.md",
+      "bytes": 30371,
+      "sha256": "039f1a5bc8fbd0c39d6c68dbc64d18087b0cbe59d1b089035d42c58c897fa3df"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/README.md",
+      "bytes": 14897,
+      "sha256": "a74e7cf71b92fd185e6ba8be3d542fbda4ce5db2d932e9c86022447e9ccebc6d"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/CHANGELOG.md",
+      "bytes": 12083,
+      "sha256": "cca4f2e5df8de6fdbae75bbed73c6cd3c60a7f44381d77982d1087f43da3ff97"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/design-system/index.md",
+      "bytes": 11742,
+      "sha256": "f243411a07fb1e29b5b872353f53e4fd02498181950bad097cb77cd2f27ca123"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/design-system/decisions.md",
+      "bytes": 21272,
+      "sha256": "64b282245f85ea6a2423bd736138aaddec3600beb9d8ba942dc9ad140d4d714a"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/provenance/README.md",
+      "bytes": 5588,
+      "sha256": "ae8ac10aea43ca43932c244db418024f14aa0f4800be08113eed8d3d0e09a3b6"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/README.md",
+      "bytes": 22855,
+      "sha256": "e258a89f2a617970f71c5f86e9864664aae8863e6fe4fb35bd46d7f52a7e5f2c"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/INFORME_ADAPTACION.md",
+      "bytes": 21601,
+      "sha256": "d493a810f8c54901904d790c03b0fb766426a3cb46aab6373abf1dc6e1148b55"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/docs/modules/manual-touch-drive.md",
+      "bytes": 2751,
+      "sha256": "b97ee0b6e10ce751dfca8667b97db09971914dce2f5dd909869fef19400cb6cd"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/docs/modules/assets.json",
+      "bytes": 1487,
+      "sha256": "779be89eec28f0bbf0da7cf9f32757d3367cc41a83e022295f71b27d714adc85"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/data/README.md",
+      "bytes": 4286,
+      "sha256": "7aa4f8bd06cf84df4528335c087777880512d280c630c808368a8cc188a5e0af"
+    }
+  ],
+  "files": [
+    {
+      "path": "AutoFinalRobo2-Contracts/CHANGELOG.md",
+      "bytes": 12315,
+      "sha256": "6ec4a2c114f2bb599857151cc5f9173ed8c60ebff42ebafbb0a7818eecf38c9d",
+      "adaptation": "Current03 input behavior/status/identity decision/package evidence; previous change records retained, no runtime/visual or hardware acceptance claim."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/changes/2026-10-25-03-touch-input-feedback.md",
+      "bytes": 2147,
+      "sha256": "5ef996ccb466df782e9a9535abb8937cae37a004b3ec3d0b05012dbf557cc246",
+      "adaptation": "Current03 input behavior/status/identity decision/package evidence; previous change records retained, no runtime/visual or hardware acceptance claim."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/WEB_TOUCH_SIMULATION.md",
+      "bytes": 6182,
+      "sha256": "9ce4145be7694264131304992822095613be54e700183a37b1fa6b6b4c0607b6",
+      "adaptation": "Current03 input behavior/status/identity decision/package evidence; previous change records retained, no runtime/visual or hardware acceptance claim."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/ALINEACION_MAESTRO.md",
+      "bytes": 3711,
+      "sha256": "49cd7a2b51db00387d5558a32ed2b477b6953b937b1b24f26ef6176026dfcb1a",
+      "adaptation": "Current03 input behavior/status/identity decision/package evidence; previous change records retained, no runtime/visual or hardware acceptance claim."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/design-system/coverage-20261025-03.json",
+      "bytes": 933,
+      "sha256": "186af91aaf71b1a337508f3578e63c0eb8eb917c04aa39d5308839334bab507e",
+      "adaptation": "Current03 input behavior/status/identity decision/package evidence; previous change records retained, no runtime/visual or hardware acceptance claim."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/design-system/decisions.md",
+      "bytes": 22045,
+      "sha256": "a3c7f8f4d168763af99a73809192acf6ab980f5adfeaa0572df4ca2285e274da",
+      "adaptation": "Current03 input behavior/status/identity decision/package evidence; previous change records retained, no runtime/visual or hardware acceptance claim."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/design-system/index.md",
+      "bytes": 11956,
+      "sha256": "43ee9f9f0dabd2ce8fed3a6a01fbaca53c1859d529e05f517da6e9d1428e5018",
+      "adaptation": "Current03 input behavior/status/identity decision/package evidence; previous change records retained, no runtime/visual or hardware acceptance claim."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/ESTADO_IMPLEMENTACION.md",
+      "bytes": 1984,
+      "sha256": "ca7ba670c51640f96a40e6ab02d3475f4cdc1e5fa0370bb83d8eb35e5ea5d472",
+      "adaptation": "Current03 input behavior/status/identity decision/package evidence; previous change records retained, no runtime/visual or hardware acceptance claim."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/PLAN_WEB.md",
+      "bytes": 1640,
+      "sha256": "6fae8134396e178a9a42e5ec92ea312d2c9e95a8a641c27188e4f6586c1d0ead",
+      "adaptation": "Current03 input behavior/status/identity decision/package evidence; previous change records retained, no runtime/visual or hardware acceptance claim."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/PROMPT_CONTINUIDAD.md",
+      "bytes": 30420,
+      "sha256": "e40f11a1d9642ed5d71a66ac7b89b8168fcbf0e3d06fd89c6795c11cde930f9e",
+      "adaptation": "Current03 input behavior/status/identity decision/package evidence; previous change records retained, no runtime/visual or hardware acceptance claim."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-25-03/manifest.json",
+      "bytes": 2631,
+      "sha256": "a7b1fffcb4f28b48daf4893df98d3807bdb04981dc076d052884e3f185f1f1a1",
+      "adaptation": "Current03 input behavior/status/identity decision/package evidence; previous change records retained, no runtime/visual or hardware acceptance claim."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-25-03/README.md",
+      "bytes": 1551,
+      "sha256": "41c2c8f5b1991945126fe88e015b40c9c470b1e25bec2a9a69e718211c50a6e3",
+      "adaptation": "Current03 input behavior/status/identity decision/package evidence; previous change records retained, no runtime/visual or hardware acceptance claim."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-25-03/summary.json",
+      "bytes": 4548,
+      "sha256": "673c327b708e0ab19272965c98ff5dd377a58dfed52a5ae5f6418d7e45c5b7ec",
+      "adaptation": "Current03 input behavior/status/identity decision/package evidence; previous change records retained, no runtime/visual or hardware acceptance claim."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-25-03/web-build.txt",
+      "bytes": 1754,
+      "sha256": "c5c3fd157d33621e5f8d3663f2df596a1d9b1dd532ff8b60711aca36928466ec",
+      "adaptation": "Current03 input behavior/status/identity decision/package evidence; previous change records retained, no runtime/visual or hardware acceptance claim."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-25-03/web-exit.txt",
+      "bytes": 3,
+      "sha256": "13bf7b3039c63bf5a50491fa3cfd8eb4e699d1ba1436315aef9cbe5711530354",
+      "adaptation": "Current03 input behavior/status/identity decision/package evidence; previous change records retained, no runtime/visual or hardware acceptance claim."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/provenance/README.md",
+      "bytes": 5814,
+      "sha256": "b750d9402e27e329866ea481ace53f9f310914ca0330d97c5abd1d5e9e06746e",
+      "adaptation": "Current03 input behavior/status/identity decision/package evidence; previous change records retained, no runtime/visual or hardware acceptance claim."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/README.md",
+      "bytes": 14953,
+      "sha256": "515a9ecaeae917ca4a92b8ef11e22397e5861338529e85127a2578eec4403bf1",
+      "adaptation": "Current03 input behavior/status/identity decision/package evidence; previous change records retained, no runtime/visual or hardware acceptance claim."
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/data/README.md",
+      "bytes": 4305,
+      "sha256": "434603d92115c5a4a776801b41c732a324a7ada12baaff06207ee53aa9c48146",
+      "adaptation": "Current03 input behavior/status/identity decision/package evidence; previous change records retained, no runtime/visual or hardware acceptance claim."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/docs/modules/assets.json",
+      "bytes": 1487,
+      "sha256": "e23fb540ca977d5867c1a6619df0abb854f5a05b1ea019370e800bf954e73ff0",
+      "adaptation": "Current03 input behavior/status/identity decision/package evidence; previous change records retained, no runtime/visual or hardware acceptance claim."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/docs/modules/manual-touch-drive.md",
+      "bytes": 3130,
+      "sha256": "dc850fb792195f26a306ce0dd961c7700f07f188201c3b40ab04fc744270d728",
+      "adaptation": "Current03 input behavior/status/identity decision/package evidence; previous change records retained, no runtime/visual or hardware acceptance claim."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/INFORME_ADAPTACION.md",
+      "bytes": 21657,
+      "sha256": "b116e0486864d149d495641f69204e428618e21a9adeb9cd9dc83454b1da5b51",
+      "adaptation": "Current03 input behavior/status/identity decision/package evidence; previous change records retained, no runtime/visual or hardware acceptance claim."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/README.md",
+      "bytes": 22911,
+      "sha256": "f122ead06b5fb4af82ddce876d1db92f47ead93449ec6b6af9352e4aa1c83cde",
+      "adaptation": "Current03 input behavior/status/identity decision/package evidence; previous change records retained, no runtime/visual or hardware acceptance claim."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/components/ui/FloatingModal.tsx",
+      "bytes": 9231,
+      "sha256": "25bd0c6c2db66e70128381c48e4b3a71bd458a46cc35fea5d52aad60c95b3ba6",
+      "adaptation": "Optional initialFocusRef, manual input opt-in; native dialog, close fallback and ST adaptation credits preserved."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/manual/ManualDriveModel.tsx",
+      "bytes": 2095,
+      "sha256": "764287b1d10f1100adf10059194b5a8b5367add8a16bdf9d17917b0ddb7c3ad0",
+      "adaptation": "Explicit passive Canvas pointer style; existing final model, top view and wheel simulation unchanged."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/manual/ManualDriveOverlay.tsx",
+      "bytes": 14953,
+      "sha256": "358cd21e1f85e205422a6626d87e0d7f5c65255b4fb0ffc0d6a1867ce9f86cb8",
+      "adaptation": "Own AFR2 dedicated DOM pointer surface, modal-scoped keyboard capture, release/cancel filtering,12/8px dead zone, active arrow and visual model feedback; offline/live fence and authorship retained."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/styles/manual-drive.css",
+      "bytes": 6924,
+      "sha256": "049d3fd3c3e0e5e12d05fb45da9952c9cf866ed12cfd59e1f8bc56da4d8de0e3",
+      "adaptation": "Own directional indication with existing tokens/shared icon, opacity/transform only, passive visual layers and separate hit surface, keyboard/reduced motion."
+    }
+  ],
+  "model": {
+    "path": "AutoFinalRobo2-Web/public/models/AutoFinalRobo2.glb",
+    "bytes": 827232,
+    "sha256": "d10684704200caa4da0a6a98715e52abc446b9dee9cccdde32f33ee05fc927c7"
+  },
+  "verification": "Authorized compilation/package/local promotion and source/artifact inspection. Source findings explain keyboard focus and Canvas event inheritance; no reproduction or runtime/visual claim. Prior browser denial respected. No tests/standalone validators, browser, phone, serial, FS image, flashing or physical operation.",
+  "protocolChanged": false,
+  "newScreenCodes": false,
+  "newDependencies": false,
+  "cadModified": false,
+  "committed": false,
+  "published": false
+}

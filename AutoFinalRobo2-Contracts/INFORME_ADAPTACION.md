@@ -1,7 +1,65 @@
+> **Vigente AFR2-20261025-01:** [control Web directo](contracts/DIRECT_CONTROL_7.md), sin permiso previo ni habilitación desde OLED. Firmware0.9.0/EX01v7 y Web0.2.0,30comandos/59ScreenCodes, compilados juntos. STOP/caducidad/watchdog y requisitos físicos conservados; sin flash/tests/placas. Estados inferiores históricos.
+
+> **Vigente AFR2-20261024-15:** [Matriz del maestro](docs/ALINEACION_MAESTRO.md):33comandos y59identidades OLED con fuentes complementarias. Calibración Web adquiere control al escribir; ESP/Web informan FS/paquete. Web/ESP compilados15; AVR sin nueva fuente, build12/EX01v6/firmware0.8.0/gates0. Sin brecha software definida identificada tras lectura; aceptación física, memoria dinámica, flash/SPI y planos CAD pendientes. Solo documentación en CAD, sin diseño nuevo. Estados inferiores históricos.
+
+> **Vigente AFR2-20261024-12:** mapa/comando actual juntos y coordenadas laterales; Hardware/Reinicio anidados, editor de pistas reversible y distancia por rueda EX01v6. Firmware0.8.0 y Web compilados; activos promovidos localmente. Build AVR incluye fuente IRQ11 con gates0; sin navegador, Hall habilitado, hardware, flasheo ni CAD. [Ficha12](changes/2026-10-24-12-control-hardware-distance.md). Los estados inferiores son históricos.
+
+> **Fuente vigente AFR2-20261024-11:** encoder CLK/DT en D2/D3 por INT4/INT5, SW D42; cola y acciones en main. Hall PCINT2 A8–A15 con preferencia de captura por software, macro0. **Esta adaptación no está compilada ni probada**; build08 corresponde a la fuente anterior. ESP/Web conservan su estado10. [Ficha11](changes/2026-10-24-11-encoder-hall-interrupts.md). Los estados previos inferiores son históricos.
+
+> **Vigente AFR2-20261024-10:** GOTO local por puntos del mapa y comandos ordenados, acento/seguimiento activo animados y controles laterales con mapa ancho completo. [Ficha10](changes/2026-10-24-10-goto-map-queue.md), [mapa](contracts/WEB_CONTROL_MAP.md) y [estado](docs/ESTADO_IMPLEMENTACION.md). Web compilada/promovida; firmware/ScreenCodes/gates sin cambios. Sin navegador, tests ni placas. Estados anteriores históricos.
+
+> **Vigente AFR2-20261024-09:** catálogo Web59, copia de biblioteca AVR actual y skill que exige entregar ambas partes vinculadas. Visor conectado con framebuffer obligatorio; preview local identificado. [Ficha09](changes/2026-10-24-09-linked-oled-library.md), [estado](docs/ESTADO_IMPLEMENTACION.md) y [build09](documentation/builds/2026-10-24-09/README.md). Firmware conserva build08. Sin comparación diferencial, pruebas físicas ni flasheo. Estados anteriores históricos.
+
+> **Vigente AFR2-20261024-08:** [Red OLED/reinicio EX01v5](contracts/EX01_NETWORK_UI_5.md), [estado Web/ESP/ATmega](docs/ESTADO_IMPLEMENTACION.md), [ficha](changes/2026-10-24-08-oled-network-restart.md) y [build08](documentation/builds/2026-10-24-08/README.md). IP/AP, avisos, iconos, scroll y menú Reinicio compilados. Sin prueba física, flasheos ni aprobación nueva de memoria/Hall. Estados anteriores históricos.
+
+> **Vigente AFR2-20261024-07:** EX01v4, etiquetas de secuencias OLED, info/boot/reinicio y cliente Web implementados y compilados en tres módulos. [Estado por módulo](docs/ESTADO_IMPLEMENTACION.md), [adaptaciones por archivo](provenance/control-system-sequence-20261024.json) y [evidencia](documentation/builds/2026-10-24-07/README.md). Paquete1452387bytes gzip promovido; render bloqueado por permiso de navegador, sin hardware probado ni flasheo. Gates memoria/Hall0 conservados. Estados inferiores históricos.
+
+> Vigente **AFR2-20261024-04**: **modelo final incluido en ESP**, paquete **1.450.201 bytes gzip** (49,96% menos que los 2,90 MB iniciales). WebP, JS/CSS minificados y dependencias/componentes optimizados. Layout candidato: flash 4 MiB / LittleFS nominal 3 MiB, solicitado por el usuario; flash fisica sin identificar. Web full/esp y firmware ESP compilados; activos promovidos a data/dist. Sin navegador, imagen FS ni flasheo. Atmega y comandos conservan el estado de02. [Evidencia](changes/2026-10-24-04-final-model-littlefs.md). Los estados previos inferiores son historicos.
+
+> Estado vigente **AFR2-20261024-02**, 24/10/2026: integración ROBO2/perfil2 + EX01v3 compilada en Atmega/ESP/Web; GOTO completo, configuración por catálogo compartido y jobs Wi-Fi OLED conectados. Paquete Web actualizado en ESP/data/dist. Sin pruebas de navegador/hardware ni flasheo; secuencias físicas mantienen bloqueo de memoria. Ver [matriz vigente](contracts/EX01_ALIGNMENT_3.md) y [evidencia](changes/2026-10-24-02-project-alignment.md). Los estados previos que siguen son históricos.
+
 # Función de Contracts
+
+
+Actualización ATmega19,24/10: fuente de producto y documentación completadas,
+sin build/tests/validadores/hardware. Leer [matriz](docs/PLAN_ATMEGA.md) y [detalle vigente](docs/ATMEGA_IMPLEMENTACION_19.md).
+Hall sin conectar y calibración/aceptación pendientes. EX01 requiere complemento
+ESP/Web; perfil3/secuencias de21 es diseño separado. Las menciones previas a
+menús/sensores/control pendientes de fuente son históricas.
+
+Estado vigente **AFR2-20261023-15**: protocolo **ROBO2/perfil 2**, validación
+compartida Mega/ESP y composición AVR USART1/Timer0/TWI/Manager/OLED/encoder en
+fuente. Cuatro vistas locales conservadas; sin compilación ni pruebas de esta
+entrega. Sustituye menciones previas a UNER/perfil 1 y backend TWI pendiente.
+[Ficha](changes/2026-10-23-15-robo2-atmega-ui.md) ·
+[Contrato](contracts/UART_PROFILE_2.md) ·
+[Validación de ambos extremos](contracts/ROBO2_VALIDACION.md) ·
+[Documento para ESP](../AutoFinalRobo2-ESP/docs/PROTOCOLO_ROBO2.md).
+Sensores/STOP autoritativo/motores/lease/Hall/GOTO/UI remota siguen pendientes.
 
 [Maestro](docs/INFORME_MAESTRO.md). Mantiene especificación, evidencia y coordinación. reference/automicro conserva AMDOC/AMI originales, sin transferir sus estados al nuevo hardware. Nuevas fichas AFR2-YYYYMMDD-NN y hallazgos AFRDOC-NNN.
 
 Claves propias atmega/esp/web/shared; f4/esp/web/qt/shared se preservan dentro de las referencias. Documentar productor/consumidor, ID/versión, wire, longitud/tipos/endian/unidades, permisos, secuencia/correlación, ACK/resultado/eventos/timeout y despliegue. Distinguir diseñado, fuente parcial, adaptado, compilado y probado. No cambiar remotos por implicación.
 
+AFR2-20261023-11 implementa en fuente el servidor ESP/LittleFS/Wi-Fi, broker WS/UART y endpoint USART1 AVR. [Ficha](changes/2026-10-23-11-esp-server-and-mega-link.md), [plan ESP](docs/PLAN_ESP.md), [perfil UART](contracts/UART_PROFILE_1.md) y [adaptaciones por archivo](provenance/esp-firmware.json). Sin builds, tests, validadores ni hardware en esta ficha; producto AVR/motores/lease/GOTO y nuevo empaquetado Web pendientes. El ID 10 corresponde a la reforma Web concurrente y se conserva.
+
 AFR2-20261023-04 incorpora [AutoFinalRobo2-CAD](../AutoFinalRobo2-CAD/README.md) como módulo del Git único de D:/ProyectoRobotica2. Contracts conserva decisiones y cambios compartidos; CAD conserva fuentes mecánicas y eléctricas. [Organización e historial](docs/ESTRUCTURA_Y_GIT.md). No cambian wire ni implementaciones de atmega/esp/web.
+
+AFR2-20261023-14 documenta la adaptación visual de ST2026-Radal a Web: [ficha](changes/2026-10-23-14-floating-web-shell.md), [procedencia](provenance/web-floating-ui.json) y [perfil consumidor](contracts/WEB_OLED_CONSUMER.md). Fuente Web sin compilar/renderizar ni probar; firmware y wire sin cambio.
+
+AFR2-20261023-16: introducción de ST adaptada, BrandMark sin medallón y Sonner bottom-right. [Ficha](changes/2026-10-23-16-startup-and-unframed-logo.md), [procedencia/prompt](provenance/web-startup.json). Fuente sin compilar/renderizar/probar; firmware/API sin cambios.
+
+AFR2-20261023-18 incorpora mapa de Control, refinamiento del velo Radal y shell Sonner legible. [Ficha](changes/2026-10-23-18-control-map-and-ui-polish.md) / [procedencia](provenance/web-control-map.json). Sin firmware nuevo ni pruebas/build/render de esta entrega; pose es diseño consumidor pendiente de productores.
+
+
+## Integración vigente — AFR2-20261024-01
+
+Revisadas fichas19/20/21. La Web21 ya contiene los cambios visuales/editor/simulador;
+Wi-Fi20 se conserva. La integración de firmware pendiente se adapta en fuente:
+ROBO2/perfil2 + EX01 v2, estado/pose, control supervisado, framebuffer OLED y
+secuencias0x40..0x45 sin colisión con comandos de producto19.
+Sin nuevo build, validador, tests, flasheo o promoción LittleFS. Secuencias físicas
+permanecen bloqueadas por defecto hasta aprobar SRAM/pila y calibración real.
+Contrato en AutoFinalRobo2-Contracts/contracts/EX01_WEB_INTEGRATION.md y ficha
+AutoFinalRobo2-Contracts/changes/2026-10-24-01-firmware-web-integration.md.
+

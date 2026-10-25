@@ -1,0 +1,167 @@
+{
+  "changeId": "AFR2-20261025-01",
+  "date": "2026-10-25",
+  "firmwareVersion": "0.9.0",
+  "webVersion": "0.2.0",
+  "extensionVersion": 7,
+  "controlMode": "direct",
+  "commandCount": 30,
+  "screenCodes": 59,
+  "authorizationRemoved": [
+    "acquire",
+    "renew",
+    "release",
+    "Web access token",
+    "controlLease",
+    "OLED access enable"
+  ],
+  "correlationRetained": [
+    "UART session/transaction",
+    "requestId",
+    "program/execution identity",
+    "OLED revision",
+    "STOP generation"
+  ],
+  "supervision": {
+    "driveTtlMs": 400,
+    "caducityMs": 1500,
+    "webHeartbeatMs": 500,
+    "physicalTimingMeasured": false,
+    "interactive": "visible and focused heartbeat, or explicit action",
+    "autoResumption": false,
+    "movesOrGrantsOnPulse": false,
+    "relayMs": 500,
+    "driveHeartbeatMs": 180
+  },
+  "atmega": {
+    "buildExitCode": 0,
+    "bss": 4072,
+    "data": 798,
+    "text": 62966,
+    "artifacts": [
+      {
+        "path": "AutoFinalRobo2-Atmega/build/afr2.elf",
+        "bytes": 95408,
+        "sha256": "ed9d0a0a2ac98271175c0437d33bb9b9bab0626c0b35bc459f1c0511510f6bf5"
+      },
+      {
+        "path": "AutoFinalRobo2-Atmega/build/afr2.hex",
+        "bytes": 179359,
+        "sha256": "e130baa39a77415baed0141625decfd8231abd8c0851a16cfea5ef1b7fd7bf4e"
+      },
+      {
+        "path": "AutoFinalRobo2-Atmega/build/afr2-communication.elf",
+        "bytes": 17880,
+        "sha256": "98796a9d4fbfd8a1e54249b62cb1af9bd04ab8e6c0648d98c4b72410906ecbb0"
+      },
+      {
+        "path": "AutoFinalRobo2-Atmega/libafr2_ui.a",
+        "bytes": 168486,
+        "sha256": "abff4db8f7724d2d04ffef1bec58c921720f022a676de8c0312bc90e2c103704"
+      }
+    ],
+    "memoryApproved": false,
+    "flash": 63764,
+    "staticSramIncludingNoinit": 4879,
+    "noinit": 9,
+    "enabledPhysicalBranchBuilt": false,
+    "hallConnected": false
+  },
+  "esp": {
+    "flash": 423273,
+    "buildExitCode": 0,
+    "physicalFlashIdentified": false,
+    "ram": 46116,
+    "artifacts": [
+      {
+        "path": "AutoFinalRobo2-ESP/.pio/build/esp12s_candidate/firmware.elf",
+        "bytes": 1607332,
+        "sha256": "b9ec7e202cb30f1cea1ed677221a4fa936233322e76b7340bb852227661481eb"
+      },
+      {
+        "path": "AutoFinalRobo2-ESP/.pio/build/esp12s_candidate/firmware.bin",
+        "bytes": 427424,
+        "sha256": "fcff2b0edac65d2401bf99f54311883ed6dca3c32b9b0c8ee791e21157888f7f"
+      }
+    ]
+  },
+  "web": {
+    "manifestSha256": "b6aea794f94135d729cb999fb3878b6539aabdc832c554fbdf299dcfdb98ed98",
+    "buildExitCode": 0,
+    "espManifestSha256": "b6aea794f94135d729cb999fb3878b6539aabdc832c554fbdf299dcfdb98ed98",
+    "estimatedFilesystemBytes": 1564672,
+    "filesystemBudgetBytes": 2867200,
+    "profile": "esp",
+    "promotion": [
+      {
+        "route": "/brand/favicon.webp",
+        "webSha256": "8b09232de5bb978d3a5b27d73f1bfbbd9d23f87ce7d6afc45d81a39e67e9c02f",
+        "espSha256": "8b09232de5bb978d3a5b27d73f1bfbbd9d23f87ce7d6afc45d81a39e67e9c02f",
+        "identical": true
+      },
+      {
+        "route": "/brand/Logo-1024.webp",
+        "webSha256": "7a9d0a4da4327b952708ebab7ddc1a287af6ef0dc33dd93f382869e1e19414c5",
+        "espSha256": "7a9d0a4da4327b952708ebab7ddc1a287af6ef0dc33dd93f382869e1e19414c5",
+        "identical": true
+      },
+      {
+        "route": "/brand/Logo-256.webp",
+        "webSha256": "d273952807d216a6ca629cdeb6e13739b7fff23d1dd32fd4b50390c6453fd9f3",
+        "espSha256": "d273952807d216a6ca629cdeb6e13739b7fff23d1dd32fd4b50390c6453fd9f3",
+        "identical": true
+      },
+      {
+        "route": "/draco/draco_decoder.wasm",
+        "webSha256": "d2ea825f06f391962a850da94d68aa9778688a57cc7a79424938cc461ae1e759",
+        "espSha256": "d2ea825f06f391962a850da94d68aa9778688a57cc7a79424938cc461ae1e759",
+        "identical": true
+      },
+      {
+        "route": "/draco/draco_wasm_wrapper.js",
+        "webSha256": "5065d3fcaba12f33fea4dc9886646f6ad1f94e53a71407a92db52c4e8b4a440d",
+        "espSha256": "5065d3fcaba12f33fea4dc9886646f6ad1f94e53a71407a92db52c4e8b4a440d",
+        "identical": true
+      },
+      {
+        "route": "/index.html",
+        "webSha256": "913f4ce008b4d392e70cbcefc6cbefee33ef774c8f29e4ddaad9f0b0ce1d458a",
+        "espSha256": "913f4ce008b4d392e70cbcefc6cbefee33ef774c8f29e4ddaad9f0b0ce1d458a",
+        "identical": true
+      },
+      {
+        "route": "/models/AutoFinalRobo2.glb",
+        "webSha256": "30d0245bc9ed858a3d93ed8d25ae8f86d7434a9c219334cf25349da76a061e5f",
+        "espSha256": "30d0245bc9ed858a3d93ed8d25ae8f86d7434a9c219334cf25349da76a061e5f",
+        "identical": true
+      }
+    ],
+    "gzipBytes": 1479980,
+    "rawBytes": 3035543,
+    "assetCount": 7
+  },
+  "oled": {
+    "notices": 11,
+    "rebootInsertionIndex": 5,
+    "controlItems": 4,
+    "systemItems": 7,
+    "retiredActionIds": [
+      2,
+      3,
+      56
+    ],
+    "physicalParity": false,
+    "nodes": 48,
+    "sharedCAndTsMenuMapping": true,
+    "resourcesRegenerated": true
+  },
+  "testsRun": false,
+  "standaloneValidators": false,
+  "browser": false,
+  "flashed": false,
+  "physicalTests": false,
+  "cadChanged": false,
+  "committed": false,
+  "published": false,
+  "verification": "Authorized compiler generation, static memory reports, local package promotion and source/artifact inspection only. No protocol/differential tests or standalone validators, browser, serial, device resets, physical operation, filesystem image, upload or publication. Prior browser denial respected; Hall/memory0 maintained."
+}

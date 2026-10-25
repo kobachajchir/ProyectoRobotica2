@@ -1,0 +1,134 @@
+{
+  "changeId": "AFR2-20261024-15",
+  "date": "2026-10-24",
+  "webBuildExitCode": 0,
+  "espBuildExitCode": 0,
+  "atmegaRebuilt": false,
+  "atmegaEvidence": "2026-10-24-12",
+  "firmwareVersion": "0.8.0",
+  "extensionVersion": 6,
+  "implementationReview": {
+    "acceptanceComplete": false,
+    "newScreenCodes": false,
+    "newDependencies": false,
+    "remainingIdentifiedSoftwareGapsWithinDefinedScope": 0,
+    "newWireCommands": false,
+    "remainingConditions": [
+      "Hall wiring and CPR/sign/geometry/PID calibration",
+      "AVR dynamic stack/ISR/timing and enabled physical branches",
+      "physical flash/SPI/layout identification",
+      "protocol/differential/visual/mobile/physical acceptance",
+      "PCB/new part/support inputs from user"
+    ],
+    "notices": 11,
+    "nodes": 48,
+    "screenCodes": 59,
+    "method": "source and contract inspection; no automated protocol validator",
+    "commands": 33
+  },
+  "atmega": {
+    "artifacts": [
+      {
+        "path": "AutoFinalRobo2-Atmega/build/afr2.elf",
+        "bytes": 96044,
+        "sha256": "bba78eb1d62ba081b7de83b07ea34cca3627b9cfefe872aa2bf2e43946f4a97c"
+      },
+      {
+        "path": "AutoFinalRobo2-Atmega/build/afr2.hex",
+        "bytes": 181163,
+        "sha256": "118ef09f9e04b4b2591e4bcb8e76f1d5f9d032a463ad506bd7dae45bf6441081"
+      }
+    ],
+    "physicalEvidence": false,
+    "hallConnected": false,
+    "flash": 64406,
+    "memoryApproved": false,
+    "enabledPhysicalBranchBuilt": false,
+    "sourceChanged": false,
+    "staticSramIncludingNoinit": 4891
+  },
+  "esp": {
+    "linker": "eagle.flash.4m3m.ld",
+    "artifacts": [
+      {
+        "path": "AutoFinalRobo2-ESP/.pio/build/esp12s_candidate/firmware.elf",
+        "bytes": 1610272,
+        "sha256": "3e46b79b009162127b2d933debd44945059a3dba72097cb4a4033ed019997611"
+      },
+      {
+        "path": "AutoFinalRobo2-ESP/.pio/build/esp12s_candidate/firmware.bin",
+        "bytes": 429968,
+        "sha256": "f118c8149be5dc4fe9236c6cd9374aa22247df91e615e6de6d603e0b91c15742"
+      }
+    ],
+    "flash": 425809,
+    "physicalFlashIdentified": false,
+    "ram": 46268
+  },
+  "web": {
+    "rawBytes": 3038046,
+    "assetCount": 7,
+    "espManifestSha256": "80862b4078bc6c0f6955a323a31f5ac07509371d8bd202e08231d6374d0f3b96",
+    "filesystemBudgetBytes": 2867200,
+    "promotion": [
+      {
+        "route": "/brand/favicon.webp",
+        "webGzipSha256": "8b09232de5bb978d3a5b27d73f1bfbbd9d23f87ce7d6afc45d81a39e67e9c02f",
+        "espGzipSha256": "8b09232de5bb978d3a5b27d73f1bfbbd9d23f87ce7d6afc45d81a39e67e9c02f",
+        "identical": true
+      },
+      {
+        "route": "/brand/Logo-1024.webp",
+        "webGzipSha256": "7a9d0a4da4327b952708ebab7ddc1a287af6ef0dc33dd93f382869e1e19414c5",
+        "espGzipSha256": "7a9d0a4da4327b952708ebab7ddc1a287af6ef0dc33dd93f382869e1e19414c5",
+        "identical": true
+      },
+      {
+        "route": "/brand/Logo-256.webp",
+        "webGzipSha256": "d273952807d216a6ca629cdeb6e13739b7fff23d1dd32fd4b50390c6453fd9f3",
+        "espGzipSha256": "d273952807d216a6ca629cdeb6e13739b7fff23d1dd32fd4b50390c6453fd9f3",
+        "identical": true
+      },
+      {
+        "route": "/draco/draco_decoder.wasm",
+        "webGzipSha256": "d2ea825f06f391962a850da94d68aa9778688a57cc7a79424938cc461ae1e759",
+        "espGzipSha256": "d2ea825f06f391962a850da94d68aa9778688a57cc7a79424938cc461ae1e759",
+        "identical": true
+      },
+      {
+        "route": "/draco/draco_wasm_wrapper.js",
+        "webGzipSha256": "5065d3fcaba12f33fea4dc9886646f6ad1f94e53a71407a92db52c4e8b4a440d",
+        "espGzipSha256": "5065d3fcaba12f33fea4dc9886646f6ad1f94e53a71407a92db52c4e8b4a440d",
+        "identical": true
+      },
+      {
+        "route": "/index.html",
+        "webGzipSha256": "4c65604fb0131a92167ffcbfd93db8dda5e44dd412fcf9e946212d09b1b9b902",
+        "espGzipSha256": "4c65604fb0131a92167ffcbfd93db8dda5e44dd412fcf9e946212d09b1b9b902",
+        "identical": true
+      },
+      {
+        "route": "/models/AutoFinalRobo2.glb",
+        "webGzipSha256": "30d0245bc9ed858a3d93ed8d25ae8f86d7434a9c219334cf25349da76a061e5f",
+        "espGzipSha256": "30d0245bc9ed858a3d93ed8d25ae8f86d7434a9c219334cf25349da76a061e5f",
+        "identical": true
+      }
+    ],
+    "profile": "esp",
+    "manifestSha256": "80862b4078bc6c0f6955a323a31f5ac07509371d8bd202e08231d6374d0f3b96",
+    "estimatedFilesystemBytes": 1564672,
+    "gzipBytes": 1480773,
+    "packagedAt": "2026-10-25T02:47:14.666Z",
+    "webVersion": "0.1.0"
+  },
+  "verification": "Authorized ESP/Web compilers and local packaging/promotion plus source/artifact/document inspection. AVR source unchanged; retains12 evidence and gates0. No tests, standalone validators, browser, differential raster tests, serial, physical operation, reset, filesystem image or upload. Previous browser denial respected.",
+  "testsRun": false,
+  "independentValidators": false,
+  "browserRender": false,
+  "physicalTests": false,
+  "flashed": false,
+  "cadGeometryModified": false,
+  "cadDocumentationUpdated": true,
+  "committed": false,
+  "remotePublished": false
+}

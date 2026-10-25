@@ -1,5 +1,9 @@
 # Nuevo driver HC-SR04
 
+AFR2-20261023-19, fuente integrada sin compilar/probar: Timer3 CTC25us, espera subida/bajada/timeout32ms en D31; servo D13/Timer5 opcional, sin barrido. Tiempos físicos sin medir.
+[Producto vigente](../PRODUCTO_ATMEGA.md). El diseño histórico siguiente conserva su evidencia.
+
+
 [Maestro](../../../INFORME_MAESTRO.md) · [Informe del repositorio](../../INFORME_ADAPTACION.md).
 
 ## Utilidad

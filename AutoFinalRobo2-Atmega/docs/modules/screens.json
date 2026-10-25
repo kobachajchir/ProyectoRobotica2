@@ -15,5 +15,24 @@
     "AFRDOC-009",
     "AFRDOC-010"
   ],
-  "status": "source-documented-not-built"
+  "status": "source-compiled-runtime-unverified",
+  "updated_by": "AFR2-20261024-08",
+  "current_implementation": "48nodos y11avisos de red;14iconos F4 en PROGMEM, texto seleccionado con scroll, IP/AP y reinicio local, EX01v5. Firmware/biblioteca compilados; sin pruebas de OLED/encoder/radio/UART/reset ni flasheo.",
+  "delivery19": {
+    "change_id": "AFR2-20261023-19",
+    "date": "2026-10-24",
+    "status": "source-integrated-uncompiled-unverified",
+    "note": "44 nodos, historial8, editores/teclado y cola4, renderer puro; fidelidad F4 no acreditada.",
+    "contract": "../../../AutoFinalRobo2-Contracts/contracts/ROBO2_PRODUCT_EXTENSION.md"
+  },
+  "delivery08": {
+    "staticSramBytes": 4797,
+    "resources": "src/ui/afr2_icons.c",
+    "stackCertified": false,
+    "changeId": "AFR2-20261024-08",
+    "flashBytes": 64232,
+    "service": "src/services/afr2_network.c",
+    "contract": "../../../AutoFinalRobo2-Contracts/contracts/EX01_NETWORK_UI_5.md",
+    "renderer": "src/ui/afr2_network_screen.c"
+  }
 }

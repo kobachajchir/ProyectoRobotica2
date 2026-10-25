@@ -1,5 +1,7 @@
 # Carpeta src/services
 
+Estado vigente AFR2-20261023-15: backend/composición integrados en fuente; el texto anterior de migración se conserva debajo como antecedente. Sin compilar/probar.
+
 [Maestro](../../../INFORME_MAESTRO.md) · [Informe del repositorio](../../INFORME_ADAPTACION.md).
 
 Base nueva de trabajo; ver estado de implementación en el informe del repositorio.
@@ -17,3 +19,6 @@ Reformas: La base nueva reduce Manager a un cliente OLED y cambia la API (no es 
 - [afr2_i2c_manager.c](<afr2_i2c_manager.c>)
 
 Estado: material preparado sin build, tests, validadores ni prueba física. Los hashes de fuentes copiadas están en [manifest](../../../AutoFinalRobo2-Contracts/provenance/files.json).
+
+
+AFR2-20261023-15: TWI AVR por IRQ y composición OLED/encoder/USART1 implementados en fuente, sin DMA ni Arduino. Ver docs/COMPOSICION.md y Contracts/changes/2026-10-23-15-robo2-atmega-ui.md. Sin builds/tests/validadores/flasheos; hardware y recursos finales pendientes.

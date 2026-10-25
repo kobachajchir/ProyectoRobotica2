@@ -1,0 +1,155 @@
+AutoFinalRobo2-Atmega/src/communication_main.su
+communication_main.c:9:5:main	6	static
+
+AutoFinalRobo2-Atmega/src/main.su
+main.c:21:17:capabilities	3	static
+main.c:19:16:stopped	3	static
+main.c:20:13:snapshot	3	static
+main.c:27:5:main	152	static
+
+AutoFinalRobo2-Atmega/src/display/afr2_oled.su
+afr2_oled.c:19:13:completed	5	static
+afr2_oled.c:34:13:send	16	static
+afr2_oled.c:29:6:Afr2Oled_Init	7	static
+afr2_oled.c:40:6:Afr2Oled_Settings	3	static
+afr2_oled.c:46:6:Afr2Oled_Task	11	static
+afr2_oled.c:71:6:Afr2Oled_Clear	5	static
+afr2_oled.c:77:6:Afr2Oled_Pixel	5	static
+afr2_oled.c:84:6:Afr2Oled_Rect	25	static
+afr2_oled.c:89:6:Afr2Oled_Char	19	static
+afr2_oled.c:95:6:Afr2Oled_Text	15	static
+afr2_oled.c:99:6:Afr2Oled_TextFlash	15	static
+
+AutoFinalRobo2-Atmega/src/display/font7x10.su
+font7x10.c:110:9:Afr2Font7x10_Row	3	static
+
+AutoFinalRobo2-Atmega/src/input/afr2_encoder_ui.su
+afr2_encoder_ui.c:3:6:Afr2EncoderUi_Init	9	static
+afr2_encoder_ui.c:9:13:Afr2EncoderUi_Poll	15	static
+
+AutoFinalRobo2-Atmega/src/platform/afr2_board.su
+afr2_board.c:15:1:__vector_21	10	static
+afr2_board.c:16:10:Afr2Board_Millis	3	static
+afr2_board.c:19:6:Afr2Board_Init	3	static
+afr2_board.c:33:6:Afr2Board_EncoderInit	3	static
+afr2_board.c:47:9:Afr2Board_EncoderLevels	3	static
+
+AutoFinalRobo2-Atmega/src/platform/afr2_motor.su
+afr2_motor.c:7:6:Afr2Motor_Stop	3	static
+afr2_motor.c:17:6:Afr2Motor_Init	3	static
+afr2_motor.c:30:6:Afr2Motor_Write	18	static
+
+AutoFinalRobo2-Atmega/src/platform/afr2_preferences.su
+afr2_preferences.c:13:17:crc.constprop	3	static
+afr2_preferences.c:45:16:load_slot	8	static
+afr2_preferences.c:52:6:Afr2Prefs_Load	81	static
+afr2_preferences.c:60:9:Afr2Prefs_Save	5	static
+afr2_preferences.c:67:9:Afr2Prefs_Task	3	static
+
+AutoFinalRobo2-Atmega/src/platform/afr2_sensors.su
+afr2_sensors.c:22:6:Afr2Sensors_Init	3	static
+afr2_sensors.c:39:1:__vector_11	29	static
+afr2_sensors.c:46:1:__vector_32	10	static
+afr2_sensors.c:58:1:__vector_47	10	static
+afr2_sensors.c:62:6:Afr2Servo_Set	5	static
+afr2_sensors.c:73:6:Afr2Sensors_Task	24	static
+
+AutoFinalRobo2-Atmega/src/platform/afr2_twi.su
+afr2_twi.c:25:13:low	3	static
+afr2_twi.c:54:22:poll	3	static
+afr2_twi.c:37:22:start	3	static
+afr2_twi.c:31:13:fail_recovery	3	static
+afr2_twi.c:26:13:ready	3	static
+afr2_twi.c:64:13:abort_transfer	3	static
+afr2_twi.c:71:6:Afr2Twi_Init	5	static
+afr2_twi.c:76:1:__vector_39	13	static
+afr2_twi.c:93:6:Afr2Twi_Task	7	static
+
+AutoFinalRobo2-Atmega/src/platform/afr2_uart1.su
+afr2_uart1.c:13:6:Afr2Uart1_Init	3	static
+afr2_uart1.c:21:1:__vector_36	12	static
+afr2_uart1.c:28:1:__vector_37	11	static
+afr2_uart1.c:32:9:Afr2Uart1_Read	3	static
+afr2_uart1.c:41:9:Afr2Uart1_Write	3	static
+afr2_uart1.c:49:9:Afr2Uart1_TakeFault	3	static
+
+AutoFinalRobo2-Atmega/src/platform/afr2_watchdog.su
+afr2_watchdog.c:8:9:Afr2Boot_Cause	3	static
+afr2_watchdog.c:9:6:Afr2Watchdog_Enable	3	static
+afr2_watchdog.c:10:6:Afr2Watchdog_Kick	3	static
+
+AutoFinalRobo2-Atmega/src/services/afr2_app.su
+afr2_app.c:9:16:value	3	static
+afr2_app.c:166:16:available	9	static
+afr2_app.c:184:20:reason	7	static
+afr2_app.c:163:13:keyboard_seed	5	static
+afr2_app.c:28:16:wifi_request	11	static
+afr2_app.c:36:16:local_command	7	static
+afr2_app.c:53:9:Afr2App_RemoteUiAllowed	3	static
+afr2_app.c:63:16:invoke	133	static
+afr2_app.c:203:6:Afr2App_Init	20	static
+afr2_app.c:208:6:Afr2App_Revoke	7	static
+afr2_app.c:216:6:Afr2App_Task	15	static
+afr2_app.c:231:6:Afr2App_UiSnapshot	110	dynamic,bounded
+
+AutoFinalRobo2-Atmega/src/services/afr2_app_wire.su
+afr2_wire.h:64:24:afr2_get_u32	3	static
+afr2_wire.h:70:20:afr2_put_u32	3	static
+afr2_app_wire.c:12:16:owner	7	static
+afr2_app_wire.c:15:17:features	7	static
+afr2_app_wire.c:8:16:wire_result	3	static
+afr2_app_wire.c:35:9:Afr2App_Command	104	dynamic,bounded
+
+AutoFinalRobo2-Atmega/src/services/afr2_i2c_manager.su
+afr2_i2c_manager.c:3:6:Afr2I2c_Init	3	static
+afr2_i2c_manager.c:9:15:Afr2I2c_Submit	17	static
+afr2_i2c_manager.c:18:6:Afr2I2c_Tick	11	static
+
+AutoFinalRobo2-Atmega/src/services/afr2_link.su
+afr2_wire.h:83:20:afr2_wire_count	3	static
+afr2_link.c:6:6:Afr2Link_Init	3	static
+afr2_link.c:9:6:Afr2Link_RxFault	5	static
+afr2_link.c:14:6:Afr2Link_Tick	9	static
+afr2_link.c:105:6:Afr2Link_Push	141	static
+
+AutoFinalRobo2-Atmega/src/services/afr2_product.su
+afr2_product.c:57:16:calibrated	3	static
+afr2_product.c:9:6:Afr2Product_Defaults	3	static
+afr2_product.c:16:9:Afr2Product_ConfigValid	3	static
+afr2_product.c:29:6:Afr2Product_Init	3	static
+afr2_product.c:33:9:Afr2Product_Stop	5	static
+afr2_product.c:43:6:Afr2Product_Snapshot	9	static
+afr2_product.c:51:9:Afr2Product_Acquire	12	static
+afr2_product.c:62:9:Afr2Product_Drive	40	static
+afr2_product.c:73:9:Afr2Product_Wheel	15	static
+afr2_product.c:81:9:Afr2Product_StartLine	6	static
+afr2_product.c:90:9:Afr2Product_StartGotoFull	48	static
+afr2_product.c:87:9:Afr2Product_StartGoto	9	static
+afr2_product.c:106:6:Afr2Product_HallBegin	18	static
+afr2_product.c:115:9:Afr2Product_HallEnd	7	static
+afr2_product.c:121:6:Afr2Product_HallSave	10	static
+afr2_product.c:128:6:Afr2Product_Save	7	static
+afr2_product.c:166:6:Afr2Product_Task	69	static
+
+AutoFinalRobo2-Atmega/src/services/afr2_sequence.su
+afr2_wire.h:64:24:afr2_get_u32	3	static
+afr2_sequence.c:5:9:Afr2Sequence_Available	3	static
+afr2_sequence.c:14:9:Afr2Sequence_Command	19	static
+afr2_sequence.c:61:6:Afr2Sequence_Tick	3	static
+
+AutoFinalRobo2-Atmega/src/ui/afr2_menu_catalog.su
+afr2_menu_catalog.c:236:6:Afr2Menu_Node	3	static
+afr2_menu_catalog.c:240:6:Afr2Menu_Item	35	static
+
+AutoFinalRobo2-Atmega/src/ui/afr2_screens.su
+afr2_screens.c:13:16:invoke	5	static
+afr2_screens.c:38:13:dismiss	3	static
+afr2_screens.c:10:13:sync_code	34	static
+afr2_screens.c:11:6:Afr2Ui_Init	3	static
+afr2_screens.c:12:6:Afr2Ui_Attach	3	static
+afr2_screens.c:16:6:Afr2Ui_Open	3	static
+afr2_screens.c:26:6:Afr2Ui_Notify	17	static
+afr2_screens.c:44:13:result	37	static
+afr2_screens.c:39:6:Afr2Ui_Tick	17	static
+afr2_screens.c:72:6:Afr2Ui_Apply	70	static
+afr2_screens.c:136:6:Afr2Ui_Render	90	dynamic,bounded

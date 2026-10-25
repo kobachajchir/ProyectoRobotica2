@@ -1,0 +1,45 @@
+{
+  "evidence": "documentation/builds/2026-10-23-20-wifi/README.md",
+  "validation": "ESP/Web builds exit 0; no radio/browser/hardware tests",
+  "scope": "ESP/Web Wi-Fi only",
+  "excluded": [
+    "ATmega",
+    "ESP/src/mega_link.*",
+    "ESP/src/broker.*",
+    "Contracts/contracts/afr2_wire.h",
+    "ROBO2/UART contract and commands"
+  ],
+  "change_id": "AFR2-20261023-20",
+  "files": [
+    {
+      "adaptation": "Estado propio de fallback/persistencia/error de configuración, sin API Mega.",
+      "sha256_after_build": "b73446c349ec11789c841a978c74dd450ba574c31bbf6aec0f88c2bec55a1efc",
+      "source": "Fuente propia activa del proyecto, anterior a AFR2-20261023-20; referencias AutoMicro sin modificar.",
+      "path": "AutoFinalRobo2-ESP/src/wifi_service.h"
+    },
+    {
+      "adaptation": "Retornos mode/AP/begin y proyección de estado Wi-Fi sin secretos; fuente propia previa.",
+      "sha256_after_build": "40cf18d309966059a84c826db69511a89524e8f2d616553ec890745d4170937f",
+      "source": "Fuente propia activa del proyecto, anterior a AFR2-20261023-20; referencias AutoMicro sin modificar.",
+      "path": "AutoFinalRobo2-ESP/src/wifi_service.cpp"
+    },
+    {
+      "adaptation": "Campos opcionales Wi-Fi; sin modificación de framing ni catálogo UART.",
+      "sha256_after_build": "028597f8332d54b9f01b918761446e5712280ebb4a8ed1f62deb2b68d4542ea8",
+      "source": "Fuente propia activa del proyecto, anterior a AFR2-20261023-20; referencias AutoMicro sin modificar.",
+      "path": "AutoFinalRobo2-Web/src/protocol/wsEnvelope.ts"
+    },
+    {
+      "adaptation": "Ciclo scan y lector automático wifi.status; lector robot.state conservado.",
+      "sha256_after_build": "c2a8076a11c537170632c938e28be24f0467a301a8d323e4edcc2c7cc4b80715",
+      "source": "Fuente propia activa del proyecto, anterior a AFR2-20261023-20; referencias AutoMicro sin modificar.",
+      "path": "AutoFinalRobo2-Web/src/features/connection/ConnectionContext.tsx"
+    },
+    {
+      "adaptation": "Scan terminal, estado de red y persistencia elegible, SSID sin trim y límites UTF-8.",
+      "sha256_after_build": "2bcd949e5af83b359be84e7e928eca64ff9373a249ae756e44c5579400737649",
+      "source": "Fuente propia activa del proyecto, anterior a AFR2-20261023-20; referencias AutoMicro sin modificar.",
+      "path": "AutoFinalRobo2-Web/src/features/wifi/WifiPage.tsx"
+    }
+  ]
+}

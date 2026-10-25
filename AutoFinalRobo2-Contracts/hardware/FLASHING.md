@@ -1,5 +1,15 @@
 # Carga con el USB del Mega y shield OSOYOO UART
 
+Actualización de configuración **AFR2-20261024-04**: el usuario pidió incluir el
+modelo final en ESP y reservar3MiB para LittleFS, suponiendo flash4MiB.
+`ESP/platformio.ini` selecciona `eagle.flash.4m3m.ld`; firmware compilado con
+éxito y Web de1.450.201 bytes gzip promovida. Es un layout candidato explícito,
+no una identificación física. Sin imagen FS ni carga. Confirmar flash/SPI y
+preservar configuración antes de un futuro flasheo; el programa tiene su límite
+separado de1.044.464 bytes. [Evidencia](../changes/2026-10-24-04-final-model-littlefs.md).
+
+[Herramienta de diagnóstico previa](ESP_DIAGNOSTICO.md), AFR2-20261023-12: `tools/esp-probe.ps1` comprueba conexión y consulta flash/cabecera sin escribir firmware; guarda evidencia en `hardware/diagnostics/`. Se lanza cuando esté cableada la placa, siguiendo las rutas y niveles de este documento. El script no determina por sí solo offsets de LittleFS ni autoriza un flasheo.
+
 Diseño de conexión, no procedimiento ejecutado. Leer [evidencia del shield](WIFI_SHIELD.md) antes de aplicar. Fuentes: [arranque ESP8266](https://docs.espressif.com/projects/esptool/en/latest/esp8266/advanced-topics/boot-mode-selection.html), [esquema Mega Rev3](https://www.arduino.cc/en/uploads/Main/arduino-mega2560_R3-schematic.pdf) y [mapa del selector](wifi-shield/wifi-pin-map.png). El puente de la placa instalada y la ruta de niveles deben identificarse antes de convertir esto en instrucciones físicas finales.
 
 ## Tres modos distintos

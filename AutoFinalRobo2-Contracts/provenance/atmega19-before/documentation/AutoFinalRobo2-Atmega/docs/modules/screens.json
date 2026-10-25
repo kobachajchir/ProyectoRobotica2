@@ -1,0 +1,21 @@
+{
+  "schema": "afr2-module-1",
+  "id": "atmega:module/reference/f4/Core/Src/screenWrappers.c",
+  "title": "Wrappers, menús y pantallas",
+  "responsibility": "Wrappers preparan datos/contexto; renderer dibuja; navegación decide pantalla/selección; acciones llaman servicios. Reutilizar conceptos y recursos, no System/globales completos. La referencia incluye menús/OSK/avisos y toda la biblioteca propia para port posterior.",
+  "changes_required": "Nueva UI usa snapshot explícito sin consultas de hardware en renderer. Mantener identidad/rol/estado/acciones por separado. Largo SW abre menú; corto selecciona; atrás solo por ítem Volver. Retirar llamadas al botón menú y no reinterpretar largo como atrás. Main procesa acciones y respeta valid/unknown. Llevar menús/textos a flash; decidir contexto de edición/confirmación sin ejecutar motor al navegar. Skill en Contracts documenta cada pantalla; paridad Web pendiente.",
+  "evidence": [
+    "reference/f4/Core/Src/screenWrappers.c",
+    "reference/f4/Core/Src/oled_utils.c",
+    "reference/f4/Core/Src/menusystem.c",
+    "reference/f4/Core/Inc/screen_context.h",
+    "src/ui/afr2_screens.c"
+  ],
+  "findings": [
+    "AFRDOC-009",
+    "AFRDOC-010"
+  ],
+  "status": "source-integrated-uncompiled-unverified",
+  "updated_by": "AFR2-20261023-15",
+  "current_implementation": "ROBO2 perfil2 y composición main UART1/Timer0/TWI/Manager/OLED/encoder; cuatro vistas locales; sin tests/builds/validadores/hardware. Ver docs/COMPOSICION.md y docs/COMUNICACION_ESP.md."
+}

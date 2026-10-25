@@ -1,0 +1,136 @@
+{
+  "changeId": "AFR2-20261025-10",
+  "date": "2026-10-25",
+  "webVersion": "0.2.0",
+  "firmwareVersion": "0.9.0",
+  "extensionVersion": 7,
+  "commandCount": 30,
+  "screenCodes": 59,
+  "web": {
+    "buildExitCode": 0,
+    "assetCount": 7,
+    "gzipBytes": 1482080,
+    "gzipDeltaFrom09": -1,
+    "rawBytes": 3043188,
+    "estimatedFilesystemBytes": 1572864,
+    "filesystemBudgetBytes": 2867200,
+    "manifestSha256": "7c7ea3eff4d300fca71b35318877007aa08b40928a89416ed44ca84c12810a8f",
+    "espManifestSha256": "7c7ea3eff4d300fca71b35318877007aa08b40928a89416ed44ca84c12810a8f",
+    "promotion": [
+      {
+        "route": "/brand/favicon.webp",
+        "webSha256": "8b09232de5bb978d3a5b27d73f1bfbbd9d23f87ce7d6afc45d81a39e67e9c02f",
+        "espSha256": "8b09232de5bb978d3a5b27d73f1bfbbd9d23f87ce7d6afc45d81a39e67e9c02f",
+        "identical": true
+      },
+      {
+        "route": "/brand/Logo-1024.webp",
+        "webSha256": "7a9d0a4da4327b952708ebab7ddc1a287af6ef0dc33dd93f382869e1e19414c5",
+        "espSha256": "7a9d0a4da4327b952708ebab7ddc1a287af6ef0dc33dd93f382869e1e19414c5",
+        "identical": true
+      },
+      {
+        "route": "/brand/Logo-256.webp",
+        "webSha256": "d273952807d216a6ca629cdeb6e13739b7fff23d1dd32fd4b50390c6453fd9f3",
+        "espSha256": "d273952807d216a6ca629cdeb6e13739b7fff23d1dd32fd4b50390c6453fd9f3",
+        "identical": true
+      },
+      {
+        "route": "/draco/draco_decoder.wasm",
+        "webSha256": "d2ea825f06f391962a850da94d68aa9778688a57cc7a79424938cc461ae1e759",
+        "espSha256": "d2ea825f06f391962a850da94d68aa9778688a57cc7a79424938cc461ae1e759",
+        "identical": true
+      },
+      {
+        "route": "/draco/draco_wasm_wrapper.js",
+        "webSha256": "5065d3fcaba12f33fea4dc9886646f6ad1f94e53a71407a92db52c4e8b4a440d",
+        "espSha256": "5065d3fcaba12f33fea4dc9886646f6ad1f94e53a71407a92db52c4e8b4a440d",
+        "identical": true
+      },
+      {
+        "route": "/index.html",
+        "webSha256": "1eb968c3b5191746aa7692545d32bfd79ddcfb4a7d3b989bff577d45aa4ea979",
+        "espSha256": "1eb968c3b5191746aa7692545d32bfd79ddcfb4a7d3b989bff577d45aa4ea979",
+        "identical": true
+      },
+      {
+        "route": "/models/AutoFinalRobo2.glb",
+        "webSha256": "30d0245bc9ed858a3d93ed8d25ae8f86d7434a9c219334cf25349da76a061e5f",
+        "espSha256": "30d0245bc9ed858a3d93ed8d25ae8f86d7434a9c219334cf25349da76a061e5f",
+        "identical": true
+      }
+    ]
+  },
+  "motion": {
+    "skill": "animate",
+    "purpose": "State indication of held direction",
+    "tool": "SVG and CSS",
+    "viewBox": [
+      360,
+      240
+    ],
+    "ribbonBandSvgUnits": 70,
+    "previousBandSvgUnits": 38,
+    "origin": "Center beneath chassis, same layers06",
+    "responsiveDimensions": "49% of shorter local side length,50% height, max480x280; viewport fallback",
+    "cameraFit": 0.52,
+    "previousCameraFit": 0.66,
+    "meshScaleChanged": false,
+    "gradient": "Transparent tail to full action color; opacity1 at84..100%, no front fade; transverse mask solid at32..68%",
+    "traces": 3,
+    "enterExitMs": 220,
+    "enterExitCurve": "existing ease-out",
+    "continuousMs": 1200,
+    "continuousCurve": "linear",
+    "travelSvgUnits": 12,
+    "phaseOrder": "tail-middle-head",
+    "inactive": "Pause current frame then fade",
+    "keyboard": "Instant/static",
+    "reducedMotion": "Static gradient; no secondary position change",
+    "newDependencies": false,
+    "newAssets": false,
+    "newPalette": false,
+    "blurOrFilters": false,
+    "base": "07 unchanged",
+    "svgOpacity": 0.58
+  },
+  "atmega": {
+    "sourceChanged": false,
+    "rebuilt": false,
+    "previousBuild": "2026-10-25-01",
+    "hallEnabled": false,
+    "memoryApproved": false
+  },
+  "esp": {
+    "firmwareChanged": false,
+    "rebuilt": false,
+    "previousBuild": "2026-10-25-01",
+    "webAssetsPromoted": true,
+    "physicalFlashIdentified": false
+  },
+  "model": {
+    "path": "AutoFinalRobo2-Web/public/models/AutoFinalRobo2.glb",
+    "bytes": 827232,
+    "sha256": "d10684704200caa4da0a6a98715e52abc446b9dee9cccdde32f33ee05fc927c7"
+  },
+  "testsRun": false,
+  "standaloneValidators": false,
+  "browser": false,
+  "phone": false,
+  "flashed": false,
+  "physicalTests": false,
+  "cadChanged": false,
+  "committed": false,
+  "published": false,
+  "verification": "Authorized Web compile/package/local promotion and source/artifact inspection. Only two camera factors changed; Overlay/CSS hashes unchanged. Size ratio deduced from orthographic formula, not a screen measurement. No tests/standalone validators, browser, phone, serial, FS image, flashing or physical operation; prior browser denial respected.",
+  "cameraFit": {
+    "previous": 0.52,
+    "current": 0.6,
+    "linearRatio": 1.1538461538461537,
+    "cameraOnly": true,
+    "otherSourceUnchanged": true,
+    "overlayUnchanged": true,
+    "chevronCssUnchanged": true,
+    "meshScaleChanged": false
+  }
+}

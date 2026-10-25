@@ -1,5 +1,9 @@
 # Carpeta docs/modules
 
+Estado19: [producto integrado en fuente](../PRODUCTO_ATMEGA.md), sin compilar/probar.
+Backend TWI y módulos nuevos ya escritos; informes iniciales siguientes son históricos.
+
+
 [Maestro](../../../INFORME_MAESTRO.md) · [Informe del repositorio](../../INFORME_ADAPTACION.md).
 
 Base nueva de trabajo; ver estado de implementación en el informe del repositorio.

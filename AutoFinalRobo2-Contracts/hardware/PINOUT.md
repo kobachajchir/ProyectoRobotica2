@@ -1,3 +1,5 @@
+> AFR2-20261024-11: CLK/DT pasan de D40/D41 a D2/D3; requiere recableado. SW D42. Hall PCINT2 A8–A15 revisado en fuente, deshabilitado. [Contrato IRQ](INTERRUPCIONES_ENCODER_HALL.md). Sin compilación ni prueba física.
+
 # Pinout y PCB de interfaz
 
 [Maestro](../docs/INFORME_MAESTRO.md). Base: supplied/Pinout_OSOYOO_Mecanum.csv y ManualOsoyoo.pdf, páginas PDF 14-17, 26-27, 33-34, 38, 43 (no numeración impresa). [CSV ampliado](PINOUT_PROPUESTO.csv).
@@ -19,12 +21,12 @@ Bluetooth comparte UART1 en el manual y queda fuera de esta arquitectura; no col
 
 El usuario y las imágenes identifican las cabeceras SDA/SCL. Usarlas; en Mega equivalen a D20/PD1 y D21/PD0, sin exigir esos números impresos. El mapa OSOYOO aportado usa equivalencias UNO D18/D19 y A4/A5: no copiarlas a Mega. A4 permanece IR1; la continuidad del shield real aún no se ha medido.
 
-La placa OLED/encoder tendrá J1 1x5 de paso 2,54 mm para CLK→D40, DT→D41, SW→D42, SDA→cabecera SDA y SCL→cabecera SCL. J2 1x2, también 2,54 mm, tendrá VCC y GND comunes a ambos módulos. [Detalle eléctrico y mecánico](PCB_OLED_ENCODER.md).
+La placa OLED/encoder tendrá J1 1x5 de paso 2,54 mm para CLK→D2, DT→D3, SW→D42, SDA→cabecera SDA y SCL→cabecera SCL. J2 1x2, también 2,54 mm, tendrá VCC y GND comunes a ambos módulos. [Detalle eléctrico y mecánico](PCB_OLED_ENCODER.md).
 
-Asignaciones AVR: CLK PG1, DT PG0, SW PL7, SDA PD1 y SCL PD0; SW activo bajo con pull-up. VCC común está acordado, tensión numérica/pull-ups pendientes de módulos reales. No asumir 5 V por ser Mega. No se ha conectado ni probado la nueva PCB.
+Asignaciones AVR: CLK PE4/INT4, DT PE5/INT5, SW PL7, SDA PD1 y SCL PD0; SW activo bajo con pull-up. VCC común está acordado, tensión numérica/pull-ups pendientes de módulos reales. No asumir 5 V por ser Mega. No se ha conectado ni probado la nueva PCB.
 
-Fuente de correspondencias: [pinout oficial Mega](https://docs.arduino.cc/resources/pinouts/A000067-full-pinout.pdf). A4 ya pertenece a IR1 y D13 al servo. D40-D42 no figuran ocupados en el pinout recibido; confirmar montaje real antes de cablear.
+Fuente de correspondencias: [pinout oficial Mega](https://docs.arduino.cc/resources/pinouts/A000067-full-pinout.pdf). A4 ya pertenece a IR1 y D13 al servo. D2/D3/D42 no figuran ocupados en el pinout recibido; confirmar montaje real antes de cablear.
 
-Los Hall de ruedas son otros sensores. El manual los deja sin conectar; su asignación permanece pendiente. Un banco PCINT como PK/A8..A15 es candidato a estudiar para ocho señales, no cableado aprobado. Comprobar niveles, acceso del shield y carga CPU; nunca adquirirlos con el polling lento del encoder UI.
+Los Hall de ruedas siguen sin conectar. La asignación de fuente es FL A8/A9, FR A10/A11, RL A12/A13 y RR A14/A15: PK0..PK7 / PCINT16..23, banco PCINT2. Se conserva x1: IRQ por A (máscara0x55), flanco ascendente contado y B para dirección. Sin superposición en el mapa actual; niveles, acceso físico y correspondencia S1/S2 pendientes. AFR2_HALL_CONNECTED=0 se conserva. [Detalle de captura y prioridad](INTERRUPCIONES_ENCODER_HALL.md).
 
 En el CSV, las señales UART se nombran `MEGA_TX1_TO_ESP_RX` y `ESP_TX_TO_MEGA_RX1` para explicitar el emisor/receptor. Esta corrección documental no renombra símbolos C ni cambia asignaciones eléctricas.

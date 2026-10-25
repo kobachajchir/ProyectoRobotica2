@@ -1,0 +1,20 @@
+{
+  "schema": "afr2-module-1",
+  "id": "atmega:module/reference/f4/Core/Src/motor_control.c",
+  "title": "Motores, PID, Mecanum y GOTO",
+  "responsibility": "Reutilizar arbitraje de fuentes, estados de misión/cancelación, límites, PID y estructura de perfiles. El origen es diferencial/balance; AutoMotion ready exige MPU/calibración/balance y objetos IR. El estimador no sustituye odometría de cuatro Hall.",
+  "changes_required": "Crear driver cuatro ruedas FL/FR/RL/RR y mezclar vx/vy/wz con geometría/signos calibrados. Usar PID de velocidad por rueda, no balance. Captura Hall por diseñar: variante/PPR/niveles/cuentas no verificados. Sin IMU, orientación solo estimada por ruedas y susceptible al deslizamiento. GOTO requiere encoder/odometría válida; cancelar/STOP/obstáculo con timeout. No falsificar ready de MPU para saltar guardas. Evitar floats costosos en ISR; unidades y saturación explícitas. MPU/balance se conservan solo como referencias de acoplamientos, fuera del producto.",
+  "evidence": [
+    "reference/f4/Core/Src/motor_control.c",
+    "reference/f4/Core/Src/motion_control.c",
+    "reference/f4/Core/Src/pid_controller.c",
+    "reference/f4/Core/Src/motion_estimator.c",
+    "reference/f4/Core/Src/auto_motion.c"
+  ],
+  "findings": [
+    "AFRDOC-002",
+    "AFRDOC-003",
+    "AFRDOC-005"
+  ],
+  "status": "source-documented-not-built"
+}

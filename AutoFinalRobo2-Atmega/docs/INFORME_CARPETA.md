@@ -1,5 +1,11 @@
 # Carpeta docs
 
+AFR2-20261023-19: composición de producto y EX01 ya escritos, sin compilar/probar.
+[Guía vigente](PRODUCTO_ATMEGA.md), [detalle por archivo](../../AutoFinalRobo2-Contracts/docs/ATMEGA_IMPLEMENTACION_19.md),
+[API/complemento](../../AutoFinalRobo2-Contracts/contracts/ROBO2_PRODUCT_EXTENSION.md).
+Las restricciones y estados de las fichas anteriores abajo son históricos.
+
+
 [Maestro](../../INFORME_MAESTRO.md) · [Informe del repositorio](../INFORME_ADAPTACION.md).
 
 Base nueva de trabajo; ver estado de implementación en el informe del repositorio.

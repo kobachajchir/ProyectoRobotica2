@@ -1,0 +1,40 @@
+/* AFR2-20261024-14: own identity, hierarchical catalogue and adapted F4 controls. */
+.afr2-developer-heading { display:flex; flex-wrap:wrap; align-items:center; gap:24px; }
+.afr2-developer-copy { flex:1; min-width:180px; display:grid; gap:12px; padding-block:4px; }
+.afr2-developer-copy h2, .afr2-developer-copy p { margin:0; }
+.afr2-developer-copy h2 { line-height:1.2; }
+.afr2-developer-back { display:inline-flex; justify-self:start; align-items:center; gap:10px; min-height:44px; padding:8px 0; color:var(--action); text-decoration:none; }
+.afr2-screen-catalogue { display:grid; grid-template-columns:minmax(220px,.8fr) minmax(0,1.4fr); gap:24px; align-items:start; }
+.afr2-screen-tree { max-height:75dvh; overflow:auto; overscroll-behavior:contain; border:1px solid var(--border-default); border-radius:var(--radius-sm); padding:8px; }
+.afr2-screen-tree ul { list-style:none; padding:0; margin:0; }
+.afr2-screen-tree li > ul { margin-left:12px; padding-left:8px; border-left:1px solid var(--border-subtle); }
+.afr2-screen-tree-row { display:flex; align-items:center; gap:4px; border:1px solid transparent; border-radius:var(--radius-sm); }
+.afr2-screen-tree-row[data-selected="true"] { background:var(--action-subtle); border-color:var(--action-border); color:var(--action); }
+.afr2-screen-tree-toggle, .afr2-screen-tree-label, .afr2-screen-tree-notices { background:transparent; border:0; color:inherit; font:inherit; cursor:pointer; }
+.afr2-screen-tree-toggle { display:grid; place-items:center; flex:none; width:44px; height:44px; }
+.afr2-screen-tree-leaf { width:12px; flex:none; }
+.afr2-screen-tree-label { min-width:0; flex:1; display:grid; gap:3px; min-height:52px; padding:8px; text-align:left; font-size:13px; overflow-wrap:anywhere; }
+.afr2-screen-tree-label small { color:var(--text-muted); font:11px var(--font-mono); }
+.afr2-screen-tree-toggle .afr2-chevron { transform:rotate(-90deg); transition:transform var(--duration-route) var(--ease-out); }
+.afr2-screen-tree-toggle .afr2-chevron[data-open="true"] { transform:rotate(0); }
+.afr2-screen-tree-notices { display:flex; align-items:center; gap:8px; min-height:44px; padding:8px; margin-top:8px; text-align:left; font-size:13px; }
+.afr2-screen-tree-notices .afr2-chevron[data-open="true"] { transform:rotate(180deg); }
+.afr2-screen-library { min-width:0; display:grid; gap:16px; }
+.afr2-screen-library header { display:grid; gap:8px; }
+.afr2-screen-library header p, .afr2-screen-library h2 { margin:0; }
+.afr2-screen-library h2 { font-size:20px; font-weight:600; }
+.afr2-screen-library header code { color:var(--text-muted); font-size:12px; }
+.afr2-oled-with-side { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:12px; align-items:center; }
+.afr2-oled-with-side > :only-child { grid-column:1/-1; }
+.afr2-oled-side { display:flex; align-items:stretch; gap:8px; }
+.afr2-oled-row-selector, .afr2-oled-page-controls { display:flex; flex-direction:column; justify-content:space-between; gap:8px; }
+.afr2-oled-side button { width:44px; min-height:44px; display:grid; place-items:center; padding:8px; border:1px solid var(--border-default); border-radius:var(--radius-sm); background:var(--surface-solid); color:var(--text); cursor:pointer; }
+.afr2-oled-side button[aria-pressed="true"] { color:var(--text-on-action); background:var(--action); border-color:var(--action-border); }
+.afr2-oled-side button:disabled { opacity:.4; cursor:default; }
+.afr2-oled-side svg { stroke-linecap:round; stroke-linejoin:round; }
+.afr2-oled-page-controls > span { text-align:center; font-size:10px; color:var(--text-muted); }
+.afr2-oled-page-controls small { display:block; }
+.afr2-oled-data-required { display:grid; place-content:center; gap:12px; min-height:180px; padding:24px; text-align:center; border:1px solid var(--border-default); border-radius:var(--radius-sm); background:var(--surface-subtle); }
+.afr2-oled-data-required p { margin:0; color:var(--text-muted); font-size:13px; }
+@media (max-width:1050px) { .afr2-screen-catalogue { grid-template-columns:minmax(0,1fr); } .afr2-screen-tree { max-height:340px; } }
+@media (prefers-reduced-motion:reduce) { .afr2-screen-tree-toggle .afr2-chevron { transition:none; } }

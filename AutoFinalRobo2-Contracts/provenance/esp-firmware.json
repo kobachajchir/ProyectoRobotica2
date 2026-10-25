@@ -1,0 +1,226 @@
+{
+  "schema": "afr2-adaptations-1",
+  "change_id": "AFR2-20261023-11",
+  "date": "2026-10-23",
+  "verification": "source-only; no builds/tests/validators/flashing/hardware",
+  "authorship": "Fuentes históricas y autorías conservadas en reference y provenance/files.json. No se atribuyen autores desconocidos ni se otorga licencia nueva. Adaptaciones propias documentadas por archivo.",
+  "reference_hashes": [
+    {
+      "path": "AutoFinalRobo2-ESP/reference/esp01/src/uner_core.c",
+      "sha256": "a53ef2aec4cc7fb0ed8c0d22699f3ee0045bf42f69131d609689cb9b7cae40a9"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/reference/esp01/src/uner_v2.h",
+      "sha256": "f05d8dea1aa27803c91eed1125a73765d11538fae9455e31f47c46fd0482fcb9"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/reference/esp01/src/webserver_ws.cpp",
+      "sha256": "19f51be9df1a37d5060783d687220fd6b40dde0226fa6eebfb190a57e6d08c20"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/reference/esp01/src/wifi_service.cpp",
+      "sha256": "2ccd38929bd7b5aa9028a2f5f0ce45638c163b45b6c623882da77d087518ef84"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/reference/esp01/src/nvs_littlefs.cpp",
+      "sha256": "27675fea9eb2dc6f68be1d1b8bf09e525d898c7b9e1f40217b3bcf09af43e979"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/reference/esp01/tools/websocket_copy_buffers.py",
+      "sha256": "912937a6b52b15580385622621e3cfdaef989f009a5a76384185802fc37eb773"
+    }
+  ],
+  "files": [
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/afr2_wire.h",
+      "sources": [
+        "AutoFinalRobo2-ESP/reference/esp01/src/uner_core.c",
+        "AutoFinalRobo2-ESP/reference/esp01/src/uner_v2.h"
+      ],
+      "adaptation": "Framing UNER v2 reimplementado como parser acotado C/C++, sin cola histórica; nuevo perfil AFR2, IDs propios, sesión y transacción.",
+      "status": "source-written-unverified"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/storage.h",
+      "sources": [
+        "AutoFinalRobo2-ESP/reference/esp01/src/nvs_littlefs.cpp",
+        "AutoFinalRobo2-ESP/reference/esp01/src/webserver_ws.cpp"
+      ],
+      "adaptation": "API propia de almacenamiento y catálogo de assets.",
+      "status": "source-written-unverified"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/storage.cpp",
+      "sources": [
+        "AutoFinalRobo2-ESP/reference/esp01/src/nvs_littlefs.cpp",
+        "AutoFinalRobo2-ESP/reference/esp01/src/webserver_ws.cpp"
+      ],
+      "adaptation": "Montaje sin autoformat, whitelist manifest, aislamiento /config, temporal+rename; no importa preferencias históricas.",
+      "status": "source-written-unverified"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/wifi_service.h",
+      "sources": [
+        "AutoFinalRobo2-ESP/reference/esp01/src/wifi_service.h"
+      ],
+      "adaptation": "API propia Wi-Fi sin dependencias F4.",
+      "status": "source-written-unverified"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/wifi_service.cpp",
+      "sources": [
+        "AutoFinalRobo2-ESP/reference/esp01/src/wifi_service.cpp",
+        "AutoFinalRobo2-ESP/reference/esp01/src/wifi_scan_arbiter.c",
+        "AutoFinalRobo2-ESP/reference/esp01/src/nvs_littlefs.cpp"
+      ],
+      "adaptation": "Estados STA/AP/AP_STA, scan asíncrono y fallback adaptados; esquema nuevo afr2-wifi-1 y cero credenciales heredadas.",
+      "status": "source-written-unverified"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/mega_link.h",
+      "sources": [
+        "AutoFinalRobo2-ESP/reference/esp01/src/uner_transport_serial.h",
+        "AutoFinalRobo2-ESP/reference/esp01/src/uart_transaction_manager.h"
+      ],
+      "adaptation": "Dueño único UART, buffers acotados y resultado correlacionado.",
+      "status": "source-written-unverified"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/mega_link.cpp",
+      "sources": [
+        "AutoFinalRobo2-ESP/reference/esp01/src/uner_transport_serial.cpp",
+        "AutoFinalRobo2-ESP/reference/esp01/src/uart_transaction_manager.c"
+      ],
+      "adaptation": "TX parcial sin intercalar, sesión/transacción, negociación/heartbeat y STOP, sin comandos F4.",
+      "status": "source-written-unverified"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/broker.h",
+      "sources": [
+        "AutoFinalRobo2-ESP/reference/esp01/src/ws_session_manager.h",
+        "AutoFinalRobo2-ESP/reference/esp01/src/ws_json_bridge.h"
+      ],
+      "adaptation": "Sesiones y pedidos propios afr2-ws-1 acotados.",
+      "status": "source-written-unverified"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/broker.cpp",
+      "sources": [
+        "AutoFinalRobo2-ESP/reference/esp01/src/ws_json_bridge.cpp",
+        "AutoFinalRobo2-ESP/reference/esp01/src/ws_session_manager.c",
+        "AutoFinalRobo2-ESP/reference/esp01/src/ws_bridge/dispatch.inc",
+        "AutoFinalRobo2-ESP/reference/esp01/src/webserver_ws.cpp"
+      ],
+      "adaptation": "Dispatcher propio AFR2, sesiones sin lease implícito, traducción binaria/JSON y errores unknown/unavailable.",
+      "status": "source-written-unverified"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/main.cpp",
+      "sources": [
+        "AutoFinalRobo2-ESP/reference/esp01/src/webserver_ws.cpp",
+        "AutoFinalRobo2-ESP/reference/esp01/src/main.cpp"
+      ],
+      "adaptation": "Composición nueva HTTP/WS/LittleFS/Wi-Fi/Mega, sin AT, logging UART ni upload HTTP.",
+      "status": "source-written-unverified"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/platformio.ini",
+      "sources": [
+        "AutoFinalRobo2-ESP/reference/esp01/platformio.upstream.ini"
+      ],
+      "adaptation": "Fija versiones del stack de referencia, incluye header Contracts y parche adaptado; no importa linker/offsets/layout ESP01.",
+      "status": "source-written-unverified"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/tools/async_tcp_copy_buffers.py",
+      "sources": [
+        "AutoFinalRobo2-ESP/reference/esp01/tools/websocket_copy_buffers.py"
+      ],
+      "adaptation": "Conserva parche de ownership TCP y contabilización de escritura HTTP parcial; agrega cabecera AFR2. No ejecutado.",
+      "status": "source-written-unverified"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/include/afr2_link.h",
+      "sources": [],
+      "adaptation": "API nueva AVR de snapshot y callback STOP; no hardware desde el endpoint.",
+      "status": "source-written-unverified"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/services/afr2_link.c",
+      "sources": [
+        "AutoFinalRobo2-ESP/reference/esp01/src/uner_core.c"
+      ],
+      "adaptation": "Endpoint AFR2 nuevo sobre framing compartido; no importa handlers STM32.",
+      "status": "source-written-unverified"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/include/afr2_uart1.h",
+      "sources": [],
+      "adaptation": "API nueva USART1 IRQ.",
+      "status": "source-written-unverified"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/platform/afr2_uart1.c",
+      "sources": [],
+      "adaptation": "Backend nuevo avr-libc con RX/TX de 128 bytes, fallos e intercambio atómico.",
+      "status": "source-written-unverified"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/communication_main.c",
+      "sources": [],
+      "adaptation": "Composición nueva opcional, Timer0 CTC 1ms, potencia inactiva, sin confirmación STOP ficticia.",
+      "status": "source-written-unverified"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/Makefile",
+      "sources": [],
+      "adaptation": "Mantiene help por defecto y biblioteca; incorpora fuentes de enlace, dependencias y objetivo opcional de comunicaciones, sin ejecutar.",
+      "status": "source-written-unverified"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/protocol/afr2Client.ts",
+      "sources": [],
+      "adaptation": "Sobre fuente propia AFR2-20261023-09: consume capacidades dinámicas por heartbeat/system.status.",
+      "status": "source-written-unverified"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/connection/ConnectionContext.tsx",
+      "sources": [],
+      "adaptation": "Sobre fuente propia AFR2-20261023-09: confirma STOP solo con completed y stopped=true.",
+      "status": "source-written-unverified"
+    }
+  ],
+  "documentation": [
+    "README.md",
+    "INFORME_MAESTRO.md",
+    "AutoFinalRobo2-Atmega/README.md",
+    "AutoFinalRobo2-Atmega/INFORME_ADAPTACION.md",
+    "AutoFinalRobo2-Atmega/docs/COMUNICACION_ESP.md",
+    "AutoFinalRobo2-Atmega/docs/COMPOSICION.md",
+    "AutoFinalRobo2-Atmega/src/platform/INFORME_CARPETA.md",
+    "AutoFinalRobo2-ESP/README.md",
+    "AutoFinalRobo2-ESP/INFORME_ADAPTACION.md",
+    "AutoFinalRobo2-ESP/data/README.md",
+    "AutoFinalRobo2-ESP/src/INFORME_CARPETA.md",
+    "AutoFinalRobo2-ESP/docs/modules/http-ws.md",
+    "AutoFinalRobo2-ESP/docs/modules/uart.md",
+    "AutoFinalRobo2-ESP/docs/modules/wifi.md",
+    "AutoFinalRobo2-Web/README.md",
+    "AutoFinalRobo2-Web/INFORME_ADAPTACION.md",
+    "AutoFinalRobo2-Contracts/README.md",
+    "AutoFinalRobo2-Contracts/INFORME_ADAPTACION.md",
+    "AutoFinalRobo2-Contracts/CHANGELOG.md",
+    "AutoFinalRobo2-Contracts/contracts/PROTOCOL.md",
+    "AutoFinalRobo2-Contracts/contracts/UART_PROFILE_1.md",
+    "AutoFinalRobo2-Contracts/contracts/commands.json",
+    "AutoFinalRobo2-Contracts/contracts/capabilities.json",
+    "AutoFinalRobo2-Contracts/docs/PLAN_ESP.md",
+    "AutoFinalRobo2-Contracts/docs/PLAN_WEB.md",
+    "AutoFinalRobo2-Contracts/docs/ROADMAP.md",
+    "AutoFinalRobo2-Contracts/docs/DECISIONES.md",
+    "AutoFinalRobo2-Contracts/docs/INFORME_MAESTRO.md",
+    "AutoFinalRobo2-Contracts/docs/PROMPT_CONTINUIDAD.md",
+    "AutoFinalRobo2-Contracts/changes/2026-10-23-11-esp-server-and-mega-link.md",
+    "AutoFinalRobo2-Contracts/provenance/README.md"
+  ]
+}

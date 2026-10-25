@@ -1,4 +1,20 @@
+> AFR2-20261024-15: [maestro reconciliado](../../docs/ALINEACION_MAESTRO.md). AFRDOC-014/015 registran huecos corregidos en fuente y compilados: auto-lease en Calibración, FS/paquete visible y eliminación de lease ficticio en salud HTTP. Hallazgos abiertos por aceptación pendiente; no confundir con código aún faltante. Casos físicos/dinámicos conservados.
+
+AFR2-20261024-09: cerrado el faltante de catálogo Web59 y copia local de biblioteca actual AVR; AFRDOC-009 sigue abierto por comparación diferencial/visual/física pendiente. El framebuffer remoto conserva sus bytes; eso no acredita paridad física de páginas.
+
+> AFR2-20261024-02: backend, transporte/contratos, GOTO, UI y productores/consumidores ya tienen integración compilada. Las brechas físicas/dinámicas siguen abiertas; no cerrar por build. Estado por hallazgo en `findings.json` y matriz vigente en `../../contracts/EX01_ALIGNMENT_3.md`.
+
 # Hallazgos y brechas de migración
+
+AFR2-20261024-08: iconos/scroll/red y reinicios locales ya tienen fuente
+compilada. Actualizados AFRDOC-005/009/010 en findings.json; siguen abiertos por
+memoria dinámica/tiempos/fidelidad física pendientes. No se cierran por build.
+
+Actualización19/24-10: backend TWI, menús/producto, Hall/odometría/GOTO y sensores
+ya tienen fuente nueva. Los hallazgos siguen abiertos por aceptación física,
+recursos e interoperabilidad pendientes. [JSON actualizado](findings.json) y
+[detalle de entrega](../../docs/ATMEGA_IMPLEMENTACION_19.md). Los párrafos iniciales
+siguientes conservan el diagnóstico histórico, no el estado fuente vigente.
 
 Son límites observados/diseñados, no fallos físicos comprobados. Se conserva el registro AMDOC original en reference/automicro sin editarlo.
 
@@ -92,3 +108,14 @@ Código afectado por la futura adaptación: `esp:platformio.ini`, `esp:src/main.
 ESP-12S V1.1 nominal 4 MiB; variante ESP8285/2MB diferenciada. Lectura real, modo SPI/layout pendientes. Baud AT de fábrica, UART propia y upload son distintos; DOUT en archivo AT no prueba modo para firmware nuevo.
 
 Código afectado por la futura adaptación: `esp:platformio.ini`, `esp:src/main.cpp`. [Documento afectado](../../hardware/WIFI_SHIELD.md), sección Firmware, velocidad y flash. Abierto; documentación, no prueba física. AFR2-20261023-03.
+
+
+## Actualización AFR2-20261023-15
+
+AFRDOC-001: backend TWI asíncrono por IRQ con STOP/deadline/recovery y composición
+AVR escritos; rama sin DMA F4 sigue siendo referencia bloqueante. AFRDOC-008:
+ROBO2/perfil2 incorpora correlación sesión/transacción y rechazo de repetidos.
+AFRDOC-010: encoder físico integrado y liberación al umbral largo corregida.
+Los tres siguen abiertos hasta comprobación autorizada; no se ejecutaron
+compilaciones/tests/validadores ni pruebas físicas. JSON conserva historial.
+AFRDOC-005 (recursos) sigue abierto: presupuesto de campos no equivale a mapa.

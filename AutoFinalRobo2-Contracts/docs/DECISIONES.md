@@ -1,4 +1,12 @@
+> AFR2-20261024-15: el estado normativo de implementación es [ALINEACION_MAESTRO](ALINEACION_MAESTRO.md). ROBO2/perfil2 EX01v6, menú y permisos/gates conservados. Se completa adquisición de control en configuración y diagnóstico local FS/paquete; decisiones inferiores mantienen su contexto histórico.
+
 # Decisiones
+
+## Firmware ESP y perfil UART / AFR2-20261023-11
+
+- ADR-024: [perfil AFR2 1](../contracts/UART_PROFILE_1.md) sobre UNER v2, con sesión/transacción en payload, N<=64 y seis IDs propios. Estado: implementado en fuente ESP/AVR, sin compilar ni probar. Concreta ADR-007 sin asumir compatibilidad histórica ni habilitar movimiento.
+- ADR-025: LittleFS con autoformat=false, assets exactos por manifiesto y preferencias privadas temporales+rename; sin upload/editor HTTP. [Contrato HTTP/WS/Wi-Fi](../contracts/PROTOCOL.md). Layout físico y capacidad real pendientes de identificar; no se adopta linker ESP01.
+- ADR-026: composición AVR de comunicaciones separada de la aplicación completa. Informa UART y datos unknown; no confirma STOP sin callback autoritativo ni concede lease. Endpoint ESP usa estados/capacidades actuales y la Web fuente los consume por latidos/eventos. Motores/GOTO pendientes.
 
 | ID | Decisión | Estado |
 | --- | --- | --- |
@@ -11,7 +19,7 @@
 | ADR-007 | UNER v2 candidato | IDs/payload/capabilities por cerrar |
 | ADR-008 | UART propia 115200 8N1 candidata | Independiente de AT de fábrica y de upload; error AVR/robustez pendientes |
 | ADR-009 | ESP-12S nominal 32 Mbit / 4 MiB según ficha V1.1 | Chip/flash real, modo SPI y layout LittleFS por identificar |
-| ADR-010 | Un dueño de mando con lease; espectadores separados | Propuesto; STOP prioritario |
+| ADR-010 | Un responsable del control con lease; espectadores separados | Propuesto; STOP prioritario |
 
 No hay .ino completo del proveedor entre los ocho adjuntos. El PDF conceptual muestra fragmentos con dos IR D52/D53, distintos del módulo de cinco canales A4..A0. No reconstruir un sketch y llamarlo original. Las URLs del manual son referencias, no instrucciones para instalar software ni firmware AT.
 
@@ -41,3 +49,30 @@ No hay .ino completo del proveedor entre los ocho adjuntos. El PDF conceptual mu
 - ADR-021: modelo futuro del auto base mediante el MCP de Fusion existente. Usar inventario/manual local de la variante Model Y, mejores CAD correspondientes y descargas Web; inferencias justificadas, explícitas y editables. Sin cables, mazos ni jumpers; conectores físicos conservados.
 - ADR-022: pieza nueva/soporte/PCB y cubierta modificada pendientes. Reservar espacio; preparar referencias OLED 0,96 pulgadas y encoder mecánico KY-040 sin placa breakout, más perilla. No declarar esos componentes instalados.
 - ADR-023: destino aprobado privado kobachajchir/ProyectoRobotica2, origin HTTPS y rama remota main, con los cuatro historiales/etiquetas conservados. La entrega solo guarda/publica el [plan](../../AutoFinalRobo2-CAD/docs/PLAN_MODELO_3D_FUSION.md); no inicia el modelado.
+
+
+## ROBO2 y composición local / AFR2-20261023-15
+
+- ADR-027: cabecera ASCII ROBO2 de5 bytes, tokens3A/A5, framing versión1 y
+  perfil2. Mantiene semántica F4 de ruta emisor nibble alto/receptor bajo y
+  validación de ambos extremos con un único header C/C++. Sustituye candidato
+  ADR-007 y framing de ADR-024; sin compatibilidad con UNER/perfil1.
+- ADR-028: composición AVR local UART/Timer0/TWI/Manager/OLED/encoder escrita;
+  opción UART sola conservada con board común. Concreta ADR-003 y amplía ADR-026.
+  Sin DMA/HAL, cuatro vistas locales, sin anuncio de servicios remotos UI ni
+  sensores/potencia por implicación. Estado fuente no compilada/probada.
+- ADR-029: guía de ESP docs/PROTOCOLO_ROBO2.md documenta enviar/recibir/validar y
+  pendientes; contrato normativo y casos comunes en Contracts. No duplicar parser.
+  Actualizar ambos firmwares juntos en una futura verificación autorizada.
+
+## Entrega ATmega19, continuación24/10/2026
+
+Árbol44 nodos y servicios de producto integrados en fuente, sin compilar/probar.
+User override: largo SW en teclado cancela y vuelve al contexto anterior; fuera
+de teclado abre principal. Conectar borrador Wi-Fi exige clic físico en auto,
+también al ingresar credenciales desde Web. Único WS es complemento ESP pendiente.
+UI_ACTION no concede permisos de motor/calibración/EEPROM; usar APIs dedicadas.
+Hall x1 propuesto A8..A15, deshabilitado hasta conectar/confirmar niveles; CPR/signo
+por una vuelta manual medida, no por11/75. Fuente/aceptación se distinguen.
+EX01/perfil2 no se mezcla con perfil3/secuencias diseñado21.
+[Matriz y evidencias](PLAN_ATMEGA.md) · [contrato](../contracts/ROBO2_PRODUCT_EXTENSION.md).

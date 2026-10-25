@@ -1,20 +1,218 @@
 {
-  "schema": "afr2-capabilities-design-1",
+  "schema": "afr2-capabilities-design-2",
+  "updated_by": "AFR2-20261025-01",
   "runtime_report": false,
+  "product": "AutoFinalRobo2",
   "hardware": {
     "imu": false,
+    "two_wheel_balance": false,
+    "chassis": "mecanum-4wd",
     "line_channels": 5,
     "ultrasonic": "HC-SR04",
     "wheel_motors": 4,
-    "wheel_encoders": "unwired-in-supplied-docs",
-    "oled": "planned-SSD1306-128x64-confirm",
-    "ui_encoder": "planned"
+    "wheel_encoders": "unwired-user-confirmed",
+    "oled": "SSD1306-128x64-I2C-only-device",
+    "ui_encoder": "single-rotary-sw-no-menu-button"
   },
-  "implementation": {
-    "uart": "pending",
-    "motion": "pending",
-    "goto": "pending",
-    "oled": "partial-source",
-    "ui": "partial-source"
-  }
+  "subsystems": {
+    "uart_bridge": {
+      "present": true,
+      "implemented": true,
+      "calibrated": false,
+      "valid": false,
+      "freshness": "unknown",
+      "reason": "Fuente y adaptadores compilados en los tres modulos; validez/calibracion se negocian con productores reales, sin evidencia fisica.",
+      "module_status": {
+        "atmega": "compiled-memory-gated-no-hardware",
+        "esp": "compiled-candidate-no-hardware",
+        "web": "compiled-packaged-promoted-no-browser"
+      }
+    },
+    "mecanum_drive": {
+      "present": true,
+      "implemented": true,
+      "calibrated": false,
+      "valid": false,
+      "freshness": "unknown",
+      "reason": "Fuente y adaptadores compilados en los tres modulos; validez/calibracion se negocian con productores reales, sin evidencia fisica.",
+      "module_status": {
+        "atmega": "compiled-memory-gated-no-hardware",
+        "esp": "compiled-candidate-no-hardware",
+        "web": "compiled-packaged-promoted-no-browser"
+      }
+    },
+    "wheel_odometry": {
+      "present": false,
+      "implemented": true,
+      "calibrated": false,
+      "valid": false,
+      "freshness": "unknown",
+      "reason": "Fuente y adaptadores compilados en los tres modulos; validez/calibracion se negocian con productores reales, sin evidencia fisica.",
+      "module_status": {
+        "atmega": "compiled-memory-gated-no-hardware",
+        "esp": "compiled-candidate-no-hardware",
+        "web": "compiled-packaged-promoted-no-browser"
+      }
+    },
+    "goto_relative": {
+      "present": false,
+      "implemented": true,
+      "calibrated": false,
+      "valid": false,
+      "freshness": "unknown",
+      "reason": "Fuente y adaptadores compilados en los tres modulos; validez/calibracion se negocian con productores reales, sin evidencia fisica.",
+      "module_status": {
+        "atmega": "compiled-memory-gated-no-hardware",
+        "esp": "compiled-candidate-no-hardware",
+        "web": "compiled-packaged-promoted-no-browser"
+      }
+    },
+    "line_array_5ch": {
+      "present": true,
+      "implemented": true,
+      "calibrated": false,
+      "valid": false,
+      "freshness": "unknown",
+      "reason": "Fuente y adaptadores compilados en los tres modulos; validez/calibracion se negocian con productores reales, sin evidencia fisica.",
+      "module_status": {
+        "atmega": "compiled-memory-gated-no-hardware",
+        "esp": "compiled-candidate-no-hardware",
+        "web": "compiled-packaged-promoted-no-browser"
+      }
+    },
+    "ultrasonic_hcsr04": {
+      "present": true,
+      "implemented": true,
+      "calibrated": false,
+      "valid": false,
+      "freshness": "unknown",
+      "reason": "Fuente y adaptadores compilados en los tres modulos; validez/calibracion se negocian con productores reales, sin evidencia fisica.",
+      "module_status": {
+        "atmega": "compiled-memory-gated-no-hardware",
+        "esp": "compiled-candidate-no-hardware",
+        "web": "compiled-packaged-promoted-no-browser"
+      }
+    },
+    "oled_128x64": {
+      "present": true,
+      "implemented": true,
+      "calibrated": false,
+      "valid": false,
+      "freshness": "unknown",
+      "reason": "Fuente y adaptadores compilados en los tres modulos; validez/calibracion se negocian con productores reales, sin evidencia fisica.",
+      "module_status": {
+        "atmega": "compiled-memory-gated-no-hardware",
+        "esp": "compiled-candidate-no-hardware",
+        "web": "compiled-packaged-promoted-no-browser"
+      }
+    },
+    "ui_encoder_sw": {
+      "present": true,
+      "implemented": true,
+      "calibrated": false,
+      "valid": false,
+      "freshness": "unknown",
+      "reason": "Fuente y adaptadores compilados en los tres modulos; validez/calibracion se negocian con productores reales, sin evidencia fisica.",
+      "module_status": {
+        "atmega": "compiled-memory-gated-no-hardware",
+        "esp": "compiled-candidate-no-hardware",
+        "web": "compiled-packaged-promoted-no-browser"
+      }
+    },
+    "sequence_runner": {
+      "present": true,
+      "implemented": false,
+      "calibrated": false,
+      "valid": false,
+      "freshness": "unknown",
+      "limits": {
+        "maxSegments": 32,
+        "maxDurationMs": 120000,
+        "stepMs": 10,
+        "editorMaxBlocksPerTrack": 64,
+        "editorMaxDurationMs": 600000,
+        "distanceBlocks": "runtime boolean: extension>=6 and bit0x4000; false with gates0",
+        "maxWheelDistanceMm": 10000
+      },
+      "reason": "EX01v7 compiled with Hall/memory0. Physical availability needs wiring/calibration and reviewed SRAM/stack; enabled branch not compiled or measured.",
+      "module_status": {
+        "atmega": "compiled-memory-gated-no-hardware",
+        "esp": "compiled-candidate-no-hardware",
+        "web": "compiled-packaged-promoted-no-browser"
+      },
+      "distance_contract": "EX01_SEQUENCE_DISTANCE_6.md"
+    },
+    "configuration": {
+      "present": true,
+      "implemented": true,
+      "calibrated": false,
+      "valid": false,
+      "freshness": "unknown",
+      "reason": "Servicio compilado; requiere estados y limites AVR vigentes.",
+      "module_status": {
+        "atmega": "compiled-memory-gated-no-hardware",
+        "esp": "compiled-candidate-no-hardware",
+        "web": "compiled-packaged-promoted-no-browser"
+      }
+    },
+    "wheel_test": {
+      "present": true,
+      "implemented": true,
+      "calibrated": false,
+      "valid": false,
+      "freshness": "unknown",
+      "reason": "Servicio compilado; requiere estados y limites AVR vigentes.",
+      "module_status": {
+        "atmega": "compiled-memory-gated-no-hardware",
+        "esp": "compiled-candidate-no-hardware",
+        "web": "compiled-packaged-promoted-no-browser"
+      }
+    },
+    "line_follow": {
+      "present": true,
+      "implemented": true,
+      "calibrated": false,
+      "valid": false,
+      "freshness": "unknown",
+      "reason": "Servicio compilado; requiere estados y limites AVR vigentes.",
+      "module_status": {
+        "atmega": "compiled-memory-gated-no-hardware",
+        "esp": "compiled-candidate-no-hardware",
+        "web": "compiled-packaged-promoted-no-browser"
+      }
+    }
+  },
+  "module_status": {
+    "atmega": "compiled-memory-gated-no-hardware",
+    "esp": "compiled-candidate-no-hardware",
+    "web": "compiled-packaged-promoted-no-browser"
+  },
+  "updated_by_history": [
+    "AFR2-20261023-21"
+  ],
+  "atmega_extension": {
+    "profile": 2,
+    "name": "EX01",
+    "version": 6,
+    "contract": "EX01_SEQUENCE_DISTANCE_6.md",
+    "runtime_report": false,
+    "profile3_sequences": "historical-superseded"
+  },
+  "integration_profile": "EX01_SEQUENCE_DISTANCE_6.md",
+  "system_services": {
+    "build_identity": "compiled-runtime-unverified",
+    "reboot": "compiled-deferred-stopped-only",
+    "boot_event": "BT01 bidirectional UART + system.boot WS with observation kind"
+  },
+  "network_presentation": {
+    "changeId": "AFR2-20261024-08",
+    "runtime_report": false,
+    "extensionFeatureBit": "0x2000",
+    "exported_as_runtime_capability": false,
+    "physical_evidence": false,
+    "web": "existing-framebuffer-consumer-and-updated-docs",
+    "esp": "compiled-paged-state-ACK-events-job8",
+    "atmega": "compiled-state-views-notifications-scroll-local-reset"
+  },
+  "control_mode": "direct"
 }

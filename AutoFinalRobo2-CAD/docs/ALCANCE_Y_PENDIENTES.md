@@ -1,12 +1,12 @@
 # Alcance y datos pendientes
 
-Este módulo concentra el diseño interno del vehículo y la electrónica asociada. La organización está creada y el [plan de Fusion](PLAN_MODELO_3D_FUSION.md) define el ensamble futuro del auto base, sin cables y con inferencias documentadas. Pieza nueva/soporte/PCB siguen pendientes. La entrega actual solo guarda/publica el plan.
+AFR2-20261024-15: revisión documental del maestro, sin nuevo CAD. El auto base ya tiene Fusionv16, Blender y GLB final según [estado del modelo](ESTADO_MODELO_3D.md). Pieza nueva/soporte/PCB siguen pendientes de planos y componentes; el modelo no acredita ajuste físico. [Matriz global](../../AutoFinalRobo2-Contracts/docs/ALINEACION_MAESTRO.md).
 
-| Área | Entregables futuros | Datos pendientes |
+| Área | Entregables / estado | Datos pendientes |
 | --- | --- | --- |
 | PCB OLED/encoder | Proyecto KiCad editable, esquema, PCB, bibliotecas propias | Módulos y pinouts reales, VCC/pull-ups, huellas, contorno, orientación J1/J2 y reglas de fabricación |
 | Pieza nueva | Fuente paramétrica editable, soporte/cubierta y plano acotado | Planos del usuario, material, espesores, espacio libre y fijación |
-| Auto completo | Ensamblaje editable con componentes y referencias relativas | Reconstrucción documental de chasis y posición de placas/motores/ruedas/batería; inferencias explícitas; sin cables |
+| Auto completo | Auto base Fusionv16/Blender y GLB final existentes | Afinar cotas/inferencias, fijaciones y ajuste físico; OLED/encoder/PCB nueva diferidos; sin cables |
 | Fabricación/impresión | Exportaciones derivadas de una revisión identificada | Formatos, tolerancias, proceso y autorización de verificaciones |
 
 La [especificación PCB](../../AutoFinalRobo2-Contracts/hardware/PCB_OLED_ENCODER.md) establece dos conectores 2,54 mm (señales 1x5 y VCC/GND comunes 1x2) y fijación con dos tornillos/tuercas. No determina tamaños de tornillo, altura, espesor, tensión ni huellas. Leer también [pinout](../../AutoFinalRobo2-Contracts/hardware/PINOUT.md), [shield](../../AutoFinalRobo2-Contracts/hardware/WIFI_SHIELD.md) y [carga](../../AutoFinalRobo2-Contracts/hardware/FLASHING.md).

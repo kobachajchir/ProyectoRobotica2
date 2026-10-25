@@ -1,0 +1,21 @@
+
+> autofinalrobo2-web@0.1.0 build
+> tsc -b && vite build
+
+vite v7.3.7 building client environment for production...
+transforming...
+✓ 640 modules transformed.
+rendering chunks...
+[plugin vite:singlefile] 
+
+[plugin vite:singlefile] Inlining: bundle.js
+[plugin vite:singlefile] Inlining: style-B_hXZ_9B.css
+computing gzip size...
+dist/index.html  1,551.77 kB │ gzip: 424.72 kB
+✓ built in 25.03s
+
+> autofinalrobo2-web@0.1.0 postbuild
+> node tools/package-web.mjs
+
+[AutoFinalRobo2-Web] Publicación por archivos (EPERM); manifest escrito al final.
+[AutoFinalRobo2-Web] Paquete LittleFS generado en artifacts/littlefs/dist (6 archivos, 2855479 bytes gzip).

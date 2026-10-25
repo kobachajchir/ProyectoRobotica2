@@ -1,0 +1,47 @@
+# AutoFinalRobo2-Atmega/src/main.su
+main.c:24:17:capabilities	3	static
+main.c:22:16:stopped	3	static
+main.c:23:13:snapshot	3	static
+main.c:30:5:main	237	static
+
+# AutoFinalRobo2-Atmega/src/ui/afr2_screens.su
+afr2_screens.c:14:16:invoke	5	static
+afr2_screens.c:39:13:dismiss	3	static
+afr2_screens.c:11:13:sync_code	34	static
+afr2_screens.c:12:6:Afr2Ui_Init	3	static
+afr2_screens.c:13:6:Afr2Ui_Attach	3	static
+afr2_screens.c:17:6:Afr2Ui_Open	3	static
+afr2_screens.c:27:6:Afr2Ui_Notify	17	static
+afr2_screens.c:67:13:result	52	static
+afr2_screens.c:40:6:Afr2Ui_Tick	89	static
+afr2_screens.c:54:10:Afr2Ui_TextOffset	13	static
+afr2_screens.c:62:10:Afr2Ui_ReportedScreen	3	static
+afr2_screens.c:95:6:Afr2Ui_Apply	85	static
+afr2_screens.c:160:6:Afr2Ui_Render	120	dynamic,bounded
+
+# AutoFinalRobo2-Atmega/src/ui/afr2_network_screen.su
+afr2_network_screen.c:12:13:labeled	24	static
+afr2_network_screen.c:8:13:line	19	static
+afr2_network_screen.c:20:6:Afr2NetworkScreen_Render	17	static
+afr2_network_screen.c:35:6:Afr2NetworkNotice_Render	17	static
+
+# AutoFinalRobo2-Atmega/src/services/afr2_network.su
+afr2_network.c:8:13:clear_ap	3	static
+afr2_network.c:12:9:Afr2App_UiPrivate	5	static
+afr2_network.c:17:9:Afr2App_NetworkCommand	74	dynamic,bounded
+
+# AutoFinalRobo2-Atmega/src/services/afr2_app.su
+afr2_app.c:9:13:wipe	3	static
+afr2_app.c:10:16:value	3	static
+afr2_app.c:174:16:available	5	static
+afr2_app.c:197:20:reason	7	static
+afr2_app.c:171:13:keyboard_seed	5	static
+afr2_app.c:29:16:wifi_request	11	static
+afr2_app.c:37:16:local_command	7	static
+afr2_app.c:54:9:Afr2App_RemoteUiAllowed	3	static
+afr2_app.c:65:16:invoke	148	static
+afr2_app.c:217:6:Afr2App_Init	20	static
+afr2_app.c:222:6:Afr2App_Revoke	7	static
+afr2_app.c:232:6:Afr2App_Task	46	static
+afr2_app.c:268:6:Afr2App_UiSnapshot	144	dynamic,bounded
+

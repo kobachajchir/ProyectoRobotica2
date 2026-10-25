@@ -1,0 +1,218 @@
+{
+  "changeId": "AFR2-20261024-03",
+  "origin": "Existing AutoFinalRobo2 sources and user-provided brand master; original authors and references preserved. Not an exclusive diff against HEAD: preexisting uncommitted work.",
+  "authorship": "Original authors retained; optimization adapted for AutoFinalRobo2 with Codex.",
+  "verification": "Both profiles compiled; no browser or physical runtime test. Snapshot before user requested final CAD model integration.",
+  "files": [
+    {
+      "path": "AutoFinalRobo2-Web/vite.config.ts",
+      "bytes": 1826,
+      "sha256": "4fc1ec327a23298b5ef6b56a625088f3623fb6b52896aa5d7b1dad7e5ac915cb",
+      "adaptation": "WebP, explicit assets, source-scoped CSS, dependencies/minification and shared components; see change03.",
+      "state": "documented-or-build-input"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/package.json",
+      "bytes": 1213,
+      "sha256": "1f1cbd9a29926fe02856f3b8bde09f891f1456607e7e55fc25519f1acc41415d",
+      "adaptation": "WebP, explicit assets, source-scoped CSS, dependencies/minification and shared components; see change03.",
+      "state": "documented-or-build-input"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/package-lock.json",
+      "bytes": 103777,
+      "sha256": "ca5397bf2c1c04cb4e1fccf23a33c30a1de1c51fb73c113257684b372ea9606b",
+      "adaptation": "WebP, explicit assets, source-scoped CSS, dependencies/minification and shared components; see change03.",
+      "state": "documented-or-build-input"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/tsconfig.app.json",
+      "bytes": 794,
+      "sha256": "9f241aa9a6808a5dba654f39bfc979692f4f830e7fc23649e4debdbcabba120d",
+      "adaptation": "WebP, explicit assets, source-scoped CSS, dependencies/minification and shared components; see change03.",
+      "state": "documented-or-build-input"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/index.html",
+      "bytes": 751,
+      "sha256": "a8a42e962e80154da8649d37e51b2cad8cad7ce0d26e022e53f7bb8314c7badf",
+      "adaptation": "WebP, explicit assets, source-scoped CSS, dependencies/minification and shared components; see change03.",
+      "state": "documented-or-build-input"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/app/App.tsx",
+      "bytes": 2458,
+      "sha256": "87617762e1dc3d354caea47f030737154aa3de025b4bb8f366215fd9cde41ea5",
+      "adaptation": "WebP, explicit assets, source-scoped CSS, dependencies/minification and shared components; see change03.",
+      "state": "source-compiled-runtime-unverified"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/components/ui/BrandMark.tsx",
+      "bytes": 863,
+      "sha256": "9722fc0869658335fc3f3954b418a3aca03cc74c24504c976871d6886326c25b",
+      "adaptation": "WebP, explicit assets, source-scoped CSS, dependencies/minification and shared components; see change03.",
+      "state": "source-compiled-runtime-unverified"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/components/ui/StartupWelcome.tsx",
+      "bytes": 3049,
+      "sha256": "7f7d9faf9dc9fe3f366b3476b1f8c848aa78a521339f31655193f06c74bd6524",
+      "adaptation": "WebP, explicit assets, source-scoped CSS, dependencies/minification and shared components; see change03.",
+      "state": "source-compiled-runtime-unverified"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/styles/index.css",
+      "bytes": 6680,
+      "sha256": "86aa1197cbdc42ba60333803dd578a7019c7f18e8b6d307f58e525bd3f3101d9",
+      "adaptation": "WebP, explicit assets, source-scoped CSS, dependencies/minification and shared components; see change03.",
+      "state": "source-compiled-runtime-unverified"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/components/three/MecanumChassis.tsx",
+      "bytes": 1299,
+      "sha256": "1c0b2b1f2a812c1ee440f675e97cf7924460f2cb24ff4f227e04d0ce65d453d6",
+      "adaptation": "WebP, explicit assets, source-scoped CSS, dependencies/minification and shared components; see change03.",
+      "state": "source-compiled-runtime-unverified"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/components/three/OrbitControls.tsx",
+      "bytes": 785,
+      "sha256": "d36824495e710ee8c4a3ebdafaca15f9ea78de15294de8075740f9dc6893f585",
+      "adaptation": "WebP, explicit assets, source-scoped CSS, dependencies/minification and shared components; see change03.",
+      "state": "source-compiled-runtime-unverified"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/components/ui/RenderBoundary.tsx",
+      "bytes": 411,
+      "sha256": "60ced5ebe3c7a82978c8db07296d4c8a33c3aa20e3eb6e3187042c282dfa894c",
+      "adaptation": "WebP, explicit assets, source-scoped CSS, dependencies/minification and shared components; see change03.",
+      "state": "source-compiled-runtime-unverified"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/model3d/Model3DEmbeddedPage.tsx",
+      "bytes": 2125,
+      "sha256": "6f85b3fbd920733ced431abf737bfe683065356b8329a283cd099d880008d83e",
+      "adaptation": "WebP, explicit assets, source-scoped CSS, dependencies/minification and shared components; see change03.",
+      "state": "source-compiled-runtime-unverified"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/model3d/Model3DPage.tsx",
+      "bytes": 6373,
+      "sha256": "f8b0b8f7f72fafe7c52a3ce51122eec8cf76f599efd9aeb8a5769a6a0e79a1a8",
+      "adaptation": "WebP, explicit assets, source-scoped CSS, dependencies/minification and shared components; see change03.",
+      "state": "source-compiled-runtime-unverified"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/ControlMapScene.tsx",
+      "bytes": 3454,
+      "sha256": "a8a2b9fa3a0c0ab4ea476196942bf7ac588508c10373203bcd288cf8c79a755b",
+      "adaptation": "WebP, explicit assets, source-scoped CSS, dependencies/minification and shared components; see change03.",
+      "state": "source-compiled-runtime-unverified"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/ControlMap.tsx",
+      "bytes": 13665,
+      "sha256": "8cd5622dc57e32e630740f3cd9b8e3b32f697bcb45aa89c5f43e62da2742a3a4",
+      "adaptation": "WebP, explicit assets, source-scoped CSS, dependencies/minification and shared components; see change03.",
+      "state": "source-compiled-runtime-unverified"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/wifi/WifiCredentialsFields.tsx",
+      "bytes": 3103,
+      "sha256": "7e2f672f18b8da57f4da8747a463723624d80f3efd8756e6f7b4d56e14a91222",
+      "adaptation": "WebP, explicit assets, source-scoped CSS, dependencies/minification and shared components; see change03.",
+      "state": "source-compiled-runtime-unverified"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/wifi/WifiPage.tsx",
+      "bytes": 11382,
+      "sha256": "5a531e8ce8e41d5c8a3ef49c3ef8923952ea99a05ebb7b41b3c3e287c8d853e7",
+      "adaptation": "WebP, explicit assets, source-scoped CSS, dependencies/minification and shared components; see change03.",
+      "state": "source-compiled-runtime-unverified"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/wifi/WifiDraftModal.tsx",
+      "bytes": 2523,
+      "sha256": "f16d1eaa5695b533457adcc6c3684bd32bddb8d86334dfc3993f2e82cf055d84",
+      "adaptation": "WebP, explicit assets, source-scoped CSS, dependencies/minification and shared components; see change03.",
+      "state": "source-compiled-runtime-unverified"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/tools/optimize-images.py",
+      "bytes": 807,
+      "sha256": "8c497fc8588af7c50d635667be78c07907e737ba4e06abcc0da923c6523bc459",
+      "adaptation": "WebP, explicit assets, source-scoped CSS, dependencies/minification and shared components; see change03.",
+      "state": "documented-or-build-input"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/tools/package-web.mjs",
+      "bytes": 7277,
+      "sha256": "c171ce0f39e57c218f734a88a13441a84624f4eabc7d94f1a5e609bfd833b508",
+      "adaptation": "WebP, explicit assets, source-scoped CSS, dependencies/minification and shared components; see change03.",
+      "state": "documented-or-build-input"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/tools/copy-web-to-esp.mjs",
+      "bytes": 2886,
+      "sha256": "bad8cce8c9400f20130cd9f1f1e83de424f63fe7f11dcf42c6e92e888765054a",
+      "adaptation": "WebP, explicit assets, source-scoped CSS, dependencies/minification and shared components; see change03.",
+      "state": "documented-or-build-input"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/public/brand/Logo-1024.webp",
+      "bytes": 204690,
+      "sha256": "abc3fd624858070734888d2004ec441bb3c32df8700a68b53466036f4b4d3ed0",
+      "adaptation": "WebP, explicit assets, source-scoped CSS, dependencies/minification and shared components; see change03.",
+      "state": "documented-or-build-input"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/public/brand/Logo-256.webp",
+      "bytes": 23054,
+      "sha256": "7e2b5f4887aa256e204cc30aa6375f75cd7d7e4ea5fe2951f2de65489da67127",
+      "adaptation": "WebP, explicit assets, source-scoped CSS, dependencies/minification and shared components; see change03.",
+      "state": "documented-or-build-input"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/public/brand/favicon.webp",
+      "bytes": 2948,
+      "sha256": "424397d8380c48307b2f9407157978f25dd4f494e1b7c2637cd67bd4adf13438",
+      "adaptation": "WebP, explicit assets, source-scoped CSS, dependencies/minification and shared components; see change03.",
+      "state": "documented-or-build-input"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/reference/brand/Logo-transparent-source.png",
+      "bytes": 1460118,
+      "sha256": "138f50540fb8ad3d5c6bbc378e70158bad39d11d21a3c342070f42af1a34f0fe",
+      "adaptation": "WebP, explicit assets, source-scoped CSS, dependencies/minification and shared components; see change03.",
+      "state": "documented-or-build-input"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/README.md",
+      "bytes": 16275,
+      "sha256": "80308bd7b8d4c3d80bb5e0c424511ab30aa825fdf777a04ea95b1bcc86e156c0",
+      "adaptation": "WebP, explicit assets, source-scoped CSS, dependencies/minification and shared components; see change03.",
+      "state": "documented-or-build-input"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/INFORME_ADAPTACION.md",
+      "bytes": 15136,
+      "sha256": "132af1e3225593096e6793049ff29ea796890266d0447c6b20fcfa05142336d8",
+      "adaptation": "WebP, explicit assets, source-scoped CSS, dependencies/minification and shared components; see change03.",
+      "state": "documented-or-build-input"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/docs/modules/assets.json",
+      "bytes": 1130,
+      "sha256": "a9a719fe1a8207d991afc27d5faba60575e9d8f5be398343e910bd155d04bc22",
+      "adaptation": "WebP, explicit assets, source-scoped CSS, dependencies/minification and shared components; see change03.",
+      "state": "documented-or-build-input"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/docs/modules/assets.md",
+      "bytes": 1625,
+      "sha256": "ecc914cd05b45f300d73f5c8c2f6845c9dd993886d3009176ca2497b6ec6a949",
+      "adaptation": "WebP, explicit assets, source-scoped CSS, dependencies/minification and shared components; see change03.",
+      "state": "documented-or-build-input"
+    }
+  ]
+}

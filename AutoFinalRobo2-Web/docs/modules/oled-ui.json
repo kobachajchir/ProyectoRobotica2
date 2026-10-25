@@ -1,18 +1,26 @@
 {
   "schema": "afr2-module-1",
-  "id": "web:module/reference/web/src/screens",
+  "id": "web:module/src/features/oled",
   "title": "Visor OLED, pantallas y acciones",
-  "responsibility": "Identidades, builders, rasterizador/editor y controles permiten estudiar la biblioteca completa; SVG no es captura de pantalla física.",
-  "changes_required": "Portar motor/recursos/estado o transportar framebuffer si se requiere fidelidad. Distinguir acción/invocador/vista. Mismo esquema de navegación que encoder: menú explícito, atrás por ítem; no simular botón físico inexistente. Implementar estados nuevos solo si Mega los reporta. No mantener sensores falsos para rellenar una pantalla.",
+  "responsibility": "59identities and shared AVR/Web library; permission items removed, Control4/System7 and Reboot index5 copied in C/TS. Live1024-byte framebuffer unchanged.",
+  "changes_required": "Comparación diferencial de copia AVR/JS, render visual y pruebas físicas pendientes. Cada pantalla nueva requiere contraparte Web en la misma tarea según skill local.",
   "evidence": [
-    "reference/web/src/screens",
-    "reference/web/src/features/oledEditor",
-    "reference/web/src/components",
-    "../AutoFinalRobo2-Contracts/documentation/SCREEN_SYSTEM.md"
+    "src/features/oled/screenCatalog.ts",
+    "src/features/oled/firmwareRenderer.ts",
+    "src/features/oled/firmwareRenderer.sources.json",
+    "src/features/oled/remoteSnapshot.ts",
+    "tools/sync-oled-library.mjs",
+    "../AutoFinalRobo2-Contracts/documentation/SCREEN_SYSTEM.md",
+    "src/features/oled/ScreenCatalogBrowser.tsx",
+    "src/features/oled/MenuSideControls.tsx",
+    "src/features/oled/FirmwareLibraryPreview.tsx",
+    "src/features/oled/LiveOledViewer.tsx",
+    "../AutoFinalRobo2-Contracts/documentation/builds/2026-10-24-14/README.md"
   ],
   "findings": [
     "AFRDOC-009",
     "AFRDOC-010"
   ],
-  "status": "source-documented-not-built"
+  "changeId": "AFR2-20261025-01",
+  "status": "source-compiled-packaged-physical-parity-unverified"
 }

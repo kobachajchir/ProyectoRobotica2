@@ -1,3 +1,5 @@
+> AFR2-20261024-15: system.info expone Storage::health como hello/api/health, con identidad de paquete opcional. HTTP health deja de inventar controlLease=none. [Contrato](../../../AutoFinalRobo2-Contracts/contracts/SYSTEM_INFO_FILESYSTEM_15.md). Fuente compilada; no pruebas de runtime.
+
 # Servidor, bridge JSON y sesiones
 
 [Maestro](../../../INFORME_MAESTRO.md) · [Informe del repositorio](../../INFORME_ADAPTACION.md).
@@ -8,7 +10,7 @@ HTTP/WebSocket, ownership de buffers, fragmentos .inc, sesiones y traducción se
 
 ## Adaptación
 
-Portar whitelist y mensajes robot.*; fuente de autoridad Mega, ESP no inventa permiso ni estado. Quitar bypass de desarrollo como valor productivo, MPU/balance/modelo anterior. Integrar LittleFS con rutas index/assets y Content-Encoding correcto para cada gzip. Preservar arreglos de buffers del origen al decidir versiones de librerías. Esqueleto actual solo Serial/yield; red/bridge no activos.
+Portar whitelist y mensajes robot.*; fuente de autoridad Mega, ESP no inventa permiso ni estado. Quitar bypass de desarrollo como valor productivo, MPU/balance/modelo anterior. Integrar LittleFS con rutas index/assets y Content-Encoding correcto para cada gzip. Preservar arreglos de buffers del origen al decidir versiones de librerías. AFR2-20261023-11 implementa red/bridge en fuente activa src/main.cpp, storage.*, broker.*; no se compiló ni probó.
 
 ## Evidencia y alcance
 
@@ -21,3 +23,4 @@ Portar whitelist y mensajes robot.*; fuente de autoridad Mega, ESP no inventa pe
 Hallazgos: AFRDOC-008, AFRDOC-009. [Registro](../../../AutoFinalRobo2-Contracts/documentation/review/FINDINGS.md).
 
 Estado: lectura/copia o fuente parcial indicada; sin compilación, tests ni prueba física. La API detallada de origen está en el corpus AMDOC importado; no equivale a API AVR adaptada.
+

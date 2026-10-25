@@ -1,0 +1,15 @@
+/* Sonner owns placement/motion. The custom shell owns width and wrapping.
+ * Inline width on the list/item overrides Sonner's <=600px symmetric-width
+ * calculation, which subtracted the previous asymmetric rail inset twice. */
+.afr2-toaster { --afr2-toast-left: max(24px, env(safe-area-inset-left)); --afr2-toast-right: max(24px, env(safe-area-inset-right)); --afr2-toast-bottom: max(24px, env(safe-area-inset-bottom)); }
+.afr2-toast { display: grid; grid-template-columns: 24px minmax(0,1fr) 32px; gap: 12px; width: 100%; min-width: 0; padding: 16px; color: var(--text); font-size: 13px; pointer-events: auto; }
+.afr2-toast__icon { display: flex; justify-content: center; padding-top: 4px; }
+.afr2-toast__copy { min-width: 0; max-height: min(45dvh,360px); overflow-y: auto; overscroll-behavior: contain; overflow-wrap: anywhere; white-space: normal; scrollbar-width: thin; }
+.afr2-toast__tone { display: block; margin: 0 0 5px; font-size: 10px; font-weight: 650; letter-spacing: .06em; }
+.afr2-toast__title { margin: 0; color: var(--text-strong); font-size: 13px; font-weight: 600; line-height: 1.55; white-space: normal; overflow-wrap: anywhere; }
+.afr2-toast__description { margin: 7px 0 0; color: var(--text-muted); font-size: 12px; line-height: 1.65; overflow-wrap: anywhere; }
+.afr2-toast__close { display: grid; place-items: center; align-self: start; width: 32px; min-height: 32px; padding: 0; border: 1px solid var(--border-default); border-radius: 10px; color: var(--text-muted); background: var(--surface-solid); cursor: pointer; }
+.afr2-toast__action { min-height: 44px; margin-top: 12px; padding: 8px 12px; border: 1px solid var(--border-default); border-radius: 10px; background: var(--surface-solid); color: var(--text-strong); font: 500 12px/1.4 var(--font-sans); cursor: pointer; }
+@media (max-width: 819px) { .afr2-toaster { --afr2-toast-left: max(12px, env(safe-area-inset-left)); --afr2-toast-right: max(12px, env(safe-area-inset-right)); --afr2-toast-bottom: max(16px, env(safe-area-inset-bottom)); } }
+@media (pointer: coarse) { .afr2-toast { grid-template-columns: 20px minmax(0,1fr) 44px; gap: 10px; padding: 14px; } .afr2-toast__close { width: 44px; min-height: 44px; } }
+@media (prefers-reduced-motion: reduce) { .afr2-toast__icon .animate-spin { animation: none; } }

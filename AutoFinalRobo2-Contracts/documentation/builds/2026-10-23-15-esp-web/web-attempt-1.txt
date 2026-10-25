@@ -1,0 +1,34 @@
+
+> autofinalrobo2-web@0.1.0 build
+> tsc -b && vite build
+
+vite v7.3.7 building client environment for production...
+transforming...
+✓ 628 modules transformed.
+rendering chunks...
+[plugin vite:singlefile] 
+
+[plugin vite:singlefile] Inlining: bundle.js
+[plugin vite:singlefile] Inlining: style-3pUKPt2G.css
+computing gzip size...
+dist/index.html  1,477.14 kB │ gzip: 404.30 kB
+✓ built in 17.88s
+
+> autofinalrobo2-web@0.1.0 postbuild
+> node tools/package-web.mjs
+
+node:internal/fs/promises:783
+  return await PromisePrototypeThen(
+         ^
+
+Error: EPERM: operation not permitted, rename 'D:\ProyectoRobotica2\AutoFinalRobo2-Web\artifacts\littlefs\dist.staging' -> 'D:\ProyectoRobotica2\AutoFinalRobo2-Web\artifacts\littlefs\dist'
+    at async rename (node:internal/fs/promises:783:10)
+    at async file:///D:/ProyectoRobotica2/AutoFinalRobo2-Web/tools/package-web.mjs:118:1 {
+  errno: -4048,
+  code: 'EPERM',
+  syscall: 'rename',
+  path: 'D:\\ProyectoRobotica2\\AutoFinalRobo2-Web\\artifacts\\littlefs\\dist.staging',
+  dest: 'D:\\ProyectoRobotica2\\AutoFinalRobo2-Web\\artifacts\\littlefs\\dist'
+}
+
+Node.js v22.13.0

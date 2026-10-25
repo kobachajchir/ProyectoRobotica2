@@ -1,0 +1,87 @@
+{
+  "changeId": "AFR2-20261024-09",
+  "date": "2026-10-24",
+  "webBuildExitCode": 0,
+  "firmwareEvidence": "2026-10-24-08",
+  "firmwareSourceChanged": false,
+  "screenCodes": 59,
+  "avrNodes": 48,
+  "networkNotices": 11,
+  "icons": 14,
+  "fontBytes": 950,
+  "web": {
+    "profile": "esp",
+    "assetCount": 7,
+    "manifestSha256": "b9519d9d4cacc877011953ee5067c90a35d54fd77ef45f43d3362902f93b9221",
+    "espManifestSha256": "b9519d9d4cacc877011953ee5067c90a35d54fd77ef45f43d3362902f93b9221",
+    "promotion": [
+      {
+        "route": "/brand/favicon.webp",
+        "webGzipSha256": "8b09232de5bb978d3a5b27d73f1bfbbd9d23f87ce7d6afc45d81a39e67e9c02f",
+        "espGzipSha256": "8b09232de5bb978d3a5b27d73f1bfbbd9d23f87ce7d6afc45d81a39e67e9c02f",
+        "identical": true
+      },
+      {
+        "route": "/brand/Logo-1024.webp",
+        "webGzipSha256": "7a9d0a4da4327b952708ebab7ddc1a287af6ef0dc33dd93f382869e1e19414c5",
+        "espGzipSha256": "7a9d0a4da4327b952708ebab7ddc1a287af6ef0dc33dd93f382869e1e19414c5",
+        "identical": true
+      },
+      {
+        "route": "/brand/Logo-256.webp",
+        "webGzipSha256": "d273952807d216a6ca629cdeb6e13739b7fff23d1dd32fd4b50390c6453fd9f3",
+        "espGzipSha256": "d273952807d216a6ca629cdeb6e13739b7fff23d1dd32fd4b50390c6453fd9f3",
+        "identical": true
+      },
+      {
+        "route": "/draco/draco_decoder.wasm",
+        "webGzipSha256": "d2ea825f06f391962a850da94d68aa9778688a57cc7a79424938cc461ae1e759",
+        "espGzipSha256": "d2ea825f06f391962a850da94d68aa9778688a57cc7a79424938cc461ae1e759",
+        "identical": true
+      },
+      {
+        "route": "/draco/draco_wasm_wrapper.js",
+        "webGzipSha256": "5065d3fcaba12f33fea4dc9886646f6ad1f94e53a71407a92db52c4e8b4a440d",
+        "espGzipSha256": "5065d3fcaba12f33fea4dc9886646f6ad1f94e53a71407a92db52c4e8b4a440d",
+        "identical": true
+      },
+      {
+        "route": "/index.html",
+        "webGzipSha256": "407506adc11ce86f7e22e4761ce06b8af3970d59b28f744c9024044372f8e359",
+        "espGzipSha256": "407506adc11ce86f7e22e4761ce06b8af3970d59b28f744c9024044372f8e359",
+        "identical": true
+      },
+      {
+        "route": "/models/AutoFinalRobo2.glb",
+        "webGzipSha256": "30d0245bc9ed858a3d93ed8d25ae8f86d7434a9c219334cf25349da76a061e5f",
+        "espGzipSha256": "30d0245bc9ed858a3d93ed8d25ae8f86d7434a9c219334cf25349da76a061e5f",
+        "identical": true
+      }
+    ],
+    "gzipBytes": 1460963,
+    "filesystemBudgetBytes": 2867200,
+    "rawBytes": 2965813,
+    "estimatedFilesystemBytes": 1548288
+  },
+  "copiedModel": {
+    "path": "AutoFinalRobo2-Web/public/models/AutoFinalRobo2.glb",
+    "bytes": 827232,
+    "sha256": "d10684704200caa4da0a6a98715e52abc446b9dee9cccdde32f33ee05fc927c7"
+  },
+  "reviewedRendererSources": {
+    "atmega:src/display/afr2_oled.c": "394bd0cc2c9cf2121bd7f920bc1e44c096ba7d2b2cd7ee1b2d04e1acb8ca36db",
+    "atmega:src/ui/afr2_screens.c": "05924ef35cc4b77559402502de7b4ecc391594db1535c135aeb60c7e7f3a9771",
+    "atmega:src/ui/afr2_network_screen.c": "2325db016325050e77e4f0bf033a0c2e0c754e7e633d9eccf4b365f10ea17f9b",
+    "atmega:src/ui/afr2_sequence_screen.c": "29c21a31c609764be9f305b2d20e521be362f9b36277a5673a83a8d8af10952f",
+    "atmega:src/ui/afr2_icons.c": "9a72ea1221bf8b04ad8fb767773b492aef951a339b235994d323007702fa33f7",
+    "atmega:include/afr2_screens.h": "77907906c128e2428f385406a5ead438d2f2df258f2ea256d10c8607a5dad173",
+    "atmega:src/ui/afr2_menu_catalog.c": "bff087c0d3f87194cc2cfbf729e64d131061272dcdd8c878e6b4d9395361edab"
+  },
+  "physicalTests": false,
+  "differentialTests": false,
+  "browserRender": false,
+  "flashed": false,
+  "sequenceMemoryApproved": false,
+  "hallConnected": false,
+  "verification": "Web compilation, source/artifact inspection. No tests, independent validators, browser/OLED render, UART/radio/reset, LittleFS image or flashing. Firmware evidence08 retained."
+}

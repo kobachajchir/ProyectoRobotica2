@@ -1,0 +1,80 @@
+{
+  "change_id": "AFR2-20261023-15",
+  "verification": "build-and-artifact-integrity-only",
+  "esp": {
+    "environment": "esp12s_candidate",
+    "status": "SUCCESS",
+    "warnings": 0,
+    "ramStaticBytes": 39980,
+    "ramProfileBytes": 81920,
+    "flashProgramBytes": 385481,
+    "flashProfileProgramMaxBytes": 1044464,
+    "binBytes": 389632,
+    "binSha256": "7b85e218bdf2301e619f21e910ed1be7d3cbc8be170c301f7a9c2287d030afe8"
+  },
+  "web": {
+    "status": "SUCCESS",
+    "tsc": true,
+    "vite": true,
+    "packageVerified": true,
+    "files": [
+      {
+        "route": "/brand/Logo.png",
+        "gzipBytes": 1509848,
+        "rawBytes": 1586581,
+        "sha256": "471bcbb75672aa8ec30a32cb74c624975a49b75deda3a531043fce52b3ba3702",
+        "verified": true
+      },
+      {
+        "route": "/draco/draco_decoder.js",
+        "gzipBytes": 107203,
+        "rawBytes": 512498,
+        "sha256": "a47cd7c84911c5175bb0511c01ba41ddafb71873fd391f055def514398f5e7c4",
+        "verified": true
+      },
+      {
+        "route": "/draco/draco_decoder.wasm",
+        "gzipBytes": 63395,
+        "rawBytes": 192420,
+        "sha256": "a680d927bed9cb864ddbd63521868891af2bfbe755092761b4837487618df8ac",
+        "verified": true
+      },
+      {
+        "route": "/draco/draco_wasm_wrapper.js",
+        "gzipBytes": 11739,
+        "rawBytes": 58572,
+        "sha256": "f3ab54e2feabfe8bd37928b5f400bc10230dcc278c7e70bca5e025f63519d960",
+        "verified": true
+      },
+      {
+        "route": "/index.html",
+        "gzipBytes": 403096,
+        "rawBytes": 1477139,
+        "sha256": "b96aaab914416f056d0840bb3acd778838a01e3722db8c9935678fe578e0cb70",
+        "verified": true
+      },
+      {
+        "route": "/models/auto_micro.glb",
+        "gzipBytes": 830349,
+        "rawBytes": 883260,
+        "sha256": "96703139261dc917fd5ed953e3d119bfaad59d367bbe49de28b38ed83f2014be",
+        "verified": true
+      }
+    ],
+    "totalGzipBytes": 2925630,
+    "totalRawBytes": 4710470
+  },
+  "physicalFlashIdentified": false,
+  "littlefsPartitionVerified": false,
+  "hardwareTested": false,
+  "flashed": false,
+  "atmegaBuildExecuted": false,
+  "espDataDistUpdated": false,
+  "sourceHashesCapturedAfterBuild": {
+    "AutoFinalRobo2-ESP/src/broker.cpp": "3573057b20f3dead3fb6b37fb2d868c1189d76db32dd10ada88ea1928c7335fd",
+    "AutoFinalRobo2-ESP/src/wifi_service.cpp": "06b2cc82716a5c810d1ee9640faaa39963d15bac81c9de5c5dfbafaab16a77bf",
+    "AutoFinalRobo2-ESP/platformio.ini": "4d6e5cb38e98455e16ceb70223f3c132c8259dd3e1be84139bd8e6970259bf1a",
+    "AutoFinalRobo2-Web/tools/package-web.mjs": "4ad07060ee7a569b340937ac267d1c5ea980d3c0c857b1d9baec6a2c90850818",
+    "AutoFinalRobo2-Contracts/contracts/afr2_wire.h": "544505875fd6e500a99df9ad20b374bad540a854ef9771e8babb95d20980d242"
+  }
+}

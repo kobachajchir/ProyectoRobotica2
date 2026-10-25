@@ -1,125 +1,956 @@
 {
-  "schema": "afr2-command-draft-1",
+  "schema": "afr2-command-3",
+  "envelope_schema": "afr2-ws-1",
+  "updated_by": "AFR2-20261025-01",
   "commands": [
     {
       "name": "system.hello",
       "owner": "esp",
       "wire_id": null,
-      "status": "proposed-not-implemented",
-      "payload_schema": null,
-      "notes": "producto/version/capabilities"
+      "status": "implemented-compiled-runtime-unverified",
+      "module_status": {
+        "atmega": "not-applicable",
+        "esp": "compiled-not-runtime-tested",
+        "web": "compiled-not-browser-tested"
+      },
+      "timeout_ms": 5000,
+      "idempotent": true,
+      "payload_schema": {
+        "req": {
+          "client": "string",
+          "clientVersion": "string"
+        },
+        "res": {
+          "product": "AutoFinalRobo2",
+          "brokerVersion": "string",
+          "megaLink": "unknown|disconnected|handshaking|ready|stale|fault",
+          "capabilities": "object",
+          "controlMode": "direct"
+        }
+      },
+      "notes": "Local ESP handshake; controlMode=direct. It never starts outputs. Device capabilities remain required."
+    },
+    {
+      "name": "system.alive",
+      "owner": "esp",
+      "wire_id": null,
+      "status": "implemented-compiled-runtime-unverified",
+      "module_status": {
+        "atmega": "not-applicable",
+        "esp": "compiled-not-runtime-tested",
+        "web": "compiled-not-browser-tested"
+      },
+      "timeout_ms": 4000,
+      "idempotent": true,
+      "payload_schema": {
+        "req": {
+          "clientTs": "uint64_ms",
+          "interactive": "boolean: page visible and focused"
+        },
+        "res": {
+          "brokerTs": "uint64_ms",
+          "megaLink": "unknown|disconnected|handshaking|ready|stale|fault",
+          "megaAgeMs": "uint32_ms|null"
+        }
+      },
+      "notes": "500ms heartbeat with interactive presence (visible and focused). ESP relays observed age; no grant/token/enable."
     },
     {
       "name": "robot.stop",
       "owner": "atmega",
-      "wire_id": null,
-      "status": "proposed-not-implemented",
-      "payload_schema": null,
-      "notes": "prioritario/idempotente"
+      "wire_id": "0x06",
+      "status": "implemented-compiled-runtime-unverified",
+      "module_status": {
+        "atmega": "compiled-not-hardware-tested",
+        "esp": "compiled-not-runtime-tested",
+        "web": "compiled-not-browser-tested"
+      },
+      "timeout_ms": 1500,
+      "idempotent": true,
+      "priority": "highest",
+      "payload_schema": {
+        "req": {
+          "reason": "user-stop|focus-lost|control-reset|safety"
+        },
+        "res": {
+          "stopped": "boolean",
+          "mode": "idle"
+        }
+      },
+      "notes": "Priority STOP invalidates older queued actions. completed confirms output shutdown, not measured zero wheel speed."
     },
     {
       "name": "robot.state",
       "owner": "atmega",
-      "wire_id": null,
-      "status": "proposed-not-implemented",
-      "payload_schema": null,
-      "notes": "estado autoritativo"
+      "wire_id": "0x11",
+      "status": "implemented-compiled-runtime-unverified",
+      "module_status": {
+        "atmega": "compiled-not-hardware-tested",
+        "esp": "compiled-not-runtime-tested",
+        "web": "compiled-not-browser-tested"
+      },
+      "timeout_ms": 2500,
+      "idempotent": true,
+      "payload_schema": {
+        "req": {},
+        "res": {
+          "mode": "idle|manual|line-follow|wheel-test|goto|sequence|fault|unknown",
+          "stopped": "boolean|null (unknown before actuator/state integration)",
+          "ageMs": "uint32_ms|null",
+          "origin": "none|local|web"
+        }
+      },
+      "notes": "State with origin=none/local/web, fault, preferences and optional valid pose. No permission state or inferred position.",
+      "web_consumer_profile": "contracts/WEB_OLED_CONSUMER.md",
+      "web_updated_by": "AFR2-20261023-21",
+      "web_map_consumer_profile": "contracts/WEB_CONTROL_MAP.md",
+      "optional_extensions_design": {
+        "pose": "afr2-pose-1; design-only, AVR/ESP producer pending; no UART assignment"
+      },
+      "wire_extension": "EX01",
+      "integration_profile": "contracts/EX01_WEB_INTEGRATION.md"
     },
     {
       "name": "robot.drive",
       "owner": "atmega",
-      "wire_id": null,
-      "status": "proposed-not-implemented",
-      "payload_schema": null,
-      "notes": "vx/vy/wz con lease"
+      "wire_id": "0x13",
+      "status": "implemented-compiled-runtime-unverified",
+      "module_status": {
+        "atmega": "compiled-not-hardware-tested",
+        "esp": "compiled-not-runtime-tested",
+        "web": "compiled-not-browser-tested"
+      },
+      "timeout_ms": 600,
+      "idempotent": false,
+      "in_flight_policy": "single-latest-slot",
+      "payload_schema": {
+        "req": {
+          "vxMmS": "int16 (-1000..1000)",
+          "vyMmS": "int16 (-1000..1000)",
+          "wzMradS": "int16 (-3140..3140)",
+          "ttlMs": "uint16 (200..1000)"
+        },
+        "res": {
+          "accepted": "boolean",
+          "wheelSpeeds": {
+            "fl": "int16",
+            "fr": "int16",
+            "rl": "int16",
+            "rr": "int16"
+          }
+        }
+      },
+      "notes": "Direct bounded Mecanum command, TTL200..1000ms (Web400ms), one in flight/latest replacement. No automatic resumption.",
+      "atmega_ex01": {
+        "profile": 2,
+        "extension": "EX01",
+        "version": 3,
+        "contract": "EX01_ALIGNMENT_3.md"
+      },
+      "wire_extension": "EX01",
+      "integration_profile": "contracts/EX01_WEB_INTEGRATION.md"
     },
     {
       "name": "robot.mode",
       "owner": "atmega",
-      "wire_id": null,
-      "status": "proposed-not-implemented",
-      "payload_schema": null,
-      "notes": "enum pendiente"
+      "wire_id": "0x15",
+      "status": "implemented-compiled-runtime-unverified",
+      "module_status": {
+        "atmega": "compiled-not-hardware-tested",
+        "esp": "compiled-not-runtime-tested",
+        "web": "compiled-not-browser-tested"
+      },
+      "timeout_ms": 2500,
+      "idempotent": false,
+      "payload_schema": {
+        "req": {
+          "mode": "idle|manual|line-follow"
+        },
+        "res": {
+          "mode": "idle|manual|line-follow"
+        }
+      },
+      "notes": "Direct idle/manual/line-follow; device checks state and calibration. Connecting or observing mode never starts motion.",
+      "atmega_ex01": {
+        "profile": 2,
+        "extension": "EX01",
+        "version": 3,
+        "contract": "EX01_ALIGNMENT_3.md"
+      },
+      "wire_extension": "EX01",
+      "integration_profile": "contracts/EX01_WEB_INTEGRATION.md"
     },
     {
       "name": "robot.test.wheel",
       "owner": "atmega",
-      "wire_id": null,
-      "status": "proposed-not-implemented",
-      "payload_schema": null,
-      "notes": "limite/timeout"
+      "wire_id": "0x14",
+      "status": "implemented-compiled-runtime-unverified",
+      "module_status": {
+        "atmega": "compiled-not-hardware-tested",
+        "esp": "compiled-not-runtime-tested",
+        "web": "compiled-not-browser-tested"
+      },
+      "timeout_ms": 3000,
+      "idempotent": false,
+      "payload_schema": {
+        "req": {
+          "wheel": "FL|FR|RL|RR",
+          "direction": "forward|reverse|stop",
+          "pwmPct": "uint8 (0..60)",
+          "durationMs": "uint16 (100..2000)"
+        },
+        "res": {
+          "wheel": "FL|FR|RL|RR",
+          "status": "accepted|completed"
+        }
+      },
+      "notes": "Direct bounded PWM/duration100..2000ms. accepted means test started, not physical test completion.",
+      "atmega_ex01": {
+        "profile": 2,
+        "extension": "EX01",
+        "version": 3,
+        "contract": "EX01_ALIGNMENT_3.md"
+      },
+      "wire_extension": "EX01",
+      "integration_profile": "contracts/EX01_WEB_INTEGRATION.md"
     },
     {
       "name": "robot.sensors",
       "owner": "atmega",
-      "wire_id": null,
-      "status": "proposed-not-implemented",
-      "payload_schema": null,
-      "notes": "linea5 y distancia valida"
+      "wire_id": "0x04",
+      "status": "implemented-compiled-runtime-unverified",
+      "module_status": {
+        "atmega": "compiled-not-hardware-tested",
+        "esp": "compiled-not-runtime-tested",
+        "web": "compiled-not-browser-tested"
+      },
+      "timeout_ms": 2000,
+      "idempotent": true,
+      "payload_schema": {
+        "req": {},
+        "res": {
+          "line": {
+            "valid": "boolean",
+            "bits": "uint8 (bit0..bit4 = IR1..IR5)|null",
+            "channels": "boolean[5] | null",
+            "ageMs": "uint32_ms | null"
+          },
+          "ultrasonic": {
+            "valid": "boolean",
+            "distanceMm": "uint16 | null",
+            "ageMs": "uint32_ms | null"
+          }
+        }
+      },
+      "notes": "Five line channels and HC-SR04 with validity/age; absent or stale samples are null, never fabricated zero."
     },
     {
       "name": "robot.encoders",
       "owner": "atmega",
-      "wire_id": null,
-      "status": "proposed-not-implemented",
-      "payload_schema": null,
-      "notes": "cuatro ruedas"
+      "wire_id": "0x05",
+      "status": "implemented-compiled-runtime-unverified",
+      "module_status": {
+        "atmega": "compiled-not-hardware-tested",
+        "esp": "compiled-not-runtime-tested",
+        "web": "compiled-not-browser-tested"
+      },
+      "timeout_ms": 2000,
+      "idempotent": true,
+      "payload_schema": {
+        "req": {},
+        "res": {
+          "wired": "boolean",
+          "valid": "boolean",
+          "counts": {
+            "fl": "int32 | null",
+            "fr": "int32 | null",
+            "rl": "int32 | null",
+            "rr": "int32 | null"
+          },
+          "ageMs": "uint32_ms | null"
+        }
+      },
+      "notes": "Four wheel counts with wiring/validity/age. Hall not connected or calibrated remains unavailable."
+    },
+    {
+      "name": "robot.calibrate",
+      "owner": "atmega",
+      "wire_id": "0x1A",
+      "status": "implemented-compiled-runtime-unverified",
+      "module_status": {
+        "atmega": "compiled-not-hardware-tested",
+        "esp": "compiled-not-runtime-tested",
+        "web": "compiled-not-browser-tested"
+      },
+      "timeout_ms": 3500,
+      "idempotent": false,
+      "payload_schema": {
+        "req": {
+          "action": "uint8 config_access ID from ATMEGA_CONFIG_ACTIONS.json",
+          "value": "int32 within that action range"
+        },
+        "res": {
+          "action": "uint8",
+          "value": "int32",
+          "persisted": false
+        }
+      },
+      "notes": "Direct numeric CONFIG RAM write with stopped outputs/no EEPROM or Hall measurement in progress. Prefix reserved0, no token. Save separately.",
+      "atmega_ex01": {
+        "profile": 2,
+        "extension": "EX01",
+        "version": 3,
+        "contract": "EX01_ALIGNMENT_3.md"
+      }
     },
     {
       "name": "robot.goto.start",
       "owner": "atmega",
-      "wire_id": null,
-      "status": "proposed-not-implemented",
-      "payload_schema": null,
-      "notes": "requiere odometria"
+      "wire_id": "0x16",
+      "status": "implemented-compiled-runtime-unverified",
+      "module_status": {
+        "atmega": "compiled-not-hardware-tested",
+        "esp": "compiled-not-runtime-tested",
+        "web": "compiled-not-browser-tested"
+      },
+      "timeout_ms": 3000,
+      "idempotent": false,
+      "requires_capability": "goto",
+      "payload_schema": {
+        "req": {
+          "xMm": "int32 -5000..5000",
+          "yMm": "int32 -5000..5000",
+          "thetaMrad": "int16 -3140..3140",
+          "maxSpeedMmS": "uint16 10..AVR speed limit (<=1000)"
+        },
+        "res": {
+          "accepted": true
+        }
+      },
+      "notes": "Direct relative XY/theta target, valid odometry/calibration, bounded speed and60s timeout. accepted is not arrival.",
+      "atmega_ex01": {
+        "profile": 2,
+        "extension": "EX01",
+        "version": 3,
+        "contract": "EX01_ALIGNMENT_3.md"
+      }
     },
     {
       "name": "robot.goto.cancel",
       "owner": "atmega",
-      "wire_id": null,
-      "status": "proposed-not-implemented",
-      "payload_schema": null,
-      "notes": "resultado final"
+      "wire_id": "0x17",
+      "status": "implemented-compiled-runtime-unverified",
+      "module_status": {
+        "atmega": "compiled-not-hardware-tested",
+        "esp": "compiled-not-runtime-tested",
+        "web": "compiled-not-browser-tested"
+      },
+      "timeout_ms": 2000,
+      "idempotent": true,
+      "payload_schema": {
+        "req": {},
+        "res": {
+          "gotoState": "cancelled",
+          "stopped": true
+        }
+      },
+      "notes": "Cancels current GOTO and shuts down outputs. STOP is also always available.",
+      "atmega_ex01": {
+        "profile": 2,
+        "extension": "EX01",
+        "version": 3,
+        "contract": "EX01_ALIGNMENT_3.md"
+      }
     },
     {
       "name": "robot.screen.get",
       "owner": "atmega",
-      "wire_id": null,
-      "status": "proposed-not-implemented",
-      "payload_schema": null,
-      "notes": "snapshot"
+      "wire_id": "0x20",
+      "status": "implemented-compiled-runtime-unverified",
+      "module_status": {
+        "atmega": "compiled-not-hardware-tested",
+        "esp": "compiled-not-runtime-tested",
+        "web": "compiled-not-browser-tested"
+      },
+      "timeout_ms": 2500,
+      "idempotent": true,
+      "payload_schema": {
+        "req": {},
+        "res": {
+          "screenCode": "0x010001|0x010002|0x020001|0x020002",
+          "selection": "uint8",
+          "firstVisible": "uint8",
+          "state": "object",
+          "framebufferBase64": "string (1024 bytes optional)"
+        }
+      },
+      "notes": "Coherent1024byte framebuffer via META/PAGE/RELEASE, no reconstruction or credential exposure.",
+      "web_consumer_profile": "contracts/WEB_OLED_CONSUMER.md",
+      "web_updated_by": "AFR2-20261023-21",
+      "atmega_ex01": {
+        "profile": 2,
+        "extension": "EX01",
+        "version": 3,
+        "contract": "EX01_ALIGNMENT_3.md"
+      },
+      "wire_extension": "EX01",
+      "integration_profile": "contracts/EX01_WEB_INTEGRATION.md"
     },
     {
       "name": "robot.ui.action",
       "owner": "atmega",
-      "wire_id": null,
-      "status": "proposed-not-implemented",
-      "payload_schema": null,
-      "notes": "acciones permitidas"
+      "wire_id": "0x22",
+      "status": "implemented-compiled-runtime-unverified",
+      "module_status": {
+        "atmega": "compiled-not-hardware-tested",
+        "esp": "compiled-not-runtime-tested",
+        "web": "compiled-not-browser-tested"
+      },
+      "timeout_ms": 2000,
+      "idempotent": false,
+      "payload_schema": {
+        "req": {
+          "action": "rotate|select|menu",
+          "delta": "int8 (-1|1 for rotate, 0 otherwise)",
+          "revision": "uint32 snapshot revision; required for EX01"
+        },
+        "res": {
+          "screenCode": "0x010001|0x010002|0x020001|0x020002",
+          "selection": "uint8"
+        }
+      },
+      "notes": "Revision/generation/age-guarded rotate/select/long-menu. Preserves physical-only actions and privacy; no access switch.",
+      "web_consumer_profile": "contracts/WEB_OLED_CONSUMER.md",
+      "web_updated_by": "AFR2-20261023-21",
+      "atmega_ex01": {
+        "profile": 2,
+        "extension": "EX01",
+        "version": 3,
+        "contract": "EX01_ALIGNMENT_3.md"
+      },
+      "wire_extension": "EX01",
+      "integration_profile": "contracts/EX01_WEB_INTEGRATION.md"
+    },
+    {
+      "name": "robot.sequence.begin",
+      "owner": "atmega",
+      "wire_id": "0x40",
+      "status": "compiled-physical-gated",
+      "module_status": {
+        "atmega": "compiled-not-hardware-tested",
+        "esp": "compiled-not-runtime-tested",
+        "web": "compiled-not-browser-tested"
+      },
+      "timeout_ms": 2500,
+      "idempotent": false,
+      "requires_capability": "sequences",
+      "payload_schema": {
+        "req": {
+          "sequenceId": "string",
+          "name": "string",
+          "segmentCount": "uint8 (1..32)",
+          "totalDurationMs": "uint32 (10..120000, multiple of 10 ms)",
+          "executionMode": "timed(default)|independent-wheels|barrier-wheels; last two require extension>=6 and distanceBlocks"
+        },
+        "res": {
+          "sequenceId": "string",
+          "state": "preparing",
+          "maxSegments": "uint8",
+          "maxDurationMs": "uint32"
+        }
+      },
+      "notes": "Prepares bounded program32records/120s; physical execution remains Hall/calibration/memory gated. No motion on upload.",
+      "wire_extension": "EX01 v6 (timed v4 compatible)",
+      "integration_profile": "contracts/EX01_SEQUENCE_DISTANCE_6.md",
+      "change_id": "AFR2-20261024-12"
+    },
+    {
+      "name": "robot.sequence.append",
+      "owner": "atmega",
+      "wire_id": "0x41",
+      "status": "compiled-physical-gated",
+      "module_status": {
+        "atmega": "compiled-not-hardware-tested",
+        "esp": "compiled-not-runtime-tested",
+        "web": "compiled-not-browser-tested"
+      },
+      "timeout_ms": 2000,
+      "idempotent": false,
+      "requires_capability": "sequences",
+      "payload_schema": {
+        "req": {
+          "sequenceId": "string",
+          "index": "uint8 (0..31)",
+          "durationMs": "uint32 (10..120000, multiple of 10 ms)",
+          "startWheelMmS": {
+            "fl": "int16",
+            "fr": "int16",
+            "rl": "int16",
+            "rr": "int16"
+          },
+          "endWheelMmS": {
+            "fl": "int16",
+            "fr": "int16",
+            "rl": "int16",
+            "rr": "int16"
+          },
+          "movementKind": "constant|ramp|pivot|curve|wait|finish|wheels (default wheels)"
+        },
+        "res": {
+          "sequenceId": "string",
+          "index": "uint8",
+          "state": "preparing"
+        },
+        "req_wheel_variant": {
+          "sequenceId": "string",
+          "index": "uint8 (0..31)",
+          "wheel": "fl|fr|rl|rr",
+          "completion": "time|distance",
+          "limit": "uint32 ms or1..10000mm",
+          "timeoutMs": "uint32 10..120000 multiple10",
+          "rampMs": "uint32 10..timeoutMs multiple10",
+          "fromMmS": "int16 within runtime limit",
+          "toMmS": "int16 within runtime limit"
+        }
+      },
+      "notes": "Strict next index and bounded time/pulse record. Prefix reserved0 and program identity; no permission token.",
+      "wire_extension": "EX01 v6 (timed v4 compatible)",
+      "integration_profile": "contracts/EX01_SEQUENCE_DISTANCE_6.md",
+      "change_id": "AFR2-20261024-12"
+    },
+    {
+      "name": "robot.sequence.commit",
+      "owner": "atmega",
+      "wire_id": "0x42",
+      "status": "compiled-physical-gated",
+      "module_status": {
+        "atmega": "compiled-not-hardware-tested",
+        "esp": "compiled-not-runtime-tested",
+        "web": "compiled-not-browser-tested"
+      },
+      "timeout_ms": 2500,
+      "idempotent": false,
+      "requires_capability": "sequences",
+      "payload_schema": {
+        "req": {
+          "sequenceId": "string",
+          "segmentCount": "uint8 (1..32)",
+          "totalDurationMs": "uint32 (10..120000)"
+        },
+        "res": {
+          "sequenceId": "string",
+          "state": "ready",
+          "segmentCount": "uint8",
+          "totalDurationMs": "uint32"
+        }
+      },
+      "notes": "Checks complete record count/durations/chains; does not execute or approve memory/Hall.",
+      "wire_extension": "EX01 v6 (timed v4 compatible)",
+      "integration_profile": "contracts/EX01_SEQUENCE_DISTANCE_6.md",
+      "change_id": "AFR2-20261024-12"
+    },
+    {
+      "name": "robot.sequence.start",
+      "owner": "atmega",
+      "wire_id": "0x43",
+      "status": "compiled-physical-gated",
+      "module_status": {
+        "atmega": "compiled-not-hardware-tested",
+        "esp": "compiled-not-runtime-tested",
+        "web": "compiled-not-browser-tested"
+      },
+      "timeout_ms": 2500,
+      "idempotent": false,
+      "requires_capability": "sequences",
+      "payload_schema": {
+        "req": {
+          "sequenceId": "string",
+          "executionId": "string"
+        },
+        "res": {
+          "sequenceId": "string",
+          "executionId": "string",
+          "state": "running",
+          "activeSegmentIndex": "uint8",
+          "elapsedMs": "uint32",
+          "totalDurationMs": "uint32"
+        }
+      },
+      "notes": "Direct start of committed program with new execution identity and device requirements; no permission acquisition.",
+      "wire_extension": "EX01 v6 (timed v4 compatible)",
+      "integration_profile": "contracts/EX01_SEQUENCE_DISTANCE_6.md",
+      "change_id": "AFR2-20261024-12"
+    },
+    {
+      "name": "robot.sequence.cancel",
+      "owner": "atmega",
+      "wire_id": "0x44",
+      "status": "compiled-physical-gated",
+      "module_status": {
+        "atmega": "compiled-not-hardware-tested",
+        "esp": "compiled-not-runtime-tested",
+        "web": "compiled-not-browser-tested"
+      },
+      "timeout_ms": 1500,
+      "idempotent": true,
+      "priority": "high",
+      "payload_schema": {
+        "req": {
+          "sequenceId": "string 1..64 bytes, identidad exacta",
+          "executionId": "string 1..64 bytes, identidad exacta",
+          "reason": "user-cancel|page-hidden|route-left|disconnect|session-lost|stop"
+        },
+        "res": {
+          "sequenceId": "string | null",
+          "executionId": "string | null",
+          "state": "cancelled",
+          "stopped": "boolean"
+        }
+      },
+      "notes": "Priority cancellation by program/execution identity; STOP remains available without those identities.",
+      "wire_extension": "EX01 v6 (timed v4 compatible)",
+      "priority_transport": "EX01 0x44 reserved priority slot; authoritative output shutdown, global STOP 0x06 fallback",
+      "integration_profile": "contracts/EX01_SEQUENCE_DISTANCE_6.md",
+      "change_id": "AFR2-20261024-12"
+    },
+    {
+      "name": "robot.sequence.status",
+      "owner": "atmega",
+      "wire_id": "0x45",
+      "status": "compiled-physical-gated",
+      "module_status": {
+        "atmega": "compiled-not-hardware-tested",
+        "esp": "compiled-not-runtime-tested",
+        "web": "compiled-not-browser-tested"
+      },
+      "timeout_ms": 1500,
+      "idempotent": true,
+      "payload_schema": {
+        "req": {
+          "sequenceId": "string 1..64 bytes, identidad exacta",
+          "executionId": "string 1..64 bytes, identidad exacta"
+        },
+        "res": {
+          "sequenceId": "string | null",
+          "executionId": "string | null",
+          "state": "idle|preparing|ready|running|completed|cancelled|failed",
+          "activeSegmentIndex": "uint8 | null",
+          "segmentCount": "uint8",
+          "elapsedMs": "uint32",
+          "totalDurationMs": "uint32",
+          "reason": "string | null"
+        }
+      },
+      "notes": "Read execution/program state within the transport session. Automatic status polls do not refresh interactive presence.",
+      "wire_extension": "EX01 v6 (timed v4 compatible)",
+      "integration_profile": "contracts/EX01_SEQUENCE_DISTANCE_6.md",
+      "change_id": "AFR2-20261024-12"
     },
     {
       "name": "wifi.status",
       "owner": "esp",
       "wire_id": null,
-      "status": "proposed-not-implemented",
-      "payload_schema": null,
-      "notes": "STA/AP"
+      "status": "implemented-compiled-runtime-unverified",
+      "module_status": {
+        "atmega": "not-applicable",
+        "esp": "compiled-not-runtime-tested",
+        "web": "compiled-not-browser-tested"
+      },
+      "timeout_ms": 2500,
+      "idempotent": true,
+      "payload_schema": {
+        "req": {},
+        "res": {
+          "mode": "AP|STA|AP_STA|OFF",
+          "staConnected": "boolean",
+          "staSsid": "string | null",
+          "staIp": "string | null",
+          "rssiDbm": "int16 | null",
+          "apSsid": "string | null",
+          "apIp": "string | null"
+        }
+      },
+      "notes": "Local ESP status independent of Mega. Credentials are never included in this report."
     },
     {
       "name": "wifi.scan",
       "owner": "esp",
       "wire_id": null,
-      "status": "proposed-not-implemented",
-      "payload_schema": null,
-      "notes": "asincrono"
+      "status": "implemented-compiled-runtime-unverified",
+      "module_status": {
+        "atmega": "not-applicable",
+        "esp": "compiled-not-runtime-tested",
+        "web": "compiled-not-browser-tested"
+      },
+      "timeout_ms": 10000,
+      "idempotent": true,
+      "payload_schema": {
+        "req": {},
+        "res": {
+          "status": "started|completed",
+          "networks": "Array<{ ssid: string, rssiDbm: number, channel: number, secure: boolean }>"
+        }
+      },
+      "notes": "Asynchronous local scan; accepted is start, terminal event distinguishes result/empty/error/timeout."
     },
     {
       "name": "wifi.configure",
       "owner": "esp",
       "wire_id": null,
-      "status": "proposed-not-implemented",
-      "payload_schema": null,
-      "notes": "secretos fuera de Git"
+      "status": "implemented-compiled-runtime-unverified",
+      "module_status": {
+        "atmega": "not-applicable",
+        "esp": "compiled-not-runtime-tested",
+        "web": "compiled-not-browser-tested"
+      },
+      "timeout_ms": 6000,
+      "idempotent": false,
+      "payload_schema": {
+        "req": {
+          "mode": "STA|AP|AP_STA",
+          "ssid": "string",
+          "password": "string (ephemeral, never logged or persisted in web storage)",
+          "persist": "boolean optional, default true; ESP LittleFS only, never browser storage"
+        },
+        "res": {
+          "status": "accepted|applied",
+          "reconnectExpected": "boolean"
+        }
+      },
+      "notes": "Local validated STA/AP/AP_STA config, RAM or explicit persistence. accepted is not completed radio connection."
+    },
+    {
+      "name": "robot.config.get",
+      "wire_id": "0x1A",
+      "owner": "atmega",
+      "status": "implemented-compiled-runtime-unverified",
+      "timeout_ms": 2500,
+      "idempotent": true,
+      "module_status": {
+        "atmega": "compiled-not-hardware-tested",
+        "esp": "compiled-not-runtime-tested",
+        "web": "compiled-not-browser-tested"
+      },
+      "payload_schema": {
+        "req": {
+          "action": "uint8 config_access ID"
+        },
+        "res": {
+          "action": "uint8",
+          "value": "int32",
+          "persisted": false
+        }
+      },
+      "notes": "Read a shared numeric CONFIG action without preparing control; wheel/IR channel are shared device context."
+    },
+    {
+      "name": "robot.preferences",
+      "wire_id": "0x1B",
+      "owner": "atmega",
+      "status": "implemented-compiled-runtime-unverified",
+      "timeout_ms": 2500,
+      "idempotent": false,
+      "module_status": {
+        "atmega": "compiled-not-hardware-tested",
+        "esp": "compiled-not-runtime-tested",
+        "web": "compiled-not-browser-tested"
+      },
+      "payload_schema": {
+        "req": {
+          "action": "save|discard"
+        },
+        "res": {
+          "state": "writing|discarded",
+          "persisted": false
+        }
+      },
+      "notes": "Explicit save/discard. save is accepted until later state confirms EEPROM completion; RAM is not persistence."
+    },
+    {
+      "name": "robot.line.calibrate",
+      "wire_id": "0x1C",
+      "owner": "atmega",
+      "status": "implemented-compiled-runtime-unverified",
+      "timeout_ms": 2500,
+      "idempotent": false,
+      "module_status": {
+        "atmega": "compiled-not-hardware-tested",
+        "esp": "compiled-not-runtime-tested",
+        "web": "compiled-not-browser-tested"
+      },
+      "payload_schema": {
+        "req": {
+          "confirm": "boolean"
+        },
+        "res": {
+          "calibrated": "boolean"
+        }
+      },
+      "notes": "Explicit confirm/invalidate, stopped outputs and device conditions; does not create a measured calibration."
+    },
+    {
+      "name": "wifi.draft.submit",
+      "wire_id": null,
+      "owner": "esp",
+      "status": "implemented-compiled-runtime-unverified",
+      "timeout_ms": 2500,
+      "idempotent": false,
+      "module_status": {
+        "atmega": "not-applicable",
+        "esp": "compiled-not-runtime-tested",
+        "web": "compiled-not-browser-tested"
+      },
+      "payload_schema": {
+        "req": {
+          "jobId": "uint32 exact OLED job",
+          "mode": "STA|AP|AP_STA (requested by OLED)",
+          "ssid": "UTF-8 1..32 bytes",
+          "password": "empty or UTF-8 8..63 bytes",
+          "persist": "boolean, applied only on physical Connect"
+        },
+        "res": {
+          "draftReady": true,
+          "applied": false
+        }
+      },
+      "notes": "RAM draft for the current physical OLED job; only physical Connect applies it. Never stored in browser/logs."
+    },
+    {
+      "name": "wifi.draft.cancel",
+      "wire_id": null,
+      "owner": "esp",
+      "status": "implemented-compiled-runtime-unverified",
+      "timeout_ms": 2500,
+      "idempotent": false,
+      "module_status": {
+        "atmega": "not-applicable",
+        "esp": "compiled-not-runtime-tested",
+        "web": "compiled-not-browser-tested"
+      },
+      "payload_schema": {
+        "req": {
+          "jobId": "uint32 exact OLED job"
+        },
+        "res": {
+          "draftReady": false,
+          "applied": false
+        }
+      },
+      "notes": "Explicit matching OLED job cancellation and secret disposal; does not apply radio configuration."
+    },
+    {
+      "name": "system.info",
+      "owner": "esp",
+      "wire_id": "0x50 (atmega info pages)",
+      "status": "implemented-compiled-runtime-unverified",
+      "module_status": {
+        "atmega": "compiled-no-hardware",
+        "esp": "compiled-candidate-no-hardware",
+        "web": "compiled-no-browser"
+      },
+      "timeout_ms": 4000,
+      "idempotent": true,
+      "payload_schema": {
+        "req": {},
+        "res": {
+          "esp": "device-reported build/runtime identity",
+          "atmega": "device-reported build identity|null",
+          "filesystem": "ESP filesystem health and optional accepted Web package identity; SYSTEM_INFO_FILESYSTEM_15.md"
+        }
+      },
+      "notes": "Device identity and local filesystem/package diagnostic. Missing ATmega data is null; no fabricated identity."
+    },
+    {
+      "name": "system.reboot",
+      "owner": "esp|atmega",
+      "wire_id": "0x51 (atmega); esp local",
+      "status": "implemented-compiled-runtime-unverified",
+      "module_status": {
+        "atmega": "compiled-no-hardware",
+        "esp": "compiled-candidate-no-hardware",
+        "web": "compiled-no-browser"
+      },
+      "timeout_ms": 4000,
+      "idempotent": false,
+      "payload_schema": {
+        "req": {
+          "target": "esp|atmega",
+          "confirm": true
+        },
+        "res": {
+          "restartScheduled": true,
+          "previousBootId": "uint32",
+          "status": "accepted"
+        }
+      },
+      "notes": "Explicit target/confirm; stopped outputs and EEPROM conditions. accepted schedules restart; boot event confirms a later observation."
     }
-  ]
+  ],
+  "uart_profile": "UART_PROFILE_2.md",
+  "uart_profile_next_design": "UART_PROFILE_3.md (superseded collision; do not activate)",
+  "updated_by_history": [
+    "AFR2-20261023-21",
+    "AFR2-20261024-08"
+  ],
+  "atmega_extension": {
+    "profile": 2,
+    "name": "EX01",
+    "header": "afr2_product_wire.h",
+    "contract": "EX01_SEQUENCE_DISTANCE_6.md",
+    "config_actions": "ATMEGA_CONFIG_ACTIONS.json",
+    "status": {
+      "atmega": "compiled-hardware-unverified-memory-gated",
+      "esp": "compiled-candidate-hardware-unverified",
+      "web": "compiled-editor-distance-consumer-runtime-unverified"
+    },
+    "note": "Separate from designed profile3; existing wire_id/profile3 fields are preserved."
+  },
+  "uart_product_extension": "EX01_SEQUENCE_DISTANCE_6.md",
+  "wire_profile": 2,
+  "extension": {
+    "name": "EX01",
+    "version": 6,
+    "contract": "EX01_SEQUENCE_DISTANCE_6.md"
+  },
+  "system_events": {
+    "system.boot": {
+      "device": "esp|atmega",
+      "bootId": "uint32",
+      "resetCauseBits": "uint8",
+      "observation": "uart-boot-event|session-snapshot|identity-snapshot"
+    },
+    "system.info": "completed device identity snapshot"
+  },
+  "oled_network_channel": {
+    "transport": "UART only, no new WS commands",
+    "staPassword": "not sent",
+    "localEspRebootJob": 8,
+    "state_real": "compiled-runtime-unverified",
+    "state": {
+      "wire_id": "0x53",
+      "response": "echo first7bytes",
+      "request": "bootId4,revision2,page1,length1,data0..32",
+      "pages": 5
+    },
+    "event": {
+      "wire_id": "0x54",
+      "response": "sequence4",
+      "request": "bootId4,sequence4,type1,subject1",
+      "eventCount": 11
+    },
+    "contract": "EX01_NETWORK_UI_5.md",
+    "changeId": "AFR2-20261024-08",
+    "apPassword": "local OLED only; remote capture withheld"
+  },
+  "direct_control": {
+    "contract": "DIRECT_CONTROL_7.md",
+    "changeId": "AFR2-20261025-01",
+    "extensionVersion": 7,
+    "firmwareVersion": "0.9.0",
+    "webVersion": "0.2.0",
+    "commandCount": 30,
+    "webPulseWire": "0x12:age:u16LE; echo2bytes",
+    "webInputCaducityMs": 1500,
+    "grantsPermission": false
+  }
 }

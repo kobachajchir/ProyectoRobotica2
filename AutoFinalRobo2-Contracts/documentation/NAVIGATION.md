@@ -1,5 +1,22 @@
 # Navegación de un único encoder
 
+AFR2-20261024-08: todos los submenús conservan Volver, incluidos IP/AP y
+Sistema → Reinicio. Nuevas acciones solo por clic físico; ui.action no las
+invoca ni abre la vista de clave AP. Avisos: corto cierra el aviso, largo
+abre principal. Iconos fijos, solo texto seleccionado con pausa800ms/scroll40ms;
+el giro reinicia la pausa. Sin delays ni callbacks de bus desde renderer.
+Compilado; navegación/scroll físicos no probados.
+
+AFR2-20261024-07: la nueva pantalla automática de secuencias conserva largo SW
+para principal, corto confirma y Volver explícito a Control. No captura la
+navegación después de que el usuario sale. Compilada, sin ensayo físico.
+[Contrato](../contracts/EX01_SYSTEM_SEQUENCE_4.md).
+
+Estado vigente AFR2-20261024-02: firmware y consumidor Web compilados. Largo SW
+abre principal también desde teclado, descartando credenciales sin enviarlas.
+Esto sustituye la excepción histórica de la ficha19 que aparece al final.
+No se ejecutaron ensayos físicos ni de navegador en esta entrega.
+
 Decisión del usuario: no hay botón de menú separado. Las entradas son CLK, DT y SW del encoder.
 
 | Entrada | Evento semántico | Resultado |
@@ -21,3 +38,23 @@ Para nuevas ediciones: mantener borrador separado del estado confirmado; largo a
 ## Árbol objetivo
 
 El [plan de menús](MENU_PLAN.md) extiende la navegación a Estado, Control, Modos/GOTO/línea, Pruebas, Sensores, Calibración, Wi-Fi, Pantalla y Sistema. Es diseño pendiente; no amplía las cuatro pantallas del prototipo por sí solo. Conservar Volver como única navegación al padre y largo SW como menú.
+
+
+## Integración AVR AFR2-20261023-15
+
+Polling físico desde main integrado, sin DMA ni botón menú. Debounce20ms y
+largo800ms desde flanco crudo que supera debounce; liberación al umbral largo
+emite menú y suprime corto. Mantiene Volver por ítem y supresión al arrancar
+pulsado. 2/4transiciones y sentido configurables en composición; valores reales
+y cadencia no probados. Wire de acciones remotas continúa pendiente.
+
+## Excepción de teclado y captura remota —19
+
+Pedido expreso del usuario: en teclado SSID/password, SW largo cancela el borrador
+y vuelve al contexto anterior; OK termina el campo. Fuera del teclado, largo abre
+principal, descarta edición numérica y nunca confirma. Volver restaura el historial
+de selección/scroll (hasta8 niveles). No hay botón menú añadido.
+
+Entrada física cancela captura remota. Navegación y avisos asíncronos invalidan la
+referencia de acción anterior. UI_ACTION no introduce editores ni privilegios;
+Conectar un borrador Wi-Fi requiere clic físico. [Permisos/validación](../contracts/ROBO2_PRODUCT_EXTENSION.md).

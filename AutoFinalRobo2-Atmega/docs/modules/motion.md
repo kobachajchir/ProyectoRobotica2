@@ -1,5 +1,9 @@
 # Motores, PID, Mecanum y GOTO
 
+AFR2-20261023-19, fuente integrada sin compilar/probar: Motor4/PID/Mecanum/odometría/línea/GOTO en fuente. Hall sin conectar/macro0; sin calibración ni exactitud probada.
+[Producto vigente](../PRODUCTO_ATMEGA.md). El diseño histórico siguiente conserva su evidencia.
+
+
 [Maestro](../../../INFORME_MAESTRO.md) · [Informe del repositorio](../../INFORME_ADAPTACION.md).
 
 ## Utilidad

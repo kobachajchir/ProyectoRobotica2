@@ -1,0 +1,440 @@
+{
+  "schema": "afr2-adaptation-files-1",
+  "change_id": "AFR2-20261023-19",
+  "started": "2026-10-23",
+  "continued": "2026-10-24",
+  "status": {
+    "atmega": "source-integrated-uncompiled",
+    "esp": "complement-contract-only",
+    "web": "complement-contract-only"
+  },
+  "verification": "Source reading only; SHA identifies bytes/protects concurrent edits. No tests, build, validators, serial ports, flash or hardware execution.",
+  "references": "reference/f4 immutable; provenance/files.json and origins.json preserve original evidence.",
+  "backups": "atmega19-before/ includes original replaced bytes and subsequent protected refinement snapshots.",
+  "files": [
+    {
+      "file": "../AutoFinalRobo2-Atmega/include/afr2_app.h",
+      "before_sha256": null,
+      "after_sha256": "7971fb550d5721f189234f52b3324c344a2af13534ea4b52c4536457b6d5bb76",
+      "backup": null,
+      "adaptation": "Own AVR composition/hardware/services; pinout and contracts as project evidence, no copied HAL/DMA.",
+      "reference_files": [],
+      "authorship": "Original reference authors preserved in unchanged reference files. New AFR2 source; no authorship assigned to copied legacy content.",
+      "delivery_source_snapshot": "provenance/atmega19-source/include/afr2_app.h"
+    },
+    {
+      "file": "../AutoFinalRobo2-Atmega/include/afr2_link.h",
+      "before_sha256": "df5f713a2fb07655ddcdc6ef9e3777231ba9fd20fbd0faa3ec2f06fcc800d126",
+      "after_sha256": "35530cb59822385d2ffaa66b67760f799ecb62925d34d9b5c3b3f4e4f7041fca",
+      "backup": "provenance/atmega19-before/include/afr2_link.h",
+      "adaptation": "Extend existing ROBO2 endpoint via callbacks, revocation and dynamic capabilities; shared framing unchanged.",
+      "reference_files": [
+        "../AutoFinalRobo2-Atmega/reference/f4/Core/Src/uner_app.c"
+      ],
+      "authorship": "Original reference authors preserved in unchanged reference files. New AFR2 source; no authorship assigned to copied legacy content.",
+      "delivery_source_snapshot": "provenance/atmega19-source/include/afr2_link.h"
+    },
+    {
+      "file": "../AutoFinalRobo2-Atmega/include/afr2_menu_catalog.h",
+      "before_sha256": null,
+      "after_sha256": "b4d5098869a4d93e0e4e40c2886b57bc0f1448bf46ee16d805491e0313b4b1a4",
+      "backup": null,
+      "adaptation": "New flash catalogue44 nodes; action IDs frozen explicitly.",
+      "reference_files": [
+        "../AutoFinalRobo2-Atmega/reference/f4/Core/Src/menu_definition.c",
+        "../AutoFinalRobo2-Atmega/reference/f4/Core/Src/menusystem.c"
+      ],
+      "authorship": "Original reference authors preserved in unchanged reference files. New AFR2 source; no authorship assigned to copied legacy content.",
+      "delivery_source_snapshot": "provenance/atmega19-source/include/afr2_menu_catalog.h"
+    },
+    {
+      "file": "../AutoFinalRobo2-Atmega/include/afr2_oled.h",
+      "before_sha256": "ffe9e30f144811361a567351ba2fff164e7fb79f3b351618731c44bd6b358850",
+      "after_sha256": "9fdcc5c9b45834c1c756a574f520594c58aae38b85051c33fe6ff4d7699da7fe",
+      "backup": "provenance/atmega19-before/include/afr2_oled.h",
+      "adaptation": "Own asynchronous contrast/rotation through existing I2C Manager.",
+      "reference_files": [
+        "../AutoFinalRobo2-Atmega/reference/f4/Core/Src/ssd1306.c"
+      ],
+      "authorship": "Original reference authors preserved in unchanged reference files. New AFR2 source; no authorship assigned to copied legacy content.",
+      "delivery_source_snapshot": "provenance/atmega19-source/include/afr2_oled.h"
+    },
+    {
+      "file": "../AutoFinalRobo2-Atmega/include/afr2_product.h",
+      "before_sha256": null,
+      "after_sha256": "6ccc9637c4cfcd80a90ec7dc4e1f2a7b9dbddae5fade3970dd9bf1d5a0d9caf8",
+      "backup": null,
+      "adaptation": "Own four-wheel state/control/odometry/GOTO; no balance/MPU.",
+      "reference_files": [
+        "../AutoFinalRobo2-Atmega/reference/f4/Core/Src/pid_controller.c"
+      ],
+      "authorship": "Original reference authors preserved in unchanged reference files. New AFR2 source; no authorship assigned to copied legacy content.",
+      "delivery_source_snapshot": "provenance/atmega19-source/include/afr2_product.h"
+    },
+    {
+      "file": "../AutoFinalRobo2-Atmega/include/afr2_screens.h",
+      "before_sha256": "d900cf54e70f1adbb0564d057613b5e6f25aea8aeec4c0b961461a211af2c438",
+      "after_sha256": "8a66e69f709b89099efb43b06ca5bd15e6ca3b63d37967e64cb15c8de094cea6",
+      "backup": "provenance/atmega19-before/include/afr2_screens.h",
+      "adaptation": "Own AVR state/renderer; history/editors/ASCII keyboard/queue; no F4 globals.",
+      "reference_files": [
+        "../AutoFinalRobo2-Atmega/reference/f4/Core/Src/menusystem.c",
+        "../AutoFinalRobo2-Atmega/reference/f4/Core/Src/screenWrappers.c",
+        "../AutoFinalRobo2-Atmega/reference/f4/Core/Src/osk.c",
+        "../AutoFinalRobo2-Atmega/reference/f4/Core/Src/notificationWrappers.c"
+      ],
+      "authorship": "Original reference authors preserved in unchanged reference files. New AFR2 source; no authorship assigned to copied legacy content.",
+      "delivery_source_snapshot": "provenance/atmega19-source/include/afr2_screens.h"
+    },
+    {
+      "file": "../AutoFinalRobo2-Atmega/src/main.c",
+      "before_sha256": "09f51e602f4ef704827e1195d7587a7eb36892f48c74ffece3b568bc34e6aacc",
+      "after_sha256": "06668dac6f802f269c3e339bb52ce82fc5b2384d1cb20d23a25c94095a3aa4cc",
+      "backup": "provenance/atmega19-before/src/main.c",
+      "adaptation": "Own AVR composition/hardware/services; pinout and contracts as project evidence, no copied HAL/DMA.",
+      "reference_files": [],
+      "authorship": "Original reference authors preserved in unchanged reference files. New AFR2 source; no authorship assigned to copied legacy content.",
+      "delivery_source_snapshot": "provenance/atmega19-source/src/main.c"
+    },
+    {
+      "file": "../AutoFinalRobo2-Atmega/src/display/afr2_oled.c",
+      "before_sha256": "b987de997633b68610a4a3fb9765fa4e4dcf471cd14bc282170eb67afc67ee3b",
+      "after_sha256": "721df85fd120dcc4eb1219280297f256aa363e902b62b59657033863064babc7",
+      "backup": "provenance/atmega19-before/src/display/afr2_oled.c",
+      "adaptation": "Own asynchronous contrast/rotation through existing I2C Manager.",
+      "reference_files": [
+        "../AutoFinalRobo2-Atmega/reference/f4/Core/Src/ssd1306.c"
+      ],
+      "authorship": "Original reference authors preserved in unchanged reference files. New AFR2 source; no authorship assigned to copied legacy content.",
+      "delivery_source_snapshot": "provenance/atmega19-source/src/display/afr2_oled.c"
+    },
+    {
+      "file": "../AutoFinalRobo2-Atmega/src/platform/afr2_motor.c",
+      "before_sha256": null,
+      "after_sha256": "9891e34019c2d66fcc50a021ed4078616da348ebc78f207cb1495447cca64a52",
+      "backup": null,
+      "adaptation": "Own AVR composition/hardware/services; pinout and contracts as project evidence, no copied HAL/DMA.",
+      "reference_files": [],
+      "authorship": "Original reference authors preserved in unchanged reference files. New AFR2 source; no authorship assigned to copied legacy content.",
+      "delivery_source_snapshot": "provenance/atmega19-source/src/platform/afr2_motor.c"
+    },
+    {
+      "file": "../AutoFinalRobo2-Atmega/src/platform/afr2_preferences.c",
+      "before_sha256": null,
+      "after_sha256": "4753e8a8a160a03a99fd852fbc3a2977d84d4206d8b0bfd9e792a9318a0dbefc",
+      "backup": null,
+      "adaptation": "Own AVR composition/hardware/services; pinout and contracts as project evidence, no copied HAL/DMA.",
+      "reference_files": [],
+      "authorship": "Original reference authors preserved in unchanged reference files. New AFR2 source; no authorship assigned to copied legacy content.",
+      "delivery_source_snapshot": "provenance/atmega19-source/src/platform/afr2_preferences.c"
+    },
+    {
+      "file": "../AutoFinalRobo2-Atmega/src/platform/afr2_sensors.c",
+      "before_sha256": null,
+      "after_sha256": "866ef0807a327a1b062ad9ab1aca6a194fb4fc4c1889ed3a78da4278462c420c",
+      "backup": null,
+      "adaptation": "Own AVR composition/hardware/services; pinout and contracts as project evidence, no copied HAL/DMA.",
+      "reference_files": [],
+      "authorship": "Original reference authors preserved in unchanged reference files. New AFR2 source; no authorship assigned to copied legacy content.",
+      "delivery_source_snapshot": "provenance/atmega19-source/src/platform/afr2_sensors.c"
+    },
+    {
+      "file": "../AutoFinalRobo2-Atmega/src/platform/afr2_watchdog.c",
+      "before_sha256": null,
+      "after_sha256": "9bda00266e37f50aa27ba4990e3c505891f0ebcd915a79bb72f7f714eabf0ae3",
+      "backup": null,
+      "adaptation": "Own AVR composition/hardware/services; pinout and contracts as project evidence, no copied HAL/DMA.",
+      "reference_files": [],
+      "authorship": "Original reference authors preserved in unchanged reference files. New AFR2 source; no authorship assigned to copied legacy content.",
+      "delivery_source_snapshot": "provenance/atmega19-source/src/platform/afr2_watchdog.c"
+    },
+    {
+      "file": "../AutoFinalRobo2-Atmega/src/services/afr2_app.c",
+      "before_sha256": null,
+      "after_sha256": "5748ab2b703c415f238b29d6b35212a747b37cae9d71a2a3060529147ba78897",
+      "backup": null,
+      "adaptation": "Own AVR composition/hardware/services; pinout and contracts as project evidence, no copied HAL/DMA.",
+      "reference_files": [],
+      "authorship": "Original reference authors preserved in unchanged reference files. New AFR2 source; no authorship assigned to copied legacy content.",
+      "delivery_source_snapshot": "provenance/atmega19-source/src/services/afr2_app.c"
+    },
+    {
+      "file": "../AutoFinalRobo2-Atmega/src/services/afr2_app_wire.c",
+      "before_sha256": null,
+      "after_sha256": "43a55b504f6442aaa0fa04545304f9817dd4d322e0789a22cced3c38ccf5c888",
+      "backup": null,
+      "adaptation": "Own AVR composition/hardware/services; pinout and contracts as project evidence, no copied HAL/DMA.",
+      "reference_files": [],
+      "authorship": "Original reference authors preserved in unchanged reference files. New AFR2 source; no authorship assigned to copied legacy content.",
+      "delivery_source_snapshot": "provenance/atmega19-source/src/services/afr2_app_wire.c"
+    },
+    {
+      "file": "../AutoFinalRobo2-Atmega/src/services/afr2_link.c",
+      "before_sha256": "1642b96e3ce889cf03dff53aea2ce19f9a91a4e04d1b322025770b76a435900c",
+      "after_sha256": "8b0ea1730964b2d3cac6842572e49fc1fdd35f42efe63ff991bf47647a889e56",
+      "backup": "provenance/atmega19-before/src/services/afr2_link.c",
+      "adaptation": "Extend existing ROBO2 endpoint via callbacks, revocation and dynamic capabilities; shared framing unchanged.",
+      "reference_files": [
+        "../AutoFinalRobo2-Atmega/reference/f4/Core/Src/uner_app.c"
+      ],
+      "authorship": "Original reference authors preserved in unchanged reference files. New AFR2 source; no authorship assigned to copied legacy content.",
+      "delivery_source_snapshot": "provenance/atmega19-source/src/services/afr2_link.c"
+    },
+    {
+      "file": "../AutoFinalRobo2-Atmega/src/services/afr2_product.c",
+      "before_sha256": null,
+      "after_sha256": "3c1791e3d9044272751e78c58b23d26dd28b0556364f9ccf4c4a09026b34f19e",
+      "backup": null,
+      "adaptation": "Own four-wheel state/control/odometry/GOTO; no balance/MPU.",
+      "reference_files": [
+        "../AutoFinalRobo2-Atmega/reference/f4/Core/Src/pid_controller.c"
+      ],
+      "authorship": "Original reference authors preserved in unchanged reference files. New AFR2 source; no authorship assigned to copied legacy content.",
+      "delivery_source_snapshot": "provenance/atmega19-source/src/services/afr2_product.c"
+    },
+    {
+      "file": "../AutoFinalRobo2-Atmega/src/ui/afr2_menu_catalog.c",
+      "before_sha256": null,
+      "after_sha256": "1bf69db9ea4b8ad915d60e58b0b9628178cba3dbf7174a6c01ea924e37c6c5b6",
+      "backup": null,
+      "adaptation": "New flash catalogue44 nodes; action IDs frozen explicitly.",
+      "reference_files": [
+        "../AutoFinalRobo2-Atmega/reference/f4/Core/Src/menu_definition.c",
+        "../AutoFinalRobo2-Atmega/reference/f4/Core/Src/menusystem.c"
+      ],
+      "authorship": "Original reference authors preserved in unchanged reference files. New AFR2 source; no authorship assigned to copied legacy content.",
+      "delivery_source_snapshot": "provenance/atmega19-source/src/ui/afr2_menu_catalog.c"
+    },
+    {
+      "file": "../AutoFinalRobo2-Atmega/src/ui/afr2_screens.c",
+      "before_sha256": "b2865795ccb650f7e214618685e332e5de9b5269b01b839b2ddbb75acd14997b",
+      "after_sha256": "e3cef5b7250446105550264268ec9660e399d9f555181e042db53f31efa25881",
+      "backup": "provenance/atmega19-before/src/ui/afr2_screens.c",
+      "adaptation": "Own AVR state/renderer; history/editors/ASCII keyboard/queue; no F4 globals.",
+      "reference_files": [
+        "../AutoFinalRobo2-Atmega/reference/f4/Core/Src/menusystem.c",
+        "../AutoFinalRobo2-Atmega/reference/f4/Core/Src/screenWrappers.c",
+        "../AutoFinalRobo2-Atmega/reference/f4/Core/Src/osk.c",
+        "../AutoFinalRobo2-Atmega/reference/f4/Core/Src/notificationWrappers.c"
+      ],
+      "authorship": "Original reference authors preserved in unchanged reference files. New AFR2 source; no authorship assigned to copied legacy content.",
+      "delivery_source_snapshot": "provenance/atmega19-source/src/ui/afr2_screens.c"
+    },
+    {
+      "file": "../AutoFinalRobo2-Atmega/Makefile",
+      "before_sha256": "65b8fa04093d16dcf8be4a9a85ae568272792b01c015746a4bbef90cd56a3e30",
+      "after_sha256": "e784c6a26dbbeb2d50e99d183a4cfc2788b339d64918710b36c79b774c1c8b35",
+      "backup": "provenance/atmega19-before/Makefile",
+      "adaptation": "Own AVR composition/hardware/services; pinout and contracts as project evidence, no copied HAL/DMA.",
+      "reference_files": [],
+      "authorship": "Original reference authors preserved in unchanged reference files. New AFR2 source; no authorship assigned to copied legacy content.",
+      "delivery_source_snapshot": "provenance/atmega19-source/Makefile"
+    },
+    {
+      "file": "contracts/afr2_product_wire.h",
+      "sha256": "76598e997bcc97daacfcbbfa9722c997adcc016923f8108c93814a68774a2fcc",
+      "adaptation": "Own delivery contract/documentation; no runtime evidence."
+    },
+    {
+      "file": "contracts/ATMEGA_CONFIG_ACTIONS.json",
+      "sha256": "14b285d501ab9ec5315e96c4e014bbfa30e3c93b57511ed293343fee2c7ef26e",
+      "adaptation": "Own delivery contract/documentation; no runtime evidence."
+    },
+    {
+      "file": "contracts/ROBO2_PRODUCT_EXTENSION.md",
+      "sha256": "2a5adc5cb6a14bc300f1b165ca28e8cee29498a39bcb7dcac66f9098b8a8da9f",
+      "adaptation": "Own delivery contract/documentation; no runtime evidence."
+    },
+    {
+      "file": "docs/ATMEGA_IMPLEMENTACION_19.md",
+      "sha256": "9829432e9b46c4f371644dae98fba1aea6dc06bc4221735c2c81eb55832746f9",
+      "adaptation": "Own delivery contract/documentation; no runtime evidence."
+    },
+    {
+      "file": "docs/PLAN_ATMEGA.md",
+      "sha256": "0ec193e05916fef5ab71bdd7fba8d54b2c7d4e71db0a5086bff6ff52656e5a30",
+      "adaptation": "Own delivery contract/documentation; no runtime evidence."
+    },
+    {
+      "file": "documentation/screens.json",
+      "sha256": "5e0b92567f7416f3137c6b10bf8ab3f3c8aac21cb979cdb80f7fd783495fc617",
+      "adaptation": "Own delivery contract/documentation; no runtime evidence."
+    },
+    {
+      "file": "../AutoFinalRobo2-Atmega/README.md",
+      "before_sha256": "ed078cb29c36d370a2c0691fd90ed98fd3a29999236de5a0f6ba479a7a2008b2",
+      "after_sha256": "89f8b636fdb408857604794691ce4dad87a87bad96ca723b85f34c34efcda5f6",
+      "backup": "provenance/atmega19-before/documentation/AutoFinalRobo2-Atmega/README.md",
+      "adaptation": "Documentation update preserving historical text/reference authors; ESP handoff is a new guide only."
+    },
+    {
+      "file": "../AutoFinalRobo2-Atmega/INFORME_ADAPTACION.md",
+      "before_sha256": "17c16d97334649cf449dae8d092b8e6d6f7c0c2d0bacfe13e5a8fded6fbf4c8f",
+      "after_sha256": "8c0b05010a7c74f94795b44f0c34669263f242052de385684196bfd21a9654ab",
+      "backup": "provenance/atmega19-before/documentation/AutoFinalRobo2-Atmega/INFORME_ADAPTACION.md",
+      "adaptation": "Documentation update preserving historical text/reference authors; ESP handoff is a new guide only."
+    },
+    {
+      "file": "../AutoFinalRobo2-Atmega/docs/PRODUCTO_ATMEGA.md",
+      "before_sha256": null,
+      "after_sha256": "67a2dc7fb376afedd7946953d239e005487d85aaa236dcc8a424913811937ef5",
+      "backup": null,
+      "adaptation": "Documentation update preserving historical text/reference authors; ESP handoff is a new guide only."
+    },
+    {
+      "file": "../AutoFinalRobo2-Atmega/docs/COMPOSICION.md",
+      "before_sha256": "fbf427c8df99826ac7fa32dfc764276b40730f1951eea71776f8bc171e3fe750",
+      "after_sha256": "f4450989a895a4abe5ce9bd65643d5f65b06d69df022a2a3acc9ccd1fa288a01",
+      "backup": "provenance/atmega19-before/documentation/AutoFinalRobo2-Atmega/docs/COMPOSICION.md",
+      "adaptation": "Documentation update preserving historical text/reference authors; ESP handoff is a new guide only."
+    },
+    {
+      "file": "../AutoFinalRobo2-Atmega/docs/COMUNICACION_ESP.md",
+      "before_sha256": "5f9f9157d398a8f35cbc638a3a931eff371a1e13cfc08c729d43998ed422f5d4",
+      "after_sha256": "ffe02fa117d04abee71bab0774ee489694f169c99d49d3851ea250d48488104d",
+      "backup": "provenance/atmega19-before/documentation/AutoFinalRobo2-Atmega/docs/COMUNICACION_ESP.md",
+      "adaptation": "Documentation update preserving historical text/reference authors; ESP handoff is a new guide only."
+    },
+    {
+      "file": "../AutoFinalRobo2-Atmega/docs/API_NUEVA.md",
+      "before_sha256": "65f779678bf768420d3fa0df4031f8284d70a88d472a41734f24616738cc350c",
+      "after_sha256": "043ebb3af54326c130d4cd4a56f02f04962c9039618478d6374ba1dfe6e0b239",
+      "backup": "provenance/atmega19-before/documentation/AutoFinalRobo2-Atmega/docs/API_NUEVA.md",
+      "adaptation": "Documentation update preserving historical text/reference authors; ESP handoff is a new guide only."
+    },
+    {
+      "file": "../AutoFinalRobo2-Atmega/docs/INFORME_CARPETA.md",
+      "before_sha256": "0d94c5c00b122e66f08bc749e6c7a1d69d88b46eab08598cf881780d8d60c652",
+      "after_sha256": "82189917754d39cd7d188929df3ddb0c4c3b3d1fcb794a800bae61efaf6df50f",
+      "backup": "provenance/atmega19-before/documentation/AutoFinalRobo2-Atmega/docs/INFORME_CARPETA.md",
+      "adaptation": "Documentation update preserving historical text/reference authors; ESP handoff is a new guide only."
+    },
+    {
+      "file": "../AutoFinalRobo2-Atmega/docs/modules/screens.md",
+      "before_sha256": "b3da9267710c3ca6ae847981d3c5ff4d0a30af77f2973cdde3b9faf6d5793c0a",
+      "after_sha256": "df1f0a0a3802bb31c0894b7a5d134d936ef262d1b67b156f75bc4e57e8dca09a",
+      "backup": "provenance/atmega19-before/documentation/AutoFinalRobo2-Atmega/docs/modules/screens.md",
+      "adaptation": "Documentation update preserving historical text/reference authors; ESP handoff is a new guide only."
+    },
+    {
+      "file": "../AutoFinalRobo2-Atmega/docs/modules/screens.json",
+      "before_sha256": "4ae0fbfc6d68e5d58deb512e7fbb6c56a64c70a4bb5cdc6481303d1509cf50ce",
+      "after_sha256": "616291f77ba1f6c6436d6b7b4deff3152149b381fe42728d546fc3640bb58017",
+      "backup": "provenance/atmega19-before/documentation/AutoFinalRobo2-Atmega/docs/modules/screens.json",
+      "adaptation": "Documentation update preserving historical text/reference authors; ESP handoff is a new guide only."
+    },
+    {
+      "file": "../AutoFinalRobo2-Atmega/docs/modules/motion.md",
+      "before_sha256": "9576bdbd76cd7c9b81954acc71b40a233dca5a93d4ac0827a161b4a245bddf32",
+      "after_sha256": "a9c4c84e3de08d036f09b9982345dbc202b9837f4b9286f321d009c99a10403f",
+      "backup": "provenance/atmega19-before/documentation/AutoFinalRobo2-Atmega/docs/modules/motion.md",
+      "adaptation": "Documentation update preserving historical text/reference authors; ESP handoff is a new guide only."
+    },
+    {
+      "file": "../AutoFinalRobo2-Atmega/docs/modules/motion.json",
+      "before_sha256": "ac5f6051ee7ccc8e83707c9113eddd9c474acf0c5b2619d65226ccbd8f137725",
+      "after_sha256": "245b33d008c29df9484d2918270bc23cd9f920e7311d327bfc17731a68aff618",
+      "backup": "provenance/atmega19-before/documentation/AutoFinalRobo2-Atmega/docs/modules/motion.json",
+      "adaptation": "Documentation update preserving historical text/reference authors; ESP handoff is a new guide only."
+    },
+    {
+      "file": "../AutoFinalRobo2-Atmega/docs/modules/line-ir.md",
+      "before_sha256": "b30dd5d7153940667b1342ac35b6d75212d47ba4a09489c3d7c33db38389fd42",
+      "after_sha256": "0a4b6da20298886e8dce93d1f3c07ad46c51cdc6f0498ca0c05c16f5c1ef3d02",
+      "backup": "provenance/atmega19-before/documentation/AutoFinalRobo2-Atmega/docs/modules/line-ir.md",
+      "adaptation": "Documentation update preserving historical text/reference authors; ESP handoff is a new guide only."
+    },
+    {
+      "file": "../AutoFinalRobo2-Atmega/docs/modules/line-ir.json",
+      "before_sha256": "2d9058d250c6e81f0fc73ed3512625e72dc670f729124543150e36e3f9cfac8a",
+      "after_sha256": "e7d9baefe8eac6a323bc49d33a96cd6ccd7c89925455e3e956feb39b750ceb86",
+      "backup": "provenance/atmega19-before/documentation/AutoFinalRobo2-Atmega/docs/modules/line-ir.json",
+      "adaptation": "Documentation update preserving historical text/reference authors; ESP handoff is a new guide only."
+    },
+    {
+      "file": "../AutoFinalRobo2-Atmega/docs/modules/hcsr04.md",
+      "before_sha256": "a714f965f403ff91bfb9be8dcd5c5d8d7019bbf3640144c0ab62ad52ae695469",
+      "after_sha256": "e46ce0c3906a9706cb47b9acabd2b7c34c37d3a9c9e3027e75ce9d6318b95e29",
+      "backup": "provenance/atmega19-before/documentation/AutoFinalRobo2-Atmega/docs/modules/hcsr04.md",
+      "adaptation": "Documentation update preserving historical text/reference authors; ESP handoff is a new guide only."
+    },
+    {
+      "file": "../AutoFinalRobo2-Atmega/docs/modules/hcsr04.json",
+      "before_sha256": "519ec177511f6027ad42f98af91e229538b30938d667b5db732f51e11ad49f9b",
+      "after_sha256": "fe7b397ba9b3067793c657da8e050fdb8d314e73340dc298e41878ef48c5cd48",
+      "backup": "provenance/atmega19-before/documentation/AutoFinalRobo2-Atmega/docs/modules/hcsr04.json",
+      "adaptation": "Documentation update preserving historical text/reference authors; ESP handoff is a new guide only."
+    },
+    {
+      "file": "../AutoFinalRobo2-Atmega/docs/modules/encoder-ui.md",
+      "before_sha256": "4a358a420f7b0989a2390d4320a96473fd6be55bb6e899a106108c88fa15dada",
+      "after_sha256": "7826bb67c35abe0845f30069f829d231cb9378b15d083d6bc36f497e66a577d5",
+      "backup": "provenance/atmega19-before/documentation/AutoFinalRobo2-Atmega/docs/modules/encoder-ui.md",
+      "adaptation": "Documentation update preserving historical text/reference authors; ESP handoff is a new guide only."
+    },
+    {
+      "file": "../AutoFinalRobo2-Atmega/docs/modules/encoder-ui.json",
+      "before_sha256": "33731abf37df50816afbbe72f6a17e8733ca2ce065de10e9bbb38c702f432410",
+      "after_sha256": "62fe1efdaa76c8b548749708bf9658b6ae324571ff1cb466808f9150c4bf0976",
+      "backup": "provenance/atmega19-before/documentation/AutoFinalRobo2-Atmega/docs/modules/encoder-ui.json",
+      "adaptation": "Documentation update preserving historical text/reference authors; ESP handoff is a new guide only."
+    },
+    {
+      "file": "../AutoFinalRobo2-Atmega/docs/modules/i2c-oled.md",
+      "before_sha256": "a8b4ca660f477378f641bbc4d551d32776a3d24938963769575d217502f948ea",
+      "after_sha256": "f43f984e9120ffa4f58b3cf8856d03f3d0c762a340dc7844ae9a111c02863c47",
+      "backup": "provenance/atmega19-before/documentation/AutoFinalRobo2-Atmega/docs/modules/i2c-oled.md",
+      "adaptation": "Documentation update preserving historical text/reference authors; ESP handoff is a new guide only."
+    },
+    {
+      "file": "../AutoFinalRobo2-Atmega/docs/modules/i2c-oled.json",
+      "before_sha256": "be4282f0fc28f171b85dd4b76ac3539d932b1b57696093559738ca48679ffee3",
+      "after_sha256": "1b3bbef146997befe048f7c000af6c7f74447a6ea77256b47f7422cad05c9bc9",
+      "backup": "provenance/atmega19-before/documentation/AutoFinalRobo2-Atmega/docs/modules/i2c-oled.json",
+      "adaptation": "Documentation update preserving historical text/reference authors; ESP handoff is a new guide only."
+    },
+    {
+      "file": "../AutoFinalRobo2-Atmega/docs/modules/protocol.md",
+      "before_sha256": "130d8f447eb09539e5028f2dd3d5424fb62a97e4adc2248eae3856b627f4d637",
+      "after_sha256": "2c99d04f5eb2285fe5c66062aa262c07c654f5ab42d541b382117975652a0904",
+      "backup": "provenance/atmega19-before/documentation/AutoFinalRobo2-Atmega/docs/modules/protocol.md",
+      "adaptation": "Documentation update preserving historical text/reference authors; ESP handoff is a new guide only."
+    },
+    {
+      "file": "../AutoFinalRobo2-Atmega/docs/modules/protocol.json",
+      "before_sha256": "46ae44b7473ea8b29077f90a978ecd2fe9833ff262e07d822ef9ed6e4285f153",
+      "after_sha256": "2cba1d9e385a234deec8133bfd464a392c4e1056fcb71970a88a60e793c6467e",
+      "backup": "provenance/atmega19-before/documentation/AutoFinalRobo2-Atmega/docs/modules/protocol.json",
+      "adaptation": "Documentation update preserving historical text/reference authors; ESP handoff is a new guide only."
+    },
+    {
+      "file": "../AutoFinalRobo2-Atmega/docs/modules/wifi-composition.md",
+      "before_sha256": "74334d16802071d61115e7b0d71c6692858c74b3c7da204e7fd1dcbceff3b1a9",
+      "after_sha256": "d282ba5695575aa2e659f2b48a1296bd338b98875ac608b809e037db2e474b05",
+      "backup": "provenance/atmega19-before/documentation/AutoFinalRobo2-Atmega/docs/modules/wifi-composition.md",
+      "adaptation": "Documentation update preserving historical text/reference authors; ESP handoff is a new guide only."
+    },
+    {
+      "file": "../AutoFinalRobo2-Atmega/docs/modules/wifi-composition.json",
+      "before_sha256": "abc6ed5b77757febc12c307b0d52fdd00b8ac9be7c436585eb8e174d357d4175",
+      "after_sha256": "7c8c7621d37c9d0770ca5ff335643e9d8e32efe33dde592a11c652d8e86b6038",
+      "backup": "provenance/atmega19-before/documentation/AutoFinalRobo2-Atmega/docs/modules/wifi-composition.json",
+      "adaptation": "Documentation update preserving historical text/reference authors; ESP handoff is a new guide only."
+    },
+    {
+      "file": "../AutoFinalRobo2-Atmega/docs/modules/INFORME_CARPETA.md",
+      "before_sha256": "27452371b70b5eef5cc435a56e7898e76f6e2e2072b66ffc95042dae6474461d",
+      "after_sha256": "39a446877e56f58811d61bedb28379b639d0656867d1e2a38debff72c62993e1",
+      "backup": "provenance/atmega19-before/documentation/AutoFinalRobo2-Atmega/docs/modules/INFORME_CARPETA.md",
+      "adaptation": "Documentation update preserving historical text/reference authors; ESP handoff is a new guide only."
+    },
+    {
+      "file": "../AutoFinalRobo2-ESP/docs/ROBO2_EX01_ATMEGA.md",
+      "before_sha256": null,
+      "after_sha256": "3aa7cbc72e0a11e13627500b7458df7dd93dd9695798ee32c87f098c01ef800e",
+      "backup": null,
+      "adaptation": "Documentation update preserving historical text/reference authors; ESP handoff is a new guide only."
+    }
+  ],
+  "snapshot_note": "Hashes describe this delivery snapshot, not later edits by concurrent integration work. Source snapshots preserved in atmega19-source/; these are provenance, not a second build target."
+}

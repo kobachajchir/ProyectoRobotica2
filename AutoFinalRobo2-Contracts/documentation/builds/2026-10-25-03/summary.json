@@ -1,0 +1,121 @@
+{
+  "changeId": "AFR2-20261025-03",
+  "date": "2026-10-25",
+  "webVersion": "0.2.0",
+  "firmwareVersion": "0.9.0",
+  "extensionVersion": 7,
+  "commandCount": 30,
+  "screenCodes": 59,
+  "web": {
+    "assetCount": 7,
+    "manifestSha256": "a7b1fffcb4f28b48daf4893df98d3807bdb04981dc076d052884e3f185f1f1a1",
+    "gzipDeltaFrom02": 570,
+    "rawBytes": 3041224,
+    "profile": "esp",
+    "espManifestSha256": "a7b1fffcb4f28b48daf4893df98d3807bdb04981dc076d052884e3f185f1f1a1",
+    "buildExitCode": 0,
+    "estimatedFilesystemBytes": 1572864,
+    "filesystemBudgetBytes": 2867200,
+    "gzipBytes": 1481624,
+    "promotion": [
+      {
+        "route": "/brand/favicon.webp",
+        "webSha256": "8b09232de5bb978d3a5b27d73f1bfbbd9d23f87ce7d6afc45d81a39e67e9c02f",
+        "espSha256": "8b09232de5bb978d3a5b27d73f1bfbbd9d23f87ce7d6afc45d81a39e67e9c02f",
+        "identical": true
+      },
+      {
+        "route": "/brand/Logo-1024.webp",
+        "webSha256": "7a9d0a4da4327b952708ebab7ddc1a287af6ef0dc33dd93f382869e1e19414c5",
+        "espSha256": "7a9d0a4da4327b952708ebab7ddc1a287af6ef0dc33dd93f382869e1e19414c5",
+        "identical": true
+      },
+      {
+        "route": "/brand/Logo-256.webp",
+        "webSha256": "d273952807d216a6ca629cdeb6e13739b7fff23d1dd32fd4b50390c6453fd9f3",
+        "espSha256": "d273952807d216a6ca629cdeb6e13739b7fff23d1dd32fd4b50390c6453fd9f3",
+        "identical": true
+      },
+      {
+        "route": "/draco/draco_decoder.wasm",
+        "webSha256": "d2ea825f06f391962a850da94d68aa9778688a57cc7a79424938cc461ae1e759",
+        "espSha256": "d2ea825f06f391962a850da94d68aa9778688a57cc7a79424938cc461ae1e759",
+        "identical": true
+      },
+      {
+        "route": "/draco/draco_wasm_wrapper.js",
+        "webSha256": "5065d3fcaba12f33fea4dc9886646f6ad1f94e53a71407a92db52c4e8b4a440d",
+        "espSha256": "5065d3fcaba12f33fea4dc9886646f6ad1f94e53a71407a92db52c4e8b4a440d",
+        "identical": true
+      },
+      {
+        "route": "/index.html",
+        "webSha256": "cc594f824e615986a11e2cd3c5fc61902150e51c1ac2dae19229e42d0bd8980d",
+        "espSha256": "cc594f824e615986a11e2cd3c5fc61902150e51c1ac2dae19229e42d0bd8980d",
+        "identical": true
+      },
+      {
+        "route": "/models/AutoFinalRobo2.glb",
+        "webSha256": "30d0245bc9ed858a3d93ed8d25ae8f86d7434a9c219334cf25349da76a061e5f",
+        "espSha256": "30d0245bc9ed858a3d93ed8d25ae8f86d7434a9c219334cf25349da76a061e5f",
+        "identical": true
+      }
+    ]
+  },
+  "input": {
+    "deadZoneEntryPx": 12,
+    "diagonals": true,
+    "keys": "Window capture only while driving dialog is open; input/select/textarea/contenteditable keep native keys",
+    "nullRelatedTargetNeedsViewportBoundary": true,
+    "secondPointerCancels": true,
+    "reconnectArmsPreview": false,
+    "globalPointerRelease": true,
+    "initialFocus": "Input surface through optional FloatingModal.initialFocusRef",
+    "mouseButtonsOnly": true,
+    "surface": "Dedicated transparent DOM overlay above passive Canvas",
+    "deadZoneReleasePx": 8,
+    "hysteresisDeg": 30
+  },
+  "motion": {
+    "sharedIcon": "UiIcon arrow",
+    "holdMs": 800,
+    "physicalPose": false,
+    "activeArrowOnly": true,
+    "reducedMotion": true,
+    "enterMs": 140,
+    "iconTravelPx": 3,
+    "arrowSizePx": 56,
+    "keyboardInstant": true,
+    "modelFeedbackPx": 8
+  },
+  "atmega": {
+    "previousBuild": "2026-10-25-01",
+    "sourceChanged": false,
+    "hallEnabled": false,
+    "memoryApproved": false,
+    "rebuilt": false
+  },
+  "esp": {
+    "physicalFlashIdentified": false,
+    "previousBuild": "2026-10-25-01",
+    "firmwareChanged": false,
+    "webAssetsPromoted": true,
+    "rebuilt": false
+  },
+  "model": {
+    "path": "AutoFinalRobo2-Web/public/models/AutoFinalRobo2.glb",
+    "bytes": 827232,
+    "sha256": "d10684704200caa4da0a6a98715e52abc446b9dee9cccdde32f33ee05fc927c7"
+  },
+  "testsRun": false,
+  "standaloneValidators": false,
+  "browser": false,
+  "phone": false,
+  "flashed": false,
+  "physicalTests": false,
+  "cadChanged": false,
+  "newDependencies": false,
+  "committed": false,
+  "published": false,
+  "verification": "Authorized compilation/package/local promotion and source/artifact inspection. Source findings explain keyboard focus and Canvas event inheritance; no reproduction or runtime/visual claim. Prior browser denial respected. No tests/standalone validators, browser, phone, serial, FS image, flashing or physical operation."
+}

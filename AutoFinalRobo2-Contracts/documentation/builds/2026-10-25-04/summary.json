@@ -1,0 +1,110 @@
+{
+  "changeId": "AFR2-20261025-04",
+  "date": "2026-10-25",
+  "webVersion": "0.2.0",
+  "firmwareVersion": "0.9.0",
+  "extensionVersion": 7,
+  "commandCount": 30,
+  "screenCodes": 59,
+  "rootCause": "Canvas.fallback mounts native canvas children even with WebGL. Unavailable effect called onFailure there, falsely latched modelFailed and disabled input.",
+  "fix": {
+    "newDependencies": false,
+    "reconnectArmsPreview": false,
+    "localInputWaitsForNetwork": false,
+    "localReadinessLossCancelsGesture": false,
+    "realOutputRequiresModelAndConnection": true,
+    "visualCompositionChanged": false,
+    "canvasFallbackPassive": true,
+    "localInputWaitsForModel": false,
+    "actualFailureOnlyInRenderBoundary": true
+  },
+  "web": {
+    "filesystemBudgetBytes": 2867200,
+    "manifestSha256": "51847c8c75abbe9e4e343cede1c5fcdbb6651c94630dd18306b4ad7609024286",
+    "gzipDeltaFrom03": 51,
+    "promotion": [
+      {
+        "route": "/brand/favicon.webp",
+        "webSha256": "8b09232de5bb978d3a5b27d73f1bfbbd9d23f87ce7d6afc45d81a39e67e9c02f",
+        "espSha256": "8b09232de5bb978d3a5b27d73f1bfbbd9d23f87ce7d6afc45d81a39e67e9c02f",
+        "identical": true
+      },
+      {
+        "route": "/brand/Logo-1024.webp",
+        "webSha256": "7a9d0a4da4327b952708ebab7ddc1a287af6ef0dc33dd93f382869e1e19414c5",
+        "espSha256": "7a9d0a4da4327b952708ebab7ddc1a287af6ef0dc33dd93f382869e1e19414c5",
+        "identical": true
+      },
+      {
+        "route": "/brand/Logo-256.webp",
+        "webSha256": "d273952807d216a6ca629cdeb6e13739b7fff23d1dd32fd4b50390c6453fd9f3",
+        "espSha256": "d273952807d216a6ca629cdeb6e13739b7fff23d1dd32fd4b50390c6453fd9f3",
+        "identical": true
+      },
+      {
+        "route": "/draco/draco_decoder.wasm",
+        "webSha256": "d2ea825f06f391962a850da94d68aa9778688a57cc7a79424938cc461ae1e759",
+        "espSha256": "d2ea825f06f391962a850da94d68aa9778688a57cc7a79424938cc461ae1e759",
+        "identical": true
+      },
+      {
+        "route": "/draco/draco_wasm_wrapper.js",
+        "webSha256": "5065d3fcaba12f33fea4dc9886646f6ad1f94e53a71407a92db52c4e8b4a440d",
+        "espSha256": "5065d3fcaba12f33fea4dc9886646f6ad1f94e53a71407a92db52c4e8b4a440d",
+        "identical": true
+      },
+      {
+        "route": "/index.html",
+        "webSha256": "4d90218cccab6cfebbb4e8c6ad49954e01b548c88ad7201fe9842f5f85e788bb",
+        "espSha256": "4d90218cccab6cfebbb4e8c6ad49954e01b548c88ad7201fe9842f5f85e788bb",
+        "identical": true
+      },
+      {
+        "route": "/models/AutoFinalRobo2.glb",
+        "webSha256": "30d0245bc9ed858a3d93ed8d25ae8f86d7434a9c219334cf25349da76a061e5f",
+        "espSha256": "30d0245bc9ed858a3d93ed8d25ae8f86d7434a9c219334cf25349da76a061e5f",
+        "identical": true
+      }
+    ],
+    "rawBytes": 3041425,
+    "espManifestSha256": "51847c8c75abbe9e4e343cede1c5fcdbb6651c94630dd18306b4ad7609024286",
+    "estimatedFilesystemBytes": 1572864,
+    "gzipBytes": 1481675,
+    "buildExitCode": 0,
+    "assetCount": 7
+  },
+  "atmega": {
+    "sourceChanged": false,
+    "previousBuild": "2026-10-25-01",
+    "rebuilt": false,
+    "memoryApproved": false,
+    "hallEnabled": false
+  },
+  "esp": {
+    "firmwareChanged": false,
+    "previousBuild": "2026-10-25-01",
+    "rebuilt": false,
+    "webAssetsPromoted": true,
+    "physicalFlashIdentified": false
+  },
+  "model": {
+    "path": "AutoFinalRobo2-Web/public/models/AutoFinalRobo2.glb",
+    "bytes": 827232,
+    "sha256": "d10684704200caa4da0a6a98715e52abc446b9dee9cccdde32f33ee05fc927c7"
+  },
+  "libraryEvidence": {
+    "path": "AutoFinalRobo2-Web/node_modules/@react-three/fiber/dist/react-three-fiber.esm.js",
+    "bytes": 7067,
+    "sha256": "cc26a8452be261edbeb210365f754784fef2b2d5a8caf1f81f18ea2c305b86f2"
+  },
+  "testsRun": false,
+  "standaloneValidators": false,
+  "browser": false,
+  "phone": false,
+  "flashed": false,
+  "physicalTests": false,
+  "cadChanged": false,
+  "committed": false,
+  "published": false,
+  "verification": "Human symptom: Modelo 3D no disponible. Source inspection traced fallback lifecycle to false failure state; authorized Web compile/package/local promotion and artifact hashes only. No browser reproduction, tests/standalone validators, phone, serial, FS image, flashing or physical operation; prior browser denial respected."
+}

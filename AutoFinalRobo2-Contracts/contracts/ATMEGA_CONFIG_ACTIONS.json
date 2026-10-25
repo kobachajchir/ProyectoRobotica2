@@ -1,0 +1,442 @@
+{
+  "schema": "afr2-config-actions-1",
+  "change_id": "AFR2-20261025-01",
+  "wire_profile": 2,
+  "extension": "EX01",
+  "command": "0x1A",
+  "status": {
+    "atmega": "implemented-compiled-not-runtime-tested",
+    "esp": "implemented-compiled-not-runtime-tested",
+    "web": "implemented-compiled-not-runtime-tested"
+  },
+  "rules": [
+    "IDs are stable; retired2,3,56 are not reassigned. No activation/grant switch for Web control.",
+    "CONFIG only accepts numeric actions; no arbitrary invocation. Prefix4 bytes are reserved zero in EX01v7.",
+    "Requests remain10bytes: reserved0:u32LE,op:u8,action:u8,value:i32LE;op0 read/op1 write.",
+    "Writes require stopped outputs, no EEPROM write and no Hall measurement; no lease/token or OLED enable.",
+    "RAM editing is separate from explicit EEPROM save/discard; Hall calibration remains local OLED.",
+    "Context wheel/IR channel is shared; ENCODER_STEPS only2or4."
+  ],
+  "actions": [
+    {
+      "id": 0,
+      "symbol": "AFR2_A_NONE",
+      "config_access": false
+    },
+    {
+      "id": 1,
+      "symbol": "AFR2_A_STOP",
+      "config_access": false
+    },
+    {
+      "id": 4,
+      "symbol": "AFR2_A_SPEED",
+      "config_access": true,
+      "label": "Limite velocidad",
+      "min": 10,
+      "max": 1000,
+      "editor_step": 10,
+      "unit": "mm/s"
+    },
+    {
+      "id": 5,
+      "symbol": "AFR2_A_MOVE",
+      "config_access": false
+    },
+    {
+      "id": 6,
+      "symbol": "AFR2_A_LINE_SPEED",
+      "config_access": true,
+      "label": "Velocidad",
+      "min": 10,
+      "max": 500,
+      "editor_step": 10,
+      "unit": "mm/s"
+    },
+    {
+      "id": 7,
+      "symbol": "AFR2_A_LINE_KP",
+      "config_access": true,
+      "label": "Ganancia",
+      "min": 0,
+      "max": 1000,
+      "editor_step": 10,
+      "unit": "mrad/s per line-index error"
+    },
+    {
+      "id": 8,
+      "symbol": "AFR2_A_LINE_START",
+      "config_access": false
+    },
+    {
+      "id": 9,
+      "symbol": "AFR2_A_GOTO_X",
+      "config_access": true,
+      "label": "Objetivo X mm",
+      "min": -5000,
+      "max": 5000,
+      "editor_step": 10,
+      "unit": "mm"
+    },
+    {
+      "id": 10,
+      "symbol": "AFR2_A_GOTO_Y",
+      "config_access": true,
+      "label": "Objetivo Y mm",
+      "min": -5000,
+      "max": 5000,
+      "editor_step": 10,
+      "unit": "mm"
+    },
+    {
+      "id": 11,
+      "symbol": "AFR2_A_GOTO_START",
+      "config_access": false
+    },
+    {
+      "id": 12,
+      "symbol": "AFR2_A_WHEEL",
+      "config_access": true,
+      "label": "Rueda FL FR RL RR",
+      "min": 0,
+      "max": 3,
+      "editor_step": 1,
+      "unit": "wheel index FL0/FR1/RL2/RR3"
+    },
+    {
+      "id": 13,
+      "symbol": "AFR2_A_TEST_PWM",
+      "config_access": true,
+      "label": "PWM con signo",
+      "min": -255,
+      "max": 255,
+      "editor_step": 5,
+      "unit": "signed PWM count"
+    },
+    {
+      "id": 14,
+      "symbol": "AFR2_A_TEST_MS",
+      "config_access": true,
+      "label": "Duracion ms",
+      "min": 100,
+      "max": 2000,
+      "editor_step": 100,
+      "unit": "ms"
+    },
+    {
+      "id": 15,
+      "symbol": "AFR2_A_WHEEL_START",
+      "config_access": false
+    },
+    {
+      "id": 16,
+      "symbol": "AFR2_A_HALL_BEGIN",
+      "config_access": false
+    },
+    {
+      "id": 17,
+      "symbol": "AFR2_A_HALL_END",
+      "config_access": false
+    },
+    {
+      "id": 18,
+      "symbol": "AFR2_A_HALL_SAVE",
+      "config_access": false
+    },
+    {
+      "id": 19,
+      "symbol": "AFR2_A_HALL_CANCEL",
+      "config_access": false
+    },
+    {
+      "id": 20,
+      "symbol": "AFR2_A_SERVO_US",
+      "config_access": true,
+      "label": "Pulso us",
+      "min": 1000,
+      "max": 2000,
+      "editor_step": 50,
+      "unit": "us"
+    },
+    {
+      "id": 21,
+      "symbol": "AFR2_A_SERVO_APPLY",
+      "config_access": false
+    },
+    {
+      "id": 22,
+      "symbol": "AFR2_A_SERVO_OFF",
+      "config_access": false
+    },
+    {
+      "id": 23,
+      "symbol": "AFR2_A_SAVE",
+      "config_access": false
+    },
+    {
+      "id": 24,
+      "symbol": "AFR2_A_DISCARD",
+      "config_access": false
+    },
+    {
+      "id": 25,
+      "symbol": "AFR2_A_LINE_KIND",
+      "config_access": true,
+      "label": "Tipo 0/1dig/2adc",
+      "min": 0,
+      "max": 2,
+      "editor_step": 1,
+      "unit": "enum0unknown1digital2ADC"
+    },
+    {
+      "id": 26,
+      "symbol": "AFR2_A_LINE_INVERT",
+      "config_access": true,
+      "label": "Invertir bits",
+      "min": 0,
+      "max": 31,
+      "editor_step": 1,
+      "unit": "5-bit mask"
+    },
+    {
+      "id": 27,
+      "symbol": "AFR2_A_LINE_CHANNEL",
+      "config_access": true,
+      "label": "Canal IR 1..5",
+      "min": 0,
+      "max": 4,
+      "editor_step": 1,
+      "unit": "index0..4"
+    },
+    {
+      "id": 28,
+      "symbol": "AFR2_A_LINE_THRESHOLD",
+      "config_access": true,
+      "label": "Umbral ADC",
+      "min": 0,
+      "max": 1023,
+      "editor_step": 8,
+      "unit": "ADC10-bit threshold"
+    },
+    {
+      "id": 29,
+      "symbol": "AFR2_A_LINE_CONFIRM",
+      "config_access": false
+    },
+    {
+      "id": 30,
+      "symbol": "AFR2_A_MOTOR_SIGNS",
+      "config_access": true,
+      "label": "Signos bits FL..R",
+      "min": 0,
+      "max": 15,
+      "editor_step": 1,
+      "unit": "4-bit mask"
+    },
+    {
+      "id": 31,
+      "symbol": "AFR2_A_PWM_LIMIT",
+      "config_access": true,
+      "label": "Limite PWM",
+      "min": 1,
+      "max": 255,
+      "editor_step": 5,
+      "unit": "PWM count"
+    },
+    {
+      "id": 32,
+      "symbol": "AFR2_A_RAMP",
+      "config_access": true,
+      "label": "Rampa por 10ms",
+      "min": 1,
+      "max": 32,
+      "editor_step": 1,
+      "unit": "PWM counts per10ms"
+    },
+    {
+      "id": 33,
+      "symbol": "AFR2_A_KP",
+      "config_access": true,
+      "label": "Kp Q8",
+      "min": 0,
+      "max": 2048,
+      "editor_step": 16,
+      "unit": "Q8 per10ms sample"
+    },
+    {
+      "id": 34,
+      "symbol": "AFR2_A_KI",
+      "config_access": true,
+      "label": "Ki Q8",
+      "min": 0,
+      "max": 1024,
+      "editor_step": 4,
+      "unit": "Q8 per10ms sample"
+    },
+    {
+      "id": 35,
+      "symbol": "AFR2_A_KD",
+      "config_access": true,
+      "label": "Kd Q8",
+      "min": 0,
+      "max": 2048,
+      "editor_step": 16,
+      "unit": "Q8 per10ms sample"
+    },
+    {
+      "id": 36,
+      "symbol": "AFR2_A_MOTOR_READY",
+      "config_access": true,
+      "label": "Habilitar control",
+      "min": 0,
+      "max": 1,
+      "editor_step": 1,
+      "unit": "boolean"
+    },
+    {
+      "id": 37,
+      "symbol": "AFR2_A_WHEEL_MM",
+      "config_access": true,
+      "label": "Diametro rueda mm",
+      "min": 10,
+      "max": 500,
+      "editor_step": 1,
+      "unit": "mm"
+    },
+    {
+      "id": 38,
+      "symbol": "AFR2_A_RADIUS_MM",
+      "config_access": true,
+      "label": "Lx+Ly mm",
+      "min": 1,
+      "max": 1000,
+      "editor_step": 1,
+      "unit": "mm Lx+Ly"
+    },
+    {
+      "id": 39,
+      "symbol": "AFR2_A_HALL_WIRED",
+      "config_access": true,
+      "label": "Hall conectado",
+      "min": 0,
+      "max": 1,
+      "editor_step": 1,
+      "unit": "boolean"
+    },
+    {
+      "id": 40,
+      "symbol": "AFR2_A_GEOM_READY",
+      "config_access": true,
+      "label": "Geometria valida",
+      "min": 0,
+      "max": 1,
+      "editor_step": 1,
+      "unit": "boolean"
+    },
+    {
+      "id": 41,
+      "symbol": "AFR2_A_ENC_STEPS",
+      "config_access": true,
+      "label": "Transiciones 2/4",
+      "min": 2,
+      "max": 4,
+      "editor_step": 2,
+      "unit": "transitions per detent2or4"
+    },
+    {
+      "id": 42,
+      "symbol": "AFR2_A_ENC_INVERT",
+      "config_access": true,
+      "label": "Invertir sentido",
+      "min": 0,
+      "max": 1,
+      "editor_step": 1,
+      "unit": "boolean"
+    },
+    {
+      "id": 43,
+      "symbol": "AFR2_A_WIFI_STATUS",
+      "config_access": false
+    },
+    {
+      "id": 44,
+      "symbol": "AFR2_A_WIFI_MODE",
+      "config_access": true,
+      "label": "Modo",
+      "min": 1,
+      "max": 3,
+      "editor_step": 1,
+      "unit": "enum1STA2AP3AP_STA"
+    },
+    {
+      "id": 45,
+      "symbol": "AFR2_A_WIFI_SCAN",
+      "config_access": false
+    },
+    {
+      "id": 46,
+      "symbol": "AFR2_A_WIFI_RETRY",
+      "config_access": false
+    },
+    {
+      "id": 47,
+      "symbol": "AFR2_A_WIFI_CONNECT",
+      "config_access": false
+    },
+    {
+      "id": 48,
+      "symbol": "AFR2_A_WIFI_CANCEL",
+      "config_access": false
+    },
+    {
+      "id": 49,
+      "symbol": "AFR2_A_WIFI_NETWORK",
+      "config_access": false
+    },
+    {
+      "id": 50,
+      "symbol": "AFR2_A_KEYBOARD",
+      "config_access": false
+    },
+    {
+      "id": 51,
+      "symbol": "AFR2_A_WIFI_WEB",
+      "config_access": false
+    },
+    {
+      "id": 52,
+      "symbol": "AFR2_A_WIFI_SET_MODE",
+      "config_access": false
+    },
+    {
+      "id": 53,
+      "symbol": "AFR2_A_CONTRAST",
+      "config_access": true,
+      "label": "Contraste",
+      "min": 0,
+      "max": 255,
+      "editor_step": 8,
+      "unit": "SSD1306 byte"
+    },
+    {
+      "id": 54,
+      "symbol": "AFR2_A_ROTATION",
+      "config_access": true,
+      "label": "Rotacion 0/180",
+      "min": 0,
+      "max": 1,
+      "editor_step": 1,
+      "unit": "enum0normal1rotate180"
+    },
+    {
+      "id": 55,
+      "symbol": "AFR2_A_CLEAR_FAULT",
+      "config_access": false
+    }
+  ],
+  "retired_action_ids": [
+    2,
+    3,
+    56
+  ]
+}

@@ -1,0 +1,36 @@
+.app-shell .app-shell__sidebar { padding: 0 0 16px; }
+.app-shell__sidebar-heading { flex-shrink: 0; padding: 26px 22px 24px; border-bottom: 1px solid var(--border-subtle); margin-bottom: 14px; }
+.app-shell__sidebar-heading.is-collapsed { padding-inline: 10px; }
+.app-shell__sidebar-brand { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.app-shell__sidebar-logo { display: flex; align-items: center; min-width: 0; flex: 1; border-radius: var(--radius-control); }
+.app-shell__sidebar-logo img { width: 100%; max-width: 158px; height: 44px; object-fit: contain; object-position: left center; }
+.app-shell__sidebar-collapse { display: inline-flex; align-items: center; justify-content: center; width: 38px; height: 38px; flex-shrink: 0; padding: 0; border: 1px solid var(--border-subtle); border-radius: var(--radius-control); background: var(--surface-subtle); color: var(--text-secondary); cursor: pointer; }
+.app-shell__sidebar-collapse svg { width: 18px; height: 18px; }
+.app-shell__sidebar-context { margin-top: 25px; }
+.app-shell__sidebar-context > span { display: block; color: var(--text-secondary); font-size: .6rem; font-weight: 700; letter-spacing: .15em; }
+.app-shell__sidebar-context h2 { margin: 7px 0 0; color: var(--text-primary); font-family: var(--display-font); font-size: 1.35rem; font-weight: 650; letter-spacing: -.025em; line-height: 1.2; }
+.app-shell__sidebar-brand.is-collapsed { flex-direction: column; gap: 18px; }
+.app-shell__sidebar-brand.is-collapsed .app-shell__sidebar-logo { flex: none; }
+.app-shell__sidebar-brand.is-collapsed .app-shell__sidebar-logo img { width: 34px; height: 34px; object-position: center; }
+.app-shell .app-shell__sidebar .app-shell__navigation { gap: 3px; }
+.app-shell .app-shell__sidebar .workspace-navigation__title { display: none; }
+.app-shell .app-shell__sidebar .app-shell__nav-item { position: relative; min-height: 52px; width: 100%; padding: 14px 24px; border: 0; border-radius: 0; box-shadow: none; line-height: 1.4; text-align: left; text-decoration: none; transform: none; transition: background-color 150ms var(--ease-out), color 150ms var(--ease-out); }
+.app-shell .app-shell__sidebar .app-shell__nav-item.justify-center { padding-inline: 0; }
+.app-shell--sidebar-collapsed .app-shell__sidebar .app-shell__nav-item,
+.app-shell--sidebar-collapsed .app-shell__sidebar button[aria-label="Organizar barra lateral"] { display: flex; align-items: center; justify-content: center; flex: none; width: 100%; height: 52px; min-height: 52px; max-height: 52px; padding: 0; gap: 0; }
+.app-shell--sidebar-collapsed .app-shell__sidebar .app-shell__nav-item > svg,
+.app-shell--sidebar-collapsed .app-shell__sidebar button[aria-label="Organizar barra lateral"] > svg { width: 19px; height: 19px; flex: none; }
+.app-shell .app-shell__sidebar .app-shell__nav-item > svg { width: 19px; height: 19px; }
+.app-shell .app-shell__sidebar .app-shell__nav-item > span { white-space: normal; }
+.app-shell .app-shell__sidebar .app-shell__nav-item.is-active,
+.app-shell .app-shell__sidebar .app-shell__nav-item[aria-current="page"] { background: linear-gradient(90deg, var(--action-primary), var(--action-primary-hover)); color: var(--action-on-primary); box-shadow: inset 3px 0 0 var(--focus-ring); }
+.app-shell .app-shell__sidebar .app-shell__nav-back { background: var(--surface-subtle); color: var(--text-primary); border-bottom: 1px solid var(--border-subtle); font-size: .8rem; }
+.app-shell .app-shell__sidebar button[aria-label="Organizar barra lateral"] { min-height: 52px; padding: 14px 24px; border-radius: 0; }
+.app-shell .app-shell__sidebar button[aria-label="Organizar barra lateral"].justify-center { padding-inline: 0; }
+.app-shell .app-shell__sidebar .app-shell__nav-item:focus-visible, .app-shell__sidebar-logo:focus-visible, .app-shell__sidebar-collapse:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: -4px; }
+@media (hover: hover) and (pointer: fine) {
+  .app-shell .app-shell__sidebar .app-shell__nav-item:not([aria-current="page"]):not(.is-active):hover { background: color-mix(in srgb, var(--action-primary) 10%, var(--surface-elevated)); color: var(--text-primary); }
+  .app-shell__sidebar-collapse:hover { background: color-mix(in srgb, var(--action-primary) 10%, var(--surface-elevated)); color: var(--text-primary); }
+}
+@media (max-width: 1023px) { .app-shell__sidebar-heading { padding: 24px 20px; } }
+@media (prefers-reduced-motion: reduce) { .app-shell .app-shell__sidebar .app-shell__nav-item { transition: none; } }

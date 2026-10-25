@@ -1,0 +1,538 @@
+{
+  "changeId": "AFR2-20261024-15",
+  "date": "2026-10-24",
+  "authorship": "Existing AFR2/AutoMicro/F4/ST credits retained. Own15 adaptation under explicit human request; no external source, download or new licence.",
+  "sourceBaseline": [
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/CalibrationPanel.tsx",
+      "bytes": 4811,
+      "sha256": "40e434c225480c38e14467c5ada5c1f8b5bb600d324b560d4e72f9ee05dd0a6d"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/connection/SystemPanel.tsx",
+      "bytes": 4297,
+      "sha256": "c6969bf858604d318d2ca272027e53dff43e1e9517295a931849586ccb387aad"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/tools/package-web.mjs",
+      "bytes": 7303,
+      "sha256": "1e1f6034ff6433be180d55299066e2ff132ac1cedacfdd8077e7592848eeeadb"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/storage.h",
+      "bytes": 745,
+      "sha256": "0d7887283631be22693f8807d474dace9837862a752f96bc760419b75fee8008"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/storage.cpp",
+      "bytes": 4866,
+      "sha256": "12eacccd3872ee3e0e65183299d3f9a505c599d3ffbff1506e5f724f404a6a6f"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/broker_system.cpp",
+      "bytes": 4578,
+      "sha256": "d9182fc7b9f9faa1992b543583c612a69d755ebf680a7eb43bac2d639a313b99"
+    }
+  ],
+  "preservedHistoricalPlans": [
+    {
+      "source": "INFORME_MAESTRO.md",
+      "snapshot": "AutoFinalRobo2-Contracts/docs/history/alignment15/INFORME_MAESTRO.md",
+      "sha256": "b4bab720e6ee2708978e84169dbebf1742ccb042983f700e30a4410d58bb74f7",
+      "state": "historical-not-current; relative links retain original context"
+    },
+    {
+      "source": "AutoFinalRobo2-Contracts/docs/INFORME_MAESTRO.md",
+      "snapshot": "AutoFinalRobo2-Contracts/docs/history/alignment15/AutoFinalRobo2-Contracts__docs__INFORME_MAESTRO.md",
+      "sha256": "2f46584bfaeb32b23c3e420e4b0a072ceb0a26c92d9861c659f426c453ce6816",
+      "state": "historical-not-current; relative links retain original context"
+    },
+    {
+      "source": "AutoFinalRobo2-Contracts/docs/ROADMAP.md",
+      "snapshot": "AutoFinalRobo2-Contracts/docs/history/alignment15/AutoFinalRobo2-Contracts__docs__ROADMAP.md",
+      "sha256": "8ae7080977ca4b0b86d055ed259aed92ef8e7a4c6fe5dedec4f61c0c76f3b1eb",
+      "state": "historical-not-current; relative links retain original context"
+    },
+    {
+      "source": "AutoFinalRobo2-Contracts/docs/PLAN_ATMEGA.md",
+      "snapshot": "AutoFinalRobo2-Contracts/docs/history/alignment15/AutoFinalRobo2-Contracts__docs__PLAN_ATMEGA.md",
+      "sha256": "b017bc46f628c11559845b063866008b1102b0263a753d114aae019af462cdd2",
+      "state": "historical-not-current; relative links retain original context"
+    },
+    {
+      "source": "AutoFinalRobo2-Contracts/docs/PLAN_ESP.md",
+      "snapshot": "AutoFinalRobo2-Contracts/docs/history/alignment15/AutoFinalRobo2-Contracts__docs__PLAN_ESP.md",
+      "sha256": "3929cd59a0d5000ad9b807a63093f3ec15943712f3d7596a16ea9d06316dd2b3",
+      "state": "historical-not-current; relative links retain original context"
+    },
+    {
+      "source": "AutoFinalRobo2-Contracts/docs/PLAN_WEB.md",
+      "snapshot": "AutoFinalRobo2-Contracts/docs/history/alignment15/AutoFinalRobo2-Contracts__docs__PLAN_WEB.md",
+      "sha256": "44e3a398efd2a8639af49c08eae9a8c8218785564e500f8d7674cd4512dfa67f",
+      "state": "historical-not-current; relative links retain original context"
+    }
+  ],
+  "references": [
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/afr2_product_wire.h",
+      "bytes": 2043,
+      "sha256": "6ed84ae220b47f1ac34e8485b3e983b5d92a80af0122b2a38c3f04ee8856d15c",
+      "modifiedIn15": false
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/afr2_build_info.h",
+      "bytes": 419,
+      "sha256": "c79b53cd41097fe5be21ac6b8992e2d1543e492cca57ef507046047a162fc8e0",
+      "modifiedIn15": false
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/ATMEGA_CONFIG_ACTIONS.json",
+      "bytes": 10772,
+      "sha256": "1bd19f62538db14ef46cb9aa707094a3705f783431b6aa27c8ac840ac5958d0c",
+      "modifiedIn15": false
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/MENU_PLAN.md",
+      "bytes": 5966,
+      "sha256": "d1bfef34bb0dbf5d5a701ea5b2514d64428838a1f90c4f8a985ba035dbe371f7",
+      "modifiedIn15": false
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/screens.json",
+      "bytes": 61240,
+      "sha256": "342813febf349ea728d670606d8c1ac3727da1be6a580175e172cd6d24a5ab53",
+      "modifiedIn15": false
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/include/afr2_board.h",
+      "bytes": 940,
+      "sha256": "a8fff723db280caf6947691033a03a6c33d8b4483be7712150bf863ea4c7a51b",
+      "modifiedIn15": false
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/include/afr2_sequence.h",
+      "bytes": 1296,
+      "sha256": "01b2c374c05dc154678da0f068a0aba11bb0cc7a7fc8d6f0dc2ce145ca7ae1e0",
+      "modifiedIn15": false
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/services/afr2_app_wire.c",
+      "bytes": 14999,
+      "sha256": "e72bac94145e6ba66cf0c04df4f037af375de4d7c6534d859e18071b2b4e5a75",
+      "modifiedIn15": false
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/broker_product.cpp",
+      "bytes": 21566,
+      "sha256": "a1b10d0cea2f27662fb572ac65f5287c3f933df68597b1a01cfaa4977d7d073e",
+      "modifiedIn15": false
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/protocol/wsEnvelope.ts",
+      "bytes": 9651,
+      "sha256": "f42fef2a7a1bc745d35c6dea49dd55243deda6465cfab790b6c3acf95c43c4d9",
+      "modifiedIn15": false
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/styles/tokens.css",
+      "bytes": 11891,
+      "sha256": "59a49ca95486ce3e5971ffabb7d488798438dba15aaad09b54c14a4e2b4caae9",
+      "modifiedIn15": false
+    }
+  ],
+  "files": [
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/CalibrationPanel.tsx",
+      "bytes": 8351,
+      "sha256": "ed7dd4119c5da67c1522e415604cf292510d176fcc1699554e9c50b1e94e8511",
+      "adaptation": "15: calibration write lease and fresh stopped guards; actual filesystem/package diagnostic in existing hardware UI; optional manifest identity; current guide/plan pointers. Existing authors/components retained."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/ControlPage.tsx",
+      "bytes": 42836,
+      "sha256": "9719521c5aa885e18b8436a9e3a4c899ca2ed08f68bccc219aa3605d371a94ab",
+      "adaptation": "15: calibration write lease and fresh stopped guards; actual filesystem/package diagnostic in existing hardware UI; optional manifest identity; current guide/plan pointers. Existing authors/components retained."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/connection/SystemPanel.tsx",
+      "bytes": 6270,
+      "sha256": "3f40ab928ddbecefb518b8895b1f5299e61e7372ebee48bdd37609c173e102b7",
+      "adaptation": "15: calibration write lease and fresh stopped guards; actual filesystem/package diagnostic in existing hardware UI; optional manifest identity; current guide/plan pointers. Existing authors/components retained."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/docs/DocsPage.tsx",
+      "bytes": 14828,
+      "sha256": "1e9db0b9490051340ca53e2e94da04e98e6cfd6733875c5ffaf7468eb1a470e3",
+      "adaptation": "15: calibration write lease and fresh stopped guards; actual filesystem/package diagnostic in existing hardware UI; optional manifest identity; current guide/plan pointers. Existing authors/components retained."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/protocol/robotState.ts",
+      "bytes": 2927,
+      "sha256": "2aa38be9b7c1fd8d8a8fd019dba6b9e176ce9f81c783c948525c4c140f9ba8e6",
+      "adaptation": "15: calibration write lease and fresh stopped guards; actual filesystem/package diagnostic in existing hardware UI; optional manifest identity; current guide/plan pointers. Existing authors/components retained."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/tools/package-web.mjs",
+      "bytes": 7436,
+      "sha256": "8c461367654a1106d78b4f54e3176ed5d08122bfd13e1d0ffdca8728fe2cd378",
+      "adaptation": "15: calibration write lease and fresh stopped guards; actual filesystem/package diagnostic in existing hardware UI; optional manifest identity; current guide/plan pointers. Existing authors/components retained."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/docs/modules/control.md",
+      "bytes": 1866,
+      "sha256": "2a80fc7e9648fc8559e72eb4eb7c0121eca52331c1547b0f5d3a41cacab718bd",
+      "adaptation": "15: calibration write lease and fresh stopped guards; actual filesystem/package diagnostic in existing hardware UI; optional manifest identity; current guide/plan pointers. Existing authors/components retained."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/docs/modules/protocol.md",
+      "bytes": 1873,
+      "sha256": "b207f304707cfdb1bc8c66975dedc0046b5f7c7a04d12a5ff438ab38cb46dfbf",
+      "adaptation": "15: calibration write lease and fresh stopped guards; actual filesystem/package diagnostic in existing hardware UI; optional manifest identity; current guide/plan pointers. Existing authors/components retained."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/docs/modules/assets.md",
+      "bytes": 2175,
+      "sha256": "05d877beabb0fffa67152b11c395ce319a634bd5454637ce1f75cd6f6b39a85a",
+      "adaptation": "15: calibration write lease and fresh stopped guards; actual filesystem/package diagnostic in existing hardware UI; optional manifest identity; current guide/plan pointers. Existing authors/components retained."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/docs/modules/assets.json",
+      "bytes": 1487,
+      "sha256": "a6900004399e7b17a84fee82a3f8093e053e3c2bf9c2a70e53e117f2372f4dce",
+      "adaptation": "15: calibration write lease and fresh stopped guards; actual filesystem/package diagnostic in existing hardware UI; optional manifest identity; current guide/plan pointers. Existing authors/components retained."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/README.md",
+      "bytes": 21896,
+      "sha256": "360dde1bca1052dea98293b35d8887f6f83294eb798af9022c55ea591999d27e",
+      "adaptation": "15: calibration write lease and fresh stopped guards; actual filesystem/package diagnostic in existing hardware UI; optional manifest identity; current guide/plan pointers. Existing authors/components retained."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/INFORME_ADAPTACION.md",
+      "bytes": 20651,
+      "sha256": "978d99143d8049164a0f7ca8b3ab477d2738c39920561262dab45e961bf0cdec",
+      "adaptation": "15: calibration write lease and fresh stopped guards; actual filesystem/package diagnostic in existing hardware UI; optional manifest identity; current guide/plan pointers. Existing authors/components retained."
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/storage.h",
+      "bytes": 940,
+      "sha256": "3985661fb6db69b8488957bee8d95d8ad9b17fff076c939ff188d2bdd3b7a302",
+      "adaptation": "15: bounded optional package metadata only after accepted manifest; Storage health in system.info; removed fictitious none lease in HTTP health; current source/runtime docs. No UART/perms changes."
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/storage.cpp",
+      "bytes": 5935,
+      "sha256": "0d79fb46259758784c320febfb341744fce286fc45660735f221e96349d8bdf5",
+      "adaptation": "15: bounded optional package metadata only after accepted manifest; Storage health in system.info; removed fictitious none lease in HTTP health; current source/runtime docs. No UART/perms changes."
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/broker_system.cpp",
+      "bytes": 4635,
+      "sha256": "5bbc662b97d7708cf4e2566460aabe6e57f13986558bb5703628fce48674e09b",
+      "adaptation": "15: bounded optional package metadata only after accepted manifest; Storage health in system.info; removed fictitious none lease in HTTP health; current source/runtime docs. No UART/perms changes."
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/main.cpp",
+      "bytes": 4318,
+      "sha256": "a6997e2b17e7ffeb485fbb20f2a46242d89d938b34995edcb475f383d5c5c02d",
+      "adaptation": "15: bounded optional package metadata only after accepted manifest; Storage health in system.info; removed fictitious none lease in HTTP health; current source/runtime docs. No UART/perms changes."
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/README.md",
+      "bytes": 11322,
+      "sha256": "61c22ce35a5d8cbc495367e9b1d8d0efc0651c90dd8941c865a27a9bd55c1352",
+      "adaptation": "15: bounded optional package metadata only after accepted manifest; Storage health in system.info; removed fictitious none lease in HTTP health; current source/runtime docs. No UART/perms changes."
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/INFORME_ADAPTACION.md",
+      "bytes": 10719,
+      "sha256": "f0d3fd366bc95622b3bddf664f5a60a522b1a6257ba6b9f4fe8904b8d508d23f",
+      "adaptation": "15: bounded optional package metadata only after accepted manifest; Storage health in system.info; removed fictitious none lease in HTTP health; current source/runtime docs. No UART/perms changes."
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/data/README.md",
+      "bytes": 3610,
+      "sha256": "7e8d62a58b93f261b03771d665d8784a56ffe11afae44b208d7f984158fef21a",
+      "adaptation": "15: bounded optional package metadata only after accepted manifest; Storage health in system.info; removed fictitious none lease in HTTP health; current source/runtime docs. No UART/perms changes."
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/docs/modules/http-ws.md",
+      "bytes": 1899,
+      "sha256": "5c11a1f0fb4fc775b36f7f11797c6d9c6cb3370cf4a3a90c616430a3fe104473",
+      "adaptation": "15: bounded optional package metadata only after accepted manifest; Storage health in system.info; removed fictitious none lease in HTTP health; current source/runtime docs. No UART/perms changes."
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/docs/ROBO2_EX01_ATMEGA.md",
+      "bytes": 3120,
+      "sha256": "b2a949f7aba015300f36c4c98c48fb26124ad1b2276bee1142e224099a62141b",
+      "adaptation": "15: bounded optional package metadata only after accepted manifest; Storage health in system.info; removed fictitious none lease in HTTP health; current source/runtime docs. No UART/perms changes."
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/docs/PROTOCOLO_ROBO2.md",
+      "bytes": 11781,
+      "sha256": "fcefa8ad10d43f71da34f66f1c6babf23d88e246050325b548353e4889270d84",
+      "adaptation": "15: bounded optional package metadata only after accepted manifest; Storage health in system.info; removed fictitious none lease in HTTP health; current source/runtime docs. No UART/perms changes."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/README.md",
+      "bytes": 7987,
+      "sha256": "36ba944abf02d1db54725c7f65ad2e86a0eecb0361453cc07e5d306c1d24786f",
+      "adaptation": "15: current documentation pointers only; no firmware source or build changes."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/INFORME_ADAPTACION.md",
+      "bytes": 10175,
+      "sha256": "71427676cfc8b9339dbe75ebdf0b90ff32f8a615bda819ffdddb3534f767fdf6",
+      "adaptation": "15: current documentation pointers only; no firmware source or build changes."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/docs/PRODUCTO_ATMEGA.md",
+      "bytes": 4258,
+      "sha256": "3574f87587c1056d5ab5a4638e8d8a82b04b74d59dd87166a9f39b8f06be1d22",
+      "adaptation": "15: current documentation pointers only; no firmware source or build changes."
+    },
+    {
+      "path": "AutoFinalRobo2-CAD/README.md",
+      "bytes": 4420,
+      "sha256": "8cc4250e26606a6c57e284f284bbb7bf34427668aee3c1f6d29f0c4fbadada36",
+      "adaptation": "15: document existing base model vs new PCB/part waiting user inputs; no CAD geometry/tool changes."
+    },
+    {
+      "path": "AutoFinalRobo2-CAD/INFORME_ADAPTACION.md",
+      "bytes": 2308,
+      "sha256": "685a33c25419b1f8b3907abf01406676437f6f27603751bfb30e226d5ca3126f",
+      "adaptation": "15: document existing base model vs new PCB/part waiting user inputs; no CAD geometry/tool changes."
+    },
+    {
+      "path": "AutoFinalRobo2-CAD/docs/ALCANCE_Y_PENDIENTES.md",
+      "bytes": 2423,
+      "sha256": "f3858b50542c6937a8f396e60420482291168c90f5da96eebc991ebc31e196b7",
+      "adaptation": "15: document existing base model vs new PCB/part waiting user inputs; no CAD geometry/tool changes."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/README.md",
+      "bytes": 14039,
+      "sha256": "94dba2a088117ed32b38c829b243374ec41df4573b7773e0f015070e7cd67729",
+      "adaptation": "15: normative source/complement/acceptance matrix; archived historical plans; compatible system.info/manifest extension; no new wire ID/ScreenCode/gate."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/INFORME_ADAPTACION.md",
+      "bytes": 8450,
+      "sha256": "da12ff8a8047406aa96c66241f488a3723880cdbd5cf5ce1db7ff83a6a365d48",
+      "adaptation": "15: normative source/complement/acceptance matrix; archived historical plans; compatible system.info/manifest extension; no new wire ID/ScreenCode/gate."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/CHANGELOG.md",
+      "bytes": 11620,
+      "sha256": "2c3e13c09c9e5a65bbf2dc1e213dc3912f983a7431c5fc72646665366f07d79a",
+      "adaptation": "15: normative source/complement/acceptance matrix; archived historical plans; compatible system.info/manifest extension; no new wire ID/ScreenCode/gate."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/changes/2026-10-24-15-master-alignment.md",
+      "bytes": 2016,
+      "sha256": "5d91b709643375f238515f3de30777ad89b7847486888ec948e452ff010bcdeb",
+      "adaptation": "15: normative source/complement/acceptance matrix; archived historical plans; compatible system.info/manifest extension; no new wire ID/ScreenCode/gate."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/SYSTEM_INFO_FILESYSTEM_15.md",
+      "bytes": 2536,
+      "sha256": "f5a455ff00b710e56fc84e4377ae036c9d0a40dc29a76626e32c0e3911cb91a0",
+      "adaptation": "15: normative source/complement/acceptance matrix; archived historical plans; compatible system.info/manifest extension; no new wire ID/ScreenCode/gate."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/commands.json",
+      "bytes": 35942,
+      "sha256": "e41aa5428ba2f9a484b89fa20ee112f591315ffafaa306d2007c996efd4b78f5",
+      "adaptation": "15: normative source/complement/acceptance matrix; archived historical plans; compatible system.info/manifest extension; no new wire ID/ScreenCode/gate."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/PROTOCOL.md",
+      "bytes": 17795,
+      "sha256": "5addce33b534869ff26ee2769bd1680ae44d906639cc4bfaa328886906520790",
+      "adaptation": "15: normative source/complement/acceptance matrix; archived historical plans; compatible system.info/manifest extension; no new wire ID/ScreenCode/gate."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/WEB_ASSETS.md",
+      "bytes": 2670,
+      "sha256": "c098fd85bd70a9e208c48fd867934cbd5f0975a288f7ca25574d584b729423e1",
+      "adaptation": "15: normative source/complement/acceptance matrix; archived historical plans; compatible system.info/manifest extension; no new wire ID/ScreenCode/gate."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/EX01_ALIGNMENT_3.md",
+      "bytes": 6249,
+      "sha256": "63b4a771da6b81492abbd72d549f2cbbf58e080b66adf16eeedd923ad3efc839",
+      "adaptation": "15: normative source/complement/acceptance matrix; archived historical plans; compatible system.info/manifest extension; no new wire ID/ScreenCode/gate."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/ALINEACION_MAESTRO.md",
+      "bytes": 9271,
+      "sha256": "e7588f42f97028a6aa172eb544011a6944740bbac11be3cad7f88ed0e630f5e7",
+      "adaptation": "15: normative source/complement/acceptance matrix; archived historical plans; compatible system.info/manifest extension; no new wire ID/ScreenCode/gate."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/INFORME_MAESTRO.md",
+      "bytes": 1637,
+      "sha256": "74d9a7a695c1135ed7060bccee9502d4e011135564aa602f56342964898d81c2",
+      "adaptation": "15: normative source/complement/acceptance matrix; archived historical plans; compatible system.info/manifest extension; no new wire ID/ScreenCode/gate."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/ROADMAP.md",
+      "bytes": 2686,
+      "sha256": "dabf43f97e02d3a5ac4ba61b0820326105fb87b41419367fd86329fb8cf54764",
+      "adaptation": "15: normative source/complement/acceptance matrix; archived historical plans; compatible system.info/manifest extension; no new wire ID/ScreenCode/gate."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/PLAN_ATMEGA.md",
+      "bytes": 3926,
+      "sha256": "c16dc01cc122eb73e07f7ee29588fb5de0b2c5ae1a10073f11fc5776feb9ea7e",
+      "adaptation": "15: normative source/complement/acceptance matrix; archived historical plans; compatible system.info/manifest extension; no new wire ID/ScreenCode/gate."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/PLAN_ESP.md",
+      "bytes": 3035,
+      "sha256": "6f845942bd459fbbdaa742bc1dfeb3f89175cccd3bb16d89bb1f9ca35873e0c6",
+      "adaptation": "15: normative source/complement/acceptance matrix; archived historical plans; compatible system.info/manifest extension; no new wire ID/ScreenCode/gate."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/PLAN_WEB.md",
+      "bytes": 3545,
+      "sha256": "de1c9581dfa1d373c431113a99b298eab9c78662b23a8227ac230f3ff235108f",
+      "adaptation": "15: normative source/complement/acceptance matrix; archived historical plans; compatible system.info/manifest extension; no new wire ID/ScreenCode/gate."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/ESTADO_IMPLEMENTACION.md",
+      "bytes": 12594,
+      "sha256": "d125bab4cc063e491a7351cde10b2d08883bc954779dc75f1e6c7ad44d69c677",
+      "adaptation": "15: normative source/complement/acceptance matrix; archived historical plans; compatible system.info/manifest extension; no new wire ID/ScreenCode/gate."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/PROMPT_CONTINUIDAD.md",
+      "bytes": 29600,
+      "sha256": "e83d53aa0c477bedf578eb2cf4d19b384cbc788f2476714c654909c0cab9f1c7",
+      "adaptation": "15: normative source/complement/acceptance matrix; archived historical plans; compatible system.info/manifest extension; no new wire ID/ScreenCode/gate."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/DECISIONES.md",
+      "bytes": 7783,
+      "sha256": "b3f25c65f7f00e82d6be8a750d2bee1886fcdb0a2afbc0ef275a1baa7cc429c2",
+      "adaptation": "15: normative source/complement/acceptance matrix; archived historical plans; compatible system.info/manifest extension; no new wire ID/ScreenCode/gate."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/overlays/connections.json",
+      "bytes": 9777,
+      "sha256": "4e4f65cb21d84283edeca3e86dc7c8f684f6a9c53bfffe9af5eb389d1778661e",
+      "adaptation": "15: normative source/complement/acceptance matrix; archived historical plans; compatible system.info/manifest extension; no new wire ID/ScreenCode/gate."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/review/findings.json",
+      "bytes": 24131,
+      "sha256": "f367f4009a66b223e4e2e32062ca0b2ab30c6380f98e0ce5a500b5646ff05778",
+      "adaptation": "15: normative source/complement/acceptance matrix; archived historical plans; compatible system.info/manifest extension; no new wire ID/ScreenCode/gate."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/review/FINDINGS.md",
+      "bytes": 7700,
+      "sha256": "1394dfab3947645dedfb9787f22b8ed9ab71d91075c2de45470a44b033a8f8ac",
+      "adaptation": "15: normative source/complement/acceptance matrix; archived historical plans; compatible system.info/manifest extension; no new wire ID/ScreenCode/gate."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/design-system/index.md",
+      "bytes": 11213,
+      "sha256": "003c98125921fddc8e85775d847daf12a69aa249fbfb4d2e6fba48fa460dcfde",
+      "adaptation": "15: normative source/complement/acceptance matrix; archived historical plans; compatible system.info/manifest extension; no new wire ID/ScreenCode/gate."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/design-system/decisions.md",
+      "bytes": 19916,
+      "sha256": "36e211be241f69fd11fceabed725f50d37624f8723b6fbedcaa564af1cc0155e",
+      "adaptation": "15: normative source/complement/acceptance matrix; archived historical plans; compatible system.info/manifest extension; no new wire ID/ScreenCode/gate."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/design-system/coverage-20261024-15.json",
+      "bytes": 694,
+      "sha256": "9dbeeb1a963ba008bb8dca618b4aee5b83e3aad25176c43bd45a84616738c39d",
+      "adaptation": "15: normative source/complement/acceptance matrix; archived historical plans; compatible system.info/manifest extension; no new wire ID/ScreenCode/gate."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/history/alignment15/README.md",
+      "bytes": 421,
+      "sha256": "1204498c71da0cb13b4f2693e1c1bb13eb787a1ab57947d622398447d75d18b5",
+      "adaptation": "15: normative source/complement/acceptance matrix; archived historical plans; compatible system.info/manifest extension; no new wire ID/ScreenCode/gate."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/history/alignment15/manifest.json",
+      "bytes": 2056,
+      "sha256": "84c3440a6411bfd8d1ceff114f7c0305848e8a21c6f9e9fceae7cc2a81fc254a",
+      "adaptation": "15: normative source/complement/acceptance matrix; archived historical plans; compatible system.info/manifest extension; no new wire ID/ScreenCode/gate."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/provenance/README.md",
+      "bytes": 5055,
+      "sha256": "c8c3820ce5231cb83e9a3f3942734d0f561ebed99fafa57f4c5ea932faa8816f",
+      "adaptation": "15: normative source/complement/acceptance matrix; archived historical plans; compatible system.info/manifest extension; no new wire ID/ScreenCode/gate."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-24-15/README.md",
+      "bytes": 1797,
+      "sha256": "b605865a3cefdbd85f7d496f818580fdbe51eec926ef4667773b3f73cd068a92",
+      "adaptation": "15: normative source/complement/acceptance matrix; archived historical plans; compatible system.info/manifest extension; no new wire ID/ScreenCode/gate."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-24-15/summary.json",
+      "bytes": 5206,
+      "sha256": "7e62125dada939084d9c8a36be7d6ad49fb1d1b1488b2da8eb8b631d560e640b",
+      "adaptation": "15: normative source/complement/acceptance matrix; archived historical plans; compatible system.info/manifest extension; no new wire ID/ScreenCode/gate."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-24-15/manifest.json",
+      "bytes": 2631,
+      "sha256": "80862b4078bc6c0f6955a323a31f5ac07509371d8bd202e08231d6374d0f3b96",
+      "adaptation": "15: normative source/complement/acceptance matrix; archived historical plans; compatible system.info/manifest extension; no new wire ID/ScreenCode/gate."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-24-15/web-build.txt",
+      "bytes": 1753,
+      "sha256": "03b7eba58885f568b7f1b9e0e3dcdf2adcb209e09f1d1566fdc07499d22ea518",
+      "adaptation": "15: normative source/complement/acceptance matrix; archived historical plans; compatible system.info/manifest extension; no new wire ID/ScreenCode/gate."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-24-15/esp-build.txt",
+      "bytes": 1755,
+      "sha256": "593839d7c60cbefad3160d093a0a8afd52edb55de0cdb83abec452f80d3cf578",
+      "adaptation": "15: normative source/complement/acceptance matrix; archived historical plans; compatible system.info/manifest extension; no new wire ID/ScreenCode/gate."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-24-15/web-exit.txt",
+      "bytes": 3,
+      "sha256": "13bf7b3039c63bf5a50491fa3cfd8eb4e699d1ba1436315aef9cbe5711530354",
+      "adaptation": "15: normative source/complement/acceptance matrix; archived historical plans; compatible system.info/manifest extension; no new wire ID/ScreenCode/gate."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-24-15/esp-exit.txt",
+      "bytes": 3,
+      "sha256": "13bf7b3039c63bf5a50491fa3cfd8eb4e699d1ba1436315aef9cbe5711530354",
+      "adaptation": "15: normative source/complement/acceptance matrix; archived historical plans; compatible system.info/manifest extension; no new wire ID/ScreenCode/gate."
+    },
+    {
+      "path": "INFORME_MAESTRO.md",
+      "bytes": 2669,
+      "sha256": "50ffc6fb7e9cf48e3d337dd6d6d1bf5d8cd30226bdb858e09387a839c8f05516",
+      "adaptation": "15: current master and entry point reconciled; history retained in Contracts."
+    },
+    {
+      "path": "README.md",
+      "bytes": 5948,
+      "sha256": "4a907c8f106b882560c31a67e200560f6230d787a4b39b78a77f2d148f366356",
+      "adaptation": "15: current master and entry point reconciled; history retained in Contracts."
+    }
+  ],
+  "verification": "Authorized ESP/Web compilers and local packaging/promotion plus source/artifact/document inspection. AVR source unchanged; retains12 evidence and gates0. No tests, standalone validators, browser, differential raster tests, serial, physical operation, reset, filesystem image or upload. Previous browser denial respected.",
+  "atmegaSourceChanged": false,
+  "cadGeometryModified": false,
+  "newDependencies": false,
+  "newScreenCodes": false,
+  "newWireCommands": false,
+  "runtimeVerified": false,
+  "committed": false,
+  "remotePublished": false
+}

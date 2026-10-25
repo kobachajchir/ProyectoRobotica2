@@ -1,5 +1,9 @@
 # Cinco sensores de línea
 
+AFR2-20261023-19, fuente integrada sin compilar/probar: Cinco canales PF4..PF0 digital/ADC, mayoría de3 scans, inversión/umbrales y confirmación manual. Tipo/polaridad sin comprobar.
+[Producto vigente](../PRODUCTO_ATMEGA.md). El diseño histórico siguiente conserva su evidencia.
+
+
 [Maestro](../../../INFORME_MAESTRO.md) · [Informe del repositorio](../../INFORME_ADAPTACION.md).
 
 ## Utilidad

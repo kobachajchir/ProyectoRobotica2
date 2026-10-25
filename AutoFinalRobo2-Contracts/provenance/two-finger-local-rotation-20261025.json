@@ -1,0 +1,289 @@
+{
+  "changeId": "AFR2-20261025-11",
+  "date": "2026-10-25",
+  "authorization": "Human explicitly requests two-finger local pivot simulation. Existing compile/correct authorization remains active; no physical yaw requested.",
+  "authorship": "Own AFR2 PointerEvent/visual model adaptation; existing ST/F4/AutoMicro credits preserved. No external asset/dependency or CAD change.",
+  "before": [
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/manual/ManualDriveOverlay.tsx",
+      "sha256": "7edb895f410441cb27b65978aa2a45f08a87a7b4b5cdeb0b2a3019441837aea8"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/manual/ManualDriveModel.tsx",
+      "sha256": "d4d0487228d707f88dcfab1db0a7866ec7b7ddc72cc885d978211c513f3263ea"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/components/three/RobotModel.tsx",
+      "sha256": "c20a9585a18a1ec0a822f057efa25550b9fa86788d9a58097afb2ef3ef653571"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/styles/manual-drive.css",
+      "sha256": "220cda1a72d3cad7ee1e07af4b1a72c918f8d2bebf144ba68d01e6b6db81d6d6"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/WEB_TOUCH_SIMULATION.md",
+      "sha256": "9cce0f263e33702c118bd0f2759d05a7f1372a62f50baf6bf50a2fdc81a53d64"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/ESTADO_IMPLEMENTACION.md",
+      "sha256": "84d58547f529a54d30bf9f2fa61684182674dd75639c2bbb556b55502d6673c7"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/ALINEACION_MAESTRO.md",
+      "sha256": "46d28039adc6852125ad012f1473770f03b9ce64bf4757a64f57091b453a1716"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/PLAN_WEB.md",
+      "sha256": "2a095ee09579a8d92d72ffa0a51ba9691ead4d61b7089a7b2d6e9ca21230d288"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/PROMPT_CONTINUIDAD.md",
+      "sha256": "c4d23857df2df1911bbfd2d5764583a795224961d0607980a6e4e3867e23659f"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/README.md",
+      "sha256": "f99975ab46f15a324a93cb2014420d39595f42d7a7b9f7f12e0d2a85dc0d878f"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/CHANGELOG.md",
+      "sha256": "6a4298de0ad2ad6e3b67e88847ac126cdf330f323bb9cfc213ebfa6ea4dd8562"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/design-system/index.md",
+      "sha256": "d37766fec1bd70afeff29a48c78a4310baf9cbfa281a8b4e79bdced43a49b5af"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/design-system/decisions.md",
+      "sha256": "b27e2594e969e6699b1830fd21a1ff0e5d2fa5795403c162d0f69d202505a344"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/provenance/README.md",
+      "sha256": "68c212a5bd2498182d3ee5f11675d276ba563141c0e03231742b809bf349c61b"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/README.md",
+      "sha256": "513d15c99b12a69f319c5bfd225d021c6d04b1ca8d87e851bd5c20272037c745"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/INFORME_ADAPTACION.md",
+      "sha256": "1701e5f8583bb55495dd5a982af0022a506ab4d97526c0109c37788ebb504f17"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/docs/modules/manual-touch-drive.md",
+      "sha256": "9525023af3f6b67cd780310f3561abe4dbbd38b58076ddffac039143b748cd3b"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/docs/modules/assets.json",
+      "sha256": "a9b59b9c2c89ffcb35f100c6da9647ca2c7f02198aeea8f26433519b66b15fa1"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/data/README.md",
+      "sha256": "17c4a1a114e2b969eb2c0c840237a7328910d4e961ec83fcbb9a1345d0dba4ac"
+    }
+  ],
+  "created": [
+    "AutoFinalRobo2-Web/src/features/control/manual/useManualDrivePointers.ts"
+  ],
+  "files": [
+    {
+      "path": "AutoFinalRobo2-Contracts/CHANGELOG.md",
+      "bytes": 14119,
+      "sha256": "9c5413dffc01771072e5c01542ffcdc8b8236eb50b9efb52e2e18db741ef3268",
+      "adaptation": "Current11 behavior, identity, state and compiler/package evidence; previous records/authorship preserved, no visual/gesture or physical acceptance claim."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/README.md",
+      "bytes": 14824,
+      "sha256": "a66ba92705df7fe98cbc0da1a005bf448d1702067467e7eb5c2ea4b6fbc338d3",
+      "adaptation": "Current11 behavior, identity, state and compiler/package evidence; previous records/authorship preserved, no visual/gesture or physical acceptance claim."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/changes/2026-10-25-11-two-finger-local-rotation.md",
+      "bytes": 2836,
+      "sha256": "54c9fe3428d65e0391a45025475e7e1aeb7e6fb4d963d84b571deb2ffad1b96c",
+      "adaptation": "Current11 behavior, identity, state and compiler/package evidence; previous records/authorship preserved, no visual/gesture or physical acceptance claim."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/WEB_TOUCH_SIMULATION.md",
+      "bytes": 9918,
+      "sha256": "4b6f800d437d60bcade6ec0f03868a5af9fd6f4cde00d3810bec1c19fe08b951",
+      "adaptation": "Current11 behavior, identity, state and compiler/package evidence; previous records/authorship preserved, no visual/gesture or physical acceptance claim."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/ALINEACION_MAESTRO.md",
+      "bytes": 3754,
+      "sha256": "ff6ea56d6bd2590b4177a70e19801adc233f38bf403605b5d8cf278c621a8a45",
+      "adaptation": "Current11 behavior, identity, state and compiler/package evidence; previous records/authorship preserved, no visual/gesture or physical acceptance claim."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/ESTADO_IMPLEMENTACION.md",
+      "bytes": 2244,
+      "sha256": "adc8a18fb38bda66e2f874ac2edcab72c2edb69f17df481d6cfdb9b45d56ff07",
+      "adaptation": "Current11 behavior, identity, state and compiler/package evidence; previous records/authorship preserved, no visual/gesture or physical acceptance claim."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/PLAN_WEB.md",
+      "bytes": 1628,
+      "sha256": "cc6688f59a5325812e037397850577bd4d6fd9d83c22af3bcea8a881f19b0597",
+      "adaptation": "Current11 behavior, identity, state and compiler/package evidence; previous records/authorship preserved, no visual/gesture or physical acceptance claim."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/PROMPT_CONTINUIDAD.md",
+      "bytes": 30408,
+      "sha256": "9119e353c5993cc70077255d72ed11051b5019d4cd39e8fe32867ff58c2ad3ce",
+      "adaptation": "Current11 behavior, identity, state and compiler/package evidence; previous records/authorship preserved, no visual/gesture or physical acceptance claim."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/design-system/coverage-20261025-11.json",
+      "bytes": 2081,
+      "sha256": "9158d5c2bac082d092c79fc1ebd8245e17c9a6b6f4d17321ffd7697cba62ac5d",
+      "adaptation": "Current11 behavior, identity, state and compiler/package evidence; previous records/authorship preserved, no visual/gesture or physical acceptance claim."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/design-system/decisions.md",
+      "bytes": 26870,
+      "sha256": "f4c6b102d5c8f29cdf3ec8c0fc1948014adb5df2364dea1dfd46c84c9a0cae7a",
+      "adaptation": "Current11 behavior, identity, state and compiler/package evidence; previous records/authorship preserved, no visual/gesture or physical acceptance claim."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/design-system/index.md",
+      "bytes": 11940,
+      "sha256": "261a9169b449a40028cf68fe8b57e6c576285a051ab978a1a9a81e78ab05bcf8",
+      "adaptation": "Current11 behavior, identity, state and compiler/package evidence; previous records/authorship preserved, no visual/gesture or physical acceptance claim."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-25-11/README.md",
+      "bytes": 1368,
+      "sha256": "212f12f6414c7010bb67172b05a5ce58e8aba5c7f079978770149c735ec77ec9",
+      "adaptation": "Current11 behavior, identity, state and compiler/package evidence; previous records/authorship preserved, no visual/gesture or physical acceptance claim."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-25-11/manifest.json",
+      "bytes": 2631,
+      "sha256": "31b7bb90cc614168570a53e7391b7aff75226f9583f106b8c9a89420eaf1b32f",
+      "adaptation": "Current11 behavior, identity, state and compiler/package evidence; previous records/authorship preserved, no visual/gesture or physical acceptance claim."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-25-11/summary.json",
+      "bytes": 6441,
+      "sha256": "781d0de393b2e5bd8983f822bce4289eac66584a64e1637187e8d9689df3eddd",
+      "adaptation": "Current11 behavior, identity, state and compiler/package evidence; previous records/authorship preserved, no visual/gesture or physical acceptance claim."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-25-11/web-build.txt",
+      "bytes": 1754,
+      "sha256": "577b26c371a362b2fa1d53b8b7e384e7be7f23561f856f7be471bb52ebdc1977",
+      "adaptation": "Current11 behavior, identity, state and compiler/package evidence; previous records/authorship preserved, no visual/gesture or physical acceptance claim."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-25-11/web-exit.txt",
+      "bytes": 3,
+      "sha256": "13bf7b3039c63bf5a50491fa3cfd8eb4e699d1ba1436315aef9cbe5711530354",
+      "adaptation": "Current11 behavior, identity, state and compiler/package evidence; previous records/authorship preserved, no visual/gesture or physical acceptance claim."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/provenance/README.md",
+      "bytes": 7602,
+      "sha256": "57385a37e65f68d0e396f47f160f331842c99db82e3f78b78c75df3250cfbb30",
+      "adaptation": "Current11 behavior, identity, state and compiler/package evidence; previous records/authorship preserved, no visual/gesture or physical acceptance claim."
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/data/README.md",
+      "bytes": 4278,
+      "sha256": "709f3f07537912c745479af2c6ae883b10d8641427d5d233a62e8b7e82610a35",
+      "adaptation": "Current11 behavior, identity, state and compiler/package evidence; previous records/authorship preserved, no visual/gesture or physical acceptance claim."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/INFORME_ADAPTACION.md",
+      "bytes": 21528,
+      "sha256": "5a62d2f849fe7ab42cdb4ffe8503f7eb93c6a0ba15a55388f7619c52b284cec5",
+      "adaptation": "Current11 behavior, identity, state and compiler/package evidence; previous records/authorship preserved, no visual/gesture or physical acceptance claim."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/README.md",
+      "bytes": 22782,
+      "sha256": "00a1952772fac9ebbb780e146f2dc9457029d867d612e0b4252c420e9aa17a74",
+      "adaptation": "Current11 behavior, identity, state and compiler/package evidence; previous records/authorship preserved, no visual/gesture or physical acceptance claim."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/docs/modules/assets.json",
+      "bytes": 1488,
+      "sha256": "214c1b52e694540b6737692271a0a31081420120e6c1f3544565c0eb7f0d4f8a",
+      "adaptation": "Current11 behavior, identity, state and compiler/package evidence; previous records/authorship preserved, no visual/gesture or physical acceptance claim."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/docs/modules/manual-touch-drive.md",
+      "bytes": 3126,
+      "sha256": "82ec16a840dc9b463cb7597247b8badfc7df540388181586ea68ab50b69db98c",
+      "adaptation": "Current11 behavior, identity, state and compiler/package evidence; previous records/authorship preserved, no visual/gesture or physical acceptance claim."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/components/three/RobotModel.tsx",
+      "bytes": 5631,
+      "sha256": "55aab9fa7b170732235ce2985160a7415aa2644d056416b03d7e5588fd4299e7",
+      "adaptation": "Optional cumulative wheelAngleOffsets applied by delta to existing wheel phase. Previous absolute-angle/speed consumers unchanged when option absent; cache geometry preserved."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/manual/ManualDriveModel.tsx",
+      "bytes": 2883,
+      "sha256": "0bc3373b7e908056aac63dfae8350f4a3742b511479753e1a93abe37487e39e1",
+      "adaptation": "Apply centered group yaw and nominal Mecanum angular offsets; camera60%, final asset and passive Canvas fallback retained."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/manual/ManualDriveOverlay.tsx",
+      "bytes": 18296,
+      "sha256": "7bb91c1da3a9aca2f4635c72979d5dc95c9e25b377fa2d99e2625e2afba4a06f",
+      "adaptation": "Bind dual-contact hook to local yaw/RAF, force preview and release previous real target, screen-to-body translation, Q/E/0, heading/status; existing direct-control fence preserved."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/manual/useManualDrivePointers.ts",
+      "bytes": 6226,
+      "sha256": "e9bc62f782d1d1f42e32abd566a003a6fc56312a5a8d6622da838fe48645da9c",
+      "adaptation": "Own dual-contact PointerEvent state, capture, angular wrap/slop and draining after cancellation; no network dependency or output."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/styles/manual-drive.css",
+      "bytes": 7616,
+      "sha256": "0e5888313d55b43ec3fd967083af332d98e841856a9ae20de66dba419206a8ff",
+      "adaptation": "Existing mode badge/readout and keyboard-help rules added; previous chevron styling untouched, no palette/motion-token change."
+    }
+  ],
+  "gesture": {
+    "kind": "Two-touch twist, not pinch zoom or physical drive",
+    "pointerTypes": "Two touch contacts on same input surface; mixed/outside/third contact cancels",
+    "minimumSeparationPx": 40,
+    "activationAngleDeg": 3,
+    "angleDelta": "-atan2(sin(current-previous),cos(current-previous))",
+    "modelAxis": "Own centered vertical +Y, counterclockwise positive",
+    "response": "Direct gesture angle, no inertia; RAF coalesces visual updates",
+    "release": "Pose retained; remaining contact drains until up, no fallback to translation",
+    "mode": "Entering twist cancels previous target and latches local preview until closing/reopening",
+    "physicalYawSent": false,
+    "previousPhysicalTargetRelease": "Existing release callback only if a real target had been sent",
+    "keyboard": {
+      "Q": "local +15deg",
+      "E": "local -15deg",
+      "0": "local zero heading",
+      "repeat": false,
+      "textFieldsAndBrowserModifiers": "Keep native behavior"
+    },
+    "headingReset": "Next dialog open or0",
+    "headingReadout": "0..360deg,0.1precision; no per-frame live announcements",
+    "translationAfterTurn": "Screen-relative, inverse heading rotation to body wheel speeds",
+    "wheelPivotOffsets": "FL/RL=-theta*L/R; FR/RR=+theta*L/R, applied as deltas to preserve phase",
+    "nominalLmm": 300,
+    "nominalRadiusMm": 40,
+    "wheelFeedbackMeasured": false,
+    "reducedMotion": "Direct pose remains functional; secondary wheel/chevron animation suppressed",
+    "cameraFitUnchanged": 0.6,
+    "chevronStylesUnchangedExceptReadoutRules": true
+  },
+  "verification": "Authorized Web compile/package/local promotion and source/artifact inspection only. Pointer states, angular sign/wrap, local-mode fence and additive Mecanum wheel offsets reviewed in source; no actual gesture, browser/phone or multi-pointer injection tests. No tests/standalone validators, serial, FS image, flashing or physical operation; prior browser denial respected.",
+  "protocolChanged": false,
+  "newCommands": false,
+  "newScreenCodes": false,
+  "newDependencies": false,
+  "cadModified": false,
+  "committed": false,
+  "published": false
+}

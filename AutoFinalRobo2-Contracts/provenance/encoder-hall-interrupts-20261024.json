@@ -1,0 +1,263 @@
+{
+  "changeId": "AFR2-20261024-11",
+  "date": "2026-10-24",
+  "origin": "Código propio AFR2 existente; autores y referencias originales conservados. Adaptación funcional AVR con Codex, sin copiar recursos nuevos.",
+  "scope": "Atmega, Contracts y punteros maestros raíz. Sin cambios ESP/Web/CAD/reference ni D:/AutoProyecto.",
+  "sources": [
+    {
+      "url": "https://docs.arduino.cc/resources/pinouts/A000067-full-pinout.pdf",
+      "use": "D2 PE4/INT4, D3 PE5/INT5, D42 PL7, A8–A15 PK0..7/PCINT16..23."
+    },
+    {
+      "url": "https://ww1.microchip.com/downloads/en/AppNotes/Atmel-8468-Using-External-Interrupts-for-megaAVR-Devices_ApplicationNote_AVR1200.pdf",
+      "use": "Tipos INT/PCINT, máscaras, cualquier cambio y prioridad fija por dirección del vector. No se copiaron ejemplos."
+    }
+  ],
+  "files": [
+    {
+      "path": "AutoFinalRobo2-Contracts/hardware/INTERRUPCIONES_ENCODER_HALL.md",
+      "bytes": 5390,
+      "sha256": "4adedbaaa82dcc5409a7ef7b0e456182a9ace7c2cb1110117209245e7a2bb506",
+      "adaptation": "Nuevo contrato de pines, captura IRQ, consumo diferido, x1 Hall y límites de prioridad/estado real.",
+      "previousSha256": null
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/hardware/PINOUT.md",
+      "bytes": 3070,
+      "sha256": "022a50b5eb0165f6450f6565863519de0e5f355df96c226f1ef7be4a64dda2a6",
+      "adaptation": "Actualizar destinos UI y ocho Hall, sin afirmar cableado ni prioridad hardware.",
+      "previousSha256": "4de49af058dde9f8f8724a5dbb8f3a35fe984f7771ecee8df573c0951243ace3"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/hardware/PCB_OLED_ENCODER.md",
+      "bytes": 4304,
+      "sha256": "ed31f755a601c917bd45309419e8b06103f68ee0862f68d772e0633036812a4f",
+      "adaptation": "Actualizar destinos externos J1 CLK/DT, preservando SW/I2C/alimentación.",
+      "previousSha256": "dfe9327a3b93f3a5063957b2766039e58e3373ff75ecb0797dc8d14f0fec0f21"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/hardware/PINOUT_PROPUESTO.csv",
+      "bytes": 2189,
+      "sha256": "66dc21213167971b2271fb2b45c389c29a680aa27a3f3174798f344f3130664b",
+      "adaptation": "Mapa tabular D2/D3 y ocho Hall PCINT2 x1, deshabilitados.",
+      "previousSha256": "0061ba1d2d507767beaa93e11c16443275c8c1bb185fc7bbd8668ac318529739"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/changes/2026-10-24-11-encoder-hall-interrupts.md",
+      "bytes": 3068,
+      "sha256": "ca0327a34a5d2bf81125e213744fdbf35e08babc11e260c7438aa4ce8a8a731a",
+      "adaptation": "Ficha compartida con estados reales de todos los consumidores y límites de prioridad.",
+      "previousSha256": null
+    },
+    {
+      "path": "README.md",
+      "bytes": 5416,
+      "sha256": "c3a048995ada2670b918ad2c7da2d8cbf9877c044e75dad28792c50c3d6d12b2",
+      "adaptation": "Puntero de continuidad11: fuente AVR sin compilar, pines nuevos, Hall deshabilitado y evidencia anterior distinguida.",
+      "previousSha256": "79429ec943f4617d0c20c1c514075ef02d48ef01b21f8afe22844eafc7875086"
+    },
+    {
+      "path": "INFORME_MAESTRO.md",
+      "bytes": 13627,
+      "sha256": "4b9f146e78366b333d2aa274917e414ba22a4bb3e5f67971f6ad881d52e6a4c9",
+      "adaptation": "Puntero de continuidad11: fuente AVR sin compilar, pines nuevos, Hall deshabilitado y evidencia anterior distinguida.",
+      "previousSha256": "adf2355809fa14f32c2bc8a1ff8baa73251695057952e07864aebce1a456d261"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/README.md",
+      "bytes": 13094,
+      "sha256": "66f698c57008e98fa7504c3d39310d20335488aca9eb5353707071e92b5c1730",
+      "adaptation": "Puntero de continuidad11: fuente AVR sin compilar, pines nuevos, Hall deshabilitado y evidencia anterior distinguida.",
+      "previousSha256": "e0b227e21a0ef874b341a3367a8625fab4a7558f590ae56e1c4849d3f4b1a1f7"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/INFORME_ADAPTACION.md",
+      "bytes": 7505,
+      "sha256": "c903d0db487b91c63f5806d82dbebe8c1da7686947e660eb71a1258e57507a4d",
+      "adaptation": "Puntero de continuidad11: fuente AVR sin compilar, pines nuevos, Hall deshabilitado y evidencia anterior distinguida.",
+      "previousSha256": "32427f09f51c04a87b26104e36d0a411a4de5f9231d1b5dea6a4ba0d382bd070"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/INFORME_MAESTRO.md",
+      "bytes": 14106,
+      "sha256": "2f46584bfaeb32b23c3e420e4b0a072ceb0a26c92d9861c659f426c453ce6816",
+      "adaptation": "Puntero de continuidad11: fuente AVR sin compilar, pines nuevos, Hall deshabilitado y evidencia anterior distinguida.",
+      "previousSha256": "37315082147009a5b5a0513ea494609ca0262437ce3ab00febfce9e4f6b74c2e"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/PLAN_ATMEGA.md",
+      "bytes": 9004,
+      "sha256": "b017bc46f628c11559845b063866008b1102b0263a753d114aae019af462cdd2",
+      "adaptation": "Puntero de continuidad11: fuente AVR sin compilar, pines nuevos, Hall deshabilitado y evidencia anterior distinguida.",
+      "previousSha256": "0fcea050f8f138ac2d356d237fb5f44287aa3aee5ea00b7537bc7f58aab2ee9e"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/ROADMAP.md",
+      "bytes": 5963,
+      "sha256": "8ae7080977ca4b0b86d055ed259aed92ef8e7a4c6fe5dedec4f61c0c76f3b1eb",
+      "adaptation": "Puntero de continuidad11: fuente AVR sin compilar, pines nuevos, Hall deshabilitado y evidencia anterior distinguida.",
+      "previousSha256": "2c88aebf2010b567ef8c640b353e7ed1d4205591993cf7d987fc91545b214654"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/PROMPT_CONTINUIDAD.md",
+      "bytes": 28657,
+      "sha256": "c08cb42157d3202efa47cc09b4fbbcfcc95b1e414e0fbdfd4b8253e20017c9ee",
+      "adaptation": "Puntero de continuidad11: fuente AVR sin compilar, pines nuevos, Hall deshabilitado y evidencia anterior distinguida.",
+      "previousSha256": "82eb639a01e27d2a26207d97e3e2a2b6aa23616bb70bced826b3aea188df8734"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/README.md",
+      "bytes": 6986,
+      "sha256": "6985deb0defabf764824b6d9f41b240f94b0aa7e6c1c4fd1d55a6676dc7ca055",
+      "adaptation": "Puntero de continuidad11: fuente AVR sin compilar, pines nuevos, Hall deshabilitado y evidencia anterior distinguida.",
+      "previousSha256": "0c698a879a4fc24f2ccdc8b136b7761fd9ea8d5c6da5d423b0f38e2062391146"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/INFORME_ADAPTACION.md",
+      "bytes": 9174,
+      "sha256": "9bc3c7e9e7cdd9526343bb3d2ac02751b59cc0e6ee2e722cf4b0afca2a9289e4",
+      "adaptation": "Puntero de continuidad11: fuente AVR sin compilar, pines nuevos, Hall deshabilitado y evidencia anterior distinguida.",
+      "previousSha256": "5caec0f4930a5dad39bd3040d28a92f63e95e446b5e8e2eef7fa295c3d3eca4d"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/docs/PRODUCTO_ATMEGA.md",
+      "bytes": 3720,
+      "sha256": "20a20db6ddb8052d8bffcabdb461962228a15a23dd1294c240926cd4183def91",
+      "adaptation": "Puntero de continuidad11: fuente AVR sin compilar, pines nuevos, Hall deshabilitado y evidencia anterior distinguida.",
+      "previousSha256": "3db496c492bd5433f353adc8cbbe368d482e78308a384bb524c3a2d98b1f6155"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/ESTADO_IMPLEMENTACION.md",
+      "bytes": 9014,
+      "sha256": "552bca7a62e99a22c997d97cfb10529b6757c7cc6ad97cbe10dcec2ffee7ccdf",
+      "adaptation": "Distinguir fuente11 no compilada de evidencia histórica08, ESP/Web conservados.",
+      "previousSha256": "aa332deadb8527b1022196346d30697991b29d0a117edc5d1bf3f1aa86f9f4f3"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/hardware/RECURSOS_Y_TIEMPOS.md",
+      "bytes": 5514,
+      "sha256": "8f6db2b33cb1976b4aac699c6b119585058ca1a0329b7238e88e45355310fe5f",
+      "adaptation": "Actualizar recursos FIFO/IRQ y prioridad de servicio, sin extrapolar cifras de compilaciones previas.",
+      "previousSha256": "bd60ce258079375f9e5d75252cda98b1fbfafa0637898cd4c8ecf152c6273d21"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/CHANGELOG.md",
+      "bytes": 10381,
+      "sha256": "4ac58f747169c39c9a44c8a74a600dd9da8c641cad3660c208fe8d6b3adafd76",
+      "adaptation": "Registrar11 con estado real atmega/esp/web.",
+      "previousSha256": "e5eb0ddb0443121c5e20b2ea818825ebbc44a59980d166edd48c71a13c2dc45b"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/docs/COMPOSICION.md",
+      "bytes": 5392,
+      "sha256": "a54081c7b5c915a3d6dc024c399e8a97338341ac65d515a5d4f4cbc31f005f64",
+      "adaptation": "Actualizar composición, captura/consumo y distinción de evidencia previa.",
+      "previousSha256": "f4450989a895a4abe5ce9bd65643d5f65b06d69df022a2a3acc9ccd1fa288a01"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/docs/API_NUEVA.md",
+      "bytes": 4732,
+      "sha256": "eec33e5468967f748ff12e983d7e36bbd71dbf1754a26438c4c397f93d8b6f3a",
+      "adaptation": "Documentar APIs nuevas, overflow, contexto main y snapshot Hall.",
+      "previousSha256": "d1687a9d0dff6c2891931538d6ab0cd7a1798064ef4e06bc34a6c1013051aae8"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/docs/modules/encoder-ui.md",
+      "bytes": 2370,
+      "sha256": "69b6a41e9e7f44747890b3024f1014a488a5f21e895575af46c8e863064850e3",
+      "adaptation": "Actualizar módulo de entrada conservando referencias/autores previos.",
+      "previousSha256": "7826bb67c35abe0845f30069f829d231cb9378b15d083d6bc36f497e66a577d5"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/docs/modules/encoder-ui.json",
+      "bytes": 2283,
+      "sha256": "bac7639ef0ec601c09d2a0ff64830c10597a8ca949356dd9b14cc5294275c499",
+      "adaptation": "Actualizar metadatos máquina del módulo con estado real11.",
+      "previousSha256": "62fe1efdaa76c8b548749708bf9658b6ae324571ff1cb466808f9150c4bf0976"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/overlays/connections.json",
+      "bytes": 6508,
+      "sha256": "93671fc7b4abe873d2b01d67739cd19d7aecf74c493290ce4aecc4dcae06dc42",
+      "adaptation": "Actualizar flujos UI/sensores/PCB a fuente11 no compilada, sin cambiar wire ni renderers.",
+      "previousSha256": "dd2777d57ab0db060ca500706d901b9534f4214f9e822867ca955ff56731ff70"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/include/board_pinmap.h",
+      "bytes": 5644,
+      "sha256": "9317b855e5aaef3b0c31cbaf86a444c6a4129fadbcf2472f211afde2f6ff3859",
+      "adaptation": "D2/PE4/INT4 y D3/PE5/INT5; ocho Hall PK0..7/PCINT16..23 y máscara A x1; autores existentes preservados.",
+      "previousRecordedSha256": null,
+      "previousRecord": null
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/include/afr2_board.h",
+      "bytes": 940,
+      "sha256": "a8fff723db280caf6947691033a03a6c33d8b4483be7712150bf863ea4c7a51b",
+      "adaptation": "API FIFO con discontinuidad y Hall init/snapshot; gate Hall0 trasladado desde sensores sin habilitarlo.",
+      "previousRecordedSha256": null,
+      "previousRecord": null
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/platform/afr2_board.c",
+      "bytes": 6023,
+      "sha256": "9d60d7ac17bc2293b9ffada5f09bc5ad14eb92cde4309b0ad1a927c1baa18099",
+      "adaptation": "INT4/5 capturan FIFO; servicio Hall pendiente primero, PCINT2/counters x1 desenrollados; atomicidad, overflow y pinout nuevos.",
+      "previousRecordedSha256": null,
+      "previousRecord": null
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/platform/afr2_sensors.c",
+      "bytes": 5591,
+      "sha256": "c75f4d388a59cfb859f8b319c19f4a20fd2be8fdaf02d0fd0d0e59a354aacba5",
+      "adaptation": "Consumir captura/snapshot Hall de board, retirando vector/counters duplicados; sensores/eco/servo conservados.",
+      "previousRecordedSha256": null,
+      "previousRecord": null
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/include/afr2_encoder_ui.h",
+      "bytes": 1265,
+      "sha256": "d0a2ed0a1a381d2fe972963c51be826933a184ecc4290830ab69d0a206ec9dff",
+      "adaptation": "APIs Transition/ResetRotation/Button de main; Poll conservado por compatibilidad.",
+      "previousRecordedSha256": null,
+      "previousRecord": null
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/input/afr2_encoder_ui.c",
+      "bytes": 2519,
+      "sha256": "192368ca83be886cd913370d84b5dc2c3e3b7c21fd3291536200665fa3c697b2",
+      "adaptation": "Separar decodificación de AB y pulsador manteniendo lógica previa, debounce y largo/corto exclusivos.",
+      "previousRecordedSha256": null,
+      "previousRecord": null
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/main.c",
+      "bytes": 4584,
+      "sha256": "c3e2061a5e8b2925af213d030c20318a89856698f4927b1ed77785a56f8426ff",
+      "adaptation": "Consumir hasta32estados AB/vuelta, resetear parcial en overflow, diferir pulsador mientras quedan giros, acciones fuera de ISR.",
+      "previousRecordedSha256": "17ac06d01a6660fc2d125ee0d1f83738b9514a25d4b82638efca64211706a802",
+      "previousRecord": "AFR2-20261024-08"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/provenance/README.md",
+      "bytes": 4528,
+      "sha256": "bf0a15da61f1b751a99a071294f125e92eb5ee5fb17ce926cb161eccc30e2abd",
+      "adaptation": "Enlazar procedencia11 sin modificar archivos de referencia.",
+      "previousSha256": "c9464003018e52df2db632284ad5ab64f8839287172414dc034083972c8eb3ed"
+    }
+  ],
+  "states": {
+    "atmega": "source-integrated-uncompiled-unverified",
+    "esp": "unchanged-firmware08-assets10",
+    "web": "unchanged-delivery10",
+    "cad": "unchanged"
+  },
+  "verification": "Lectura de fuente y diff solamente. Sin tests, compilaciones, validadores, flasheo ni pruebas físicas; rama Hall habilitada tampoco compilada.",
+  "hardwareValidated": false,
+  "hallConnected": false,
+  "sequenceMemoryApproved": false,
+  "hardwarePriorityChanged": false,
+  "nestedInterrupts": false,
+  "priorityPolicy": "Hall ya pendiente se captura primero al entrar por UI; INT4/5 conservan prioridad hardware sobre PCINT2. Sin preempción de ISR en curso.",
+  "memory": "Sin nuevo mapa ni medición de pila/ciclos. Cifras08 exclusivamente históricas."
+}

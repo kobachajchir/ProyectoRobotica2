@@ -1,5 +1,11 @@
 # I2C Manager, SSD1306 y recursos
 
+AFR2-20261023-19, fuente integrada sin compilar/probar: Backend TWI/Manager ya escrito15, settings19; transferencia asíncrona por páginas, sin DMA. Sin prueba de bus.
+[Producto vigente](../PRODUCTO_ATMEGA.md). El diseño histórico siguiente conserva su evidencia.
+
+
+Estado vigente AFR2-20261023-15: backend/composición integrados en fuente; el texto anterior de migración se conserva debajo como antecedente. Sin compilar/probar.
+
 [Maestro](../../../INFORME_MAESTRO.md) · [Informe del repositorio](../../INFORME_ADAPTACION.md).
 
 ## Utilidad
@@ -22,3 +28,6 @@ La base nueva reduce Manager a un cliente OLED y cambia la API (no es ABI drop-i
 Hallazgos: AFRDOC-001, AFRDOC-005, AFRDOC-009. [Registro](../../../AutoFinalRobo2-Contracts/documentation/review/FINDINGS.md).
 
 Estado: lectura/copia o fuente parcial indicada; sin compilación, tests ni prueba física. La API detallada de origen está en el corpus AMDOC importado; no equivale a API AVR adaptada.
+
+
+AFR2-20261023-15: TWI AVR por IRQ y composición OLED/encoder/USART1 implementados en fuente, sin DMA ni Arduino. Ver docs/COMPOSICION.md y Contracts/changes/2026-10-23-15-robo2-atmega-ui.md. Sin builds/tests/validadores/flasheos; hardware y recursos finales pendientes.

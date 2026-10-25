@@ -1,20 +1,42 @@
 {
   "name": "autofinalrobo2-web",
+  "version": "0.2.0",
   "private": true,
-  "version": "0.1.0",
   "type": "module",
   "scripts": {
+    "prestart": "node tools/sync-oled-library.mjs",
+    "start": "vite",
+    "predev": "node tools/sync-oled-library.mjs",
     "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
-    "package:littlefs": "node tools/package-web.mjs"
+    "build": "node tools/sync-oled-library.mjs && tsc -b && vite build",
+    "postbuild": "node tools/package-web.mjs --profile full",
+    "package:littlefs": "node tools/package-web.mjs",
+    "copy:esp": "node tools/copy-web-to-esp.mjs",
+    "build:esp": "node tools/sync-oled-library.mjs && tsc -b && vite build --mode esp && node tools/package-web.mjs --profile esp && npm run copy:esp",
+    "preview": "vite preview"
   },
   "dependencies": {
-    "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "@dnd-kit/core": "6.3.1",
+    "@dnd-kit/sortable": "10.0.0",
+    "@dnd-kit/utilities": "3.2.2",
+    "@react-three/fiber": "^9.4.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "react-router-dom": "^7.9.4",
+    "sonner": "^2.0.8",
+    "three": "^0.180.0"
   },
   "devDependencies": {
-    "@vitejs/plugin-react": "4.6.0",
-    "vite": "7.0.4"
+    "@tailwindcss/vite": "^4.1.14",
+    "@types/node": "^24.6.0",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
+    "@types/three": "^0.180.0",
+    "@vitejs/plugin-react": "^5.0.0",
+    "tailwindcss": "^4.1.14",
+    "terser": "5.51.2",
+    "typescript": "~5.9.3",
+    "vite": "^7.1.7",
+    "vite-plugin-singlefile": "^2.3.0"
   }
 }

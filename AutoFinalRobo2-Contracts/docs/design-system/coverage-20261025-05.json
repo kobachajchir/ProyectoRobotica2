@@ -1,0 +1,31 @@
+{
+  "changeId": "AFR2-20261025-05",
+  "decision": "VIS-028",
+  "manual": "0.1.9",
+  "direction": "Confirmada",
+  "composition": "Propuesta",
+  "verification": "No verificada",
+  "targets": [
+    "ManualDriveOverlay inline SVG trail",
+    "manual-drive.css"
+  ],
+  "canonicalSources": [
+    "existing action tokens in both themes",
+    "manual0.1.9 motion rules"
+  ],
+  "purpose": "State indication of a held direction",
+  "tool": "SVG/CSS",
+  "properties": [
+    "transform",
+    "opacity"
+  ],
+  "enterExit": "140ms existing ease-out; scale.96 to1",
+  "continuous": "800ms linear; traces +/-6px, tail-to-head phases; pause preserves current frame",
+  "keyboard": "Instant, static gradient",
+  "reducedMotion": "Static gradient; no translation",
+  "newDependencies": false,
+  "newPalette": false,
+  "newAssets": false,
+  "browser": false,
+  "phone": false
+}

@@ -1,0 +1,31 @@
+{
+  "changeId": "AFR2-20261025-09",
+  "decision": "VIS-032",
+  "manual": "0.1.9",
+  "direction": "Confirmada",
+  "composition": "Propuesta",
+  "verification": "No verificada",
+  "targets": [
+    "ManualDriveOverlay restore07",
+    "manual-drive.css opacity only",
+    "retirement of ManualDirectionTrail08"
+  ],
+  "restoration": {
+    "base": "AFR2-20261025-07",
+    "overlayEquals07": true,
+    "cssEquals07ExceptOpacityAndComment": true,
+    "svgOpacity": 0.58,
+    "retiredComponent": "AutoFinalRobo2-Web/src/features/control/manual/ManualDirectionTrail.tsx",
+    "retiredComponentWasUnmodified": true,
+    "localBackup": ".tmp/revert09/ManualDirectionTrail.tsx",
+    "cameraFitUnchanged": 0.52,
+    "timingUnchanged": {
+      "fadeMs": 220,
+      "flowMs": 1200
+    }
+  },
+  "newDependencies": false,
+  "newPalette": false,
+  "browser": false,
+  "phone": false
+}

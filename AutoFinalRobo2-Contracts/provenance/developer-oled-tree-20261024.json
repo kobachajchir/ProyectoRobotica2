@@ -1,0 +1,283 @@
+{
+  "changeId": "AFR2-20261024-14",
+  "date": "2026-10-24",
+  "authorship": "Existing AFR2, F4/AutoMicro kobac and ST developer-profile credits retained. Own14 adaptations with Codex under explicit human request; no new license inferred.",
+  "references": [
+    {
+      "path": "D:/AutoProyecto/Web ESP01/WebESP01AutoMicro2025/src/components/ScreenStreamWorkspace.tsx",
+      "use": "Read-only: visible row selector, side placement, up/down SVG. Adapted to existing AFR2 rotation contract, no F4 command copied.",
+      "sha256": "1dda55208edda4524b95ca3528a53eb235cbaf6fe412ff9fe9199484fa26318e",
+      "modified": false
+    },
+    {
+      "path": "D:/ProyectoRobotica2/AutoFinalRobo2-Contracts/.agents/skills/afr2-screen-authoring/SKILL.md",
+      "use": "Same AVR/Web library, no fake telemetry, explicit SW/Volver, per-file provenance.",
+      "sha256": "ca834b47e92a35ad622b7e4beadfa89ae92fbdf48499e718f373ddde964fdb39",
+      "modified": false
+    },
+    {
+      "path": "D:/ProyectoRobotica2/AutoFinalRobo2-Web/src/features/oled/firmwareRenderer.ts",
+      "use": "Existing pure AVR layout/scroll copy; unchanged14.",
+      "sha256": "2190d3d7dff1bc05b92d8cc9af5acc9b7cf0f44173b0e6299748dfba53c3aab5",
+      "modified": false
+    },
+    {
+      "path": "D:/ProyectoRobotica2/AutoFinalRobo2-Web/src/features/oled/firmwareRenderer.sources.json",
+      "use": "Existing reviewed AVR source pins; unchanged14.",
+      "sha256": "ea44b9c32bf6aac145d9bf200b97e097508b789ac9564854f8bfda98fe1d14b7",
+      "modified": false
+    },
+    {
+      "path": "D:/ProyectoRobotica2/AutoFinalRobo2-Web/src/features/oled/oledRasterizer.ts",
+      "use": "Existing pixel primitives; unchanged14.",
+      "sha256": "f802ae3f1a336e19651df3a5412f5fd528e8da7f14adaf34631ddacb5c752f65",
+      "modified": false
+    },
+    {
+      "path": "D:/ProyectoRobotica2/AutoFinalRobo2-Web/src/styles/tokens.css",
+      "use": "Existing AFR2 identity; unchanged14.",
+      "sha256": "59a49ca95486ce3e5971ffabb7d488798438dba15aaad09b54c14a4e2b4caae9",
+      "modified": false
+    }
+  ],
+  "files": [
+    {
+      "path": "AutoFinalRobo2-Web/src/features/developer/DeveloperPage.tsx",
+      "bytes": 1267,
+      "sha256": "79d29e08d5138abeae90b5d5f636256aa7c022cf6ba24ffa2c82192349b289fc",
+      "adaptation": "14: developer profile cleanup/spacing/back arrow; shared catalogue hierarchy; local static wrapper selection/history/text-scroll; adapted side row/scroll controls and serial remote capture; same renderer/resources and AFR2 navigation."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/oled/screenCatalog.ts",
+      "bytes": 1886,
+      "sha256": "92445c3d7d742aa521201fa2aa71280092ffda25c3a19a04868a5b9efa22de8e",
+      "adaptation": "14: developer profile cleanup/spacing/back arrow; shared catalogue hierarchy; local static wrapper selection/history/text-scroll; adapted side row/scroll controls and serial remote capture; same renderer/resources and AFR2 navigation."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/oled/MenuSideControls.tsx",
+      "bytes": 2062,
+      "sha256": "85f9481608f14eae1b137d9f5da70051a92bf346ff2841d02ad04e75c1ee4a49",
+      "adaptation": "14: developer profile cleanup/spacing/back arrow; shared catalogue hierarchy; local static wrapper selection/history/text-scroll; adapted side row/scroll controls and serial remote capture; same renderer/resources and AFR2 navigation."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/oled/ScreenCatalogBrowser.tsx",
+      "bytes": 4283,
+      "sha256": "490daaf62277b7307a89d5c2ae78fb9960eabe539ea50d53ae052eb19066ea10",
+      "adaptation": "14: developer profile cleanup/spacing/back arrow; shared catalogue hierarchy; local static wrapper selection/history/text-scroll; adapted side row/scroll controls and serial remote capture; same renderer/resources and AFR2 navigation."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/oled/FirmwareLibraryPreview.tsx",
+      "bytes": 6033,
+      "sha256": "e030f9c7c222be3d4804ff875ba7a9822395f97abbd3d54049525b9808582073",
+      "adaptation": "14: developer profile cleanup/spacing/back arrow; shared catalogue hierarchy; local static wrapper selection/history/text-scroll; adapted side row/scroll controls and serial remote capture; same renderer/resources and AFR2 navigation."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/oled/EncoderControl.tsx",
+      "bytes": 19062,
+      "sha256": "4ee769038f75bf3e5ef9d92b4e59ad6aaf3f67c33c9adbb418db51d7fa208909",
+      "adaptation": "14: developer profile cleanup/spacing/back arrow; shared catalogue hierarchy; local static wrapper selection/history/text-scroll; adapted side row/scroll controls and serial remote capture; same renderer/resources and AFR2 navigation."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/oled/OledPage.tsx",
+      "bytes": 1387,
+      "sha256": "428d4fdff01e2b9131f8b24d8bb7c1deb2380d9a539adceacceefdb4ac461f53",
+      "adaptation": "14: developer profile cleanup/spacing/back arrow; shared catalogue hierarchy; local static wrapper selection/history/text-scroll; adapted side row/scroll controls and serial remote capture; same renderer/resources and AFR2 navigation."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/oled/LiveOledViewer.tsx",
+      "bytes": 16258,
+      "sha256": "6debbec726bccedf2cc65d50c1ceea05a1cb626606deeaa4aaedaf6b96662fbc",
+      "adaptation": "14: developer profile cleanup/spacing/back arrow; shared catalogue hierarchy; local static wrapper selection/history/text-scroll; adapted side row/scroll controls and serial remote capture; same renderer/resources and AFR2 navigation."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/styles/oled-catalogue.css",
+      "bytes": 4188,
+      "sha256": "c3b04ea736a3e63539961a32cdaf60dbe3c8f1c831a62ab302c47171d391d44a",
+      "adaptation": "14: developer profile cleanup/spacing/back arrow; shared catalogue hierarchy; local static wrapper selection/history/text-scroll; adapted side row/scroll controls and serial remote capture; same renderer/resources and AFR2 navigation."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/styles/index.css",
+      "bytes": 6851,
+      "sha256": "60f0c2e014121f28b17c15f30060e9c0e78b613376836d8292e5dd98e5198e2e",
+      "adaptation": "14: developer profile cleanup/spacing/back arrow; shared catalogue hierarchy; local static wrapper selection/history/text-scroll; adapted side row/scroll controls and serial remote capture; same renderer/resources and AFR2 navigation."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/docs/DocsPage.tsx",
+      "bytes": 13804,
+      "sha256": "5051110b1dfb6d5a87a021f79ad057f6128d2c612fdcd37fc3b02dd746482178",
+      "adaptation": "14: developer profile cleanup/spacing/back arrow; shared catalogue hierarchy; local static wrapper selection/history/text-scroll; adapted side row/scroll controls and serial remote capture; same renderer/resources and AFR2 navigation."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/docs/modules/oled-ui.md",
+      "bytes": 2716,
+      "sha256": "5144ba921d5b3575182a3aa4bf8461e804a3746712ade09aa1c026b37f76428d",
+      "adaptation": "14: developer profile cleanup/spacing/back arrow; shared catalogue hierarchy; local static wrapper selection/history/text-scroll; adapted side row/scroll controls and serial remote capture; same renderer/resources and AFR2 navigation."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/docs/modules/oled-ui.json",
+      "bytes": 1283,
+      "sha256": "203c710e351dbe2dfd9907c4a73630909f9fdd9d6232342fff63b96a324d199d",
+      "adaptation": "14: developer profile cleanup/spacing/back arrow; shared catalogue hierarchy; local static wrapper selection/history/text-scroll; adapted side row/scroll controls and serial remote capture; same renderer/resources and AFR2 navigation."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/docs/modules/assets.json",
+      "bytes": 1487,
+      "sha256": "5a2e98282aaac1b6811da4b02beed23be888c378929815e642599d91f8a2c5eb",
+      "adaptation": "14: developer profile cleanup/spacing/back arrow; shared catalogue hierarchy; local static wrapper selection/history/text-scroll; adapted side row/scroll controls and serial remote capture; same renderer/resources and AFR2 navigation."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/README.md",
+      "bytes": 21925,
+      "sha256": "384544154a2feabdcd8cd404a84448c00da863edc99d30baf02dbaccc55902b2",
+      "adaptation": "14: developer profile cleanup/spacing/back arrow; shared catalogue hierarchy; local static wrapper selection/history/text-scroll; adapted side row/scroll controls and serial remote capture; same renderer/resources and AFR2 navigation."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/INFORME_ADAPTACION.md",
+      "bytes": 20680,
+      "sha256": "61109ab6c78a3ee86e4e505e72e1cf1a9b54a628bdb3878d10211edc4b896e37",
+      "adaptation": "14: developer profile cleanup/spacing/back arrow; shared catalogue hierarchy; local static wrapper selection/history/text-scroll; adapted side row/scroll controls and serial remote capture; same renderer/resources and AFR2 navigation."
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/README.md",
+      "bytes": 11351,
+      "sha256": "bacf6fb3480bd5d31fbdba7f30887171bdda65ff899127f210cde95234f92e09",
+      "adaptation": "14: current Web package documentation only; firmware remains12."
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/INFORME_ADAPTACION.md",
+      "bytes": 10748,
+      "sha256": "a1c17ddc451f8536d48c52997e90d90719fc37a4544e89d6a97ca0dd2c34be0c",
+      "adaptation": "14: current Web package documentation only; firmware remains12."
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/data/README.md",
+      "bytes": 3248,
+      "sha256": "fdfd5c9f223f725137df40130a9e6b2814fb98bc412651f27f6a0daea1cb8bc5",
+      "adaptation": "14: current Web package documentation only; firmware remains12."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/README.md",
+      "bytes": 14068,
+      "sha256": "b3c9db4082dad1829abaf475941d9a1e95660584373b8ec3a2b71c40d0db2fba",
+      "adaptation": "14: shared navigation/evidence/identity and source-runtime distinction; no new protocol, OLED identity or firmware."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/INFORME_ADAPTACION.md",
+      "bytes": 8479,
+      "sha256": "04b63554d1351594430d8f079b7a3e72f87388d11aa7d66b9202e1cc6e36b130",
+      "adaptation": "14: shared navigation/evidence/identity and source-runtime distinction; no new protocol, OLED identity or firmware."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/CHANGELOG.md",
+      "bytes": 11329,
+      "sha256": "ef1906d99614f242b27e70059d466f54868ca53583fb683e97d46389ba18bbfe",
+      "adaptation": "14: shared navigation/evidence/identity and source-runtime distinction; no new protocol, OLED identity or firmware."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/changes/2026-10-24-14-developer-oled-tree.md",
+      "bytes": 2449,
+      "sha256": "ccf4427fdd1358b2942a6befa236bd84084f2362c9d46f35c651338d42f2269d",
+      "adaptation": "14: shared navigation/evidence/identity and source-runtime distinction; no new protocol, OLED identity or firmware."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/WEB_OLED_CONSUMER.md",
+      "bytes": 9359,
+      "sha256": "97373e3266f2554862b4e8e73b405e6cc306b134eb255a2bbfaa4c9b4ad59d35",
+      "adaptation": "14: shared navigation/evidence/identity and source-runtime distinction; no new protocol, OLED identity or firmware."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/screens.json",
+      "bytes": 61240,
+      "sha256": "342813febf349ea728d670606d8c1ac3727da1be6a580175e172cd6d24a5ab53",
+      "adaptation": "14: shared navigation/evidence/identity and source-runtime distinction; no new protocol, OLED identity or firmware."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/overlays/connections.json",
+      "bytes": 8623,
+      "sha256": "8c64f26f55ca2e5c9ff7d24bc79d3551c9a45680fd77e24322e3e0275759682e",
+      "adaptation": "14: shared navigation/evidence/identity and source-runtime distinction; no new protocol, OLED identity or firmware."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/ESTADO_IMPLEMENTACION.md",
+      "bytes": 11053,
+      "sha256": "142d004d81416e01244ecab839de88d964ac6b2bc3640f5ef0006720ca6012c0",
+      "adaptation": "14: shared navigation/evidence/identity and source-runtime distinction; no new protocol, OLED identity or firmware."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/PROMPT_CONTINUIDAD.md",
+      "bytes": 29637,
+      "sha256": "62eeb135b77c649ed824574a83f2c7d2693bda892ef51a4e323bb72dc27f02eb",
+      "adaptation": "14: shared navigation/evidence/identity and source-runtime distinction; no new protocol, OLED identity or firmware."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/design-system/index.md",
+      "bytes": 10991,
+      "sha256": "e42f635a7db91c52bae6c7a5054ac2375008e64c4ea2eaf354d26003ef4f69dd",
+      "adaptation": "14: shared navigation/evidence/identity and source-runtime distinction; no new protocol, OLED identity or firmware."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/design-system/sources.md",
+      "bytes": 9933,
+      "sha256": "35b2a6a36044c52ea178d79f6168936baa7fb0f02e5e38a9e0371e81c592312d",
+      "adaptation": "14: shared navigation/evidence/identity and source-runtime distinction; no new protocol, OLED identity or firmware."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/design-system/decisions.md",
+      "bytes": 19373,
+      "sha256": "b6446230e691ddbf3d78f65e45757bd795d88c4b3d4c573c1d8626b5c3edc0f3",
+      "adaptation": "14: shared navigation/evidence/identity and source-runtime distinction; no new protocol, OLED identity or firmware."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/design-system/coverage-20261024-14.json",
+      "bytes": 1084,
+      "sha256": "2fd16e2182f209a2a75bdfb39c82507556cb7fa604cf4e8624376b46dd06d040",
+      "adaptation": "14: shared navigation/evidence/identity and source-runtime distinction; no new protocol, OLED identity or firmware."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/provenance/README.md",
+      "bytes": 4775,
+      "sha256": "99c2bb74d1013ba915844b61f6257d29295bb8d3280f80f9377b812ab4e88df6",
+      "adaptation": "14: shared navigation/evidence/identity and source-runtime distinction; no new protocol, OLED identity or firmware."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-24-14/README.md",
+      "bytes": 1272,
+      "sha256": "6c732ca50f9f47eb383187a0d40b1fb7a1272925e18be0273fc58044e1f1ebf9",
+      "adaptation": "14: shared navigation/evidence/identity and source-runtime distinction; no new protocol, OLED identity or firmware."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-24-14/summary.json",
+      "bytes": 3793,
+      "sha256": "90fe9f6fdc75c66c4d8230c8c53e350bec93959ba9e7e0f36dd5366e86ad062e",
+      "adaptation": "14: shared navigation/evidence/identity and source-runtime distinction; no new protocol, OLED identity or firmware."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-24-14/manifest.json",
+      "bytes": 2562,
+      "sha256": "b112b0eeca1673e84a362160ea4b37dfa1d74a635c46605efcec9752b7a73d83",
+      "adaptation": "14: shared navigation/evidence/identity and source-runtime distinction; no new protocol, OLED identity or firmware."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-24-14/web-build.txt",
+      "bytes": 1755,
+      "sha256": "9ba398c6b32129ae0ba3d71e86281ff707967cd6c665eb97af9e613436b9d3ee",
+      "adaptation": "14: shared navigation/evidence/identity and source-runtime distinction; no new protocol, OLED identity or firmware."
+    },
+    {
+      "path": "INFORME_MAESTRO.md",
+      "bytes": 14651,
+      "sha256": "b4bab720e6ee2708978e84169dbebf1742ccb042983f700e30a4410d58bb74f7",
+      "adaptation": "14: current project status pointer only."
+    }
+  ],
+  "verification": "Authorized Web compilation and source/artifact inspection only. No tests, standalone validators, browser, serial, resets, physical operation, firmware compilation or filesystem image. Prior browser denial respected.",
+  "firmwareSourceChanged": false,
+  "newDependencies": false,
+  "newScreenCodes": false,
+  "rendererChanged": false,
+  "browserVerified": false,
+  "physicalVerified": false,
+  "differentialParity": false,
+  "committed": false,
+  "remotePublished": false
+}

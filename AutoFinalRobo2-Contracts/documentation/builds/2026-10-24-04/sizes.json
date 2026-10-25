@@ -1,0 +1,58 @@
+{
+  "changeId": "AFR2-20261024-04",
+  "beforeGzipBytes": 2897959,
+  "afterGzipBytes": 1450201,
+  "reductionPercent": 49.95784964521582,
+  "estimatedFilesystemBytes": 1540096,
+  "filesystemBudgetBytes": 2867200,
+  "candidateLayout": {
+    "physicalFlashAssumedBytes": 4194304,
+    "nominalFilesystemBytes": 3145728,
+    "linkerScript": "eagle.flash.4m3m.ld",
+    "filesystemStart": "0x40300000",
+    "filesystemEnd": "0x405fa000",
+    "filesystemLinkerBytes": 3121152,
+    "programMaximumBytes": 1044464,
+    "physicalIdentification": false
+  },
+  "firmware": {
+    "programUsedBytes": 414281,
+    "staticRamBytes": 44396,
+    "physicalRuntimeVerified": false
+  },
+  "finalModel": {
+    "sourceSha256": "d10684704200caa4da0a6a98715e52abc446b9dee9cccdde32f33ee05fc927c7",
+    "publicSha256": "d10684704200caa4da0a6a98715e52abc446b9dee9cccdde32f33ee05fc927c7",
+    "promotedRawSha256": "d10684704200caa4da0a6a98715e52abc446b9dee9cccdde32f33ee05fc927c7",
+    "rawBytes": 827232
+  },
+  "manifestSha256": {
+    "web": "e0cbeebf37719ac2e2549c6153e631fd6b5d3e537da531a4d27af54451f18633",
+    "esp": "e0cbeebf37719ac2e2549c6153e631fd6b5d3e537da531a4d27af54451f18633"
+  },
+  "staticInspection": {
+    "legacyUrlInBundle": false,
+    "finalUrlInBundle": true,
+    "fileRoutes": [
+      "/brand/favicon.webp",
+      "/brand/Logo-1024.webp",
+      "/brand/Logo-256.webp",
+      "/draco/draco_decoder.wasm",
+      "/draco/draco_wasm_wrapper.js",
+      "/index.html",
+      "/models/AutoFinalRobo2.glb"
+    ],
+    "promotedFiles": [
+      "index.html.gz",
+      "manifest.json",
+      "brand\\favicon.webp.gz",
+      "brand\\Logo-1024.webp.gz",
+      "brand\\Logo-256.webp.gz",
+      "draco\\draco_decoder.wasm.gz",
+      "draco\\draco_wasm_wrapper.js.gz",
+      "models\\AutoFinalRobo2.glb.gz"
+    ],
+    "sourceMaps": []
+  },
+  "verification": "Web full + ESP builds and ESP firmware compile; static artifacts inspected; no test runner, validator, browser, filesystem image, serial or flashing."
+}

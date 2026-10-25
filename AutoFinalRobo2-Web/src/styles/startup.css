@@ -1,0 +1,30 @@
+/* VIS-017 — Radal's full-screen acrylic veil, free logo and halo/sheens.
+ * There is no card/panel material around the logo or secondary controls. */
+.afr2-brand-mark { display: inline-flex; align-items: center; justify-content: center; flex: none; vertical-align: middle; background: transparent; border: 0; border-radius: 0; box-shadow: none; }
+.afr2-brand-mark__image { display: block; width: 100%; height: 100%; object-fit: contain; }
+.afr2-brand-mark__fallback { color: var(--action); font: 650 .75rem/1 var(--font-sans); letter-spacing: -.02em; }
+.afr2-brand-mark--hero .afr2-brand-mark__fallback { font-size: 1.25rem; }
+.afr2-startup-content { display: contents; }
+body:has(.afr2-startup[open]) { overflow: hidden; }
+.afr2-startup { --welcome-ink: color-mix(in srgb, var(--action) 28%, var(--oled-bezel)); --welcome-tint: color-mix(in srgb, var(--welcome-ink) 86%, transparent); --welcome-halo: color-mix(in srgb, var(--action) 28%, transparent); --welcome-sheen: rgba(255,255,255,.08); position: fixed; inset: 0; width: 100vw; max-width: none; height: 100dvh; max-height: none; margin: 0; padding: max(24px,env(safe-area-inset-top)) max(24px,env(safe-area-inset-right)) max(24px,env(safe-area-inset-bottom)) max(24px,env(safe-area-inset-left)); border: 0; border-radius: 0; box-shadow: none; background: var(--welcome-ink); isolation: isolate; overscroll-behavior: none; overflow: hidden; color: var(--startup-control-color); }
+.afr2-startup[open] { display: grid; place-items: center; }
+.afr2-startup::backdrop { background: transparent; }
+.afr2-startup::before { position: absolute; inset: 0; z-index: -1; content: ''; pointer-events: none; background: radial-gradient(ellipse at 50% 42%,var(--welcome-halo),transparent 64%),linear-gradient(135deg,var(--welcome-sheen),transparent 45%); }
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) { .afr2-startup { background: var(--welcome-tint); backdrop-filter: blur(24px) saturate(1.2); -webkit-backdrop-filter: blur(24px) saturate(1.2); } }
+.afr2-startup__logo { width: min(76vw,32rem); max-width: 100%; opacity: 0; transform: scale(.97); pointer-events: none; background: none; border: 0; border-radius: 0; box-shadow: none; will-change: opacity,transform; }
+.afr2-startup__logo img { display: block; width: 100%; height: auto; max-height: calc(100dvh - 128px); object-fit: contain; }
+.afr2-startup[data-ready="true"] { animation: afr2-startup-veil-out var(--startup-veil-exit) var(--ease-enter) var(--startup-veil-delay) forwards; }
+.afr2-startup[data-ready="true"] .afr2-startup__logo { animation: afr2-startup-logo-in var(--startup-logo-enter) var(--ease-enter) both,afr2-startup-logo-out var(--startup-logo-exit) var(--ease-enter) var(--startup-logo-out-delay) forwards; }
+.afr2-startup__actions { position: absolute; top: max(16px,env(safe-area-inset-top)); right: max(16px,env(safe-area-inset-right)); }
+.afr2-startup__stop, .afr2-startup__skip { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 10px 14px; border: 0; border-radius: 0; box-shadow: none; background: transparent; color: var(--startup-control-color); font: 500 12px/1.5 var(--font-sans); cursor: pointer; }
+.afr2-startup__stop { font-weight: 650; letter-spacing: .02em; }
+.afr2-startup__skip { position: absolute; left: 50%; bottom: max(16px,env(safe-area-inset-bottom)); transform: translateX(-50%); width: max-content; max-width: calc(100vw - 32px); text-align: center; text-wrap: balance; }
+.afr2-startup__skip span { padding-left: 8px; opacity: .65; }
+.afr2-startup__skip:focus-visible, .afr2-startup__stop:focus-visible { outline-color: var(--startup-control-color); }
+@media (hover:hover) and (pointer:fine) { .afr2-startup__skip:hover { text-decoration: underline; text-underline-offset: 4px; } }
+@keyframes afr2-startup-logo-in { from { opacity: 0; transform: scale(.97); } to { opacity: 1; transform: scale(1); } }
+@keyframes afr2-startup-logo-out { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(.97); } }
+@keyframes afr2-startup-veil-out { from { opacity: 1; } to { opacity: 0; } }
+@media (prefers-reduced-motion:reduce) { .afr2-startup[data-ready="true"] { animation: afr2-startup-veil-out 120ms var(--ease-out) forwards; } .afr2-startup__logo,.afr2-startup[data-ready="true"] .afr2-startup__logo { opacity: 1; transform: none; animation: none; will-change: auto; } }
+@media (prefers-reduced-transparency:reduce),(prefers-contrast:more) { .afr2-startup { background: var(--welcome-ink); backdrop-filter: none; -webkit-backdrop-filter: none; } .afr2-startup::before { background: none; } }
+@media (max-width:819px) { .afr2-welcome .afr2-brand-mark { display: inline-flex; } }

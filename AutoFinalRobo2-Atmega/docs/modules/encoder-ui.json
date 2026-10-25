@@ -2,8 +2,8 @@
   "schema": "afr2-module-1",
   "id": "atmega:module/reference/f4/Core/Src/encoder.c",
   "title": "Encoder de interfaz y pulsador único",
-  "responsibility": "encoder.c F4 procesa un mando rotativo y su pulsador. Con la ampliación solicitada vuelve a ser una referencia útil para UI; no mide las cuatro ruedas. user_button queda como antecedente del botón eliminado.",
-  "changes_required": "CLK D40/PG1 y DT D41/PG0 se leen juntos; SW D42/PL7 activo bajo. Inicializar desde niveles reales, evitar gesto de arranque pulsado, rechazar transición cuadratura inválida y ajustar signo/transiciones por detent. Base: 1 ms poll, 20 ms debounce, 800 ms largo exclusivo; ajustar sin asumir hardware probado. El corto sale al soltar solo si no se emitió largo. No usar polling de UI para Hall motriz.",
+  "responsibility": "encoder.c F4 procesa un encoder rotativo y su pulsador. Con la ampliación solicitada vuelve a ser una referencia útil para UI; no mide las cuatro ruedas. user_button queda como antecedente del botón eliminado.",
+  "changes_required": "CLK D2/PE4/INT4 y DT D3/PE5/INT5 se capturan por cualquier cambio en una lectura PINE; FIFO32bytes/31útiles y acciones/decodificación en main. Overflow descarta y resincroniza el paso parcial. SW D42/PL7 muestreado con objetivo1ms,20ms debounce,800ms largo exclusivo y supresión al arrancar pulsado. Hall PCINT2 A8–A15 x1, captura pendiente antes de UI; prioridad hardware fija sin ISR anidadas. Hall/memoria0 y fuente sin compilar/probar.",
   "evidence": [
     "reference/f4/Core/Src/encoder.c",
     "reference/f4/Core/Inc/encoder_types.h",
@@ -14,5 +14,20 @@
     "AFRDOC-003",
     "AFRDOC-010"
   ],
-  "status": "source-documented-not-built"
+  "status": "source-integrated-uncompiled-unverified",
+  "updated_by": "AFR2-20261024-11",
+  "current_implementation": "CLK D2/PE4/INT4 y DT D3/PE5/INT5 se capturan por cualquier cambio en una lectura PINE; FIFO32bytes/31útiles y acciones/decodificación en main. Overflow descarta y resincroniza el paso parcial. SW D42/PL7 muestreado con objetivo1ms,20ms debounce,800ms largo exclusivo y supresión al arrancar pulsado. Hall PCINT2 A8–A15 x1, captura pendiente antes de UI; prioridad hardware fija sin ISR anidadas. Hall/memoria0 y fuente sin compilar/probar.",
+  "delivery19": {
+    "change_id": "AFR2-20261023-19",
+    "date": "2026-10-24",
+    "status": "source-integrated-uncompiled-unverified",
+    "note": "Encoder CLK/DT/SW separado de Hall motrices; giro/clic/largo y pruebas de contadores en pantalla, sin prueba física.",
+    "contract": "../../../AutoFinalRobo2-Contracts/contracts/ROBO2_PRODUCT_EXTENSION.md"
+  },
+  "delivery11": {
+    "change_id": "AFR2-20261024-11",
+    "date": "2026-10-24",
+    "status": "source-integrated-uncompiled-unverified",
+    "contract": "../../../AutoFinalRobo2-Contracts/hardware/INTERRUPCIONES_ENCODER_HALL.md"
+  }
 }

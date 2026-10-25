@@ -11,3 +11,6 @@ Adaptar propietario/catálogo F4 a Mega, flash ESP12S, LittleFS, UART y capacida
 - [main.cpp](<main.cpp>)
 
 Estado: material preparado sin build, tests, validadores ni prueba física. Los hashes de fuentes copiadas están en [manifest](../../AutoFinalRobo2-Contracts/provenance/files.json).
+
+
+AFR2-20261023-11: main.cpp compone storage.h/.cpp, wifi_service.h/.cpp, mega_link.h/.cpp y broker.h/.cpp. El perfil binario reside en Contracts/contracts/afr2_wire.h. Fuente implementada, sin compilar ni probar; detalles en README e INFORME_ADAPTACION.

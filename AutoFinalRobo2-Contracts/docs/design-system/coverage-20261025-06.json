@@ -1,0 +1,41 @@
+{
+  "changeId": "AFR2-20261025-06",
+  "decision": "VIS-029",
+  "manual": "0.1.9",
+  "direction": "Confirmada",
+  "composition": "Propuesta",
+  "verification": "No verificada",
+  "targets": [
+    "ManualDriveOverlay SVG underbody trail",
+    "manual-drive.css layers and motion"
+  ],
+  "canonicalSources": [
+    "existing action tokens in both themes",
+    "manual0.1.9 motion/depth rules"
+  ],
+  "originInterpretation": "Beneath chassis layer, not fixed bottom-of-screen direction",
+  "purpose": "State indication of held direction",
+  "tool": "SVG and CSS",
+  "viewBox": [
+    320,
+    200
+  ],
+  "responsiveSize": "46% of shorter local side for length,36% for height; max320x200",
+  "layers": {
+    "shadow": 0,
+    "trail": 1,
+    "model": 2,
+    "modeAndHint": 4,
+    "input": 5
+  },
+  "gradient": "Longitudinal action fade plus transverse opacity mask; no blur",
+  "enterExit": "220ms existing ease-out; scale.96 to1",
+  "continuous": "1200ms linear; traces +/-20 SVG units, tail-to-head phases; pause current frame",
+  "keyboard": "Instant/static",
+  "reducedMotion": "Static gradient; no secondary movement",
+  "newDependencies": false,
+  "newPalette": false,
+  "newAssets": false,
+  "browser": false,
+  "phone": false
+}

@@ -1,5 +1,42 @@
 # Sistema de pantallas AutoFinalRobo2
 
+AFR2-20261024-09: catálogo compartido de59entradas consumido directamente por
+Web, copia TypeScript de layouts/primitivas AVR y recursos actuales generados del C.
+Los builds detectan códigos sin registrar y cambios de layout pendientes de port.
+Vista local de biblioteca identificada y visor remoto con framebuffer obligatorio;
+retirado fallback de4pantallas antiguas. La skill requiere contraparte Web en cada
+alta/modificación. Sin comparación diferencial, render de navegador ni OLED física.
+[Ficha09](../changes/2026-10-24-09-linked-oled-library.md).
+
+Vigente AFR2-20261024-08:48nodos y11tipos de aviso de red. IP/AP/Reinicio,
+14XBM F4 en PROGMEM, etiquetas32bytes y scroll recortado seleccionado.
+Snapshot con strings prestados estables en main; renderers sin hardware/I2C.
+Captura remota no disponible mientras hay clave AP visible; clave STA excluida.
+EX01v5 compilado; [contrato](../contracts/EX01_NETWORK_UI_5.md) y
+[evidencia/memoria](builds/2026-10-24-08/README.md). No equivale a paridad F4
+ni prueba de placas. El estado07 e inferiores conserva su evidencia histórica.
+
+Vigente AFR2-20261024-07: catálogo ampliado con pantalla0x03002c de ejecución de
+secuencias (barra segmentada, iconos/nombres PROGMEM y tiempo), snapshot en main y
+renderer puro. EX01v4 compilado en las tres partes; OLED físico no probado y
+secuencias mantienen gate de memoria0. [Estado por módulo](../docs/ESTADO_IMPLEMENTACION.md).
+El estado02 e inferiores se conserva como historia.
+
+Estado vigente AFR2-20261024-02: productor AVR y puente ESP/consumidor Web
+compilados para EX01v3; el framebuffer ampliado ya tiene traducción y consumo.
+Captura temporalmente ocupada es reintentable y no bloquea el visor para siempre.
+Sin prueba física ni revisión de navegador. Los pendientes de puente del texto
+histórico inferior quedan sustituidos por contracts/EX01_ALIGNMENT_3.md.
+
+Estado19,24/10:44 nodos en catálogo PROGMEM, historial8, editores, teclado y avisos.
+Backend TWI/Manager ya integrado; snapshot de presentación separado del renderer.
+EX01 produce captura1024bytes/revisión/selección, retenida600ms; puente ESP pendiente.
+Web debe usar framebuffer para el árbol ampliado, sin reconstruirlo con los cuatro
+renderers antiguos. No se acredita paridad de íconos F4 ni pantalla física atómica.
+[Implementación](../docs/ATMEGA_IMPLEMENTACION_19.md) · [Contrato](../contracts/ROBO2_PRODUCT_EXTENSION.md).
+El texto inicial que sigue es histórico respecto de cantidad de vistas/backend.
+
+
 [Maestro](../docs/INFORME_MAESTRO.md), [navegación](NAVIGATION.md), [catálogo](screens.json), [skill](../.agents/skills/afr2-screen-authoring/SKILL.md).
 
 ## Capas
@@ -30,3 +67,13 @@ OSK, iconos, fuentes grandes, menús completos, canvas remoto, animaciones y ré
 ## Menús y placa de interfaz
 
 Ver [árbol objetivo](MENU_PLAN.md) y [requisitos de PCB/soporte](../hardware/PCB_OLED_ENCODER.md). La UI de producto y los conectores están especificados; su implementación y el diseño CAD siguen pendientes. Los IDs de screens.json describen únicamente las vistas iniciales en fuente.
+
+
+## Estado vigente AFR2-20261023-15
+
+Backend TWI IRQ y composición main/GPIO/Timer0 implementados en fuente; esto
+sustituye la condición inicial de backend pendiente. Manager mantiene propiedad,
+deadline y callback en main. OLED conserva raster/dirty pages/snapshot y PROGMEM.
+Las mismas cuatro vistas se integran con encoder físico; no cambia catálogo ni
+Web ni se añade UI remota. Hardware, memoria, tiempos y funcionamiento pendientes
+de comprobación. No se ejecutaron builds/tests/validadores/flasheos.

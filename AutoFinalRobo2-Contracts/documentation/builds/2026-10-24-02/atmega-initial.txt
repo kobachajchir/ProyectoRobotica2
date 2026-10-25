@@ -1,0 +1,104 @@
+avr-gcc -mmcu=atmega2560 -std=gnu11 -MMD -MP -Os -Wall -Wextra -fstack-usage -ffunction-sections -fdata-sections -DF_CPU=16000000UL -Iinclude -I../AutoFinalRobo2-Contracts/contracts  -c -o src/main.o src/main.c
+src/main.c: In function 'capabilities':
+src/main.c:24:5: warning: this 'if' clause does not guard... [-Wmisleading-indentation]
+     if(p->sensors.hall_available)c|=AFR2_CAP_ENCODERS;return c;
+     ^~
+src/main.c:24:55: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the 'if'
+     if(p->sensors.hall_available)c|=AFR2_CAP_ENCODERS;return c;
+                                                       ^~~~~~
+avr-gcc -mmcu=atmega2560 -std=gnu11 -MMD -MP -Os -Wall -Wextra -fstack-usage -ffunction-sections -fdata-sections -DF_CPU=16000000UL -Iinclude -I../AutoFinalRobo2-Contracts/contracts  -c -o src/services/afr2_i2c_manager.o src/services/afr2_i2c_manager.c
+avr-gcc -mmcu=atmega2560 -std=gnu11 -MMD -MP -Os -Wall -Wextra -fstack-usage -ffunction-sections -fdata-sections -DF_CPU=16000000UL -Iinclude -I../AutoFinalRobo2-Contracts/contracts  -c -o src/display/afr2_oled.o src/display/afr2_oled.c
+avr-gcc -mmcu=atmega2560 -std=gnu11 -MMD -MP -Os -Wall -Wextra -fstack-usage -ffunction-sections -fdata-sections -DF_CPU=16000000UL -Iinclude -I../AutoFinalRobo2-Contracts/contracts  -c -o src/display/font7x10.o src/display/font7x10.c
+avr-gcc -mmcu=atmega2560 -std=gnu11 -MMD -MP -Os -Wall -Wextra -fstack-usage -ffunction-sections -fdata-sections -DF_CPU=16000000UL -Iinclude -I../AutoFinalRobo2-Contracts/contracts  -c -o src/input/afr2_encoder_ui.o src/input/afr2_encoder_ui.c
+avr-gcc -mmcu=atmega2560 -std=gnu11 -MMD -MP -Os -Wall -Wextra -fstack-usage -ffunction-sections -fdata-sections -DF_CPU=16000000UL -Iinclude -I../AutoFinalRobo2-Contracts/contracts  -c -o src/ui/afr2_screens.o src/ui/afr2_screens.c
+src/ui/afr2_screens.c: In function 'keyboard':
+src/ui/afr2_screens.c:66:13: warning: this 'if' clause does not guard... [-Wmisleading-indentation]
+             if(!r)Afr2Ui_Open(u,AFR2_N_WIFI_REVIEW);result(u,r);
+             ^~
+src/ui/afr2_screens.c:66:53: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the 'if'
+             if(!r)Afr2Ui_Open(u,AFR2_N_WIFI_REVIEW);result(u,r);
+                                                     ^~~~~~
+src/ui/afr2_screens.c: In function 'Afr2Ui_Apply':
+src/ui/afr2_screens.c:88:13: warning: this 'if' clause does not guard... [-Wmisleading-indentation]
+             if(u->draft<u->editing.min)u->draft=u->editing.min;if(u->draft>u->editing.max)u->draft=u->editing.max;u->redraw=true;}
+             ^~
+src/ui/afr2_screens.c:88:64: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the 'if'
+             if(u->draft<u->editing.min)u->draft=u->editing.min;if(u->draft>u->editing.max)u->draft=u->editing.max;u->redraw=true;}
+                                                                ^~
+src/ui/afr2_screens.c:93:9: warning: this 'while' clause does not guard... [-Wmisleading-indentation]
+         while(selected<0)selected+=n.count;u->selection=selected%n.count;
+         ^~~~~
+src/ui/afr2_screens.c:93:44: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the 'while'
+         while(selected<0)selected+=n.count;u->selection=selected%n.count;
+                                            ^
+avr-gcc -mmcu=atmega2560 -std=gnu11 -MMD -MP -Os -Wall -Wextra -fstack-usage -ffunction-sections -fdata-sections -DF_CPU=16000000UL -Iinclude -I../AutoFinalRobo2-Contracts/contracts  -c -o src/services/afr2_link.o src/services/afr2_link.c
+avr-gcc -mmcu=atmega2560 -std=gnu11 -MMD -MP -Os -Wall -Wextra -fstack-usage -ffunction-sections -fdata-sections -DF_CPU=16000000UL -Iinclude -I../AutoFinalRobo2-Contracts/contracts  -c -o src/platform/afr2_uart1.o src/platform/afr2_uart1.c
+avr-gcc -mmcu=atmega2560 -std=gnu11 -MMD -MP -Os -Wall -Wextra -fstack-usage -ffunction-sections -fdata-sections -DF_CPU=16000000UL -Iinclude -I../AutoFinalRobo2-Contracts/contracts  -c -o src/platform/afr2_twi.o src/platform/afr2_twi.c
+avr-gcc -mmcu=atmega2560 -std=gnu11 -MMD -MP -Os -Wall -Wextra -fstack-usage -ffunction-sections -fdata-sections -DF_CPU=16000000UL -Iinclude -I../AutoFinalRobo2-Contracts/contracts  -c -o src/platform/afr2_board.o src/platform/afr2_board.c
+avr-gcc -mmcu=atmega2560 -std=gnu11 -MMD -MP -Os -Wall -Wextra -fstack-usage -ffunction-sections -fdata-sections -DF_CPU=16000000UL -Iinclude -I../AutoFinalRobo2-Contracts/contracts  -c -o src/platform/afr2_motor.o src/platform/afr2_motor.c
+avr-gcc -mmcu=atmega2560 -std=gnu11 -MMD -MP -Os -Wall -Wextra -fstack-usage -ffunction-sections -fdata-sections -DF_CPU=16000000UL -Iinclude -I../AutoFinalRobo2-Contracts/contracts  -c -o src/platform/afr2_sensors.o src/platform/afr2_sensors.c
+src/platform/afr2_sensors.c: In function 'Afr2Sensors_Task':
+src/platform/afr2_sensors.c:91:9: warning: this 'if' clause does not guard... [-Wmisleading-indentation]
+         if(scans<3)++scans;s->line_bits=0;
+         ^~
+src/platform/afr2_sensors.c:91:28: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the 'if'
+         if(scans<3)++scans;s->line_bits=0;
+                            ^
+avr-gcc -mmcu=atmega2560 -std=gnu11 -MMD -MP -Os -Wall -Wextra -fstack-usage -ffunction-sections -fdata-sections -DF_CPU=16000000UL -Iinclude -I../AutoFinalRobo2-Contracts/contracts  -c -o src/platform/afr2_preferences.o src/platform/afr2_preferences.c
+avr-gcc -mmcu=atmega2560 -std=gnu11 -MMD -MP -Os -Wall -Wextra -fstack-usage -ffunction-sections -fdata-sections -DF_CPU=16000000UL -Iinclude -I../AutoFinalRobo2-Contracts/contracts  -c -o src/platform/afr2_watchdog.o src/platform/afr2_watchdog.c
+src/platform/afr2_watchdog.c: In function 'Afr2Boot_Early':
+src/platform/afr2_watchdog.c:7:1: warning: stack usage computation not supported for this target
+ void Afr2Boot_Early(void) { boot_cause=MCUSR;MCUSR=0;wdt_disable(); }
+ ^~~~
+avr-gcc -mmcu=atmega2560 -std=gnu11 -MMD -MP -Os -Wall -Wextra -fstack-usage -ffunction-sections -fdata-sections -DF_CPU=16000000UL -Iinclude -I../AutoFinalRobo2-Contracts/contracts  -c -o src/services/afr2_product.o src/services/afr2_product.c
+src/services/afr2_product.c: In function 'Afr2Product_Task':
+src/services/afr2_product.c:224:13: warning: this 'if' clause does not guard... [-Wmisleading-indentation]
+             if(p->integral[i]>32767)p->integral[i]=32767;if(p->integral[i]<-32767)p->integral[i]=-32767;
+             ^~
+src/services/afr2_product.c:224:58: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the 'if'
+             if(p->integral[i]>32767)p->integral[i]=32767;if(p->integral[i]<-32767)p->integral[i]=-32767;
+                                                          ^~
+avr-gcc -mmcu=atmega2560 -std=gnu11 -MMD -MP -Os -Wall -Wextra -fstack-usage -ffunction-sections -fdata-sections -DF_CPU=16000000UL -Iinclude -I../AutoFinalRobo2-Contracts/contracts  -c -o src/services/afr2_sequence.o src/services/afr2_sequence.c
+avr-gcc -mmcu=atmega2560 -std=gnu11 -MMD -MP -Os -Wall -Wextra -fstack-usage -ffunction-sections -fdata-sections -DF_CPU=16000000UL -Iinclude -I../AutoFinalRobo2-Contracts/contracts  -c -o src/services/afr2_app.o src/services/afr2_app.c
+src/services/afr2_app.c: In function 'invoke':
+src/services/afr2_app.c:137:9: warning: this 'if' clause does not guard... [-Wmisleading-indentation]
+         if(!data)return AFR2_BAD;const Afr2UiCredentials *cred=data;
+         ^~
+src/services/afr2_app.c:137:34: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the 'if'
+         if(!data)return AFR2_BAD;const Afr2UiCredentials *cred=data;
+                                  ^~~~~
+avr-gcc -mmcu=atmega2560 -std=gnu11 -MMD -MP -Os -Wall -Wextra -fstack-usage -ffunction-sections -fdata-sections -DF_CPU=16000000UL -Iinclude -I../AutoFinalRobo2-Contracts/contracts  -c -o src/services/afr2_app_wire.o src/services/afr2_app_wire.c
+src/services/afr2_app_wire.c: In function 'Afr2App_Command':
+src/services/afr2_app_wire.c:86:9: warning: this 'if' clause does not guard... [-Wmisleading-indentation]
+         if(n)return AFR2_RESULT_BAD_REQUEST;Afr2Product_Stop(p);out[0]=p->goto_state;*length=1;break;
+         ^~
+src/services/afr2_app_wire.c:86:45: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the 'if'
+         if(n)return AFR2_RESULT_BAD_REQUEST;Afr2Product_Stop(p);out[0]=p->goto_state;*length=1;break;
+                                             ^~~~~~~~~~~~~~~~
+src/services/afr2_app_wire.c:102:13: warning: this 'if' clause does not guard... [-Wmisleading-indentation]
+             if(!p->hall_delta || p->hall_bad || p->hall_measuring)return AFR2_RESULT_BAD_REQUEST;Afr2Product_HallSave(p);Afr2Product_Save(p);}
+             ^~
+src/services/afr2_app_wire.c:102:98: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the 'if'
+             if(!p->hall_delta || p->hall_bad || p->hall_measuring)return AFR2_RESULT_BAD_REQUEST;Afr2Product_HallSave(p);Afr2Product_Save(p);}
+                                                                                                  ^~~~~~~~~~~~~~~~~~~~
+src/services/afr2_app_wire.c:122:9: warning: this 'if' clause does not guard... [-Wmisleading-indentation]
+         if(r)return wire_result(r);out[0]=p->config.line_calibrated;*length=1;break;
+         ^~
+src/services/afr2_app_wire.c:122:36: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the 'if'
+         if(r)return wire_result(r);out[0]=p->config.line_calibrated;*length=1;break;
+                                    ^~~
+src/services/afr2_app_wire.c:184:13: warning: this 'if' clause does not guard... [-Wmisleading-indentation]
+             if(d[1]==0)w->network_count=0;memcpy(w->networks[d[1]],d+3,d[2]);w->networks[d[1]][d[2]]=0;
+             ^~
+src/services/afr2_app_wire.c:184:43: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the 'if'
+             if(d[1]==0)w->network_count=0;memcpy(w->networks[d[1]],d+3,d[2]);w->networks[d[1]][d[2]]=0;
+                                           ^~~~~~
+avr-gcc -mmcu=atmega2560 -std=gnu11 -MMD -MP -Os -Wall -Wextra -fstack-usage -ffunction-sections -fdata-sections -DF_CPU=16000000UL -Iinclude -I../AutoFinalRobo2-Contracts/contracts  -c -o src/ui/afr2_menu_catalog.o src/ui/afr2_menu_catalog.c
+cmd /c "if not exist build mkdir build"
+avr-gcc -mmcu=atmega2560 -std=gnu11 -MMD -MP -Os -Wall -Wextra -fstack-usage -ffunction-sections -fdata-sections -Wl,--gc-sections,-Map,build/afr2.map -o build/afr2.elf src/main.o src/services/afr2_i2c_manager.o src/display/afr2_oled.o src/display/font7x10.o src/input/afr2_encoder_ui.o src/ui/afr2_screens.o src/services/afr2_link.o src/platform/afr2_uart1.o src/platform/afr2_twi.o src/platform/afr2_board.o src/platform/afr2_motor.o src/platform/afr2_sensors.o src/platform/afr2_preferences.o src/platform/afr2_watchdog.o src/services/afr2_product.o src/services/afr2_sequence.o src/services/afr2_app.o src/services/afr2_app_wire.o src/ui/afr2_menu_catalog.o -lm
+avr-objcopy -O ihex -R .eeprom build/afr2.elf build/afr2.hex
+avr-gcc -mmcu=atmega2560 -std=gnu11 -MMD -MP -Os -Wall -Wextra -fstack-usage -ffunction-sections -fdata-sections -DF_CPU=16000000UL -Iinclude -I../AutoFinalRobo2-Contracts/contracts  -c -o src/communication_main.o src/communication_main.c
+cmd /c "if not exist build mkdir build"
+avr-gcc -mmcu=atmega2560 -std=gnu11 -MMD -MP -Os -Wall -Wextra -fstack-usage -ffunction-sections -fdata-sections -Wl,--gc-sections,-Map,build/afr2-communication.map -o build/afr2-communication.elf src/communication_main.o src/services/afr2_link.o src/platform/afr2_uart1.o src/platform/afr2_board.o
+avr-objcopy -O ihex -R .eeprom build/afr2-communication.elf build/afr2-communication.hex
+avr-ar rcs libafr2_ui.a src/services/afr2_i2c_manager.o src/display/afr2_oled.o src/display/font7x10.o src/input/afr2_encoder_ui.o src/ui/afr2_screens.o src/services/afr2_link.o src/platform/afr2_uart1.o src/platform/afr2_twi.o src/platform/afr2_board.o src/platform/afr2_motor.o src/platform/afr2_sensors.o src/platform/afr2_preferences.o src/platform/afr2_watchdog.o src/services/afr2_product.o src/services/afr2_sequence.o src/services/afr2_app.o src/services/afr2_app_wire.o src/ui/afr2_menu_catalog.o

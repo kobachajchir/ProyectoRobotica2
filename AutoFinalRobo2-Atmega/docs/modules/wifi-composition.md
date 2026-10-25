@@ -1,5 +1,9 @@
 # Wi-Fi, preferencias y composición AVR
 
+AFR2-20261023-19, fuente integrada sin compilar/probar: Teclado local o solicitud modal Web desde auto, borrador y Conectar físico. Outbox/poll/resultados en Mega; ESP/modal/un solo WS pendientes.
+[Producto vigente](../PRODUCTO_ATMEGA.md). El diseño histórico siguiente conserva su evidencia.
+
+
 [Maestro](../../../INFORME_MAESTRO.md) · [Informe del repositorio](../../INFORME_ADAPTACION.md).
 
 ## Utilidad

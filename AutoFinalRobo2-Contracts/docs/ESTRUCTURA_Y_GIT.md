@@ -18,6 +18,8 @@ Fuentes propias y referencias históricas preservadas; documentos/planos aportad
 
 El .gitignore raíz excluye node_modules, .pio, entornos Python, cachés de paquetes/herramientas, builds/dist/artifacts, compilados y preferencias locales/secretos. En CAD excluye .downloads, vendor recuperable, exportaciones, renders y backups/locks automáticos. Guardar URL, versión, licencia, checksum y pasos de obtención en reference/DEPENDENCIAS.md antes de depender de una descarga no versionada. Las bibliotecas propias y las adaptaciones sí se versionan.
 
+Las carpetas .tmp/ conservan borradores, scripts de edición puntual y copias de trabajo locales; quedan excluidas sin borrar su contenido. Las fuentes, herramientas del producto y evidencias publicables se conservan en sus ubicaciones documentadas.
+
 No se ignoran globalmente PDF, STEP, STL, GLB, FCStd ni bibliotecas KiCad: pueden ser insumos únicos o fuentes. Las exportaciones regenerables se guardan en AutoFinalRobo2-CAD/exports y quedan fuera de Git. Un entregable que deba conservarse como evidencia puede versionarse en una ubicación explícita, documentando el motivo y su procedencia. No se eliminó evidencia existente para reducir el tamaño.
 
 Los nueve modelos que estaban en CADS se trasladaron a AutoFinalRobo2-CAD/reference/supplied. Su URL, versión y licencia todavía no están identificadas, por lo que se conservan como insumos; [inventario](../../AutoFinalRobo2-CAD/reference/insumos-locales.json). CADS/README.md señala la nueva ubicación. No se descargó ni instaló software para esta reorganización.

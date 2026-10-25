@@ -1,0 +1,121 @@
+{
+  "changeId": "AFR2-20261024-07",
+  "date": "2026-10-24",
+  "buildExitCodes": {
+    "web": 0,
+    "esp": 0,
+    "atmega": 0
+  },
+  "avr": {
+    "stackCertified": false,
+    "text": 53182,
+    "staticSramBytes": 4295,
+    "sramCapacity": 8192,
+    "data": 452,
+    "bss": 3834,
+    "noinit": 9,
+    "flashBytes": 53634
+  },
+  "esp": {
+    "staticRamBytes": 45476,
+    "physicalFlashIdentified": false,
+    "candidateLinkerScript": "eagle.flash.4m3m.ld",
+    "ramCapacity": 81920,
+    "programCapacity": 1044464,
+    "programBytes": 419945
+  },
+  "web": {
+    "estimatedFilesystemBytes": 1540096,
+    "manifestSha256": "dc8771626db31f9b221ab943a6a6952d71c110bd235291260a4d88ef6642595f",
+    "promotion": [
+      {
+        "route": "/brand/favicon.webp",
+        "webGzipSha256": "8b09232de5bb978d3a5b27d73f1bfbbd9d23f87ce7d6afc45d81a39e67e9c02f",
+        "espGzipSha256": "8b09232de5bb978d3a5b27d73f1bfbbd9d23f87ce7d6afc45d81a39e67e9c02f",
+        "identical": true
+      },
+      {
+        "route": "/brand/Logo-1024.webp",
+        "webGzipSha256": "7a9d0a4da4327b952708ebab7ddc1a287af6ef0dc33dd93f382869e1e19414c5",
+        "espGzipSha256": "7a9d0a4da4327b952708ebab7ddc1a287af6ef0dc33dd93f382869e1e19414c5",
+        "identical": true
+      },
+      {
+        "route": "/brand/Logo-256.webp",
+        "webGzipSha256": "d273952807d216a6ca629cdeb6e13739b7fff23d1dd32fd4b50390c6453fd9f3",
+        "espGzipSha256": "d273952807d216a6ca629cdeb6e13739b7fff23d1dd32fd4b50390c6453fd9f3",
+        "identical": true
+      },
+      {
+        "route": "/draco/draco_decoder.wasm",
+        "webGzipSha256": "d2ea825f06f391962a850da94d68aa9778688a57cc7a79424938cc461ae1e759",
+        "espGzipSha256": "d2ea825f06f391962a850da94d68aa9778688a57cc7a79424938cc461ae1e759",
+        "identical": true
+      },
+      {
+        "route": "/draco/draco_wasm_wrapper.js",
+        "webGzipSha256": "5065d3fcaba12f33fea4dc9886646f6ad1f94e53a71407a92db52c4e8b4a440d",
+        "espGzipSha256": "5065d3fcaba12f33fea4dc9886646f6ad1f94e53a71407a92db52c4e8b4a440d",
+        "identical": true
+      },
+      {
+        "route": "/index.html",
+        "webGzipSha256": "8cbcc760690aafa7b23d91450a012f2bcb61f4a1e632b852c76448157d760aec",
+        "espGzipSha256": "8cbcc760690aafa7b23d91450a012f2bcb61f4a1e632b852c76448157d760aec",
+        "identical": true
+      },
+      {
+        "route": "/models/AutoFinalRobo2.glb",
+        "webGzipSha256": "30d0245bc9ed858a3d93ed8d25ae8f86d7434a9c219334cf25349da76a061e5f",
+        "espGzipSha256": "30d0245bc9ed858a3d93ed8d25ae8f86d7434a9c219334cf25349da76a061e5f",
+        "identical": true
+      }
+    ],
+    "espManifestSha256": "dc8771626db31f9b221ab943a6a6952d71c110bd235291260a4d88ef6642595f",
+    "gzipBytes": 1452387,
+    "filesystemBudgetBytes": 2867200,
+    "rawBytes": 2906053,
+    "profile": "esp",
+    "assetCount": 7
+  },
+  "artifacts": [
+    {
+      "path": "AutoFinalRobo2-Atmega/build/afr2.elf",
+      "bytes": 82968,
+      "sha256": "318d6fd16c49719f6b71251773738c735ba8c3fca3fcbbd7d90fa0477815bcc8"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/build/afr2.hex",
+      "bytes": 150870,
+      "sha256": "74410086772e28747a79d3bf95864f5dc6c2db8d87efdfa439152980c163b7a3"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/build/afr2-communication.elf",
+      "bytes": 17448,
+      "sha256": "60f19bc15e1dfec826ac5c21c5d9eddd40602f4fd08b1ea4a835812408f283cf"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/libafr2_ui.a",
+      "bytes": 139912,
+      "sha256": "79b696a63a5523e8f23c0ec12cc15d602eacf52028e5f811b3056fc2daf747ec"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/.pio/build/esp12s_candidate/firmware.elf",
+      "bytes": 1597164,
+      "sha256": "c473cd971c885c3fe3a9605ea7b78afe52362cdf88743e81d96ee295b689c81e"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/.pio/build/esp12s_candidate/firmware.bin",
+      "bytes": 424096,
+      "sha256": "eba9ed1954c5c4abc1dd0ac834baa4fe45a2f6557ade7a27821ac3f1137c1b4e"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/public/models/AutoFinalRobo2.glb",
+      "bytes": 827232,
+      "sha256": "d10684704200caa4da0a6a98715e52abc446b9dee9cccdde32f33ee05fc927c7"
+    }
+  ],
+  "sequenceMemoryApproved": false,
+  "hallConnected": false,
+  "verification": "Compilación e inspección de fuente/artefactos. Navegador denegado, sin elusión. Sin tests, validadores independientes, imagen FS, reinicios ni pruebas físicas."
+}

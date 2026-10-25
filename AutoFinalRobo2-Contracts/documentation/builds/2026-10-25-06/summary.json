@@ -1,0 +1,126 @@
+{
+  "changeId": "AFR2-20261025-06",
+  "date": "2026-10-25",
+  "webVersion": "0.2.0",
+  "firmwareVersion": "0.9.0",
+  "extensionVersion": 7,
+  "commandCount": 30,
+  "screenCodes": 59,
+  "web": {
+    "buildExitCode": 0,
+    "assetCount": 7,
+    "gzipBytes": 1482047,
+    "gzipDeltaFrom05": 95,
+    "rawBytes": 3043040,
+    "estimatedFilesystemBytes": 1572864,
+    "filesystemBudgetBytes": 2867200,
+    "manifestSha256": "e030c9d166847a92bb2bed99fcb1dfe48b331ae232d32e4f35149be2d16817e4",
+    "espManifestSha256": "e030c9d166847a92bb2bed99fcb1dfe48b331ae232d32e4f35149be2d16817e4",
+    "promotion": [
+      {
+        "route": "/brand/favicon.webp",
+        "webSha256": "8b09232de5bb978d3a5b27d73f1bfbbd9d23f87ce7d6afc45d81a39e67e9c02f",
+        "espSha256": "8b09232de5bb978d3a5b27d73f1bfbbd9d23f87ce7d6afc45d81a39e67e9c02f",
+        "identical": true
+      },
+      {
+        "route": "/brand/Logo-1024.webp",
+        "webSha256": "7a9d0a4da4327b952708ebab7ddc1a287af6ef0dc33dd93f382869e1e19414c5",
+        "espSha256": "7a9d0a4da4327b952708ebab7ddc1a287af6ef0dc33dd93f382869e1e19414c5",
+        "identical": true
+      },
+      {
+        "route": "/brand/Logo-256.webp",
+        "webSha256": "d273952807d216a6ca629cdeb6e13739b7fff23d1dd32fd4b50390c6453fd9f3",
+        "espSha256": "d273952807d216a6ca629cdeb6e13739b7fff23d1dd32fd4b50390c6453fd9f3",
+        "identical": true
+      },
+      {
+        "route": "/draco/draco_decoder.wasm",
+        "webSha256": "d2ea825f06f391962a850da94d68aa9778688a57cc7a79424938cc461ae1e759",
+        "espSha256": "d2ea825f06f391962a850da94d68aa9778688a57cc7a79424938cc461ae1e759",
+        "identical": true
+      },
+      {
+        "route": "/draco/draco_wasm_wrapper.js",
+        "webSha256": "5065d3fcaba12f33fea4dc9886646f6ad1f94e53a71407a92db52c4e8b4a440d",
+        "espSha256": "5065d3fcaba12f33fea4dc9886646f6ad1f94e53a71407a92db52c4e8b4a440d",
+        "identical": true
+      },
+      {
+        "route": "/index.html",
+        "webSha256": "c7bc534f50cab340e6392b182094de904fbfdcbb28511b84302c3aa29750fd74",
+        "espSha256": "c7bc534f50cab340e6392b182094de904fbfdcbb28511b84302c3aa29750fd74",
+        "identical": true
+      },
+      {
+        "route": "/models/AutoFinalRobo2.glb",
+        "webSha256": "30d0245bc9ed858a3d93ed8d25ae8f86d7434a9c219334cf25349da76a061e5f",
+        "espSha256": "30d0245bc9ed858a3d93ed8d25ae8f86d7434a9c219334cf25349da76a061e5f",
+        "identical": true
+      }
+    ]
+  },
+  "motion": {
+    "skill": "animate",
+    "purpose": "State indication of held direction",
+    "tool": "SVG and CSS",
+    "viewBox": [
+      320,
+      200
+    ],
+    "origin": "Center of model rectangle, beneath chassis; direction rotates about origin",
+    "layers": {
+      "shadow": 0,
+      "trail": 1,
+      "model": 2,
+      "modeAndHint": 4,
+      "input": 5
+    },
+    "responsiveDimensions": "46% of shorter local side for length,36% for height, max320x200; viewport fallback",
+    "gradient": "Longitudinal action fade plus transverse opacity mask; white is non-visible mask data",
+    "traces": 3,
+    "enterExitMs": 220,
+    "enterExitCurve": "existing ease-out",
+    "continuousMs": 1200,
+    "continuousCurve": "linear",
+    "travelSvgUnits": 20,
+    "phaseOrder": "tail-middle-head",
+    "inactive": "Paused at current frame, outer opacity fades",
+    "keyboard": "Instant static gradient",
+    "reducedMotion": "Static gradient; no secondary position change",
+    "newDependencies": false,
+    "newAssets": false,
+    "newPalette": false,
+    "blurOrFilters": false
+  },
+  "atmega": {
+    "sourceChanged": false,
+    "rebuilt": false,
+    "previousBuild": "2026-10-25-01",
+    "hallEnabled": false,
+    "memoryApproved": false
+  },
+  "esp": {
+    "firmwareChanged": false,
+    "rebuilt": false,
+    "previousBuild": "2026-10-25-01",
+    "webAssetsPromoted": true,
+    "physicalFlashIdentified": false
+  },
+  "model": {
+    "path": "AutoFinalRobo2-Web/public/models/AutoFinalRobo2.glb",
+    "bytes": 827232,
+    "sha256": "d10684704200caa4da0a6a98715e52abc446b9dee9cccdde32f33ee05fc927c7"
+  },
+  "testsRun": false,
+  "standaloneValidators": false,
+  "browser": false,
+  "phone": false,
+  "flashed": false,
+  "physicalTests": false,
+  "cadChanged": false,
+  "committed": false,
+  "published": false,
+  "verification": "Authorized Web compile/package/local promotion and source/artifact inspection only. No visual render or acceptance, tests/standalone validators, browser, phone, serial, FS image, flashing or physical operation. Underbody layering follows source z-order and existing alpha Canvas; not visually measured. Prior browser denial respected."
+}

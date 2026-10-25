@@ -1,0 +1,391 @@
+{
+  "changeId": "AFR2-20261025-02",
+  "date": "2026-10-25",
+  "authorization": "Human requested tactile use without robot, overhead model, movement text/shared identity arrows and wheel simulation. Previous compile/correct request remains active.",
+  "authorship": "Existing AFR2/F4/AutoMicro/ST credits preserved. Own adaptation of current AFR2 sources; no new external source or asset, final GLB unchanged.",
+  "beforeSource": [
+    {
+      "path": "src/components/three/RobotModel.tsx",
+      "sha256": "42e7ce14baff2c8f5a5d99b5b2cd75e6d8883caf607caf3fe200541c75703df2",
+      "bytes": 1853
+    },
+    {
+      "path": "src/features/control/manual/ManualDriveOverlay.tsx",
+      "sha256": "4874a849ccb54d01551dbc9163a01c0cf81173ac6d9fdee762cd4a59cd73fd27",
+      "bytes": 10135
+    },
+    {
+      "path": "src/features/control/manual/ManualDriveModel.tsx",
+      "sha256": "92c7f8c5555a780b94a132009544173af57176beebde19575146b715b169d136",
+      "bytes": 1904
+    },
+    {
+      "path": "src/styles/manual-drive.css",
+      "sha256": "eed02a78102f525092a63febd1fdac09bb03f8129594319d0ae17aa007862a49",
+      "bytes": 5334
+    },
+    {
+      "path": "src/features/control/controlMapTypes.ts",
+      "sha256": "766a4079d46addfbc05b1ed434ea63b45d3ea7efe9fb846d6dde8725d5d2607a",
+      "bytes": 705
+    },
+    {
+      "path": "src/features/control/ControlMap.tsx",
+      "sha256": "b67283928a046dc7f294c90b8aa928747271f18c10c594c1e62947e9a1c47f27",
+      "bytes": 7669
+    },
+    {
+      "path": "src/features/control/ControlMapScene.tsx",
+      "sha256": "bfaa1f18c488a13dc90eb2e00308c8154002a4c4c1faf21900c91095faaaea7e",
+      "bytes": 6519
+    },
+    {
+      "path": "src/features/control/ControlPage.tsx",
+      "sha256": "ed38eb975c2d086e0636871005a1cd35429414e55aa9b58036660a02a7842a0f",
+      "bytes": 40852
+    },
+    {
+      "path": "src/features/control/sequences/mecanumKinematics.ts",
+      "sha256": "f9762bc152eac37d8ffb6ff1d16e0eaefeeffa389a5b97f2f47e0e4ef0ac2fc5",
+      "bytes": 32368
+    },
+    {
+      "path": "src/features/control/goto/gotoSimulation.ts",
+      "sha256": "caffff281ae3618925894151a5ef1e75f6b9c9e8494d07d787ea263d3d215f1c",
+      "bytes": 5105
+    },
+    {
+      "path": "src/features/control/goto/GotoSimulatorPanel.tsx",
+      "sha256": "990402aa8cb046687f3442916d8a86a3ee776d321fa0fea6119e9bda09af31d5",
+      "bytes": 9869
+    }
+  ],
+  "beforeDocumentation": [
+    {
+      "path": "AutoFinalRobo2-Contracts/README.md",
+      "sha256": "ece1094b862caf80bb818b7c53b37867152b901a781ff0777b023e625c1601bf"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/CHANGELOG.md",
+      "sha256": "7417e606ceab61a31aa56af78702d29919ff097d7faaab7ac732aaf1a4538dd7"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/PROMPT_CONTINUIDAD.md",
+      "sha256": "058ba76420f3cfdb67cd738900528776ff9e4864002ac18e77605d51046efddd"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/PLAN_WEB.md",
+      "sha256": "ecc90d71528628ed3702e62fc973bb6a19833ed19a5257a509c259f2e0bedf29"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/ESTADO_IMPLEMENTACION.md",
+      "sha256": "edf7092d33da1e70319d750fd448104f6d40a55e788c4c7c69f2c75e16ed1412"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/ALINEACION_MAESTRO.md",
+      "sha256": "57f73760c7035f4dc70f3fe964847215ed4e2eeb83aee60ae084a627e57eb592"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/WEB_CONTROL_MAP.md",
+      "sha256": "1de2080f52c05a46a22f8c9db7e67647a3b575cdbfc38d9e93b31f75cc86838d"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/design-system/index.md",
+      "sha256": "877a0d4ef6a30b7eb7c15cde668433bef8d97930feb87e2d256f534347e1405a"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/design-system/decisions.md",
+      "sha256": "6701c3dc5efe96719d30836a551c1c4b1a3a85744933e48d55897eab59d11d3e"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/design-system/adoption.md",
+      "sha256": "22b5eba8df9f0c5b2a853052cbf4ad340718dd10ba8dd616a64c592384dd23bc"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/provenance/README.md",
+      "sha256": "56bd9c9b4adf0c0b7d38a57e85c17a3ae3f478b95374de4e739b08a2a800a33e"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/README.md",
+      "sha256": "eb72904f9b1d88f8c9e642c47648282413c22e1fd99e807d3481d28760af9e37"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/INFORME_ADAPTACION.md",
+      "sha256": "5c21e6147d92fe2eb7c9359cf94fc41ef5377c69f234e205198d7628d5f3fa4a"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/docs/modules/manual-touch-drive.md",
+      "sha256": "d59c7aa5b8d53aef454aa2c84a2aa41e2cbf51c6af16ede2c0581cb980bee4f8"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/docs/modules/goto-simulation.md",
+      "sha256": "70ab4a7513b1e2fcf4aa5b0536f900d5c4ac25e6691eb2cbe25acfc73121d9fb"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/docs/modules/sequence-editor.md",
+      "sha256": "3e8a3212fce17e391074dd4448241153a1a70a6894a77f09dd5f52caf11ceef1"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/docs/modules/assets.json",
+      "sha256": "62e7d926c0e89c334859b588c112b4142176eed00a19fa3fcc26e4f9cce609c5"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/data/README.md",
+      "sha256": "b7c182b16bc043eb2846ae89930238db66f6ea23be53b64f8d65e79d3885cfa2"
+    }
+  ],
+  "files": [
+    {
+      "path": "AutoFinalRobo2-Contracts/CHANGELOG.md",
+      "bytes": 12083,
+      "sha256": "cca4f2e5df8de6fdbae75bbed73c6cd3c60a7f44381d77982d1087f43da3ff97",
+      "adaptation": "Current02 behavior/status/visual decision/build evidence documented, with historical records retained; no claim of visual or physical verification."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/changes/2026-10-25-02-touch-simulation-wheels.md",
+      "bytes": 1785,
+      "sha256": "5508cb0557dbccef8561b7715c6a8d288b3f780f0590aa4af7de57e07b1a1da4",
+      "adaptation": "Current02 behavior/status/visual decision/build evidence documented, with historical records retained; no claim of visual or physical verification."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/WEB_CONTROL_MAP.md",
+      "bytes": 11387,
+      "sha256": "3c81cff3340192a178f79fb5438d5b0eda4caa6f829ce1d5e23cbc8955bf8a8c",
+      "adaptation": "Current02 behavior/status/visual decision/build evidence documented, with historical records retained; no claim of visual or physical verification."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/WEB_TOUCH_SIMULATION.md",
+      "bytes": 4646,
+      "sha256": "acc5e0b9e85d48aff9b13e6adabb8e559a5193f1698203be8f8853c7450d8d10",
+      "adaptation": "Current02 behavior/status/visual decision/build evidence documented, with historical records retained; no claim of visual or physical verification."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/ALINEACION_MAESTRO.md",
+      "bytes": 3677,
+      "sha256": "1188c6a066fbe72265e908b195b5cd0e624d3510894b04b304f1e71530afa1e2",
+      "adaptation": "Current02 behavior/status/visual decision/build evidence documented, with historical records retained; no claim of visual or physical verification."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/design-system/adoption.md",
+      "bytes": 5150,
+      "sha256": "2f932ec003822791dc2b018be29dd7dcc528899c6a457252b364e6abf3931c3a",
+      "adaptation": "Current02 behavior/status/visual decision/build evidence documented, with historical records retained; no claim of visual or physical verification."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/design-system/coverage-20261025-02.json",
+      "bytes": 814,
+      "sha256": "a84a513e21a572cb11c5fed02e03a62c2a6b392c7173106bc43cc5f7d1673396",
+      "adaptation": "Current02 behavior/status/visual decision/build evidence documented, with historical records retained; no claim of visual or physical verification."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/design-system/decisions.md",
+      "bytes": 21272,
+      "sha256": "64b282245f85ea6a2423bd736138aaddec3600beb9d8ba942dc9ad140d4d714a",
+      "adaptation": "Current02 behavior/status/visual decision/build evidence documented, with historical records retained; no claim of visual or physical verification."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/design-system/index.md",
+      "bytes": 11742,
+      "sha256": "f243411a07fb1e29b5b872353f53e4fd02498181950bad097cb77cd2f27ca123",
+      "adaptation": "Current02 behavior/status/visual decision/build evidence documented, with historical records retained; no claim of visual or physical verification."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/ESTADO_IMPLEMENTACION.md",
+      "bytes": 1903,
+      "sha256": "a93448b1c25bd6ee352c74b269c37707d7920df0d9bdb1f9078f7c65f10a6fd6",
+      "adaptation": "Current02 behavior/status/visual decision/build evidence documented, with historical records retained; no claim of visual or physical verification."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/PLAN_WEB.md",
+      "bytes": 1591,
+      "sha256": "652c2b614d52674802be59ee34abe0f667cedb3c1d437ef1df09bbed3454ecaa",
+      "adaptation": "Current02 behavior/status/visual decision/build evidence documented, with historical records retained; no claim of visual or physical verification."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/PROMPT_CONTINUIDAD.md",
+      "bytes": 30371,
+      "sha256": "039f1a5bc8fbd0c39d6c68dbc64d18087b0cbe59d1b089035d42c58c897fa3df",
+      "adaptation": "Current02 behavior/status/visual decision/build evidence documented, with historical records retained; no claim of visual or physical verification."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-25-02/manifest.json",
+      "bytes": 2631,
+      "sha256": "63c9f17f12d28eb906b1cc5df408e48dae4b692b71dec3561b62657db392e65a",
+      "adaptation": "Current02 behavior/status/visual decision/build evidence documented, with historical records retained; no claim of visual or physical verification."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-25-02/README.md",
+      "bytes": 1599,
+      "sha256": "93780c4c447290d3716fd2c7ab25ff1082a4dcea1448254079d5aa57ddcf159d",
+      "adaptation": "Current02 behavior/status/visual decision/build evidence documented, with historical records retained; no claim of visual or physical verification."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-25-02/summary.json",
+      "bytes": 4209,
+      "sha256": "9a188d6a858f8f0c18eb1da9b2604ffdfba058fb33291976310b446f2e9e7c05",
+      "adaptation": "Current02 behavior/status/visual decision/build evidence documented, with historical records retained; no claim of visual or physical verification."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-25-02/web-build.txt",
+      "bytes": 1754,
+      "sha256": "054ceb5bc1963e6cc55c3003f2c284f499c52940d4c6bf8aa17e18efa2d81caf",
+      "adaptation": "Current02 behavior/status/visual decision/build evidence documented, with historical records retained; no claim of visual or physical verification."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-25-02/web-exit.txt",
+      "bytes": 3,
+      "sha256": "13bf7b3039c63bf5a50491fa3cfd8eb4e699d1ba1436315aef9cbe5711530354",
+      "adaptation": "Current02 behavior/status/visual decision/build evidence documented, with historical records retained; no claim of visual or physical verification."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/provenance/README.md",
+      "bytes": 5588,
+      "sha256": "ae8ac10aea43ca43932c244db418024f14aa0f4800be08113eed8d3d0e09a3b6",
+      "adaptation": "Current02 behavior/status/visual decision/build evidence documented, with historical records retained; no claim of visual or physical verification."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/README.md",
+      "bytes": 14897,
+      "sha256": "a74e7cf71b92fd185e6ba8be3d542fbda4ce5db2d932e9c86022447e9ccebc6d",
+      "adaptation": "Current02 behavior/status/visual decision/build evidence documented, with historical records retained; no claim of visual or physical verification."
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/data/README.md",
+      "bytes": 4286,
+      "sha256": "7aa4f8bd06cf84df4528335c087777880512d280c630c808368a8cc188a5e0af",
+      "adaptation": "Current02 behavior/status/visual decision/build evidence documented, with historical records retained; no claim of visual or physical verification."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/docs/modules/assets.json",
+      "bytes": 1487,
+      "sha256": "779be89eec28f0bbf0da7cf9f32757d3367cc41a83e022295f71b27d714adc85",
+      "adaptation": "Current02 behavior/status/visual decision/build evidence documented, with historical records retained; no claim of visual or physical verification."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/docs/modules/goto-simulation.md",
+      "bytes": 2735,
+      "sha256": "2caf2dd443e61a5674c3d75dc19e092c6c5bb1eb521d1675e74a7568956439b1",
+      "adaptation": "Current02 behavior/status/visual decision/build evidence documented, with historical records retained; no claim of visual or physical verification."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/docs/modules/manual-touch-drive.md",
+      "bytes": 2751,
+      "sha256": "b97ee0b6e10ce751dfca8667b97db09971914dce2f5dd909869fef19400cb6cd",
+      "adaptation": "Current02 behavior/status/visual decision/build evidence documented, with historical records retained; no claim of visual or physical verification."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/docs/modules/sequence-editor.md",
+      "bytes": 2912,
+      "sha256": "c109b44804d3c9366ca9743b35a0a813aff5e220d1e855c58d3caed864d252b4",
+      "adaptation": "Current02 behavior/status/visual decision/build evidence documented, with historical records retained; no claim of visual or physical verification."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/INFORME_ADAPTACION.md",
+      "bytes": 21601,
+      "sha256": "d493a810f8c54901904d790c03b0fb766426a3cb46aab6373abf1dc6e1148b55",
+      "adaptation": "Current02 behavior/status/visual decision/build evidence documented, with historical records retained; no claim of visual or physical verification."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/README.md",
+      "bytes": 22855,
+      "sha256": "e258a89f2a617970f71c5f86e9864664aae8863e6fe4fb35bd46d7f52a7e5f2c",
+      "adaptation": "Current02 behavior/status/visual decision/build evidence documented, with historical records retained; no claim of visual or physical verification."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/components/three/RobotModel.tsx",
+      "bytes": 4926,
+      "sha256": "c20a9585a18a1ec0a822f057efa25550b9fa86788d9a58097afb2ef3ef653571",
+      "adaptation": "Own AFR2 clone-only axle rig for four final Rueda80 assemblies, cursor angles/gesture roll, demand rendering, reduced motion; existing GLTF framing/authorship retained."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/components/three/robotWheelMotion.ts",
+      "bytes": 701,
+      "sha256": "f7a6a6b66c736d25484e3c3c28a1fc7a81a8dce26089b8fd4b51f2e7308d1787",
+      "adaptation": "Own shared visual units/types; nominal Rueda80 radius40mm, no calibration or new dependency."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/ControlMap.tsx",
+      "bytes": 7828,
+      "sha256": "3ab1c757bede252670aa7b62909a95ef63f46465a1882561ff06cf9eb1fe56c6",
+      "adaptation": "Own AFR2 typed propagation of simulated wheel angles through existing Control/GOTO map feeds; prior sources and credits preserved."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/ControlMapScene.tsx",
+      "bytes": 6551,
+      "sha256": "19e335d6d0448f997b019290bd1f52447380353b2b11dee0efa28d325dc3374b",
+      "adaptation": "Own AFR2 typed propagation of simulated wheel angles through existing Control/GOTO map feeds; prior sources and credits preserved."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/controlMapTypes.ts",
+      "bytes": 822,
+      "sha256": "10011eab3a1f170b63d8b98251f8a98f1727bff210de3500f453fafe7ae86174",
+      "adaptation": "Own AFR2 typed propagation of simulated wheel angles through existing Control/GOTO map feeds; prior sources and credits preserved."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/ControlPage.tsx",
+      "bytes": 41095,
+      "sha256": "488af0388bf7f1b440430a756bc577e916144f7b9357a399d1afebf9eaffe397",
+      "adaptation": "Own AFR2 typed propagation of simulated wheel angles through existing Control/GOTO map feeds; prior sources and credits preserved."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/goto/gotoSimulation.ts",
+      "bytes": 5576,
+      "sha256": "af3fecbeadd47b6bce3e1fce8248c6dbc603df812d7e04419474b85f18a6e81c",
+      "adaptation": "Existing constant-heading local planner extended with analytic wheel travel and cursor angles."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/goto/GotoSimulatorPanel.tsx",
+      "bytes": 9905,
+      "sha256": "df0f5c3fb655f494be8dff0292764485ea80a474bbb7d163fdea6cfdc64df8d9",
+      "adaptation": "Own AFR2 typed propagation of simulated wheel angles through existing Control/GOTO map feeds; prior sources and credits preserved."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/manual/ManualDriveModel.tsx",
+      "bytes": 2061,
+      "sha256": "dd51ab8426cabd82f1b83085421313d98d850a5e72c42932c55ea27816732c33",
+      "adaptation": "Existing shared asset retained; true overhead orthographic camera and gesture wheel speed input."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/manual/ManualDriveOverlay.tsx",
+      "bytes": 12624,
+      "sha256": "2466f72eea91f21c22eb2a36347f30c7c2388121a5e9987d713a8bb86ce66a11",
+      "adaptation": "Own offline preview latch and physical callback fence, independent speed, status/shared arrow icon; existing gestures/dialog/safety retained."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/sequences/mecanumKinematics.ts",
+      "bytes": 32750,
+      "sha256": "fa917fe69d34dd5af44b1a8f65925320e96ecd220e2685d3bfa075d88e96d1a2",
+      "adaptation": "Existing deterministic simulation extended with wheel travel in its same10ms integration loop; no physical program changes."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/styles/manual-drive.css",
+      "bytes": 5747,
+      "sha256": "2d316128ebbbf7772dc8a6c31d101cf90af2cb30085e2900fe425917659adf97",
+      "adaptation": "Existing identity tokens retained; mode band, compass/model separation and reduced motion."
+    }
+  ],
+  "model": {
+    "path": "AutoFinalRobo2-Web/public/models/AutoFinalRobo2.glb",
+    "bytes": 827232,
+    "sha256": "d10684704200caa4da0a6a98715e52abc446b9dee9cccdde32f33ee05fc927c7"
+  },
+  "dependencies": [
+    {
+      "path": "AutoFinalRobo2-Web/package.json",
+      "bytes": 1347,
+      "sha256": "ec2bcdf180f7d2c5cdac4f5fcf7e64a8482de2743819d968b388fadec7f24292"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/package-lock.json",
+      "bytes": 100731,
+      "sha256": "826eac32def6bf19e9aac7b6aa42cf443a532795d859fa2cd170dc3ba2116cc4"
+    }
+  ],
+  "verification": "Authorized Web compilation/package/promotion and source/asset metadata/hash inspection only. No protocol/differential tests, standalone validators, browser, phone, serial, FS image, flashing or physical operation. Prior browser denial respected.",
+  "newScreenCodes": false,
+  "newCommands": false,
+  "newDependencies": false,
+  "cadModified": false,
+  "committed": false,
+  "published": false
+}

@@ -1,4 +1,22 @@
-# Árbol funcional de menús por implementar
+> AFR2-20261025-01: se retiran las opciones de permiso de acceso por pedido explícito. Árbol restante, ScreenCodes y Volver conservados; [control directo7](../contracts/DIRECT_CONTROL_7.md).
+
+# Árbol funcional de menús
+
+Vigente AFR2-20261024-08:48nodos compilados y11avisos de red. Se añaden IP de
+conexión/Datos AP y Sistema → Reinicio, preservando el árbol íntegro anterior.
+Iconos F4 en flash, texto seleccionado con scroll y Volver en submenús.
+[Contrato v5](../contracts/EX01_NETWORK_UI_5.md); sin ensayo físico.
+
+Vigente AFR2-20261024-07: se conserva íntegro el árbol objetivo inferior. Se
+agrega vista de ejecución0x03002c, abierta por secuencia y con Volver a Control;
+no sustituye ni renumera los nodos previos. Catálogo, productor y consumidor
+compilados; secuencias físicas permanecen bloqueadas por memoria y no probadas.
+[Estado actual](../docs/ESTADO_IMPLEMENTACION.md).
+
+Estado19/24-10: árbol implementado en fuente ATmega mediante44 nodos, sin compilar/probar.
+[Catálogo](screens.json) y [detalle](../docs/ATMEGA_IMPLEMENTACION_19.md). La introducción
+inicial siguiente describe el estado anterior. PCB/soporte siguen pendientes.
+
 
 Fecha 2026-10-23. Diseño inicial para contextualizar el trabajo futuro. [Reglas de entrada](NAVIGATION.md). El prototipo fuente sigue teniendo solo Inicio, menú reducido, Sensores y Estado OLED. Esta lista no agrega handlers ni asegura capabilities.
 
@@ -7,12 +25,11 @@ Inicio / dashboard
 Menú principal (SW largo)
   Estado
     Resumen del robot
-    Enlace Mega-ESP y dueño del mando
+    Enlace Mega-ESP y origen de actividad
     Alertas / datos caducados
     Volver
   Control manual
     Detener
-    Tomar / liberar mando
     Límite de velocidad
     Movimiento Mecanum
       Adelante / atrás
@@ -64,6 +81,8 @@ Menú principal (SW largo)
     Volver
   Wi-Fi
     Estado STA / AP / IP
+    IP de conexión (SSID y dirección obtenida)
+    Datos de red AP (SSID / clave propia / IP, solo OLED local)
     Modo STA / AP / combinado, según soporte
     Buscar redes / seleccionar
     Configurar conexión
@@ -77,6 +96,10 @@ Menú principal (SW largo)
     Parámetros del encoder
     Volver
   Sistema
+    Reinicio
+      Reiniciar ATMEGA
+      Reiniciar ESP
+      Volver
     Versiones Mega / ESP / Web
     Capacidades disponibles
     Preferencias y guardado

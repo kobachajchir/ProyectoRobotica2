@@ -1,0 +1,28 @@
+/* VIS-019 / AFR2-20261024-07. One spacing rhythm across the control workspace. */
+.afr2-control-workspace, .afr2-sequence-workspace { display: flex; flex-direction: column; gap: 24px; min-width: 0; width: 100%; }
+.afr2-control-workspace .afr2-glass-panel, .afr2-block-properties { padding: 24px; border-radius: var(--radius-md); }
+.afr2-control-workspace .afr2-workspace, .afr2-control-workspace .afr2-task-panel { width: 100%; min-width: 0; }
+.afr2-control-workspace .afr2-task-panel { padding-top: 24px; }
+.afr2-control-workspace .afr2-action-row { gap: 12px; }
+.afr2-sequence-editor-body { display: grid; grid-template-columns: minmax(0, 1fr); gap: 24px; width: 100%; min-width: 0; }
+.afr2-block-properties { display: flex; flex-direction: column; gap: 16px; background: var(--surface-solid); border: 1px solid var(--border-default); }
+.afr2-block-properties > .afr2-action-row { justify-content: space-between; }
+.afr2-block-properties h3 { margin: 0; font-size: 1rem; font-weight: 600; }
+.afr2-select-wrap { display: inline-grid; position: relative; min-width: 0; width: 100%; }
+.afr2-select-wrap > select { appearance: none; width: 100%; padding-right: 40px; }
+.afr2-select-wrap > .afr2-chevron { position: absolute; right: 12px; top: 50%; margin-top: -10px; pointer-events: none; color: var(--text-muted); }
+.afr2-select-wrap:has(> select:open) > .afr2-chevron { transform: rotate(180deg); }
+.afr2-brand-trigger { padding: 0; border: 0; background: transparent; border-radius: 12px; cursor: pointer; flex-shrink: 0; }
+.afr2-brand-trigger:active { transform: scale(.97); }
+.afr2-settings-system { display: flex; flex-direction: column; gap: 16px; margin-top: 24px; }
+.afr2-settings-system h3 { margin: 0; font-size: 1rem; }
+.afr2-settings-system .afr2-status-list dd { min-width: 0; max-width: 70%; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
+.afr2-developer-profile { display: flex; flex-direction: column; gap: 24px; padding: 32px; border: 1px solid var(--border-default); border-radius: var(--radius-lg); background: var(--surface-solid); }
+.afr2-developer-profile h2 { font-size: clamp(1.75rem, 4vw, 2.5rem); letter-spacing: -.025em; line-height: 1.12; margin: 0 0 8px; }
+.afr2-developer-profile p { color: var(--text-muted); }
+.afr2-developer-profile a { display: inline-flex; min-height: 44px; align-items: center; padding: 8px 16px; border: 1px solid var(--border-default); border-radius: var(--radius-sm); color: var(--action); text-decoration: none; }
+@media (max-width: 819px) {
+  .afr2-control-workspace, .afr2-sequence-workspace, .afr2-sequence-editor-body { gap: 20px; }
+  .afr2-control-workspace .afr2-glass-panel, .afr2-block-properties, .afr2-developer-profile { padding: 20px; }
+  .afr2-control-workspace .afr2-task-panel { padding-top: 20px; }
+}

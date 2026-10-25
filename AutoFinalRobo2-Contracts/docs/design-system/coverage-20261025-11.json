@@ -1,0 +1,49 @@
+{
+  "changeId": "AFR2-20261025-11",
+  "decision": "VIS-034",
+  "manual": "0.1.9",
+  "direction": "Confirmada",
+  "composition": "Propuesta",
+  "verification": "No verificada",
+  "targets": [
+    "useManualDrivePointers",
+    "ManualDriveOverlay",
+    "ManualDriveModel yaw",
+    "RobotModel optional wheel offsets",
+    "manual readout/help CSS"
+  ],
+  "gesture": {
+    "kind": "Two-touch twist, not pinch zoom or physical drive",
+    "pointerTypes": "Two touch contacts on same input surface; mixed/outside/third contact cancels",
+    "minimumSeparationPx": 40,
+    "activationAngleDeg": 3,
+    "angleDelta": "-atan2(sin(current-previous),cos(current-previous))",
+    "modelAxis": "Own centered vertical +Y, counterclockwise positive",
+    "response": "Direct gesture angle, no inertia; RAF coalesces visual updates",
+    "release": "Pose retained; remaining contact drains until up, no fallback to translation",
+    "mode": "Entering twist cancels previous target and latches local preview until closing/reopening",
+    "physicalYawSent": false,
+    "previousPhysicalTargetRelease": "Existing release callback only if a real target had been sent",
+    "keyboard": {
+      "Q": "local +15deg",
+      "E": "local -15deg",
+      "0": "local zero heading",
+      "repeat": false,
+      "textFieldsAndBrowserModifiers": "Keep native behavior"
+    },
+    "headingReset": "Next dialog open or0",
+    "headingReadout": "0..360deg,0.1precision; no per-frame live announcements",
+    "translationAfterTurn": "Screen-relative, inverse heading rotation to body wheel speeds",
+    "wheelPivotOffsets": "FL/RL=-theta*L/R; FR/RR=+theta*L/R, applied as deltas to preserve phase",
+    "nominalLmm": 300,
+    "nominalRadiusMm": 40,
+    "wheelFeedbackMeasured": false,
+    "reducedMotion": "Direct pose remains functional; secondary wheel/chevron animation suppressed",
+    "cameraFitUnchanged": 0.6,
+    "chevronStylesUnchangedExceptReadoutRules": true
+  },
+  "browser": false,
+  "phone": false,
+  "newDependencies": false,
+  "newPalette": false
+}

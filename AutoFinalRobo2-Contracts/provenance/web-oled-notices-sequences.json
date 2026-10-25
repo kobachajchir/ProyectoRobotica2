@@ -1,0 +1,150 @@
+{
+  "schema": "afr2-ui-oled-sequences-1",
+  "changeId": "AFR2-20261023-21",
+  "visualDecision": "VIS-018 (design-system 0.1.8)",
+  "verification": "Source adaptation only; no npm install, build, tests, validators or browser run executed",
+  "files": [
+    {
+      "target": "package.json",
+      "adaptation": "Added @dnd-kit/core 6.3.1, @dnd-kit/sortable 10.0.0 and @dnd-kit/utilities 3.2.2 matching reference/web/package.json",
+      "authorship": "Existing source authors preserved; AutoFinalRobo2 adaptation"
+    },
+    {
+      "target": "src/protocol/wsEnvelope.ts",
+      "adaptation": "Added control.renew, robot.sequence.begin/append/commit/start/cancel/status commands and sequence_runner capability",
+      "authorship": "Own project source with AutoFinalRobo2 adaptation"
+    },
+    {
+      "target": "src/protocol/afr2Client.ts",
+      "adaptation": "Extended priority STOP superseding policy to cancel in-flight robot.sequence.begin/append/commit/start requests",
+      "authorship": "Own project source with AutoFinalRobo2 adaptation"
+    },
+    {
+      "target": "src/protocol/robotState.ts",
+      "adaptation": "Added sequence mode to ROBOT_MODES",
+      "authorship": "Own project source with AutoFinalRobo2 adaptation"
+    },
+    {
+      "target": "src/features/connection/useRobotMode.ts",
+      "adaptation": "Added Spanish label for sequence mode",
+      "authorship": "Own project source with AutoFinalRobo2 adaptation"
+    },
+    {
+      "target": "src/features/connection/ConnectionContext.tsx",
+      "adaptation": "Added noticeId, stopNoticeVisible, dismissStopNotice and renewControlLease (1500 ms lease / 500 ms renewal)",
+      "authorship": "Own project source with AutoFinalRobo2 adaptation"
+    },
+    {
+      "target": "src/components/ui/DismissibleNotice.tsx",
+      "adaptation": "Shared dismissible notice component with 44x44px keyboard-accessible close button for header, modals and panels",
+      "authorship": "Own project source (AFR2-20261023-21 / VIS-018)"
+    },
+    {
+      "target": "src/components/ui/StatusNotice.tsx",
+      "adaptation": "Added optional onDismiss button support",
+      "authorship": "Own project source with AutoFinalRobo2 adaptation"
+    },
+    {
+      "target": "src/components/navigation/RouteNav.tsx",
+      "adaptation": "Replaced static stop feedback paragraph with shared DismissibleNotice bound to noticeId",
+      "authorship": "Own project source with AutoFinalRobo2 adaptation"
+    },
+    {
+      "target": "src/components/ui/FloatingModal.tsx",
+      "adaptation": "Replaced static modal stop feedback paragraph with shared DismissibleNotice bound to noticeId",
+      "authorship": "Adapted from ST2026-Radal PublicCatalogSearch.tsx; extended in AFR2-20261023-21"
+    },
+    {
+      "target": "src/features/oled/EncoderControl.tsx",
+      "adaptation": "Adapted layout, TurnArrowIcon, MonoBitmapEncoderIcon and manual refresh button from reference/web/src/components/ScreenStreamWorkspace.tsx; 800 ms long-press visual state retained until release",
+      "authorship": "Original ScreenStreamWorkspace authors preserved; adapted for AutoFinalRobo2 single-SW encoder"
+    },
+    {
+      "target": "src/features/oled/LiveOledViewer.tsx",
+      "adaptation": "Always renders EncoderControl (even when disabled) with explicit blocked reason and manual screen sync",
+      "authorship": "Own project source with ScreenStreamWorkspace adaptation"
+    },
+    {
+      "target": "src/features/control/ChassisSpinGraphic.tsx",
+      "adaptation": "Top-down 4WD Mecanum chassis SVG with counter-clockwise/clockwise circular arrow for manual spin controls and pivot sequence blocks",
+      "authorship": "Own project source (AFR2-20261023-21 / VIS-018)"
+    },
+    {
+      "target": "src/features/control/ControlMap.tsx",
+      "adaptation": "Added explicit source separation between Simulación and Robot conectado so simulated pose never enters telemetry state",
+      "authorship": "Own project source with AutoFinalRobo2 adaptation"
+    },
+    {
+      "target": "src/features/control/ControlPage.tsx",
+      "adaptation": "Replaced text rotation buttons with ChassisSpinGraphic controls, added 500 ms lease renewal loop and integrated Secuencias task",
+      "authorship": "Own project source with AutoFinalRobo2 adaptation"
+    },
+    {
+      "target": "src/features/control/sequences/sequenceTypes.ts",
+      "adaptation": "Versioned afr2-sequence-1 document schema, movement blocks, 4-wheel tracks (FL/FR/RL/RR) and editor/physical limits",
+      "authorship": "Adapted from reference/web/src/types/MotorTypes.ts for 4WD Mecanum"
+    },
+    {
+      "target": "src/features/control/sequences/mecanumKinematics.ts",
+      "adaptation": "Pure deterministic Mecanum kinematics, movement-to-wheel derivation without silent speed clipping, advanced copy and 10 ms simulator",
+      "authorship": "Own project source (AFR2-20261023-21)"
+    },
+    {
+      "target": "src/features/control/sequences/sequenceStorage.ts",
+      "adaptation": "LocalStorage autosave, program library and strict JSON import/export validation for afr2-sequence-1",
+      "authorship": "Own project source (AFR2-20261023-21)"
+    },
+    {
+      "target": "src/features/control/sequences/MotorBlock.tsx",
+      "adaptation": "Adapted from reference/web/src/components/MotorBlock.tsx with ChassisSpinGraphic, ramp trapezoid, terminal finish glyph and keyboard/button reordering",
+      "authorship": "Original MotorBlock authors preserved; adapted for AutoFinalRobo2"
+    },
+    {
+      "target": "src/features/control/sequences/TimelineRow.tsx",
+      "adaptation": "Adapted from reference/web/src/components/TimelineRow.tsx using @dnd-kit, shared time scale/cursor and 0 mm/s tail indicator",
+      "authorship": "Original TimelineRow authors preserved; adapted for AutoFinalRobo2"
+    },
+    {
+      "target": "src/features/control/sequences/SequenceEditorPanel.tsx",
+      "adaptation": "Adapted timeline/transport/property patterns from reference/web/src/pages/ControlSection.tsx for 2-level Mecanum editing, desktop side panel, mobile FloatingModal and ROBO2 profile 3 physical execution",
+      "authorship": "Original ControlSection authors preserved; adapted for AutoFinalRobo2"
+    },
+    {
+      "target": "src/styles/workspace.css",
+      "adaptation": "Added VIS-018 styles for DismissibleNotice, OLED live controls, ChassisSpinGraphic buttons and sequence timeline blocks",
+      "authorship": "Own project source (AFR2-20261023-21 / VIS-018)"
+    }
+  ],
+  "sources": [
+    {
+      "path": "D:/ProyectoRobotica2/AutoFinalRobo2-Web/reference/web/src/components/ScreenStreamWorkspace.tsx",
+      "role": "direct",
+      "authorship": "Original AutoMicro authors retained; read-only migration reference"
+    },
+    {
+      "path": "D:/ProyectoRobotica2/AutoFinalRobo2-Web/reference/web/src/hooks/useScreenStreamKeyboard.ts",
+      "role": "supporting",
+      "authorship": "Original AutoMicro authors retained; read-only migration reference"
+    },
+    {
+      "path": "D:/ProyectoRobotica2/AutoFinalRobo2-Web/reference/web/src/components/TimelineRow.tsx",
+      "role": "direct",
+      "authorship": "Original AutoMicro authors retained; read-only migration reference"
+    },
+    {
+      "path": "D:/ProyectoRobotica2/AutoFinalRobo2-Web/reference/web/src/components/MotorBlock.tsx",
+      "role": "direct",
+      "authorship": "Original AutoMicro authors retained; read-only migration reference"
+    },
+    {
+      "path": "D:/ProyectoRobotica2/AutoFinalRobo2-Web/reference/web/src/components/StopDiscontinuityGlyph.tsx",
+      "role": "supporting",
+      "authorship": "Original AutoMicro authors retained; read-only migration reference"
+    },
+    {
+      "path": "D:/ProyectoRobotica2/AutoFinalRobo2-Web/reference/web/src/pages/ControlSection.tsx",
+      "role": "direct",
+      "authorship": "Original AutoMicro authors retained; read-only migration reference"
+    }
+  ]
+}

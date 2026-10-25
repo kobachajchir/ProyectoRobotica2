@@ -1,0 +1,111 @@
+{
+  "changeId": "AFR2-20261024-13",
+  "date": "2026-10-24",
+  "webBuildExitCode": 0,
+  "firmwareSourceChanged": false,
+  "firmwareEvidence": "2026-10-24-12",
+  "extensionVersion": 6,
+  "firmwareVersion": "0.8.0",
+  "input": {
+    "referencePoseOnly": true,
+    "maxDpr": 1.5,
+    "authoritativeStopReadRequired": true,
+    "angularHysteresisDegrees": 30,
+    "entryThresholdPx": 22,
+    "pointerCapture": true,
+    "heartbeatMs": 180,
+    "acquireOnOpen": false,
+    "modelDemandRendering": true,
+    "leaseTtlMs": 1500,
+    "releaseThresholdPx": 14,
+    "directions": 8,
+    "diagonal": "L1 normalized to published speed limit",
+    "driveTtlMs": 400,
+    "leaseRenewMs": 500
+  },
+  "motion": {
+    "arrowsOpacityMs": 140,
+    "frequency": "occasional overlay, frequent functional gesture",
+    "reduced": "no displacement,120ms fade",
+    "exitMs": 200,
+    "keyboard": "immediate",
+    "purpose": [
+      "Spatial consistency",
+      "State indication"
+    ],
+    "feelVerified": false,
+    "material": "existing transform/clip-path",
+    "enterMs": 240,
+    "continuousFloatLoop": false,
+    "arrowEasing": "--ease-out"
+  },
+  "web": {
+    "manifestSha256": "aba433fc872762d520dee5db2e0b88da00071ea6b4a5b3c09f18c8a70d517982",
+    "assetCount": 7,
+    "estimatedFilesystemBytes": 1564672,
+    "espManifestSha256": "aba433fc872762d520dee5db2e0b88da00071ea6b4a5b3c09f18c8a70d517982",
+    "profile": "esp",
+    "gzipBytes": 1476266,
+    "filesystemBudgetBytes": 2867200,
+    "rawBytes": 3021347,
+    "promotion": [
+      {
+        "route": "/brand/favicon.webp",
+        "webGzipSha256": "8b09232de5bb978d3a5b27d73f1bfbbd9d23f87ce7d6afc45d81a39e67e9c02f",
+        "espGzipSha256": "8b09232de5bb978d3a5b27d73f1bfbbd9d23f87ce7d6afc45d81a39e67e9c02f",
+        "identical": true
+      },
+      {
+        "route": "/brand/Logo-1024.webp",
+        "webGzipSha256": "7a9d0a4da4327b952708ebab7ddc1a287af6ef0dc33dd93f382869e1e19414c5",
+        "espGzipSha256": "7a9d0a4da4327b952708ebab7ddc1a287af6ef0dc33dd93f382869e1e19414c5",
+        "identical": true
+      },
+      {
+        "route": "/brand/Logo-256.webp",
+        "webGzipSha256": "d273952807d216a6ca629cdeb6e13739b7fff23d1dd32fd4b50390c6453fd9f3",
+        "espGzipSha256": "d273952807d216a6ca629cdeb6e13739b7fff23d1dd32fd4b50390c6453fd9f3",
+        "identical": true
+      },
+      {
+        "route": "/draco/draco_decoder.wasm",
+        "webGzipSha256": "d2ea825f06f391962a850da94d68aa9778688a57cc7a79424938cc461ae1e759",
+        "espGzipSha256": "d2ea825f06f391962a850da94d68aa9778688a57cc7a79424938cc461ae1e759",
+        "identical": true
+      },
+      {
+        "route": "/draco/draco_wasm_wrapper.js",
+        "webGzipSha256": "5065d3fcaba12f33fea4dc9886646f6ad1f94e53a71407a92db52c4e8b4a440d",
+        "espGzipSha256": "5065d3fcaba12f33fea4dc9886646f6ad1f94e53a71407a92db52c4e8b4a440d",
+        "identical": true
+      },
+      {
+        "route": "/index.html",
+        "webGzipSha256": "17a6f6a6696b30ff2db1516207558f8c6d1e17198c2281574707901104bd412e",
+        "espGzipSha256": "17a6f6a6696b30ff2db1516207558f8c6d1e17198c2281574707901104bd412e",
+        "identical": true
+      },
+      {
+        "route": "/models/AutoFinalRobo2.glb",
+        "webGzipSha256": "30d0245bc9ed858a3d93ed8d25ae8f86d7434a9c219334cf25349da76a061e5f",
+        "espGzipSha256": "30d0245bc9ed858a3d93ed8d25ae8f86d7434a9c219334cf25349da76a061e5f",
+        "identical": true
+      }
+    ]
+  },
+  "model": {
+    "path": "AutoFinalRobo2-Web/public/models/AutoFinalRobo2.glb",
+    "bytes": 827232,
+    "sha256": "d10684704200caa4da0a6a98715e52abc446b9dee9cccdde32f33ee05fc927c7"
+  },
+  "testsRun": false,
+  "independentValidators": false,
+  "browserRender": false,
+  "phoneTests": false,
+  "physicalTests": false,
+  "flashed": false,
+  "cadModified": false,
+  "committed": false,
+  "remotePublished": false,
+  "verification": "Authorized Web build, OLED resource generation, TypeScript/Vite/minification/gzip/promotion and source/artifact inspection only. No browser, gestures, phone, physical/serial/reset, filesystem image, tests or standalone validators. Prior browser denial respected."
+}

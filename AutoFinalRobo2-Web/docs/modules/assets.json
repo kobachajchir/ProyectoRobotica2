@@ -2,16 +2,40 @@
   "schema": "afr2-module-1",
   "id": "web:module/reference/web/public",
   "title": "Recursos, estilos y empaquetado",
-  "responsibility": "Se conservan recursos necesarios para leer/reutilizar la UI anterior; el GLB es el robot previo y no representa Mecanum.",
-  "changes_required": "Crear identidad/modelo del nuevo robot; retirar 3D pesado si excede LittleFS/bundle. El package activo es React/Vite mínimo, sin postbuild hacia otro repo. El empaquetador produce artifacts/littlefs/dist dentro de Web, no publica ni flashea. Versiones iniciales tomadas del manifest origen; falta instalar/fijar lock propio y revisar requisitos Node. No se ejecutó build/npm.",
+  "responsibility": "WebP y modelo final CAD de AutoFinalRobo2 con Draco WASM local en ambos perfiles; legacy fuera de public.",
+  "changes_required": "Identificar flash/SPI/layout; comprobar posteriormente navegador y hardware con autorización. La compilación no acredita geometría ni cableado.",
   "evidence": [
     "reference/web/public",
     "reference/web/src/assets",
     "reference/web/package.json.upstream.txt",
-    "tools/package-web.mjs"
+    "tools/package-web.mjs",
+    "vite.config.ts",
+    "tools/copy-web-to-esp.mjs",
+    "tools/optimize-images.py",
+    "../AutoFinalRobo2-Contracts/changes/2026-10-24-03-web-payload.md",
+    "tools/web-budget.mjs",
+    "docs/model-asset-20261024.json",
+    "../AutoFinalRobo2-Contracts/changes/2026-10-24-04-final-model-littlefs.md"
   ],
   "findings": [
     "AFRDOC-005"
   ],
-  "status": "source-documented-not-built"
+  "status": "source-compiled-runtime-unverified",
+  "latest_change_id": "AFR2-20261025-11",
+  "runtime_profiles": {
+    "esp": {
+      "gzip_bytes": 1483767,
+      "asset_count": 7,
+      "filesystem_budget_bytes": 2867200,
+      "nominal_littlefs_bytes": 3145728,
+      "linker": "eagle.flash.4m3m.ld",
+      "physical_flash_identified": false,
+      "compiled_change_id": "AFR2-20261025-11"
+    },
+    "full": {
+      "gzip_bytes": 1450201,
+      "asset_count": 7,
+      "compiled_change_id": "AFR2-20261024-04"
+    }
+  }
 }

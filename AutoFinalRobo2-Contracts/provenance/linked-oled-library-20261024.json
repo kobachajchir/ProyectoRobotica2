@@ -1,0 +1,356 @@
+{
+  "changeId": "AFR2-20261024-09",
+  "date": "2026-10-24",
+  "authorship": "Current AFR2 AVR library and original F4 font/XBM author kobac preserved; browser port/generator and same-task linking workflow adapted with Codex. Prior08 resource attribution retained.",
+  "references": [
+    {
+      "path": "AutoFinalRobo2-Atmega/include/afr2_menu_catalog.h",
+      "bytes": 2763,
+      "sha256": "cdc9fb226a466249f11cd58096dacbc4086e001b03a754b51bee7d5ab21680e1",
+      "modifiedIn09": false,
+      "use": "Active AVR source. Data copied literally; pure layouts/primitives ported to browser. main.c inspected for ADDRESS7 only."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/include/afr2_icons.h",
+      "bytes": 575,
+      "sha256": "8fa35bc5976d6ca27c35abe11dfbdbcd2410c236723b576ce303ee7106ee9c3f",
+      "modifiedIn09": false,
+      "use": "Active AVR source. Data copied literally; pure layouts/primitives ported to browser. main.c inspected for ADDRESS7 only."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/include/afr2_screens.h",
+      "bytes": 3076,
+      "sha256": "77907906c128e2428f385406a5ead438d2f2df258f2ea256d10c8607a5dad173",
+      "modifiedIn09": false,
+      "use": "Active AVR source. Data copied literally; pure layouts/primitives ported to browser. main.c inspected for ADDRESS7 only."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/display/afr2_oled.c",
+      "bytes": 5579,
+      "sha256": "394bd0cc2c9cf2121bd7f920bc1e44c096ba7d2b2cd7ee1b2d04e1acb8ca36db",
+      "modifiedIn09": false,
+      "use": "Active AVR source. Data copied literally; pure layouts/primitives ported to browser. main.c inspected for ADDRESS7 only."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/display/font7x10.c",
+      "bytes": 6927,
+      "sha256": "bf30c638eeccb38bfa625edc517f31c951f05674072c4bbcd4cc0174fb09d954",
+      "modifiedIn09": false,
+      "use": "Active AVR source. Data copied literally; pure layouts/primitives ported to browser. main.c inspected for ADDRESS7 only."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/ui/afr2_menu_catalog.c",
+      "bytes": 13585,
+      "sha256": "bff087c0d3f87194cc2cfbf729e64d131061272dcdd8c878e6b4d9395361edab",
+      "modifiedIn09": false,
+      "use": "Active AVR source. Data copied literally; pure layouts/primitives ported to browser. main.c inspected for ADDRESS7 only."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/ui/afr2_screens.c",
+      "bytes": 11078,
+      "sha256": "05924ef35cc4b77559402502de7b4ecc391594db1535c135aeb60c7e7f3a9771",
+      "modifiedIn09": false,
+      "use": "Active AVR source. Data copied literally; pure layouts/primitives ported to browser. main.c inspected for ADDRESS7 only."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/ui/afr2_icons.c",
+      "bytes": 6171,
+      "sha256": "9a72ea1221bf8b04ad8fb767773b492aef951a339b235994d323007702fa33f7",
+      "modifiedIn09": false,
+      "use": "Active AVR source. Data copied literally; pure layouts/primitives ported to browser. main.c inspected for ADDRESS7 only."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/ui/afr2_network_screen.c",
+      "bytes": 4288,
+      "sha256": "2325db016325050e77e4f0bf033a0c2e0c754e7e633d9eccf4b365f10ea17f9b",
+      "modifiedIn09": false,
+      "use": "Active AVR source. Data copied literally; pure layouts/primitives ported to browser. main.c inspected for ADDRESS7 only."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/ui/afr2_sequence_screen.c",
+      "bytes": 2647,
+      "sha256": "29c21a31c609764be9f305b2d20e521be362f9b36277a5673a83a8d8af10952f",
+      "modifiedIn09": false,
+      "use": "Active AVR source. Data copied literally; pure layouts/primitives ported to browser. main.c inspected for ADDRESS7 only."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/main.c",
+      "bytes": 3803,
+      "sha256": "17ac06d01a6660fc2d125ee0d1f83738b9514a25d4b82638efca64211706a802",
+      "modifiedIn09": false,
+      "use": "Active AVR source. Data copied literally; pure layouts/primitives ported to browser. main.c inspected for ADDRESS7 only."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/afr2_network_wire.h",
+      "bytes": 660,
+      "sha256": "d77361e68c59a2329b4ca5f813c0089e5ea0dc1c7eb8832b8e16895eb62b1e26",
+      "modifiedIn09": false,
+      "use": "Shared enum identities copied by build."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/afr2_sequence_labels.h",
+      "bytes": 383,
+      "sha256": "67ad0587e1832c5b0a6a39b1238ffd6edc212949d619129bb5ada6fd089c63c0",
+      "modifiedIn09": false,
+      "use": "Shared enum identities copied by build."
+    }
+  ],
+  "files": [
+    {
+      "path": "AutoFinalRobo2-Web/package.json",
+      "bytes": 1389,
+      "sha256": "6085e4b5fee53d1e2d9073448641edb2328450c3c88ba7b7a237403f0d9aa65a",
+      "adaptation": "09: current AVR drawing/layout copy, literal generated resources and shared59 catalogue; live framebuffer only, labelled local static-menu preview, build linkage/guards, or documentation. Original authors/resources preserved."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/tools/sync-oled-library.mjs",
+      "bytes": 4979,
+      "sha256": "05a17db0166e47b40898afe6cbbee05b63753d69cf636af19079696bfb05a0f9",
+      "adaptation": "09: current AVR drawing/layout copy, literal generated resources and shared59 catalogue; live framebuffer only, labelled local static-menu preview, build linkage/guards, or documentation. Original authors/resources preserved."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/oled/screenCatalog.ts",
+      "bytes": 1653,
+      "sha256": "7833dd7c5f83881ab9483df87e8995000e55d43a527c39a019871a3d4b7454fb",
+      "adaptation": "09: current AVR drawing/layout copy, literal generated resources and shared59 catalogue; live framebuffer only, labelled local static-menu preview, build linkage/guards, or documentation. Original authors/resources preserved."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/oled/OledPage.tsx",
+      "bytes": 1739,
+      "sha256": "9a8b899b1001fb66e7adc77799aa19d55d5708f5c95039b7698fb30d0c58f3dd",
+      "adaptation": "09: current AVR drawing/layout copy, literal generated resources and shared59 catalogue; live framebuffer only, labelled local static-menu preview, build linkage/guards, or documentation. Original authors/resources preserved."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/oled/LiveOledViewer.tsx",
+      "bytes": 13229,
+      "sha256": "fe54571c15327b7f1c108df2f61d90b5db0225310f0162d3be9a2cd83f6a866d",
+      "adaptation": "09: current AVR drawing/layout copy, literal generated resources and shared59 catalogue; live framebuffer only, labelled local static-menu preview, build linkage/guards, or documentation. Original authors/resources preserved."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/oled/OledCanvas128x64.tsx",
+      "bytes": 4387,
+      "sha256": "a0d4e454eca9fd2a98bb669c33b0baf9ac979616d142759552ea2f776748e454",
+      "adaptation": "09: current AVR drawing/layout copy, literal generated resources and shared59 catalogue; live framebuffer only, labelled local static-menu preview, build linkage/guards, or documentation. Original authors/resources preserved."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/oled/remoteSnapshot.ts",
+      "bytes": 1937,
+      "sha256": "98e07c72396ee23f76960ff6337fc4ff61c7356e9a10d2b732b9145962935e4a",
+      "adaptation": "09: current AVR drawing/layout copy, literal generated resources and shared59 catalogue; live framebuffer only, labelled local static-menu preview, build linkage/guards, or documentation. Original authors/resources preserved."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/oled/oledRasterizer.ts",
+      "bytes": 2870,
+      "sha256": "f802ae3f1a336e19651df3a5412f5fd528e8da7f14adaf34631ddacb5c752f65",
+      "adaptation": "09: current AVR drawing/layout copy, literal generated resources and shared59 catalogue; live framebuffer only, labelled local static-menu preview, build linkage/guards, or documentation. Original authors/resources preserved."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/oled/font7x10.ts",
+      "bytes": 472,
+      "sha256": "1938980f1846311c273230cd8523eadd7557e99583ae917483ca5e61af03bb4b",
+      "adaptation": "09: current AVR drawing/layout copy, literal generated resources and shared59 catalogue; live framebuffer only, labelled local static-menu preview, build linkage/guards, or documentation. Original authors/resources preserved."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/oled/firmwareRenderer.ts",
+      "bytes": 13084,
+      "sha256": "2190d3d7dff1bc05b92d8cc9af5acc9b7cf0f44173b0e6299748dfba53c3aab5",
+      "adaptation": "09: current AVR drawing/layout copy, literal generated resources and shared59 catalogue; live framebuffer only, labelled local static-menu preview, build linkage/guards, or documentation. Original authors/resources preserved."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/oled/firmwareRenderer.sources.json",
+      "bytes": 746,
+      "sha256": "ea44b9c32bf6aac145d9bf200b97e097508b789ac9564854f8bfda98fe1d14b7",
+      "adaptation": "09: current AVR drawing/layout copy, literal generated resources and shared59 catalogue; live framebuffer only, labelled local static-menu preview, build linkage/guards, or documentation. Original authors/resources preserved."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/oled/generated/firmwareLibrary.ts",
+      "bytes": 16458,
+      "sha256": "b187609def50c10b9b2158a786ac0b57e249bc41319380d507f6c76159a1dd3f",
+      "adaptation": "09: current AVR drawing/layout copy, literal generated resources and shared59 catalogue; live framebuffer only, labelled local static-menu preview, build linkage/guards, or documentation. Original authors/resources preserved."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/oled/FirmwareLibraryPreview.tsx",
+      "bytes": 3144,
+      "sha256": "39bb9250e99c4d45e5dd3e5f5968bafe0ba15dfc1d48686b98ba4391480c051f",
+      "adaptation": "09: current AVR drawing/layout copy, literal generated resources and shared59 catalogue; live framebuffer only, labelled local static-menu preview, build linkage/guards, or documentation. Original authors/resources preserved."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/docs/modules/oled-ui.md",
+      "bytes": 1714,
+      "sha256": "9a547fdaba843ba92f7c03ca4662067bdffa4d43d08e1a3ea5c94eb8f25f71a2",
+      "adaptation": "09: current AVR drawing/layout copy, literal generated resources and shared59 catalogue; live framebuffer only, labelled local static-menu preview, build linkage/guards, or documentation. Original authors/resources preserved."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/docs/modules/oled-ui.json",
+      "bytes": 948,
+      "sha256": "164c441b46a015dd1876ce4ddd03e5ff5437e1e27308f92624faf8c51e187f33",
+      "adaptation": "09: current AVR drawing/layout copy, literal generated resources and shared59 catalogue; live framebuffer only, labelled local static-menu preview, build linkage/guards, or documentation. Original authors/resources preserved."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/README.md",
+      "bytes": 20334,
+      "sha256": "766cf1ad05f5e8fde5f447added4a40815b4745cb255e29e74db7d2ce40dfc1b",
+      "adaptation": "09: current AVR drawing/layout copy, literal generated resources and shared59 catalogue; live framebuffer only, labelled local static-menu preview, build linkage/guards, or documentation. Original authors/resources preserved."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/INFORME_ADAPTACION.md",
+      "bytes": 19089,
+      "sha256": "258bed68d3504e863bac83eddad3c3052fdc4ce72c45b52535973a3397f31262",
+      "adaptation": "09: current AVR drawing/layout copy, literal generated resources and shared59 catalogue; live framebuffer only, labelled local static-menu preview, build linkage/guards, or documentation. Original authors/resources preserved."
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/README.md",
+      "bytes": 9998,
+      "sha256": "26536be3eb23437dd731bd6866399c8edb8fc7bc84dee0d7933e68430d564b68",
+      "adaptation": "09: documentation of local Web package promotion only. Firmware/wire unchanged from08; no flashing."
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/INFORME_ADAPTACION.md",
+      "bytes": 9395,
+      "sha256": "c345f4e7941c8ef6a45ef2f32bffda71e0966b8266bca618f1c0e6211bee1af3",
+      "adaptation": "09: documentation of local Web package promotion only. Firmware/wire unchanged from08; no flashing."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/.agents/skills/afr2-screen-authoring/SKILL.md",
+      "bytes": 4931,
+      "sha256": "ca834b47e92a35ad622b7e4beadfa89ae92fbdf48499e718f373ddde964fdb39",
+      "adaptation": "09: shared59 screen metadata, OLED consumer/flows, same-task AVR/Web skill and template, honest source/build/physical states and evidence."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/.agents/skills/afr2-screen-authoring/references/architecture.md",
+      "bytes": 2219,
+      "sha256": "b9bd3292c3d324f3dce81268b4029336cf9759f23de09e82635267115bcaff98",
+      "adaptation": "09: shared59 screen metadata, OLED consumer/flows, same-task AVR/Web skill and template, honest source/build/physical states and evidence."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/.agents/skills/afr2-screen-authoring/references/web-linking.md",
+      "bytes": 2716,
+      "sha256": "13248d8b872f0e3401fd9ff746cbd28a242f020af5c2e3cfc800306a850f1d49",
+      "adaptation": "09: shared59 screen metadata, OLED consumer/flows, same-task AVR/Web skill and template, honest source/build/physical states and evidence."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/.agents/skills/afr2-screen-authoring/assets/screen-record.json",
+      "bytes": 804,
+      "sha256": "0ecd361e8d5f0704b839579a54df205b7375ad113f113eaf70fa53108581db7c",
+      "adaptation": "09: shared59 screen metadata, OLED consumer/flows, same-task AVR/Web skill and template, honest source/build/physical states and evidence."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/screens.json",
+      "bytes": 60043,
+      "sha256": "85622436d13f9ab2f6027c0005f0e026234c8d804207328bdbb4ece75908e17e",
+      "adaptation": "09: shared59 screen metadata, OLED consumer/flows, same-task AVR/Web skill and template, honest source/build/physical states and evidence."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/SCREEN_SYSTEM.md",
+      "bytes": 6235,
+      "sha256": "10d0c7f404062f1efa201a8c59747b1b3c53af3acf03e148f6ee65ba1fb25c76",
+      "adaptation": "09: shared59 screen metadata, OLED consumer/flows, same-task AVR/Web skill and template, honest source/build/physical states and evidence."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/overlays/connections.json",
+      "bytes": 5764,
+      "sha256": "6e90fc3b18466103dd0141609d717efea18da46d26cbcbed52c579b8efafb4a6",
+      "adaptation": "09: shared59 screen metadata, OLED consumer/flows, same-task AVR/Web skill and template, honest source/build/physical states and evidence."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/review/findings.json",
+      "bytes": 17870,
+      "sha256": "c04ab0baef05ea30b5a3d68a55153b42f4fd6251930ad3974d07889420ead48e",
+      "adaptation": "09: shared59 screen metadata, OLED consumer/flows, same-task AVR/Web skill and template, honest source/build/physical states and evidence."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/review/FINDINGS.md",
+      "bytes": 7334,
+      "sha256": "d8efb431eb19c807ccc8f23bccb51146fec56cddd5dabf361bd32e2318a63821",
+      "adaptation": "09: shared59 screen metadata, OLED consumer/flows, same-task AVR/Web skill and template, honest source/build/physical states and evidence."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/WEB_OLED_CONSUMER.md",
+      "bytes": 8478,
+      "sha256": "cfc440108ad37112d626f4c40379b7977e1a011700b5710b96cf318bb322acbf",
+      "adaptation": "09: shared59 screen metadata, OLED consumer/flows, same-task AVR/Web skill and template, honest source/build/physical states and evidence."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/ESTADO_IMPLEMENTACION.md",
+      "bytes": 7367,
+      "sha256": "7e9e31c602b274254b48afb817c5715b86de68c5491d95db15a239f6b1dc8345",
+      "adaptation": "09: shared59 screen metadata, OLED consumer/flows, same-task AVR/Web skill and template, honest source/build/physical states and evidence."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/PROMPT_CONTINUIDAD.md",
+      "bytes": 27291,
+      "sha256": "577f50d089444bf395f714d8f384daa9990f99623b38bb7407f849b6d4150812",
+      "adaptation": "09: shared59 screen metadata, OLED consumer/flows, same-task AVR/Web skill and template, honest source/build/physical states and evidence."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/README.md",
+      "bytes": 12239,
+      "sha256": "a9ab4dafbbd3875bf9612a27223aff6de30c484a298668eee205c05656a5731d",
+      "adaptation": "09: shared59 screen metadata, OLED consumer/flows, same-task AVR/Web skill and template, honest source/build/physical states and evidence."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/INFORME_ADAPTACION.md",
+      "bytes": 6652,
+      "sha256": "5401e7bf5202d45575a891e1bd458c344e52c559b3a1be03b78e90d456657ee0",
+      "adaptation": "09: shared59 screen metadata, OLED consumer/flows, same-task AVR/Web skill and template, honest source/build/physical states and evidence."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/CHANGELOG.md",
+      "bytes": 9812,
+      "sha256": "454afcd02937aa31d69f2c605407c673942b26d3930ca9822b4cc02ae614f196",
+      "adaptation": "09: shared59 screen metadata, OLED consumer/flows, same-task AVR/Web skill and template, honest source/build/physical states and evidence."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/provenance/README.md",
+      "bytes": 4006,
+      "sha256": "c3e7eaedf82691b868f7a14c0a0f04425b2edf5ccf94bcda842857b1b016c73e",
+      "adaptation": "09: shared59 screen metadata, OLED consumer/flows, same-task AVR/Web skill and template, honest source/build/physical states and evidence."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/changes/2026-10-24-09-linked-oled-library.md",
+      "bytes": 3843,
+      "sha256": "3577c06f67cba8220d5308b748638b4dc15e4b89f16e3937b1ccc82e6e42acba",
+      "adaptation": "09: shared59 screen metadata, OLED consumer/flows, same-task AVR/Web skill and template, honest source/build/physical states and evidence."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-24-09/README.md",
+      "bytes": 2100,
+      "sha256": "2451e928d06dec8d270e6af6f1402fdce6d18464cf600185c3f188217891c9a6",
+      "adaptation": "09: shared59 screen metadata, OLED consumer/flows, same-task AVR/Web skill and template, honest source/build/physical states and evidence."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-24-09/web-build.txt",
+      "bytes": 1754,
+      "sha256": "20ddbda38a631a394580a3423fd969dcbda896ee0f2ba133e87ed509595997bb",
+      "adaptation": "09: shared59 screen metadata, OLED consumer/flows, same-task AVR/Web skill and template, honest source/build/physical states and evidence."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-24-09/manifest.json",
+      "bytes": 2562,
+      "sha256": "b9519d9d4cacc877011953ee5067c90a35d54fd77ef45f43d3362902f93b9221",
+      "adaptation": "09: shared59 screen metadata, OLED consumer/flows, same-task AVR/Web skill and template, honest source/build/physical states and evidence."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/builds/2026-10-24-09/summary.json",
+      "bytes": 3976,
+      "sha256": "a7fe524f6041a14720926dc5f761e44370d716b8371d3e268df3d552b71c9468",
+      "adaptation": "09: shared59 screen metadata, OLED consumer/flows, same-task AVR/Web skill and template, honest source/build/physical states and evidence."
+    },
+    {
+      "path": "INFORME_MAESTRO.md",
+      "bytes": 12853,
+      "sha256": "55973c35c9e0a72f58f03848deda612f09c9d8ed993961072af4c570cb38dc9a",
+      "adaptation": "Current09 pointer; history preserved."
+    }
+  ],
+  "referenceProvenance": "provenance/oled-network-restart-20261024.json",
+  "skillAuthoringReference": "C:/Users/kobac/.codex/skills/.system/skill-creator/SKILL.md",
+  "skillAuthoringReferenceModified": false,
+  "verification": "Web compilation, source/artifact inspection. No tests, independent validators, browser/OLED render, UART/radio/reset, LittleFS image or flashing. Firmware evidence08 retained.",
+  "physicalParityVerified": false,
+  "f4PixelParity": false,
+  "differentialTests": false,
+  "cadModified": false,
+  "committed": false,
+  "remotePublished": false
+}
