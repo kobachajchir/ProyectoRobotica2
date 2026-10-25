@@ -1,5 +1,7 @@
 # Modelo completo del auto
 
+**Final AFR2-20261025-13:** [Fusion](AutoFinalRobo2-Final-20261025.f3d), [Blender](AutoFinalRobo2-Final-20261025.blend) y [entrega Web/ESP](../../docs/MODELO_FINAL_WEB_20261025.md). Incluye PCB y soporte editados por el usuario, materiales y GLB final de **871.756 bytes**. Fuentes anteriores históricas; maestro final conserva sus revisiones ocultas.
+
 AFR2-20261024-01: [Fusion v16](AutoFinalRobo2-20261024-ruedas.f3d), [Blender](AutoFinalRobo2-20261024.blend), [entrega](../../docs/RUEDAS_Y_BLENDER_20261024.md). Ruedas y casquillos colocados, GLB 827.232 bytes con Draco. Estados anteriores históricos.
 
 AFR2-20261023-07: [AutoFinalRobo2.f3d](AutoFinalRobo2.f3d), ensamble parcial exportado de Fusion versión 15. [Pasos, fuentes y pendientes](../../docs/ARMADO_FUSION_PASO_A_PASO.md). Ruedas de 80 mm y acoples pendientes. Scripts locales de autoría junto al maestro, con BaseFeatures simplificados y parámetros explícitos en Python; no reconstruyen solos las importaciones iniciales. El estado previo de abajo es histórico.

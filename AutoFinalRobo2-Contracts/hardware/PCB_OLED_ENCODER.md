@@ -1,6 +1,8 @@
-> AFR2-20261024-11: J1 conserva orden y formato; CLK/DT ahora D2/D3 por IRQ. [Captura y Hall](INTERRUPCIONES_ENCODER_HALL.md). Requisitos documentales; CAD pendiente.
+> **Vigente AFR2-20261025-12:** [PCB y soporte creados](../changes/2026-10-25-12-oled-encoder-pcb-support.md). J1 hembra 1x05 paso 2,54 mm; J2 JST de **2,00 mm**, +3V3/GND, confirmado por usuario; OLED en socket hembra 1x04 de 2,54 mm con GND/VCC/SCL/SDA de frente. Encoder de contactos a GND, sin VCC directo. Las secciones siguientes son requisitos históricos; tensión, paso de power y tornillería pendientes allí quedan reemplazados por esta revisión. Sin ERC/DRC ni prueba física.
 
 # Placa OLED/encoder y soporte: requisitos para la próxima etapa
+
+**Final AFR2-20261025-13:** [PCB/soporte manuales y modelo Web/ESP](../changes/2026-10-25-13-final-cad-web-model.md). Componentes TH; R2/R3 de 10 kΩ desde CLK/DT a +3V3. Sólo fondo, PCB de 2 mm directa al soporte, encoder directo y torretas comerciales de 15 mm sólo para OLED. Soporte sobre torretas comerciales de 5 mm al auto; tornillos y tuercas inferiores para PCB. Sin ERC/DRC ni prueba física; comprobación CAD solicitada sin penetraciones PCB–fondo. Sustituye los requisitos históricos de montaje que siguen.
 
 Actualización del usuario 2026-10-23. [Pinout](PINOUT.md). Estado: requisitos; no esquemático/PCB/modelo mecánico creados.
 

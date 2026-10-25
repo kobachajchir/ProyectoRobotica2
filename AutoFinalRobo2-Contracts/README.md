@@ -26,6 +26,8 @@
 
 # AutoFinalRobo2-Contracts
 
+**CAD/Web AFR2-20261025-13:** [modelo final de 871.756 bytes](changes/2026-10-25-13-final-cad-web-model.md), con PCB y soporte manuales; Fusion/Blender guardados y mismo GLB en Web y paquete ESP compilado/promovido. Firmware sin cambios ni flasheo; comprobación CAD/Draco y render Blender realizados.
+
 Hito AFR2-20261024-01: [Fusion v16 con ruedas y Blender](changes/2026-10-24-01-wheels-blender.md), GLB 827.232 bytes, Draco y materiales PBR. Atmega/ESP/Web sin cambios. Hitos anteriores históricos.
 
 Hito CAD AFR2-20261023-07: [ensamble parcial Fusion guardado/exportado](../AutoFinalRobo2-CAD/docs/ARMADO_FUSION_PASO_A_PASO.md), versión 15, con modelos aportados por el usuario y Model Y esencial. Ruedas 80 mm y acoples pendientes; sin construir ruedas ni cambiar código/contratos eléctricos. [Registro](changes/2026-10-23-07-fusion-assembly.md).

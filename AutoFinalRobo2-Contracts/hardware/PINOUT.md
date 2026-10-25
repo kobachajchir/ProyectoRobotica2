@@ -21,9 +21,9 @@ Bluetooth comparte UART1 en el manual y queda fuera de esta arquitectura; no col
 
 El usuario y las imágenes identifican las cabeceras SDA/SCL. Usarlas; en Mega equivalen a D20/PD1 y D21/PD0, sin exigir esos números impresos. El mapa OSOYOO aportado usa equivalencias UNO D18/D19 y A4/A5: no copiarlas a Mega. A4 permanece IR1; la continuidad del shield real aún no se ha medido.
 
-La placa OLED/encoder tendrá J1 1x5 de paso 2,54 mm para CLK→D2, DT→D3, SW→D42, SDA→cabecera SDA y SCL→cabecera SCL. J2 1x2, también 2,54 mm, tendrá VCC y GND comunes a ambos módulos. [Detalle eléctrico y mecánico](PCB_OLED_ENCODER.md).
+La placa OLED/encoder tiene J1 hembra 1x5 de paso 2,54 mm para CLK→D2, DT→D3, SW→D42, SDA→cabecera SDA y SCL→cabecera SCL. J2 1x2 JST de **2,00 mm** lleva +3V3 y GND; el OLED va en socket hembra 1x04 de 2,54 mm. Encoder sin breakout con comunes a GND. [Detalle eléctrico y mecánico vigente AFR2-20261025-12](PCB_OLED_ENCODER.md).
 
-Asignaciones AVR: CLK PE4/INT4, DT PE5/INT5, SW PL7, SDA PD1 y SCL PD0; SW activo bajo con pull-up. VCC común está acordado, tensión numérica/pull-ups pendientes de módulos reales. No asumir 5 V por ser Mega. No se ha conectado ni probado la nueva PCB.
+Asignaciones AVR: CLK PE4/INT4, DT PE5/INT5, SW PL7, SDA PD1 y SCL PD0; SW activo bajo con pull-up. +3V3 confirmado por el usuario; pull-ups y compatibilidad de niveles I2C con Mega siguen pendientes de identificar en los módulos reales. No se ha conectado ni probado la nueva PCB.
 
 Fuente de correspondencias: [pinout oficial Mega](https://docs.arduino.cc/resources/pinouts/A000067-full-pinout.pdf). A4 ya pertenece a IR1 y D13 al servo. D2/D3/D42 no figuran ocupados en el pinout recibido; confirmar montaje real antes de cablear.
 

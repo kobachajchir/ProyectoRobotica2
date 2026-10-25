@@ -2,6 +2,10 @@
 
 # AutoFinalRobo2 — informe maestro vigente
 
+**Modelo final AFR2-20261025-13:** [PCB/soporte del usuario y conjunto Web/ESP](AutoFinalRobo2-CAD/docs/MODELO_FINAL_WEB_20261025.md). KiCad, Fusion y Blender guardados; GLB **871.756 bytes**, idéntico al descomprimido de ESP. Web compilada y siete activos promovidos, paquete 1.505.042 bytes gzip. Comprobación CAD/Draco y render Blender; sin ERC/DRC, firmware nuevo ni flasheo. Sustituye el estado CAD pendiente inferior.
+
+**CAD AFR2-20261025-12:** [Panel OLED/encoder](AutoFinalRobo2-CAD/docs/PANEL_UI_20261025.md): fuentes KiCad 20×35 mm ruteadas en B.Cu, modelos STEP de Fusion y soporte con bisel/torretas M3×15 creados. Sin cambio de firmware/ESP/Web, ERC/DRC, interferencias ni montaje físico; JST comercial, niveles I2C y ranura M3 pendientes. Reemplaza únicamente el estado histórico de PCB/soporte pendientes.
+
 24/10/2026, AFR2-20261024-15. Un único Git en D:/ProyectoRobotica2 con cinco
 módulos. Proyecto independiente; D:/AutoProyecto es referencia de solo lectura.
 

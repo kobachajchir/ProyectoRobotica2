@@ -2,6 +2,10 @@
 
 # AutoFinalRobo2-CAD
 
+**Final AFR2-20261025-13:** [auto con PCB y soporte del usuario](docs/MODELO_FINAL_WEB_20261025.md), maestros Fusion/Blender guardados y GLB **871.756 bytes** integrado en Web y paquete ESP. Importación/Draco y render Blender comprobados; sin ERC/DRC ni prueba física. Las revisiones inferiores son históricas.
+
+**Vigente AFR2-20261025-12:** [Panel OLED/encoder](docs/PANEL_UI_20261025.md): esquema/PCB de 20×35 mm ruteada en B.Cu, modelos Fusion vinculados por STEP y soporte con bisel desmontable/torretas M3×15 creados. Sin ERC/DRC ni montaje físico; ranura M3 y niveles I2C pendientes. Los estados de CAD pendiente que siguen son históricos.
+
 AFR2-20261024-01: [ruedas y Blender](docs/RUEDAS_Y_BLENDER_20261024.md). Fusion v16 y Blender guardados; fotos/renders y GLB **827.232 bytes**, materiales PBR y Draco. Casquillos Ø6→Ø4 de referencia autorizados. Estados anteriores históricos.
 
 Actualización AFR2-20261023-07: [armado paso a paso en Fusion](docs/ARMADO_FUSION_PASO_A_PASO.md), versión 15 guardada y [maestro F3D exportado](mecanica/auto-completo/AutoFinalRobo2.f3d). Ensamble parcial de los CAD aportados en CADS; Model Y esencial al final. Ruedas de 80 mm y acoples pendientes, sin generar ruedas. Capas del chasis conservadas; inferencias y ejes documentados. Las secciones anteriores de entrega que siguen son históricas.

@@ -4,6 +4,8 @@ Independiente del AMI AutoMicro.
 
 | Fecha | ID | Cambio | Atmega | ESP | Web | Detalle |
 | --- | --- | --- | --- | --- | --- | --- |
+|2026-10-25|AFR2-20261025-13|Modelo final con PCB/soporte manuales y GLB de 871.756 B|sin cambio|firmware sin cambio; activos promovidos|compilada/empaquetada; modelo final|[CAD guardado, render/Draco y hashes](changes/2026-10-25-13-final-cad-web-model.md)|
+|2026-10-25|AFR2-20261025-12|PCB20×35 B.Cu, OLED en socket y soporte M3×15 en Fusion|sin cambio|sin cambio|sin cambio|[Diseño CAD, sin ERC/DRC ni montaje físico](changes/2026-10-25-12-oled-encoder-pcb-support.md)|
 |2026-10-25|AFR2-20261025-11|Giro local con dos dedos, rumbo/Q-E y ruedas|sin cambio, build01/gates0|firmware01, activos11|compilada/promovida, tacto pendiente|[Ficha](changes/2026-10-25-11-two-finger-local-rotation.md)|
 |2026-10-25|AFR2-20261025-10|Modelo manual mayor por cámara60%; chevrones intactos|sin cambio, build01/gates0|firmware01, activos10|compilada/promovida, visual pendiente|[Ficha](changes/2026-10-25-10-larger-manual-model.md)|
 |2026-10-25|AFR2-20261025-09|Restaurar diseño07, suavizar solo color|sin cambio, build01/gates0|firmware01, activos09|compilada/promovida, visual pendiente|[Ficha](changes/2026-10-25-09-restore-previous-trail.md)|

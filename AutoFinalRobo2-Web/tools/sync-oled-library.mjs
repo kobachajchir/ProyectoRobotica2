@@ -11,7 +11,8 @@ const avr = new URL('../AutoFinalRobo2-Atmega/', root);
 const contract = new URL('../AutoFinalRobo2-Contracts/contracts/', root);
 const sources = {};
 async function source(base, path) {
-  const text = await readFile(new URL(path, base), 'utf8');
+  // Hash the reviewed text independently of Git's Windows CRLF checkout.
+  const text = (await readFile(new URL(path, base), 'utf8')).replace(/\r\n/g, '\n');
   sources[`${base === avr ? 'atmega' : 'contracts'}:${path}`] = createHash('sha256').update(text).digest('hex');
   return text.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/[^\r\n]*/g, '');
 }
