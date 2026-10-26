@@ -5,6 +5,7 @@
  * Requires the same PREPARED snapshot, UI state, clock and previous framebuffer
  * as AVR. Does not fabricate telemetry or predict remote navigation/actions.
  */
+import { renderSensorScreen,type FirmwareSensorSnapshot } from './firmwareSensorRenderer';
 import { Afr2OledBuffer } from './oledRasterizer';
 import { FIRMWARE_LIBRARY as L } from './generated/firmwareLibrary';
 const S = L.symbols;
@@ -20,6 +21,7 @@ export interface FirmwareUiState {
   notice: { title: string; text: string; ms: number; kind: number } | null;
 }
 export interface FirmwareSnapshot {
+  sensor?: FirmwareSensorSnapshot; irRaw?: readonly number[]; irKind?:number; irValid?:boolean; lineValid?:boolean;
   lines: readonly string[]; labels: readonly string[]; disabled: readonly number[];
   sequenceState: number; sequenceCount: number; sequenceIndex: number; sequenceKind: number;
   sequenceDurationMs: number; sequenceElapsedMs: number;
@@ -61,6 +63,8 @@ function icon(o: Afr2OledBuffer, id: number, x: number, y: number, size: number)
 function menuIcon(node: number, target: number, action: number, label: string): number {
   if (label.startsWith('Volver')) return S.AFR2_ICON_BACK;
   if (action === S.AFR2_A_REBOOT_MEGA || action === S.AFR2_A_REBOOT_ESP || target === S.AFR2_N_REBOOT) return S.AFR2_ICON_REFRESH;
+  if (([S.AFR2_N_DISTANCE_SERVO,S.AFR2_N_RADAR_VIEW,S.AFR2_N_RADAR_CONFIG] as number[]).includes(target) || (action>=S.AFR2_A_RADAR_START && action<=S.AFR2_A_US_INTERVAL))return S.AFR2_ICON_RADAR;
+  if(target===S.AFR2_N_SERVO || target===S.AFR2_N_SERVO_ANGLE || action===S.AFR2_A_SERVO_CENTER || action===S.AFR2_A_SERVO_OFF)return S.AFR2_ICON_SERVO;
   if (target === S.AFR2_N_AP_INFO || node === S.AFR2_N_WIFI_AP) return S.AFR2_ICON_AP;
   if (target === S.AFR2_N_WIFI || target === S.AFR2_N_NETWORK || node === S.AFR2_N_WIFI || (action >= S.AFR2_A_WIFI_STATUS && action <= S.AFR2_A_WIFI_SET_MODE)) return S.AFR2_ICON_WIFI;
   if (target === S.AFR2_N_ENCODER_VIEW || target === S.AFR2_N_ENCODER_CONFIG) return S.AFR2_ICON_ENCODER;
@@ -163,6 +167,7 @@ export function renderFirmwareScreen(u: FirmwareUiState, o: Afr2OledBuffer, s: F
   } else if (u.keyboard) keyboard(o, u);
   else if (u.node === S.AFR2_N_SEQUENCE) sequence(o, s);
   else if (u.node === S.AFR2_N_NETWORK || u.node === S.AFR2_N_AP_INFO) network(o, u, s);
+  else if (([S.AFR2_N_RADAR_VIEW,S.AFR2_N_US_VIEW,S.AFR2_N_LINE_VIEW,S.AFR2_N_IR_VALUES,S.AFR2_N_SERVO_ANGLE] as number[]).includes(u.node))renderSensorScreen(o,u.node,s.sensor,{raw:s.irRaw??[],kind:s.irKind??0,valid:s.irValid??false,lineValid:s.lineValid??false});
   else if (u.edit) { o.drawText(0, 0, u.editingLabel); o.drawText(0, 23, String(u.draft).slice(0, 17)); o.drawText(0, 40, 'Click: aplicar'); o.drawText(0, 53, 'Largo: descartar'); }
   else {
     const view = Number(n[2]) !== 0, count = view ? 1 : 3;

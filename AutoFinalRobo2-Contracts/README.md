@@ -1,3 +1,13 @@
+> **Radar Web AFR2-20261026-02 / VIS-038:** escena continua, encuadre1m, vistas y jerarquía de lecturas; parámetros debajo del mapa. [Ficha](changes/2026-10-26-02-radar-composition.md). Fuente integrada; **sin compilación ni verificación visual ni promoción ESP**. Firmware/OLED/CAD y Modelo3D sin intervención. Sustituye la presentación16.
+
+> **Interfaz AFR2-20261025-16:** radar Web con líneas volumétricas, sector editable, selector doble y parámetros barra/número; Configuracion sin acento. [Ficha](changes/2026-10-25-16-radar-volume-scan-controls.md). **Solo fuente, sin build ni navegador ni promoción ESP**. La compilación14 no cubre esta interfaz; ATmega/ESP/OLED sin cambios en esta revisión. Estados inferiores históricos.
+
+> **Fuente Web AFR2-20261025-15:** [componentes interactivos del modelo](contracts/WEB_MODEL_INSPECTION.md), once selectores con ficha fija y accesos a controlar. Sin tests/build/validaciones/navegador ni promoción ESP; ATmega/ESP/CAD sin cambios. [Ficha](changes/2026-10-25-15-model-component-hotspots.md). El build14 inferior corresponde a la fuente previa.
+
+> **Compilación AFR2-20261025-14 autorizada y completada:** firmware ATmega (producto/comunicación/biblioteca), ESP y Web full compilan sin errores ni advertencias finales. Firmware0.10.0/EX01v8, Web0.3.0. [Evidencia](documentation/builds/2026-10-25-14/README.md). Sin tests, navegador ni flasheos; paquete Web local full generado, **ESP/data/dist conserva el paquete anterior**. La SRAM estática no certifica pila/ISR ni hardware. Estados previos inferiores históricos.
+
+> **Vigente AFR2-20261025-14:** [radar autónomo, servo/IR, pantallas hermanas y red](contracts/SENSORS_RADAR_8.md). Firmware nominal0.10.0/EX01v8 y Web0.3.0: fuente integrada y recursos OLED copiados, **sin compilar, probar, renderizar ni flashear**. Paquete ESP anterior; estados inferiores históricos. Modelo3D conserva pose; otras escenas siguen PWM aplicado.
+
 > **Vigente AFR2-20261025-11:** giro local con dos dedos/Q-E, orientación persistente y rumbo visible; levantar uno cancela hasta soltar ambos. No envía yaw físico. Cámara10/chevrones09 conservados. [Contrato](contracts/WEB_TOUCH_SIMULATION.md), [build11](documentation/builds/2026-10-25-11/README.md). Web compilada/promovida; firmware0.9.0/EX01v7/build01/gates0 sin cambios. Gesto/teléfono No verificados; estados inferiores históricos.
 
 > **Vigente AFR2-20261025-01:** [control Web directo](contracts/DIRECT_CONTROL_7.md), sin permiso previo ni habilitación desde OLED. Firmware0.9.0/EX01v7 y Web0.2.0,30comandos/59ScreenCodes, compilados juntos. STOP/caducidad/watchdog y requisitos físicos conservados; sin flash/tests/placas. Estados inferiores históricos.

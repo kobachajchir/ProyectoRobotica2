@@ -2,8 +2,8 @@
   "schema": "afr2-module-1",
   "id": "atmega:module/include/board_pinmap.h",
   "title": "Nuevo driver HC-SR04",
-  "responsibility": "No se localizó un driver reusable directo en la fuente F4. El pinout recibido asigna TRIG D30 y ECHO D31.",
-  "changes_required": "Implementar idle, trigger, wait-rise, wait-fall, publish y timeout con reloj fino; no delay/pulseIn. D31 requiere muestreo periódico de resolución suficiente o recableado a captura con ficha. Publicar distancia/validez/edad/error; timeout no significa camino libre. Si se usa servo D13, medir solo después de estabilización y marcar orientación. Cobertura frontal no protege lateral/retroceso.",
+  "responsibility": "No se localizÃƒÂ³ un driver reusable directo en la fuente F4. El pinout recibido asigna TRIG D30 y ECHO D31.",
+  "changes_required": "Implementar idle, trigger, wait-rise, wait-fall, publish y timeout con reloj fino; no delay/pulseIn. D31 requiere muestreo periÃƒÂ³dico de resoluciÃƒÂ³n suficiente o recableado a captura con ficha. Publicar distancia/validez/edad/error; timeout no significa camino libre. Si se usa servo D13, medir solo despuÃƒÂ©s de estabilizaciÃƒÂ³n y marcar orientaciÃƒÂ³n. Cobertura frontal no protege lateral/retroceso.",
   "evidence": [
     "include/board_pinmap.h",
     "../AutoFinalRobo2-Contracts/hardware/supplied/Pinout_OSOYOO_Mecanum.csv"
@@ -16,7 +16,29 @@
     "change_id": "AFR2-20261023-19",
     "date": "2026-10-24",
     "status": "source-integrated-uncompiled-unverified",
-    "note": "Timer3 CTC25us, espera subida/bajada/timeout32ms en D31; servo D13/Timer5 opcional, sin barrido. Tiempos físicos sin medir.",
+    "note": "Timer3 CTC25us, espera subida/bajada/timeout32ms en D31; servo D13/Timer5 opcional, sin barrido. Tiempos fÃƒÂ­sicos sin medir.",
     "contract": "../../../AutoFinalRobo2-Contracts/contracts/ROBO2_PRODUCT_EXTENSION.md"
+  },
+  "latest_afr2": {
+    "change_id": "AFR2-20261025-14",
+    "state": "compiled-runtime-unverified",
+    "contract": "../../../AutoFinalRobo2-Contracts/contracts/SENSORS_RADAR_8.md",
+    "producer": "src/platform/afr2_sensors.c",
+    "commands": "src/services/afr2_sensor_commands.c",
+    "screen_pair": "C sensor screens and Web firmwareSensorRenderer.ts",
+    "pins": {
+      "trig": 30,
+      "echo": 31,
+      "servo": 13
+    },
+    "sampling_us": 25,
+    "trigger_interval_ms": [
+      70,
+      1000
+    ],
+    "echo_timeout_ms": 32,
+    "position_source": "applied-pwm",
+    "radar_autonomous": true,
+    "build_evidence": "../../../AutoFinalRobo2-Contracts/documentation/builds/2026-10-25-14/README.md"
   }
 }

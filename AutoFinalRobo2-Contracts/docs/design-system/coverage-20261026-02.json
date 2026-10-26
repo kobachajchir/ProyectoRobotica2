@@ -1,0 +1,63 @@
+{
+  "schema": "afr2-visual-coverage-1",
+  "decision": "VIS-038",
+  "changeId": "AFR2-20261026-02",
+  "manualVersion": "0.1.9",
+  "mode": "APLICAR",
+  "approval": "explicit-user-draft-authorization",
+  "verification": "No verificada",
+  "canonical": [
+    "Web/src/features/control/ControlMap.tsx",
+    "Web/src/styles/control-map.css",
+    "Web/src/styles/tokens.css",
+    "Web/src/components/ui/Button.tsx",
+    "Web/src/components/ui/Disclosure.tsx"
+  ],
+  "confirmed": [
+    "redesign the radar rejected by the user",
+    "apply Emil and visual skills",
+    "preserve product identity"
+  ],
+  "observed": [
+    "shared GOTO map tokens",
+    "Button and Disclosure primitives",
+    "source-defined sensor ranges and units"
+  ],
+  "proposed": [
+    "continuous fading floor grid",
+    "ruby sector and volumetric arcs",
+    "projected framing and default one-meter view",
+    "large distance and secondary applied angle",
+    "parameters below the scene"
+  ],
+  "covered_in_source": [
+    "radar geometry and shader",
+    "perspective and top controls",
+    "primary measurement and disclosures",
+    "responsive layout",
+    "empty and historical states",
+    "existing numeric and dual range controls"
+  ],
+  "executed": [
+    "source inspection and editing"
+  ],
+  "not_executed": [
+    "tests",
+    "builds",
+    "validators",
+    "browser",
+    "visual comparison",
+    "contrast measurement",
+    "WebGL performance",
+    "physical acceptance",
+    "flash",
+    "ESP bundle promotion"
+  ],
+  "unchanged": [
+    "ATmega and OLED",
+    "ESP firmware and served assets",
+    "CAD and GLB",
+    "inspection model and its visibility controls"
+  ],
+  "supersedes": "VIS-037 scene and composition; retains its input behavior"
+}

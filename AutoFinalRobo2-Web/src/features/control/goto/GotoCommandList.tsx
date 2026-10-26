@@ -36,7 +36,7 @@ export const GotoCommandList = memo(function GotoCommandList({ commands, activeI
           </li>;
         })}
       </ol>
-      {!commands.length && <p className="afr2-goto-empty">Elegí un punto del mapa o agregá el primer movimiento.</p>}
+      {!commands.length && <p className="afr2-goto-empty">Elegi un punto del mapa o agrega el primer movimiento.</p>}
     </div>
     {expanded && <p className="afr2-help">El desplazamiento manual desactiva «Seguir activo». Editar la lista reinicia la vista previa.</p>}
   </>;

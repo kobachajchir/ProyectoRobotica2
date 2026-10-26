@@ -31,6 +31,9 @@ void Afr2Product_Init(Afr2Product *p,uint8_t reset) {
     Afr2Prefs_Load(&p->config,&p->prefs_loaded);Afr2Motor_Init();Afr2Sensors_Init();
 }
 uint8_t Afr2Product_Stop(void *ctx) {
+    Afr2Head_Stop();return Afr2Product_HaltMotion(ctx);
+}
+uint8_t Afr2Product_HaltMotion(void *ctx) {
     Afr2Product *p=ctx;Afr2Motor_Stop();
     if(p->sequence.state>=1 && p->sequence.state<=3)p->sequence.state=5;
     memset(p->pwm,0,sizeof(p->pwm));memset(p->target,0,sizeof(p->target));
@@ -58,6 +61,7 @@ static uint8_t calibrated(const Afr2Product *p) {
     return 1;
 }
 uint8_t Afr2Product_Drive(Afr2Product *p,int16_t vx,int16_t vy,int16_t wz,uint16_t ttl) {
+    if(Afr2Head_State()->running)return AFR2_BUSY;
     if(p->fault || p->hall_measuring)return AFR2_DENIED;
     if(!p->config.motor_ready || !calibrated(p))return AFR2_UNAVAILABLE;
     if(ttl<200 || ttl>1000 || abs32(vx)>p->config.speed_limit || abs32(vy)>p->config.speed_limit || abs32(wz)>3140)return AFR2_BAD;
@@ -69,6 +73,7 @@ uint8_t Afr2Product_Drive(Afr2Product *p,int16_t vx,int16_t vy,int16_t wz,uint16
     p->mode=AFR2_MANUAL;p->command_ms=p->now;p->local_started_ms=p->now;p->test_started_ms=ttl;p->stopped=0;return AFR2_OK;
 }
 uint8_t Afr2Product_Wheel(Afr2Product *p,uint8_t wheel,int16_t pwm,uint16_t duration) {
+    if(Afr2Head_State()->running)return AFR2_BUSY;
     if(wheel>3 || abs32(pwm)>p->config.pwm_limit || duration<100 || duration>2000)return AFR2_BAD;
     if(p->fault || p->hall_measuring)return AFR2_DENIED;
     Afr2Motor_Stop();memset(p->pwm,0,sizeof(p->pwm));memset(p->integral,0,sizeof(p->integral));memset(p->last_error,0,sizeof(p->last_error));
@@ -77,6 +82,7 @@ uint8_t Afr2Product_Wheel(Afr2Product *p,uint8_t wheel,int16_t pwm,uint16_t dura
     p->mode=AFR2_WHEEL_TEST;p->stopped=0;p->command_ms=p->now;p->test_started_ms=duration;return AFR2_OK;
 }
 uint8_t Afr2Product_StartLine(Afr2Product *p) {
+    if(Afr2Head_State()->running)return AFR2_BUSY;
     if(p->fault || p->hall_measuring)return AFR2_DENIED;
     if(!p->config.motor_ready || !p->sensors.line_valid || !calibrated(p))return AFR2_UNAVAILABLE;
     if(p->goto_state==1)p->goto_state=3;
@@ -86,6 +92,7 @@ uint8_t Afr2Product_StartGoto(Afr2Product *p,int32_t x,int32_t y) {
     return Afr2Product_StartGotoFull(p,x,y,0,p->config.speed_limit);
 }
 uint8_t Afr2Product_StartGotoFull(Afr2Product *p,int32_t x,int32_t y,int16_t theta,uint16_t speed) {
+    if(Afr2Head_State()->running)return AFR2_BUSY;
     if(abs32(x)>5000 || abs32(y)>5000 || abs32(theta)>3140 || (!x && !y && !theta) ||
        speed<10 || speed>p->config.speed_limit)return AFR2_BAD;
     if(p->fault || p->hall_measuring)return AFR2_DENIED;

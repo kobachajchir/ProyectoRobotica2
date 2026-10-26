@@ -177,9 +177,12 @@ void Broker::capabilities(JsonObject out) {
     }
 }
 void Broker::status(JsonObject out,uint32_t now,uint32_t client) {
-    out["megaLink"]=mega_.state(); out["controlMode"]="direct"; out["brokerTs"]=now;
+    out["megaLink"]=mega_.state(); out["controlMode"]="direct";out["extensionVersion"]=AFR2_EXT_VERSION;
+    JsonObject head=out["sensorHead"].to<JsonObject>();head["known"]=sensorKnown_ && mega_.ready();head["running"]=radarRunning_;head["enabled"]=servoEnabled_;head["ageMs"]=(uint32_t)(now-sensorAt_); out["brokerTs"]=now;
     if (mega_.hasReply()) out["megaAgeMs"]=mega_.age(now); else out["megaAgeMs"]=nullptr;
     capabilities(out["capabilities"].to<JsonObject>());
+    const char *headNames[]={"sensor_head","radar_scanner"};
+    for(const char *name:headNames){JsonObject capability=out["capabilities"][name].to<JsonObject>();bool available=productReady_ && mega_.ready() && (productFeatures_&(!strcmp(name,"radar_scanner")?AFR2_EXT_F_RADAR:AFR2_EXT_F_SENSOR_HEAD));capability["present"]=true;capability["implemented"]=available;capability["valid"]=available;capability["calibrated"]=false;capability["freshness"]=available?"fresh":"unknown";capability["reason"]="EX01v8; calibracion fisica pendiente.";}
     draftStatus(out["wifiDraft"].to<JsonObject>());
 }
 void Broker::dispatch(const BrokerRequest &req,uint32_t now) {
@@ -197,6 +200,13 @@ void Broker::dispatch(const BrokerRequest &req,uint32_t now) {
     if(!strcmp(req.command,"system.reboot") && req.generation!=generation_){error(req,"SUPERSEDED","Reinicio anterior a STOP/revocacion.");return;}
     if(dispatchSystem(req,now))return;
     if (!strcmp(req.command,"system.alive")) { status(payload,now,req.client); answer(req,frame); return; }
+    if(!strcmp(req.command,"wifi.info")){
+        wifi_.status(payload);auto *peer=ws_.client(req.client);
+        bool ap=peer && peer->client() && peer->client()->localIP()==WiFi.softAPIP();
+        payload["connectionInterface"]=ap?"AP":"STA";payload["connectionRssiDbm"]=nullptr;
+        if(!ap && WiFi.status()==WL_CONNECTED)payload["connectionRssiDbm"]=WiFi.RSSI();
+        payload["apClients"]=WiFi.softAPgetStationNum();payload["channel"]=WiFi.channel();payload["rssiSource"]="esp-sta";answer(req,frame);return;
+    }
     if (!strcmp(req.command,"wifi.status")) { wifi_.status(payload); answer(req,frame); return; }
     if(dispatchWifiDraft(req,now))return;
     if (!strcmp(req.command,"wifi.scan")) {
@@ -249,7 +259,7 @@ void Broker::finish(const MegaResult &r) {
     if(req.client==0 && !strcmp(req.command,"_web_pulse"))return;
     if(req.client==0 && (!strcmp(req.command,"_ext") || !strcmp(req.command,"_state") || !strcmp(req.command,"_limits"))) {
         if(r.timeout || r.transportFault || r.payload[8]!=AFR2_RESULT_OK){productReady_=false;return;}
-        if(r.command==AFR2_EXT_HELLO){extensionVersion_=afr2_get_u16(r.payload+13);productFeatures_=afr2_get_u32(r.payload+15);productReady_=extensionVersion_==7;}
+        if(r.command==AFR2_EXT_HELLO){extensionVersion_=afr2_get_u16(r.payload+13);productFeatures_=afr2_get_u32(r.payload+15);productReady_=extensionVersion_==AFR2_EXT_VERSION;}
         else if(r.command==AFR2_EXT_LIMITS){speedLimit_=afr2_get_u16(r.payload+9);pwmLimit_=r.payload[11];wheelMm_=afr2_get_u16(r.payload+13);radiusMm_=afr2_get_u16(r.payload+15);limitsAt_=millis();}
         else {productStopped_=r.payload[11]!=0;productStateAt_=millis();productMode_=r.payload[9];productOrigin_=r.payload[10];productFeatures_=afr2_get_u32(r.payload+17);}
         return;
@@ -270,6 +280,7 @@ void Broker::finish(const MegaResult &r) {
     const uint8_t *p=r.payload;
     if (r.command==AFR2_CMD_STOP) {
         if (p[9]!=1 || (p[10]!=0 && p[10]!=5)) { error(req,"INTERNAL_ERROR","Respuesta STOP invalida.",false,"atmega"); return; }
+        radarRunning_=servoEnabled_=false;sensorKnown_=true;sensorAt_=millis();payload["radarStopped"]=true;payload["servoEnabled"]=false;
         payload["stopped"]=true; payload["mode"]=p[10]==5?"fault":"idle";productOrigin_=0;
         publishStatus();
     } else if (r.command==AFR2_CMD_STATE) {

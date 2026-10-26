@@ -1,0 +1,29 @@
+{
+  "change_id": "AFR2-20261025-14",
+  "author_preserved": "kobac / reference F4",
+  "adaptations": [
+    {
+      "source": "AutoFinalRobo2-Atmega/reference/f4/Core/Src/eventManagers.c",
+      "sha256": "b2c0e8f439dc45bc0be1c5b097b181de3408eb99433f5e92841361910eedbb00",
+      "role": "IR rotation toggles, short return; preserve only authorized single-SW semantics"
+    },
+    {
+      "source": "AutoFinalRobo2-Atmega/reference/f4/Core/Src/screenWrappers.c",
+      "sha256": "617db2ed83da25f4696dc95cb5ee9963b2257f7116c531142c7cc914440c38de",
+      "role": "IR graph/raw sibling context and wrapper separation"
+    },
+    {
+      "source": "AutoFinalRobo2-Atmega/reference/f4/Core/Src/oled_utils.c",
+      "sha256": "3b50bd2496ef9d1afae38608f62fb36f93dd525b00edd362fa58514f39bf17dd",
+      "role": "IR bars/raw display adapted to five10bit channels"
+    },
+    {
+      "source": "AutoFinalRobo2-Web/public/models/AutoFinalRobo2.glb",
+      "sha256": "c1bb1d87b40a4224a56e8e6473692929b36b0497799dd0971d6561b4939a4475",
+      "role": "Read node names/transforms only; clone-only HC-SR04/bracket pivot, SG90 body fixed"
+    }
+  ],
+  "hardware_verified": false,
+  "visual_verified": false,
+  "cad_sources_modified": false
+}

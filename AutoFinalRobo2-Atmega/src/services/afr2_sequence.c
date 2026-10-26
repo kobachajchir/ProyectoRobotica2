@@ -96,7 +96,7 @@ uint8_t Afr2Sequence_Command(Afr2Product *p,uint8_t cmd,const uint8_t *d,uint8_t
            afr2_get_u32(d+9)!=s->total || (s->mode?!pulse_commit(s):s->sum!=s->total))return AFR2_RESULT_BAD_REQUEST;
         s->state=2;afr2_put_u32(out,token);out[4]=2;out[5]=s->count;afr2_put_u32(out+6,s->total);*length=10;
     } else if(cmd==AFR2_EXT_SEQ_START) {
-        if(n!=12 || !afr2_get_u32(d+8) || s->state!=2 || !p->stopped)return AFR2_RESULT_BAD_REQUEST;
+        if(n!=12 || !afr2_get_u32(d+8) || s->state!=2 || !p->stopped || Afr2Head_State()->running)return AFR2_RESULT_BAD_REQUEST;
         s->execution=afr2_get_u32(d+8);s->started=p->now;s->elapsed=0;s->index=0;s->state=3;
         p->origin=AFR2_SOURCE_WEB;p->mode=AFR2_SEQUENCE;p->stopped=0;
         if(s->mode){for(uint8_t w=0;w<4;w++)wheel_enter(p,w,s->first[w]);}

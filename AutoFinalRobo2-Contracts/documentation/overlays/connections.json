@@ -25,7 +25,7 @@
         "atmega:twi-backend"
       ],
       "state": "source-integrated-uncompiled-runtime-unverified",
-      "note": "Fuente11: encoder INT4/5 D2/D3, FIFO/main; Hall PCINT2 A8–A15 x1 macro0, preferencia de captura software. Sin nueva compilación ni hardware; CAD pendiente.",
+      "note": "Fuente11: encoder INT4/5 D2/D3, FIFO/main; Hall PCINT2 A8Ã¢â‚¬â€œA15 x1 macro0, preferencia de captura software. Sin nueva compilaciÃƒÂ³n ni hardware; CAD pendiente.",
       "changeId": "AFR2-20261024-11"
     },
     {
@@ -38,7 +38,7 @@
         "atmega:motors4"
       ],
       "state": "source-integrated-uncompiled-runtime-unverified",
-      "note": "Fuente11: encoder INT4/5 D2/D3, FIFO/main; Hall PCINT2 A8–A15 x1 macro0, preferencia de captura software. Sin nueva compilación ni hardware; CAD pendiente.",
+      "note": "Fuente11: encoder INT4/5 D2/D3, FIFO/main; Hall PCINT2 A8Ã¢â‚¬â€œA15 x1 macro0, preferencia de captura software. Sin nueva compilaciÃƒÂ³n ni hardware; CAD pendiente.",
       "changeId": "AFR2-20261024-11"
     },
     {
@@ -50,7 +50,7 @@
         "shared:hardware/PCB_OLED_ENCODER.md"
       ],
       "state": "source-integrated-uncompiled-runtime-unverified",
-      "note": "Fuente11: encoder INT4/5 D2/D3, FIFO/main; Hall PCINT2 A8–A15 x1 macro0, preferencia de captura software. Sin nueva compilación ni hardware; CAD pendiente.",
+      "note": "Fuente11: encoder INT4/5 D2/D3, FIFO/main; Hall PCINT2 A8Ã¢â‚¬â€œA15 x1 macro0, preferencia de captura software. Sin nueva compilaciÃƒÂ³n ni hardware; CAD pendiente.",
       "changeId": "AFR2-20261024-11"
     },
     {
@@ -69,7 +69,7 @@
         "AFRDOC-012",
         "AFRDOC-013"
       ],
-      "note": "Selector E_RX/E_TX y puerto directo separados; USART1 operación; cruce D0/D1 para puente USB. No cambio wire."
+      "note": "Selector E_RX/E_TX y puerto directo separados; USART1 operaciÃƒÂ³n; cruce D0/D1 para puente USB. No cambio wire."
     },
     {
       "id": "shared:flow/web-global-oled",
@@ -82,7 +82,7 @@
       ],
       "state": "source-integrated-compiled-runtime-unverified",
       "changeId": "AFR2-20261024-09",
-      "note": "EX01v5; catálogo59 en Web, copia AVR y visor framebuffer sin reconstrucción heredada. Sin prueba física."
+      "note": "EX01v5; catÃƒÂ¡logo59 en Web, copia AVR y visor framebuffer sin reconstrucciÃƒÂ³n heredada. Sin prueba fÃƒÂ­sica."
     },
     {
       "id": "shared:flow/web-control-map",
@@ -94,7 +94,7 @@
       ],
       "state": "source-integrated-compiled-runtime-unverified",
       "changeId": "AFR2-20261024-07",
-      "note": "Solo simulación local, sin pose física ni inferencia de orientación desde consignas. GLB a escala nativa; suelo por vértices precisos. Compilado, render no verificado."
+      "note": "Solo simulaciÃƒÂ³n local, sin pose fÃƒÂ­sica ni inferencia de orientaciÃƒÂ³n desde consignas. GLB a escala nativa; suelo por vÃƒÂ©rtices precisos. Compilado, render no verificado."
     },
     {
       "id": "shared:flow/car-wifi-draft",
@@ -203,7 +203,7 @@
         "esp:existing-robot.ui.action",
         "atmega:revision-guarded-encoder"
       ],
-      "note": "Numbered rows highlight, SW confirms. Existing delta±1 wire, up to3steps with fresh capture between steps. Dynamic count unknown uses basic encoder. No renderer/resource change or fabricated telemetry; no physical evidence."
+      "note": "Numbered rows highlight, SW confirms. Existing deltaÃ‚Â±1 wire, up to3steps with fresh capture between steps. Dynamic count unknown uses basic encoder. No renderer/resource change or fabricated telemetry; no physical evidence."
     },
     {
       "id": "shared:flow/filesystem-package-diagnostic",
@@ -232,6 +232,49 @@
         "atmega:1500ms-caducity"
       ],
       "note": "No grant/token/access switch; heartbeat cannot start or resume outputs. OLED and Web tables aligned,30commands/59codes."
+    },
+    {
+      "id": "shared:flow/sensor-head-v8",
+      "path": [
+        "atmega:timer3-echo-d31",
+        "atmega:head-snapshot",
+        "atmega:EX01v8-60..68",
+        "esp:broker-sensors",
+        "web:shared-head-reader",
+        "web:radar-ir-wheels"
+      ],
+      "state": "source-integrated-compiled-runtime-unverified",
+      "changeId": "AFR2-20261025-14",
+      "note": "Applied PWM/IR/raw/range ages, autonomous step scan; no build/runtime/hardware acceptance.",
+      "build_evidence": "builds/2026-10-25-14/README.md"
+    },
+    {
+      "id": "shared:flow/sibling-screens-v8",
+      "path": [
+        "atmega:encoder-ui",
+        "atmega:sibling-navigation",
+        "atmega:sensor-renderer",
+        "contracts:screens",
+        "web:firmware-sensor-renderer",
+        "web:live-framebuffer"
+      ],
+      "state": "source-integrated-compiled-runtime-unverified",
+      "changeId": "AFR2-20261025-14",
+      "note": "Separate sibling codes, short return, long main; resources copied, parity untested.",
+      "build_evidence": "builds/2026-10-25-14/README.md"
+    },
+    {
+      "id": "shared:flow/network-pill-v8",
+      "path": [
+        "esp:wifi-service",
+        "esp:wifi-info-socket-interface",
+        "web:shared-radio-reader",
+        "web:network-pill-modal"
+      ],
+      "state": "source-integrated-compiled-runtime-unverified",
+      "changeId": "AFR2-20261025-14",
+      "note": "AP vs STA reflects socket local IP; dBm is router RSSI, no AP-client signal fabricated.",
+      "build_evidence": "builds/2026-10-25-14/README.md"
     }
   ],
   "updated_by": "AFR2-20261025-01"

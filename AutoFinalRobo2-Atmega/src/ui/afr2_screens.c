@@ -8,7 +8,7 @@
 #include <avr/pgmspace.h>
 #define TXT(o,x,y,s) Afr2Oled_TextFlash(o,x,y,PSTR(s),AFR2_WHITE)
 static void wipe(void *data,uint16_t n){volatile uint8_t *p=data;while(n--)*p++=0;}
-static void sync_code(Afr2Ui *u){Afr2MenuNode n;Afr2Menu_Node(u->node,&n);u->screen=n.code;++u->generation;u->redraw=true;u->scroll_started_ms=u->clock_ms;u->scroll_redraw=false;}
+static void sync_code(Afr2Ui *u){Afr2MenuNode n;Afr2Menu_Node(u->node,&n);u->screen=n.code;++u->generation;++u->navigation_revision;u->redraw=true;u->scroll_started_ms=u->clock_ms;u->scroll_redraw=false;}
 void Afr2Ui_Init(Afr2Ui *u){memset(u,0,sizeof(*u));u->node=AFR2_N_HOME;sync_code(u);}
 void Afr2Ui_Attach(Afr2Ui *u,const Afr2UiOps *ops){u->ops=*ops;}
 static uint8_t invoke(Afr2Ui *u,uint8_t action,int32_t value,const void *data) {
@@ -114,6 +114,16 @@ void Afr2Ui_Apply(Afr2Ui *u,Afr2UiInput in) {
             u->redraw=true;}
         if(in.click){uint8_t r=invoke(u,u->editing.action,u->draft,0);u->edit=0;u->redraw=true;result(u,r);}return;
     }
+    if(u->node==AFR2_N_RADAR_VIEW || u->node==AFR2_N_US_VIEW || u->node==AFR2_N_LINE_VIEW || u->node==AFR2_N_IR_VALUES || u->node==AFR2_N_SERVO_ANGLE){
+        if(in.click){back(u,u->node==AFR2_N_SERVO_ANGLE?AFR2_N_SERVO:u->node==AFR2_N_LINE_VIEW || u->node==AFR2_N_IR_VALUES?AFR2_N_SENSORS:AFR2_N_DISTANCE_SERVO);return;}
+        if(in.rotation){
+            if(u->node==AFR2_N_SERVO_ANGLE){int32_t angle=(u->ops.value?u->ops.value(u->ops.ctx,AFR2_A_SERVO_ANGLE):90)+in.rotation;
+                if(angle<0)angle=0;
+                if(angle>180)angle=180;
+                uint8_t r=invoke(u,AFR2_A_SERVO_ANGLE,angle,0);if(r)result(u,r);u->redraw=true;}
+            else if(in.rotation%2){u->node=u->node==AFR2_N_RADAR_VIEW?AFR2_N_US_VIEW:u->node==AFR2_N_US_VIEW?AFR2_N_RADAR_VIEW:u->node==AFR2_N_LINE_VIEW?AFR2_N_IR_VALUES:AFR2_N_LINE_VIEW;sync_code(u);}
+        }return;
+    }
     Afr2MenuNode n;Afr2Menu_Node(u->node,&n);
     if(in.rotation){int16_t selected=(int16_t)u->selection+in.rotation;
         while(selected<0)selected+=n.count;
@@ -174,6 +184,7 @@ void Afr2Ui_Render(Afr2Ui *u,Afr2Oled *o,const Afr2UiSnapshot *s) {
     } else if(u->keyboard)render_keyboard(u,o);
     else if(u->node==AFR2_N_SEQUENCE)Afr2SequenceScreen_Render(o,s);
     else if(u->node==AFR2_N_NETWORK || u->node==AFR2_N_AP_INFO)Afr2NetworkScreen_Render(o,u,s);
+    else if(u->node==AFR2_N_RADAR_VIEW || u->node==AFR2_N_US_VIEW || u->node==AFR2_N_LINE_VIEW || u->node==AFR2_N_IR_VALUES || u->node==AFR2_N_SERVO_ANGLE)Afr2SensorScreen_Render(o,u->node,s);
     else if(u->edit) {
         char value[18];Afr2Oled_Text(o,0,0,u->editing.label,AFR2_WHITE);
         snprintf(value,sizeof(value),"%ld",(long)u->draft);Afr2Oled_Text(o,0,23,value,AFR2_WHITE);

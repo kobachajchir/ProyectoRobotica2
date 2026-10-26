@@ -16,11 +16,11 @@ function uint(value: unknown, max: number): value is number { return typeof valu
  * substitute a missing remote capture or infer state from a ScreenCode. */
 export function parseRemoteOled(payload: Record<string, unknown>): RemoteOledSnapshot {
   const code = payload.screenCode;
-  if (typeof code !== 'string' || !/^0x(?:[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/.test(code) || !uint(payload.selection, 255) || !uint(payload.firstVisible, 255)) throw new Error('El snapshot OLED no tiene identidad y selección válidas.');
+  if (typeof code !== 'string' || !/^0x(?:[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/.test(code) || !uint(payload.selection, 255) || !uint(payload.firstVisible, 255)) throw new Error('El snapshot OLED no tiene identidad y seleccion validas.');
   const screenCode = normalizeScreenCode(code)!;
   const buffer = new Afr2OledBuffer();
   if (typeof payload.framebufferBase64 === 'string') {
-    if (payload.framebufferBase64.length !== 1368) throw new Error('La captura debe usar Base64 canónico para 1024 bytes.');
+    if (payload.framebufferBase64.length !== 1368) throw new Error('La captura debe usar Base64 canonico para 1024 bytes.');
     const data = atob(payload.framebufferBase64);
     if (btoa(data) !== payload.framebufferBase64 || data.length !== 1024) throw new Error('El framebuffer OLED debe contener exactamente 1024 bytes.');
     for (let index = 0; index < 1024; index++) buffer.buffer[index] = data.charCodeAt(index);

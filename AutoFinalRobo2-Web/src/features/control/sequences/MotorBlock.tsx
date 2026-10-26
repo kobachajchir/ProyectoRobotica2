@@ -10,7 +10,7 @@ export interface TimelineVisualBlock {
   summary: string;
   /** Para bloques de giro ('pivot'): sentido del giro sobre el eje. */
   pivotDirection?: 'ccw' | 'cw';
-  /** Para rampas: proporción inicial/final (-1..1) para dibujar el trapecio. */
+  /** Para rampas: proporcion inicial/final (-1..1) para dibujar el trapecio. */
   rampFromRatio?: number;
   rampToRatio?: number;
   /** Para curva ('curve'): lado izquierdo o derecho. */
@@ -45,9 +45,9 @@ function StopTerminalGlyph() {
 }
 
 /**
- * Bloque visual de línea de tiempo adaptado de `reference/web/src/components/MotorBlock.tsx` (AFR2-20261023-21 / VIS-018).
- * - Superficie sólida, acento carmesí/rubí en selección y reproducción, sin dependencias de PIN o balance.
- * - Incluye símbolo `ChassisSpinGraphic` para bloques de giro sobre el eje (`pivot`), trapecio SVG para `ramp`
+ * Bloque visual de linea de tiempo adaptado de `reference/web/src/components/MotorBlock.tsx` (AFR2-20261023-21 / VIS-018).
+ * - Superficie solida, acento carmesi/rubi en seleccion y reproduccion, sin dependencias de PIN o balance.
+ * - Incluye simbolo `ChassisSpinGraphic` para bloques de giro sobre el eje (`pivot`), trapecio SVG para `ramp`
  *   y glifo terminal para `finish`.
  */
 export function MotorBlock({
@@ -147,7 +147,7 @@ export function MotorBlock({
         </svg>
       )}
 
-      {/* Barra de progreso en reproducción */}
+      {/* Barra de progreso en reproduccion */}
       {active && !isFinish && (
         <div
           className="pointer-events-none absolute inset-y-0 left-0 bg-[var(--action)]/20 transition-none"

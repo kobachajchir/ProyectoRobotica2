@@ -5,6 +5,9 @@
 #include "afr2_menu_catalog.h"
 #include <avr/pgmspace.h>
 #include <string.h>
+/* Original AFR2 radar and servo pictograms, 2026-10-25. */
+static const uint8_t Icon_Radar_bits[] PROGMEM={0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0xe0,0x0f,0x30,0x18,0x58,0x30,0xcc,0x67,0xe6,0xcc,0xb2,0x98,0x12,0x91,0xfe,0xff,0x00,0x00,0x00,0x00};
+static const uint8_t Icon_Servo_bits[] PROGMEM={0x00,0x00,0x00,0x00,0x00,0x00,0xf0,0x1f,0x00,0x01,0x00,0x01,0x00,0x01,0x00,0x01,0xf8,0x1f,0x08,0x10,0x08,0x10,0x08,0x10,0x08,0x10,0x08,0x10,0xf8,0x1f,0x00,0x00};
 static const uint8_t Icon_Info_bits[] PROGMEM = {0xe0,0x03,0x18,0x0c,0xc4,0x10,0x42,0x21,0xc2,0x20,0x01,0x40,0xc1,0x41,0x41,0x41,0x41,0x41,0x41,0x41,0x42,0x21,0xc2,0x21,0x04,0x10,0x18,0x0c,0xe0,0x03,0x00,0x00};
 static const uint8_t Icon_Wifi_bits[] PROGMEM = {
     0x80,0x0f,0x00,0xe0,0x3f,0x00,0x78,0xf0,0x00,0x9c,0xcf,0x01,
@@ -63,6 +66,8 @@ static const Icon icons[AFR2_ICON_COUNT] PROGMEM={
  { Icon_OperationWarning_bits, 16, 16 },
  { Icon_Motor_bits, 16, 16 },
  { Icon_Prefs_bits, 16, 16 },
+ { Icon_Radar_bits, 16, 16 },
+ { Icon_Servo_bits, 16, 16 },
 };
 void Afr2Icon_Draw(Afr2Oled *o,uint8_t id,int16_t x,int16_t y,uint8_t size) {
     if(id>=AFR2_ICON_COUNT || !size)return;
@@ -79,6 +84,8 @@ void Afr2Icon_Draw(Afr2Oled *o,uint8_t id,int16_t x,int16_t y,uint8_t size) {
 uint8_t Afr2Menu_Icon(uint8_t node,uint8_t target,uint8_t action,const char *label) {
     if(!strncmp(label,"Volver",6))return AFR2_ICON_BACK;
     if(action==AFR2_A_REBOOT_MEGA || action==AFR2_A_REBOOT_ESP || target==AFR2_N_REBOOT)return AFR2_ICON_REFRESH;
+    if(target==AFR2_N_DISTANCE_SERVO || target==AFR2_N_RADAR_VIEW || target==AFR2_N_RADAR_CONFIG || (action>=AFR2_A_RADAR_START && action<=AFR2_A_US_INTERVAL))return AFR2_ICON_RADAR;
+    if(target==AFR2_N_SERVO || target==AFR2_N_SERVO_ANGLE || action==AFR2_A_SERVO_CENTER || action==AFR2_A_SERVO_OFF)return AFR2_ICON_SERVO;
     if(target==AFR2_N_AP_INFO || node==AFR2_N_WIFI_AP)return AFR2_ICON_AP;
     if(target==AFR2_N_WIFI || target==AFR2_N_NETWORK || node==AFR2_N_WIFI || (action>=AFR2_A_WIFI_STATUS && action<=AFR2_A_WIFI_SET_MODE))return AFR2_ICON_WIFI;
     if(target==AFR2_N_ENCODER_VIEW || target==AFR2_N_ENCODER_CONFIG)return AFR2_ICON_ENCODER;

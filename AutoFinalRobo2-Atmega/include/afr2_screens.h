@@ -5,6 +5,7 @@
 #include "afr2_encoder_ui.h"
 #include "afr2_menu_catalog.h"
 #include "afr2_network_wire.h"
+#include "afr2_sensor_head.h"
 #define AFR2_SCREEN_SEQUENCE 0x03002cUL
 #define AFR2_SCREEN_HOME 0x010001UL
 #define AFR2_SCREEN_MENU 0x010002UL
@@ -22,7 +23,7 @@ typedef struct {
 typedef struct {uint8_t node,selection,first;} Afr2UiPosition;
 typedef struct {char title[18],text[18];uint16_t ms;uint8_t kind;} Afr2Notification;
 typedef struct {
-    uint32_t screen,revision,generation,clock_ms,notice_started_ms,scroll_started_ms,scroll_render_ms;
+    uint32_t screen,revision,generation,navigation_revision,clock_ms,notice_started_ms,scroll_started_ms,scroll_render_ms;
     uint8_t node,selection,firstVisible,depth,edit,keyboard,keyboard_field,key,length;
     uint8_t notices,head,tail;
     bool redraw,scroll_redraw;
@@ -36,6 +37,10 @@ typedef struct {
     uint16_t encoder_clicks,encoder_holds;
 } Afr2Ui;
 typedef struct {
+    uint32_t sensor_now_ms;
+    const Afr2SensorHead *head; /* stable borrowed main-loop state during render */
+    uint16_t ir_raw[5];
+    uint8_t ir_kind,ir_valid;
     bool line_valid,ultrasonic_valid;
     uint8_t line_bits;
     uint16_t ultrasonic_mm;
@@ -51,6 +56,7 @@ typedef struct {
      * allocations or hardware reads. AP passphrase never enters remote capture. */
     const char *network_ssid,*network_ap_ssid,*network_password,*network_ip,*network_ap_ip;
 } Afr2UiSnapshot;
+void Afr2SensorScreen_Render(Afr2Oled *o,uint8_t node,const Afr2UiSnapshot *s);
 void Afr2SequenceScreen_Render(Afr2Oled *o,const Afr2UiSnapshot *s);
 void Afr2Ui_Init(Afr2Ui *ui);
 void Afr2Ui_Attach(Afr2Ui *ui,const Afr2UiOps *ops);

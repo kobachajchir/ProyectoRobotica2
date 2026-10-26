@@ -97,3 +97,50 @@ importar comandos F4, menú/atrás adicionales ni confirmación por clic de fila
 Biblioteca AVR y framebuffer remoto conservados. Hash y adaptación por archivo
 en provenance/developer-oled-tree-20261024.json. Dirección Confirmada; composición
 Propuesta. Compilación no acredita píxeles, diseño visual o hardware.
+
+## VIS-035 / AFR2-20261025-14
+
+Fuentes canónicas confirmadas por el usuario: ControlMap/GOTO actual y FloatingModal/Configuración actuales; soporte de tokens/globales. Objetivos: Sensores, red global y rig del servo de escenas. Skills visual-identity-system, apple-design, emil-design-eng; la imagen adjunta es referencia ilustrativa del radar OLED, no paleta Web ni datos de ensayo. Inspección de fuente y metadatos del GLB; sin navegador/render ni validadores. Borrador0.1.9 aceptado expresamente en la conversación.
+
+## Alcance15 — Componentes del visor 3D / VIS-036
+
+Dirección humana Confirmada: puntos sobre piezas, ficha local fija y navegación
+a controlar. Modo APLICAR; continúa borrador0.1.9 autorizado para esta extensión.
+Fuentes canónicas: manual/tokens y decisiones existentes, sin redefinir marca.
+Supporting: tokens.css, GlassSurface/popover, Button, UiIcon y estructura de
+TaskSections. Objetivo direct: Model3DPage, ModelInspection, modelComponents y
+model-inspection.css. Dependencias funcionales: RobotModel/useRobotModel,
+OrbitControls, Sensores y Control para abrir la tarea/rueda del enlace. El GLB
+actual aporta referencias de pieza, no autoridad visual. OLED/encoder están
+fusionados en un nodo; sus puntos y el del ESP son referencias locales Inferidas.
+
+Skills: visual-identity-system/APLICAR y emil-design-eng para componentes/tacto,
+feedback y ausencia de interpolación en seguimiento funcional. Se inspeccionaron
+fuentes locales; no se ejecutaron workflows de tests/validadores/render por la
+restricción humana. No se elevan los objetivos a canon ni se usan fuentes de
+marca externas. Composición Propuesta, visual No verificada; cobertura15.
+
+
+## Fuentes de aplicación16 — VIS-037
+
+- Confirmada: pedido humano25/10/2026 de radar neón/3D, selector angular doble,
+  barras con número editable, explicación de inversión y Configuracion sin acento.
+- Canónica: manual0.1.9/tokens propios, ControlMap/GOTO y FloatingModal/Disclosure.
+- Observada: RadarScene/SensorsPage y contrato SENSORS_RADAR_8 con rangos actuales.
+- Propuesta en fuente: geometría volumétrica, halo rubí y composición de controles.
+- Skills aplicadas: visual-identity-system, apple-design, emil-design-eng y animate.
+- Sin ejecución visual, compilación, tests ni validadores; no se usó documentación
+  de referencia como autorización adicional ni se cambió CAD/firmware/OLED.
+
+
+## Fuentes de aplicación26-02 — VIS-038
+
+Confirmada: pedido humano26/10/2026 de rehacer el radar y aplicar Emil.
+Canónica: manual/tokens0.1.9 autorizados, ControlMap/ControlMapScene,
+control-map.css y Button/Disclosure. Supporting: theme y RobotModel existente.
+Objetivo: RadarScene/SensorsPage/radar.css; no se eleva su composición anterior
+a fuente visual. No se cambia Modelo3D, GLB, OLED, firmware ni marca.
+Propuesta: suelo continuo, retícula/sector, encuadre1m y jerarquía de lecturas.
+Skills: visual-identity-system, apple-design, emil-design-eng. Inspección de
+fuente y edición; no navegador, tests, compilación ni validadores por instrucción
+humana. Cobertura26-02 no acredita el resultado visual.

@@ -1,0 +1,21 @@
+{
+  "changeId": "AFR2-20261025-15",
+  "decisionId": "VIS-036",
+  "manualVersion": "0.1.9",
+  "mode": "APLICAR",
+  "direction": "Confirmada",
+  "composition": "Propuesta",
+  "anchors": "Inferida",
+  "verification": "No verificada",
+  "authorization": "Pedido humano de puntos, fichas locales y accesos consistentes con la identidad existente; continúa borrador0.1.9 autorizado.",
+  "sources": ["index.md", "tokens.json", "manual.md", "components.md", "decisions.md", "sources.md"],
+  "supporting": ["Web/src/styles/tokens.css", "Web/src/components/ui/UiIcon.tsx", "Web/src/components/ui/GlassSurface.tsx", "Web/src/components/ui/Button.tsx"],
+  "targets": ["Web/src/features/model3d/Model3DPage.tsx", "Web/src/features/model3d/ModelInspection.tsx", "Web/src/features/model3d/modelComponents.ts", "Web/src/styles/model-inspection.css", "Web/src/features/sensors/SensorsPage.tsx", "Web/src/features/control/ControlPage.tsx"],
+  "components": ["servo", "ultrasound", "fl", "fr", "rl", "rr", "atmega", "esp", "oled", "encoder", "line"],
+  "sourceCoverage": ["puntos proyectados", "separación con líneas", "ficha fija no modal", "clic exterior distinto de arrastre", "X/Escape", "foco de retorno", "desplegable por teclado", "destinos de tarea/rueda", "44px táctil", "tokens de ambos temas", "scroll local", "movimiento/transparencia reducidos"],
+  "executedChecks": [],
+  "pending": ["render visual y contraste", "teclado/lector en ejecución", "gestos y selección en móvil", "referencias inferidas sobre modelo renderizado"],
+  "atmega": "Sin cambios",
+  "esp": "Sin cambios, sin promoción data/dist",
+  "web": "Fuente implementada, sin build ni ejecución"
+}

@@ -1,24 +1,13 @@
-# Nuevo driver HC-SR04
+> **Actualización de compilación14:** pedido humano posterior autoriza compilar/corregir. ATmega/ESP/Web full: exit0, sin errores ni advertencias finales. [Informe](../../../AutoFinalRobo2-Contracts/documentation/builds/2026-10-25-14/README.md). Sin tests, validadores independientes, navegador, montaje físico ni flasheos. Paquete local full generado; no promovido a ESP/data/dist. El texto de entrega sin compilar inferior es histórico.
 
-AFR2-20261023-19, fuente integrada sin compilar/probar: Timer3 CTC25us, espera subida/bajada/timeout32ms en D31; servo D13/Timer5 opcional, sin barrido. Tiempos físicos sin medir.
-[Producto vigente](../PRODUCTO_ATMEGA.md). El diseño histórico siguiente conserva su evidencia.
+# HC-SR04, servo y radar
 
+AFR2-20261025-14. Implementación en fuente, sin nuevo build ni prueba física. [Contrato de cabeza EX01v8](../../../AutoFinalRobo2-Contracts/contracts/SENSORS_RADAR_8.md).
 
-[Maestro](../../../INFORME_MAESTRO.md) · [Informe del repositorio](../../INFORME_ADAPTACION.md).
+Driver en src/platform/afr2_sensors.c: D30 TRIG, D31 ECHO muestreado por Timer3 cada25µs, subida/bajada y timeout32ms. Disparos70..1000ms, default70. Distancia nominal en mm con grano4,31mm; no se afirma exactitud física. Medidas20..4000mm; errores y edad explícitos.
 
-## Utilidad
+Servo D13/Timer5:50Hz,1000..2000µs; pending y applied separados y cambio al inicio del pulso. Snapshot publica PWM aplicado/ángulo nominal; sin feedback físico. ADC de línea5canales10bits/digital sin acoplar rawValid a calibración.
 
-No se localizó un driver reusable directo en la fuente F4. El pinout recibido asigna TRIG D30 y ECHO D31.
+Radar local no bloqueante, por pasos5°, configuración RAM y37bins/cola16. Permanece activo al salir/desconectar ESP/Web; STOP/fallo/reinicioATmega lo apaga. Tracción bloqueada durante radar. Datos laterales no habilitan protección frontal. Centrar y esperar medición fresca antes de conducir; apagar PWM no centra ni garantiza orientación.
 
-## Adaptación
-
-Implementar idle, trigger, wait-rise, wait-fall, publish y timeout con reloj fino; no delay/pulseIn. D31 requiere muestreo periódico de resolución suficiente o recableado a captura con ficha. Publicar distancia/validez/edad/error; timeout no significa camino libre. Si se usa servo D13, medir solo después de estabilización y marcar orientación. Cobertura frontal no protege lateral/retroceso.
-
-## Evidencia y alcance
-
-- [include/board_pinmap.h](../../include/board_pinmap.h)
-- [../AutoFinalRobo2-Contracts/hardware/supplied/Pinout_OSOYOO_Mecanum.csv](../../../AutoFinalRobo2-Contracts/hardware/supplied/Pinout_OSOYOO_Mecanum.csv)
-
-Hallazgos: AFRDOC-004. [Registro](../../../AutoFinalRobo2-Contracts/documentation/review/FINDINGS.md).
-
-Estado: lectura/copia o fuente parcial indicada; sin compilación, tests ni prueba física. La API detallada de origen está en el corpus AMDOC importado; no equivale a API AVR adaptada.
+APIs públicas: Afr2Head_State/Servo/Interval/Configure/Start/Stop/Read y Afr2Sensors_Init/Task. Comandos de aplicación en src/services/afr2_sensor_commands.c. Render puro en src/ui/afr2_sensor_screens.c y contraparte Web firmwareSensorRenderer.ts. Pruebas/captura/recursos y límites en ficha14.

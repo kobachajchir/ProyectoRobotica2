@@ -15,9 +15,9 @@ const DIRECTIONS: ManualDirection[] = [
   { id: 'n', label: 'adelante', vx: 1, vy: 0, angle: 0 },
   { id: 'ne', label: 'adelante a la derecha', vx: 1, vy: -1, angle: 45 },
   { id: 'e', label: 'la derecha', vx: 0, vy: -1, angle: 90 },
-  { id: 'se', label: 'atrás a la derecha', vx: -1, vy: -1, angle: 135 },
-  { id: 's', label: 'atrás', vx: -1, vy: 0, angle: 180 },
-  { id: 'sw', label: 'atrás a la izquierda', vx: -1, vy: 1, angle: 225 },
+  { id: 'se', label: 'atras a la derecha', vx: -1, vy: -1, angle: 135 },
+  { id: 's', label: 'atras', vx: -1, vy: 0, angle: 180 },
+  { id: 'sw', label: 'atras a la izquierda', vx: -1, vy: 1, angle: 225 },
   { id: 'w', label: 'la izquierda', vx: 0, vy: 1, angle: 270 },
   { id: 'nw', label: 'adelante a la izquierda', vx: 1, vy: 1, angle: 315 },
 ];
@@ -196,12 +196,12 @@ export function ManualDriveOverlay({ open, origin, onClose, onRelease, onDirecti
     return inverseMecanumKinematics(vx * perAxis, vy * perAxis, 0, DEFAULT_KINEMATIC_PROFILE.lxPlusLyMm);
   }, [direction, displayedSpeed, enabled, headingRad]);
   const headingDegrees = ((Math.round(headingRad * 1800 / Math.PI) % 3600) + 3600) % 3600 / 10;
-  return <FloatingModal open={open} origin={origin} size="fullscreen" title="Conducción manual" kicker="Control táctil"
+  return <FloatingModal open={open} origin={origin} size="fullscreen" title="Conduccion manual" kicker="Control tactil"
     initialFocusRef={input} onBeforeClose={cancel} onBeforeStop={cancel} onClose={onClose}>
     <div className="afr2-manual-drive" data-pressed={pressed} data-mode={mode}>
       <div className="afr2-manual-stage">
         <div className="afr2-manual-shadow" aria-hidden="true" />
-        <div className="afr2-manual-mode"><span className="afr2-manual-mode-label" role="status">{mode === 'preview' ? <><UiIcon name="cube" /> Simulación local</> : <><UiIcon name="wifi" /> Control del robot</>}</span>
+        <div className="afr2-manual-mode"><span className="afr2-manual-mode-label" role="status">{mode === 'preview' ? <><UiIcon name="cube" /> Simulacion local</> : <><UiIcon name="wifi" /> Control del robot</>}</span>
           {mode === 'preview' && <span id={`${uid}-heading`} className="afr2-manual-heading-angle" aria-live="off"><span className="sr-only">Rumbo simulado: </span>{headingDegrees.toFixed(1)}°</span>}</div>
         <div className="afr2-manual-model" aria-hidden="true" style={{ transform: `translate(${-8 * (direction?.vy ?? 0)}px, ${-8 * (direction?.vx ?? 0)}px)` }}><RenderBoundary key={viewerKey} fallback={<Unavailable onFailure={failed} />}>
           <Suspense fallback={<p className="afr2-manual-model-message">Cargando modelo 3D…</p>}><Model onReady={ready} wheelSpeeds={wheelSpeeds} headingRad={headingRad} /></Suspense>
@@ -236,17 +236,17 @@ export function ManualDriveOverlay({ open, origin, onClose, onRelease, onDirecti
             </g>
           </svg>
         </span>)}</div>
-        <div ref={input} className="afr2-manual-input" role="group" tabIndex={0} aria-label="Un dedo desplaza; girá dos dedos para rotar la simulación"
+        <div ref={input} className="afr2-manual-input" role="group" tabIndex={0} aria-label="Un dedo desplaza; gira dos dedos para rotar la simulacion"
           aria-describedby={`${uid}-help ${uid}-heading`} aria-keyshortcuts="ArrowUp ArrowDown ArrowLeft ArrowRight Q E 0" aria-disabled={!enabled} onPointerDown={down} onPointerMove={move}
           onPointerUp={end} onPointerCancel={end} onLostPointerCapture={lost}
           onBlur={cancel} onContextMenu={event => { event.preventDefault(); cancel(); }} />
-        <span className="afr2-manual-gesture-hint" aria-hidden="true">{twisting ? 'Girá los dos dedos · Levantá ambos para volver al arrastre' : pressed && !direction ? 'Arrastrá para elegir una dirección' : ''}</span>
+        <span className="afr2-manual-gesture-hint" aria-hidden="true">{twisting ? 'Gira los dos dedos · Levanta ambos para volver al arrastre' : pressed && !direction ? 'Arrastra para elegir una direccion' : ''}</span>
       </div>
       <footer className="afr2-manual-footer">
-        <p className="afr2-manual-direction" role="status" aria-live="polite">{twisting ? turnSide > 0 ? 'Giro simulado a la izquierda' : turnSide < 0 ? 'Giro simulado a la derecha' : 'Giro con dos dedos' : direction ? `${mode === 'preview' ? 'Simulando' : 'Moviendo'} hacia ${direction.label}` : mode === 'preview' ? 'Simulación detenida' : !modelReady ? 'Preparando modelo 3D…' : 'Deslizá y mantené para mover'}</p>
-        <p id={`${uid}-help`} className="afr2-help">Un dedo desplaza en pantalla · Dos dedos giran la simulación · Soltá para detener.
+        <p className="afr2-manual-direction" role="status" aria-live="polite">{twisting ? turnSide > 0 ? 'Giro simulado a la izquierda' : turnSide < 0 ? 'Giro simulado a la derecha' : 'Giro con dos dedos' : direction ? `${mode === 'preview' ? 'Simulando' : 'Moviendo'} hacia ${direction.label}` : mode === 'preview' ? 'Simulacion detenida' : !modelReady ? 'Preparando modelo 3D…' : 'Desliza y mantene para mover'}</p>
+        <p id={`${uid}-help`} className="afr2-help">Un dedo desplaza en pantalla · Dos dedos giran la simulacion · Solta para detener.
           <span className="afr2-manual-keyboard-help">Flechas: mover · Q/E: girar 15° · 0: centrar rumbo.</span>
-          <span>{mode === 'preview' ? `${error ? 'Consigna sin confirmar. ' : ''}No envía movimientos. Cerrá y volvé a abrir para usar el robot cuando esté disponible.` : 'Vista superior · Dirección y ruedas solicitadas, sin feedback físico.'}</span></p>
+          <span>{mode === 'preview' ? `${error ? 'Consigna sin confirmar. ' : ''}No envia movimientos. Cerra y volve a abrir para usar el robot cuando este disponible.` : 'Vista superior · Direccion y ruedas solicitadas, sin feedback fisico.'}</span></p>
         {modelFailed && <Button onClick={() => { cancel(); clearRobotModelCache(); setModelReady(false); setModelFailed(false); setViewerKey(value => value + 1); }}>Reintentar modelo 3D</Button>}
         <div className="afr2-manual-speed"><label htmlFor={`${uid}-speed`}>{mode === 'preview' ? 'Velocidad simulada' : 'Velocidad de movimiento'}</label><output htmlFor={`${uid}-speed`}>{displayedSpeed} <span>mm/s</span></output>
           <input id={`${uid}-speed`} type="range" min={10} max={displayedMaxSpeed} step={10} value={displayedSpeed}

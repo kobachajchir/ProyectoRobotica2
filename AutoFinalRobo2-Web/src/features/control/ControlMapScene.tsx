@@ -100,7 +100,7 @@ export function ControlMapScene({ fallback, ...props }: MapSceneProps & { fallba
   const position = props.pose ? world(props.pose.xMm, props.pose.yMm) : [0, 0, 0] as [number, number, number];
   const floorSize = Math.max(16, Math.ceil(8 / props.zoom));
   return <Canvas orthographic={props.view === 'top'} frameloop="demand" dpr={[1, 1.5]} camera={{ position: [1, 1, 1], fov: 45, near: .01, far: 400 }}
-    fallback={fallback ?? <div className="afr2-map-fallback">WebGL no está disponible.</div>}>
+    fallback={fallback ?? <div className="afr2-map-fallback">WebGL no esta disponible.</div>}>
     <color attach="background" args={[color.floor]} /><ambientLight intensity={1.6} /><directionalLight position={[3, 5, 2]} intensity={1.8} />
     <CameraRig {...props} />
     <gridHelper position={floorCenter} args={[floorSize, floorSize * 2, color.grid, color.grid]} />

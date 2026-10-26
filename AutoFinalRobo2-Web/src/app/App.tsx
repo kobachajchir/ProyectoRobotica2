@@ -23,7 +23,7 @@ export function App() {
     <ThemeProvider>
       <ConnectionProvider>
         <StartupWelcome>
-          {/* Un único Toaster raíz fuera de contenedores con transform/overflow (VIS-007) */}
+          {/* Un unico Toaster raiz fuera de contenedores con transform/overflow (VIS-007) */}
           <Afr2Toaster />
           <WifiDraftModal />
           <HashRouter>
@@ -40,7 +40,7 @@ export function App() {
                     <Suspense
                       fallback={
                         <div className="afr2-glass-panel p-8 text-center text-sm font-semibold">
-                          Cargando módulo 3D bajo demanda...
+                          Cargando modulo 3D bajo demanda...
                         </div>
                       }
                     >

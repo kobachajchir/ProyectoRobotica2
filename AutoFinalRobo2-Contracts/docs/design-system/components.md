@@ -108,3 +108,57 @@ Teclado: botones nativos, nombres y aria-pressed en cámaras, sin enviar movimie
 
 Propuesta implementada/compilada; cotejo visual pendiente por navegador denegado.
 
+
+
+## VIS-035 — Sensores y red (fuente, sin comprobación visual)
+
+| Componente | Comportamiento | Evidencia / límite |
+|---|---|---|
+| Radar/servo | Composición GOTO, escala métrica, datos laterales, muestras por ángulo, control directo y barrido autónomo | Dirección Confirmada; layout Propuesto, sin navegador |
+| IR/Ruedas | Tareas separadas, originales5canales con unidad correcta, sin ceros para desconocido | Fuente integrada; adquisición real pendiente |
+| NetworkPill/Red | Verde STA, amarillo AP, icono según RSSI, modal propio y Configuración renombrada | Usa tokens/primitivas; señal AP no se inventa |
+| RobotModel/Needle | Interpolación críticamente amortiguada, giro HC/soporte, cuerpo SG90 fijo; Modelo3D estático | Pivote visual inferido; PWM off no centra la animación |
+| OLED hermanas | C/TS enteros, mismos recursos, códigos propios; giro alterna/corto retorna | Biblioteca copiada; paridad física no comprobada |
+
+## VIS-036 — Inspección de componentes del modelo
+
+| Componente | Anatomía y comportamiento | Evidencia / límite |
+|---|---|---|
+| ModelPoint | Punto exacto, línea y selector numerado44px; proyección inmediata con cámara, separación de vecinos, oculta fuera del encuadre | Pedido Confirmado; referencias Inferidas del GLB, sin comprobar visualmente |
+| ModelInfo | Ficha no modal en un rincón fijo; icono, modelo, explicación, datos, acción; scroll propio, X/Escape/clic exterior | Composición Propuesta con material popover común; drag/zoom conserva ficha |
+| Selector de piezas | Desplegable con los once componentes y foco alternativo si el punto sale del encuadre | Teclado, nombres accesibles y referencias DOM; ejecución No verificada |
+| Accesos a tareas | Distancia/servo, línea, rueda preseleccionada, Control, Wi-Fi y OLED | Solo navegación; no inicia movimientos o reinicios |
+
+Manual0.1.9 autorizado; superficie/acento/iconos existentes. Ambos temas por
+tokens, tamaño mínimo44px, reduced motion/transparency y estado sin telemetría
+inventada. No cambia semántica del encoder ni crea pantallas de firmware.
+Alcance fuente; sin build/browser/tests/validaciones. Cobertura15 y contrato
+WEB_MODEL_INSPECTION.md documentan referencias y límites.
+
+
+## VIS-037 — Radar y parámetros (fuente16)
+
+| Componente | Antes | Fuente actual | Verificación |
+|---|---|---|---|
+| RadarScene | Cámara cenital y líneas planas | Plataforma/anillos tubulares, proyección oblicua, contorno/eco con volumen, sector previo | No verificada; sin render/build |
+| ScanAngleRange | Desde/Hasta independientes | Barra doble0–180°, paso/separación5°, campos numéricos y operación táctil/teclado | No verificada; sin navegador |
+| ScanRangeField | Entrada numérica sola | Valor/unidad arriba a la derecha, barra y límites; Enter/blur/Escape | No verificada; sin navegador |
+| Configuracion | Etiquetas dispares y título mal codificado | Mismo nombre sin acento en lateral, modal, tooltip y nombre accesible | Fuente; sin comprobación visual |
+
+El campo numérico se normaliza antes de modificar el borrador y la barra. El
+barrido físico sigue exigiendo Aplicar; no se producen órdenes al arrastrar los
+parámetros. Carácter rubí propio, chrome neutro y límites del firmware vigentes.
+
+
+## VIS-038 — Radar como instrumento (fuente26-02)
+
+| Before | After | Why |
+|---|---|---|
+| Escena en pedestal sólido | Campo continuo y sector rubí con retícula desvanecida | Integración con el mapa canónico |
+| Encuadre4m y controles en una columna larga | Inicio1m, vistas Perspectiva/Superior y parámetros debajo | Protagonismo del auto y espacio del mapa |
+| Datos al mismo nivel | Distancia principal, ángulo aplicado y diagnósticos en Disclosure | Jerarquía de lectura |
+
+`radar.css` concentra esta composición; `sensors.css` conserva los controles
+compartidos/IR/ruedas/red. ScanRangeField/ScanAngleRange y Button/Disclosure
+siguen siendo las primitivas. GPU bajo demanda y shader sin reloj. Estado real:
+fuente integrada; no renderizado/compilado/comparado. No verificado.

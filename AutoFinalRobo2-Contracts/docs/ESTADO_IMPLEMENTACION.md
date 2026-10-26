@@ -1,3 +1,11 @@
+> **Web26-02 / VIS-038:** nueva composición del radar, encuadre/vistas y parámetros separados de la columna de medición. [Ficha](../changes/2026-10-26-02-radar-composition.md). Solo fuente, visual **No verificada**; sin tests/build/validadores/navegador/promoción ESP. ATmega/ESP/OLED sin cambios; compilación14 anterior a esta interfaz.
+
+> **Web16 / VIS-037:** fuente de radar volumétrico y parámetros con barras/números integrada. [Ficha](../changes/2026-10-25-16-radar-volume-scan-controls.md). Sin compilación, tests, validadores, navegador ni promoción. Firmware ATmega/ESP y OLED sin modificación; evidencia14 anterior a esta interfaz. Cambios15/16 de fuente Web no quedan cubiertos por ese build.
+
+> **Compilación AFR2-20261025-14 autorizada y completada:** firmware ATmega (producto/comunicación/biblioteca), ESP y Web full compilan sin errores ni advertencias finales. Firmware0.10.0/EX01v8, Web0.3.0. [Evidencia](../documentation/builds/2026-10-25-14/README.md). Sin tests, navegador ni flasheos; paquete Web local full generado, **ESP/data/dist conserva el paquete anterior**. La SRAM estática no certifica pila/ISR ni hardware. Estados previos inferiores históricos.
+
+> **Fuente vigente AFR2-20261025-14:** [radar autónomo, servo/IR, pantallas hermanas y red](../contracts/SENSORS_RADAR_8.md). Firmware nominal0.10.0/EX01v8 y Web0.3.0: fuente integrada y recursos OLED copiados, **sin compilar, probar, renderizar ni flashear**. Paquete ESP anterior; estados inferiores históricos. Modelo3D conserva pose; otras escenas siguen PWM aplicado.
+
 # Estado vigente — AFR2-20261025-11
 
 25/10/2026. [Control directo7](../contracts/DIRECT_CONTROL_7.md),
@@ -39,3 +47,17 @@ conservados. Hall y memoria0; no habilita funciones físicas sin sus requisitos.
 Sin tests, validadores independientes, navegador, flasheo o pruebas físicas.
 Calibración/cableado/Hall, memoria dinámica, flash/SPI y planos CAD siguen pendientes.
 Copias anteriores en history/alignment15 y history/direct-control7 son históricas.
+
+## AFR2-20261025-15 — Modelo 3D con componentes interactivos
+
+Fuente Web nueva: once puntos con fichas locales de explicación y acceso a la
+tarea/rueda correspondiente. La cámara mueve los puntos y la ficha queda fija;
+arrastrar/zoom la conserva, X/Escape/clic exterior la cierra. Identidad0.1.9,
+VIS-036. Referencias visuales inferidas del GLB, sin modificar CAD.
+
+Estado de esta entrega: atmega sin cambios; esp sin cambios y sin promoción a
+data/dist; web implementada en fuente, sin compilar ni empaquetar. El build14
+previo no incluye esta interfaz. Sin tests, compilaciones, validaciones,
+navegador, render ni flasheo. Documentación y límites en
+[contrato del visor](../contracts/WEB_MODEL_INSPECTION.md) y
+[ficha15](../changes/2026-10-25-15-model-component-hotspots.md).

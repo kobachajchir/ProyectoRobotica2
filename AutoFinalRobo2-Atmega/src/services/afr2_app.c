@@ -9,7 +9,11 @@
 static void wipe(void *data,uint16_t n){volatile uint8_t *p=data;while(n--)*p++=0;}
 static int32_t value(void *ctx,uint8_t action) {
     Afr2App *a=ctx;Afr2Product *p=a->product;Afr2Config *c=&p->config;
+    const Afr2SensorHead *h=Afr2Head_State();
     switch(action) {
+    case AFR2_A_SERVO_ANGLE:return h->target_us?(h->inverted?180-((int32_t)(h->target_us-1000)*180+500)/1000:((int32_t)(h->target_us-1000)*180+500)/1000):h->angle;
+    case AFR2_A_RADAR_MIN:return h->min_angle;case AFR2_A_RADAR_MAX:return h->max_angle;case AFR2_A_RADAR_SPEED:return h->speed;
+    case AFR2_A_RADAR_SETTLE:return h->settle_ms;case AFR2_A_US_INTERVAL:return h->interval_ms;case AFR2_A_SERVO_INVERT:return h->inverted;
     case AFR2_A_SPEED:return c->speed_limit;case AFR2_A_LINE_SPEED:return c->line_speed;
     case AFR2_A_LINE_KP:return c->line_kp;case AFR2_A_GOTO_X:return p->target_x;case AFR2_A_GOTO_Y:return p->target_y;
     case AFR2_A_WHEEL:return p->selected_wheel;case AFR2_A_TEST_PWM:return a->test_pwm;case AFR2_A_TEST_MS:return c->test_ms;
@@ -35,6 +39,7 @@ static uint8_t wifi_request(Afr2Product *p,uint8_t op) {
     return AFR2_OK;
 }
 static uint8_t local_command(Afr2Product *p) {
+    if(Afr2Head_State()->running)return AFR2_BUSY;
     if(p->origin==AFR2_SOURCE_WEB)Afr2Product_Stop(p);
     p->origin=AFR2_SOURCE_LOCAL;p->local_timeout_ms=5000;p->local_started_ms=p->now;return AFR2_OK;
 }
@@ -58,6 +63,8 @@ uint8_t Afr2App_RemoteUiAllowed(uint8_t action) {
     case AFR2_A_LINE_CONFIRM:case AFR2_A_SAVE:case AFR2_A_DISCARD:case AFR2_A_CLEAR_FAULT:
     case AFR2_A_WIFI_CONNECT:case AFR2_A_KEYBOARD:return 0;
     case AFR2_A_REBOOT_MEGA:case AFR2_A_REBOOT_ESP:return 0;
+    case AFR2_A_SERVO_ANGLE:case AFR2_A_SERVO_CENTER:case AFR2_A_RADAR_START:case AFR2_A_RADAR_STOP:
+    case AFR2_A_RADAR_MIN:case AFR2_A_RADAR_MAX:case AFR2_A_RADAR_SPEED:case AFR2_A_RADAR_SETTLE:case AFR2_A_US_INTERVAL:case AFR2_A_SERVO_INVERT:return 0;
     default:return 1;
     }
 }
@@ -71,6 +78,16 @@ static uint8_t invoke(void *ctx,uint8_t action,int32_t v,const void *data) {
         (action>=AFR2_A_LINE_KIND && action<=AFR2_A_ENC_INVERT) ||
         action==AFR2_A_CONTRAST || action==AFR2_A_ROTATION;
     if(setting && (!p->stopped || p->prefs_state==1 || p->hall_measuring))return AFR2_BUSY;
+    const Afr2SensorHead *h=Afr2Head_State();
+    if(action>=AFR2_A_SERVO_ANGLE && action<=AFR2_A_SERVO_INVERT){
+        if(!p->stopped || p->fault || p->hall_measuring)return AFR2_BUSY;
+        switch(action){
+        case AFR2_A_SERVO_ANGLE:return Afr2Head_Servo(1,v);case AFR2_A_SERVO_CENTER:return Afr2Head_Servo(2,90);
+        case AFR2_A_RADAR_START:if(p->sequence.state>=1 && p->sequence.state<=3)return AFR2_BUSY;return Afr2Head_Start();case AFR2_A_RADAR_STOP:Afr2Head_Stop();return AFR2_OK;
+        default:return Afr2Head_Configure(action==AFR2_A_RADAR_MIN?v:h->min_angle,action==AFR2_A_RADAR_MAX?v:h->max_angle,
+            action==AFR2_A_RADAR_SPEED?v:h->speed,action==AFR2_A_RADAR_SETTLE?v:h->settle_ms,action==AFR2_A_US_INTERVAL?v:h->interval_ms,action==AFR2_A_SERVO_INVERT?v:h->inverted);
+        }
+    }
     switch(action) {
     case AFR2_A_STOP:return Afr2Product_Stop(p)?AFR2_OK:AFR2_FAILED;
     case AFR2_A_SPEED:c->speed_limit=v;if(c->line_speed>v)c->line_speed=v;break;
@@ -95,7 +112,7 @@ static uint8_t invoke(void *ctx,uint8_t action,int32_t v,const void *data) {
     case AFR2_A_TEST_PWM:if(v<-255 || v>255 || !p->stopped)return AFR2_BAD;a->test_pwm=v;return AFR2_OK;
     case AFR2_A_TEST_MS:c->test_ms=v;break;
     case AFR2_A_WHEEL_START:{uint8_t r=local_command(p);if(r)return r;return Afr2Product_Wheel(p,p->selected_wheel,a->test_pwm,c->test_ms);}
-    case AFR2_A_HALL_BEGIN:Afr2Product_HallBegin(p);return p->hall_measuring?AFR2_OK:AFR2_UNAVAILABLE;
+    case AFR2_A_HALL_BEGIN:if(Afr2Head_State()->running)return AFR2_BUSY;Afr2Product_HallBegin(p);return p->hall_measuring?AFR2_OK:AFR2_UNAVAILABLE;
     case AFR2_A_HALL_END:return Afr2Product_HallEnd(p);
     case AFR2_A_HALL_SAVE:
         if(p->prefs_state==1)return AFR2_BUSY;
@@ -105,8 +122,8 @@ static uint8_t invoke(void *ctx,uint8_t action,int32_t v,const void *data) {
         if(!a->remote_ui && p->origin==AFR2_SOURCE_LOCAL && !p->stopped)Afr2Product_Stop(p);
         p->hall_measuring=0;p->hall_delta=0;p->hall_bad=0;return AFR2_OK;
     case AFR2_A_SERVO_US:if(v<1000 || v>2000)return AFR2_BAD;a->servo_us=v;return AFR2_OK;
-    case AFR2_A_SERVO_APPLY:if(!p->stopped)return AFR2_BUSY;Afr2Servo_Set(a->servo_us);return AFR2_OK;
-    case AFR2_A_SERVO_OFF:Afr2Servo_Set(0);return AFR2_OK;
+    case AFR2_A_SERVO_APPLY:if(h->running || !p->stopped)return AFR2_BUSY;Afr2Servo_Set(a->servo_us);return AFR2_OK;
+    case AFR2_A_SERVO_OFF:Afr2Head_Stop();return AFR2_OK;
     case AFR2_A_SAVE:if(!p->stopped || p->prefs_state==1)return AFR2_BUSY;Afr2Product_Save(p);return p->prefs_state==1?AFR2_OK:AFR2_FAILED;
     case AFR2_A_DISCARD:if(!p->stopped || p->prefs_state==1 || p->hall_measuring)return AFR2_BUSY;*c=a->saved_config;p->odom_ready=0;p->pose_valid=0;return AFR2_OK;
     case AFR2_A_LINE_KIND:c->line_kind=v;c->line_calibrated=0;break;
@@ -212,7 +229,7 @@ void Afr2App_Init(Afr2App *a,Afr2Product *p,Afr2Ui *u,Afr2Oled *o,Afr2Link *l) {
 }
 void Afr2App_Revoke(void *ctx) {
     Afr2App *a=ctx;Afr2Product *p=a->product;
-    Afr2Product_Stop(p);p->extension_ready=0;p->session=0;p->wifi.available=0;
+    Afr2Product_HaltMotion(p);p->extension_ready=0;p->session=0;p->wifi.available=0;
     p->wifi.pending=0;p->wifi.draft_ready=0;p->wifi.credential_length=0;p->wifi.network_count=0;
     p->wifi.esp_version[0]=p->wifi.web_version[0]=0;
     wipe(p->wifi.password,sizeof(p->wifi.password));a->snapshot_active=0;
@@ -248,7 +265,7 @@ void Afr2App_Task(Afr2App *a,uint32_t now) {
     Afr2Ui_Tick(a->ui,now);
     /* Text scroll updates only its clipped band. Do not schedule a full OLED
      * redraw every40ms; notices/network views have their own100ms redraw. */
-    if(!a->ui->notices && a->ui->node!=AFR2_N_NETWORK && a->ui->node!=AFR2_N_AP_INFO && (uint32_t)(now-a->render_ms)>=250u) {
+    if(!a->ui->notices && a->ui->node!=AFR2_N_NETWORK && a->ui->node!=AFR2_N_AP_INFO && (uint32_t)(now-a->render_ms)>=(a->ui->node==AFR2_N_RADAR_VIEW || a->ui->node==AFR2_N_US_VIEW || a->ui->node==AFR2_N_LINE_VIEW || a->ui->node==AFR2_N_IR_VALUES || a->ui->node==AFR2_N_SERVO_ANGLE?100u:250u)) {
         Afr2MenuNode node;Afr2Menu_Node(a->ui->node,&node);
         if(node.view || a->ui->edit || a->ui->keyboard || (uint32_t)(now-a->render_ms)>=1000u) {
             a->render_ms=now;a->ui->redraw=true;
@@ -258,6 +275,7 @@ void Afr2App_Task(Afr2App *a,uint32_t now) {
 #define LINE(row,fmt,...) snprintf_P(s->lines[row],sizeof(s->lines[row]),PSTR(fmt),##__VA_ARGS__)
 void Afr2App_UiSnapshot(Afr2App *a,Afr2UiSnapshot *s) {
     Afr2Product *p=a->product;Afr2Ui *u=a->ui;memset(s,0,sizeof(*s));
+    s->sensor_now_ms=p->now;s->head=Afr2Head_State();s->ir_kind=p->config.line_kind;s->ir_valid=s->head->ir_valid;memcpy(s->ir_raw,p->sensors.line_raw,sizeof(s->ir_raw));
     s->line_valid=p->sensors.line_valid;s->line_bits=p->sensors.line_bits;
     s->ultrasonic_valid=p->sensors.ultrasonic_valid;s->ultrasonic_mm=p->sensors.distance_mm;
     s->oled_ready=a->oled->initialized;s->oled_errors=a->oled->errors;

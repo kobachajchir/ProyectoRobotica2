@@ -44,7 +44,7 @@ bool MegaLink::request(uint8_t command,uint32_t now,bool priority) {
     return start(command,now,true,priority);
 }
 bool MegaLink::requestProduct(uint8_t command,const uint8_t *body,uint8_t size,uint32_t now,bool priority) {
-    if(!ready_ || command<0x10 || command>AFR2_EXT_NETWORK_EVENT || (priority && command!=AFR2_EXT_SEQ_CANCEL))return false;
+    if(!ready_ || command<0x10 || command>AFR2_EXT_MOTION_HALT || (priority && command!=AFR2_EXT_SEQ_CANCEL && command!=AFR2_EXT_MOTION_HALT))return false;
     return start(command,now,true,priority,body,size);
 }
 bool MegaLink::take(MegaResult &r) {
@@ -76,6 +76,7 @@ static bool bodyValid(uint8_t command,const uint8_t *p,uint16_t caps) {
 }
 // Explicit product reply validation; never accept an arbitrary successful body.
 static bool productReply(uint8_t cmd,const uint8_t *p,uint8_t n,const uint8_t *q,uint8_t qn) {
+    if(cmd>=AFR2_EXT_US_GET && cmd<=AFR2_EXT_MOTION_HALT)return n>=9 && afr2_sensor_reply_valid(cmd,p+9,n-9,q,qn);
     switch(cmd) {
     case AFR2_EXT_NETWORK_STATE:return qn>=8 && n==16 && !memcmp(p+9,q,7);
     case AFR2_EXT_NETWORK_EVENT:return qn==10 && n==13 && afr2_get_u32(p+9)==afr2_get_u32(q+4);

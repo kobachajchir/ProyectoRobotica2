@@ -1,3 +1,4 @@
+import { NetworkPill,NetworkDetails } from '../../features/connection/NetworkConnection';
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { BrandMark } from '../ui/BrandMark';
@@ -20,7 +21,7 @@ const NAV_ITEMS: { to: string; label: string; icon: UiIconName }[] = [
   { to: '/wifi', label: 'Wi-Fi', icon: 'wifi' },
   { to: '/oled', label: 'Pantalla OLED', icon: 'screen' },
   { to: '/modelo-3d', label: 'Modelo 3D', icon: 'cube' },
-  { to: '/documentacion', label: 'Documentación', icon: 'book' },
+  { to: '/documentacion', label: 'Documentacion', icon: 'book' },
 ];
 
 /** AppShell/sidebar adapted from ST2026-Radal 335d3ed; product-specific services
@@ -28,7 +29,6 @@ const NAV_ITEMS: { to: string; label: string; icon: UiIconName }[] = [
 export function AppShell({ children }: { children: ReactNode }) {
   const { preference, setPreference } = useTheme();
   const {
-    wsState,
     triggerEmergencyStop,
     stopRecord,
     stopAvailable,
@@ -43,7 +43,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       return true;
     }
   });
-  const [modal, setModal] = useState<'oled' | 'settings' | null>(null);
+  const [modal, setModal] = useState<'oled' | 'settings' | 'network' | null>(null);
   const [origin, setOrigin] = useState<ModalOrigin | null>(null);
   const sidebar = useRef<HTMLElement>(null);
   const location = useLocation();
@@ -95,14 +95,7 @@ export function AppShell({ children }: { children: ReactNode }) {
     setModal('settings');
   };
 
-  const connectionLabel =
-    wsState === 'ready'
-      ? 'ESP conectado'
-      : wsState === 'connecting' || wsState === 'handshaking'
-        ? 'Conectando…'
-        : wsState === 'degraded'
-          ? 'Conexión degradada'
-          : 'Sin conexión';
+
 
   return (
     <OverlayContext.Provider value={overlays}>
@@ -150,7 +143,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             </span>
           </button>
           <p className="afr2-nav-caption afr2-sidebar-label">Espacio de trabajo</p>
-          <nav id="afr2-route-nav" aria-label="Navegación principal" className="afr2-route-nav">
+          <nav id="afr2-route-nav" aria-label="Navegacion principal" className="afr2-route-nav">
             {NAV_ITEMS.map((item) => (
               <NavLink
                 key={item.to}
@@ -171,13 +164,13 @@ export function AppShell({ children }: { children: ReactNode }) {
           <button
             type="button"
             className="afr2-route-link afr2-sidebar-settings"
-            aria-label="Conexión y apariencia"
-            title="Conexión y apariencia"
+            aria-label="Configuracion y apariencia"
+            title="Configuracion y apariencia"
             aria-haspopup="dialog"
             onClick={(event) => showSettings(event.currentTarget, event.detail === 0)}
           >
             <UiIcon name="settings" />
-            <span className="afr2-sidebar-label">Ajustes</span>
+            <span className="afr2-sidebar-label">Configuracion</span>
           </button>
         </aside>
         <div className="afr2-app-content">
@@ -187,19 +180,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               <span className="afr2-mode-label">Modo · {mode}</span>
             </div>
             <div className="afr2-action-row">
-              <button
-                type="button"
-                className="afr2-session-button"
-                aria-haspopup="dialog"
-                aria-label={`Conexión: ${connectionLabel}. Abrir ajustes`}
-                onClick={(event) => showSettings(event.currentTarget, event.detail === 0)}
-              >
-                <span
-                  className={`afr2-connection-dot${wsState === 'ready' ? ' is-ready' : ''}`}
-                  aria-hidden="true"
-                />
-                <span>{connectionLabel}</span>
-              </button>
+              <NetworkPill onOpen={source=>{setOrigin(source);setModal('network');}} />
               {stopAvailable && <Button variant="emergency" onClick={() => void triggerEmergencyStop('user-stop')}>
                 ■ STOP
               </Button>}
@@ -226,17 +207,20 @@ export function AppShell({ children }: { children: ReactNode }) {
           origin={origin}
           onClose={() => setModal((value) => (value === 'oled' ? null : value))}
           title="Pantalla en vivo"
-          description="Consultá la OLED sin salir de lo que estás haciendo."
+          description="Consulta la OLED sin salir de lo que estas haciendo."
         >
           <LiveOledViewer active={modal === 'oled'} />
+        </FloatingModal>
+        <FloatingModal open={modal==='network'} origin={origin} onClose={()=>setModal(v=>v==='network'?null:v)} title="Red conectada" description="Wi-Fi y punto de acceso del auto">
+          <NetworkDetails onClose={()=>setModal(null)}/>
         </FloatingModal>
         <FloatingModal
           open={modal === 'settings'}
           origin={origin}
           onClose={() => setModal((value) => (value === 'settings' ? null : value))}
-          title="Conexión y apariencia"
+          title="Configuracion y apariencia"
         >
-          <div className="afr2-theme-field"><span>Apariencia</span><div className="afr2-theme-choices" role="group" aria-label="Apariencia">{(['system', 'light', 'dark'] as ThemePreference[]).map(value => <button key={value} type="button" aria-pressed={preference === value} onClick={() => setPreference(value)}>{value === 'system' ? 'Automática' : value === 'light' ? 'Clara' : 'Oscura'}</button>)}</div></div>
+          <div className="afr2-theme-field"><span>Apariencia</span><div className="afr2-theme-choices" role="group" aria-label="Apariencia">{(['system', 'light', 'dark'] as ThemePreference[]).map(value => <button key={value} type="button" aria-pressed={preference === value} onClick={() => setPreference(value)}>{value === 'system' ? 'Automatica' : value === 'light' ? 'Clara' : 'Oscura'}</button>)}</div></div>
           <SystemPanel />
         </FloatingModal>
       </div>

@@ -1,3 +1,13 @@
+> **Aplicación26-02/VIS-038:** radar con suelo continuo, acento rubí, distancia principal y parámetros debajo del mapa. Escala inicial1m; Perspectiva/Superior conservan metros. Borrador0.1.9 ya autorizado; dirección Confirmada, composición Propuesta, aspecto **No verificado**. [Cobertura](coverage-20261026-02.json). Sin ejecución de comprobaciones.
+
+> **Ajuste AFR2-20261026-01 / VIS-036:** referencias del Modelo3D con botón compartido Mostrar/Ocultar junto al selector; ocultar cierra la ficha. Ocho puntos, con una sola rueda FL representativa. Tokens/identidad conservados, dirección Confirmada y aspecto No verificado. [Ficha](../../changes/2026-10-26-01-model-reference-visibility.md). Sin tests/build/validaciones; sustituye la cantidad de once puntos del hito15.
+
+> **Aplicación16/VIS-037:** radar oblicuo con anillos tubulares y brillo rubí, sector previo identificable y controles de rango/número. Borrador0.1.9 previamente autorizado; dirección Confirmada, composición Propuesta, visual **No verificada**. [Cobertura16](coverage-20261025-16.json). Sin builds, validadores ni navegador.
+
+> **Aplicación15/VIS-036:** Modelo3D con once puntos de componentes, ficha fija dentro del visor y accesos a tareas. Continúa borrador0.1.9 autorizado y tokens existentes; dirección Confirmada, composición Propuesta y referencias CAD Inferidas. Fuente sin tests/build/validaciones/navegador. [Cobertura15](coverage-20261025-15.json), [contrato](../../contracts/WEB_MODEL_INSPECTION.md).
+
+> **Aplicación14/VIS-035:** Sensores separados, radar/servo con disposición GOTO, pill STA/AP y modal Red, Configuración renombrada. Borrador0.1.9 autorizado expresamente. Dirección Confirmada, composición/iconos Propuestos, interfaz y paridad OLED **No verificadas**. [Cobertura14](coverage-20261025-14.json), [contrato8](../../contracts/SENSORS_RADAR_8.md).
+
 > Aplicación11/VIS-034: giro local con dos dedos, rumbo persistente y Q/E; manual0.1.9 autorizado. Composición Propuesta, gesto/visual No verificados. [Cobertura11](coverage-20261025-11.json).
 
 > Aplicación02/VIS-026: Control táctil sin robot, superior/flechas comunes y giro simulado. Borrador0.1.9 autorizado; dirección Confirmada, composición Propuesta, visual No verificada. [Cobertura02](coverage-20261025-02.json).

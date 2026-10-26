@@ -20,6 +20,7 @@ typedef struct {
     uint8_t (*command)(void *ctx,uint8_t cmd,const uint8_t *data,uint8_t length,
                        uint8_t *out,uint8_t *out_length); /* out capacity 55 bytes */
     void (*revoke)(void *ctx); /* transport/session authority revoked, main only */
+    uint8_t (*halt_motion)(void *ctx); /* optional: supervision leaves autonomous sensing alive */
 } Afr2LinkOps;
 typedef struct {
     Afr2WireParser parser;

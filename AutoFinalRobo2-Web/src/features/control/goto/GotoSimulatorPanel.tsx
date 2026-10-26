@@ -108,8 +108,8 @@ export function GotoSimulatorPanel({ commands, onCommandsChange, speedMmS, onSpe
           : <label>Distancia (m)<input className="afr2-glass-field" type="number" required min="0.1" max="10" step="0.1" value={metres} disabled={playing} onChange={event => setMetres(event.target.value)} /></label>}
         <Button type="submit" disabled={playing || commands.length >= GOTO_MAX_COMMANDS}>Agregar movimiento</Button>
       </form>
-      {(error || plan.error) && <StatusNotice tone="warning" title="Revisá el recorrido">{error || plan.error}</StatusNotice>}
-      <label className="afr2-goto-speed">Velocidad máxima simulada <strong className="afr2-tabular">{formatMetres(speedMmS)} m/s</strong><input type="range" min={50} max={500} step={50} value={speedMmS} disabled={playing} onChange={event => { reset(); setError(null); onSpeedChange(Number(event.target.value)); }} /></label>
+      {(error || plan.error) && <StatusNotice tone="warning" title="Revisa el recorrido">{error || plan.error}</StatusNotice>}
+      <label className="afr2-goto-speed">Velocidad maxima simulada <strong className="afr2-tabular">{formatMetres(speedMmS)} m/s</strong><input type="range" min={50} max={500} step={50} value={speedMmS} disabled={playing} onChange={event => { reset(); setError(null); onSpeedChange(Number(event.target.value)); }} /></label>
     </section>
   );
   const playback = <div className="afr2-goto-playback">
@@ -124,6 +124,6 @@ export function GotoSimulatorPanel({ commands, onCommandsChange, speedMmS, onSpe
       routePanel={<GotoCommandList commands={commands} activeIndex={activeIndex} completed={completed} playing={playing} follow={follow} onFollow={setFollow} onReorder={reorder} onRemove={remove} />}
       sidebarPanel={playback} waypoints={waypoints} onSelectPoint={selectPoint} pickingDisabled={playing}
       simulationFeed={{ pose: snapshot.pose, trail: snapshot.trail, wheelAngles: snapshot.wheelAngles, cursorMs, totalDurationMs: plan.totalDurationMs, isPlaying: playing,
-        profileSummary: 'Traslación Mecanum ideal, rumbo constante. Cada destino se recorre en orden; sin feedback físico.', onResetOrigin: reset }} />
+        profileSummary: 'Traslacion Mecanum ideal, rumbo constante. Cada destino se recorre en orden; sin feedback fisico.', onResetOrigin: reset }} />
   </div>;
 }

@@ -27,7 +27,9 @@ export function FirmwareLibraryPreview({ screen, onNavigate, active = true }: { 
   const dynamic = node === library.symbols.AFR2_N_WIFI_NETWORKS;
   const count = current && !dynamic ? Number(current[3]) : 0;
   const visible = current?.[2] ? 1 : 3;
-  const drawable = !!current && !current[2] && !dynamic;
+  const siblingViews=[library.symbols.AFR2_N_RADAR_VIEW,library.symbols.AFR2_N_US_VIEW,library.symbols.AFR2_N_LINE_VIEW,library.symbols.AFR2_N_IR_VALUES] as number[];
+  const sensorView=siblingViews.includes(node) || node===library.symbols.AFR2_N_SERVO_ANGLE;
+  const drawable = !!current && (!current[2] || sensorView) && !dynamic;
   useEffect(() => {
     if (position.node !== node) { history.current = []; setPosition({ node, selection: 0, firstVisible: 0 }); }
     scrollStarted.current = clock(); setClockMs(clock()); setFeedback(null);
@@ -47,6 +49,11 @@ export function FirmwareLibraryPreview({ screen, onNavigate, active = true }: { 
     return result;
   }, [drawable, state.node, state.selection, state.firstVisible, clockMs]);
   const move = (delta: number) => {
+    if(!active)return;
+    if(sensorView){
+      if(node===library.symbols.AFR2_N_SERVO_ANGLE){setFeedback('El control fisico del servo requiere el equipo. Usa Distancia y servo para enviar una orden.');return;}
+      if(delta%2){const target=node===library.symbols.AFR2_N_RADAR_VIEW?library.symbols.AFR2_N_US_VIEW:node===library.symbols.AFR2_N_US_VIEW?library.symbols.AFR2_N_RADAR_VIEW:node===library.symbols.AFR2_N_LINE_VIEW?library.symbols.AFR2_N_IR_VALUES:library.symbols.AFR2_N_LINE_VIEW;navigate({node:target,selection:0,firstVisible:0});}return;
+    }
     if (!count || !active) return;
     const next = { ...state };
     for (let i = 0; i < Math.min(3, Math.abs(delta)); i++) {
@@ -63,9 +70,10 @@ export function FirmwareLibraryPreview({ screen, onNavigate, active = true }: { 
   const press = (kind: 'short' | 'long') => {
     if (!active) return;
     if (kind === 'long') { history.current = []; navigate({ node: library.symbols.AFR2_N_MENU, selection: 0, firstVisible: 0 }); return; }
+    if(sensorView){const parent=Number(current[1]);navigate(history.current.pop()??{node:parent,selection:0,firstVisible:0});return;}
     if (!count) { setFeedback('Esta pantalla necesita datos preparados por el controlador.'); return; }
     const item = firmwareMenuItem(node, state.selection);
-    if (item.action) { setFeedback('Esta acción se ejecuta con el equipo conectado. La biblioteca local solo permite navegar.'); return; }
+    if (item.action) { setFeedback('Esta accion se ejecuta con el equipo conectado. La biblioteca local solo permite navegar.'); return; }
     if (item.label.startsWith('Volver')) navigate(history.current.pop() ?? { node: item.target, selection: 0, firstVisible: 0 });
     else {
       if (item.target === library.symbols.AFR2_N_HOME || item.target === library.symbols.AFR2_N_MENU) history.current = [];
@@ -74,11 +82,11 @@ export function FirmwareLibraryPreview({ screen, onNavigate, active = true }: { 
     }
   };
   return <div className="afr2-page-stack afr2-library-preview">
-    <p className="afr2-help">Vista local del diseño. Botones 1–3: resaltar fila; SW: confirmar. Flechas: desplazar selección. Acciones y datos del equipo requieren el visor conectado.</p>
+    <p className="afr2-help">Vista local del diseño. Botones 1–3: resaltar fila; SW: confirmar. Flechas: desplazar seleccion. Acciones y datos del equipo requieren el visor conectado.</p>
     <div className="afr2-oled-with-side">
       {drawable ? <OledCanvas128x64 compact oledBuffer={buffer} screenCode={screen.code} sourceMode="local-firmware-preview" showGrid={false} />
         : <div className="afr2-oled-data-required"><strong>{screen.name}</strong><p>Esta vista necesita un snapshot del equipo. Consultala en el visor conectado.</p></div>}
-      <MenuSideControls selection={state.selection} firstVisible={state.firstVisible} count={count} visibleRows={visible} disabled={!active}
+      <MenuSideControls selection={state.selection} firstVisible={state.firstVisible} count={sensorView?0:count} visibleRows={visible} disabled={!active}
         onHighlight={index => move(index - state.selection)} onScroll={direction => move(direction * Math.min(3, direction < 0 ? state.selection : count - state.selection - 1))} />
     </div>
     <EncoderControl label="Encoder · biblioteca local" available={node >= 0 && active} onRotate={move} onPress={press} statusMessage={feedback} compact />

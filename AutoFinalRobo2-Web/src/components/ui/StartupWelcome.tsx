@@ -45,7 +45,7 @@ export function StartupWelcome({ children }: PropsWithChildren) {
       {stopAvailable && <div className="afr2-startup__actions"><button type="button" className="afr2-startup__stop" onClick={() => { void triggerEmergencyStop('startup-stop'); finish(); }}>■ STOP</button></div>}
       <div className="afr2-startup__logo" aria-hidden="true"><img ref={logo} src={AFR2_BRAND_LOGO} alt="" width="1024" height="1024" loading="eager" fetchPriority="high" decoding="async"
         onLoad={event => prepareLogo(event.currentTarget)} onError={finish} /></div>
-      <button type="button" autoFocus className="afr2-startup__skip" onClick={finish}>Omitir introducción <span aria-hidden="true">· Esc</span></button>
+      <button type="button" autoFocus className="afr2-startup__skip" onClick={finish}>Omitir introduccion <span aria-hidden="true">· Esc</span></button>
     </dialog>, document.body)}
   </>;
 }

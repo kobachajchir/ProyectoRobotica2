@@ -29,5 +29,5 @@ export function compilePhysicalProgram(doc: Afr2SequenceDocument): {
   }
   const totalDurationMs = (doc.editorLevel === 'movements' ? phases.reduce((sum, value) => sum + value, 0) : Math.max(...sums)) + 1000;
   return { mode: doc.editorLevel === 'movements' ? 'barrier-wheels' : 'independent-wheels', segments, totalDurationMs,
-    error: !segments.length || segments.length > 32 || totalDurationMs > 120000 ? 'El modo por pulsos admite 32 instrucciones de rueda y 120 s de tiempo máximo de seguridad. Dividí el programa.' : null };
+    error: !segments.length || segments.length > 32 || totalDurationMs > 120000 ? 'El modo por pulsos admite 32 instrucciones de rueda y 120 s de tiempo maximo de seguridad. Dividi el programa.' : null };
 }

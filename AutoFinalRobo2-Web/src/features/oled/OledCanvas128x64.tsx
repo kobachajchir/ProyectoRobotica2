@@ -16,8 +16,8 @@ export interface OledCanvas128x64Props {
 }
 
 /**
- * Lienzo físico SSD1306 128×64 píxeles (`VIS-006`).
- * Renderiza el framebuffer de 1024 bytes exactamente igual que las 8 páginas verticales del ATmega2560.
+ * Lienzo fisico SSD1306 128×64 pixeles (`VIS-006`).
+ * Renderiza el framebuffer de 1024 bytes exactamente igual que las 8 paginas verticales del ATmega2560.
  */
 export function OledCanvas128x64({
   oledBuffer,
@@ -109,7 +109,7 @@ export function OledCanvas128x64({
           ref={canvasRef}
           width={AFR2_OLED_WIDTH * scale}
           height={AFR2_OLED_HEIGHT * scale}
-          aria-label={`Pantalla OLED 128 por 64 píxeles mostrando ${meta.name} (${meta.code})`}
+          aria-label={`Pantalla OLED 128 por 64 pixeles mostrando ${meta.name} (${meta.code})`}
           className="max-w-full rounded-lg border"
           style={{
             borderColor: 'rgba(103, 232, 249, 0.24)',

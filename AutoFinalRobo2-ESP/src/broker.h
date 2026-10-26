@@ -53,6 +53,11 @@ private:
     bool finishProduct(const BrokerRequest &req,const MegaResult &r);
     void tickProduct(uint32_t now);
     bool productRequest(uint8_t cmd,const uint8_t *body,uint8_t size);
+    bool encodeSensors(BrokerRequest &req,JsonObjectConst payload);
+    bool finishSensors(const BrokerRequest &req,const MegaResult &result);
+    void tickSensors(uint32_t now);
+    uint32_t sensorAt_=0,screenRevision_=0,screenCode_=0;
+    bool sensorKnown_=false,radarRunning_=false,servoEnabled_=false;
     void stopWebOperations();
     void publishStatus();
     bool dispatchWifiDraft(const BrokerRequest &req,uint32_t now);

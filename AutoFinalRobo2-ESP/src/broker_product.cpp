@@ -12,6 +12,7 @@ static bool textId(JsonVariantConst v) { return v.is<const char *>() && strlen(v
 bool Broker::encodeProduct(BrokerRequest &q,JsonObjectConst p) {
     const char *c=q.command;
     auto fail=[&](){error(q,"BAD_REQUEST","Argumentos fuera del contrato EX01.");return false;};
+    if(!strncmp(c,"robot.ultrasonic.",17) || !strcmp(c,"robot.ir.get") || !strncmp(c,"robot.servo.",12) || !strncmp(c,"robot.radar.",12) || !strcmp(c,"robot.screen.status"))return encodeSensors(q,p);
     if(!strcmp(c,"system.reboot")) {
         if(!p["confirm"].is<bool>() || !p["confirm"].as<bool>())return fail();
         const char *target=p["target"]|"";
@@ -109,7 +110,7 @@ void Broker::publishStatus() {
 }
 bool Broker::dispatchProduct(BrokerRequest q,uint32_t now) {
     if(!q.wireCommand)return false;
-    if(!mega_.ready() || !productReady_ || extensionVersion_!=7){error(q,"CAPABILITY_UNAVAILABLE","ATmega aun no negocio EX01.");return true;}
+    if(!mega_.ready() || !productReady_ || extensionVersion_!=AFR2_EXT_VERSION){error(q,"CAPABILITY_UNAVAILABLE","ATmega aun no negocio EX01.");return true;}
     if(q.wireCommand==AFR2_EXT_UI_META || q.wireCommand==AFR2_EXT_UI_ACTION) {
         if(!(productFeatures_&AFR2_EXT_F_UI)){error(q,"CAPABILITY_UNAVAILABLE","Servicio UI remoto no disponible.");return true;}
         if(q.wireCommand==AFR2_EXT_UI_ACTION && (!session(q.client)->oledCaptured || afr2_get_u32(q.body)!=session(q.client)->oledRevision)){error(q,"BAD_REQUEST","La captura ya no corresponde a esta sesion.");return true;}
@@ -141,6 +142,7 @@ bool Broker::dispatchProduct(BrokerRequest q,uint32_t now) {
 }
 bool Broker::finishProduct(const BrokerRequest &q,const MegaResult &r) {
     if(!q.wireCommand)return false;
+    if(finishSensors(q,r))return true;
     const uint8_t *p=r.payload;JsonDocument f;JsonObject out=f["payload"].to<JsonObject>();
     if(r.command==AFR2_EXT_UI_PAGE) {
         if((uint32_t)(millis()-oledAt_)>1800 || afr2_get_u32(p+9)!=oledRevision_ || afr2_get_u16(p+13)!=oledOffset_){error(q,"TIMEOUT","Captura OLED incoherente o vencida.");return true;}
@@ -201,13 +203,13 @@ bool Broker::finishProduct(const BrokerRequest &q,const MegaResult &r) {
 }
 void Broker::tickProduct(uint32_t now) {
     if(!mega_.ready()){productReady_=false;extensionVersion_=0;productFeatures_=0;productAttempted_=false;speedLimit_=0;pwmLimit_=0;limitsAt_=0;wifiAwaitWeb_=wifiDraftReady_=false;wifiJob_=0;wifiOffset_=0;wifiVersions_=0;oledDraft_=WifiConfig{};}
-    if(safetyRequested_ && mega_.ready()) {
+    if(safetyRequested_ && mega_.ready() && productReady_) {
         if(waiting_){error(pending_,"SUPERSEDED","Supervision revocada.");waiting_=false;}
-        if(mega_.request(AFR2_CMD_STOP,now,true)){pending_=BrokerRequest{};strlcpy(pending_.command,"robot.stop",33);waiting_=true;safetyRequested_=false;}
+        if(mega_.requestProduct(AFR2_EXT_MOTION_HALT,nullptr,0,now,true)){pending_=BrokerRequest{};pending_.wireCommand=AFR2_EXT_MOTION_HALT;strlcpy(pending_.command,"_motion_halt",33);waiting_=true;safetyRequested_=false;}
         return;
     }
     if(waiting_ || mega_.busy() || stopQueued_ || !mega_.ready())return;
-    if(productReady_ && extensionVersion_==7 && (uint32_t)(now-webPulseAt_)>=500u) {
+    if(productReady_ && extensionVersion_==AFR2_EXT_VERSION && (uint32_t)(now-webPulseAt_)>=500u) {
         for(const auto &client:sessions_)if(client.used && client.ready) {
             uint32_t age=now-client.inputSeen;uint8_t body[2];
             afr2_put_u16(body,age>1500u?1500u:(uint16_t)age);
@@ -220,6 +222,7 @@ void Broker::tickProduct(uint32_t now) {
     }
     tickWifi(now);if(waiting_)return;
     tickNetwork(now);if(waiting_)return;
+    tickSensors(now);if(waiting_)return;
     if((uint32_t)(now-productAt_)<(productReady_?500u:1000u))return;
     productAt_=now;BrokerRequest q;
     if(!productReady_){

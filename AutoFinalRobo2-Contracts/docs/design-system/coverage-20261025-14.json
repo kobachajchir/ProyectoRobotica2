@@ -1,0 +1,49 @@
+{
+  "schema": "afr2-visual-coverage-1",
+  "decision": "VIS-035",
+  "changeId": "AFR2-20261025-14",
+  "manualVersion": "0.1.9",
+  "mode": "APLICAR",
+  "approval": "explicit-user-draft-authorization",
+  "verification": "No verificada",
+  "canonical": [
+    "Web/src/features/control/ControlMap.tsx",
+    "Web/src/features/control/goto/GotoSimulatorPanel.tsx",
+    "Web/src/components/ui/FloatingModal.tsx",
+    "Web/src/styles/tokens.css"
+  ],
+  "confirmed": [
+    "three sensor tasks",
+    "GOTO map/sidebar disposition",
+    "autonomous stepped radar",
+    "servo motion except inspection model",
+    "network modal and STA/AP pill"
+  ],
+  "proposed": [
+    "radar rings and numeric layout",
+    "original radar/servo icons",
+    "network signal thresholds and modal composition"
+  ],
+  "covered_in_source": [
+    "distance-servo workspace",
+    "IR five channels",
+    "wheel readings",
+    "head rig and critically damped motion",
+    "network pill and modal",
+    "OLED sibling renderers"
+  ],
+  "executed": [
+    "OLED resource copy --copy-only",
+    "authorized ATmega ESP Web compilation; final warnings corrected"
+  ],
+  "not_executed": [
+    "tests",
+    "validators",
+    "browser",
+    "visual comparison",
+    "physical acceptance",
+    "flash",
+    "ESP bundle promotion"
+  ],
+  "build_evidence": "../../documentation/builds/2026-10-25-14/README.md"
+}

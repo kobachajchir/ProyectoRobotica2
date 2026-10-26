@@ -1,3 +1,9 @@
+## Vigente AFR2-20261025-14 — Vistas hermanas
+
+Por pedido humano actual, Radar/Numérica e IR Gráfica/Valores alternan con giro en ambos sentidos sin apilar historial; corto vuelve al listado restaurando selección/scroll. Ángulo del servo: giro controla, corto vuelve. Es una excepción contextual explícita al requisito anterior de Volver por ítem. Largo800ms abre principal y nunca genera corto al liberar. Los demás menús conservan Volver por ítem. Cada hermana tiene ScreenCode distinto y navegación revisionada; la captura anterior queda inválida.
+
+UI_ACTION permite navegar en estas vistas y volver, pero no mover servo por giro remoto; ese control usa robot.servo.set. Fuente C y biblioteca Web se entregan juntas, incluyendo recursos y comportamiento. [Contrato8](../contracts/SENSORS_RADAR_8.md). Sin ensayo de navegación/paridad.
+
 # Navegación de un único encoder
 
 AFR2-20261024-08: todos los submenús conservan Volver, incluidos IP/AP y

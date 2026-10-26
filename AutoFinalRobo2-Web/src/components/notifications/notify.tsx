@@ -90,7 +90,7 @@ const TONE_STYLES: Record<ToastTone, { color: string; bg: string; border: string
     color: 'var(--warning)',
     bg: 'var(--warning-subtle)',
     border: 'var(--warning-border)',
-    label: 'ATENCIÓN',
+    label: 'ATENCION',
   },
   error: {
     color: 'var(--error)',
@@ -106,7 +106,7 @@ const TONE_STYLES: Record<ToastTone, { color: string; bg: string; border: string
   },
 };
 
-const TONE_LABELS: Record<ToastTone, string> = { info: 'Información', success: 'Listo', warning: 'Atención', error: 'Error', loading: 'En curso' };
+const TONE_LABELS: Record<ToastTone, string> = { info: 'Informacion', success: 'Listo', warning: 'Atencion', error: 'Error', loading: 'En curso' };
 function renderCustomToast(tone: ToastTone, options: NotifyOptions) {
   const meta = TONE_STYLES[tone];
   return toast.custom(id => (
@@ -118,7 +118,7 @@ function renderCustomToast(tone: ToastTone, options: NotifyOptions) {
         {options.description && <p className="afr2-toast__description">{options.description}</p>}
         {options.actionLabel && options.onAction && <button type="button" className="afr2-toast__action" onClick={() => { options.onAction?.(); toast.dismiss(id); }}>{options.actionLabel}</button>}
       </div>
-      <button type="button" aria-label="Cerrar notificación" className="afr2-toast__close" onClick={() => toast.dismiss(id)}>✕</button>
+      <button type="button" aria-label="Cerrar notificacion" className="afr2-toast__close" onClick={() => toast.dismiss(id)}>✕</button>
     </div>
   ), { id: options.id, duration: options.duration ?? (tone === 'loading' ? Infinity : tone === 'error' ? 6000 : 4000) });
 }
@@ -132,7 +132,7 @@ export const notify = {
   dismiss: (id?: string | number) => toast.dismiss(id),
 
   /**
-   * Notifica pérdida de enlace usando el ID estable `afr2-connection` para evitar apilar toasts en reintentos.
+   * Notifica perdida de enlace usando el ID estable `afr2-connection` para evitar apilar toasts en reintentos.
    */
   connectionLost: (reason: string) => {
     hadConnectionLossInSession = true;
@@ -145,7 +145,7 @@ export const notify = {
   },
 
   /**
-   * Solo notifica recuperación si previamente se observó una caída en la sesión actual (VIS-010).
+   * Solo notifica recuperacion si previamente se observo una caida en la sesion actual (VIS-010).
    */
   connectionRecovered: (detail: string) => {
     if (!hadConnectionLossInSession) return;

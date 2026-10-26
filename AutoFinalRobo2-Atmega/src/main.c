@@ -20,6 +20,7 @@ static Afr2Oled oled;
 static Afr2EncoderUi encoder;
 static Afr2Ui ui;
 static uint8_t stopped(void *ctx){return Afr2Product_Stop(((Afr2App *)ctx)->product);}
+static uint8_t halt_motion(void *ctx){return Afr2Product_HaltMotion(((Afr2App *)ctx)->product);}
 static void snapshot(void *ctx,uint32_t now,Afr2LinkSnapshot *out){Afr2Product_Snapshot(((Afr2App *)ctx)->product,now,out);}
 static uint16_t capabilities(void *ctx) {
     Afr2Product *p=((Afr2App *)ctx)->product;
@@ -34,7 +35,7 @@ int main(void) {
     Afr2Oled_Init(&oled,&manager,AFR2_OLED_ADDRESS7,0);Afr2Ui_Init(&ui);
     Afr2App_Init(&app,&product,&ui,&oled,&link);
     Afr2LinkOps ops={0};ops.ctx=&app;ops.snapshot=snapshot;ops.stop=stopped;
-    ops.current_capabilities=capabilities;ops.command=Afr2App_Command;ops.revoke=Afr2App_Revoke;
+    ops.current_capabilities=capabilities;ops.command=Afr2App_Command;ops.revoke=Afr2App_Revoke;ops.halt_motion=halt_motion;
     Afr2Link_Init(&link,&ops);Afr2Board_EncoderInit();
     uint8_t levels=Afr2Board_EncoderLevels();
     Afr2EncoderUi_Init(&encoder,(levels&2)!=0,(levels&1)!=0,(levels&4)!=0,0);

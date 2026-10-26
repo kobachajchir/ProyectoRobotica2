@@ -1,7 +1,11 @@
 import type { SVGProps } from 'react';
 
-export type UiIconName = 'home' | 'control' | 'sensors' | 'wifi' | 'screen' | 'cube' | 'book' | 'panel' | 'back' | 'settings' | 'close' | 'arrow';
+export type UiIconName = 'home' | 'control' | 'sensors' | 'wifi' | 'screen' | 'cube' | 'book' | 'panel' | 'back' | 'settings' | 'close' | 'arrow' | 'radar' | 'servo' | 'wheel' | 'antenna';
 const paths: Record<UiIconName, string> = {
+  radar: 'M2 20a10 10 0 0 1 20 0H2Zm4 0a6 6 0 0 1 12 0M12 20l-5-9M12 20v-2',
+  servo: 'M5 12h14v8H5v-8Zm7 0V6m-6 0h12M4 15H2m20 0h-2',
+  wheel: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm0 5v8m-4-4h8M8 5l-2 2m12 10-2 2',
+  antenna: 'M12 9v12m-5 0h10M8 6a6 6 0 0 0 0 8m8-8a6 6 0 0 1 0 8M5 3a10 10 0 0 0 0 14M19 3a10 10 0 0 1 0 14M12 7h.01',
   home: 'm3 10 9-7 9 7M5 9v12h5v-7h4v7h5V9',
   control: 'M8 7h8c3 0 4 2 5 9 .5 4-2 5-4 2l-2-2H9l-2 2c-2 3-4.5 2-4-2C4 9 5 7 8 7ZM7 10v5M4.5 12.5h5M16 11h.01M18 14h.01',
   sensors: 'M3 12h4l3-8 4 16 3-8h4',

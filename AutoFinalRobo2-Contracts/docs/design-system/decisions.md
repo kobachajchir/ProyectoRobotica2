@@ -290,3 +290,87 @@ Apple-design/mobile-native/animate aplicadas como manipulación funcional,
 no inercia de liberación por ser control explícito. Teléfono/lectores/temas
 y transiciones de contacto por comprobar, no acreditados por build.
 
+
+
+## VIS-035 — Sensores, radar y red (25/10/2026)
+
+Confirmada por pedido humano: usar borrador0.1.9, disposición GOTO con mediciones/ángulo al costado, tres tareas separadas, modal propio de Red y nombre Configuración. Radar semicircular Three.js con escala física y PWM aplicado; Modelo3D se conserva estático. IR original/digital/ADC no se etiqueta como distancia.
+
+Propuesta: anillos4, escalas0.5/1/2/4m, iconos propios coherentes y umbrales RSSI -55/-67/-75dBm. Amarillo AP y verde STA consumen warning/success existentes con texto/icono, no solo color. Origen de la sesión por IP del socket, sin atribuir RSSI STA al cliente AP. Superficies de trabajo sólidas, chrome/modal neutro; acento carmesí/rubí propio.
+
+Movimiento: presión inmediata, modal común con foco/escape/retorno; interpolación críticamente amortiguada desde ángulo visual/velocidad actual. En reduced motion se actualiza el dato sin transición; nunca se congela el ángulo real ni se integran muestras visuales. Geometrías del grid memoizadas y recursos dispuestos al desmontar. Las nuevas lecturas no producen toasts por muestra.
+
+Cinco reglas protectoras: (1) fuente autoritativa y edades propias, (2) misma composición GOTO/primitivas, (3) paleta y semántica existentes, (4) navegación OLED y copia Web vinculadas, (5) motion accesible sin datos fabricados. Sin validación visual, browser ni ensayos; cobertura de fuente no acredita contraste, paridad o montaje.
+
+Revisión de barrido independiente: cada inicio cambia scanRevision para descartar mapas anteriores aunque no se haya observado la parada. La vista fija puede superponer la última muestra válida con ángulo/PWM conocido sobre el histórico; los puntos fuera de escala se cuentan. Ningún punto se genera desde la interpolación visual.
+
+## VIS-036 — Puntos y fichas del modelo 3D (25/10/2026)
+
+Dirección Confirmada por pedido humano: puntos fijados a piezas, ficha explicativa
+local que conserva su posición al girar el auto y acceso a la sección relacionada.
+Continúa aplicación del borrador0.1.9 autorizado, sin nueva fuente de marca.
+Propuesta: numeración01–11, selectores44px separados con líneas, ficha superior
+derecha/escritorio e inferior/móvil, desplegable alternativo, X/Escape y cierre
+exterior que distingue clic de arrastre. Referencias de geometría Inferidas;
+ESP y OLED/encoder requieren coordenadas locales del exportado conjunto actual.
+
+Usa popover neutro compartido y tokens de acento, superficie, radio, tipografía
+y sombra, con iconos propios. Seguimiento geométrico inmediato sin interpolar
+selectores; solo feedback corto en botones, sin transición en reduced motion.
+La ficha no es modal: permite seguir orbitando y hacer zoom. Scroll propio,
+foco en cierre y retorno al selector/desplegable. La navegación abre tareas y
+rueda elegida, sin disparar acciones físicas. OLED conserva SW único y Volver.
+
+Cinco reglas protectoras: material/token común; una ficha por vez; puntos unidos
+al CAD y panel independiente; teclado/tacto/movimiento reducido; explicaciones
+con datos del proyecto y acciones físicas solo en sus controles. Composición
+Propuesta e interacción/visual No verificadas; sin navegador, tests, build ni
+validadores. Cobertura: coverage-20261025-15.json. Fuente nueva separada del
+build14 anterior. Revisión visual de referencias, temas y gestos queda pendiente.
+
+
+## VIS-037 — Radar volumétrico y controles vinculados (25/10/2026)
+
+Confirmada: pedido humano de un radar tecnológico/neón con líneas 3D, rango
+doble0–180°, barra y campo numérico para velocidad/estabilización/intervalo,
+confirmación Enter/blur y límites coherentes. Configuracion sin acento por pedido
+expreso. Se conserva el manual0.1.9 autorizado y la excepción Modelo3D.
+
+Observada: disposición mapa/lecturas laterales de Control/GOTO, primitivas de
+modal/Disclosure, paleta neutra con acento carmesí/rubí y límites del contrato8.
+Propuesta: proyección oblicua, plataforma con espesor, anillos tubulares/halo
+moderado, contorno elevado y hitos 3D. La altura del hito no representa altura
+medida. No se agrega otra marca cromática ni un barrido ficticio.
+
+Manipulación1:1, sin easing del rango/sector. Microfeedback de borde/foco140ms;
+aguja conserva interpolación amortiguada del dato aplicado y reduced motion.
+Canvas bajo demanda; geometrías/texturas liberadas. La vista previa se distingue
+de la configuración aceptada, bloqueando iniciar hasta aplicar los cambios.
+No toasts por muestra ni nuevos comandos/pantallas OLED.
+
+Cinco reglas protectoras: escala y procedencia real, composición GOTO, tokens
+existentes, estado de aplicación explícito y movimiento accesible funcional.
+No verificada: presentación en temas/tamaños, táctil/teclado/lectores, rendimiento
+WebGL y contraste final; sin ejecución de herramientas de comprobación.
+
+
+## VIS-038 — Composición del radar (26/10/2026)
+
+Confirmada: el usuario rechaza el resultado visual anterior y pide rehacer el
+radar con Emil y skills visuales, coherente con el producto. Se conserva la
+identidad0.1.9 autorizada. No se usa el radar rechazado como referencia canónica.
+Observada: tokens de Control/GOTO, Button/Disclosure y jerarquías del manual.
+Propuesta: campo continuo con retícula que desvanece, anillos/sector rubí y
+encuadre de límites proyectados; distancia dominante y detalles plegables,
+parámetros debajo del mapa. Inicio1m y dos vistas; no se agranda el modelo.
+
+El shader de suelo no usa tiempo. Marcas en una sola geometría, sin bloom ni
+paquetes adicionales. Cámara/alcance y rangos responden inmediatamente;
+servo/aguja conservan interpolación funcional y reduced motion. Sin animar
+lecturas numéricas, sin ecos de muestra y sin atribuir al halo un haz calibrado.
+
+Cinco reglas: (1) tokens propios Control/GOTO, (2) jerarquía dato/control/detalle,
+(3) escala y procedencia reales, (4) controles accesibles y datos desconocidos
+explícitos, (5) movimiento ligado al dato. VIS-037 se conserva para los controles,
+pero se sustituye su plataforma/composición. Diseño Propuesto; temas/móvil,
+contraste, teclado y rendimiento No verificados. Sin tests/build/validadores.

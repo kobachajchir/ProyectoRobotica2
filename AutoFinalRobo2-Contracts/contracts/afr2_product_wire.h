@@ -5,6 +5,7 @@
 #define AFR2_PRODUCT_WIRE_H
 #include "afr2_wire.h"
 #include "afr2_network_wire.h"
+#include "afr2_sensor_wire.h"
 #define AFR2_EXT_HELLO 0x10u
 #define AFR2_EXT_STATE 0x11u
 #define AFR2_EXT_WEB_PULSE 0x12u
@@ -36,7 +37,9 @@
 #define AFR2_EXT_INFO 0x50u
 #define AFR2_EXT_REBOOT 0x51u
 #define AFR2_EXT_BOOT 0x52u
-#define AFR2_EXT_VERSION 7u
+#define AFR2_EXT_VERSION 8u
+#define AFR2_EXT_F_SENSOR_HEAD 0x8000UL
+#define AFR2_EXT_F_RADAR 0x10000UL
 #define AFR2_EXT_F_DISTANCE 0x4000UL
 #define AFR2_EXT_CHUNK 40u
 #define AFR2_EXT_F_UI 0x01UL
@@ -52,7 +55,7 @@
 #define AFR2_EXT_F_WHEEL 0x800UL
 #define AFR2_EXT_F_SYSTEM 0x1000UL
 #define AFR2_EXT_F_NETWORK_UI 0x2000UL
-#define AFR2_EXT_FEATURE_MASK 0x7fffUL
+#define AFR2_EXT_FEATURE_MASK 0x1ffffUL
 /* Result byte retains legacy 0..4. Busy/denied are mapped to unavailable and
  * never OK; detailed requirement/status can be read through EX_STATE.
  */

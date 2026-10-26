@@ -2,9 +2,9 @@
  * by each actual compilation. "workspace" never claims a clean Git commit. */
 #ifndef AFR2_BUILD_INFO_H
 #define AFR2_BUILD_INFO_H
-#define AFR2_FIRMWARE_VERSION "0.9.0"
+#define AFR2_FIRMWARE_VERSION "0.10.0"
 #define AFR2_FIRMWARE_MAJOR 0
-#define AFR2_FIRMWARE_MINOR 9
+#define AFR2_FIRMWARE_MINOR 10
 #define AFR2_FIRMWARE_PATCH 0
 #ifndef AFR2_BUILD_REVISION
 #define AFR2_BUILD_REVISION "workspace"

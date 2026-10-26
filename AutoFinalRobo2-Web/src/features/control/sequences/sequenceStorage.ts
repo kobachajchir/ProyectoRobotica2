@@ -42,25 +42,25 @@ function isFiniteInt(val: unknown): val is number {
 
 function parseMovementBlock(raw: unknown, idx: number): { ok: true; block: MovementBlock } | { ok: false; error: string } {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
-    return { ok: false, error: `Bloque de movimiento #${idx + 1} no es un objeto válido.` };
+    return { ok: false, error: `Bloque de movimiento #${idx + 1} no es un objeto valido.` };
   }
   const obj = raw as Record<string, unknown>;
-  if (obj.completion !== undefined && obj.completion !== 'time' && obj.completion !== 'distance') return { ok: false, error: 'Modo de finalización desconocido.' };
+  if (obj.completion !== undefined && obj.completion !== 'time' && obj.completion !== 'distance') return { ok: false, error: 'Modo de finalizacion desconocido.' };
   const kind = obj.kind as MovementBlockKind;
   if (!VALID_MOVEMENT_KINDS.includes(kind)) {
     return { ok: false, error: `Bloque de movimiento #${idx + 1} tiene tipo desconocido (${String(obj.kind)}).` };
   }
   const durationMs = Number(obj.durationMs ?? 0);
   if (!Number.isInteger(durationMs) || durationMs < 0 || durationMs > EDITOR_MAX_DURATION_MS) {
-    return { ok: false, error: `Bloque de movimiento #${idx + 1} tiene duración fuera de rango.` };
+    return { ok: false, error: `Bloque de movimiento #${idx + 1} tiene duracion fuera de rango.` };
   }
   if (kind === 'finish' && durationMs !== 0) {
-    return { ok: false, error: `Bloque de finalización #${idx + 1} debe tener duración 0 ms.` };
+    return { ok: false, error: `Bloque de finalizacion #${idx + 1} debe tener duracion 0 ms.` };
   }
   if (kind !== 'finish' && (durationMs <= 0 || durationMs % DURATION_STEP_MS !== 0)) {
     return {
       ok: false,
-      error: `Bloque de movimiento #${idx + 1} tiene duración ${durationMs} ms (debe ser múltiplo positivo de ${DURATION_STEP_MS} ms).`,
+      error: `Bloque de movimiento #${idx + 1} tiene duracion ${durationMs} ms (debe ser multiplo positivo de ${DURATION_STEP_MS} ms).`,
     };
   }
 
@@ -92,10 +92,10 @@ function parseWheelBlock(
   idx: number
 ): { ok: true; block: WheelBlock } | { ok: false; error: string } {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
-    return { ok: false, error: `Bloque #${idx + 1} de pista ${track.toUpperCase()} es inválido.` };
+    return { ok: false, error: `Bloque #${idx + 1} de pista ${track.toUpperCase()} es invalido.` };
   }
   const obj = raw as Record<string, unknown>;
-  if (obj.completion !== undefined && obj.completion !== 'time' && obj.completion !== 'distance') return { ok: false, error: 'Modo de finalización desconocido.' };
+  if (obj.completion !== undefined && obj.completion !== 'time' && obj.completion !== 'distance') return { ok: false, error: 'Modo de finalizacion desconocido.' };
   const kind = obj.kind as WheelBlockKind;
   if (!VALID_WHEEL_KINDS.includes(kind)) {
     return {
@@ -105,15 +105,15 @@ function parseWheelBlock(
   }
   const durationMs = Number(obj.durationMs ?? 0);
   if (!Number.isInteger(durationMs) || durationMs < 0 || durationMs > EDITOR_MAX_DURATION_MS) {
-    return { ok: false, error: `Bloque #${idx + 1} de pista ${track.toUpperCase()} tiene duración inválida.` };
+    return { ok: false, error: `Bloque #${idx + 1} de pista ${track.toUpperCase()} tiene duracion invalida.` };
   }
   if (kind === 'finish' && durationMs !== 0) {
-    return { ok: false, error: `Finalización en pista ${track.toUpperCase()} debe tener duración 0 ms.` };
+    return { ok: false, error: `Finalizacion en pista ${track.toUpperCase()} debe tener duracion 0 ms.` };
   }
   if (kind !== 'finish' && (durationMs <= 0 || durationMs % DURATION_STEP_MS !== 0)) {
     return {
       ok: false,
-      error: `Bloque #${idx + 1} en ${track.toUpperCase()} (${durationMs} ms) debe ser múltiplo positivo de ${DURATION_STEP_MS} ms.`,
+      error: `Bloque #${idx + 1} en ${track.toUpperCase()} (${durationMs} ms) debe ser multiplo positivo de ${DURATION_STEP_MS} ms.`,
     };
   }
 
@@ -134,8 +134,8 @@ function parseWheelBlock(
 }
 
 /**
- * Comprueba versión (`afr2-sequence-1`), unidades, estructura y límites antes de reemplazar
- * el documento abierto. Los archivos incompatibles o dañados devuelven `ok: false` con motivo explícito.
+ * Comprueba version (`afr2-sequence-1`), unidades, estructura y limites antes de reemplazar
+ * el documento abierto. Los archivos incompatibles o dañados devuelven `ok: false` con motivo explicito.
  */
 export function parseAndValidateSequenceJson(
   rawJson: string, allowDraft = false
@@ -144,18 +144,18 @@ export function parseAndValidateSequenceJson(
   try {
     parsed = JSON.parse(rawJson);
   } catch {
-    return { ok: false, error: 'El archivo seleccionado no contiene JSON válido.' };
+    return { ok: false, error: 'El archivo seleccionado no contiene JSON valido.' };
   }
 
   if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
-    return { ok: false, error: 'La raíz del documento JSON debe ser un objeto.' };
+    return { ok: false, error: 'La raiz del documento JSON debe ser un objeto.' };
   }
 
   const root = parsed as Record<string, unknown>;
   if (root.schema !== AFR2_SEQUENCE_SCHEMA && root.schema !== 'afr2-sequence-1') {
     return {
       ok: false,
-      error: `Versión de esquema incompatible (${String(root.schema ?? 'ausente')}). Se requiere "${AFR2_SEQUENCE_SCHEMA}".`,
+      error: `Version de esquema incompatible (${String(root.schema ?? 'ausente')}). Se requiere "${AFR2_SEQUENCE_SCHEMA}".`,
     };
   }
 
@@ -168,7 +168,7 @@ export function parseAndValidateSequenceJson(
   ) {
     return {
       ok: false,
-      error: 'Las unidades del documento deben ser explícitamente { distance: "mm", time: "ms", angle: "mrad" }.',
+      error: 'Las unidades del documento deben ser explicitamente { distance: "mm", time: "ms", angle: "mrad" }.',
     };
   }
 
@@ -193,7 +193,7 @@ export function parseAndValidateSequenceJson(
   if (rawMovements.length > EDITOR_MAX_BLOCKS_PER_TRACK) {
     return {
       ok: false,
-      error: `El documento contiene ${rawMovements.length} bloques de movimiento (máximo ${EDITOR_MAX_BLOCKS_PER_TRACK}).`,
+      error: `El documento contiene ${rawMovements.length} bloques de movimiento (maximo ${EDITOR_MAX_BLOCKS_PER_TRACK}).`,
     };
   }
 
@@ -217,7 +217,7 @@ export function parseAndValidateSequenceJson(
     if (arr.length > EDITOR_MAX_BLOCKS_PER_TRACK) {
       return {
         ok: false,
-        error: `La pista ${key.toUpperCase()} contiene ${arr.length} bloques (máximo ${EDITOR_MAX_BLOCKS_PER_TRACK}).`,
+        error: `La pista ${key.toUpperCase()} contiene ${arr.length} bloques (maximo ${EDITOR_MAX_BLOCKS_PER_TRACK}).`,
       };
     }
     for (let i = 0; i < arr.length; i += 1) {
@@ -265,7 +265,7 @@ export function parseAndValidateSequenceJson(
     const firstErr = validation.issues.find((i) => i.severity === 'error');
     return {
       ok: false,
-      error: firstErr?.message ?? 'El documento incumple las reglas de validación del editor.',
+      error: firstErr?.message ?? 'El documento incumple las reglas de validacion del editor.',
     };
   }
 

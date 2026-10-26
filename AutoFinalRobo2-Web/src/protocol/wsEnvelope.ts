@@ -32,6 +32,17 @@ export type Afr2CommandName =
   | 'robot.mode'
   | 'robot.test.wheel'
   | 'robot.sensors'
+  | 'robot.ultrasonic.get'
+  | 'robot.ultrasonic.configure'
+  | 'robot.ir.get'
+  | 'robot.servo.get'
+  | 'robot.servo.set'
+  | 'robot.radar.configure'
+  | 'robot.radar.start'
+  | 'robot.radar.stop'
+  | 'robot.radar.get'
+  | 'robot.screen.status'
+  | 'wifi.info'
   | 'robot.encoders'
   | 'robot.calibrate'
   | 'robot.config.get'
@@ -147,6 +158,8 @@ export interface Afr2CapabilitiesMap {
   configuration: SubsystemCapability;
   wheel_test: SubsystemCapability;
   line_follow: SubsystemCapability;
+  sensor_head?: SubsystemCapability;
+  radar_scanner?: SubsystemCapability;
 }
 
 export interface Afr2SequenceLimits {
@@ -189,7 +202,7 @@ export const DEFAULT_DESIGN_CAPABILITIES: Afr2CapabilitiesMap = {
     calibrated: false,
     valid: false,
     freshness: 'unknown',
-    reason: 'Transporte físico D18/D19 documentado; broker ESP y parser Mega aún sin enlazar.',
+    reason: 'Transporte fisico D18/D19 documentado; broker ESP y parser Mega aun sin enlazar.',
   },
   mecanum_drive: {
     present: true,
@@ -197,7 +210,7 @@ export const DEFAULT_DESIGN_CAPABILITIES: Afr2CapabilitiesMap = {
     calibrated: false,
     valid: false,
     freshness: 'unknown',
-    reason: 'Cuatro ruedas FL/FR/RL/RR; esperando capacidades y calibración del controlador.',
+    reason: 'Cuatro ruedas FL/FR/RL/RR; esperando capacidades y calibracion del controlador.',
   },
   wheel_odometry: {
     present: false,
@@ -205,7 +218,7 @@ export const DEFAULT_DESIGN_CAPABILITIES: Afr2CapabilitiesMap = {
     calibrated: false,
     valid: false,
     freshness: 'unknown',
-    reason: 'Encoders Hall de rueda sin cablear en la documentación suministrada.',
+    reason: 'Encoders Hall de rueda sin cablear en la documentacion suministrada.',
   },
   goto_relative: {
     present: false,
@@ -213,7 +226,7 @@ export const DEFAULT_DESIGN_CAPABILITIES: Afr2CapabilitiesMap = {
     calibrated: false,
     valid: false,
     freshness: 'unknown',
-    reason: 'Deshabilitado hasta disponer de odometría de ruedas conectada y calibrada.',
+    reason: 'Deshabilitado hasta disponer de odometria de ruedas conectada y calibrada.',
   },
   line_array_5ch: {
     present: true,
@@ -221,7 +234,7 @@ export const DEFAULT_DESIGN_CAPABILITIES: Afr2CapabilitiesMap = {
     calibrated: false,
     valid: false,
     freshness: 'unknown',
-    reason: 'Cinco canales IR1..IR5 definidos; telemetría en vivo pendiente de enlace.',
+    reason: 'Cinco canales IR1..IR5 definidos; telemetria en vivo pendiente de enlace.',
   },
   ultrasonic_hcsr04: {
     present: true,
@@ -229,7 +242,7 @@ export const DEFAULT_DESIGN_CAPABILITIES: Afr2CapabilitiesMap = {
     calibrated: true,
     valid: false,
     freshness: 'unknown',
-    reason: 'HC-SR04 con ventana de eco y validez explícita; sin lectura en vivo sin enlace.',
+    reason: 'HC-SR04 con ventana de eco y validez explicita; sin lectura en vivo sin enlace.',
   },
   oled_128x64: {
     present: true,
@@ -237,7 +250,7 @@ export const DEFAULT_DESIGN_CAPABILITIES: Afr2CapabilitiesMap = {
     calibrated: true,
     valid: true,
     freshness: 'local-preview',
-    reason: 'Fuentes C (afr2_oled.c, font7x10.c, afr2_screens.c) y réplica Canvas 128×64 bit a bit.',
+    reason: 'Fuentes C (afr2_oled.c, font7x10.c, afr2_screens.c) y replica Canvas 128×64 bit a bit.',
   },
   ui_encoder_sw: {
     present: true,
@@ -245,7 +258,7 @@ export const DEFAULT_DESIGN_CAPABILITIES: Afr2CapabilitiesMap = {
     calibrated: true,
     valid: true,
     freshness: 'local-preview',
-    reason: 'Giro, SW corto (confirmar) y SW largo ≥ 800 ms (Menú principal); atrás solo por Volver.',
+    reason: 'Giro, SW corto (confirmar) y SW largo ≥ 800 ms (Menu principal); atras solo por Volver.',
   },
   sequence_runner: {
     present: true,
@@ -258,7 +271,7 @@ export const DEFAULT_DESIGN_CAPABILITIES: Afr2CapabilitiesMap = {
       maxDurationMs: 120_000,
       stepMs: 10,
     },
-    reason: 'Simulador local disponible; ejecución física en ATmega/ESP pendiente de perfil EX01 v2 (0x40-0x45).',
+    reason: 'Simulador local disponible; ejecucion fisica en ATmega/ESP pendiente de perfil EX01 v2 (0x40-0x45).',
   },
 };
 
@@ -310,6 +323,12 @@ export const EMPTY_SENSORS_SNAPSHOT: SensorsSnapshot = {
 };
 
 export interface WifiStatusSnapshot {
+  receivedAtMs?: number;
+  connectionInterface?: 'AP'|'STA';
+  connectionRssiDbm?: number|null;
+  apClients?: number;
+  channel?: number;
+  rssiSource?: 'esp-sta';
   applying?: boolean;
   fallbackActive?: boolean;
   scanRunning?: boolean;

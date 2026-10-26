@@ -1,3 +1,51 @@
+## AFR2-20261026-03 - 26/10/2026
+
+Textos de toda la interfaz Web sin acentos agudos, con enie conservada;
+correccion de cadenas mal codificadas y etiquetas importadas normalizadas
+solo para presentacion. Fuente sin tests/build/validaciones ni promocion ESP.
+ATmega/ESP/CAD y recursos de framebuffer sin cambios.
+[Ficha](changes/2026-10-26-03-web-unaccented-text.md).
+
+## AFR2-20261026-02 — 26/10/2026
+
+Radar Web recompuesto: suelo continuo y retícula radial, anillos/sector rubí,
+encuadre adaptado y vistas Perspectiva/Superior. Inicio1m sin alterar escala física.
+Distancia destacada, diagnósticos desplegables y parámetros debajo del mapa.
+VIS-038; fuente sin tests/build/validadores/navegador/promoción ESP.
+[Ficha](changes/2026-10-26-02-radar-composition.md). Firmware/OLED/CAD/Modelo3D sin cambios de esta revisión.
+
+## AFR2-20261026-01 — 26/10/2026
+
+Modelo3D con botón Mostrar/Ocultar referencias a la derecha del selector;
+ocultar cierra la ficha y retira puntos/líneas. Ocho referencias, incluida una
+única rueda FL representativa. Fuente Web sin tests/build/validaciones ni
+promoción ESP; ATmega/ESP/CAD sin cambios.
+[Ficha](changes/2026-10-26-01-model-reference-visibility.md).
+
+## AFR2-20261025-16 — 25/10/2026
+
+Radar Web con plataforma/anillos 3D, brillo rubí y sector de escaneo en vista
+previa. Selector doble0–180° y barras/campos numéricos vinculados con límites,
+Enter/blur y Escape; inversión explicada y etiqueta Configuracion sin acento.
+Fuente Web/VIS-037; sin tests/builds/validadores/navegador/promoción ESP.
+ATmega/ESP/OLED/CAD sin cambio en esta revisión. [Ficha](changes/2026-10-25-16-radar-volume-scan-controls.md).
+
+## AFR2-20261025-15 — 25/10/2026
+
+Modelo3D con once selectores de componentes, ficha local fija, explicación y
+acceso a la tarea/rueda correspondiente. X/Escape/clic fuera cierran; orbitar
+conserva la ficha. Identidad0.1.9/VIS-036, solo fuente Web y documentación,
+sin tests/builds/validaciones ni promoción ESP. ATmega/ESP/CAD sin cambios.
+[Ficha](changes/2026-10-25-15-model-component-hotspots.md).
+
+### AFR2-20261025-14 — Compilación posterior autorizada
+
+ATmega firmware/communication/library, ESP y Web full compilados. Corregida creación de build en Windows y siete advertencias de indentación. Sin errores/advertencias finales; recursos OLED regenerados. Sin tests, navegador ni flash; sin promoción al paquete ESP. [Evidencia](documentation/builds/2026-10-25-14/README.md).
+
+## AFR2-20261025-14 — 25/10/2026
+
+Sensores separados, HC-SR04/servo/radar autónomo en ATmega, EX01v8 y41comandos públicos con ESP/Web, vistas OLED hermanas y copia Web64identidades, radar Three.js y animación común salvo Modelo3D. Pill STA/AP y modal Red; Configuración renombrada. Fuente sin builds/tests/validadores/browser/flasheo; recursos OLED copiados en modo copy-only. [Ficha](changes/2026-10-25-14-sensors-autonomous-radar.md).
+
 # Registro AutoFinalRobo2
 
 Independiente del AMI AutoMicro.

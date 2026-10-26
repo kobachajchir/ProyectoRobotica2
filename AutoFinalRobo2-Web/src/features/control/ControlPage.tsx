@@ -1,6 +1,7 @@
 import { Chevron } from '../../components/ui/Chevron';
 import { SectionHeader } from '../../components/ui/SectionHeader';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Button } from '../../components/ui/Button';
 import { Disclosure } from '../../components/ui/Disclosure';
 import { StatusNotice } from '../../components/ui/StatusNotice';
@@ -42,12 +43,13 @@ const MECANUM_VECTORS: VectorPreset[] = [
   { id: 'w', label: 'Lateral Izquierda', symbol: '←', vxFactor: 0, vyFactor: 1 },
   { id: 'stop', label: 'Detener consigna', symbol: '■', vxFactor: 0, vyFactor: 0 },
   { id: 'e', label: 'Lateral Derecha', symbol: '→', vxFactor: 0, vyFactor: -1 },
-  { id: 'sw', label: 'Diag. Izq. Atrás', symbol: '↙', vxFactor: -1, vyFactor: 1 },
-  { id: 's', label: 'Atrás', symbol: '↓', vxFactor: -1, vyFactor: 0 },
-  { id: 'se', label: 'Diag. Der. Atrás', symbol: '↘', vxFactor: -1, vyFactor: -1 },
+  { id: 'sw', label: 'Diag. Izq. Atras', symbol: '↙', vxFactor: -1, vyFactor: 1 },
+  { id: 's', label: 'Atras', symbol: '↓', vxFactor: -1, vyFactor: 0 },
+  { id: 'se', label: 'Diag. Der. Atras', symbol: '↘', vxFactor: -1, vyFactor: -1 },
 ];
 
 export function ControlPage() {
+  const [entryParams] = useSearchParams();
   const {
     wsState,
     megaLinkState,
@@ -61,7 +63,7 @@ export function ControlPage() {
     setOperationActivity,
   } = useConnection();
 
-  const [activeTask, setActiveTask] = useState<ControlTaskId>('drive');
+  const [activeTask, setActiveTask] = useState<ControlTaskId>(() => entryParams.get('tarea') === 'wheel' ? 'wheel' : 'drive');
   const [linearSpeedMmS, setLinearSpeedMmS] = useState(100);
   const [angularSpeedMradS, setAngularSpeedMradS] = useState(800);
   const [activePadId, setActivePadId] = useState<string | null>(null);
@@ -74,7 +76,10 @@ export function ControlPage() {
   const mounted = useRef(true);
   const latestStop = useRef(stopRecord.lastIssuedAtMs);latestStop.current=stopRecord.lastIssuedAtMs;
 
-  const [testWheel, setTestWheel] = useState<WheelId>('FL');
+  const [testWheel, setTestWheel] = useState<WheelId>(() => {
+    const wheel = entryParams.get('rueda');
+    return wheel === 'FR' || wheel === 'RL' || wheel === 'RR' ? wheel : 'FL';
+  });
   const [testDirection, setTestDirection] = useState<'forward' | 'reverse' | 'stop'>('forward');
   const [testPwmPct, setTestPwmPct] = useState(25);
   const [testDurationMs, setTestDurationMs] = useState(600);
@@ -89,7 +94,7 @@ export function ControlPage() {
   const maxPwm = Math.min(60, capabilities.wheel_test.limits?.maxPwmPct ?? 25);
   useEffect(() => {setLinearSpeedMmS(v => Math.min(v,maxSpeed));setTestPwmPct(v => Math.min(v,maxPwm));}, [maxSpeed,maxPwm]);
 
-  // Estado para conectar la simulación de Secuencias con el ControlMap existente
+  // Estado para conectar la simulacion de Secuencias con el ControlMap existente
   const [simMapPose, setSimMapPose] = useState<RobotPose | null>(null);
   const [simMapTrail, setSimMapTrail] = useState<TrailPoint[]>([]);
   const [simWheelAngles, setSimWheelAngles] = useState<RobotWheelValues>();
@@ -271,8 +276,8 @@ export function ControlPage() {
       },
       {
         loadingTitle: 'Enviando objetivo relativo GOTO...',
-        successTitle: 'Misión GOTO completada',
-        acceptedTitle: 'Misión GOTO aceptada (en progreso)',
+        successTitle: 'Mision GOTO completada',
+        acceptedTitle: 'Mision GOTO aceptada (en progreso)',
       }
     );
   };
@@ -318,9 +323,9 @@ export function ControlPage() {
 
   return (
     <div className="afr2-route-view afr2-control-workspace">
-      <SectionHeader title="Control" description="Movimientos, secuencias y simulación desde la Web." />
+      <SectionHeader title="Control" description="Movimientos, secuencias y simulacion desde la Web." />
       {driveError && <StatusNotice tone="error" title="Consigna sin confirmar">{driveError}</StatusNotice>}
-      {robotState && <p className="afr2-help" role="status">Modo AVR: {robotState.mode} · GOTO: {robotState.gotoState} · Salidas apagadas: {robotState.stopped === null ? 'desconocido' : robotState.stopped ? 'sí' : 'no'} · Fallo: {robotState.fault ?? 'desconocido'}</p>}
+      {robotState && <p className="afr2-help" role="status">Modo AVR: {robotState.mode} · GOTO: {robotState.gotoState} · Salidas apagadas: {robotState.stopped === null ? 'desconocido' : robotState.stopped ? 'si' : 'no'} · Fallo: {robotState.fault ?? 'desconocido'}</p>}
 
 
 
@@ -337,25 +342,25 @@ export function ControlPage() {
                 {!canDrive && (
                   <StatusNotice
                     tone="info"
-                    title="Simulación local disponible"
-                    badge="Control táctil"
+                    title="Simulacion local disponible"
+                    badge="Control tactil"
                   >
                     {wsState !== 'ready' || megaLinkState !== 'ready'
-                      ? 'Abrí Control táctil para simular sin conexión al robot. Las órdenes físicas requieren enlace Web↔ESP↔ATmega2560.'
-                      : `Control táctil permite simular localmente. Robot: ${capabilities.mecanum_drive.reason || 'Esperá la confirmación de parada antes de operar.'}`}
+                      ? 'Abri Control tactil para simular sin conexion al robot. Las ordenes fisicas requieren enlace Web↔ESP↔ATmega2560.'
+                      : `Control tactil permite simular localmente. Robot: ${capabilities.mecanum_drive.reason || 'Espera la confirmacion de parada antes de operar.'}`}
                   </StatusNotice>
                 )}
 
                 <div className="afr2-manual-heading">
-                  <h2>Conducción manual</h2>
+                  <h2>Conduccion manual</h2>
                   <Button variant="primary" aria-haspopup="dialog" aria-expanded={manualOverlayOpen} icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5" /></svg>}
                     onClick={event => { stopActiveHold(true); setDriveError(null); setManualOrigin({ element: event.currentTarget, keyboard: event.detail === 0 }); setManualOverlayOpen(true); }}>
-                    Control táctil
+                    Control tactil
                   </Button>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-                  {/* Pad direccional 3x3 + controles gráficos de giro sobre el eje */}
+                  {/* Pad direccional 3x3 + controles graficos de giro sobre el eje */}
                   <div className="lg:col-span-7 afr2-glass-panel rounded-[var(--radius-md)] p-5 space-y-4">
                     <h2 className="text-base font-semibold text-[var(--text)]">
                       Vectores planares (`vx`, `vy`) y giro sobre el eje (`wz`)
@@ -364,7 +369,7 @@ export function ControlPage() {
                     <div
                       className="grid grid-cols-3 gap-3"
                       role="group"
-                      aria-label="Vectores de traslación Mecanum"
+                      aria-label="Vectores de traslacion Mecanum"
                     >
                       {MECANUM_VECTORS.map((vec) => {
                         const isStopCell = vec.id === 'stop';
@@ -413,14 +418,14 @@ export function ControlPage() {
                       })}
                     </div>
 
-                    {/* Dos controles gráficos de giro sobre el eje (vista superior del chasis + flecha circular) */}
+                    {/* Dos controles graficos de giro sobre el eje (vista superior del chasis + flecha circular) */}
                     <div className="space-y-2 pt-2 border-t border-[var(--border-default)]">
                       <div className="flex items-center justify-between gap-2">
                         <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
                           Giro sobre el eje (vista superior del chasis)
                         </span>
                         <span className="text-[11px] font-mono text-[var(--text-muted)]">
-                          Acción solicitada · soltar o cancelar detiene
+                          Accion solicitada · soltar o cancelar detiene
                         </span>
                       </div>
 
@@ -568,10 +573,10 @@ export function ControlPage() {
                     </div>
                   </div>
 
-                  {/* Parámetros de velocidad y modo operativo */}
+                  {/* Parametros de velocidad y modo operativo */}
                   <div className="lg:col-span-5 afr2-glass-panel rounded-[var(--radius-md)] p-5 space-y-5">
                     <h2 className="text-base font-semibold text-[var(--text)]">
-                      Parámetros y modo operativo
+                      Parametros y modo operativo
                     </h2>
 
                     <div>
@@ -630,7 +635,7 @@ export function ControlPage() {
                             onClick={() => void handleModeSubmit(mode)}
                             className="afr2-segmented-btn disabled:opacity-55 disabled:cursor-not-allowed"
                           >
-                            {mode === 'idle' ? 'IDLE' : mode === 'manual' ? 'MANUAL' : 'LÍNEA 5CH'}
+                            {mode === 'idle' ? 'IDLE' : mode === 'manual' ? 'MANUAL' : 'LINEA 5CH'}
                           </button>
                         ))}
                       </div>
@@ -659,7 +664,7 @@ export function ControlPage() {
                     Prueba individual de rueda (`robot.test.wheel`)
                   </h2>
                   <p className="text-xs text-[var(--text-muted)] mt-1">
-                    Acciona una sola rueda con límite de PWM (≤ 60 %) y duración acotada (100–2000 ms).
+                    Acciona una sola rueda con limite de PWM (≤ 60 %) y duracion acotada (100–2000 ms).
                   </p>
                 </div>
 
@@ -704,7 +709,7 @@ export function ControlPage() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label htmlFor="wheel-pwm-input" className="block text-xs font-medium text-[var(--text-muted)] mb-1">
-                        PWM (%) — máx. 60 %
+                        PWM (%) — max. 60 %
                       </label>
                       <input
                         id="wheel-pwm-input"
@@ -720,7 +725,7 @@ export function ControlPage() {
                     </div>
                     <div>
                       <label htmlFor="wheel-dur-input" className="block text-xs font-medium text-[var(--text-muted)] mb-1">
-                        Duración (ms)
+                        Duracion (ms)
                       </label>
                       <input
                         id="wheel-dur-input"
@@ -755,14 +760,14 @@ export function ControlPage() {
             content: (
               <div className="afr2-page-stack">
               <GotoSimulatorPanel commands={gotoCommands} onCommandsChange={setGotoCommands} speedMmS={gotoSimSpeedMmS} onSpeedChange={setGotoSimSpeedMmS} />
-              <Disclosure title="Enviar un objetivo al robot" meta="Requiere odometría y calibración">
+              <Disclosure title="Enviar un objetivo al robot" meta="Requiere odometria y calibracion">
               <div className="afr2-glass-panel rounded-[var(--radius-md)] p-5 space-y-4 max-w-2xl">
                 <div>
                   <h2 className="text-base font-semibold text-[var(--text)]">
                     Posicionamiento relativo (`robot.goto.start`)
                   </h2>
                   <p className="text-xs text-[var(--text-muted)] mt-1">
-                    Desplazamiento relativo (`xMm`, `yMm`, `thetaMrad`) sujeto a odometría de ruedas.
+                    Desplazamiento relativo (`xMm`, `yMm`, `thetaMrad`) sujeto a odometria de ruedas.
                   </p>
                 </div>
 
@@ -770,7 +775,7 @@ export function ControlPage() {
                   <StatusNotice
                     tone="warning"
                     title="GOTO deshabilitado"
-                    badge="Sin odometría"
+                    badge="Sin odometria"
                   >
                     {capabilities.goto_relative.reason} ({capabilities.wheel_odometry.reason})
                   </StatusNotice>
@@ -844,8 +849,8 @@ export function ControlPage() {
                           'robot.goto.cancel',
                           {},
                           {
-                            loadingTitle: 'Cancelando misión GOTO...',
-                            successTitle: 'Misión GOTO cancelada',
+                            loadingTitle: 'Cancelando mision GOTO...',
+                            successTitle: 'Mision GOTO cancelada',
                           }
                         )
                       }
@@ -861,7 +866,7 @@ export function ControlPage() {
           },
           {
             id: 'calibrate',
-            label: 'Calibración',
+            label: 'Calibracion',
             content: (
               <CalibrationPanel />
             ),
@@ -874,18 +879,18 @@ export function ControlPage() {
         onSpeedChange={setLinearSpeedMmS} stopSignal={stopRecord.lastIssuedAtMs} error={driveError}
         onDirectionChange={(direction: ManualDirection) => { const speed = Math.floor(Math.min(linearSpeedMmS, maxSpeed) / (Math.abs(direction.vx) + Math.abs(direction.vy))); void startHoldVector(`touch-${direction.id}`, direction.label, direction.vx * speed, direction.vy * speed, 0); }} />
       <Disclosure
-        title="Supervisión del control Web"
+        title="Supervision del control Web"
         meta="ATmega2560 autoritativo"
       >
         <ul className="list-disc pl-5 space-y-1 text-xs">
           <li>
-            La supervisión se prepara automáticamente al operar desde la Web. Una orden pierde vigencia si se interrumpe la conexión o deja de renovarse.
+            La supervision se prepara automaticamente al operar desde la Web. Una orden pierde vigencia si se interrumpe la conexion o deja de renovarse.
           </li>
           <li>
-            La pérdida de foco, ocultamiento de pestaña, cambio de tarea o desconexión detiene inmediatamente el envío de consignas, cancela cualquier secuencia física activa y emite <code>robot.stop</code>.
+            La perdida de foco, ocultamiento de pestaña, cambio de tarea o desconexion detiene inmediatamente el envio de consignas, cancela cualquier secuencia fisica activa y emite <code>robot.stop</code>.
           </li>
           <li>
-            La confirmación de parada física proviene únicamente del productor autoritativo en el ATmega2560.
+            La confirmacion de parada fisica proviene unicamente del productor autoritativo en el ATmega2560.
           </li>
         </ul>
       </Disclosure>

@@ -1,3 +1,7 @@
+## Vigente AFR2-20261025-14
+
+Sensores → Distancia y servo (Ver distancia: Radar↔Numérica; Control del servo: Ángulo/Centrar/Desactivar/Volver; Radar automático: Iniciar/Detener/Límites/Velocidad/Estabilización/Intervalo/Inversión/Volver; Volver), Línea IR (Gráfica↔Valores), Ruedas y Volver. Vistas hermanas cortas retornan al listado; largo abre principal. Árbol integrado en fuente C y copia Web, sin ensayo. Ver SENSORS_RADAR_8.
+
 > AFR2-20261025-01: se retiran las opciones de permiso de acceso por pedido explícito. Árbol restante, ScreenCodes y Volver conservados; [control directo7](../contracts/DIRECT_CONTROL_7.md).
 
 # Árbol funcional de menús

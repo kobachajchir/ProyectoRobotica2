@@ -9,7 +9,7 @@ void Afr2Link_Init(Afr2Link *l,const Afr2LinkOps *ops) {
 }
 void Afr2Link_RxFault(Afr2Link *l) {
     afr2_wire_reset(&l->parser); l->negotiated=0; l->reply_length=0;
-    if (l->ops.stop) l->ops.stop(l->ops.ctx);
+    if(l->ops.halt_motion)l->ops.halt_motion(l->ops.ctx);else if(l->ops.stop)l->ops.stop(l->ops.ctx);
     if (l->ops.revoke) l->ops.revoke(l->ops.ctx);
 }
 void Afr2Link_Tick(Afr2Link *l,uint32_t now) {
@@ -17,7 +17,7 @@ void Afr2Link_Tick(Afr2Link *l,uint32_t now) {
         afr2_wire_gap(&l->parser);
     if (l->negotiated && (uint32_t)(now-l->last_request_ms)>1500u) {
         l->negotiated=0; l->supervised=1;
-        if (l->ops.stop) l->ops.stop(l->ops.ctx);
+        if(l->ops.halt_motion)l->ops.halt_motion(l->ops.ctx);else if(l->ops.stop)l->ops.stop(l->ops.ctx);
         if (l->ops.revoke) l->ops.revoke(l->ops.ctx);
     }
 }
@@ -37,7 +37,7 @@ static void handle(Afr2Link *l,uint32_t now) {
     Afr2LinkSnapshot s;
     if (!afr2_route_matches(p->route,AFR2_NODE_ESP,AFR2_NODE_MEGA) || p->length<8u) return;
     if(p->command==AFR2_EXT_BOOT && p->length==14 && !memcmp(p->payload,"BT01",4) && p->payload[4]==AFR2_NODE_ESP) {
-        if(l->ops.stop)l->ops.stop(l->ops.ctx);
+        if(l->ops.halt_motion)l->ops.halt_motion(l->ops.ctx);else if(l->ops.stop)l->ops.stop(l->ops.ctx);
         if(l->ops.revoke)l->ops.revoke(l->ops.ctx);
         l->negotiated=0;l->session=l->last_transaction=0;return;
     }
@@ -51,7 +51,7 @@ static void handle(Afr2Link *l,uint32_t now) {
             out[8]=AFR2_RESULT_BAD_REQUEST;
         else {
             if (l->session!=session) {
-                if(l->ops.stop)l->ops.stop(l->ops.ctx);
+                if(l->ops.halt_motion)l->ops.halt_motion(l->ops.ctx);else if(l->ops.stop)l->ops.stop(l->ops.ctx);
                 if(l->ops.revoke)l->ops.revoke(l->ops.ctx);
             }
             l->session=session; l->last_transaction=transaction; l->negotiated=1;

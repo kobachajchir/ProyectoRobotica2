@@ -35,7 +35,7 @@ export function snapDurationMs(value: number, isFinish = false): number {
 }
 
 /**
- * Cinemática inversa Mecanum sin recortes silenciosos de velocidad:
+ * Cinematica inversa Mecanum sin recortes silenciosos de velocidad:
  * Convierte consignas del chasis (vxMmS, vyMmS, wzMradS) a las 4 ruedas (mm/s).
  * v_FL = vx - vy - wz * (lx + ly)
  * v_FR = vx + vy + wz * (lx + ly)
@@ -59,7 +59,7 @@ export function inverseMecanumKinematics(
 }
 
 /**
- * Cinemática directa Mecanum determinista desde las 4 ruedas (mm/s) hacia el chasis:
+ * Cinematica directa Mecanum determinista desde las 4 ruedas (mm/s) hacia el chasis:
  * vx = (v_FL + v_FR + v_RL + v_RR) / 4
  * vy = (-v_FL + v_FR + v_RL - v_RR) / 4
  * wz(mrad/s) = ((-v_FL + v_FR - v_RL + v_RR) / (4 * (lx + ly))) * 1000
@@ -162,7 +162,7 @@ export function createDefaultMovementBlock(kind: MovementBlockKind): MovementBlo
       return {
         id,
         kind: 'finish',
-        label: 'Finalización',
+        label: 'Finalizacion',
         durationMs: 0,
         vxMmS: 0,
         vyMmS: 0,
@@ -214,7 +214,7 @@ export function createDefaultWheelBlock(kind: WheelBlockKind): WheelBlock {
       return {
         id,
         kind: 'finish',
-        label: 'Finalización',
+        label: 'Finalizacion',
         durationMs: 0,
         speedMmS: 0,
         fromSpeedMmS: 0,
@@ -265,7 +265,7 @@ export function resolveMovementBlockEndpoints(
 
 /**
  * Deriva las cuatro pistas de rueda (`FL`, `FR`, `RL`, `RR`) a partir de la secuencia de movimientos del auto.
- * Respeta la semántica terminal de `finish` y no aplica recortes silenciosos de velocidad.
+ * Respeta la semantica terminal de `finish` y no aplica recortes silenciosos de velocidad.
  */
 export function deriveWheelTracksFromMovements(
   movementBlocks: MovementBlock[],
@@ -284,7 +284,7 @@ export function deriveWheelTracksFromMovements(
         result[key].push({
           id: `${block.id}-${key}`,
           kind: 'finish',
-          label: block.label || 'Finalización',
+          label: block.label || 'Finalizacion',
           durationMs: 0,
           speedMmS: 0,
           fromSpeedMmS: 0,
@@ -471,7 +471,7 @@ export function normalizeSequenceDocument(doc: Afr2SequenceDocument): {
     return { segments, totalDurationMs: cursorMs, effectiveTracks };
   }
 
-  // Nivel 'wheels': partición temporal sincronizada entre las 4 pistas FL/FR/RL/RR
+  // Nivel 'wheels': particion temporal sincronizada entre las 4 pistas FL/FR/RL/RR
   const perTrack = {
     fl: buildWheelTrackIntervals(effectiveTracks.fl),
     fr: buildWheelTrackIntervals(effectiveTracks.fr),
@@ -524,8 +524,8 @@ export function normalizeSequenceDocument(doc: Afr2SequenceDocument): {
 }
 
 /**
- * Valida la estructura, múltiplos de 10 ms, bloques terminales, límites de velocidades sin recorte
- * silencioso y límites tanto del editor (64 bloques / 10 min) como físicos (32 segmentos / 120 s).
+ * Valida la estructura, multiplos de 10 ms, bloques terminales, limites de velocidades sin recorte
+ * silencioso y limites tanto del editor (64 bloques / 10 min) como fisicos (32 segmentos / 120 s).
  */
 export function validateSequenceDocument(
   doc: Afr2SequenceDocument,
@@ -556,7 +556,7 @@ export function validateSequenceDocument(
         id: 'mov-max-blocks',
         severity: 'error',
         track: 'movements',
-        message: `La pista supera el máximo del editor (${EDITOR_MAX_BLOCKS_PER_TRACK} bloques).`,
+        message: `La pista supera el maximo del editor (${EDITOR_MAX_BLOCKS_PER_TRACK} bloques).`,
       });
     }
 
@@ -568,7 +568,7 @@ export function validateSequenceDocument(
           severity: 'error',
           track: 'movements',
           blockId: block.id,
-          message: `El bloque «${block.label}» está después de Finalización (que es terminal).`,
+          message: `El bloque «${block.label}» esta despues de Finalizacion (que es terminal).`,
         });
       }
       if (block.kind === 'finish') {
@@ -579,7 +579,7 @@ export function validateSequenceDocument(
             severity: 'error',
             track: 'movements',
             blockId: block.id,
-            message: 'El bloque de Finalización no debe consumir duración (0 ms).',
+            message: 'El bloque de Finalizacion no debe consumir duracion (0 ms).',
           });
         }
         continue;
@@ -591,7 +591,7 @@ export function validateSequenceDocument(
           severity: 'error',
           track: 'movements',
           blockId: block.id,
-          message: `La duración de «${block.label}» (${block.durationMs} ms) debe ser múltiplo positivo de ${DURATION_STEP_MS} ms.`,
+          message: `La duracion de «${block.label}» (${block.durationMs} ms) debe ser multiplo positivo de ${DURATION_STEP_MS} ms.`,
         });
       }
 
@@ -612,7 +612,7 @@ export function validateSequenceDocument(
           severity: 'error',
           track: 'movements',
           blockId: block.id,
-          message: `«${block.label}» demanda ${peak} mm/s en una rueda, superando el máximo configurado (${maxWheelSpeed} mm/s). No se recorta silenciosamente; reducí la consigna o ajustá el perfil.`,
+          message: `«${block.label}» demanda ${peak} mm/s en una rueda, superando el maximo configurado (${maxWheelSpeed} mm/s). No se recorta silenciosamente; reduci la consigna o ajusta el perfil.`,
         });
       }
     }
@@ -637,7 +637,7 @@ export function validateSequenceDocument(
           id: `whl-max-blocks-${key}`,
           severity: 'error',
           track: key,
-          message: `${WHEEL_TRACK_LABELS[key]} supera el máximo del editor (${EDITOR_MAX_BLOCKS_PER_TRACK} bloques).`,
+          message: `${WHEEL_TRACK_LABELS[key]} supera el maximo del editor (${EDITOR_MAX_BLOCKS_PER_TRACK} bloques).`,
         });
       }
       let seenFinish = false;
@@ -648,7 +648,7 @@ export function validateSequenceDocument(
             severity: 'error',
             track: key,
             blockId: block.id,
-            message: `En ${key.toUpperCase()}, «${block.label}» está ubicado tras un bloque terminal de Finalización.`,
+            message: `En ${key.toUpperCase()}, «${block.label}» esta ubicado tras un bloque terminal de Finalizacion.`,
           });
         }
         if (block.kind === 'finish') {
@@ -659,7 +659,7 @@ export function validateSequenceDocument(
               severity: 'error',
               track: key,
               blockId: block.id,
-              message: `En ${key.toUpperCase()}, la Finalización debe tener duración 0 ms.`,
+              message: `En ${key.toUpperCase()}, la Finalizacion debe tener duracion 0 ms.`,
             });
           }
           continue;
@@ -670,7 +670,7 @@ export function validateSequenceDocument(
             severity: 'error',
             track: key,
             blockId: block.id,
-            message: `En ${key.toUpperCase()}, «${block.label}» (${block.durationMs} ms) debe ser múltiplo positivo de ${DURATION_STEP_MS} ms.`,
+            message: `En ${key.toUpperCase()}, «${block.label}» (${block.durationMs} ms) debe ser multiplo positivo de ${DURATION_STEP_MS} ms.`,
           });
         }
         const peak =
@@ -685,7 +685,7 @@ export function validateSequenceDocument(
             severity: 'error',
             track: key,
             blockId: block.id,
-            message: `En ${key.toUpperCase()}, «${block.label}» solicita ${peak} mm/s (máximo nominal ${maxWheelSpeed} mm/s).`,
+            message: `En ${key.toUpperCase()}, «${block.label}» solicita ${peak} mm/s (maximo nominal ${maxWheelSpeed} mm/s).`,
           });
         }
       }
@@ -697,7 +697,7 @@ export function validateSequenceDocument(
   for (const block of checkedBlocks) if (block.completion === 'distance') {
     const duration = doc.editorLevel === 'movements' ? movementDurationMs(block as MovementBlock, doc.kinematicProfile) : wheelDurationMs(block as WheelBlock);
     if (!Number.isInteger(block.distanceMm) || (block.distanceMm ?? 0) < 1 || (block.distanceMm ?? 0) > 10000 || duration <= 0 || duration > EDITOR_MAX_DURATION_MS || block.kind === 'wait' || block.kind === 'finish')
-      issues.push({ id: `distance-${block.id}`, severity: 'error', blockId: block.id, message: 'Distancia inválida, sin velocidad o duración simulada fuera de límites.' });
+      issues.push({ id: `distance-${block.id}`, severity: 'error', blockId: block.id, message: 'Distancia invalida, sin velocidad o duracion simulada fuera de limites.' });
   }
 
   if (normalized.totalDurationMs <= 0) {
@@ -705,7 +705,7 @@ export function validateSequenceDocument(
       id: 'total-zero',
       severity: 'error',
       track: 'global',
-      message: 'La duración efectiva del programa es 0 ms. Agregá al menos un bloque con duración positiva.',
+      message: 'La duracion efectiva del programa es 0 ms. Agrega al menos un bloque con duracion positiva.',
     });
   }
 
@@ -714,7 +714,7 @@ export function validateSequenceDocument(
       id: 'editor-max-duration',
       severity: 'error',
       track: 'global',
-      message: `La duración total (${(normalized.totalDurationMs / 1000).toFixed(1)} s) supera el límite del editor (600 s / 10 min).`,
+      message: `La duracion total (${(normalized.totalDurationMs / 1000).toFixed(1)} s) supera el limite del editor (600 s / 10 min).`,
     });
   }
 
@@ -727,7 +727,7 @@ export function validateSequenceDocument(
       id: 'phys-max-segments',
       severity: 'warning',
       track: 'physical',
-      message: `El programa genera ${normalized.segments.length} segmentos normalizados y excede el límite físico del controlador (${physicalLimits.maxSegments} segmentos). Podés simularlo localmente, pero el controlador rechazará su carga física sin truncarlo.`,
+      message: `El programa genera ${normalized.segments.length} segmentos normalizados y excede el limite fisico del controlador (${physicalLimits.maxSegments} segmentos). Podes simularlo localmente, pero el controlador rechazara su carga fisica sin truncarlo.`,
     });
   }
 
@@ -737,7 +737,7 @@ export function validateSequenceDocument(
       id: 'phys-max-duration',
       severity: 'warning',
       track: 'physical',
-      message: `La duración total (${(normalized.totalDurationMs / 1000).toFixed(1)} s) excede el límite físico del controlador (${(physicalLimits.maxDurationMs / 1000).toFixed(0)} s).`,
+      message: `La duracion total (${(normalized.totalDurationMs / 1000).toFixed(1)} s) excede el limite fisico del controlador (${(physicalLimits.maxDurationMs / 1000).toFixed(0)} s).`,
     });
   }
 
@@ -774,7 +774,7 @@ function wrapAngleRad(rad: number): number {
 }
 
 /**
- * Motor determinista de simulación cinemática Mecanum en pasos fijos de 10 ms.
+ * Motor determinista de simulacion cinematica Mecanum en pasos fijos de 10 ms.
  * - Al evaluar cualquier `targetTimeMs`, produce exactamente el mismo estado e historial espacial.
  * - Al finalizar la secuencia (`targetTimeMs >= totalDurationMs`), las consignas de salida quedan en 0 mm/s.
  */
@@ -862,7 +862,7 @@ export function evaluateSequenceSimulationAtTime(
     }
   }
 
-  // Si el cursor está al final del programa o detenido en 0, las salidas solicitadas son 0
+  // Si el cursor esta al final del programa o detenido en 0, las salidas solicitadas son 0
   if (clampedCursorMs >= totalDurationMs || clampedCursorMs === 0) {
     currentWheels = { fl: 0, fr: 0, rl: 0, rr: 0 };
     if (clampedCursorMs >= totalDurationMs) {
@@ -894,13 +894,13 @@ export function evaluateSequenceSimulationAtTime(
 }
 
 export function createStarterSequenceDocument(
-  name = 'Recorrido Mecanum de demostración'
+  name = 'Recorrido Mecanum de demostracion'
 ): Afr2SequenceDocument {
   const movBlocks: MovementBlock[] = [
     {
       id: 'demo-mov-1',
       kind: 'ramp',
-      label: 'Aceleración frontal',
+      label: 'Aceleracion frontal',
       durationMs: 800,
       vxMmS: 0,
       vyMmS: 0,
@@ -990,7 +990,7 @@ export function createStarterSequenceDocument(
     {
       id: 'demo-mov-7',
       kind: 'finish',
-      label: 'Finalización',
+      label: 'Finalizacion',
       durationMs: 0,
       vxMmS: 0,
       vyMmS: 0,

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useConnection } from './ConnectionContext';
 import { stateAge, type RobotMode } from '../../protocol/robotState';
 
-const LABELS: Record<RobotMode, string> = { idle: 'Reposo', manual: 'Manual', 'line-follow': 'Seguimiento de línea', 'wheel-test': 'Prueba de rueda', goto: 'GOTO', sequence: 'Secuencia', fault: 'Fallo', unknown: 'Sin datos' };
+const LABELS: Record<RobotMode, string> = { idle: 'Reposo', manual: 'Manual', 'line-follow': 'Seguimiento de linea', 'wheel-test': 'Prueba de rueda', goto: 'GOTO', sequence: 'Secuencia', fault: 'Fallo', unknown: 'Sin datos' };
 
 /** Shares the same authoritative snapshot as Control; never issues a second poll. */
 export function useRobotMode(): string {

@@ -1,6 +1,7 @@
 #ifndef AFR2_APP_H
 #define AFR2_APP_H
 #include "afr2_product.h"
+uint8_t Afr2App_SensorCommand(void *ctx,uint8_t cmd,const uint8_t *d,uint8_t n,uint8_t *out,uint8_t *length);
 #include "afr2_screens.h"
 typedef struct {
     Afr2Product *product;

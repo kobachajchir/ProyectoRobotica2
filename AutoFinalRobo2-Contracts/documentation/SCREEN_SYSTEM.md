@@ -1,3 +1,7 @@
+> **Actualización de compilación14:** pedido humano posterior autoriza compilar/corregir. ATmega/ESP/Web full: exit0, sin errores ni advertencias finales. [Informe](builds/2026-10-25-14/README.md). Sin tests, validadores independientes, navegador, montaje físico ni flasheos. Paquete local full generado; no promovido a ESP/data/dist. El texto de entrega sin compilar inferior es histórico.
+
+> **AFR2-20261025-14:**53nodos/64identidades. Radar/numérica e IR gráfica/valores son hermanas con códigos propios, giro alterna y corto retorna al listado; pantalla angular con control local. Renderer entero C y TypeScript,16iconos y LUT trigonométrica copiados a biblioteca Web. Visor conectado conserva framebuffer1024bytes; metadatos por comando69 no congelan render. Fuente EX01v8 sin compilar ni comparar paridad. [Contrato8](../contracts/SENSORS_RADAR_8.md).
+
 # Sistema de pantallas AutoFinalRobo2
 
 AFR2-20261024-09: catálogo compartido de59entradas consumido directamente por

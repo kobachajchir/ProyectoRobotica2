@@ -68,7 +68,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     });
   }, [resolvedTheme]);
 
-  // Rastrear modalidad de entrada (teclado = 0ms transiciones según §9.2)
+  // Rastrear modalidad de entrada (teclado = 0ms transiciones segun §9.2)
   useEffect(() => {
     if (typeof document === 'undefined') return;
     const root = document.documentElement;

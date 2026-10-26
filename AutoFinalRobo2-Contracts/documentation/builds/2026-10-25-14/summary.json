@@ -1,0 +1,90 @@
+{
+  "schema": "afr2-build-summary-1",
+  "changeId": "AFR2-20261025-14",
+  "clientDate": "2026-10-25",
+  "firmwareVersion": "0.10.0",
+  "webVersion": "0.3.0",
+  "extensionVersion": 8,
+  "commandCount": 41,
+  "screenIdentities": 64,
+  "atmega": {
+    "exitCode": 0,
+    "warnings": 0,
+    "targets": [
+      "firmware",
+      "communication-firmware",
+      "library"
+    ],
+    "textBytes": 71696,
+    "dataBytes": 1094,
+    "bssBytes": 4809,
+    "noinitBytes": 9,
+    "flashBytes": 72790,
+    "staticSramBytes": 5912,
+    "staticSramRemainingBytes": 2280
+  },
+  "esp": {
+    "exitCode": 0,
+    "warnings": 0,
+    "environment": "esp12s_candidate",
+    "ramBytes": 47008,
+    "flashBytes": 433787
+  },
+  "web": {
+    "exitCode": 0,
+    "warnings": 0,
+    "profile": "full",
+    "assets": 7,
+    "rawBytes": 3138024,
+    "gzipBytes": 1515587,
+    "estimatedFilesystemBytes": 1605632
+  },
+  "fixes": [
+    "Windows make build-directory creation",
+    "Six AVR misleading-indentation warnings",
+    "One ESP misleading-indentation warning"
+  ],
+  "sourceChanges": [
+    "AutoFinalRobo2-Atmega/Makefile",
+    "AutoFinalRobo2-Atmega/src/ui/afr2_screens.c",
+    "AutoFinalRobo2-Atmega/src/services/afr2_sensor_commands.c",
+    "AutoFinalRobo2-ESP/src/broker_sensors.cpp",
+    "AutoFinalRobo2-Web/src/features/oled/firmwareRenderer.sources.json"
+  ],
+  "testsRun": false,
+  "independentValidatorsRun": false,
+  "browserRun": false,
+  "hardwareValidated": false,
+  "flashPerformed": false,
+  "espAssetsPromoted": false,
+  "artifacts": {
+    "AutoFinalRobo2-Atmega/build/afr2.elf": {
+      "bytes": 105468,
+      "sha256": "265549e525ca99056c5a6720d88ca56eb6676433b38bd0300a27972096df0d5a"
+    },
+    "AutoFinalRobo2-Atmega/build/afr2.hex": {
+      "bytes": 204760,
+      "sha256": "5e94baa5ab9b92261bb8336dd8c77d050d7932428f0216465501eff71bde74d7"
+    },
+    "AutoFinalRobo2-Atmega/build/afr2-communication.elf": {
+      "bytes": 17984,
+      "sha256": "e722bcaea63523f180e49b1de9783734fb7d3ac39077bd4929019044b2e9e81c"
+    },
+    "AutoFinalRobo2-Atmega/libafr2_ui.a": {
+      "bytes": 194504,
+      "sha256": "9849fe5f1fb77d96e5c924e7f1db3e71360082544142d0553a7f8e7ee5fe3849"
+    },
+    "AutoFinalRobo2-ESP/.pio/build/esp12s_candidate/firmware.elf": {
+      "bytes": 1619436,
+      "sha256": "1148f5d6ba1e842879390896fcd445046afccfea6e6918732e91d95707f0b9f0"
+    },
+    "AutoFinalRobo2-ESP/.pio/build/esp12s_candidate/firmware.bin": {
+      "bytes": 437936,
+      "sha256": "1cd5f1bda6ef439bfbb6134ba236b5026f476bf82f67f840a68efbf69864b289"
+    },
+    "AutoFinalRobo2-Web/dist/index.html": {
+      "bytes": 1784584,
+      "sha256": "0ecf2aed20173c02a74085cf37756e902411179f69b938cab930d5d628e1f6fe"
+    }
+  }
+}

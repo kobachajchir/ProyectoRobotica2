@@ -17,7 +17,7 @@ static uint8_t web_command(Afr2Product *p,const uint8_t *d) {
     Afr2Product_WebPulse(p,0);p->origin=AFR2_SOURCE_WEB;return 1;
 }
 static uint32_t features(const Afr2Product *p) {
-    uint32_t f=AFR2_EXT_F_UI|AFR2_EXT_F_STOP|AFR2_EXT_F_WIFI|AFR2_EXT_F_PREFS|AFR2_EXT_F_CONFIG|AFR2_EXT_F_WHEEL|AFR2_EXT_F_SYSTEM|AFR2_EXT_F_NETWORK_UI;
+    uint32_t f=AFR2_EXT_F_UI|AFR2_EXT_F_STOP|AFR2_EXT_F_WIFI|AFR2_EXT_F_PREFS|AFR2_EXT_F_CONFIG|AFR2_EXT_F_WHEEL|AFR2_EXT_F_SYSTEM|AFR2_EXT_F_NETWORK_UI|AFR2_EXT_F_SENSOR_HEAD|AFR2_EXT_F_RADAR;
     if(p->sensors.line_valid)f|=AFR2_EXT_F_LINE;
     if(p->sensors.hall_available)f|=AFR2_EXT_F_HALL;
     if(p->config.motor_ready && p->pose_valid && !p->fault)f|=AFR2_EXT_F_MOTION|AFR2_EXT_F_GOTO;
@@ -45,6 +45,7 @@ uint8_t Afr2App_Command(void *ctx,uint8_t cmd,const uint8_t *d,uint8_t n,uint8_t
     }
     if(!p->extension_ready)return AFR2_RESULT_UNAVAILABLE;
     if(a->reboot_pending && cmd!=AFR2_EXT_INFO)return AFR2_RESULT_UNAVAILABLE;
+    if(cmd>=AFR2_EXT_US_GET && cmd<=AFR2_EXT_MOTION_HALT)return Afr2App_SensorCommand(a,cmd,d,n,out,length);
     if(cmd==AFR2_EXT_NETWORK_STATE || cmd==AFR2_EXT_NETWORK_EVENT)return Afr2App_NetworkCommand(a,cmd,d,n,out,length);
     if(cmd>=AFR2_EXT_SEQ_BEGIN && cmd<=AFR2_EXT_SEQ_STATUS) {
         if(cmd==AFR2_EXT_SEQ_START && (a->ui->keyboard || a->reboot_pending))return AFR2_RESULT_UNAVAILABLE;
@@ -154,7 +155,8 @@ uint8_t Afr2App_Command(void *ctx,uint8_t cmd,const uint8_t *d,uint8_t n,uint8_t
         if(!a->snapshot_revision || afr2_get_u32(d)!=a->snapshot_revision || a->ui->generation!=a->snapshot_generation ||
            (uint32_t)(p->now-a->snapshot_ms)>4000u || a->snapshot_active || a->ui->keyboard ||
            a->ui->edit || p->hall_measuring || !p->stopped)return AFR2_RESULT_UNAVAILABLE;
-        if(d[4]==1 && !a->ui->notices) {
+        if(d[4]==0 && a->ui->node==AFR2_N_SERVO_ANGLE)return AFR2_RESULT_UNAVAILABLE;
+        if(d[4]==1 && !a->ui->notices && a->ui->node!=AFR2_N_RADAR_VIEW && a->ui->node!=AFR2_N_US_VIEW && a->ui->node!=AFR2_N_LINE_VIEW && a->ui->node!=AFR2_N_IR_VALUES && a->ui->node!=AFR2_N_SERVO_ANGLE) {
             Afr2MenuItem selected;Afr2Menu_Item(a->ui->node,a->ui->selection,&selected);
             if(selected.step || selected.target==AFR2_N_AP_INFO || !Afr2App_RemoteUiAllowed(selected.action))return AFR2_RESULT_UNAVAILABLE;
         }

@@ -1,3 +1,15 @@
+> **Radar Web AFR2-20261026-02:** composición/escena rehechas con manual0.1.9 y VIS-038. [Ficha](AutoFinalRobo2-Contracts/changes/2026-10-26-02-radar-composition.md). Fuente implementada; **sin compilación, tests, validadores, navegador ni promoción ESP**. Firmware/OLED/CAD y Modelo3D sin intervención en esta revisión. Presentación16 sustituida, controles conservados.
+
+> **Modelo3D AFR2-20261026-01:** botón Mostrar/Ocultar referencias, cierre de fichas al ocultar y una única rueda representativa (ocho referencias en total). [Ficha](AutoFinalRobo2-Contracts/changes/2026-10-26-01-model-reference-visibility.md). Solo fuente Web/documentación, sin tests/build/validaciones ni promoción ESP. Sustituye la cantidad de once referencias del hito15.
+
+> **Interfaz Web AFR2-20261025-16:** radar volumétrico con sector de escaneo editable, barras y entradas numéricas vinculadas. [Ficha](AutoFinalRobo2-Contracts/changes/2026-10-25-16-radar-volume-scan-controls.md). Fuente implementada; **sin tests/builds/validadores/navegador/promoción ESP**. Compilación14 anterior a estos cambios; ATmega/ESP/OLED/CAD sin intervención en esta revisión.
+
+> **Fuente Web AFR2-20261025-15:** once puntos interactivos de componentes en Modelo3D, ficha fija local y accesos a las tareas/ruedas. Sin tests, compilación, validaciones, navegador ni promoción ESP; firmware/CAD sin cambios. [Ficha](AutoFinalRobo2-Contracts/changes/2026-10-25-15-model-component-hotspots.md). El build14 inferior no incluye este cambio.
+
+> **Compilación AFR2-20261025-14 autorizada y completada:** firmware ATmega (producto/comunicación/biblioteca), ESP y Web full compilan sin errores ni advertencias finales. Firmware0.10.0/EX01v8, Web0.3.0. [Evidencia](AutoFinalRobo2-Contracts/documentation/builds/2026-10-25-14/README.md). Sin tests, navegador ni flasheos; paquete Web local full generado, **ESP/data/dist conserva el paquete anterior**. La SRAM estática no certifica pila/ISR ni hardware. Estados previos inferiores históricos.
+
+> **Sensores y radar autónomo AFR2-20261025-14:** [radar autónomo, servo/IR, pantallas hermanas y red](AutoFinalRobo2-Contracts/contracts/SENSORS_RADAR_8.md). Firmware nominal0.10.0/EX01v8 y Web0.3.0: fuente integrada y recursos OLED copiados, **sin compilar, probar, renderizar ni flashear**. Paquete ESP anterior; estados inferiores históricos. Modelo3D conserva pose; otras escenas siguen PWM aplicado.
+
 > **Vigente AFR2-20261025-01:** [control directo7](AutoFinalRobo2-Contracts/contracts/DIRECT_CONTROL_7.md), sin permiso ni opciones de adquisición. Los tres módulos compilan con firmware0.9.0/Web0.2.0. Estado anterior inferior histórico.
 
 # AutoFinalRobo2 — informe maestro vigente

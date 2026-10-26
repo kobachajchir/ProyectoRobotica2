@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include "afr2_link.h"
 #include "afr2_sequence.h"
+#include "afr2_sensor_head.h"
 #define AFR2_CONFIG_VERSION 1u
 #define AFR2_NOTICE_MS 3000u
 enum { AFR2_IDLE, AFR2_MANUAL, AFR2_LINE, AFR2_WHEEL_TEST, AFR2_GOTO, AFR2_FAULT, AFR2_SEQUENCE };
@@ -66,6 +67,7 @@ typedef struct Afr2Product {
 void Afr2Product_Init(Afr2Product *p,uint8_t reset_cause);
 void Afr2Product_Task(Afr2Product *p,uint32_t now);
 uint8_t Afr2Product_Stop(void *ctx);
+uint8_t Afr2Product_HaltMotion(void *ctx); /* transport supervision preserves autonomous radar */
 void Afr2Product_Snapshot(void *ctx,uint32_t now,Afr2LinkSnapshot *out);
 void Afr2Product_WebPulse(Afr2Product *p,uint16_t age);
 uint8_t Afr2Product_Drive(Afr2Product *p,int16_t vx,int16_t vy,int16_t wz,uint16_t ttl);

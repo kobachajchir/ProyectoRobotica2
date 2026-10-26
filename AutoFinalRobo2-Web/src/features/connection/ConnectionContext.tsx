@@ -1,3 +1,4 @@
+import type { HeadReading, ScreenStatus } from '../../protocol/sensorHead';
 import { parseRobotState, type RobotStateSnapshot } from '../../protocol/robotState';
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Afr2Client, Afr2CommandError, type Afr2ClientStateSnapshot } from '../../protocol/afr2Client';
@@ -32,6 +33,8 @@ interface ConnectionContextValue extends Afr2ClientStateSnapshot {
   wifiDraft: {jobId:number;mode:'STA'|'AP'|'AP_STA';ssid:string} | null;
   robotState: RobotStateSnapshot | null;
   sensors: SensorsSnapshot;
+  headReading: HeadReading | null;
+  screenStatus: ScreenStatus | null;
   wifiStatus: WifiStatusSnapshot;
   wifiNetworks: WifiNetworkCandidate[];
   wifiScanState: 'idle' | 'scanning' | 'completed' | 'failed';
@@ -87,6 +90,10 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
   }, []);
   const hasWebOperation = useCallback(() => ['manual', 'command', 'commandPending', 'configuration', 'sequence'].some(name => activityRef.current[name]), []);
   useEffect(() => { client.connect(`${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/ws`); return () => client.disconnect(); }, [client]);
+  const [headReading,setHeadReading]=useState<HeadReading|null>(null);
+  const [screenStatus,setScreenStatus]=useState<ScreenStatus|null>(null);
+  const requestTail=useRef<Promise<unknown>>(Promise.resolve());
+  const requestEpoch=useRef(0);
   const [robotState, setRobotState] = useState<RobotStateSnapshot | null>(null);
   const [sensors, setSensors] = useState<SensorsSnapshot>(EMPTY_SENSORS_SNAPSHOT);
   const [wifiStatus, setWifiStatus] = useState<WifiStatusSnapshot>(EMPTY_WIFI_SNAPSHOT);
@@ -128,11 +135,11 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
 
       if (prev === 'ready' && next.wsState === 'disconnected') {
         notify.connectionLost(
-          next.lastError ?? 'Se perdió la sesión con el broker ESP8266. Operaciones en vuelo canceladas.'
+          next.lastError ?? 'Se perdio la sesion con el broker ESP8266. Operaciones en vuelo canceladas.'
         );
       } else if (prev !== 'ready' && next.wsState === 'ready') {
         notify.connectionRecovered(
-          `Sesión activa con ${next.endpointUrl} (enlace Mega: ${next.megaLinkState}).`
+          `Sesion activa con ${next.endpointUrl} (enlace Mega: ${next.megaLinkState}).`
         );
       }
     });
@@ -143,10 +150,12 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
         const device = evt.payload.device, id = evt.payload.bootId, observation = String(evt.payload.observation ?? 'identity-snapshot');
         const previous = observedBoots.current[device];observedBoots.current[device] = id;
         setBootReports(prev => [{ device, bootId:id, receivedAtMs:Date.now(), observation }, ...prev.filter(report => report.device !== device)].slice(0,2));
-        if (observation === 'uart-boot-event' || (previous !== undefined && previous !== id)) notify.info({ id:`afr2-boot-${device}`, title:`${device === 'esp' ? 'ESP' : 'ATmega'} inició`, description:`Arranque ${id}. El movimiento permanece detenido después del arranque.` });
+        if (observation === 'uart-boot-event' || (previous !== undefined && previous !== id)) notify.info({ id:`afr2-boot-${device}`, title:`${device === 'esp' ? 'ESP' : 'ATmega'} inicio`, description:`Arranque ${id}. El movimiento permanece detenido despues del arranque.` });
         setBootRevision(v => v + 1);setSystemInfo(null);
       }
       if(evt.event === 'system.status') {
+        const h=evt.payload?.sensorHead as {known?:boolean;running?:boolean;enabled?:boolean}|undefined;
+        if(h?.known){setOperationActivity('radar',h.running===true);setOperationActivity('servo',h.enabled===true);}
         const draft = evt.payload?.wifiDraft as Record<string, unknown> | undefined;
         if(draft?.pending === true && Number.isInteger(draft.jobId) && (draft.mode === 'STA' || draft.mode === 'AP' || draft.mode === 'AP_STA')) {
           setWifiDraft(prev => prev?.jobId === draft.jobId ? prev : {jobId:draft.jobId as number,mode:draft.mode as 'STA'|'AP'|'AP_STA',ssid:typeof draft.ssid === 'string'?draft.ssid:''});
@@ -171,7 +180,7 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
             typeof net.channel === 'number' && typeof net.secure === 'boolean'
         ));
         setWifiScanState(failed ? 'failed' : 'completed');
-        setWifiScanError(failed ? 'La ESP no pudo completar el escaneo. Volvé a intentarlo.' : null);
+        setWifiScanError(failed ? 'La ESP no pudo completar el escaneo. Volve a intentarlo.' : null);
         setWifiScanTruncated(!failed && evt.payload.truncated === true);
       }
     });
@@ -182,7 +191,7 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
       if (wifiScanTimer.current) clearTimeout(wifiScanTimer.current);
       wifiScanGeneration.current++; wifiScanPending.current = false;
     };
-  }, [client]);
+  }, [client,setOperationActivity]);
 
   // Radio status is an ESP-only service: it remains available without Mega.
   useEffect(() => {
@@ -192,8 +201,8 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
       if (cancelled || pending || document.visibilityState !== 'visible') return;
       pending = true;
       try {
-        const response = await client.sendCommand<WifiStatusSnapshot>('wifi.status', {}, 2500);
-        if (!cancelled && response.status === 'completed') setWifiStatus(response.payload);
+        const response = await client.sendCommand<WifiStatusSnapshot>('wifi.info', {}, 2500);
+        if (!cancelled && response.status === 'completed') setWifiStatus({...response.payload,receivedAtMs:Date.now()});
       } catch { if (!cancelled) setWifiStatus(EMPTY_WIFI_SNAPSHOT); }
       finally { pending = false; }
     };
@@ -260,6 +269,7 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
 
   const triggerEmergencyStop = useCallback(
     async (reason = 'user-stop'): Promise<boolean> => {
+      ++requestEpoch.current;
       const issuedAt = Date.now();
       const sendingNoticeId = ++stopNoticeCounterRef.current;
       setStopRecord((prev) => ({
@@ -277,7 +287,7 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
         const res = await client.sendPriorityStop(reason);
         // AFR2-20261023-11: acceptance alone never confirms an actuator shutdown.
         if (res.status !== 'completed' || res.payload?.stopped !== true) {
-          throw new Error('STOP aceptado sin confirmación autoritativa de parada.');
+          throw new Error('STOP aceptado sin confirmacion autoritativa de parada.');
         }
         activityRef.current={};setActivities({});
         const confirmedAt = Date.now();
@@ -306,11 +316,11 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
           noticeId: failedNoticeId,
           lastIssuedAtMs: issuedAt,
           status: 'unconfirmed-offline',
-          detail: `Consignas locales anuladas. Sin confirmación física: ${message}`,
+          detail: `Consignas locales anuladas. Sin confirmacion fisica: ${message}`,
         }));
         notify.error({
           id: 'afr2-stop-status',
-          title: 'STOP emitido localmente (sin confirmación remota)',
+          title: 'STOP emitido localmente (sin confirmacion remota)',
           description: message,
         });
         return false;
@@ -322,9 +332,38 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
   // Polling/remote UI reports inline; it must not create one toast per snapshot.
   const requestCommand = useCallback(
     <TPayload = Record<string, unknown>,>(cmd: Afr2CommandName, payload: Record<string, unknown>, timeoutMs = 2500): Promise<Afr2WsResponse<TPayload>> =>
-      client.sendCommand<TPayload>(cmd, payload, timeoutMs),
+      {
+        if(cmd==='robot.stop'){++requestEpoch.current;return client.sendCommand<TPayload>(cmd,payload,timeoutMs);}
+        const epoch=requestEpoch.current;
+        const operation=requestTail.current.then(()=>{if(epoch!==requestEpoch.current)throw new Afr2CommandError('SUPERSEDED','Peticion anterior a STOP o cambio de sesion.',false,'web');return client.sendCommand<TPayload>(cmd,payload,timeoutMs);});
+        requestTail.current=operation.catch(()=>undefined);return operation;
+      },
     [client]
   );
+
+  // One shared head reader feeds every animated robot instance. Each response owns its age.
+  useEffect(()=>{
+    ++requestEpoch.current;
+    if(snapshot.wsState!=='ready' || snapshot.megaLinkState!=='ready' || !snapshot.capabilities.sensor_head?.implemented){setHeadReading(null);setScreenStatus(null);return;}
+    let cancelled=false,headPending=false,screenPending=false;
+    const head=async()=>{
+      if(cancelled || headPending || document.visibilityState!=='visible')return;headPending=true;
+      try{const r=await requestCommand<Omit<HeadReading,'receivedAtMs'>>('robot.ultrasonic.get',{},2000);
+        if(!cancelled && r.status==='completed' && Number.isInteger(r.payload.angleDeg) && r.payload.sample){
+          setHeadReading({...r.payload,receivedAtMs:Date.now()});setOperationActivity('radar',r.payload.running);setOperationActivity('servo',r.payload.enabled);
+        }
+      }catch{if(!cancelled)setHeadReading(null);}finally{headPending=false;}
+    };
+    const screen=async()=>{
+      if(cancelled || screenPending || document.visibilityState!=='visible')return;screenPending=true;
+      try{const r=await requestCommand<ScreenStatus>('robot.screen.status',{},2000);if(!cancelled && r.status==='completed')setScreenStatus(r.payload);}catch{if(!cancelled)setScreenStatus(null);}finally{screenPending=false;}
+    };
+    void head();void screen();const a=window.setInterval(()=>void head(),100),b=window.setInterval(()=>void screen(),250);
+    const visible=()=>{void head();void screen();};document.addEventListener('visibilitychange',visible);
+    return()=>{cancelled=true;clearInterval(a);clearInterval(b);document.removeEventListener('visibilitychange',visible);};
+  },[snapshot.wsState,snapshot.megaLinkState,snapshot.endpointUrl,snapshot.capabilities.sensor_head?.implemented,bootRevision,requestCommand,setOperationActivity]);
+
+  useEffect(()=>{const fence=()=>{++requestEpoch.current;};const visibility=()=>{if(document.visibilityState!=='visible')fence();};window.addEventListener('blur',fence);document.addEventListener('visibilitychange',visibility);return()=>{window.removeEventListener('blur',fence);document.removeEventListener('visibilitychange',visibility);};},[]);
 
   const refreshSystemInfo = useCallback(async () => {
     try { const response = await client.sendCommand<Record<string, unknown>>('system.info', {}, 4000); if (response.status === 'completed' && response.payload) { setSystemInfo(response.payload); setSystemInfoUpdatedAtMs(Date.now()); } }
@@ -372,8 +411,8 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
         if (res.status === 'accepted') {
           notify.info({
             id: toastId,
-            title: labels.acceptedTitle ?? 'Petición aceptada; esperando resultado',
-            description: 'Petición aceptada por el broker; pendiente de resultado final.',
+            title: labels.acceptedTitle ?? 'Peticion aceptada; esperando resultado',
+            description: 'Peticion aceptada por el broker; pendiente de resultado final.',
           });
         } else {
           notify.success({
@@ -426,7 +465,7 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
       'robot.sensors',
       {},
       {
-        loadingTitle: 'Solicitando telemetría de sensores...',
+        loadingTitle: 'Solicitando telemetria de sensores...',
         successTitle: 'Lectura de sensores actualizada',
       },
       2000
@@ -443,7 +482,7 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
 
   const refreshWifiStatus = useCallback(async (): Promise<void> => {
     const res = await executeCommandWithToast<Partial<WifiStatusSnapshot>>(
-      'wifi.status',
+      'wifi.info',
       {},
       {
         loadingTitle: 'Consultando estado Wi-Fi del ESP8266...',
@@ -455,7 +494,7 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
       setWifiStatus((prev) => ({
         ...prev,
         ...res.payload,
-        ageMs: 0,
+        ageMs: 0, receivedAtMs:Date.now(),
       }));
     }
   }, [executeCommandWithToast]);
@@ -470,7 +509,7 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
     wifiScanTimer.current = setTimeout(() => {
       if (generation !== wifiScanGeneration.current || !wifiScanPending.current) return;
       wifiScanPending.current = false; setWifiScanState('failed');
-      setWifiScanError('No llegó el resultado del escaneo en 30 segundos.');
+      setWifiScanError('No llego el resultado del escaneo en 30 segundos.');
     }, 30000);
     try {
       await client.sendCommand('wifi.scan', {}, 10000);
@@ -488,7 +527,7 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
       systemInfo, systemInfoUpdatedAtMs, bootReports, refreshSystemInfo, stopAvailable, webOperationActive, hasWebOperation, setOperationActivity,
       wifiDraft,
       robotState,
-      sensors,
+      sensors, headReading, screenStatus,
       wifiStatus,
       wifiNetworks,
       wifiScanState, wifiScanError, wifiScanTruncated,
@@ -510,7 +549,7 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
       snapshot, systemInfo, systemInfoUpdatedAtMs, bootReports, refreshSystemInfo, stopAvailable, webOperationActive, hasWebOperation, setOperationActivity,
       wifiDraft,
       robotState,
-      sensors,
+      sensors, headReading, screenStatus,
       wifiStatus,
       wifiNetworks,
       wifiScanState, wifiScanError, wifiScanTruncated,

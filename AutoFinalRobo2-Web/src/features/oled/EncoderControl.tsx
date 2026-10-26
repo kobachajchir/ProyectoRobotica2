@@ -9,13 +9,13 @@ export interface EncoderControlProps {
   onRefresh?: () => void;
   /** Disponibilidad de enlace/capacidad/captura fresca. Si pasa a false, cancela de inmediato cualquier gesto activo. */
   available?: boolean;
-  /** Solicitud en vuelo (lectura o acción pendiente). Bloquea iniciar nuevos gestos pero conserva el estado visual largo hasta soltar. */
+  /** Solicitud en vuelo (lectura o accion pendiente). Bloquea iniciar nuevos gestos pero conserva el estado visual largo hasta soltar. */
   busy?: boolean;
   /** Compatibilidad con llamadas que pasen disabled directo. */
   disabled?: boolean;
-  /** Motivo explícito mostrado junto al control cuando está deshabilitado o ocupado. */
+  /** Motivo explicito mostrado junto al control cuando esta deshabilitado o ocupado. */
   disabledReason?: string | null;
-  /** Mensaje de estado o confirmación mostrado junto a los controles. */
+  /** Mensaje de estado o confirmacion mostrado junto a los controles. */
   statusMessage?: string | null;
   statusTone?: 'neutral' | 'loading' | 'success' | 'error';
   refreshDisabled?: boolean;
@@ -135,12 +135,12 @@ function RefreshSyncIcon({ spinning = false }: { spinning?: boolean }) {
 }
 
 /**
- * Controles físicos del encoder único KY-040 adaptados de `ScreenStreamWorkspace.tsx` (AFR2-20261023-21 / VIS-018).
- * - Muestra siempre Giro izquierdo, SW y Giro derecho más el botón manual de Actualizar, incluso deshabilitados.
- * - Único botón SW (sin botón USER, Menú ni Atrás).
- * - Umbral propio de 800 ms: corto (< 800 ms) confirma al soltar; largo (>= 800 ms) envía menú una vez y
- *   conserva su estado visual de atención hasta soltar, aunque la solicitud ya esté en curso.
- * - Pérdida de disponibilidad, cancelación de puntero, pérdida de foco/captura o cierre del modal cancelan el gesto de inmediato.
+ * Controles fisicos del encoder unico KY-040 adaptados de `ScreenStreamWorkspace.tsx` (AFR2-20261023-21 / VIS-018).
+ * - Muestra siempre Giro izquierdo, SW y Giro derecho mas el boton manual de Actualizar, incluso deshabilitados.
+ * - Unico boton SW (sin boton USER, Menu ni Atras).
+ * - Umbral propio de 800 ms: corto (< 800 ms) confirma al soltar; largo (>= 800 ms) envia menu una vez y
+ *   conserva su estado visual de atencion hasta soltar, aunque la solicitud ya este en curso.
+ * - Perdida de disponibilidad, cancelacion de puntero, perdida de foco/captura o cierre del modal cancelan el gesto de inmediato.
  */
 export function EncoderControl({
   onRotate,
@@ -156,7 +156,7 @@ export function EncoderControl({
   refreshLoading = false,
   lastEventLabel,
   compact = false,
-  label = 'Controles físicos · Encoder único KY-040',
+  label = 'Controles fisicos · Encoder unico KY-040',
 }: EncoderControlProps) {
   const isAvailable = available && !disabled;
   const controlsDisabled = !isAvailable || busy;
@@ -202,7 +202,7 @@ export function EncoderControl({
     setBarScale(0);
   }, [clearTimers]);
 
-  // Si se pierde la disponibilidad (enlace caído, captura caducada, modal cerrado), cancelar inmediatamente.
+  // Si se pierde la disponibilidad (enlace caido, captura caducada, modal cerrado), cancelar inmediatamente.
   useEffect(() => {
     if (!isAvailable) {
       cancelGesture();
@@ -292,7 +292,7 @@ export function EncoderControl({
     setLongVisualActive(false);
     setBarScale(0);
 
-    // Soltar después de pulsación larga (>= 800 ms) nunca envía confirmación corta.
+    // Soltar despues de pulsacion larga (>= 800 ms) nunca envia confirmacion corta.
     if (!wasLong && isAvailable && !busy) {
       onPress('short');
     }
@@ -311,17 +311,17 @@ export function EncoderControl({
           : 'idle';
 
   const swStatusCopy = longVisualActive
-    ? `Menú enviado (≥ ${AFR2_LONG_PRESS_MS} ms) · soltá SW para finalizar el gesto`
+    ? `Menu enviado (≥ ${AFR2_LONG_PRESS_MS} ms) · solta SW para finalizar el gesto`
     : pressing
-      ? `Pulsando SW… soltá antes de ${AFR2_LONG_PRESS_MS} ms para confirmar o mantené para Menú`
-      : 'Corto (< 800 ms): confirmar · Largo (≥ 800 ms): abrir Menú principal';
+      ? `Pulsando SW… solta antes de ${AFR2_LONG_PRESS_MS} ms para confirmar o mantene para Menu`
+      : 'Corto (< 800 ms): confirmar · Largo (≥ 800 ms): abrir Menu principal';
 
   const reasonToShow =
     disabledReason ??
     (!isAvailable
       ? 'Controles deshabilitados: requiere enlace Web↔ESP y ESP↔ATmega listos, capacidad remota y captura fresca.'
       : busy && !longVisualActive
-        ? 'Acción o consulta en curso; aguardando respuesta del controlador.'
+        ? 'Accion o consulta en curso; aguardando respuesta del controlador.'
         : null);
 
   return (
@@ -337,14 +337,14 @@ export function EncoderControl({
             {label}
           </span>
           <p className="text-xs text-[var(--text-muted)] mt-0.5">
-            Sin botón Menú ni Atrás dedicado: retroceso solo mediante la opción <code>Volver</code> en pantalla.
+            Sin boton Menu ni Atras dedicado: retroceso solo mediante la opcion <code>Volver</code> en pantalla.
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
           {lastEventLabel && (
             <span className="text-xs font-mono px-2.5 py-1 rounded-md bg-[var(--surface-subtle)] border border-[var(--border)] text-[var(--text)]">
-              Última entrada: {lastEventLabel}
+              Ultima entrada: {lastEventLabel}
             </span>
           )}
           {onRefresh && (
@@ -363,7 +363,7 @@ export function EncoderControl({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5" role="group" aria-label="Acciones de giro y pulsación SW">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5" role="group" aria-label="Acciones de giro y pulsacion SW">
         <div className="flex flex-col gap-1">
           <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
             Giro izquierdo
@@ -391,8 +391,8 @@ export function EncoderControl({
             data-state={swStateAttr}
             aria-label={
               longVisualActive
-                ? 'Pulsación larga activa (Menú principal enviado). Soltar para terminar gesto.'
-                : 'Pulsador SW del encoder: pulsación corta confirma, mantener 800 ms abre Menú principal'
+                ? 'Pulsacion larga activa (Menu principal enviado). Soltar para terminar gesto.'
+                : 'Pulsador SW del encoder: pulsacion corta confirma, mantener 800 ms abre Menu principal'
             }
             onPointerDown={(e) => {
               if (e.button !== 0 || controlsDisabled) return;
@@ -469,7 +469,7 @@ export function EncoderControl({
               />
               <span>
                 {longVisualActive
-                  ? 'SW · Menú (soltar)'
+                  ? 'SW · Menu (soltar)'
                   : pressing
                     ? 'SW · Manteniendo…'
                     : 'SW (Corto / Largo)'}
