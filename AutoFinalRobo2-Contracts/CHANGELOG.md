@@ -1,3 +1,12 @@
+## AFR2-20261027-19 — 27/10/2026
+
+Loader 0.3.0: monitor serie de lectura con baudios configurables, consola RX,
+capturas de texto/bytes/eventos, observación incremental de arranque y diagnóstico
+detallado de fallos. Libera el COM antes de diagnóstico/carga y expone captura por
+MCP; manual y estados actualizados. Identificador separado del informe del brazo.
+Solo fuente/documentación, sin tests, compilación, ejecución, COM ni flasheo.
+[Ficha](changes/2026-10-27-19-loader-serial-monitor.md).
+
 ## AFR2-20261027-18 — 27/10/2026
 
 Informe integrado del brazo PVC32: motivos de correcciones v01–v06, masas y

@@ -163,9 +163,17 @@ namespace AFR2Loader
             {
                 case "loader_status": return new { version = LoaderVersion.Value, sessionId = sessionId, busy = busy, acceptsRequests = remoteRequests.Checked,
                     pendingJobId = pendingJob == null ? null : pendingJob.Id, activeJobId = currentJob == null ? null : currentJob.Id,
-                    port = ports.Text, stage = status.Text, lastResult = lastResult.Text, evidencePort = evidencePort, bootEvidence = bootEvidence, romEvidence = romEvidence };
+                    port = ports.Text, stage = status.Text, lastResult = lastResult.Text, evidencePort = evidencePort, bootEvidence = bootEvidence, romEvidence = romEvidence,
+                    serial = serialCapture == null ? null : serialCapture.Snapshot(0, 1), lastFailureReport = lastFailurePath };
                 case "loader_ports": return new { ports = System.IO.Ports.SerialPort.GetPortNames(), opensPort = false };
                 case "loader_profile": return ProfileSnapshot();
+                case "loader_serial":
+                    int serialCursor = args.ContainsKey("cursor") ? Convert.ToInt32(args["cursor"]) : 0;
+                    int serialLimit = args.ContainsKey("limit") ? Convert.ToInt32(args["limit"]) : 60;
+                    if (serialCursor < 0 || serialLimit < 1 || serialLimit > 120) throw new ArgumentException("cursor >= 0; limit entre 1 y 120.");
+                    if (serialCapture == null) return new { state = "closed", message = "No se abrió el monitor en esta sesión." };
+                    if (args.ContainsKey("captureId") && Arg(args, "captureId", "") != serialCapture.Id) throw new ArgumentException("La captura cambió. Consultá loader_serial sin captureId y con cursor 0.");
+                    return serialCapture.Snapshot(serialCursor, serialLimit);
                 case "loader_job":
                     JobState found; if (!jobs.TryGetValue(Arg(args, "jobId", ""), out found)) throw new ArgumentException("Trabajo no disponible en esta sesión o fuera de los últimos 100.");
                     int cursor = args.ContainsKey("cursor") ? Convert.ToInt32(args["cursor"]) : 0;
@@ -194,6 +202,7 @@ namespace AFR2Loader
                 return new { jobId = previous[1], status = jobs.TryGetValue(previous[1], out existing) ? existing.Status : "history_expired", duplicate = true, executedByThisRequest = false };
             }
             if (!remoteRequests.Checked) throw new InvalidOperationException("Solicitudes MCP deshabilitadas en la ventana.");
+            if (serialTransition) throw new InvalidOperationException("El monitor está abriendo/cerrando el puerto. Esperá a que termine antes de proponer una operación.");
             if (busy || pendingJob != null || reservedJob != null) throw new InvalidOperationException("Ya hay un trabajo activo o pendiente. Consultarlo; no se encola otra operación.");
             if (requests.Count >= 1000) throw new InvalidOperationException("Límite de solicitudes de esta sesión. Reiniciá la ventana para comenzar otra sesión.");
             string action, port = "";
@@ -279,7 +288,7 @@ namespace AFR2Loader
                     case "flash_esp_fs": await ops.FlashEsp(p, port, true, true, shouldListen, token); break;
                     default: throw new InvalidOperationException("Acción no implementada.");
                 }
-            });
+            }, !job.Action.StartsWith("build_", StringComparison.Ordinal));
         }
     }
 }

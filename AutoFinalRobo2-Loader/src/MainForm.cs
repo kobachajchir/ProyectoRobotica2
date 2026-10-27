@@ -133,6 +133,7 @@ namespace AFR2Loader
             FillSettings(); RefreshPorts();
             FormClosing += WindowClosing;
             InitializeIntegration(tabs, layout, configLayout, footer);
+            InitializeSerial(tabs);
             Log("AFR2 Loader " + LoaderVersion.Value + " | Hecho por Koba Chajchir");
             Log("Perfiles y registros: " + Profile.UserRoot);
         }
@@ -243,9 +244,9 @@ namespace AFR2Loader
                 return dialog.ShowDialog(this) == DialogResult.OK;
             }
         }
-        async void Execute(string title, Func<Operations, Profile, string, CancellationToken, Task> body)
+        async void Execute(string title, Func<Operations, Profile, string, CancellationToken, Task> body, bool usesSerial = false)
         {
-            try { await ExecuteCore(title, body); }
+            try { await ExecuteCore(title, body, usesSerial); }
             catch (Exception error)
             {
                 if (cancellation != null) { cancellation.Dispose(); cancellation = null; }
@@ -257,11 +258,13 @@ namespace AFR2Loader
                 JobState failed = currentJob ?? reservedJob;
                 if (failed != null) { failed.Status = "failed"; failed.Result = error.Message; failed.Ended = DateTimeOffset.Now.ToString("o"); }
                 currentJob = null; reservedJob = null;
+                QueueFailure("Inicio de operación", error); UpdateSerialControls();
             }
         }
-        async Task ExecuteCore(string title, Func<Operations, Profile, string, CancellationToken, Task> body)
+        async Task ExecuteCore(string title, Func<Operations, Profile, string, CancellationToken, Task> body, bool usesSerial)
         {
             if (busy || pendingJob != null) return;
+            if (serialTransition) throw new InvalidOperationException("Esperá que el monitor termine de abrir/cerrar el puerto antes de iniciar otra operación.");
             ReadSettings(); Profile snapshot = profile.Copy(); string port = ports.Text;
             currentJob = reservedJob ?? NewJob(title, "window", port, "running"); reservedJob = null;
             currentJob.Status = "running"; currentJob.Stage = title;
@@ -270,6 +273,8 @@ namespace AFR2Loader
             cancellation = new CancellationTokenSource(); runner = new Runner(Log);
             var ops = new Operations(runner, Log, SetState, Confirm);
             ops.WritingStarted = () => { if (currentJob != null) currentJob.WritingStarted = true; };
+            ops.Changed = (code, message) => QueueNotice(new LoaderNotice { Origin = "cargador " + port, Code = code, Message = message });
+            UpdateSerialControls();
             string directory = Path.Combine(Profile.UserRoot, "logs"); Directory.CreateDirectory(directory);
             currentLog = Path.Combine(directory, DateTime.Now.ToString("yyyyMMdd-HHmmss-fff") + "-" + Guid.NewGuid().ToString("N").Substring(0, 6));
             currentJob.LogPath = currentLog + ".txt";
@@ -279,31 +284,40 @@ namespace AFR2Loader
             {
                 lock (logGate) logFile = new StreamWriter(currentLog + ".txt", false, new UTF8Encoding(false));
                 Log(title + " | perfil: " + snapshot.Get("Name") + " | puerto: " + port);
+                if (usesSerial && serialCapture != null)
+                {
+                    Log("Liberando monitor serie antes de usar la herramienta de carga/diagnóstico...");
+                    await StopSerialMonitor("Puerto entregado al cargador");
+                    cancellation.Token.ThrowIfCancellationRequested();
+                }
                 SetState(title);
                 await body(ops, snapshot, port, cancellation.Token);
                 resultState = "completed";
                 status.Text = "Completado: " + title;
-                lastResult.Text = "Operación completada. Consultá el detalle y las instrucciones de restitución en el registro.";
+                lastResult.Text = ops.Verified ? "Carga completada y contenido verificado correctamente. Consultá el registro y restaurá el cableado de operación." : "Operación completada sin escritura/verificación de firmware. Consultá el detalle del registro.";
                 lastResult.ForeColor = Color.FromArgb(20, 110, 65); Log(status.Text);
+                if (!ops.Verified) QueueNotice(new LoaderNotice { Origin = "cargador " + port, Code = "completed", Message = lastResult.Text });
             }
             catch (OperationCanceledException error)
             {
                 resultState = "cancelled"; errorText = error.Message; status.Text = "Operación cancelada";
                 lastResult.Text = ops.WroteAnything ? "Se inició una escritura: puede haber contenido incompleto. No se declara verificación correcta." : "Cancelado sin iniciar escritura de firmware.";
                 lastResult.ForeColor = Color.DarkOrange; Log(status.Text + ": " + error.Message);
+                QueueNotice(new LoaderNotice { Origin = "cargador " + port, Code = "cancelled", Message = lastResult.Text, Detail = error.ToString() });
             }
             catch (Exception error)
             {
                 errorText = error.ToString(); status.Text = "No se completó: " + title;
                 lastResult.Text = (ops.WroteAnything ? "Escritura iniciada, resultado NO verificado. " : "") + error.Message;
                 lastResult.ForeColor = Color.Firebrick; Log("ERROR: " + error);
+                QueueNotice(new LoaderNotice { Origin = "cargador " + port, Code = "failed", Message = lastResult.Text, Detail = "Etapa: " + currentJob.Stage + "\r\nRegistro: " + currentLog + ".txt\r\n" + error });
             }
             finally
             {
                 try
                 {
                     string report = new JavaScriptSerializer().Serialize(new { schema = 1, application = "AFR2 Loader " + LoaderVersion.Value, jobId = currentJob.Id, operation = title, started = started.ToString("o"), ended = DateTime.Now.ToString("o"), status = resultState, error = errorText,
-                        writingStarted = ops.WroteAnything, port = port, profile = snapshot, steps = ops.Steps });
+                        writingStarted = ops.WroteAnything, contentVerified = ops.Verified, port = port, profile = snapshot, steps = ops.Steps });
                     File.WriteAllText(currentLog + ".json", report, new UTF8Encoding(false));
                     Log("Registro: " + currentLog + ".txt | Resumen: .json");
                 }
@@ -315,6 +329,7 @@ namespace AFR2Loader
                 currentJob = null;
                 foreach (Control c in idleControls) c.Enabled = true; configMenu.Enabled = true;
                 cancel.Enabled = false; progress.Style = ProgressBarStyle.Blocks; progress.Value = 0; DrainLog();
+                DrainNotices(); UpdateSerialControls();
             }
         }
         void Build(bool all)
@@ -332,7 +347,7 @@ namespace AFR2Loader
         {
             bool shouldListen = listen.Checked;
             Execute("Detectar ESP y consultar ROM", async (ops, p, port, token) =>
-            { if (!ops.PrepareEsp(false)) throw new OperationCanceledException(); if (shouldListen) await ops.ListenBoot(p, port, token); await ops.Probe(p, port, token); });
+            { if (!ops.PrepareEsp(false)) throw new OperationCanceledException(); if (shouldListen) await ops.ListenBoot(p, port, token); await ops.Probe(p, port, token); }, true);
         }
         void Flash()
         {
@@ -341,7 +356,7 @@ namespace AFR2Loader
             {
                 if (selected == 0) await ops.FlashMega(p, port, token);
                 else await ops.FlashEsp(p, port, selected == 1 || selected == 3, selected == 2 || selected == 3, shouldListen, token);
-            });
+            }, true);
         }
         void Cancel()
         {
@@ -349,9 +364,16 @@ namespace AFR2Loader
             if (MessageBox.Show(this, "Cancelar durante una escritura puede dejar firmware o filesystem incompleto. ¿Detener la operación y sus procesos hijos?", "Cancelar", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes) return;
             cancellation.Cancel(); if (runner != null) runner.StopTree(); Log("Cancelación solicitada.");
         }
-        void WindowClosing(object sender, FormClosingEventArgs e)
+        async void WindowClosing(object sender, FormClosingEventArgs e)
         {
             if (busy) { e.Cancel = true; MessageBox.Show(this, "Hay una operación en curso. Esperá a que termine o usá Cancelar; el programa mantendrá el puerto hasta cerrarlo correctamente."); }
+            else if (serialTransition) { e.Cancel = true; MessageBox.Show(this, "Esperá que el monitor termine de abrir/cerrar el puerto."); }
+            else if (!closingAfterSerial && serialCapture != null)
+            {
+                e.Cancel = true;
+                try { await StopSerialMonitor("Cierre de ventana"); closingAfterSerial = true; BeginInvoke(new Action(Close)); }
+                catch (Exception error) { QueueFailure("Cierre de ventana", error); }
+            }
             else { RejectPending(); if (bridge != null) bridge.Dispose(); timer.Stop(); timer.Dispose(); }
         }
         void OpenManual()

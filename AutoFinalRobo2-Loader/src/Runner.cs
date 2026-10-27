@@ -19,6 +19,7 @@ namespace AFR2Loader
         readonly Action<string> log;
         readonly object gate = new object();
         Process active;
+        public Action<string> OutputLine;
         public Runner(Action<string> writer) { log = writer; }
         public static string Quote(string value)
         {
@@ -91,6 +92,7 @@ namespace AFR2Loader
                             if (output.Length > 4194304) output.Remove(0, output.Length - 3145728);
                         }
                         log(e.Data);
+                        Action<string> observer = OutputLine; if (observer != null) observer(e.Data);
                     };
                     process.OutputDataReceived += receive; process.ErrorDataReceived += receive;
                     try

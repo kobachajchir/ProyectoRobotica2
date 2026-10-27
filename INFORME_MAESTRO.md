@@ -1,3 +1,5 @@
+> **Loader AFR2-20261027-19 / 0.3.0:** [monitor serie, eventos y diagnóstico](AutoFinalRobo2-Loader/MANUAL.html#monitor), baudios, apertura/cierre, texto y bytes RX, modos ESP y fallos detallados. Cierre previo a carga y consulta MCP de captura. [Ficha](AutoFinalRobo2-Contracts/changes/2026-10-27-19-loader-serial-monitor.md). Solo fuente/documentación; sin compilar/ejecutar/probar, abrir COM ni flashear.
+
 > **Loader AFR2-20261027-16 / 0.2.0:** [servidor MCP y guía Codex](AutoFinalRobo2-Loader/MCP.md), revisión de solicitudes en GUI, historial y refuerzos de interfaz/errores. [Ficha](AutoFinalRobo2-Contracts/changes/2026-10-27-16-loader-mcp-ui.md). Solo fuente/documentación, sin compilación, ejecución, registro global, pruebas MCP/COM ni flasheo.
 
 > **Organización AFR2-20261027-14:** [AutoFinalRobo2-Loader](AutoFinalRobo2-Loader/README.md) integrado como sexto módulo en la raíz. Código, lanzadores y manual propios; único Git global y registros compartidos en Contracts. Solo traslado/documentación; sin compilación, ejecución, tests ni flasheo.

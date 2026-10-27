@@ -1,4 +1,4 @@
-# AFR2 Loader 0.2 — conexión con Codex
+# AFR2 Loader 0.3 — conexión con Codex
 
 El servidor pertenece al mismo módulo y comparte la sesión del Loader gráfico.
 Transporte MCP **stdio**, JSON-RPC UTF-8 por líneas. No requiere puerto TCP,
@@ -52,6 +52,7 @@ fuentes ni registros. Estos comandos modifican la configuración de Codex
 | `loader_status` | Versión, sesión, activo/pendiente, estado y evidencias UART/ROM. No abre COM. |
 | `loader_ports` | Enumera COM presentes. No abre puertos. |
 | `loader_profile` | Valores visibles, rutas resueltas y existencia de archivos/carpetas; no comprueba versiones de herramientas. |
+| `loader_serial` | Estado y texto de la última captura serie, contador RX, observación de arranque, errores y rutas de archivos. No abre/cierra puertos. |
 | `loader_request_profile` | Propone opciones por clave; muestra actual → propuesto. Solo se aplica/guarda al aprobar en GUI. |
 | `loader_request_operation` | Reserva un trabajo y devuelve `jobId`, `awaiting_approval`, `executed:false`. |
 | `loader_job` | Estado y registro incremental; pasar `nextCursor` como cursor siguiente. |
@@ -60,6 +61,36 @@ fuentes ni registros. Estos comandos modifican la configuración de Codex
 Recurso `loader://manual`: el manual HTML distribuido con esta versión.
 No hay herramienta para ejecutar comandos libres, modificar fuses, leer
 archivos arbitrarios o pulsar botones de hardware.
+
+### Lectura del monitor
+
+Abrir la captura desde **Monitor serie** en la GUI. `loader_serial` no inicia
+una captura ni envía datos al dispositivo. Consulta inicial:
+
+```json
+{"cursor":0,"limit":60}
+```
+
+Continuar con `captureId` igual a `id` de la respuesta y `cursor` igual a
+`received.nextCursor`. La captura cambia al reabrir el puerto o aplicar nuevos
+baudios; si el ID no coincide se rechaza el cursor, para no mezclar sesiones.
+`received.lines` contiene fragmentos de texto, no necesariamente líneas UART
+completas. `received.hasMore`, `firstAvailableCursor` y `cursorWasTruncated`
+informan el recorte de memoria. Los registros completos están en `.rx.txt` y
+`.rx.bin`; si hubo un fallo de disco, el estado lo indica y la captura termina.
+
+`state`: opening/open/closing/closed/failed. `portReleased` es independiente
+del éxito de captura: un fallo de lectura puede terminar con puerto liberado.
+`observed` conserva el último mensaje de arranque con hora; no garantiza que
+el chip siga en ese modo después de otro reset no recibido. `loader_status`
+incluye un resumen de captura y `lastFailureReport` para el último fallo de la
+sesión. No se interpreta texto genérico del dispositivo como carga verificada.
+
+Los trabajos de diagnóstico/carga cierran y esperan el monitor antes de usar
+la herramienta externa, tanto por GUI como por MCP. Mientras el monitor está
+abriendo/cerrando se rechazan propuestas nuevas; esperar y consultar estado.
+Un build puede conservar una captura ya abierta. El servidor no reabre ni
+reconecta el COM al finalizar una carga; se hace manualmente desde la ventana.
 
 ## Operaciones
 

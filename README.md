@@ -1,3 +1,5 @@
+> **Loader AFR2-20261027-19 / 0.3.0:** [monitor serie y errores](AutoFinalRobo2-Loader/MANUAL.html#monitor), selección de baudios, COM abrir/cerrar, captura de texto/bytes y avisos de reinicio, programación y verificación. [Ficha](AutoFinalRobo2-Contracts/changes/2026-10-27-19-loader-serial-monitor.md). Fuente/documentación; sin compilar/ejecutar/probar ni abrir COM/flashear.
+
 > **Loader AFR2-20261027-16 / 0.2.0:** [MCP para conectar con Codex](AutoFinalRobo2-Loader/MCP.md), revisión de solicitudes en GUI, historial y refuerzos de interfaz. [Ficha](AutoFinalRobo2-Contracts/changes/2026-10-27-16-loader-mcp-ui.md). Fuente/documentación; sin compilar, ejecutar, registrar MCP, probar COM ni flashear en esta revisión.
 
 > **Vigente AFR2-20261025-01:** [control directo7](AutoFinalRobo2-Contracts/contracts/DIRECT_CONTROL_7.md), sin permiso ni opciones de adquisición. Los tres módulos compilan con firmware0.9.0/Web0.2.0. Estado anterior inferior histórico.

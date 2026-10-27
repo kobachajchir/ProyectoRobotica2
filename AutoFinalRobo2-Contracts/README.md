@@ -1,3 +1,5 @@
+> **Loader AFR2-20261027-19 / 0.3.0:** [monitor serie y eventos](../AutoFinalRobo2-Loader/MANUAL.html#monitor), COM abrir/cerrar, baudios, texto RX, detección de reinicio/modo ESP y logs de fallos; liberación antes de cargar y consulta MCP de captura. [Ficha](changes/2026-10-27-19-loader-serial-monitor.md). Solo fuente/documentación; sin compilar/ejecutar/probar ni abrir COM/flashear.
+
 > **Loader AFR2-20261027-16 / 0.2.0:** [MCP para Codex](../AutoFinalRobo2-Loader/MCP.md), solicitudes revisables en GUI, historial, filtro y evidencias UART/ROM separadas. [Ficha](changes/2026-10-27-16-loader-mcp-ui.md). Solo fuente/documentación: sin compilar, ejecutar, registrar ni comprobar conexión; sin COM ni flasheos.
 
 > **Loader AFR2-20261027-14:** cargador trasladado a [AutoFinalRobo2-Loader](../AutoFinalRobo2-Loader/README.md), sexto módulo en la raíz del único Git. [Manual](../AutoFinalRobo2-Loader/MANUAL.html), [registro](changes/2026-10-27-14-loader-root-module.md). Contracts conserva documentación compartida; fuentes/lanzadores fuera de tools. Sin compilar/ejecutar/probar esta entrega.

@@ -1,3 +1,5 @@
+> **Loader AFR2-20261027-19 / 0.3.0:** [monitor serie y errores](../../AutoFinalRobo2-Loader/MANUAL.html#monitor), COM abrir/cerrar, baudios, captura RX, detección de arranque y etapas de escritura/verificación; consulta MCP de captura y logs de fallos. [Ficha](../changes/2026-10-27-19-loader-serial-monitor.md). Solo fuente/documentación; sin compilar, ejecutar, validar ni abrir COM/flashear. atmega/esp/web/CAD sin cambios por esta ficha.
+
 > **Loader AFR2-20261027-16 / 0.2.0:** [MCP y revisión GUI](../../AutoFinalRobo2-Loader/MCP.md), historial, filtro de configuración y evidencias UART/ROM. [Ficha](../changes/2026-10-27-16-loader-mcp-ui.md). Solo fuente/documentación; no compilado, ejecutado, registrado ni conectado al cliente en esta entrega; sin pruebas COM ni flasheos. Atmega/ESP/Web/CAD sin cambios por esta ficha.
 
 > **Web26-02 / VIS-038:** nueva composición del radar, encuadre/vistas y parámetros separados de la columna de medición. [Ficha](../changes/2026-10-26-02-radar-composition.md). Solo fuente, visual **No verificada**; sin tests/build/validadores/navegador/promoción ESP. ATmega/ESP/OLED sin cambios; compilación14 anterior a esta interfaz.

@@ -23,6 +23,8 @@ namespace AFR2Loader
                 Tool("loader_status", "Estado del Loader gráfico y trabajo activo. No abre puertos.", Schema(new {}), true),
                 Tool("loader_ports", "Enumera puertos presentes sin abrirlos.", Schema(new {}), true),
                 Tool("loader_profile", "Perfil visible y rutas resueltas. No ejecuta herramientas.", Schema(new {}), true),
+                Tool("loader_serial", "Estado y texto incremental de la última captura serie de la ventana. No abre ni cierra el puerto. Usar received.nextCursor y captureId=id para continuar en la misma captura.",
+                    Schema(new { captureId = new { type = "string" }, cursor = new { type = "integer", minimum = 0 }, limit = new { type = "integer", minimum = 1, maximum = 120 } }), true),
                 Tool("loader_request_profile", "Propone cambios de perfil. Requiere revisión y aprobación en la ventana; no aplica ni guarda silenciosamente.",
                     Schema(new { values = new { type = "object", additionalProperties = new { type = "string" } }, requestId = new { type = "string", description = "ID único para deduplicar reintentos" } }, "values", "requestId"), false),
                 Tool("loader_request_operation", "Solicita una operación; devuelve jobId pendiente de aprobación humana. Nunca escribe al solicitar. Las cargas mantienen los asistentes de cableado y confirmación final. No repetir si ya existe el job.",
@@ -46,6 +48,11 @@ namespace AFR2Loader
                 case "loader_request_profile":
                     keys = new[] { "values", "requestId" }; StringValue(args, "requestId");
                     Object(args["values"]); break;
+                case "loader_serial":
+                    keys = new[] { "captureId", "cursor", "limit" };
+                    if (args.ContainsKey("captureId") && !(args["captureId"] is string)) throw new ArgumentException("captureId debe ser texto.");
+                    foreach (string key in new[] { "cursor", "limit" }) if (args.ContainsKey(key) && !(args[key] is int)) throw new ArgumentException(key + " debe ser entero.");
+                    break;
                 case "loader_request_operation":
                     keys = new[] { "action", "port", "listenBoot", "requestId" }; StringValue(args, "requestId");
                     if (!Actions.Contains(StringValue(args, "action"))) throw new ArgumentException("Acción no admitida.");

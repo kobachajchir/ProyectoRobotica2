@@ -14,6 +14,11 @@ Comparte el único Git global: no inicializar un repositorio ni submódulo aquí
 - Conservar la distinción entre log de arranque y comunicación ROM, confirmación
   de cableado, escritura y verificación. No declarar hardware probado por compilar.
 - Perfiles, ejecutables y registros de usuario van a LOCALAPPDATA, no a Git.
+- SerialCapture es dueño exclusivo del COM y sus archivos; esperar el cierre
+  antes de entregar el puerto a esptool/avrdude, también en operaciones MCP.
+  El monitor es de lectura: no enviar comandos ni activar DTR/RTS por defecto.
+- Un mensaje UART no acredita carga verificada. Mantener eventos tipados de
+  escritura/verificación y el error original/código/salida en los informes.
 - MCP stdio usa Mcp.ps1; stdout contiene únicamente JSON-RPC. Diagnósticos y
   compilación del lanzador van por stderr. No registrar globalmente al iniciar.
 - MCP comparte la ventana mediante LocalBridge. Mantener revisión GUI,

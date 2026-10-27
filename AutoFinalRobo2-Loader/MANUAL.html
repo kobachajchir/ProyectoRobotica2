@@ -21,10 +21,10 @@ svg{display:block;width:100%;height:auto;background:white;border:1px solid #d6de
 @media print{body{background:white}main{padding:0;max-width:none}nav{display:none}h2,h3{break-after:avoid}table,svg,.note,.attention{break-inside:avoid}a{color:inherit}pre{white-space:pre-wrap;background:#eef2f5;color:#172733}}
 </style>
 <main>
-<header><div class="kicker">AutoFinalRobo2 · herramientas del grupo · versión 0.2.0</div>
+<header><div class="kicker">AutoFinalRobo2 · herramientas del grupo · versión 0.3.0</div>
 <h1>AFR2 Loader</h1><p>Compilar, preparar conexiones, cargar y verificar el firmware del Mega y del ESP8266, incluyendo la Web en LittleFS.</p>
-<p><strong>Hecho por Koba Chajchir</strong> · 27/10/2026 · AFR2-20261027-16</p></header>
-<nav><a href="#inicio">Primer inicio</a><a href="#config">Configurar</a><a href="#build">Compilar</a><a href="#mega">Cargar Mega</a><a href="#esp">Cargar ESP</a><a href="#fs">LittleFS</a><a href="#resultado">Resultados</a><a href="#fallas">Problemas</a><a href="#mcp">Codex / MCP</a><a href="#autor">Acerca de</a></nav>
+<p><strong>Hecho por Koba Chajchir</strong> · 27/10/2026 · AFR2-20261027-19</p></header>
+<nav><a href="#inicio">Primer inicio</a><a href="#config">Configurar</a><a href="#build">Compilar</a><a href="#mega">Cargar Mega</a><a href="#esp">Cargar ESP</a><a href="#fs">LittleFS</a><a href="#resultado">Resultados</a><a href="#fallas">Problemas</a><a href="#monitor">Monitor serie</a><a href="#mcp">Codex / MCP</a><a href="#autor">Acerca de</a></nav>
 <div class="note"><strong>Estado de esta entrega:</strong> programa implementado en fuente; no se ha compilado, abierto ni probado en hardware en esta entrega. No confundir los flasheos manuales anteriores con validación de AFR2 Loader. El primer lanzamiento construye el ejecutable localmente.</div>
 
 <section id="inicio"><h2>1. Primer inicio en otra computadora</h2>
@@ -150,7 +150,29 @@ svg{display:block;width:100%;height:auto;background:white;border:1px solid #d6de
 <p>Los sensores de línea en A0-A4 pasan por las cabeceras del shield hacia el Mega; no son la UART y pueden permanecer conectados. OLED usa D20/SDA y D21/SCL. Los Hall usan A8-A11 para A y A12-A15 para B, ambos DEL DER/DEL IZQ/TRAS DER/TRAS IZQ. El encoder de menú usa D2/D3/D42.</p>
 </section>
 
-<section id="mcp"><h2>10. Codex / MCP e historial</h2>
+<section id="monitor"><h2>10. Monitor serie, eventos y errores</h2>
+<ol><li>Abrir <strong>Monitor serie</strong>, actualizar puertos y elegir el COM de la placa. El COM de esta pestaña es explícito; revisar también el COM de Operación antes de cargar.</li><li>Elegir baudios de lectura: <strong>74880</strong> para el mensaje ROM del ESP. Para texto del firmware usar los baudios que tenga configurados. Se admite un valor escrito entre 300 y 2000000, sujeto al adaptador. Elegir UTF-8, ASCII o Latin-1 para decodificar.</li><li>Pulsar <strong>Abrir puerto</strong>. La recepción aparece en la consola sin agregar saltos de línea por cada fragmento recibido. No se envían comandos. Se usan 8N1, sin control de flujo y con DTR/RTS inactivos; el driver puede afectar reset al abrir.</li><li>Para cambiar la velocidad de una captura abierta, seleccionar el nuevo valor y pulsar <strong>Aplicar baudios</strong>. Cierra el COM y abre una captura nueva, conserva la anterior y reinicia la detección de arranque. El cambio modifica el lector, no reconfigura la UART del dispositivo.</li><li><strong>Cerrar puerto</strong> termina la captura y espera el cierre. Antes de consultar o flashear, la app hace este cierre automáticamente; si no puede confirmar que se liberó, detiene la carga.</li></ol>
+<table><thead><tr><th>Aviso</th><th>Fuente e interpretación</th></tr></thead><tbody>
+<tr><td>Reinicio observado</td><td>Mensaje <code>rst cause:</code> recibido. La causa numérica se conserva sin inventar el estado de un botón.</td></tr>
+<tr><td>Programación UART observada</td><td><code>boot mode:(1,...)</code>. Todavía falta respuesta bidireccional de esptool.</td></tr>
+<tr><td>Arranque desde flash</td><td><code>boot mode:(3,...)</code>. No demuestra que el firmware haya iniciado correctamente.</td></tr>
+<tr><td>Escritura / verificación</td><td>Etapas de la operación y salida de esptool/avrdude. Durante ellas la herramienta ocupa el COM y el monitor queda cerrado.</td></tr>
+<tr><td>Carga verificada</td><td>Se completó la verificación exigida por el cargador. Un texto UART genérico como OK/done no produce este resultado.</td></tr>
+<tr><td>Falló</td><td>Se conserva la excepción original y, cuando existe, la herramienta, código de salida y última salida. No se declara éxito ni se reintenta automáticamente.</td></tr>
+</tbody></table>
+<p>El mensaje de auto-reset del ATmega al iniciar avrdude describe una solicitud de la herramienta; no se presenta como reinicio medido por UART. En el ESP se conservan los botones manuales KEY/RST y el modo no_reset. Después de cargar, restaurar el cableado/modo del manual y abrir el monitor manualmente. No hay reapertura automática que pueda ocultar el resultado o afectar el reset.</p>
+<p><strong>Seguir texto</strong> controla el desplazamiento. <strong>Pausar vista</strong> pausa solo la visualización; se sigue recibiendo y guardando. <strong>Limpiar vista</strong> no borra archivos. <strong>Copiar texto</strong> copia lo retenido en pantalla, no toda la captura. La pantalla y la cola tienen un límite de memoria: si se omiten caracteres por atraso, se avisa. Para evidencia completa usar los archivos. Los baudios/codificación seleccionados del monitor pertenecen a esta sesión; no cambian los baudios de esptool/avrdude del perfil.</p>
+<table><thead><tr><th>Archivo en LOCALAPPDATA\AutoFinalRobo2Loader\logs</th><th>Contenido</th></tr></thead><tbody>
+<tr><td>serial-*.rx.txt</td><td>Texto recibido, decodificado según la selección y guardado como UTF-8. NUL se representa como ␀ solo en pantalla.</td></tr>
+<tr><td>serial-*.rx.bin</td><td>Bytes originales, útiles si los baudios/codificación fueron incorrectos o el protocolo es binario.</td></tr>
+<tr><td>serial-*.events.txt / .json</td><td>Apertura, observaciones de arranque y resumen de cierre con estado, bytes y error. El resumen se escribe al terminar la captura.</td></tr>
+<tr><td>failure-*.txt</td><td>Informe legible del fallo: origen, mensaje, posibles revisiones, detalle y rutas de registros asociados.</td></tr>
+</tbody></table>
+<p><strong>Eventos y errores</strong> conserva los últimos 250 avisos en pantalla. Ante un fallo la pestaña se abre y resalta el evento; <strong>Ver último error</strong> y <strong>Copiar último error</strong> permiten conservarlo. Las sugerencias no prueban una causa física: el detalle original es la evidencia. Si falla el disco/registro, la captura termina y se informa; no se promete conservar lo que no pudo escribirse. Los archivos no tienen rotación automática: cerrar capturas largas y administrar su espacio desde Windows.</p>
+<p>Codex consulta la captura con <code>loader_serial</code> sin abrir/cerrar el puerto. El parser mantiene fragmentos entre lecturas para reconocer mensajes partidos. La evidencia tiene hora y no garantiza un modo permanente después de otro reset no recibido. El Mega no tiene aquí un mensaje de arranque genérico equivalente al ROM del ESP.</p>
+<p>Referencias: <a href="https://docs.espressif.com/projects/esptool/en/latest/esp8266/advanced-topics/boot-mode-selection.html">Espressif: selección de modo y log ROM</a>; <a href="https://learn.microsoft.com/en-us/dotnet/api/system.io.ports.serialport.close?view=netframework-4.8.1">Microsoft: cierre de SerialPort</a>.</p>
+</section>
+<section id="mcp"><h2>11. Codex / MCP e historial</h2>
 <p>La pestaña <strong>Codex / MCP</strong> muestra el comando con la ubicación real del programa. Registrar el servidor una vez con <code>RegistrarMcp.ps1</code> y reiniciar o reconectar el cliente MCP. Abrir y mantener el Loader gráfico. <a href="MCP.md">Guía completa de registro, herramientas y ejemplos</a>. El registro por sí solo no prueba conexión: <code>loader_status</code> debe responder con la sesión de esta ventana.</p>
 <ol><li>Codex consulta estado, perfil o puertos sin abrir COM. Puede proponer una operación o un cambio de perfil.</li><li>La propuesta aparece en esta pestaña como <code>awaiting_approval</code>. No se ejecutó todavía. Revisar acción, puerto y argumentos. En cambios de perfil se muestra el valor anterior y el propuesto.</li><li>Elegir <strong>Revisar y continuar</strong> o <strong>Rechazar</strong>. La acción aprobada utiliza el perfil visible; las cargas conservan los asistentes de cableado y confirmación final.</li><li>Codex consulta <code>loader_job</code> con el ID y cursor para seguir el resultado. No reenviar escrituras con identificadores nuevos ante un timeout. La ejecución permanece en la ventana si el cliente se desconecta.</li></ol>
 <p>Solo se admite un trabajo activo o pendiente. Los controles de ejecución y configuración quedan bloqueados al reservarlo. Desmarcar <strong>Aceptar solicitudes de Codex</strong> bloquea propuestas nuevas y conserva las consultas; no cancela una operación aprobada. Para detenerla usar <strong>Cancelar</strong>. El servidor no puede pulsar KEY/RST, mover cables ni medir tensiones.</p>
@@ -158,7 +180,7 @@ svg{display:block;width:100%;height:auto;background:white;border:1px solid #d6de
 <p>En Operación se diferencian evidencia UART y respuesta ROM con puerto/hora. Son observaciones del momento indicado, no un monitor permanente. <strong>Seguir registro</strong> controla el desplazamiento automático. En Configuración se puede filtrar por nombre o descripción; los valores de filas ocultas se conservan. <strong>Ver rutas resueltas</strong> muestra los paths resultantes y si existen, sin ejecutar herramientas ni comprobar sus versiones.</p>
 <p>El MCP usa stdio y un canal local del mismo usuario de Windows. Los mensajes de compilación/diagnóstico del servidor van por stderr; stdout queda reservado al protocolo. No requiere un puerto de red. Las herramientas del robot y sus rutas siguen siendo las del perfil.</p>
 </section>
-<section id="autor"><h2>11. Acerca de y referencias</h2><p><strong>Hecho por Koba Chajchir</strong><br>
+<section id="autor"><h2>12. Acerca de y referencias</h2><p><strong>Hecho por Koba Chajchir</strong><br>
 <a href="https://github.com/kobachajchir">GitHub: kobachajchir</a><br><a href="https://www.linkedin.com/in/kchajchir">LinkedIn: kchajchir</a><br>Teléfono: +54 388 488 9973</p>
 <p>Datos de autoría tomados de <code>AutoFinalRobo2-Web/src/features/developer/DeveloperPage.tsx</code>. No se inventan correo ni institución. Los perfiles son configuraciones locales; no envían datos a estos contactos.</p>
 <ul><li><a href="https://docs.espressif.com/projects/esptool/en/latest/esp8266/advanced-topics/boot-mode-selection.html">Espressif: modo programación y mensaje ROM74880</a>.</li>
@@ -168,5 +190,5 @@ svg{display:block;width:100%;height:auto;background:white;border:1px solid #d6de
 <li><a href="https://osoyoo.com/2020/07/31/introduction-of-osoyoo-uart-wifi-shield/">OSOYOO: shield UART V1.3, selector y puerto directo</a>.</li>
 <li><a href="https://www.arduino.cc/en/uploads/Main/arduino-mega2560_R3-schematic.pdf">Arduino: esquema del Mega2560 Rev3 y puente USB</a>.</li>
 <li>Documentación local: Contracts/hardware/PINOUT.md, FLASHING.md y CARGA_USB_COM16.md; código y parser esptool4.5.1 instalado usados como evidencia técnica.</li></ul>
-</section><footer>AFR2 Loader 0.2.0 · Manual local portable · Hecho por Koba Chajchir<br>Estado: fuente entregada; compilación, interacción, conexión MCP y hardware pendientes de pedido y ejecución explícitos.</footer>
+</section><footer>AFR2 Loader 0.3.0 · Manual local portable · Hecho por Koba Chajchir<br>Estado: fuente entregada; compilación, interacción, conexión MCP y hardware pendientes de pedido y ejecución explícitos.</footer>
 </main></html>

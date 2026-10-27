@@ -1,8 +1,8 @@
 # AFR2 Loader - Windows
 
 Herramienta gráfica en español para compilar y cargar el software de
-AutoFinalRobo2. Hecho por Koba Chajchir. Versión **0.2.0**,
-AFR2-20261027-16, 27/10/2026. Desde **AFR2-20261027-14** es un módulo propio
+AutoFinalRobo2. Hecho por Koba Chajchir. Versión **0.3.0**,
+AFR2-20261027-19, 27/10/2026. Desde **AFR2-20261027-14** es un módulo propio
 en la raíz, `AutoFinalRobo2-Loader`, al mismo nivel que Atmega, ESP, Web,
 Contracts y CAD. Comparte su único Git. [Registro de integración](../AutoFinalRobo2-Contracts/changes/2026-10-27-14-loader-root-module.md).
 
@@ -71,6 +71,46 @@ ejecutó en esta entrega. Registrar o listar herramientas no demuestra conexión
 la primera consulta `loader_status` debe devolver la sesión de la ventana.
 `awaiting_approval` significa que todavía no se ejecutó la operación.
 
+## Monitor serie y errores
+
+En **Monitor serie** elegir COM, baudios (lista o valor propio) y codificación.
+**Abrir puerto** inicia lectura continua; **Cerrar puerto** termina y libera
+el COM. **Aplicar baudios** cierra la captura y abre otra al nuevo valor, sin
+enviar comandos al dispositivo. Lectura 8N1, DTR/RTS inactivos. La apertura
+del adaptador puede afectar reset; no hay apertura ni reconexión automática.
+
+Usar **74880** para recibir el arranque ROM del ESP; para la aplicación elegir
+sus baudios. El parser reconoce mensajes fragmentados de `rst cause`,
+programación UART modo 1 y arranque desde flash modo 3. Son observaciones del
+texto recibido, con fecha; no se declara modo actual permanente ni éxito por
+un mensaje genérico `OK`/`done`. La consulta esptool sigue comprobando ida/vuelta.
+
+La vista conserva texto entre fragmentos, permite pausar desplazamiento,
+pausar la vista, limpiar y copiar. La captura guarda `.rx.txt` UTF-8, `.rx.bin`
+con bytes originales, `.events.txt` y resumen `.json` en LOCALAPPDATA/logs.
+La memoria de pantalla es limitada; si se omiten caracteres por atraso avisa
+y conserva los archivos mientras el disco permita escribir. Limpiar/pausar
+la vista no borra archivos ni detiene la lectura. Cambiar de captura no borra
+los registros anteriores; no se implementa rotación automática por tamaño.
+
+Antes de diagnóstico/carga se cierra el monitor, se espera su liberación y
+recién después se ejecuta esptool/avrdude. Durante la carga, la fuente del
+progreso es la herramienta, cuyo texto está en Operación y su log; no se abre
+un segundo lector sobre el mismo COM. Después no se reabre automáticamente:
+restaurar el cableado/modo y abrir manualmente para observar la aplicación.
+
+**Eventos y errores** distingue reinicio observado, modo UART, sincronización,
+escritura, verificación y carga verificada. Un fallo abre esta pestaña, conserva
+el mensaje original y genera `failure-*.txt`. **Ver/Copiar último error** reúne
+origen, sugerencia, código de salida y última salida de la herramienta cuando
+existen, más rutas de registros. Las sugerencias son diagnósticos posibles,
+no una medición del cableado. Un fallo no queda oculto por el posterior aviso
+de cierre del puerto. El resumen de carga registra `contentVerified`.
+
+Codex dispone de `loader_serial` para consultar la última captura y su texto
+incremental sin abrir/cerrar puertos. `loader_status` incluye captura y ruta
+del último informe de fallo. Guía en [MCP.md](MCP.md).
+
 ## Para otro compañero
 
 Copiar **toda la carpeta AutoFinalRobo2-Loader**, incluyendo `src/`, `MANUAL.html`, lanzadores y
@@ -99,6 +139,10 @@ del usuario que abre el programa. Todos esos resultados se pueden reemplazar.
 | src/Operations.cs | Builds, escucha UART, consulta ROM, layout, escritura y verificación |
 | src/MainForm.cs | Ventana, configuración, asistentes, estados y registro |
 | src/MainForm.Integration.cs | Revisión MCP, historial, indicadores y filtro |
+| src/MainForm.Serial.cs | Monitor, baudios, consola RX, eventos e informes de error |
+| src/SerialCapture.cs | Lectura en segundo plano, cierre y archivos de captura |
+| src/BootObservation.cs | Parser incremental de reinicio y modo de arranque ESP |
+| src/FailureDetails.cs | Error de herramienta con salida/código y orientación diagnóstica |
 | src/JobState.cs | Trabajo, estado y registro paginado en memoria |
 | src/LocalBridge.cs | Named pipe limitada al usuario, comparte la sesión GUI |
 | src/McpServer.cs | Protocolo MCP stdio, herramientas y manual como recurso |
