@@ -1,0 +1,19 @@
+{
+  "changeId": "AFR2-20261027-04",
+  "decisionId": "VIS-041",
+  "manualVersion": "0.1.9",
+  "mode": "APLICAR",
+  "authorization": "Pedido humano de reorganizacion visual; identidad0.1.9 previamente autorizada.",
+  "canonicalSources": ["manual.md", "tokens.json", "components.md", "decisions.md"],
+  "supporting": ["Web/src/components/ui/TaskSections.tsx", "Web/src/features/sensors/ScanControls.tsx", "Web/src/styles/tokens.css"],
+  "targets": ["Web/src/features/collector/", "Web/src/features/model3d/", "Web/src/styles/collector.css", "Web/src/styles/model-inspection.css", "Web/src/components/navigation/RouteNav.tsx", "Web/src/features/home/HomePage.tsx", "Web/src/app/App.tsx"],
+  "coverage": [
+    {"behavior": "Simulaciones Auto/Brazo/Conjunto y Control aparte", "evidence": "Confirmada", "coverage": "Cubierta en fuente", "verification": "No verificada"},
+    {"behavior": "Articulaciones/gripper independientes, sliders vinculados y matrices laterales", "evidence": "Confirmada", "coverage": "Cubierta en fuente", "verification": "No verificada"},
+    {"behavior": "Pills de motores, jerarquia y paneles compactos", "evidence": "Propuesta", "coverage": "Cubierta en fuente", "verification": "No verificada"},
+    {"behavior": "Modelos3D Auto/Brazo con herramientas compartidas", "evidence": "Confirmada", "coverage": "Parcial: modelo y referencias del brazo pendientes por pedido humano", "verification": "No verificada"},
+    {"behavior": "Burbuja definitiva", "evidence": "Confirmada", "coverage": "Pendiente de imagen del usuario; no se redefine", "verification": "No verificada"}
+  ],
+  "checksRun": [],
+  "limits": "Sin pruebas, builds, validadores ni navegador. No se acredita presupuesto ESP con dos modelos ni funcionamiento fisico."
+}

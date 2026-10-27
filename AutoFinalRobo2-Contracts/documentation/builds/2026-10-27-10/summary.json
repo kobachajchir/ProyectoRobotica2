@@ -1,0 +1,78 @@
+{
+  "changeId": "AFR2-20261027-10",
+  "builds": {
+    "atmegaProduct": 0,
+    "atmegaCommunication": 0,
+    "atmegaLibrary": 0,
+    "espFirmware": 0,
+    "webEspAndCopy": 0,
+    "littleFS": 0
+  },
+  "artifacts": {
+    "atmegaProduct": {
+      "path": "AutoFinalRobo2-Atmega/build/afr2.hex",
+      "bytes": 206221,
+      "sha256": "4a45488745b291b6431577b2b3fd7427d8a7f78bac8d853d81c262514094d99b"
+    },
+    "atmegaCommunication": {
+      "path": "AutoFinalRobo2-Atmega/build/afr2-communication.hex",
+      "bytes": 13321,
+      "sha256": "72630befb7094f9cded5277b1ca6dd6e340f6e6b6832254735fd8261764b7993"
+    },
+    "atmegaLibrary": {
+      "path": "AutoFinalRobo2-Atmega/libafr2_ui.a",
+      "bytes": 196368,
+      "sha256": "ae0b787d0d6fb56de38dea2cd44eef36d6b87077460631e0b17a29b884edfebd"
+    },
+    "espFirmware": {
+      "path": "AutoFinalRobo2-ESP/.pio/build/esp12s_candidate/firmware.bin",
+      "bytes": 437936,
+      "sha256": "1cd5f1bda6ef439bfbb6134ba236b5026f476bf82f67f840a68efbf69864b289"
+    },
+    "espLittleFS": {
+      "path": "AutoFinalRobo2-ESP/.pio/build/esp12s_candidate/littlefs.bin",
+      "bytes": 3121152,
+      "sha256": "706416b8d63160a54ba7b3a8b690062236e2c9cba11121f03d9ee128e5deda89"
+    }
+  },
+  "hallCaptureCompiled": true,
+  "hallConfigPreference": "preserved; set Hall conectado=1 after upload",
+  "sourcePinout": "A8-A11 A, A12-A15 B, each FR FL RR RL",
+  "atmega": {
+    "text": 72212,
+    "data": 1094,
+    "bss": 4827,
+    "noinit": 9,
+    "flashBytes": 73306,
+    "staticRamBytes": 5930
+  },
+  "esp": {
+    "ramBytes": 47008,
+    "flashBytes": 433787
+  },
+  "web": {
+    "profile": "esp",
+    "assets": 8,
+    "gzipBytes": 1571104,
+    "estimatedFSBytes": 1671168,
+    "budgetBytes": 2867200,
+    "packagedAt": "2026-10-27T14:35:32.819Z"
+  },
+  "layout": {
+    "physicalFlashIdentified": false,
+    "candidateFlashBytes": 4194304,
+    "linker": "eagle.flash.4m3m.ld",
+    "fsOffset": "0x100000",
+    "fsEndOffset": "0x3FA000",
+    "fsBytes": 3121152
+  },
+  "hardware": {
+    "port": "COM16 reported by user",
+    "serialOpened": false,
+    "firmwareUploaded": false,
+    "filesystemUploaded": false,
+    "wiringIdentified": false
+  },
+  "testsRun": false,
+  "browserRun": false
+}

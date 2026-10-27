@@ -1,3 +1,5 @@
+> **AFR2-20261027-10:** paquete Web esp actual,8activos/1571104bytes gzip; estimación FS1671168/2867200bytes. Imagen littlefs.bin3121152bytes creada después de la copia. [Build](../../AutoFinalRobo2-Contracts/documentation/builds/2026-10-27-10/README.md). Sin subir a placa; estados inferiores históricos.
+
 > **Vigente AFR2-20261025-11:** giro local con dos dedos/Q-E, sin yaw físico;7archivos/1483767bytes gzip, FS estimado1572864/2867200. Firmware0.9.0/EX01v7/build01 intacto. [Build11](../../AutoFinalRobo2-Contracts/documentation/builds/2026-10-25-11/README.md). Solo copia local; sin imagen FS/flasheo. Estados inferiores históricos.
 
 > **Vigente AFR2-20261025-01:** Web0.2.0/control directo7, siete activos promovidos, 1479980 bytes gzip. Estimación FS 1564672/2867200. ESP/ATmega0.9.0 deben actualizarse juntos; sin imagen FS/upload. [Evidencia](../../AutoFinalRobo2-Contracts/documentation/builds/2026-10-25-01/README.md). Estados inferiores históricos.

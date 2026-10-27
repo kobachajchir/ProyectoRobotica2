@@ -17,10 +17,11 @@ const SIDEBAR_STORAGE_KEY = 'afr2.sidebar-collapsed';
 const NAV_ITEMS: { to: string; label: string; icon: UiIconName }[] = [
   { to: '/', label: 'Inicio', icon: 'home' },
   { to: '/control', label: 'Control', icon: 'control' },
+  { to: '/simulaciones', label: 'Simulaciones', icon: 'arm' },
   { to: '/sensores', label: 'Sensores', icon: 'sensors' },
   { to: '/wifi', label: 'Wi-Fi', icon: 'wifi' },
   { to: '/oled', label: 'Pantalla OLED', icon: 'screen' },
-  { to: '/modelo-3d', label: 'Modelo 3D', icon: 'cube' },
+  { to: '/modelo-3d', label: 'Modelos 3D', icon: 'cube' },
   { to: '/documentacion', label: 'Documentacion', icon: 'book' },
 ];
 

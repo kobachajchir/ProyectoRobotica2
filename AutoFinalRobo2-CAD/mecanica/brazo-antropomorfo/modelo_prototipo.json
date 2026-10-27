@@ -1,0 +1,33 @@
+{
+  "change_id": "AFR2-20261026-05",
+  "date": "2026-10-26",
+  "status": "prototipo geometrico para revision; sin validacion mecanica",
+  "fusion_document": "AFR2_Brazo_PVC32_Prototipo_v01",
+  "fusion_data_file_id": "urn:adsk.wipprod:dm.lineage:vIwNlnoFTwqcFyF4eHskyg",
+  "native_file": "AFR2_Brazo_PVC32_Prototipo_v01.f3d",
+  "source": "build_prototype.py",
+  "parameters_file": "parametros_prototipo.csv",
+  "user_parameters": 88,
+  "components_including_root": 96,
+  "root_joints": 10,
+  "arm_revolute_joints": 6,
+  "actuators": {
+    "GX3240MGV1_reference": 1,
+    "DS3218MG": 1,
+    "MG946R_positional": 2,
+    "MG90S_positional": 3
+  },
+  "bearings": {
+    "608_2Z_8x22x7": 6,
+    "625_2Z_5x16x5": 3
+  },
+  "pvc_mm": {"outside": 32, "inside": 28.3, "derived_wall": 1.85, "cuts": [80, 70]},
+  "chain_mm": {"shoulder_height": 120, "shoulder_elbow": 130, "elbow_wrist": 120, "wrist_tcp": 75},
+  "payload_requirement": {"cube_mm": [50, 50, 50], "mass_g": 100, "capacity_validated": false},
+  "control_envelopes": ["Nano45x18", "PCA9685_70x25", "3x_XL4016_65x48"],
+  "geometry_limits": ["dientes no evolventes", "splines y horns simplificados", "patrones comerciales parciales", "retencion axial y acoples por detallar"],
+  "engineering_checks_run": false,
+  "firmware_changed": false,
+  "web_changed": false,
+  "pcb_changed": false
+}

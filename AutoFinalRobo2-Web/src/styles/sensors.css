@@ -2,10 +2,10 @@
 .afr2-screen-tree-name {display:inline-flex;align-items:center;gap:.4rem}.afr2-screen-tree-name svg {width:1rem;height:1rem;flex-shrink:0}
 .afr2-sensor-fields {display:grid;gap:1.25rem;padding-top:1rem}
 .afr2-scan-field {min-width:0;margin:0;padding:0;border:0}
-.afr2-scan-field__heading {display:flex;justify-content:space-between;align-items:center;gap:.5rem;min-height:2.75rem}
+.afr2-scan-field__heading {display:flex;justify-content:space-between;align-items:center;gap:.5rem;min-height:0;font-size:.82rem;line-height:1.4}
 .afr2-scan-field__heading > label,.afr2-scan-zone legend {font-size:.82rem;font-weight:550;color:var(--text)}
 .afr2-scan-number {display:inline-flex;align-items:center;gap:.35rem;flex-shrink:0}
-.afr2-scan-field .afr2-scan-number input[type=text] {box-sizing:border-box;width:4rem;min-height:2.75rem;padding:.45rem .45rem;text-align:right;border:1px solid var(--glass-field-border);border-radius:.65rem;background:var(--glass-field-bg);color:var(--text-strong);font:inherit;font-size:.88rem;font-weight:600;font-variant-numeric:tabular-nums;transition:border-color 140ms ease,background-color 140ms ease}
+.afr2-scan-field .afr2-scan-number input[type=text].afr2-compact-number {box-sizing:border-box;width:4rem;min-height:0;height:22px;padding:1px 6px;text-align:right;border:1px solid var(--glass-field-border);border-radius:6px;background:var(--glass-field-bg);color:var(--text-strong);font:inherit;font-size:.82rem;font-weight:550;line-height:1.3;font-variant-numeric:tabular-nums;transition:border-color 140ms ease,background-color 140ms ease}
 @media(hover:hover) and (pointer:fine){.afr2-scan-field .afr2-scan-number input:hover:not(:disabled) {border-color:var(--glass-field-border-hover);background:var(--glass-field-bg-hover)}}
 .afr2-scan-field .afr2-scan-number input:focus-visible {outline:2px solid var(--focus);outline-offset:2px;background:var(--glass-field-bg-focus);transition:none}
 .afr2-scan-field .afr2-scan-number input:disabled {cursor:not-allowed;color:var(--text-disabled)}

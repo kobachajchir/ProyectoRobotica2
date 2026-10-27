@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="es">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AFR2 Loader - Manual de uso</title>
+<style>
+:root{font-family:Segoe UI,Arial,sans-serif;color:#172733;background:#f4f6f8;line-height:1.65}
+*{box-sizing:border-box}body{margin:0}main{max-width:1020px;margin:0 auto;padding:42px 30px 70px}
+header{border-bottom:3px solid #164f63;padding-bottom:24px}h1{font-size:38px;line-height:1.15;margin:8px 0 14px}
+h2{font-size:25px;margin:44px 0 14px}h3{font-size:19px;margin:25px 0 10px}a{color:#075a7d}
+.kicker{font-weight:700;letter-spacing:.12em;color:#164f63;font-size:12px;text-transform:uppercase}
+nav{display:flex;gap:9px 20px;flex-wrap:wrap;margin:24px 0}section{scroll-margin-top:18px}
+table{border-collapse:collapse;width:100%;background:white;margin:16px 0;font-size:14px}
+th,td{padding:10px 12px;text-align:left;vertical-align:top;border:1px solid #d6dee4}th{background:#164f63;color:white}
+code,pre{font-family:Consolas,monospace}code{background:#e5edf1;padding:2px 4px;border-radius:3px}
+pre{background:#172733;color:#eff6fb;padding:17px;overflow:auto;line-height:1.55;font-size:13px}
+.note{background:#e8f1f5;border-left:4px solid #164f63;padding:14px 18px;margin:20px 0}
+.attention{background:#fff5e8;border-left:4px solid #a66016;padding:14px 18px;margin:20px 0}
+li{margin:7px 0}footer{margin-top:48px;border-top:1px solid #bccbd5;padding-top:18px;color:#475569}
+svg{display:block;width:100%;height:auto;background:white;border:1px solid #d6dee4;border-radius:8px;margin:18px 0}
+@media print{body{background:white}main{padding:0;max-width:none}nav{display:none}h2,h3{break-after:avoid}table,svg,.note,.attention{break-inside:avoid}a{color:inherit}pre{white-space:pre-wrap;background:#eef2f5;color:#172733}}
+</style>
+<main>
+<header><div class="kicker">AutoFinalRobo2 · herramientas del grupo · versión 0.2.0</div>
+<h1>AFR2 Loader</h1><p>Compilar, preparar conexiones, cargar y verificar el firmware del Mega y del ESP8266, incluyendo la Web en LittleFS.</p>
+<p><strong>Hecho por Koba Chajchir</strong> · 27/10/2026 · AFR2-20261027-16</p></header>
+<nav><a href="#inicio">Primer inicio</a><a href="#config">Configurar</a><a href="#build">Compilar</a><a href="#mega">Cargar Mega</a><a href="#esp">Cargar ESP</a><a href="#fs">LittleFS</a><a href="#resultado">Resultados</a><a href="#fallas">Problemas</a><a href="#mcp">Codex / MCP</a><a href="#autor">Acerca de</a></nav>
+<div class="note"><strong>Estado de esta entrega:</strong> programa implementado en fuente; no se ha compilado, abierto ni probado en hardware en esta entrega. No confundir los flasheos manuales anteriores con validación de AFR2 Loader. El primer lanzamiento construye el ejecutable localmente.</div>
+
+<section id="inicio"><h2>1. Primer inicio en otra computadora</h2>
+<ol><li>Copiar la carpeta completa <code>AutoFinalRobo2-Loader</code>, módulo propio de la raíz del proyecto. Conservar <code>src</code>, <code>Iniciar.cmd</code>, <code>Iniciar.ps1</code>, el manual y la plantilla.</li>
+<li>Hacer doble clic en <strong>Iniciar.cmd</strong>. Windows PowerShell invoca el compilador C# de .NET Framework, genera el EXE en la carpeta de datos del usuario y abre la ventana. No compila el robot ni abre COM en este paso.</li>
+<li>Ir a <strong>Configuración</strong>, elegir la raíz de la copia del repositorio y completar las herramientas. Después pulsar <strong>Guardar</strong>.</li>
+<li>Conectar el USB-B y pulsar <strong>Actualizar puertos</strong>. Elegir el COM que corresponda al Mega de esa computadora. COM16 era el puerto de la PC de Koba; no se fija para los demás.</li></ol>
+<p>Requisitos de la interfaz: Windows 10/11, Windows PowerShell 5.1 y .NET Framework 4.8 con su compilador <code>csc.exe</code>. No hace falta Visual Studio ni VS Code para abrirla. Windows puede pedir autorizar la ejecución de un archivo descargado: revisar el origen antes de desbloquearlo. El lanzador no modifica políticas globales ni pide administrador.</p>
+<p>Se guardan programa, perfiles y registros en <code>%LOCALAPPDATA%\AutoFinalRobo2Loader</code>. El perfil por defecto está en <code>profiles\default.json</code>. Guardar conserva también una copia <code>.bak</code> del perfil anterior.</p>
+</section>
+
+<section id="config"><h2>2. Configurar herramientas, carpetas y archivos</h2>
+<p>Cada opción tiene un botón <strong>...</strong> para elegir carpeta o archivo. Al dejar el cursor sobre el valor aparece una ayuda. <strong>Detectar rutas vacías</strong> busca instalaciones habituales del usuario; no reemplaza campos ya completados ni instala nada. Si una ruta dejó de existir, vaciarla antes de detectar o elegir el archivo correcto.</p>
+<table><thead><tr><th>Grupo</th><th>Qué elegir</th><th>Para qué se usa</th></tr></thead><tbody>
+<tr><td>Raíz y proyectos</td><td>ProyectoRobotica2 y sus carpetas Atmega, ESP y Web</td><td>Compilar el código. Deben conservar los contratos compartidos y rutas entre módulos.</td></tr>
+<tr><td>AVR</td><td>GNU make.exe, avr-gcc.exe, avr-ar.exe y avr-objcopy.exe</td><td>Compilar C, generar biblioteca y convertir ELF a HEX. NMake no sustituye GNU Make.</td></tr>
+<tr><td>Avrdude</td><td>avrdude.exe y avrdude.conf de la misma instalación</td><td>Cargar el Mega mediante su bootloader. Arduino15 suele incluirlos tras instalar la plataforma AVR.</td></tr>
+<tr><td>ESP</td><td>platformio.exe, entorno de platformio.ini</td><td>Compilar firmware y construir LittleFS usando las dependencias del proyecto.</td></tr>
+<tr><td>Web</td><td>node.exe y npm.cmd</td><td>Ejecutar build:esp. Node debe ser compatible con las versiones fijadas por el proyecto. Las dependencias de package-lock deben estar instaladas, habitualmente con npm ci.</td></tr>
+<tr><td>Consulta y carga ESP</td><td>python.exe y esptool.py; versión mayor 4 o 5</td><td>Leer flash, escribir BIN y verificar. El intérprete debe tener las dependencias de esptool y pyserial.</td></tr>
+<tr><td>Archivos de carga</td><td>afr2.hex, firmware.bin, littlefs.bin</td><td>Se cargan exactamente los archivos elegidos. Pueden estar fuera del repositorio; el asistente muestra ruta, tamaño y hash antes de escribir.</td></tr>
+<tr><td>Layout</td><td>Linker .ld, offsets, tamaño FS y flash esperada</td><td>Impedir una carga cuando imagen, linker y capacidad detectada no coinciden.</td></tr>
+<tr><td>Comunicación</td><td>Baudios Mega/ESP, MCU y protocolo AVR</td><td>Adaptar el perfil al bootloader y herramientas disponibles.</td></tr>
+</tbody></table>
+<p>Variables admitidas: <code>{Repo}</code> se reemplaza por la raíz, <code>{Env}</code> por el entorno PlatformIO, y <code>%USERPROFILE%</code>/<code>%LOCALAPPDATA%</code> por variables de Windows. El programa admite espacios en rutas. Para npm.cmd se rechazan rutas o argumentos con comillas, porcentajes sin resolver o signos de exclamación, porque CMD los interpreta de forma especial.</p>
+<h3>Perfil candidato actual del ESP</h3>
+<table><thead><tr><th>Dato</th><th>Valor del proyecto</th></tr></thead><tbody>
+<tr><td>Chip / entorno</td><td>ESP8266 / esp12s_candidate</td></tr><tr><td>Flash esperada</td><td>4 MiB = 4.194.304 bytes; debe confirmarlo flash_id real</td></tr>
+<tr><td>Linker</td><td>eagle.flash.4m3m.ld</td></tr><tr><td>Firmware</td><td>Offset 0x0; límite 1.044.464 bytes</td></tr>
+<tr><td>LittleFS</td><td>Offset 0x100000; longitud 3.121.152 bytes; fin exclusivo 0x3FA000</td></tr>
+<tr><td>Modo/frecuencia SPI</td><td>keep / keep: conserva la cabecera del firmware seleccionado. El equipo anterior reportó DIO/40 MHz; eso no es una certificación de cualquier BIN nuevo.</td></tr>
+</tbody></table>
+<p>El programa lee <code>_FS_start</code> y <code>_FS_end</code> del linker; convierte la dirección de CPU en offset restando <code>0x40200000</code>. Compara esos valores con el perfil. Si existe platformio.ini, exige un entorno explícito con <code>board_build.ldscript</code> correspondiente. No resuelve layouts heredados mediante extends ni expresiones de linker: en esa situación se detiene y se debe preparar un perfil/entorno explícito compatible.</p>
+<p>Importar/exportar desde <strong>Perfiles</strong> facilita compartir configuraciones. Revisar todas las rutas en la otra PC. El JSON no contiene contraseñas; sí puede incluir rutas/nombres de usuario y queda copiado en el informe de operaciones.</p>
+</section>
+
+<section id="build"><h2>3. Compilar sin tocar las placas</h2>
+<p><strong>Compilar destino</strong> usa el destino seleccionado. <strong>Compilar todo</strong> ejecuta la cadena siguiente, y se detiene en el primer error:</p>
+<ol><li><strong>ATmega:</strong> GNU Make, reconstrucción completa de <code>firmware</code>, <code>communication-firmware</code> y <code>library</code>. El producto está en <code>build/afr2.hex</code>.</li>
+<li><strong>ESP:</strong> PlatformIO <code>run -e entorno</code>, genera <code>.pio/build/entorno/firmware.bin</code>.</li>
+<li><strong>Web:</strong> npm <code>run build:esp</code>. Sincroniza recursos OLED, compila TypeScript/Vite, comprime y genera manifiesto, y ejecuta copy:esp hacia <code>ESP/data/dist</code>.</li>
+<li><strong>LittleFS:</strong> PlatformIO <code>run -e entorno -t buildfs</code>, después de la copia. Genera <code>littlefs.bin</code>.</li></ol>
+<p>Compilar no requiere conectar USB. Los builds pueden descargar dependencias mediante PlatformIO/npm si el entorno lo necesita. La aplicación no lanza tests ni validadores independientes; los pasos TypeScript y comprobaciones de presupuesto del propio empaquetador sí forman parte de su build normal.</p>
+<div class="attention">Los archivos elegidos para cargar pueden ser externos. Un build genera archivos en las rutas normales del proyecto, pero no sobrescribe ni cambia automáticamente la selección de un BIN externo. Revisar las rutas y los hashes del asistente. Un hash identifica el contenido; no demuestra de qué fuentes fue compilado.</div>
+<p><code>afr2-communication.hex</code> sirve para una composición reducida del enlace. <strong>No cargarlo como sustituto del producto completo</strong> si se necesitan pantalla, sensores y control. <code>libafr2_ui.a</code> no se sube a la placa.</p>
+</section>
+
+<section id="mega"><h2>4. Cargar el ATmega2560</h2>
+<ol><li>Elegir <strong>ATmega - producto completo</strong> y el puerto correcto.</li><li>Quitar el puente <strong>RESET del Mega a GND</strong>. RESET debe quedar libre para que el bootloader pueda arrancar.</li>
+<li>Retirar los puentes de servicio D0/D1 hacia el ESP. El ESP debe quedar aislado de esos dos nodos. D18/TX1→E_RX y E_TX→D19/RX1 pueden permanecer como enlace normal.</li>
+<li>Conservar desconectada la potencia de motores, cerrar monitores serie y pulsar <strong>Flashear destino</strong>.</li><li>Revisar HEX, puerto y las casillas del asistente. Al pulsar Continuar se ejecuta avrdude.</li>
+<li>Esperar el resultado. El programa exige código0, firma esperada y el mensaje <code>bytes of flash verified</code> para declarar éxito. Un retorno0 sin evidencia reconocible de verificación se informa como no verificado.</li></ol>
+<p>No pulsar KEY/RST del shield para cargar el Mega. Son botones del ESP. El cargador Mega normalmente realiza auto-reset desde USB. El procedimiento no modifica fuses, bootloader ni EEPROM; usa protocolo <code>wiring</code> y baudios115200 del perfil.</p>
+<p>En este proyecto la captura Hall está habilitada en la fuente por pedido de Koba. La preferencia guardada es independiente: si <strong>Hall conectado</strong> estaba0, ponerla1 en <strong>Calibracion → Geometria</strong>, volver y Guardar EEPROM. No inventar CPR/signos/geometría por haber cargado firmware.</p>
+</section>
+
+<section id="esp"><h2>5. Preparar, detectar y cargar el ESP</h2>
+<h3>Por qué D0/D1 y por qué RESET a GND</h3>
+<p>El USB-B conecta al convertidor USB-serie del Mega, que está unido a USART0 (D0/D1), no a USART1 (D18/D19). En funcionamiento normal, el Mega ejecuta su programa y habla con el ESP por D18/D19. Mantener al Mega en reset detiene ese microcontrolador y permite utilizar su convertidor USB; <strong>no crea un puente interno entre USART0 y USART1</strong>.</p>
+<svg viewBox="0 0 900 260" role="img" aria-label="Puente de programación: USB serie transmite por D0 hacia E RX; E TX retorna por D1; RESET Mega a GND">
+<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#164f63"/></marker></defs>
+<g font-family="Segoe UI,Arial" fill="#172733"><rect x="24" y="32" width="220" height="155" rx="12" fill="#e8f1f5"/><rect x="631" y="32" width="245" height="155" rx="12" fill="#e8f1f5"/>
+<text x="46" y="64" font-size="18" font-weight="bold">USB-B del Mega</text><text x="46" y="89" font-size="15">Puente USB-serie</text>
+<text x="650" y="64" font-size="18" font-weight="bold">Selector del shield</text><text x="650" y="89" font-size="15">Pines centrales E_RX/E_TX</text>
+<text x="65" y="123" font-size="16">Salida: D0 / RX0</text><text x="651" y="123" font-size="16">E_RX → ESP RX</text>
+<text x="65" y="160" font-size="16">Entrada: D1 / TX0</text><text x="651" y="160" font-size="16">E_TX ← ESP TX</text>
+<path d="M247,119 H625" stroke="#164f63" stroke-width="3" marker-end="url(#arrow)"/><path d="M625,156 H247" stroke="#164f63" stroke-width="3" marker-end="url(#arrow)"/>
+<text x="284" y="108" font-size="14">PC envía al ESP</text><text x="284" y="146" font-size="14">ESP responde a la PC</text>
+<text x="28" y="223" font-size="17" font-weight="bold">RESET del ATmega → GND durante toda la operación ESP</text><text x="28" y="246" font-size="14">Retirar cables D18/D19. No conectar el puerto directo ESP UART de 3,3 V a señales de 5 V.</text></g></svg>
+<h3>Cableado temporal de servicio</h3>
+<p>Desconectar alimentación para mover cables. Se usa la ruta del <strong>selector central E_RX/E_TX</strong>, no la fila directa ESP UART.</p>
+<table><thead><tr><th>Mega</th><th>Destino</th></tr></thead><tbody><tr><td>D0/RX0</td><td>E_RX central del selector</td></tr><tr><td>D1/TX0</td><td>E_TX central del selector</td></tr><tr><td>RESET del ATmega</td><td>GND, puente permanente durante diagnóstico/carga ESP</td></tr><tr><td>D18/D19</td><td>Desconectados de las señales ESP durante servicio</td></tr></tbody></table>
+<p>La dirección de D0/D1 parece invertida porque los nombres están escritos desde el ATmega. Desde el puente USB, D0 es su salida y D1 su entrada. La cabecera directa <code>GND / ESP TX / ESP RX / 3V3</code> no se presume tolerante a5V: usar solo una ruta con adaptación identificada. El reset que se une a masa es el del Mega, <strong>no RST ni EN del ESP</strong>. El ESP debe quedar alimentado y libre para arrancar.</p>
+<h3>Detectar programación</h3>
+<ol><li>Conectar USB. Confirmar puerto y cableado en el asistente. Dejar activada <strong>Escuchar KEY/RST</strong>.</li><li>Pulsar <strong>Detectar ESP / ROM</strong> o iniciar la carga del destino ESP. Al aparecer “Escuchando74880”, mantener <strong>KEY</strong>, pulsar/soltar <strong>RST del shield</strong> y soltar KEY.</li><li>El programa busca <code>boot mode:(1,...)</code> en el mensaje ROM. Si ve <code>(3,...)</code>, indica arranque normal y continúa esperando la secuencia correcta.</li><li>Al detectar modo1 cierra el monitor para liberar el puerto. Después esptool consulta la ROM y la flash. Solo una respuesta exitosa confirma comunicación bidireccional.</li></ol>
+<p>Si el ESP ya estaba esperando comandos y no emitirá otro mensaje de arranque, se puede desmarcar Escuchar KEY/RST e intentar directamente la consulta ROM. Esto <strong>no saltea</strong> la sincronización ni la lectura de flash. Si el mensaje se perdió, repetir KEY/RST con la escucha ya abierta. Un LED no acredita modo programación.</p>
+<div class="note"><strong>Dos evidencias diferentes:</strong> el log74880 confirma ESP→PC y GPIO0 al reset. No confirma que el RX del ESP reciba a la PC. La consulta flash_id comprueba ida/vuelta. Si el primer paso funciona y el segundo no, revisar especialmente D0→E_RX, niveles y contactos; no invertir ambos cables a ciegas.</div>
+<h3>Confirmación y carga</h3>
+<p>Después de la consulta, la aplicación compara la flash detectada con el perfil y los límites del linker. Si algo no coincide no escribe. Muestra ruta, SHA-256, tamaño y offset de cada BIN. Recién al confirmar ese segundo diálogo se inicia la escritura. Esptool queda configurado con <code>no_reset</code>: no se supone que DTR/RTS del Mega estén conectados a GPIO0/EN del ESP.</p>
+<p>La carga usa <code>write_flash</code> en esptool4 o <code>write-flash</code> en esptool5. Después ejecuta automáticamente <code>verify_flash</code>/<code>verify-flash</code> con los mismos parámetros SPI y archivos. Si la escritura termina pero la verificación falla, el resultado se muestra como no verificado; no se vuelve a escribir automáticamente.</p>
+</section>
+
+<section id="fs"><h2>6. Web y LittleFS</h2>
+<p>El Mega no almacena la Web. La página, modelos, decodificador y manifiesto van comprimidos dentro del filesystem de la flash del ESP. Firmware ESP y filesystem son dos regiones distintas.</p>
+<table><thead><tr><th>Destino seleccionado</th><th>Compilar destino</th><th>Flashear destino</th></tr></thead><tbody>
+<tr><td>ESP - firmware</td><td>Compila el firmware ESP</td><td>Escribe y verifica solo firmware.bin</td></tr><tr><td>ESP - Web y LittleFS</td><td>build:esp + copy:esp + buildfs</td><td>Escribe y verifica solo littlefs.bin</td></tr>
+<tr><td>ESP - firmware + LittleFS</td><td>Firmware ESP y después cadena Web/FS</td><td>Escribe ambos pares offset/BIN en una operación y verifica ambos</td></tr></tbody></table>
+<p>La herramienta usa PlatformIO para construir el FS y esptool directamente para escribir y verificar la imagen elegida. Es el mismo tipo de imagen que carga Upload Filesystem Image, con un flujo manual de botones explícito y archivos configurables.</p>
+<div class="attention">La imagen LittleFS reemplaza su región completa. Puede borrar <code>/config/wifi.json</code> y otras preferencias guardadas allí. La confirmación de FS exige reconocer este reemplazo; la herramienta no implementa respaldo/restauración automática. Antes de continuar, conservar por el medio adecuado cualquier dato que se necesite. No se ejecuta erase_flash ni se borran regiones fuera de las seleccionadas por iniciativa de la aplicación.</div>
+<p>El tamaño del BIN LittleFS es el rango reservado completo, no la suma gzip. Que los activos comprimidos quepan en3MiB nominales no significa que cualquier chip o layout sirva. Si se cambia linker/entorno, reconstruir firmware y FS juntos y actualizar el perfil.</p>
+</section>
+
+<section id="resultado"><h2>7. Qué significa el resultado</h2>
+<table><thead><tr><th>Estado</th><th>Interpretación</th></tr></thead><tbody>
+<tr><td>Modo programación observado</td><td>Se recibió el mensaje ROM modo1. Aún no hay prueba de ida/vuelta.</td></tr>
+<tr><td>ROM responde</td><td>esptool sincronizó y obtuvo tamaño de flash. No se grabó nada en ese diagnóstico.</td></tr>
+<tr><td>Build completado</td><td>Procesos exit0 y artefactos encontrados. No se cargó el robot.</td></tr>
+<tr><td>Carga y verificación completadas</td><td>Las herramientas comprobaron el contenido escrito. No certifica funcionamiento de sensores/motores, Wi-Fi ni seguridad mecánica.</td></tr>
+<tr><td>Escritura iniciada; resultado no verificado</td><td>Puede haberse modificado flash. Revisar el log; no asumir que quedó el firmware anterior intacto.</td></tr>
+<tr><td>Cancelada</td><td>Se detienen procesos hijos y se libera el puerto. Si se inició escritura, puede haber contenido incompleto.</td></tr>
+</tbody></table>
+<p>Cada operación guarda texto de comandos/stdout/stderr y un JSON con perfil, pasos, códigos, hashes y estado en <code>%LOCALAPPDATA%\AutoFinalRobo2Loader\logs</code>. El registro de pantalla se recorta para mantener la ventana ágil; el archivo conserva la salida completa. Copiar registro copia solo lo que queda en pantalla. Para compartir evidencia completa, abrir la carpeta de registros.</p>
+<p>La app evita operaciones simultáneas. Configuración y selección de puerto se bloquean mientras trabaja. Para cancelar hay una confirmación; el cierre de ventana se bloquea mientras sigue una operación. Un timeout o fallo detiene la cadena; no se continúa con FS si falló el build Web ni se declara éxito porque el proceso solo se haya iniciado.</p>
+</section>
+
+<section id="fallas"><h2>8. Resolver problemas</h2>
+<table><thead><tr><th>Síntoma</th><th>Qué revisar</th></tr></thead><tbody>
+<tr><td>No abre la interfaz</td><td>Abrir Iniciar.cmd y conservar el error. Revisar .NET Framework4.8/csc y que la carpeta src esté completa. No confundir un fallo de compilación de la herramienta con el robot.</td></tr>
+<tr><td>Herramienta o carpeta inexistente</td><td>Configuración, ruta seleccionada y variables resueltas. Elegir el ejecutable real. Instalar herramientas fuera de la aplicación siguiendo documentación del proveedor.</td></tr>
+<tr><td>PermissionError / platforms.lock</td><td>Permisos y propietario de la instalación/caché PlatformIO. No borrar cachés ni elevar toda la app automáticamente. Copiar el error para revisar el entorno.</td></tr>
+<tr><td>COM ocupado o access denied</td><td>Cerrar monitor de VS Code/Arduino y otras instancias. Actualizar puertos. La app cierra su monitor antes de lanzar esptool.</td></tr>
+<tr><td>Sin mensaje al pulsar RST</td><td>ESP alimentado, RST del ESP libre, E_TX→D1, masa y COM. RESET Mega→GND debe permanecer. No alimentar ESP desde el pin3,3V de baja capacidad del Mega.</td></tr>
+<tr><td>boot mode:(3,...)</td><td>GPIO0 no estaba bajo en ese reset. Mantener KEY y pulsar/soltar RST del shield. Los botones no actúan sobre el Mega.</td></tr>
+<tr><td>boot mode:(1,...) pero esptool no recibe</td><td>Revisar D0→E_RX, cable/contacto, adaptación y alimentación; el log prueba solo un sentido. Intentar consulta sin escucha si ya quedó en modo1. Bajada a9600 configurable para diagnóstico; no repetir escritura.</td></tr>
+<tr><td>Flash distinta al perfil</td><td>No forzar. Elegir layout apropiado al chip, reconstruir firmware/FS y actualizar linker/rangos. El mensaje del firmware AT anterior sobre32Mbit no sustituye flash_id.</td></tr>
+<tr><td>Verificación falla</td><td>Conservar log/JSON, no desconectar al azar ni cambiar archivos. Revisar estabilidad, baudios y modo SPI. La app no lo transforma en éxito ni repite la escritura.</td></tr>
+<tr><td>Compilación TypeScript o presupuesto FS falla</td><td>Corregir el código/tamaño en el proyecto. No cargar un FS anterior como si fuera el recién compilado. La cadena se detiene en el fallo.</td></tr>
+</tbody></table>
+</section>
+
+<section><h2>9. Volver al funcionamiento normal</h2>
+<ol><li>Terminar toda operación y cerrar el puerto. Desconectar alimentación antes de mover cables.</li><li>Quitar <strong>RESET Mega→GND</strong>.</li><li>Retirar cables de servicio D0/D1 y restaurar <strong>D18/TX1→E_RX</strong>, <strong>E_TX→D19/RX1</strong>. No agregar jumpers paralelos D0/D1 o D4/D5.</li><li>KEY libre. Alimentar y, si hace falta, pulsar/soltar RST del ESP para arrancar desde flash.</li><li>Revisar configuración Hall/calibración por el procedimiento del proyecto antes de usar funciones que dependan de odometría.</li></ol>
+<p>Los sensores de línea en A0-A4 pasan por las cabeceras del shield hacia el Mega; no son la UART y pueden permanecer conectados. OLED usa D20/SDA y D21/SCL. Los Hall usan A8-A11 para A y A12-A15 para B, ambos DEL DER/DEL IZQ/TRAS DER/TRAS IZQ. El encoder de menú usa D2/D3/D42.</p>
+</section>
+
+<section id="mcp"><h2>10. Codex / MCP e historial</h2>
+<p>La pestaña <strong>Codex / MCP</strong> muestra el comando con la ubicación real del programa. Registrar el servidor una vez con <code>RegistrarMcp.ps1</code> y reiniciar o reconectar el cliente MCP. Abrir y mantener el Loader gráfico. <a href="MCP.md">Guía completa de registro, herramientas y ejemplos</a>. El registro por sí solo no prueba conexión: <code>loader_status</code> debe responder con la sesión de esta ventana.</p>
+<ol><li>Codex consulta estado, perfil o puertos sin abrir COM. Puede proponer una operación o un cambio de perfil.</li><li>La propuesta aparece en esta pestaña como <code>awaiting_approval</code>. No se ejecutó todavía. Revisar acción, puerto y argumentos. En cambios de perfil se muestra el valor anterior y el propuesto.</li><li>Elegir <strong>Revisar y continuar</strong> o <strong>Rechazar</strong>. La acción aprobada utiliza el perfil visible; las cargas conservan los asistentes de cableado y confirmación final.</li><li>Codex consulta <code>loader_job</code> con el ID y cursor para seguir el resultado. No reenviar escrituras con identificadores nuevos ante un timeout. La ejecución permanece en la ventana si el cliente se desconecta.</li></ol>
+<p>Solo se admite un trabajo activo o pendiente. Los controles de ejecución y configuración quedan bloqueados al reservarlo. Desmarcar <strong>Aceptar solicitudes de Codex</strong> bloquea propuestas nuevas y conserva las consultas; no cancela una operación aprobada. Para detenerla usar <strong>Cancelar</strong>. El servidor no puede pulsar KEY/RST, mover cables ni medir tensiones.</p>
+<p><strong>Historial de sesión</strong> reúne los últimos 100 trabajos, su origen, puerto y resultado. Doble clic abre un resumen legible y las últimas 120 líneas disponibles; los logs completos de operaciones ejecutadas quedan en la carpeta de registros. Una propuesta rechazada no genera informe de ejecución. La memoria y deduplicación de solicitudes se pierden al cerrar la ventana.</p>
+<p>En Operación se diferencian evidencia UART y respuesta ROM con puerto/hora. Son observaciones del momento indicado, no un monitor permanente. <strong>Seguir registro</strong> controla el desplazamiento automático. En Configuración se puede filtrar por nombre o descripción; los valores de filas ocultas se conservan. <strong>Ver rutas resueltas</strong> muestra los paths resultantes y si existen, sin ejecutar herramientas ni comprobar sus versiones.</p>
+<p>El MCP usa stdio y un canal local del mismo usuario de Windows. Los mensajes de compilación/diagnóstico del servidor van por stderr; stdout queda reservado al protocolo. No requiere un puerto de red. Las herramientas del robot y sus rutas siguen siendo las del perfil.</p>
+</section>
+<section id="autor"><h2>11. Acerca de y referencias</h2><p><strong>Hecho por Koba Chajchir</strong><br>
+<a href="https://github.com/kobachajchir">GitHub: kobachajchir</a><br><a href="https://www.linkedin.com/in/kchajchir">LinkedIn: kchajchir</a><br>Teléfono: +54 388 488 9973</p>
+<p>Datos de autoría tomados de <code>AutoFinalRobo2-Web/src/features/developer/DeveloperPage.tsx</code>. No se inventan correo ni institución. Los perfiles son configuraciones locales; no envían datos a estos contactos.</p>
+<ul><li><a href="https://docs.espressif.com/projects/esptool/en/latest/esp8266/advanced-topics/boot-mode-selection.html">Espressif: modo programación y mensaje ROM74880</a>.</li>
+<li><a href="https://docs.espressif.com/projects/esptool/en/latest/esp8266/esptool/basic-commands.html">Espressif: flash-id, escritura y regiones flash</a>.</li>
+<li><a href="https://docs.espressif.com/projects/esptool/en/latest/esp8266/troubleshooting.html">Espressif: problemas de comunicación y alimentación</a>.</li>
+<li><a href="https://docs.platformio.org/en/latest/platforms/espressif8266.html">PlatformIO: ESP8266 y filesystem</a>.</li>
+<li><a href="https://osoyoo.com/2020/07/31/introduction-of-osoyoo-uart-wifi-shield/">OSOYOO: shield UART V1.3, selector y puerto directo</a>.</li>
+<li><a href="https://www.arduino.cc/en/uploads/Main/arduino-mega2560_R3-schematic.pdf">Arduino: esquema del Mega2560 Rev3 y puente USB</a>.</li>
+<li>Documentación local: Contracts/hardware/PINOUT.md, FLASHING.md y CARGA_USB_COM16.md; código y parser esptool4.5.1 instalado usados como evidencia técnica.</li></ul>
+</section><footer>AFR2 Loader 0.2.0 · Manual local portable · Hecho por Koba Chajchir<br>Estado: fuente entregada; compilación, interacción, conexión MCP y hardware pendientes de pedido y ejecución explícitos.</footer>
+</main></html>

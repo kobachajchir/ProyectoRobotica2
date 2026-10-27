@@ -102,8 +102,10 @@ automático. Fuera del centro nominal1450..1550us o durante300ms tras moverlo se
 invalida lectura frontal. Desactivar pulso no centra ni mide orientación.
 
 Hall: AFR2_HALL_CONNECTED=0 por defecto, más hall_wired en configuración. Propuesta
-FL A8/A9, FR A10/A11, RL A12/A13, RR A14/A15; confirmar niveles/pull-ups antes de
-cablear. PCINT2: x1 por flanco ascendente A, B aporta signo. No polling del encoder UI.
+vigente AFR2-20261027-07: FR A8/A12, FL A9/A13, RR A10/A14, RL A11/A15.
+Headers A8-A11 para A y A12-A15 para B, orden físico FR/FL/RR/RL; contadores
+lógicos FL/FR/RL/RR conservados. PCINT2 máscara0x0F: x1 por flanco ascendente A,
+B aporta signo. Niveles/pull-ups y funcionamiento pendientes; no polling del encoder UI.
 
 Test: seleccionar rueda → Iniciar → girar UNA vuelta hacia adelante → Finalizar
 → revisar → Guardar o Descartar. Salidas apagadas; rechaza cero/inversiones y

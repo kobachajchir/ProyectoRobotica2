@@ -1,3 +1,7 @@
+> **Build AFR2-20261027-10:** perfil esp compilado,8activos/1571104bytes gzip y copy:esp completado. [Evidencia](../AutoFinalRobo2-Contracts/documentation/builds/2026-10-27-10/README.md). Retorno tipado de startManualScan corregido para TypeScript; sin navegador, tests ni carga física.
+
+> **AFR2-20261027-06:** calibracion con ayuda contextual para 29 parametros; matematica mayor y centrada con el mismo formulario en Auto/Brazo/Conjunto. Pad de movimiento, boton mantenido y campos numero/barra reutilizados con Control. [Ficha](../AutoFinalRobo2-Contracts/changes/2026-10-27-06-calibration-live-math-shared-controls.md). Solo fuente, sin tests/build/validaciones/navegador ni promocion ESP.
+
 > **Presentación vigente AFR2-20261026-02:** radar recompuesto con campo continuo, escala inicial1m, vistas Perspectiva/Superior y parámetros debajo del mapa. [Detalle](../AutoFinalRobo2-Contracts/changes/2026-10-26-02-radar-composition.md). Solo fuente; **sin build, tests, validadores ni navegador**. Paquete ESP anterior; semántica de controles16 y Modelo3D01 conservados.
 
 > **Fuente vigente AFR2-20261025-16:** radar con volumen/neón rubí, selector doble angular, controles barra/número y Configuracion sin acento. [Detalle](../AutoFinalRobo2-Contracts/changes/2026-10-25-16-radar-volume-scan-controls.md). **Sin compilar, validar en navegador ni promover activos al ESP**. Los artefactos14 no incluyen esta interfaz. ATmega/ESP/OLED/CAD sin cambios de esta revisión.
@@ -30,7 +34,17 @@
 
 > Estado vigente **AFR2-20261024-02**, 24/10/2026: integración ROBO2/perfil2 + EX01v3 compilada en Atmega/ESP/Web; GOTO completo, configuración por catálogo compartido y jobs Wi-Fi OLED conectados. Paquete Web actualizado en ESP/data/dist. Sin pruebas de navegador/hardware ni flasheo; secuencias físicas mantienen bloqueo de memoria. Ver [matriz vigente](../AutoFinalRobo2-Contracts/contracts/EX01_ALIGNMENT_3.md) y [evidencia](../AutoFinalRobo2-Contracts/changes/2026-10-24-02-project-alignment.md). Los estados previos que siguen son históricos.
 
+> **AFR2-20261027-05:** ancho util ampliado en toda la aplicacion. Simulaciones en una tarjeta con matematica adosada/plegable y controles abajo; numeros compactos y motores distinguidos. Control agrupa manual/secuencias en Movimiento y pruebas/calibracion en una seccion, conservando funciones y GOTO. [Estado](../AutoFinalRobo2-Contracts/changes/2026-10-27-05-wide-workspaces-control-cards.md). Fuente sin tests/build/validaciones/navegador ni promocion ESP. Modelos3D sin reforma interna de esta ficha.
+
 # AutoFinalRobo2-Web
+
+> **Fuente AFR2-20261027-11:** puntos guardados y trayectorias en Brazo/Conjunto,
+> descriptor de robot independiente del GLB e IK cartesiana en Worker. Los destinos
+> conservan posicion/orientacion al cambiar dimensiones. [Contrato y guia para
+> incorporar modelos](../AutoFinalRobo2-Contracts/contracts/WEB_ARM_POINTS.md).
+> Esta entrega no ejecuta tests/build/validadores/navegador ni promocion ESP;
+> el paquete de otra ficha no acredita esta fuente final. Perfil inicial v03,
+> sin sustituir el CAD v04 concurrente ni ejecutar el pendiente de envolvente.
 
 
 

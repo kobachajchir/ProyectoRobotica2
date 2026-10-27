@@ -1,3 +1,13 @@
+> **Loader AFR2-20261027-16 / 0.2.0:** [MCP para Codex](../AutoFinalRobo2-Loader/MCP.md), solicitudes revisables en GUI, historial, filtro y evidencias UART/ROM separadas. [Ficha](changes/2026-10-27-16-loader-mcp-ui.md). Solo fuente/documentación: sin compilar, ejecutar, registrar ni comprobar conexión; sin COM ni flasheos.
+
+> **Loader AFR2-20261027-14:** cargador trasladado a [AutoFinalRobo2-Loader](../AutoFinalRobo2-Loader/README.md), sexto módulo en la raíz del único Git. [Manual](../AutoFinalRobo2-Loader/MANUAL.html), [registro](changes/2026-10-27-14-loader-root-module.md). Contracts conserva documentación compartida; fuentes/lanzadores fuera de tools. Sin compilar/ejecutar/probar esta entrega.
+
+> **Herramienta Windows AFR2-20261027-13:** [AFR2 Loader](../AutoFinalRobo2-Loader/README.md), [manual detallado](../AutoFinalRobo2-Loader/MANUAL.html). Interfaz con perfiles, rutas, builds AVR/ESP/Web/LittleFS, escucha de arranque ESP, asistentes de cableado y escritura/verificación. Entrega en fuente y lanzador; no compilada, ejecutada ni probada en esta ficha. [Registro](changes/2026-10-27-13-windows-loader.md).
+
+> **Build/carga AFR2-20261027-10:** [compilaciones completas y LittleFS](documentation/builds/2026-10-27-10/README.md), [guía USB-B/COM16](hardware/CARGA_USB_COM16.md). Hall habilitado en fuente por pedido humano; preferencia Hall conectado/EEPROM conservada. Web esp compilada/promovida,8activos/1571104bytes gzip; littlefs.bin3121152bytes generado. Sin apertura serie ni carga; jumpers y flash física pendientes. Estados inferiores históricos.
+
+> **Pinout AFR2-20261027-07:** [pinout completo del auto](hardware/PINOUT.md) y [PDF A4 para compartir](hardware/output/pdf/PINOUT_DEL_AUTO.pdf), firmado por Koba Chajchir. Hall A8-A11=A y A12-A15=B, ambos DEL DER / DEL IZQ / TRAS DER / TRAS IZQ; máscara0x0F en fuente ATmega. Panel OLED/encoder a 5 V según montaje comunicado. Hall deshabilitado, sin compilar/flashear/probar esta revisión; CAD +3V3 no actualizado. [Ficha](changes/2026-10-27-07-complete-pinout-grouped-hall.md).
+
 > **Radar Web AFR2-20261026-02 / VIS-038:** escena continua, encuadre1m, vistas y jerarquía de lecturas; parámetros debajo del mapa. [Ficha](changes/2026-10-26-02-radar-composition.md). Fuente integrada; **sin compilación ni verificación visual ni promoción ESP**. Firmware/OLED/CAD y Modelo3D sin intervención. Sustituye la presentación16.
 
 > **Interfaz AFR2-20261025-16:** radar Web con líneas volumétricas, sector editable, selector doble y parámetros barra/número; Configuracion sin acento. [Ficha](changes/2026-10-25-16-radar-volume-scan-controls.md). **Solo fuente, sin build ni navegador ni promoción ESP**. La compilación14 no cubre esta interfaz; ATmega/ESP/OLED sin cambios en esta revisión. Estados inferiores históricos.
@@ -34,7 +44,16 @@
 
 > Estado vigente **AFR2-20261024-02**, 24/10/2026: integración ROBO2/perfil2 + EX01v3 compilada en Atmega/ESP/Web; GOTO completo, configuración por catálogo compartido y jobs Wi-Fi OLED conectados. Paquete Web actualizado en ESP/data/dist. Sin pruebas de navegador/hardware ni flasheo; secuencias físicas mantienen bloqueo de memoria. Ver [matriz vigente](contracts/EX01_ALIGNMENT_3.md) y [evidencia](changes/2026-10-24-02-project-alignment.md). Los estados previos que siguen son históricos.
 
+> **AFR2-20261027-05:** [Ancho util y tarjetas integradas](changes/2026-10-27-05-wide-workspaces-control-cards.md): matriz adosada/plegable, controles inferiores y numeros compactos; Movimiento y Pruebas/calibracion agrupados en Control. Funciones y GOTO conservados. Sin tests/build/validaciones/navegador ni cambios de atmega/ESP de esta ficha.
+
+> **AFR2-20261027-06:** calibracion con ayuda derecha para los 29 parametros; matriz mayor y centrada, mismo formulario en las tres simulaciones; pad, boton mantenido y numero/barra reutilizados con Control. [Ficha](changes/2026-10-27-06-calibration-live-math-shared-controls.md). Solo fuente, sin tests/build/validaciones/navegador ni promocion ESP.
+
 # AutoFinalRobo2-Contracts
+
+> **AFR2-20261027-11:** [puntos cartesianos, modelos y trayectorias Web](contracts/WEB_ARM_POINTS.md).
+> Biblioteca persistente, Worker numerico, visualizacion y ejecucion del mismo plan;
+> perfil v03 y adaptador para GLB articulados. [Ficha](changes/2026-10-27-11-arm-points-model-agnostic.md).
+> Solo fuente, sin comprobaciones ni promocion ejecutadas por esta entrega.
 
 **CAD/Web AFR2-20261025-13:** [modelo final de 871.756 bytes](changes/2026-10-25-13-final-cad-web-model.md), con PCB y soporte manuales; Fusion/Blender guardados y mismo GLB en Web y paquete ESP compilado/promovido. Firmware sin cambios ni flasheo; comprobación CAD/Draco y render Blender realizados.
 
@@ -72,7 +91,7 @@ Central independiente. Empezar por [maestro](docs/INFORME_MAESTRO.md), [decision
 - [Hallazgos](documentation/review/FINDINGS.md), [registro](CHANGELOG.md), [plantilla](templates/change.md).
 - [Procedencia](provenance/README.md), [manifest](provenance/files.json), [orígenes](provenance/origins.json).
 
-Módulos hermanos: ../AutoFinalRobo2-Atmega, ../AutoFinalRobo2-ESP, ../AutoFinalRobo2-Web y [AutoFinalRobo2-CAD](../AutoFinalRobo2-CAD/README.md), dedicado a KiCad, la pieza nueva y el modelo completo del auto. Los cinco pertenecen al único Git de D:/ProyectoRobotica2. No hay Qt ni dependencia de ejecución hacia AutoMicro. reference/automicro conserva evidencia histórica: sus reglas y estados no son instrucciones ni resultados del nuevo proyecto.
+Módulos hermanos: ../AutoFinalRobo2-Atmega, ../AutoFinalRobo2-ESP, ../AutoFinalRobo2-Web y [AutoFinalRobo2-CAD](../AutoFinalRobo2-CAD/README.md), dedicado a KiCad, la pieza nueva y el modelo completo del auto. Junto con [Loader](../AutoFinalRobo2-Loader/README.md), los seis pertenecen al único Git de D:/ProyectoRobotica2. No hay Qt ni dependencia de ejecución hacia AutoMicro. reference/automicro conserva evidencia histórica: sus reglas y estados no son instrucciones ni resultados del nuevo proyecto.
 
 Estado vigente [AFR2-20261023-15](changes/2026-10-23-15-esp-web-build-fixes.md): ESP compilada con perfil candidato, sin errores ni warnings finales; Web compilada y empaquetada localmente (6 assets, 2.925.630 bytes gzip, integridad cotejada). ESP/data/dist conserva el paquete anterior. ATmega se trabaja en paralelo y no se tocó/compiló en esta ficha; nuevo protocolo pendiente de la documentación que entregará el usuario. Sin verificación física, identificación de flash/layout ni flasheo. [Plan ESP](docs/PLAN_ESP.md) · [Perfil provisional UART 1](contracts/UART_PROFILE_1.md) · [Implementación inicial](changes/2026-10-23-11-esp-server-and-mega-link.md).
 

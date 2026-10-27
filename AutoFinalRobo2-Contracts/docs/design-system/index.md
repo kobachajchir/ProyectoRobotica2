@@ -1,3 +1,7 @@
+> **Aplicación27-05/VIS-042:** contenido sin tope1120 px, margen lateral reducido, simulador en una tarjeta con matematica adosada/plegable y controles inferiores. Numeros compactos; Control con tarjetas manual/secuencias y pruebas/calibracion. Reemplaza la disposicion lateral041 y el ancho014/015, por pedido humano. [Cobertura](coverage-20261027-05.json). Aspecto No verificado, sin tests/build/validaciones/navegador.
+
+> **Aplicación27-04/VIS-041:** Simulaciones con tres pills, controles derechos y matrices persistentes; gripper independiente, sliders vinculados y motores en pills. Modelos3D con selector de modelo y herramientas conservadas, brazo final pendiente. Borrador0.1.9 autorizado; direccion Confirmada, composicion Propuesta, aspecto No verificado. [Cobertura](coverage-20261027-04.json). Sin tests/build/validaciones/navegador.
+
 > **Aplicación26-02/VIS-038:** radar con suelo continuo, acento rubí, distancia principal y parámetros debajo del mapa. Escala inicial1m; Perspectiva/Superior conservan metros. Borrador0.1.9 ya autorizado; dirección Confirmada, composición Propuesta, aspecto **No verificado**. [Cobertura](coverage-20261026-02.json). Sin ejecución de comprobaciones.
 
 > **Ajuste AFR2-20261026-01 / VIS-036:** referencias del Modelo3D con botón compartido Mostrar/Ocultar junto al selector; ocultar cierra la ficha. Ocho puntos, con una sola rueda FL representativa. Tokens/identidad conservados, dirección Confirmada y aspecto No verificado. [Ficha](../../changes/2026-10-26-01-model-reference-visibility.md). Sin tests/build/validaciones; sustituye la cantidad de once puntos del hito15.
@@ -12,6 +16,8 @@
 
 > Aplicación02/VIS-026: Control táctil sin robot, superior/flechas comunes y giro simulado. Borrador0.1.9 autorizado; dirección Confirmada, composición Propuesta, visual No verificada. [Cobertura02](coverage-20261025-02.json).
 
+> **Aplicacion27-06/VIS-043:** ayuda de calibracion contextual a la derecha, matematica mas amplia/centrada y mismo formulario en las tres simulaciones. Pad de movimiento, boton mantenido y campo numero/barra compartidos con Control. Identidad0.1.9 conservada; direccion Confirmada, composicion Propuesta y aspecto No verificado. [Cobertura](coverage-20261027-06.json). Sin tests/build/validaciones/navegador.
+
 ---
 product: AutoFinalRobo2
 manualVersion: 0.1.9
@@ -19,6 +25,12 @@ status: draft
 updatedAt: 2026-10-24
 ---
 # Identidad visual AutoFinalRobo2
+
+> **Aplicacion27-11/VIS-044:** puntos guardados compartidos en Brazo/Conjunto,
+> marcadores, recorrido y postura final; modelo activo y bloqueos explicados.
+> Tarjeta, campos y acciones0.1.9 con Apple Design para respuesta directa y
+> cancelacion, sin rebotes de estado matematico. [Cobertura](coverage-20261027-11.json).
+> Fuente aplicada; aspecto/interaccion No verificados, sin comprobaciones ejecutadas.
 
 > Vigente AFR2-20261025-01/VIS-025: control Web directo sin permiso previo, con tokens/primitivas visuales existentes. Las decisiones previas de adquisición se sustituyen por el pedido humano actual. [Contrato7](../../contracts/DIRECT_CONTROL_7.md); visual/físico No verificados.
 

@@ -94,11 +94,10 @@ function ProjectedPoints({ anchors, elements }: {
   return null;
 }
 
-export function ModelInspection() {
+function CarInspection({ referencesVisible, onToggleReferences }: { referencesVisible: boolean; onToggleReferences: () => void }) {
   const { scene, size, offset } = useRobotModel();
   const anchors = useMemo(() => getComponentAnchors(scene, offset), [scene, offset]);
   const [selected, setSelected] = useState<string | null>(null);
-  const [referencesVisible, setReferencesVisible] = useState(true);
   const elements = useRef(new Map<string, PointElements>());
   const panel = useRef<HTMLElement>(null);
   const picker = useRef<HTMLSelectElement>(null);
@@ -173,7 +172,7 @@ export function ModelInspection() {
       </select></span>
       </div>
       <Button size="sm" className="afr2-model-inspection__toggle" aria-pressed={referencesVisible} aria-controls="afr2-model-references"
-        onClick={() => { setSelected(null); setReferencesVisible(visible => !visible); }}>
+        onClick={() => { setSelected(null); onToggleReferences(); }}>
         {referencesVisible ? 'Ocultar referencias' : 'Mostrar referencias'}
       </Button>
     </div>
@@ -225,5 +224,32 @@ export function ModelInspection() {
     <p className="afr2-help afr2-model-inspection__help">{referencesVisible
       ? 'Elegi un punto para conocer la pieza. Podes girar o acercar el modelo con la ficha abierta; cerrala con la X, Escape o un clic fuera.'
       : 'Referencias ocultas. Podes girar y acercar el modelo; usa Mostrar referencias para explorar sus componentes.'}</p>
+  </div>;
+}
+
+/** The same viewer tools for either model. No arm asset or component anchors
+ * are fabricated while its final export is still pending. */
+export function ModelInspection({ model = 'auto', referencesVisible, onToggleReferences }: {
+  model?: 'auto' | 'brazo'; referencesVisible: boolean; onToggleReferences: () => void;
+}) {
+  if (model === 'auto') return <CarInspection referencesVisible={referencesVisible} onToggleReferences={onToggleReferences} />;
+  return <div className="afr2-model-inspection">
+    <div className="afr2-model-inspection__toolbar">
+      <div className="afr2-model-inspection__picker">
+        <label htmlFor="afr2-arm-model-component"><UiIcon name="cube" />Explorar componentes</label>
+        <span className="afr2-select-wrap"><select id="afr2-arm-model-component" disabled aria-describedby="afr2-arm-model-pending">
+          <option>Referencias pendientes del modelo final</option>
+        </select></span>
+      </div>
+      <Button size="sm" className="afr2-model-inspection__toggle" aria-pressed={referencesVisible} onClick={onToggleReferences}>
+        {referencesVisible ? 'Ocultar referencias' : 'Mostrar referencias'}
+      </Button>
+    </div>
+    <div className="afr2-model-inspection__viewport afr2-model-inspection__pending" id="afr2-arm-model-pending" role="status">
+      <UiIcon name="arm" width="64" height="64" /><h3>Brazo robotico</h3>
+      <p>El modelo final estara disponible aqui cuando lo incorporemos.</p>
+      <small>Sus componentes y referencias se agregaran con ese modelo.</small>
+    </div>
+    <p className="afr2-help afr2-model-inspection__help">Mismo visor y controles. Modelo del brazo pendiente.</p>
   </div>;
 }

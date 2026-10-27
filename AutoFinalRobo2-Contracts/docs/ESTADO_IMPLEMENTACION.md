@@ -1,3 +1,5 @@
+> **Loader AFR2-20261027-16 / 0.2.0:** [MCP y revisión GUI](../../AutoFinalRobo2-Loader/MCP.md), historial, filtro de configuración y evidencias UART/ROM. [Ficha](../changes/2026-10-27-16-loader-mcp-ui.md). Solo fuente/documentación; no compilado, ejecutado, registrado ni conectado al cliente en esta entrega; sin pruebas COM ni flasheos. Atmega/ESP/Web/CAD sin cambios por esta ficha.
+
 > **Web26-02 / VIS-038:** nueva composición del radar, encuadre/vistas y parámetros separados de la columna de medición. [Ficha](../changes/2026-10-26-02-radar-composition.md). Solo fuente, visual **No verificada**; sin tests/build/validadores/navegador/promoción ESP. ATmega/ESP/OLED sin cambios; compilación14 anterior a esta interfaz.
 
 > **Web16 / VIS-037:** fuente de radar volumétrico y parámetros con barras/números integrada. [Ficha](../changes/2026-10-25-16-radar-volume-scan-controls.md). Sin compilación, tests, validadores, navegador ni promoción. Firmware ATmega/ESP y OLED sin modificación; evidencia14 anterior a esta interfaz. Cambios15/16 de fuente Web no quedan cubiertos por ese build.

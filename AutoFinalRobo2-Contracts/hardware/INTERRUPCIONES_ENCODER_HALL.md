@@ -1,6 +1,11 @@
-# Encoder UI y Hall por interrupciones — AFR2-20261024-11
+> **Build AFR2-20261027-10:** usuario confirma cableado Hall y pide captura: AFR2_HALL_CONNECTED=1. Mapa agrupado y máscara0x0F conservados; producto/comunicación/biblioteca compilados. Preferencia hall_wired conservada; si estaba0, activar Hall conectado en Geometria tras cargar. [Evidencia](../documentation/builds/2026-10-27-10/README.md). Sin flasheo/prueba física; estados inferiores históricos.
 
-24/10/2026. Implementación en fuente, sin compilar, validar, flashear ni probar.
+> **Vigente AFR2-20261027-07:** A agrupadas en A8-A11 y B en A12-A15; ambos headers en orden DEL DER, DEL IZQ, TRAS DER, TRAS IZQ. Fuente actualizada, sin compilar ni flashear; Hall continúa deshabilitado. [Pinout completo](PINOUT.md), [ficha](../changes/2026-10-27-07-complete-pinout-grouped-hall.md).
+
+# Encoder UI y Hall por interrupciones
+
+Base 24/10/2026, mapa actualizado 27/10/2026. Nueva asignación en fuente,
+sin compilar, validar, flashear ni probar esta revisión.
 El cambio de CLK/DT requiere recablear; no describe un montaje ya realizado.
 
 ## Asignación actual
@@ -10,12 +15,12 @@ El cambio de CLK/DT requiere recablear; no describe un montaje ya realizado.
 | Encoder CLK | D2 | PE4 / INT4 | Cualquier cambio de nivel |
 | Encoder DT | D3 | PE5 / INT5 | Cualquier cambio de nivel |
 | Encoder SW | D42 | PL7, sin INT/PCINT | Muestreo main objetivo1ms |
-| Hall FL A/B | A8/A9 (D62/D63) | PK0/PK1 / PCINT16/17 | A interrumpe; B da sentido |
-| Hall FR A/B | A10/A11 (D64/D65) | PK2/PK3 / PCINT18/19 | A interrumpe; B da sentido |
-| Hall RL A/B | A12/A13 (D66/D67) | PK4/PK5 / PCINT20/21 | A interrumpe; B da sentido |
-| Hall RR A/B | A14/A15 (D68/D69) | PK6/PK7 / PCINT22/23 | A interrumpe; B da sentido |
+| Hall DEL DER (FR) A/B | A8/A12 (D62/D66) | PK0/PK4 / PCINT16/20 | A interrumpe; B da sentido |
+| Hall DEL IZQ (FL) A/B | A9/A13 (D63/D67) | PK1/PK5 / PCINT17/21 | A interrumpe; B da sentido |
+| Hall TRAS DER (RR) A/B | A10/A14 (D64/D68) | PK2/PK6 / PCINT18/22 | A interrumpe; B da sentido |
+| Hall TRAS IZQ (RL) A/B | A11/A15 (D65/D69) | PK3/PK7 / PCINT19/23 | A interrumpe; B da sentido |
 
-Las ocho señales Hall soportan PCINT2. Se conserva x1: máscara PCMSK2=0x55,
+Las ocho señales Hall soportan PCINT2. Se conserva x1: máscara PCMSK2=0x0F,
 interrupción por cambios de A y cuenta únicamente en subida; lectura simultánea
 PINK para los cuatro pares y dirección desde B. No se habilita IRQ por B porque
 no se utiliza x2/x4. Se conservan unidades de calibración, orden FL/FR/RL/RR y
@@ -25,7 +30,10 @@ D2/D3 están libres según el mapa documental y el código activos. Comparten
 función alternativa OC3B/OC3C, pero Timer3 no habilita esas salidas. A8–A15 no
 colisionan con línea A0–A4, PWM/direcciones, servo, UART1 o TWI en ese mapa.
 Esto es una revisión documental; acceso físico del shield, continuidad, niveles,
-pull-ups y correspondencia real S1/S2 con A/B siguen sin comprobar.
+pull-ups y funcionamiento físico siguen sin comprobar. El usuario establece S1=A
+(naranja), S2=B (verde). Los ocho pines siguen en el mismo banco; no se requiere
+que B esté junto a su A. La lectura PINK simultánea y los símbolos por rueda
+permiten conservar los contadores en orden lógico FL/FR/RL/RR.
 
 Fuente: [pinout oficial Mega, páginas1/2](https://docs.arduino.cc/resources/pinouts/A000067-full-pinout.pdf).
 SW, SDA/SCL y conectores1x5/1x2 conservan sus posiciones; D40/D41 quedan liberados.

@@ -1,0 +1,18 @@
+{
+  "changeId": "AFR2-20261027-02",
+  "decisionId": "VIS-040",
+  "manualVersion": "0.1.9",
+  "mode": "APLICAR",
+  "authorization": "Correccion humana: Control intacto; solo agregar Brazo y Simulacion conjunta con controles derechos. Identidad0.1.9 previamente autorizada.",
+  "canonicalSources": ["manual.md", "tokens.json", "components.md", "decisions.md"],
+  "targets": ["Web/src/features/collector/", "Web/src/styles/collector.css", "Web/src/app/App.tsx", "Web/src/components/navigation/RouteNav.tsx", "Web/src/features/home/HomePage.tsx"],
+  "restored": ["Web/src/features/control/ControlPage.tsx", "Web/src/components/three/RobotModel.tsx", "Web/src/components/three/OrbitControls.tsx"],
+  "coverage": [
+    {"behavior": "Control original y tactil preservados; rutas nuevas separadas", "evidence": "Confirmada", "coverage": "Cubierta en fuente", "verification": "No verificada"},
+    {"behavior": "Brazo seleccionable y controles derechos; apilado movil", "evidence": "Confirmada", "coverage": "Cubierta en fuente", "verification": "No verificada"},
+    {"behavior": "Posiciones/spawn, zona de toma y cubos alcanzables", "evidence": "Confirmada", "coverage": "Cubierta en fuente con geometria simplificada", "verification": "No verificada"},
+    {"behavior": "Temas, teclado, foco, carga/error, viewport y rendimiento", "evidence": "Propuesta", "coverage": "Parcial; estilos y controles en fuente", "verification": "No verificada"}
+  ],
+  "checksRun": [],
+  "limits": "Sin tests, builds, validadores ni navegador por instruccion humana. Sin nuevas garantias CAD, de carga o de hardware."
+}

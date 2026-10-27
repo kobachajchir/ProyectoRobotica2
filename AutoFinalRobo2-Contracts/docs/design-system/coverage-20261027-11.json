@@ -1,0 +1,19 @@
+{
+  "changeId": "AFR2-20261027-11",
+  "decisionId": "VIS-044",
+  "manualVersion": "0.1.9",
+  "mode": "APLICAR",
+  "authorization": "Plan aprobado de puntos individuales con destinos cartesianos conservados al cambiar dimensiones, y uso de consistencia visual/Apple Design.",
+  "canonicalSources": ["manual.md", "tokens.json", "components.md", "decisions.md"],
+  "supporting": ["Web/src/components/ui/CollapsiblePanel.tsx", "Web/src/components/ui/Button.tsx", "Web/src/features/collector/CollectorPage.tsx"],
+  "targets": ["Web/src/features/collector/SavedArmPointsPanel.tsx", "Web/src/features/collector/CollectorScene.tsx", "Web/src/styles/arm-points.css", "Web/src/features/collector/ArmPointsContext.tsx"],
+  "coverage": [
+    {"behavior": "Tarjeta y biblioteca compartidas entre Brazo y Conjunto", "evidence": "Confirmada", "coverage": "Cubierta en fuente", "verification": "No verificada"},
+    {"behavior": "Lista y marcadores seleccionan el mismo destino", "evidence": "Confirmada", "coverage": "Contexto compartido y acceso a controles del brazo", "verification": "No verificada"},
+    {"behavior": "Vista previa, postura transparente y cancelacion visible", "evidence": "Confirmada", "coverage": "Mismo plan para dibujo/reproduccion y boton junto al visor", "verification": "No verificada"},
+    {"behavior": "Modelo activo, origen del punto y bloqueos explicados", "evidence": "Confirmada", "coverage": "Ficha, avisos y revision de marcos en fuente", "verification": "No verificada"},
+    {"behavior": "Respuesta inmediata y sin rebotes matematicos", "evidence": "Observada", "coverage": "Primitivas0.1.9 y manipulacion directa; sin librerias nuevas", "verification": "No verificada"}
+  ],
+  "checksRun": [],
+  "limits": "Sin tests/build/validadores/navegador por esta entrega. Diseno aplicado en fuente, no se afirma aspecto, rendimiento ni operacion fisica."
+}

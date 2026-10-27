@@ -1,5 +1,6 @@
 import { Chevron } from '../../components/ui/Chevron';
 import { SectionHeader } from '../../components/ui/SectionHeader';
+import { CollapsiblePanel } from '../../components/ui/CollapsiblePanel';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Button } from '../../components/ui/Button';
@@ -8,7 +9,8 @@ import { StatusNotice } from '../../components/ui/StatusNotice';
 import { TaskSections } from '../../components/ui/TaskSections';
 import type { RobotPose } from '../../protocol/robotState';
 import { useConnection } from '../connection/ConnectionContext';
-import { ChassisSpinGraphic } from './ChassisSpinGraphic';
+import { MecanumDrivePad } from '../../components/robot/MecanumDrivePad';
+import { RangeNumberField } from '../../components/ui/RangeNumberField';
 import {
   ControlMap,
   type RequestedMotion,
@@ -28,26 +30,6 @@ type WheelId = 'FL' | 'FR' | 'RL' | 'RR';
 type RobotModeOption = 'idle' | 'manual' | 'line-follow';
 type ControlTaskId = 'drive' | 'sequences' | 'wheel' | 'goto' | 'calibrate';
 
-interface VectorPreset {
-  id: string;
-  label: string;
-  symbol: string;
-  vxFactor: -1 | 0 | 1;
-  vyFactor: -1 | 0 | 1;
-}
-
-const MECANUM_VECTORS: VectorPreset[] = [
-  { id: 'nw', label: 'Diag. Izq. Adelante', symbol: '↖', vxFactor: 1, vyFactor: 1 },
-  { id: 'n', label: 'Adelante', symbol: '↑', vxFactor: 1, vyFactor: 0 },
-  { id: 'ne', label: 'Diag. Der. Adelante', symbol: '↗', vxFactor: 1, vyFactor: -1 },
-  { id: 'w', label: 'Lateral Izquierda', symbol: '←', vxFactor: 0, vyFactor: 1 },
-  { id: 'stop', label: 'Detener consigna', symbol: '■', vxFactor: 0, vyFactor: 0 },
-  { id: 'e', label: 'Lateral Derecha', symbol: '→', vxFactor: 0, vyFactor: -1 },
-  { id: 'sw', label: 'Diag. Izq. Atras', symbol: '↙', vxFactor: -1, vyFactor: 1 },
-  { id: 's', label: 'Atras', symbol: '↓', vxFactor: -1, vyFactor: 0 },
-  { id: 'se', label: 'Diag. Der. Atras', symbol: '↘', vxFactor: -1, vyFactor: -1 },
-];
-
 export function ControlPage() {
   const [entryParams] = useSearchParams();
   const {
@@ -64,6 +46,7 @@ export function ControlPage() {
   } = useConnection();
 
   const [activeTask, setActiveTask] = useState<ControlTaskId>(() => entryParams.get('tarea') === 'wheel' ? 'wheel' : 'drive');
+  const [cardExpanded, setCardExpanded] = useState(true);
   const [linearSpeedMmS, setLinearSpeedMmS] = useState(100);
   const [angularSpeedMradS, setAngularSpeedMradS] = useState(800);
   const [activePadId, setActivePadId] = useState<string | null>(null);
@@ -192,6 +175,7 @@ export function ControlPage() {
     setManualOverlayOpen(false);
     const taskId = nextTask as ControlTaskId;
     setActiveTask(taskId);
+    setCardExpanded(true);
   };
 
   const startHoldVector = async (id: string, label: string, vx: number, vy: number, wz: number) => {
@@ -321,19 +305,7 @@ export function ControlPage() {
         }
       : null;
 
-  return (
-    <div className="afr2-route-view afr2-control-workspace">
-      <SectionHeader title="Control" description="Movimientos, secuencias y simulacion desde la Web." />
-      {driveError && <StatusNotice tone="error" title="Consigna sin confirmar">{driveError}</StatusNotice>}
-      {robotState && <p className="afr2-help" role="status">Modo AVR: {robotState.mode} · GOTO: {robotState.gotoState} · Salidas apagadas: {robotState.stopped === null ? 'desconocido' : robotState.stopped ? 'si' : 'no'} · Fallo: {robotState.fault ?? 'desconocido'}</p>}
-
-
-
-      <TaskSections
-        ariaLabel="Tareas de Control"
-        activeId={activeTask}
-        onChange={handleTaskChange}
-        items={[
+  const controlTasks = [
           {
             id: 'drive',
             label: 'Movimiento',
@@ -360,270 +332,23 @@ export function ControlPage() {
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-                  {/* Pad direccional 3x3 + controles graficos de giro sobre el eje */}
                   <div className="lg:col-span-7 afr2-glass-panel rounded-[var(--radius-md)] p-5 space-y-4">
-                    <h2 className="text-base font-semibold text-[var(--text)]">
-                      Vectores planares (`vx`, `vy`) y giro sobre el eje (`wz`)
-                    </h2>
-
-                    <div
-                      className="grid grid-cols-3 gap-3"
-                      role="group"
-                      aria-label="Vectores de traslacion Mecanum"
-                    >
-                      {MECANUM_VECTORS.map((vec) => {
-                        const isStopCell = vec.id === 'stop';
-                        if (isStopCell) return <span key={vec.id} aria-hidden="true" />;
-                        const isActive = activePadId === vec.id;
-                        return (
-                          <button
-                            key={vec.id}
-                            type="button"
-                            disabled={!canDrive && !isStopCell}
-                            aria-label={vec.label}
-                            onPointerDown={() => {
-                              if (isStopCell) {
-                                stopActiveHold(true);
-                                return;
-                              }
-                              startHoldVector(
-                                vec.id,
-                                vec.label,
-                                vec.vxFactor * linearSpeedMmS,
-                                vec.vyFactor * linearSpeedMmS,
-                                0
-                              );
-                            }}
-                            onPointerUp={() => stopActiveHold(true)}
-                            onPointerCancel={() => stopActiveHold(true)}
-                            onPointerLeave={() => {
-                              if (isActive) stopActiveHold(true);
-                            }}
-                            className={`min-h-16 rounded-[var(--radius-sm)] border p-2.5 flex flex-col items-center justify-center gap-1 select-none ${
-                              isStopCell
-                                ? 'bg-[var(--surface-solid)] border-[var(--error)] text-[var(--error)] font-semibold'
-                                : isActive
-                                  ? 'bg-[var(--action)] text-[var(--on-action)] border-[var(--action)]'
-                                  : 'afr2-glass-field text-[var(--text)] disabled:opacity-55 disabled:cursor-not-allowed'
-                            }`}
-                          >
-                            <span className="text-xl leading-none font-mono" aria-hidden="true">
-                              {vec.symbol}
-                            </span>
-                            <span className="text-[11px] font-medium text-center leading-tight">
-                              {vec.label}
-                            </span>
-                          </button>
-                        );
-                      })}
-                    </div>
-
-                    {/* Dos controles graficos de giro sobre el eje (vista superior del chasis + flecha circular) */}
-                    <div className="space-y-2 pt-2 border-t border-[var(--border-default)]">
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
-                          Giro sobre el eje (vista superior del chasis)
-                        </span>
-                        <span className="text-[11px] font-mono text-[var(--text-muted)]">
-                          Accion solicitada · soltar o cancelar detiene
-                        </span>
-                      </div>
-
-                      <div
-                        className="grid grid-cols-1 sm:grid-cols-2 gap-3"
-                        role="group"
-                        aria-label="Controles de giro sobre el eje"
-                      >
-                        <button
-                          type="button"
-                          disabled={!canDrive}
-                          aria-pressed={activePadId === 'rot-ccw'}
-                          aria-label="Girar izquierda (sentido antihorario +wz)"
-                          onPointerDown={(e) => {
-                            if (e.button !== 0 || !canDrive) return;
-                            try {
-                              e.currentTarget.setPointerCapture(e.pointerId);
-                            } catch {
-                              // Ignorar
-                            }
-                            startHoldVector('rot-ccw', 'Girar izquierda', 0, 0, angularSpeedMradS);
-                          }}
-                          onPointerUp={(e) => {
-                            try {
-                              if (e.currentTarget.hasPointerCapture(e.pointerId)) {
-                                e.currentTarget.releasePointerCapture(e.pointerId);
-                              }
-                            } catch {
-                              // Ignorar
-                            }
-                            stopActiveHold(true);
-                          }}
-                          onPointerCancel={(e) => {
-                            try {
-                              if (e.currentTarget.hasPointerCapture(e.pointerId)) {
-                                e.currentTarget.releasePointerCapture(e.pointerId);
-                              }
-                            } catch {
-                              // Ignorar
-                            }
-                            stopActiveHold(true);
-                          }}
-                          onLostPointerCapture={() => {
-                            if (activePadId === 'rot-ccw') stopActiveHold(true);
-                          }}
-                          onKeyDown={(e) => {
-                            if (e.key === ' ' || e.key === 'Enter') {
-                              e.preventDefault();
-                              if (e.repeat || !canDrive) return;
-                              startHoldVector('rot-ccw', 'Girar izquierda', 0, 0, angularSpeedMradS);
-                            }
-                          }}
-                          onKeyUp={(e) => {
-                            if (e.key === ' ' || e.key === 'Enter') {
-                              e.preventDefault();
-                              stopActiveHold(true);
-                            }
-                          }}
-                          onBlur={() => {
-                            if (activePadId === 'rot-ccw') stopActiveHold(true);
-                          }}
-                          className="afr2-spin-axis-btn min-h-16 rounded-[var(--radius-sm)] px-4 py-3 flex items-center gap-3.5 text-left select-none"
-                        >
-                          <ChassisSpinGraphic
-                            direction="ccw"
-                            active={activePadId === 'rot-ccw'}
-                            size="md"
-                          />
-                          <div className="min-w-0">
-                            <span className="block text-sm font-semibold">Girar izquierda</span>
-                            <span className="block text-xs font-mono opacity-80">
-                              Antihorario (+{angularSpeedMradS} mrad/s)
-                            </span>
-                          </div>
-                        </button>
-
-                        <button
-                          type="button"
-                          disabled={!canDrive}
-                          aria-pressed={activePadId === 'rot-cw'}
-                          aria-label="Girar derecha (sentido horario -wz)"
-                          onPointerDown={(e) => {
-                            if (e.button !== 0 || !canDrive) return;
-                            try {
-                              e.currentTarget.setPointerCapture(e.pointerId);
-                            } catch {
-                              // Ignorar
-                            }
-                            startHoldVector('rot-cw', 'Girar derecha', 0, 0, -angularSpeedMradS);
-                          }}
-                          onPointerUp={(e) => {
-                            try {
-                              if (e.currentTarget.hasPointerCapture(e.pointerId)) {
-                                e.currentTarget.releasePointerCapture(e.pointerId);
-                              }
-                            } catch {
-                              // Ignorar
-                            }
-                            stopActiveHold(true);
-                          }}
-                          onPointerCancel={(e) => {
-                            try {
-                              if (e.currentTarget.hasPointerCapture(e.pointerId)) {
-                                e.currentTarget.releasePointerCapture(e.pointerId);
-                              }
-                            } catch {
-                              // Ignorar
-                            }
-                            stopActiveHold(true);
-                          }}
-                          onLostPointerCapture={() => {
-                            if (activePadId === 'rot-cw') stopActiveHold(true);
-                          }}
-                          onKeyDown={(e) => {
-                            if (e.key === ' ' || e.key === 'Enter') {
-                              e.preventDefault();
-                              if (e.repeat || !canDrive) return;
-                              startHoldVector('rot-cw', 'Girar derecha', 0, 0, -angularSpeedMradS);
-                            }
-                          }}
-                          onKeyUp={(e) => {
-                            if (e.key === ' ' || e.key === 'Enter') {
-                              e.preventDefault();
-                              stopActiveHold(true);
-                            }
-                          }}
-                          onBlur={() => {
-                            if (activePadId === 'rot-cw') stopActiveHold(true);
-                          }}
-                          className="afr2-spin-axis-btn min-h-16 rounded-[var(--radius-sm)] px-4 py-3 flex items-center gap-3.5 text-left select-none"
-                        >
-                          <ChassisSpinGraphic
-                            direction="cw"
-                            active={activePadId === 'rot-cw'}
-                            size="md"
-                          />
-                          <div className="min-w-0">
-                            <span className="block text-sm font-semibold">Girar derecha</span>
-                            <span className="block text-xs font-mono opacity-80">
-                              Horario (-{angularSpeedMradS} mrad/s)
-                            </span>
-                          </div>
-                        </button>
-                      </div>
-                    </div>
+                    <h2 className="text-base font-semibold text-[var(--text)]">Mover el robot</h2>
+                    <MecanumDrivePad disabled={!canDrive} activeId={activePadId}
+                      onStart={intent => { void startHoldVector(intent.id, intent.label, intent.vx * linearSpeedMmS, intent.vy * linearSpeedMmS, intent.wz * angularSpeedMradS); }}
+                      onStop={() => stopActiveHold(true)} />
                   </div>
-
                   {/* Parametros de velocidad y modo operativo */}
                   <div className="lg:col-span-5 afr2-glass-panel rounded-[var(--radius-md)] p-5 space-y-5">
                     <h2 className="text-base font-semibold text-[var(--text)]">
                       Parametros y modo operativo
                     </h2>
 
-                    <div>
-                      <div className="flex justify-between text-xs font-medium mb-1">
-                        <label htmlFor="linear-speed-range" className="text-[var(--text-muted)]">
-                          Velocidad lineal (`vx / vy`)
-                        </label>
-                        <span className="font-mono font-semibold text-[var(--text)]">
-                          {linearSpeedMmS} mm/s
-                        </span>
-                      </div>
-                      <input
-                        id="linear-speed-range"
-                        type="range"
-                        min={10}
-                        max={maxSpeed}
-                        step={10}
-                        value={linearSpeedMmS}
-                        onChange={(e) => setLinearSpeedMmS(Number(e.target.value))}
-                        className="w-full accent-[var(--action)]"
-                      />
-                    </div>
-
-                    <div>
-                      <div className="flex justify-between text-xs font-medium mb-1">
-                        <label htmlFor="angular-speed-range" className="text-[var(--text-muted)]">
-                          Velocidad angular (`wz`)
-                        </label>
-                        <span className="font-mono font-semibold text-[var(--text)]">
-                          {angularSpeedMradS} mrad/s
-                        </span>
-                      </div>
-                      <input
-                        id="angular-speed-range"
-                        type="range"
-                        min={200}
-                        max={2000}
-                        step={100}
-                        value={angularSpeedMradS}
-                        onChange={(e) => setAngularSpeedMradS(Number(e.target.value))}
-                        className="w-full accent-[var(--action)]"
-                      />
-                    </div>
-
+                    <RangeNumberField label="Velocidad lineal" value={linearSpeedMmS} min={10} max={maxSpeed} step={10} unit="mm/s" onChange={setLinearSpeedMmS} />
+                    <RangeNumberField label="Velocidad angular" value={angularSpeedMradS} min={200} max={2000} step={100} unit="mrad/s" onChange={setAngularSpeedMradS} />
                     <div className="space-y-2 pt-2 border-t border-[var(--border-default)]">
                       <span className="block text-xs font-medium text-[var(--text-muted)]">
-                        Modo operativo (`robot.mode`)
+                        Modo operativo
                       </span>
                       <div className="afr2-segmented" role="group" aria-label="Modo operativo del robot">
                         {(['idle', 'manual', 'line-follow'] as RobotModeOption[]).map((mode) => (
@@ -635,7 +360,7 @@ export function ControlPage() {
                             onClick={() => void handleModeSubmit(mode)}
                             className="afr2-segmented-btn disabled:opacity-55 disabled:cursor-not-allowed"
                           >
-                            {mode === 'idle' ? 'IDLE' : mode === 'manual' ? 'MANUAL' : 'LINEA 5CH'}
+                            {mode === 'idle' ? 'Reposo' : mode === 'manual' ? 'Manual' : 'Linea'}
                           </button>
                         ))}
                       </div>
@@ -871,6 +596,37 @@ export function ControlPage() {
               <CalibrationPanel />
             ),
           },
+
+  ];
+  const controlGroup = activeTask === 'drive' || activeTask === 'sequences' ? 'movement' : activeTask === 'wheel' || activeTask === 'calibrate' ? 'checks' : 'goto';
+  const renderControlCard = (id: ControlTaskId, title: string) => <CollapsiblePanel
+    className={`afr2-control-card afr2-control-card--${id}`} title={title} expanded={cardExpanded && activeTask === id}
+    onToggle={() => {
+      if (cardExpanded && activeTask === id) { stopActiveHold(true); setManualOverlayOpen(false); setCardExpanded(false); }
+      else handleTaskChange(id);
+    }}>
+    {controlTasks.find(task => task.id === id)?.content}
+  </CollapsiblePanel>;
+  return (
+    <div className="afr2-route-view afr2-control-workspace">
+      <SectionHeader title="Control" description="Movimientos, secuencias y simulacion desde la Web." />
+      {driveError && <StatusNotice tone="error" title="Consigna sin confirmar">{driveError}</StatusNotice>}
+      {robotState && <p className="afr2-help" role="status">Modo AVR: {robotState.mode} · GOTO: {robotState.gotoState} · Salidas apagadas: {robotState.stopped === null ? 'desconocido' : robotState.stopped ? 'si' : 'no'} · Fallo: {robotState.fault ?? 'desconocido'}</p>}
+
+
+
+      <TaskSections ariaLabel="Tareas de Control" activeId={controlGroup}
+        onChange={group => { if (group !== controlGroup) handleTaskChange(group === 'movement' ? 'drive' : group === 'checks' ? 'wheel' : 'goto'); }}
+        items={[
+          { id: 'movement', label: 'Movimiento', content: <div className="afr2-control-cards">
+            {renderControlCard('drive', 'Conduccion manual')}
+            {renderControlCard('sequences', 'Secuencias')}
+          </div> },
+          { id: 'checks', label: 'Pruebas y calibracion', content: <div className="afr2-control-cards">
+            {renderControlCard('wheel', 'Prueba de rueda')}
+            {renderControlCard('calibrate', 'Calibracion')}
+          </div> },
+          { id: 'goto', label: 'GOTO', content: controlTasks.find(task => task.id === 'goto')?.content },
         ]}
       />
 

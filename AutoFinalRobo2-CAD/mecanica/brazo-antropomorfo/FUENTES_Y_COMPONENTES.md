@@ -1,0 +1,21 @@
+# Fuentes dimensionales y oferta argentina
+
+AFR2-20261026-05 · consulta 26/10/2026. La selección es preliminar para el prototipo. Las publicaciones comerciales acreditan oferta y variantes anunciadas; no prueban identidad entre un clon y el plano del fabricante, ni garantizan stock al comprar. No se toman las dimensiones de embalaje de las tiendas como dimensiones del servo.
+
+| Referencia | Medida usada en CAD | Fuente dimensional | Oferta argentina |
+| --- | --- | --- | --- |
+| GX3240MG, referencia para GX3240MGV1 | 40 × 20 × 40,5 mm | [Familia GX, fabricante](https://www.gxservo.com/pd.jsp?id=16); envolvente de familia, variante V1 y fijaciones pendientes | [Starware, V1 270°](https://tienda.starware.com.ar/producto/servo-motor-digital-starware-gx3240mgv1-40k-5-74v-270g-metal-alto-torque/) |
+| DS3218 | 40 × 20 × 40,5 mm | [Ficha DSSERVO PDF](https://www.dsservo.com/d_file/DS3218%20datasheet.pdf) | [Starware DS3218MG 180°](https://tienda.starware.com.ar/producto/servo-motor-digital-dsservo-ds3218mg-20kg-180-grados-engranajes-metal/) |
+| MG946R | 40,7 × 19,7 × 42,9 mm | [TowerPro](https://towerpro.com.tw/product/mg946r/) | [Starware MG946R 180°](https://tienda.starware.com.ar/producto/servo-motor-digital-starware-mg946r-180g-11kg-torque-metalico/) |
+| MG90S | 22,8 × 12,2 × 28,5 mm | [TowerPro](https://towerpro.com.tw/product/mg90s-3/) | [SyC AR-MG90S](https://www.sycelectronica.com.ar/articulo.php?codigo=AR-MG90S), [TodoMicro](https://www.todomicro.com.ar/843-servo-mg90s-18kg-torque-compatible-arduino.html) |
+| 608-2Z / 608ZZ | d8 × D22 × B7 mm | [Ficha SKF 608-2Z](https://docs.rs-online.com/8f0c/0900766b8151f2a7.pdf) | [Martin Morris 608ZZ](https://martinmorris.ar/products/rodamiento-608-2z-conomico-origen-china) |
+| 625-2Z / 625ZZ | d5 × D16 × B5 mm | [SKF 625-2Z](https://www.emarketplace.in.skf.com/deep-groove-ball-bearing/625-2z) | [USO3D, publicación argentina](https://www.mercadolibre.com.ar/ruleman-625zz-rodamiento-5x16x5-impresoras-3d--uso3d/up/MLAU335417906), [SKF 625ZZ local](https://articulo.mercadolibre.com.ar/MLA-916025324-rodamiento-625-zz-5mm-x-16mm-x-5mm-skf-_JM) |
+| Nano A000005 | PCB 45 × 18 mm | [Arduino, datasheet y dibujo mecánico](https://docs.arduino.cc/resources/datasheets/A000005-datasheet.pdf) | [Starware Nano V3.0](https://tienda.starware.com.ar/producto/placa-desarrollo-arduino-compatible-nano-v30-ccable/); cotejar el clon y su conector con la envolvente |
+| Módulo PCA9685 | PCB 70 × 25 mm de una variante comercial | [NXP, ficha del circuito integrado](https://www.nxp.com/docs/en/data-sheet/PCA9685.pdf); no es un plano del módulo | [Sistemsoft, módulo 70 × 25](https://www.sistemsoft.com.ar/electronica/placa-de-desarrollo/controlador-servos-16-canales-pca9685-pwm-arduino-compatible) |
+| Módulo XL4016 | PCB 65 × 48 mm de referencia | Envolvente de publicación comercial; disipador y componentes simplificados | [Starware XL4016](https://tienda.starware.com.ar/producto/modulo-regulador-reductor-voltaje-diy-xl4016-step-down-9a-300w-5-40-a-12-35v-dc-dc/) |
+| PETG rojo 1,75 mm | Apariencia, sin parámetros mecánicos de impresión | [PrintaLot, material y ficha técnica](https://printalot.com.ar/productos/filamentos/pet-g/petg-1-75-mm-1-kg/) | [PrintaLot Argentina](https://printalot.com.ar/productos/filamentos/pet-g/petg-1-75-mm-1-kg/), [BYTEC, variantes PETG](https://bytec.store/producto/filamento-petg-printalot-1kg?variant=97) |
+| Caño PVC | Exterior32 / interior28,3 mm | Foto aportada por el usuario, conservada en reference | Material elegido por el usuario; confirmar estas medidas en el caño real |
+
+Las longitudes de las carcasas se usan como envolventes de referencia. Los offsets de salida, altura/plano de pestañas, diámetros de horn/spline y patrones de fijación no se presentan como un dibujo de fabricación del fabricante. Se exponen como parámetros o cotas locales para ajustar la variante que se consiga. Los rodamientos representan aros y blindajes, sin bolas internas. No se descargaron CAD de terceros ni se atribuye un modelo propio al fabricante.
+
+No hay lista de compra aprobada ni presupuesto actualizado en esta revisión. La selección de actuadores sigue pendiente del cálculo de torque y corriente del mecanismo definitivo. Los torques anunciados como “kg” por comercios no son una carga útil del brazo.

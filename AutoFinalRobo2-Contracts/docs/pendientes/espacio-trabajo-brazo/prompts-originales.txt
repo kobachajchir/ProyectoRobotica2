@@ -1,0 +1,147 @@
+stos prompts están pensados para ejecutarlos en este orden. Para las vistas técnicas conviene obtener proyecciones del CAD: una imagen generada puede ilustrar la presentación, pero no aportar cotas fiables.
+
+1. Preparar la geometría y los datos del conjunto
+Trabajá en D:/ProyectoRobotica2. Leé las instrucciones aplicables y usá como
+fuente el ensamble AFR2_Brazo_PVC32_AGV_v03, sus parámetros y revision_v03.
+Conservá los maestros originales.
+
+Prepará los datos necesarios para calcular y documentar el espacio de trabajo
+del brazo montado sobre el auto:
+
+- Definí los marcos mundo, chasis, montaje del brazo, J1…J6 y herramienta.
+- Definí explícitamente el TCP: centro de agarre entre las mordazas, su origen,
+  orientación y relación con la apertura del gripper.
+- Extraé posiciones y direcciones de ejes, longitudes, desplazamientos,
+  ceros articulares, sentidos positivos y límites del CAD.
+- Diferenciá ángulo de articulación, ángulo de servo y relaciones de transmisión.
+- Documentá las transformaciones entre coordenadas originales del CAD,
+  coordenadas robóticas X adelante/Y izquierda/Z arriba y coordenadas Web.
+- Registrá la altura del montaje respecto del suelo y la posición del brazo
+  respecto del chasis.
+- Identificá geometrías de exclusión: suelo, chasis, ruedas, electrónica,
+  soporte, propio brazo y depósito. Indicá cuáles son definitivas o propuestas.
+
+Entregá una tabla cinemática, un esquema del árbol de transformaciones y datos
+estructurados reutilizables por documentación y simulador. Señalá cualquier
+dato faltante sin inventarlo. No ejecutes tests, compilaciones, validaciones,
+flasheos ni movimientos físicos.
+2. Obtener todas las vistas técnicas necesarias
+A partir del ensamble v03 y de sus marcos documentados, prepará vistas técnicas
+ortográficas del robot completo con el brazo montado.
+
+Necesito:
+1. Superior: auto completo, montaje, brazo, pinza y depósito si está definido.
+2. Lateral izquierda y lateral derecha.
+3. Frontal y posterior.
+4. Isométrica general que permita entender el montaje.
+5. Detalle del montaje y del TCP.
+
+Usá fondo blanco, líneas limpias y la misma postura de referencia para las
+vistas principales. Incluí tríada de ejes, unidades en mm, escala y nombres
+de articulaciones. Conservá orientación y escala comparables entre vistas.
+
+Acotá únicamente dimensiones obtenidas del CAD: altura respecto del suelo,
+posición del montaje, centros de articulaciones, longitudes y desplazamientos
+de la herramienta. No copies dimensiones ni formas de las imágenes industriales
+de referencia.
+
+Prepará también vistas auxiliares con posturas identificadas: transporte,
+máxima extensión hacia delante, atrás y laterales, máximo y mínimo Z, y
+aproximación al cubo de 50 mm en el suelo. Las posturas extremas deberán
+proceder del cálculo cinemático; si todavía no existen, dejalas pendientes.
+
+Conservá fuentes editables y exportá las ilustraciones para documentación.
+No alteres la geometría para conseguir una imagen más conveniente.
+3. Calcular la burbuja de trabajo
+Calculá el espacio de trabajo del TCP usando la cinemática y los límites
+extraídos del CAD v03. Tomá como base el informe cinemático en curso y
+documentá cualquier adaptación necesaria.
+
+No construyas una esfera por radio máximo. Buscá los extremos del TCP y
+muestreá también configuraciones interiores y fronteras articulares:
+los máximos por sí solos no describen huecos ni concavidades.
+
+Separá:
+- Espacio posicional alcanzable por el TCP.
+- Espacio compatible con la orientación de agarre requerida.
+- Espacio admitido por el modelo de colisiones utilizado.
+- Regiones útiles para recoger desde el suelo y descargar en el depósito.
+
+Conservá huecos, sectores limitados y regiones desconectadas. No uses una
+envolvente convexa que rellene zonas inalcanzables. Documentá resolución,
+método de muestreo/reconstrucción y limitaciones de la aproximación.
+
+Para cada extremo entregá XYZ, configuración articular y restricción activa.
+Entregá puntos, superficie triangulada, contornos y metadatos reproducibles.
+
+Distinguí el espacio del TCP del volumen barrido por todos los eslabones.
+Un punto alcanzable tampoco demuestra una trayectoria de toma, elevación y
+descarga: registrá esa condición por separado.
+
+Esta etapa autoriza el cálculo de alcance solicitado; no autoriza ensayos
+físicos, compilaciones ni validadores ajenos a ese cálculo.
+4. Renderizar la burbuja junto al robot
+Integrá la envolvente calculada en las simulaciones Web correspondientes.
+Usá los mismos datos cinemáticos y transformaciones del CAD v03.
+
+La burbuja debe estar expresada en el marco del montaje del brazo y heredar
+la traslación y orientación del chasis. Debe acompañar al auto al avanzar,
+retroceder, desplazarse lateralmente y girar, conservando el desplazamiento
+real del montaje. Evitá aplicar dos veces esa transformación.
+
+Representación:
+- Superficie semitransparente con contorno legible y puntos opcionales.
+- Huecos y restricciones visibles.
+- Regiones de recogida y descarga diferenciadas con leyenda.
+- TCP y postura actual destacados.
+- Controles para mostrar superficie, puntos y cortes superior/lateral.
+- Misma presentación y convenciones en las simulaciones.
+
+La envolvente total depende de geometría, límites, herramienta y restricciones:
+recalculala cuando cambien esos datos. Al mover una articulación actualizá
+la postura y el TCP; al mover el auto transformá la envolvente existente.
+Si se muestra alcance condicionado por articulaciones bloqueadas, calculalo
+y etiquetalo como una envolvente distinta.
+
+Compartí la geometría calculada entre las vistas y evitá regenerarla en cada
+fotograma. Conservá pequeños los recursos destinados al ESP y documentá su
+tamaño al generarlos, sin ejecutar builds.
+
+Mantené separado el control físico. Identificá el resultado como alcance
+del modelo, sin atribuirle capacidad de carga ni posición física medida.
+5. Preparar las láminas de documentación como las referencias
+Prepará láminas técnicas del espacio de trabajo usando exclusivamente el
+ensamble y la envolvente calculados en las etapas anteriores.
+
+Lámina principal: vista superior ortográfica del brazo montado sobre el auto,
+con contorno del alcance proyectado, sectores angulares de J1, zonas excluidas,
+TCP, ejes, montaje y depósito.
+
+Completá con:
+- Vistas laterales con límites de altura y alcance.
+- Vista frontal con extensión lateral.
+- Isométrica con la envolvente 3D semitransparente.
+- Cortes horizontales a alturas identificadas, incluyendo la altura del TCP
+  de agarre del cubo.
+- Cortes verticales por el montaje.
+- Posturas que producen los extremos, con sus valores articulares.
+
+Diferenciá claramente proyección y corte: una región visible en la proyección
+superior no implica que sea alcanzable a la altura del suelo.
+
+Usá las imágenes aportadas como referencia de composición: robot legible,
+envolvente coloreada, límites discontinuos, cotas y leyenda. Todas las cotas
+deben proceder de nuestros datos.
+
+Incluí versión del CAD, definición del TCP, límites articulares, método,
+resolución y restricciones consideradas. Entregá figuras vectoriales y una
+explicación matemática vinculada al informe, preservando Documentacion/ original.
+La relación que debe mantener el conjunto es:
+\[
+{}^{mundo}T_{TCP}
+=
+{}^{mundo}T_{chasis}\;
+{}^{chasis}T_{montaje}\;
+{}^{montaje}T_{TCP}(q)
+\]
+Así, la burbuja acompaña al auto y las mismas coordenadas alimentan el simulador y las láminas. En esta continuación preparé los prompts; todavía no ejecuté el cálculo ni generé vistas nuevas.

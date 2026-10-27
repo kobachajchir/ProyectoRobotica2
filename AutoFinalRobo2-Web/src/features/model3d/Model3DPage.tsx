@@ -4,7 +4,7 @@ import { clearRobotModelCache } from '../../components/three/RobotModel';
 import { GlassSurface } from '../../components/ui/GlassSurface';
 import { SectionHeader } from '../../components/ui/SectionHeader';
 import { Button } from '../../components/ui/Button';
-import { StatusNotice } from '../../components/ui/StatusNotice';
+import { TaskSections } from '../../components/ui/TaskSections';
 import { ModelInspection } from './ModelInspection';
 
 interface ViewerErrorBoundaryState {
@@ -55,76 +55,32 @@ class ViewerErrorBoundary extends Component<
 }
 
 export function Model3DPage() {
+  const [selectedModel, setSelectedModel] = useState<'auto' | 'brazo'>('auto');
+  const [referencesVisible, setReferencesVisible] = useState(true);
   const [viewerEnabled, setViewerEnabled] = useState(true);
   const [viewerKey, setViewerKey] = useState(1);
-  const retryModel = () => {
-    // useLoader caches rejected requests too. A remount alone repeats the old error.
-    clearRobotModelCache();
-    setViewerKey(k => k + 1);
-  };
-
-  return (
-    <div className="afr2-route-view flex flex-col gap-6">
-      <GlassSurface variant="panel" className="p-5 sm:p-6">
-        <SectionHeader
-          eyebrow="Visor GLB + Draco Local · AutoFinalRobo2-CAD"
-          title="Modelo 3D de AutoFinalRobo2"
-          description="Explora el modelo del robot: arrastra para girar y usa la rueda o dos dedos para acercarte."
-          badge="Modelo final · Mecanum 4WD"
-          badgeTone="info"
-          actions={
-            <>
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => setViewerEnabled((v) => !v)}
-              >
-                {viewerEnabled ? 'Pausar visor' : 'Activar visor'}
-              </Button>
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => setViewerKey((k) => k + 1)}
-              >
-                Restablecer vista
-              </Button>
-            </>
-          }
-        />
-
-        <Disclosure title="Acerca del modelo">        <StatusNotice
-          tone="info"
-          title="Ensamble del robot · Fusion v16 y Blender"
-          description="Modelo final elegido para la Web, con cuatro ruedas Mecanum, placas y soporte OLED-encoder. Los puntos identifican las piezas del ensamble; las referencias visuales no certifican tolerancias ni montaje fisico."
-          className="mt-4"
-        /></Disclosure>
-
-        <div className="mt-5">
-          {!viewerEnabled ? (
-            <div className="afr2-surface-cell flex h-[380px] flex-col items-center justify-center gap-3 p-6 text-center">
-              <p className="text-sm font-semibold" style={{ color: 'var(--text-strong)' }}>
-                Lienzo WebGL en pausa
-              </p>
-              <Button variant="primary" size="sm" onClick={() => setViewerEnabled(true)}>
-                Reanudar visor 3D
-              </Button>
-            </div>
-          ) : (
-            <ViewerErrorBoundary key={viewerKey} onReset={retryModel}>
-                <Suspense
-                  fallback={
-                    <div className="afr2-model-inspection__loading" role="status">
-                      Cargando el modelo de AutoFinalRobo2...
-                    </div>
-                  }
-                >
-                  <ModelInspection />
-                </Suspense>
-            </ViewerErrorBoundary>
-          )}
-        </div>
-        <p className="mt-3 text-xs" style={{ color: 'var(--text-muted)' }}>Escala del modelo: 1 unidad = 1 m · Cuadricula de 0,5 m · Suelo en la base de las ruedas</p>
-      </GlassSurface>
-    </div>
-  );
+  const retryModel = () => { clearRobotModelCache(); setViewerKey(k => k + 1); };
+  const viewer = (model: 'auto' | 'brazo') => <div className="afr2-models-viewer">
+    {!viewerEnabled ? <div className="afr2-model-inspection__loading"><p>Visor en pausa</p>
+      <Button onClick={() => setViewerEnabled(true)}>Reanudar visor</Button></div>
+      : <ViewerErrorBoundary key={`${model}-${viewerKey}`} onReset={retryModel}>
+        <Suspense fallback={<div className="afr2-model-inspection__loading" role="status">Cargando modelo 3D...</div>}>
+          <ModelInspection model={model} referencesVisible={referencesVisible} onToggleReferences={() => setReferencesVisible(v => !v)} />
+        </Suspense>
+      </ViewerErrorBoundary>}
+  </div>;
+  return <div className="afr2-route-view afr2-models-page">
+    <GlassSurface variant="panel" className="p-5 sm:p-6">
+      <SectionHeader title="Modelos 3D" description="Elegi un modelo para explorarlo y conocer sus componentes."
+        actions={<><Button size="sm" onClick={() => setViewerEnabled(v => !v)}>{viewerEnabled ? 'Pausar visor' : 'Activar visor'}</Button>
+          <Button size="sm" onClick={() => setViewerKey(k => k + 1)}>Restablecer vista</Button></>} />
+      <TaskSections label="Elegir modelo 3D" value={selectedModel} onValueChange={value => setSelectedModel(value as 'auto' | 'brazo')} items={[
+        { id: 'auto', label: 'Auto', content: viewer('auto') },
+        { id: 'brazo', label: 'Brazo robotico', content: viewer('brazo') },
+      ]} />
+      <Disclosure title="Acerca del modelo">
+        <p className="afr2-help">{selectedModel === 'auto' ? 'Auto Mecanum 4WD con el ensamble actual de Fusion y Blender. Escala: 1 unidad = 1 m, con suelo en la base de las ruedas.' : 'El modelo final del brazo y sus referencias estan pendientes. Este visor renderizara ese archivo, separado del modelo del auto.'}</p>
+      </Disclosure>
+    </GlassSurface>
+  </div>;
 }

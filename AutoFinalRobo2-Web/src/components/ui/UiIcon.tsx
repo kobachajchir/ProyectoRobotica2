@@ -1,7 +1,8 @@
 import type { SVGProps } from 'react';
 
-export type UiIconName = 'home' | 'control' | 'sensors' | 'wifi' | 'screen' | 'cube' | 'book' | 'panel' | 'back' | 'settings' | 'close' | 'arrow' | 'radar' | 'servo' | 'wheel' | 'antenna';
+export type UiIconName = 'home' | 'control' | 'sensors' | 'wifi' | 'screen' | 'cube' | 'book' | 'panel' | 'back' | 'settings' | 'close' | 'arrow' | 'radar' | 'servo' | 'wheel' | 'antenna' | 'arm';
 const paths: Record<UiIconName, string> = {
+  arm: 'M4 21h10M6 21v-5l5-5-4-5 3-3 7 8-3 4 4 3m-1-7 4-3m-3-2 4 4M8 5h.01M12 12h.01',
   radar: 'M2 20a10 10 0 0 1 20 0H2Zm4 0a6 6 0 0 1 12 0M12 20l-5-9M12 20v-2',
   servo: 'M5 12h14v8H5v-8Zm7 0V6m-6 0h12M4 15H2m20 0h-2',
   wheel: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm0 5v8m-4-4h8M8 5l-2 2m12 10-2 2',

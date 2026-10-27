@@ -3,7 +3,7 @@
 #define AFR2_BOARD_H
 #include <stdint.h>
 #ifndef AFR2_HALL_CONNECTED
-#define AFR2_HALL_CONNECTED 0 /* S1/S2 still unconnected; authoring does not enable Hall. */
+#define AFR2_HALL_CONNECTED 1 /* AFR2-20261027-10: user confirms wiring and requests Hall capture. */
 #endif
 /* Leaves global IRQ disabled; Timer0 CTC 1ms, PWM/direction latches inactive. */
 void Afr2Board_Init(void);

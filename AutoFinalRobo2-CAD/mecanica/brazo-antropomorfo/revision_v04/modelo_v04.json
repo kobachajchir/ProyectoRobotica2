@@ -1,0 +1,2641 @@
+{
+  "revision": "AFR2-20261027-09",
+  "document": "AFR2_Brazo_PVC32_AGV_v04",
+  "file_id": "urn:adsk.wipprod:dm.lineage:msjpO8t3QAqUgUJCox0Hzw",
+  "scope": "Prototipo CAD editable; no fabricacion ni ensayo de carga",
+  "user_parameters": 126,
+  "components_including_root": 332,
+  "root_groups": 16,
+  "motion_links": 4,
+  "joints": [
+    {
+      "name": "J2_Hombro",
+      "type": "1",
+      "CAD_deg": 45.0,
+      "minimum_deg": -10.0,
+      "maximum_deg": 125.00000000000001
+    },
+    {
+      "name": "J3_Codo",
+      "type": "1",
+      "CAD_deg": 45.0,
+      "minimum_deg": -90.0,
+      "maximum_deg": 90.0
+    },
+    {
+      "name": "J4_Giro_muneca",
+      "type": "1",
+      "CAD_deg": 0.0,
+      "minimum_deg": -90.0,
+      "maximum_deg": 90.0
+    },
+    {
+      "name": "J5_Inclinacion_muneca",
+      "type": "1",
+      "CAD_deg": 90.0,
+      "minimum_deg": -90.0,
+      "maximum_deg": 90.0
+    },
+    {
+      "name": "J6_Giro_herramienta",
+      "type": "1",
+      "CAD_deg": 0.0,
+      "minimum_deg": -90.0,
+      "maximum_deg": 90.0
+    },
+    {
+      "name": "T_J4_Motor",
+      "type": "1",
+      "CAD_deg": 0.0,
+      "minimum_deg": null,
+      "maximum_deg": null
+    },
+    {
+      "name": "REF_Pieza_en_pinza",
+      "type": "0"
+    },
+    {
+      "name": "T_Hombro_Pinion_2a1",
+      "type": "1",
+      "CAD_deg": -90.0,
+      "minimum_deg": null,
+      "maximum_deg": null
+    },
+    {
+      "name": "J7_Servo_pinza",
+      "type": "1",
+      "CAD_deg": 19.8,
+      "minimum_deg": -90.0,
+      "maximum_deg": 90.0
+    },
+    {
+      "name": "G1_Mordaza_izquierda",
+      "type": "2"
+    },
+    {
+      "name": "G2_Mordaza_derecha",
+      "type": "2"
+    },
+    {
+      "name": "J1_Giro_base",
+      "type": "1",
+      "CAD_deg": 20.0,
+      "minimum_deg": -90.0,
+      "maximum_deg": 90.0
+    },
+    {
+      "name": "J0_Montura_rigida_sobre_AGV",
+      "type": "0"
+    },
+    {
+      "name": "J8_Pan_HCSR04",
+      "type": "1",
+      "CAD_deg": 0.0,
+      "minimum_deg": -90.0,
+      "maximum_deg": 90.0
+    }
+  ],
+  "arm_components_with_solid_geometry": [
+    {
+      "component": "V03_Separador_8mm_delantero (1)",
+      "bodies": [
+        {
+          "name": "Separador",
+          "volume_mm3": 227.388,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Separador_axial_J4",
+      "bodies": [
+        {
+          "name": "Separador",
+          "volume_mm3": 289.404,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tornillo_tapa_J1_1",
+      "bodies": [
+        {
+          "name": "Tornillo_vastago",
+          "volume_mm3": 127.824,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tornillo_union_V02_M03_DS3218_Codo-1",
+      "bodies": [
+        {
+          "name": "Vastago",
+          "volume_mm3": 59.396,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Inserto_M3_J4_-1",
+      "bodies": [
+        {
+          "name": "Inserto",
+          "volume_mm3": 35.343,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Casquillo_central_compresion",
+      "bodies": [
+        {
+          "name": "Casquillo",
+          "volume_mm3": 20850.554,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tornillo_tapa_J6_1",
+      "bodies": [
+        {
+          "name": "Tornillo_vastago",
+          "volume_mm3": 47.815,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Arandelas_y_tuerca_A11_Encastre_proximal_antebrazo_PETG",
+      "bodies": [
+        {
+          "name": "Arandela_cabeza",
+          "volume_mm3": 44.108,
+          "lumps": 1
+        },
+        {
+          "name": "Arandela_tuerca",
+          "volume_mm3": 29.405,
+          "lumps": 1
+        },
+        {
+          "name": "Tuerca_M3_REF",
+          "volume_mm3": 60.243,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tornillo_tapa_A01_Plataforma_giratoria_PETG-11",
+      "bodies": [
+        {
+          "name": "Vastago",
+          "volume_mm3": 127.824,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Inserto_M3_A06_Encastre_distal_brazo_PETG11",
+      "bodies": [
+        {
+          "name": "Inserto_M3_REF",
+          "volume_mm3": 35.343,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tapa_608_A06_Encastre_distal_brazo_PETG_-1",
+      "bodies": [
+        {
+          "name": "Placa_retencion",
+          "volume_mm3": 4201.088,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tornillo_tapa_A06_Encastre_distal_brazo_PETG11",
+      "bodies": [
+        {
+          "name": "Vastago",
+          "volume_mm3": 127.824,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Inserto_M3_V02_A15_Horquilla_J5_PETG-1-1",
+      "bodies": [
+        {
+          "name": "Inserto_M3_REF",
+          "volume_mm3": 35.343,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "R02_608ZZ_Hombro_-1",
+      "bodies": [
+        {
+          "name": "Aro_exterior",
+          "volume_mm3": 676.228,
+          "lumps": 1
+        },
+        {
+          "name": "Aro_interior",
+          "volume_mm3": 313.374,
+          "lumps": 1
+        },
+        {
+          "name": "Blindaje",
+          "volume_mm3": 1244.071,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V02_E03_Eje_J4",
+      "bodies": [
+        {
+          "name": "Eje",
+          "volume_mm3": 1725.301,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Separador_axial_J5",
+      "bodies": [
+        {
+          "name": "Separador",
+          "volume_mm3": 98.52,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V02_Rueda40_Hombro",
+      "bodies": [
+        {
+          "name": "Raiz_engranaje",
+          "volume_mm3": 16403.415,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Inserto_M3_servo_J1_1",
+      "bodies": [
+        {
+          "name": "Inserto",
+          "volume_mm3": 35.343,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V02_E05_Acople_J6",
+      "bodies": [
+        {
+          "name": "Brida",
+          "volume_mm3": 1079.72,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V02_A15_Horquilla_J5_PETG",
+      "bodies": [
+        {
+          "name": "Rotor, rueda J4, horquilla J5 y housing - una impresion",
+          "volume_mm3": 73799.923,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V02_A20_Bastidor_pinza",
+      "bodies": [
+        {
+          "name": "Plataforma, palma, guias y labios unidos - una impresion",
+          "volume_mm3": 49243.489,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "A11_Encastre_proximal_antebrazo_PETG_Perno_M3_REF",
+      "bodies": [
+        {
+          "name": "Vastago",
+          "volume_mm3": 174.751,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tornillo_original_horn_V03_M01_MG946_Base",
+      "bodies": [
+        {
+          "name": "Vastago",
+          "volume_mm3": 113.686,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "E01_Eje_hombro_8mm",
+      "bodies": [
+        {
+          "name": "Eje",
+          "volume_mm3": 4663.308,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "R03_608ZZ_Codo_-1",
+      "bodies": [
+        {
+          "name": "Aro_exterior",
+          "volume_mm3": 676.228,
+          "lumps": 1
+        },
+        {
+          "name": "Aro_interior",
+          "volume_mm3": 313.374,
+          "lumps": 1
+        },
+        {
+          "name": "Blindaje",
+          "volume_mm3": 1244.071,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tornillo_original_horn_V02_M06_MG90S_J6",
+      "bodies": [
+        {
+          "name": "Vastago",
+          "volume_mm3": 41.532,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "A05_Encastre_proximal_brazo_PETG_Perno_M3_REF",
+      "bodies": [
+        {
+          "name": "Vastago",
+          "volume_mm3": 174.751,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "A06_Encastre_distal_brazo_PETG",
+      "bodies": [
+        {
+          "name": "Manguito, horquilla de codo y housing - una impresion",
+          "volume_mm3": 80286.633,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "A12_Encastre_distal_antebrazo_PETG",
+      "bodies": [
+        {
+          "name": "Manguito, doble apoyo J4 y soporte de motor - una impresion",
+          "volume_mm3": 40586.476,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "A12_Encastre_distal_antebrazo_PETG_Perno_M3_REF",
+      "bodies": [
+        {
+          "name": "Vastago",
+          "volume_mm3": 174.751,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "R02_608ZZ_Hombro_1",
+      "bodies": [
+        {
+          "name": "Aro_exterior",
+          "volume_mm3": 676.228,
+          "lumps": 1
+        },
+        {
+          "name": "Aro_interior",
+          "volume_mm3": 313.374,
+          "lumps": 1
+        },
+        {
+          "name": "Blindaje",
+          "volume_mm3": 1244.071,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_M2x8_union_horn_1 (1)",
+      "bodies": [
+        {
+          "name": "Tornillo_vastago",
+          "volume_mm3": 47.815,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tornillo_original_horn_V02_M02_GX3240_270",
+      "bodies": [
+        {
+          "name": "Vastago",
+          "volume_mm3": 113.686,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tornillo_union_V02_M06_MG90S_J6-1",
+      "bodies": [
+        {
+          "name": "Vastago",
+          "volume_mm3": 40.919,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Horn_movil_V02_M04_MG90S_J4",
+      "bodies": [
+        {
+          "name": "Plato_horn_REF",
+          "volume_mm3": 420.219,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Inserto_M2_J6_1",
+      "bodies": [
+        {
+          "name": "Inserto_REF",
+          "volume_mm3": 19.439,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tornillo_original_horn_V02_M07_MG90S_Pinza",
+      "bodies": [
+        {
+          "name": "Vastago",
+          "volume_mm3": 41.532,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Arandelas_y_tuerca_A12_Encastre_distal_antebrazo_PETG",
+      "bodies": [
+        {
+          "name": "Arandela_cabeza",
+          "volume_mm3": 44.108,
+          "lumps": 1
+        },
+        {
+          "name": "Arandela_tuerca",
+          "volume_mm3": 29.405,
+          "lumps": 1
+        },
+        {
+          "name": "Tuerca_M3_REF",
+          "volume_mm3": 60.243,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tornillo_rosca_plastico_J6-1",
+      "bodies": [
+        {
+          "name": "Vastago_REF",
+          "volume_mm3": 47.815,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_E03_Retencion_superior_J4",
+      "bodies": [
+        {
+          "name": "Casquillo",
+          "volume_mm3": 82.687,
+          "lumps": 1
+        },
+        {
+          "name": "Arandela",
+          "volume_mm3": 290.77,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tuerca_M2_horn_-1 (1)",
+      "bodies": [
+        {
+          "name": "Tuerca_REF",
+          "volume_mm3": 21.564,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tuerca_arandela_M3_A",
+      "bodies": [
+        {
+          "name": "Arandela",
+          "volume_mm3": 29.405,
+          "lumps": 1
+        },
+        {
+          "name": "Tuerca_REF",
+          "volume_mm3": 53.024,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V02_M07_MG90S_Pinza",
+      "bodies": [
+        {
+          "name": "Carcasa_servo_REF",
+          "volume_mm3": 8185.421,
+          "lumps": 1
+        },
+        {
+          "name": "Salida_spline_REFERENCIA",
+          "volume_mm3": 59.816,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V02_Mandibula_-1",
+      "bodies": [
+        {
+          "name": "Carro",
+          "volume_mm3": 6880.531,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "A01_Plataforma_giratoria_PETG",
+      "bodies": [
+        {
+          "name": "Plataforma, torre y soporte de hombro - una impresion",
+          "volume_mm3": 207000.487,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_R06_625_J6_inferior",
+      "bodies": [
+        {
+          "name": "Aro_exterior",
+          "volume_mm3": 341.648,
+          "lumps": 1
+        },
+        {
+          "name": "Aro_interior",
+          "volume_mm3": 153.153,
+          "lumps": 1
+        },
+        {
+          "name": "Blindaje",
+          "volume_mm3": 379.347,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V02_M04_MG90S_J4",
+      "bodies": [
+        {
+          "name": "Carcasa_servo_REF",
+          "volume_mm3": 8185.421,
+          "lumps": 1
+        },
+        {
+          "name": "Salida_spline_REFERENCIA",
+          "volume_mm3": 59.816,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "L01_PVC32_Corte_1",
+      "bodies": [
+        {
+          "name": "Tubo_PVC",
+          "volume_mm3": 14018.415,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "A05_Encastre_proximal_brazo_PETG",
+      "bodies": [
+        {
+          "name": "Nucleo de hombro y manguito proximal - una impresion",
+          "volume_mm3": 65229.736,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "L02_PVC32_Corte_2",
+      "bodies": [
+        {
+          "name": "Tubo_PVC",
+          "volume_mm3": 12266.113,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Inserto_fijacion_J21",
+      "bodies": [
+        {
+          "name": "Inserto_M3_REF",
+          "volume_mm3": 35.343,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Inserto_fijacion_J31",
+      "bodies": [
+        {
+          "name": "Inserto_M3_REF",
+          "volume_mm3": 35.343,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "A11_Encastre_proximal_antebrazo_PETG",
+      "bodies": [
+        {
+          "name": "Nucleo de codo y manguito proximal - una impresion",
+          "volume_mm3": 60856.816,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "A06_Encastre_distal_brazo_PETG_Perno_M3_REF",
+      "bodies": [
+        {
+          "name": "Vastago",
+          "volume_mm3": 174.751,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V02_Almohadilla_1",
+      "bodies": [
+        {
+          "name": "Goma",
+          "volume_mm3": 1088.0,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "R03_608ZZ_Codo_1",
+      "bodies": [
+        {
+          "name": "Aro_exterior",
+          "volume_mm3": 676.228,
+          "lumps": 1
+        },
+        {
+          "name": "Aro_interior",
+          "volume_mm3": 313.374,
+          "lumps": 1
+        },
+        {
+          "name": "Blindaje",
+          "volume_mm3": 1244.071,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V02_M06_MG90S_J6",
+      "bodies": [
+        {
+          "name": "Carcasa_servo_REF",
+          "volume_mm3": 8185.421,
+          "lumps": 1
+        },
+        {
+          "name": "Salida_spline_REFERENCIA",
+          "volume_mm3": 59.816,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V02_E04_Eje_y_brida_J5",
+      "bodies": [
+        {
+          "name": "Eje",
+          "volume_mm3": 2043.423,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V02_Pinon24_J4",
+      "bodies": [
+        {
+          "name": "Raiz_engranaje",
+          "volume_mm3": 3836.683,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V02_Pinon24_Pinza",
+      "bodies": [
+        {
+          "name": "Raiz_engranaje",
+          "volume_mm3": 1644.874,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V02_R05_625_-1",
+      "bodies": [
+        {
+          "name": "Aro_exterior",
+          "volume_mm3": 341.648,
+          "lumps": 1
+        },
+        {
+          "name": "Aro_interior",
+          "volume_mm3": 153.153,
+          "lumps": 1
+        },
+        {
+          "name": "Blindaje",
+          "volume_mm3": 379.347,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V02_Mandibula_1",
+      "bodies": [
+        {
+          "name": "Carro",
+          "volume_mm3": 6880.531,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V02_Almohadilla_-1",
+      "bodies": [
+        {
+          "name": "Goma",
+          "volume_mm3": 1088.0,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Arandelas_y_tuerca_A05_Encastre_proximal_brazo_PETG",
+      "bodies": [
+        {
+          "name": "Arandela_cabeza",
+          "volume_mm3": 44.108,
+          "lumps": 1
+        },
+        {
+          "name": "Arandela_tuerca",
+          "volume_mm3": 29.405,
+          "lumps": 1
+        },
+        {
+          "name": "Tuerca_M3_REF",
+          "volume_mm3": 60.243,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Prisionero_J6_M2_5x12_REF",
+      "bodies": [
+        {
+          "name": "Prisionero",
+          "volume_mm3": 58.905,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Inserto_M2_J6_-1",
+      "bodies": [
+        {
+          "name": "Inserto_REF",
+          "volume_mm3": 19.439,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Separador_M3_B",
+      "bodies": [
+        {
+          "name": "Separador",
+          "volume_mm3": 1587.887,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Horn_movil_V03_M01_MG946_Base",
+      "bodies": [
+        {
+          "name": "Plato_horn_REF",
+          "volume_mm3": 760.721,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V02_R04_608_J4",
+      "bodies": [
+        {
+          "name": "Aro_exterior",
+          "volume_mm3": 676.228,
+          "lumps": 1
+        },
+        {
+          "name": "Aro_interior",
+          "volume_mm3": 313.374,
+          "lumps": 1
+        },
+        {
+          "name": "Blindaje",
+          "volume_mm3": 1244.071,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tornillo_tapa_J1_-1",
+      "bodies": [
+        {
+          "name": "Tornillo_vastago",
+          "volume_mm3": 127.824,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V04_Anclaje_M10x80",
+      "bodies": [
+        {
+          "name": "Tornillo_vastago",
+          "volume_mm3": 7872.046,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V02_R06_625_J6",
+      "bodies": [
+        {
+          "name": "Aro_exterior",
+          "volume_mm3": 341.648,
+          "lumps": 1
+        },
+        {
+          "name": "Aro_interior",
+          "volume_mm3": 153.153,
+          "lumps": 1
+        },
+        {
+          "name": "Blindaje",
+          "volume_mm3": 379.347,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "Pieza_50mm_REFERENCIA",
+      "bodies": [
+        {
+          "name": "Bloque",
+          "volume_mm3": 125000.0,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tapa_608_A06_Encastre_distal_brazo_PETG_1",
+      "bodies": [
+        {
+          "name": "Placa_retencion",
+          "volume_mm3": 4204.557,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V02_M03_DS3218_Codo",
+      "bodies": [
+        {
+          "name": "Carcasa_servo_REF",
+          "volume_mm3": 33094.728,
+          "lumps": 1
+        },
+        {
+          "name": "Salida_spline_REFERENCIA",
+          "volume_mm3": 84.823,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V02_E02_Eje_y_brida_codo",
+      "bodies": [
+        {
+          "name": "Eje",
+          "volume_mm3": 5099.132,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V02_A18_Nucleo_J5_y_columna_J6",
+      "bodies": [
+        {
+          "name": "Nucleo J5, cuna J6 y portarodamientos - una impresion",
+          "volume_mm3": 30566.087,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tornillo_tapa_A06_Encastre_distal_brazo_PETG1-1",
+      "bodies": [
+        {
+          "name": "Vastago",
+          "volume_mm3": 127.824,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tornillo_original_horn_V02_M03_DS3218_Codo",
+      "bodies": [
+        {
+          "name": "Vastago",
+          "volume_mm3": 113.686,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tornillo_union_V02_M03_DS3218_Codo1",
+      "bodies": [
+        {
+          "name": "Vastago",
+          "volume_mm3": 59.396,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_R04_608_J4_inferior",
+      "bodies": [
+        {
+          "name": "Aro_exterior",
+          "volume_mm3": 676.228,
+          "lumps": 1
+        },
+        {
+          "name": "Aro_interior",
+          "volume_mm3": 313.374,
+          "lumps": 1
+        },
+        {
+          "name": "Blindaje",
+          "volume_mm3": 1244.071,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V02_R05_625_1",
+      "bodies": [
+        {
+          "name": "Aro_exterior",
+          "volume_mm3": 341.648,
+          "lumps": 1
+        },
+        {
+          "name": "Aro_interior",
+          "volume_mm3": 153.153,
+          "lumps": 1
+        },
+        {
+          "name": "Blindaje",
+          "volume_mm3": 379.347,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V02_M05_MG946_J5",
+      "bodies": [
+        {
+          "name": "Carcasa_servo_REF",
+          "volume_mm3": 35082.139,
+          "lumps": 1
+        },
+        {
+          "name": "Salida_spline_REFERENCIA",
+          "volume_mm3": 84.823,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V02_Pinon20_Hombro",
+      "bodies": [
+        {
+          "name": "Raiz_engranaje",
+          "volume_mm3": 3765.591,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tornillo_union_V02_M06_MG90S_J61",
+      "bodies": [
+        {
+          "name": "Vastago",
+          "volume_mm3": 40.919,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V04_Separador_M3_E",
+      "bodies": [
+        {
+          "name": "Separador",
+          "volume_mm3": 1587.887,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Prisionero_M3x5_collar",
+      "bodies": [
+        {
+          "name": "Prisionero",
+          "volume_mm3": 35.343,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Collar_8mm_retencion",
+      "bodies": [
+        {
+          "name": "Collar",
+          "volume_mm3": 1177.755,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V04_Anclaje_M3x70_F",
+      "bodies": [
+        {
+          "name": "Tornillo_vastago",
+          "volume_mm3": 566.076,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V02_M02_GX3240_270",
+      "bodies": [
+        {
+          "name": "Carcasa_servo_REF",
+          "volume_mm3": 33094.728,
+          "lumps": 1
+        },
+        {
+          "name": "Salida_spline_REFERENCIA",
+          "volume_mm3": 84.823,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Inserto_M3_A01_Plataforma_giratoria_PETG-1-1",
+      "bodies": [
+        {
+          "name": "Inserto_M3_REF",
+          "volume_mm3": 35.343,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Inserto_M3_A01_Plataforma_giratoria_PETG1-1",
+      "bodies": [
+        {
+          "name": "Inserto_M3_REF",
+          "volume_mm3": 35.343,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tornillo_tapa_V02_A15_Horquilla_J5_PETG-11",
+      "bodies": [
+        {
+          "name": "Vastago",
+          "volume_mm3": 127.824,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tornillo_tapa_A01_Plataforma_giratoria_PETG11",
+      "bodies": [
+        {
+          "name": "Vastago",
+          "volume_mm3": 127.824,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Inserto_M3_A06_Encastre_distal_brazo_PETG-1-1",
+      "bodies": [
+        {
+          "name": "Inserto_M3_REF",
+          "volume_mm3": 35.343,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_R01_608_J1_superior",
+      "bodies": [
+        {
+          "name": "Aro_exterior",
+          "volume_mm3": 676.228,
+          "lumps": 1
+        },
+        {
+          "name": "Aro_interior",
+          "volume_mm3": 313.374,
+          "lumps": 1
+        },
+        {
+          "name": "Blindaje",
+          "volume_mm3": 1244.071,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V04_Anclaje_M3x70_A",
+      "bodies": [
+        {
+          "name": "Tornillo_vastago",
+          "volume_mm3": 566.076,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Nano_vertical",
+      "bodies": [
+        {
+          "name": "PCB",
+          "volume_mm3": 1296.0,
+          "lumps": 1
+        },
+        {
+          "name": "Conectores",
+          "volume_mm3": 2688.0,
+          "lumps": 1
+        },
+        {
+          "name": "USB",
+          "volume_mm3": 256.0,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tornillo_union_V03_M01_MG946_Base-1",
+      "bodies": [
+        {
+          "name": "Vastago",
+          "volume_mm3": 59.396,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_M2x8_union_horn_-1",
+      "bodies": [
+        {
+          "name": "Tornillo_vastago",
+          "volume_mm3": 47.815,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Plataforma_sandwich_superior",
+      "bodies": [
+        {
+          "name": "Montura, rack y apoyo fijo J1 - una impresion",
+          "volume_mm3": 130599.848,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tuerca_arandela_M3_C",
+      "bodies": [
+        {
+          "name": "Arandela",
+          "volume_mm3": 29.405,
+          "lumps": 1
+        },
+        {
+          "name": "Tuerca_REF",
+          "volume_mm3": 53.024,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tornillo_tapa_V02_A15_Horquilla_J5_PETG-1-1",
+      "bodies": [
+        {
+          "name": "Vastago",
+          "volume_mm3": 127.824,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Fijacion_servo_J1_-1",
+      "bodies": [
+        {
+          "name": "Tornillo_vastago",
+          "volume_mm3": 159.632,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tapa_625_J6",
+      "bodies": [
+        {
+          "name": "Placa",
+          "volume_mm3": 1887.01,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tornillo_rosca_plastico_J71",
+      "bodies": [
+        {
+          "name": "Vastago_REF",
+          "volume_mm3": 47.815,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Inserto_M3_A01_Plataforma_giratoria_PETG-11",
+      "bodies": [
+        {
+          "name": "Inserto_M3_REF",
+          "volume_mm3": 35.343,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Inserto_M3_A01_Plataforma_giratoria_PETG11",
+      "bodies": [
+        {
+          "name": "Inserto_M3_REF",
+          "volume_mm3": 35.343,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tapa_625_V02_A15_Horquilla_J5_PETG_-1",
+      "bodies": [
+        {
+          "name": "Placa_retencion",
+          "volume_mm3": 2855.25,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Inserto_M3_V02_A15_Horquilla_J5_PETG1-1",
+      "bodies": [
+        {
+          "name": "Inserto_M3_REF",
+          "volume_mm3": 35.343,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Retencion_rueda_hombro",
+      "bodies": [
+        {
+          "name": "Separador_frontal",
+          "volume_mm3": 206.717,
+          "lumps": 1
+        },
+        {
+          "name": "Arandela",
+          "volume_mm3": 385.018,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tapa_625_V02_A15_Horquilla_J5_PETG_1",
+      "bodies": [
+        {
+          "name": "Placa_retencion",
+          "volume_mm3": 2858.718,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Inserto_M3_A06_Encastre_distal_brazo_PETG1-1",
+      "bodies": [
+        {
+          "name": "Inserto_M3_REF",
+          "volume_mm3": 35.343,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Separador_8mm_trasero (1)",
+      "bodies": [
+        {
+          "name": "Separador",
+          "volume_mm3": 227.388,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Inserto_M3_V02_A15_Horquilla_J5_PETG11",
+      "bodies": [
+        {
+          "name": "Inserto_M3_REF",
+          "volume_mm3": 35.343,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tornillo_tapa_V02_A15_Horquilla_J5_PETG1-1",
+      "bodies": [
+        {
+          "name": "Vastago",
+          "volume_mm3": 127.824,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tornillo_tapa_A01_Plataforma_giratoria_PETG-1-1",
+      "bodies": [
+        {
+          "name": "Vastago",
+          "volume_mm3": 127.824,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tapa_608_A01_Plataforma_giratoria_PETG_1",
+      "bodies": [
+        {
+          "name": "Placa_retencion",
+          "volume_mm3": 4204.557,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_XL4016_vertical_3",
+      "bodies": [
+        {
+          "name": "PCB",
+          "volume_mm3": 4992.0,
+          "lumps": 1
+        },
+        {
+          "name": "Disipador",
+          "volume_mm3": 8568.0,
+          "lumps": 1
+        },
+        {
+          "name": "Inductor",
+          "volume_mm3": 2926.394,
+          "lumps": 1
+        },
+        {
+          "name": "Bornera",
+          "volume_mm3": 640.0,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_M2x8_union_horn_-1 (1)",
+      "bodies": [
+        {
+          "name": "Tornillo_vastago",
+          "volume_mm3": 47.815,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tornillo_union_V02_M05_MG946_J51",
+      "bodies": [
+        {
+          "name": "Vastago",
+          "volume_mm3": 59.396,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_XL4016_vertical_1",
+      "bodies": [
+        {
+          "name": "PCB",
+          "volume_mm3": 4992.0,
+          "lumps": 1
+        },
+        {
+          "name": "Disipador",
+          "volume_mm3": 8568.0,
+          "lumps": 1
+        },
+        {
+          "name": "Inductor",
+          "volume_mm3": 2926.394,
+          "lumps": 1
+        },
+        {
+          "name": "Bornera",
+          "volume_mm3": 640.0,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tapa_608_J4",
+      "bodies": [
+        {
+          "name": "Placa",
+          "volume_mm3": 4197.62,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_XL4016_vertical_2",
+      "bodies": [
+        {
+          "name": "PCB",
+          "volume_mm3": 4992.0,
+          "lumps": 1
+        },
+        {
+          "name": "Disipador",
+          "volume_mm3": 8568.0,
+          "lumps": 1
+        },
+        {
+          "name": "Inductor",
+          "volume_mm3": 2926.394,
+          "lumps": 1
+        },
+        {
+          "name": "Bornera",
+          "volume_mm3": 640.0,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Horn_movil_V02_M02_GX3240_270",
+      "bodies": [
+        {
+          "name": "Plato_horn_REF",
+          "volume_mm3": 760.721,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Separador_M3_A",
+      "bodies": [
+        {
+          "name": "Separador",
+          "volume_mm3": 1587.887,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tornillo_tapa_J4_1",
+      "bodies": [
+        {
+          "name": "Tornillo_vastago",
+          "volume_mm3": 127.824,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tornillo_tapa_V02_A15_Horquilla_J5_PETG11",
+      "bodies": [
+        {
+          "name": "Vastago",
+          "volume_mm3": 127.824,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tornillo_tapa_J4_-1",
+      "bodies": [
+        {
+          "name": "Tornillo_vastago",
+          "volume_mm3": 127.824,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tornillo_tapa_J6_-1",
+      "bodies": [
+        {
+          "name": "Tornillo_vastago",
+          "volume_mm3": 47.815,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Contraplaca_aluminio_3mm",
+      "bodies": [
+        {
+          "name": "Contraplaca",
+          "volume_mm3": 17397.279,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V04_Anclaje_M3x70_C",
+      "bodies": [
+        {
+          "name": "Tornillo_vastago",
+          "volume_mm3": 566.076,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tuerca_arandela_M3_D",
+      "bodies": [
+        {
+          "name": "Arandela",
+          "volume_mm3": 29.405,
+          "lumps": 1
+        },
+        {
+          "name": "Tuerca_REF",
+          "volume_mm3": 53.024,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Separador_M3_C",
+      "bodies": [
+        {
+          "name": "Separador",
+          "volume_mm3": 1587.887,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tuerca_arandela_M3_B",
+      "bodies": [
+        {
+          "name": "Arandela",
+          "volume_mm3": 29.405,
+          "lumps": 1
+        },
+        {
+          "name": "Tuerca_REF",
+          "volume_mm3": 53.024,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V04_Anclaje_M3x70_B",
+      "bodies": [
+        {
+          "name": "Tornillo_vastago",
+          "volume_mm3": 566.076,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Inserto_M3_J1_1",
+      "bodies": [
+        {
+          "name": "Inserto",
+          "volume_mm3": 35.343,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tuerca_arandela_M10",
+      "bodies": [
+        {
+          "name": "Arandela",
+          "volume_mm3": 930.402,
+          "lumps": 1
+        },
+        {
+          "name": "Tuerca_REF",
+          "volume_mm3": 1575.509,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Inserto_M3_J1_-1",
+      "bodies": [
+        {
+          "name": "Inserto",
+          "volume_mm3": 35.343,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tuerca_M2_horn_1",
+      "bodies": [
+        {
+          "name": "Tuerca_REF",
+          "volume_mm3": 21.564,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_M01_MG946_Base",
+      "bodies": [
+        {
+          "name": "Carcasa_servo_REF",
+          "volume_mm3": 35082.139,
+          "lumps": 1
+        },
+        {
+          "name": "Salida_spline_REFERENCIA",
+          "volume_mm3": 84.823,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_E00_Husillo_base_completo",
+      "bodies": [
+        {
+          "name": "Brida",
+          "volume_mm3": 2568.626,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tornillo_retencion_J1",
+      "bodies": [
+        {
+          "name": "Tornillo_vastago",
+          "volume_mm3": 120.755,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Horn_movil_V02_M07_MG90S_Pinza",
+      "bodies": [
+        {
+          "name": "Plato_horn_REF",
+          "volume_mm3": 420.219,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tornillo_axial_hombro",
+      "bodies": [
+        {
+          "name": "Tornillo_vastago",
+          "volume_mm3": 113.686,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Separador_medio_J6",
+      "bodies": [
+        {
+          "name": "Separador",
+          "volume_mm3": 28.149,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tornillo_union_V02_M05_MG946_J5-1",
+      "bodies": [
+        {
+          "name": "Vastago",
+          "volume_mm3": 59.396,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Separador_axial_J6",
+      "bodies": [
+        {
+          "name": "Separador",
+          "volume_mm3": 168.892,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Inserto_fijacion_J51",
+      "bodies": [
+        {
+          "name": "Inserto_M3_REF",
+          "volume_mm3": 35.343,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Fijacion_servo_J1_1",
+      "bodies": [
+        {
+          "name": "Tornillo_vastago",
+          "volume_mm3": 159.632,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_PCA9685_vertical",
+      "bodies": [
+        {
+          "name": "PCB",
+          "volume_mm3": 2800.0,
+          "lumps": 1
+        },
+        {
+          "name": "Conectores",
+          "volume_mm3": 8064.0,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tuerca_M2_5_pinon_-1",
+      "bodies": [
+        {
+          "name": "Tuerca_REF",
+          "volume_mm3": 37.699,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tuerca_M2_5_pinon_1",
+      "bodies": [
+        {
+          "name": "Tuerca_REF",
+          "volume_mm3": 37.699,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tornillo_original_horn_V02_M05_MG946_J5",
+      "bodies": [
+        {
+          "name": "Vastago",
+          "volume_mm3": 113.686,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Inserto_fijacion_J3-1",
+      "bodies": [
+        {
+          "name": "Inserto_M3_REF",
+          "volume_mm3": 35.343,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Arandela_trasera_J5",
+      "bodies": [
+        {
+          "name": "Arandela_M3_REF",
+          "volume_mm3": 29.932,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tornillo_fijacion_J31",
+      "bodies": [
+        {
+          "name": "Vastago_M3x8",
+          "volume_mm3": 127.824,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tornillo_original_horn_V02_M04_MG90S_J4",
+      "bodies": [
+        {
+          "name": "Vastago",
+          "volume_mm3": 41.532,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "81_Pan_HCSR04",
+      "bodies": [
+        {
+          "name": "REF_AUTO_16-SOIC__Body1",
+          "volume_mm3": 58.043,
+          "lumps": 1
+        },
+        {
+          "name": "REF_AUTO_90deg_pin__Body1",
+          "volume_mm3": 5.968,
+          "lumps": 1
+        },
+        {
+          "name": "REF_AUTO_90deg_pin__Body1 (1)",
+          "volume_mm3": 5.968,
+          "lumps": 1
+        },
+        {
+          "name": "REF_AUTO_90deg_pin__Body1 (2)",
+          "volume_mm3": 5.968,
+          "lumps": 1
+        },
+        {
+          "name": "REF_AUTO_90deg_pin__Body1 (3)",
+          "volume_mm3": 5.968,
+          "lumps": 1
+        },
+        {
+          "name": "REF_AUTO_Case Cover__Body1",
+          "volume_mm3": 2.641,
+          "lumps": 1
+        },
+        {
+          "name": "REF_AUTO_Case Cover__Body1 (1)",
+          "volume_mm3": 2.641,
+          "lumps": 1
+        },
+        {
+          "name": "REF_AUTO_Conn_1X4_case__Body1",
+          "volume_mm3": 60.574,
+          "lumps": 1
+        },
+        {
+          "name": "REF_AUTO_Crystal__Body1",
+          "volume_mm3": 102.655,
+          "lumps": 1
+        },
+        {
+          "name": "REF_AUTO_PCB (1)__Body1",
+          "volume_mm3": 1354.553,
+          "lumps": 1
+        },
+        {
+          "name": "REF_AUTO_SG90 - Micro Servo 9g - Tower Pro.1_Pea__Body13",
+          "volume_mm3": 119.271,
+          "lumps": 1
+        },
+        {
+          "name": "REF_AUTO_SG90 - Micro Servo 9g - Tower Pro.2_Pea__Body1",
+          "volume_mm3": 155.429,
+          "lumps": 1
+        },
+        {
+          "name": "REF_AUTO_SG90 - Micro Servo 9g - Tower Pro.6_BS EN ISO 7045 - M2 x 4 - Z - 4S__Body1",
+          "volume_mm3": 17.838,
+          "lumps": 1
+        },
+        {
+          "name": "REF_AUTO_SOP14_TPK__Body1",
+          "volume_mm3": 59.23,
+          "lumps": 1
+        },
+        {
+          "name": "REF_AUTO_SOP14_TPK__Body1 (1)",
+          "volume_mm3": 59.23,
+          "lumps": 1
+        },
+        {
+          "name": "REF_AUTO_Soporte_HCSR04_Referencia__Base_sobre_servo",
+          "volume_mm3": 896.0,
+          "lumps": 1
+        },
+        {
+          "name": "REF_AUTO_Soporte_HCSR04_Referencia__Placa_ultrasonido",
+          "volume_mm3": 3043.915,
+          "lumps": 1
+        },
+        {
+          "name": "REF_AUTO_T-R Case__Body1",
+          "volume_mm3": 252.176,
+          "lumps": 1
+        },
+        {
+          "name": "REF_AUTO_T-R Case__Body1 (1)",
+          "volume_mm3": 252.176,
+          "lumps": 1
+        },
+        {
+          "name": "REF_AUTO_T-R Core__Body1",
+          "volume_mm3": 145.171,
+          "lumps": 1
+        },
+        {
+          "name": "REF_AUTO_T-R Core__Body1 (1)",
+          "volume_mm3": 145.171,
+          "lumps": 1
+        },
+        {
+          "name": "REF_AUTO_T-R Terminal__Body1",
+          "volume_mm3": 4.214,
+          "lumps": 1
+        },
+        {
+          "name": "REF_AUTO_T-R Terminal__Body1 (1)",
+          "volume_mm3": 4.214,
+          "lumps": 1
+        },
+        {
+          "name": "REF_AUTO_T-R Terminal__Body1 (2)",
+          "volume_mm3": 4.214,
+          "lumps": 1
+        },
+        {
+          "name": "REF_AUTO_T-R Terminal__Body1 (3)",
+          "volume_mm3": 4.214,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Prisionero_M3x5_collar (1)",
+      "bodies": [
+        {
+          "name": "Prisionero",
+          "volume_mm3": 35.343,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V04_Anclaje_M3x70_E",
+      "bodies": [
+        {
+          "name": "Tornillo_vastago",
+          "volume_mm3": 566.076,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Horn_movil_V02_M05_MG946_J5",
+      "bodies": [
+        {
+          "name": "Plato_horn_REF",
+          "volume_mm3": 760.721,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Separador_8mm_delantero",
+      "bodies": [
+        {
+          "name": "Separador",
+          "volume_mm3": 227.388,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tornillo_M2_5_pinon_1",
+      "bodies": [
+        {
+          "name": "Cabeza",
+          "volume_mm3": 79.031,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tuerca_M2_horn_1 (1)",
+      "bodies": [
+        {
+          "name": "Tuerca_REF",
+          "volume_mm3": 21.564,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_M2x8_union_horn_1",
+      "bodies": [
+        {
+          "name": "Tornillo_vastago",
+          "volume_mm3": 47.815,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tornillo_fijacion_J21",
+      "bodies": [
+        {
+          "name": "Vastago_M3x8",
+          "volume_mm3": 127.824,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tornillo_axial_trasero_J5",
+      "bodies": [
+        {
+          "name": "Vastago",
+          "volume_mm3": 113.686,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Inserto_fijacion_J2-1",
+      "bodies": [
+        {
+          "name": "Inserto_M3_REF",
+          "volume_mm3": 35.343,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tornillo_fijacion_J2-1",
+      "bodies": [
+        {
+          "name": "Vastago_M3x8",
+          "volume_mm3": 127.824,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tornillo_rosca_plastico_J4-1",
+      "bodies": [
+        {
+          "name": "Vastago_REF",
+          "volume_mm3": 47.815,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tornillo_rosca_plastico_J61",
+      "bodies": [
+        {
+          "name": "Vastago_REF",
+          "volume_mm3": 47.815,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V04_Contrabarra_izquierda_aluminio_3mm",
+      "bodies": [
+        {
+          "name": "Contrabarra",
+          "volume_mm3": 1715.153,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V04_Tuerca_arandela_M3_E",
+      "bodies": [
+        {
+          "name": "Arandela",
+          "volume_mm3": 29.405,
+          "lumps": 1
+        },
+        {
+          "name": "Tuerca_REF",
+          "volume_mm3": 53.024,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Separador_trasero_J5",
+      "bodies": [
+        {
+          "name": "Separador",
+          "volume_mm3": 154.818,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tornillo_rosca_plastico_J41",
+      "bodies": [
+        {
+          "name": "Vastago_REF",
+          "volume_mm3": 47.815,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "82_Envolvente_pan_REFERENCIA",
+      "bodies": [
+        {
+          "name": "Envolvente_circular_con_holgura",
+          "volume_mm3": 171011.214,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V04_Separador_M3_F",
+      "bodies": [
+        {
+          "name": "Separador",
+          "volume_mm3": 1587.887,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Inserto_fijacion_J5-1",
+      "bodies": [
+        {
+          "name": "Inserto_M3_REF",
+          "volume_mm3": 35.343,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tornillo_fijacion_J3-1",
+      "bodies": [
+        {
+          "name": "Vastago_M3x8",
+          "volume_mm3": 127.824,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tornillo_rosca_plastico_J7-1",
+      "bodies": [
+        {
+          "name": "Vastago_REF",
+          "volume_mm3": 47.815,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tornillo_fijacion_J51",
+      "bodies": [
+        {
+          "name": "Vastago_M3x8",
+          "volume_mm3": 127.824,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V04_Tuerca_arandela_M3_F",
+      "bodies": [
+        {
+          "name": "Arandela",
+          "volume_mm3": 29.405,
+          "lumps": 1
+        },
+        {
+          "name": "Tuerca_REF",
+          "volume_mm3": 53.024,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tuerca_M2_horn_-1",
+      "bodies": [
+        {
+          "name": "Tuerca_REF",
+          "volume_mm3": 21.564,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Collar_8mm_retencion (1)",
+      "bodies": [
+        {
+          "name": "Collar",
+          "volume_mm3": 1177.755,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tornillo_axial_J4",
+      "bodies": [
+        {
+          "name": "Tornillo_vastago",
+          "volume_mm3": 120.755,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Inserto_M3_servo_J1_-1",
+      "bodies": [
+        {
+          "name": "Inserto",
+          "volume_mm3": 35.343,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Arandelas_y_tuerca_A06_Encastre_distal_brazo_PETG",
+      "bodies": [
+        {
+          "name": "Arandela_cabeza",
+          "volume_mm3": 44.108,
+          "lumps": 1
+        },
+        {
+          "name": "Arandela_tuerca",
+          "volume_mm3": 29.405,
+          "lumps": 1
+        },
+        {
+          "name": "Tuerca_M3_REF",
+          "volume_mm3": 60.243,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tornillo_fijacion_J5-1",
+      "bodies": [
+        {
+          "name": "Vastago_M3x8",
+          "volume_mm3": 127.824,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tornillo_tapa_A06_Encastre_distal_brazo_PETG-1-1",
+      "bodies": [
+        {
+          "name": "Vastago",
+          "volume_mm3": 127.824,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Inserto_M3_V02_A15_Horquilla_J5_PETG-11",
+      "bodies": [
+        {
+          "name": "Inserto_M3_REF",
+          "volume_mm3": 35.343,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tapa_608_A01_Plataforma_giratoria_PETG_-1",
+      "bodies": [
+        {
+          "name": "Placa_retencion",
+          "volume_mm3": 4201.088,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Inserto_M3_J4_1",
+      "bodies": [
+        {
+          "name": "Inserto",
+          "volume_mm3": 35.343,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V04_Anclaje_M3x70_D",
+      "bodies": [
+        {
+          "name": "Tornillo_vastago",
+          "volume_mm3": 566.076,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Inserto_M3_A06_Encastre_distal_brazo_PETG-11",
+      "bodies": [
+        {
+          "name": "Inserto_M3_REF",
+          "volume_mm3": 35.343,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tornillo_tapa_A01_Plataforma_giratoria_PETG1-1",
+      "bodies": [
+        {
+          "name": "Vastago",
+          "volume_mm3": 127.824,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tornillo_tapa_A06_Encastre_distal_brazo_PETG-11",
+      "bodies": [
+        {
+          "name": "Vastago",
+          "volume_mm3": 127.824,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Separador_M3_D",
+      "bodies": [
+        {
+          "name": "Separador",
+          "volume_mm3": 1587.887,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Retencion_axial_J1",
+      "bodies": [
+        {
+          "name": "Arandela",
+          "volume_mm3": 290.77,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Bornera_y_alimentacion_REF",
+      "bodies": [
+        {
+          "name": "Bornera",
+          "volume_mm3": 1600.0,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_R01_608_J1_inferior",
+      "bodies": [
+        {
+          "name": "Aro_exterior",
+          "volume_mm3": 676.228,
+          "lumps": 1
+        },
+        {
+          "name": "Aro_interior",
+          "volume_mm3": 313.374,
+          "lumps": 1
+        },
+        {
+          "name": "Blindaje",
+          "volume_mm3": 1244.071,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tapa_rodamientos_J1",
+      "bodies": [
+        {
+          "name": "Placa",
+          "volume_mm3": 4694.645,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Horn_movil_V02_M03_DS3218_Codo",
+      "bodies": [
+        {
+          "name": "Plato_horn_REF",
+          "volume_mm3": 760.721,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tornillo_union_V03_M01_MG946_Base1",
+      "bodies": [
+        {
+          "name": "Vastago",
+          "volume_mm3": 59.396,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Horn_movil_V02_M06_MG90S_J6",
+      "bodies": [
+        {
+          "name": "Plato_horn_REF",
+          "volume_mm3": 420.219,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Tornillo_M2_5_pinon_-1",
+      "bodies": [
+        {
+          "name": "Cabeza",
+          "volume_mm3": 79.031,
+          "lumps": 1
+        }
+      ]
+    },
+    {
+      "component": "V03_Separador_8mm_trasero",
+      "bodies": [
+        {
+          "name": "Separador",
+          "volume_mm3": 227.388,
+          "lumps": 1
+        }
+      ]
+    }
+  ],
+  "timeline_health_messages": [],
+  "payload_mm": [
+    50,
+    50,
+    50
+  ],
+  "payload_requirement_g": 100,
+  "car_reference_solids": 643,
+  "native_car_to_arm_mm": "(X, -Z-32, Y-26)",
+  "mounting_holes_mm": [
+    [
+      "A",
+      "31.051 mm",
+      "19.739 mm"
+    ],
+    [
+      "B",
+      "67.997 mm",
+      "19.739 mm"
+    ],
+    [
+      "C",
+      "31.051 mm",
+      "-21.036 mm"
+    ],
+    [
+      "D",
+      "68.418 mm",
+      "-21.036 mm"
+    ],
+    [
+      "E",
+      "-68.298597443 mm",
+      "-12.157024165 mm"
+    ],
+    [
+      "F",
+      "-31.142269400 mm",
+      "-12.199106379 mm"
+    ]
+  ],
+  "base_top_mm": 144.00000000000003,
+  "shoulder_z_mm": 257.0,
+  "native_file": "AFR2_Brazo_PVC32_AGV_v04.f3d",
+  "parameters_csv": "parametros_prototipo_v04.csv",
+  "inactive_historical_timeline_items": 90,
+  "pan_sweep_deg": [
+    -90,
+    90
+  ],
+  "mount_bottom_mm": 54.0
+}

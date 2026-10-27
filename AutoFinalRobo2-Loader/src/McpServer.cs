@@ -1,0 +1,135 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Web.Script.Serialization;
+
+namespace AFR2Loader
+{
+    // MCP stdio / JSON-RPC. Each tools/call is a short request; jobs are polled separately.
+    public static class McpServer
+    {
+        static readonly JavaScriptSerializer Json = new JavaScriptSerializer { MaxJsonLength = 1048576, RecursionLimit = 32 };
+        static readonly string[] Actions = { "build_mega", "build_esp", "build_web_fs", "build_all", "probe_esp", "flash_mega", "flash_esp", "flash_fs", "flash_esp_fs" };
+        static object Schema(object properties, params string[] required)
+        { return new { type = "object", properties = properties, required = required, additionalProperties = false }; }
+        static object Tool(string name, string description, object schema, bool readOnly)
+        { return new { name = name, description = description, inputSchema = schema, annotations = new { readOnlyHint = readOnly, destructiveHint = !readOnly, openWorldHint = false } }; }
+        public static object[] Tools()
+        {
+            return new[] {
+                Tool("loader_status", "Estado del Loader gráfico y trabajo activo. No abre puertos.", Schema(new {}), true),
+                Tool("loader_ports", "Enumera puertos presentes sin abrirlos.", Schema(new {}), true),
+                Tool("loader_profile", "Perfil visible y rutas resueltas. No ejecuta herramientas.", Schema(new {}), true),
+                Tool("loader_request_profile", "Propone cambios de perfil. Requiere revisión y aprobación en la ventana; no aplica ni guarda silenciosamente.",
+                    Schema(new { values = new { type = "object", additionalProperties = new { type = "string" } }, requestId = new { type = "string", description = "ID único para deduplicar reintentos" } }, "values", "requestId"), false),
+                Tool("loader_request_operation", "Solicita una operación; devuelve jobId pendiente de aprobación humana. Nunca escribe al solicitar. Las cargas mantienen los asistentes de cableado y confirmación final. No repetir si ya existe el job.",
+                    Schema(new { action = new { type = "string", @enum = Actions }, port = new { type = "string", description = "COM para diagnóstico/carga; no necesario para builds" }, listenBoot = new { type = "boolean", description = "Escuchar KEY/RST antes de consulta ESP, default true" }, requestId = new { type = "string", description = "ID único para deduplicar reintentos" } }, "action", "requestId"), false),
+                Tool("loader_job", "Estado y lote incremental del registro. Usar nextCursor para continuar; no espera ni ejecuta procesos.",
+                    Schema(new { jobId = new { type = "string" }, cursor = new { type = "integer", minimum = 0 }, limit = new { type = "integer", minimum = 1, maximum = 120 } }, "jobId"), true),
+                Tool("loader_request_cancel", "Solicita cancelar un trabajo pendiente o activo. La ventana confirma interrupción si hay una operación en curso; no provoca reintento ni borrado.",
+                    Schema(new { jobId = new { type = "string" } }, "jobId"), false)
+            };
+        }
+        static Dictionary<string, object> Object(object value)
+        { var result = value as Dictionary<string, object>; if (result == null) throw new ArgumentException("Se esperaba un objeto JSON."); return result; }
+        static string StringValue(Dictionary<string, object> value, string key)
+        { object v; if (!value.TryGetValue(key, out v) || !(v is string)) throw new ArgumentException("Falta texto: " + key); return (string)v; }
+        static void Validate(string tool, Dictionary<string, object> args)
+        {
+            string[] keys;
+            switch (tool)
+            {
+                case "loader_status": case "loader_ports": case "loader_profile": keys = new string[0]; break;
+                case "loader_request_profile":
+                    keys = new[] { "values", "requestId" }; StringValue(args, "requestId");
+                    Object(args["values"]); break;
+                case "loader_request_operation":
+                    keys = new[] { "action", "port", "listenBoot", "requestId" }; StringValue(args, "requestId");
+                    if (!Actions.Contains(StringValue(args, "action"))) throw new ArgumentException("Acción no admitida.");
+                    if (args.ContainsKey("port") && !(args["port"] is string)) throw new ArgumentException("port debe ser texto.");
+                    if (args.ContainsKey("listenBoot") && !(args["listenBoot"] is bool)) throw new ArgumentException("listenBoot debe ser booleano.");
+                    break;
+                case "loader_job":
+                    keys = new[] { "jobId", "cursor", "limit" }; StringValue(args, "jobId");
+                    foreach (string key in new[] { "cursor", "limit" }) if (args.ContainsKey(key) && !(args[key] is int)) throw new ArgumentException(key + " debe ser entero.");
+                    break;
+                case "loader_request_cancel": keys = new[] { "jobId" }; StringValue(args, "jobId"); break;
+                default: throw new ArgumentException("Herramienta desconocida.");
+            }
+            if (args.Keys.Any(k => !keys.Contains(k))) throw new ArgumentException("Argumentos no admitidos.");
+        }
+        static object ToolCall(Dictionary<string, object> parameters)
+        {
+            try
+            {
+                string name = StringValue(parameters, "name");
+                var args = parameters.ContainsKey("arguments") ? Object(parameters["arguments"]) : new Dictionary<string, object>();
+                Validate(name, args);
+                var bridge = Object(LocalBridge.Call(Json.Serialize(new { command = name, arguments = args })));
+                bool ok = bridge.ContainsKey("ok") && (bool)bridge["ok"];
+                object data = bridge.ContainsKey("data") ? bridge["data"] : bridge["error"];
+                return new { content = new[] { new { type = "text", text = Json.Serialize(data) } }, isError = !ok };
+            }
+            catch (Exception error) { return new { content = new[] { new { type = "text", text = error.GetBaseException().Message } }, isError = true }; }
+        }
+        public static void Run(string appDir)
+        {
+            bool initialized = false;
+            using (var input = new StreamReader(Console.OpenStandardInput(), new UTF8Encoding(false), false, 4096))
+            using (var output = new StreamWriter(Console.OpenStandardOutput(), new UTF8Encoding(false), 4096) { AutoFlush = true })
+            {
+                string line;
+                while ((line = input.ReadLine()) != null)
+                {
+                    object id = null; bool respond = true;
+                    try
+                    {
+                        if (line.Length > 1048576) throw new ArgumentException("Mensaje demasiado grande.");
+                        var request = Object(Json.DeserializeObject(line));
+                        respond = request.TryGetValue("id", out id);
+                        if (!respond) continue;
+                        if (!request.ContainsKey("jsonrpc") || Convert.ToString(request["jsonrpc"]) != "2.0") throw new ArgumentException("Se requiere JSON-RPC 2.0.");
+                        string method = StringValue(request, "method");
+                        var parameters = request.ContainsKey("params") ? Object(request["params"]) : new Dictionary<string, object>();
+                        object result;
+                        if (method == "initialize")
+                        {
+                            string requested = StringValue(parameters, "protocolVersion");
+                            string protocol = new[] { "2024-11-05", "2025-03-26", "2025-06-18" }.Contains(requested) ? requested : "2025-06-18";
+                            initialized = true;
+                            result = new { protocolVersion = protocol, serverInfo = new { name = "afr2-loader", version = LoaderVersion.Value },
+                                capabilities = new { tools = new { listChanged = false }, resources = new { } },
+                                instructions = "Use loader_status antes de operar. Las solicitudes devuelven jobId y requieren aprobación en la ventana. No confundir awaiting_approval con operación ejecutada. Consultar loader_job con cursor; no reenviar solicitudes de escritura. boot mode 1 no demuestra ida/vuelta. No hay herramienta de comandos arbitrarios." };
+                        }
+                        else if (method == "ping") result = new { };
+                        else
+                        {
+                            if (!initialized) throw new InvalidOperationException("Inicializar MCP primero.");
+                            switch (method)
+                            {
+                                case "tools/list": result = new { tools = Tools() }; break;
+                                case "tools/call": result = ToolCall(parameters); break;
+                                case "resources/list": result = new { resources = new[] { new { uri = "loader://manual", name = "Manual AFR2 Loader", description = "Manual local, incluyendo cableado y estados de verificación", mimeType = "text/html" } } }; break;
+                                case "resources/read":
+                                    string uri = StringValue(parameters, "uri");
+                                    if (uri != "loader://manual") throw new ArgumentException("Recurso desconocido.");
+                                    result = new { contents = new[] { new { uri = uri, mimeType = "text/html", text = File.ReadAllText(Path.Combine(appDir, "MANUAL.html")) } } }; break;
+                                default:
+                                    output.WriteLine(Json.Serialize(new { jsonrpc = "2.0", id = id, error = new { code = -32601, message = "Método no disponible" } })); continue;
+                            }
+                        }
+                        output.WriteLine(Json.Serialize(new { jsonrpc = "2.0", id = id, result = result }));
+                    }
+                    catch (Exception error)
+                    {
+                        if (respond) output.WriteLine(Json.Serialize(new { jsonrpc = "2.0", id = id, error = new { code = id == null ? -32700 : -32602, message = error.GetBaseException().Message } }));
+                        Console.Error.WriteLine("AFR2 MCP: " + error.GetBaseException().Message);
+                    }
+                }
+            }
+        }
+    }
+}

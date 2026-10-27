@@ -1,3 +1,5 @@
+> **Preparación AFR2-20261027-10:** [guía específica de carga USB-B/COM16](CARGA_USB_COM16.md). ATmega/ESP/Web compilados, Web esp promovida e imagen LittleFS generada. Hall habilitado en build por pedido humano; configuración EEPROM conservada. No se abrió puerto ni se cargó a placas; jumpers y flash real aún sin identificar. Los estados de no imagen FS inferiores son históricos.
+
 # Carga con el USB del Mega y shield OSOYOO UART
 
 Actualización de configuración **AFR2-20261024-04**: el usuario pidió incluir el

@@ -34,7 +34,7 @@ function CommittedNumber({ label, value, min, max, step, unit, disabled, onChang
     onChange(next);
   };
   return <span className="afr2-scan-number">
-    <input type="text" inputMode="decimal" aria-label={label} aria-describedby={`${id}-unit ${id}-bounds ${id}-notice`}
+    <input className="afr2-compact-number" type="text" inputMode="decimal" aria-label={label} aria-describedby={`${id}-unit ${id}-bounds ${id}-notice`}
       value={text} disabled={disabled} autoComplete="off" spellCheck={false}
       onFocus={() => { editing.current = true; setNotice(''); }}
       onChange={event => { editing.current = true; setText(event.target.value); }}

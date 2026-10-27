@@ -1,0 +1,19 @@
+{
+  "changeId": "AFR2-20261027-06",
+  "decisionId": "VIS-043",
+  "manualVersion": "0.1.9",
+  "mode": "APLICAR",
+  "authorization": "Pedido humano de ayuda contextual derecha, matematica destacada e identica en tres simulaciones y componentes reutilizados con Control.",
+  "canonicalSources": ["manual.md", "tokens.json", "components.md", "decisions.md"],
+  "supporting": ["Web/src/components/ui/CollapsiblePanel.tsx", "Web/src/features/collector/CollectorPage.tsx", "contracts/ATMEGA_CONFIG_ACTIONS.json", "Atmega/src/services/afr2_app.c", "Atmega/src/services/afr2_product.c"],
+  "targets": ["Web/src/features/control/CalibrationPanel.tsx", "Web/src/features/control/CalibrationExplanation.tsx", "Web/src/features/control/calibrationGuide.ts", "Web/src/features/control/ControlPage.tsx", "Web/src/components/robot/MecanumDrivePad.tsx", "Web/src/components/ui/HoldActionButton.tsx", "Web/src/components/ui/RangeNumberField.tsx", "Web/src/components/robot/HomogeneousMatrix.tsx", "Web/src/features/collector/SimulationMatrix.tsx", "Web/src/styles/collector.css", "Web/src/styles/robot-controls.css", "Web/src/styles/homogeneous-matrix.css", "Web/src/styles/calibration.css"],
+  "coverage": [
+    {"behavior": "Ayuda detallada e interpretacion por parametro y valor del editor", "evidence": "Confirmada", "coverage": "Cubierta en fuente; 29 fichas", "verification": "No verificada"},
+    {"behavior": "Misma matriz y formulario en las tres simulaciones", "evidence": "Confirmada", "coverage": "SimulationMatrix y HomogeneousMatrix compartidos", "verification": "No verificada"},
+    {"behavior": "Columna mayor, matriz centrada y bloques rotacion/posicion", "evidence": "Confirmada", "coverage": "Composicion propuesta aplicada en fuente", "verification": "No verificada"},
+    {"behavior": "Pad comun con giros bajo columnas extremas", "evidence": "Confirmada", "coverage": "MecanumDrivePad compartido con adaptadores separados", "verification": "No verificada"},
+    {"behavior": "Boton mantenido y campos numero/barra reutilizados", "evidence": "Observada", "coverage": "Implementaciones y estilos comunes", "verification": "No verificada"}
+  ],
+  "checksRun": [],
+  "limits": "Sin tests/build/validaciones/navegador ni operacion fisica. Fuente no promovida al paquete ESP. Datos del modelo nominal, no telemetria de posicion."
+}

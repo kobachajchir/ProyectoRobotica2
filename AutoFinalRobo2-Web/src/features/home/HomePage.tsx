@@ -7,10 +7,11 @@ import { SectionArtwork } from './SectionArtwork';
 
 const SECTIONS: { to: string; title: string; description: string; icon: UiIconName }[] = [
   { to: '/control', title: 'Control', description: 'Movimiento, pruebas y calibracion.', icon: 'control' },
+  { to: '/simulaciones', title: 'Simulaciones', description: 'Auto, brazo y conjunto en tres vistas 3D.', icon: 'arm' },
   { to: '/sensores', title: 'Sensores', description: 'Linea, distancia y ruedas.', icon: 'sensors' },
   { to: '/wifi', title: 'Wi-Fi', description: 'Tu conexion con el robot.', icon: 'wifi' },
   { to: '/oled', title: 'Pantalla OLED', description: 'Abri la pantalla en vivo.', icon: 'screen' },
-  { to: '/modelo-3d', title: 'Modelo 3D', description: 'Explora el modelo del robot.', icon: 'cube' },
+  { to: '/modelo-3d', title: 'Modelos 3D', description: 'Explora el auto y el brazo robotico.', icon: 'cube' },
   { to: '/documentacion', title: 'Documentacion', description: 'Guias y referencias del proyecto.', icon: 'book' },
 ];
 export function HomePage() {

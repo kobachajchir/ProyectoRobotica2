@@ -1,0 +1,6 @@
+# Reemplazar C:/RUTA por la ubicación real. No duplicar la sección.
+[mcp_servers.afr2-loader]
+command = "powershell.exe"
+args = ["-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-File", "C:/RUTA/ProyectoRobotica2/AutoFinalRobo2-Loader/Mcp.ps1"]
+startup_timeout_sec = 60
+tool_timeout_sec = 20

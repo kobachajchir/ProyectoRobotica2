@@ -1,3 +1,5 @@
+> **Organización vigente AFR2-20261027-14:** seis módulos en la raíz: Atmega, ESP, Web, Contracts, CAD y [Loader](../../AutoFinalRobo2-Loader/README.md). El cargador tiene fuentes/manual propios y comparte el único Git; sus fichas AFR2 siguen en Contracts. [Registro](../changes/2026-10-27-14-loader-root-module.md). Las descripciones de cinco módulos inferiores corresponden a la organización anterior.
+
 # Organización del proyecto y Git
 
 AFR2-20261023-04, 23/10/2026. Por pedido del usuario, D:/ProyectoRobotica2 es el único repositorio Git de trabajo. Antes había cuatro repositorios independientes, limpios y sin remotos. Ahora sus carpetas se conservan como módulos, junto con AutoFinalRobo2-CAD. No hay submódulos ni Git anidados activos.

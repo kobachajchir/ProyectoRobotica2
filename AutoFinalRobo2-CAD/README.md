@@ -1,6 +1,20 @@
 > **Vigente AFR2-20261024-15:** [Matriz del maestro](../AutoFinalRobo2-Contracts/docs/ALINEACION_MAESTRO.md):33comandos y59identidades OLED con fuentes complementarias. Calibración Web adquiere control al escribir; ESP/Web informan FS/paquete. Web/ESP compilados15; AVR sin nueva fuente, build12/EX01v6/firmware0.8.0/gates0. Sin brecha software definida identificada tras lectura; aceptación física, memoria dinámica, flash/SPI y planos CAD pendientes. Solo documentación en CAD, sin diseño nuevo. Estados inferiores históricos.
 
+> **AFR2-20261027-01:** [propuesta de recolector](mecanica/robot-recolector/README.md), con dibujo SVG superior/lateral y rig simplificado en Web. Ensamble nativo auto/brazo/deposito, soporte y cargas pendientes. Maestros existentes sin modificar; sin comprobaciones de esta revision.
+
 # AutoFinalRobo2-CAD
+
+**AFR2-20261027-17:** [presupuesto de masas y esfuerzos de brazo v06 con 200 g](mecanica/brazo-antropomorfo/analisis_cargas_200g/README.md). Volúmenes/CG extraídos de Fusion, peso propio y carga separados, apoyos y engranajes, sensibilidad de masa FDM y criterios de refuerzo. Copia horizontal de estudio guardada; maestro v06 conservado. Cálculo estático externo, sin FEA ni refuerzos modelados; 200 g no acreditados como carga física.
+
+**AFR2-20261027-15, brazo vigente v06:** [montura baja y contraplaca inferior única](mecanica/brazo-antropomorfo/revision_v06/README.md), con seis ejes y doce rodamientos completos, transmisiones revisadas y 3.141 configuraciones CAD sin penetraciones reportables. [F3D editable](mecanica/brazo-antropomorfo/AFR2_Brazo_PVC32_AGV_v06.f3d). Sustituye la solución elevada v04; no acredita carga ni estabilidad física. Despieces aún sin generar por indicación humana; [plan de skill de láminas](docs/PLAN_SKILL_LAMINAS_TECNICAS.md).
+
+**AFR2-20261027-09:** [brazo v04: montura bilateral y giro del HC-SR04](mecanica/brazo-antropomorfo/revision_v04/README.md). Dos M3 izquierdos con contrabarra completan seis laterales más el central. Alza paramétrica de 32 mm, misma disposición de electrónica y unión nativa para mover salida del servo, soporte y sensor entre −90° y +90°. [Maestro editable](mecanica/brazo-antropomorfo/AFR2_Brazo_PVC32_AGV_v04.f3d). La v03 no había incluido ese giro del auto; evidencia y límites en el informe v04.
+
+**AFR2-20261027-03:** [brazo v03 montado sobre el auto](mecanica/brazo-antropomorfo/revision_v03/README.md). Montura con cuatroM3 y apriete centralM10/contraplaca, control vertical, guías continuas, doce rodamientos externos, ejes y retenciones completos, fijaciones de servos y despieces derivados. [Maestro nativo](mecanica/brazo-antropomorfo/AFR2_Brazo_PVC32_AGV_v03.f3d). El maestro del auto y las versiones anteriores del brazo se conservan; carga, estabilidad y fabricación siguen pendientes. No se promueve este ensamble a Web/ESP.
+
+**AFR2-20261026-06:** [brazo v02 y revisión de movimiento](mecanica/brazo-antropomorfo/revision_v02/README.md). Pinza con un piñón y dos cremalleras vinculadas, apertura60,011 mm y agarre50 mm; J6 directo, apoyos y separaciones corregidos. Comprobación CAD autorizada:2902 poses muestreadas sin penetraciones reportables; no acredita todo el espacio continuo ni capacidad de carga. [Maestro v02](mecanica/brazo-antropomorfo/AFR2_Brazo_PVC32_Prototipo_v02.f3d).
+
+**AFR2-20261026-05:** [prototipo de brazo antropomorfo PVC32](mecanica/brazo-antropomorfo/README.md), con componentes y parámetros nativos de Fusion, articulaciones rojas, motores/housings, rodamientos y control alojado en la base. Diseño para revisión; sin cálculo de carga, interferencias ni fabricación. Es una ampliación autorizada del CAD; el estado del auto de los hitos anteriores se conserva.
 
 **Final AFR2-20261025-13:** [auto con PCB y soporte del usuario](docs/MODELO_FINAL_WEB_20261025.md), maestros Fusion/Blender guardados y GLB **871.756 bytes** integrado en Web y paquete ESP. Importación/Draco y render Blender comprobados; sin ERC/DRC ni prueba física. Las revisiones inferiores son históricas.
 
@@ -23,6 +37,7 @@ Estado al 23/10/2026: estructura y documentación creadas; nueve insumos CAD exi
 | [mecanica/pieza-nueva](mecanica/pieza-nueva/README.md) | Pieza nueva, soporte y relación con la cubierta |
 | [mecanica/auto-completo](mecanica/auto-completo/README.md) | Ensamblaje completo del vehículo |
 | [mecanica/componentes](mecanica/componentes/README.md) | Modelos editables propios de componentes |
+| [mecanica/brazo-antropomorfo](mecanica/brazo-antropomorfo/README.md) | Prototipo paramétrico del brazo PVC32, fichas y fuentes |
 | [reference](reference/README.md) | Insumos conservados, inventario y procedencia de dependencias |
 | [docs](docs/ALCANCE_Y_PENDIENTES.md) | Alcance, estado, decisiones y datos pendientes |
 | exports/ | STEP/STL/GLB, Gerber, taladros, planos u otras salidas regenerables; ignorada por Git |

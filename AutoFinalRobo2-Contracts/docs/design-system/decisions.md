@@ -1,5 +1,35 @@
 # Decisiones visuales — 23/10/2026
 
+## VIS-044 — Enseñar y recuperar destinos del brazo (27/10/2026)
+
+Confirmada: plan humano de puntos individuales persistentes, misma biblioteca en
+Brazo y Conjunto, y conservacion de posicion/orientacion al cambiar dimensiones.
+Pedido explicito de Visual Consistency y Apple Design. Observada: identidad0.1.9
+autorizada y primitivas de tarjeta, campos, Button y Chevron compartidas.
+Propuesta aplicada: tarjeta plegable inferior, captura/lista/ficha, acciones
+proximas al destino, marcadores seleccionables, postura transparente y recorrido
+continuo por segmentos. Cancelar permanece junto al visor si se pliega la tarjeta.
+Texto y leyenda distinguen destino, modelo, calculo y bloqueo. Sin rebotes ni
+inercia en las articulaciones; feedback inmediato con primitivas existentes y
+teclado/reduced motion heredados. Sin nueva dependencia o blur anidado.
+[Cobertura](coverage-20261027-11.json). Fuente implementada, aspecto/interaccion
+No verificados; sin tests/build/validadores/navegador por esta entrega.
+
+## VIS-043 — Ayuda contextual y matematica protagonista (27/10/2026)
+
+Confirmada: pedido humano de explicar cada parametro a la derecha, destacar
+la matriz y usar el mismo formulario matematico en las tres simulaciones.
+Reutilizar el pad simulado en Control y alinear los giros con las columnas
+extremas. Observada: identidad0.1.9, superficies/tokens propios, tarjeta05,
+pad simulado y numeros compactos. Propuesta aplicada: ficha con significado,
+rango, interpretacion y dependencias; columna matematica mayor, corchetes
+visibles, bloques de rotacion/posicion y lecturas trigonometricas centradas.
+SimulationMatrix/HomogeneousMatrix, MecanumDrivePad, HoldActionButton y
+RangeNumberField estandarizan presentacion; cada adaptador conserva su dominio.
+No se animan las cifras ni se agregan materiales, activos o dependencias.
+[Cobertura](coverage-20261027-06.json). Direccion Confirmada, composicion
+Propuesta y aspecto/interaccion No verificados. Sin tests/build/navegador.
+
 Todas afectan el objetivo Web. Alternativa de partida: lenguaje instrumental cian de AutoMicro con paneles más sólidos; la especificación adopta el informe de transferencia para material/temas/movimiento y el activo propio `D:/ProyectoRobotica2/assets/Logo.png` para la identidad carmesí/rubí sobre vidrio neutro. Cerrar el plan visual documental habilita su implementación cuando se solicite, sin confirmar experiencia en ejecución.
 
 | ID | Categoría y regla | Evidencia | Aprobación | Fuente/razón | Consecuencia |
@@ -353,6 +383,54 @@ existentes, estado de aplicación explícito y movimiento accesible funcional.
 No verificada: presentación en temas/tamaños, táctil/teclado/lectores, rendimiento
 WebGL y contraste final; sin ejecución de herramientas de comprobación.
 
+
+## VIS-042 — Ancho util y tarjetas integradas (27/10/2026)
+
+Confirmada: pedido humano de quitar margenes amplios, unificar simulaciones en
+una tarjeta, adosar/plegar matematica y mover controles debajo del renderizador.
+Numeros de slider compactos; botones de motor distinguibles; Control agrupado
+en Movimiento y Pruebas/calibracion, manteniendo GOTO y funciones existentes.
+Observada: primitivas y Chevron0.1.9, con transition transform180ms ease-out;
+teclado/reduced motion inmediatos. Propuesta: relleno12…24 px, matriz320 px o
+rail52 px, divisores internos y controles distribuidos en dos columnas.
+Se retira el limite1120 px (contentMax=none) por direccion humana confirmada.
+[Cobertura](coverage-20261027-05.json). Fuente sin tests/build/validaciones ni
+observacion visual; aspecto y respuesta No verificados.
+
+## VIS-041 — Simulaciones y Modelos3D (27/10/2026)
+
+Confirmada: pedido humano de unificar tres simulaciones, mantener Control aparte,
+modelos elegibles mediante pills, gripper independiente y controles mas ordenados.
+Observada: TaskSections, campos de radar con titulo/numero superiores y barra
+inferior, tokens y superficies0.1.9 autorizados. Propuesta: controles compactos
+derechos, matriz persistente debajo, motores en pills con nombre central.
+Articulaciones seleccionables y arrastrables con ambos botones del mouse.
+El selector del visor conserva herramientas; brazo final/referencias y burbuja
+definitiva esperan los insumos del usuario. [Cobertura](coverage-20261027-04.json).
+Fuente implementada, aspecto/interaccion No verificados, sin tests/build/navegador.
+
+## VIS-040 — Control intacto, brazo y conjunto separados (27/10/2026)
+
+Confirmada: correccion humana que exige conservar Control/control tactil y
+agregar solamente Brazo robotico y Simulacion conjunta. Controles a la derecha,
+articulaciones seleccionables y gripper, posiciones de cubos y toma segun alcance.
+Observada: tokens0.1.9 autorizados, Button, TaskSections y disposiciones laterales
+existentes. Propuesta: escena izquierda, controles derechos con eje seleccionado,
+selector de tareas del conjunto, proyeccion del espacio de toma y cubos verdes
+alcanzables/ocre fuera de alcance; en movil se apilan los controles debajo.
+Sustituye rutas y disposicion VIS-039. Aspecto No verificado, sin ejecucion de
+tests/build/validadores/navegador. [Cobertura](coverage-20261027-02.json).
+
+## VIS-039 — Robot recolector y panel del brazo (27/10/2026)
+
+Confirmada: pedido humano de simulador3D, referencias reversibles, auto
+seleccionable/movil, motores adelante/atras y panel del brazo separado del robot.
+Observada: identidad0.1.9 previamente autorizada, tokens, Button/Disclosure,
+SectionHeader, navegacion y escenas propias. Propuesta: escena ancha, vistas
+Superior/Lateral/Perspectiva, datos inferiores y controles por panel, con estado
+compartido en memoria. Rig del brazo y deposito nominales; no CAD final.
+[Cobertura](coverage-20261027-01.json). Direccion Confirmada, composicion
+Propuesta y aspecto No verificado. Sin tests/build/validaciones/navegador.
 
 ## VIS-038 — Composición del radar (26/10/2026)
 

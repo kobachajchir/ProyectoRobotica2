@@ -1,6 +1,6 @@
 import { StartupWelcome } from '../components/ui/StartupWelcome';
 import { Suspense, lazy } from 'react';
-import { HashRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { HashRouter, Navigate, Outlet, Route, Routes } from 'react-router-dom';
 import { ThemeProvider } from './providers/ThemeProvider';
 import { ConnectionProvider } from '../features/connection/ConnectionContext';
 import { Afr2Toaster } from '../components/notifications/notify';
@@ -13,6 +13,9 @@ import { WifiDraftModal } from '../features/wifi/WifiDraftModal';
 import { OledPage } from '../features/oled/OledPage';
 import { DocsPage } from '../features/docs/DocsPage';
 import { DeveloperPage } from '../features/developer/DeveloperPage';
+import { CollectorProvider } from '../features/collector/CollectorContext';
+
+const CollectorPage = lazy(() => import('../features/collector/CollectorPage').then(m => ({ default: m.CollectorPage })));
 
 const Model3DPage = lazy(() =>
   import('../features/model3d/Model3DPage').then((m) => ({ default: m.Model3DPage }))
@@ -31,6 +34,11 @@ export function App() {
               <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/control" element={<ControlPage />} />
+                <Route element={<CollectorProvider><Outlet /></CollectorProvider>}>
+                  <Route path="/simulaciones" element={<Suspense fallback={<p role="status">Cargando simulaciones...</p>}><CollectorPage /></Suspense>} />
+                </Route>
+                <Route path="/brazo" element={<Navigate to="/simulaciones?tipo=brazo" replace />} />
+                <Route path="/simulacion" element={<Navigate to="/simulaciones?tipo=conjunta" replace />} />
                 <Route path="/sensores" element={<SensorsPage />} />
                 <Route path="/wifi" element={<WifiPage />} />
                 <Route path="/oled" element={<OledPage />} />

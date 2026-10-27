@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="740" viewBox="0 0 1280 740">
+  <title>Robot recolector: propuesta nominal de montaje</title>
+  <desc>Vistas superior y lateral. Brazo PVC32 v02 y bandeja lateral. Esquema editable, no plano de fabricacion. Cotas nominales en milimetros.</desc>
+  <defs><style>text{font-family:system-ui,sans-serif;fill:#182333}.note{fill:#526276;font-size:13px}.dim{fill:#526276;font-size:12px}.proposed{fill:#b81d33;fill-opacity:.08;stroke:#b81d33;stroke-width:1.5;stroke-dasharray:6 4}</style></defs>
+  <rect width="1280" height="740" fill="#f3f6fb"/>
+  <text x="48" y="48" font-size="25" font-weight="700">Robot recolector</text>
+  <text x="48" y="75" class="note">AFR2-20261027-01 · Distribucion propuesta · Sin fabricacion ni comprobaciones</text>
+  <rect x="32" y="100" width="540" height="470" rx="20" fill="#fff"/>
+  <rect x="592" y="100" width="656" height="470" rx="20" fill="#fff"/>
+  <text x="56" y="132" font-size="17" font-weight="650">Superior</text>
+  <text x="616" y="132" font-size="17" font-weight="650">Lateral · proyeccion</text>
+  <g transform="translate(36,35)">
+    <rect x="125" y="207.5" width="200" height="245" rx="20" fill="#eaf0f8" stroke="#64748b" stroke-width="2"/>
+    <g fill="#475569"><rect x="111" y="229" width="23" height="64" rx="7"/><rect x="316" y="229" width="23" height="64" rx="7"/><rect x="111" y="366" width="23" height="64" rx="7"/><rect x="316" y="366" width="23" height="64" rx="7"/></g>
+    <rect x="145" y="285" width="160" height="160" rx="5" class="proposed"/>
+    <circle cx="225" cy="365" r="27" fill="#b81d33" fill-opacity=".16" stroke="#b81d33"/>
+    <text x="225" y="369" font-size="12" text-anchor="middle">J1</text>
+    <text x="225" y="413" font-size="12" text-anchor="middle">Base160 ×160</text>
+    <rect x="296" y="93.5" width="118" height="118" rx="5" class="proposed"/>
+    <path d="M355 94V211M296 152.5H414" stroke="#b81d33" stroke-opacity=".6"/>
+    <text x="425" y="125" class="dim">Deposito</text><text x="425" y="145" class="dim">118 ×118</text>
+    <path d="M340 211V275H305" fill="none" stroke="#94a3b8" stroke-width="10"/>
+    <text x="359" y="250" class="dim">Extension</text><text x="359" y="268" class="dim">propuesta</text>
+    <circle cx="225" cy="227" r="7" fill="#0369a1"/>
+    <path d="M225 217V160" stroke="#0369a1" stroke-dasharray="4 4"/>
+    <text x="56" y="176" class="dim">HC-SR04 virtual</text><text x="56" y="194" class="dim">altura45 propuesta</text>
+    <path d="M175 194L218 221" fill="none" stroke="#64748b"/>
+    <path d="M225 330V182M225 330H76" fill="none" stroke="#64748b"/>
+    <text x="232" y="187" class="dim">+X frente</text><text x="42" y="322" class="dim">+Y</text>
+    <text x="225" y="480" class="dim" text-anchor="middle">Chasis nominal245 ×200 · Ruedas esquematicas</text>
+  </g>
+  <g>
+    <path d="M625 480H1205" stroke="#64748b" stroke-width="2"/>
+    <rect x="677.5" y="390" width="245" height="50" rx="8" fill="#eaf0f8" stroke="#64748b"/>
+    <circle cx="713" cy="440" r="40" fill="#475569"/><circle cx="884" cy="440" r="40" fill="#475569"/>
+    <rect x="685" y="318" width="160" height="72" class="proposed"/>
+    <path d="M765 318V205" stroke="#94a3b8" stroke-width="23"/>
+    <path d="M765 205L895 207L991 279L1035 311L1035 376" fill="none" stroke="#b81d33" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M1035 376V455" stroke="#475569" stroke-width="9"/>
+    <g fill="#b81d33" stroke="#fff" stroke-width="2"><circle cx="765" cy="205" r="10"/><circle cx="895" cy="207" r="10"/><circle cx="991" cy="279" r="8"/><circle cx="1035" cy="311" r="8"/><circle cx="1035" cy="376" r="8"/></g>
+    <rect x="1010" y="430" width="50" height="50" rx="2" fill="#c8934e"/>
+    <text x="1073" y="453" class="dim">Cubo50</text><text x="1073" y="471" class="dim">100 g requisito</text>
+    <path d="M918.5 290V350H1036.5V290" fill="none" stroke="#b81d33" stroke-width="2" stroke-dasharray="6 4"/>
+    <text x="1075" y="330" class="dim">Deposito en</text><text x="1075" y="348" class="dim">otra seccion Y</text>
+    <text x="648" y="300" class="dim" transform="rotate(-90 648 300)">Hombro185 sobre montaje</text>
+    <text x="1170" y="434" class="dim">90*</text>
+    <text x="820" y="190" class="dim">130</text><text x="938" y="225" class="dim">120</text>
+    <text x="706" y="516" class="dim">Postura de toma ilustrativa · Alcance calculado en Web</text>
+    <text x="706" y="537" class="dim">* Altura propuesta; no medida sobre el auto fisico</text>
+  </g>
+  <rect x="32" y="590" width="1216" height="122" rx="18" fill="#fff"/>
+  <text x="56" y="620" font-size="15" font-weight="650">Mundo → Chasis → Base → J1 → J2 → J3 → J4 → J5 → J6 → Pinza</text>
+  <text x="56" y="647" class="note">Ramas: HC-SR04 + servo / deposito. El alcance3D se muestrea con restricciones; no se dibuja una esfera ideal.</text>
+  <text x="56" y="674" class="note">La bandeja sobresale. Faltan ensamble nativo, soporte, fijaciones, cargas, estabilidad, alimentacion e informe cinematico.</text>
+  <text x="56" y="697" class="dim">Autoria propia. Fuente dimensional: brazo v02 y referencia nominal del auto. No es un plano de fabricacion.</text>
+</svg>

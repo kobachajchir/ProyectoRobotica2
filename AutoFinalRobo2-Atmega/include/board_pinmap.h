@@ -139,19 +139,21 @@
 #define AFR2_ENC_UI_SW_PIN PINL
 #define AFR2_ENC_UI_SW_BIT 7u
 
-/* Proposed Hall bank, x1 rising A + B direction; levels/wiring unverified.
- * Wheel order matches Afr2Sensors.counts: FL, FR, RL, RR. */
+/* AFR2-20261027-07: contiguous headers A8..A11=A, A12..A15=B.
+ * Physical order in both headers: FR, FL, RR, RL.
+ * Logical Afr2Sensors.counts order remains FL, FR, RL, RR.
+ * x1 rising A + B direction; physical operation remains unverified. */
 #define AFR2_HALL_DDR DDRK
 #define AFR2_HALL_PORT PORTK
 #define AFR2_HALL_PIN PINK
-#define AFR2_HALL_A_MASK 0x55u
-#define AFR2_HALL_FL_A_BIT 0u /* A8 / D62 / PK0 / PCINT16 */
-#define AFR2_HALL_FL_B_BIT 1u /* A9 / D63 / PK1 / PCINT17 */
-#define AFR2_HALL_FR_A_BIT 2u /* A10 / D64 / PK2 / PCINT18 */
-#define AFR2_HALL_FR_B_BIT 3u /* A11 / D65 / PK3 / PCINT19 */
-#define AFR2_HALL_RL_A_BIT 4u /* A12 / D66 / PK4 / PCINT20 */
-#define AFR2_HALL_RL_B_BIT 5u /* A13 / D67 / PK5 / PCINT21 */
-#define AFR2_HALL_RR_A_BIT 6u /* A14 / D68 / PK6 / PCINT22 */
-#define AFR2_HALL_RR_B_BIT 7u /* A15 / D69 / PK7 / PCINT23 */
+#define AFR2_HALL_A_MASK 0x0Fu
+#define AFR2_HALL_FL_A_BIT 1u /* A9 / D63 / PK1 / PCINT17 */
+#define AFR2_HALL_FL_B_BIT 5u /* A13 / D67 / PK5 / PCINT21 */
+#define AFR2_HALL_FR_A_BIT 0u /* A8 / D62 / PK0 / PCINT16 */
+#define AFR2_HALL_FR_B_BIT 4u /* A12 / D66 / PK4 / PCINT20 */
+#define AFR2_HALL_RL_A_BIT 3u /* A11 / D65 / PK3 / PCINT19 */
+#define AFR2_HALL_RL_B_BIT 7u /* A15 / D69 / PK7 / PCINT23 */
+#define AFR2_HALL_RR_A_BIT 2u /* A10 / D64 / PK2 / PCINT18 */
+#define AFR2_HALL_RR_B_BIT 6u /* A14 / D68 / PK6 / PCINT22 */
 
 #endif

@@ -1,0 +1,19 @@
+{
+  "changeId": "AFR2-20261027-05",
+  "decisionId": "VIS-042",
+  "manualVersion": "0.1.9",
+  "mode": "APLICAR",
+  "authorization": "Pedido humano de ampliar el ancho, unificar simulador y reorganizar visualmente Control; identidad0.1.9 previamente autorizada.",
+  "canonicalSources": ["manual.md", "tokens.json", "components.md", "decisions.md"],
+  "supporting": ["Web/src/components/ui/Chevron.tsx", "Web/src/components/ui/TaskSections.tsx", "Web/src/styles/workspace.css", "Web/src/features/sensors/ScanControls.tsx"],
+  "targets": ["Web/src/styles/workspace.css", "Web/src/styles/tokens.css", "Web/src/features/collector/", "Web/src/styles/collector.css", "Web/src/features/control/ControlPage.tsx", "Web/src/styles/control-cards.css", "Web/src/components/ui/CollapsiblePanel.tsx", "Web/src/styles/sensors.css"],
+  "coverage": [
+    {"behavior": "Ancho casi completo y una tarjeta de simulacion", "evidence": "Confirmada", "coverage": "Cubierta en fuente", "verification": "No verificada"},
+    {"behavior": "Matematica adosada/plegable y controles inferiores sin scroll propio", "evidence": "Confirmada", "coverage": "Cubierta en fuente", "verification": "No verificada"},
+    {"behavior": "Campos compactos, motores y modos en pills", "evidence": "Confirmada", "coverage": "Cubierta en fuente", "verification": "No verificada"},
+    {"behavior": "Movimiento manual/secuencias y pruebas/calibracion agrupados", "evidence": "Confirmada", "coverage": "Cubierta en fuente conservando handlers", "verification": "No verificada"},
+    {"behavior": "Giro de chevron180ms con teclado/reduced motion inmediatos", "evidence": "Observada", "coverage": "Chevron compartido aplicado", "verification": "No verificada"}
+  ],
+  "checksRun": [],
+  "limits": "Sin tests/build/validaciones/navegador; no se acredita operacion fisica, ausencia de solapamientos o aspecto final."
+}

@@ -20,3 +20,7 @@ conservados. La sesión/transacción/programa/revisión solo correlaciona mensaj
 El retiro del permiso no habilita hardware sin requisitos. Se conservan SW largo
 para principal, corto confirma y atrás por Volver. [Matriz](ALINEACION_MAESTRO.md).
 Sin nuevo CAD; J1 cinco señales/J2 alimentación común,2,54mm y fijación pendientes.
+
+## Pendiente diferido: burbujas de espacio de trabajo — AFR2-20261027-08
+
+[Prompts originales, cinco etapas pendientes y dos referencias visuales](pendientes/espacio-trabajo-brazo/README.md). Referencias recibidas el 27/10/2026. Esperar a que el usuario avise explícitamente que el diseño está listo; no iniciar cálculo, vistas ni integración Web por el solo hecho de guardar los prompts. [Ficha](../changes/2026-10-27-08-workspace-envelope-pending-prompts.md).

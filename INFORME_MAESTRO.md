@@ -1,3 +1,13 @@
+> **Loader AFR2-20261027-16 / 0.2.0:** [servidor MCP y guía Codex](AutoFinalRobo2-Loader/MCP.md), revisión de solicitudes en GUI, historial y refuerzos de interfaz/errores. [Ficha](AutoFinalRobo2-Contracts/changes/2026-10-27-16-loader-mcp-ui.md). Solo fuente/documentación, sin compilación, ejecución, registro global, pruebas MCP/COM ni flasheo.
+
+> **Organización AFR2-20261027-14:** [AutoFinalRobo2-Loader](AutoFinalRobo2-Loader/README.md) integrado como sexto módulo en la raíz. Código, lanzadores y manual propios; único Git global y registros compartidos en Contracts. Solo traslado/documentación; sin compilación, ejecución, tests ni flasheo.
+
+> **Herramienta AFR2-20261027-13:** [AFR2 Loader para Windows](AutoFinalRobo2-Loader/README.md), aplicación de compilación/carga con rutas y perfiles portables, diagnóstico UART y verificación posterior. [Manual](AutoFinalRobo2-Loader/MANUAL.html). Fuente/lanzador entregados, sin compilar, ejecutar, validar ni flashear en esta ficha; firmware/Web/CAD sin intervención.
+
+> **Build/carga AFR2-20261027-10:** [ATmega/ESP/Web compilados y LittleFS creado](AutoFinalRobo2-Contracts/documentation/builds/2026-10-27-10/README.md). Hall activo en build por pedido humano, mapa07, hall_wired/EEPROM conservados. Web esp promovida,8activos/1571104bytes gzip; littlefs.bin3121152bytes. [Guía USB-B/COM16](AutoFinalRobo2-Contracts/hardware/CARGA_USB_COM16.md). Sin apertura serie ni flasheo; montaje de jumpers/flash física sin identificar. Estados inferiores históricos.
+
+> **Pinout AFR2-20261027-07:** [hoja completa y PDF](AutoFinalRobo2-Contracts/hardware/PINOUT.md), Hecho por Koba Chajchir. Hall agrupados A8-A11=A y A12-A15=B, orden DEL DER / DEL IZQ / TRAS DER / TRAS IZQ en ambos; fuente ATmega/máscara0x0F actualizadas. Panel OLED/encoder a 5 V reportado; CAD +3V3 sin editar. Hall deshabilitado, sin compilación/flasheo/tests/validaciones de esta revisión. [Ficha](AutoFinalRobo2-Contracts/changes/2026-10-27-07-complete-pinout-grouped-hall.md).
+
 > **Radar Web AFR2-20261026-02:** composición/escena rehechas con manual0.1.9 y VIS-038. [Ficha](AutoFinalRobo2-Contracts/changes/2026-10-26-02-radar-composition.md). Fuente implementada; **sin compilación, tests, validadores, navegador ni promoción ESP**. Firmware/OLED/CAD y Modelo3D sin intervención en esta revisión. Presentación16 sustituida, controles conservados.
 
 > **Modelo3D AFR2-20261026-01:** botón Mostrar/Ocultar referencias, cierre de fichas al ocultar y una única rueda representativa (ocho referencias en total). [Ficha](AutoFinalRobo2-Contracts/changes/2026-10-26-01-model-reference-visibility.md). Solo fuente Web/documentación, sin tests/build/validaciones ni promoción ESP. Sustituye la cantidad de once referencias del hito15.
@@ -12,7 +22,18 @@
 
 > **Vigente AFR2-20261025-01:** [control directo7](AutoFinalRobo2-Contracts/contracts/DIRECT_CONTROL_7.md), sin permiso ni opciones de adquisición. Los tres módulos compilan con firmware0.9.0/Web0.2.0. Estado anterior inferior histórico.
 
+> **Interfaz AFR2-20261027-05:** ancho util global ampliado; simulaciones en una tarjeta con matematica lateral plegable y controles inferiores. Inputs compactos, modos en pills y Control agrupado en Movimiento / Pruebas y calibracion / GOTO. Funciones fisicas y tactiles conservadas. [Ficha](AutoFinalRobo2-Contracts/changes/2026-10-27-05-wide-workspaces-control-cards.md). Sin tests/build/validaciones/navegador/promocion ESP; modelo final del brazo y burbuja de referencia pendientes.
+
+> **Interfaz AFR2-20261027-06:** calibracion con ayuda contextual derecha e interpretacion del valor; matematica destacada y uniforme en Auto/Brazo/Conjunto; pad de movimiento, boton mantenido y numero/barra compartidos con Control. [Ficha](AutoFinalRobo2-Contracts/changes/2026-10-27-06-calibration-live-math-shared-controls.md). Solo fuente; sin tests/build/validaciones/navegador/promocion ESP. Adaptadores fisico y simulado separados.
+
 # AutoFinalRobo2 — informe maestro vigente
+
+> **Fuente Web AFR2-20261027-11:** [puntos y trayectorias independientes del modelo](AutoFinalRobo2-Contracts/contracts/WEB_ARM_POINTS.md).
+> Posicion/orientacion respecto del montaje conservadas al cambiar dimensiones;
+> biblioteca local compartida, IK en Worker, vista previa y reproduccion cancelable.
+> Perfil nominal v03, sin modificar CAD v04. Esta entrega no ejecuta tests/builds,
+> validadores, navegador ni promocion ESP; el paquete de10 no acredita la fuente
+> final de11. Envolvente definitiva y laminas del pendiente08 sin ejecutar.
 
 **Modelo final AFR2-20261025-13:** [PCB/soporte del usuario y conjunto Web/ESP](AutoFinalRobo2-CAD/docs/MODELO_FINAL_WEB_20261025.md). KiCad, Fusion y Blender guardados; GLB **871.756 bytes**, idéntico al descomprimido de ESP. Web compilada y siete activos promovidos, paquete 1.505.042 bytes gzip. Comprobación CAD/Draco y render Blender; sin ERC/DRC, firmware nuevo ni flasheo. Sustituye el estado CAD pendiente inferior.
 

@@ -1,32 +1,122 @@
-> AFR2-20261024-11: CLK/DT pasan de D40/D41 a D2/D3; requiere recableado. SW D42. Hall PCINT2 A8–A15 revisado en fuente, deshabilitado. [Contrato IRQ](INTERRUPCIONES_ENCODER_HALL.md). Sin compilación ni prueba física.
+> **Build AFR2-20261027-10:** captura Hall habilitada por pedido humano y compilada. Preferencia Hall conectado/EEPROM conservada; activarla en menú si estaba0. Aún sin flasheo. [Evidencia](../documentation/builds/2026-10-27-10/README.md), [guía de carga](CARGA_USB_COM16.md). La nota de Hall deshabilitado en la hoja PDF07 describe esa entrega anterior.
 
-# Pinout y PCB de interfaz
+# Pinout del auto
 
-[Maestro](../docs/INFORME_MAESTRO.md). Base: supplied/Pinout_OSOYOO_Mecanum.csv y ManualOsoyoo.pdf, páginas PDF 14-17, 26-27, 33-34, 38, 43 (no numeración impresa). [CSV ampliado](PINOUT_PROPUESTO.csv).
+AutoFinalRobo2 | OSOYOO Mecanum 4WD | Arduino Mega 2560
 
-| Función | Señales documentadas |
+**AFR2-20261027-07 - 27/10/2026**
+
+[Hoja PDF para imprimir](output/pdf/PINOUT_DEL_AUTO.pdf). Fuente editable: [PINOUT_DEL_AUTO.json](PINOUT_DEL_AUTO.json); generador: [generate_pinout_auto.py](../tools/generate_pinout_auto.py).
+
+DEL/TRAS e IZQ/DER se interpretan mirando en el sentido de avance del auto.
+
+## Motores - control desde el Mega
+
+| Rueda | Model Y / salida | IN1 | IN2 | PWM |
+| --- | --- | --- | --- | --- |
+| DEL DER (FR) | M_B / BK1-BK2 | D22 | D24 | D9 / ENA |
+| DEL IZQ (FL) | M_B / BK3-BK4 | D26 | D28 | D10 / ENB |
+| TRAS DER (RR) | M_A / AK1-AK2 | D5 | D6 | D11 / ENA |
+| TRAS IZQ (RL) | M_A / AK3-AK4 | D7 | D8 | D12 / ENB |
+
+M+/M- van al puente H de su rueda; no al Mega. Polaridad de giro según montaje y calibración.
+
+## Hall de ruedas - dos headers de 4 señales
+
+| Rueda | A = S1 / naranja | B = S2 / verde |
+| --- | --- | --- |
+| DEL DER | A8 (D62) | A12 (D66) |
+| DEL IZQ | A9 (D63) | A13 (D67) |
+| TRAS DER | A10 (D64) | A14 (D68) |
+| TRAS IZQ | A11 (D65) | A15 (D69) |
+
+Header A: A8, A9, A10, A11. Header B: A12, A13, A14, A15. Ambos: DEL DER, DEL IZQ, TRAS DER, TRAS IZQ.
+
+## Hall de ruedas - alimentación
+
+| En cada encoder Hall | Conexión |
 | --- | --- |
-| FR / BK1-BK2 | Dirección D22/D24, PWM D9 |
-| FL / BK3-BK4 | Dirección D26/D28, PWM D10 |
-| RR / AK1-AK2 | Dirección D5/D6, PWM D11 |
-| RL / AK3-AK4 | Dirección D7/D8, PWM D12 |
-| Servo ultrasonido | D13 reservado |
-| HC-SR04 | TRIG D30, ECHO D31 |
-| Línea IR1..IR5 | A4, A3, A2, A1, A0 |
-| ESP operativo | Mega TX1 D18 → E_RX del selector; E_TX del selector → Mega RX1 D19 |
+| VCC / V (blanco en manual) | +5 V regulados |
+| GND / G (amarillo en manual) | GND común con el Mega |
 
-Bluetooth comparte UART1 en el manual y queda fuera de esta arquitectura; no colocar sus salidas en paralelo con ESP. Retirar/aislar jumpers hacia D4/D5 y D0/D1 al usar D18/D19; D5 ya es dirección RR. [Shield, selector y niveles](WIFI_SHIELD.md). El puerto directo ESP UART de 3,3 V no se sustituye por E_RX/E_TX sin revisar la ruta de niveles. Polaridad por rueda pendiente de comprobar.
+Los cuatro VCC comparten +5 V y los cuatro GND comparten masa. OSOYOO advierte variantes blanco/amarillo invertidos: identificar V/G en la placa. No usar tensión de batería en VCC Hall.
 
-## Adiciones acordadas y conectores
+## Potencia y voltímetro del kit
 
-El usuario y las imágenes identifican las cabeceras SDA/SCL. Usarlas; en Mega equivalen a D20/PD1 y D21/PD0, sin exigir esos números impresos. El mapa OSOYOO aportado usa equivalencias UNO D18/D19 y A4/A5: no copiarlas a Mega. A4 permanece IR1; la continuidad del shield real aún no se ha medido.
+| Origen / conexión | Destino |
+| --- | --- |
+| Portabaterías + / - | Model Y VIN+ / VIN- |
+| Model Y VOUT+ / VOUT- | Entrada POWER del shield |
+| Voltímetro VCC / VT / GND | Cabecera homónima del Model Y |
 
-La placa OLED/encoder tiene J1 hembra 1x5 de paso 2,54 mm para CLK→D2, DT→D3, SW→D42, SDA→cabecera SDA y SCL→cabecera SCL. J2 1x2 JST de **2,00 mm** lleva +3V3 y GND; el OLED va en socket hembra 1x04 de 2,54 mm. Encoder sin breakout con comunes a GND. [Detalle eléctrico y mecánico vigente AFR2-20261025-12](PCB_OLED_ENCODER.md).
+Ruta de potencia del manual; VOUT no se considera una salida regulada de 5 V. VT mide tensión; no es un GPIO del Mega. GND lógico común; no usar una salida M- del puente H como masa.
 
-Asignaciones AVR: CLK PE4/INT4, DT PE5/INT5, SW PL7, SDA PD1 y SCL PD0; SW activo bajo con pull-up. +3V3 confirmado por el usuario; pull-ups y compatibilidad de niveles I2C con Mega siguen pendientes de identificar en los módulos reales. No se ha conectado ni probado la nueva PCB.
+## Sensores de línea, ultrasonido y servo
 
-Fuente de correspondencias: [pinout oficial Mega](https://docs.arduino.cc/resources/pinouts/A000067-full-pinout.pdf). A4 ya pertenece a IR1 y D13 al servo. D2/D3/D42 no figuran ocupados en el pinout recibido; confirmar montaje real antes de cablear.
+| Elemento | Señal | Pin Mega / alimentación |
+| --- | --- | --- |
+| Línea | IR1 / IR2 / IR3 / IR4 / IR5 | A4 / A3 / A2 / A1 / A0 |
+| Línea | VCC / GND | +5 V / GND |
+| HC-SR04 | TRIG / ECHO | D30 / D31 |
+| HC-SR04 | VCC / GND | +5 V / GND |
+| Servo radar | S / VCC / GND | D13 / +5 V / GND |
 
-Los Hall de ruedas siguen sin conectar. La asignación de fuente es FL A8/A9, FR A10/A11, RL A12/A13 y RR A14/A15: PK0..PK7 / PCINT16..23, banco PCINT2. Se conserva x1: IRQ por A (máscara0x55), flanco ascendente contado y B para dirección. Sin superposición en el mapa actual; niveles, acceso físico y correspondencia S1/S2 pendientes. AFR2_HALL_CONNECTED=0 se conserva. [Detalle de captura y prioridad](INTERRUPCIONES_ENCODER_HALL.md).
+S del servo es señal. Su +5 V es de alimentación, no un GPIO. A4 está ocupado por IR1; no usar A4/A5 como I2C del Mega.
 
-En el CSV, las señales UART se nombran `MEGA_TX1_TO_ESP_RX` y `ESP_TX_TO_MEGA_RX1` para explicitar el emisor/receptor. Esta corrección documental no renombra símbolos C ni cambia asignaciones eléctricas.
+## Panel añadido - OLED y encoder de menú
+
+| Elemento | Señal | Pin Mega / alimentación |
+| --- | --- | --- |
+| OLED | SDA / SCL | D20 (SDA) / D21 (SCL) |
+| OLED | VCC / GND | +5 V / GND |
+| Encoder menú | CLK / DT / SW | D2 / D3 / D42 |
+| Panel encoder | VCC / GND | +5 V / GND |
+| Encoder sin breakout | Comunes giro / pulsador | GND / GND |
+
+5 V en el montaje: confirmado por Koba. El encoder mecánico cierra contactos a GND; VCC alimenta el panel/pull-ups. OLED con pines arriba, de frente: GND, VCC, SCL, SDA. Usar serigrafía real.
+
+## Conectores del panel
+
+| Conector | Orden de señales |
+| --- | --- |
+| J1 hembra 1x5 / 2,54 mm | 1 CLK, 2 DT, 3 SW, 4 SDA, 5 SCL |
+| J2 JST 1x2 / 2,00 mm | 1 VCC (+5 V montaje), 2 GND |
+
+Numeración del diseño; identificar pin 1 físicamente. El CAD guardado conserva +3V3: esta hoja registra el montaje a 5 V, no una actualización del esquema/PCB.
+
+## Wi-Fi - UART de operación
+
+| Origen | Destino |
+| --- | --- |
+| Mega D18 / TX1 | E_RX del selector del shield |
+| E_TX del selector del shield | Mega D19 / RX1 |
+| GND Mega | GND shield |
+
+Usar E_RX/E_TX del selector. El puerto directo ESP UART es de 3,3 V. Aislar selección D4/D5 y D0/D1; Bluetooth desconectado de UART1. D5 ya controla un motor.
+
+## Compatibilidad del nuevo agrupamiento Hall
+
+A8-A11 son PK0-PK3 y A12-A15 son PK4-PK7. Las ocho señales pertenecen a PINK y al grupo PCINT2; se conserva una captura simultánea del puerto. No se necesita adyacencia entre cada A y B.
+
+El firmware usa x1: cuenta flancos ascendentes de A y lee B para el sentido. La máscara cambia de 0x55 a **0x0F** para interrumpir solo con PK0-PK3. Los contadores y el protocolo mantienen el orden lógico **FL, FR, RL, RR**; el orden físico de los headers es **FR, FL, RR, RL**. No cambia CPR ni formato wire.
+
+## Estado de esta entrega
+
+Build AFR2-20261027-10: captura Hall habilitada y firmware compilado. Aún sin flashear. Si la preferencia estaba en 0, activar Hall conectado=1 en Geometria y guardar EEPROM. Funcionamiento físico no probado.
+
+El usuario confirma alimentación del panel OLED/encoder a 5 V. Se registra como montaje comunicado, sin certificar tolerancia del OLED, pull-ups, continuidad ni rendimiento físico. No se modifica el CAD que conserva la red +3V3. El build AFR2-20261027-10 habilita captura Hall por pedido humano; la preferencia Hall conectado y la EEPROM se conservan. La versión flasheada previa puede usar otro mapa.
+
+D0/D1 corresponden a USB/USART0; no son el enlace operativo ESP. La carga temporal tiene cableado propio en [FLASHING.md](FLASHING.md). Para el selector y niveles, ver [WIFI_SHIELD.md](WIFI_SHIELD.md). Para IRQ y límites, ver [INTERRUPCIONES_ENCODER_HALL.md](INTERRUPCIONES_ENCODER_HALL.md).
+
+## Referencias
+
+- [Manual OSOYOO del kit](supplied/ManualOsoyoo.pdf): Páginas PDF 5, 14-17, 26-27, 33-34 y 43.
+- [Mapa de pines del firmware](../../AutoFinalRobo2-Atmega/include/board_pinmap.h): Asignación activa en fuente; Hall agrupados en revisión 07.
+- [Arduino Mega 2560 - pinout oficial](https://docs.arduino.cc/resources/pinouts/A000067-full-pinout.pdf): Correspondencia A8-A15, D62-D69 y puerto K.
+- [Microchip ATmega2560 - hoja de datos](https://ww1.microchip.com/downloads/en/devicedoc/atmega640-1280-1281-2560-2561-datasheet-ds40002211a.pdf): Puerto K / PCINT16-PCINT23 y PCMSK2.
+- [OSOYOO - alimentación y colores Hall](https://osoyoo.com/2020/07/01/robot-tank-car-kit-v2-lesson8-use-encoder-to-synchronize-motor-speed/): Hall V a 5 V; G a GND; S1 naranja; S2 verde.
+- [OSOYOO - variantes de alimentación del encoder](https://osoyoo.com/2019/11/08/how-to-test-motor-encoder-with-arduino/): Advierte variantes con blanco y amarillo intercambiados.
+- [LCDwiki - OLED de referencia MC096VX](https://www.lcdwiki.com/0.96inch_OLED_Module_%28IIC-4P_SKU%3AMC096VX%29): Referencia 3,3/5 V; no identifica por sí sola la unidad instalada.
+- [Montaje comunicado por Koba Chajchir](../changes/2026-10-27-07-complete-pinout-grouped-hall.md): 27/10/2026: panel a 5 V; Hall en dos grupos A y B, orden FR/FL/RR/RL.
+
+**Hecho por Koba Chajchir**

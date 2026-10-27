@@ -1,3 +1,5 @@
+> **Loader AFR2-20261027-16 / 0.2.0:** [MCP para conectar con Codex](AutoFinalRobo2-Loader/MCP.md), revisión de solicitudes en GUI, historial y refuerzos de interfaz. [Ficha](AutoFinalRobo2-Contracts/changes/2026-10-27-16-loader-mcp-ui.md). Fuente/documentación; sin compilar, ejecutar, registrar MCP, probar COM ni flashear en esta revisión.
+
 > **Vigente AFR2-20261025-01:** [control directo7](AutoFinalRobo2-Contracts/contracts/DIRECT_CONTROL_7.md), sin permiso ni opciones de adquisición. Los tres módulos compilan con firmware0.9.0/Web0.2.0. Estado anterior inferior histórico.
 
 > **Vigente AFR2-20261024-15:** [Matriz del maestro](AutoFinalRobo2-Contracts/docs/ALINEACION_MAESTRO.md):33comandos y59identidades OLED con fuentes complementarias. Calibración Web adquiere control al escribir; ESP/Web informan FS/paquete. Web/ESP compilados15; AVR sin nueva fuente, build12/EX01v6/firmware0.8.0/gates0. Sin brecha software definida identificada tras lectura; aceptación física, memoria dinámica, flash/SPI y planos CAD pendientes. Solo documentación en CAD, sin diseño nuevo. Estados inferiores históricos.
@@ -10,7 +12,7 @@
 
 # AutoFinalRobo2
 
-Un único repositorio Git local en D:/ProyectoRobotica2, organizado en cinco módulos. [Informe maestro](INFORME_MAESTRO.md) · [Central documental](AutoFinalRobo2-Contracts/README.md) · [Git, exclusiones e historial](AutoFinalRobo2-Contracts/docs/ESTRUCTURA_Y_GIT.md).
+Un único repositorio Git local en D:/ProyectoRobotica2, organizado en seis módulos. [Informe maestro](INFORME_MAESTRO.md) · [Central documental](AutoFinalRobo2-Contracts/README.md) · [Git, exclusiones e historial](AutoFinalRobo2-Contracts/docs/ESTRUCTURA_Y_GIT.md).
 
 | Módulo | Contenido |
 | --- | --- |
@@ -19,6 +21,7 @@ Un único repositorio Git local en D:/ProyectoRobotica2, organizado en cinco mó
 | [Web](AutoFinalRobo2-Web/README.md) | React/Vite; paquete previo y cambios fuente pendientes de reconstruir |
 | [Contracts](AutoFinalRobo2-Contracts/README.md) | Contratos, hardware, evidencia y cambios AFR2 |
 | [CAD](AutoFinalRobo2-CAD/README.md) | KiCad, pieza nueva y modelo completo del auto; estructura e insumos |
+| [Loader](AutoFinalRobo2-Loader/README.md) | Cargador Windows: compilación y flasheo guiados de ATmega/ESP/Web/LittleFS; fuente sin ejecutar ni probar |
 
 El trabajo de diseño eléctrico y mecánico se concentra en AutoFinalRobo2-CAD. Los insumos que estaban en CADS se conservan allí con inventario; Documentacion/ conserva los documentos originales. No iniciar un Git dentro de cada módulo.
 

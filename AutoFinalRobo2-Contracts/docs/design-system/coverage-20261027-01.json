@@ -1,0 +1,18 @@
+{
+  "changeId": "AFR2-20261027-01",
+  "decisionId": "VIS-039",
+  "manualVersion": "0.1.9",
+  "mode": "APLICAR",
+  "authorization": "Borrador0.1.9 previamente autorizado, registrado en index.md; pedido actual de paneles separados y simulador3D cuidado.",
+  "canonicalSources": ["manual.md", "tokens.json", "components.md", "decisions.md", "sources.md"],
+  "supporting": ["Web/src/styles/tokens.css", "Web/src/components/ui/Button.tsx", "Web/src/components/ui/Disclosure.tsx", "Web/src/components/ui/SectionHeader.tsx"],
+  "targets": ["Web/src/features/collector/", "Web/src/styles/collector.css", "Web/src/components/navigation/RouteNav.tsx", "Web/src/features/home/HomePage.tsx"],
+  "coverage": [
+    {"behavior": "Paneles Robot/Brazo y referencias reversibles", "evidence": "Confirmada", "coverage": "Cubierta en fuente", "verification": "No verificada"},
+    {"behavior": "Tokens propios, superficies solidas y datos locales identificados", "evidence": "Observada", "coverage": "Cubierta en fuente", "verification": "No verificada"},
+    {"behavior": "Escena ancha con controles inferiores y vistas", "evidence": "Propuesta", "approval": "Pendiente", "coverage": "Cubierta en fuente", "verification": "No verificada"},
+    {"behavior": "Escritorio/movil, temas, teclado, foco, carga/error y rendimiento", "evidence": "Propuesta", "coverage": "Parcial; estilos y controles accesibles en fuente", "verification": "No verificada"}
+  ],
+  "checksRun": [],
+  "limits": "No navegador, tests, builds ni validadores por instruccion humana. No se acredita paridad del rig con un ensamble CAD nuevo, ni cargas o funcionamiento fisico."
+}

@@ -1,3 +1,145 @@
+## AFR2-20261027-17 — 27/10/2026
+
+Brazo v06: masas/CG de 264 cuerpos y carga horizontal de 200 g; copia nativa de
+estudio conservando el maestro. Peso propio, fuerzas/momentos por junta, apoyos y
+engranajes calculados; sensibilidad FDM y criterios de refuerzo documentados.
+Codo 15,83 kgf·cm estáticos, objetivo preliminar ×2 superior al bloqueo publicado
+del DS3218. Sin FEA, refuerzos nuevos, despieces ni capacidad física acreditada.
+[Ficha](changes/2026-10-27-17-arm-mass-gravity-200g.md).
+
+## AFR2-20261027-15 — 27/10/2026
+
+Brazo v06 con contraplaca inferior única PETG, conservando montura baja y J1
+retrasado. Seis ejes/doce rodamientos completos y 3.141 configuraciones CAD sin
+penetraciones reportables; extremos/apertura nativos y transmisiones revisados.
+Maestro/CSV/evidencia guardados. Skill de láminas planificada; despieces pendientes
+de la señal del usuario. Sin fabricación, estabilidad ni capacidad de carga física
+acreditadas. [Ficha](changes/2026-10-27-15-arm-single-underplate-reviewed.md).
+
+## AFR2-20261027-14 - 27/10/2026
+
+Loader pasa a carpeta propia AutoFinalRobo2-Loader en la raíz, sexto módulo
+del único Git. Fuentes, lanzadores, perfiles y manual trasladados completos;
+referencias y reglas de organización actualizadas. Sin cambio funcional,
+compilación, ejecución, tests, validadores ni flasheo.
+[Ficha](changes/2026-10-27-14-loader-root-module.md).
+
+## AFR2-20261027-13 - 27/10/2026
+
+AFR2 Loader0.1.0 para Windows: perfiles/rutas/COM configurables, builds
+ATmega/ESP/Web/LittleFS, detección de boot UART y consulta ROM diferenciadas,
+asistentes de cableado y confirmación, carga/verificación y logs. C# WinForms
+con lanzador que genera EXE local al abrir; manual HTML y Acerca de con los
+datos de Koba. Solo fuente, sin compilar/ejecutar/probar ni abrir COM/flashear.
+[Ficha](changes/2026-10-27-13-windows-loader.md).
+
+## AFR2-20261027-11 — 27/10/2026
+
+Puntos cartesianos persistentes compartidos entre Brazo y Conjunto, con edicion,
+importacion/exportacion, IK en Worker, vista previa y reproduccion de trayectorias.
+Descriptor y adaptador visual independientes del GLB; perfil nominal v03 y destinos
+conservados al cambiar dimensiones. Cancelacion e invalidacion por contexto.
+[Ficha](changes/2026-10-27-11-arm-points-model-agnostic.md) y
+[contrato/guia](contracts/WEB_ARM_POINTS.md). Solo fuente: esta entrega no ejecuta
+builds/tests/validadores/navegador ni promocion ESP. No se acredita que el paquete
+de la ficha10 corresponda a esta fuente final.
+
+## AFR2-20261027-10 - 27/10/2026
+
+ATmega producto/comunicación/biblioteca, ESP y Web perfil esp compilados. Hall
+habilitado por pedido humano y cableado confirmado; preferencia EEPROM
+conservada. Web promovida a ESP/data/dist (8activos,1571104bytes gzip) y
+LittleFS3121152bytes generado. Corrección de retorno CollectorState para
+startManualScan. Guía USB-B/COM16 y lanzador Mega preparados, sin ejecutarlos.
+Sin tests, navegador, apertura serie ni flasheo; flash/jumpers por identificar.
+[Ficha](changes/2026-10-27-10-builds-hall-flashing-preparation.md).
+
+## AFR2-20261027-09 — 27/10/2026
+
+Brazo sobre AGV v04: dos anclajes M3 izquierdos con contrabarra completan seis
+laterales más el central. Alza paramétrica de 32 mm y giro nativo solidario de
+salida SG90, soporte y HC-SR04. Envolvente circular completa libre y 363 casos
+CAD sin penetraciones reportables; montajes internos y presentación nativa
+revisados. Tapa J1 con rebaje independiente corregido. F3D/126 parámetros y
+vistas guardados; carga, estabilidad y fabricación física pendientes.
+[Ficha](changes/2026-10-27-09-arm-bilateral-mount-pan-clearance.md).
+
+## AFR2-20261027-07 - 27/10/2026
+
+Pinout completo del auto en Markdown y PDF A4 de dos páginas, con referencias y
+autoría Hecho por Koba Chajchir. Hall en dos headers consecutivos: A8-A11=A,
+A12-A15=B, ambos FR/FL/RR/RL; fuente AVR y máscara0x0F alineadas, sin cambiar
+contadores lógicos ni wire. Panel OLED/encoder a 5 V según montaje comunicado;
+CAD previo +3V3 no editado. Hall deshabilitado; sin tests/build/flasheo,
+validadores ni validación visual/física. [Ficha](changes/2026-10-27-07-complete-pinout-grouped-hall.md).
+
+## AFR2-20261027-06 — 27/10/2026
+
+Calibracion con 29 fichas contextuales a la derecha; matematica mayor y centrada,
+con un mismo dibujo y formulario para Auto/Brazo/Conjunto. Pad de movimiento,
+boton mantenido y campos numero/barra compartidos con Control; giros alineados
+bajo columnas extremas. Adaptadores fisico/simulado separados. Solo fuente,
+sin tests/build/validaciones/navegador ni promocion ESP.
+[Ficha](changes/2026-10-27-06-calibration-live-math-shared-controls.md).
+
+## AFR2-20261027-03 — 27/10/2026
+
+Brazo sobre AGV v03 guardado: guías continuas, doce rodamientos, ejes y sujeciones,
+montura sobre agujeros del auto, contraplaca y electrónica vertical.114 parámetros,
+despieces y2.904 posturas CAD muestreadas sin penetraciones reportables. Carga,
+estabilidad y fabricación pendientes. Firmware/Web sin cambios de esta ficha.
+[Alcance y evidencia](changes/2026-10-27-03-arm-agv-mechanical-continuity.md).
+
+## AFR2-20261027-05 — 27/10/2026
+
+Aplicacion a todo el ancho util; simulaciones en una tarjeta con matematica
+adosada/plegable y controles inferiores. Numeros compactos, motores y modos en
+pills. Control agrupa manual/secuencias en Movimiento y pruebas/calibracion en
+una seccion. GOTO y funciones conservados. Fuente sin tests/build/validaciones.
+[Ficha](changes/2026-10-27-05-wide-workspaces-control-cards.md).
+
+## AFR2-20261027-04 — 27/10/2026
+
+Simulaciones con pills Auto/Brazo/Conjunto y Control aparte; articulaciones
+arrastrables, gripper independiente, sliders vinculados y matrices laterales
+en vivo. Modelos3D con selector Auto/Brazo y herramientas conservadas; archivo
+final y referencias del brazo pendientes. Sin assets/dependencias nuevos ni
+compilacion, pruebas o validaciones. [Ficha](changes/2026-10-27-04-simulations-models-interface.md).
+
+## AFR2-20261027-02 — 27/10/2026
+
+Control original restituido, incluido su flujo tactil y componentes3D compartidos.
+Solo se agregan Brazo robotico y Simulacion conjunta, con controles a la derecha,
+seleccion de articulaciones/gripper, posiciones/spawn de cubos y recogida segun
+alcance. Adaptadores nuevos aislados, estados individuales y llegada con tolerancia.
+Fuente sin tests/build/validaciones/navegador. Atmega/ESP/CAD sin cambios de esta ficha.
+[Ficha](changes/2026-10-27-02-preserve-control-arm-combined.md).
+
+## AFR2-20261027-01 — 27/10/2026
+
+Paneles Robot / Brazo robotico con escena3D compartida, auto seleccionable y
+movil, ruedas adelante/atras, seis ejes/pinza, referencias reversibles, cubos
+por semilla, radar ideal y mision local. Alcance vertical calculado y propuesta
+SVG de montaje. CAD nativo/informe cinematico/pruebas fisicas pendientes.
+Solo fuente y documentacion, sin tests/build/validaciones/navegador/promocion ESP.
+[Ficha](changes/2026-10-27-01-collector-3d-panels.md).
+
+## AFR2-20261026-06 — 26/10/2026
+
+Brazo v02: piñón/cremalleras de pinza vinculados, agarre50 mm y entrada60,011 mm,
+J6 directo, alojamientos y abrazadera corregidos, separaciones ampliadas.
+Revisión CAD solicitada:2902 poses muestreadas sin penetraciones reportables,
+18 accionamientos nativos de ejes y9 de pinza. No prueba espacio continuo ni carga física.
+Firmware/ESP/Web/PCB sin cambios. [Ficha y evidencia](changes/2026-10-26-06-arm-gripper-motion.md).
+
+## AFR2-20261026-05 — 26/10/2026
+
+Prototipo del brazo PVC32 guardado en Fusion y F3D local: 88 parámetros,
+componentes nativos, seis articulaciones, pinza, motores/housings rojos,
+rodamientos y Nano/PCA9685/XL4016 en la base. Pieza50 mm/100 g como requisito.
+Sin cálculo mecánico, interferencias ni pruebas; firmware/ESP/Web/PCB sin cambios.
+[Ficha y límites](changes/2026-10-26-05-arm-pvc32-prototype.md).
+
 ## AFR2-20261026-03 - 26/10/2026
 
 Textos de toda la interfaz Web sin acentos agudos, con enie conservada;

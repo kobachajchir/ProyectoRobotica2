@@ -1,4 +1,12 @@
 /* VIS-036: local, nonmodal component cards use the shared popover material. */
+.afr2-models-page { display: flex; flex-direction: column; gap: 24px; }
+.afr2-models-page .afr2-workspace { margin-top: 24px; }
+.afr2-models-viewer { margin: 18px 0; }
+.afr2-model-inspection__viewport.afr2-model-inspection__pending { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 28px; text-align: center; background: var(--surface-subtle); color: var(--text-muted); }
+.afr2-model-inspection__pending > svg { color: var(--action); }
+.afr2-model-inspection__pending h3 { margin: 0; color: var(--text-strong); font-size: 22px; }
+.afr2-model-inspection__pending p { max-width: 380px; font-size: 14px; }
+.afr2-model-inspection__pending small { max-width: 380px; font-size: 12px; }
 .afr2-model-inspection__toolbar {
   display: flex;
   align-items: flex-end;

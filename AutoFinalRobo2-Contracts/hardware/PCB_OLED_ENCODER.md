@@ -1,3 +1,5 @@
+> **Montaje comunicado AFR2-20261027-07:** el usuario confirma OLED y panel del encoder a **5 V**. [Pinout vigente](PINOUT.md). Los archivos KiCad conservan +3V3; esta confirmación no edita el CAD ni certifica compatibilidad de niveles. Las tensiones de las revisiones inferiores describen el diseño previo.
+
 > **Vigente AFR2-20261025-12:** [PCB y soporte creados](../changes/2026-10-25-12-oled-encoder-pcb-support.md). J1 hembra 1x05 paso 2,54 mm; J2 JST de **2,00 mm**, +3V3/GND, confirmado por usuario; OLED en socket hembra 1x04 de 2,54 mm con GND/VCC/SCL/SDA de frente. Encoder de contactos a GND, sin VCC directo. Las secciones siguientes son requisitos históricos; tensión, paso de power y tornillería pendientes allí quedan reemplazados por esta revisión. Sin ERC/DRC ni prueba física.
 
 # Placa OLED/encoder y soporte: requisitos para la próxima etapa

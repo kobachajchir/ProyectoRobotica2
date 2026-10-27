@@ -1,0 +1,40 @@
+/* Shared teaching UI. Identity0.1.9 / Apple: immediate feedback, stable layout,
+ * no inertia or decorative springs on mathematical/robot state. */
+.afr2-arm-points { margin-top: 24px; border: 1px solid var(--border-default); border-radius: 16px; background: var(--surface-subtle); }
+.afr2-arm-points > .afr2-collapsible-panel__heading { padding: 18px 20px; }
+.afr2-arm-points > .afr2-collapsible-panel__body { padding: 0 20px 20px; display: flex; flex-direction: column; gap: 18px; }
+.afr2-arm-points > .afr2-collapsible-panel__body[hidden] { display: none; }
+.afr2-arm-points__model { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+.afr2-arm-points__model > div { display: flex; flex-direction: column; gap: 4px; }
+.afr2-arm-points__model span, .afr2-arm-points small { font-size: 12px; color: var(--text-muted); }
+.afr2-arm-points__model strong { font-size: 16px; color: var(--text-strong); }
+.afr2-arm-points label { display: flex; flex-direction: column; gap: 7px; font-size: 13px; font-weight: 550; }
+.afr2-arm-points label > input:not([type="checkbox"]), .afr2-arm-points select { min-width: 0; width: 100%; min-height: 44px; padding: 8px 12px; font-size: 16px; }
+.afr2-arm-points__capture { display: flex; align-items: flex-end; flex-wrap: wrap; gap: 12px; }
+.afr2-arm-points__capture > label { flex: 1 1 240px; }
+.afr2-arm-points__toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.afr2-arm-points__toolbar > label, label.afr2-arm-points__restore { display: flex; flex-direction: row; align-items: center; gap: 8px; }
+.afr2-arm-points input[type="checkbox"] { width: 18px; height: 18px; min-height: 0; accent-color: var(--action); }
+.afr2-arm-points__toolbar > label { margin-right: auto; }
+.afr2-arm-points__layout { display: grid; grid-template-columns: minmax(200px, .7fr) minmax(0, 1.3fr); gap: 24px; align-items: start; }
+.afr2-arm-points__list { display: grid; gap: 8px; }
+.afr2-arm-points__list > button { min-width: 0; min-height: 70px; padding: 12px 14px; border: 1px solid var(--border-default); border-radius: 12px; text-align: left; background: var(--surface-solid); color: var(--text-strong); cursor: pointer; display: flex; flex-direction: column; gap: 5px; }
+.afr2-arm-points__list > button:active { background: var(--action-subtle); }
+.afr2-arm-points__list > button[aria-pressed="true"] { border-color: var(--action); background: var(--action-subtle); }
+.afr2-arm-points__list strong { font-size: 14px; overflow-wrap: anywhere; }
+.afr2-arm-points__list span { font-size: 12px; font-variant-numeric: tabular-nums; }
+.afr2-arm-points__detail { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.afr2-arm-points__facts { margin: 0; font-size: 12px; }
+.afr2-arm-points__facts > div { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 14px; padding: 10px 0; border-bottom: 1px solid var(--border-default); }
+.afr2-arm-points__facts dt { color: var(--text-muted); }
+.afr2-arm-points__facts dd { margin: 0; color: var(--text-strong); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.afr2-arm-points details { font-size: 12px; color: var(--text-muted); }
+.afr2-arm-points summary { cursor: pointer; padding: 10px 0; }
+.afr2-arm-points__actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.afr2-arm-points__actions > button { flex: 1 1 180px; }
+.afr2-arm-points__notice, .afr2-arm-points__confirm { padding: 14px; border: 1px solid var(--warning); border-radius: 12px; color: var(--text-strong); font-size: 13px; line-height: 1.6; }
+.afr2-arm-points__notice p, .afr2-arm-points__confirm p, .afr2-arm-points__status p { margin: 0 0 10px; }
+.afr2-arm-points__confirm > button { margin-right: 8px; }
+.afr2-arm-points__status { padding-top: 14px; border-top: 1px solid var(--border-default); font-size: 13px; line-height: 1.6; }
+@media (max-width: 760px) { .afr2-arm-points__layout { grid-template-columns: minmax(0, 1fr); } .afr2-arm-points__list { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); } }
+@media (max-width: 640px) { .afr2-arm-points > .afr2-collapsible-panel__body { padding: 0 16px 16px; } .afr2-arm-points > .afr2-collapsible-panel__heading { padding: 16px; } }
