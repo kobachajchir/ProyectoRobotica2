@@ -1,3 +1,12 @@
+## AFR2-20261027-21 — 27/10/2026
+
+Brazo v08: housing GX3270BLS ventilado, parámetros y archivos independientes;
+reservas de tapa608, insertos, pestañas, abrazadera, tornillo y placa XL4016
+corregidas. Revisión autorizada: 3.141 configuraciones sin penetraciones
+reportables, seis ejes/doce rodamientos completos, pinza y límites nativos.
+Masas/cargas recalculadas; J1/apoyos/alimentación pendientes. Sin FEA ni
+aceptación física. [Ficha](changes/2026-10-27-21-arm-housing-rechecked.md).
+
 ## AFR2-20261027-20 — 27/10/2026
 
 Brazo v07: servo GX3270BLS 270° en codo, modelo paramétrico independiente,

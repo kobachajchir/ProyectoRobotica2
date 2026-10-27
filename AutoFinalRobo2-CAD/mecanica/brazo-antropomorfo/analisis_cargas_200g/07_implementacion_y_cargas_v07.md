@@ -1,5 +1,7 @@
 # 7. Actuador implementado, refuerzos y cargas v07
 
+> **Continuación v08 — AFR2-20261027-21:** [housing completado, interferencias corregidas, movimiento comprobado y masas/cargas actualizadas](../revision_v08/README.md). Los datos v07 de este capítulo se preservan; la v08 no acredita resistencia o frenada física.
+
 [Índice integrado](INFORME_ITERACION_DISENO.md) · [Plan inicial](06_plan_rediseño_v07.md) · [Archivos editables v07](../revision_v07/README.md)
 
 27/10/2026 · AFR2-20261027-20. Esta entrega pasa del plan a la geometría nativa y al recálculo. **No completa la selección operativa de todos los ejes ni demuestra que el robot soporte una parada de emergencia.**

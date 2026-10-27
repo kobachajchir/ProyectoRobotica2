@@ -30,6 +30,8 @@
 
 # AutoFinalRobo2 — informe maestro vigente
 
+> **Brazo AFR2-20261027-21:** [v08 con housing GX3270BLS ventilado](AutoFinalRobo2-CAD/mecanica/brazo-antropomorfo/revision_v08/README.md), reservas de montaje corregidas y maestros editables. Revisión autorizada: 3.141 configuraciones CAD sin penetraciones reportables, seis ejes/doce rodamientos completos, pinza 50/60,01 mm y pan libre. Masa recalculada 2,277 kg con carga de 200 g. J1, apoyos, alimentación y aceptación física permanecen abiertos; sin FEA, compilación ni flasheo. Atmega/ESP/Web/Loader sin cambios.
+
 > **Brazo AFR2-20261027-20:** [v07 implementada con GX3270BLS en J3](AutoFinalRobo2-CAD/mecanica/brazo-antropomorfo/revision_v07/README.md), housing integrado, solapes27 mm y nervios locales sin elevar base. [Cargas actualizadas e interpretación](AutoFinalRobo2-CAD/mecanica/brazo-antropomorfo/analisis_cargas_200g/07_implementacion_y_cargas_v07.md): 2,267 kg con200 g, codo15,83 kgf·cm estáticos, frenadas finitas ilustrativas y resultantes completas de base/primer eslabón. J1, apoyos, alimentación y aceptación bajo carga siguen abiertos. Sin tests, compilaciones, barridos CAD, FEA ni ensayos físicos; Atmega/ESP/Web/Loader sin cambios. Sustituye el estado «v07 en planificación» de18.
 
 > **Brazo AFR2-20261027-18:** [informe integrado de esfuerzos e iteración](AutoFinalRobo2-CAD/mecanica/brazo-antropomorfo/analisis_cargas_200g/INFORME_ITERACION_DISENO.md). Historial v01–v06, resultados estáticos con 200 g y plan v07: selección por eje, frenada finita, cargas combinadas y prioridades base/primer eslabón. Solo documentación; nuevos motores, dinámica, refuerzos, FEA y capacidad física siguen pendientes.

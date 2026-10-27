@@ -1,0 +1,56 @@
+{
+  "shoulder": {
+    "module_mm": 1.5000000000000002,
+    "pinion_teeth": 20.0,
+    "wheel_teeth": 40.0,
+    "axis_distance_mm": 45.00000000000001,
+    "expected_distance_mm": 45.00000000000001,
+    "ratio": 2.0
+  },
+  "J4": {
+    "module_mm": 1.5,
+    "teeth": [
+      24,
+      24
+    ],
+    "axis_distance_mm": 36,
+    "expected_distance_mm": 36.0,
+    "ratio": 1
+  },
+  "gripper": {
+    "module_mm": 1.0,
+    "pinion_teeth": 24.0,
+    "pitch_radius_mm": 12.000000000000002,
+    "rack_travel_each_mm": 37.699111843077524,
+    "opening_min_mm": 4.007083551445421,
+    "opening_at_109_8_deg_mm": 50.0,
+    "opening_at_133_7_deg_mm": 60.01120858943946
+  },
+  "links": [
+    {
+      "name": "Transmision_J4_1a1",
+      "reversed": true,
+      "valueOne": "1 deg",
+      "valueTwo": "1 deg"
+    },
+    {
+      "name": "Reduccion_hombro_2a1",
+      "reversed": true,
+      "valueOne": "1 deg",
+      "valueTwo": "gear_ratio * 1 deg"
+    },
+    {
+      "name": "Servo_pinza_a_cremallera",
+      "reversed": true,
+      "valueOne": "180 deg",
+      "valueTwo": "grip_r * 3.141592653589793"
+    },
+    {
+      "name": "Mordazas_opuestas",
+      "reversed": true,
+      "valueOne": "1 mm",
+      "valueTwo": "1 mm"
+    }
+  ],
+  "scope": "Relaciones geometricas nominales; interferencias de dientes se comprueban por muestreo. No calcula resistencia, desgaste, backlash real ni torque."
+}

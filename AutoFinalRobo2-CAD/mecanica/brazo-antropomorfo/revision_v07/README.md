@@ -1,5 +1,7 @@
 # Brazo v07: GX3270BLS en el codo y refuerzos locales
 
+> **Continuación AFR2-20261027-21:** [v08 con housing terminado y comprobaciones geométricas](../revision_v08/README.md). La revisión encontró y corrigió interferencias de v07. Este archivo y sus datos se conservan como antecedente; la aceptación de carga/frenada sigue abierta.
+
 27/10/2026 · AFR2-20261027-20. Se implementa una iteración CAD para estudiar 200 g de carga: nuevo servo del codo, alojamiento integrado, mayor solape del primer eslabón y nervios en torre/base. **Prototipo editable, sin liberación de fabricación ni capacidad física acreditada.**
 
 ## Abrir y editar
