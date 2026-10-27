@@ -4,6 +4,8 @@
 
 # AutoFinalRobo2-CAD
 
+**AFR2-20261027-18:** [informe integrado de esfuerzos e iteración del brazo PVC32](mecanica/brazo-antropomorfo/analisis_cargas_200g/INFORME_ITERACION_DISENO.md). Relaciona problemas, correcciones v01–v06, masas/estática de 200 g y plan v07 de actuadores/refuerzos. Frenada finita y cargas combinadas definidas como método; sin nuevos cálculos, CAD, FEA ni comprobaciones.
+
 **AFR2-20261027-17:** [presupuesto de masas y esfuerzos de brazo v06 con 200 g](mecanica/brazo-antropomorfo/analisis_cargas_200g/README.md). Volúmenes/CG extraídos de Fusion, peso propio y carga separados, apoyos y engranajes, sensibilidad de masa FDM y criterios de refuerzo. Copia horizontal de estudio guardada; maestro v06 conservado. Cálculo estático externo, sin FEA ni refuerzos modelados; 200 g no acreditados como carga física.
 
 **AFR2-20261027-15, brazo vigente v06:** [montura baja y contraplaca inferior única](mecanica/brazo-antropomorfo/revision_v06/README.md), con seis ejes y doce rodamientos completos, transmisiones revisadas y 3.141 configuraciones CAD sin penetraciones reportables. [F3D editable](mecanica/brazo-antropomorfo/AFR2_Brazo_PVC32_AGV_v06.f3d). Sustituye la solución elevada v04; no acredita carga ni estabilidad física. Despieces aún sin generar por indicación humana; [plan de skill de láminas](docs/PLAN_SKILL_LAMINAS_TECNICAS.md).

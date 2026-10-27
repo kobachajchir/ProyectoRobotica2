@@ -22,3 +22,21 @@ Consulta del 27/10/2026. Los datos de catálogo no sustituyen el pesaje, la iden
 La carga máxima solicitada aquí es **200 g**, frente a los 100 g del nombre histórico del componente. No se cambia el volumen del cubo ni se obtiene su peso con la densidad Steel que tenía asignada.
 
 El campo `basis` del CSV por cuerpo identifica el origen de cada masa. Las partes de un motor o un rodamiento reciben fracciones de una única masa de catálogo; no se suma esa masa y además la de su envolvente. Horns y tornillos se presupuestan por separado como accesorios del mecanismo; si el peso de un kit los incluye, se deberá ajustar el presupuesto al pesarlo.
+
+## Ampliación documental AFR2-20261027-18: dinámica e iteración
+
+Consulta 27/10/2026. Se utilizan para explicar el método y registrar candidatos, no para declarar simulación o rediseño realizados.
+
+| Fuente | Uso y límite |
+| --- | --- |
+| [Lynch/Park, Modern Robotics 8.3, Newton–Euler](https://modernrobotics.northwestern.edu/nu-gm-book-resource/8-3-newton-euler-inverse-dynamics/) | Propagación de cinemática y resultantes, separación de par del motor y otras cargas; no contiene parámetros de nuestro brazo |
+| [Modern Robotics 8.2, dinámica de cuerpo rígido](https://modernrobotics.northwestern.edu/nu-gm-book-resource/8-2-dynamics-of-a-single-rigid-body-part-2-of-2/) | Fuerza, tensor de inercia y momento dinámico; requiere masas e inercias coherentes |
+| [Modern Robotics 8.1.3, matriz de masa](https://modernrobotics.northwestern.edu/nu-gm-book-resource/8-1-3-understanding-the-mass-matrix/) | Dependencia de la dinámica respecto de postura y movimiento; no se calculó aquí la matriz numérica del brazo |
+| [Modern Robotics 3.4, fuerzas y momentos espaciales](https://modernrobotics.northwestern.edu/nu-gm-book-resource/3-4-wrenches/) | Expresar y trasladar resultantes en distintos sistemas |
+| [OpenStax, College Physics 2e, 10.5](https://openstax.org/books/college-physics-2e/pages/10-5-angular-momentum-and-its-conservation) | Relación entre momento angular, torque y tiempo; la parada finita y el perfil ilustrativo se desarrollan algebraicamente para el informe |
+| [Starware GX3240MGV1, SKU 3132](https://tienda.starware.com.ar/producto/servo-motor-digital-starware-gx3240mgv1-40k-5-74v-270g-metal-alto-torque/) | Oferta publicada con stock, hasta 40 kgf·cm y 270°; no se obtuvo plano completo ni capacidad continua de la variante |
+| [Starware DYM BLS-HV70, SKU 2996](https://tienda.starware.com.ar/producto/servo-motor-digital-brushless-dym-bls-hv70-70kg-5-84v-180gr-metalico-ip67/) | Oferta publicada con stock y torque de bloqueo anunciado de 68 kgf·cm a 7,4 V; faltan plano, masa neta, corriente y datos térmicos trazables |
+
+La oferta comercial es variable. Los campos generales de peso/dimensiones de una tienda pueden corresponder al bulto; no sustituyen ficha ni medición del componente. No hay lista de compra cerrada ni motor definitivo seleccionado.
+
+Para el historial se usan los README y JSON locales de [v02](../revision_v02/README.md), [v03](../revision_v03/README.md), [v04](../revision_v04/README.md), [v05](../revision_v05/README.md) y [v06](../revision_v06/README.md), y los resultados originales de esta carpeta. No se ejecutaron sus scripts otra vez.

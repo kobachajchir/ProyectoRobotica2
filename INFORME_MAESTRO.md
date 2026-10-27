@@ -28,6 +28,8 @@
 
 # AutoFinalRobo2 — informe maestro vigente
 
+> **Brazo AFR2-20261027-18:** [informe integrado de esfuerzos e iteración](AutoFinalRobo2-CAD/mecanica/brazo-antropomorfo/analisis_cargas_200g/INFORME_ITERACION_DISENO.md). Historial v01–v06, resultados estáticos con 200 g y plan v07: selección por eje, frenada finita, cargas combinadas y prioridades base/primer eslabón. Solo documentación; nuevos motores, dinámica, refuerzos, FEA y capacidad física siguen pendientes.
+
 > **Fuente Web AFR2-20261027-11:** [puntos y trayectorias independientes del modelo](AutoFinalRobo2-Contracts/contracts/WEB_ARM_POINTS.md).
 > Posicion/orientacion respecto del montaje conservadas al cambiar dimensiones;
 > biblioteca local compartida, IK en Worker, vista previa y reproduccion cancelable.

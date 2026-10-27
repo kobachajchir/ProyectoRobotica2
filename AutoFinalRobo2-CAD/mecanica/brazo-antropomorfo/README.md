@@ -1,5 +1,7 @@
 # Brazo antropomorfo PVC32 — prototipo editable
 
+**Informe integrado AFR2-20261027-18:** [por qué iteramos el diseño, cargas existentes y plan de frenada/rediseño v07](analisis_cargas_200g/INFORME_ITERACION_DISENO.md). Incluye historial, seis componentes de esfuerzo por sección y prioridades en base/hombro/primer eslabón. Solo integración documental; selección final, dinámica, FEA y geometría v07 pendientes.
+
 **Análisis AFR2-20261027-17:** [masas, centros de masa y cargas con 200 g](analisis_cargas_200g/README.md), con copia horizontal de estudio, fuerzas por articulación, cargas en apoyos/engranajes y tensiones nominales de PVC. Se conserva la v06; no hay aún refuerzos nuevos ni estudio FEA. Los 200 g son requisito de cálculo, no carga útil física certificada.
 
 **Revisión vigente v06:** [montura baja, contraplaca inferior única y revisión geométrica](revision_v06/README.md). [Maestro editable](AFR2_Brazo_PVC32_AGV_v06.f3d), parámetros en `parametros_prototipo_v06.csv`. Conserva la base a 6 mm del chasis y J1 retrasado 14 mm, con una sola pieza inferior de PETG. Revisión autorizada de ejes, rodamientos, engranajes y 3.141 configuraciones CAD sin penetraciones reportables. Despieces pendientes de la señal del usuario; [plan de láminas/skill](../../docs/PLAN_SKILL_LAMINAS_TECNICAS.md).

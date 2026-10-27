@@ -1,5 +1,7 @@
 # Brazo v06: masas y cargas con 200 g
 
+**Informe integrado AFR2-20261027-18:** [fundamentos de las correcciones, esfuerzos e iteración del diseño](INFORME_ITERACION_DISENO.md). Reúne estos resultados con la evolución v01–v06, el método de frenada/esfuerzos combinados y el plan v07. La dinámica y el nuevo montaje siguen pendientes; no se recalcularon los datos de esta carpeta al integrar el informe.
+
 Análisis solicitado el 27/10/2026, primera etapa antes de diseñar los refuerzos y realizar tensiones detalladas. Se parte del maestro `AFR2_Brazo_PVC32_AGV_v06`; la copia nativa de estudio queda extendida horizontalmente y con `part_mass=200 g`. Las fuerzas se aplican en el modelo analítico como gravedad por cuerpo y carga puntual en el CG del cubo. **No hay un estudio FEA ejecutado en Fusion.**
 
 ## Resultados principales
@@ -18,6 +20,8 @@ Análisis solicitado el 27/10/2026, primera etapa antes de diseñar los refuerzo
 2. [Postura, ecuaciones, esfuerzos, transmisión y reacciones](02_estatica_y_reacciones.md).
 3. [Tensiones nominales de PVC y criterios de refuerzo/FEA](03_tensiones_preliminares_y_refuerzos.md).
 4. [Fuentes y supuestos](FUENTES.md).
+
+Ampliación explicativa: [evolución y correcciones](04_evolucion_y_correcciones.md), [frenada y esfuerzos combinados](05_frenada_y_esfuerzos_combinados.md), [selección de actuadores y plan v07](06_plan_rediseño_v07.md).
 
 ![Cargas y momentos](cargas_y_momentos.png)
 

@@ -1,3 +1,12 @@
+## AFR2-20261027-18 — 27/10/2026
+
+Informe integrado del brazo PVC32: motivos de correcciones v01–v06, masas y
+estática existentes de 200 g, método de frenada finita/esfuerzos combinados y plan
+v07 de actuadores y refuerzos. Prioridad base, hombro, primer eslabón y unión al
+acrílico; candidatos comerciales diferenciados de motor elegido. Índice y
+capítulos navegables, sin nuevos cálculos, CAD, FEA o comprobaciones.
+[Ficha](changes/2026-10-27-18-arm-design-iteration-report.md).
+
 ## AFR2-20261027-17 — 27/10/2026
 
 Brazo v06: masas/CG de 264 cuerpos y carga horizontal de 200 g; copia nativa de

@@ -50,6 +50,8 @@
 
 # AutoFinalRobo2-Contracts
 
+> **Brazo AFR2-20261027-18:** [informe integrado de esfuerzos e iteración](../AutoFinalRobo2-CAD/mecanica/brazo-antropomorfo/analisis_cargas_200g/INFORME_ITERACION_DISENO.md), con historial de correcciones, datos estáticos existentes, frenada/esfuerzos combinados y plan v07. [Ficha](changes/2026-10-27-18-arm-design-iteration-report.md). Solo documentación; sin nuevo CAD, cálculo dinámico, FEA, tests, compilaciones ni flasheos.
+
 > **AFR2-20261027-11:** [puntos cartesianos, modelos y trayectorias Web](contracts/WEB_ARM_POINTS.md).
 > Biblioteca persistente, Worker numerico, visualizacion y ejecucion del mismo plan;
 > perfil v03 y adaptador para GLB articulados. [Ficha](changes/2026-10-27-11-arm-points-model-agnostic.md).
