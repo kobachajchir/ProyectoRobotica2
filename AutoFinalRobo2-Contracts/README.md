@@ -52,6 +52,8 @@
 
 # AutoFinalRobo2-Contracts
 
+> **Brazo AFR2-20261027-20:** [v07 implementada: GX3270BLS en el codo y refuerzos locales](../AutoFinalRobo2-CAD/mecanica/brazo-antropomorfo/revision_v07/README.md). [Ficha](changes/2026-10-27-20-arm-gx3270bls-reinforcement.md) y [cargas actualizadas](../AutoFinalRobo2-CAD/mecanica/brazo-antropomorfo/analisis_cargas_200g/07_implementacion_y_cargas_v07.md). F3D completo/motor independiente, parámetros y cálculo estático/dinámico bajo hipótesis. J1, apoyos y alimentación siguen abiertos; sin barridos CAD, FEA ni capacidad física acreditada. Atmega/ESP/Web/Loader sin cambios.
+
 > **Brazo AFR2-20261027-18:** [informe integrado de esfuerzos e iteración](../AutoFinalRobo2-CAD/mecanica/brazo-antropomorfo/analisis_cargas_200g/INFORME_ITERACION_DISENO.md), con historial de correcciones, datos estáticos existentes, frenada/esfuerzos combinados y plan v07. [Ficha](changes/2026-10-27-18-arm-design-iteration-report.md). Solo documentación; sin nuevo CAD, cálculo dinámico, FEA, tests, compilaciones ni flasheos.
 
 > **AFR2-20261027-11:** [puntos cartesianos, modelos y trayectorias Web](contracts/WEB_ARM_POINTS.md).

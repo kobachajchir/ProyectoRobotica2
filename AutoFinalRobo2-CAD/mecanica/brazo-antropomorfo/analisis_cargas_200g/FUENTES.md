@@ -1,5 +1,7 @@
 # Fuentes y estado de los datos
 
+**Ampliación v07 — AFR2-20261027-20:** [selección GX3270BLS y lectura dimensional](../revision_v07/ACTUADOR_Y_MONTAJE.md), [manifest recuperable](../revision_v07/fuentes_actuador.json) y [método/resultados nuevos](07_implementacion_y_cargas_v07.md). La afirmación histórica de «ningún motor elegido» al final corresponde a la entrega18: el codo v07 ya tiene referencia seleccionada para CAD, sin aceptación física.
+
 Consulta del 27/10/2026. Los datos de catálogo no sustituyen el pesaje, la identificación de la variante adquirida ni sus curvas de servicio continuo.
 
 | Dato | Fuente | Uso y límite |

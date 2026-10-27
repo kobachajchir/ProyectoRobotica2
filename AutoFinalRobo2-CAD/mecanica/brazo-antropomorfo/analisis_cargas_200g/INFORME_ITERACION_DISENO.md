@@ -2,7 +2,7 @@
 
 **Fecha:** 27/10/2026, Argentina. **Revisión documental:** AFR2-20261027-18.
 
-Este informe explica por qué se corrigió el prototipo, qué cargas se calcularon y qué decisiones deben guiar su siguiente iteración. Integra la evolución geométrica hasta v06, el presupuesto de masas y la estática con 200 g, y el planteo de frenada de emergencia solicitado posteriormente. La revisión v07 de actuadores y refuerzos sigue en planificación.
+Este informe explica por qué se corrigió el prototipo, qué cargas se calcularon y qué decisiones deben guiar su siguiente iteración. Integra la evolución geométrica, el presupuesto de masas, la estática con 200 g y el planteo de frenada de emergencia. **Ampliación AFR2-20261027-20:** se implementó el servo del codo y los refuerzos v07 y se recalcularon masas/estática y frenadas hipotéticas; [capítulo7](07_implementacion_y_cargas_v07.md). La aceptación operativa, FEA y dinámica completa permanecen abiertas.
 
 La finalidad es conservar la cadena **problema observado → causa mecánica → evidencia o hipótesis → modificación → efecto secundario → resultado pendiente**. Una modificación puede resolver una discontinuidad geométrica sin acreditar resistencia; una pieza más resistente puede agregar masa y aumentar el esfuerzo del motor anterior.
 
@@ -14,8 +14,9 @@ La finalidad es conservar la cadena **problema observado → causa mecánica →
 | [2. Estática y reacciones](02_estatica_y_reacciones.md) | Brazo horizontal, fuerzas, pares, apoyos y engranajes | Resultados analíticos existentes; no incluyen frenada |
 | [3. Tensiones preliminares y refuerzos](03_tensiones_preliminares_y_refuerzos.md) | Flexión nominal del PVC, agarre y criterios locales | Aproximaciones de sección; articulaciones sin FEA |
 | [4. Por qué se hicieron las correcciones](04_evolucion_y_correcciones.md) | Historial v01–v06 y relación entre problema, corrección y límite | Modificaciones CAD documentadas y decisiones del usuario |
-| [5. Frenada y esfuerzos combinados](05_frenada_y_esfuerzos_combinados.md) | Dinámica, seis componentes por sección y zonas críticas | Método de cálculo y casos propuestos; sin resultados dinámicos numéricos |
-| [6. Plan de selección y rediseño v07](06_plan_rediseño_v07.md) | Actuadores argentinos, cotas, montaje y secuencia de iteración | Candidatos y plan; motor definitivo sin elegir, CAD v07 sin iniciar |
+| [5. Frenada y esfuerzos combinados](05_frenada_y_esfuerzos_combinados.md) | Dinámica, seis componentes por sección y zonas críticas | Método propuesto originalmente; primeros resultados en capítulo7 |
+| [6. Plan de selección y rediseño v07](06_plan_rediseño_v07.md) | Actuadores argentinos, cotas, montaje y secuencia de iteración | Plan original; ejecución y decisiones actuales en capítulo7 |
+| [7. Implementación y cargas v07](07_implementacion_y_cargas_v07.md) | GX3270BLS modelado, montaje/refuerzos, masas y primeras frenadas | CAD nativo guardado y cálculo bajo hipótesis; sin barridos, FEA ni aceptación física |
 | [Fuentes y supuestos](FUENTES.md) | Referencias de materiales, actuadores y mecánica | Procedencia y límites de cada dato |
 
 ## Requisitos que gobiernan esta iteración
@@ -56,6 +57,8 @@ La prioridad estructural será la base, el hombro, los encastres del primer esla
 La hipótesis de «frenada instantánea» se reemplaza por una parada de emergencia con tiempo/recorrido finitos y perfil definido. Se propone explorar inicialmente **200, 100 y 50 ms**; son casos de sensibilidad, no capacidades medidas ni parámetros ya configurados. Los picos deben obtenerse durante toda la trayectoria y en las distintas posturas y sentidos de movimiento.
 
 ## Resultado documental de esta entrega
+
+Este apartado describe la entrega18 original. La entrega20 añade el [resultado implementado y recalculado v07](07_implementacion_y_cargas_v07.md); los capítulos1–6 y sus resultados v06 se conservan como antecedentes.
 
 Se consolidan fundamentos y plan. El maestro [v06](../AFR2_Brazo_PVC32_AGV_v06.f3d), la [copia horizontal](AFR2_Brazo_PVC32_Estatica_200g_v06.f3d), los CSV y los resultados originales permanecen como antecedentes. No se recalcularon cargas, no se ejecutó dinámica ni FEA y no se modelaron los nuevos refuerzos o actuadores.
 

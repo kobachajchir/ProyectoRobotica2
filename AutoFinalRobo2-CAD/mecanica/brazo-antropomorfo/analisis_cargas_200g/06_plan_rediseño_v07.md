@@ -1,5 +1,7 @@
 # 6. Selección de actuadores y plan de rediseño v07
 
+> **Continuación AFR2-20261027-20:** este capítulo conserva el plan inicial de la entrega18. Se ejecutó la sustitución del codo por GX3270BLS y el modelado/refuerzo v07, con masas y escenarios de frenada recalculados. [Resultado y pendientes reales](07_implementacion_y_cargas_v07.md). La selección operativa de todos los ejes sigue abierta.
+
 [Índice del informe](INFORME_ITERACION_DISENO.md) · [Anterior: frenada](05_frenada_y_esfuerzos_combinados.md)
 
 **Estado:** plan integrado, no ejecutado. Se conserva el maestro v06 y su copia de estudio. No hay motor nuevo aprobado, geometría v07 ni dimensiones finales de fabricación.

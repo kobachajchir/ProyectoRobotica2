@@ -1,3 +1,12 @@
+## AFR2-20261027-20 — 27/10/2026
+
+Brazo v07: servo GX3270BLS 270° en codo, modelo paramétrico independiente,
+housing integrado con cuatro M3, acople, solapes de 27 mm y nervios locales
+sin elevar la base. Masas/CG/estática actualizadas y frenadas ilustrativas
+con seis componentes de carga por sección. J1 y alimentación pendientes;
+sin barridos CAD, FEA, tests, compilaciones ni capacidad física acreditada.
+[Ficha](changes/2026-10-27-20-arm-gx3270bls-reinforcement.md).
+
 ## AFR2-20261027-19 — 27/10/2026
 
 Loader 0.3.0: monitor serie de lectura con baudios configurables, consola RX,

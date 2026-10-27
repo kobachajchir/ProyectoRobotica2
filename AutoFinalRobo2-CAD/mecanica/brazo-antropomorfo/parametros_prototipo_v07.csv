@@ -1,0 +1,159 @@
+﻿parametro,expresion,unidad,procedencia
+pvc_od,32 mm,mm,USUARIO: diametro exterior de la foto.
+pvc_id,28.3 mm,mm,USUARIO: diametro interior de la foto.
+pvc_wall,( pvc_od - pvc_id ) / 2,mm,DERIVADO: 1.85 mm. C=3.2 de la foto es incompatible con A/B; no usado.
+link1,130 mm,mm,PROPUESTO: distancia entre ejes hombro-codo.
+link2,120 mm,mm,PROPUESTO: distancia codo-J4.
+shoulder_z,base_top + 113 mm,mm,DERIVADO v05: conserva torre local de 113 mm sobre interfaz J1.
+base_w,160 mm,mm,PROPUESTO: base cuadrada.
+base_h,v05_motor_face + 32 mm - lid_t,mm,DERIVADO v05: altura de interfaz J1 segun motor y espacio sobre rack.
+base_wall,4 mm,mm,PROPUESTO: paredes de caja.
+base_floor,4 mm,mm,PROPUESTO: piso de caja.
+lid_t,3 mm,mm,PROPUESTO: tapa desmontable.
+base_top,base_h + lid_t,mm,DERIVADO: interfaz giratoria J1.
+tower_h,shoulder_z - base_top,mm,DERIVADO: centro del hombro en conjunto J1.
+socket_clear,0.35 mm,mm,"PROPUESTO: holgura diametral inicial PVC, sin calibrar impresion."
+socket_wall,3 mm,mm,PROPUESTO: pared radial de encastre.
+socket_od,pvc_od + socket_clear + 2 * socket_wall,mm,DERIVADO.
+socket_start,20 mm,mm,PROPUESTO: inicio del manguito respecto del eje.
+socket_length,22 mm,mm,PROPUESTO: largo axial del manguito.
+tube_inset,25 mm,mm,PROPUESTO: extremo de corte respecto del eje.
+tube1_cut,link1 - 2 * tube_inset,mm,DERIVADO: largo de corte PVC 1.
+tube2_cut,link2 - 2 * tube_inset,mm,DERIVADO: largo de corte PVC 2.
+socket_overlap,socket_start + socket_length - tube_inset,mm,DERIVADO: solape PVC-manguito.
+fit_clear,0.25 mm,mm,PROPUESTO: holgura diametral alojamientos rodamientos.
+servo_clear,0.6 mm,mm,PROPUESTO: holgura de caja servo.
+housing_wall,3 mm,mm,PROPUESTO: pared housing.
+fork_y,28 mm,mm,PROPUESTO: centros de los apoyos de hombro y codo.
+fork_t,9 mm,mm,PROPUESTO: espesor orejas grandes.
+b608_id,8 mm,mm,CATALOGO SKF 608-2Z: diametro interior.
+b608_od,22 mm,mm,CATALOGO SKF 608-2Z: diametro exterior.
+b608_w,7 mm,mm,CATALOGO SKF 608-2Z: ancho.
+b625_id,5 mm,mm,CATALOGO SKF 625-2Z: diametro interior.
+b625_od,16 mm,mm,CATALOGO SKF 625-2Z: diametro exterior.
+b625_w,5 mm,mm,CATALOGO SKF 625-2Z: ancho.
+gx_l,40 mm,mm,CATALOGO familia GX3240MG; variante V1 por confirmar.
+gx_w,20 mm,mm,CATALOGO familia GX3240MG.
+gx_h,40.5 mm,mm,CATALOGO familia GX3240MG; envolvente.
+ds_l,40 mm,mm,DATASHEET DS3218.
+ds_w,20 mm,mm,DATASHEET DS3218.
+ds_h,40.5 mm,mm,"DATASHEET DS3218, envolvente."
+mg_l,40.7 mm,mm,FABRICANTE MG946R.
+mg_w,19.7 mm,mm,FABRICANTE MG946R.
+mg_h,42.9 mm,mm,"FABRICANTE MG946R, envolvente."
+micro_l,22.8 mm,mm,FABRICANTE MG90S.
+micro_w,12.2 mm,mm,FABRICANTE MG90S.
+micro_h,28.5 mm,mm,"FABRICANTE MG90S, envolvente."
+std_shaft_x,10 mm,mm,REFERENCIA de dibujo servo estandar; confirmar variante antes de fabricar.
+micro_shaft_x,5.5 mm,mm,"INFERIDO: posicion de salida MG90S, editable."
+std_ear,7 mm,mm,"REFERENCIA: pestaña de servo estandar, editable."
+std_ear_z,8 mm,mm,INFERIDO: plano de pestañas bajo cara superior.
+std_hole_pitch_x,49 mm,mm,REFERENCIA: patron longitudinal estandar; confirmar cada variante.
+std_hole_pitch_y,10 mm,mm,REFERENCIA: patron transversal estandar; confirmar cada variante.
+std_mount_d,4.2 mm,mm,PROPUESTO: paso M4.
+std_horn_d,22 mm,mm,REFERENCIA: plato/horn simplificado.
+std_spline_d,6 mm,mm,REFERENCIA: envolvente de spline; no genera estrias comerciales.
+gear_module,1.5 mm,mm,PROPUESTO: engranajes rectos de referencia.
+pinion_teeth,20,,PROPUESTO: dientes pinon.
+wheel_teeth,40,,PROPUESTO: dientes rueda.
+gear_ratio,wheel_teeth / pinion_teeth,,DERIVADO: reduccion externa del hombro.
+gear_centers,gear_module * ( pinion_teeth + wheel_teeth ) / 2,mm,DERIVADO: distancia entre ejes de engranajes.
+gear_t,6 mm,mm,PROPUESTO: ancho dentado.
+wrist45,55 mm,mm,PROPUESTO: J4 a J5.
+wrist56,65 mm,mm,PROPUESTO: J5 a J6.
+tcp_offset,78.5 mm,mm,PROPUESTO: J6 a punto de agarre.
+tool_reach,wrist45 + wrist56 + tcp_offset,mm,DERIVADO: J4 a TCP = 75 mm.
+grip_open,grip_min + 2 * grip_r * grip_angle / ( 1 rad ),mm,PROPUESTO: apertura de muestra para bloque de 50 mm.
+grip_max,grip_min + 2 * grip_r * 3.141592653589793,mm,PROPUESTO: apertura maxima geometrica.
+finger_t,6 mm,mm,PROPUESTO: espesor mandibula.
+finger_depth,16 mm,mm,PROPUESTO: ancho de mandibula.
+finger_length,40 mm,mm,PROPUESTO: largo de mandibula.
+pad_t,2 mm,mm,PROPUESTO: recubrimiento elastico.
+palm_w,118 mm,mm,PROPUESTO: ancho de palma.
+palm_d,60 mm,mm,PROPUESTO: fondo palma.
+palm_t,4 mm,mm,PROPUESTO: espesor palma.
+part_size,50 mm,mm,USUARIO: bloque 50x50x50 mm.
+part_mass,200 g,g,USUARIO: carga nominal; no carga admisible validada.
+nano_l,45 mm,mm,ARDUINO Nano A000005; variante clon por confirmar.
+nano_w,18 mm,mm,ARDUINO Nano A000005.
+pca_l,70 mm,mm,OFERTA LOCAL PCA9685 Sistemsoft; variante de modulo.
+pca_w,25 mm,mm,OFERTA LOCAL PCA9685 Sistemsoft.
+buck_l,65 mm,mm,"OFERTA LOCAL XL4016, variante simplificada."
+buck_w,48 mm,mm,"OFERTA LOCAL XL4016, variante simplificada."
+pcb_t,1.6 mm,mm,REFERENCIA: PCB comercial.
+q1,20 deg,deg,POSE DE PRESENTACION: giro base.
+q2,35 deg,deg,POSE DE PRESENTACION: hombro desde vertical.
+q3,-15 deg,deg,POSE DE PRESENTACION: codo.
+q4,0 deg,deg,POSE DE PRESENTACION: giro antebrazo.
+q5,65 deg,deg,POSE DE PRESENTACION: inclinacion muñeca.
+q6,0 deg,deg,POSE DE PRESENTACION: giro herramienta.
+grip_module,1 mm,mm,PROPUESTO v02: geometria y movimiento.
+grip_teeth,24,,PROPUESTO v02: geometria y movimiento.
+grip_r,grip_module * grip_teeth / 2,mm,PROPUESTO v02: geometria y movimiento.
+grip_min,50 mm - 2 * grip_r * ( 109.8 deg ) / ( 1 rad ),mm,PROPUESTO v02: geometria y movimiento.
+grip_deck,36 mm,mm,PROPUESTO v02: geometria y movimiento.
+grip_angle,( 50 mm - grip_min ) / ( 2 * grip_r ) * 180 deg / 3.141592653589793,deg,PROPUESTO v02: geometria y movimiento.
+shoulder_phase,9 deg,deg,PROPUESTO v02: geometria y movimiento.
+shaft_shoulder_l,96 mm,mm,PROPUESTO v02: geometria y movimiento.
+grip_contact,109.8 deg,deg,REFERENCIA CAD: contacto50 mm; calibracion real de PWM pendiente.
+grip_mid,grip_min + grip_r * 3.141592653589793,mm,PROPUESTO v02: geometria y movimiento.
+agv_mount_z,6 mm,mm,"PROPUESTO v05: montura baja a 6 mm, Mega de referencia desde 4.5 mm."
+agv_mount_t,6 mm,mm,PROPUESTO v02: geometria y movimiento.
+agv_upper_t,3 mm,mm,PROPUESTO v02: geometria y movimiento.
+agv_back_t,3 mm,mm,PROPUESTO v02: geometria y movimiento.
+agv_center_x,0.333 mm,mm,PROPUESTO v02: geometria y movimiento.
+agv_center_y,-8.501 mm,mm,PROPUESTO v02: geometria y movimiento.
+electronics_z,v05_rack_rail_z + 4 mm,mm,DERIVADO v05: PCB XL sobre puente de 4 mm.
+electronics_pitch,23 mm,mm,PROPUESTO v02: geometria y movimiento.
+agv_A_x,31.051 mm,mm,PROPUESTO v02: geometria y movimiento.
+agv_A_y,19.739 mm,mm,PROPUESTO v02: geometria y movimiento.
+agv_B_x,67.997 mm,mm,PROPUESTO v02: geometria y movimiento.
+agv_B_y,19.739 mm,mm,PROPUESTO v02: geometria y movimiento.
+agv_C_x,31.051 mm,mm,PROPUESTO v02: geometria y movimiento.
+agv_C_y,-21.036 mm,mm,PROPUESTO v02: geometria y movimiento.
+agv_D_x,68.418 mm,mm,PROPUESTO v02: geometria y movimiento.
+agv_D_y,-21.036 mm,mm,PROPUESTO v02: geometria y movimiento.
+agv_E_x,-68.298597443 mm,mm,"CAD auto 27/10/2026: agujero izquierdo bajo voltimetro, coordenada X."
+agv_E_y,-12.157024165 mm,mm,"CAD auto 27/10/2026: agujero izquierdo bajo voltimetro, coordenada Y."
+agv_F_x,-31.142269400 mm,mm,"CAD auto 27/10/2026: segundo agujero izquierdo, coordenada X."
+agv_F_y,-12.199106379 mm,mm,"CAD auto 27/10/2026: segundo agujero izquierdo, coordenada Y."
+pan_axis_x,-5.150029370 mm,mm,"CAD SG90 del auto: centro del eje de salida, X."
+pan_axis_y,42.999972322 mm,mm,"CAD SG90 del auto: centro del eje de salida, Y."
+pan_radius_bound,31.4 mm,mm,"ENVOLVENTE conservadora v04: radio maximo de cajas 31.3198822 mm, redondeado hacia arriba."
+pan_clearance,3 mm,mm,PROPUESTO v04: margen geometrico 3 mm; no tolerancia de fabricacion validada.
+pan_top_z,51 mm,mm,CAD: cota superior de los 25 solidos moviles del pan.
+pan_bottom_z,5 mm,mm,"ENVOLVENTE v04: limite inferior conservador 5 mm, geometria desde 5.7999569 mm."
+agv_pan_lift,0 mm,mm,"LEGADO v04, valor 0 mm. El bastidor v05 no usa un alza general."
+agv_mount_z_final,agv_mount_z + agv_pan_lift,mm,DERIVADO: altura de separadores y fijaciones; coincide con montura baja sin alza.
+v05_axis_y,-14 mm,mm,"PROPUESTO v05: retraso de eje J1, 14 mm respecto de v04."
+v05_motor_bottom,electronics_z + buck_l + 5 mm - mg_h - 32 mm,mm,"DERIVADO v05: plato J1 3 mm sobre postes XL, compensando altura mg_h."
+v05_motor_face,v05_motor_bottom + mg_h,mm,DERIVADO v05: fondo de motor mas altura nominal mg_h.
+v05_rack_y,-18 mm,mm,PROPUESTO v05: traslado longitudinal de los tres XL4016.
+v05_rack_rail_z,agv_mount_z + agv_mount_t + 10 mm,mm,"DERIVADO v05: puente 10 mm sobre cara superior de montura, libre de Mega."
+v05_logic_z,agv_mount_z + agv_mount_t + 3 mm,mm,DERIVADO v05: placas PCA y Nano 3 mm sobre montura.
+v07_motor_l,40.5 mm,mm,"PLANO Yipin GX3270BLS, galeria Starware 2982-8705."
+v07_motor_w,21 mm,mm,PLANO Yipin GX3270BLS.
+v07_case_h,41.7 mm,mm,"PLANO: cuerpo principal, no altura con resaltes/eje."
+v07_boss_h,3.45 mm,mm,DERIVADO: 45.15-41.70; reserva conservadora frente a foto de altura contradictoria.
+v07_spline_h,5 mm,mm,PLANO: longitud del estriado.
+v07_spline_d,5.94 mm,mm,PLANO: Z25; dientes no modelados como perfil de fabricacion.
+v07_ear_span,55.1 mm,mm,PLANO: ancho longitudinal con pestanas.
+v07_mount_pitch,48 mm,mm,PLANO: centros longitudinales de fijacion.
+v07_mount_cross,10 mm,mm,PLANO: centros transversales de fijacion.
+v07_mount_d,4.5 mm,mm,"PLANO: pasos nominales del servo, cuatro."
+v07_ear_t,2.5 mm,mm,PLANO: espesor pestana.
+v07_ear_back,30.65 mm,mm,PLANO: cara posterior de pestana desde fondo de carcasa.
+v07_axis_offset,10.5 mm,mm,INFERIDO: eje a extremo corto del cuerpo; no acotado en plano. Ajustar a unidad comprada.
+v07_spline_tip_y,42 mm,mm,DISENO: mantener horn a Y40..42 y eje articular existente.
+v07_spline_base_y,v07_spline_tip_y + v07_spline_h,mm,DERIVADO.
+v07_case_front_y,v07_spline_base_y + v07_boss_h,mm,DERIVADO.
+v07_case_back_y,v07_case_front_y + v07_case_h,mm,DERIVADO: reserva total 50.15 mm incluido eje segun lectura conservadora del plano.
+v07_tab_rear_y,v07_case_back_y - v07_ear_back,mm,DERIVADO del plano; confirmar variante antes de fabricar.
+v07_clear,0.6 mm,mm,PROPUESTO: holgura de montaje.
+v07_mount_wall,6 mm,mm,PROPUESTO: apoyo de pestanas.
+v07_rib_t,4 mm,mm,PROPUESTO: nervios locales; sin FEA.
+v07_socket_extra,10 mm,mm,PROPUESTO: pasar solape tubular de 17 a 27 mm.
+v07_J1_outer,50 mm,mm,"PROPUESTO: collar de apoyo, sin elevar base ni cambiar centros de rodamientos."
+v07_motor_mass,90 g,g,"OFERTA Starware 2982, masa sin accesorios; pendiente de pesaje."
+v07_control_V,7.4,,"PROPUESTO: alimentacion regulada del nuevo servo, no conectar 2S sin regular."
+v07_brake_time,0.1 s,s,"HIPOTESIS de calculo, no tiempo de parada acreditado."
