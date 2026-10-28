@@ -20,6 +20,7 @@ La finalidad es conservar la cadena **problema observado → causa mecánica →
 | [8. Housing y revisión v08](../revision_v08/README.md) | Housing ventilado, correcciones de montaje y masas/cargas actualizadas | 3.141 configuraciones CAD sin penetraciones reportables, ejes/apoyos completos; sin FEA ni aceptación física |
 | [9. Comprobaciones de J1 y uniones](../analisis_J1_uniones/README.md) | Rodamientos, eje, acople D, bastidor, fijaciones y propuesta de rediseño | Secciones/barras y 7.075 estados; sin material FDM asignado, nuevo ensamble ni aceptación física |
 | [10. Iteración implementada J1 v09](../revision_v09/README.md) | GX3270BLS, cuna baja reforzada, eje/brida y cartucho6000; PLA PrintaLot | 3.087 configuraciones CAD y79.651 estados de predimensionado; sin FEA ni aceptación física, otros actuadores y estabilidad pendientes |
+| [11. Preselección de actuadores por masas](../preseleccion_actuadores_v10/README.md) | Piezas actuales, motores alternativos, CG/inercias, reservas y efecto en ejes anteriores | 25 combinaciones y297.379 cargas de J1 por alternativa; sin nuevo CAD, compra cerrada o aprobación de frenado físico |
 | [Fuentes y supuestos](FUENTES.md) | Referencias de materiales, actuadores y mecánica | Procedencia y límites de cada dato |
 
 ## Requisitos que gobiernan esta iteración

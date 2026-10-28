@@ -1,0 +1,57 @@
+{
+  "record": "AFR2-20261028-06",
+  "date": "2026-10-28",
+  "baseline_commit": "172b6d0",
+  "CAD_modified": false,
+  "baseline_geometry_sha256": "5493f86562206a12d17dbd305002857d2b4f2a2e293078f872b25b44a6db0477",
+  "native_v09_sha256": "d0efd12c4d09c0933dc7d5f12c7f2ee7060cfb8b73e2087c1d37a07352a68d82",
+  "evidence_counts": {
+    "inventory": "../revision_v09/geometria_v09.json",
+    "sha256": "5493f86562206a12d17dbd305002857d2b4f2a2e293078f872b25b44a6db0477",
+    "source_states": 16507,
+    "trajectory_cases": 787,
+    "original_v09_states": 4411,
+    "expanded_J1_states": 297379,
+    "cases": 25,
+    "parity": [
+      {
+        "source_index": 0,
+        "max_force_error_N": 8.314050610056891e-10,
+        "max_moment_error_Nm": 4.018953326005665e-11
+      },
+      {
+        "source_index": 8253,
+        "max_force_error_N": 5.329070518200751e-15,
+        "max_moment_error_Nm": 5.551115123125783e-16
+      },
+      {
+        "all_4411_v09_J1_force_error_N": 1.6479230424693014e-08,
+        "all_4411_v09_J1_moment_error_Nm": 5.662477153833834e-09
+      }
+    ]
+  },
+  "regenerable_export": {
+    "path": "AutoFinalRobo2-CAD/exports/analisis-actuadores-v10/cargas_comparadas.npz",
+    "size_bytes": 182245308,
+    "sha256": "097bdcbd46dcc6e562196d389b77445d749feb5d7306aa0dba15365d035a5f8b",
+    "tracked": false
+  },
+  "sources": {
+    "comparar.py": "1a361a643213b4397c4d8a59abd4132fb3b109a0f33f7e4e2fd6da05cb310024",
+    "uniones.py": "56d966e148cc69d7117d617162bb35d65ecae1872f36fd2fcadd3baf26513554",
+    "informar.py": "0f80b6e3d606d9da4dba78f7b0a7edc7f4a5c5108a44339c3399531a05735010",
+    "candidatos.json": "575588d8d1924622d38c10f958f01a547193fdc7f8552c363844bc86048cf6bb"
+  },
+  "execution_order": [
+    "comparar.py",
+    "uniones.py",
+    "informar.py",
+    "manifiesto.py"
+  ],
+  "dependencies": [
+    "Python3.12 usado",
+    "numpy",
+    "matplotlib"
+  ],
+  "note": "Solo calculos y documentacion. Sin Fusion nuevo, FEA, ensayo fisico ni aceptacion de compra/fabricacion. La exportacion completa es regenerable y se excluye de Git; JSON/CSV publican los resultados."
+}
