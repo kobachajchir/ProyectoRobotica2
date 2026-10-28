@@ -12,7 +12,7 @@ namespace AFR2Loader
     public static class McpServer
     {
         static readonly JavaScriptSerializer Json = new JavaScriptSerializer { MaxJsonLength = 1048576, RecursionLimit = 32 };
-        static readonly string[] Actions = { "build_mega", "build_esp", "build_web_fs", "build_all", "probe_esp", "flash_mega", "flash_esp", "flash_fs", "flash_esp_fs" };
+        static readonly string[] Actions = { "build_mega", "build_esp", "build_web_fs", "build_all", "probe_esp", "flash_mega", "flash_esp", "flash_fs", "flash_esp_fs", "install_mega_flasher", "restore_mega_product", "flash_mega_backup" };
         static object Schema(object properties, params string[] required)
         { return new { type = "object", properties = properties, required = required, additionalProperties = false }; }
         static object Tool(string name, string description, object schema, bool readOnly)

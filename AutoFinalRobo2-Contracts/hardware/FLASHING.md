@@ -1,6 +1,10 @@
+> **Loader vigente AFR2-20261028-05 / 0.9.0:** [plan A/B actualizado](PLAN_PRUEBA_FLASHER_MEGA.md), backup leído opcional, aviso y Preferencias; Flashear Firmware ATmega con menú Flashear último backup. [Ficha05](../changes/2026-10-28-05-loader-mega-backups.md). Solo fuente/documentación; no se compiló, abrió COM ni flasheó. Sustituye la copia HEX de03.
+
 > **Preparación AFR2-20261027-10:** [guía específica de carga USB-B/COM16](CARGA_USB_COM16.md). ATmega/ESP/Web compilados, Web esp promovida e imagen LittleFS generada. Hall habilitado en build por pedido humano; configuración EEPROM conservada. No se abrió puerto ni se cargó a placas; jumpers y flash real aún sin identificar. Los estados de no imagen FS inferiores son históricos.
 
 # Carga con el USB del Mega y shield OSOYOO UART
+
+> **Integración AFR2-20261028-03:** [plan A/B](PLAN_PRUEBA_FLASHER_MEGA.md), instalar/restaurar flasher en Loader0.8, baud fijo115200 candidato. RESET Mega **libre**, D18/D19. Fuente sin compilar/cargar/probar. El puente físico RESET-GND inferior es otro transporte; no hay cambio automático de montaje ni restauración al cerrar.
 
 > **Diagnóstico AFR2-20261027-25:** consultas externas por USB–TTL en COM5
 > aportadas por el usuario identifican ESP8266EX y flash **4 MiB**. [Informe](diagnostics/20261027-com5-usbttl-user-report/report.md).

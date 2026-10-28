@@ -18,8 +18,8 @@ namespace AFR2Loader
 
         Control CreateEspOptions(Control selectors)
         {
-            var panel = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 3, Margin = new Padding(0) };
-            panel.RowStyles.Add(new RowStyle(SizeType.Absolute, 44)); panel.RowStyles.Add(new RowStyle(SizeType.Absolute, 42)); panel.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+            var panel = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 4, Margin = new Padding(0) };
+            panel.RowStyles.Add(new RowStyle(SizeType.Absolute, 44)); panel.RowStyles.Add(new RowStyle(SizeType.Absolute, 42)); panel.RowStyles.Add(new RowStyle(SizeType.Absolute, 42)); panel.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
             panel.Controls.Add(selectors, 0, 0);
             var options = new FlowLayoutPanel { Dock = DockStyle.Fill, WrapContents = false };
             options.Controls.Add(new Label { Text = "ESP", AutoSize = true, Margin = new Padding(0, 8, 6, 0) });
@@ -28,7 +28,7 @@ namespace AFR2Loader
             options.Controls.Add(filesystemLayout); idleControls.Add(filesystemLayout);
             atPackageButton = AddButton(options, "Paquete AT...", SelectAtPackage, 125);
             atPackageButton.Visible = false;
-            panel.Controls.Add(options, 0, 1); panel.Controls.Add(memorySummary, 0, 2);
+            panel.Controls.Add(options, 0, 1); panel.Controls.Add(CreateEspMethodSelector(), 0, 2); panel.Controls.Add(memorySummary, 0, 3);
             espMode.SelectionChangeCommitted += (s, e) => { string chosen = espMode.SelectedIndex == 1 ? "at" : "web"; ReadSettings(); SetProfileValue("EspFirmwareMode", chosen); SyncEspOptions(); };
             includeFilesystem.CheckedChanged += (s, e) => {
                 if (syncingEspOptions) return;

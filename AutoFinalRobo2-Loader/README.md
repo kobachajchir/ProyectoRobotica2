@@ -1,13 +1,78 @@
 # AFR2 Loader - Windows
 
+> **AFR2-20261028-05 / 0.9.0:** backup opcional leído del ATmega, aviso configurable y botón **Flashear Firmware ATmega** con menú **Flashear último backup**. [Ficha](../AutoFinalRobo2-Contracts/changes/2026-10-28-05-loader-mega-backups.md) · [Plan A/B](../AutoFinalRobo2-Contracts/hardware/PLAN_PRUEBA_FLASHER_MEGA.md). Fuente entregada; sin compilar, ejecutar, abrir COM ni flashear.
+
 Herramienta gráfica en español para compilar y cargar el software de
 AutoFinalRobo2 y cargar paquetes ESP8266 AT precompilados para otros usos.
-Hecho por Koba Chajchir. Versión **0.7.0**,
-AFR2-20261027-24, 27/10/2026. Desde **AFR2-20261027-14** es un módulo propio
+Hecho por Koba Chajchir. Versión **0.9.0**,
+AFR2-20261028-05, 28/10/2026. Desde **AFR2-20261027-14** es un módulo propio
 en la raíz, `AutoFinalRobo2-Loader`, al mismo nivel que Atmega, ESP, Web,
 Contracts y CAD. Comparte su único Git. [Registro de integración](../AutoFinalRobo2-Contracts/changes/2026-10-27-14-loader-root-module.md).
 
 ## Abrir
+
+En **Operación → Método ESP** se elige entre **Flasher en ATmega — D18/D19,
+RESET libre** y **Puente serial del Mega — D0/D1, RESET a GND**. Al elegir se
+cierra la lectura serie, se muestra el cableado de ese método y se habilita
+Continuar solo al marcar todas las casillas. Cancelar conserva el método
+anterior y deja el monitor cerrado. Elegir no instala ni carga firmware. La
+misma selección está sincronizada con la pestaña Flasher ATmega; las cargas
+mantienen además su asistente y confirmación final. Cambios de perfil/importación
+no se presentan como confirmación física; el asistente de cada carga sigue activo.
+
+La pestaña **Flasher ATmega** contiene conexión ESP, baudios, instalación,
+consulta sin escritura y el botón dividido **Flashear Firmware ATmega**.
+**Cargar flasher en ATmega...** también aparece en Operación; compila solo el
+servicio AVR y pide confirmar antes de escribirlo y verificarlo.
+
+**Backup de ATmega antes de cargar** está marcado por defecto. Lee flash y
+hfuse dos veces con avrdude en modo sin escritura; compara ambas lecturas y
+conserva los archivos originales, imagen completa, aplicación y hashes. Un
+fallo detiene la instalación antes de reemplazar el programa. El respaldo es
+lo que tiene el equipo en ese momento: puede contener otro flasher. No requiere
+un HEX de producto para crearlo y no incluye EEPROM.
+
+Desmarcarlo muestra **No se va a crear backup del ATmega**, con Continuar sin
+backup / Cancelar y **No mostrar de nuevo**. Esta última opción se guarda solo
+al continuar. En **Preferencias** se puede reactivar el aviso y cambiar la
+casilla predeterminada. Guardar persiste ambos ajustes para este usuario en
+`%LOCALAPPDATA%/AutoFinalRobo2Loader/preferences.json`, fuera de los perfiles.
+Omitir un backup no elimina ni reemplaza los anteriores. El aviso suprimible
+no desactiva los asistentes de cableado ni la confirmación de escritura.
+
+Tras instalar el flasher se selecciona `mega_bridge`, se alinea EspBaud con
+BridgeBaud y se conserva RESET Mega **libre**, D18/TX1→E_RX y E_TX→D19/RX1 por
+la ruta de niveles identificada. Sin D0/D1 al ESP ni jumpers paralelos; potencia
+de actuadores desconectada. No aplicar TX de 5 V al RX directo ESP de 3,3 V.
+Primero **Detectar ESP sin escribir**, luego firmware y LittleFS del mismo
+layout. En software se guía KEY/RST manualmente: no se escucha el boot a 74880.
+El wrapper abre COM con DTR/RTS inactivos, espera BridgeStartupSeconds y entrega
+ese mismo puerto a esptool. Baudios coincidentes: 115200, 57600, 38400 o 9600;
+cambiar variante requiere volver a cargar el flasher. MegaBaud es independiente.
+
+Al terminar hay dos acciones en el mismo botón:
+
+- **Flashear Firmware ATmega** carga/verifica el HEX elegido en Configuración.
+- La flecha abre **Flashear último backup**: revisa fecha, COM de origen/destino,
+  tamaños, hashes y hfuse; escribe solo aplicación y la contrasta mediante una
+  lectura posterior completa, incluida su cola FF. No programa bootloader,
+  fuses ni EEPROM. No supone que el backup sea el firmware del auto.
+
+El último backup completado se indexa para este usuario en `backups/last-mega-backup.json`;
+los respaldos históricos tienen carpetas únicas. Un COM puede cambiar entre
+sesiones: se muestra origen y destino, no se adivina la identidad física. Las
+copias de HEX de PC de0.8 en recovery/ se conservan pero no se convierten en
+backups del equipo. Si falta el respaldo, se detiene la acción: seleccionar un
+HEX conocido para Flashear Firmware ATmega. Un bootloader que no permite leer
+flash/hfuse no habilita backup; no se omite silenciosamente el fallo. AVRDUDE6.3
+recorta colas FF: se normaliza el exportado y se contrasta después de escribir;
+si quedan bytes de otro programa se informa fallo, sin borrado automático.
+
+`mega_reset` mantiene el método físico D0/D1 y RESET-GND. No se cambia de montaje
+ni se carga firmware al cerrar la app. El [plan A/B](../AutoFinalRobo2-Contracts/hardware/PLAN_PRUEBA_FLASHER_MEGA.md)
+detalla preparación y recuperación. Código nuevo en `src/Operations.MegaBackup.cs`,
+`src/MainForm.Preferences.cs` y `src/LoaderPreferences.cs`; transporte en
+`src/Operations.MegaBridge.cs`, `src/MainForm.MegaBridge.cs` y el wrapper Python.
 
 Hacer doble clic en **Iniciar.cmd**. En el primer inicio, el lanzador genera
 el ejecutable WinForms con el compilador de .NET Framework de Windows y lo

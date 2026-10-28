@@ -16,15 +16,23 @@ else
 MKDIR_BUILD = mkdir -p build
 endif
 .DEFAULT_GOAL := help
-.PHONY: help library firmware communication-firmware
+.PHONY: help library firmware communication-firmware esp-bridge-firmware
 help:
 	@echo AVR C: leer INFORME_ADAPTACION.md y docs/COMPOSICION.md.
 	@echo Bajo pedido expreso: library, firmware o communication-firmware. Sin upload.
+	@echo Servicio opcional: esp-bridge-firmware BRIDGE_BAUD=115200. Reemplaza temporalmente el producto al cargarlo.
 library: libafr2_ui.a
 libafr2_ui.a: $(OBJECTS)
 	$(AR) rcs $@ $^
 firmware: build/afr2.hex
 communication-firmware: build/afr2-communication.hex
+# Standalone service, never part of firmware/library/default build. Rate in filename
+# prevents reusing a HEX from a different fixed-baud selection.
+BRIDGE_BAUD ?= 115200
+esp-bridge-firmware: build/afr2-esp-bridge-$(BRIDGE_BAUD).hex
+build/afr2-esp-bridge-$(BRIDGE_BAUD).elf: service/esp_uart_bridge.c
+	$(MKDIR_BUILD)
+	$(CC) $(CPPFLAGS) $(filter-out -fstack-usage,$(CFLAGS)) -DAFR2_BRIDGE_BAUD=$(BRIDGE_BAUD)UL -Wl,--gc-sections,-Map,build/afr2-esp-bridge-$(BRIDGE_BAUD).map -o $@ $<
 build/afr2.elf: src/main.o $(OBJECTS)
 	$(MKDIR_BUILD)
 	$(CC) $(CFLAGS) -Wl,--gc-sections,-Map,build/afr2.map -o $@ $^ -lm

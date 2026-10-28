@@ -35,9 +35,10 @@ namespace AFR2Loader
             compileTarget.ToolTipText = EspFlashRules.IsAt(profile) && target.SelectedIndex != 0
                 ? "Revisar los BIN precompilados y el mapa del paquete AT; no compila Arduino ni firmware del proveedor."
                 : "Compilar el destino seleccionado con el perfil y layout visibles.";
-            flashTarget.Text = "Flashear " + name + "...";
+            flashTarget.Text = target.SelectedIndex == 0 ? "Flashear Firmware ATmega" : "Flashear " + name + "...";
+            flashTarget.DropDownButtonWidth = target.SelectedIndex == 0 ? 18 : 0;
             detectTarget.Text = target.SelectedIndex == 0 ? "Detectar ATmega" : "Detectar ESP / ROM";
-            listen.Visible = target.SelectedIndex != 0;
+            listen.Visible = target.SelectedIndex != 0 && !Operations.UsesMegaBridge(profile);
             for (int i = 0; i < compileTarget.DropDownItems.Count; i++)
             {
                 var item = compileTarget.DropDownItems[i] as ToolStripMenuItem;
@@ -53,8 +54,8 @@ namespace AFR2Loader
             var group = new GroupBox { Text = "Etapas de la operación", Dock = DockStyle.Fill, Padding = new Padding(10), Margin = new Padding(10, 0, 0, 0) };
             var list = new FlowLayoutPanel { Dock = DockStyle.Fill, AutoScroll = true, FlowDirection = FlowDirection.TopDown, WrapContents = false };
             list.Controls.Add(new Label { Text = "Vacío: pendiente · marca: completado\r\nCasilla rellena: en curso", Width = 218, Height = 42 });
-            string[] keys = { "wiring", "reset", "bootloader", "connected", "build_mega", "build_esp", "build_web_fs", "package", "writing", "verifying", "verified" };
-            string[] names = { "Cableado confirmado", "Reinicio ESP detectado", "Modo programación detectado", "Conexión confirmada", "Compilación ATmega", "Compilación ESP", "Compilación Web / LittleFS", "Paquete AT revisado", "Escritura", "Verificación", "Carga verificada" };
+            string[] keys = { "wiring", "reset", "bootloader", "connected", "build_mega", "build_esp", "build_web_fs", "backup", "package", "writing", "verifying", "verified" };
+            string[] names = { "Cableado confirmado", "Reinicio ESP detectado", "Modo programación detectado", "Conexión confirmada", "Compilación ATmega", "Compilación ESP", "Compilación Web / LittleFS", "Backup flash ATmega", "Paquete AT revisado", "Escritura", "Verificación", "Carga verificada" };
             for (int i = 0; i < keys.Length; i++)
             {
                 var check = new CheckBox { Text = names[i], AutoCheck = false, ThreeState = true, TabStop = false, Width = 218, Height = 38, Margin = new Padding(0, 2, 0, 2) };
@@ -108,6 +109,8 @@ namespace AFR2Loader
                 (code == "boot_listener_ready" || code == "reset_observed" || code == "normal_boot_observed" || code == "unknown_boot_observed"))
             { status.Text = notice.Message; currentJob.Stage = notice.Message; UpdateActivityBar(); }
             if (code == "wiring_confirmed") ShowStep("wiring", CheckState.Checked, notice.Message);
+            else if (code == "backup_reading") { activeStep = "backup"; ShowStep("backup", CheckState.Indeterminate, notice.Message); }
+            else if (code == "backup_completed") { ShowStep("backup", CheckState.Checked, notice.Message); activeStep = null; }
             else if (code == "reviewing_package") { activeStep = "package"; ShowStep("package", CheckState.Indeterminate, notice.Message); }
             else if (code == "package_ready") { ShowStep("package", CheckState.Checked, notice.Message); activeStep = null; }
             else if (code == "reset_observed")
@@ -195,8 +198,23 @@ namespace AFR2Loader
                 return Task.FromResult(0);
             }
         }
-        void RemindOperatingWiring(Profile loadedProfile)
+        void RemindOperatingWiring(Profile loadedProfile, bool installedFlasher, bool megaFirmwareWritten, bool flashedBackup)
         {
+            if (flashedBackup)
+            {
+                MessageBox.Show(this, "Último backup de aplicación ATmega flasheado y contrastado con lectura posterior.\r\n\r\nRESET Mega libre. El contenido es el programa que tenía al hacer el backup: puede ser firmware del auto, un flasher u otro programa. No habilitar actuadores hasta revisarlo. KEY libre y RST del ESP si corresponde.", "Backup ATmega cargado", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+            if (installedFlasher)
+            {
+                MessageBox.Show(this, "Flasher temporal del Mega escrito y verificado.\r\n\r\nMantené RESET Mega LIBRE y el enlace D18→E_RX / E_TX→D19. Potencia de actuadores desconectada.\r\nAhora elegí Detectar ESP / ROM; el asistente indicará KEY/RST del ESP.\r\n\r\nAl terminar usá Flashear Firmware ATmega o su menú Flashear último backup, revisando qué programa contiene.", "Flasher ATmega listo; falta consultar ESP", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+            if (Operations.UsesMegaBridge(loadedProfile) && !megaFirmwareWritten)
+            {
+                MessageBox.Show(this, "Contenido ESP escrito y verificado.\r\nRESET Mega sigue LIBRE; no cambies a RESET-GND.\r\n\r\nEl Mega sigue ejecutando el flasher temporal: usá Flashear Firmware ATmega o el menú Flashear último backup antes de habilitar actuadores. Revisá que el backup contenga el programa del auto. Después KEY libre y RST del ESP para arrancar desde flash.", "ESP verificado; firmware Mega pendiente", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
             MessageBox.Show(this,
                 "Carga y verificación completadas.\r\n\r\nAntes de usar el robot, recordá volver a las conexiones de funcionamiento:\r\n\r\n" +
                 "Mega D18 / TX1  →  E_RX / RX central del shield\r\n" +

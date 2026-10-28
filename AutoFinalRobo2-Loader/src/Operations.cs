@@ -64,7 +64,8 @@ namespace AFR2Loader
             {
                 string hint = "Revisá la salida completa en el registro.";
                 if (result.Output.IndexOf("No serial data received", StringComparison.OrdinalIgnoreCase) >= 0)
-                    hint = "No hubo respuesta de esptool. boot mode:(1,...) confirma el modo y ESP→PC, pero no PC→ESP. Revisá D0→RX central (E_RX del selector ESP URAT), K/RST y RESET del Mega a GND.";
+                    hint = UsesMegaBridge(p) ? "No hubo respuesta. Revisá flasher instalado, baud fijo igual a esptool, RESET Mega LIBRE, D18→E_RX y E_TX→D19 y KEY/RST del ESP. No pasar a RESET-GND dentro de este modo."
+                        : "No hubo respuesta de esptool. boot mode:(1,...) confirma ESP→PC, pero no PC→ESP. Revisá D0→E_RX, E_TX→D1, KEY/RST y RESET Mega a GND.";
                 else if (Regex.IsMatch(result.Output, "Access is denied|PermissionError|UnauthorizedAccess|cannot open port", RegexOptions.IgnoreCase))
                     hint = "Revisá monitor serie abierto, permisos de herramientas/cachés y puerto. La aplicación no cambia permisos ni eleva privilegios automáticamente.";
                 throw new CommandFailure("El comando terminó con código " + result.ExitCode + ". " + hint, p.Resolve(key), result.ExitCode, result.Output);
@@ -175,8 +176,17 @@ namespace AFR2Loader
             PortValid(port); NeedFile(p.Resolve("Esptool"));
             Choice(p.Get("EsptoolMajor"), "4", "5");
             int baud = (int)p.Number("EspBaud"); if (baud < 9600 || baud > 921600) throw new Exception("Baudios ESP fuera de rango.");
-            var a = new List<string> { p.Resolve("Esptool"), "--chip", "esp8266", "--port", port, "--baud", baud.ToString(),
-                "--before", Spell(p, "no_reset"), "--after", Spell(p, "no_reset") };
+            var a = new List<string>();
+            if (UsesMegaBridge(p))
+            {
+                CheckBridge(p); NeedFile(BridgeToolPath);
+                Steps.Add(new { bridgeLauncher = BridgeToolPath, sha256 = Hash(BridgeToolPath), startupSeconds = p.Get("BridgeStartupSeconds") });
+                a.AddRange(new[] { BridgeToolPath, "--esptool", p.Resolve("Esptool"), "--bridge-baud", p.Get("BridgeBaud"), "--startup-seconds", p.Get("BridgeStartupSeconds"), "--" });
+            }
+            else a.Add(p.Resolve("Esptool"));
+            a.AddRange(new[] { "--chip", "esp8266", "--port", port, "--baud", baud.ToString(),
+                "--before", Spell(p, "no_reset"), "--after", Spell(p, "no_reset") });
+            if (UsesMegaBridge(p)) a.AddRange(new[] { "--connect-attempts", "30" });
             if (noStub) a.Add("--no-stub"); return a;
         }
         static string Spell(Profile p, string name) { return p.Get("EsptoolMajor") == "5" ? name.Replace('_', '-') : name; }
@@ -184,7 +194,8 @@ namespace AFR2Loader
         {
             Stage("syncing", "Consultando ROM y tamaño real de flash; sin escritura...");
             var args = EspArgs(p, port, true); args.Add(Spell(p, "flash_id"));
-            var result = await Command(p, "Python", args, Path.GetDirectoryName(p.Resolve("Esptool")), token, 50);
+            Steps.Add(new { espTransport = p.Get("EspTransport"), baud = p.Get("EspBaud"), bridgeWait = UsesMegaBridge(p) ? p.Get("BridgeStartupSeconds") : null });
+            var result = await Command(p, "Python", args, Path.GetDirectoryName(p.Resolve("Esptool")), token, UsesMegaBridge(p) ? 120 : 50);
             Match match = Regex.Match(result.Output, @"Detected flash size:\s*(\d+)\s*(KB|MB)\b", RegexOptions.IgnoreCase);
             if (!match.Success) throw new Exception("esptool respondió, pero no se pudo identificar la capacidad. No se permite escribir con tamaño desconocido.");
             long bytes = Int64.Parse(match.Groups[1].Value) * (match.Groups[2].Value.ToUpperInvariant() == "MB" ? 1048576L : 1024L);
@@ -207,8 +218,18 @@ namespace AFR2Loader
             if (fs) list.Add("El filesystem elegido será reemplazado, incluidas sus preferencias. Respaldé los datos que necesitaba.");
             return list.ToArray();
         }
-        public bool PrepareEsp(bool fs)
+        public bool PrepareEsp(Profile p, bool fs)
         {
+            if (UsesMegaBridge(p))
+            {
+                CheckBridge(p);
+                var checks = new List<string> { "Potencia de actuadores desconectada y monitor externo cerrado.", "RESET Mega LIBRE; el Mega debe ejecutar el flasher, sin puente RESET-GND.",
+                    "D18/TX1→E_RX y E_TX→D19/RX1. Sin cables D0/D1 al ESP ni jumpers paralelos.", "Ruta de niveles identificada; no TX de 5 V al RX directo ESP. Alimentación por shield y masa común." };
+                if (fs) checks.Add("El filesystem se reemplazará; conservé los datos que necesitaba.");
+                bool bridgeAccepted = confirm("ESP por flasher ATmega — RESET libre", "Transporte: puente software por USART1, fijo a " + p.Get("BridgeBaud") + ".\r\nPrimero cargar el flasher en ATmega; después KEY/RST y consulta ROM.\r\nNo se mide cableado ni se ejecuta todavía escritura ESP.", checks.ToArray());
+                if (bridgeAccepted) Stage("wiring_confirmed", "ESP por puente software: cableado confirmado; RESET Mega libre.");
+                return bridgeAccepted;
+            }
             bool accepted = confirm("Preparar conexión ESP", "Mismo USB-B, modo de servicio distinto al de operación.\r\nD0/D1 usan ahora los mismos cables que estaban en D18/D19.\r\nUsá RX/TX centrales del selector ESP URAT (E_RX/E_TX); es distinto de la cabecera directa ESP UART de 3,3 V.\r\n\r\nAl momento de flashear te voy a avisar para que presiones K y RST.\r\nCon la guía activada, al confirmar aparece otra pantalla con los pasos para apretarlos y soltarlos. No los pulses todavía.\r\nSi desactivaste la guía porque el ESP ya está en modo programación, se consultará directamente la ROM.\r\nTodavía no se escribe firmware.", EspChecks(fs));
             if (accepted) Stage("wiring_confirmed", "Preparación y cableado ESP confirmados por el usuario; no medidos por el programa.");
             return accepted;
@@ -257,8 +278,7 @@ namespace AFR2Loader
         {
             if (filesystem && !EspFlashRules.UseFilesystem(p)) throw new ArgumentException("Filesystem desactivado en el perfil. Elegí Firmware o activá filesystem.");
             if (EspFlashRules.IsAt(p)) { await FlashAtPackage(p, port, firmware, filesystem, listen, token); return; }
-            if (!PrepareEsp(filesystem)) throw new OperationCanceledException("Cableado no confirmado.");
-            if (listen) await ListenBoot(p, port, token);
+            await PrepareEspSession(p, port, filesystem, listen, token);
             long size = await Probe(p, port, token);
             if (firmware) Layout(p, size, false);
             if (filesystem) Layout(p, size, true);
@@ -269,13 +289,13 @@ namespace AFR2Loader
             foreach (var file in files) details += "Offset " + file.Item1 + "\r\n" + Describe(file.Item2) + "\r\n\r\n";
             var hashes = files.Select(f => Hash(f.Item2)).ToArray();
             if (!confirm("Continuar para flashear ESP", details + "La ROM respondió. Esto autoriza ESCRIBIR y después VERIFICAR los archivos indicados.",
-                new[] { "Revisé puerto, archivos, offsets y cableado; mantener RESET del Mega a GND.", "Si se pierde alimentación o se cancela, el contenido puede quedar incompleto." }))
+                new[] { UsesMegaBridge(p) ? "Revisé puerto, archivos, offsets y enlace D18/D19; mantener RESET Mega LIBRE." : "Revisé puerto, archivos, offsets y cableado; mantener RESET Mega a GND.", "Si se pierde alimentación o se cancela, el contenido puede quedar incompleto." }))
                 throw new OperationCanceledException("Carga no confirmada.");
             token.ThrowIfCancellationRequested();
             for (int i = 0; i < files.Count; i++) EnsureUnchanged(files[i].Item2, hashes[i]);
             var write = EspArgs(p, port, false); write.Add(Spell(p, "write_flash")); AddFlashOptions(p, write);
             foreach (var file in files) write.AddRange(new[] { file.Item1, file.Item2 });
-            Stage("writing", "Escribiendo ESP. No desconectar ni quitar RESET-GND del Mega.");
+            Stage("writing", UsesMegaBridge(p) ? "Escribiendo ESP por flasher ATmega. No desconectar; RESET Mega LIBRE." : "Escribiendo ESP. No desconectar ni quitar RESET-GND del Mega.");
             MarkWriting(); // Once launched, a failed write may already have modified flash.
             await Command(p, "Python", write, Path.GetDirectoryName(p.Resolve("Esptool")), token);
             Stage("verifying", "Escritura terminada; verificando automáticamente contra los archivos...");
@@ -286,7 +306,8 @@ namespace AFR2Loader
             Verified = true;
             Stage("verified", "ESP: carga y verificación de contenido completadas correctamente.");
             log("ESP: escritura y verificación de contenido completadas. No demuestra ejecución, Wi-Fi ni funcionamiento del robot.");
-            log("Para operar: apagar, quitar RESET Mega→GND, retirar D0/D1, restaurar D18→E_RX y E_TX→D19. KEY libre; resetear ESP.");
+            log(EspRestoration(p));
+            if (UsesMegaBridge(p)) CompletionMessage = "ESP escrito y verificado. El Mega sigue ejecutando el flasher temporal: usá Flashear Firmware ATmega o el menú Flashear último backup antes de operar.";
         }
         public async Task FlashMega(Profile p, string port, CancellationToken token)
         {
@@ -302,13 +323,13 @@ namespace AFR2Loader
             })) throw new OperationCanceledException("Cableado no confirmado.");
             Stage("wiring_confirmed", "Cableado ATmega confirmado por el usuario.");
             EnsureUnchanged(hex, hash); token.ThrowIfCancellationRequested();
-            Stage("writing", "Cargando ATmega por su bootloader; RESET debe estar libre. Auto-reset de bootloader solicitado por avrdude; no es un reinicio observado por UART."); MarkWriting();
-            var result = await Command(p, "Avrdude", new[] { "-C", p.Resolve("AvrdudeConfig"), "-v", "-p", p.Get("Mcu"), "-c", p.Get("Programmer"),
-                "-P", port, "-b", p.Get("MegaBaud"), "-D", "-U", "flash:w:" + Path.GetFileName(hex) + ":i" }, Path.GetDirectoryName(hex), token);
-            if (result.Output.IndexOf(p.Get("Signature"), StringComparison.OrdinalIgnoreCase) < 0 || !Regex.IsMatch(result.Output, @"\d+\s+bytes of flash verified", RegexOptions.IgnoreCase))
-                throw new CommandFailure("avrdude terminó sin error, pero no se reconoció firma/verificación. Revisá el log; no se declara éxito verificado.", p.Resolve("Avrdude"), result.ExitCode, result.Output);
+            MegaServiceRecord service = MegaServiceRecord.Read(port);
+            if (service != null) { service.Status = "product_write_started"; service.Save(); }
+            await UploadMegaApplication(p, port, hex, token);
             EnsureUnchanged(hex, hash);
             Verified = true;
+            if (service != null) { service.Status = "product_verified"; service.Save(); }
+            MegaFirmwareFlashed = true;
             Stage("verified", "ATmega: firma esperada, carga y bytes de flash verificados correctamente.");
             log("ATmega: firma esperada, aplicación escrita y bytes verificados. No demuestra sensores/motores calibrados.");
             log("Si Hall conectado estaba en 0: Calibracion > Geometria > Hall conectado=1; volver y Guardar EEPROM.");

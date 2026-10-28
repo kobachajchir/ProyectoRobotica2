@@ -29,7 +29,8 @@ namespace AFR2Loader
         readonly List<Control> idleControls = new List<Control>();
         readonly object logGate = new object();
         readonly System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer();
-        Button cancel, detectTarget, flashTarget;
+        Button cancel, detectTarget;
+        ToolStripSplitButton flashTarget;
         ToolStripSplitButton compileTarget;
         CancellationTokenSource cancellation;
         Runner runner;
@@ -95,7 +96,7 @@ namespace AFR2Loader
             target.Items.AddRange(new object[] { "Firmware ATmega (producto completo)", "Firmware ESP", "Web / LittleFS en ESP", "Firmware ESP + Web / LittleFS" });
             target.SelectedIndex = 0; selectors.Controls.Add(target); idleControls.Add(target);
             detectTarget = AddButton(selectors, "Detectar ATmega", DetectSelected, 165);
-            layout.RowStyles[1].Height = 170; layout.Controls.Add(CreateEspOptions(selectors), 0, 1);
+            layout.RowStyles[1].Height = 212; layout.Controls.Add(CreateEspOptions(selectors), 0, 1);
             var actions = new FlowLayoutPanel { Dock = DockStyle.Fill, WrapContents = true };
             var compileMenu = new ToolStrip { GripStyle = ToolStripGripStyle.Hidden, Dock = DockStyle.None, AutoSize = true, Margin = new Padding(0, 4, 8, 4), Padding = new Padding(0), RenderMode = ToolStripRenderMode.System };
             compileTarget = new ToolStripSplitButton("Compilar ATmega") { AutoSize = false, Size = new Size(245, 32), ToolTipText = "Compilar el destino seleccionado. La flecha permite elegir otro firmware y compilarlo." };
@@ -107,11 +108,12 @@ namespace AFR2Loader
             }
             compileMenu.Items.Add(compileTarget); actions.Controls.Add(compileMenu); idleControls.Add(compileMenu);
             AddButton(actions, "Compilar todo", () => Build(true), 140);
-            flashTarget = AddButton(actions, "Flashear ATmega...", Flash, 285);
+            var flashMenu = CreateFirmwareFlashMenu(true); actions.Controls.Add(flashMenu);
             flashTarget.BackColor = Color.FromArgb(22, 79, 99); flashTarget.ForeColor = Color.White;
-            flashTarget.FlatStyle = FlatStyle.Flat;
+            AddButton(actions, "Cargar flasher en ATmega...", InstallFlasher, 260);
+            layout.RowStyles[2].Height = 90;
             listen.Text = "Guiar K / RST y detectar modo de programación antes de consultar o cargar ESP"; listen.Checked = true;
-            listen.AutoSize = true; listen.Margin = new Padding(0, 8, 0, 0); idleControls.Add(listen); actions.SetFlowBreak(flashTarget, true); actions.Controls.Add(listen);
+            listen.AutoSize = true; listen.Margin = new Padding(0, 8, 0, 0); idleControls.Add(listen); actions.SetFlowBreak(flashMenu, true); actions.Controls.Add(listen);
             target.SelectedIndexChanged += (s, e) => UpdateTargetActions(); UpdateTargetActions();
             layout.Controls.Add(actions, 0, 2);
             var stateBox = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 2 };
@@ -158,6 +160,8 @@ namespace AFR2Loader
             FormClosing += WindowClosing;
             InitializeIntegration(tabs, layout, configLayout, footer);
             InitializeSerial(tabs);
+            InitializeMegaBridge(tabs);
+            InitializePreferences(tabs);
             Log("AFR2 Loader " + LoaderVersion.Value + " | Hecho por Koba Chajchir");
             Log("Perfiles y registros: " + Profile.UserRoot);
         }
@@ -208,6 +212,7 @@ namespace AFR2Loader
             foreach (Field field in Profile.Fields)
             { int i = settings.Rows.Add(field.Label, profile.Get(field.Key)); settings.Rows[i].Tag = field; settings.Rows[i].Cells[1].ToolTipText = field.Hint; }
             SyncEspOptions();
+            SyncBridgeOptions();
         }
         void ReadSettings()
         {
@@ -287,7 +292,7 @@ namespace AFR2Loader
         }
         async Task ExecuteCore(string title, Func<Operations, Profile, string, CancellationToken, Task> body, bool usesSerial)
         {
-            if (busy || pendingJob != null) return;
+            if (busy || pendingJob != null || profileDialogs > 0) return;
             if (serialTransition) throw new InvalidOperationException("Esperá que el monitor termine de abrir/cerrar el puerto antes de iniciar otra operación.");
             ReadSettings(); Profile snapshot = profile.Copy(); string port = ports.Text; DrainNotices();
             currentJob = reservedJob ?? NewJob(title, "window", port, "running"); reservedJob = null;
@@ -297,6 +302,7 @@ namespace AFR2Loader
             cancel.Enabled = true; progress.Style = ProgressBarStyle.Marquee; lastResult.ForeColor = Color.FromArgb(71, 85, 105);
             cancellation = new CancellationTokenSource(); runner = new Runner(Log);
             var ops = new Operations(runner, Log, SetState, Confirm);
+            ops.BridgeToolPath = Path.Combine(appDir, "tools", "esp_bridge_esptool.py");
             ops.BootAssistant = GuideEspBoot;
             ops.WritingStarted = () => { if (currentJob != null) currentJob.WritingStarted = true; };
             ops.Changed = (code, message) => QueueNotice(new LoaderNotice { Origin = "cargador " + port, Code = code, Message = message });
@@ -320,22 +326,26 @@ namespace AFR2Loader
                 await body(ops, snapshot, port, cancellation.Token);
                 resultState = "completed";
                 status.Text = "Completado: " + title;
-                lastResult.Text = ops.Verified ? "Carga completada y contenido verificado correctamente. Consultá el registro y restaurá el cableado de operación." : "Operación completada sin escritura/verificación de firmware. Consultá el detalle del registro.";
+                lastResult.Text = !String.IsNullOrEmpty(ops.CompletionMessage) ? ops.CompletionMessage : ops.Verified ? "Carga completada y contenido verificado correctamente. Consultá el registro y restaurá el cableado de operación." : "Operación completada sin escritura/verificación de firmware. Consultá el detalle del registro.";
                 lastResult.ForeColor = Color.FromArgb(20, 110, 65); Log(status.Text);
-                if (ops.Verified) Log("Recordatorio de funcionamiento: Mega D18/TX1 → E_RX (RX central); E_TX (TX central) → Mega D19/RX1. Retirar servicio D0/D1 y RESET Mega→GND con alimentación desconectada.");
+                if (ops.Verified)
+                    Log(ops.FlashedMegaBackup ? "Backup de aplicación ATmega flasheado y contrastado. Revisar qué programa contiene antes de operar; no se supone que sea el firmware del auto."
+                        : ops.InstalledMegaFlasher || (Operations.UsesMegaBridge(snapshot) && !ops.MegaFirmwareFlashed)
+                        ? "Servicio temporal: RESET Mega LIBRE, D18→E_RX / E_TX→D19. El Mega aún ejecuta el flasher; restaurar el firmware del auto antes de operar."
+                        : "Recordatorio de funcionamiento: Mega D18/TX1 → E_RX (RX central); E_TX (TX central) → Mega D19/RX1. Retirar servicio D0/D1 y RESET Mega→GND con alimentación desconectada.");
                 if (!ops.Verified) QueueNotice(new LoaderNotice { Origin = "cargador " + port, Code = "completed", Message = lastResult.Text });
             }
             catch (OperationCanceledException error)
             {
                 resultState = "cancelled"; errorText = error.Message; status.Text = "Operación cancelada";
-                lastResult.Text = ops.WroteAnything ? "Se inició una escritura: puede haber contenido incompleto. No se declara verificación correcta." : "Cancelado sin iniciar escritura de firmware.";
+                lastResult.Text = ops.Verified ? "El contenido se verificó antes de la cancelación; el flujo de servicio no terminó." : ops.WroteAnything ? "Se inició una escritura: puede haber contenido incompleto. No se declara verificación correcta." : "Cancelado sin iniciar escritura de firmware.";
                 lastResult.ForeColor = Color.DarkOrange; Log(status.Text + ": " + error.Message);
                 QueueNotice(new LoaderNotice { Origin = "cargador " + port, Code = "cancelled", Message = lastResult.Text, Detail = error.ToString() });
             }
             catch (Exception error)
             {
                 errorText = error.ToString(); status.Text = "No se completó: " + title;
-                lastResult.Text = (ops.WroteAnything ? "Escritura iniciada, resultado NO verificado. " : "") + error.Message;
+                lastResult.Text = (ops.Verified ? "Contenido verificado; falló un paso posterior del flujo. " : ops.WroteAnything ? "Escritura iniciada, resultado NO verificado. " : "") + error.Message;
                 lastResult.ForeColor = Color.Firebrick; Log("ERROR: " + error);
                 QueueNotice(new LoaderNotice { Origin = "cargador " + port, Code = "failed", Message = lastResult.Text, Detail = "Etapa: " + currentJob.Stage + "\r\nRegistro: " + currentLog + ".txt\r\n" + error });
             }
@@ -356,9 +366,9 @@ namespace AFR2Loader
                 currentJob = null;
                 foreach (Control c in idleControls) c.Enabled = true; configMenu.Enabled = true;
                 cancel.Enabled = false; progress.Style = ProgressBarStyle.Blocks; progress.Value = 0; DrainLog();
-                DrainNotices(); UpdateSerialControls();
+                DrainNotices(); UpdateSerialControls(); SyncBridgeOptions();
             }
-            if (resultState == "completed" && ops.Verified) RemindOperatingWiring(snapshot);
+            if (resultState == "completed" && ops.Verified) RemindOperatingWiring(snapshot, ops.InstalledMegaFlasher, ops.MegaFirmwareFlashed, ops.FlashedMegaBackup);
         }
         void Build(bool all)
         {
@@ -384,7 +394,7 @@ namespace AFR2Loader
         {
             bool shouldListen = listen.Checked;
             Execute("Detectar ESP y consultar ROM", async (ops, p, port, token) =>
-            { if (!ops.PrepareEsp(false)) throw new OperationCanceledException(); if (shouldListen) await ops.ListenBoot(p, port, token); await ops.Probe(p, port, token); }, true);
+            { await ops.PrepareEspSession(p, port, false, shouldListen, token); await ops.Probe(p, port, token); }, true);
         }
         void DetectSelected()
         {

@@ -158,7 +158,9 @@ namespace AFR2Loader
             if (message.IndexOf("ROM responde", StringComparison.OrdinalIgnoreCase) >= 0) romEvidence = "respuesta confirmada a " + DateTime.Now.ToString("HH:mm:ss");
             string wiring = target.SelectedIndex == 0
                 ? "ATmega: RESET libre; D0/D1 aislados del ESP; USB-B al Mega."
-                : "ESP: RESET ATmega → GND; D0 → RX central y D1 → TX central del selector ESP URAT. Al cargar te voy a avisar para que presiones K y RST.";
+                : Operations.UsesMegaBridge(profile)
+                    ? "ESP por flasher software: RESET Mega LIBRE; D18/TX1→E_RX y E_TX→D19/RX1. Baud fijo " + profile.Get("BridgeBaud") + ". Al terminar usar Flashear Firmware ATmega o el menú Flashear último backup."
+                    : "ESP: RESET ATmega → GND; D0 → RX central y D1 → TX central del selector ESP URAT. Al cargar te voy a avisar para que presiones K y RST.";
             evidence.Text = wiring + "\r\nEvidencia " + evidencePort + ": arranque " + bootEvidence + " | ROM " + romEvidence + ".\r\n" + (pendingJob == null ? "Los estados observados no prueban el cableado ni que el modo siga vigente después de otro reset." : "Solicitud MCP pendiente: revisar en Codex / MCP. No se ejecutó todavía.");
         }
         void RefreshHistory()
@@ -237,6 +239,8 @@ namespace AFR2Loader
                 case "mcp_client_closed": ForgetMcpClient(mcpClientId); return new { observed = true };
                 case "loader_connection_test": return CompleteMcpConnectionTest(args, mcpClientId);
                 case "loader_status": return new { version = LoaderVersion.Value, sessionId = sessionId, busy = busy, acceptsRequests = remoteRequests.Checked,
+                    espTransport = profile.Get("EspTransport"), bridgeBaud = profile.Get("BridgeBaud"),
+                    backupBeforeFlasher = backupBeforeFlasher.Checked, showNoBackupWarning = preferences == null || preferences.ShowNoMegaBackupWarning,
                     mcpConnection = McpConnectionSnapshot(),
                     autoAcceptRequests = remoteRequests.Checked && autoAcceptRequests.Checked,
                     espFirmwareMode = profile.Get("EspFirmwareMode"), includeFilesystem = EspFlashRules.UseFilesystem(profile),
@@ -282,7 +286,7 @@ namespace AFR2Loader
                 return new { jobId = previous[1], status = jobs.TryGetValue(previous[1], out existing) ? existing.Status : "history_expired", duplicate = true, executedByThisRequest = false };
             }
             if (!remoteRequests.Checked) throw new InvalidOperationException("Solicitudes MCP deshabilitadas en la ventana.");
-            if (profileDialogs > 0) throw new InvalidOperationException("Hay un diálogo de perfiles abierto. Cerralo antes de iniciar una solicitud MCP.");
+            if (profileDialogs > 0) throw new InvalidOperationException("Hay un diálogo de configuración/cableado abierto. Cerralo antes de iniciar una solicitud MCP.");
             if (serialTransition) throw new InvalidOperationException("El monitor está abriendo/cerrando el puerto. Esperá a que termine antes de proponer una operación.");
             if (busy || pendingJob != null || reservedJob != null) throw new InvalidOperationException("Ya hay un trabajo activo o pendiente. Consultarlo; no se encola otra operación.");
             if (requests.Count >= 1000) throw new InvalidOperationException("Límite de solicitudes de esta sesión. Reiniciá la ventana para comenzar otra sesión.");
@@ -297,7 +301,7 @@ namespace AFR2Loader
             else
             {
                 action = Arg(args, "action", "");
-                if (!new[] { "build_mega", "build_esp", "build_web_fs", "build_all", "probe_esp", "flash_mega", "flash_esp", "flash_fs", "flash_esp_fs" }.Contains(action)) throw new ArgumentException("Acción no admitida.");
+                if (!new[] { "build_mega", "build_esp", "build_web_fs", "build_all", "probe_esp", "flash_mega", "flash_esp", "flash_fs", "flash_esp_fs", "install_mega_flasher", "restore_mega_product", "flash_mega_backup" }.Contains(action)) throw new ArgumentException("Acción no admitida.");
                 port = Arg(args, "port", ports.Text);
                 if (!action.StartsWith("build_") && !Regex.IsMatch(port, @"^COM[1-9][0-9]{0,4}$", RegexOptions.IgnoreCase)) throw new ArgumentException("Elegir un puerto COM válido.");
                 if (args.ContainsKey("listenBoot") && !(args["listenBoot"] is bool)) throw new ArgumentException("listenBoot debe ser booleano.");
@@ -305,6 +309,7 @@ namespace AFR2Loader
             pendingJob = NewJob(action, "mcp", port, "awaiting_approval"); pendingArguments = args;
             requests[requestId] = new[] { identity, pendingJob.Id };
             requestDetail.Text = "Trabajo: " + pendingJob.Id + "\r\nAcción: " + action + "\r\nPuerto: " + port + "\r\nFirmware ESP: " + profile.Get("EspFirmwareMode") + " | filesystem: " + EspFlashRules.UseFilesystem(profile) + "\r\nArgumentos:\r\n" + serializer.Serialize(args) + "\r\n\r\nSe usará el perfil visible al aprobar. Revisá sus rutas. La solicitud no ejecutó procesos ni abrió el puerto.";
+            if (action == "install_mega_flasher") requestDetail.Text += "\r\nBackup de ATmega antes de cargar: " + (backupBeforeFlasher.Checked ? "ACTIVADO; leer/contrastar antes de escribir, detener si falla." : "DESACTIVADO; no se creará backup nuevo. Se aplica la preferencia del aviso.");
             if (action == "update_profile")
             {
                 ReadSettings(); requestDetail.Text += "\r\n\r\nCambios de perfil (actual → propuesto):";
@@ -376,7 +381,7 @@ namespace AFR2Loader
                 ClearPending(); Log(job.Result); return;
             }
             bool shouldListen = !args.ContainsKey("listenBoot") || (bool)args["listenBoot"];
-            if (job.Action == "build_mega" || job.Action == "flash_mega") target.SelectedIndex = 0;
+            if (job.Action == "build_mega" || job.Action == "flash_mega" || job.Action == "install_mega_flasher" || job.Action == "restore_mega_product" || job.Action == "flash_mega_backup") target.SelectedIndex = 0;
             else if (job.Action == "build_web_fs" || job.Action == "flash_fs") target.SelectedIndex = 2;
             else if (job.Action == "flash_esp_fs" || job.Action == "build_all") target.SelectedIndex = 3;
             else target.SelectedIndex = 1;
@@ -391,8 +396,11 @@ namespace AFR2Loader
                     case "build_esp": await ops.BuildEsp(p, token); break;
                     case "build_web_fs": await ops.BuildWebFs(p, token); break;
                     case "build_all": await ops.BuildAll(p, token); break;
-                    case "probe_esp": if (!ops.PrepareEsp(false)) throw new OperationCanceledException(); if (shouldListen) await ops.ListenBoot(p, port, token); await ops.Probe(p, port, token); break;
+                    case "probe_esp": await ops.PrepareEspSession(p, port, false, shouldListen, token); await ops.Probe(p, port, token); break;
                     case "flash_mega": await ops.FlashMega(p, port, token); break;
+                    case "install_mega_flasher": await InstallFlasherCore(ops, p, port, token); break;
+                    case "restore_mega_product": await ops.RestoreMegaProduct(p, port, token); break;
+                    case "flash_mega_backup": await ops.FlashLatestMegaBackup(p, port, token); break;
                     case "flash_esp": await ops.FlashEsp(p, port, true, false, shouldListen, token); break;
                     case "flash_fs": await ops.FlashEsp(p, port, false, true, shouldListen, token); break;
                     case "flash_esp_fs": await ops.FlashEsp(p, port, true, true, shouldListen, token); break;

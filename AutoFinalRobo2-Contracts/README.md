@@ -1,3 +1,9 @@
+> **Loader AFR2-20261028-05 / 0.9.0:** backup opcional leído del equipo, aviso de omisión con No mostrar de nuevo y Preferencias, botón de firmware ATmega con último backup en desplegable. [Ficha](changes/2026-10-28-05-loader-mega-backups.md) · [Plan A/B](hardware/PLAN_PRUEBA_FLASHER_MEGA.md). Solo fuente/documentación; sin compilar, ejecutar, validar, abrir COM ni flashear. atmega/esp/web sin cambios de firmware por05. Reemplaza el mecanismo de copia HEX de03.
+
+> **Loader AFR2-20261028-03 / 0.8.0:** instalar/restaurar flasher ATmega, selector **Método ESP** con instrucciones y casillas por conexión. [Plan A/B](hardware/PLAN_PRUEBA_FLASHER_MEGA.md), [ficha](changes/2026-10-28-03-loader-mega-flasher.md). Código y documentación; sin compilar, ejecutar, abrir COM ni flashear. atmega de servicio en fuente; esp/web sin cambios.
+
+> **Servicio AFR2-20261028-02:** [ESP por puente de software en Mega](hardware/MEGA_ESP_PUENTE_SOFTWARE.md), RESET libre, D18/D19 y baud fijo 115200 candidato. Fuente de servicio AVR aislada y objetivo Make separados del producto; sin compilar/cargar/probar, sin cambio de firmware ESP/Web. Integración al Loader pendiente en02, incorporada en fuente03. [Ficha](changes/2026-10-28-02-mega-esp-software-bridge.md).
+
 > **Loader AFR2-20261027-24 / 0.7.0:** [alta y prueba del servidor MCP](changes/2026-10-27-24-loader-mcp-connection-test.md), estado conectado con evidencia por sesión y autoaceptación visible desde el inicio. Solo fuente/documentación; sin compilar, ejecutar GUI/MCP, tests, validadores, COM ni flasheos de esta revisión. atmega/esp/web sin cambios por esta ficha.
 
 > **Loader AFR2-20261027-23 / 0.6.1:** [Paquete AT visible solo al seleccionar AT](changes/2026-10-27-23-loader-at-package-visibility.md), oculto en Web propio. Fuente y documentación; sin compilar, ejecutar GUI/MCP, tests, validadores, COM ni flasheos de esta revisión. atmega/esp/web sin cambios por esta ficha.

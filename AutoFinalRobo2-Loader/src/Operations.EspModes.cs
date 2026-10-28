@@ -47,8 +47,7 @@ namespace AFR2Loader
             for (int i = 0; i < regions.Length; i++) CheckAtRegion(regions[i], files[i]);
             string[] hashes = files.Select(Hash).ToArray();
             Steps.Add(new { firmwareFamily = "at", package = manifest, packageSha256 = manifestHash, layout = layout.Id, regions = regions, imageSha256 = hashes });
-            if (!PrepareEsp(filesystem)) throw new OperationCanceledException("Cableado AT no confirmado.");
-            if (listen) await ListenBoot(p, port, token);
+            await PrepareEspSession(p, port, filesystem, listen, token);
             long detected = await Probe(p, port, token);
             if (detected != package.FlashBytes) throw new ArgumentException("Flash física distinta de la requerida por el paquete AT. No se escribe.");
             string details = "Firmware AT por USB / ROM. No se envían comandos AT para instalar el firmware.\r\n" + package.Name + " | layout " + layout.Id + "\r\nFlash " + detected + " B | SPI " + package.FlashMode + " / " + package.FlashFreq + "\r\n\r\n";
@@ -72,6 +71,8 @@ namespace AFR2Loader
             for (int i = 0; i < regions.Length; i++) verify.AddRange(new[] { regions[i].Offset, files[i] });
             await Command(transfer, "Python", verify, Path.GetDirectoryName(transfer.Resolve("Esptool")), token);
             Verified = true; Stage("verified", "Paquete AT: contenido de las regiones seleccionadas escrito y verificado por USB.");
+            log(EspRestoration(p));
+            if (UsesMegaBridge(p)) CompletionMessage = "Paquete AT escrito y verificado. El Mega sigue ejecutando el flasher temporal; restaurar su producto no lo convierte en compatible con AT.";
             log("La verificación de bytes no acredita respuestas AT ni compatibilidad del firmware del Mega con AT.");
         }
     }

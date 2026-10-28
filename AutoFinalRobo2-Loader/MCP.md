@@ -1,6 +1,27 @@
-# AFR2 Loader 0.7 — conexión con Codex
+# AFR2 Loader 0.9 — conexión con Codex
 
 El servidor pertenece al mismo módulo y comparte la sesión del Loader gráfico.
+
+Desde0.8, `EspTransport` selecciona `mega_bridge` (flasher temporal, D18/D19,
+RESET libre) o `mega_reset` (puente físico D0/D1, RESET-GND). Se consulta en
+loader_status/perfil. Las operaciones ESP existentes usan esa selección y sus
+asistentes: no saltan al otro modo ante un error. `listenBoot` solo gobierna la
+escucha74880 en el modo físico; en el software se guía KEY/RST manualmente y
+se consulta ROM al baud fijo. Importar/proponer un perfil no acredita cableado.
+
+`install_mega_flasher` usa la casilla Backup de ATmega antes de cargar de la
+ventana. Si está marcada lee/contrasta flash y hfuse antes de escribir el
+servicio; un fallo detiene la carga. Desmarcada aplica el aviso y la preferencia
+No mostrar de nuevo. No necesita HEX de producto para crear un backup real.
+`flash_mega` carga el HEX configurado. `flash_mega_backup` carga el último backup
+leído y completado, mostrando origen/destino; comprueba hashes/hfuse y contrasta
+la aplicación completa mediante lectura posterior. `restore_mega_product` se
+conserva como alias de esta última acción; ya no usa copias HEX de PC de0.8.
+`loader_status` expone `backupBeforeFlasher` y `showNoBackupWarning`; MCP no
+modifica las preferencias ni desactiva asistentes. No hay restauración al
+cerrar. El registro local no detecta cargas externas ni cambios de placa.
+Los asistentes físicos permanecen activos incluso con autoaceptación MCP.
+
 Transporte MCP **stdio**, JSON-RPC UTF-8 por líneas. No requiere puerto TCP,
 servicio de Windows, administrador ni dependencias npm/Python para el servidor.
 Las herramientas de firmware siguen siendo externas y configurables.
@@ -136,6 +157,9 @@ reconecta el COM al finalizar una carga; se hace manualmente desde la ventana.
 | action | Qué hace después de aprobar |
 | --- | --- |
 | `build_mega` | Producto AVR, comunicación y biblioteca. |
+| `install_mega_flasher` | Compila el servicio, realiza backup leído si la casilla está marcada, carga/verifica y selecciona mega_bridge con EspBaud alineado. Conserva aviso y asistentes. |
+| `flash_mega_backup` | Carga la aplicación del último backup completado; muestra origen/destino, comprueba hashes/hfuse y contrasta lectura posterior completa. |
+| `restore_mega_product` | Alias de flash_mega_backup desde0.9. No usa antiguas copias de HEX de PC. |
 | `build_esp` | Familia Web: firmware PlatformIO con el layout elegido. Familia AT: revisar BIN del paquete precompilado, sin compilación Arduino. |
 | `build_web_fs` | Requiere FS activado. Web: build:esp, promoción y buildfs. AT: revisión del paquete del proveedor. |
 | `build_all` | ATmega y preparación ESP según familia; Web/FS solo para familia Web con FS activado. Se detiene ante un error. |

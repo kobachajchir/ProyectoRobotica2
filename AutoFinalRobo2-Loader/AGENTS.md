@@ -19,6 +19,15 @@ Comparte el único Git global: no inicializar un repositorio ni submódulo aquí
   El monitor es de lectura: no enviar comandos ni activar DTR/RTS por defecto.
 - Un mensaje UART no acredita carga verificada. Mantener eventos tipados de
   escritura/verificación y el error original/código/salida en los informes.
+- Loader0.9: separar mega_bridge (D18/D19, RESET libre, baud fijo) de mega_reset
+  (D0/D1, RESET-GND). No pedir74880 en el puente fijo ni cambiar de montaje
+  silenciosamente. El wrapper espera después de abrir el mismo COM para esptool.
+- Backup opcional antes de instalar el flasher: dos lecturas flash/hfuse,
+  comparación y hashes antes de publicar el último respaldo. Un fallo bloquea
+  la carga; no sustituirlo por una copia de HEX de PC. Conservar los históricos.
+  Flashear último backup usa la región de aplicación y lectura posterior; no
+  programar bootloader/fuses/EEPROM. Aviso al omitir configurable en Preferencias.
+  Flashear Firmware ATmega usa el HEX configurado; son acciones diferentes.
 - MCP stdio usa Mcp.ps1; stdout contiene únicamente JSON-RPC. Diagnósticos y
   compilación del lanzador van por stderr. No registrar globalmente al iniciar.
 - MCP comparte la ventana mediante LocalBridge. Revisión GUI por defecto;
