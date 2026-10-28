@@ -46,6 +46,14 @@
 > el paquete de otra ficha no acredita esta fuente final. Perfil inicial v03,
 > sin sustituir el CAD v04 concurrente ni ejecutar el pendiente de envolvente.
 
+## Acceso desde otro dispositivo de la LAN
+
+Con Vite abierto en localhost:5173, ejecutar `npm run proxy:lan` en otra
+terminal de este módulo. El proxy imprime las direcciones para abrir desde
+el teléfono, con puerto5180. Incluye HTTP, recursos3D y WebSockets de Vite;
+no emula el robot. [Uso y puertos configurables](docs/modules/lan-proxy.md).
+Herramienta AFR2-20261025-12, independiente del bundle y de LittleFS.
+
 
 
 Aplicación Web oficial de `AutoFinalRobo2` (`AFR2-20261023-09`), implementada según el [Plan Web aprobado](../AutoFinalRobo2-Contracts/docs/PLAN_WEB.md) y el [Sistema de Identidad Visual v0.1.3](../AutoFinalRobo2-Contracts/docs/design-system/index.md).

@@ -1,3 +1,11 @@
+> **Loader AFR2-20261027-24 / 0.7.0:** [alta, prueba y estado del servidor MCP](changes/2026-10-27-24-loader-mcp-connection-test.md), instrucción para Codex por sesión/prueba y casilla Autoaceptar visible desde el inicio. Fuente/documentación; sin compilar, ejecutar GUI/MCP, tests, validadores, COM ni flasheos de esta revisión. atmega/esp/web sin cambios por esta ficha.
+
+> **Loader AFR2-20261027-23 / 0.6.1:** [visibilidad de Paquete AT según familia](changes/2026-10-27-23-loader-at-package-visibility.md). Corrección en fuente y documentación, sin compilar, ejecutar GUI/MCP, tests, validadores, COM ni flasheos de esta revisión. atmega/esp/web sin cambios por esta ficha.
+
+> **Loader AFR2-20261027-22 / 0.6.0:** [familias Web/AT por USB y memoria](changes/2026-10-27-22-loader-web-at-usb-layouts.md), [reglas y esquema](contracts/LOADER_FLASH_MODES.md). Cargador/lanzador adaptados en fuente; sin compilar, ejecutar GUI/MCP, tests, validadores, COM ni flasheos de esta revisión. atmega/esp/web sin cambios por esta ficha; el firmware de producto no se convierte a AT.
+
+> **Loader AFR2-20261027-21 / 0.5.0:** [autoaceptación MCP, historial Ctrl/Shift y perfiles locales](changes/2026-10-27-21-loader-autoaccept-profiles-history.md), con toast de copia y presentación de errores/foco inicial corregidos. Solo fuente/documentación; sin compilar, ejecutar GUI/MCP, tests, validadores, COM ni flasheos de esta revisión. atmega/esp/web sin cambios de esta ficha.
+
 > **Vigente AFR2-20261025-01:** [control Web directo](contracts/DIRECT_CONTROL_7.md), sin permiso previo ni habilitación desde OLED. Firmware0.9.0/EX01v7 y Web0.2.0,30comandos/59ScreenCodes, compilados juntos. STOP/caducidad/watchdog y requisitos físicos conservados; sin flash/tests/placas. Estados inferiores históricos.
 
 > **Vigente AFR2-20261024-15:** [Matriz del maestro](docs/ALINEACION_MAESTRO.md):33comandos y59identidades OLED con fuentes complementarias. Calibración Web adquiere control al escribir; ESP/Web informan FS/paquete. Web/ESP compilados15; AVR sin nueva fuente, build12/EX01v6/firmware0.8.0/gates0. Sin brecha software definida identificada tras lectura; aceptación física, memoria dinámica, flash/SPI y planos CAD pendientes. Solo documentación en CAD, sin diseño nuevo. Estados inferiores históricos.
@@ -19,6 +27,18 @@
 > Estado vigente **AFR2-20261024-02**, 24/10/2026: integración ROBO2/perfil2 + EX01v3 compilada en Atmega/ESP/Web; GOTO completo, configuración por catálogo compartido y jobs Wi-Fi OLED conectados. Paquete Web actualizado en ESP/data/dist. Sin pruebas de navegador/hardware ni flasheo; secuencias físicas mantienen bloqueo de memoria. Ver [matriz vigente](contracts/EX01_ALIGNMENT_3.md) y [evidencia](changes/2026-10-24-02-project-alignment.md). Los estados previos que siguen son históricos.
 
 # Función de Contracts
+
+AFR2-20261027-25: [identificación ESP8266EX y flash 4 MiB por USB–TTL](hardware/diagnostics/20261027-com5-usbttl-user-report/report.md).
+Ejecución aportada por el usuario, esptool 4.5.1/COM5/9600, IDs `5e / 4016`.
+Sin cambios de atmega/esp/web/Loader/CAD, nueva carga ni verificación de contenido.
+Registro documental, sin pruebas nuevas del agente; layout y modo/frecuencia SPI pendientes.
+
+AFR2-20261027-20: Loader 0.4.0 incorpora estado inferior, etapas tipadas,
+scroll que respeta la lectura, selección compartida de compilación/carga,
+detección ATmega/ESP y asistente separado K/RST. [Ficha](changes/2026-10-27-20-loader-workflow-scroll.md)
+y [adaptaciones por archivo](provenance/loader-workflow-20261027.json).
+Solo fuente/documentación; sin tests, compilaciones, validadores, ejecución,
+COM ni flasheos. atmega/esp/web/CAD sin cambios de esta entrega.
 
 
 Actualización ATmega19,24/10: fuente de producto y documentación completadas,

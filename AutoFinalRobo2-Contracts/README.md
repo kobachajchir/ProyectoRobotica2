@@ -1,3 +1,13 @@
+> **Loader AFR2-20261027-24 / 0.7.0:** [alta y prueba del servidor MCP](changes/2026-10-27-24-loader-mcp-connection-test.md), estado conectado con evidencia por sesión y autoaceptación visible desde el inicio. Solo fuente/documentación; sin compilar, ejecutar GUI/MCP, tests, validadores, COM ni flasheos de esta revisión. atmega/esp/web sin cambios por esta ficha.
+
+> **Loader AFR2-20261027-23 / 0.6.1:** [Paquete AT visible solo al seleccionar AT](changes/2026-10-27-23-loader-at-package-visibility.md), oculto en Web propio. Fuente y documentación; sin compilar, ejecutar GUI/MCP, tests, validadores, COM ni flasheos de esta revisión. atmega/esp/web sin cambios por esta ficha.
+
+> **Loader AFR2-20261027-22 / 0.6.0:** selección Web/AT por USB, filesystem/tamaños y resumen de memoria; reglas separadas de linker y paquete AT, verificación multi-BIN y lanzador con perfil/familia. [Ficha](changes/2026-10-27-22-loader-web-at-usb-layouts.md), [contrato](contracts/LOADER_FLASH_MODES.md). Solo fuente/documentación; sin compilar, ejecutar GUI/MCP, tests, validadores, COM ni flasheos de esta revisión. Firmware atmega/esp y Web sin cambios por esta ficha.
+
+> **Loader AFR2-20261027-21 / 0.5.0:** autoaceptación MCP opcional por sesión, historial Ctrl/Shift y copia con toast, selector de perfiles locales, aviso del monitor alineado y asistentes sin texto seleccionado. [Ficha](changes/2026-10-27-21-loader-autoaccept-profiles-history.md), [MCP](../AutoFinalRobo2-Loader/MCP.md). Solo fuente/documentación; sin compilar, ejecutar GUI/MCP, tests, validadores, COM ni flasheos de esta revisión. atmega/esp/web sin cambios de esta ficha.
+
+> **Loader AFR2-20261027-20 / 0.4.0:** barra de estado, etapas laterales, scroll con posición conservada, dropdown de compilación y destino de flasheo explícito, detección ATmega/ESP junto a Destino y guía K/RST con aviso de puerto listo. [Ficha](changes/2026-10-27-20-loader-workflow-scroll.md), [manual](../AutoFinalRobo2-Loader/MANUAL.html#resultado). Solo fuente/documentación; sin compilación, ejecución, tests, validadores, COM ni flasheos. Firmware/Web sin cambios de esta ficha.
+
 > **Loader AFR2-20261027-19 / 0.3.0:** [monitor serie y eventos](../AutoFinalRobo2-Loader/MANUAL.html#monitor), COM abrir/cerrar, baudios, texto RX, detección de reinicio/modo ESP y logs de fallos; liberación antes de cargar y consulta MCP de captura. [Ficha](changes/2026-10-27-19-loader-serial-monitor.md). Solo fuente/documentación; sin compilar/ejecutar/probar ni abrir COM/flashear.
 
 > **Loader AFR2-20261027-16 / 0.2.0:** [MCP para Codex](../AutoFinalRobo2-Loader/MCP.md), solicitudes revisables en GUI, historial, filtro y evidencias UART/ROM separadas. [Ficha](changes/2026-10-27-16-loader-mcp-ui.md). Solo fuente/documentación: sin compilar, ejecutar, registrar ni comprobar conexión; sin COM ni flasheos.
@@ -51,6 +61,8 @@
 > **AFR2-20261027-06:** calibracion con ayuda derecha para los 29 parametros; matriz mayor y centrada, mismo formulario en las tres simulaciones; pad, boton mantenido y numero/barra reutilizados con Control. [Ficha](changes/2026-10-27-06-calibration-live-math-shared-controls.md). Solo fuente, sin tests/build/validaciones/navegador ni promocion ESP.
 
 # AutoFinalRobo2-Contracts
+
+> **Diagnóstico ESP AFR2-20261027-25:** [consultas USB–TTL COM5 aportadas por el usuario](hardware/diagnostics/20261027-com5-usbttl-user-report/report.md), ESP8266EX y flash **4 MiB**, IDs `5e / 4016`. Comunicación bidireccional observada; sin carga ni verificación de contenido. Layout/SPI y causa del fallo COM8 por Mega/selector pendientes. [Ficha](changes/2026-10-27-25-esp-usbttl-identification.md). Firmware/Web/Loader sin cambios de esta ficha.
 
 > **Brazo AFR2-20261027-21:** [housing GX3270BLS y revisión CAD v08](../AutoFinalRobo2-CAD/mecanica/brazo-antropomorfo/revision_v08/README.md), [ficha](changes/2026-10-27-21-arm-housing-rechecked.md). Interferencias nuevas corregidas, 3.141 configuraciones sin penetraciones reportables y ejes/apoyos completos; masas y cargas recalculadas. Sin FEA ni aceptación física de carga/frenada. Atmega/ESP/Web/Loader sin cambios.
 

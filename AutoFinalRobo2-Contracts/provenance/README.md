@@ -1,3 +1,18 @@
+AFR2-20261027-24: [Loader0.7, alta y prueba del servidor MCP](loader-mcp-connection-20261027.json),
+fuente propia, indicador por sesión/cliente y casilla siempre visible. Sin
+compilación, ejecución GUI/MCP, tests, validadores, COM ni cargas de esta revisión.
+
+AFR2-20261027-23: [Paquete AT solo en familia AT](loader-at-visibility-20261027.json),
+corrección propia de visibilidad en fuente, sin compilación ni ejecución de esta revisión.
+
+AFR2-20261027-22: [Loader0.6, Web/AT por USB y reglas de memoria](loader-esp-modes-20261027.json),
+referencia AutoMicro en solo lectura y adaptaciones propias por archivo. Solo
+fuente/documentación; sin builds, tests, validadores, GUI/MCP, COM ni cargas.
+
+AFR2-20261027-21: [Loader0.5, autoaceptación MCP, perfiles y copia](loader-usability-20261027.json),
+adaptación por archivo sobre fuentes locales conservadas. Solo fuente/documentación;
+sin compilar, ejecutar GUI/MCP, tests, validadores, COM ni flasheos de esta revisión.
+
 AFR2-20261025-01: [control Web directo7](direct-web-control-20261025.json), eliminación funcional del permiso confirmado por el usuario, menús C/TS y contratos coordinados. Compilados los tres módulos, sin flasheo/pruebas físicas. Baselines y adaptaciones por archivo; autorías preservadas.
 
 AFR2-20261024-15: [alineación del maestro](master-alignment-20261024.json), fuentes complementarias y brechas corregidas FS/Calibración/health. Se preservan seis planes anteriores por hash. Web/ESP compilados, AVR conserva12/gates0; aceptación física y CAD nuevo pendientes.
@@ -11,6 +26,19 @@ AFR2-20261024-10: [simulador GOTO y recorrido](goto-map-queue-20261024.json) reg
 AFR2-20261024-09: [biblioteca OLED vinculada](linked-oled-library-20261024.json) registra fuentes AVR activas de solo lectura en esta ficha, copia Web de primitivas/layouts y recursos literales, catálogo compartido y actualización de skill. Autorías previas/F4 kobac conservadas. Hashes no acreditan comparación diferencial ni hardware. [Build09](../documentation/builds/2026-10-24-09/README.md).
 
 # Procedencia
+
+AFR2-20261027-25: [diagnóstico USB–TTL ESP aportado](esp-usbttl-diagnosis-20261027.json),
+consultas del usuario y registro por archivo. ESP8266EX/flash 4 MiB identificados;
+sin carga ni verificación de contenido, ni nuevas pruebas del agente para documentarlo.
+
+AFR2-20261027-20: [interfaz y flujo Loader 0.4](loader-workflow-20261027.json),
+adaptaciones por archivo de barra/etapas, consolas, destino y guía K/RST.
+Autoría de Koba Chajchir conservada. Solo fuente/documentación; sin ejecución,
+compilación, tests, validadores, COM ni flasheos.
+
+AFR2-20261025-12: [proxy LAN de desarrollo](lan-development-proxy-20261025.json),
+herramienta Node propia y documentación por archivo. Servicio local iniciado;
+sin dependencia nueva, cambios de firmware o acceso remoto comprobado.
 
 AFR2-20261024-08: [Red OLED, iconos F4 y reinicio](oled-network-restart-20261024.json)
 registra hashes,14recursos seleccionados y adaptaciones por archivo. Fuentes

@@ -1,4 +1,4 @@
-# AFR2 Loader 0.3 — conexión con Codex
+# AFR2 Loader 0.7 — conexión con Codex
 
 El servidor pertenece al mismo módulo y comparte la sesión del Loader gráfico.
 Transporte MCP **stdio**, JSON-RPC UTF-8 por líneas. No requiere puerto TCP,
@@ -49,18 +49,57 @@ fuentes ni registros. Estos comandos modifican la configuración de Codex
 
 | Herramienta | Resultado y efecto |
 | --- | --- |
-| `loader_status` | Versión, sesión, activo/pendiente, estado y evidencias UART/ROM. No abre COM. |
+| `loader_status` | Versión, sesión, activo/pendiente, `mcpConnection`, `autoAcceptRequests`, `espFirmwareMode`, `includeFilesystem`, estado y evidencias UART/ROM. No abre COM. |
+| `loader_connection_test` | Recibe `sessionId` y `testId` de Ejecutar prueba. Comprueba la sesión y la prueba vigente y muestra Servidor MCP conectado. Solo conexión; no abre COM, inicia jobs ni aplica perfiles. |
 | `loader_ports` | Enumera COM presentes. No abre puertos. |
-| `loader_profile` | Valores visibles, rutas resueltas y existencia de archivos/carpetas; no comprueba versiones de herramientas. |
+| `loader_profile` | Valores visibles, `espMemory` con resumen de memoria y rutas resueltas/existencia; no comprueba versiones de herramientas. |
 | `loader_serial` | Estado y texto de la última captura serie, contador RX, observación de arranque, errores y rutas de archivos. No abre/cierra puertos. |
-| `loader_request_profile` | Propone opciones por clave; muestra actual → propuesto. Solo se aplica/guarda al aprobar en GUI. |
-| `loader_request_operation` | Reserva un trabajo y devuelve `jobId`, `awaiting_approval`, `executed:false`. |
+| `loader_request_profile` | Propone opciones por clave; muestra actual → propuesto. Se aplica/guarda tras revisión o por la casilla Autoaceptar activada en GUI. |
+| `loader_request_operation` | Reserva un trabajo y devuelve `jobId`, `autoAccepted` y `executed:false`: `awaiting_approval` en modo manual o `accepted` en automático. |
 | `loader_job` | Estado y registro incremental; pasar `nextCursor` como cursor siguiente. |
-| `loader_request_cancel` | Rechaza uno pendiente, o pide confirmación de interrupción para uno activo. No equivale a cancelación consumada. |
+| `loader_request_cancel` | Rechaza uno pendiente; para uno activo pide confirmación manual o solicita interrupción directamente si Autoaceptar está marcado. No equivale a cancelación consumada. |
 
 Recurso `loader://manual`: el manual HTML distribuido con esta versión.
 No hay herramienta para ejecutar comandos libres, modificar fuses, leer
 archivos arbitrarios o pulsar botones de hardware.
+
+### Prueba de conexión con esta ventana
+
+Arriba de **Codex / MCP** aparece **Estado del servidor MCP**. El comando de
+PowerShell está identificado como **Comando para añadir servidor MCP** y se
+copia con su propio botón. Solo registra el servidor; no ejecuta la prueba.
+
+1. Pulsar **Ejecutar prueba**. Despliega una instrucción para pegar en el chat
+   de Codex con `loader_connection_test`, el ID de esta sesión y un ID nuevo
+   para la prueba.
+2. Copiar la instrucción con su botón y enviarla en Codex. No es un comando
+   para el monitor serie ni para pegar directamente en PowerShell.
+3. La herramienta devuelve `ok:true`, `status:connected`, `sessionId`, `testId`,
+   `version`, `verifiedAt` UTC, `transport:stdio`, `localEndpoint`,
+   `networkEndpoint:null`, `opensPort:false`, `executesOperation:false` y
+   `duplicate`. La ventana muestra **Servidor MCP conectado** y la hora/cliente.
+
+Los IDs se copian tal como los genera la ventana. Otra sesión, un ID anterior
+o una prueba de más de cinco minutos se rechazan. Volver a pulsar el botón
+genera otra prueba y reemplaza la pendiente. Una repetición de la misma prueba
+ya completada por el mismo proceso devuelve el resultado con `duplicate:true`,
+sin cambiar la hora original. Registrar, listar herramientas, `ping` o detectar
+el proceso no bastan para poner el indicador en conectado.
+
+`mcpConnection` en `loader_status` expone `connected`, `transport`,
+`localEndpoint`, `networkEndpoint`, `testPending`, `testExpired`, `verifiedAt`
+y `display`. `connected` requiere una prueba correcta y un proceso stdio que
+continúe comunicándose con esta ventana. La señal local de vida se envía cada
+cinco segundos; el indicador pasa a desconectado al cerrar el cliente o tras
+30 segundos sin señales. No es una medición de red, COM ni del robot. La prueba
+y la señal de vida siguen disponibles con Aceptar solicitudes desmarcado,
+sin iniciar un trabajo ni necesitar la casilla de autoaceptación.
+
+Esta implementación no usa IP ni puerto TCP: muestra stdio y el nombre del
+canal local de Windows. No confundir el COM del robot con el transporte MCP.
+Si la herramienta de prueba no aparece, desconectar el servidor anterior,
+reabrir el Loader actualizado y reconectar MCP; los lanzadores pueden compilar
+los EXE cuando cambian las fuentes.
 
 ### Lectura del monitor
 
@@ -97,14 +136,27 @@ reconecta el COM al finalizar una carga; se hace manualmente desde la ventana.
 | action | Qué hace después de aprobar |
 | --- | --- |
 | `build_mega` | Producto AVR, comunicación y biblioteca. |
-| `build_esp` | Firmware del entorno PlatformIO configurado. |
-| `build_web_fs` | `npm run build:esp`, promoción Web y `pio ... -t buildfs`. |
-| `build_all` | ATmega, ESP y Web/FS, en secuencia; se detiene ante un error. |
+| `build_esp` | Familia Web: firmware PlatformIO con el layout elegido. Familia AT: revisar BIN del paquete precompilado, sin compilación Arduino. |
+| `build_web_fs` | Requiere FS activado. Web: build:esp, promoción y buildfs. AT: revisión del paquete del proveedor. |
+| `build_all` | ATmega y preparación ESP según familia; Web/FS solo para familia Web con FS activado. Se detiene ante un error. |
 | `probe_esp` | Asistente de conexión, escucha opcional y consulta ROM/flash. No escribe flash. |
 | `flash_mega` | Asistente de cableado, avrdude y verificación. |
-| `flash_esp` | Firmware ESP, con consulta previa y verificación posterior. |
-| `flash_fs` | LittleFS completo, con advertencia de reemplazo de datos y verificación. |
-| `flash_esp_fs` | Firmware y LittleFS del mismo layout; verifica ambos. |
+| `flash_esp` | Web: BIN Arduino. AT: regiones firmware y system del paquete. Consulta previa y verificación posterior por USB/ROM. |
+| `flash_fs` | Solo filesystem del layout: LittleFS Web o regiones FS del paquete AT; requiere casilla FS activa. |
+| `flash_esp_fs` | Firmware y filesystem de la misma familia/layout; verifica todos los BIN elegidos. |
+
+Las acciones ESP usan `EspFirmwareMode` (`web`/`at`), `WebUseFilesystem`,
+`WebLayoutPreset`, `AtPackage`, `AtLayoutId` y `AtUseFilesystem` del perfil
+visible al aprobar. Antes de solicitar una carga, consultar `loader_profile`
+para conocer familia y memoria. Cambiar esos valores sigue el flujo habitual
+de `loader_request_profile` con revisión/autoaceptación. No cambia el firmware
+del Mega ni lo hace compatible con AT. [Reglas completas](../AutoFinalRobo2-Contracts/contracts/LOADER_FLASH_MODES.md).
+
+Las variantes Web exigen BIN construidos con el layout seleccionado; las AT
+usan el mapa del proveedor para ESP8266 y sus BIN precompilados. Cambiar de
+familia no ejecuta comandos AT ni actualizaciones OTA: ambas cargas son USB.
+`package_ready` indica revisión local de archivos; `verified` exige escritura
+y verificación de los BIN. Ninguno certifica la ejecución física del robot.
 
 Ejemplo de argumentos de `loader_request_operation`:
 
@@ -123,7 +175,7 @@ Ejemplo de consulta posterior:
 {"jobId":"ID_DEVUELTO","cursor":0,"limit":60}
 ```
 
-El job pasa por `awaiting_approval` → `running` → `completed`, `failed` o
+El job pasa por `awaiting_approval` (manual) o `accepted` (automático) → `running` → `completed`, `failed` o
 `cancelled`; puede terminar `rejected` antes de ejecutar. Un cambio de perfil
 aprobado termina `completed` sin abrir puertos. `completed` significa que
 terminó **esa acción**, no que se flasheó si la acción era un build/diagnóstico.
@@ -139,10 +191,26 @@ cerrar la ventana: registrar/revisar el resultado antes de reiniciar.
 
 ## Ventana y concurrencia
 
+**Autoaceptar todas las solicitudes de Codex (esta sesión)** se activa
+manualmente en Codex / MCP y empieza desmarcado al abrir. La casilla permanece
+visible desde el inicio en una fila independiente que ajusta su altura al
+texto. Deshabilitar solicitudes la deja visible pero inactiva y desmarcada;
+no se necesita marcar Aceptar para que aparezca.
+
+Acepta la solicitud pendiente y las nuevas operaciones/cambios de perfil sin el diálogo de revisión
+MCP. Los cambios de perfil se guardan en el perfil activo o en una copia local
+nueva si el perfil importado no tenía archivo. La aprobación figura como
+`approvalMode: "automatic"` o `"manual"` en el trabajo y el resumen JSON de
+operación. `accepted` todavía no significa que se haya ejecutado o escrito:
+seguir consultando el mismo jobId. No reenviar una escritura para iniciarla.
+Desmarcar la casilla no cancela un trabajo ya iniciado. Los asistentes de
+cableado, K/RST y confirmación final de escritura conservan su interacción.
+
 Una sola GUI por usuario de Windows; servidor MCP y GUI deben correr con el
 mismo usuario y nivel de privilegios normal. El canal local usa una named pipe
 con ACL de ese usuario. Solo hay un trabajo activo o pendiente: una segunda
-solicitud se rechaza. La solicitud pendiente bloquea los controles locales de
+solicitud se rechaza. También se rechazan propuestas mientras se usa un diálogo
+de perfiles. La solicitud pendiente bloquea los controles locales de
 ejecución/configuración hasta aprobar/rechazar. Consultas de estado siguen
 disponibles mientras trabaja. Los diálogos de cableado y la confirmación final
 de escritura siguen exigiendo intervención en la ventana.

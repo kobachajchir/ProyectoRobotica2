@@ -1,0 +1,23 @@
+{
+  "changeId": "AFR2-20261027-20",
+  "date": "2026-10-27",
+  "authorPreserved": "Koba Chajchir",
+  "origin": "Adaptación propia del Loader existente bajo D:/ProyectoRobotica2; sin copiar fuentes externas ni modificar referencias de AutoProyecto.",
+  "state": "Solo fuente y documentación. Sin compilación, tests, validación ejecutada, aplicación, COM ni flasheos.",
+  "files": [
+    { "path": "AutoFinalRobo2-Loader/src/MainForm.cs", "adaptation": "Selector compartido de build/carga, botón dividido, detección junto a Destino, consola por lotes e integración del flujo guiado." },
+    { "path": "AutoFinalRobo2-Loader/src/MainForm.Workflow.cs", "adaptation": "Fuente nueva: barra global, indicadores de eventos, diálogo K/RST con espera de escucha real y cierre cancelable, y aviso final de cableado operativo D18→E_RX/E_TX→D19." },
+    { "path": "AutoFinalRobo2-Loader/src/LogTextBox.cs", "adaptation": "Fuente nueva: RichTextBox con seguimiento explícito, conservación de selección/scroll y límite de texto en pantalla." },
+    { "path": "AutoFinalRobo2-Loader/src/MainForm.Serial.cs", "adaptation": "Monitor reutiliza consola estable; eventos del cargador alimentan las etapas de la GUI." },
+    { "path": "AutoFinalRobo2-Loader/src/MainForm.Integration.cs", "adaptation": "Resumen compacto y nombres centrales del selector ESP URAT, sin reiterar retiro de D18/D19." },
+    { "path": "AutoFinalRobo2-Loader/src/Operations.cs", "adaptation": "Eventos de compilación completada/puerto listo, guía previa a escucha, casillas de cableado corregidas y consulta de firma AVR sin escritura." },
+    { "path": "AutoFinalRobo2-Loader/src/JobState.cs", "adaptation": "Versión de aplicación 0.4.0; sin cambio del esquema de trabajo." },
+    { "path": "AutoFinalRobo2-Loader/README.md", "adaptation": "Funciones y arquitectura del nuevo flujo; comportamiento de lectura y estado real sin ejecución." },
+    { "path": "AutoFinalRobo2-Loader/MANUAL.html", "adaptation": "Selección, detección ATmega, cableado central, secuencia K/RST, barra/etapas y control de scroll." },
+    { "path": "AutoFinalRobo2-Contracts/changes/2026-10-27-20-loader-workflow-scroll.md", "adaptation": "Registro del pedido y estados separados de atmega/esp/web/Loader." },
+    { "path": "AutoFinalRobo2-Contracts/README.md", "adaptation": "Enlace al nuevo estado del Loader." },
+    { "path": "AutoFinalRobo2-Contracts/INFORME_ADAPTACION.md", "adaptation": "Estado fuente de esta entrega; firmware y Web sin intervención." },
+    { "path": "AutoFinalRobo2-Contracts/CHANGELOG.md", "adaptation": "Entrada nueva, preservando entradas y ediciones previas." },
+    { "path": "AutoFinalRobo2-Contracts/provenance/README.md", "adaptation": "Enlace al manifiesto incremental, preservando la procedencia anterior." }
+  ]
+}

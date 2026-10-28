@@ -1,0 +1,23 @@
+{
+  "changeId": "AFR2-20261027-24",
+  "date": "2026-10-27",
+  "authorPreserved": "Koba Chajchir",
+  "origin": "Adaptación propia de la interfaz y del servidor MCP local del Loader; cambios anteriores conservados.",
+  "state": "Fuente nominal0.7.0 y documentación. Sin compilar, ejecutar GUI/MCP, tests, validadores, registro global, COM ni flasheos de esta revisión.",
+  "files": [
+    { "path": "AutoFinalRobo2-Loader/src/MainForm.Integration.cs", "adaptation": "Sección MCP con scroll y filas automáticas para alta/estado y ambas casillas siempre visibles; despacho de prueba y señales del cliente; mcpConnection en estado." },
+    { "path": "AutoFinalRobo2-Loader/src/MainForm.McpConnection.cs", "adaptation": "Paneles de alta y conexión, instrucción copiable con IDs por sesión/prueba, vencimiento, resultado, seguimiento de cliente y endpoint local sin IP/puerto TCP." },
+    { "path": "AutoFinalRobo2-Loader/src/McpClientConnection.cs", "adaptation": "Identidad del proceso stdio, señal local periódica y cierre, llamadas serializadas con las herramientas; sin puertos de red ni acceso a hardware." },
+    { "path": "AutoFinalRobo2-Loader/src/McpServer.cs", "adaptation": "Herramienta loader_connection_test de consulta con IDs obligatorios y validación, metadatos de cliente y enlace de su ciclo de vida al proceso stdio." },
+    { "path": "AutoFinalRobo2-Loader/src/JobState.cs", "adaptation": "Versión nominal0.7.0." },
+    { "path": "AutoFinalRobo2-Loader/README.md", "adaptation": "Versión vigente, flujo de alta/prueba, casilla siempre visible y nuevos archivos de arquitectura." },
+    { "path": "AutoFinalRobo2-Loader/MCP.md", "adaptation": "Herramienta y campos de conexión, prueba por chat, IDs y plazos, endpoint local, reconexión y visibilidad de autoaceptación." },
+    { "path": "AutoFinalRobo2-Loader/MANUAL.html", "adaptation": "Manual portable0.7.0 con alta, indicador/prueba, transporte y casilla visible desde el inicio." },
+    { "path": "AutoFinalRobo2-Contracts/changes/2026-10-27-24-loader-mcp-connection-test.md", "adaptation": "Pedido, decisiones, comportamiento y estados separados por módulo." },
+    { "path": "AutoFinalRobo2-Contracts/provenance/loader-mcp-connection-20261027.json", "adaptation": "Procedencia incremental por archivo de esta entrega." },
+    { "path": "AutoFinalRobo2-Contracts/README.md", "adaptation": "Estado fuente Loader0.7.0 y enlace a la ficha24." },
+    { "path": "AutoFinalRobo2-Contracts/INFORME_ADAPTACION.md", "adaptation": "Estado y límites de esta revisión sin ejecución." },
+    { "path": "AutoFinalRobo2-Contracts/CHANGELOG.md", "adaptation": "Entrada AFR2-20261027-24 preservando el historial." },
+    { "path": "AutoFinalRobo2-Contracts/provenance/README.md", "adaptation": "Índice de este registro de procedencia." }
+  ]
+}

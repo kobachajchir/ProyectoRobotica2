@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace AFR2Loader
 {
-    public sealed class Operations
+    public sealed partial class Operations
     {
         readonly Runner runner;
         readonly Action<string> log, state;
@@ -21,6 +21,7 @@ namespace AFR2Loader
         public bool Verified { get; private set; }
         public Action WritingStarted;
         public Action<string, string> Changed;
+        public Func<Func<CancellationToken, Task>, CancellationToken, Task> BootAssistant;
         void Stage(string code, string message) { state(message); if (Changed != null) Changed(code, message); }
         void MarkWriting() { WroteAnything = true; if (WritingStarted != null) WritingStarted(); }
         public List<object> Steps = new List<object>();
@@ -44,8 +45,14 @@ namespace AFR2Loader
         public async Task<CommandResult> Command(Profile p, string key, IEnumerable<string> args, string dir, CancellationToken token, int timeout = 0)
         {
             var watch = Stopwatch.StartNew();
-            int verificationNotice = 0;
+            int verificationNotice = 0, connectionNotice = 0;
             runner.OutputLine = line => {
+                if (key == "Avrdude")
+                {
+                    Match signature = Regex.Match(line, @"Device signature\s*=\s*(0x[0-9a-fA-F]{6})", RegexOptions.IgnoreCase);
+                    if (signature.Success && signature.Groups[1].Value.Equals(p.Get("Signature"), StringComparison.OrdinalIgnoreCase) && Interlocked.Exchange(ref connectionNotice, 1) == 0)
+                        if (Changed != null) Changed("device_connected", "ATmega: avrdude recibió la firma esperada " + signature.Groups[1].Value + ".");
+                }
                 if (key == "Avrdude" && line.IndexOf("verifying flash memory against", StringComparison.OrdinalIgnoreCase) >= 0 && Interlocked.Exchange(ref verificationNotice, 1) == 0)
                     if (Changed != null) Changed("verifying", "ATmega: avrdude inició la verificación de flash.");
             };
@@ -57,7 +64,7 @@ namespace AFR2Loader
             {
                 string hint = "Revisá la salida completa en el registro.";
                 if (result.Output.IndexOf("No serial data received", StringComparison.OrdinalIgnoreCase) >= 0)
-                    hint = "No hubo respuesta de esptool. boot mode:(1,...) confirma el modo y ESP→PC, pero no PC→ESP. Revisá D0→E_RX, KEY/RST y RESET del Mega a GND.";
+                    hint = "No hubo respuesta de esptool. boot mode:(1,...) confirma el modo y ESP→PC, pero no PC→ESP. Revisá D0→RX central (E_RX del selector ESP URAT), K/RST y RESET del Mega a GND.";
                 else if (Regex.IsMatch(result.Output, "Access is denied|PermissionError|UnauthorizedAccess|cannot open port", RegexOptions.IgnoreCase))
                     hint = "Revisá monitor serie abierto, permisos de herramientas/cachés y puerto. La aplicación no cambia permisos ni eleva privilegios automáticamente.";
                 throw new CommandFailure("El comando terminó con código " + result.ExitCode + ". " + hint, p.Resolve(key), result.ExitCode, result.Output);
@@ -67,7 +74,7 @@ namespace AFR2Loader
 
         public async Task BuildMega(Profile p, CancellationToken token)
         {
-            Stage("building", "Compilando ATmega: producto, comunicación y biblioteca...");
+            Stage("building_mega", "Compilando ATmega: producto, comunicación y biblioteca...");
             foreach (string key in new[] { "Gcc", "Ar", "Objcopy" }) NeedFile(p.Resolve(key));
             string dir = p.Resolve("AtmegaDir"); NeedFile(Path.Combine(dir, "Makefile"));
             await Command(p, "Make", new[] { "-B", "firmware", "communication-firmware", "library",
@@ -76,27 +83,38 @@ namespace AFR2Loader
             Artifact(Path.Combine(dir, "build", "afr2.hex"));
             Artifact(Path.Combine(dir, "build", "afr2-communication.hex"));
             Artifact(Path.Combine(dir, "libafr2_ui.a"));
+            Stage("build_mega_completed", "Compilación ATmega completada: producto, comunicación y biblioteca.");
         }
         public async Task BuildEsp(Profile p, CancellationToken token)
         {
-            Stage("building", "Compilando firmware ESP..."); NeedFile(Path.Combine(p.Resolve("EspDir"), "platformio.ini"));
-            await Command(p, "Pio", new[] { "run", "-e", p.Get("PioEnv") }, p.Resolve("EspDir"), token);
-            Artifact(Path.Combine(p.Resolve("EspDir"), ".pio", "build", p.Get("PioEnv"), "firmware.bin"));
+            if (EspFlashRules.IsAt(p)) { ReviewAtPackage(p); return; }
+            Stage("building_esp", "Compilando firmware ESP..."); NeedFile(Path.Combine(p.Resolve("EspDir"), "platformio.ini"));
+            var arguments = WebBuildArguments(p, false);
+            string buildLayoutIdentity = p.Get("WebLayoutPreset") == "custom" ? null : WebLayoutIdentity(p);
+            await Command(p, "Pio", arguments, p.Resolve("EspDir"), token);
+            string image = Path.Combine(p.Resolve("EspDir"), ".pio", "build", p.Get("PioEnv"), "firmware.bin");
+            Artifact(image); SaveWebReceipt(p, image, buildLayoutIdentity);
+            Stage("build_esp_completed", "Compilación del firmware ESP completada.");
         }
         public async Task BuildWebFs(Profile p, CancellationToken token)
         {
-            Stage("building", "Web: build:esp, gzip y copia a ESP/data/dist...");
+            if (!EspFlashRules.UseFilesystem(p)) throw new ArgumentException("El perfil tiene filesystem desactivado. Elegí Firmware o activá un layout con filesystem.");
+            if (EspFlashRules.IsAt(p)) { ReviewAtPackage(p); return; }
+            var arguments = WebBuildArguments(p, true);
+            string buildLayoutIdentity = p.Get("WebLayoutPreset") == "custom" ? null : WebLayoutIdentity(p);
+            Stage("building_web_fs", "Compilando Web: build:esp, gzip y copia a ESP/data/dist...");
             NeedFile(p.Resolve("Node")); NeedFile(Path.Combine(p.Resolve("WebDir"), "package.json"));
             await Command(p, "Npm", new[] { "run", "build:esp" }, p.Resolve("WebDir"), token);
             string manifest = Path.Combine(p.Resolve("EspDir"), "data", "dist", "manifest.json");
             NeedFile(manifest);
             var m = new System.Web.Script.Serialization.JavaScriptSerializer().Deserialize<Dictionary<string, object>>(File.ReadAllText(manifest));
             if (!m.ContainsKey("buildProfile") || Convert.ToString(m["buildProfile"]) != "esp") throw new Exception("El manifiesto promovido no pertenece al perfil esp.");
-            Stage("building", "Generando imagen LittleFS desde ESP/data...");
-            await Command(p, "Pio", new[] { "run", "-e", p.Get("PioEnv"), "-t", "buildfs" }, p.Resolve("EspDir"), token);
+            Stage("building_web_fs", "Generando imagen LittleFS desde ESP/data...");
+            await Command(p, "Pio", arguments, p.Resolve("EspDir"), token);
             string image = Path.Combine(p.Resolve("EspDir"), ".pio", "build", p.Get("PioEnv"), "littlefs.bin");
             if (new FileInfo(image).Length != p.Number("FsBytes")) throw new Exception("Imagen creada, pero su tamaño no coincide con el perfil. Revisá linker, entorno y FsBytes antes de cargar.");
-            Artifact(image); Artifact(manifest);
+            Artifact(image); Artifact(manifest); SaveWebReceipt(p, image, buildLayoutIdentity);
+            Stage("build_web_fs_completed", "Compilación Web e imagen LittleFS completadas.");
         }
         void Artifact(string path)
         {
@@ -106,8 +124,14 @@ namespace AFR2Loader
 
         public async Task ListenBoot(Profile p, string port, CancellationToken token)
         {
+            if (BootAssistant == null) await ListenBootCore(p, port, token);
+            else await BootAssistant(t => ListenBootCore(p, port, t), token);
+            Stage("bootloader_observed", "Modo programación observado; monitor cerrado y COM liberado.");
+        }
+        async Task ListenBootCore(Profile p, string port, CancellationToken token)
+        {
             PortValid(port);
-            Stage("awaiting_boot", "Escuchando 74880: mantené KEY, pulsá/soltá RST ESP, soltá KEY. Mega RESET→GND.");
+            Stage("awaiting_boot", "Abriendo escucha 74880 para K / RST. Esperá el aviso PUERTO LISTO.");
             int seconds = (int)p.Number("BootWaitSeconds");
             if (seconds < 5 || seconds > 600) throw new Exception("Espera KEY/RST debe estar entre 5 y 600 segundos.");
             await Task.Run(() =>
@@ -117,7 +141,9 @@ namespace AFR2Loader
                     serial.DtrEnable = false; serial.RtsEnable = false; serial.Handshake = Handshake.None;
                     serial.ReadTimeout = 200; serial.Encoding = Encoding.ASCII;
                     serial.Open();
-                    log("Monitor abierto. Pulsá los botones AHORA; el programa no los controla eléctricamente.");
+                    token.ThrowIfCancellationRequested();
+                    string ready = "PUERTO LISTO: mantené K, apretá RST, soltá RST y después soltá K. RESET ATmega → GND.";
+                    log(ready); if (Changed != null) Changed("boot_listener_ready", ready);
                     var clock = Stopwatch.StartNew(); var observer = new BootObserver(); bool sawNormal = false;
                     while (clock.Elapsed.TotalSeconds < seconds)
                     {
@@ -142,7 +168,6 @@ namespace AFR2Loader
                     throw new TimeoutException(sawNormal ? "Se vio arranque normal, pero no modo 1. Revisá KEY/GPIO0 y el botón RST del ESP." : "Sin mensaje de modo programación. Revisá ESP TX→D1, alimentación, reset del ESP y puerto.");
                 }
             }, token);
-            Stage("bootloader_observed", "Modo programación observado; monitor cerrado y COM liberado.");
         }
 
         List<string> EspArgs(Profile p, string port, bool noStub)
@@ -174,32 +199,39 @@ namespace AFR2Loader
             var list = new List<string> {
                 "Potencia de motores desconectada y monitor serie externo cerrado.",
                 "RESET del ATmega unido a GND; no es el RST del ESP.",
-                "D0/RX0 del Mega → E_RX CENTRAL del selector; E_TX CENTRAL → D1/TX0.",
-                "Cables D18/D19 retirados; sin jumpers paralelos ni conexión directa ESP UART a 5 V.",
-                "ESP alimentado por el shield; masa común. KEY y RST identificados."
+                "D0/RX0 del Mega → RX CENTRAL (E_RX) del selector ESP URAT.",
+                "D1/TX0 del Mega → TX CENTRAL (E_TX) del selector ESP URAT.",
+                "Sin jumpers paralelos D0/D1 ni D4/D5; no usar ESP UART directo de 3,3 V con 5 V.",
+                "ESP alimentado por el shield y masa común. Identifiqué K (KEY) y RST."
             };
-            if (fs) list.Add("LittleFS será reemplazado, incluidas preferencias Wi-Fi. Respaldé los datos que necesitaba.");
+            if (fs) list.Add("El filesystem elegido será reemplazado, incluidas sus preferencias. Respaldé los datos que necesitaba.");
             return list.ToArray();
         }
         public bool PrepareEsp(bool fs)
-        { return confirm("Preparar conexión ESP", "Mismo USB-B, modo de servicio distinto al de operación. Al continuar NO se escribe todavía.", EspChecks(fs)); }
+        {
+            bool accepted = confirm("Preparar conexión ESP", "Mismo USB-B, modo de servicio distinto al de operación.\r\nD0/D1 usan ahora los mismos cables que estaban en D18/D19.\r\nUsá RX/TX centrales del selector ESP URAT (E_RX/E_TX); es distinto de la cabecera directa ESP UART de 3,3 V.\r\n\r\nAl momento de flashear te voy a avisar para que presiones K y RST.\r\nCon la guía activada, al confirmar aparece otra pantalla con los pasos para apretarlos y soltarlos. No los pulses todavía.\r\nSi desactivaste la guía porque el ESP ya está en modo programación, se consultará directamente la ROM.\r\nTodavía no se escribe firmware.", EspChecks(fs));
+            if (accepted) Stage("wiring_confirmed", "Preparación y cableado ESP confirmados por el usuario; no medidos por el programa.");
+            return accepted;
+        }
 
         void Layout(Profile p, long detected, bool fs)
         {
             long expected = p.Number("FlashMB") * 1048576L;
             if (expected <= 0 || expected != detected) throw new Exception("Flash detectada " + detected + " != perfil " + expected + ". Ajustá perfil/layout y recompilá. No se escribió nada.");
             long start = p.Number("FsOffset"), length = p.Number("FsBytes"), fw = p.Number("FirmwareOffset"), max = p.Number("FirmwareMax");
-            if (start < 0 || length <= 0 || fw < 0 || max <= 0 || start % 4096 != 0 || length % 4096 != 0 || start >= detected || length > detected - start)
+            if (start < 0 || length < 0 || (fs && length == 0) || fw != 0 || max <= 0 || start % 4096 != 0 || length % 4096 != 0 || start >= detected || length > detected - start)
                 throw new Exception("Rangos de flash inválidos en el perfil.");
             if (fw >= start || max > start - fw) throw new Exception("El rango de firmware invade LittleFS.");
             NeedFile(p.Resolve("Linker")); string ld = File.ReadAllText(p.Resolve("Linker"));
+            var actualLayout = WebFlashLayout.Read(p.Resolve("Linker"), detected);
+            if (max > actualLayout.FirmwareMax || EspFlashRules.UseFilesystem(p) != (length > 0)) throw new Exception("El límite de código o la selección filesystem no coincide con el linker.");
             Match a = Regex.Match(ld, @"_FS_start\s*=\s*(0x[0-9a-fA-F]+)"), b = Regex.Match(ld, @"_FS_end\s*=\s*(0x[0-9a-fA-F]+)");
             if (!a.Success || !b.Success) throw new Exception("El linker no declara _FS_start/_FS_end en formato reconocido.");
             long ldStart = Convert.ToInt64(a.Groups[1].Value.Substring(2), 16) - 0x40200000L;
             long ldEnd = Convert.ToInt64(b.Groups[1].Value.Substring(2), 16) - 0x40200000L;
             if (start != ldStart || length != ldEnd - ldStart) throw new Exception("El perfil no coincide con el linker elegido.");
             string iniPath = Path.Combine(p.Resolve("EspDir"), "platformio.ini");
-            if (File.Exists(iniPath))
+            if (p.Get("WebLayoutPreset") == "custom" && File.Exists(iniPath))
             {
                 string ini = File.ReadAllText(iniPath);
                 Match environment = Regex.Match(ini, @"(?ms)^\[env:" + Regex.Escape(p.Get("PioEnv")) + @"\]\s*\r?\n(.*?)(?=^\[|\z)");
@@ -214,14 +246,17 @@ namespace AFR2Loader
             long bytes = new FileInfo(bin).Length;
             if (fs ? bytes != length : bytes <= 0 || bytes > max) throw new Exception("El tamaño del BIN no coincide con el rango permitido del perfil.");
             if (!fs && File.ReadAllBytes(bin)[0] != 0xe9) throw new Exception("Se esperaba firmware ESP8266 combinado de Arduino con cabecera 0xE9.");
+            RequireWebReceipt(p, bin);
         }
         void AddFlashOptions(Profile p, List<string> args)
         {
             args.AddRange(new[] { Spell(p, "--flash_mode"), p.Get("FlashMode"), Spell(p, "--flash_freq"), p.Get("FlashFreq"),
-                Spell(p, "--flash_size"), p.Get("FlashMB") + "MB" });
+                Spell(p, "--flash_size"), p.Number("FlashMB").ToString(System.Globalization.CultureInfo.InvariantCulture) + "MB" });
         }
         public async Task FlashEsp(Profile p, string port, bool firmware, bool filesystem, bool listen, CancellationToken token)
         {
+            if (filesystem && !EspFlashRules.UseFilesystem(p)) throw new ArgumentException("Filesystem desactivado en el perfil. Elegí Firmware o activá filesystem.");
+            if (EspFlashRules.IsAt(p)) { await FlashAtPackage(p, port, firmware, filesystem, listen, token); return; }
             if (!PrepareEsp(filesystem)) throw new OperationCanceledException("Cableado no confirmado.");
             if (listen) await ListenBoot(p, port, token);
             long size = await Probe(p, port, token);
@@ -265,6 +300,7 @@ namespace AFR2Loader
                 "D18→E_RX y E_TX→D19 pueden permanecer para operación. No pulsar KEY/RST del shield.",
                 "Seleccioné el HEX de producto completo; no el de comunicación sola."
             })) throw new OperationCanceledException("Cableado no confirmado.");
+            Stage("wiring_confirmed", "Cableado ATmega confirmado por el usuario.");
             EnsureUnchanged(hex, hash); token.ThrowIfCancellationRequested();
             Stage("writing", "Cargando ATmega por su bootloader; RESET debe estar libre. Auto-reset de bootloader solicitado por avrdude; no es un reinicio observado por UART."); MarkWriting();
             var result = await Command(p, "Avrdude", new[] { "-C", p.Resolve("AvrdudeConfig"), "-v", "-p", p.Get("Mcu"), "-c", p.Get("Programmer"),
@@ -276,6 +312,23 @@ namespace AFR2Loader
             Stage("verified", "ATmega: firma esperada, carga y bytes de flash verificados correctamente.");
             log("ATmega: firma esperada, aplicación escrita y bytes verificados. No demuestra sensores/motores calibrados.");
             log("Si Hall conectado estaba en 0: Calibracion > Geometria > Hall conectado=1; volver y Guardar EEPROM.");
+        }
+        public async Task ProbeMega(Profile p, string port, CancellationToken token)
+        {
+            PortValid(port); NeedFile(p.Resolve("AvrdudeConfig"));
+            if (!Regex.IsMatch(p.Get("Signature"), @"^0x[0-9a-fA-F]{6}$")) throw new Exception("Firma AVR esperada inválida.");
+            if (!confirm("Detectar ATmega sin escribir", "Puerto " + port + "\r\nSe consulta la firma mediante avrdude, sin -U y con -n (sin escritura).\r\nEl bootloader puede solicitar auto-reset; esto no es un reinicio observado por UART.", new[] {
+                "Potencia de motores desconectada y monitor serie externo cerrado.",
+                "RESET del ATmega libre (sin puente a GND).",
+                "D0/D1 aislados del ESP; USB-B conectado al Mega. No pulsar K / RST del shield."
+            })) throw new OperationCanceledException("Detección ATmega no confirmada.");
+            Stage("wiring_confirmed", "Cableado ATmega confirmado por el usuario.");
+            Stage("syncing", "Detectando ATmega: consultando firma por su bootloader, sin escribir...");
+            var result = await Command(p, "Avrdude", new[] { "-C", p.Resolve("AvrdudeConfig"), "-v", "-n", "-p", p.Get("Mcu"), "-c", p.Get("Programmer"), "-P", port, "-b", p.Get("MegaBaud") }, Path.GetDirectoryName(p.Resolve("AvrdudeConfig")), token);
+            Match signature = Regex.Match(result.Output, @"Device signature\s*=\s*(0x[0-9a-fA-F]{6})", RegexOptions.IgnoreCase);
+            if (!signature.Success || !signature.Groups[1].Value.Equals(p.Get("Signature"), StringComparison.OrdinalIgnoreCase))
+                throw new CommandFailure("No se reconoció la firma ATmega esperada. Revisá la salida de avrdude.", p.Resolve("Avrdude"), result.ExitCode, result.Output);
+            Stage("device_connected", "ATmega detectado: firma " + signature.Groups[1].Value + ". No se escribió ni verificó firmware.");
         }
     }
 }

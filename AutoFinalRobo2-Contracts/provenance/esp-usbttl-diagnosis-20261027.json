@@ -1,0 +1,36 @@
+{
+  "changeId": "AFR2-20261027-25",
+  "reportedDate": "2026-10-27",
+  "measurementTime": null,
+  "source": "Salidas PowerShell aportadas por el usuario; no repetidas por el agente para este registro.",
+  "attribution": "Pruebas ejecutadas por el usuario; transcripción e informe asistidos por Codex. Autorías anteriores conservadas.",
+  "observed": {
+    "port": "COM5",
+    "transport": "USB–TTL externo; modelo no comunicado",
+    "esptoolVersion": "4.5.1",
+    "baud": 9600,
+    "commands": ["chip_id", "flash_id"],
+    "chip": "ESP8266EX",
+    "chipId": "0x00c2218e",
+    "mac": "ec:64:c9:c2:21:8e",
+    "reportedCrystalMHz": 26,
+    "flashManufacturerId": "0x5e",
+    "flashDeviceId": "0x4016",
+    "reportedFlashSize": "4MB",
+    "flashBytes": 4194304,
+    "numericExitCode": null
+  },
+  "wiringClarification": "El usuario aclaró que utilizó exactamente los mismos dos pines del shield con el USB–TTL y con el Mega. La cabecera física no quedó identificada por foto; no se infiere bypass del selector.",
+  "limits": "Sin marca/modelo de flash atribuidos, layout ni modo/frecuencia SPI comprobados, carga o verificación de contenido. Sin pruebas nuevas del agente para registrar la evidencia.",
+  "files": [
+    { "path": "hardware/diagnostics/20261027-com5-usbttl-user-report/report.md", "adaptation": "Informe nuevo y salidas del usuario con atribución y límites; sin inventar hora ni exit code." },
+    { "path": "changes/2026-10-27-25-esp-usbttl-identification.md", "adaptation": "Ficha de evidencia y estados por módulo." },
+    { "path": "hardware/diagnostics/README.md", "adaptation": "Enlace al resultado sin sustituir evidencia histórica." },
+    { "path": "hardware/WIFI_SHIELD.md", "adaptation": "Identificación de este ejemplar; incertidumbres eléctricas y SPI conservadas." },
+    { "path": "hardware/FLASHING.md", "adaptation": "Consulta USB–TTL sin convertir el layout candidato en validado." },
+    { "path": "README.md", "adaptation": "Enlace y estado del diagnóstico aportado." },
+    { "path": "INFORME_ADAPTACION.md", "adaptation": "Evidencia sin cambios de firmware/Loader." },
+    { "path": "CHANGELOG.md", "adaptation": "Entrada incremental, preservando cambios previos." },
+    { "path": "provenance/README.md", "adaptation": "Enlace a este manifiesto incremental." }
+  ]
+}

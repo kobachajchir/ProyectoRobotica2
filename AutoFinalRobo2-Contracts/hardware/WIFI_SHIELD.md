@@ -1,5 +1,12 @@
 # Shield Wi-Fi OSOYOO UART V1.3 con ESP-12S
 
+> **Identificación aportada AFR2-20261027-25:** el usuario obtuvo ESP8266EX,
+> chip `0x00c2218e`, cristal 26 MHz y flash `5e / 4016`, capacidad **4 MiB**,
+> mediante USB–TTL en COM5 a 9600 con esptool 4.5.1. [Evidencia y límites](diagnostics/20261027-com5-usbttl-user-report/report.md).
+> Sin nueva escritura ni verificación de firmware; modo/frecuencia SPI y layout
+> siguen pendientes. No identifica el punto de fallo de la ruta Mega/selector
+> ni acredita tolerancia eléctrica. Estados inferiores anteriores conservados.
+
 Actualización documental del 2026-10-23, [AFR2-20261023-03](../changes/2026-10-23-03-wifi-shield-evidence.md). [Maestro](../docs/INFORME_MAESTRO.md), [pinout](PINOUT.md), [carga](FLASHING.md). El usuario identifica este shield mediante la página y tres imágenes de referencia; no son fotografías verificadas del cableado actual del robot. No se ejecutaron ensayos ni flasheos.
 
 ## Evidencia y alcance

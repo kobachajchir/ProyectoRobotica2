@@ -1,0 +1,74 @@
+{
+  "changeId": "AFR2-20261025-12",
+  "date": "2026-10-25",
+  "baseCommit": "e7c7851e66254082a3e5fc8e3c214f900cfd0a96",
+  "authorization": "Pedido humano de proxy para acceso LAN al localhost de la Web.",
+  "files": [
+    {
+      "sha256": "a33eefbe546ffbd74af14f54d9670f8799060b7937b51f61caefefbcf43d6d6c",
+      "bytes": 2580,
+      "adaptation": "Herramienta AFR2 nueva: TCP con backpressure, half-close, cierre por señal, timeout de conexión y selección IPv4/IPv6; no librerías externas.",
+      "path": "AutoFinalRobo2-Web/tools/lan-proxy.mjs"
+    },
+    {
+      "sha256": "58fc390e293f731618d143fd1eedddb5db8a13bfb303eadd85e3f763ef93ca2f",
+      "bytes": 1392,
+      "adaptation": "Añadir solo el comando proxy:lan.",
+      "path": "AutoFinalRobo2-Web/package.json"
+    },
+    {
+      "sha256": "dfa795261291953631afa0fce88cfd18cb0356b406f63feed9174702afaf0ca0",
+      "bytes": 1603,
+      "adaptation": "Documentar inicio, puertos, rutas transparentes y límites del servicio de desarrollo.",
+      "path": "AutoFinalRobo2-Web/docs/modules/lan-proxy.md"
+    },
+    {
+      "sha256": "dd5a28f8bf782ae2f93b0401f4cb05d2314edbae0592b702d8e624da5430067a",
+      "bytes": 23208,
+      "adaptation": "Enlazar uso del proxy LAN.",
+      "path": "AutoFinalRobo2-Web/README.md"
+    },
+    {
+      "sha256": "83bfe06cfe069bd77e10cb74a57ca7fc3c3789e078f05fd4261be463b806f16e",
+      "bytes": 21981,
+      "adaptation": "Registrar autoría propia y estado real; no nueva compilación.",
+      "path": "AutoFinalRobo2-Web/INFORME_ADAPTACION.md"
+    },
+    {
+      "sha256": "8a7fd2dfc2c4f107e600289d4aa33e8533d61ef09687e385da4809014cec0a92",
+      "bytes": 14341,
+      "adaptation": "Registrar AFR2-20261025-12.",
+      "path": "AutoFinalRobo2-Contracts/CHANGELOG.md"
+    },
+    {
+      "sha256": "21023ddf6664d0d00faf1dd1f0e78212e8f5e35779cce12c8708c5dea4ae462f",
+      "bytes": 1689,
+      "adaptation": "Registrar pedido, implementación, inicio observado y estado de los módulos.",
+      "path": "AutoFinalRobo2-Contracts/changes/2026-10-25-12-lan-development-proxy.md"
+    },
+    {
+      "sha256": "951f2f57459eba721b4f4ee4e1091fdb22d6f710b04d864fc648e31dcd51f6d5",
+      "bytes": 7839,
+      "adaptation": "Enlazar este registro.",
+      "path": "AutoFinalRobo2-Contracts/provenance/README.md"
+    }
+  ],
+  "runtime": {
+    "listen": "0.0.0.0:5180",
+    "target": "localhost:5173",
+    "pid": 34456,
+    "listenerObserved": true,
+    "stderrEmpty": true,
+    "remoteAccessVerified": false,
+    "firewallChanged": false
+  },
+  "newDependencies": false,
+  "protocolChanged": false,
+  "firmwareChanged": false,
+  "buildRun": false,
+  "testsRun": false,
+  "browser": false,
+  "phone": false,
+  "flashed": false,
+  "physicalTests": false
+}

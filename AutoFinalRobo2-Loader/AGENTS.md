@@ -21,7 +21,14 @@ Comparte el único Git global: no inicializar un repositorio ni submódulo aquí
   escritura/verificación y el error original/código/salida en los informes.
 - MCP stdio usa Mcp.ps1; stdout contiene únicamente JSON-RPC. Diagnósticos y
   compilación del lanzador van por stderr. No registrar globalmente al iniciar.
-- MCP comparte la ventana mediante LocalBridge. Mantener revisión GUI,
+- MCP comparte la ventana mediante LocalBridge. Revisión GUI por defecto;
+  autoaceptación opcional solo cuando el usuario marca la casilla de esa sesión,
+  conforme al pedido AFR2-20261027-21. Registrar el modo de aprobación, mantener
   deduplicación, exclusión de trabajos simultáneos y asistentes físicos. No
   agregar ejecución libre de shell ni declarar conectado por solo registrarlo.
 - Preservar trabajo ajeno y módulos Atmega/ESP/Web/CAD fuera del alcance solicitado.
+- Loader0.6 incorpora carga USB opcional de paquetes ESP8266 AT para otros usos,
+  por pedido AFR2-20261027-22. No convierte el firmware de producto a AT. Separar
+  reglas Web/linker de AT/paquete del proveedor, con offsets/regiones explícitos;
+  no inferir un filesystem AT ni trasladar offsets de ESP32 al ESP8266. Cambiar
+  el layout requiere imágenes correspondientes y consulta de flash antes de escribir.

@@ -23,7 +23,18 @@ namespace AFR2Loader
             using (var instance = new Mutex(true, LocalBridge.MutexName, out owned))
             {
                 if (!owned) { MessageBox.Show("AFR2 Loader ya está abierto para este usuario. Usá esa ventana para compartir la sesión con MCP."); return; }
-                try { Application.Run(new MainForm(appDir)); }
+                try
+                {
+                    string profile = null, mode = null;
+                    for (int i = 1; i < args.Length; i += 2)
+                    {
+                        if (i + 1 >= args.Length) throw new ArgumentException("Falta el valor de " + args[i]);
+                        if (args[i] == "--profile") profile = args[i + 1];
+                        else if (args[i] == "--esp-mode") mode = args[i + 1];
+                        else throw new ArgumentException("Opción de inicio desconocida: " + args[i]);
+                    }
+                    Application.Run(new MainForm(appDir, profile, mode));
+                }
                 catch (Exception error) { MessageBox.Show(error.ToString(), "AFR2 Loader - error de inicio", MessageBoxButtons.OK, MessageBoxIcon.Error); }
                 finally { instance.ReleaseMutex(); }
             }

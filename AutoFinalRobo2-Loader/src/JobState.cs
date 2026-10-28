@@ -20,6 +20,7 @@ namespace AFR2Loader
         public string Created { get; private set; }
         public string Ended { get; set; }
         public bool WritingStarted { get; set; }
+        public string ApprovalMode { get; set; }
         public JobState(string action, string origin, string port, string status)
         {
             Id = Guid.NewGuid().ToString("N"); Action = action; Origin = origin; Port = port;
@@ -36,7 +37,7 @@ namespace AFR2Loader
         public string Detail()
         {
             lock (gate) return "Trabajo: " + Id + "\r\nAcción: " + Action + "\r\nOrigen: " + Origin + "\r\nPuerto: " + Port +
-                "\r\nEstado: " + Status + "\r\nEtapa: " + Stage + "\r\nResultado: " + Result + "\r\nEscritura iniciada: " + WritingStarted +
+                "\r\nEstado: " + Status + "\r\nAprobación MCP: " + (ApprovalMode ?? "no aplica / pendiente") + "\r\nEtapa: " + Stage + "\r\nResultado: " + Result + "\r\nEscritura iniciada: " + WritingStarted +
                 "\r\nArchivo: " + LogPath + "\r\n\r\nÚltimas 120 líneas disponibles:\r\n" + String.Join("\r\n", lines.Skip(Math.Max(0, lines.Count - 120)));
         }
         public object Snapshot(int cursor, int limit)
@@ -51,13 +52,13 @@ namespace AFR2Loader
                 string[] batch = selected.ToArray(); count = batch.Length;
                 return new { id = Id, action = Action, origin = Origin, port = Port, status = Status,
                     stage = Stage, result = Result, logPath = LogPath, created = Created, ended = Ended,
-                    writingStarted = WritingStarted, firstAvailableCursor = firstLine, cursorWasTruncated = cursor < firstLine,
+                    writingStarted = WritingStarted, approvalMode = ApprovalMode, firstAvailableCursor = firstLine, cursorWasTruncated = cursor < firstLine,
                     nextCursor = from + count, hasMore = from + count < firstLine + lines.Count, lines = batch };
             }
         }
     }
     public static class LoaderVersion
     {
-        public const string Value = "0.3.0";
+        public const string Value = "0.7.0";
     }
 }

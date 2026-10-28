@@ -14,7 +14,8 @@ namespace AFR2Loader
     public sealed partial class MainForm
     {
         readonly CheckBox followLog = new CheckBox { Text = "Seguir registro", Checked = true, AutoSize = true, Margin = new Padding(8, 9, 0, 0) };
-        readonly CheckBox remoteRequests = new CheckBox { Text = "Aceptar solicitudes de Codex para revisión en esta ventana", Checked = true, AutoSize = true };
+        readonly CheckBox remoteRequests = new CheckBox { Text = "Aceptar solicitudes de Codex", Checked = true, AutoSize = true };
+        readonly CheckBox autoAcceptRequests = new CheckBox { Text = "Autoaceptar todas las solicitudes de Codex (esta sesión)", AutoSize = true };
         readonly Label evidence = new Label { Dock = DockStyle.Fill, AutoEllipsis = true };
         readonly Label remoteState = new Label { Dock = DockStyle.Fill, ForeColor = Color.FromArgb(22, 79, 99), Font = new Font("Segoe UI", 11, FontStyle.Bold) };
         readonly TextBox requestDetail = new TextBox { Dock = DockStyle.Fill, Multiline = true, ReadOnly = true, ScrollBars = ScrollBars.Vertical, BackColor = Color.White };
@@ -35,60 +36,98 @@ namespace AFR2Loader
         void InitializeIntegration(TabControl tabs, TableLayoutPanel layout, TableLayoutPanel configLayout, FlowLayoutPanel footer)
         {
             mainTabs = tabs; footer.Controls.Add(followLog);
-            layout.RowStyles[3].Height = 165;
+            layout.RowStyles[3].Height = 112;
             var box = (TableLayoutPanel)layout.GetControlFromPosition(0, 3);
             box.RowCount = 3; box.RowStyles.Add(new RowStyle(SizeType.Absolute, 25));
-            box.RowStyles.Add(new RowStyle(SizeType.Absolute, 40)); box.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+            box.RowStyles.Add(new RowStyle(SizeType.Absolute, 32)); box.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
             box.Controls.Add(evidence, 0, 2);
             target.SelectedIndexChanged += (s, e) => UpdateConnectionEvidence("");
             ports.SelectedIndexChanged += (s, e) => { bootEvidence = "sin observar"; romEvidence = "sin consultar"; evidencePort = ports.Text; UpdateConnectionEvidence(""); };
             UpdateConnectionEvidence("");
 
             mcpTab = new TabPage("Codex / MCP") { Padding = new Padding(16) }; tabs.TabPages.Add(mcpTab);
-            var mcpLayout = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 7 };
-            foreach (int height in new[] { 58, 68, 40, 48 }) mcpLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, height));
-            mcpLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100)); mcpLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 45)); mcpLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 65));
-            mcpLayout.Controls.Add(new Label { Dock = DockStyle.Fill, Text = "Una ventana, una operación, el mismo registro.\r\nCodex consulta la sesión y propone operaciones. Revisá la solicitud aquí; los asistentes de cableado siguen activos.", Font = new Font(Font, FontStyle.Bold) }, 0, 0);
-            string command = "codex mcp add afr2-loader -- powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File \"" + Path.Combine(appDir, "Mcp.ps1") + "\"";
-            var commandBox = new TextBox { Dock = DockStyle.Fill, Text = command, ReadOnly = true, Multiline = true, BackColor = Color.White };
-            mcpLayout.Controls.Add(commandBox, 0, 1);
-            var commandButtons = new FlowLayoutPanel { Dock = DockStyle.Fill };
-            var copyCommand = new Button { Text = "Copiar comando MCP", Width = 185, Height = 32 };
-            copyCommand.Click += (s, e) => Clipboard.SetText(command); commandButtons.Controls.Add(copyCommand);
-            remoteRequests.Margin = new Padding(10, 8, 0, 0); commandButtons.Controls.Add(remoteRequests);
-            mcpLayout.Controls.Add(commandButtons, 0, 2); mcpLayout.Controls.Add(remoteState, 0, 3); mcpLayout.Controls.Add(requestDetail, 0, 4);
-            var approvalButtons = new FlowLayoutPanel { Dock = DockStyle.Fill };
+            var mcpScroll = new Panel { Dock = DockStyle.Fill, AutoScroll = true };
+            var mcpLayout = new TableLayoutPanel { Dock = DockStyle.Top, AutoSize = true, AutoSizeMode = AutoSizeMode.GrowAndShrink, ColumnCount = 1, RowCount = 7 };
+            mcpLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+            for (int row = 0; row < 7; row++) mcpLayout.RowStyles.Add(new RowStyle(row == 4 ? SizeType.Absolute : SizeType.AutoSize, row == 4 ? 120 : 0));
+            mcpLayout.Controls.Add(CreateMcpServerPanel(), 0, 0);
+            mcpLayout.Controls.Add(CreateMcpRegistrationPanel(), 0, 1);
+            // Separate autosized rows reserve room for both checkboxes before any click,
+            // including when Windows scales fonts. Disabled never means hidden.
+            var requestOptions = new TableLayoutPanel { Dock = DockStyle.Top, AutoSize = true, ColumnCount = 1, RowCount = 2, Margin = new Padding(0, 6, 0, 6) };
+            requestOptions.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+            requestOptions.RowStyles.Add(new RowStyle(SizeType.AutoSize)); requestOptions.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+            remoteRequests.Dock = autoAcceptRequests.Dock = DockStyle.Top;
+            remoteRequests.Margin = autoAcceptRequests.Margin = new Padding(3, 4, 3, 4);
+            autoAcceptRequests.Visible = true; autoAcceptRequests.Enabled = remoteRequests.Checked;
+            requestOptions.Controls.Add(remoteRequests, 0, 0); requestOptions.Controls.Add(autoAcceptRequests, 0, 1);
+            remoteRequests.CheckedChanged += (s, e) => {
+                autoAcceptRequests.Enabled = remoteRequests.Checked;
+                if (!remoteRequests.Checked) autoAcceptRequests.Checked = false;
+                UpdateRequestMode();
+            };
+            autoAcceptRequests.CheckedChanged += (s, e) => {
+                UpdateRequestMode();
+                Log("Aceptación automática MCP " + (autoAcceptRequests.Checked ? "activada" : "desactivada") + " por el usuario para esta sesión.");
+                if (autoAcceptRequests.Checked && pendingJob != null) ScheduleAutomaticApproval(pendingJob);
+            };
+            EnableTextCopyFeedback(requestDetail); requestDetail.TabStop = false;
+            remoteState.AutoSize = true; remoteState.Margin = new Padding(3, 4, 3, 8);
+            mcpLayout.Controls.Add(requestOptions, 0, 2); mcpLayout.Controls.Add(remoteState, 0, 3); mcpLayout.Controls.Add(requestDetail, 0, 4);
+            var approvalButtons = new FlowLayoutPanel { Dock = DockStyle.Top, AutoSize = true, WrapContents = true };
             reviewRequest = new Button { Text = "Revisar y continuar...", Width = 190, Height = 34, Enabled = false };
             rejectRequest = new Button { Text = "Rechazar solicitud", Width = 175, Height = 34, Enabled = false };
-            reviewRequest.Click += (s, e) => { try { ApprovePending(); } catch (Exception error) { FailPending(error); } };
+            reviewRequest.Click += (s, e) => { try { ApprovePending(false); } catch (Exception error) { FailPending(error); } };
             rejectRequest.Click += (s, e) => RejectPending(); approvalButtons.Controls.Add(reviewRequest); approvalButtons.Controls.Add(rejectRequest);
             mcpLayout.Controls.Add(approvalButtons, 0, 5);
-            mcpLayout.Controls.Add(new Label { Dock = DockStyle.Fill, Text = "El comando registra el servidor cuando lo ejecutás. Mantené esta ventana abierta y reiniciá o reconectá el cliente MCP después de registrarlo.\r\nNo se abre ningún COM al iniciar. Desmarcar solicitudes bloquea acciones nuevas; las consultas siguen disponibles. El historial corresponde a esta sesión." }, 0, 6);
-            mcpTab.Controls.Add(mcpLayout); remoteState.Text = "Sin solicitudes pendientes";
+            mcpLayout.Controls.Add(new Label { Dock = DockStyle.Top, AutoSize = true, Text = "La aceptación automática inicia las acciones y aplica cambios de perfil durante esta sesión. Los asistentes de cableado y K / RST siguen activos. Desmarcar solicitudes bloquea acciones nuevas; las consultas y la prueba de conexión siguen disponibles." }, 0, 6);
+            mcpScroll.Controls.Add(mcpLayout); mcpTab.Controls.Add(mcpScroll); UpdateRequestMode();
 
             var historyTab = new TabPage("Historial de sesión") { Padding = new Padding(12) };
             history.Dock = DockStyle.Fill; history.ReadOnly = true; history.AllowUserToAddRows = false; history.AllowUserToDeleteRows = false;
             history.RowHeadersVisible = false; history.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            history.SelectionMode = DataGridViewSelectionMode.FullRowSelect; history.MultiSelect = true;
+            history.ClipboardCopyMode = DataGridViewClipboardCopyMode.EnableAlwaysIncludeHeaderText;
             foreach (string name in new[] { "Inicio", "Acción", "Origen", "Puerto", "Estado", "Resultado" }) history.Columns.Add(name, name);
+            foreach (DataGridViewColumn column in history.Columns) column.SortMode = DataGridViewColumnSortMode.NotSortable;
+            history.KeyDown += (s, e) => {
+                if (e.Control && (e.KeyCode == Keys.C || e.KeyCode == Keys.Insert))
+                { e.Handled = e.SuppressKeyPress = true; CopyHistorySelection(); }
+            };
+            var historyMenu = new ContextMenuStrip();
+            historyMenu.Items.Add("Copiar seleccionados", null, (s, e) => CopyHistorySelection()); history.ContextMenuStrip = historyMenu;
             history.CellDoubleClick += (s, e) => {
                 if (e.RowIndex < 0) return;
                 var job = (JobState)history.Rows[e.RowIndex].Tag;
                 using (var detail = new Form { Text = "Trabajo " + job.Id, Size = new Size(900, 600), StartPosition = FormStartPosition.CenterParent })
-                { detail.Controls.Add(new TextBox { Dock = DockStyle.Fill, Multiline = true, ReadOnly = true, ScrollBars = ScrollBars.Both, WordWrap = false, Font = new Font("Consolas", 10), Text = job.Detail() }); detail.ShowDialog(this); }
+                {
+                    var text = new TextBox { Dock = DockStyle.Fill, Multiline = true, ReadOnly = true, ScrollBars = ScrollBars.Both, WordWrap = false, Font = new Font("Consolas", 10), Text = job.Detail() };
+                    var copyDetail = new Button { Text = "Copiar detalle", Dock = DockStyle.Bottom, Height = 38 };
+                    copyDetail.Click += (copySender, copyEvent) => CopyText(text.Text, copyDetail);
+                    EnableTextCopyFeedback(text); detail.Controls.Add(text); detail.Controls.Add(copyDetail);
+                    FocusDialogAction(detail, copyDetail, text); detail.ShowDialog(this);
+                }
             };
-            historyTab.Controls.Add(history); tabs.TabPages.Add(historyTab);
+            var historyLayout = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 2 };
+            historyLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100)); historyLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 45));
+            historyLayout.Controls.Add(history, 0, 0);
+            var historyActions = new FlowLayoutPanel { Dock = DockStyle.Fill, WrapContents = false };
+            var copyHistory = new Button { Text = "Copiar seleccionados", Width = 185, Height = 32 };
+            copyHistory.Click += (s, e) => CopyHistorySelection(); historyActions.Controls.Add(copyHistory);
+            historyActions.Controls.Add(new Label { Text = "Ctrl + clic: filas sueltas · Shift + clic: rango · Ctrl + C: copiar", AutoSize = true, Margin = new Padding(12, 10, 0, 0) });
+            historyLayout.Controls.Add(historyActions, 0, 1); historyTab.Controls.Add(historyLayout); tabs.TabPages.Add(historyTab);
             timer.Tick += (s, e) => { if (++historyTick % 10 == 0 && tabs.SelectedTab == historyTab) RefreshHistory(); };
             tabs.SelectedIndexChanged += (s, e) => { if (tabs.SelectedTab == historyTab) RefreshHistory(); };
 
             var heading = configLayout.GetControlFromPosition(0, 0); configLayout.Controls.Remove(heading);
-            configLayout.RowStyles[0].Height = 100;
-            var searchPanel = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 2 };
-            searchPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 60)); searchPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
-            searchPanel.Controls.Add(heading, 0, 0);
+            configLayout.RowStyles[0].Height = 142;
+            var searchPanel = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 3 };
+            searchPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 38)); searchPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 60)); searchPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+            InitializeSavedProfiles(searchPanel); searchPanel.Controls.Add(heading, 0, 1);
             var search = new TextBox { Dock = DockStyle.Top, Text = "" };
             var searchRow = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2 }; searchRow.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 130)); searchRow.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
             searchRow.Controls.Add(new Label { Text = "Filtrar opciones", Dock = DockStyle.Fill }, 0, 0); searchRow.Controls.Add(search, 1, 0);
-            searchPanel.Controls.Add(searchRow, 0, 1); configLayout.Controls.Add(searchPanel, 0, 0);
+            searchPanel.Controls.Add(searchRow, 0, 2); configLayout.Controls.Add(searchPanel, 0, 0);
             search.TextChanged += (s, e) => {
                 settings.EndEdit(); settings.CurrentCell = null;
                 foreach (DataGridViewRow row in settings.Rows)
@@ -119,14 +158,46 @@ namespace AFR2Loader
             if (message.IndexOf("ROM responde", StringComparison.OrdinalIgnoreCase) >= 0) romEvidence = "respuesta confirmada a " + DateTime.Now.ToString("HH:mm:ss");
             string wiring = target.SelectedIndex == 0
                 ? "ATmega: RESET libre; D0/D1 aislados del ESP; USB-B al Mega."
-                : "ESP: RESET Mega a GND; D0/RX0 → E_RX central; E_TX central → D1/TX0; retirar D18/D19. KEY + RST del shield.";
+                : "ESP: RESET ATmega → GND; D0 → RX central y D1 → TX central del selector ESP URAT. Al cargar te voy a avisar para que presiones K y RST.";
             evidence.Text = wiring + "\r\nEvidencia " + evidencePort + ": arranque " + bootEvidence + " | ROM " + romEvidence + ".\r\n" + (pendingJob == null ? "Los estados observados no prueban el cableado ni que el modo siga vigente después de otro reset." : "Solicitud MCP pendiente: revisar en Codex / MCP. No se ejecutó todavía.");
         }
         void RefreshHistory()
         {
-            history.Rows.Clear();
+            // Update existing rows instead of rebuilding them every second: native
+            // Ctrl/Shift selection, its anchor and the scroll position survive ticks.
+            if (history.ContainsFocus && Control.MouseButtons != MouseButtons.None) return;
+            var top = history.FirstDisplayedScrollingRowIndex < 0 ? null : history.Rows[history.FirstDisplayedScrollingRowIndex].Tag as JobState;
+            for (int i = history.Rows.Count - 1; i >= 0; i--)
+                if (!jobs.ContainsKey(((JobState)history.Rows[i].Tag).Id)) history.Rows.RemoveAt(i);
+            int index = 0;
             foreach (JobState job in jobs.Values.OrderByDescending(j => j.Created))
-            { int row = history.Rows.Add(job.Created, job.Action, job.Origin, job.Port, job.Status, job.Result); history.Rows[row].Tag = job; }
+            {
+                DataGridViewRow row = history.Rows.Cast<DataGridViewRow>().FirstOrDefault(r => ((JobState)r.Tag).Id == job.Id);
+                if (row == null) { history.Rows.Insert(index, job.Created, job.Action, job.Origin, job.Port, job.Status, job.Result); row = history.Rows[index]; row.Tag = job; }
+                object[] values = { job.Created, job.Action, job.Origin, job.Port, job.Status, job.Result };
+                for (int column = 0; column < values.Length; column++)
+                    if (!Object.Equals(row.Cells[column].Value, values[column])) row.Cells[column].Value = values[column];
+                index++;
+            }
+            if (top != null)
+            {
+                var row = history.Rows.Cast<DataGridViewRow>().FirstOrDefault(r => ((JobState)r.Tag).Id == top.Id);
+                if (row != null && history.FirstDisplayedScrollingRowIndex != row.Index) history.FirstDisplayedScrollingRowIndex = row.Index;
+            }
+        }
+        void CopyHistorySelection()
+        {
+            if (history.SelectedRows.Count == 0) return;
+            var text = new System.Text.StringBuilder();
+            text.AppendLine(String.Join("\t", history.Columns.Cast<DataGridViewColumn>().Select(c => ClipboardCell(c.HeaderText))));
+            foreach (DataGridViewRow row in history.SelectedRows.Cast<DataGridViewRow>().OrderBy(r => r.Index))
+                text.AppendLine(String.Join("\t", row.Cells.Cast<DataGridViewCell>().Select(c => ClipboardCell(Convert.ToString(c.Value)))));
+            CopyText(text.ToString(), history);
+        }
+        static string ClipboardCell(string value)
+        {
+            if (value.IndexOfAny(new[] { '\t', '\r', '\n', '"' }) < 0) return value;
+            return "\"" + value.Replace("\"", "\"\"") + "\"";
         }
         JobState NewJob(string action, string origin, string port, string state)
         {
@@ -148,7 +219,7 @@ namespace AFR2Loader
         object ProfileSnapshot()
         {
             ReadSettings();
-            return new { values = new Dictionary<string, string>(profile.Values), paths = Profile.Fields.Where(f => f.Kind != "text").Select(f => {
+            return new { values = new Dictionary<string, string>(profile.Values), espMemory = memorySummary.Text, paths = Profile.Fields.Where(f => f.Kind != "text").Select(f => {
                 string resolved; try { resolved = profile.Resolve(f.Key); } catch (Exception error) { resolved = "ERROR: " + error.Message; }
                 return new { key = f.Key, path = resolved, exists = f.Kind == "folder" ? Directory.Exists(resolved) : File.Exists(resolved) };
             }).ToArray() };
@@ -159,9 +230,16 @@ namespace AFR2Loader
             var request = serializer.Deserialize<Dictionary<string, object>>(json);
             string command = Convert.ToString(request["command"]);
             var args = (Dictionary<string, object>)request["arguments"];
+            string mcpClientId = ObserveMcpClient(request);
             switch (command)
             {
+                case "mcp_client_alive": return new { sessionId = sessionId, observed = true };
+                case "mcp_client_closed": ForgetMcpClient(mcpClientId); return new { observed = true };
+                case "loader_connection_test": return CompleteMcpConnectionTest(args, mcpClientId);
                 case "loader_status": return new { version = LoaderVersion.Value, sessionId = sessionId, busy = busy, acceptsRequests = remoteRequests.Checked,
+                    mcpConnection = McpConnectionSnapshot(),
+                    autoAcceptRequests = remoteRequests.Checked && autoAcceptRequests.Checked,
+                    espFirmwareMode = profile.Get("EspFirmwareMode"), includeFilesystem = EspFlashRules.UseFilesystem(profile),
                     pendingJobId = pendingJob == null ? null : pendingJob.Id, activeJobId = currentJob == null ? null : currentJob.Id,
                     port = ports.Text, stage = status.Text, lastResult = lastResult.Text, evidencePort = evidencePort, bootEvidence = bootEvidence, romEvidence = romEvidence,
                     serial = serialCapture == null ? null : serialCapture.Snapshot(0, 1), lastFailureReport = lastFailurePath };
@@ -184,7 +262,9 @@ namespace AFR2Loader
                     string id = Arg(args, "jobId", "");
                     if (pendingJob != null && pendingJob.Id == id) { RejectPending(); return new { jobId = id, status = "rejected" }; }
                     if (currentJob == null || currentJob.Id != id) throw new ArgumentException("Ese trabajo no está pendiente ni activo.");
-                    BeginInvoke(new Action(Cancel)); return new { jobId = id, status = "cancel_confirmation_requested", cancelled = false };
+                    bool automaticCancel = remoteRequests.Checked && autoAcceptRequests.Checked;
+                    BeginInvoke(new Action(() => { if (currentJob != null && currentJob.Id == id) Cancel(automaticCancel); }));
+                    return new { jobId = id, status = automaticCancel ? "cancellation_requested" : "cancel_confirmation_requested", cancelled = false };
                 case "loader_request_profile": case "loader_request_operation": return QueueRequest(command, args, serializer);
                 default: throw new ArgumentException("Comando local no disponible.");
             }
@@ -202,6 +282,7 @@ namespace AFR2Loader
                 return new { jobId = previous[1], status = jobs.TryGetValue(previous[1], out existing) ? existing.Status : "history_expired", duplicate = true, executedByThisRequest = false };
             }
             if (!remoteRequests.Checked) throw new InvalidOperationException("Solicitudes MCP deshabilitadas en la ventana.");
+            if (profileDialogs > 0) throw new InvalidOperationException("Hay un diálogo de perfiles abierto. Cerralo antes de iniciar una solicitud MCP.");
             if (serialTransition) throw new InvalidOperationException("El monitor está abriendo/cerrando el puerto. Esperá a que termine antes de proponer una operación.");
             if (busy || pendingJob != null || reservedJob != null) throw new InvalidOperationException("Ya hay un trabajo activo o pendiente. Consultarlo; no se encola otra operación.");
             if (requests.Count >= 1000) throw new InvalidOperationException("Límite de solicitudes de esta sesión. Reiniciá la ventana para comenzar otra sesión.");
@@ -223,22 +304,45 @@ namespace AFR2Loader
             }
             pendingJob = NewJob(action, "mcp", port, "awaiting_approval"); pendingArguments = args;
             requests[requestId] = new[] { identity, pendingJob.Id };
-            requestDetail.Text = "Trabajo: " + pendingJob.Id + "\r\nAcción: " + action + "\r\nPuerto: " + port + "\r\nArgumentos:\r\n" + serializer.Serialize(args) + "\r\n\r\nSe usará el perfil visible al aprobar. Revisá sus rutas. La solicitud no ejecutó procesos ni abrió el puerto.";
+            requestDetail.Text = "Trabajo: " + pendingJob.Id + "\r\nAcción: " + action + "\r\nPuerto: " + port + "\r\nFirmware ESP: " + profile.Get("EspFirmwareMode") + " | filesystem: " + EspFlashRules.UseFilesystem(profile) + "\r\nArgumentos:\r\n" + serializer.Serialize(args) + "\r\n\r\nSe usará el perfil visible al aprobar. Revisá sus rutas. La solicitud no ejecutó procesos ni abrió el puerto.";
             if (action == "update_profile")
             {
                 ReadSettings(); requestDetail.Text += "\r\n\r\nCambios de perfil (actual → propuesto):";
                 foreach (var pair in (Dictionary<string, object>)args["values"]) requestDetail.Text += "\r\n" + pair.Key + ": " + profile.Get(pair.Key) + " → " + (string)pair.Value;
             }
-            remoteState.Text = "Solicitud de Codex pendiente de revisión";
+            UpdateRequestMode();
             reviewRequest.Enabled = rejectRequest.Enabled = true;
             foreach (Control c in idleControls) c.Enabled = false; configMenu.Enabled = false;
             mainTabs.SelectedTab = mcpTab; UpdateConnectionEvidence("");
-            return new { jobId = pendingJob.Id, status = "awaiting_approval", executed = false };
+            JobState queued = pendingJob;
+            bool automatic = remoteRequests.Checked && autoAcceptRequests.Checked;
+            if (automatic) ScheduleAutomaticApproval(queued);
+            return new { jobId = queued.Id, status = queued.Status, autoAccepted = automatic, executed = false };
+        }
+        void UpdateRequestMode()
+        {
+            if (pendingJob != null)
+            {
+                if (!autoAcceptRequests.Checked && pendingJob.Status == "accepted")
+                { pendingJob.Status = "awaiting_approval"; pendingJob.Stage = "Esperando revisión en la ventana"; }
+                remoteState.Text = pendingJob.Status == "accepted" ? "Solicitud aceptada automáticamente; preparando la acción" : "Solicitud de Codex pendiente de revisión";
+            }
+            else remoteState.Text = !remoteRequests.Checked ? "Solicitudes de Codex deshabilitadas" : autoAcceptRequests.Checked
+                ? "Aceptación automática activada para esta sesión" : "Sin solicitudes pendientes · revisión manual";
+        }
+        void ScheduleAutomaticApproval(JobState job)
+        {
+            job.Status = "accepted"; job.Stage = "Aceptada automáticamente; preparando la acción"; UpdateRequestMode();
+            BeginInvoke(new Action(() => {
+                if (pendingJob != job || busy) return;
+                if (!remoteRequests.Checked || !autoAcceptRequests.Checked) { UpdateRequestMode(); return; }
+                try { ApprovePending(true); } catch (Exception error) { FailPending(error); }
+            }));
         }
         void ClearPending()
         {
             pendingJob = null; pendingArguments = null; reviewRequest.Enabled = rejectRequest.Enabled = false;
-            remoteState.Text = "Sin solicitudes pendientes";
+            UpdateRequestMode();
             foreach (Control c in idleControls) c.Enabled = !busy; configMenu.Enabled = !busy;
             UpdateConnectionEvidence("");
         }
@@ -253,17 +357,22 @@ namespace AFR2Loader
             if (pendingJob != null) { pendingJob.Status = "failed"; pendingJob.Result = error.Message; pendingJob.Ended = DateTimeOffset.Now.ToString("o"); }
             ClearPending(); MessageBox.Show(this, error.Message, "Solicitud MCP", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
-        void ApprovePending()
+        void ApprovePending(bool automatic)
         {
             if (pendingJob == null || busy) return;
             JobState job = pendingJob; var args = pendingArguments;
-            if (MessageBox.Show(this, requestDetail.Text + "\r\n\r\n¿Aprobar esta solicitud?", "Revisión de solicitud MCP", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes) return;
+            if (!automatic && MessageBox.Show(this, requestDetail.Text + "\r\n\r\n¿Aprobar esta solicitud?", "Revisión de solicitud MCP", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes) return;
+            // A cancellation may arrive through the bridge while the modal review is open.
+            if (pendingJob != job || busy) return;
+            job.ApprovalMode = automatic ? "automatic" : "manual";
+            job.Add(DateTime.Now.ToString("HH:mm:ss") + (automatic ? " Solicitud autoaceptada por la opción activada en la ventana." : " Solicitud aprobada manualmente en la ventana."));
+            requestDetail.AppendText(automatic ? "\r\n\r\nACEPTADA AUTOMÁTICAMENTE: iniciando la acción solicitada." : "\r\n\r\nAPROBADA EN LA VENTANA.");
             if (job.Action == "update_profile")
             {
                 ReadSettings(); Profile next = profile.Copy();
                 foreach (var pair in (Dictionary<string, object>)args["values"]) next.Values[pair.Key] = (string)pair.Value;
-                next.Save(profilePath); profile = next; FillSettings();
-                job.Status = "completed"; job.Result = "Perfil aplicado y guardado por aprobación en la ventana."; job.Ended = DateTimeOffset.Now.ToString("o");
+                SaveRemoteProfile(next);
+                job.Status = "completed"; job.Result = automatic ? "Perfil aplicado y guardado por aceptación automática." : "Perfil aplicado y guardado por aprobación en la ventana."; job.Ended = DateTimeOffset.Now.ToString("o");
                 ClearPending(); Log(job.Result); return;
             }
             bool shouldListen = !args.ContainsKey("listenBoot") || (bool)args["listenBoot"];
@@ -275,12 +384,13 @@ namespace AFR2Loader
             if (!String.IsNullOrEmpty(job.Port)) { if (!ports.Items.Contains(job.Port)) ports.Items.Add(job.Port); ports.SelectedItem = job.Port; }
             reservedJob = job; ClearPending();
             Execute(job.Action, async (ops, p, port, token) => {
+                Log("Aprobación MCP: " + (automatic ? "automática, activada en la ventana" : "manual"));
                 switch (job.Action)
                 {
                     case "build_mega": await ops.BuildMega(p, token); break;
                     case "build_esp": await ops.BuildEsp(p, token); break;
                     case "build_web_fs": await ops.BuildWebFs(p, token); break;
-                    case "build_all": await ops.BuildMega(p, token); await ops.BuildEsp(p, token); await ops.BuildWebFs(p, token); break;
+                    case "build_all": await ops.BuildAll(p, token); break;
                     case "probe_esp": if (!ops.PrepareEsp(false)) throw new OperationCanceledException(); if (shouldListen) await ops.ListenBoot(p, port, token); await ops.Probe(p, port, token); break;
                     case "flash_mega": await ops.FlashMega(p, port, token); break;
                     case "flash_esp": await ops.FlashEsp(p, port, true, false, shouldListen, token); break;

@@ -8,6 +8,7 @@
     "start": "vite",
     "predev": "node tools/sync-oled-library.mjs",
     "dev": "vite",
+    "proxy:lan": "node tools/lan-proxy.mjs",
     "build": "node tools/sync-oled-library.mjs && tsc -b && vite build",
     "postbuild": "node tools/package-web.mjs --profile full",
     "package:littlefs": "node tools/package-web.mjs",

@@ -20,6 +20,12 @@ namespace AFR2Loader
         public static readonly string UserRoot = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "AutoFinalRobo2Loader");
         public static readonly Field[] Fields = {
             new Field("Name", "Nombre del perfil", "Ejemplo: Robot del grupo / notebook de Juan", "text"),
+            new Field("EspFirmwareMode", "Firmware ESP", "web: firmware Arduino propio; at: paquete AT. Ambos se cargan por USB/ROM.", "text"),
+            new Field("WebUseFilesystem", "Incluir LittleFS Web", "true o false; el firmware y su linker deben corresponder a la elección", "text"),
+            new Field("WebLayoutPreset", "Layout Web", "custom conserva el perfil; otro valor es el nombre de un linker instalado elegido arriba", "text"),
+            new Field("AtPackage", "Paquete AT", "Manifiesto afr2-esp-at-package-1 con archivos, regiones y layouts del proveedor", "file"),
+            new Field("AtLayoutId", "Layout del paquete AT", "ID declarado dentro del paquete; no usa offsets Arduino/LittleFS", "text"),
+            new Field("AtUseFilesystem", "Incluir filesystem AT", "true o false; solo regiones filesystem declaradas en el paquete", "text"),
             new Field("Repo", "Raíz del repositorio", "Carpeta ProyectoRobotica2. No se necesita Git para cargar archivos externos.", "folder"),
             new Field("AtmegaDir", "Proyecto ATmega", "Carpeta con Makefile", "folder"),
             new Field("EspDir", "Proyecto ESP", "Carpeta con platformio.ini", "folder"),
@@ -64,6 +70,8 @@ namespace AFR2Loader
             if (!Fields.Any(f => f.Key == key)) throw new ArgumentException("Opción de perfil desconocida: " + key);
             if (value == null || value.Length > 4096 || value.Any(Char.IsControl)) throw new ArgumentException("Valor inválido para " + key + ": máximo 4096 caracteres, sin caracteres de control.");
             if (key == "PioEnv" && !System.Text.RegularExpressions.Regex.IsMatch(value, @"^[a-zA-Z0-9_-]{1,100}$")) throw new ArgumentException("El entorno PlatformIO debe contener letras, números, _ o -.");
+            if (key == "EspFirmwareMode" && value != "web" && value != "at") throw new ArgumentException("Firmware ESP: web o at.");
+            if ((key == "WebUseFilesystem" || key == "AtUseFilesystem") && value != "true" && value != "false") throw new ArgumentException(key + ": true o false.");
         }
         public string Resolve(string key)
         {
@@ -107,6 +115,8 @@ namespace AFR2Loader
             var v = p.Values;
             foreach (Field f in Fields) v[f.Key] = "";
             v["Name"] = "Mi AutoFinalRobo2"; v["Repo"] = repo;
+            v["EspFirmwareMode"] = "web"; v["WebUseFilesystem"] = "true"; v["WebLayoutPreset"] = "custom";
+            v["AtPackage"] = ""; v["AtLayoutId"] = ""; v["AtUseFilesystem"] = "false";
             v["AtmegaDir"] = "{Repo}\\AutoFinalRobo2-Atmega";
             v["EspDir"] = "{Repo}\\AutoFinalRobo2-ESP"; v["WebDir"] = "{Repo}\\AutoFinalRobo2-Web";
             v["PioEnv"] = "esp12s_candidate"; v["EsptoolMajor"] = "4";

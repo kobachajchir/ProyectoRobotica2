@@ -1,8 +1,9 @@
 # AFR2 Loader - Windows
 
 Herramienta gráfica en español para compilar y cargar el software de
-AutoFinalRobo2. Hecho por Koba Chajchir. Versión **0.3.0**,
-AFR2-20261027-19, 27/10/2026. Desde **AFR2-20261027-14** es un módulo propio
+AutoFinalRobo2 y cargar paquetes ESP8266 AT precompilados para otros usos.
+Hecho por Koba Chajchir. Versión **0.7.0**,
+AFR2-20261027-24, 27/10/2026. Desde **AFR2-20261027-14** es un módulo propio
 en la raíz, `AutoFinalRobo2-Loader`, al mismo nivel que Atmega, ESP, Web,
 Contracts y CAD. Comparte su único Git. [Registro de integración](../AutoFinalRobo2-Contracts/changes/2026-10-27-14-loader-root-module.md).
 
@@ -26,8 +27,97 @@ Para generar el EXE sin abrir la ventana, cuando se autorice esa compilación:
 powershell -NoProfile -ExecutionPolicy Bypass -File .\Iniciar.ps1 -SoloCompilar
 ```
 
+El lanzador también permite abrir una familia y un perfil ya guardado:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\Iniciar.ps1 -FirmwareEsp at -Perfil "robot-at.json"
+```
+
+`-FirmwareEsp` admite `web` o `at`; `-Perfil` es un nombre JSON de la biblioteca
+local. Solo abre esa selección: no inicia firmware, puertos ni cargas. Sin
+opciones conserva el último perfil. Si la ventana ya está abierta usa su sesión
+actual; el lanzador no cambia una operación en curso.
+
+## Firmware ESP y memoria
+
+En Operación, arriba del registro, elegir **Web propio / Arduino** o
+**Firmware AT / paquete**, y marcar **Incluir filesystem** cuando corresponda.
+Ambos se cargan por USB con la ROM del ESP8266. No hay OTA/HTTP en esta revisión.
+AT designa el firmware que interpreta comandos AT después de instalarlo.
+
+- **Web:** dropdown de los linkers instalados para la capacidad del perfil,
+  con/sin LittleFS. Muestra bytes reales de código, FS y reservas/espacio.
+  Elegir un preset actualiza el perfil y usa una configuración de build local,
+  sin reescribir platformio.ini del producto. El cambio de layout exige construir
+  los BIN correspondientes: sus recibos locales verifican layout y hash antes
+  de cargar. Para imágenes externas se mantiene **Personalizado** con su linker.
+- **AT:** **Paquete AT...**, visible únicamente con esta familia seleccionada,
+  abre un manifiesto con variantes de memoria y BIN
+  del proveedor. El dropdown muestra sus layouts y reservas FS; marcar la
+  casilla incluye las imágenes filesystem en la escritura, sin redimensionar
+  una tabla ya compilada. Permite firmware/sistema, FS o ambos y verifica cada
+  BIN. No usa el linker Arduino ni construye LittleFS para un paquete AT.
+- **ATmega:** conserva HEX, avrdude y sus reglas propias. La familia ESP no
+  modifica el código del microcontrolador ni lo convierte a AT.
+
+En AT, el botón se llama **Revisar paquete AT**: comprueba archivos, regiones,
+capacidades y hashes; no compila un firmware del proveedor. **Compilar todo**
+compila ATmega y prepara ESP según familia; construye Web/LittleFS solo con
+familia Web y FS activado. Las acciones MCP usan la misma selección del perfil.
+
+Preparar un paquete requiere el mapa oficial de esa versión, para **ESP8266**.
+Copiar [paquete-at.plantilla.json](paquete-at.plantilla.json) junto a los BIN
+y completar capacidad, SPI, layouts y regiones de firmware/system/filesystem.
+La plantilla contiene datos incompletos a propósito: no representa un paquete
+compatible para cargar. Ver [manual portable](MANUAL.html#modos) y
+[contrato completo](../AutoFinalRobo2-Contracts/contracts/LOADER_FLASH_MODES.md).
+No se distribuyen BIN AT ni se asume AT+FS en un firmware ESP8266 genérico.
+
+El firmware de producto AutoFinalRobo2 sigue usando su protocolo propio:
+cargar AT en el ESP no acredita compatibilidad con ese firmware del Mega.
+
 ## Incluye
 
+- **Estado del servidor MCP** arriba de Codex / MCP y **Ejecutar prueba**:
+  despliega una instrucción para pegar en el chat de Codex, con identificadores
+  de esta ventana y de la prueba. `loader_connection_test` confirma la conexión
+  y muestra **Servidor MCP conectado**, hora y cliente. El transporte es stdio
+  y se muestra su canal local Windows; no hay IP ni puerto TCP. Detecta cierre
+  del cliente o ausencia de su señal durante 30 segundos. La prueba vence a
+  los cinco minutos y no abre COM ni ejecuta operaciones del robot.
+- **Comando para añadir servidor MCP**, con copia y confirmación de portapapeles,
+  separado de la instrucción de prueba que se ejecuta en el chat de Codex.
+- Casilla **Autoaceptar todas las solicitudes de Codex (esta sesión)** en
+  Codex / MCP, visible desde la apertura en su propia fila adaptable al texto.
+  Si se deshabilitan solicitudes queda visible pero inactiva y desmarcada.
+  Activa la ejecución de solicitudes nuevas y la pendiente sin
+  revisión MCP adicional; también aplica cambios de perfil y acepta solicitudes
+  de cancelación. Empieza desmarcada al abrir. Los asistentes de cableado,
+  K/RST y confirmación final de escritura siguen requiriendo interacción.
+- Historial con selección de filas por Ctrl + clic, rangos por Shift + clic
+  o teclado y copia por Ctrl + C, Ctrl + Insert, botón o menú contextual.
+  Solo se copian las filas elegidas, con encabezados, en orden visible. La
+  actualización conserva selección y posición; copiar muestra abajo
+  **Copiado al portapapeles**, también en los botones de copia de otras vistas.
+- Selector de perfiles guardados arriba de Configuración. Enumera los JSON
+  de LOCALAPPDATA/profiles por nombre y archivo; Guardar conserva el perfil
+  activo y **Guardar como...** crea otro. Importar permite revisar antes de
+  guardarlo en la biblioteca; Exportar conserva la copia portable. Se recuerda
+  el último perfil seleccionado y se consultan cambios sin guardar al cambiar.
+- Monitor con aviso separado en título/mensaje, icono alineado, primera letra
+  mayúscula y mensaje completo con desplazamiento; datos originales conservados
+  en Eventos y errores. Los asistentes abren con foco en la acción o primera
+  casilla, sin seleccionar automáticamente las instrucciones.
+- Barra inferior visible en todas las pestañas: etapa actual, monitor serie y
+  revisión MCP. Casillas laterales de avance alimentadas por eventos de la
+  operación, con compilaciones, reinicio ESP, modo UART, conexión y carga.
+- Botón dividido Compilar: la flecha permite elegir ATmega, ESP, Web/LittleFS
+  o ESP + Web/LittleFS y compilar; la selección queda también como destino de
+  flasheo. Compilar todo conserva ese destino. El botón Flashear nombra qué
+  cargará, y Detectar junto a Destino cambia entre ATmega y ESP / ROM.
+- Detección ATmega por firma con avrdude sin escritura; ESP mantiene la consulta
+  ROM. Asistente K/RST separado del cableado, con aviso de puerto listo después
+  de Continuar y antes de pulsar los botones del shield.
 - Puerto COM seleccionable y actualización de puertos presentes.
 - Configuración de carpetas, herramientas, HEX/BIN, entorno y layout; perfiles
   JSON importables/exportables, sin nombres de usuario ni COM fijos.
@@ -37,6 +127,9 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\Iniciar.ps1 -SoloCompilar
   sincronización ROM y lectura de flash con esptool antes de cada carga ESP.
 - Asistentes de cableado ATmega/ESP, confirmación explícita previa a escritura,
   y advertencia de reemplazo de preferencias al cargar LittleFS.
+- Aviso al terminar una carga verificada (ATmega, ESP o LittleFS): restaurar
+  D18/TX1 → E_RX y E_TX → D19/RX1 del selector, retirar servicio D0/D1 y quitar
+  RESET Mega–GND con alimentación desconectada. No aparece por solo compilar.
 - Carga con avrdude y verificación AVR incorporada; escritura ESP y comando
   `verify_flash`/`verify-flash` posterior contra los BIN seleccionados.
 - Registro vivo de stdout/stderr, errores, códigos de salida, SHA-256,
@@ -55,7 +148,8 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\Iniciar.ps1 -SoloCompilar
 ## Conectar Codex
 
 Abrir **Iniciar.cmd**. Ejecutar **RegistrarMcp.ps1** desde PowerShell para
-registrar `afr2-loader`, o copiar el comando de la pestaña Codex / MCP.
+registrar `afr2-loader`, o copiar el **Comando para añadir servidor MCP**
+de la pestaña Codex / MCP.
 Reiniciar/reconectar el cliente MCP. Guía completa, alternativas sin CLI y
 herramientas en [MCP.md](MCP.md). La app permanece abierta: el servidor comparte
 su trabajo/registro y no flashea fuera de esa sesión.
@@ -69,7 +163,15 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\RegistrarMcp.ps1"
 El registro modifica la configuración de Codex de quien lo ejecuta. No se
 ejecutó en esta entrega. Registrar o listar herramientas no demuestra conexión:
 la primera consulta `loader_status` debe devolver la sesión de la ventana.
-`awaiting_approval` significa que todavía no se ejecutó la operación.
+Para el indicador de conexión, pulsar **Ejecutar prueba** y pegar en el chat
+de Codex la instrucción desplegada. La herramienta `loader_connection_test`
+debe devolver `ok:true`, `status:connected` y los mismos `sessionId`/`testId`.
+La prueba también funciona con las solicitudes deshabilitadas. Si no aparece
+la herramienta nueva, cerrar el cliente MCP anterior y reconectarlo a los
+fuentes actualizados; iniciar los lanzadores puede reconstruir el ejecutable.
+`awaiting_approval` espera revisión manual; `accepted` indica aceptación
+automática y todavía no acredita ejecución. Consultar `loader_job` para el
+estado real; `loader_status.autoAcceptRequests` muestra el modo de la ventana.
 
 ## Monitor serie y errores
 
@@ -92,6 +194,13 @@ La memoria de pantalla es limitada; si se omiten caracteres por atraso avisa
 y conserva los archivos mientras el disco permita escribir. Limpiar/pausar
 la vista no borra archivos ni detiene la lectura. Cambiar de captura no borra
 los registros anteriores; no se implementa rotación automática por tamaño.
+
+En Operación y Monitor serie, mover rueda/barra, navegar con teclas o seleccionar
+texto desactiva Seguir. Los nuevos datos conservan selección y posición vertical
+y horizontal; no se desplaza la vista en ticks sin texto. Volver a marcar Seguir
+lleva al final y retoma el seguimiento. La pantalla conserva un tramo limitado:
+si expira texto antiguo se ajusta la posición al contenido todavía disponible;
+los archivos contienen el registro completo mientras se puedan escribir.
 
 Antes de diagnóstico/carga se cierra el monitor, se espera su liberación y
 recién después se ejecuta esptool/avrdude. Durante la carga, la fuente del
@@ -134,12 +243,22 @@ del usuario que abre el programa. Todos esos resultados se pueden reemplazar.
 | Archivo | Responsabilidad |
 | --- | --- |
 | src/Program.cs | Entrada STA y manejo de errores de interfaz |
+| src/MainForm.McpConnection.cs | Alta, instrucción de prueba, evidencia por sesión e indicador de conexión MCP |
+| src/McpClientConnection.cs | Identidad del proceso stdio, señal local de vida y aviso de cierre |
 | src/Profile.cs | Esquema, valores, resolución de rutas y persistencia de perfiles |
 | src/Runner.cs | Procesos externos asíncronos, salida, timeout y cancelación |
 | src/Operations.cs | Builds, escucha UART, consulta ROM, layout, escritura y verificación |
+| src/Operations.EspModes.cs | Selección de preparación y carga USB de mapas AT con verificación por BIN |
+| src/Operations.WebLayouts.cs | Configuración de build por layout y recibos locales de imágenes Web |
+| src/EspFlashRules.cs | Rangos del linker Web y esquema/reglas independientes de paquetes AT |
 | src/MainForm.cs | Ventana, configuración, asistentes, estados y registro |
 | src/MainForm.Integration.cs | Revisión MCP, historial, indicadores y filtro |
 | src/MainForm.Serial.cs | Monitor, baudios, consola RX, eventos e informes de error |
+| src/MainForm.Workflow.cs | Barra de estado, destino visible, etapas y asistente K/RST |
+| src/MainForm.EspModes.cs | Selector Web/AT, filesystem y resumen de memoria |
+| src/MainForm.Profiles.cs | Biblioteca local, selector y persistencia del perfil activo |
+| src/MainForm.Usability.cs | Copia con toast y foco inicial de diálogos de lectura |
+| src/LogTextBox.cs | Consolas con posición/selección conservadas y seguimiento manual |
 | src/SerialCapture.cs | Lectura en segundo plano, cierre y archivos de captura |
 | src/BootObservation.cs | Parser incremental de reinicio y modo de arranque ESP |
 | src/FailureDetails.cs | Error de herramienta con salida/código y orientación diagnóstica |
@@ -150,6 +269,7 @@ del usuario que abre el programa. Todos esos resultados se pueden reemplazar.
 | Iniciar.ps1 / Iniciar.cmd | Apertura de la interfaz |
 | Mcp.ps1 / RegistrarMcp.ps1 | Entrada stdio y registro optativo en Codex |
 | MCP.md / codex-mcp.example.toml | Configuración portable y contrato operativo MCP |
+| paquete-at.plantilla.json | Plantilla sin offsets candidatos para describir el mapa oficial de un paquete AT |
 | MANUAL.html | Manual portable que se abre desde Opciones / ayuda |
 
 No hay Git anidado: Loader es el sexto módulo del repositorio global.

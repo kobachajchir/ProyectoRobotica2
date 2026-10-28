@@ -2,6 +2,12 @@
 
 # Carga con el USB del Mega y shield OSOYOO UART
 
+> **Diagnóstico AFR2-20261027-25:** consultas externas por USB–TTL en COM5
+> aportadas por el usuario identifican ESP8266EX y flash **4 MiB**. [Informe](diagnostics/20261027-com5-usbttl-user-report/report.md).
+> La ruta por Mega/selector COM8 no sincronizó en los intentos documentados;
+> la causa exacta sigue sin aislar. Esta consulta no valida el layout 4m3m,
+> el modo/frecuencia SPI ni una carga de imágenes. Sin flasheo de esta ficha.
+
 Actualización de configuración **AFR2-20261024-04**: el usuario pidió incluir el
 modelo final en ESP y reservar3MiB para LittleFS, suponiendo flash4MiB.
 `ESP/platformio.ini` selecciona `eagle.flash.4m3m.ld`; firmware compilado con

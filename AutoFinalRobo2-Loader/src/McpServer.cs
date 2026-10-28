@@ -20,18 +20,20 @@ namespace AFR2Loader
         public static object[] Tools()
         {
             return new[] {
-                Tool("loader_status", "Estado del Loader gráfico y trabajo activo. No abre puertos.", Schema(new {}), true),
+                Tool("loader_status", "Estado del Loader gráfico, conexión MCP comprobada, trabajo activo y autoAcceptRequests de esta sesión. No abre puertos.", Schema(new {}), true),
+                Tool("loader_connection_test", "Comprueba la conexión con esta ventana usando sessionId y testId de la instrucción que muestra Ejecutar prueba. Devuelve connected y actualiza el indicador del Loader. Solo conexión: no abre COM ni ejecuta operaciones. Si el ID venció o cambió la ventana, generar otra prueba.",
+                    Schema(new { sessionId = new { type = "string" }, testId = new { type = "string" } }, "sessionId", "testId"), true),
                 Tool("loader_ports", "Enumera puertos presentes sin abrirlos.", Schema(new {}), true),
-                Tool("loader_profile", "Perfil visible y rutas resueltas. No ejecuta herramientas.", Schema(new {}), true),
+                Tool("loader_profile", "Perfil visible, familia ESP Web/AT, memoria y rutas resueltas. No ejecuta herramientas.", Schema(new {}), true),
                 Tool("loader_serial", "Estado y texto incremental de la última captura serie de la ventana. No abre ni cierra el puerto. Usar received.nextCursor y captureId=id para continuar en la misma captura.",
                     Schema(new { captureId = new { type = "string" }, cursor = new { type = "integer", minimum = 0 }, limit = new { type = "integer", minimum = 1, maximum = 120 } }), true),
-                Tool("loader_request_profile", "Propone cambios de perfil. Requiere revisión y aprobación en la ventana; no aplica ni guarda silenciosamente.",
+                Tool("loader_request_profile", "Solicita cambios de perfil. La ventana los revisa o los aplica y guarda automáticamente si el usuario activó Autoaceptar. Consultar el jobId devuelto.",
                     Schema(new { values = new { type = "object", additionalProperties = new { type = "string" } }, requestId = new { type = "string", description = "ID único para deduplicar reintentos" } }, "values", "requestId"), false),
-                Tool("loader_request_operation", "Solicita una operación; devuelve jobId pendiente de aprobación humana. Nunca escribe al solicitar. Las cargas mantienen los asistentes de cableado y confirmación final. No repetir si ya existe el job.",
+                Tool("loader_request_operation", "Solicita una operación con el perfil visible y devuelve jobId. ESP Web usa Arduino/LittleFS; ESP AT revisa/carga el paquete del proveedor por USB. build_all omite Web en AT y filesystem desactivado. Consultar loader_profile. Autoaceptar permite inicio automático; awaiting_approval espera revisión. accepted no significa ejecutada ni verificada. Mantiene asistentes físicos. No repetir si existe el job.",
                     Schema(new { action = new { type = "string", @enum = Actions }, port = new { type = "string", description = "COM para diagnóstico/carga; no necesario para builds" }, listenBoot = new { type = "boolean", description = "Escuchar KEY/RST antes de consulta ESP, default true" }, requestId = new { type = "string", description = "ID único para deduplicar reintentos" } }, "action", "requestId"), false),
                 Tool("loader_job", "Estado y lote incremental del registro. Usar nextCursor para continuar; no espera ni ejecuta procesos.",
                     Schema(new { jobId = new { type = "string" }, cursor = new { type = "integer", minimum = 0 }, limit = new { type = "integer", minimum = 1, maximum = 120 } }, "jobId"), true),
-                Tool("loader_request_cancel", "Solicita cancelar un trabajo pendiente o activo. La ventana confirma interrupción si hay una operación en curso; no provoca reintento ni borrado.",
+                Tool("loader_request_cancel", "Solicita cancelar un trabajo pendiente o activo. Autoaceptar permite pedir la interrupción sin revisión adicional; en modo manual la ventana confirma. Consultar loader_job para el resultado; no provoca reintento ni borrado.",
                     Schema(new { jobId = new { type = "string" } }, "jobId"), false)
             };
         }
@@ -45,6 +47,14 @@ namespace AFR2Loader
             switch (tool)
             {
                 case "loader_status": case "loader_ports": case "loader_profile": keys = new string[0]; break;
+                case "loader_connection_test":
+                    keys = new[] { "sessionId", "testId" };
+                    foreach (string key in keys)
+                    {
+                        Guid parsed;
+                        if (!Guid.TryParseExact(StringValue(args, key), "N", out parsed)) throw new ArgumentException(key + " debe ser el ID de la instrucción del Loader.");
+                    }
+                    break;
                 case "loader_request_profile":
                     keys = new[] { "values", "requestId" }; StringValue(args, "requestId");
                     Object(args["values"]); break;
@@ -68,14 +78,14 @@ namespace AFR2Loader
             }
             if (args.Keys.Any(k => !keys.Contains(k))) throw new ArgumentException("Argumentos no admitidos.");
         }
-        static object ToolCall(Dictionary<string, object> parameters)
+        static object ToolCall(Dictionary<string, object> parameters, McpClientConnection client)
         {
             try
             {
                 string name = StringValue(parameters, "name");
                 var args = parameters.ContainsKey("arguments") ? Object(parameters["arguments"]) : new Dictionary<string, object>();
                 Validate(name, args);
-                var bridge = Object(LocalBridge.Call(Json.Serialize(new { command = name, arguments = args })));
+                var bridge = Object(client.Call(name, args));
                 bool ok = bridge.ContainsKey("ok") && (bool)bridge["ok"];
                 object data = bridge.ContainsKey("data") ? bridge["data"] : bridge["error"];
                 return new { content = new[] { new { type = "text", text = Json.Serialize(data) } }, isError = !ok };
@@ -85,6 +95,7 @@ namespace AFR2Loader
         public static void Run(string appDir)
         {
             bool initialized = false;
+            using (var client = new McpClientConnection())
             using (var input = new StreamReader(Console.OpenStandardInput(), new UTF8Encoding(false), false, 4096))
             using (var output = new StreamWriter(Console.OpenStandardOutput(), new UTF8Encoding(false), 4096) { AutoFlush = true })
             {
@@ -107,9 +118,13 @@ namespace AFR2Loader
                             string requested = StringValue(parameters, "protocolVersion");
                             string protocol = new[] { "2024-11-05", "2025-03-26", "2025-06-18" }.Contains(requested) ? requested : "2025-06-18";
                             initialized = true;
+                            object clientInfo;
+                            var info = parameters.TryGetValue("clientInfo", out clientInfo) ? clientInfo as Dictionary<string, object> : null;
+                            object clientName;
+                            client.Start(info != null && info.TryGetValue("name", out clientName) ? Convert.ToString(clientName) : "Cliente MCP");
                             result = new { protocolVersion = protocol, serverInfo = new { name = "afr2-loader", version = LoaderVersion.Value },
                                 capabilities = new { tools = new { listChanged = false }, resources = new { } },
-                                instructions = "Use loader_status antes de operar. Las solicitudes devuelven jobId y requieren aprobación en la ventana. No confundir awaiting_approval con operación ejecutada. Consultar loader_job con cursor; no reenviar solicitudes de escritura. boot mode 1 no demuestra ida/vuelta. No hay herramienta de comandos arbitrarios." };
+                                instructions = "Use loader_status antes de operar y consulte autoAcceptRequests. Las solicitudes devuelven jobId: awaiting_approval espera revisión manual; accepted indica aceptación automática habilitada por el usuario en la ventana, no ejecución ni verificación. Consultar loader_job con cursor; no reenviar solicitudes de escritura. Los asistentes físicos siguen activos. boot mode 1 no demuestra ida/vuelta. No hay herramienta de comandos arbitrarios." };
                         }
                         else if (method == "ping") result = new { };
                         else
@@ -118,7 +133,7 @@ namespace AFR2Loader
                             switch (method)
                             {
                                 case "tools/list": result = new { tools = Tools() }; break;
-                                case "tools/call": result = ToolCall(parameters); break;
+                                case "tools/call": result = ToolCall(parameters, client); break;
                                 case "resources/list": result = new { resources = new[] { new { uri = "loader://manual", name = "Manual AFR2 Loader", description = "Manual local, incluyendo cableado y estados de verificación", mimeType = "text/html" } } }; break;
                                 case "resources/read":
                                     string uri = StringValue(parameters, "uri");

@@ -1,3 +1,54 @@
+## AFR2-20261027-25 — 27/10/2026
+
+Consultas chip_id/flash_id por USB–TTL COM5 aportadas por el usuario: ESP8266EX,
+chip `0x00c2218e`, cristal 26 MHz, flash `5e / 4016`, **4 MiB**. Registro de
+salidas y límites; sin carga, verificación de contenido, cambios de firmware,
+perfil o Loader, ni pruebas nuevas del agente para este registro.
+[Ficha](changes/2026-10-27-25-esp-usbttl-identification.md).
+
+## AFR2-20261027-24 — 27/10/2026
+
+Loader0.7.0: estado del servidor MCP, comando para añadirlo e instrucción de
+prueba por sesión desde Codex. Indicador conectado con prueba válida y señal
+de vida del cliente; endpoint stdio/local sin IP ni puerto TCP. Autoaceptar
+visible desde el inicio con filas automáticas. Fuente/documentación; sin
+tests, compilación, validadores, GUI/MCP, COM ni flasheos de esta revisión.
+[Ficha](changes/2026-10-27-24-loader-mcp-connection-test.md).
+
+## AFR2-20261027-23 — 27/10/2026
+
+Loader0.6.1: Paquete AT se oculta en Web propio y aparece solo en familia AT,
+también al cargar/cambiar perfiles. Guardia de acción según familia y estado.
+Fuente/documentación; sin tests, compilación, validadores, GUI/MCP, COM ni
+flasheos de esta revisión. [Ficha](changes/2026-10-27-23-loader-at-package-visibility.md).
+
+## AFR2-20261027-22 — 27/10/2026
+
+Loader0.6.0: familia ESP Web/AT por USB, filesystem opcional y tamaños con
+resumen de memoria; reglas separadas de linker Arduino y paquete AT por regiones.
+Builds Web con layout/recibo, carga AT multi-BIN verificada y lanzador con selección
+de familia/perfil. ATmega conserva su flujo; firmware de producto sin backend AT.
+Solo fuente/documentación; sin tests, builds, validadores, GUI/MCP, COM ni flasheos
+de esta revisión. [Ficha](changes/2026-10-27-22-loader-web-at-usb-layouts.md).
+
+## AFR2-20261027-21 — 27/10/2026
+
+Loader0.5.0: autoaceptación MCP opcional por sesión, historial Ctrl/Shift y
+copia con toast, selector de perfiles y Guardar como, aviso del monitor
+alineado/capitalizado y asistentes sin selección inicial. Estado accepted y
+modo de aprobación registrados; asistentes físicos conservados. Solo fuente
+y documentación; sin tests, compilación, validadores, GUI/MCP, COM ni flasheos
+de esta revisión. [Ficha](changes/2026-10-27-21-loader-autoaccept-profiles-history.md).
+
+## AFR2-20261027-20 — 27/10/2026
+
+Loader 0.4.0: barra de estado global, indicadores de etapas, consolas con posición
+y selección conservadas, dropdown de compilación vinculado al destino de carga,
+detección ATmega/ESP junto a Destino y asistente K/RST separado con aviso de puerto
+listo. Redacción de cableado central sin repetir retiro de D18/D19. Solo fuente
+y documentación; sin tests, builds, validadores, ejecución, COM ni flasheos.
+[Ficha](changes/2026-10-27-20-loader-workflow-scroll.md).
+
 ## AFR2-20261027-21 — 27/10/2026
 
 Brazo v08: housing GX3270BLS ventilado, parámetros y archivos independientes;
@@ -232,6 +283,7 @@ Independiente del AMI AutoMicro.
 | --- | --- | --- | --- | --- | --- | --- |
 |2026-10-25|AFR2-20261025-13|Modelo final con PCB/soporte manuales y GLB de 871.756 B|sin cambio|firmware sin cambio; activos promovidos|compilada/empaquetada; modelo final|[CAD guardado, render/Draco y hashes](changes/2026-10-25-13-final-cad-web-model.md)|
 |2026-10-25|AFR2-20261025-12|PCB20×35 B.Cu, OLED en socket y soporte M3×15 en Fusion|sin cambio|sin cambio|sin cambio|[Diseño CAD, sin ERC/DRC ni montaje físico](changes/2026-10-25-12-oled-encoder-pcb-support.md)|
+|2026-10-25|AFR2-20261025-12|Proxy LAN de desarrollo HTTP/WebSocket|sin cambios, build01|sin cambios, activos11|herramienta local iniciada; acceso remoto pendiente|[Ficha](changes/2026-10-25-12-lan-development-proxy.md)|
 |2026-10-25|AFR2-20261025-11|Giro local con dos dedos, rumbo/Q-E y ruedas|sin cambio, build01/gates0|firmware01, activos11|compilada/promovida, tacto pendiente|[Ficha](changes/2026-10-25-11-two-finger-local-rotation.md)|
 |2026-10-25|AFR2-20261025-10|Modelo manual mayor por cámara60%; chevrones intactos|sin cambio, build01/gates0|firmware01, activos10|compilada/promovida, visual pendiente|[Ficha](changes/2026-10-25-10-larger-manual-model.md)|
 |2026-10-25|AFR2-20261025-09|Restaurar diseño07, suavizar solo color|sin cambio, build01/gates0|firmware01, activos09|compilada/promovida, visual pendiente|[Ficha](changes/2026-10-25-09-restore-previous-trail.md)|

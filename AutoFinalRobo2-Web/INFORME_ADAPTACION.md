@@ -28,6 +28,13 @@
 
 # Adaptación Web (`AFR2-20261023-09`)
 
+AFR2-20261025-12: herramienta propia [proxy LAN](docs/modules/lan-proxy.md),
+`tools/lan-proxy.mjs`, basada solo en node:net/node:os. package.json incorpora
+`proxy:lan`; documentación de uso/puertos añadida. Inicio local observado en
+0.0.0.0:5180, destino localhost:5173; sin modificar Vite, fuentes de la app,
+lockfile, dependencias, build11 o activos ESP. Sin tests, nueva compilación,
+navegador ni acceso comprobado desde otro dispositivo.
+
 
 
 [Informe maestro](../INFORME_MAESTRO.md) · [Contracts](../AutoFinalRobo2-Contracts/README.md) · [Plan Web](../AutoFinalRobo2-Contracts/docs/PLAN_WEB.md).
