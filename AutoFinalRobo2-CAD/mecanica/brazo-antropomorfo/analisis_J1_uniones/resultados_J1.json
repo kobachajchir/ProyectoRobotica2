@@ -1,0 +1,398 @@
+{
+  "scope": "J1 v08, estatica/frenadas individuales30gr/s, J1 ambos sentidos y19 orientaciones finales cada10gr. Secciones, barras y fijaciones; no FEA de solidos/contactos ni aprobacion FDM.",
+  "sources_geometry": "secciones_CAD_v08.json",
+  "states": 7075,
+  "source_states": 379,
+  "source_cases": 19,
+  "yaw_end_deg": [
+    -90,
+    -80,
+    -70,
+    -60,
+    -50,
+    -40,
+    -30,
+    -20,
+    -10,
+    0,
+    10,
+    20,
+    30,
+    40,
+    50,
+    60,
+    70,
+    80,
+    90
+  ],
+  "cases_excluded_by_native_J1_limits": [
+    {
+      "case": "J1_+1_200ms_30deg_s",
+      "yaw_end_deg": -90
+    },
+    {
+      "case": "J1_+1_100ms_30deg_s",
+      "yaw_end_deg": -90
+    },
+    {
+      "case": "J1_+1_50ms_30deg_s",
+      "yaw_end_deg": -90
+    },
+    {
+      "case": "J1_-1_200ms_30deg_s",
+      "yaw_end_deg": 90
+    },
+    {
+      "case": "J1_-1_100ms_30deg_s",
+      "yaw_end_deg": 90
+    },
+    {
+      "case": "J1_-1_50ms_30deg_s",
+      "yaw_end_deg": 90
+    }
+  ],
+  "assumptions": {
+    "PETG_E_MPa": 1500,
+    "PETG_poisson": 0.38,
+    "FDM_strength_assigned": false,
+    "material_strength_multiplier_for_n2_Kt2": 4,
+    "bearing_C0_reference_N": 1370,
+    "frame_torsion_J_approx": "0.5*(Ix+Iy), solo sensibilidad de rigidez; no tension exacta",
+    "rigid_bridge_z_mm": 66,
+    "fixed_feet_z_mm": 12.1,
+    "shaft_torsion_warning": "circulo8 de referencia; D y agujero no resueltos en torsion",
+    "anchor_warning": "placa rigida y fuerzas incrementales; sin precarga/contacto unilateral/prying",
+    "D_contact_warning": "sin friccion, media cara activa y reparto ideal; no contacto FEA ni rotura demostrada"
+  },
+  "max_bearing_load": {
+    "case": "J2_+1_50ms_30deg_s",
+    "time_s": 0.025,
+    "yaw_end_deg": -80,
+    "bearing": "inferior",
+    "Fr_N": 565.1987167572511,
+    "Fa_bound_N": 21.560109393391418,
+    "P0_N": 565.1987167572511,
+    "C0_reference_N": 1370,
+    "s0_reference": 2.4239262393591128,
+    "projected_pressure_MPa": 3.6701215373847473,
+    "reaction_on_shaft_N": [
+      134.06938700876282,
+      -549.0673810117825,
+      0.0
+    ]
+  },
+  "max_shaft_nominal": {
+    "case": "J2_+1_50ms_30deg_s",
+    "time_s": 0.025,
+    "yaw_end_deg": -90,
+    "z_mm": 6.5137,
+    "normal_stress_nominal_MPa": 94.1319318921649,
+    "torsion_circle8_surrogate_MPa": 0.019223467478013585,
+    "vm_surrogate_MPa": 94.13193778084182,
+    "yield_required_n2_Kt2_MPa": 376.5277511233673
+  },
+  "max_frame_nominal": {
+    "case": "J2_+1_50ms_30deg_s",
+    "time_s": 0.025,
+    "yaw_end_deg": 60,
+    "column": "columna_-1_-1",
+    "sigma_nominal_MPa": 8.776844535719043,
+    "z_mm": 65.8137,
+    "required_strength_n2_Kt2_MPa": 35.10737814287617,
+    "cap_translation_mm": [
+      -0.01796316953385094,
+      0.09213081816383827,
+      -0.0013831707990301122
+    ],
+    "cap_rotation_deg": [
+      -0.2841449177085333,
+      0.05796367432419807,
+      0.09999303342151655
+    ],
+    "tip_force_moment": [
+      2.607386944672093,
+      0.7200294206463264,
+      84.23403524044275,
+      -91.98230610844523,
+      1.4509827996296991,
+      5.047195337823589
+    ]
+  },
+  "max_servo_post_nominal": {
+    "case": "J1_-1_50ms_30deg_s",
+    "time_s": 0.025,
+    "yaw_end_deg": -90,
+    "post": "derecho",
+    "shear_per_screw_N": 33.457440315523655,
+    "sigma_post_nominal_MPa": 5.679722326598815,
+    "z_mm": 12.1137,
+    "required_strength_n2_Kt2_MPa": 22.71888930639526,
+    "screw_shear_thread_MPa": 6.651578591555398,
+    "insert_transverse_projected_MPa": 1.8587466841957587
+  },
+  "max_anchor_tension": {
+    "case": "J2_+1_50ms_30deg_s",
+    "time_s": 0.025,
+    "yaw_end_deg": -90,
+    "model": "rigidez_At_sobre_L",
+    "bolt": "A",
+    "normal_increment_N": 64.97927109557169,
+    "service_tension_N": 64.97927109557169,
+    "shear_N": 0.004753571693224877,
+    "screw_vm_service_MPa": 12.918344257891537,
+    "washer_pressure_service_MPa": 2.209780383198409,
+    "washer_pressure_with100N_preload_MPa": 5.61052703046113
+  },
+  "max_anchor_vm_service": {
+    "case": "J2_+1_50ms_30deg_s",
+    "time_s": 0.025,
+    "yaw_end_deg": -90,
+    "model": "rigidez_At_sobre_L",
+    "bolt": "A",
+    "normal_increment_N": 64.97927109557169,
+    "service_tension_N": 64.97927109557169,
+    "shear_N": 0.004753571693224877,
+    "screw_vm_service_MPa": 12.918344257891537,
+    "washer_pressure_service_MPa": 2.209780383198409,
+    "washer_pressure_with100N_preload_MPa": 5.61052703046113
+  },
+  "max_D_contact": {
+    "case": "J1_-1_50ms_30deg_s",
+    "time_s": 0.025,
+    "yaw_end_deg": -90,
+    "torque_Nmm": 1595.9199030504783,
+    "half_chord_mm": 2.2605309110914633,
+    "engagement_mm": 8.8,
+    "D_flat_pressure_minimum_average_MPa": 35.49012415607716,
+    "D_flat_pressure_uniform_half_MPa": 70.98024831215432,
+    "D_flat_pressure_triangular_peak_MPa": 106.47037246823146,
+    "proposed_flange4M3_R25_shear_per_bolt_N": 15.959199030504783,
+    "proposed_flange_bearing_PETG_t5_5_MPa": 0.9672241836669565,
+    "bearing_cap_axial_per_screw_bound_N": 8.426276758115755,
+    "cap_insert_average_pullout_shear_required_MPa": 0.1490092886571637
+  },
+  "bearing_spacing_sensitivity": [
+    {
+      "centres_mm": 8,
+      "couple_radial_N": 565.2376798399906,
+      "nominal_projected_pressure_MPa": 3.6703745444155236
+    },
+    {
+      "centres_mm": 16,
+      "couple_radial_N": 282.6188399199953,
+      "nominal_projected_pressure_MPa": 1.8351872722077618
+    },
+    {
+      "centres_mm": 24,
+      "couple_radial_N": 188.41255994666355,
+      "nominal_projected_pressure_MPa": 1.2234581814718413
+    },
+    {
+      "centres_mm": 32,
+      "couple_radial_N": 141.30941995999765,
+      "nominal_projected_pressure_MPa": 0.9175936361038809
+    }
+  ],
+  "numerical_equilibrium_residuals": {
+    "radial_force_max_N": 1.1718571004216928e-13,
+    "radial_moment_max_Nmm": 2.73085155401175e-12,
+    "frame_generalized_max_mixed_N_Nmm": 1.8277260863493426e-12,
+    "zero_speed_endpoint_vs_static_max_N": 7.105427357601002e-15,
+    "zero_speed_endpoint_vs_static_max_Nmm": 9.094947017729282e-13
+  },
+  "anchor_model_maxima": {
+    "rigidez_igual": {
+      "case": "J2_+1_50ms_30deg_s",
+      "time_s": 0.025,
+      "yaw_end_deg": -90,
+      "model": "rigidez_igual",
+      "bolt": "A",
+      "normal_increment_N": 60.70467053077529,
+      "service_tension_N": 60.70467053077529,
+      "shear_N": 0.0061154323309542714,
+      "screw_vm_service_MPa": 12.06852315206459,
+      "washer_pressure_service_MPa": 2.0644120478072217,
+      "washer_pressure_with100N_preload_MPa": 5.465158695069943
+    },
+    "rigidez_At_sobre_L": {
+      "case": "J2_+1_50ms_30deg_s",
+      "time_s": 0.025,
+      "yaw_end_deg": -90,
+      "model": "rigidez_At_sobre_L",
+      "bolt": "A",
+      "normal_increment_N": 64.97927109557169,
+      "service_tension_N": 64.97927109557169,
+      "shear_N": 0.004753571693224877,
+      "screw_vm_service_MPa": 12.918344257891537,
+      "washer_pressure_service_MPa": 2.209780383198409,
+      "washer_pressure_with100N_preload_MPa": 5.61052703046113
+    }
+  },
+  "max_cap_axial_bound": {
+    "case": "J2_+1_50ms_30deg_s",
+    "time_s": 0.025,
+    "yaw_end_deg": -90,
+    "torque_Nmm": 1.932553734574393,
+    "half_chord_mm": 2.2605309110914633,
+    "engagement_mm": 8.8,
+    "D_flat_pressure_minimum_average_MPa": 0.042976199399003566,
+    "D_flat_pressure_uniform_half_MPa": 0.08595239879800713,
+    "D_flat_pressure_triangular_peak_MPa": 0.1289285981970107,
+    "proposed_flange4M3_R25_shear_per_bolt_N": 0.01932553734574393,
+    "proposed_flange_bearing_PETG_t5_5_MPa": 0.0011712446876208443,
+    "bearing_cap_axial_per_screw_bound_N": 10.780054696695709,
+    "cap_insert_average_pullout_shear_required_MPa": 0.19063322130890273
+  },
+  "proposed_flange_no_CAD": {
+    "PCD_mm": 50,
+    "plate_OD_mm": 60,
+    "metal_thickness_mm": 3,
+    "hub_OD_proposed_mm": 20,
+    "PETG_effective_thickness_mm": 5.5,
+    "bolts": "4 M3 pasantes, arandelas/tuercas y limitadores de compresion",
+    "loadcase_max_tension": {
+      "case": "J2_+1_50ms_30deg_s",
+      "time_s": 0.025,
+      "yaw_end_deg": 70,
+      "max_tension_N": 62.57524200298634,
+      "max_shear_N": 0.025140629589367084,
+      "max_hole_bearing_MPa": 0.001523674520567702
+    },
+    "loadcase_max_shear": {
+      "case": "J1_-1_50ms_30deg_s",
+      "time_s": 0.025,
+      "yaw_end_deg": -90,
+      "max_tension_N": 41.92832894432005,
+      "max_shear_N": 16.885284103178932,
+      "max_hole_bearing_MPa": 1.023350551707814
+    },
+    "announced_63kgfcm_stall_shear_per_bolt_N": 61.781895000000006,
+    "flange_four_sector_bending_sensitivity": [
+      {
+        "hub_radius_mm": 5,
+        "sector_width_at_root_mm": 7.853981633974483,
+        "cantilever_span_mm": 20,
+        "sector_bending_MPa": 106.23103018609994,
+        "yield_required_n2_Kt2_MPa": 424.9241207443998
+      },
+      {
+        "hub_radius_mm": 10,
+        "sector_width_at_root_mm": 15.707963267948966,
+        "cantilever_span_mm": 15,
+        "sector_bending_MPa": 39.83663631978748,
+        "yield_required_n2_Kt2_MPa": 159.34654527914992
+      }
+    ],
+    "warning": "Propuesta dimensional; union metal/eje, placa a flexion, encastres, holguras y montaje no comprobados."
+  },
+  "motor_sizing": {
+    "J1_MG946R_announced_kgfcm_at6V": 13,
+    "case_peak_required_kgfcm": 16.27385399754736,
+    "preliminary_n2_peak_requirement_kgfcm": 32.54770799509472,
+    "same30deg_s_singleaxis_ideal_stop_ms_at_announced_limit": 62.59174614441292,
+    "same30deg_s_singleaxis_ideal_stop_ms_n2": 125.18349228882585,
+    "GX3270BLS_candidate_announced_kgfcm_at7_4V": 63,
+    "GX3270BLS_catalogue_to_calculated_peak_ratio": 3.871240334925873,
+    "warning": "No curva de par continuo, torque-velocidad, temperatura o frenada real; no parametros aprobados."
+  },
+  "underplate_contact_sensitivity": [
+    {
+      "service_tension_N": 64.97927109557169,
+      "preload_assumed_N": 0,
+      "total_N": 64.97927109557169,
+      "unsupported_strip_span_mm": 5,
+      "strip_width_assumed_mm": 20,
+      "underplate_t_mm": 3,
+      "cantilever_strip_bending_MPa": 10.829878515928614,
+      "punching_average_MPa": 0.9849306850827192,
+      "scope": "Sensibilidad de falta de apoyo, no modelo de contacto real de la contraplaca/acrilico."
+    },
+    {
+      "service_tension_N": 64.97927109557169,
+      "preload_assumed_N": 0,
+      "total_N": 64.97927109557169,
+      "unsupported_strip_span_mm": 10,
+      "strip_width_assumed_mm": 20,
+      "underplate_t_mm": 3,
+      "cantilever_strip_bending_MPa": 21.65975703185723,
+      "punching_average_MPa": 0.9849306850827192,
+      "scope": "Sensibilidad de falta de apoyo, no modelo de contacto real de la contraplaca/acrilico."
+    },
+    {
+      "service_tension_N": 64.97927109557169,
+      "preload_assumed_N": 0,
+      "total_N": 64.97927109557169,
+      "unsupported_strip_span_mm": 20,
+      "strip_width_assumed_mm": 20,
+      "underplate_t_mm": 3,
+      "cantilever_strip_bending_MPa": 43.31951406371446,
+      "punching_average_MPa": 0.9849306850827192,
+      "scope": "Sensibilidad de falta de apoyo, no modelo de contacto real de la contraplaca/acrilico."
+    },
+    {
+      "service_tension_N": 64.97927109557169,
+      "preload_assumed_N": 100,
+      "total_N": 164.97927109557168,
+      "unsupported_strip_span_mm": 5,
+      "strip_width_assumed_mm": 20,
+      "underplate_t_mm": 3,
+      "cantilever_strip_bending_MPa": 27.49654518259528,
+      "punching_average_MPa": 2.5006920478626746,
+      "scope": "Sensibilidad de falta de apoyo, no modelo de contacto real de la contraplaca/acrilico."
+    },
+    {
+      "service_tension_N": 64.97927109557169,
+      "preload_assumed_N": 100,
+      "total_N": 164.97927109557168,
+      "unsupported_strip_span_mm": 10,
+      "strip_width_assumed_mm": 20,
+      "underplate_t_mm": 3,
+      "cantilever_strip_bending_MPa": 54.99309036519056,
+      "punching_average_MPa": 2.5006920478626746,
+      "scope": "Sensibilidad de falta de apoyo, no modelo de contacto real de la contraplaca/acrilico."
+    },
+    {
+      "service_tension_N": 64.97927109557169,
+      "preload_assumed_N": 100,
+      "total_N": 164.97927109557168,
+      "unsupported_strip_span_mm": 20,
+      "strip_width_assumed_mm": 20,
+      "underplate_t_mm": 3,
+      "cantilever_strip_bending_MPa": 109.98618073038112,
+      "punching_average_MPa": 2.5006920478626746,
+      "scope": "Sensibilidad de falta de apoyo, no modelo de contacto real de la contraplaca/acrilico."
+    }
+  ],
+  "hypothetical_new_motor_stall_no_mass_change": {
+    "post_stress_scaled_MPa": 21.987570161908355,
+    "post_required_strength_n2_Kt2_MPa": 87.95028064763342,
+    "D_uniform_half_pressure_scaled_MPa": 274.7816002490659,
+    "warning": "Escalado lineal de torque a63kgfcm, sin CAD, fijaciones ni masas del nuevo motor; solo muestra que no basta cambiar servo."
+  },
+  "solid_circular_shaft_sizing_no_CAD": [
+    {
+      "case": "J2_+1_50ms_30deg_s",
+      "time_s": 0.025,
+      "yaw_end_deg": -80,
+      "diameter_mm": 8,
+      "solid_circular_vm_MPa": 90.38930164877569,
+      "yield_required_n2_Kt2_MPa": 361.55720659510274
+    },
+    {
+      "case": "J2_+1_50ms_30deg_s",
+      "time_s": 0.025,
+      "yaw_end_deg": -80,
+      "diameter_mm": 10,
+      "solid_circular_vm_MPa": 46.33422480818966,
+      "yield_required_n2_Kt2_MPa": 185.33689923275864
+    },
+    {
+      "case": "J2_+1_50ms_30deg_s",
+      "time_s": 0.025,
+      "yaw_end_deg": -80,
+      "diameter_mm": 12,
+      "solid_circular_vm_MPa": 26.845559706142918,
+      "yield_required_n2_Kt2_MPa": 107.38223882457167
+    }
+  ]
+}

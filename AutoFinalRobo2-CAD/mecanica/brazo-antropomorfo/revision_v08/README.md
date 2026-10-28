@@ -1,5 +1,7 @@
 # Brazo v08: housing GX3270BLS y revisión geométrica
 
+> **Continuación AFR2-20261028-01:** [comprobación resistente de J1 y sus uniones](../analisis_J1_uniones/README.md), con requisitos de material y propuesta dimensional de rediseño. Se conserva esta geometría; el estudio no da por aprobada la resistencia.
+
 27/10/2026 · AFR2-20261027-21. Se completa el housing del codo, se corrigen interferencias introducidas por los refuerzos v07 y se repite la revisión CAD pedida por el usuario. Se conservan los maestros anteriores. **Los resultados son geométricos y analíticos; no acreditan resistencia física de 200 g ni frenada de emergencia.**
 
 ## Archivos editables
@@ -62,7 +64,7 @@ El aumento neto es 10,46 g y el CG añadido pasa a (−13,774; 118,696; 152,955)
 
 Se recalcularon las mismas hipótesis de frenada individuales a 30°/s y 200/100/50 ms. En50 ms se obtienen picos de 16,27/27,01/25,56 kgf·cm para los servos J1/J2/J3. J1 sigue superando los13 anunciados de su MG946R. La flexión máxima de base entre esos casos es 4,522 N·m, equivalente a ≈ 565 N por apoyo para el par idealM/d con 8 mm. La sensibilidad J3 a 600°/s sin carga de catálogo sigue llegando144,68 kgf·cm, superior al máximo anunciado del nuevo servo.
 
-Estos resultados **no aceptan la frenada de emergencia**: mantienen abiertos actuador/transmisión de J1, separación de apoyos, alimentación, curvas bajo carga, FEA/contactos, impresión y dinámica simultánea/AGV. [Método y límites de cálculo](../analisis_cargas_200 g/07_implementacion_y_cargas_v07.md).
+Estos resultados **no aceptan la frenada de emergencia**: mantienen abiertos actuador/transmisión de J1, separación de apoyos, alimentación, curvas bajo carga, FEA/contactos, impresión y dinámica simultánea/AGV. [Método y límites de cálculo](../analisis_cargas_200g/07_implementacion_y_cargas_v07.md).
 
 [Geometría e inercias](geometria_v08.json) · [Masas por cuerpo](masas_por_cuerpo_v08.csv) · [PETG por pieza](petg_por_pieza_v08.csv) · [Estática](estatica_v08.json) · [Frenadas](frenadas_hipotesis_v08.json) · [Picos](picos_frenadas_v08.csv).
 

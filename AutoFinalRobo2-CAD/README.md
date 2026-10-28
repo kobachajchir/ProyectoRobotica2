@@ -4,6 +4,8 @@
 
 # AutoFinalRobo2-CAD
 
+**AFR2-20261028-01:** [comprobaciones de J1/uniones sobre v08](mecanica/brazo-antropomorfo/analisis_J1_uniones/README.md). 35 secciones, 7.075 estados, apoyos/eje, bastidor, acople D y anclajes; requisitos de resistencia sin material FDM asignado. Propuesta de brida, eje Ø10 y separación16 mm a la misma altura, con estudio parcial de espacio. No hay ensamble nuevo ni FEA de sólidos/contactos; maestro v08 sin modificar.
+
 **AFR2-20261027-21, brazo vigente v08:** [housing GX3270BLS y nueva revisión geométrica](mecanica/brazo-antropomorfo/revision_v08/README.md), con [ensamble F3D](mecanica/brazo-antropomorfo/AFR2_Brazo_PVC32_AGV_v08_Housing.f3d) y housing independiente. Reservas de montaje corregidas, 3.141 configuraciones sin penetraciones reportables, seis ejes/doce rodamientos completos. Masas/cargas actualizadas; sin FEA ni aceptación física de 200 g/frenada. Sustituye la geometría vigente v07 conservando su maestro.
 
 **AFR2-20261027-20, brazo vigente v07:** [GX3270BLS 270° en el codo, cuna/horquilla integrada y refuerzos locales](mecanica/brazo-antropomorfo/revision_v07/README.md). [F3D](mecanica/brazo-antropomorfo/AFR2_Brazo_PVC32_AGV_v07_GX3270BLS.f3d) y motor independiente, 158 parámetros, montura baja conservada. [Recálculo](mecanica/brazo-antropomorfo/analisis_cargas_200g/07_implementacion_y_cargas_v07.md): 2,267 kg con200 g, codo15,83 kgf·cm estáticos y frenadas hipotéticas. J1 y alimentación siguen abiertos; sin barridos, FEA ni capacidad física acreditada. Los estados inferiores son antecedentes.

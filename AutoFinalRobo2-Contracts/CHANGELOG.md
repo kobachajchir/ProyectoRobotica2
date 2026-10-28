@@ -1,3 +1,13 @@
+## AFR2-20261028-01 — 28/10/2026
+
+Comprobación resistente de J1/uniones sobre v08: 35 secciones y 7.075 estados,
+equilibrio de rodamientos, eje, acople D, modelo de barras y anclajes.
+Requisitos de material y propuesta dimensional de brida/eje/apoyos más
+separados sin elevar el plato; estudio temporal de espacio del motor.
+V08 sin modificar; J1 sin aprobar, material/perfil pendientes. Sin FEA de
+sólidos/contactos ni ensayo físico.
+[Ficha](changes/2026-10-28-01-j1-joint-strength-study.md).
+
 ## AFR2-20261027-25 — 27/10/2026
 
 Consultas chip_id/flash_id por USB–TTL COM5 aportadas por el usuario: ESP8266EX,

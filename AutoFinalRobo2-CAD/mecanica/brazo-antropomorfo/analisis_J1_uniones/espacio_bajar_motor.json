@@ -1,0 +1,87 @@
+{
+  "scope": "Solo motor MG946 v08 desplazado contra auto/electronica/anclajes/pan. Excluye piezas J1 a redisenar. No modela nuevo servo ni movimiento futuro.",
+  "fixed_bodies": 680,
+  "translation_only": true,
+  "native_modified": false,
+  "rows": [
+    {
+      "motor_translation_z_mm": 0,
+      "hits": [],
+      "nominal_case_bottom_mm": 21.1,
+      "existing_mount_top_mm": 12,
+      "crosses_existing_mount_floor": false
+    },
+    {
+      "motor_translation_z_mm": -8,
+      "hits": [
+        {
+          "motor_body": "Carcasa_servo_REF",
+          "fixed": "V05_Anclaje_M3x25_C",
+          "volume_mm3": 18.912413320866193
+        }
+      ],
+      "nominal_case_bottom_mm": 13.100000000000001,
+      "existing_mount_top_mm": 12,
+      "crosses_existing_mount_floor": false
+    },
+    {
+      "motor_translation_z_mm": -16,
+      "hits": [
+        {
+          "motor_body": "Carcasa_servo_REF",
+          "fixed": "V03_Casquillo_central_compresion",
+          "volume_mm3": 209.0819758524841
+        },
+        {
+          "motor_body": "Carcasa_servo_REF",
+          "fixed": "V05_Anclaje_M3x25_C",
+          "volume_mm3": 47.04948054206828
+        },
+        {
+          "motor_body": "Carcasa_servo_REF",
+          "fixed": "V05_M10x30_DIN7991_REF",
+          "volume_mm3": 994.7488344830617
+        }
+      ],
+      "nominal_case_bottom_mm": 5.100000000000001,
+      "existing_mount_top_mm": 12,
+      "crosses_existing_mount_floor": true
+    }
+  ],
+  "GX_candidates_no_CAD_changes": [
+    {
+      "servo": "GX3270BLS",
+      "body_front_z_mm": 56,
+      "case_bottom_z_mm": 14.29999999999999,
+      "C_head_flush": false,
+      "hits": [
+        {
+          "fixed": "V05_Anclaje_M3x25_C",
+          "volume_mm3": 4.369836157752706
+        }
+      ]
+    },
+    {
+      "servo": "GX3270BLS",
+      "body_front_z_mm": 56,
+      "case_bottom_z_mm": 14.29999999999999,
+      "C_head_flush": true,
+      "hits": []
+    },
+    {
+      "servo": "GX3270BLS",
+      "body_front_z_mm": 58,
+      "case_bottom_z_mm": 16.29999999999999,
+      "C_head_flush": false,
+      "hits": []
+    },
+    {
+      "servo": "GX3270BLS",
+      "body_front_z_mm": 58,
+      "case_bottom_z_mm": 16.29999999999999,
+      "C_head_flush": true,
+      "hits": []
+    }
+  ],
+  "candidate_scope": "Solo envolvente contra piezas que se conservarian; nueva montura/coupling/eje/apoyos y barrido futuros no incluidos."
+}
