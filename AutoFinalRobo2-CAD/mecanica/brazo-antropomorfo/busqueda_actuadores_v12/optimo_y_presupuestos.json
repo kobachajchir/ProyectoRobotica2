@@ -1,0 +1,54 @@
+{
+  "scope": "Optimo dentro de modelo lineal de sensibilidad de curvaSTS3250,12V,velocidad minima405deg/s,par inferior45kgfcm y nominal16. Masas/CG/tensores fijos, no optimizacion global de arquitectura.",
+  "rows": [
+    {
+      "eta": 0.7,
+      "gripper": "MG92B",
+      "optimal_ratio": 10.44,
+      "best_minimum_margin": 1.4622651036197367,
+      "max_joint_kgfcm": 79.96361241921954,
+      "passes": false
+    },
+    {
+      "eta": 0.7,
+      "gripper": "STS3215",
+      "optimal_ratio": 10.46,
+      "best_minimum_margin": 1.3676543938160795,
+      "max_joint_kgfcm": 85.60418776037325,
+      "passes": false
+    },
+    {
+      "eta": 0.85,
+      "gripper": "MG92B",
+      "optimal_ratio": 10.44,
+      "best_minimum_margin": 1.775607625823966,
+      "max_joint_kgfcm": 79.96361241921954,
+      "passes": false
+    },
+    {
+      "eta": 0.85,
+      "gripper": "STS3215",
+      "optimal_ratio": 10.46,
+      "best_minimum_margin": 1.6607231924909538,
+      "max_joint_kgfcm": 85.60418776037325,
+      "passes": false
+    }
+  ],
+  "unknown_STS_inertia_budget": [
+    {
+      "joint": "J4",
+      "scalar_axial_output_inertia_budget_kgm2": 0.013338514368037444,
+      "scope": "Presupuesto escalar conservador abs(tau_externa)+J*maxabs(alpha_motor)<=cap/2. Sin acoplamiento con padre ni energia/freno. No propiedad medida del STS."
+    },
+    {
+      "joint": "J5",
+      "scalar_axial_output_inertia_budget_kgm2": 0.0014300255645939616,
+      "scope": "Presupuesto escalar conservador abs(tau_externa)+J*maxabs(alpha_motor)<=cap/2. Sin acoplamiento con padre ni energia/freno. No propiedad medida del STS."
+    },
+    {
+      "joint": "J6",
+      "scalar_axial_output_inertia_budget_kgm2": 0.03058858921405902,
+      "scope": "Presupuesto escalar conservador abs(tau_externa)+J*maxabs(alpha_motor)<=cap/2. Sin acoplamiento con padre ni energia/freno. No propiedad medida del STS."
+    }
+  ]
+}

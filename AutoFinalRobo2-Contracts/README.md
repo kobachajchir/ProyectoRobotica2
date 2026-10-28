@@ -1,3 +1,5 @@
+> **AFR2-20261028-08:** [busqueda de actuadores a30grados/s e inercia](changes/2026-10-28-08-actuadores-30gs-inercia-vuelco.md). No se acepta bajar la velocidad para cerrar el objetivo. RS01 pasa un filtro nominal condicionado, con masa/estructura/apoyo pendientes. Sin cambios de producto en firmware, Web o Loader ni nuevo CAD.
+
 > **AFR2-20261028-07:** [busqueda simultanea de motores por par, masa y resistencia](changes/2026-10-28-07-busqueda-actuadores-par-masa.md). DS51150 descartado para frenada desde catalogo; STS multivuelta con reductores pasa filtro nominal condicionado, sin seleccion final ni nuevo CAD. atmega/esp/web/Loader sin intervencion.
 
 > **Loader AFR2-20261028-05 / 0.9.0:** backup opcional leído del equipo, aviso de omisión con No mostrar de nuevo y Preferencias, botón de firmware ATmega con último backup en desplegable. [Ficha](changes/2026-10-28-05-loader-mega-backups.md) · [Plan A/B](hardware/PLAN_PRUEBA_FLASHER_MEGA.md). Solo fuente/documentación; sin compilar, ejecutar, validar, abrir COM ni flashear. atmega/esp/web sin cambios de firmware por05. Reemplaza el mecanismo de copia HEX de03.

@@ -1,0 +1,193 @@
+{
+  "date": "2026-10-28",
+  "scope": "Preseleccion de masas/cargas, sin modificar CAD. Valores comerciales no son curvas de servicio/frenado.",
+  "sources": {
+    "GX70": "https://tienda.starware.com.ar/producto/servo-motor-digital-brushless-yipin-gx3270bls-70kg-5-84v-270gr-ip68-metal/",
+    "GX55": "https://tienda.starware.com.ar/producto/servo-motor-digital-brushless-yipin-gx3255bls-55kg-5-84v-180gr-rojo-ip68/",
+    "GX40": "https://tienda.starware.com.ar/producto/servo-motor-digital-starware-gx3240mgv1-40k-5-74v-270g-metal-alto-torque/",
+    "DS8930_local": "https://www.hobbymotors.com.ar/store/productos/servos/dualsky-ds8930-brushless-standard-64g-22kg-com-7-4v",
+    "DS8930_manufacturer": "https://shop.dualsky.com/ds8930-brushless-standard-64g-22kgcom74v_p0324.html",
+    "DS8930_pdf": "https://shop.dualsky.com/u_file/2605/file/87295eb38f.pdf",
+    "DS3225_pdf": "https://dsservo.com/d_file/DS3225%20datasheet.pdf",
+    "DS3225_import": "https://tiendamia.com.ar/p/ebay/v1%7C123872582846%7C0/ds3225-25kg-metal-gear-digital-servo-waterproof-high-torque-for",
+    "DYM": "https://tienda.starware.com.ar/producto/servo-motor-digital-brushless-dym-bls-hv70mg-70kg-5-84v-180gr-ip65/",
+    "SPT_manufacturer": "https://reacherbrushless.com/product/product-24-326.html",
+    "MG90S_manufacturer": "https://towerpro.com.tw/product/mg90s-3/",
+    "DS9401_manufacturer": "https://shop.dualsky.com/u_file/2605/file/87295eb38f.pdf",
+    "DS9401_local": "https://www.hobbymotors.com.ar/store/productos/servos",
+    "MG92B_datasheet": "https://akizukidenshi.com/goodsaffix/mg92b.pdf",
+    "MG92B_local": "https://www.mercadolibre.com.ar/mini-servo-tower-pro-14gr-metal-gear-mg92b/up/MLAU3872823218"
+  },
+  "motors": {
+    "GX70": {
+      "name": "GX3270BLS 270",
+      "mass_g": 90,
+      "box_xyz_mm": [
+        40.5,
+        41.7,
+        21
+      ],
+      "offset_from_left_mm": 10.5,
+      "travel_deg": 270,
+      "torque_kgfcm": {
+        "7.4": 63,
+        "8.4": 70
+      },
+      "no_load_deg_s": {
+        "7.4": 600,
+        "8.4": 666.6666666667
+      },
+      "stall_A": {
+        "7.4": 7,
+        "8.4": 9
+      },
+      "availability": "En stock en la pagina local consultada; cotas de salida y offset inferidos, no plano completo"
+    },
+    "GX55": {
+      "name": "GX3255BLS 180",
+      "mass_g": 90,
+      "box_xyz_mm": [
+        40.5,
+        41.7,
+        21
+      ],
+      "offset_from_left_mm": 10.5,
+      "travel_deg": 180,
+      "torque_kgfcm": {
+        "7.4": 55
+      },
+      "no_load_deg_s": {
+        "7.4": 750
+      },
+      "stall_A": {
+        "7.4": 8
+      },
+      "availability": "En stock local; ficha tecnica5-7.4V aunque titulo dice8.4. Se usa7.4V"
+    },
+    "DS8930": {
+      "name": "Dualsky DS8930",
+      "mass_g": 68,
+      "box_xyz_mm": [
+        40,
+        39,
+        20
+      ],
+      "offset_from_left_mm": 10,
+      "travel_deg": null,
+      "torque_kgfcm": {
+        "7.4": 22,
+        "8.4": 24
+      },
+      "no_load_deg_s": {
+        "7.4": 600,
+        "8.4": 666.6666666667
+      },
+      "stall_A": null,
+      "availability": "Catalogo local indica1 disponible al consultar. Titulo64g, tabla y PDF del fabricante68g: se adopta68g. Recorrido180 y corriente pendientes"
+    },
+    "DS3225": {
+      "name": "DSSERVO DS3225",
+      "mass_g": 60,
+      "box_xyz_mm": [
+        40,
+        40.5,
+        20
+      ],
+      "offset_from_left_mm": 10,
+      "travel_deg": 180,
+      "torque_kgfcm": {
+        "6.8": 24.5
+      },
+      "no_load_deg_s": {
+        "6.8": 461.5384615385
+      },
+      "stall_A": {
+        "6.8": 2.3
+      },
+      "availability": "Solo oferta de importacion localizada; no se presenta como stock nacional. Especificacion fabricante24.5, no25 del titulo"
+    },
+    "DS9401": {
+      "name": "Dualsky DS9401",
+      "mass_g": 26,
+      "box_xyz_mm": [
+        35.1,
+        29.6,
+        15
+      ],
+      "offset_from_left_mm": 8.5,
+      "travel_deg": null,
+      "torque_kgfcm": {
+        "6.0": 3.5
+      },
+      "no_load_deg_s": {
+        "6.0": 600
+      },
+      "stall_A": null,
+      "availability": "Catalogo local8 disponibles. Se usan26g/3.5kgfcm@6V del PDF, no25g/4kg@7.4V del titulo local. Recorrido180 e interfaz pendientes"
+    },
+    "MG92B": {
+      "name": "TowerPro MG92B posicional160",
+      "mass_g": 13.8,
+      "box_xyz_mm": [
+        22.8,
+        31,
+        12
+      ],
+      "offset_from_left_mm": 5.5,
+      "travel_deg": 160,
+      "torque_kgfcm": {
+        "6.0": 3.5
+      },
+      "no_load_deg_s": {
+        "6.0": 750
+      },
+      "stall_A": null,
+      "availability": "Oferta CANDY-HO14g localizada. Confirmar variante posicional160 del PDF y no360 continua.160 sirve para pinza60mm(133.7deg), no reemplazo1:1 de J4 con180"
+    },
+    "STS3250": {
+      "name": "STS325012V",
+      "mass_g": 80,
+      "box_xyz_mm": [
+        45.22,
+        35,
+        24.72
+      ],
+      "offset_from_left_mm": 12,
+      "travel_deg": 5040,
+      "rated_kgfcm": 16,
+      "stall_kgfcm": 50,
+      "no_load_deg_s": 450,
+      "mass_note": "Presupuesto80g; ficha3250:74.5+-1g,3215:55+-1g. No peso de paquete como dato neto."
+    },
+    "STS3215": {
+      "name": "STS321512V",
+      "mass_g": 80,
+      "box_xyz_mm": [
+        45.22,
+        35,
+        24.72
+      ],
+      "offset_from_left_mm": 12,
+      "travel_deg": 5040,
+      "rated_kgfcm": 10,
+      "stall_kgfcm": 30,
+      "no_load_deg_s": 270,
+      "mass_note": "Presupuesto80g; ficha3250:74.5+-1g,3215:55+-1g. No peso de paquete como dato neto."
+    }
+  },
+  "rejected_before_calculation": [
+    {
+      "name": "SPT5325LV-360",
+      "reason": "La fuente de fabricante identifica rotacion continua sin feedback de angulo; no sustituye un servo posicional mediante PWM"
+    },
+    {
+      "name": "DYM BLS-HV70MG",
+      "reason": "Pagina mezcla masa aproximada/bruta200g, datos adicionales100g y medidas de empaque. No hay masa neta ni plano completos confirmados. Variante local180 no cubre270 de J2 con2:1"
+    },
+    {
+      "name": "DS3235/DS8950",
+      "reason": "No se confirmo stock local para la variante seleccionable; no se propone comprarlo como solucion disponible"
+    }
+  ],
+  "DS8930_pdf_sha256": "a3ec9401e7ec962dd19000d9c62cb49c58db122f12573529ffb234c782e92de8"
+}
