@@ -1,3 +1,5 @@
+> **Busqueda AFR2-20261028-07, objetivo activo:** [actuadores, peso de transmisiones y frenada desde catalogo](busqueda_actuadores_v11/README.md). Dos rutas comparadas: DS51150 limitado por velocidad/estructura y STS multivuelta con reducciones presupuestadas. Esta ultima supera el filtro nominal con minimo2.11, pero faltan reductores reales, variante local, PLA y estabilidad. Sin nuevo CAD.
+
 # Brazo antropomorfo PVC32 — prototipo editable
 
 **Preselección AFR2-20261028-06, sin nuevo CAD:** [efecto de los motores nuevos sobre las piezas actuales](preseleccion_actuadores_v10/README.md), con25 combinaciones de masa y comprobación de cargas, uniones, tubos, agarre y sensibilidad de vuelco. Cambiar por motores más pesados no cierra el caso50 ms. Opción ligera con96 g netos de incremento pasa la comparación de pares×2 a100 ms, con límites explícitos y selección aún pendiente. El maestro vigente sigue siendo v09.

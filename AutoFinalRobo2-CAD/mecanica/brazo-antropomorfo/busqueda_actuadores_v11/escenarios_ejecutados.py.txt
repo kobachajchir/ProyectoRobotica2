@@ -1,0 +1,10 @@
+
+case('v09_actual')
+case('A_150_10V_GX',{'J2':'DS150_10','J3':'DS150_10','J4':'GX70','J5':'GX70','J7':'MG92B'},mounts=True)
+case('B_150_bajo_GX',{'J2':'DS150_bajo10','J3':'DS150_bajo10','J4':'GX70','J5':'GX70','J7':'MG92B'},mounts=True)
+case('C_206g_bajo_GX',{'J2':'DS150_206g','J3':'DS150_206g','J4':'GX70','J5':'GX70','J7':'MG92B'},mounts=True)
+case('D_150_12V_GX',{'J2':'DS150_12','J3':'DS150_12','J4':'GX70','J5':'GX70','J7':'MG92B'},mounts=True)
+case('E_150_bajo_DS35',{'J2':'DS150_bajo10','J3':'DS150_bajo10','J4':'DS35','J5':'DS35','J7':'MG92B'},mounts=True)
+case('F_206g_bajo_DS35',{'J2':'DS150_206g','J3':'DS150_206g','J4':'DS35','J5':'DS35','J7':'MG92B'},mounts=True)
+case('G_reforzado_206g_GX',{'J2':'DS150_206g','J3':'DS150_206g','J4':'GX70','J5':'GX70','J7':'MG92B'},mounts=True,note='50g por montaje; 330g acero hombro adicionales sin descontar PLA; 200g potencia fija en base')
+cases[-1]['chosen']+=reinforced+[power]

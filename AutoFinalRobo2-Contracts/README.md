@@ -1,3 +1,5 @@
+> **AFR2-20261028-07:** [busqueda simultanea de motores por par, masa y resistencia](changes/2026-10-28-07-busqueda-actuadores-par-masa.md). DS51150 descartado para frenada desde catalogo; STS multivuelta con reductores pasa filtro nominal condicionado, sin seleccion final ni nuevo CAD. atmega/esp/web/Loader sin intervencion.
+
 > **Loader AFR2-20261028-05 / 0.9.0:** backup opcional leído del equipo, aviso de omisión con No mostrar de nuevo y Preferencias, botón de firmware ATmega con último backup en desplegable. [Ficha](changes/2026-10-28-05-loader-mega-backups.md) · [Plan A/B](hardware/PLAN_PRUEBA_FLASHER_MEGA.md). Solo fuente/documentación; sin compilar, ejecutar, validar, abrir COM ni flashear. atmega/esp/web sin cambios de firmware por05. Reemplaza el mecanismo de copia HEX de03.
 
 > **Loader AFR2-20261028-03 / 0.8.0:** instalar/restaurar flasher ATmega, selector **Método ESP** con instrucciones y casillas por conexión. [Plan A/B](hardware/PLAN_PRUEBA_FLASHER_MEGA.md), [ficha](changes/2026-10-28-03-loader-mega-flasher.md). Código y documentación; sin compilar, ejecutar, abrir COM ni flashear. atmega de servicio en fuente; esp/web sin cambios.

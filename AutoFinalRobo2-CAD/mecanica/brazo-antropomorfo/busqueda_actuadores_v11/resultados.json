@@ -1,0 +1,3951 @@
+{
+  "baseline": {
+    "inventory": "../revision_v09/geometria_v09.json",
+    "sha256": "5493f86562206a12d17dbd305002857d2b4f2a2e293078f872b25b44a6db0477",
+    "source_states": 16507,
+    "trajectory_cases": 787,
+    "original_v09_states": 4411,
+    "expanded_J1_states": 297379,
+    "cases": 8,
+    "parity": [
+      {
+        "source_index": 0,
+        "max_force_error_N": 8.314050610056891e-10,
+        "max_moment_error_Nm": 4.018953326005665e-11
+      },
+      {
+        "source_index": 8253,
+        "max_force_error_N": 5.329070518200751e-15,
+        "max_moment_error_Nm": 5.551115123125783e-16
+      },
+      {
+        "all_4411_v09_J1_force_error_N": 1.6479230424693014e-08,
+        "all_4411_v09_J1_moment_error_Nm": 5.662477153833834e-09
+      }
+    ]
+  },
+  "results": [
+    {
+      "name": "v09_actual",
+      "swaps": {},
+      "hv": false,
+      "mounts": false,
+      "shift": [
+        0,
+        0,
+        0
+      ],
+      "note": "",
+      "mass_g": 2400.432732032495,
+      "delta_mass_g": 0.0,
+      "cg_mm": [
+        -13.291133081649786,
+        110.93011138932808,
+        147.2267093292
+      ],
+      "scenarios": {
+        "200": [
+          {
+            "joint": "J1",
+            "peak_servo_kgfcm": 4.8793989042204,
+            "advertised_peak_kgfcm": 63.0,
+            "stall_peak_ratio": 12.911426435233368,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 12.588640774352532,
+            "case": "roll4-90_roll6+0_-1_1_1_-1_1_-1_200ms",
+            "time_s": 0.1,
+            "q_deg": [
+              0.5625,
+              89.4375,
+              -0.5625,
+              -89.4375,
+              -0.5625,
+              0.5625
+            ],
+            "max_force_N": 19.53051978510008,
+            "max_moment_Nm": 3.679604591810326,
+            "max_local_N_N": 19.494718803455843,
+            "max_local_V_N": 1.3829877420060903,
+            "max_local_T_Nm": 0.47850557264072985,
+            "max_local_bending_Nm": 3.658002924150253
+          },
+          {
+            "joint": "J2",
+            "peak_servo_kgfcm": 21.720227468661918,
+            "advertised_peak_kgfcm": 40.0,
+            "stall_peak_ratio": 1.8416013394754844,
+            "passes_preliminary_2x": false,
+            "linear_speed_margin_sensitivity": null,
+            "case": "S6_+1_+1_+1_-1_+1_-1_200ms",
+            "time_s": 0.1,
+            "q_deg": [
+              -0.5625,
+              89.4375,
+              -0.5625,
+              0.5625,
+              -0.5625,
+              0.5625
+            ],
+            "max_force_N": 14.363052827974208,
+            "max_moment_Nm": 3.6466378598773357,
+            "max_local_N_N": 1.005538866528316,
+            "max_local_V_N": 14.362962636883676,
+            "max_local_T_Nm": 0.17356113822173475,
+            "max_local_bending_Nm": 3.6426221090712385
+          },
+          {
+            "joint": "J3",
+            "peak_servo_kgfcm": 20.30562648131506,
+            "advertised_peak_kgfcm": 63.0,
+            "stall_peak_ratio": 3.1025883421017166,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 3.0204591064715163,
+            "case": "S6_+1_+1_+1_-1_+1_-1_200ms",
+            "time_s": 0.1,
+            "q_deg": [
+              -0.5625,
+              89.4375,
+              -0.5625,
+              0.5625,
+              -0.5625,
+              0.5625
+            ],
+            "max_force_N": 10.231512648064506,
+            "max_moment_Nm": 2.007179719630336,
+            "max_local_N_N": 1.2134545290176066,
+            "max_local_V_N": 10.23078770417381,
+            "max_local_T_Nm": 0.07894988771246313,
+            "max_local_bending_Nm": 2.0058474034438905
+          },
+          {
+            "joint": "J4",
+            "peak_servo_kgfcm": 0.8786019556114125,
+            "advertised_peak_kgfcm": 1.8,
+            "stall_peak_ratio": 2.048709302891767,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 1.9869493291891822,
+            "case": "S6_-1_+1_+1_-1_-1_-1_200ms",
+            "time_s": 0.09,
+            "q_deg": [
+              0.7237312499999997,
+              89.27626874999999,
+              -0.7237312499999997,
+              0.7237312499999997,
+              0.7237312499999997,
+              0.7237312499999997
+            ],
+            "max_force_N": 7.451197074283186,
+            "max_moment_Nm": 0.9678266323920148,
+            "max_local_N_N": 0.911541951030505,
+            "max_local_V_N": 7.450870540538371,
+            "max_local_T_Nm": 0.07754527681196993,
+            "max_local_bending_Nm": 0.9649847410907517
+          },
+          {
+            "joint": "J5",
+            "peak_servo_kgfcm": 5.900195071950506,
+            "advertised_peak_kgfcm": 13.0,
+            "stall_peak_ratio": 2.203316982145544,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 2.1007665174058547,
+            "case": "S6_-1_+1_+1_+1_+1_+1_200ms",
+            "time_s": 0.1,
+            "q_deg": [
+              0.5625,
+              89.4375,
+              -0.5625,
+              -0.5625,
+              -0.5625,
+              -0.5625
+            ],
+            "max_force_N": 5.203824508070383,
+            "max_moment_Nm": 0.5829435927145139,
+            "max_local_N_N": 0.854714210639173,
+            "max_local_V_N": 5.2033881587075,
+            "max_local_T_Nm": 0.005286521913608706,
+            "max_local_bending_Nm": 0.5829326982889108
+          },
+          {
+            "joint": "J6",
+            "peak_servo_kgfcm": 0.01700729138091984,
+            "advertised_peak_kgfcm": 1.8,
+            "stall_peak_ratio": 105.83695896569314,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 102.79546935741655,
+            "case": "S6_+1_+1_+1_+1_+1_+1_200ms",
+            "time_s": 0.09,
+            "q_deg": [
+              -0.7237312499999997,
+              89.27626874999999,
+              -0.7237312499999997,
+              -0.7237312499999997,
+              -0.7237312499999997,
+              -0.7237312499999997
+            ],
+            "max_force_N": 4.154051276377956,
+            "max_moment_Nm": 0.2898232038057331,
+            "max_local_N_N": 0.6882020469214701,
+            "max_local_V_N": 4.153800344581641,
+            "max_local_T_Nm": 0.001667845540206976,
+            "max_local_bending_Nm": 0.2898208108997004
+          }
+        ],
+        "100": [
+          {
+            "joint": "J1",
+            "peak_servo_kgfcm": 9.754891909289814,
+            "advertised_peak_kgfcm": 63.0,
+            "stall_peak_ratio": 6.458298111945619,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 6.296840659146978,
+            "case": "roll4-90_roll6+0_-1_1_1_-1_1_-1_100ms",
+            "time_s": 0.05,
+            "q_deg": [
+              0.28125,
+              89.71875,
+              -0.28125,
+              -89.71875,
+              -0.28125,
+              0.28125
+            ],
+            "max_force_N": 21.60187368409475,
+            "max_moment_Nm": 4.438900528268492,
+            "max_local_N_N": 21.47275134227478,
+            "max_local_V_N": 2.7535282712681006,
+            "max_local_T_Nm": 0.9566281074223696,
+            "max_local_bending_Nm": 4.367948564555714
+          },
+          {
+            "joint": "J2",
+            "peak_servo_kgfcm": 25.97042621396669,
+            "advertised_peak_kgfcm": 40.0,
+            "stall_peak_ratio": 1.54021345935741,
+            "passes_preliminary_2x": false,
+            "linear_speed_margin_sensitivity": null,
+            "case": "S6_+1_+1_+1_-1_+1_-1_100ms",
+            "time_s": 0.05,
+            "q_deg": [
+              -0.28125,
+              89.71875,
+              -0.28125,
+              0.28125,
+              -0.28125,
+              0.28125
+            ],
+            "max_force_N": 16.460498188791707,
+            "max_moment_Nm": 4.404425148068097,
+            "max_local_N_N": 0.6922614186376003,
+            "max_local_V_N": 16.46007367780459,
+            "max_local_T_Nm": 0.19574487905792026,
+            "max_local_bending_Nm": 4.400567554663979
+          },
+          {
+            "joint": "J3",
+            "peak_servo_kgfcm": 24.9139088662485,
+            "advertised_peak_kgfcm": 63.0,
+            "stall_peak_ratio": 2.5287079734544458,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 2.465160691010248,
+            "case": "S6_+1_+1_+1_-1_+1_-1_100ms",
+            "time_s": 0.05,
+            "q_deg": [
+              -0.28125,
+              89.71875,
+              -0.28125,
+              0.28125,
+              -0.28125,
+              0.28125
+            ],
+            "max_force_N": 12.22030687468602,
+            "max_moment_Nm": 2.491071836703014,
+            "max_local_N_N": 0.7789829371517871,
+            "max_local_V_N": 12.220301132013642,
+            "max_local_T_Nm": 0.09609037281448708,
+            "max_local_bending_Nm": 2.4896850073480334
+          },
+          {
+            "joint": "J4",
+            "peak_servo_kgfcm": 1.0592293680249318,
+            "advertised_peak_kgfcm": 1.8,
+            "stall_peak_ratio": 1.6993486532159974,
+            "passes_preliminary_2x": false,
+            "linear_speed_margin_sensitivity": 1.6518820001828287,
+            "case": "S6_-1_+1_+1_-1_-1_-1_100ms",
+            "time_s": 0.05,
+            "q_deg": [
+              0.28125,
+              89.71875,
+              -0.28125,
+              0.28125,
+              0.28125,
+              0.28125
+            ],
+            "max_force_N": 9.191487749148564,
+            "max_moment_Nm": 1.2241321685512931,
+            "max_local_N_N": 0.6096110916905751,
+            "max_local_V_N": 9.19135932165546,
+            "max_local_T_Nm": 0.09348742513747528,
+            "max_local_bending_Nm": 1.221054590646697
+          },
+          {
+            "joint": "J5",
+            "peak_servo_kgfcm": 7.461734014237145,
+            "advertised_peak_kgfcm": 13.0,
+            "stall_peak_ratio": 1.7422223809098163,
+            "passes_preliminary_2x": false,
+            "linear_speed_margin_sensitivity": 1.66360557034608,
+            "case": "S6_-1_+1_+1_+1_+1_+1_100ms",
+            "time_s": 0.05,
+            "q_deg": [
+              0.28125,
+              89.71875,
+              -0.28125,
+              -0.28125,
+              -0.28125,
+              -0.28125
+            ],
+            "max_force_N": 6.55513674764138,
+            "max_moment_Nm": 0.7466818345751653,
+            "max_local_N_N": 0.5503327833648527,
+            "max_local_V_N": 6.555122023177997,
+            "max_local_T_Nm": 0.007582804948306851,
+            "max_local_bending_Nm": 0.7466682734568708
+          },
+          {
+            "joint": "J6",
+            "peak_servo_kgfcm": 0.03239857041603339,
+            "advertised_peak_kgfcm": 1.8,
+            "stall_peak_ratio": 55.55800693938078,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 54.06048759368419,
+            "case": "S6_+1_+1_+1_+1_+1_+1_100ms",
+            "time_s": 0.05,
+            "q_deg": [
+              -0.28125,
+              89.71875,
+              -0.28125,
+              -0.28125,
+              -0.28125,
+              -0.28125
+            ],
+            "max_force_N": 5.303529700409003,
+            "max_moment_Nm": 0.3738502939930503,
+            "max_local_N_N": 0.45046536423616124,
+            "max_local_V_N": 5.3035292532802565,
+            "max_local_T_Nm": 0.003177214405703938,
+            "max_local_bending_Nm": 0.37384289521659364
+          }
+        ],
+        "50": [
+          {
+            "joint": "J1",
+            "peak_servo_kgfcm": 19.50199452591026,
+            "advertised_peak_kgfcm": 63.0,
+            "stall_peak_ratio": 3.2304388105687596,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 3.1496778403045407,
+            "case": "roll4-90_roll6+0_-1_1_1_-1_1_-1_50ms",
+            "time_s": 0.025,
+            "q_deg": [
+              0.140625,
+              89.85937499999999,
+              -0.140625,
+              -89.85937499999999,
+              -0.140625,
+              0.140625
+            ],
+            "max_force_N": 25.86074482766404,
+            "max_moment_Nm": 6.011576406205682,
+            "max_local_N_N": 25.42728977531948,
+            "max_local_V_N": 5.4971098939647165,
+            "max_local_T_Nm": 1.9124923461751786,
+            "max_local_bending_Nm": 5.799175328295251
+          },
+          {
+            "joint": "J2",
+            "peak_servo_kgfcm": 34.46959044295805,
+            "advertised_peak_kgfcm": 40.0,
+            "stall_peak_ratio": 1.160443146726502,
+            "passes_preliminary_2x": false,
+            "linear_speed_margin_sensitivity": null,
+            "case": "S6_+1_+1_+1_-1_+1_-1_50ms",
+            "time_s": 0.025,
+            "q_deg": [
+              -0.140625,
+              89.85937499999999,
+              -0.140625,
+              0.140625,
+              -0.140625,
+              0.140625
+            ],
+            "max_force_N": 20.78247415436966,
+            "max_moment_Nm": 5.960879867550953,
+            "max_local_N_N": 0.649939292742109,
+            "max_local_V_N": 20.781329470746122,
+            "max_local_T_Nm": 0.24047056473242334,
+            "max_local_bending_Nm": 5.957096161895173
+          },
+          {
+            "joint": "J3",
+            "peak_servo_kgfcm": 34.129186005127465,
+            "advertised_peak_kgfcm": 63.0,
+            "stall_peak_ratio": 1.8459274121139329,
+            "passes_preliminary_2x": false,
+            "linear_speed_margin_sensitivity": 1.7997792268110846,
+            "case": "S6_+1_+1_+1_-1_+1_-1_50ms",
+            "time_s": 0.025,
+            "q_deg": [
+              -0.140625,
+              89.85937499999999,
+              -0.140625,
+              0.140625,
+              -0.140625,
+              0.140625
+            ],
+            "max_force_N": 16.311795597137703,
+            "max_moment_Nm": 3.481916235680067,
+            "max_local_N_N": 0.5668604660768033,
+            "max_local_V_N": 16.311687579194082,
+            "max_local_T_Nm": 0.13076144757592217,
+            "max_local_bending_Nm": 3.48038607399829
+          },
+          {
+            "joint": "J4",
+            "peak_servo_kgfcm": 1.424985755050846,
+            "advertised_peak_kgfcm": 1.8,
+            "stall_peak_ratio": 1.2631705219648128,
+            "passes_preliminary_2x": false,
+            "linear_speed_margin_sensitivity": 1.2309520295747947,
+            "case": "S6_-1_+1_+1_-1_-1_-1_50ms",
+            "time_s": 0.025,
+            "q_deg": [
+              0.140625,
+              89.85937499999999,
+              -0.140625,
+              0.140625,
+              0.140625,
+              0.140625
+            ],
+            "max_force_N": 12.759660462035693,
+            "max_moment_Nm": 1.7479194295885816,
+            "max_local_N_N": 0.4647259959902324,
+            "max_local_V_N": 12.759242914156415,
+            "max_local_T_Nm": 0.1257690289929244,
+            "max_local_bending_Nm": 1.7443840755972149
+          },
+          {
+            "joint": "J5",
+            "peak_servo_kgfcm": 10.582948233655182,
+            "advertised_peak_kgfcm": 13.0,
+            "stall_peak_ratio": 1.2283911546177908,
+            "passes_preliminary_2x": false,
+            "linear_speed_margin_sensitivity": 1.1750675018809331,
+            "case": "S6_-1_+1_+1_+1_+1_+1_50ms",
+            "time_s": 0.025,
+            "q_deg": [
+              0.140625,
+              89.85937499999999,
+              -0.140625,
+              -0.140625,
+              -0.140625,
+              -0.140625
+            ],
+            "max_force_N": 9.316366077292905,
+            "max_moment_Nm": 1.0805579400130692,
+            "max_local_N_N": 0.39701416083447627,
+            "max_local_V_N": 9.316363460999384,
+            "max_local_T_Nm": 0.012214355831015548,
+            "max_local_bending_Nm": 1.0805408164275276
+          },
+          {
+            "joint": "J6",
+            "peak_servo_kgfcm": 0.06410596540459795,
+            "advertised_peak_kgfcm": 1.8,
+            "stall_peak_ratio": 28.07851014549882,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 27.376547391861347,
+            "case": "roll4-90_roll6-90_1_1_1_-1_-1_-1_50ms",
+            "time_s": 0.025,
+            "q_deg": [
+              -0.140625,
+              89.85937499999999,
+              -0.140625,
+              -89.85937499999999,
+              0.140625,
+              -89.85937499999999
+            ],
+            "max_force_N": 7.648354069459389,
+            "max_moment_Nm": 0.5450145466084988,
+            "max_local_N_N": 0.3307016085570678,
+            "max_local_V_N": 7.648333853929572,
+            "max_local_T_Nm": 0.006286647656350007,
+            "max_local_bending_Nm": 0.5449943735640125
+          }
+        ]
+      },
+      "pipes": [
+        {
+          "section": "PVC1",
+          "normal_nominal_MPa": 4.380149919829048,
+          "shear_envelope_MPa": 0.31223220619478353,
+          "case": "S6_+1_+1_+1_-1_+1_+1_50ms",
+          "time_s": 0.025,
+          "note": "Seccion libre25mm: corte por grafo/centroides; flexion+axial, torsion+cortante2V/A. Sin contacto o admisible PVC asignado."
+        },
+        {
+          "section": "PVC2",
+          "normal_nominal_MPa": 2.4876646209450732,
+          "shear_envelope_MPa": 0.2198081886762041,
+          "case": "S6_+1_+1_+1_-1_+1_+1_50ms",
+          "time_s": 0.025,
+          "note": "Seccion libre25mm: corte por grafo/centroides; flexion+axial, torsion+cortante2V/A. Sin contacto o admisible PVC asignado."
+        }
+      ],
+      "static_tipping_sensitivity": {
+        "assumption": "Linea de vuelco hipotetica y=b; CG del auto sin brazo y=0. Sin factor ni dinamica. b no medido.",
+        "chassis_mass_min_g_for_halfspan": {
+          "60": 2037.571773750068,
+          "80": 928.0706473044272,
+          "100": 262.3699714370428
+        }
+      }
+    },
+    {
+      "name": "A_150_10V_GX",
+      "swaps": {
+        "J2": "DS150_10",
+        "J3": "DS150_10",
+        "J4": "GX70",
+        "J5": "GX70",
+        "J7": "MG92B"
+      },
+      "hv": false,
+      "mounts": true,
+      "shift": [
+        0,
+        0,
+        0
+      ],
+      "note": "",
+      "mass_g": 2752.4327320324946,
+      "delta_mass_g": 351.9999999999999,
+      "cg_mm": [
+        -17.443898337281524,
+        116.44792360177178,
+        151.20494635136393
+      ],
+      "scenarios": {
+        "200": [
+          {
+            "joint": "J1",
+            "peak_servo_kgfcm": 5.567022968759825,
+            "advertised_peak_kgfcm": 63.0,
+            "stall_peak_ratio": 11.316640932421842,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 11.033724909111296,
+            "case": "roll4-90_roll6+0_-1_1_1_-1_1_-1_200ms",
+            "time_s": 0.1,
+            "q_deg": [
+              0.5625,
+              89.4375,
+              -0.5625,
+              -89.4375,
+              -0.5625,
+              0.5625
+            ],
+            "max_force_N": 23.326969675830572,
+            "max_moment_Nm": 4.365309599765579,
+            "max_local_N_N": 23.28371591787034,
+            "max_local_V_N": 1.6522722465423771,
+            "max_local_T_Nm": 0.5459384579658854,
+            "max_local_bending_Nm": 4.341059265265704
+          },
+          {
+            "joint": "J2",
+            "peak_servo_kgfcm": 25.65162553137218,
+            "advertised_peak_kgfcm": 150.0,
+            "stall_peak_ratio": 5.847582634346061,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 4.893634636075792,
+            "case": "S6_+1_+1_+1_-1_+1_-1_200ms",
+            "time_s": 0.1,
+            "q_deg": [
+              -0.5625,
+              89.4375,
+              -0.5625,
+              0.5625,
+              -0.5625,
+              0.5625
+            ],
+            "max_force_N": 17.27824826334756,
+            "max_moment_Nm": 4.308864707303341,
+            "max_local_N_N": 1.1963199972081515,
+            "max_local_V_N": 17.278247588165026,
+            "max_local_T_Nm": 0.27929401149103456,
+            "max_local_bending_Nm": 4.3006845491664425
+          },
+          {
+            "joint": "J3",
+            "peak_servo_kgfcm": 23.12662785559407,
+            "advertised_peak_kgfcm": 150.0,
+            "stall_peak_ratio": 6.486029910483326,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 6.034635779394081,
+            "case": "S6_+1_+1_+1_-1_+1_-1_200ms",
+            "time_s": 0.1,
+            "q_deg": [
+              -0.5625,
+              89.4375,
+              -0.5625,
+              0.5625,
+              -0.5625,
+              0.5625
+            ],
+            "max_force_N": 12.113764230101774,
+            "max_moment_Nm": 2.2862286664097065,
+            "max_local_N_N": 1.4290259318053147,
+            "max_local_V_N": 12.112919508099983,
+            "max_local_T_Nm": 0.11923752778330927,
+            "max_local_bending_Nm": 2.2838784173808304
+          },
+          {
+            "joint": "J4",
+            "peak_servo_kgfcm": 1.2918107343639198,
+            "advertised_peak_kgfcm": 63.0,
+            "stall_peak_ratio": 48.76875406289361,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 47.332369730442196,
+            "case": "roll4+0_roll6+90_-1_1_1_-1_-1_1_200ms",
+            "time_s": 0.09,
+            "q_deg": [
+              0.7237312499999997,
+              89.27626874999999,
+              -0.7237312499999997,
+              0.7237312499999997,
+              0.7237312499999997,
+              89.27626874999999
+            ],
+            "max_force_N": 8.312141200106133,
+            "max_moment_Nm": 1.0418291520832772,
+            "max_local_N_N": 1.0143958669984279,
+            "max_local_V_N": 8.312116255402788,
+            "max_local_T_Nm": 0.11401502164334941,
+            "max_local_bending_Nm": 1.0361626323535502
+          },
+          {
+            "joint": "J5",
+            "peak_servo_kgfcm": 6.138069280445164,
+            "advertised_peak_kgfcm": 63.0,
+            "stall_peak_ratio": 10.26381376969908,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 9.992859535211272,
+            "case": "S6_-1_+1_+1_+1_+1_+1_200ms",
+            "time_s": 0.1,
+            "q_deg": [
+              0.5625,
+              89.4375,
+              -0.5625,
+              -0.5625,
+              -0.5625,
+              -0.5625
+            ],
+            "max_force_N": 5.465820230032169,
+            "max_moment_Nm": 0.6064097949317483,
+            "max_local_N_N": 0.897654830491798,
+            "max_local_V_N": 5.465346140558882,
+            "max_local_T_Nm": 0.0063465938690119555,
+            "max_local_bending_Nm": 0.6064003910044105
+          },
+          {
+            "joint": "J6",
+            "peak_servo_kgfcm": 0.027037367180745894,
+            "advertised_peak_kgfcm": 1.8,
+            "stall_peak_ratio": 66.57452953784025,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 64.48724071225412,
+            "case": "roll4+0_roll6+90_-1_1_1_-1_1_1_200ms",
+            "time_s": 0.09,
+            "q_deg": [
+              0.7237312499999997,
+              89.27626874999999,
+              -0.7237312499999997,
+              0.7237312499999997,
+              -0.7237312499999997,
+              89.27626874999999
+            ],
+            "max_force_N": 4.416036900457453,
+            "max_moment_Nm": 0.29626717680895653,
+            "max_local_N_N": 0.7311426667740952,
+            "max_local_V_N": 4.415750893870992,
+            "max_local_T_Nm": 0.0026514599686306177,
+            "max_local_bending_Nm": 0.29626524396762755
+          }
+        ],
+        "100": [
+          {
+            "joint": "J1",
+            "peak_servo_kgfcm": 11.128922610171353,
+            "advertised_peak_kgfcm": 63.0,
+            "stall_peak_ratio": 5.660925339027942,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 5.519402205552244,
+            "case": "roll4+90_roll6+90_-1_-1_1_1_-1_1_100ms",
+            "time_s": 0.05,
+            "q_deg": [
+              0.28125,
+              90.28125,
+              -0.28125,
+              89.71875,
+              0.28125,
+              89.71875
+            ],
+            "max_force_N": 25.752941373836546,
+            "max_moment_Nm": 5.218014152770129,
+            "max_local_N_N": 25.596808794081227,
+            "max_local_V_N": 3.2859869262196972,
+            "max_local_T_Nm": 1.091374489150369,
+            "max_local_bending_Nm": 5.1373686649734305
+          },
+          {
+            "joint": "J2",
+            "peak_servo_kgfcm": 30.45319603208152,
+            "advertised_peak_kgfcm": 150.0,
+            "stall_peak_ratio": 4.925591384299353,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 4.19530975439215,
+            "case": "S6_+1_+1_+1_-1_+1_-1_100ms",
+            "time_s": 0.05,
+            "q_deg": [
+              -0.28125,
+              89.71875,
+              -0.28125,
+              0.28125,
+              -0.28125,
+              0.28125
+            ],
+            "max_force_N": 19.733634958879215,
+            "max_moment_Nm": 5.164790920714133,
+            "max_local_N_N": 0.8569807007466805,
+            "max_local_V_N": 19.73336332687229,
+            "max_local_T_Nm": 0.3157416264781219,
+            "max_local_bending_Nm": 5.157069654072331
+          },
+          {
+            "joint": "J3",
+            "peak_servo_kgfcm": 28.220102949028476,
+            "advertised_peak_kgfcm": 150.0,
+            "stall_peak_ratio": 5.3153597728162785,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 4.966550224812621,
+            "case": "S6_+1_+1_+1_-1_+1_-1_100ms",
+            "time_s": 0.05,
+            "q_deg": [
+              -0.28125,
+              89.71875,
+              -0.28125,
+              0.28125,
+              -0.28125,
+              0.28125
+            ],
+            "max_force_N": 14.40709804614617,
+            "max_moment_Nm": 2.8209077248919905,
+            "max_local_N_N": 0.9117287187355364,
+            "max_local_V_N": 14.407031163257912,
+            "max_local_T_Nm": 0.14638767151969326,
+            "max_local_bending_Nm": 2.818581984949553
+          },
+          {
+            "joint": "J4",
+            "peak_servo_kgfcm": 1.5429445199675584,
+            "advertised_peak_kgfcm": 63.0,
+            "stall_peak_ratio": 40.8310209373728,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 39.71579858060619,
+            "case": "S6_-1_+1_+1_-1_-1_-1_100ms",
+            "time_s": 0.05,
+            "q_deg": [
+              0.28125,
+              89.71875,
+              -0.28125,
+              0.28125,
+              0.28125,
+              0.28125
+            ],
+            "max_force_N": 10.230805209779643,
+            "max_moment_Nm": 1.3141735598613136,
+            "max_local_N_N": 0.6764235410956065,
+            "max_local_V_N": 10.230610629672832,
+            "max_local_T_Nm": 0.13618005189065868,
+            "max_local_bending_Nm": 1.3080796796427299
+          },
+          {
+            "joint": "J5",
+            "peak_servo_kgfcm": 7.754450150236058,
+            "advertised_peak_kgfcm": 63.0,
+            "stall_peak_ratio": 8.124367141373934,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 7.9212579628395865,
+            "case": "S6_-1_+1_+1_+1_+1_+1_100ms",
+            "time_s": 0.05,
+            "q_deg": [
+              0.28125,
+              89.71875,
+              -0.28125,
+              -0.28125,
+              -0.28125,
+              -0.28125
+            ],
+            "max_force_N": 6.881408315869598,
+            "max_moment_Nm": 0.7759181999408993,
+            "max_local_N_N": 0.5776705939709439,
+            "max_local_V_N": 6.881388246175457,
+            "max_local_T_Nm": 0.007899249960851631,
+            "max_local_bending_Nm": 0.7759034614638951
+          },
+          {
+            "joint": "J6",
+            "peak_servo_kgfcm": 0.03581326826190471,
+            "advertised_peak_kgfcm": 1.8,
+            "stall_peak_ratio": 50.260701895076586,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 49.00418434769966,
+            "case": "roll4-90_roll6-90_1_-1_-1_-1_-1_-1_100ms",
+            "time_s": 0.05,
+            "q_deg": [
+              -0.28125,
+              90.28125,
+              0.28125,
+              -89.71875,
+              0.28125,
+              -89.71875
+            ],
+            "max_force_N": 5.629788665287966,
+            "max_moment_Nm": 0.3818716351610518,
+            "max_local_N_N": 0.4778031748422525,
+            "max_local_V_N": 5.629786529779992,
+            "max_local_T_Nm": 0.0035120818720060783,
+            "max_local_bending_Nm": 0.3818658201002729
+          }
+        ],
+        "50": [
+          {
+            "joint": "J1",
+            "peak_servo_kgfcm": 22.25813559892108,
+            "advertised_peak_kgfcm": 63.0,
+            "stall_peak_ratio": 2.8304257434326083,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 2.759665099846793,
+            "case": "roll4+90_roll6+90_-1_-1_1_1_-1_1_50ms",
+            "time_s": 0.025,
+            "q_deg": [
+              0.140625,
+              90.140625,
+              -0.140625,
+              89.85937499999999,
+              0.140625,
+              89.85937499999999
+            ],
+            "max_force_N": 30.746697786021958,
+            "max_moment_Nm": 6.99085544367595,
+            "max_local_N_N": 30.221235688948177,
+            "max_local_V_N": 6.556191573819808,
+            "max_local_T_Nm": 2.182777454711594,
+            "max_local_bending_Nm": 6.747027217789666
+          },
+          {
+            "joint": "J2",
+            "peak_servo_kgfcm": 40.05955840836062,
+            "advertised_peak_kgfcm": 150.0,
+            "stall_peak_ratio": 3.744424700615129,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 3.223845362214879,
+            "case": "S6_+1_+1_+1_-1_+1_-1_50ms",
+            "time_s": 0.025,
+            "q_deg": [
+              -0.140625,
+              89.85937499999999,
+              -0.140625,
+              0.140625,
+              -0.140625,
+              0.140625
+            ],
+            "max_force_N": 24.798043462029394,
+            "max_moment_Nm": 6.9256300993321105,
+            "max_local_N_N": 0.9758864454903136,
+            "max_local_V_N": 24.797307190726066,
+            "max_local_T_Nm": 0.39035270477658307,
+            "max_local_bending_Nm": 6.918295160013784
+          },
+          {
+            "joint": "J3",
+            "peak_servo_kgfcm": 38.41215818096123,
+            "advertised_peak_kgfcm": 150.0,
+            "stall_peak_ratio": 3.9050135973444644,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 3.65505708688309,
+            "case": "S6_+1_+1_+1_-1_+1_-1_50ms",
+            "time_s": 0.025,
+            "q_deg": [
+              -0.140625,
+              89.85937499999999,
+              -0.140625,
+              0.140625,
+              -0.140625,
+              0.140625
+            ],
+            "max_force_N": 19.127634008289334,
+            "max_moment_Nm": 3.917468340508912,
+            "max_local_N_N": 0.7533992346224955,
+            "max_local_V_N": 19.127590599488872,
+            "max_local_T_Nm": 0.2024936664890116,
+            "max_local_bending_Nm": 3.9147390695090456
+          },
+          {
+            "joint": "J4",
+            "peak_servo_kgfcm": 2.0661837738088242,
+            "advertised_peak_kgfcm": 63.0,
+            "stall_peak_ratio": 30.49099542770349,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 29.725946441512747,
+            "case": "S6_-1_+1_+1_-1_-1_-1_50ms",
+            "time_s": 0.025,
+            "q_deg": [
+              0.140625,
+              89.85937499999999,
+              -0.140625,
+              0.140625,
+              0.140625,
+              0.140625
+            ],
+            "max_force_N": 14.164637795224879,
+            "max_moment_Nm": 1.8711041430812634,
+            "max_local_N_N": 0.5480879954307026,
+            "max_local_V_N": 14.163997411724976,
+            "max_local_T_Nm": 0.18236106994880075,
+            "max_local_bending_Nm": 1.8641275799579755
+          },
+          {
+            "joint": "J5",
+            "peak_servo_kgfcm": 10.985447647289467,
+            "advertised_peak_kgfcm": 63.0,
+            "stall_peak_ratio": 5.7348596090705986,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 5.5914881188438335,
+            "case": "S6_-1_+1_+1_+1_+1_+1_50ms",
+            "time_s": 0.025,
+            "q_deg": [
+              0.140625,
+              89.85937499999999,
+              -0.140625,
+              -0.140625,
+              -0.140625,
+              -0.140625
+            ],
+            "max_force_N": 9.774204081365486,
+            "max_moment_Nm": 1.121606629359894,
+            "max_local_N_N": 0.41649329148264885,
+            "max_local_V_N": 9.774203422328174,
+            "max_local_T_Nm": 0.012830234556495812,
+            "max_local_bending_Nm": 1.121586941308953
+          },
+          {
+            "joint": "J6",
+            "peak_servo_kgfcm": 0.07148370854819358,
+            "advertised_peak_kgfcm": 1.8,
+            "stall_peak_ratio": 25.180562628286957,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 24.55104856257978,
+            "case": "roll4-90_roll6-90_1_1_1_-1_-1_-1_50ms",
+            "time_s": 0.025,
+            "q_deg": [
+              -0.140625,
+              89.85937499999999,
+              -0.140625,
+              -89.85937499999999,
+              0.140625,
+              -89.85937499999999
+            ],
+            "max_force_N": 8.106183337180948,
+            "max_moment_Nm": 0.5562825140915307,
+            "max_local_N_N": 0.35018073920524045,
+            "max_local_V_N": 8.10617091334775,
+            "max_local_T_Nm": 0.007010157104341426,
+            "max_local_bending_Nm": 0.5562810816444367
+          }
+        ]
+      },
+      "pipes": [
+        {
+          "section": "PVC1",
+          "normal_nominal_MPa": 5.071201205265801,
+          "shear_envelope_MPa": 0.4180350461452398,
+          "case": "S6_+1_+1_+1_-1_+1_+1_50ms",
+          "time_s": 0.025,
+          "note": "Seccion libre25mm: corte por grafo/centroides; flexion+axial, torsion+cortante2V/A. Sin contacto o admisible PVC asignado."
+        },
+        {
+          "section": "PVC2",
+          "normal_nominal_MPa": 2.780234422279139,
+          "shear_envelope_MPa": 0.2806338793576941,
+          "case": "S6_+1_+1_+1_-1_+1_+1_50ms",
+          "time_s": 0.025,
+          "note": "Seccion libre25mm: corte por grafo/centroides; flexion+axial, torsion+cortante2V/A. Sin contacto o admisible PVC asignado."
+        }
+      ],
+      "static_tipping_sensitivity": {
+        "assumption": "Linea de vuelco hipotetica y=b; CG del auto sin brazo y=0. Sin factor ni dinamica. b no medido.",
+        "chassis_mass_min_g_for_halfspan": {
+          "60": 2589.485209613104,
+          "80": 1254.0057242017042,
+          "100": 452.7180329548644
+        }
+      }
+    },
+    {
+      "name": "B_150_bajo_GX",
+      "swaps": {
+        "J2": "DS150_bajo10",
+        "J3": "DS150_bajo10",
+        "J4": "GX70",
+        "J5": "GX70",
+        "J7": "MG92B"
+      },
+      "hv": false,
+      "mounts": true,
+      "shift": [
+        0,
+        0,
+        0
+      ],
+      "note": "",
+      "mass_g": 2752.4327320324946,
+      "delta_mass_g": 351.9999999999999,
+      "cg_mm": [
+        -17.443898337281524,
+        116.44792360177178,
+        151.20494635136393
+      ],
+      "scenarios": {
+        "200": [
+          {
+            "joint": "J1",
+            "peak_servo_kgfcm": 5.567022968759825,
+            "advertised_peak_kgfcm": 63.0,
+            "stall_peak_ratio": 11.316640932421842,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 11.033724909111296,
+            "case": "roll4-90_roll6+0_-1_1_1_-1_1_-1_200ms",
+            "time_s": 0.1,
+            "q_deg": [
+              0.5625,
+              89.4375,
+              -0.5625,
+              -89.4375,
+              -0.5625,
+              0.5625
+            ],
+            "max_force_N": 23.326969675830572,
+            "max_moment_Nm": 4.365309599765579,
+            "max_local_N_N": 23.28371591787034,
+            "max_local_V_N": 1.6522722465423771,
+            "max_local_T_Nm": 0.5459384579658854,
+            "max_local_bending_Nm": 4.341059265265704
+          },
+          {
+            "joint": "J2",
+            "peak_servo_kgfcm": 25.65162553137218,
+            "advertised_peak_kgfcm": 125.0,
+            "stall_peak_ratio": 4.872985528621717,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 4.078028863396493,
+            "case": "S6_+1_+1_+1_-1_+1_-1_200ms",
+            "time_s": 0.1,
+            "q_deg": [
+              -0.5625,
+              89.4375,
+              -0.5625,
+              0.5625,
+              -0.5625,
+              0.5625
+            ],
+            "max_force_N": 17.278248263347564,
+            "max_moment_Nm": 4.308864707303341,
+            "max_local_N_N": 1.1963199972081515,
+            "max_local_V_N": 17.27824758816503,
+            "max_local_T_Nm": 0.2792940114910345,
+            "max_local_bending_Nm": 4.3006845491664425
+          },
+          {
+            "joint": "J3",
+            "peak_servo_kgfcm": 23.12662785559407,
+            "advertised_peak_kgfcm": 125.0,
+            "stall_peak_ratio": 5.405024925402772,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 5.028863149495067,
+            "case": "S6_+1_+1_+1_-1_+1_-1_200ms",
+            "time_s": 0.1,
+            "q_deg": [
+              -0.5625,
+              89.4375,
+              -0.5625,
+              0.5625,
+              -0.5625,
+              0.5625
+            ],
+            "max_force_N": 12.113764230101774,
+            "max_moment_Nm": 2.2862286664097065,
+            "max_local_N_N": 1.4290259318053147,
+            "max_local_V_N": 12.112919508099983,
+            "max_local_T_Nm": 0.11923752778330927,
+            "max_local_bending_Nm": 2.2838784173808304
+          },
+          {
+            "joint": "J4",
+            "peak_servo_kgfcm": 1.2918107343639198,
+            "advertised_peak_kgfcm": 63.0,
+            "stall_peak_ratio": 48.76875406289361,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 47.332369730442196,
+            "case": "roll4+0_roll6+90_-1_1_1_-1_-1_1_200ms",
+            "time_s": 0.09,
+            "q_deg": [
+              0.7237312499999997,
+              89.27626874999999,
+              -0.7237312499999997,
+              0.7237312499999997,
+              0.7237312499999997,
+              89.27626874999999
+            ],
+            "max_force_N": 8.312141200106133,
+            "max_moment_Nm": 1.0418291520832772,
+            "max_local_N_N": 1.0143958669984279,
+            "max_local_V_N": 8.312116255402788,
+            "max_local_T_Nm": 0.11401502164334941,
+            "max_local_bending_Nm": 1.0361626323535502
+          },
+          {
+            "joint": "J5",
+            "peak_servo_kgfcm": 6.138069280445164,
+            "advertised_peak_kgfcm": 63.0,
+            "stall_peak_ratio": 10.26381376969908,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 9.992859535211272,
+            "case": "S6_-1_+1_+1_+1_+1_+1_200ms",
+            "time_s": 0.1,
+            "q_deg": [
+              0.5625,
+              89.4375,
+              -0.5625,
+              -0.5625,
+              -0.5625,
+              -0.5625
+            ],
+            "max_force_N": 5.465820230032169,
+            "max_moment_Nm": 0.6064097949317483,
+            "max_local_N_N": 0.897654830491798,
+            "max_local_V_N": 5.465346140558882,
+            "max_local_T_Nm": 0.0063465938690119555,
+            "max_local_bending_Nm": 0.6064003910044105
+          },
+          {
+            "joint": "J6",
+            "peak_servo_kgfcm": 0.027037367180745894,
+            "advertised_peak_kgfcm": 1.8,
+            "stall_peak_ratio": 66.57452953784025,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 64.48724071225412,
+            "case": "roll4+0_roll6+90_-1_1_1_-1_1_1_200ms",
+            "time_s": 0.09,
+            "q_deg": [
+              0.7237312499999997,
+              89.27626874999999,
+              -0.7237312499999997,
+              0.7237312499999997,
+              -0.7237312499999997,
+              89.27626874999999
+            ],
+            "max_force_N": 4.416036900457453,
+            "max_moment_Nm": 0.29626717680895653,
+            "max_local_N_N": 0.7311426667740952,
+            "max_local_V_N": 4.415750893870992,
+            "max_local_T_Nm": 0.0026514599686306177,
+            "max_local_bending_Nm": 0.29626524396762755
+          }
+        ],
+        "100": [
+          {
+            "joint": "J1",
+            "peak_servo_kgfcm": 11.128922610171351,
+            "advertised_peak_kgfcm": 63.0,
+            "stall_peak_ratio": 5.660925339027943,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 5.519402205552245,
+            "case": "roll4+90_roll6+90_-1_-1_1_1_-1_1_100ms",
+            "time_s": 0.05,
+            "q_deg": [
+              0.28125,
+              90.28125,
+              -0.28125,
+              89.71875,
+              0.28125,
+              89.71875
+            ],
+            "max_force_N": 25.752941373836546,
+            "max_moment_Nm": 5.218014152770129,
+            "max_local_N_N": 25.596808794081227,
+            "max_local_V_N": 3.2859869262196972,
+            "max_local_T_Nm": 1.0913744891503687,
+            "max_local_bending_Nm": 5.1373686649734305
+          },
+          {
+            "joint": "J2",
+            "peak_servo_kgfcm": 30.45319603208152,
+            "advertised_peak_kgfcm": 125.0,
+            "stall_peak_ratio": 4.104659486916128,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 3.496091461993458,
+            "case": "S6_+1_+1_+1_-1_+1_-1_100ms",
+            "time_s": 0.05,
+            "q_deg": [
+              -0.28125,
+              89.71875,
+              -0.28125,
+              0.28125,
+              -0.28125,
+              0.28125
+            ],
+            "max_force_N": 19.733634958879215,
+            "max_moment_Nm": 5.164790920714133,
+            "max_local_N_N": 0.8569807007466805,
+            "max_local_V_N": 19.73336332687229,
+            "max_local_T_Nm": 0.3157416264781219,
+            "max_local_bending_Nm": 5.157069654072331
+          },
+          {
+            "joint": "J3",
+            "peak_servo_kgfcm": 28.220102949028476,
+            "advertised_peak_kgfcm": 125.0,
+            "stall_peak_ratio": 4.429466477346899,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 4.138791854010517,
+            "case": "S6_+1_+1_+1_-1_+1_-1_100ms",
+            "time_s": 0.05,
+            "q_deg": [
+              -0.28125,
+              89.71875,
+              -0.28125,
+              0.28125,
+              -0.28125,
+              0.28125
+            ],
+            "max_force_N": 14.40709804614617,
+            "max_moment_Nm": 2.8209077248919905,
+            "max_local_N_N": 0.9117287187355364,
+            "max_local_V_N": 14.407031163257912,
+            "max_local_T_Nm": 0.14638767151969326,
+            "max_local_bending_Nm": 2.818581984949553
+          },
+          {
+            "joint": "J4",
+            "peak_servo_kgfcm": 1.5429445199675584,
+            "advertised_peak_kgfcm": 63.0,
+            "stall_peak_ratio": 40.8310209373728,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 39.71579858060619,
+            "case": "S6_-1_+1_+1_-1_-1_-1_100ms",
+            "time_s": 0.05,
+            "q_deg": [
+              0.28125,
+              89.71875,
+              -0.28125,
+              0.28125,
+              0.28125,
+              0.28125
+            ],
+            "max_force_N": 10.230805209779643,
+            "max_moment_Nm": 1.3141735598613136,
+            "max_local_N_N": 0.6764235410956065,
+            "max_local_V_N": 10.230610629672832,
+            "max_local_T_Nm": 0.13618005189065868,
+            "max_local_bending_Nm": 1.3080796796427299
+          },
+          {
+            "joint": "J5",
+            "peak_servo_kgfcm": 7.754450150236058,
+            "advertised_peak_kgfcm": 63.0,
+            "stall_peak_ratio": 8.124367141373934,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 7.9212579628395865,
+            "case": "S6_-1_+1_+1_+1_+1_+1_100ms",
+            "time_s": 0.05,
+            "q_deg": [
+              0.28125,
+              89.71875,
+              -0.28125,
+              -0.28125,
+              -0.28125,
+              -0.28125
+            ],
+            "max_force_N": 6.881408315869598,
+            "max_moment_Nm": 0.7759181999408993,
+            "max_local_N_N": 0.5776705939709439,
+            "max_local_V_N": 6.881388246175457,
+            "max_local_T_Nm": 0.007899249960851631,
+            "max_local_bending_Nm": 0.7759034614638951
+          },
+          {
+            "joint": "J6",
+            "peak_servo_kgfcm": 0.03581326826190471,
+            "advertised_peak_kgfcm": 1.8,
+            "stall_peak_ratio": 50.260701895076586,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 49.00418434769966,
+            "case": "roll4-90_roll6-90_1_-1_-1_-1_-1_-1_100ms",
+            "time_s": 0.05,
+            "q_deg": [
+              -0.28125,
+              90.28125,
+              0.28125,
+              -89.71875,
+              0.28125,
+              -89.71875
+            ],
+            "max_force_N": 5.629788665287966,
+            "max_moment_Nm": 0.3818716351610518,
+            "max_local_N_N": 0.4778031748422525,
+            "max_local_V_N": 5.629786529779992,
+            "max_local_T_Nm": 0.0035120818720060783,
+            "max_local_bending_Nm": 0.3818658201002729
+          }
+        ],
+        "50": [
+          {
+            "joint": "J1",
+            "peak_servo_kgfcm": 22.25813559892108,
+            "advertised_peak_kgfcm": 63.0,
+            "stall_peak_ratio": 2.8304257434326083,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 2.759665099846793,
+            "case": "roll4+90_roll6+90_-1_-1_1_1_-1_1_50ms",
+            "time_s": 0.025,
+            "q_deg": [
+              0.140625,
+              90.140625,
+              -0.140625,
+              89.85937499999999,
+              0.140625,
+              89.85937499999999
+            ],
+            "max_force_N": 30.746697786021958,
+            "max_moment_Nm": 6.99085544367595,
+            "max_local_N_N": 30.221235688948177,
+            "max_local_V_N": 6.556191573819808,
+            "max_local_T_Nm": 2.182777454711594,
+            "max_local_bending_Nm": 6.747027217789666
+          },
+          {
+            "joint": "J2",
+            "peak_servo_kgfcm": 40.05955840836062,
+            "advertised_peak_kgfcm": 125.0,
+            "stall_peak_ratio": 3.120353917179274,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 2.6865378018457324,
+            "case": "S6_+1_+1_+1_-1_+1_-1_50ms",
+            "time_s": 0.025,
+            "q_deg": [
+              -0.140625,
+              89.85937499999999,
+              -0.140625,
+              0.140625,
+              -0.140625,
+              0.140625
+            ],
+            "max_force_N": 24.798043462029394,
+            "max_moment_Nm": 6.9256300993321105,
+            "max_local_N_N": 0.9758864454903136,
+            "max_local_V_N": 24.797307190726066,
+            "max_local_T_Nm": 0.39035270477658307,
+            "max_local_bending_Nm": 6.918295160013784
+          },
+          {
+            "joint": "J3",
+            "peak_servo_kgfcm": 38.41215818096123,
+            "advertised_peak_kgfcm": 125.0,
+            "stall_peak_ratio": 3.2541779977870537,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 3.045880905735908,
+            "case": "S6_+1_+1_+1_-1_+1_-1_50ms",
+            "time_s": 0.025,
+            "q_deg": [
+              -0.140625,
+              89.85937499999999,
+              -0.140625,
+              0.140625,
+              -0.140625,
+              0.140625
+            ],
+            "max_force_N": 19.127634008289334,
+            "max_moment_Nm": 3.917468340508912,
+            "max_local_N_N": 0.7533992346224955,
+            "max_local_V_N": 19.127590599488872,
+            "max_local_T_Nm": 0.2024936664890116,
+            "max_local_bending_Nm": 3.9147390695090456
+          },
+          {
+            "joint": "J4",
+            "peak_servo_kgfcm": 2.0661837738088242,
+            "advertised_peak_kgfcm": 63.0,
+            "stall_peak_ratio": 30.49099542770349,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 29.725946441512747,
+            "case": "S6_-1_+1_+1_-1_-1_-1_50ms",
+            "time_s": 0.025,
+            "q_deg": [
+              0.140625,
+              89.85937499999999,
+              -0.140625,
+              0.140625,
+              0.140625,
+              0.140625
+            ],
+            "max_force_N": 14.164637795224879,
+            "max_moment_Nm": 1.8711041430812634,
+            "max_local_N_N": 0.5480879954307026,
+            "max_local_V_N": 14.163997411724976,
+            "max_local_T_Nm": 0.18236106994880075,
+            "max_local_bending_Nm": 1.8641275799579755
+          },
+          {
+            "joint": "J5",
+            "peak_servo_kgfcm": 10.985447647289467,
+            "advertised_peak_kgfcm": 63.0,
+            "stall_peak_ratio": 5.7348596090705986,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 5.5914881188438335,
+            "case": "S6_-1_+1_+1_+1_+1_+1_50ms",
+            "time_s": 0.025,
+            "q_deg": [
+              0.140625,
+              89.85937499999999,
+              -0.140625,
+              -0.140625,
+              -0.140625,
+              -0.140625
+            ],
+            "max_force_N": 9.774204081365486,
+            "max_moment_Nm": 1.121606629359894,
+            "max_local_N_N": 0.41649329148264885,
+            "max_local_V_N": 9.774203422328174,
+            "max_local_T_Nm": 0.012830234556495812,
+            "max_local_bending_Nm": 1.121586941308953
+          },
+          {
+            "joint": "J6",
+            "peak_servo_kgfcm": 0.07148370854819358,
+            "advertised_peak_kgfcm": 1.8,
+            "stall_peak_ratio": 25.180562628286957,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 24.55104856257978,
+            "case": "roll4-90_roll6-90_1_1_1_-1_-1_-1_50ms",
+            "time_s": 0.025,
+            "q_deg": [
+              -0.140625,
+              89.85937499999999,
+              -0.140625,
+              -89.85937499999999,
+              0.140625,
+              -89.85937499999999
+            ],
+            "max_force_N": 8.106183337180948,
+            "max_moment_Nm": 0.5562825140915307,
+            "max_local_N_N": 0.35018073920524045,
+            "max_local_V_N": 8.10617091334775,
+            "max_local_T_Nm": 0.007010157104341426,
+            "max_local_bending_Nm": 0.5562810816444367
+          }
+        ]
+      },
+      "pipes": [
+        {
+          "section": "PVC1",
+          "normal_nominal_MPa": 5.071201205265801,
+          "shear_envelope_MPa": 0.4180350461452398,
+          "case": "S6_+1_+1_+1_-1_+1_+1_50ms",
+          "time_s": 0.025,
+          "note": "Seccion libre25mm: corte por grafo/centroides; flexion+axial, torsion+cortante2V/A. Sin contacto o admisible PVC asignado."
+        },
+        {
+          "section": "PVC2",
+          "normal_nominal_MPa": 2.780234422279139,
+          "shear_envelope_MPa": 0.2806338793576941,
+          "case": "S6_+1_+1_+1_-1_+1_+1_50ms",
+          "time_s": 0.025,
+          "note": "Seccion libre25mm: corte por grafo/centroides; flexion+axial, torsion+cortante2V/A. Sin contacto o admisible PVC asignado."
+        }
+      ],
+      "static_tipping_sensitivity": {
+        "assumption": "Linea de vuelco hipotetica y=b; CG del auto sin brazo y=0. Sin factor ni dinamica. b no medido.",
+        "chassis_mass_min_g_for_halfspan": {
+          "60": 2589.485209613104,
+          "80": 1254.0057242017042,
+          "100": 452.7180329548644
+        }
+      }
+    },
+    {
+      "name": "C_206g_bajo_GX",
+      "swaps": {
+        "J2": "DS150_206g",
+        "J3": "DS150_206g",
+        "J4": "GX70",
+        "J5": "GX70",
+        "J7": "MG92B"
+      },
+      "hv": false,
+      "mounts": true,
+      "shift": [
+        0,
+        0,
+        0
+      ],
+      "note": "",
+      "mass_g": 2814.432732032495,
+      "delta_mass_g": 414.00000000000017,
+      "cg_mm": [
+        -18.590658132374497,
+        115.176878384526,
+        151.8117447682449
+      ],
+      "scenarios": {
+        "200": [
+          {
+            "joint": "J1",
+            "peak_servo_kgfcm": 5.600478143122973,
+            "advertised_peak_kgfcm": 63.0,
+            "stall_peak_ratio": 11.249039526626838,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 10.967813538461167,
+            "case": "roll4-90_roll6+0_-1_1_1_-1_1_-1_200ms",
+            "time_s": 0.1,
+            "q_deg": [
+              0.5625,
+              89.4375,
+              -0.5625,
+              -89.4375,
+              -0.5625,
+              0.5625
+            ],
+            "max_force_N": 23.950919986922774,
+            "max_moment_Nm": 4.416137263806842,
+            "max_local_N_N": 23.90760197238118,
+            "max_local_V_N": 1.6737179949439986,
+            "max_local_T_Nm": 0.5492192898225691,
+            "max_local_bending_Nm": 4.391802863743271
+          },
+          {
+            "joint": "J2",
+            "peak_servo_kgfcm": 25.902440223176658,
+            "advertised_peak_kgfcm": 125.0,
+            "stall_peak_ratio": 4.825800153305791,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 4.03711383843504,
+            "case": "S6_+1_+1_+1_-1_+1_-1_200ms",
+            "time_s": 0.1,
+            "q_deg": [
+              -0.5625,
+              89.4375,
+              -0.5625,
+              0.5625,
+              -0.5625,
+              0.5625
+            ],
+            "max_force_N": 17.598416426331124,
+            "max_moment_Nm": 4.351998367635771,
+            "max_local_N_N": 1.2144302333804597,
+            "max_local_V_N": 17.598414351395437,
+            "max_local_T_Nm": 0.3006425651609715,
+            "max_local_bending_Nm": 4.342574089413441
+          },
+          {
+            "joint": "J3",
+            "peak_servo_kgfcm": 23.12662785559407,
+            "advertised_peak_kgfcm": 125.0,
+            "stall_peak_ratio": 5.405024925402772,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 5.028863149495067,
+            "case": "S6_+1_+1_+1_-1_+1_-1_200ms",
+            "time_s": 0.1,
+            "q_deg": [
+              -0.5625,
+              89.4375,
+              -0.5625,
+              0.5625,
+              -0.5625,
+              0.5625
+            ],
+            "max_force_N": 12.113764230101774,
+            "max_moment_Nm": 2.2862286664097065,
+            "max_local_N_N": 1.4290259318053147,
+            "max_local_V_N": 12.112919508099983,
+            "max_local_T_Nm": 0.11923752778330927,
+            "max_local_bending_Nm": 2.2838784173808304
+          },
+          {
+            "joint": "J4",
+            "peak_servo_kgfcm": 1.2918107343639198,
+            "advertised_peak_kgfcm": 63.0,
+            "stall_peak_ratio": 48.76875406289361,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 47.332369730442196,
+            "case": "roll4+0_roll6+90_-1_1_1_-1_-1_1_200ms",
+            "time_s": 0.09,
+            "q_deg": [
+              0.7237312499999997,
+              89.27626874999999,
+              -0.7237312499999997,
+              0.7237312499999997,
+              0.7237312499999997,
+              89.27626874999999
+            ],
+            "max_force_N": 8.312141200106133,
+            "max_moment_Nm": 1.0418291520832772,
+            "max_local_N_N": 1.0143958669984279,
+            "max_local_V_N": 8.312116255402788,
+            "max_local_T_Nm": 0.11401502164334941,
+            "max_local_bending_Nm": 1.0361626323535502
+          },
+          {
+            "joint": "J5",
+            "peak_servo_kgfcm": 6.138069280445164,
+            "advertised_peak_kgfcm": 63.0,
+            "stall_peak_ratio": 10.26381376969908,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 9.992859535211272,
+            "case": "S6_-1_+1_+1_+1_+1_+1_200ms",
+            "time_s": 0.1,
+            "q_deg": [
+              0.5625,
+              89.4375,
+              -0.5625,
+              -0.5625,
+              -0.5625,
+              -0.5625
+            ],
+            "max_force_N": 5.465820230032169,
+            "max_moment_Nm": 0.6064097949317483,
+            "max_local_N_N": 0.897654830491798,
+            "max_local_V_N": 5.465346140558882,
+            "max_local_T_Nm": 0.0063465938690119555,
+            "max_local_bending_Nm": 0.6064003910044105
+          },
+          {
+            "joint": "J6",
+            "peak_servo_kgfcm": 0.027037367180745894,
+            "advertised_peak_kgfcm": 1.8,
+            "stall_peak_ratio": 66.57452953784025,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 64.48724071225412,
+            "case": "roll4+0_roll6+90_-1_1_1_-1_1_1_200ms",
+            "time_s": 0.09,
+            "q_deg": [
+              0.7237312499999997,
+              89.27626874999999,
+              -0.7237312499999997,
+              0.7237312499999997,
+              -0.7237312499999997,
+              89.27626874999999
+            ],
+            "max_force_N": 4.416036900457453,
+            "max_moment_Nm": 0.29626717680895653,
+            "max_local_N_N": 0.7311426667740952,
+            "max_local_V_N": 4.415750893870992,
+            "max_local_T_Nm": 0.0026514599686306177,
+            "max_local_bending_Nm": 0.29626524396762755
+          }
+        ],
+        "100": [
+          {
+            "joint": "J1",
+            "peak_servo_kgfcm": 11.200225657360713,
+            "advertised_peak_kgfcm": 63.0,
+            "stall_peak_ratio": 5.62488666990355,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 5.484264503155961,
+            "case": "roll4+90_roll6+90_-1_-1_1_1_-1_1_100ms",
+            "time_s": 0.05,
+            "q_deg": [
+              0.28125,
+              90.28125,
+              -0.28125,
+              89.71875,
+              0.28125,
+              89.71875
+            ],
+            "max_force_N": 26.393046781943333,
+            "max_moment_Nm": 5.270666817414985,
+            "max_local_N_N": 26.23652236019341,
+            "max_local_V_N": 3.327876815212284,
+            "max_local_T_Nm": 1.0983669294275644,
+            "max_local_bending_Nm": 5.189687153588289
+          },
+          {
+            "joint": "J2",
+            "peak_servo_kgfcm": 30.71745451929878,
+            "advertised_peak_kgfcm": 125.0,
+            "stall_peak_ratio": 4.0693476056574465,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 3.465423700072077,
+            "case": "S6_+1_+1_+1_-1_+1_-1_100ms",
+            "time_s": 0.05,
+            "q_deg": [
+              -0.28125,
+              89.71875,
+              -0.28125,
+              0.28125,
+              -0.28125,
+              0.28125
+            ],
+            "max_force_N": 20.070560891966714,
+            "max_moment_Nm": 5.21029463141011,
+            "max_local_N_N": 0.8725892916757196,
+            "max_local_V_N": 20.07023202591744,
+            "max_local_T_Nm": 0.3383940937108972,
+            "max_local_bending_Nm": 5.201420689438536
+          },
+          {
+            "joint": "J3",
+            "peak_servo_kgfcm": 28.220102949028476,
+            "advertised_peak_kgfcm": 125.0,
+            "stall_peak_ratio": 4.429466477346899,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 4.138791854010517,
+            "case": "S6_+1_+1_+1_-1_+1_-1_100ms",
+            "time_s": 0.05,
+            "q_deg": [
+              -0.28125,
+              89.71875,
+              -0.28125,
+              0.28125,
+              -0.28125,
+              0.28125
+            ],
+            "max_force_N": 14.40709804614617,
+            "max_moment_Nm": 2.8209077248919905,
+            "max_local_N_N": 0.9117287187355364,
+            "max_local_V_N": 14.407031163257912,
+            "max_local_T_Nm": 0.14638767151969326,
+            "max_local_bending_Nm": 2.818581984949553
+          },
+          {
+            "joint": "J4",
+            "peak_servo_kgfcm": 1.5429445199675584,
+            "advertised_peak_kgfcm": 63.0,
+            "stall_peak_ratio": 40.8310209373728,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 39.71579858060619,
+            "case": "S6_-1_+1_+1_-1_-1_-1_100ms",
+            "time_s": 0.05,
+            "q_deg": [
+              0.28125,
+              89.71875,
+              -0.28125,
+              0.28125,
+              0.28125,
+              0.28125
+            ],
+            "max_force_N": 10.230805209779643,
+            "max_moment_Nm": 1.3141735598613136,
+            "max_local_N_N": 0.6764235410956065,
+            "max_local_V_N": 10.230610629672832,
+            "max_local_T_Nm": 0.13618005189065868,
+            "max_local_bending_Nm": 1.3080796796427299
+          },
+          {
+            "joint": "J5",
+            "peak_servo_kgfcm": 7.754450150236058,
+            "advertised_peak_kgfcm": 63.0,
+            "stall_peak_ratio": 8.124367141373934,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 7.9212579628395865,
+            "case": "S6_-1_+1_+1_+1_+1_+1_100ms",
+            "time_s": 0.05,
+            "q_deg": [
+              0.28125,
+              89.71875,
+              -0.28125,
+              -0.28125,
+              -0.28125,
+              -0.28125
+            ],
+            "max_force_N": 6.881408315869598,
+            "max_moment_Nm": 0.7759181999408993,
+            "max_local_N_N": 0.5776705939709439,
+            "max_local_V_N": 6.881388246175457,
+            "max_local_T_Nm": 0.007899249960851631,
+            "max_local_bending_Nm": 0.7759034614638951
+          },
+          {
+            "joint": "J6",
+            "peak_servo_kgfcm": 0.03581326826190471,
+            "advertised_peak_kgfcm": 1.8,
+            "stall_peak_ratio": 50.260701895076586,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 49.00418434769966,
+            "case": "roll4-90_roll6-90_1_-1_-1_-1_-1_-1_100ms",
+            "time_s": 0.05,
+            "q_deg": [
+              -0.28125,
+              90.28125,
+              0.28125,
+              -89.71875,
+              0.28125,
+              -89.71875
+            ],
+            "max_force_N": 5.629788665287966,
+            "max_moment_Nm": 0.3818716351610518,
+            "max_local_N_N": 0.4778031748422525,
+            "max_local_V_N": 5.629786529779992,
+            "max_local_T_Nm": 0.0035120818720060783,
+            "max_local_bending_Nm": 0.3818658201002729
+          }
+        ],
+        "50": [
+          {
+            "joint": "J1",
+            "peak_servo_kgfcm": 22.400594564235973,
+            "advertised_peak_kgfcm": 63.0,
+            "stall_peak_ratio": 2.8124253496638727,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 2.7421147159222756,
+            "case": "roll4+90_roll6+90_-1_-1_1_1_-1_1_50ms",
+            "time_s": 0.025,
+            "q_deg": [
+              0.140625,
+              90.140625,
+              -0.140625,
+              89.85937499999999,
+              0.140625,
+              89.85937499999999
+            ],
+            "max_force_N": 31.421570024305957,
+            "max_moment_Nm": 7.049433099380337,
+            "max_local_N_N": 30.892601670149315,
+            "max_local_V_N": 6.638949834069393,
+            "max_local_T_Nm": 2.196747906833647,
+            "max_local_bending_Nm": 6.804166587724696
+          },
+          {
+            "joint": "J2",
+            "peak_servo_kgfcm": 40.35089911887579,
+            "advertised_peak_kgfcm": 125.0,
+            "stall_peak_ratio": 3.0978244036581115,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 2.6669114294996703,
+            "case": "S6_+1_+1_+1_-1_+1_-1_50ms",
+            "time_s": 0.025,
+            "q_deg": [
+              -0.140625,
+              89.85937499999999,
+              -0.140625,
+              0.140625,
+              -0.140625,
+              0.140625
+            ],
+            "max_force_N": 25.170461238897275,
+            "max_moment_Nm": 6.976442047954096,
+            "max_local_N_N": 1.012354495973452,
+            "max_local_V_N": 25.169538812191085,
+            "max_local_T_Nm": 0.415584933548323,
+            "max_local_bending_Nm": 6.968058501649833
+          },
+          {
+            "joint": "J3",
+            "peak_servo_kgfcm": 38.41215818096123,
+            "advertised_peak_kgfcm": 125.0,
+            "stall_peak_ratio": 3.2541779977870537,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 3.045880905735908,
+            "case": "S6_+1_+1_+1_-1_+1_-1_50ms",
+            "time_s": 0.025,
+            "q_deg": [
+              -0.140625,
+              89.85937499999999,
+              -0.140625,
+              0.140625,
+              -0.140625,
+              0.140625
+            ],
+            "max_force_N": 19.127634008289334,
+            "max_moment_Nm": 3.917468340508912,
+            "max_local_N_N": 0.7533992346224955,
+            "max_local_V_N": 19.127590599488872,
+            "max_local_T_Nm": 0.2024936664890116,
+            "max_local_bending_Nm": 3.9147390695090456
+          },
+          {
+            "joint": "J4",
+            "peak_servo_kgfcm": 2.0661837738088242,
+            "advertised_peak_kgfcm": 63.0,
+            "stall_peak_ratio": 30.49099542770349,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 29.725946441512747,
+            "case": "S6_-1_+1_+1_-1_-1_-1_50ms",
+            "time_s": 0.025,
+            "q_deg": [
+              0.140625,
+              89.85937499999999,
+              -0.140625,
+              0.140625,
+              0.140625,
+              0.140625
+            ],
+            "max_force_N": 14.164637795224879,
+            "max_moment_Nm": 1.8711041430812634,
+            "max_local_N_N": 0.5480879954307026,
+            "max_local_V_N": 14.163997411724976,
+            "max_local_T_Nm": 0.18236106994880075,
+            "max_local_bending_Nm": 1.8641275799579755
+          },
+          {
+            "joint": "J5",
+            "peak_servo_kgfcm": 10.985447647289467,
+            "advertised_peak_kgfcm": 63.0,
+            "stall_peak_ratio": 5.7348596090705986,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 5.5914881188438335,
+            "case": "S6_-1_+1_+1_+1_+1_+1_50ms",
+            "time_s": 0.025,
+            "q_deg": [
+              0.140625,
+              89.85937499999999,
+              -0.140625,
+              -0.140625,
+              -0.140625,
+              -0.140625
+            ],
+            "max_force_N": 9.774204081365486,
+            "max_moment_Nm": 1.121606629359894,
+            "max_local_N_N": 0.41649329148264885,
+            "max_local_V_N": 9.774203422328174,
+            "max_local_T_Nm": 0.012830234556495812,
+            "max_local_bending_Nm": 1.121586941308953
+          },
+          {
+            "joint": "J6",
+            "peak_servo_kgfcm": 0.07148370854819358,
+            "advertised_peak_kgfcm": 1.8,
+            "stall_peak_ratio": 25.180562628286957,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 24.55104856257978,
+            "case": "roll4-90_roll6-90_1_1_1_-1_-1_-1_50ms",
+            "time_s": 0.025,
+            "q_deg": [
+              -0.140625,
+              89.85937499999999,
+              -0.140625,
+              -89.85937499999999,
+              0.140625,
+              -89.85937499999999
+            ],
+            "max_force_N": 8.106183337180948,
+            "max_moment_Nm": 0.5562825140915307,
+            "max_local_N_N": 0.35018073920524045,
+            "max_local_V_N": 8.10617091334775,
+            "max_local_T_Nm": 0.007010157104341426,
+            "max_local_bending_Nm": 0.5562810816444367
+          }
+        ]
+      },
+      "pipes": [
+        {
+          "section": "PVC1",
+          "normal_nominal_MPa": 5.103837774849948,
+          "shear_envelope_MPa": 0.43237939265214276,
+          "case": "S6_+1_+1_+1_-1_+1_+1_50ms",
+          "time_s": 0.025,
+          "note": "Seccion libre25mm: corte por grafo/centroides; flexion+axial, torsion+cortante2V/A. Sin contacto o admisible PVC asignado."
+        },
+        {
+          "section": "PVC2",
+          "normal_nominal_MPa": 2.780234422279139,
+          "shear_envelope_MPa": 0.2806338793576941,
+          "case": "S6_+1_+1_+1_-1_+1_+1_50ms",
+          "time_s": 0.025,
+          "note": "Seccion libre25mm: corte por grafo/centroides; flexion+axial, torsion+cortante2V/A. Sin contacto o admisible PVC asignado."
+        }
+      ],
+      "static_tipping_sensitivity": {
+        "assumption": "Linea de vuelco hipotetica y=b; CG del auto sin brazo y=0. Sin factor ni dinamica. b no medido.",
+        "chassis_mass_min_g_for_halfspan": {
+          "60": 2588.1935429464374,
+          "80": 1237.5369742017044,
+          "100": 427.14303295486445
+        }
+      }
+    },
+    {
+      "name": "D_150_12V_GX",
+      "swaps": {
+        "J2": "DS150_12",
+        "J3": "DS150_12",
+        "J4": "GX70",
+        "J5": "GX70",
+        "J7": "MG92B"
+      },
+      "hv": false,
+      "mounts": true,
+      "shift": [
+        0,
+        0,
+        0
+      ],
+      "note": "",
+      "mass_g": 2752.4327320324946,
+      "delta_mass_g": 351.9999999999999,
+      "cg_mm": [
+        -17.443898337281524,
+        116.44792360177178,
+        151.20494635136393
+      ],
+      "scenarios": {
+        "200": [
+          {
+            "joint": "J1",
+            "peak_servo_kgfcm": 5.567022968759825,
+            "advertised_peak_kgfcm": 63.0,
+            "stall_peak_ratio": 11.316640932421842,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 11.033724909111296,
+            "case": "roll4-90_roll6+0_-1_1_1_-1_1_-1_200ms",
+            "time_s": 0.1,
+            "q_deg": [
+              0.5625,
+              89.4375,
+              -0.5625,
+              -89.4375,
+              -0.5625,
+              0.5625
+            ],
+            "max_force_N": 23.326969675830572,
+            "max_moment_Nm": 4.365309599765579,
+            "max_local_N_N": 23.28371591787034,
+            "max_local_V_N": 1.6522722465423771,
+            "max_local_T_Nm": 0.5459384579658854,
+            "max_local_bending_Nm": 4.341059265265704
+          },
+          {
+            "joint": "J2",
+            "peak_servo_kgfcm": 25.65162553137218,
+            "advertised_peak_kgfcm": 165.0,
+            "stall_peak_ratio": 6.432340897780667,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 5.539807036471635,
+            "case": "S6_+1_+1_+1_-1_+1_-1_200ms",
+            "time_s": 0.1,
+            "q_deg": [
+              -0.5625,
+              89.4375,
+              -0.5625,
+              0.5625,
+              -0.5625,
+              0.5625
+            ],
+            "max_force_N": 17.278248263347564,
+            "max_moment_Nm": 4.308864707303341,
+            "max_local_N_N": 1.1963199972081515,
+            "max_local_V_N": 17.27824758816503,
+            "max_local_T_Nm": 0.2792940114910345,
+            "max_local_bending_Nm": 4.3006845491664425
+          },
+          {
+            "joint": "J3",
+            "peak_servo_kgfcm": 23.12662785559407,
+            "advertised_peak_kgfcm": 165.0,
+            "stall_peak_ratio": 7.134632901531659,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 6.708061976340778,
+            "case": "S6_+1_+1_+1_-1_+1_-1_200ms",
+            "time_s": 0.1,
+            "q_deg": [
+              -0.5625,
+              89.4375,
+              -0.5625,
+              0.5625,
+              -0.5625,
+              0.5625
+            ],
+            "max_force_N": 12.113764230101774,
+            "max_moment_Nm": 2.2862286664097065,
+            "max_local_N_N": 1.4290259318053147,
+            "max_local_V_N": 12.112919508099983,
+            "max_local_T_Nm": 0.11923752778330927,
+            "max_local_bending_Nm": 2.2838784173808304
+          },
+          {
+            "joint": "J4",
+            "peak_servo_kgfcm": 1.2918107343639198,
+            "advertised_peak_kgfcm": 63.0,
+            "stall_peak_ratio": 48.76875406289361,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 47.332369730442196,
+            "case": "roll4+0_roll6+90_-1_1_1_-1_-1_1_200ms",
+            "time_s": 0.09,
+            "q_deg": [
+              0.7237312499999997,
+              89.27626874999999,
+              -0.7237312499999997,
+              0.7237312499999997,
+              0.7237312499999997,
+              89.27626874999999
+            ],
+            "max_force_N": 8.312141200106133,
+            "max_moment_Nm": 1.0418291520832772,
+            "max_local_N_N": 1.0143958669984279,
+            "max_local_V_N": 8.312116255402788,
+            "max_local_T_Nm": 0.11401502164334941,
+            "max_local_bending_Nm": 1.0361626323535502
+          },
+          {
+            "joint": "J5",
+            "peak_servo_kgfcm": 6.138069280445164,
+            "advertised_peak_kgfcm": 63.0,
+            "stall_peak_ratio": 10.26381376969908,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 9.992859535211272,
+            "case": "S6_-1_+1_+1_+1_+1_+1_200ms",
+            "time_s": 0.1,
+            "q_deg": [
+              0.5625,
+              89.4375,
+              -0.5625,
+              -0.5625,
+              -0.5625,
+              -0.5625
+            ],
+            "max_force_N": 5.465820230032169,
+            "max_moment_Nm": 0.6064097949317483,
+            "max_local_N_N": 0.897654830491798,
+            "max_local_V_N": 5.465346140558882,
+            "max_local_T_Nm": 0.0063465938690119555,
+            "max_local_bending_Nm": 0.6064003910044105
+          },
+          {
+            "joint": "J6",
+            "peak_servo_kgfcm": 0.027037367180745894,
+            "advertised_peak_kgfcm": 1.8,
+            "stall_peak_ratio": 66.57452953784025,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 64.48724071225412,
+            "case": "roll4+0_roll6+90_-1_1_1_-1_1_1_200ms",
+            "time_s": 0.09,
+            "q_deg": [
+              0.7237312499999997,
+              89.27626874999999,
+              -0.7237312499999997,
+              0.7237312499999997,
+              -0.7237312499999997,
+              89.27626874999999
+            ],
+            "max_force_N": 4.416036900457453,
+            "max_moment_Nm": 0.29626717680895653,
+            "max_local_N_N": 0.7311426667740952,
+            "max_local_V_N": 4.415750893870992,
+            "max_local_T_Nm": 0.0026514599686306177,
+            "max_local_bending_Nm": 0.29626524396762755
+          }
+        ],
+        "100": [
+          {
+            "joint": "J1",
+            "peak_servo_kgfcm": 11.128922610171351,
+            "advertised_peak_kgfcm": 63.0,
+            "stall_peak_ratio": 5.660925339027943,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 5.519402205552245,
+            "case": "roll4+90_roll6+90_-1_-1_1_1_-1_1_100ms",
+            "time_s": 0.05,
+            "q_deg": [
+              0.28125,
+              90.28125,
+              -0.28125,
+              89.71875,
+              0.28125,
+              89.71875
+            ],
+            "max_force_N": 25.752941373836546,
+            "max_moment_Nm": 5.218014152770129,
+            "max_local_N_N": 25.596808794081227,
+            "max_local_V_N": 3.2859869262196972,
+            "max_local_T_Nm": 1.0913744891503687,
+            "max_local_bending_Nm": 5.1373686649734305
+          },
+          {
+            "joint": "J2",
+            "peak_servo_kgfcm": 30.45319603208152,
+            "advertised_peak_kgfcm": 165.0,
+            "stall_peak_ratio": 5.418150522729289,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 4.73499041280911,
+            "case": "S6_+1_+1_+1_-1_+1_-1_100ms",
+            "time_s": 0.05,
+            "q_deg": [
+              -0.28125,
+              89.71875,
+              -0.28125,
+              0.28125,
+              -0.28125,
+              0.28125
+            ],
+            "max_force_N": 19.733634958879215,
+            "max_moment_Nm": 5.164790920714133,
+            "max_local_N_N": 0.8569807007466805,
+            "max_local_V_N": 19.73336332687229,
+            "max_local_T_Nm": 0.3157416264781219,
+            "max_local_bending_Nm": 5.157069654072331
+          },
+          {
+            "joint": "J3",
+            "peak_servo_kgfcm": 28.220102949028476,
+            "advertised_peak_kgfcm": 165.0,
+            "stall_peak_ratio": 5.846895750097906,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 5.5137940126808545,
+            "case": "S6_+1_+1_+1_-1_+1_-1_100ms",
+            "time_s": 0.05,
+            "q_deg": [
+              -0.28125,
+              89.71875,
+              -0.28125,
+              0.28125,
+              -0.28125,
+              0.28125
+            ],
+            "max_force_N": 14.40709804614617,
+            "max_moment_Nm": 2.8209077248919905,
+            "max_local_N_N": 0.9117287187355364,
+            "max_local_V_N": 14.407031163257912,
+            "max_local_T_Nm": 0.14638767151969326,
+            "max_local_bending_Nm": 2.818581984949553
+          },
+          {
+            "joint": "J4",
+            "peak_servo_kgfcm": 1.5429445199675584,
+            "advertised_peak_kgfcm": 63.0,
+            "stall_peak_ratio": 40.8310209373728,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 39.71579858060619,
+            "case": "S6_-1_+1_+1_-1_-1_-1_100ms",
+            "time_s": 0.05,
+            "q_deg": [
+              0.28125,
+              89.71875,
+              -0.28125,
+              0.28125,
+              0.28125,
+              0.28125
+            ],
+            "max_force_N": 10.230805209779643,
+            "max_moment_Nm": 1.3141735598613136,
+            "max_local_N_N": 0.6764235410956065,
+            "max_local_V_N": 10.230610629672832,
+            "max_local_T_Nm": 0.13618005189065868,
+            "max_local_bending_Nm": 1.3080796796427299
+          },
+          {
+            "joint": "J5",
+            "peak_servo_kgfcm": 7.754450150236058,
+            "advertised_peak_kgfcm": 63.0,
+            "stall_peak_ratio": 8.124367141373934,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 7.9212579628395865,
+            "case": "S6_-1_+1_+1_+1_+1_+1_100ms",
+            "time_s": 0.05,
+            "q_deg": [
+              0.28125,
+              89.71875,
+              -0.28125,
+              -0.28125,
+              -0.28125,
+              -0.28125
+            ],
+            "max_force_N": 6.881408315869598,
+            "max_moment_Nm": 0.7759181999408993,
+            "max_local_N_N": 0.5776705939709439,
+            "max_local_V_N": 6.881388246175457,
+            "max_local_T_Nm": 0.007899249960851631,
+            "max_local_bending_Nm": 0.7759034614638951
+          },
+          {
+            "joint": "J6",
+            "peak_servo_kgfcm": 0.03581326826190471,
+            "advertised_peak_kgfcm": 1.8,
+            "stall_peak_ratio": 50.260701895076586,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 49.00418434769966,
+            "case": "roll4-90_roll6-90_1_-1_-1_-1_-1_-1_100ms",
+            "time_s": 0.05,
+            "q_deg": [
+              -0.28125,
+              90.28125,
+              0.28125,
+              -89.71875,
+              0.28125,
+              -89.71875
+            ],
+            "max_force_N": 5.629788665287966,
+            "max_moment_Nm": 0.3818716351610518,
+            "max_local_N_N": 0.4778031748422525,
+            "max_local_V_N": 5.629786529779992,
+            "max_local_T_Nm": 0.0035120818720060783,
+            "max_local_bending_Nm": 0.3818658201002729
+          }
+        ],
+        "50": [
+          {
+            "joint": "J1",
+            "peak_servo_kgfcm": 22.25813559892108,
+            "advertised_peak_kgfcm": 63.0,
+            "stall_peak_ratio": 2.8304257434326083,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 2.759665099846793,
+            "case": "roll4+90_roll6+90_-1_-1_1_1_-1_1_50ms",
+            "time_s": 0.025,
+            "q_deg": [
+              0.140625,
+              90.140625,
+              -0.140625,
+              89.85937499999999,
+              0.140625,
+              89.85937499999999
+            ],
+            "max_force_N": 30.746697786021958,
+            "max_moment_Nm": 6.99085544367595,
+            "max_local_N_N": 30.221235688948177,
+            "max_local_V_N": 6.556191573819808,
+            "max_local_T_Nm": 2.182777454711594,
+            "max_local_bending_Nm": 6.747027217789666
+          },
+          {
+            "joint": "J2",
+            "peak_servo_kgfcm": 40.05955840836062,
+            "advertised_peak_kgfcm": 165.0,
+            "stall_peak_ratio": 4.1188671706766415,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 3.6278644063295116,
+            "case": "S6_+1_+1_+1_-1_+1_-1_50ms",
+            "time_s": 0.025,
+            "q_deg": [
+              -0.140625,
+              89.85937499999999,
+              -0.140625,
+              0.140625,
+              -0.140625,
+              0.140625
+            ],
+            "max_force_N": 24.798043462029394,
+            "max_moment_Nm": 6.9256300993321105,
+            "max_local_N_N": 0.9758864454903136,
+            "max_local_V_N": 24.797307190726066,
+            "max_local_T_Nm": 0.39035270477658307,
+            "max_local_bending_Nm": 6.918295160013784
+          },
+          {
+            "joint": "J3",
+            "peak_servo_kgfcm": 38.41215818096123,
+            "advertised_peak_kgfcm": 165.0,
+            "stall_peak_ratio": 4.295514957078911,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 4.057792827902602,
+            "case": "S6_+1_+1_+1_-1_+1_-1_50ms",
+            "time_s": 0.025,
+            "q_deg": [
+              -0.140625,
+              89.85937499999999,
+              -0.140625,
+              0.140625,
+              -0.140625,
+              0.140625
+            ],
+            "max_force_N": 19.127634008289334,
+            "max_moment_Nm": 3.917468340508912,
+            "max_local_N_N": 0.7533992346224955,
+            "max_local_V_N": 19.127590599488872,
+            "max_local_T_Nm": 0.2024936664890116,
+            "max_local_bending_Nm": 3.9147390695090456
+          },
+          {
+            "joint": "J4",
+            "peak_servo_kgfcm": 2.0661837738088242,
+            "advertised_peak_kgfcm": 63.0,
+            "stall_peak_ratio": 30.49099542770349,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 29.725946441512747,
+            "case": "S6_-1_+1_+1_-1_-1_-1_50ms",
+            "time_s": 0.025,
+            "q_deg": [
+              0.140625,
+              89.85937499999999,
+              -0.140625,
+              0.140625,
+              0.140625,
+              0.140625
+            ],
+            "max_force_N": 14.164637795224879,
+            "max_moment_Nm": 1.8711041430812634,
+            "max_local_N_N": 0.5480879954307026,
+            "max_local_V_N": 14.163997411724976,
+            "max_local_T_Nm": 0.18236106994880075,
+            "max_local_bending_Nm": 1.8641275799579755
+          },
+          {
+            "joint": "J5",
+            "peak_servo_kgfcm": 10.985447647289467,
+            "advertised_peak_kgfcm": 63.0,
+            "stall_peak_ratio": 5.7348596090705986,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 5.5914881188438335,
+            "case": "S6_-1_+1_+1_+1_+1_+1_50ms",
+            "time_s": 0.025,
+            "q_deg": [
+              0.140625,
+              89.85937499999999,
+              -0.140625,
+              -0.140625,
+              -0.140625,
+              -0.140625
+            ],
+            "max_force_N": 9.774204081365486,
+            "max_moment_Nm": 1.121606629359894,
+            "max_local_N_N": 0.41649329148264885,
+            "max_local_V_N": 9.774203422328174,
+            "max_local_T_Nm": 0.012830234556495812,
+            "max_local_bending_Nm": 1.121586941308953
+          },
+          {
+            "joint": "J6",
+            "peak_servo_kgfcm": 0.07148370854819358,
+            "advertised_peak_kgfcm": 1.8,
+            "stall_peak_ratio": 25.180562628286957,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 24.55104856257978,
+            "case": "roll4-90_roll6-90_1_1_1_-1_-1_-1_50ms",
+            "time_s": 0.025,
+            "q_deg": [
+              -0.140625,
+              89.85937499999999,
+              -0.140625,
+              -89.85937499999999,
+              0.140625,
+              -89.85937499999999
+            ],
+            "max_force_N": 8.106183337180948,
+            "max_moment_Nm": 0.5562825140915307,
+            "max_local_N_N": 0.35018073920524045,
+            "max_local_V_N": 8.10617091334775,
+            "max_local_T_Nm": 0.007010157104341426,
+            "max_local_bending_Nm": 0.5562810816444367
+          }
+        ]
+      },
+      "pipes": [
+        {
+          "section": "PVC1",
+          "normal_nominal_MPa": 5.071201205265801,
+          "shear_envelope_MPa": 0.4180350461452398,
+          "case": "S6_+1_+1_+1_-1_+1_+1_50ms",
+          "time_s": 0.025,
+          "note": "Seccion libre25mm: corte por grafo/centroides; flexion+axial, torsion+cortante2V/A. Sin contacto o admisible PVC asignado."
+        },
+        {
+          "section": "PVC2",
+          "normal_nominal_MPa": 2.780234422279139,
+          "shear_envelope_MPa": 0.2806338793576941,
+          "case": "S6_+1_+1_+1_-1_+1_+1_50ms",
+          "time_s": 0.025,
+          "note": "Seccion libre25mm: corte por grafo/centroides; flexion+axial, torsion+cortante2V/A. Sin contacto o admisible PVC asignado."
+        }
+      ],
+      "static_tipping_sensitivity": {
+        "assumption": "Linea de vuelco hipotetica y=b; CG del auto sin brazo y=0. Sin factor ni dinamica. b no medido.",
+        "chassis_mass_min_g_for_halfspan": {
+          "60": 2589.485209613104,
+          "80": 1254.0057242017042,
+          "100": 452.7180329548644
+        }
+      }
+    },
+    {
+      "name": "E_150_bajo_DS35",
+      "swaps": {
+        "J2": "DS150_bajo10",
+        "J3": "DS150_bajo10",
+        "J4": "DS35",
+        "J5": "DS35",
+        "J7": "MG92B"
+      },
+      "hv": false,
+      "mounts": true,
+      "shift": [
+        0,
+        0,
+        0
+      ],
+      "note": "",
+      "mass_g": 2692.432732032495,
+      "delta_mass_g": 292.0000000000003,
+      "cg_mm": [
+        -17.141247842036663,
+        113.43888850592451,
+        150.52425962626742
+      ],
+      "scenarios": {
+        "200": [
+          {
+            "joint": "J1",
+            "peak_servo_kgfcm": 5.367345165526352,
+            "advertised_peak_kgfcm": 63.0,
+            "stall_peak_ratio": 11.737646463402333,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 11.444205301817275,
+            "case": "roll4+90_roll6+90_-1_-1_1_1_-1_1_200ms",
+            "time_s": 0.1,
+            "q_deg": [
+              0.5625,
+              90.5625,
+              -0.5625,
+              89.4375,
+              0.5625,
+              89.4375
+            ],
+            "max_force_N": 22.633598618742806,
+            "max_moment_Nm": 4.178759819157127,
+            "max_local_N_N": 22.592888880068866,
+            "max_local_V_N": 1.5785371699716728,
+            "max_local_T_Nm": 0.52635675467509,
+            "max_local_bending_Nm": 4.155295053768439
+          },
+          {
+            "joint": "J2",
+            "peak_servo_kgfcm": 24.540511394587142,
+            "advertised_peak_kgfcm": 125.0,
+            "stall_peak_ratio": 5.093618384316597,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 4.2647402086051365,
+            "case": "S6_+1_+1_+1_-1_+1_-1_200ms",
+            "time_s": 0.1,
+            "q_deg": [
+              -0.5625,
+              89.4375,
+              -0.5625,
+              0.5625,
+              -0.5625,
+              0.5625
+            ],
+            "max_force_N": 16.584558196347796,
+            "max_moment_Nm": 4.121898591638424,
+            "max_local_N_N": 1.1480690872611512,
+            "max_local_V_N": 16.584554629274564,
+            "max_local_T_Nm": 0.2555838497909915,
+            "max_local_bending_Nm": 4.114639063688612
+          },
+          {
+            "joint": "J3",
+            "peak_servo_kgfcm": 22.15328958365234,
+            "advertised_peak_kgfcm": 125.0,
+            "stall_peak_ratio": 5.642502867485726,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 5.250658073035855,
+            "case": "S6_+1_+1_+1_-1_+1_-1_200ms",
+            "time_s": 0.1,
+            "q_deg": [
+              -0.5625,
+              89.4375,
+              -0.5625,
+              0.5625,
+              -0.5625,
+              0.5625
+            ],
+            "max_force_N": 11.420255870248551,
+            "max_moment_Nm": 2.189532054980956,
+            "max_local_N_N": 1.3499666797099203,
+            "max_local_V_N": 11.41929836248848,
+            "max_local_T_Nm": 0.09543751532229712,
+            "max_local_bending_Nm": 2.1879632078722375
+          },
+          {
+            "joint": "J4",
+            "peak_servo_kgfcm": 1.035983730367848,
+            "advertised_peak_kgfcm": 35.0,
+            "stall_peak_ratio": 33.784314342052944,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 32.65905373721382,
+            "case": "roll4+0_roll6+90_-1_1_1_-1_-1_1_200ms",
+            "time_s": 0.09,
+            "q_deg": [
+              0.7237312499999997,
+              89.27626874999999,
+              -0.7237312499999997,
+              0.7237312499999997,
+              0.7237312499999997,
+              89.27626874999999
+            ],
+            "max_force_N": 7.952344027433033,
+            "max_moment_Nm": 1.0198128618648394,
+            "max_local_N_N": 0.9721169451306095,
+            "max_local_V_N": 7.952008211295511,
+            "max_local_T_Nm": 0.09143576864470673,
+            "max_local_bending_Nm": 1.0161345522017107
+          },
+          {
+            "joint": "J5",
+            "peak_servo_kgfcm": 6.138069280445164,
+            "advertised_peak_kgfcm": 35.0,
+            "stall_peak_ratio": 5.702118760943934,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 5.535162713037484,
+            "case": "S6_-1_+1_+1_+1_+1_+1_200ms",
+            "time_s": 0.1,
+            "q_deg": [
+              0.5625,
+              89.4375,
+              -0.5625,
+              -0.5625,
+              -0.5625,
+              -0.5625
+            ],
+            "max_force_N": 5.465820230032169,
+            "max_moment_Nm": 0.6064097949317483,
+            "max_local_N_N": 0.897654830491798,
+            "max_local_V_N": 5.465346140558882,
+            "max_local_T_Nm": 0.0063465938690119555,
+            "max_local_bending_Nm": 0.6064003910044105
+          },
+          {
+            "joint": "J6",
+            "peak_servo_kgfcm": 0.027037367180745894,
+            "advertised_peak_kgfcm": 1.8,
+            "stall_peak_ratio": 66.57452953784025,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 64.48724071225412,
+            "case": "roll4+0_roll6+90_-1_1_1_-1_1_1_200ms",
+            "time_s": 0.09,
+            "q_deg": [
+              0.7237312499999997,
+              89.27626874999999,
+              -0.7237312499999997,
+              0.7237312499999997,
+              -0.7237312499999997,
+              89.27626874999999
+            ],
+            "max_force_N": 4.416036900457453,
+            "max_moment_Nm": 0.29626717680895653,
+            "max_local_N_N": 0.7311426667740952,
+            "max_local_V_N": 4.415750893870992,
+            "max_local_T_Nm": 0.0026514599686306177,
+            "max_local_bending_Nm": 0.29626524396762755
+          }
+        ],
+        "100": [
+          {
+            "joint": "J1",
+            "peak_servo_kgfcm": 10.736143170516335,
+            "advertised_peak_kgfcm": 63.0,
+            "stall_peak_ratio": 5.868029049110578,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 5.721328322882814,
+            "case": "roll4+90_roll6+90_-1_-1_1_1_-1_1_100ms",
+            "time_s": 0.05,
+            "q_deg": [
+              0.28125,
+              90.28125,
+              -0.28125,
+              89.71875,
+              0.28125,
+              89.71875
+            ],
+            "max_force_N": 24.951270878466772,
+            "max_moment_Nm": 5.001637598571403,
+            "max_local_N_N": 24.80415812708478,
+            "max_local_V_N": 3.1396688008957065,
+            "max_local_T_Nm": 1.0528559842314402,
+            "max_local_bending_Nm": 4.923939328478663
+          },
+          {
+            "joint": "J2",
+            "peak_servo_kgfcm": 29.170566593450445,
+            "advertised_peak_kgfcm": 125.0,
+            "stall_peak_ratio": 4.285141311861449,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 3.6506099732119135,
+            "case": "S6_+1_+1_+1_-1_+1_-1_100ms",
+            "time_s": 0.05,
+            "q_deg": [
+              -0.28125,
+              89.71875,
+              -0.28125,
+              0.28125,
+              -0.28125,
+              0.28125
+            ],
+            "max_force_N": 18.931021414838497,
+            "max_moment_Nm": 4.947257037050783,
+            "max_local_N_N": 0.8125809192861115,
+            "max_local_V_N": 18.930688729538392,
+            "max_local_T_Nm": 0.28645323246529936,
+            "max_local_bending_Nm": 4.940472435681795
+          },
+          {
+            "joint": "J3",
+            "peak_servo_kgfcm": 27.090160470809405,
+            "advertised_peak_kgfcm": 125.0,
+            "stall_peak_ratio": 4.614221467410349,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 4.311603046777225,
+            "case": "S6_+1_+1_+1_-1_+1_-1_100ms",
+            "time_s": 0.05,
+            "q_deg": [
+              -0.28125,
+              89.71875,
+              -0.28125,
+              0.28125,
+              -0.28125,
+              0.28125
+            ],
+            "max_force_N": 13.604370593731216,
+            "max_moment_Nm": 2.7077779835878317,
+            "max_local_N_N": 0.8633384423247609,
+            "max_local_V_N": 13.604334548742024,
+            "max_local_T_Nm": 0.11700661568695182,
+            "max_local_bending_Nm": 2.706237830934655
+          },
+          {
+            "joint": "J4",
+            "peak_servo_kgfcm": 1.2375968080674198,
+            "advertised_peak_kgfcm": 35.0,
+            "stall_peak_ratio": 28.28061592583982,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 27.41563508650659,
+            "case": "S6_-1_+1_+1_-1_-1_-1_100ms",
+            "time_s": 0.05,
+            "q_deg": [
+              0.28125,
+              89.71875,
+              -0.28125,
+              0.28125,
+              0.28125,
+              0.28125
+            ],
+            "max_force_N": 9.802251222045154,
+            "max_moment_Nm": 1.2880098250726564,
+            "max_local_N_N": 0.6494908661838097,
+            "max_local_V_N": 9.802108797007037,
+            "max_local_T_Nm": 0.10923010864050926,
+            "max_local_bending_Nm": 1.2840728949107063
+          },
+          {
+            "joint": "J5",
+            "peak_servo_kgfcm": 7.754450150236058,
+            "advertised_peak_kgfcm": 35.0,
+            "stall_peak_ratio": 4.513537300763297,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 4.387914314164908,
+            "case": "S6_-1_+1_+1_+1_+1_+1_100ms",
+            "time_s": 0.05,
+            "q_deg": [
+              0.28125,
+              89.71875,
+              -0.28125,
+              -0.28125,
+              -0.28125,
+              -0.28125
+            ],
+            "max_force_N": 6.881408315869598,
+            "max_moment_Nm": 0.7759181999408993,
+            "max_local_N_N": 0.5776705939709439,
+            "max_local_V_N": 6.881388246175457,
+            "max_local_T_Nm": 0.007899249960851631,
+            "max_local_bending_Nm": 0.7759034614638951
+          },
+          {
+            "joint": "J6",
+            "peak_servo_kgfcm": 0.03581326826190471,
+            "advertised_peak_kgfcm": 1.8,
+            "stall_peak_ratio": 50.260701895076586,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 49.00418434769966,
+            "case": "roll4-90_roll6-90_1_-1_-1_-1_-1_-1_100ms",
+            "time_s": 0.05,
+            "q_deg": [
+              -0.28125,
+              90.28125,
+              0.28125,
+              -89.71875,
+              0.28125,
+              -89.71875
+            ],
+            "max_force_N": 5.629788665287966,
+            "max_moment_Nm": 0.3818716351610518,
+            "max_local_N_N": 0.4778031748422525,
+            "max_local_V_N": 5.629786529779992,
+            "max_local_T_Nm": 0.0035120818720060783,
+            "max_local_bending_Nm": 0.3818658201002729
+          }
+        ],
+        "50": [
+          {
+            "joint": "J1",
+            "peak_servo_kgfcm": 21.47253349773593,
+            "advertised_peak_kgfcm": 63.0,
+            "stall_peak_ratio": 2.933980752976482,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 2.86063123415207,
+            "case": "roll4+90_roll6+90_-1_-1_1_1_-1_1_50ms",
+            "time_s": 0.025,
+            "q_deg": [
+              0.140625,
+              90.140625,
+              -0.140625,
+              89.85937499999999,
+              0.140625,
+              89.85937499999999
+            ],
+            "max_force_N": 29.720976839221134,
+            "max_moment_Nm": 6.712865787397282,
+            "max_local_N_N": 29.225000660083104,
+            "max_local_V_N": 6.264592243558627,
+            "max_local_T_Nm": 2.1057362062557208,
+            "max_local_bending_Nm": 6.478267563367653
+          },
+          {
+            "joint": "J2",
+            "peak_servo_kgfcm": 38.43265917489165,
+            "advertised_peak_kgfcm": 125.0,
+            "stall_peak_ratio": 3.252442133425508,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 2.8005514327798005,
+            "case": "S6_+1_+1_+1_-1_+1_-1_50ms",
+            "time_s": 0.025,
+            "q_deg": [
+              -0.140625,
+              89.85937499999999,
+              -0.140625,
+              0.140625,
+              -0.140625,
+              0.140625
+            ],
+            "max_force_N": 23.77025550153244,
+            "max_moment_Nm": 6.64475917485268,
+            "max_local_N_N": 0.8794456537579594,
+            "max_local_V_N": 23.769333127343852,
+            "max_local_T_Nm": 0.34997735877103,
+            "max_local_bending_Nm": 6.638409541108493
+          },
+          {
+            "joint": "J3",
+            "peak_servo_kgfcm": 36.9668234129029,
+            "advertised_peak_kgfcm": 125.0,
+            "stall_peak_ratio": 3.381410369070825,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 3.165086925515013,
+            "case": "S6_+1_+1_+1_-1_+1_-1_50ms",
+            "time_s": 0.025,
+            "q_deg": [
+              -0.140625,
+              89.85937499999999,
+              -0.140625,
+              0.140625,
+              -0.140625,
+              0.140625
+            ],
+            "max_force_N": 18.09943704982788,
+            "max_moment_Nm": 3.7698594756637465,
+            "max_local_N_N": 0.6653841670951659,
+            "max_local_V_N": 18.09942600629861,
+            "max_local_T_Nm": 0.16202566782449243,
+            "max_local_bending_Nm": 3.7682272945210875
+          },
+          {
+            "joint": "J4",
+            "peak_servo_kgfcm": 1.6625103708498037,
+            "advertised_peak_kgfcm": 35.0,
+            "stall_peak_ratio": 21.052500251237234,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 20.458112406929523,
+            "case": "S6_-1_+1_+1_-1_-1_-1_50ms",
+            "time_s": 0.025,
+            "q_deg": [
+              0.140625,
+              89.85937499999999,
+              -0.140625,
+              0.140625,
+              0.140625,
+              0.140625
+            ],
+            "max_force_N": 13.595101091839284,
+            "max_moment_Nm": 1.8362530310408143,
+            "max_local_N_N": 0.5012513641040027,
+            "max_local_V_N": 13.594633743502905,
+            "max_local_T_Nm": 0.14673291595464805,
+            "max_local_bending_Nm": 1.83179938621358
+          },
+          {
+            "joint": "J5",
+            "peak_servo_kgfcm": 10.985447647289467,
+            "advertised_peak_kgfcm": 35.0,
+            "stall_peak_ratio": 3.1860331161503326,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 3.0984172054561987,
+            "case": "S6_-1_+1_+1_+1_+1_+1_50ms",
+            "time_s": 0.025,
+            "q_deg": [
+              0.140625,
+              89.85937499999999,
+              -0.140625,
+              -0.140625,
+              -0.140625,
+              -0.140625
+            ],
+            "max_force_N": 9.774204081365486,
+            "max_moment_Nm": 1.121606629359894,
+            "max_local_N_N": 0.41649329148264885,
+            "max_local_V_N": 9.774203422328174,
+            "max_local_T_Nm": 0.012830234556495812,
+            "max_local_bending_Nm": 1.121586941308953
+          },
+          {
+            "joint": "J6",
+            "peak_servo_kgfcm": 0.07148370854819358,
+            "advertised_peak_kgfcm": 1.8,
+            "stall_peak_ratio": 25.180562628286957,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 24.55104856257978,
+            "case": "roll4-90_roll6-90_1_1_1_-1_-1_-1_50ms",
+            "time_s": 0.025,
+            "q_deg": [
+              -0.140625,
+              89.85937499999999,
+              -0.140625,
+              -89.85937499999999,
+              0.140625,
+              -89.85937499999999
+            ],
+            "max_force_N": 8.106183337180948,
+            "max_moment_Nm": 0.5562825140915307,
+            "max_local_N_N": 0.35018073920524045,
+            "max_local_V_N": 8.10617091334775,
+            "max_local_T_Nm": 0.007010157104341426,
+            "max_local_bending_Nm": 0.5562810816444367
+          }
+        ]
+      },
+      "pipes": [
+        {
+          "section": "PVC1",
+          "normal_nominal_MPa": 4.867235955094428,
+          "shear_envelope_MPa": 0.39013785200354967,
+          "case": "S6_+1_+1_+1_-1_+1_+1_50ms",
+          "time_s": 0.025,
+          "note": "Seccion libre25mm: corte por grafo/centroides; flexion+axial, torsion+cortante2V/A. Sin contacto o admisible PVC asignado."
+        },
+        {
+          "section": "PVC2",
+          "normal_nominal_MPa": 2.6830141578336293,
+          "shear_envelope_MPa": 0.2527016545485869,
+          "case": "S6_+1_+1_+1_-1_+1_+1_50ms",
+          "time_s": 0.025,
+          "note": "Seccion libre25mm: corte por grafo/centroides; flexion+axial, torsion+cortante2V/A. Sin contacto o admisible PVC asignado."
+        }
+      ],
+      "static_tipping_sensitivity": {
+        "assumption": "Linea de vuelco hipotetica y=b; CG del auto sin brazo y=0. Sin factor ni dinamica. b no medido.",
+        "chassis_mass_min_g_for_halfspan": {
+          "60": 2398.010209613104,
+          "80": 1125.3994742017042,
+          "100": 361.8330329548642
+        }
+      }
+    },
+    {
+      "name": "F_206g_bajo_DS35",
+      "swaps": {
+        "J2": "DS150_206g",
+        "J3": "DS150_206g",
+        "J4": "DS35",
+        "J5": "DS35",
+        "J7": "MG92B"
+      },
+      "hv": false,
+      "mounts": true,
+      "shift": [
+        0,
+        0,
+        0
+      ],
+      "note": "",
+      "mass_g": 2754.432732032495,
+      "delta_mass_g": 354.0000000000001,
+      "cg_mm": [
+        -18.319799997637254,
+        112.20788691059228,
+        151.15959766985802
+      ],
+      "scenarios": {
+        "200": [
+          {
+            "joint": "J1",
+            "peak_servo_kgfcm": 5.403066807306963,
+            "advertised_peak_kgfcm": 63.0,
+            "stall_peak_ratio": 11.660044609257927,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 11.36854349402648,
+            "case": "roll4+90_roll6+90_-1_-1_1_1_-1_1_200ms",
+            "time_s": 0.1,
+            "q_deg": [
+              0.5625,
+              90.5625,
+              -0.5625,
+              89.4375,
+              0.5625,
+              89.4375
+            ],
+            "max_force_N": 23.257570585906734,
+            "max_moment_Nm": 4.229567567264439,
+            "max_local_N_N": 23.216774934579707,
+            "max_local_V_N": 1.599860457729604,
+            "max_local_T_Nm": 0.5298598510587683,
+            "max_local_bending_Nm": 4.206019681386056
+          },
+          {
+            "joint": "J2",
+            "peak_servo_kgfcm": 24.791326086391624,
+            "advertised_peak_kgfcm": 125.0,
+            "stall_peak_ratio": 5.042086073347025,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 4.220092022807331,
+            "case": "S6_+1_+1_+1_-1_+1_-1_200ms",
+            "time_s": 0.1,
+            "q_deg": [
+              -0.5625,
+              89.4375,
+              -0.5625,
+              0.5625,
+              -0.5625,
+              0.5625
+            ],
+            "max_force_N": 16.904732558452675,
+            "max_moment_Nm": 4.164992181147701,
+            "max_local_N_N": 1.1661793234334596,
+            "max_local_V_N": 16.904726259874895,
+            "max_local_T_Nm": 0.27693105686415365,
+            "max_local_bending_Nm": 4.156527776293479
+          },
+          {
+            "joint": "J3",
+            "peak_servo_kgfcm": 22.15328958365234,
+            "advertised_peak_kgfcm": 125.0,
+            "stall_peak_ratio": 5.642502867485726,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 5.250658073035855,
+            "case": "S6_+1_+1_+1_-1_+1_-1_200ms",
+            "time_s": 0.1,
+            "q_deg": [
+              -0.5625,
+              89.4375,
+              -0.5625,
+              0.5625,
+              -0.5625,
+              0.5625
+            ],
+            "max_force_N": 11.420255870248551,
+            "max_moment_Nm": 2.189532054980956,
+            "max_local_N_N": 1.3499666797099203,
+            "max_local_V_N": 11.41929836248848,
+            "max_local_T_Nm": 0.09543751532229712,
+            "max_local_bending_Nm": 2.1879632078722375
+          },
+          {
+            "joint": "J4",
+            "peak_servo_kgfcm": 1.035983730367848,
+            "advertised_peak_kgfcm": 35.0,
+            "stall_peak_ratio": 33.784314342052944,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 32.65905373721382,
+            "case": "roll4+0_roll6+90_-1_1_1_-1_-1_1_200ms",
+            "time_s": 0.09,
+            "q_deg": [
+              0.7237312499999997,
+              89.27626874999999,
+              -0.7237312499999997,
+              0.7237312499999997,
+              0.7237312499999997,
+              89.27626874999999
+            ],
+            "max_force_N": 7.952344027433033,
+            "max_moment_Nm": 1.0198128618648394,
+            "max_local_N_N": 0.9721169451306095,
+            "max_local_V_N": 7.952008211295511,
+            "max_local_T_Nm": 0.09143576864470673,
+            "max_local_bending_Nm": 1.0161345522017107
+          },
+          {
+            "joint": "J5",
+            "peak_servo_kgfcm": 6.138069280445164,
+            "advertised_peak_kgfcm": 35.0,
+            "stall_peak_ratio": 5.702118760943934,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 5.535162713037484,
+            "case": "S6_-1_+1_+1_+1_+1_+1_200ms",
+            "time_s": 0.1,
+            "q_deg": [
+              0.5625,
+              89.4375,
+              -0.5625,
+              -0.5625,
+              -0.5625,
+              -0.5625
+            ],
+            "max_force_N": 5.465820230032169,
+            "max_moment_Nm": 0.6064097949317483,
+            "max_local_N_N": 0.897654830491798,
+            "max_local_V_N": 5.465346140558882,
+            "max_local_T_Nm": 0.0063465938690119555,
+            "max_local_bending_Nm": 0.6064003910044105
+          },
+          {
+            "joint": "J6",
+            "peak_servo_kgfcm": 0.027037367180745894,
+            "advertised_peak_kgfcm": 1.8,
+            "stall_peak_ratio": 66.57452953784025,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 64.48724071225412,
+            "case": "roll4+0_roll6+90_-1_1_1_-1_1_1_200ms",
+            "time_s": 0.09,
+            "q_deg": [
+              0.7237312499999997,
+              89.27626874999999,
+              -0.7237312499999997,
+              0.7237312499999997,
+              -0.7237312499999997,
+              89.27626874999999
+            ],
+            "max_force_N": 4.416036900457453,
+            "max_moment_Nm": 0.29626717680895653,
+            "max_local_N_N": 0.7311426667740952,
+            "max_local_V_N": 4.415750893870992,
+            "max_local_T_Nm": 0.0026514599686306177,
+            "max_local_bending_Nm": 0.29626524396762755
+          }
+        ],
+        "100": [
+          {
+            "joint": "J1",
+            "peak_servo_kgfcm": 10.8074462177057,
+            "advertised_peak_kgfcm": 63.0,
+            "stall_peak_ratio": 5.829314227517313,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 5.683581371829379,
+            "case": "roll4+90_roll6+90_-1_-1_1_1_-1_1_100ms",
+            "time_s": 0.05,
+            "q_deg": [
+              0.28125,
+              90.28125,
+              -0.28125,
+              89.71875,
+              0.28125,
+              89.71875
+            ],
+            "max_force_N": 25.59144439521902,
+            "max_moment_Nm": 5.054230077484157,
+            "max_local_N_N": 25.44387169319696,
+            "max_local_V_N": 3.18130482105653,
+            "max_local_T_Nm": 1.059848424508636,
+            "max_local_bending_Nm": 4.976197909427493
+          },
+          {
+            "joint": "J2",
+            "peak_servo_kgfcm": 29.434825080667697,
+            "advertised_peak_kgfcm": 125.0,
+            "stall_peak_ratio": 4.246670386436165,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 3.6171843864613242,
+            "case": "S6_+1_+1_+1_-1_+1_-1_100ms",
+            "time_s": 0.05,
+            "q_deg": [
+              -0.28125,
+              89.71875,
+              -0.28125,
+              0.28125,
+              -0.28125,
+              0.28125
+            ],
+            "max_force_N": 19.267965888347703,
+            "max_moment_Nm": 4.992716702644813,
+            "max_local_N_N": 0.8281895102151505,
+            "max_local_V_N": 19.26756952983699,
+            "max_local_T_Nm": 0.3091056996980748,
+            "max_local_bending_Nm": 4.9848219427839515
+          },
+          {
+            "joint": "J3",
+            "peak_servo_kgfcm": 27.090160470809405,
+            "advertised_peak_kgfcm": 125.0,
+            "stall_peak_ratio": 4.614221467410349,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 4.311603046777225,
+            "case": "S6_+1_+1_+1_-1_+1_-1_100ms",
+            "time_s": 0.05,
+            "q_deg": [
+              -0.28125,
+              89.71875,
+              -0.28125,
+              0.28125,
+              -0.28125,
+              0.28125
+            ],
+            "max_force_N": 13.604370593731216,
+            "max_moment_Nm": 2.7077779835878317,
+            "max_local_N_N": 0.8633384423247609,
+            "max_local_V_N": 13.604334548742024,
+            "max_local_T_Nm": 0.11700661568695182,
+            "max_local_bending_Nm": 2.706237830934655
+          },
+          {
+            "joint": "J4",
+            "peak_servo_kgfcm": 1.2375968080674198,
+            "advertised_peak_kgfcm": 35.0,
+            "stall_peak_ratio": 28.28061592583982,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 27.41563508650659,
+            "case": "S6_-1_+1_+1_-1_-1_-1_100ms",
+            "time_s": 0.05,
+            "q_deg": [
+              0.28125,
+              89.71875,
+              -0.28125,
+              0.28125,
+              0.28125,
+              0.28125
+            ],
+            "max_force_N": 9.802251222045154,
+            "max_moment_Nm": 1.2880098250726564,
+            "max_local_N_N": 0.6494908661838097,
+            "max_local_V_N": 9.802108797007037,
+            "max_local_T_Nm": 0.10923010864050926,
+            "max_local_bending_Nm": 1.2840728949107063
+          },
+          {
+            "joint": "J5",
+            "peak_servo_kgfcm": 7.754450150236058,
+            "advertised_peak_kgfcm": 35.0,
+            "stall_peak_ratio": 4.513537300763297,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 4.387914314164908,
+            "case": "S6_-1_+1_+1_+1_+1_+1_100ms",
+            "time_s": 0.05,
+            "q_deg": [
+              0.28125,
+              89.71875,
+              -0.28125,
+              -0.28125,
+              -0.28125,
+              -0.28125
+            ],
+            "max_force_N": 6.881408315869598,
+            "max_moment_Nm": 0.7759181999408993,
+            "max_local_N_N": 0.5776705939709439,
+            "max_local_V_N": 6.881388246175457,
+            "max_local_T_Nm": 0.007899249960851631,
+            "max_local_bending_Nm": 0.7759034614638951
+          },
+          {
+            "joint": "J6",
+            "peak_servo_kgfcm": 0.03581326826190471,
+            "advertised_peak_kgfcm": 1.8,
+            "stall_peak_ratio": 50.260701895076586,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 49.00418434769966,
+            "case": "roll4-90_roll6-90_1_-1_-1_-1_-1_-1_100ms",
+            "time_s": 0.05,
+            "q_deg": [
+              -0.28125,
+              90.28125,
+              0.28125,
+              -89.71875,
+              0.28125,
+              -89.71875
+            ],
+            "max_force_N": 5.629788665287966,
+            "max_moment_Nm": 0.3818716351610518,
+            "max_local_N_N": 0.4778031748422525,
+            "max_local_V_N": 5.629786529779992,
+            "max_local_T_Nm": 0.0035120818720060783,
+            "max_local_bending_Nm": 0.3818658201002729
+          }
+        ],
+        "50": [
+          {
+            "joint": "J1",
+            "peak_servo_kgfcm": 21.614992463050825,
+            "advertised_peak_kgfcm": 63.0,
+            "stall_peak_ratio": 2.914643625608183,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 2.841777534967978,
+            "case": "roll4+90_roll6+90_-1_-1_1_1_-1_1_50ms",
+            "time_s": 0.025,
+            "q_deg": [
+              0.140625,
+              90.140625,
+              -0.140625,
+              89.85937499999999,
+              0.140625,
+              89.85937499999999
+            ],
+            "max_force_N": 30.395598272094702,
+            "max_moment_Nm": 6.771357609381963,
+            "max_local_N_N": 29.896366641284242,
+            "max_local_V_N": 6.346833937341284,
+            "max_local_T_Nm": 2.119706658377774,
+            "max_local_bending_Nm": 6.5353174059886765
+          },
+          {
+            "joint": "J2",
+            "peak_servo_kgfcm": 38.72399988540681,
+            "advertised_peak_kgfcm": 125.0,
+            "stall_peak_ratio": 3.2279723264617197,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 2.779230480283262,
+            "case": "S6_+1_+1_+1_-1_+1_-1_50ms",
+            "time_s": 0.025,
+            "q_deg": [
+              -0.140625,
+              89.85937499999999,
+              -0.140625,
+              0.140625,
+              -0.140625,
+              0.140625
+            ],
+            "max_force_N": 24.14271787437724,
+            "max_moment_Nm": 6.6955231431968345,
+            "max_local_N_N": 0.9159137042410979,
+            "max_local_V_N": 24.14158578567488,
+            "max_local_T_Nm": 0.37520958754277034,
+            "max_local_bending_Nm": 6.68817166705843
+          },
+          {
+            "joint": "J3",
+            "peak_servo_kgfcm": 36.9668234129029,
+            "advertised_peak_kgfcm": 125.0,
+            "stall_peak_ratio": 3.381410369070825,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 3.165086925515013,
+            "case": "S6_+1_+1_+1_-1_+1_-1_50ms",
+            "time_s": 0.025,
+            "q_deg": [
+              -0.140625,
+              89.85937499999999,
+              -0.140625,
+              0.140625,
+              -0.140625,
+              0.140625
+            ],
+            "max_force_N": 18.09943704982788,
+            "max_moment_Nm": 3.7698594756637465,
+            "max_local_N_N": 0.6653841670951659,
+            "max_local_V_N": 18.09942600629861,
+            "max_local_T_Nm": 0.16202566782449243,
+            "max_local_bending_Nm": 3.7682272945210875
+          },
+          {
+            "joint": "J4",
+            "peak_servo_kgfcm": 1.6625103708498037,
+            "advertised_peak_kgfcm": 35.0,
+            "stall_peak_ratio": 21.052500251237234,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 20.458112406929523,
+            "case": "S6_-1_+1_+1_-1_-1_-1_50ms",
+            "time_s": 0.025,
+            "q_deg": [
+              0.140625,
+              89.85937499999999,
+              -0.140625,
+              0.140625,
+              0.140625,
+              0.140625
+            ],
+            "max_force_N": 13.595101091839284,
+            "max_moment_Nm": 1.8362530310408143,
+            "max_local_N_N": 0.5012513641040027,
+            "max_local_V_N": 13.594633743502905,
+            "max_local_T_Nm": 0.14673291595464805,
+            "max_local_bending_Nm": 1.83179938621358
+          },
+          {
+            "joint": "J5",
+            "peak_servo_kgfcm": 10.985447647289467,
+            "advertised_peak_kgfcm": 35.0,
+            "stall_peak_ratio": 3.1860331161503326,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 3.0984172054561987,
+            "case": "S6_-1_+1_+1_+1_+1_+1_50ms",
+            "time_s": 0.025,
+            "q_deg": [
+              0.140625,
+              89.85937499999999,
+              -0.140625,
+              -0.140625,
+              -0.140625,
+              -0.140625
+            ],
+            "max_force_N": 9.774204081365486,
+            "max_moment_Nm": 1.121606629359894,
+            "max_local_N_N": 0.41649329148264885,
+            "max_local_V_N": 9.774203422328174,
+            "max_local_T_Nm": 0.012830234556495812,
+            "max_local_bending_Nm": 1.121586941308953
+          },
+          {
+            "joint": "J6",
+            "peak_servo_kgfcm": 0.07148370854819358,
+            "advertised_peak_kgfcm": 1.8,
+            "stall_peak_ratio": 25.180562628286957,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 24.55104856257978,
+            "case": "roll4-90_roll6-90_1_1_1_-1_-1_-1_50ms",
+            "time_s": 0.025,
+            "q_deg": [
+              -0.140625,
+              89.85937499999999,
+              -0.140625,
+              -89.85937499999999,
+              0.140625,
+              -89.85937499999999
+            ],
+            "max_force_N": 8.106183337180948,
+            "max_moment_Nm": 0.5562825140915307,
+            "max_local_N_N": 0.35018073920524045,
+            "max_local_V_N": 8.10617091334775,
+            "max_local_T_Nm": 0.007010157104341426,
+            "max_local_bending_Nm": 0.5562810816444367
+          }
+        ]
+      },
+      "pipes": [
+        {
+          "section": "PVC1",
+          "normal_nominal_MPa": 4.899871866063324,
+          "shear_envelope_MPa": 0.40448231586467764,
+          "case": "S6_+1_+1_+1_-1_+1_+1_50ms",
+          "time_s": 0.025,
+          "note": "Seccion libre25mm: corte por grafo/centroides; flexion+axial, torsion+cortante2V/A. Sin contacto o admisible PVC asignado."
+        },
+        {
+          "section": "PVC2",
+          "normal_nominal_MPa": 2.6830141578336293,
+          "shear_envelope_MPa": 0.2527016545485869,
+          "case": "S6_+1_+1_+1_-1_+1_+1_50ms",
+          "time_s": 0.025,
+          "note": "Seccion libre25mm: corte por grafo/centroides; flexion+axial, torsion+cortante2V/A. Sin contacto o admisible PVC asignado."
+        }
+      ],
+      "static_tipping_sensitivity": {
+        "assumption": "Linea de vuelco hipotetica y=b; CG del auto sin brazo y=0. Sin factor ni dinamica. b no medido.",
+        "chassis_mass_min_g_for_halfspan": {
+          "60": 2396.718542946437,
+          "80": 1108.9307242017042,
+          "100": 336.2580329548643
+        }
+      }
+    },
+    {
+      "name": "G_reforzado_206g_GX",
+      "swaps": {
+        "J2": "DS150_206g",
+        "J3": "DS150_206g",
+        "J4": "GX70",
+        "J5": "GX70",
+        "J7": "MG92B"
+      },
+      "hv": false,
+      "mounts": true,
+      "shift": [
+        0,
+        0,
+        0
+      ],
+      "note": "50g por montaje; 330g acero hombro adicionales sin descontar PLA; 200g potencia fija en base",
+      "mass_g": 3519.432732032495,
+      "delta_mass_g": 1119.0000000000002,
+      "cg_mm": [
+        -20.59288152780208,
+        100.78763408158233,
+        150.3856597573228
+      ],
+      "scenarios": {
+        "200": [
+          {
+            "joint": "J1",
+            "peak_servo_kgfcm": 6.169587648912128,
+            "advertised_peak_kgfcm": 63.0,
+            "stall_peak_ratio": 10.211379363596313,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 9.956094879506404,
+            "case": "roll4+90_roll6+90_-1_-1_1_1_-1_1_200ms",
+            "time_s": 0.1,
+            "q_deg": [
+              0.5625,
+              90.5625,
+              -0.5625,
+              89.4375,
+              0.5625,
+              89.4375
+            ],
+            "max_force_N": 29.14655700470225,
+            "max_moment_Nm": 4.8872210023501355,
+            "max_local_N_N": 29.102559178721556,
+            "max_local_V_N": 1.8630909039537187,
+            "max_local_T_Nm": 0.6050298671720412,
+            "max_local_bending_Nm": 4.860309211836457
+          },
+          {
+            "joint": "J2",
+            "peak_servo_kgfcm": 28.564391459606927,
+            "advertised_peak_kgfcm": 125.0,
+            "stall_peak_ratio": 4.376077823214376,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 3.659454636051199,
+            "case": "S6_+1_+1_+1_-1_+1_-1_200ms",
+            "time_s": 0.1,
+            "q_deg": [
+              -0.5625,
+              89.4375,
+              -0.5625,
+              0.5625,
+              -0.5625,
+              0.5625
+            ],
+            "max_force_N": 21.66553218031435,
+            "max_moment_Nm": 4.808444194106576,
+            "max_local_N_N": 1.457932876545756,
+            "max_local_V_N": 21.665519951908646,
+            "max_local_T_Nm": 0.453161508407301,
+            "max_local_bending_Nm": 4.788977759945722
+          },
+          {
+            "joint": "J3",
+            "peak_servo_kgfcm": 25.50427417094121,
+            "advertised_peak_kgfcm": 125.0,
+            "stall_peak_ratio": 4.9011392820745785,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 4.559345709606744,
+            "case": "S6_+1_+1_+1_-1_+1_-1_200ms",
+            "time_s": 0.1,
+            "q_deg": [
+              -0.5625,
+              89.4375,
+              -0.5625,
+              0.5625,
+              -0.5625,
+              0.5625
+            ],
+            "max_force_N": 13.37471923657632,
+            "max_moment_Nm": 2.5216098777590665,
+            "max_local_N_N": 1.5776553557149706,
+            "max_local_V_N": 13.374016184647207,
+            "max_local_T_Nm": 0.1482905493390158,
+            "max_local_bending_Nm": 2.5184651860028953
+          },
+          {
+            "joint": "J4",
+            "peak_servo_kgfcm": 1.605451317996181,
+            "advertised_peak_kgfcm": 63.0,
+            "stall_peak_ratio": 39.241301990167145,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 38.099439191636186,
+            "case": "roll4+0_roll6+90_-1_1_1_-1_-1_1_200ms",
+            "time_s": 0.09,
+            "q_deg": [
+              0.7237312499999997,
+              89.27626874999999,
+              -0.7237312499999997,
+              0.7237312499999997,
+              0.7237312499999997,
+              89.27626874999999
+            ],
+            "max_force_N": 9.181374683477728,
+            "max_moment_Nm": 1.1320622377029503,
+            "max_local_N_N": 1.1196284119930247,
+            "max_local_V_N": 9.181347083543171,
+            "max_local_T_Nm": 0.14169689250864523,
+            "max_local_bending_Nm": 1.1242684716602893
+          },
+          {
+            "joint": "J5",
+            "peak_servo_kgfcm": 6.544294212402234,
+            "advertised_peak_kgfcm": 63.0,
+            "stall_peak_ratio": 9.626706556164198,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 9.372213723413413,
+            "case": "S6_-1_+1_+1_+1_+1_+1_200ms",
+            "time_s": 0.1,
+            "q_deg": [
+              0.5625,
+              89.4375,
+              -0.5625,
+              -0.5625,
+              -0.5625,
+              -0.5625
+            ],
+            "max_force_N": 5.915186630264015,
+            "max_moment_Nm": 0.6464791229681264,
+            "max_local_N_N": 0.9714266281972429,
+            "max_local_V_N": 5.914639235886921,
+            "max_local_T_Nm": 0.008955218538496568,
+            "max_local_bending_Nm": 0.6464723590114754
+          },
+          {
+            "joint": "J6",
+            "peak_servo_kgfcm": 0.05361047496027222,
+            "advertised_peak_kgfcm": 1.8,
+            "stall_peak_ratio": 33.57552794176663,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 32.61065120754011,
+            "case": "roll4+0_roll6+90_-1_1_1_-1_1_1_200ms",
+            "time_s": 0.09,
+            "q_deg": [
+              0.7237312499999997,
+              89.27626874999999,
+              -0.7237312499999997,
+              0.7237312499999997,
+              -0.7237312499999997,
+              89.27626874999999
+            ],
+            "max_force_N": 4.86538772615769,
+            "max_moment_Nm": 0.3071428825819658,
+            "max_local_N_N": 0.8049144644795402,
+            "max_local_V_N": 4.865033112872958,
+            "max_local_T_Nm": 0.005257391642691535,
+            "max_local_bending_Nm": 0.30714176844869556
+          }
+        ],
+        "100": [
+          {
+            "joint": "J1",
+            "peak_servo_kgfcm": 12.340548121841229,
+            "advertised_peak_kgfcm": 63.0,
+            "stall_peak_ratio": 5.105121699456596,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 4.977493656970181,
+            "case": "roll4+90_roll6+90_-1_-1_1_1_-1_1_100ms",
+            "time_s": 0.05,
+            "q_deg": [
+              0.28125,
+              90.28125,
+              -0.28125,
+              89.71875,
+              0.28125,
+              89.71875
+            ],
+            "max_force_N": 31.83317368004213,
+            "max_moment_Nm": 5.825573647729313,
+            "max_local_N_N": 31.673281628476474,
+            "max_local_V_N": 3.7005877535901144,
+            "max_local_T_Nm": 1.210194362390543,
+            "max_local_bending_Nm": 5.73603875417655
+          },
+          {
+            "joint": "J2",
+            "peak_servo_kgfcm": 33.844785142079026,
+            "advertised_peak_kgfcm": 125.0,
+            "stall_peak_ratio": 3.6933311727421256,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 3.1446879933474134,
+            "case": "S6_+1_+1_+1_-1_+1_-1_100ms",
+            "time_s": 0.05,
+            "q_deg": [
+              -0.28125,
+              89.71875,
+              -0.28125,
+              0.28125,
+              -0.28125,
+              0.28125
+            ],
+            "max_force_N": 24.38140446633385,
+            "max_moment_Nm": 5.749241347642981,
+            "max_local_N_N": 1.0595738019505592,
+            "max_local_V_N": 24.380686050695665,
+            "max_local_T_Nm": 0.498554943885326,
+            "max_local_bending_Nm": 5.731321794459059
+          },
+          {
+            "joint": "J3",
+            "peak_servo_kgfcm": 31.062428594381743,
+            "advertised_peak_kgfcm": 125.0,
+            "stall_peak_ratio": 4.024154119829791,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 3.7599211658420697,
+            "case": "S6_+1_+1_+1_-1_+1_-1_100ms",
+            "time_s": 0.05,
+            "q_deg": [
+              -0.28125,
+              89.71875,
+              -0.28125,
+              0.28125,
+              -0.28125,
+              0.28125
+            ],
+            "max_force_N": 15.908526916770144,
+            "max_moment_Nm": 3.1051828232840872,
+            "max_local_N_N": 1.0066208111878578,
+            "max_local_V_N": 15.908409652817388,
+            "max_local_T_Nm": 0.18168842489524056,
+            "max_local_bending_Nm": 3.1019767181034172
+          },
+          {
+            "joint": "J4",
+            "peak_servo_kgfcm": 1.9118939345251837,
+            "advertised_peak_kgfcm": 63.0,
+            "stall_peak_ratio": 32.95161873906251,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 32.05684079281185,
+            "case": "roll4+0_roll6+90_-1_1_1_-1_-1_1_100ms",
+            "time_s": 0.05,
+            "q_deg": [
+              0.28125,
+              89.71875,
+              -0.28125,
+              0.28125,
+              0.28125,
+              89.71875
+            ],
+            "max_force_N": 11.289946613284608,
+            "max_moment_Nm": 1.424949537067644,
+            "max_local_N_N": 0.7457961613638472,
+            "max_local_V_N": 11.289726013322106,
+            "max_local_T_Nm": 0.16874347187710256,
+            "max_local_bending_Nm": 1.4166520097447184
+          },
+          {
+            "joint": "J5",
+            "peak_servo_kgfcm": 8.254132333748899,
+            "advertised_peak_kgfcm": 63.0,
+            "stall_peak_ratio": 7.632540581208053,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 7.441727066677851,
+            "case": "S6_-1_+1_+1_+1_+1_+1_100ms",
+            "time_s": 0.05,
+            "q_deg": [
+              0.28125,
+              89.71875,
+              -0.28125,
+              -0.28125,
+              -0.28125,
+              -0.28125
+            ],
+            "max_force_N": 7.440867128868814,
+            "max_moment_Nm": 0.8258247478051389,
+            "max_local_N_N": 0.6246708818334649,
+            "max_local_V_N": 7.440833212598518,
+            "max_local_T_Nm": 0.010952653754984375,
+            "max_local_bending_Nm": 0.8258069491325996
+          },
+          {
+            "joint": "J6",
+            "peak_servo_kgfcm": 0.06582274027174395,
+            "advertised_peak_kgfcm": 1.8,
+            "stall_peak_ratio": 27.34617234969014,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 26.599748699966252,
+            "case": "roll4+0_roll6+90_-1_1_1_-1_1_1_100ms",
+            "time_s": 0.05,
+            "q_deg": [
+              0.28125,
+              89.71875,
+              -0.28125,
+              0.28125,
+              -0.28125,
+              89.71875
+            ],
+            "max_force_N": 6.189227653497471,
+            "max_moment_Nm": 0.39539762971583703,
+            "max_local_N_N": 0.5248034627047734,
+            "max_local_V_N": 6.189218317580033,
+            "max_local_T_Nm": 0.006455005758858979,
+            "max_local_bending_Nm": 0.3953955244928558
+          }
+        ],
+        "50": [
+          {
+            "joint": "J1",
+            "peak_servo_kgfcm": 24.681117199646184,
+            "advertised_peak_kgfcm": 63.0,
+            "stall_peak_ratio": 2.552558682428814,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 2.4887447153680933,
+            "case": "roll4+90_roll6+90_-1_-1_1_1_-1_1_50ms",
+            "time_s": 0.025,
+            "q_deg": [
+              0.140625,
+              90.140625,
+              -0.140625,
+              89.85937499999999,
+              0.140625,
+              89.85937499999999
+            ],
+            "max_force_N": 37.36234471750314,
+            "max_moment_Nm": 7.780947967384125,
+            "max_local_N_N": 36.81278742491618,
+            "max_local_V_N": 7.378549402291858,
+            "max_local_T_Nm": 2.4203907798591024,
+            "max_local_bending_Nm": 7.509014632587081
+          },
+          {
+            "joint": "J2",
+            "peak_servo_kgfcm": 44.41051195230466,
+            "advertised_peak_kgfcm": 125.0,
+            "stall_peak_ratio": 2.8146489311865093,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 2.4229369817843933,
+            "case": "S6_+1_+1_+1_-1_+1_-1_50ms",
+            "time_s": 0.025,
+            "q_deg": [
+              -0.140625,
+              89.85937499999999,
+              -0.140625,
+              0.140625,
+              -0.140625,
+              0.140625
+            ],
+            "max_force_N": 29.98038096744842,
+            "max_moment_Nm": 7.686726922823722,
+            "max_local_N_N": 1.3369796616151575,
+            "max_local_V_N": 29.978033146153546,
+            "max_local_T_Nm": 0.5899025664710473,
+            "max_local_bending_Nm": 7.670558581569958
+          },
+          {
+            "joint": "J3",
+            "peak_servo_kgfcm": 42.18639673448609,
+            "advertised_peak_kgfcm": 125.0,
+            "stall_peak_ratio": 2.96304045085264,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 2.773277912535961,
+            "case": "S6_+1_+1_+1_-1_+1_-1_50ms",
+            "time_s": 0.025,
+            "q_deg": [
+              -0.140625,
+              89.85937499999999,
+              -0.140625,
+              0.140625,
+              -0.140625,
+              0.140625
+            ],
+            "max_force_N": 21.124067679313516,
+            "max_moment_Nm": 4.303392803749728,
+            "max_local_N_N": 0.8840076634412578,
+            "max_local_V_N": 21.12395129536771,
+            "max_local_T_Nm": 0.2491033846926195,
+            "max_local_bending_Nm": 4.298705867656349
+          },
+          {
+            "joint": "J4",
+            "peak_servo_kgfcm": 2.532490419273644,
+            "advertised_peak_kgfcm": 63.0,
+            "stall_peak_ratio": 24.876698257389396,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 24.25478080095466,
+            "case": "S6_-1_+1_+1_-1_-1_-1_50ms",
+            "time_s": 0.025,
+            "q_deg": [
+              0.140625,
+              89.85937499999999,
+              -0.140625,
+              0.140625,
+              0.140625,
+              0.140625
+            ],
+            "max_force_N": 15.61395867126326,
+            "max_moment_Nm": 2.0241626805450967,
+            "max_local_N_N": 0.6310262379141128,
+            "max_local_V_N": 15.613225532719795,
+            "max_local_T_Nm": 0.22351722453152892,
+            "max_local_bending_Nm": 2.0148118165161195
+          },
+          {
+            "joint": "J5",
+            "peak_servo_kgfcm": 11.672324145079177,
+            "advertised_peak_kgfcm": 63.0,
+            "stall_peak_ratio": 5.397382664921927,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 5.262448098298878,
+            "case": "S6_-1_+1_+1_+1_+1_+1_50ms",
+            "time_s": 0.025,
+            "q_deg": [
+              0.140625,
+              89.85937499999999,
+              -0.140625,
+              -0.140625,
+              -0.140625,
+              -0.140625
+            ],
+            "max_force_N": 10.559024438615413,
+            "max_moment_Nm": 1.1916562515751419,
+            "max_local_N_N": 0.45000944757266303,
+            "max_local_V_N": 10.55902345332524,
+            "max_local_T_Nm": 0.01495314473379931,
+            "max_local_bending_Nm": 1.1916299346185164
+          },
+          {
+            "joint": "J6",
+            "peak_servo_kgfcm": 0.09027141464293602,
+            "advertised_peak_kgfcm": 1.8,
+            "stall_peak_ratio": 19.939866979151798,
+            "passes_preliminary_2x": true,
+            "linear_speed_margin_sensitivity": 19.440452596679624,
+            "case": "roll4+0_roll6+90_-1_1_1_-1_1_1_50ms",
+            "time_s": 0.025,
+            "q_deg": [
+              0.140625,
+              89.85937499999999,
+              -0.140625,
+              0.140625,
+              -0.140625,
+              89.85937499999999
+            ],
+            "max_force_N": 8.890988701694953,
+            "max_moment_Nm": 0.5753166395814298,
+            "max_local_N_N": 0.3836968952952546,
+            "max_local_V_N": 8.890986649127573,
+            "max_local_T_Nm": 0.008852601684081488,
+            "max_local_bending_Nm": 0.5753110481976403
+          }
+        ]
+      },
+      "pipes": [
+        {
+          "section": "PVC1",
+          "normal_nominal_MPa": 5.5723685129344505,
+          "shear_envelope_MPa": 0.5571798010503277,
+          "case": "S6_+1_+1_+1_-1_+1_+1_50ms",
+          "time_s": 0.025,
+          "note": "Seccion libre25mm: corte por grafo/centroides; flexion+axial, torsion+cortante2V/A. Sin contacto o admisible PVC asignado."
+        },
+        {
+          "section": "PVC2",
+          "normal_nominal_MPa": 3.0483010648575477,
+          "shear_envelope_MPa": 0.3222828631692991,
+          "case": "S6_+1_+1_+1_-1_+1_+1_50ms",
+          "time_s": 0.025,
+          "note": "Seccion libre25mm: corte por grafo/centroides; flexion+axial, torsion+cortante2V/A. Sin contacto o admisible PVC asignado."
+        }
+      ],
+      "static_tipping_sensitivity": {
+        "assumption": "Linea de vuelco hipotetica y=b; CG del auto sin brazo y=0. Sin factor ni dinamica. b no medido.",
+        "chassis_mass_min_g_for_halfspan": {
+          "60": 2392.4889074814164,
+          "80": 914.5084976029386,
+          "100": 27.72025167585189
+        }
+      }
+    }
+  ]
+}

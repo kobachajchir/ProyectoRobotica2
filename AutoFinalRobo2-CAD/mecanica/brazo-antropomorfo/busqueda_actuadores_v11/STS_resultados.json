@@ -1,0 +1,91 @@
+{
+  "results": [
+    {
+      "scope": "Misma familia de finales v10, solo frenadas50ms; seis maximos de catalogo+10%, masa80g por motor y presupuestos de reductor. No workspace continuo.",
+      "name": "STS_presupuesto_80g",
+      "mass_g": 3919.0327320324955,
+      "cg_mm": [
+        -13.185341916211987,
+        110.02283822085836,
+        148.02014592080835
+      ],
+      "states": 5502,
+      "expanded_J1_states": 99378,
+      "trajectories": 262,
+      "ratios": [
+        12.0,
+        28.0,
+        24.0,
+        4.0,
+        12.0,
+        4.0
+      ],
+      "reducer_mass_budget_g": [
+        300.0,
+        300.0,
+        300.0,
+        75.0,
+        150.0,
+        75.0
+      ],
+      "eta": 0.5,
+      "initial_output_speed_deg_s": [
+        24.75,
+        10.607142857142858,
+        12.375,
+        74.25,
+        24.75,
+        74.25
+      ],
+      "peak_motor_kgfcm": [
+        4.0517485271962785,
+        4.739299152341828,
+        2.9384018803905985,
+        1.1134218096201947,
+        1.3715295647084567,
+        0.09052240076543987
+      ],
+      "rated_torque_ratio": [
+        2.4680702498878384,
+        2.1100166245168768,
+        3.403210454885331,
+        8.981322184995777,
+        7.29112974106809,
+        110.46989381017228
+      ],
+      "max_joint_force_N": [
+        34.97318985426084,
+        27.20735172477049,
+        20.12574326612699,
+        14.29795494314076,
+        9.56909550291805,
+        5.8613824938373424
+      ],
+      "max_joint_moment_Nm": [
+        6.871172395340786,
+        6.805130893663987,
+        3.6459443046539195,
+        1.6099698793892503,
+        0.8547502553784414,
+        0.3860214135475085
+      ],
+      "fixed_base_extra_mass_g": 340.0,
+      "fixed_extra_cg_world_mm": [
+        9.438574453113127,
+        -14.0,
+        35.062833875331464
+      ],
+      "frame_extra_mass_g": 140.0,
+      "note": "Fixed340g = reductorfijo150 + motor80-90 + fuente200; frame140g excluye fuente en piso. CG fuente x=y=0.",
+      "static_tipping_sensitivity": {
+        "assumption": "Linea de vuelco hipotetica y=b; CG del auto sin brazo y=0. Sin factor ni dinamica. b no medido.",
+        "chassis_mass_min_g_for_halfspan": {
+          "60": 3267.352338945168,
+          "80": 1470.756071200752,
+          "100": 392.7983105541026
+        }
+      },
+      "scenarios": {}
+    }
+  ]
+}
