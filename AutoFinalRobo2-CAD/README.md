@@ -4,6 +4,8 @@
 
 # AutoFinalRobo2-CAD
 
+**AFR2-20261028-04, brazo v09:** [J1 GX3270BLS, housing bajo y PLA PrintaLot](mecanica/brazo-antropomorfo/revision_v09/README.md), con [maestro editable](mecanica/brazo-antropomorfo/AFR2_Brazo_PVC32_AGV_v09_J1_GX3270BLS.f3d) y componentes independientes. Eje/brida metálica, cartucho desmontable6000 y correcciones de interferencias;3.087 configuraciones sin penetraciones reportables y79.651 estados de cargas/secciones. Predimensionado bajo hipótesis; PLA FDM, restantes actuadores y estabilidad del auto aún condicionados. Conserva v08; sin FEA ni ensayo físico.
+
 **AFR2-20261028-01:** [comprobaciones de J1/uniones sobre v08](mecanica/brazo-antropomorfo/analisis_J1_uniones/README.md). 35 secciones, 7.075 estados, apoyos/eje, bastidor, acople D y anclajes; requisitos de resistencia sin material FDM asignado. Propuesta de brida, eje Ø10 y separación16 mm a la misma altura, con estudio parcial de espacio. No hay ensamble nuevo ni FEA de sólidos/contactos; maestro v08 sin modificar.
 
 **AFR2-20261027-21, brazo vigente v08:** [housing GX3270BLS y nueva revisión geométrica](mecanica/brazo-antropomorfo/revision_v08/README.md), con [ensamble F3D](mecanica/brazo-antropomorfo/AFR2_Brazo_PVC32_AGV_v08_Housing.f3d) y housing independiente. Reservas de montaje corregidas, 3.141 configuraciones sin penetraciones reportables, seis ejes/doce rodamientos completos. Masas/cargas actualizadas; sin FEA ni aceptación física de 200 g/frenada. Sustituye la geometría vigente v07 conservando su maestro.

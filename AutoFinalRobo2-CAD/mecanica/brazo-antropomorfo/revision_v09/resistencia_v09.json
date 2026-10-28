@@ -1,0 +1,593 @@
+{
+  "scope": "Analisis nominal de secciones nativas y grupos rigidos. Sin FEA, contacto ni aprobacion FDM. Frenadas individuales y64 signos simultaneos de6 ejes a30gr/s, 200g, 200/100/50ms.",
+  "printed_material": {
+    "name": "PLA PrintaLot",
+    "density_g_cm3": 1.24,
+    "E_reference_MPa": 1500,
+    "nu_assumed": 0.38,
+    "strength_assigned": false,
+    "note": "Current official-linked TDS v1 12FEB17 reports ambiguous elastic modulus3.6MPa. It is not silently changed to GPa; E1500 is only a stiffness hypothesis. Published53MPa D882 is not FDM Z-direction strength."
+  },
+  "source_states": 4411,
+  "source_cases": 211,
+  "coupled_sign_combinations": 64,
+  "evaluated_states": 79651,
+  "peaks": {
+    "bearing_P0_N": {
+      "case": "S6_-1_+1_+1_-1_+1_+1_50ms",
+      "time_s": 0.025,
+      "yaw_deg": -90,
+      "bearing": 1,
+      "C0_N": 1960,
+      "s0": 4.382586992283458,
+      "pressure_projected_MPa": 2.1501174853273635,
+      "value": 447.22443694809164
+    },
+    "shaft_vm_reference_MPa": {
+      "case": "S6_-1_+1_+1_-1_+1_-1_50ms",
+      "time_s": 0.025,
+      "yaw_deg": -80,
+      "z_mm": -8.9863,
+      "sigma_nominal_MPa": 60.35327535535126,
+      "torsion_surrogate_MPa": 9.267908772161244,
+      "torsion_reference_diameters_mm": [
+        9.6,
+        3.4
+      ],
+      "required_yield_n2_Kt2_MPa": 249.8063328307322,
+      "value": 62.45158320768305
+    },
+    "housing_normal_nominal_MPa": {
+      "case": "S6_+1_+1_+1_-1_+1_-1_50ms",
+      "time_s": 0.025,
+      "yaw_deg": 90,
+      "z_mm": 44.0137,
+      "required_normal_n2_Kt2_MPa": 9.98020100412873,
+      "value": 2.4950502510321826
+    },
+    "housing_cap_translation_mm": {
+      "case": "S6_-1_+1_+1_-1_+1_-1_50ms",
+      "time_s": 0.025,
+      "yaw_deg": 80,
+      "value": 0.09490440349566888
+    },
+    "housing_cap_rotation_deg": {
+      "case": "S6_-1_+1_+1_-1_+1_+1_50ms",
+      "time_s": 0.025,
+      "yaw_deg": -90,
+      "value": 0.2454589586143387
+    },
+    "housing_frame_normal_nominal_MPa": {
+      "case": "S6_+1_+1_+1_-1_+1_-1_50ms",
+      "time_s": 0.025,
+      "yaw_deg": 90,
+      "wall": "izquierda",
+      "z_mm": 59.0137,
+      "required_normal_n2_Kt2_MPa": 12.58430593846876,
+      "cap_translation_mm": [
+        -0.009238240914489774,
+        0.09029755561039797,
+        -0.0027312123423773034
+      ],
+      "cap_rotation_deg": [
+        -0.24005126073037783,
+        -0.006553003705795308,
+        0.01637197399642024
+      ],
+      "value": 3.14607648461719
+    },
+    "flange_M4_tension_N": {
+      "case": "S6_+1_+1_+1_-1_+1_-1_50ms",
+      "time_s": 0.025,
+      "yaw_deg": -80,
+      "value": 86.49596728812773
+    },
+    "flange_M4_shear_N": {
+      "case": "S6_-1_-1_-1_-1_-1_-1_50ms",
+      "time_s": 0.025,
+      "yaw_deg": -80,
+      "value": 16.937546711600216
+    },
+    "flange_M4_vm_service_MPa": {
+      "case": "S6_+1_+1_+1_-1_+1_-1_50ms",
+      "time_s": 0.025,
+      "yaw_deg": -80,
+      "value": 10.284268538762
+    },
+    "flange_M4_PLA_washer_pressure_MPa": {
+      "case": "S6_+1_+1_+1_-1_+1_-1_50ms",
+      "time_s": 0.025,
+      "yaw_deg": -80,
+      "value": 2.514959717089821
+    },
+    "flange_sleeve_PLA_hole_bearing_MPa": {
+      "case": "S6_-1_-1_-1_-1_-1_-1_50ms",
+      "time_s": 0.025,
+      "yaw_deg": -80,
+      "value": 0.3528655564916712
+    },
+    "cart_M3_tension_N": {
+      "case": "S6_+1_+1_+1_-1_+1_-1_50ms",
+      "time_s": 0.025,
+      "yaw_deg": 90,
+      "value": 162.33305396121096
+    },
+    "cart_M3_shear_N": {
+      "case": "S6_-1_-1_-1_-1_-1_-1_50ms",
+      "time_s": 0.025,
+      "yaw_deg": -30,
+      "value": 13.2342311901352
+    },
+    "cart_M3_washer_pressure_MPa": {
+      "case": "S6_+1_+1_+1_-1_+1_-1_50ms",
+      "time_s": 0.025,
+      "yaw_deg": 90,
+      "value": 5.332530023762664
+    },
+    "clip_axial_demand_bound_N": {
+      "case": "S6_-1_+1_+1_-1_+1_+1_50ms",
+      "time_s": 0.025,
+      "yaw_deg": -90,
+      "value": 25.427289775732202
+    },
+    "motor_demand_kgfcm": {
+      "case": "S6_+1_+1_+1_+1_-1_+1_50ms",
+      "time_s": 0.025,
+      "yaw_deg": -80,
+      "value": 16.2975073063199
+    },
+    "servo_M3_shear_N": {
+      "case": "S6_+1_+1_+1_+1_-1_+1_50ms",
+      "time_s": 0.025,
+      "yaw_deg": -80,
+      "value": 16.298387258344544
+    },
+    "horn_twoM3_shear_N": {
+      "case": "S6_+1_+1_+1_+1_-1_+1_50ms",
+      "time_s": 0.025,
+      "yaw_deg": -80,
+      "value": 106.54930001701472
+    },
+    "anchor_tension_N": {
+      "case": "S6_-1_+1_+1_-1_+1_+1_50ms",
+      "time_s": 0.025,
+      "yaw_deg": -80,
+      "bolt": "A",
+      "model": "At_L",
+      "value": 84.26480431036153
+    }
+  },
+  "static_peaks": {
+    "bearing_P0_N": {
+      "case": "estatica",
+      "time_s": 0,
+      "yaw_deg": 30,
+      "bearing": 0,
+      "C0_N": 1960,
+      "s0": 8.679720210261536,
+      "pressure_projected_MPa": 1.085642934888219,
+      "value": 225.81373045674957
+    },
+    "shaft_vm_reference_MPa": {
+      "case": "estatica",
+      "time_s": 0,
+      "yaw_deg": -50,
+      "z_mm": -8.9863,
+      "sigma_nominal_MPa": 30.591309379626,
+      "torsion_surrogate_MPa": 0.0,
+      "torsion_reference_diameters_mm": [
+        9.6,
+        3.4
+      ],
+      "required_yield_n2_Kt2_MPa": 122.365237518504,
+      "value": 30.591309379626
+    },
+    "housing_normal_nominal_MPa": {
+      "case": "estatica",
+      "time_s": 0,
+      "yaw_deg": 90,
+      "z_mm": 44.0137,
+      "required_normal_n2_Kt2_MPa": 5.0556497334778205,
+      "value": 1.2639124333694551
+    },
+    "housing_cap_translation_mm": {
+      "case": "estatica",
+      "time_s": 0,
+      "yaw_deg": 90,
+      "value": 0.047675559967285425
+    },
+    "housing_cap_rotation_deg": {
+      "case": "estatica",
+      "time_s": 0,
+      "yaw_deg": 90,
+      "value": 0.12305812704619112
+    },
+    "housing_frame_normal_nominal_MPa": {
+      "case": "estatica",
+      "time_s": 0,
+      "yaw_deg": 90,
+      "wall": "izquierda",
+      "z_mm": 44.0137,
+      "required_normal_n2_Kt2_MPa": 5.244415899374687,
+      "cap_translation_mm": [
+        -0.0015261759324165965,
+        0.047627867720738105,
+        -0.0014886307780690418
+      ],
+      "cap_rotation_deg": [
+        -0.12304397432432654,
+        -0.001862822393981998,
+        0.00011361038450257925
+      ],
+      "value": 1.3111039748436717
+    },
+    "flange_M4_tension_N": {
+      "case": "estatica",
+      "time_s": 0,
+      "yaw_deg": -80,
+      "value": 40.44980096254243
+    },
+    "flange_M4_shear_N": {
+      "case": "estatica",
+      "time_s": 0,
+      "yaw_deg": -90,
+      "value": 0.0
+    },
+    "flange_M4_vm_service_MPa": {
+      "case": "estatica",
+      "time_s": 0,
+      "yaw_deg": -80,
+      "value": 4.607038834002555
+    },
+    "flange_M4_PLA_washer_pressure_MPa": {
+      "case": "estatica",
+      "time_s": 0,
+      "yaw_deg": -80,
+      "value": 1.1761198027443587
+    },
+    "flange_sleeve_PLA_hole_bearing_MPa": {
+      "case": "estatica",
+      "time_s": 0,
+      "yaw_deg": -90,
+      "value": 0.0
+    },
+    "cart_M3_tension_N": {
+      "case": "estatica",
+      "time_s": 0,
+      "yaw_deg": 90,
+      "value": 80.1950791644121
+    },
+    "cart_M3_shear_N": {
+      "case": "estatica",
+      "time_s": 0,
+      "yaw_deg": -90,
+      "value": 0.0
+    },
+    "cart_M3_washer_pressure_MPa": {
+      "case": "estatica",
+      "time_s": 0,
+      "yaw_deg": 90,
+      "value": 2.634353614171734
+    },
+    "clip_axial_demand_bound_N": {
+      "case": "estatica",
+      "time_s": 0,
+      "yaw_deg": -90,
+      "value": 17.518292538909066
+    },
+    "motor_demand_kgfcm": {
+      "case": "estatica",
+      "time_s": 0,
+      "yaw_deg": -90,
+      "value": 0.0
+    },
+    "servo_M3_shear_N": {
+      "case": "estatica",
+      "time_s": 0,
+      "yaw_deg": -90,
+      "value": 0.0
+    },
+    "horn_twoM3_shear_N": {
+      "case": "estatica",
+      "time_s": 0,
+      "yaw_deg": -90,
+      "value": 0.0
+    },
+    "anchor_tension_N": {
+      "case": "estatica",
+      "time_s": 0,
+      "yaw_deg": -90,
+      "bolt": "A",
+      "model": "At_L",
+      "value": 42.328200142879254
+    }
+  },
+  "coupled_joint_peaks": {
+    "J1": {
+      "joint": "J1",
+      "point_m": [
+        0.0,
+        -0.014000000000000002,
+        0.096
+      ],
+      "force_N": [
+        0.39123605535962686,
+        -4.7212149415650035,
+        23.87312513561163
+      ],
+      "moment_Nm": [
+        0.8072927228123239,
+        -5.058693995681306,
+        -1.5982395002552208
+      ],
+      "section_local_z_longitudinal": {
+        "N_N": 23.87312513561163,
+        "Vx_N": 0.40282247016274203,
+        "Vy_N": -4.720240484657745,
+        "T_Nm": -1.5982395002552208,
+        "Mx_Nm": 0.8197061818531904,
+        "My_Nm": -5.056697366629676
+      },
+      "axis_torque_Nm": -1.5982395002552208,
+      "bending_Nm": 5.122704996605585,
+      "servo_torque_kgfcm": 16.297507306319904,
+      "case": "S6_+1_+1_+1_+1_-1_+1_50ms",
+      "time_s": 0.025,
+      "q_deg": [
+        -0.140625,
+        89.85937499999999,
+        -0.140625,
+        -0.140625,
+        0.140625,
+        -0.140625
+      ]
+    },
+    "J2": {
+      "joint": "J2",
+      "point_m": [
+        0.0,
+        -0.014000000000000002,
+        0.209
+      ],
+      "force_N": [
+        0.20941159365356968,
+        -4.655471517691239,
+        20.24762485078382
+      ],
+      "moment_Nm": [
+        0.20751225611075377,
+        -5.747057175842608,
+        -1.5679162359593872
+      ],
+      "section_local_z_longitudinal": {
+        "N_N": 0.2705316306160891,
+        "Vx_N": -20.24702185020728,
+        "Vy_N": -4.654943522722318,
+        "T_Nm": 0.21776810834995608,
+        "Mx_Nm": 1.568455442903174,
+        "My_Nm": -5.746530554729377
+      },
+      "axis_torque_Nm": -5.746530554729377,
+      "bending_Nm": 1.583501002647902,
+      "servo_torque_kgfcm": 34.46959044135643,
+      "case": "S6_+1_+1_+1_-1_+1_-1_50ms",
+      "time_s": 0.025,
+      "q_deg": [
+        -0.140625,
+        89.85937499999999,
+        -0.140625,
+        0.140625,
+        -0.140625,
+        0.140625
+      ]
+    },
+    "J3": {
+      "joint": "J3",
+      "point_m": [
+        0.12999921689087168,
+        -0.01431906672251987,
+        0.20931906768353986
+      ],
+      "force_N": [
+        0.047179042990766966,
+        -4.186680054645312,
+        15.75861054550456
+      ],
+      "moment_Nm": [
+        0.1050973033327795,
+        -3.3471978482371267,
+        -0.9531087602191158
+      ],
+      "section_local_z_longitudinal": {
+        "N_N": 0.13480844517260734,
+        "Vx_N": -15.758138660173183,
+        "Vy_N": -4.186551649844454,
+        "T_Nm": 0.10863232997926914,
+        "Mx_Nm": 0.9536534952382472,
+        "My_Nm": -3.346929819270288
+      },
+      "axis_torque_Nm": -3.346929819270288,
+      "bending_Nm": 0.959820802075497,
+      "servo_torque_kgfcm": 34.129186004092,
+      "case": "S6_+1_+1_+1_-1_+1_-1_50ms",
+      "time_s": 0.025,
+      "q_deg": [
+        -0.140625,
+        89.85937499999999,
+        -0.140625,
+        0.140625,
+        -0.140625,
+        0.140625
+      ]
+    },
+    "J4": {
+      "joint": "J4",
+      "point_m": [
+        0.24999740971977039,
+        -0.013386412810280976,
+        0.20990811394049966
+      ],
+      "force_N": [
+        -0.14240590794951236,
+        3.4928922944383234,
+        10.915288142751566
+      ],
+      "moment_Nm": [
+        0.12681454116724458,
+        -1.4066500992992792,
+        0.4907169155610398
+      ],
+      "section_local_z_longitudinal": {
+        "N_N": -0.08025094756283654,
+        "Vx_N": -10.907207035068657,
+        "Vy_N": 3.5200121792434866,
+        "T_Nm": 0.12576902902001705,
+        "Mx_Nm": -0.49355716811156,
+        "My_Nm": -1.4057499756617216
+      },
+      "axis_torque_Nm": 0.12576902902001705,
+      "bending_Nm": 1.4898763949627611,
+      "servo_torque_kgfcm": 1.4249857553578105,
+      "case": "S6_-1_+1_+1_-1_-1_-1_50ms",
+      "time_s": 0.025,
+      "q_deg": [
+        0.140625,
+        89.85937499999999,
+        -0.140625,
+        0.140625,
+        0.140625,
+        0.140625
+      ]
+    },
+    "J5": {
+      "joint": "J5",
+      "point_m": [
+        0.30499658143301567,
+        -0.013251424262814697,
+        0.21017809347493954
+      ],
+      "force_N": [
+        -0.08809536113450095,
+        2.59009860469269,
+        8.938571310860043
+      ],
+      "moment_Nm": [
+        0.00098507967123422,
+        -1.0370925298656157,
+        0.3031262071832057
+      ],
+      "section_local_z_longitudinal": {
+        "N_N": -0.01590522107244871,
+        "Vx_N": -8.945261469580428,
+        "Vy_N": 2.5683599667486403,
+        "T_Nm": 0.0006653947028344984,
+        "Mx_Nm": -0.3005831698527228,
+        "My_Nm": -1.0378326929796902
+      },
+      "axis_torque_Nm": -1.0378326929796902,
+      "bending_Nm": 0.3005839063370183,
+      "servo_torque_kgfcm": 10.582948233899346,
+      "case": "S6_-1_+1_+1_+1_+1_+1_50ms",
+      "time_s": 0.025,
+      "q_deg": [
+        0.140625,
+        89.85937499999999,
+        -0.140625,
+        -0.140625,
+        -0.140625,
+        -0.140625
+      ]
+    },
+    "J6": {
+      "joint": "J6",
+      "point_m": [
+        0.36999462463300686,
+        -0.01490771370100372,
+        0.21065669067567103
+      ],
+      "force_N": [
+        -0.07686183669891865,
+        -2.133334902191997,
+        7.340403611059097
+      ],
+      "moment_Nm": [
+        -0.006400629348281035,
+        -0.5228881096257786,
+        -0.15180608261723536
+      ],
+      "section_local_z_longitudinal": {
+        "N_N": -0.017588889064880014,
+        "Vx_N": -7.330170753929673,
+        "Vy_N": -2.1695248487436674,
+        "T_Nm": -0.006238015384778749,
+        "Mx_Nm": 0.15432923664805495,
+        "My_Nm": -0.5221509397131763
+      },
+      "axis_torque_Nm": -0.006238015384778749,
+      "bending_Nm": 0.5444805938945156,
+      "servo_torque_kgfcm": 0.0636100542466464,
+      "case": "S6_+1_+1_+1_+1_+1_+1_50ms",
+      "time_s": 0.025,
+      "q_deg": [
+        -0.140625,
+        89.85937499999999,
+        -0.140625,
+        -0.140625,
+        -0.140625,
+        -0.140625
+      ]
+    }
+  },
+  "numerical_equilibrium_residuals": {
+    "force_N": 1.0056880367913176e-13,
+    "bending_moment_Nmm": 1.9293296132306226e-12,
+    "drive_torque_route": "Mz reacted separately at motor mounting pattern"
+  },
+  "bearing_centres_mm": [
+    72.5,
+    85.5
+  ],
+  "bearing_spacing_mm": 13.0,
+  "fixed_J1_dead_load_frame": {
+    "force_N": [
+      0.0,
+      0.0,
+      -2.220799327775458
+    ],
+    "moment_at_cap_Nmm": [
+      0.00012630326597093088,
+      14.836407537794772,
+      0.0
+    ],
+    "mass_g": 226.45850803031192,
+    "method": "Actual hardware CGs plus trapezoidal integration of printed wall sections. Referred to rigid cap; self-weight not distributed along beams, conservative axial magnitude sensitivity."
+  },
+  "stall_sensitivity_63kgfcm": {
+    "servo_M3_each_N": 63.00340156175484,
+    "horn_M3_each_N": 411.8793,
+    "flange_M4_each_N": 61.781895000000006
+  },
+  "doubleD_metal_contact_reference": {
+    "engagement_mm": 3.35,
+    "half_chord_mm": 3,
+    "uniform_half_both_faces_at_peak_MPa": 53.009601998514775,
+    "uniform_half_both_faces_at_63kgfcm_MPa": 204.91507462686567,
+    "warning": "Metal-metal simplified contact, not FEA; pressure is not equivalent tensile stress; doubleD torsion not resolved locally"
+  },
+  "flange_sector_sensitivity": {
+    "root_radius_mm": 10,
+    "thickness_mm": 3,
+    "sigma_bending_MPa": 55.06504300568164,
+    "required_yield_n2_Kt2_MPa": 220.26017202272655,
+    "warning": "Four radial cantilever sectors, no plate/contact solution"
+  },
+  "limitations": [
+    "housing whole-section and two-variable-section-beam models; rigid cap/fixed feet, isotropic E1500 and torsion stiffness J=0.5(Ix+Iy) approximate; no exact torsional stress, local contacts or FDM orthotropy",
+    "drive torque at Z60 conservative for lever versus tabs Z43.95; local bank bending still unresolved",
+    "shaft annular torsion reference is not local solution at root/bores/flange; stress concentration factors assumed",
+    "fastener groups omit preload, unilateral contact and prying",
+    "PLA PrintaLot selected by user; FDM profile/orthotropic strength undefined; E1500MPa assumed, not TDS",
+    "no AGV braking, impact, fatigue or creep envelope; coupled cases do not cover every trajectory, speed or joint configuration",
+    "reference bearing mass20g and catalogue C0 do not identify a purchased unit"
+  ]
+}
