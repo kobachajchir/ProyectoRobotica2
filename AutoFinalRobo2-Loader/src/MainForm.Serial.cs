@@ -75,6 +75,7 @@ namespace AFR2Loader
             buttons.Controls.Add(serialFollow); buttons.Controls.Add(serialPause);
             var clear = new Button { Text = "Limpiar vista", Width = 120, Height = 30 }; clear.Click += (s, e) => ClearSerialView(); buttons.Controls.Add(clear);
             var copy = new Button { Text = "Copiar texto", Width = 120, Height = 30 }; copy.Click += (s, e) => CopyText(serialText.Text, copy); buttons.Controls.Add(copy);
+            var convert = new Button { Text = "Conversor HEX / ASCII", Width = 185, Height = 30 }; convert.Click += (s, e) => { if (converterTab != null) tabs.SelectedTab = converterTab; }; buttons.Controls.Add(convert);
             var files = new Button { Text = "Abrir registros", Width = 125, Height = 30 }; files.Click += (s, e) => OpenLogs(); buttons.Controls.Add(files);
             var failure = new Button { Text = "Ver último error", Width = 140, Height = 30 }; failure.Click += (s, e) => ShowLastFailure(); buttons.Controls.Add(failure);
             layout.Controls.Add(buttons, 0, 4);

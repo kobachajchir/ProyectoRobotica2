@@ -1,4 +1,4 @@
-# AFR2 Loader 0.9.1 — conexión con Codex
+# AFR2 Loader 0.9.2 — conexión con Codex
 
 El servidor pertenece al mismo módulo y comparte la sesión del Loader gráfico.
 
@@ -312,3 +312,9 @@ transporte seleccionado: mega_bridge no abre escucha74880 ni exige RESET-GND.
 KEY se mantiene hasta finalizar la operación. No cambia la revisión manual/
 autoaceptación de la sesión ni crea permisos nuevos. Fuente sin ejecutar ni
 compilar esta integración; no se actualiza automáticamente una ventana ya abierta.
+
+## Conversor universal0.9.2
+
+La pestaña Conversor HEX / ASCII es una utilidad GUI local sin asociación a comandos.
+No agrega herramienta MCP, jobs, tráfico serie ni logs del contenido pegado.
+Puede usarse durante una operación sin tocar sus recursos. Fuente sin ejecutar.

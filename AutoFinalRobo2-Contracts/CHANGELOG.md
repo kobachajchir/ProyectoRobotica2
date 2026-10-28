@@ -1,3 +1,11 @@
+## AFR2-20261028-12 — 28/10/2026
+
+Loader0.9.2: Conversor HEX / ASCII universal, independiente de comandos,
+monitor y operaciones. HEX a ASCII legible/escapado, ASCII literal a HEX,
+portapapeles y copia HEX original. Sin COM, jobs ni logs de texto pegado.
+Fuente sin compilar, ejecutar, tests ni validadores. Web/atmega/esp/CAD sin
+cambios por esta ficha. [Ficha](changes/2026-10-28-12-loader-conversor-universal.md).
+
 ## AFR2-20261028-11 — 28/10/2026
 
 Integración de origin/main2a72b9a y mejoras locales. Loader remoto0.9.0 más

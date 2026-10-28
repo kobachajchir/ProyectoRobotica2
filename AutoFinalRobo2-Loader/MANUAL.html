@@ -21,10 +21,10 @@ svg{display:block;width:100%;height:auto;background:white;border:1px solid #d6de
 @media print{body{background:white}main{padding:0;max-width:none}nav{display:none}h2,h3{break-after:avoid}table,svg,.note,.attention{break-inside:avoid}a{color:inherit}pre{white-space:pre-wrap;background:#eef2f5;color:#172733}}
 </style>
 <main>
-<header><div class="kicker">AutoFinalRobo2 · herramientas del grupo · versión 0.9.1</div>
+<header><div class="kicker">AutoFinalRobo2 · herramientas del grupo · versión 0.9.2</div>
 <h1>AFR2 Loader</h1><p>Compilar, preparar conexiones, cargar y verificar el firmware del Mega y del ESP8266, incluyendo la Web en LittleFS.</p>
-<p><strong>Hecho por Koba Chajchir</strong> · 28/10/2026 · AFR2-20261028-11</p></header>
-<nav><a href="#inicio">Primer inicio</a><a href="#config">Configurar</a><a href="#preferencias">Preferencias y backups</a><a href="#modos">Web / AT y memoria</a><a href="#build">Compilar</a><a href="#mega">Cargar Mega</a><a href="#esp">Cargar ESP</a><a href="#fs">LittleFS</a><a href="#resultado">Resultados</a><a href="#fallas">Problemas</a><a href="#monitor">Monitor serie</a><a href="#mcp">Codex / MCP</a><a href="#autor">Acerca de</a></nav>
+<p><strong>Hecho por Koba Chajchir</strong> · 28/10/2026 · AFR2-20261028-12</p></header>
+<nav><a href="#inicio">Primer inicio</a><a href="#config">Configurar</a><a href="#preferencias">Preferencias y backups</a><a href="#modos">Web / AT y memoria</a><a href="#build">Compilar</a><a href="#mega">Cargar Mega</a><a href="#esp">Cargar ESP</a><a href="#fs">LittleFS</a><a href="#resultado">Resultados</a><a href="#fallas">Problemas</a><a href="#monitor">Monitor serie</a><a href="#conversor">Conversor HEX / ASCII</a><a href="#mcp">Codex / MCP</a><a href="#autor">Acerca de</a></nav>
 <div class="note"><strong>Estado de esta entrega:</strong> programa implementado en fuente; no se ha compilado, abierto ni probado en hardware en esta entrega. No confundir los flasheos manuales anteriores con validación de AFR2 Loader. El primer lanzamiento construye el ejecutable localmente.</div>
 
 <section id="metodo"><h2>Elegir método de flasheo ESP</h2>
@@ -254,6 +254,13 @@ svg{display:block;width:100%;height:auto;background:white;border:1px solid #d6de
 <p>En Operación se diferencian evidencia UART y respuesta ROM con puerto/hora. Son observaciones del momento indicado, no un monitor permanente. <strong>Seguir registro</strong> controla el desplazamiento automático. En Configuración se puede filtrar por nombre o descripción; los valores de filas ocultas se conservan. <strong>Ver rutas resueltas</strong> muestra los paths resultantes y si existen, sin ejecutar herramientas ni comprobar sus versiones.</p>
 <p>El MCP usa stdio y un canal local del mismo usuario de Windows. Los mensajes de compilación/diagnóstico del servidor van por stderr; stdout queda reservado al protocolo. No requiere un puerto de red. Las herramientas del robot y sus rutas siguen siendo las del perfil.</p>
 </section>
+<section id="conversor"><h2>Conversor universal HEX / ASCII</h2>
+<p>La pestaña <strong>Conversor HEX / ASCII</strong>, accesible también desde Monitor serie, convierte texto pegado sin abrir COM ni interpretar comandos o protocolos. Funciona durante un trabajo porque no comparte el puerto ni sus buffers. No importa datos del monitor automáticamente.</p>
+<ol><li>Elegir <strong>HEX → ASCII</strong>. Pegar pares HH, tokens0xHH o pares continuos, separados por espacios/saltos/comas/punto y coma. Las líneas completas --- hora | COM | baudios | codec --- son metadatos y se omiten.</li><li>Pulsar <strong>Convertir</strong> o Ctrl+Enter. <strong>Legible</strong> conserva CR/LF/tab; <strong>Escapada</strong> los representa como \r, \n, \t. NUL, DEL y bytes80..FF siempre se muestran como \xHH, conservando el dato sin sustituirlo.</li><li><strong>Copiar resultado</strong> copia la vista actual. <strong>Copiar HEX normalizado</strong> copia los bytes originales en filas de16. Pegar y Limpiar afectan solo al conversor.</li></ol>
+<p><strong>ASCII literal → HEX</strong> admite caracteres0..127 y saltos reales. \n o \x41 escritos son caracteres literales, no escapes. Un carácter fuera de ASCII se rechaza indicando posición; no se convierte implícitamente a UTF-8 ni Latin-1.</p>
+<p>Límites64KiB de bytes y262144caracteres. Una entrada inválida o excesiva no genera resultados parciales; editar o cambiar dirección descarta la salida previa. No se extraen bytes de palabras, columnas de offsets/ASCII o etiquetas arbitrarias de logs. Los borradores viven solo en la ventana, sin guardarse en perfiles, archivos de log ni jobs MCP.</p>
+<p>Ejemplo: <code>48 6F 6C 61 0D 0A 00 80</code> muestra Hola y salto en Legible; la vista Escapada muestra <code>Hola\r\n\x00\x80</code>. <code>41</code> siempre es A y <code>02</code> se representa como <code>\x02</code>; no se les asignan nombres de comando.</p>
+<p>Fuente0.9.2 / AFR2-20261028-12 sin compilar, ejecutar GUI, probar ni abrir COM en esta entrega.</p></section>
 <section id="autor"><h2>12. Acerca de y referencias</h2><p><strong>Hecho por Koba Chajchir</strong><br>
 <a href="https://github.com/kobachajchir">GitHub: kobachajchir</a><br><a href="https://www.linkedin.com/in/kchajchir">LinkedIn: kchajchir</a><br>Teléfono: +54 388 488 9973</p>
 <p>Datos de autoría tomados de <code>AutoFinalRobo2-Web/src/features/developer/DeveloperPage.tsx</code>. No se inventan correo ni institución. Los perfiles son configuraciones locales; no envían datos a estos contactos.</p>
@@ -264,5 +271,5 @@ svg{display:block;width:100%;height:auto;background:white;border:1px solid #d6de
 <li><a href="https://osoyoo.com/2020/07/31/introduction-of-osoyoo-uart-wifi-shield/">OSOYOO: shield UART V1.3, selector y puerto directo</a>.</li>
 <li><a href="https://www.arduino.cc/en/uploads/Main/arduino-mega2560_R3-schematic.pdf">Arduino: esquema del Mega2560 Rev3 y puente USB</a>.</li>
 <li>Documentación local: Contracts/hardware/PINOUT.md, FLASHING.md y CARGA_USB_COM16.md; código y parser esptool4.5.1 instalado usados como evidencia técnica.</li></ul>
-</section><footer>AFR2 Loader 0.9.1 · Manual local portable · Hecho por Koba Chajchir<br>Estado de esta revisión: fuente entregada; compilación, interacción, conexión MCP y hardware pendientes de pedido y ejecución explícitos.</footer>
+</section><footer>AFR2 Loader 0.9.2 · Manual local portable · Hecho por Koba Chajchir<br>Estado de esta revisión: fuente entregada; compilación, interacción, conexión MCP y hardware pendientes de pedido y ejecución explícitos.</footer>
 </main></html>

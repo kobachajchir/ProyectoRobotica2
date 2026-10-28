@@ -1,0 +1,104 @@
+{
+  "changeId": "AFR2-20261028-12",
+  "date": "2026-10-28",
+  "version": "0.9.2",
+  "integrationCommit": "e13605b",
+  "authorship": "Código universal propio AFR2 con Codex bajo pedido humano, autorías previas del Loader conservadas; sin transferencia de comandos o protocolo.",
+  "files": [
+    {
+      "path": "AutoFinalRobo2-Loader/src/HexAsciiConverter.cs",
+      "bytes": 5009,
+      "sha256": "6a9883a3a0c40ea3b2ad83a7fc4ff022a21fc2527575088d6e33992259c1d0bc",
+      "adaptation": "Conversión universal pura HEX/ASCII sin catálogo, framing, parser de boot ni acceso serie; entrada estricta, límites, escapes y bytes originales."
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/MainForm.Converter.cs",
+      "bytes": 9368,
+      "sha256": "b4cae12ab171d7aa736fb087612272291bc10f43296888c7e1abcf649516d9cf",
+      "adaptation": "Pestaña independiente para pegar, convertir, cambiar vista ASCII y copiar; sin jobs/logs/COM ni persistencia; controles habilitados durante trabajos."
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/MainForm.cs",
+      "bytes": 34878,
+      "sha256": "639cf5e54f558c64ee8194f8f9b038a8be260ef85b4d5d7cf57a0f7b8a361848",
+      "adaptation": "Inicializa la nueva pestaña sin alterar transporte ni carga."
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/MainForm.Serial.cs",
+      "bytes": 25076,
+      "sha256": "8a1bdd05088dde5d67f4b60aba3ced8f4b254d9b7e25c59d2190bc0f02ccc540",
+      "adaptation": "Acceso desde Monitor serie al conversor local; no importa buffers ni abre/cierra el puerto."
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/JobState.cs",
+      "bytes": 3288,
+      "sha256": "4e15662f47bb9f2362f5f8a3cff972defc3cfb1be2735bbc495523564efa3dbe",
+      "adaptation": "Versión fuente0.9.2; integración0.9.1 conservada en commit anterior."
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/README.md",
+      "bytes": 31399,
+      "sha256": "f0b37baf1a66407d7403c98368f413a068b3b6e0343f66806091e82384b0c256",
+      "adaptation": "Estado0.9.2 y manual de conversión universal; antecedentes0.9.0/0.9.1 conservados."
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/MANUAL.html",
+      "bytes": 62167,
+      "sha256": "7b9f59dd4d08de33e4335ef0305b7f7d435c4c9b569e77d2ae674d48fb74917d",
+      "adaptation": "Sección Conversor y enlace de navegación; HEX/ASCII, controles, límites y condición sin ejecución."
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/MCP.md",
+      "bytes": 20077,
+      "sha256": "13110117807feef850423c0f10b9511abb8773ed1baa2ed9034113965e7a639f",
+      "adaptation": "Identidad0.9.2 y separación del conversor GUI, sin agregar endpoint ni jobs MCP."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/changes/2026-10-28-12-loader-conversor-universal.md",
+      "bytes": 3491,
+      "sha256": "20fd1023745b3ab29d01ec4576bd174b4ed68951c334b8b0a8c236bf99f9ebe8",
+      "adaptation": "Ficha AFR2 del pedido y su aclaración Loader, formatos, límites y estado real por módulo."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/README.md",
+      "bytes": 30139,
+      "sha256": "ecf264b67bd33280aa638ee2e21d1b998108b28ea0b5554bb3b110deb4aab806",
+      "adaptation": "Acceso a ficha12 y estado fuente sin compilación."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/INFORME_ADAPTACION.md",
+      "bytes": 14218,
+      "sha256": "30fd9968c413448c8ed242945b981de5ae1fe5f6b0491330531e72b5704ddf19",
+      "adaptation": "Registro de adaptación universal solo en Loader."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/CHANGELOG.md",
+      "bytes": 35371,
+      "sha256": "455a6a1fd71e12c067b03df042872b25bd1f8e61b63b5a496a7807f86beabf17",
+      "adaptation": "Entrada0.9.2 independiente de la integración11."
+    }
+  ],
+  "references": [
+    {
+      "path": "AutoFinalRobo2-Loader/src/MainForm.Usability.cs",
+      "sha256": "45df63d02e5f0c54a2a1efba9ccd2cd32fc18f7a0ea701f4be26a88b39fde9b1",
+      "use": "Copia/feedback existentes o inventario de compilación que incluye src/*.cs; solo lectura, sin ejecutar compilador.",
+      "modified": false
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/Compilar.ps1",
+      "sha256": "9657d6ef89590a396e8a0ee0928f7637a1697eb5dea65583eb7e455dd7cf8156",
+      "use": "Copia/feedback existentes o inventario de compilación que incluye src/*.cs; solo lectura, sin ejecutar compilador.",
+      "modified": false
+    }
+  ],
+  "state": {
+    "loader": "implementado-en-fuente-sin-compilar-ni-ejecutar",
+    "web": "sin-cambios-desde-e13605b",
+    "atmega": "sin-cambios12",
+    "esp": "sin-cambios12-y-sin-promocion",
+    "cad": "sin-intervencion"
+  },
+  "isolation": "HexAsciiConverter no depende de catálogos, SerialCapture, BootObservation ni Operations. UI sin jobs/logs/COM; estado temporal en memoria. Corrección del destino Web revertida antes de este commit.",
+  "verification": "Lectura manual de fuente/diff. Hashes para procedencia únicamente. Sin tests, validadores, compilaciones, GUI, puertos ni hardware. Sin push."
+}

@@ -1,3 +1,5 @@
+> **Loader AFR2-20261028-12 / 0.9.2:** [Conversor universal HEX / ASCII](changes/2026-10-28-12-loader-conversor-universal.md) para texto pegado, con vista legible/escapada, ASCII literal a HEX y copia normalizada. Sin asociación a comandos, COM ni jobs. Solo fuente; sin compilar/ejecutar/probar. Web/atmega/esp/CAD sin cambios de esta ficha.
+
 > **Integración AFR2-20261028-11 / Loader0.9.1:** se incorporó origin/main2a72b9a (Loader0.9.0, servicio AVR y cambios CAD) conservando monitor HEX, USB–TTL, verificación y Protocol Studio locales. [Resoluciones y resguardo](changes/2026-10-28-11-integracion-local-remoto.md). Protocol Studio reasignado a09/10 para evitar IDs remotos repetidos. Solo fuente y Git; sin compilar, probar, validar, COM, flash ni promoción ESP.
 
 > **AFR2-20261028-08:** [busqueda de actuadores a30grados/s e inercia](changes/2026-10-28-08-actuadores-30gs-inercia-vuelco.md). No se acepta bajar la velocidad para cerrar el objetivo. RS01 pasa un filtro nominal condicionado, con masa/estructura/apoyo pendientes. Sin cambios de producto en firmware, Web o Loader ni nuevo CAD.

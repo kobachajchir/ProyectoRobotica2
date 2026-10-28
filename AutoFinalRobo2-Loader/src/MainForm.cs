@@ -164,6 +164,7 @@ namespace AFR2Loader
             InitializeSerial(tabs);
             InitializeMegaBridge(tabs);
             InitializePreferences(tabs);
+            InitializeConverter(tabs);
             Log("AFR2 Loader " + LoaderVersion.Value + " | Hecho por Koba Chajchir");
             Log("Perfiles y registros: " + Profile.UserRoot);
         }

@@ -1,13 +1,15 @@
 # AFR2 Loader - Windows
 
+> **AFR2-20261028-12 / 0.9.2:** pestaña **Conversor HEX / ASCII**, universal e independiente de comandos y del puerto serie. Pegar HEX, convertir a ASCII legible/escapado o ASCII literal a HEX y copiar resultado/HEX normalizado. Acceso también desde Monitor serie. Fuente sin compilar ni ejecutar. [Ficha](../AutoFinalRobo2-Contracts/changes/2026-10-28-12-loader-conversor-universal.md).
+
 > **AFR2-20261028-11 / 0.9.1:** integración de Loader remoto0.9.0 con mejoras locales0.7.4. Conserva flasher ATmega, backups y Preferencias; incorpora USB–TTL externo, monitor ASCII/HEX/texto, Limpiar ventana, Python sin buffer y comprobación nueva antes de verificar. Solo fuente, sin compilar, ejecutar ni usar COM. [Ficha de integración](../AutoFinalRobo2-Contracts/changes/2026-10-28-11-integracion-local-remoto.md).
 
 > **AFR2-20261028-05 / 0.9.0:** backup opcional leído del ATmega, aviso configurable y botón **Flashear Firmware ATmega** con menú **Flashear último backup**. [Ficha](../AutoFinalRobo2-Contracts/changes/2026-10-28-05-loader-mega-backups.md) · [Plan A/B](../AutoFinalRobo2-Contracts/hardware/PLAN_PRUEBA_FLASHER_MEGA.md). Fuente entregada; sin compilar, ejecutar, abrir COM ni flashear.
 
 Herramienta gráfica en español para compilar y cargar el software de
 AutoFinalRobo2 y cargar paquetes ESP8266 AT precompilados para otros usos.
-Hecho por Koba Chajchir. Versión **0.9.1**,
-AFR2-20261028-11, 28/10/2026. Desde **AFR2-20261027-14** es un módulo propio
+Hecho por Koba Chajchir. Versión **0.9.2**,
+AFR2-20261028-12, 28/10/2026. Desde **AFR2-20261027-14** es un módulo propio
 en la raíz, `AutoFinalRobo2-Loader`, al mismo nivel que Atmega, ESP, Web,
 Contracts y CAD. Comparte su único Git. [Registro de integración](../AutoFinalRobo2-Contracts/changes/2026-10-27-14-loader-root-module.md).
 
@@ -440,3 +442,28 @@ PC→ESP. La aplicación exige una consulta ROM exitosa y flash identificada ant
 de escribir. La verificación de flash no acredita sensores, Wi-Fi ni movimiento.
 Los asistentes no pueden medir tensiones, mover cables ni garantizar que las
 confirmaciones manuales coincidan con el montaje.
+
+## Conversor universal HEX / ASCII
+
+Abrir la pestaña **Conversor HEX / ASCII**, o el botón del mismo nombre en
+Monitor serie. No hace falta abrir COM, elegir dispositivo ni iniciar un trabajo.
+
+1. Elegir **HEX → ASCII** y pegar los bytes (HH,0xHH o pares continuos).
+   Se permiten las cabeceras completas --- hora | COM | baudios | codec ---:
+   se omiten como metadatos, sin convertir los números del título.
+2. Pulsar **Convertir** o Ctrl+Enter. La vista Legible conserva saltos/tab;
+   Escapada muestra controles como \r,\n,\t,\xHH. Los bytes80..FF y controles
+   como NUL se conservan como \xHH en ambas, sin inventar texto ASCII.
+3. **Copiar resultado** copia lo visible. **Copiar HEX normalizado** obtiene los
+   bytes originales en filas de16. Pegar y Limpiar afectan solo al conversor.
+
+**ASCII literal → HEX** convierte caracteres0..127 y saltos reales. Una secuencia
+escrita como \n se codifica literalmente; no interpreta escapes. Los caracteres
+fuera de ASCII se rechazan con posición, sin sustituirlos por ? ni cambiar a
+UTF-8. Hasta64KiB de bytes/262144caracteres; una entrada inválida/excesiva no
+produce resultado parcial. Editar invalida la conversión anterior.
+
+No se identifican comandos, protocolos ni arranques; 41 es A y02 es \x02.
+No transmite, no abre COM y no añade jobs/logs del texto pegado. Los borradores
+son solo de la ventana. Disponible durante operaciones porque es independiente
+de sus recursos. Fuente0.9.2 sin compilación, tests, validadores ni ejecución GUI.
