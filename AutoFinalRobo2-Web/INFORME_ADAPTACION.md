@@ -1,3 +1,7 @@
+> **AFR2-20261028-10:** Protocol Studio recupera el flujo de AutoMicro: parámetros guiados, estructura por campos, cuatro salidas, mapa seleccionable, stream continuo y ayuda. Identidad AFR2 0.1.9 conservada. [Continuidad](../AutoFinalRobo2-Contracts/docs/PROTOCOL_STUDIO_AUTOMICRO.md). Fuente sin tests, build, validadores, navegador ni promoción ESP.
+
+> **AFR2-20261028-09:** Protocol Studio en **Desarrollador**, con Traductor de capturas HEX/texto y Constructor ROBO2. Copia HEX/RealTerm/C/Python/decimal, lectura de arranque ESP y tramas con XOR. [Uso](docs/modules/protocol-studio.md). Fuente implementada; sin tests, compilación, validadores, navegador ni promoción ESP en esta revisión.
+
 > **Compilación14 posterior al pedido de fuente:** ATmega/ESP/Web compilados sin errores ni advertencias finales; carpeta build Windows y siete advertencias de indentación corregidas. Sin tests, navegador, flash ni promoción a ESP/data/dist. Ver Contracts/documentation/builds/2026-10-25-14/README.md. La falta de compilación mencionada más abajo describe la entrega previa.
 
 > **Fuente vigente AFR2-20261025-14:** [sensores, servo y radar autónomo EX01v8](../AutoFinalRobo2-Contracts/contracts/SENSORS_RADAR_8.md). Firmware nominal0.10.0/Web0.3.0,41comandos/64identidades OLED. Fuentes vinculadas y recursos Web copiados; sin compilar, ejecutar tests/validadores, renderizar ni flashear. Paquete ESP anterior; los estados inferiores son históricos.

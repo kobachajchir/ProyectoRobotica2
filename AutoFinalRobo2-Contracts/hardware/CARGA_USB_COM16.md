@@ -71,8 +71,12 @@ avrdude al cargar es parte de la futura carga; no se ejecutó en esta entrega.
 ## 2. Identificar el ESP antes de cargar
 
 Pasar al modo de carga ESP de la tabla anterior. Una vez identificados KEY y
-RST: mantener KEY (GPIO0 bajo), pulsar y soltar RST del ESP y después soltar
-KEY. El RESET del Mega se mantiene a GND para evitar otro emisor sobre UART.
+RST: mantener KEY (GPIO0 bajo), pulsar y soltar solo RST del ESP y mantener
+KEY hasta finalizar la operación, incluidas escritura y verificación.
+Cerrar un asistente o ver modo1 no indica soltar KEY. Procedimiento actualizado
+por la carga USB–TTL aportada en [AFR2-20261027-27](../changes/2026-10-27-27-loader-esp-command-key.md);
+ese éxito COM5 no valida la ruta por USB Mega descrita aquí.
+El RESET del Mega se mantiene a GND para evitar otro emisor sobre UART.
 Entrar al cargador no se deduce de que aparezca COM16.
 
 La configuración de build sigue siendo candidata: `esp12e`, flash 4 MiB,

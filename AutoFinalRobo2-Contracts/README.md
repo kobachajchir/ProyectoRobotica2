@@ -1,3 +1,5 @@
+> **Integración AFR2-20261028-11 / Loader0.9.1:** se incorporó origin/main2a72b9a (Loader0.9.0, servicio AVR y cambios CAD) conservando monitor HEX, USB–TTL, verificación y Protocol Studio locales. [Resoluciones y resguardo](changes/2026-10-28-11-integracion-local-remoto.md). Protocol Studio reasignado a09/10 para evitar IDs remotos repetidos. Solo fuente y Git; sin compilar, probar, validar, COM, flash ni promoción ESP.
+
 > **AFR2-20261028-08:** [busqueda de actuadores a30grados/s e inercia](changes/2026-10-28-08-actuadores-30gs-inercia-vuelco.md). No se acepta bajar la velocidad para cerrar el objetivo. RS01 pasa un filtro nominal condicionado, con masa/estructura/apoyo pendientes. Sin cambios de producto en firmware, Web o Loader ni nuevo CAD.
 
 > **AFR2-20261028-07:** [busqueda simultanea de motores por par, masa y resistencia](changes/2026-10-28-07-busqueda-actuadores-par-masa.md). DS51150 descartado para frenada desde catalogo; STS multivuelta con reductores pasa filtro nominal condicionado, sin seleccion final ni nuevo CAD. atmega/esp/web/Loader sin intervencion.
@@ -7,6 +9,18 @@
 > **Loader AFR2-20261028-03 / 0.8.0:** instalar/restaurar flasher ATmega, selector **Método ESP** con instrucciones y casillas por conexión. [Plan A/B](hardware/PLAN_PRUEBA_FLASHER_MEGA.md), [ficha](changes/2026-10-28-03-loader-mega-flasher.md). Código y documentación; sin compilar, ejecutar, abrir COM ni flashear. atmega de servicio en fuente; esp/web sin cambios.
 
 > **Servicio AFR2-20261028-02:** [ESP por puente de software en Mega](hardware/MEGA_ESP_PUENTE_SOFTWARE.md), RESET libre, D18/D19 y baud fijo 115200 candidato. Fuente de servicio AVR aislada y objetivo Make separados del producto; sin compilar/cargar/probar, sin cambio de firmware ESP/Web. Integración al Loader pendiente en02, incorporada en fuente03. [Ficha](changes/2026-10-28-02-mega-esp-software-bridge.md).
+
+> **Web AFR2-20261028-10:** [Esencia de AutoMicro en Protocol Studio](changes/2026-10-28-10-protocol-studio-essence.md): formularios, estructura visual, salidas simultáneas, mapa de captura y ayuda, con identidad AFR2. [Cotejo en fuente](docs/PROTOCOL_STUDIO_AUTOMICRO.md). Sin compilación, tests, validadores ni navegador; atmega/esp y paquete ESP sin cambios.
+
+> **Web AFR2-20261028-09:** [Protocol Studio desde Desarrollador](changes/2026-10-28-09-web-protocol-studio.md), traductor de capturas HEX/texto y constructor ROBO2 offline. [Contrato y límites](contracts/WEB_PROTOCOL_STUDIO.md). Fuente sin compilar, probar, validar ni observar en navegador; ATmega/ESP y paquete ESP sin cambios de esta ficha.
+
+> **Loader AFR2-20261027-30 / 0.7.4:** [Monitor serie ASCII / HEX con espacios](changes/2026-10-27-30-loader-serial-hex-ascii.md), selector en vivo con bytes originales y reconversión de la ventana retenida, sin reabrir COM. Fuente sin compilar/ejecutar esta revisión; atmega/esp/web/CAD sin cambios por esta ficha.
+
+> **Loader AFR2-20261027-29 / 0.7.3:** [comprobar cargador antes de verificar](changes/2026-10-27-29-loader-verification-bootloader-gate.md). Consulta nueva y, sin respuesta confirmada, pausa y aviso/asistente KEY/RST; después continúa solo la verificación. Fuente sin compilar/ejecutar esta revisión; atmega/esp/web/CAD sin cambios por esta ficha.
+
+> **Loader AFR2-20261027-28 / 0.7.2:** [botón Limpiar ventana en Operación](changes/2026-10-27-28-loader-clear-operation-view.md), disponible durante trabajos; vacía solo consola/cola de visualización y conserva logs e historial. Fuente sin compilar/ejecutar esta revisión; atmega/esp/web/CAD sin cambios por esta ficha.
+
+> **Loader AFR2-20261027-27 / 0.7.1:** [comando ESP y KEY sostenido](changes/2026-10-27-27-loader-esp-command-key.md). Python `-u`, conexión USB–TTL/puente Mega configurable y KEY hasta terminar escritura/verificación. Fuente sin compilar/ejecutar esta revisión. El usuario aportó escritura manual COM5/115200 de firmware con hash verificado; no valida el Loader corregido, arranque, Wi-Fi ni LittleFS. atmega/web sin cambios por esta ficha.
 
 > **Loader AFR2-20261027-24 / 0.7.0:** [alta y prueba del servidor MCP](changes/2026-10-27-24-loader-mcp-connection-test.md), estado conectado con evidencia por sesión y autoaceptación visible desde el inicio. Solo fuente/documentación; sin compilar, ejecutar GUI/MCP, tests, validadores, COM ni flasheos de esta revisión. atmega/esp/web sin cambios por esta ficha.
 

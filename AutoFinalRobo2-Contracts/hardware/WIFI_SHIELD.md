@@ -1,5 +1,11 @@
 # Shield Wi-Fi OSOYOO UART V1.3 con ESP-12S
 
+> **Carga manual aportada AFR2-20261027-27:** firmware ESP escrito por
+> USB–TTL COM5/115200, 437936 bytes y hash verificado con esptool4.5.1;
+> KEY mantenido durante la carga. [Salida y límites](../changes/2026-10-27-27-loader-esp-command-key.md).
+> No acredita arranque del programa, Wi-Fi, LittleFS, ruta Mega ni pruebas
+> del Loader0.7.1 corregido en fuente.
+
 > **Identificación aportada AFR2-20261027-25:** el usuario obtuvo ESP8266EX,
 > chip `0x00c2218e`, cristal 26 MHz y flash `5e / 4016`, capacidad **4 MiB**,
 > mediante USB–TTL en COM5 a 9600 con esptool 4.5.1. [Evidencia y límites](diagnostics/20261027-com5-usbttl-user-report/report.md).

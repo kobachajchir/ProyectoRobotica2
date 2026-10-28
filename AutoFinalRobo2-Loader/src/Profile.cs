@@ -20,7 +20,7 @@ namespace AFR2Loader
         public static readonly string UserRoot = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "AutoFinalRobo2Loader");
         public static readonly Field[] Fields = {
             new Field("Name", "Nombre del perfil", "Ejemplo: Robot del grupo / notebook de Juan", "text"),
-            new Field("EspTransport", "Conexión ESP", "mega_reset: puente físico D0/D1 y RESET a GND; mega_bridge: flasher ejecutándose en Mega, D18/D19 y RESET libre", "text"),
+            new Field("EspTransport", "Conexión ESP", "mega_reset: D0/D1 y RESET-GND; mega_bridge: flasher D18/D19 y RESET libre; usb-ttl: adaptador externo 3,3 V. mega-usb es alias anterior de mega_reset", "text"),
             new Field("BridgeBaud", "Baudios flasher ATmega", "115200, 57600, 38400 o 9600; requiere cargar esa variante y usar igual EspBaud", "text"),
             new Field("BridgeStartupSeconds", "Espera al abrir puente", "Segundos después de abrir COM, antes de esptool; permite salir del bootloader Mega. 3 recomendado, 1..15", "text"),
             new Field("EspFirmwareMode", "Firmware ESP", "web: firmware Arduino propio; at: paquete AT. Ambos se cargan por USB/ROM.", "text"),
@@ -74,7 +74,7 @@ namespace AFR2Loader
             if (value == null || value.Length > 4096 || value.Any(Char.IsControl)) throw new ArgumentException("Valor inválido para " + key + ": máximo 4096 caracteres, sin caracteres de control.");
             if (key == "PioEnv" && !System.Text.RegularExpressions.Regex.IsMatch(value, @"^[a-zA-Z0-9_-]{1,100}$")) throw new ArgumentException("El entorno PlatformIO debe contener letras, números, _ o -.");
             if (key == "EspFirmwareMode" && value != "web" && value != "at") throw new ArgumentException("Firmware ESP: web o at.");
-            if (key == "EspTransport" && value != "mega_reset" && value != "mega_bridge") throw new ArgumentException("Conexión ESP: mega_reset o mega_bridge.");
+            if (key == "EspTransport" && value != "mega_reset" && value != "mega_bridge" && value != "usb-ttl" && value != "mega-usb") throw new ArgumentException("Conexión ESP: mega_reset, mega_bridge o usb-ttl (mega-usb es alias anterior de mega_reset).");
             if (key == "BridgeBaud" && !new[] { "115200", "57600", "38400", "9600" }.Contains(value)) throw new ArgumentException("Baudios flasher: 115200, 57600, 38400 o 9600.");
             if (key == "BridgeStartupSeconds") { int seconds; if (!Int32.TryParse(value, out seconds) || seconds < 1 || seconds > 15) throw new ArgumentException("Espera puente: 1 a 15 segundos."); }
             if ((key == "WebUseFilesystem" || key == "AtUseFilesystem") && value != "true" && value != "false") throw new ArgumentException(key + ": true o false.");
@@ -99,6 +99,7 @@ namespace AFR2Loader
             Profile p = new JavaScriptSerializer().Deserialize<Profile>(json);
             if (p == null || p.Schema != 1 || p.Values == null) throw new Exception("Perfil incompatible. Se necesita schema 1.");
             foreach (var kv in p.Values) ValidateValue(kv.Key, kv.Value);
+            if (p.Get("EspTransport") == "mega-usb") p.Values["EspTransport"] = "mega_reset";
             Profile defaults = Defaults("");
             foreach (var kv in defaults.Values) if (!p.Values.ContainsKey(kv.Key)) p.Values[kv.Key] = kv.Value;
             return p;

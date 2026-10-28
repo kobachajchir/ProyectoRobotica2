@@ -1,3 +1,17 @@
+> **Integración AFR2-20261028-11 / Loader0.9.1:** se incorporó origin/main2a72b9a (Loader0.9.0, servicio AVR y cambios CAD) conservando monitor HEX, USB–TTL, verificación y Protocol Studio locales. [Resoluciones y resguardo](changes/2026-10-28-11-integracion-local-remoto.md). Protocol Studio reasignado a09/10 para evitar IDs remotos repetidos. Solo fuente y Git; sin compilar, probar, validar, COM, flash ni promoción ESP.
+
+> **Web AFR2-20261028-10:** [Esencia de AutoMicro en Protocol Studio](changes/2026-10-28-10-protocol-studio-essence.md): formularios, estructura visual, salidas simultáneas, mapa de captura y ayuda, con identidad AFR2. [Cotejo en fuente](docs/PROTOCOL_STUDIO_AUTOMICRO.md). Sin compilación, tests, validadores ni navegador; atmega/esp y paquete ESP sin cambios.
+
+> **Web AFR2-20261028-09:** [Protocol Studio desde Desarrollador](changes/2026-10-28-09-web-protocol-studio.md), traductor de capturas HEX/texto y constructor ROBO2 offline. [Contrato y límites](contracts/WEB_PROTOCOL_STUDIO.md). Fuente sin compilar, probar, validar ni observar en navegador; ATmega/ESP y paquete ESP sin cambios de esta ficha.
+
+> **Loader AFR2-20261027-30 / 0.7.4:** [selector ASCII / HEX con espacios](changes/2026-10-27-30-loader-serial-hex-ascii.md) en Monitor serie, con bytes originales y cambio de vista sin reabrir puerto. Registros, parser y journal MCP independientes del formato visual. Fuente sin compilar/ejecutar esta revisión; atmega/esp/web/CAD sin cambios por esta ficha.
+
+> **Loader AFR2-20261027-29 / 0.7.3:** [consulta del cargador antes de verificar](changes/2026-10-27-29-loader-verification-bootloader-gate.md), con pausa y recuperación KEY/RST si no se confirma respuesta. No repite escritura; cancelar conserva resultado sin verificación completada. Fuente sin compilar/ejecutar esta revisión; atmega/esp/web/CAD sin cambios por esta ficha.
+
+> **Loader AFR2-20261027-28 / 0.7.2:** [Limpiar ventana de Operación](changes/2026-10-27-28-loader-clear-operation-view.md) conserva logs, estados e historial y permite continuar viendo salida nueva durante trabajos. Fuente sin compilar ni ejecutar esta revisión; atmega/esp/web/CAD sin cambios por esta ficha.
+
+> **Loader AFR2-20261027-27 / 0.7.1:** [escritura equivalente al comando manual y KEY sostenido](changes/2026-10-27-27-loader-esp-command-key.md). Fuente adaptada con Python `-u`, instrucciones USB–TTL/puente Mega y recordatorio de soltar KEY solo al terminar la operación. Sin compilar/ejecutar/probar esta revisión. Evidencia separada: el usuario aportó una carga manual ESP por COM5/115200 con hash verificado; sin prueba de arranque, Wi-Fi o LittleFS. atmega/web/CAD sin cambios de esta ficha.
+
 > **Loader AFR2-20261027-24 / 0.7.0:** [alta, prueba y estado del servidor MCP](changes/2026-10-27-24-loader-mcp-connection-test.md), instrucción para Codex por sesión/prueba y casilla Autoaceptar visible desde el inicio. Fuente/documentación; sin compilar, ejecutar GUI/MCP, tests, validadores, COM ni flasheos de esta revisión. atmega/esp/web sin cambios por esta ficha.
 
 > **Loader AFR2-20261027-23 / 0.6.1:** [visibilidad de Paquete AT según familia](changes/2026-10-27-23-loader-at-package-visibility.md). Corrección en fuente y documentación, sin compilar, ejecutar GUI/MCP, tests, validadores, COM ni flasheos de esta revisión. atmega/esp/web sin cambios por esta ficha.

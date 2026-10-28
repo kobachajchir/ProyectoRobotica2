@@ -1,0 +1,223 @@
+{
+  "changeId": "AFR2-20261028-09",
+  "date": "2026-10-28",
+  "authorship": "AutoMicro y ST conservan sus créditos y fuentes originales en reference/. Adaptación propia AFR2 realizada con Codex bajo pedido humano. No se infiere transferencia de licencia, aprobación visual ni compatibilidad de UNER.",
+  "references": [
+    {
+      "path": "AutoFinalRobo2-Web/reference/web/src/pages/ProtocolSection.tsx",
+      "sha256": "9a84347604c7d9bfd7696cecfbfdd76692cb51763ded7ed2965c1bea670869ba",
+      "use": "Patrón histórico de tareas Constructor/Traductor; autoría original conservada en reference/.",
+      "modified": false
+    },
+    {
+      "path": "AutoFinalRobo2-Web/reference/web/src/features/protocolStudio/utils.ts",
+      "sha256": "fd1cb41012c1c9426d787b3ece3ffb890ea2e257c69a4929c1cd6f808153057f",
+      "use": "Conceptos históricos de formatos, detalle de trama y scanner de bloques; UNER no se transfiere.",
+      "modified": false
+    },
+    {
+      "path": "AutoFinalRobo2-Web/reference/web/src/features/protocolStudio/useProtocolStudioState.ts",
+      "sha256": "1ba944ef5d6a44c9112d45c2f9db993666348751d0b06e8031531cf3cfaca708",
+      "use": "Patrón histórico de borradores, salida y traslado al traductor.",
+      "modified": false
+    },
+    {
+      "path": "AutoFinalRobo2-Web/reference/web/src/features/protocolStudio/types.ts",
+      "sha256": "104305b3dc37a6960bdacc6654b1ccba7d596e567415034ddd36a9b72e1e91b9",
+      "use": "Organización histórica de resultados de traducción.",
+      "modified": false
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/afr2_wire.h",
+      "sha256": "6f82980c81af922848a1d856d0f9efe6c39331b01875aeadd07eb7e4180dc6f5",
+      "use": "Autoridad actual de framing, rutas, tokens, XOR y límite64.",
+      "modified": false
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/afr2_product_wire.h",
+      "sha256": "7bf2e049a96bc130411e8691b954a5eda793df2169926b6dc23bd2778a1e472d",
+      "use": "Autoridad de IDs de producto y EX01v8.",
+      "modified": false
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/afr2_network_wire.h",
+      "sha256": "d77361e68c59a2329b4ca5f813c0089e5ea0dc1c7eb8832b8e16895eb62b1e26",
+      "use": "IDs53/54 de estado y evento de red.",
+      "modified": false
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/afr2_sensor_wire.h",
+      "sha256": "f176b0f4e94ceeb14b277502dba119398d8a9d3fd4ea0c18358e535fbeabe67a",
+      "use": "IDs de sensores y longitudes/estructuras explícitas.",
+      "modified": false
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/main.c",
+      "sha256": "edc77bd8350beb2065bf02f147173d3094f94d6a9c57ba264443b4cd7ea8fd42",
+      "use": "Emisión del evento BOOT BT01 sin prefijo de correlación.",
+      "modified": false
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/services/afr2_link.c",
+      "sha256": "224471ae67da698941abbd7c6d2dacf433430717e8c60ac9b76ff945e02f1fcc",
+      "use": "Manejo de prefijos base y evento BOOT del par.",
+      "modified": false
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/services/afr2_app_wire.c",
+      "sha256": "1623612b108e818d44de8216dd699b8c48a7335574622225106f4a02e8c5bfda",
+      "use": "Longitudes y campos actuales de cuerpos de producto.",
+      "modified": false
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/services/afr2_sequence.c",
+      "sha256": "fe104e801adbaf5cff4e06c827eacf3519c24ff4c93d1b65e0e35c1f10670024",
+      "use": "BEGIN13/14 y APPEND28/30, sin inferir capacidad habilitada.",
+      "modified": false
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/services/afr2_sensor_commands.c",
+      "sha256": "17f4f2494143af74835392031c8c15d783b9215f7130e181fe4f83ac1f300cf9",
+      "use": "Offsets actuales de US/IR/servo/navegación.",
+      "modified": false
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/styles/tokens.css",
+      "sha256": "60a73dc2e47bd8d274c51a4ac4085d8dcc371877a334620e4b2aee9860b0e3ce",
+      "use": "Identidad y temas AFR2 existentes; sin cambios de esta ficha.",
+      "modified": false
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/components/ui/TaskSections.tsx",
+      "sha256": "090787bdcd4dd889987c47bc4e832e08991ef02a054e942ac6657fa880683d3c",
+      "use": "Pestañas, teclado y una sola tarea visible; sin cambios.",
+      "modified": false
+    }
+  ],
+  "files": [
+    {
+      "path": "AutoFinalRobo2-Web/src/features/protocolStudio/catalog.ts",
+      "bytes": 6982,
+      "sha256": "15793dccc833515a0dd639f370cd4fa7732ae2d53880c7371d4c882130f899e9",
+      "adaptation": "Catálogo ROBO2/EX01v8 y longitudes de cuerpo desde fuentes propias; variantes de secuencia, HALL_CAL retirado y BOOT solo lectura."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/protocolStudio/codec.ts",
+      "bytes": 20975,
+      "sha256": "e1a50a57b1183da4b5f363bcce741c5cd2476becdaac21165694057500760f31",
+      "adaptation": "Implementación propia offline: entrada estricta, límites de captura, conversiones sin pérdida de bytes originales, scanner ROBO2, BT01 y constructor. Conceptos del estudio AutoMicro; sin copiar framing/catálogo UNER."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/protocolStudio/ProtocolStudioPage.tsx",
+      "bytes": 16056,
+      "sha256": "5b3ef56e11d446a3eb402640ff774378415b15b5a3c35bd3198224ebac34460b",
+      "adaptation": "Flujo Constructor/Traductor inspirado en AutoMicro, reescrito con componentes AFR2; copia confirmada o selección manual, formatos, detalle paginado y ejemplo de texto identificado."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/styles/protocol-studio.css",
+      "bytes": 12923,
+      "sha256": "5849530907b7617bf1f4290a7c1074fae72cea64d31e067a04f839222533a59e",
+      "adaptation": "Superficies sólidas, tokens AFR2, columnas adaptables y estados explícitos; identidad 0.1.9 conservada."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/developer/DeveloperPage.tsx",
+      "bytes": 1668,
+      "sha256": "daf9872ed4de35142a9db401b0b5b4f22c21311c3bbc9f9a9efb6929c1ab9ba3",
+      "adaptation": "Tarjeta de acceso a Protocol Studio; créditos y contenido previo ST/AFR2 conservados."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/app/App.tsx",
+      "bytes": 3630,
+      "sha256": "2dd45a29ce9c38c767c5a06ab9101d88d2ae2edb5b5837ea6e94e7ea9d599898",
+      "adaptation": "Ruta Protocol Studio bajo Desarrollador mediante lazy/Suspense."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/components/navigation/RouteNav.tsx",
+      "bytes": 10359,
+      "sha256": "f88093482a9742ba70e25cfe25240f62509b79defd1592c4e886d3d052ef920a",
+      "adaptation": "Título del shell para la ruta Protocol Studio; navegación existente conservada."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/README.md",
+      "bytes": 27386,
+      "sha256": "00f8ba7257bc02ceb31bda754b531a352613e1105c9470fd59a1fc7b5cceba8d",
+      "adaptation": "Estado de fuente y acceso al manual del estudio, sin atribuirle compilaciones previas."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/INFORME_ADAPTACION.md",
+      "bytes": 23448,
+      "sha256": "8755a6cce0ddb48dc434c26362547dca86d1b89423554da77dab3b887982db4f",
+      "adaptation": "Resumen de adaptación y límites; historial previo conservado."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/docs/modules/protocol-studio.md",
+      "bytes": 3102,
+      "sha256": "b6f5d2e737333f2fa3721cc2300ea8d8bf01c1fd38ceefddcf541f851a08dad5",
+      "adaptation": "Guía de uso, formatos y límites del estudio offline."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/WEB_PROTOCOL_STUDIO.md",
+      "bytes": 8127,
+      "sha256": "0f04b55f005cb8d14876f98b6fde2e62ff02cb32f03f7a32ea5aa65e02808f8f",
+      "adaptation": "Contrato de herramienta local, wire consultado, interpretación parcial, copia, límites y despliegue pendiente."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/changes/2026-10-28-09-web-protocol-studio.md",
+      "bytes": 2364,
+      "sha256": "048e8aa31a82a68ce50b09d881cfed8f853a0f81f59899068f8a360e901f9a5d",
+      "adaptation": "Ficha AFR2 con alcance y estado real por módulo."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/README.md",
+      "bytes": 29793,
+      "sha256": "c582bf262821085b76acbc21cbb0724dbe21776cd9820ae7aceeba272bd6ed19",
+      "adaptation": "Acceso a ficha y contrato; entradas previas ajenas preservadas."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/INFORME_ADAPTACION.md",
+      "bytes": 13872,
+      "sha256": "4e1188dceb662b6c8ba25cab8524af2fd925088fffaa236186a8f1a516da306d",
+      "adaptation": "Resumen del nuevo estudio Web y estado sin ejecución."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/CHANGELOG.md",
+      "bytes": 34950,
+      "sha256": "57977151c07bdeece86279665efd6077f7f333df3cd4cc49e8387c2cdb70538a",
+      "adaptation": "Registro AFR2-20261028-09 sin sustituir registros anteriores."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/design-system/index.md",
+      "bytes": 16252,
+      "sha256": "69380d01fd8aaf64cdccacf7d50a0eb5bafd6029a651024c730b3a088bb0b404",
+      "adaptation": "Índice VIS-045 sobre borrador 0.1.9 previamente autorizado para Desarrollador."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/design-system/decisions.md",
+      "bytes": 40786,
+      "sha256": "66c07bb81241103f66703dec141585d92fe9799d767db59cc64848dcc59f449d",
+      "adaptation": "Decisión de composición propuesta, cinco reglas protectoras y verificación visual pendiente."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/design-system/sources.md",
+      "bytes": 15203,
+      "sha256": "e7a18a1b1e519b5feadf6cf41152a0e464d70e17253f7ddbad6844dd2dbe10fa",
+      "adaptation": "Separa identidad canónica AFR2, herramienta de referencia AutoMicro y autoridades de wire propias."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/design-system/coverage-20261028-09.json",
+      "bytes": 1726,
+      "sha256": "5838ebbb613d3130c0855c8c4354a00e9fbca7c6f2a0292d7eb29c812fc29e78",
+      "adaptation": "Cobertura de fuente y estados; sin afirmar comprobación de navegador/contraste/teléfono."
+    }
+  ],
+  "state": {
+    "web": "adaptado-en-fuente-sin-compilar-ni-ejecutar",
+    "atmega": "sin-cambios",
+    "esp": "sin-cambios-firmware-y-data-dist",
+    "loader": "sin-intervencion",
+    "cad": "sin-intervencion"
+  },
+  "verification": "Lectura manual de fuentes/contratos y diff. Hashes solo para procedencia. Sin tests, compilaciones, validadores, codec ejecutado, navegador, servidor, COM, flasheos ni promoción ESP.",
+  "integrationChange": "AFR2-20261028-11",
+  "idReassignment": "IDs locales de Protocol Studio01/02 reasignados a09/10 al integrar remoto2a72b9a; IDs remotos01/02 intactos. Hashes de files actualizados al contenido integrado; referencias conservadas."
+}

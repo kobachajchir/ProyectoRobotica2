@@ -55,16 +55,18 @@ namespace AFR2Loader
             if (!confirm("Cargar paquete AT y verificar", details, new[] {
                 "El paquete y sus offsets corresponden al ESP8266 y a la revisión que quiero instalar.",
                 firmware ? "Revisé todas las imágenes de firmware/sistema; cambiar a AT reemplaza el firmware Web de las regiones elegidas." : "El firmware AT ya instalado usa exactamente este layout y filesystem.",
-                "Revisé las regiones de datos seleccionadas y conservé sus preferencias antes de reemplazarlas."
+                "Revisé las regiones de datos seleccionadas y conservé sus preferencias antes de reemplazarlas.",
+                "Mantengo K (KEY) hasta terminar escritura y verificación; solo RST queda suelto."
             })) throw new OperationCanceledException("Carga AT no confirmada.");
             EnsureUnchanged(manifest, manifestHash); token.ThrowIfCancellationRequested();
             for (int i = 0; i < files.Length; i++) EnsureUnchanged(files[i], hashes[i]);
             Profile transfer = p.Copy(); transfer.Values["FlashMode"] = package.FlashMode; transfer.Values["FlashFreq"] = package.FlashFreq;
             var write = EspArgs(transfer, port, false); write.Add(Spell(transfer, "write_flash")); AddFlashOptions(transfer, write);
             for (int i = 0; i < regions.Length; i++) write.AddRange(new[] { regions[i].Offset, files[i] });
-            Stage("writing", "Escribiendo paquete AT por USB según su mapa de regiones..."); MarkWriting();
+            Stage("writing", "Escribiendo paquete AT según su mapa de regiones. Mantené K (KEY) apretado..."); MarkWriting();
             await Command(transfer, "Python", write, Path.GetDirectoryName(transfer.Resolve("Esptool")), token);
-            Stage("verifying", "Verificando cada BIN AT contra la flash...");
+            await EnsureBootloaderBeforeVerification(transfer, port, token);
+            Stage("verifying", "Verificando cada BIN AT contra la flash. Seguí manteniendo K (KEY)...");
             EnsureUnchanged(manifest, manifestHash);
             for (int i = 0; i < files.Length; i++) EnsureUnchanged(files[i], hashes[i]);
             var verify = EspArgs(transfer, port, false); verify.Add(Spell(transfer, "verify_flash")); AddFlashOptions(transfer, verify);

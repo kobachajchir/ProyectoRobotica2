@@ -104,15 +104,21 @@ namespace AFR2Loader
             CheckBridge(p);
             MegaServiceRecord record = MegaServiceRecord.Read(port);
             if (record != null && (record.Status != "bridge_verified" || record.Baud != p.Get("BridgeBaud"))) throw new ArgumentException("El registro de este COM no acredita flasher verificado a ese baud. Usá Cargar flasher en ATmega antes de consultar ESP. Estado: " + record.Status);
-            if (!confirm("Entrar ESP en programación — puente software", "Mega ejecutando flasher a " + p.Get("BridgeBaud") + ". RESET del Mega LIBRE.\r\n\r\nAhora mantené KEY/K del ESP, pulsá y soltá RST del ESP, y soltá KEY. Luego Continuar.\r\nNo se escucha 74880: el puente fijo no retransmite ese log de forma legible. La consulta ROM comprobará la comunicación.\r\nEl cargador esperará al Mega DESPUÉS de abrir el COM, conservando ese mismo puerto para esptool.",
-                new[] { "El flasher está instalado al baud elegido; RESET Mega libre, enlace D18/D19 adaptado y potencia de actuadores desconectada.", "Realicé KEY/K + RST del ESP y solté ambos. No presioné RESET del Mega." })) throw new OperationCanceledException("Entrada manual ESP no confirmada.");
+            GuideMegaBridgeBoot(p, false, token);
+        }
+        void GuideMegaBridgeBoot(Profile p, bool forVerification, CancellationToken token)
+        {
+            token.ThrowIfCancellationRequested(); CheckBridge(p); EspSessionStarted = true;
+            if (!confirm(forVerification ? "Recuperar cargador para verificar — puente software" : "Entrar ESP en programación — puente software", "Mega ejecutando flasher a " + p.Get("BridgeBaud") + ". RESET del Mega LIBRE.\r\n\r\nMantené KEY/K del ESP, pulsá y soltá SOLO RST del ESP; conservá KEY hasta terminar la operación. Luego Continuar.\r\nNo se escucha 74880: el puente tiene baud fijo. La consulta comprobará comunicación bidireccional.\r\nEl wrapper esperará al Mega DESPUÉS de abrir el mismo COM para esptool." + (forVerification ? "\r\nNo se repetirá la escritura, solo consulta y verificación." : ""),
+                new[] { "El flasher está instalado al baud elegido; RESET Mega libre, enlace D18/D19 adaptado y potencia de actuadores desconectada.", "Mantengo KEY/K, pulsé y solté solo RST del ESP. No presioné RESET del Mega." })) throw new OperationCanceledException("Entrada manual ESP no confirmada.");
             Stage("boot_entry_requested", "Secuencia KEY/RST confirmada manualmente; falta respuesta ROM. No se afirma modo observado por UART.");
             token.ThrowIfCancellationRequested();
         }
         string EspRestoration(Profile p)
         {
             return UsesMegaBridge(p) ? "RESET Mega sigue libre. Al terminar usá Flashear Firmware ATmega o el menú Flashear último backup; no habilitar motores con el flasher temporal instalado. KEY libre y resetear ESP para arrancar desde flash."
-                : "Para operar: apagar, quitar RESET Mega→GND, retirar D0/D1, restaurar D18→E_RX y E_TX→D19. KEY libre; resetear ESP.";
+                : p.Get("EspTransport") == "usb-ttl" ? "Para operar: al terminar soltar KEY, apagar y retirar el adaptador USB–TTL; restaurar D18→E_RX y E_TX→D19 con RESET Mega libre. KEY libre; resetear ESP."
+                : "Para operar: al terminar soltar KEY, apagar, quitar RESET Mega→GND, retirar D0/D1, restaurar D18→E_RX y E_TX→D19. KEY libre; resetear ESP.";
         }
     }
 }

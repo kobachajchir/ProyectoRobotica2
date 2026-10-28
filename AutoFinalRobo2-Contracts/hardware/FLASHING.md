@@ -1,5 +1,12 @@
 > **Loader vigente AFR2-20261028-05 / 0.9.0:** [plan A/B actualizado](PLAN_PRUEBA_FLASHER_MEGA.md), backup leído opcional, aviso y Preferencias; Flashear Firmware ATmega con menú Flashear último backup. [Ficha05](../changes/2026-10-28-05-loader-mega-backups.md). Solo fuente/documentación; no se compiló, abrió COM ni flasheó. Sustituye la copia HEX de03.
 
+> **AFR2-20261027-27:** el usuario completó una carga manual de firmware ESP
+> por USB–TTL COM5/115200 con esptool4.5.1, 437936 bytes y hash verificado.
+> Mantuvo KEY durante la carga. [Comando, salida y límites](../changes/2026-10-27-27-loader-esp-command-key.md).
+> En esta unidad, mantener KEY hasta terminar consulta/carga/verificación,
+> soltando solo RST tras pulsarlo. Loader0.7.1 adaptado en fuente, sin compilar
+> ni ejecutar esta revisión; sin arranque, Wi-Fi o carga LittleFS acreditados.
+
 > **Preparación AFR2-20261027-10:** [guía específica de carga USB-B/COM16](CARGA_USB_COM16.md). ATmega/ESP/Web compilados, Web esp promovida e imagen LittleFS generada. Hall habilitado en build por pedido humano; configuración EEPROM conservada. No se abrió puerto ni se cargó a placas; jumpers y flash real aún sin identificar. Los estados de no imagen FS inferiores son históricos.
 
 # Carga con el USB del Mega y shield OSOYOO UART
@@ -42,7 +49,7 @@ El shield declara regulación y adaptación integradas; aprovecharlas solo en la
 
 ## Arranque manual ESP
 
-OSOYOO identifica KEY y RST como controles de programación/reset. La hipótesis de conexión es KEY→GPIO0 y RST→reset ESP; falta comprobarla en la unidad. Con esa ruta confirmada: mantener KEY, pulsar y soltar RST, luego soltar KEY para entrar al cargador serie. Para ejecutar, KEY suelto y otro reset. Esto describe la secuencia prevista; no se ejecutó.
+OSOYOO identifica KEY y RST como controles de programación/reset. La hipótesis de conexión es KEY→GPIO0 y RST→reset ESP; no hay medición de continuidad de la unidad. El usuario aportó una carga manual completa con esta secuencia: mantener KEY, pulsar y soltar solo RST y conservar KEY apretado durante toda la carga. El procedimiento vigente de esta unidad mantiene KEY hasta terminar la operación, incluida la verificación; cerrar el asistente o recibir modo1 no indica soltarlo. Para ejecutar después de terminar, soltar KEY y resetear el ESP. La evidencia manual no es ejecución del agente ni prueba del Loader corregido.
 
 Espressif requiere GPIO0 bajo al reset para descarga y alto para arranque de flash; GPIO15 bajo, GPIO2 alto mediante pull-up, EN alto. No unir GPIO2 rígidamente a VCC. DTR/RTS del puente Mega no se presumen conectados a GPIO0/EN del shield: KEY/RST no acreditan auto-reset compatible con esptool.
 

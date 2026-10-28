@@ -1,18 +1,77 @@
 # AFR2 Loader - Windows
 
+> **AFR2-20261028-11 / 0.9.1:** integración de Loader remoto0.9.0 con mejoras locales0.7.4. Conserva flasher ATmega, backups y Preferencias; incorpora USB–TTL externo, monitor ASCII/HEX/texto, Limpiar ventana, Python sin buffer y comprobación nueva antes de verificar. Solo fuente, sin compilar, ejecutar ni usar COM. [Ficha de integración](../AutoFinalRobo2-Contracts/changes/2026-10-28-11-integracion-local-remoto.md).
+
 > **AFR2-20261028-05 / 0.9.0:** backup opcional leído del ATmega, aviso configurable y botón **Flashear Firmware ATmega** con menú **Flashear último backup**. [Ficha](../AutoFinalRobo2-Contracts/changes/2026-10-28-05-loader-mega-backups.md) · [Plan A/B](../AutoFinalRobo2-Contracts/hardware/PLAN_PRUEBA_FLASHER_MEGA.md). Fuente entregada; sin compilar, ejecutar, abrir COM ni flashear.
 
 Herramienta gráfica en español para compilar y cargar el software de
 AutoFinalRobo2 y cargar paquetes ESP8266 AT precompilados para otros usos.
-Hecho por Koba Chajchir. Versión **0.9.0**,
-AFR2-20261028-05, 28/10/2026. Desde **AFR2-20261027-14** es un módulo propio
+Hecho por Koba Chajchir. Versión **0.9.1**,
+AFR2-20261028-11, 28/10/2026. Desde **AFR2-20261027-14** es un módulo propio
 en la raíz, `AutoFinalRobo2-Loader`, al mismo nivel que Atmega, ESP, Web,
 Contracts y CAD. Comparte su único Git. [Registro de integración](../AutoFinalRobo2-Contracts/changes/2026-10-27-14-loader-root-module.md).
+
+## Secuencia ESP corregida
+
+Antes de enviar `verify_flash`/`verify-flash`, el Loader comprueba nuevamente
+la respuesta del cargador ROM/stub con `read_mac`/`read-mac`, sin escribir,
+subir otro stub ni solicitar reset automático. La consulta tiene dos intentos
+de conexión y un máximo de15segundos (30 con el wrapper del flasher ATmega); exige salida0 y una respuesta MAC válida.
+No se reutiliza como prueba el modo observado antes de escribir.
+
+Si no puede confirmarlo, **detiene la verificación** y muestra un aviso para
+repetir KEY/RST. Continuar abre la recuperación del transporte elegido: USB–TTL o Mega físico
+esperan PUERTO LISTO a74880; flasher ATmega conserva baud fijo y RESET libre,
+sin escucha74880. Mantener KEY, pulsar y soltar solo RST, conservar KEY. Vuelve a
+consultar el cargador y continúa únicamente con la verificación de los mismos
+BIN. Cancelar, un fallo de recuperación o de verificación mantienen el resultado
+sin verificación completada; no se repite la escritura. También se aplica a
+LittleFS y paquetes AT, desde GUI o MCP, aun con Guiar K/RST desactivado.
+
+La consulta confirma respuesta en ese momento; la sincronización del propio
+comando de verificación sigue siendo necesaria. [Registro AFR2-20261027-29](../AutoFinalRobo2-Contracts/changes/2026-10-27-29-loader-verification-bootloader-gate.md).
+Fuente0.7.3 sin compilar ni ejecutar esta revisión.
+
+El usuario aportó una carga manual por USB–TTL en COM5 a 115200, con
+esptool4.5.1 y hash verificado. Mantuvo K (KEY) apretado durante la carga,
+soltando solo RST después de pulsarlo. [Evidencia y adaptación del Loader](../AutoFinalRobo2-Contracts/changes/2026-10-27-27-loader-esp-command-key.md).
+
+El asistente, la consulta ROM, las confirmaciones y los estados de carga ahora
+piden **mantener KEY hasta terminar la operación, incluidas escritura y
+verificación**. Cerrar la pantalla de botones o ver modo1 no indica soltarlo.
+Al finalizar la operación se avisa que ya puede soltarse, también ante un fallo
+o cancelación; esto no acredita una carga válida si no se verificó el contenido.
+
+En Configuración, **Conexión serie ESP** (`EspTransport`) acepta `usb-ttl`
+para el adaptador externo de lógica3,3V, `mega_reset` para el puente físico del
+Mega o `mega_bridge` para el flasher de software D18/D19.
+El asistente muestra el cableado correspondiente. `mega-usb` de perfiles
+anteriores se acepta como alias de `mega_reset`, sin cambiar de montaje.
+Elegir `usb-ttl` para reproducir la conexión externa; nunca se exige RESET-GND
+del Mega en ese modo.
+El COM se elige en la ventana: no se fija COM5 ni se modifica un perfil guardado
+por editar las fuentes.
+
+El paso de escritura invoca Python con `-u` antes de esptool, para salida sin
+buffer de Python. Con perfil Web, firmware solo, puerto COM5 y los valores
+predeterminados, sus argumentos son equivalentes al comando manual aportado:
+
+    python -u esptool.py --chip esp8266 --port COM5 --baud 115200 --before no_reset --after no_reset write_flash --flash_mode keep --flash_freq keep --flash_size 4MB 0x0 firmware.bin
+
+Las rutas de Python/esptool/BIN se resuelven desde el perfil. `0x0` y `0x00000`
+representan el mismo offset. La escritura usa el stub normal; `--no-stub`
+se reserva para la consulta ROM previa. El Loader conserva esa consulta y la
+verificación explícita posterior, sin reinicios ni reescrituras automáticas.
+Los parámetros SPI de paquetes AT siguen viniendo de su manifiesto.
+
+Esta revisión solo modifica fuentes/documentación: **Loader0.7.1 sin compilar,
+ejecutar ni probar**. La carga manual aportada no valida el programa corregido.
 
 ## Abrir
 
 En **Operación → Método ESP** se elige entre **Flasher en ATmega — D18/D19,
-RESET libre** y **Puente serial del Mega — D0/D1, RESET a GND**. Al elegir se
+RESET libre**, **Puente serial del Mega — D0/D1, RESET a GND** y
+**Adaptador USB–TTL externo — lógica3,3V**. Al elegir se
 cierra la lectura serie, se muestra el cableado de ese método y se habilita
 Continuar solo al marcar todas las casillas. Cancelar conserva el método
 anterior y deja el monitor cerrado. Elegir no instala ni carga firmware. La
@@ -240,7 +299,31 @@ estado real; `loader_status.autoAcceptRequests` muestra el modo de la ventana.
 
 ## Monitor serie y errores
 
+En **Operación**, el botón **Limpiar ventana**, junto a **Copiar registro**,
+vacía el texto mostrado y su cola pendiente de visualización. Está disponible
+también durante una operación; la salida nueva continúa apareciendo.
+Conserva archivos de log, historial MCP, estados y la operación en curso.
+[Registro AFR2-20261027-28](../AutoFinalRobo2-Contracts/changes/2026-10-27-28-loader-clear-operation-view.md).
+Fuente0.7.2 sin compilar ni ejecutar esta revisión.
+
 En **Monitor serie** elegir COM, baudios (lista o valor propio) y codificación.
+El selector **Vista** permite alternar en vivo entre **ASCII** (inicial),
+**HEX con espacios** y **Texto decodificado**. HEX usa los bytes originales,
+dos dígitos mayúsculos por byte, un espacio entre bytes y16bytes por fila,
+sin depender de cómo se fragmentó la lectura. ASCII también parte de los
+bytes; Texto decodificado conserva la codificación UTF-8/ASCII/Latin-1 elegida
+al abrir la captura.
+
+Cambiar Vista reconvierte la ventana retenida sin cerrar/reabrir COM, cambiar
+baudios ni reiniciar la captura. El historial para reconversión está acotado
+a65536unidades (bytes + caracteres decodificados); no reconstruye lo que ya
+salió de esa ventana. Limpiar vista descarta también ese historial y lo ya
+pendiente de mostrar, para no recuperar texto viejo al cambiar de formato.
+Copiar texto copia la representación visible. Los archivos `.rx.bin`/`.rx.txt`,
+el parser de arranque y los cursores MCP siguen siendo independientes de Vista.
+[Registro AFR2-20261027-30](../AutoFinalRobo2-Contracts/changes/2026-10-27-30-loader-serial-hex-ascii.md).
+Fuente0.7.4 sin compilar ni ejecutar esta revisión.
+
 **Abrir puerto** inicia lectura continua; **Cerrar puerto** termina y libera
 el COM. **Aplicar baudios** cierra la captura y abre otra al nuevo valor, sin
 enviar comandos al dispositivo. Lectura 8N1, DTR/RTS inactivos. La apertura

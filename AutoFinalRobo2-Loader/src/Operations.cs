@@ -19,9 +19,10 @@ namespace AFR2Loader
         readonly Func<string, string, string[], bool> confirm;
         public bool WroteAnything { get; private set; }
         public bool Verified { get; private set; }
+        public bool EspSessionStarted { get; private set; } // Operation attempted; not a measurement of KEY.
         public Action WritingStarted;
         public Action<string, string> Changed;
-        public Func<Func<CancellationToken, Task>, CancellationToken, Task> BootAssistant;
+        public Func<bool, Func<CancellationToken, Task>, CancellationToken, Task> BootAssistant;
         void Stage(string code, string message) { state(message); if (Changed != null) Changed(code, message); }
         void MarkWriting() { WroteAnything = true; if (WritingStarted != null) WritingStarted(); }
         public List<object> Steps = new List<object>();
@@ -123,13 +124,14 @@ namespace AFR2Loader
             Steps.Add(new { artifact = path, bytes = new FileInfo(path).Length, sha256 = Hash(path) });
         }
 
-        public async Task ListenBoot(Profile p, string port, CancellationToken token)
+        public async Task ListenBoot(Profile p, string port, CancellationToken token, bool forVerification = false)
         {
-            if (BootAssistant == null) await ListenBootCore(p, port, token);
-            else await BootAssistant(t => ListenBootCore(p, port, t), token);
-            Stage("bootloader_observed", "Modo programación observado; monitor cerrado y COM liberado.");
+            EspSessionStarted = true;
+            if (BootAssistant == null) await ListenBootCore(p, port, token, forVerification);
+            else await BootAssistant(forVerification, t => ListenBootCore(p, port, t, forVerification), token);
+            Stage("bootloader_observed", "Modo programación observado; monitor cerrado y COM liberado. Seguí manteniendo K (KEY) hasta terminar la operación.");
         }
-        async Task ListenBootCore(Profile p, string port, CancellationToken token)
+        async Task ListenBootCore(Profile p, string port, CancellationToken token, bool forVerification)
         {
             PortValid(port);
             Stage("awaiting_boot", "Abriendo escucha 74880 para K / RST. Esperá el aviso PUERTO LISTO.");
@@ -143,7 +145,8 @@ namespace AFR2Loader
                     serial.ReadTimeout = 200; serial.Encoding = Encoding.ASCII;
                     serial.Open();
                     token.ThrowIfCancellationRequested();
-                    string ready = "PUERTO LISTO: mantené K, apretá RST, soltá RST y después soltá K. RESET ATmega → GND.";
+                    string ready = "PUERTO LISTO: mantené K (KEY), apretá RST del ESP y soltá solo RST. NO SUELTES K hasta " +
+                        (forVerification ? "terminar la verificación. No se volverá a escribir la flash." : "terminar la operación; en una carga, incluye escritura y verificación.");
                     log(ready); if (Changed != null) Changed("boot_listener_ready", ready);
                     var clock = Stopwatch.StartNew(); var observer = new BootObserver(); bool sawNormal = false;
                     while (clock.Elapsed.TotalSeconds < seconds)
@@ -166,7 +169,7 @@ namespace AFR2Loader
                         }
                         Thread.Sleep(50);
                     }
-                    throw new TimeoutException(sawNormal ? "Se vio arranque normal, pero no modo 1. Revisá KEY/GPIO0 y el botón RST del ESP." : "Sin mensaje de modo programación. Revisá ESP TX→D1, alimentación, reset del ESP y puerto.");
+                    throw new TimeoutException(sawNormal ? "Se vio arranque normal, pero no modo 1. Revisá KEY/GPIO0 y el botón RST del ESP." : "Sin mensaje de modo programación. Revisá ESP TX→RX del adaptador (D1 si usás el puente Mega), alimentación, reset del ESP y puerto.");
                 }
             }, token);
         }
@@ -176,7 +179,7 @@ namespace AFR2Loader
             PortValid(port); NeedFile(p.Resolve("Esptool"));
             Choice(p.Get("EsptoolMajor"), "4", "5");
             int baud = (int)p.Number("EspBaud"); if (baud < 9600 || baud > 921600) throw new Exception("Baudios ESP fuera de rango.");
-            var a = new List<string>();
+            var a = new List<string> { "-u" };
             if (UsesMegaBridge(p))
             {
                 CheckBridge(p); NeedFile(BridgeToolPath);
@@ -192,7 +195,8 @@ namespace AFR2Loader
         static string Spell(Profile p, string name) { return p.Get("EsptoolMajor") == "5" ? name.Replace('_', '-') : name; }
         public async Task<long> Probe(Profile p, string port, CancellationToken token)
         {
-            Stage("syncing", "Consultando ROM y tamaño real de flash; sin escritura...");
+            EspSessionStarted = true;
+            Stage("syncing", "Consultando ROM y tamaño real de flash; sin escritura. Mantené K (KEY) apretado...");
             var args = EspArgs(p, port, true); args.Add(Spell(p, "flash_id"));
             Steps.Add(new { espTransport = p.Get("EspTransport"), baud = p.Get("EspBaud"), bridgeWait = UsesMegaBridge(p) ? p.Get("BridgeStartupSeconds") : null });
             var result = await Command(p, "Python", args, Path.GetDirectoryName(p.Resolve("Esptool")), token, UsesMegaBridge(p) ? 120 : 50);
@@ -205,32 +209,85 @@ namespace AFR2Loader
             return bytes;
         }
 
-        static string[] EspChecks(bool fs)
+        async Task EnsureBootloaderBeforeVerification(Profile p, string port, CancellationToken token)
+        {
+            while (true)
+            {
+                token.ThrowIfCancellationRequested();
+                Stage("checking_bootloader", "Escritura terminada. Comprobando que el cargador ESP responda antes de verificar; mantené KEY...");
+                Exception failure;
+                try
+                {
+                    // Fresh bidirectional query. No flash write, stub upload or automatic reset.
+                    var args = EspArgs(p, port, true);
+                    int attempts = args.IndexOf("--connect-attempts");
+                    if (attempts >= 0) args[attempts + 1] = "2";
+                    else args.AddRange(new[] { "--connect-attempts", "2" });
+                    args.Add(Spell(p, "read_mac"));
+                    var result = await Command(p, "Python", args, Path.GetDirectoryName(p.Resolve("Esptool")), token, UsesMegaBridge(p) ? 30 : 15);
+                    if (!Regex.IsMatch(result.Output, @"(?im)^\s*MAC:\s*(?:[0-9a-f]{2}:){5}[0-9a-f]{2}\s*$"))
+                        throw new CommandFailure("No se reconoció la respuesta MAC del cargador ESP. No se envía verify_flash.", p.Resolve("Python"), result.ExitCode, result.Output);
+                    Steps.Add(new { check = "bootloader_before_verification", port = port, confirmed = true });
+                    Stage("rom_connected", "El cargador ESP respondió a una consulta nueva; se puede iniciar la verificación de contenido.");
+                    return;
+                }
+                catch (CommandFailure error) { failure = error; }
+                catch (TimeoutException error) { failure = error; }
+                token.ThrowIfCancellationRequested();
+                Steps.Add(new { check = "bootloader_before_verification", port = port, confirmed = false, error = failure.ToString() });
+                log("Comprobación previa a verificar sin confirmar: " + failure);
+                Stage("verification_paused", "Verificación detenida: no se pudo confirmar que el ESP siga en el cargador. Repetí KEY / RST antes de continuar.");
+                string recovery = UsesMegaBridge(p)
+                    ? "El asistente del puente software pedirá KEY/RST manteniendo RESET Mega LIBRE y el baud fijo; no abrirá una escucha a 74880."
+                    : "Se abrirá la escucha del monitor. Esperá PUERTO LISTO antes de repetir KEY / RST.";
+                if (!confirm("Verificación detenida · repetir KEY / RST",
+                    "La escritura terminó, pero no se confirmó que el ESP siga respondiendo como cargador.\r\nNo se envió la verificación; el contenido queda sin verificar por el Loader.\r\n\r\n" + recovery + "\r\nMantené KEY, pulsá y soltá SOLO RST del ESP y seguí manteniendo KEY.\r\nSe comprobará la conexión otra vez y continuará solo la verificación de los mismos archivos. No se volverá a escribir.\r\n\r\nPodés cancelar conservando el estado sin verificación completada.\r\nDetalle:\r\n" + failure,
+                    new string[0]))
+                    throw new OperationCanceledException("Verificación cancelada al recuperar el cargador ESP; la escritura previa queda sin verificar por el Loader.");
+                token.ThrowIfCancellationRequested();
+                if (UsesMegaBridge(p)) GuideMegaBridgeBoot(p, true, token);
+                else await ListenBoot(p, port, token, true);
+            }
+        }
+
+        static string[] EspChecks(Profile p, bool fs)
         {
             var list = new List<string> {
-                "Potencia de motores desconectada y monitor serie externo cerrado.",
+                "Potencia de motores desconectada y monitor serie externo cerrado."
+            };
+            if (p.Get("EspTransport") == "usb-ttl") list.AddRange(new[] {
+                "Adaptador USB–TTL con lógica de 3,3 V; TX hacia RX ESP, RX desde TX ESP y GND común, por la ruta identificada del shield.",
+                "Sin enlaces UART del Mega ni otro emisor conectados en paralelo al ESP.",
+                "Shield alimentado desde el Mega; VCC del adaptador sin conectar."
+            });
+            else list.AddRange(new[] {
                 "RESET del ATmega unido a GND; no es el RST del ESP.",
                 "D0/RX0 del Mega → RX CENTRAL (E_RX) del selector ESP URAT.",
                 "D1/TX0 del Mega → TX CENTRAL (E_TX) del selector ESP URAT.",
-                "Sin jumpers paralelos D0/D1 ni D4/D5; no usar ESP UART directo de 3,3 V con 5 V.",
-                "ESP alimentado por el shield y masa común. Identifiqué K (KEY) y RST."
-            };
+                "Sin jumpers paralelos D0/D1 ni D4/D5; no usar ESP UART directo de 3,3 V con 5 V."
+            });
+            list.Add("ESP alimentado por el shield y masa común. Identifiqué K (KEY) y RST; mantendré K hasta terminar la operación.");
             if (fs) list.Add("El filesystem elegido será reemplazado, incluidas sus preferencias. Respaldé los datos que necesitaba.");
             return list.ToArray();
         }
         public bool PrepareEsp(Profile p, bool fs)
         {
+            Profile.ValidateValue("EspTransport", p.Get("EspTransport"));
             if (UsesMegaBridge(p))
             {
                 CheckBridge(p);
                 var checks = new List<string> { "Potencia de actuadores desconectada y monitor externo cerrado.", "RESET Mega LIBRE; el Mega debe ejecutar el flasher, sin puente RESET-GND.",
                     "D18/TX1→E_RX y E_TX→D19/RX1. Sin cables D0/D1 al ESP ni jumpers paralelos.", "Ruta de niveles identificada; no TX de 5 V al RX directo ESP. Alimentación por shield y masa común." };
                 if (fs) checks.Add("El filesystem se reemplazará; conservé los datos que necesitaba.");
-                bool bridgeAccepted = confirm("ESP por flasher ATmega — RESET libre", "Transporte: puente software por USART1, fijo a " + p.Get("BridgeBaud") + ".\r\nPrimero cargar el flasher en ATmega; después KEY/RST y consulta ROM.\r\nNo se mide cableado ni se ejecuta todavía escritura ESP.", checks.ToArray());
+                checks.Add("Mantendré KEY del ESP hasta terminar la consulta o carga y su verificación; solo RST queda suelto.");
+                bool bridgeAccepted = confirm("ESP por flasher ATmega — RESET libre", "Transporte: puente software por USART1, fijo a " + p.Get("BridgeBaud") + ".\r\nPrimero cargar el flasher en ATmega; después KEY/RST y consulta ROM.\r\nMantener KEY hasta terminar la operación; no se mide cableado ni se ejecuta todavía escritura ESP.", checks.ToArray());
                 if (bridgeAccepted) Stage("wiring_confirmed", "ESP por puente software: cableado confirmado; RESET Mega libre.");
                 return bridgeAccepted;
             }
-            bool accepted = confirm("Preparar conexión ESP", "Mismo USB-B, modo de servicio distinto al de operación.\r\nD0/D1 usan ahora los mismos cables que estaban en D18/D19.\r\nUsá RX/TX centrales del selector ESP URAT (E_RX/E_TX); es distinto de la cabecera directa ESP UART de 3,3 V.\r\n\r\nAl momento de flashear te voy a avisar para que presiones K y RST.\r\nCon la guía activada, al confirmar aparece otra pantalla con los pasos para apretarlos y soltarlos. No los pulses todavía.\r\nSi desactivaste la guía porque el ESP ya está en modo programación, se consultará directamente la ROM.\r\nTodavía no se escribe firmware.", EspChecks(fs));
+            string connection = p.Get("EspTransport") == "usb-ttl"
+                ? "Adaptador USB–TTL externo: elegí su COM, distinto del USB del Mega que alimenta el shield.\r\nLógica de 3,3 V, TX/RX cruzados por función y GND; VCC del adaptador sin conectar. Aislar el enlace UART del Mega."
+                : "Puente físico USB del Mega: RESET Mega a GND, D0→E_RX y E_TX→D1 por la ruta adaptada.\r\nNo usar D18/D19 simultáneamente ni confundir selector ESP URAT con UART directo 3,3 V.";
+            bool accepted = confirm("Preparar conexión ESP", connection + "\r\n\r\nCon Guiar K / RST activado, esperá PUERTO LISTO antes de pulsar los botones.\r\nMantené KEY, pulsá y soltá solo RST del ESP; conservá KEY hasta terminar consulta, escritura y verificación. Cerrar la pantalla de botones no indica soltar KEY.\r\nTodavía no se escribe firmware.", EspChecks(p, fs));
             if (accepted) Stage("wiring_confirmed", "Preparación y cableado ESP confirmados por el usuario; no medidos por el programa.");
             return accepted;
         }
@@ -289,16 +346,17 @@ namespace AFR2Loader
             foreach (var file in files) details += "Offset " + file.Item1 + "\r\n" + Describe(file.Item2) + "\r\n\r\n";
             var hashes = files.Select(f => Hash(f.Item2)).ToArray();
             if (!confirm("Continuar para flashear ESP", details + "La ROM respondió. Esto autoriza ESCRIBIR y después VERIFICAR los archivos indicados.",
-                new[] { UsesMegaBridge(p) ? "Revisé puerto, archivos, offsets y enlace D18/D19; mantener RESET Mega LIBRE." : "Revisé puerto, archivos, offsets y cableado; mantener RESET Mega a GND.", "Si se pierde alimentación o se cancela, el contenido puede quedar incompleto." }))
+                new[] { UsesMegaBridge(p) ? "Revisé puerto, archivos, offsets y enlace D18/D19; mantener RESET Mega LIBRE." : p.Get("EspTransport") == "usb-ttl" ? "Revisé COM del USB–TTL, lógica 3,3 V, TX/RX cruzados y GND; enlace UART Mega aislado." : "Revisé puerto, archivos, offsets y D0/D1; mantener RESET Mega a GND.", "Mantengo KEY del ESP hasta terminar escritura y verificación; solo RST queda suelto.", "Si se pierde alimentación o se cancela, el contenido puede quedar incompleto." }))
                 throw new OperationCanceledException("Carga no confirmada.");
             token.ThrowIfCancellationRequested();
             for (int i = 0; i < files.Count; i++) EnsureUnchanged(files[i].Item2, hashes[i]);
             var write = EspArgs(p, port, false); write.Add(Spell(p, "write_flash")); AddFlashOptions(p, write);
             foreach (var file in files) write.AddRange(new[] { file.Item1, file.Item2 });
-            Stage("writing", UsesMegaBridge(p) ? "Escribiendo ESP por flasher ATmega. No desconectar; RESET Mega LIBRE." : "Escribiendo ESP. No desconectar ni quitar RESET-GND del Mega.");
+            Stage("writing", UsesMegaBridge(p) ? "Escribiendo ESP por flasher ATmega. KEY mantenido; RESET Mega LIBRE." : p.Get("EspTransport") == "usb-ttl" ? "Escribiendo ESP por USB–TTL. Mantené KEY y no desconectes." : "Escribiendo ESP por D0/D1. KEY mantenido; RESET Mega a GND.");
             MarkWriting(); // Once launched, a failed write may already have modified flash.
             await Command(p, "Python", write, Path.GetDirectoryName(p.Resolve("Esptool")), token);
-            Stage("verifying", "Escritura terminada; verificando automáticamente contra los archivos...");
+            await EnsureBootloaderBeforeVerification(p, port, token);
+            Stage("verifying", "Escritura terminada; verificando contra los archivos. Seguí manteniendo K (KEY)...");
             for (int i = 0; i < files.Count; i++) EnsureUnchanged(files[i].Item2, hashes[i]);
             var verify = EspArgs(p, port, false); verify.Add(Spell(p, "verify_flash")); AddFlashOptions(p, verify);
             foreach (var file in files) verify.AddRange(new[] { file.Item1, file.Item2 });

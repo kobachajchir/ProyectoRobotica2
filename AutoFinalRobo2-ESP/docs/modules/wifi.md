@@ -1,5 +1,27 @@
 # Wi-Fi y preferencias LittleFS
 
+## Configuración local — AFR2-20261027-26
+
+Se preparó `data/config/wifi.json` con modo `STA` y las credenciales indicadas
+por el usuario. Es un archivo privado, excluido de Git por la regla específica
+de `.gitignore` raíz. No copiar su contenido a fuentes, informes, ejemplos ni
+al paquete público `data/dist`.
+
+El firmware existente lee `/config/wifi.json` al iniciar mediante
+`Storage::loadWifi()` y aplica SSID/contraseña mediante `WifiService::begin()`.
+No hizo falta cambiar el C++ ni el esquema `afr2-wifi-1`. Si la configuración
+no está disponible o es inválida, se mantiene el AP de aprovisionamiento;
+si STA no conecta, se conserva el fallback y el reintento existentes.
+
+Para aplicar este archivo hay que regenerar la imagen LittleFS desde `data/`
+y cargarla con el layout correspondiente al firmware. Cargar únicamente
+`firmware.bin` no incorpora ni actualiza estas preferencias. Una carga completa
+de filesystem reemplaza su contenido, incluidas preferencias previas.
+
+En esta revisión solo se preparó el JSON local y se leyó la fuente: sin
+compilaciones, generación de imagen FS, tests, validadores, COM ni flasheos.
+La imagen LittleFS existente es anterior a esta configuración.
+
 [Maestro](../../../INFORME_MAESTRO.md) · [Informe del repositorio](../../INFORME_ADAPTACION.md).
 
 ## Utilidad

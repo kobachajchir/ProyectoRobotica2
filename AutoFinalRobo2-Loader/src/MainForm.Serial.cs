@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -12,6 +13,9 @@ namespace AFR2Loader
     public sealed partial class MainForm
     {
         readonly ComboBox serialPorts = new ComboBox(), serialBaud = new ComboBox(), serialCodec = new ComboBox();
+        readonly ComboBox serialFormat = new ComboBox();
+        readonly Queue<SerialDisplayChunk> serialView = new Queue<SerialDisplayChunk>();
+        int serialViewWeight, serialHexColumn;
         readonly LogTextBox serialText = new LogTextBox();
         readonly CheckBox serialFollow = new CheckBox { Text = "Seguir texto", AutoSize = true, Checked = true };
         readonly CheckBox serialPause = new CheckBox { Text = "Pausar vista", AutoSize = true };
@@ -49,6 +53,9 @@ namespace AFR2Loader
             serialOpen = new Button { Text = "Abrir puerto", Width = 125, Height = 30 }; serialOpen.Click += async (s, e) => await OpenSerialMonitor(); controls.Controls.Add(serialOpen);
             serialClose = new Button { Text = "Cerrar puerto", Width = 125, Height = 30 }; serialClose.Click += async (s, e) => { try { await StopSerialMonitor("Cierre manual"); } catch (Exception error) { QueueFailure("monitor", error); } }; controls.Controls.Add(serialClose);
             serialApply = new Button { Text = "Aplicar baudios", Width = 145, Height = 30 }; serialApply.Click += async (s, e) => await ApplySerialBaud(); controls.Controls.Add(serialApply);
+            controls.Controls.Add(new Label { Text = "Vista", AutoSize = true, Margin = new Padding(10, 7, 5, 0) });
+            serialFormat.Width = 185; serialFormat.DropDownStyle = ComboBoxStyle.DropDownList;
+            serialFormat.Items.AddRange(new object[] { "ASCII", "HEX con espacios", "Texto decodificado" }); serialFormat.SelectedIndex = 0; controls.Controls.Add(serialFormat);
             layout.Controls.Add(controls, 0, 0);
             var statePanel = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 2 };
             serialState.Font = new Font(Font, FontStyle.Bold); statePanel.Controls.Add(serialState, 0, 0); statePanel.Controls.Add(serialObservation, 0, 1); layout.Controls.Add(statePanel, 0, 1);
@@ -66,7 +73,7 @@ namespace AFR2Loader
             layout.Controls.Add(serialText, 0, 3);
             var buttons = new FlowLayoutPanel { Dock = DockStyle.Fill };
             buttons.Controls.Add(serialFollow); buttons.Controls.Add(serialPause);
-            var clear = new Button { Text = "Limpiar vista", Width = 120, Height = 30 }; clear.Click += (s, e) => serialText.Clear(); buttons.Controls.Add(clear);
+            var clear = new Button { Text = "Limpiar vista", Width = 120, Height = 30 }; clear.Click += (s, e) => ClearSerialView(); buttons.Controls.Add(clear);
             var copy = new Button { Text = "Copiar texto", Width = 120, Height = 30 }; copy.Click += (s, e) => CopyText(serialText.Text, copy); buttons.Controls.Add(copy);
             var files = new Button { Text = "Abrir registros", Width = 125, Height = 30 }; files.Click += (s, e) => OpenLogs(); buttons.Controls.Add(files);
             var failure = new Button { Text = "Ver último error", Width = 140, Height = 30 }; failure.Click += (s, e) => ShowLastFailure(); buttons.Controls.Add(failure);
@@ -92,6 +99,7 @@ namespace AFR2Loader
             timer.Tick += (s, e) => { DrainNotices(); DrainSerial(); UpdateSerialControls(); };
             ports.SelectedIndexChanged += (s, e) => { if (serialCapture == null || !serialCapture.Active) { if (serialPorts.Items.Contains(ports.Text)) serialPorts.SelectedItem = ports.Text; } };
             RefreshSerialPorts(); UpdateSerialControls();
+            serialFormat.SelectedIndexChanged += (s, e) => { RenderSerialView(); UpdateSerialControls(); };
             FormClosed += (s, e) => { infoIcon.Dispose(); warningIcon.Dispose(); errorIcon.Dispose(); };
         }
         void RefreshSerialPorts()
@@ -121,9 +129,10 @@ namespace AFR2Loader
             serialTransition = true; UpdateSerialControls();
             try
             {
-                DrainSerial(); serialPause.Checked = false; shownSkipped = 0;
+                serialPause.Checked = false; DrainSerial(); shownSkipped = 0;
                 serialCapture = new SerialCapture(port, baud, codec, QueueNotice);
-                serialText.AppendBatch("\r\n--- " + DateTime.Now.ToString("HH:mm:ss") + " | " + port + " | " + baud + " | " + codec + " ---\r\n");
+                var header = new SerialDisplayChunk { Header = true, Text = "\r\n--- " + DateTime.Now.ToString("HH:mm:ss") + " | " + port + " | " + baud + " | " + codec + " ---\r\n" };
+                RememberSerialChunk(header); serialText.AppendBatch(FormatSerialChunk(header));
                 await serialCapture.OpenAsync();
             }
             finally { serialTransition = false; UpdateSerialControls(); }
@@ -158,8 +167,9 @@ namespace AFR2Loader
             serialPorts.Enabled = !busy && pendingJob == null && !serialTransition && !active;
             serialBaud.Enabled = !busy && pendingJob == null && !serialTransition;
             serialCodec.Enabled = !busy && pendingJob == null && !serialTransition && !active;
+            serialFormat.Enabled = !serialTransition;
             string stateName = serialCapture == null ? "cerrado" : serialCapture.State == "open" ? "ABIERTO" : serialCapture.State == "opening" ? "ABRIENDO" : serialCapture.State == "closing" ? "CERRANDO" : serialCapture.State == "failed" ? "FALLÓ" : "CERRADO";
-            serialState.Text = serialCapture == null ? "Puerto cerrado. Sin captura." : serialCapture.Port + " | " + serialCapture.Baud + " baudios | " + serialCapture.Codec + " | " + stateName + (serialPause.Checked ? " | VISTA EN PAUSA; archivo sigue grabando mientras esté abierto" : "");
+            serialState.Text = serialCapture == null ? "Puerto cerrado. Sin captura." : serialCapture.Port + " | " + serialCapture.Baud + " baudios | " + serialCapture.Codec + " | vista " + serialFormat.Text + " | " + stateName + (serialPause.Checked ? " | VISTA EN PAUSA; archivo sigue grabando mientras esté abierto" : "");
             if (serialCapture == null) serialObservation.Text = "Sin observaciones de arranque. No se abre el puerto al iniciar.";
             serialState.ForeColor = serialCapture != null && serialCapture.State == "failed" ? Color.Firebrick : Color.FromArgb(22, 79, 99);
         }
@@ -168,8 +178,9 @@ namespace AFR2Loader
             if (serialCapture == null) return;
             if (!serialPause.Checked)
             {
-                var batch = new StringBuilder(); string chunk; int count = 0;
-                while (count++ < 60 && batch.Length < 60000 && serialCapture.TakeDisplay(out chunk)) batch.Append(chunk);
+                var batch = new StringBuilder(); SerialDisplayChunk chunk; int count = 0;
+                while (count++ < 60 && batch.Length < 60000 && serialCapture.TakeDisplay(out chunk))
+                { RememberSerialChunk(chunk); batch.Append(FormatSerialChunk(chunk)); }
                 if (batch.Length > 0)
                 {
                     serialText.AppendBatch(batch.ToString().Replace("\0", "␀"));
@@ -177,8 +188,39 @@ namespace AFR2Loader
             }
             var data = serialCapture.ViewState();
             serialObservation.Text = data.Observed + " | RX " + data.Bytes + " bytes";
-            if (data.Skipped != shownSkipped)
-            { shownSkipped = data.Skipped; QueueNotice(new LoaderNotice { Origin = "monitor", Code = "view_truncated", Message = "Vista atrasada: " + shownSkipped + " caracteres omitidos en pantalla. Consultá el registro de captura completo." }); }
+            if (data.SkippedBytes != shownSkipped)
+            { shownSkipped = data.SkippedBytes; QueueNotice(new LoaderNotice { Origin = "monitor", Code = "view_truncated", Message = "Vista atrasada: " + shownSkipped + " bytes omitidos en pantalla. Consultá el registro de captura completo." }); }
+        }
+        void RememberSerialChunk(SerialDisplayChunk chunk)
+        {
+            serialView.Enqueue(chunk); serialViewWeight += chunk.Weight;
+            while (serialViewWeight > 65536 && serialView.Count > 0) serialViewWeight -= serialView.Dequeue().Weight;
+        }
+        string FormatSerialChunk(SerialDisplayChunk chunk)
+        {
+            if (chunk.Header) { serialHexColumn = 0; return chunk.Text; }
+            if (serialFormat.SelectedIndex == 0) return Encoding.ASCII.GetString(chunk.Bytes).Replace("\0", "␀");
+            if (serialFormat.SelectedIndex != 1) return chunk.Text.Replace("\0", "␀");
+            var text = new StringBuilder(chunk.Bytes.Length * 3);
+            foreach (byte value in chunk.Bytes)
+            {
+                if (serialHexColumn == 16) { text.Append("\r\n"); serialHexColumn = 0; }
+                else if (serialHexColumn > 0) text.Append(' ');
+                text.Append(value.ToString("X2")); serialHexColumn++;
+            }
+            return text.ToString();
+        }
+        void RenderSerialView()
+        {
+            serialHexColumn = 0;
+            var text = new StringBuilder();
+            foreach (SerialDisplayChunk chunk in serialView) text.Append(FormatSerialChunk(chunk));
+            serialText.Clear(); serialText.AppendBatch(text.ToString());
+        }
+        void ClearSerialView()
+        {
+            if (serialCapture != null) serialCapture.ClearDisplay();
+            serialView.Clear(); serialViewWeight = serialHexColumn = 0; serialText.Clear();
         }
         void QueueNotice(LoaderNotice notice) { if (noticeQueue.Count < 1000) noticeQueue.Enqueue(notice); }
         void QueueFailure(string origin, Exception error) { QueueNotice(new LoaderNotice { Origin = origin, Code = "failed", Message = error.Message, Detail = error.ToString() }); }

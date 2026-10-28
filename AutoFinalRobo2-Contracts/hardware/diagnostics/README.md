@@ -1,5 +1,10 @@
 # Evidencia de diagnóstico ESP
 
+AFR2-20261027-27: [carga manual USB–TTL COM5/115200 con hash verificado](../../changes/2026-10-27-27-loader-esp-command-key.md).
+Salida aportada por el usuario: esptool4.5.1, 437936 bytes en firmware y KEY
+sostenido durante la carga. No se repitió la escritura para registrarla ni
+se acredita arranque/Wi-Fi/FS o ejecución del Loader corregido.
+
 AFR2-20261027-25: [ESP8266EX y flash 4 MiB por USB–TTL en COM5](20261027-com5-usbttl-user-report/report.md).
 Consultas chip_id/flash_id ejecutadas por el usuario y aportadas en la conversación;
 salidas conservadas con atribución. Sin carga ni verificación de contenido.

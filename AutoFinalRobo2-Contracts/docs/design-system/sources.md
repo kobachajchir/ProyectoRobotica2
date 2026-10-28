@@ -144,3 +144,36 @@ Propuesta: suelo continuo, retícula/sector, encuadre1m y jerarquía de lecturas
 Skills: visual-identity-system, apple-design, emil-design-eng. Inspección de
 fuente y edición; no navegador, tests, compilación ni validadores por instrucción
 humana. Cobertura26-02 no acredita el resultado visual.
+
+## Fuentes de aplicación28-01 — VIS-045
+
+Identidad canónica: manual0.1.9 y tokens AFR2 previamente autorizados para
+Desarrollador (VIS-019), componentes compartidos y CSS de workspace vigente.
+Objetivos directos: DeveloperPage y ProtocolStudioPage, con stylesheet propio.
+Supporting: reference/web/src/pages/ProtocolSection.tsx y protocolStudio/utils.ts,
+useProtocolStudioState.ts y types.ts como patrón de herramientas AutoMicro;
+Contracts/afr2_wire.h, afr2_product_wire.h, afr2_network_wire.h,
+afr2_sensor_wire.h y servicios AVR actuales como autoridad de formato/catálogo.
+No se elevan las referencias históricas a fuente de paleta ni a compatibilidad.
+Hashes y adaptación por archivo en provenance/web-protocol-studio-20261028.json.
+Lectura manual de fuentes; sin ejecución ni comparación de interfaz renderizada.
+
+## Fuentes de aplicación28-02 — VIS-046
+
+Direct para estructura/ideas: AutoMicro actual de solo lectura en
+D:/AutoProyecto/Web ESP01/WebESP01AutoMicro2025/src/pages/ProtocolSection.tsx,
+features/protocolStudio/components/{BuilderColumn,OutputsColumn,TranslatorColumn,
+FrameVisualizationShowcase}.tsx y features/studio.css. La copia histórica local
+conserva los créditos. No se trasladan identidad cromática, UNER ni servicios F4.
+
+Canónica de identidad: manual0.1.9, tokens/componentes propios AFR2 previamente
+autorizados. Supporting: Field, Button, TaskSections, FloatingModal, notify,
+workspace.css y tokens.css. Autoridad de bytes: Contracts y servicios AVR actuales
+app_wire/sequence/sensor_commands, sin modificaciones. Objetivos directos:
+ProtocolStudioPage, CaptureInspector, PacketStructure, StudioPrimitives,
+guidedBodies, codec y protocol-studio.css. No se alteran las fuentes canónicas.
+
+Procedencia/hashes en provenance/web-protocol-studio-essence-20261028.json;
+organización de referencia Observada en código, composición Propuesta,
+verificación de ejecución No verificada. No se ejecutaron herramientas de deriva,
+tests, compilaciones ni navegador. La referencia se leyó sin ejecutar scripts.

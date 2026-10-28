@@ -1,4 +1,26 @@
+> AFR2-20261028-11 / Loader0.9.1: integra flasher remoto0.9.0 y mejoras locales0.7.4. EspTransport conserva mega_reset (D0/D1, RESET-GND), mega_bridge (D18/D19, RESET libre y baud fijo) y usb-ttl externo3,3V; mega-usb es alias anterior de mega_reset. La recuperación previa a verificar respeta el transporte sin cambiar cableado ni reescribir. Monitor HEX y backups/Preferencias conservados. Fuente sin compilar/ejecutar; [integración](../changes/2026-10-28-11-integracion-local-remoto.md).
+
 # Loader: firmware Web o AT por USB — AFR2-20261027-22
+
+> **Ampliación AFR2-20261027-29 / Loader0.7.3:** antes de enviar la
+> verificación de contenido se exige una consulta nueva al cargador ROM/stub.
+> Si no se confirma respuesta, se pausa y pide recuperar con KEY/RST, incluso
+> con la guía inicial desactivada. Tras recuperarlo consulta nuevamente y
+> continúa solo con la verificación; no repite la escritura. GUI/MCP y ambas
+> familias ESP comparten el control. [Flujo y límites](../changes/2026-10-27-29-loader-verification-bootloader-gate.md).
+> Solo fuente/documentación, sin compilar ni ejecutar esta revisión.
+
+> **Ampliación AFR2-20261027-27 / Loader0.7.1:** perfil schema1 con
+> `EspTransport` (`mega-usb` o `usb-ttl`), instrucciones de conexión separadas
+> y KEY sostenido hasta finalizar la operación, incluidas escritura y
+> verificación. Perfiles previos reciben `mega-usb`; COM y baudios siguen
+> configurables. La invocación de Python agrega `-u` antes de esptool y
+> conserva `no_reset` antes/después. Escritura Web predeterminada: stub normal,
+> `keep/keep/4MB`, offset0; AT conserva su mapa/SPI. La consulta ROM/flash
+> previa y la verificación explícita posterior siguen separadas de la escritura.
+> [Comparación y evidencia del usuario](../changes/2026-10-27-27-loader-esp-command-key.md).
+> Fuente sin compilar/ejecutar esta revisión; el éxito manual aportado no
+> acredita el Loader corregido ni modifica ROBO2/EX01.
 
 27/10/2026. Loader nominal0.6.0, implementación en fuente sin compilar/probar.
 El usuario aclaró: elegir firmware AT o Web y cargar por USB, sin OTA/HTTP.

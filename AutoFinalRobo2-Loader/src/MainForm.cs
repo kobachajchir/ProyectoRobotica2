@@ -133,6 +133,8 @@ namespace AFR2Loader
             cancel.Click += (s, e) => Cancel(); footer.Controls.Add(cancel);
             var copy = new Button { Text = "Copiar registro", Width = 140, Height = 30 };
             copy.Click += (s, e) => CopyText(console.Text, copy); footer.Controls.Add(copy);
+            var clear = new Button { Text = "Limpiar ventana", Width = 140, Height = 30 };
+            clear.Click += (s, e) => ClearOperationView(); footer.Controls.Add(clear);
             EnableTextCopyFeedback(console);
             var manual = new Button { Text = "Manual", Width = 100, Height = 30 }; manual.Click += (s, e) => OpenManual(); footer.Controls.Add(manual);
             layout.Controls.Add(footer, 0, 5);
@@ -190,6 +192,13 @@ namespace AFR2Loader
             string line; int budget = 180; var batch = new StringBuilder();
             while (budget-- > 0 && pending.TryDequeue(out line)) batch.AppendLine(line);
             if (batch.Length > 0) console.AppendBatch(batch.ToString());
+        }
+        void ClearOperationView()
+        {
+            // Discard only the display backlog. Log() already records it in the job and on disk.
+            int queued = pending.Count; string ignored;
+            while (queued-- > 0 && pending.TryDequeue(out ignored)) { }
+            console.Clear();
         }
         void CloseLog()
         {
@@ -332,7 +341,7 @@ namespace AFR2Loader
                     Log(ops.FlashedMegaBackup ? "Backup de aplicación ATmega flasheado y contrastado. Revisar qué programa contiene antes de operar; no se supone que sea el firmware del auto."
                         : ops.InstalledMegaFlasher || (Operations.UsesMegaBridge(snapshot) && !ops.MegaFirmwareFlashed)
                         ? "Servicio temporal: RESET Mega LIBRE, D18→E_RX / E_TX→D19. El Mega aún ejecuta el flasher; restaurar el firmware del auto antes de operar."
-                        : "Recordatorio de funcionamiento: Mega D18/TX1 → E_RX (RX central); E_TX (TX central) → Mega D19/RX1. Retirar servicio D0/D1 y RESET Mega→GND con alimentación desconectada.");
+                        : "Recordatorio de funcionamiento: Mega D18/TX1 → E_RX (RX central); E_TX (TX central) → Mega D19/RX1. Con alimentación desconectada, retirar adaptador USB–TTL o servicio D0/D1 y RESET Mega→GND, si se usaron.");
                 if (!ops.Verified) QueueNotice(new LoaderNotice { Origin = "cargador " + port, Code = "completed", Message = lastResult.Text });
             }
             catch (OperationCanceledException error)
@@ -351,6 +360,11 @@ namespace AFR2Loader
             }
             finally
             {
+                if (ops.EspSessionStarted)
+                {
+                    lastResult.Text += " Ya podés soltar K (KEY).";
+                    Log("Operación ESP finalizada: ya podés soltar K (KEY). El Loader no reinicia automáticamente el ESP.");
+                }
                 try
                 {
                     string report = new JavaScriptSerializer().Serialize(new { schema = 1, application = "AFR2 Loader " + LoaderVersion.Value, jobId = currentJob.Id, approvalMode = currentJob.ApprovalMode, operation = title, started = started.ToString("o"), ended = DateTime.Now.ToString("o"), status = resultState, error = errorText,

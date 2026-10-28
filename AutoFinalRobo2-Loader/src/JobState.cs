@@ -59,6 +59,6 @@ namespace AFR2Loader
     }
     public static class LoaderVersion
     {
-        public const string Value = "0.9.0";
+        public const string Value = "0.9.1";
     }
 }

@@ -1,3 +1,7 @@
+> **AFR2-20261028-10:** Protocol Studio recupera el flujo de AutoMicro: parámetros guiados, estructura por campos, cuatro salidas, mapa seleccionable, stream continuo y ayuda. Identidad AFR2 0.1.9 conservada. [Continuidad](../AutoFinalRobo2-Contracts/docs/PROTOCOL_STUDIO_AUTOMICRO.md). Fuente sin tests, build, validadores, navegador ni promoción ESP.
+
+> **AFR2-20261028-09:** Protocol Studio en **Desarrollador**, con Traductor de capturas HEX/texto y Constructor ROBO2. Copia HEX/RealTerm/C/Python/decimal, lectura de arranque ESP y tramas con XOR. [Uso](docs/modules/protocol-studio.md). Fuente implementada; sin tests, compilación, validadores, navegador ni promoción ESP en esta revisión.
+
 > **Build AFR2-20261027-10:** perfil esp compilado,8activos/1571104bytes gzip y copy:esp completado. [Evidencia](../AutoFinalRobo2-Contracts/documentation/builds/2026-10-27-10/README.md). Retorno tipado de startManualScan corregido para TypeScript; sin navegador, tests ni carga física.
 
 > **AFR2-20261027-06:** calibracion con ayuda contextual para 29 parametros; matematica mayor y centrada con el mismo formulario en Auto/Brazo/Conjunto. Pad de movimiento, boton mantenido y campos numero/barra reutilizados con Control. [Ficha](../AutoFinalRobo2-Contracts/changes/2026-10-27-06-calibration-live-math-shared-controls.md). Solo fuente, sin tests/build/validaciones/navegador ni promocion ESP.

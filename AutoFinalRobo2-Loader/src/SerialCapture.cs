@@ -13,7 +13,14 @@ namespace AFR2Loader
     public sealed class SerialViewState
     {
         public string Observed;
-        public long Bytes, Skipped;
+        public long Bytes, Skipped, SkippedBytes;
+    }
+    public sealed class SerialDisplayChunk
+    {
+        public byte[] Bytes = new byte[0];
+        public string Text = "";
+        public bool Header;
+        public int Weight { get { return Bytes.Length + Text.Length; } }
     }
     // One worker owns the port and all capture streams. UI never closes a port during Read.
     public sealed class SerialCapture
@@ -21,15 +28,15 @@ namespace AFR2Loader
         readonly object gate = new object();
         readonly CancellationTokenSource stop = new CancellationTokenSource();
         readonly TaskCompletionSource<bool> opened = new TaskCompletionSource<bool>();
-        readonly ConcurrentQueue<string> display = new ConcurrentQueue<string>();
+        readonly ConcurrentQueue<SerialDisplayChunk> display = new ConcurrentQueue<SerialDisplayChunk>();
         readonly Action<LoaderNotice> notify;
         readonly Encoding encoding;
         readonly JobState journal;
         Task worker;
         string state = "opening", errorText, observed = "sin observar", ended;
         string closeReason = "Cierre solicitado";
-        long bytes, skippedCharacters;
-        int queuedCharacters;
+        long bytes, skippedCharacters, skippedBytes;
+        int queuedDisplayUnits;
         bool released;
         public readonly string Port, Codec, Id, Prefix;
         public readonly int Baud;
@@ -46,7 +53,7 @@ namespace AFR2Loader
         }
         public bool Active { get { lock (gate) return !released; } }
         public string State { get { lock (gate) return state; } }
-        public SerialViewState ViewState() { lock (gate) return new SerialViewState { Observed = observed, Bytes = bytes, Skipped = skippedCharacters }; }
+        public SerialViewState ViewState() { lock (gate) return new SerialViewState { Observed = observed, Bytes = bytes, Skipped = skippedCharacters, SkippedBytes = skippedBytes }; }
         public Task OpenAsync()
         {
             lock (gate) { if (worker != null) throw new InvalidOperationException("Captura ya iniciada."); worker = Task.Run((Action)ReadLoop); }
@@ -60,17 +67,22 @@ namespace AFR2Loader
             if (running != null) await running;
             if (Active) throw new IOException("No se pudo confirmar el cierre de " + Port + ". Revisá el error de la captura; no se permite iniciar una carga.");
         }
-        public bool TakeDisplay(out string text)
+        public bool TakeDisplay(out SerialDisplayChunk chunk)
         {
-            if (!display.TryDequeue(out text)) return false;
-            Interlocked.Add(ref queuedCharacters, -text.Length); return true;
+            if (!display.TryDequeue(out chunk)) return false;
+            Interlocked.Add(ref queuedDisplayUnits, -chunk.Weight); return true;
+        }
+        public void ClearDisplay()
+        {
+            int count = display.Count; SerialDisplayChunk chunk;
+            while (count-- > 0 && TakeDisplay(out chunk)) { }
         }
         public object Snapshot(int cursor, int limit)
         {
             lock (gate) { journal.Status = state; journal.Stage = observed; journal.Result = errorText; journal.Ended = ended; journal.LogPath = Prefix + ".rx.txt"; }
             lock (gate) return new { id = Id, state = state, port = Port, baud = Baud, codec = Codec, framing = "8N1", dtr = false, rts = false,
                 bytesReceived = bytes, started = Started, ended = ended, observed = observed, error = errorText,
-                portReleased = released, skippedDisplayCharacters = skippedCharacters,
+                portReleased = released, skippedDisplayCharacters = skippedCharacters, skippedDisplayBytes = skippedBytes,
                 textLog = Prefix + ".rx.txt", binaryLog = Prefix + ".rx.bin", eventsLog = Prefix + ".events.txt", report = Prefix + ".json",
                 received = journal.Snapshot(cursor, limit) };
         }
@@ -80,13 +92,18 @@ namespace AFR2Loader
             if (events != null) events.WriteLine(notice.At + " [" + code + "] " + message + " " + detail);
             notify(notice);
         }
-        void ReceiveText(string text, StreamWriter transcript, StreamWriter events, BootObserver observer)
+        void ReceiveText(string text, byte[] raw, StreamWriter transcript, StreamWriter events, BootObserver observer)
         {
-            if (text.Length == 0) return;
-            transcript.Write(text); journal.Add(text);
-            int count = Interlocked.Add(ref queuedCharacters, text.Length);
-            if (count <= 262144) display.Enqueue(text);
-            else { Interlocked.Add(ref queuedCharacters, -text.Length); lock (gate) skippedCharacters += text.Length; }
+            if (text.Length == 0 && raw.Length == 0) return;
+            if (text.Length > 0) { transcript.Write(text); journal.Add(text); }
+            var chunk = new SerialDisplayChunk { Bytes = raw, Text = text };
+            int count = Interlocked.Add(ref queuedDisplayUnits, chunk.Weight);
+            if (count <= 262144) display.Enqueue(chunk);
+            else
+            {
+                Interlocked.Add(ref queuedDisplayUnits, -chunk.Weight);
+                lock (gate) { skippedCharacters += text.Length; skippedBytes += raw.Length; }
+            }
             foreach (BootObservation observation in observer.Push(text))
             {
                 lock (gate) observed = observation.Message + " (" + DateTime.Now.ToString("HH:mm:ss") + ")";
@@ -129,10 +146,11 @@ namespace AFR2Loader
                     lock (gate) bytes += count;
                     binary.Write(buffer, 0, count); binary.Flush();
                     int length = decoder.GetChars(buffer, 0, count, characters, 0, false);
-                    ReceiveText(new String(characters, 0, length), transcript, events, observer);
+                    var raw = new byte[count]; Buffer.BlockCopy(buffer, 0, raw, 0, count);
+                    ReceiveText(new String(characters, 0, length), raw, transcript, events, observer);
                 }
                 int remaining = decoder.GetChars(new byte[0], 0, 0, characters, 0, true);
-                ReceiveText(new String(characters, 0, remaining), transcript, events, observer);
+                ReceiveText(new String(characters, 0, remaining), new byte[0], transcript, events, observer);
             }
             catch (OperationCanceledException) { opened.TrySetCanceled(); }
             catch (Exception error) { Failure(error, "Falló la lectura/apertura o el registro serie", events); opened.TrySetException(error); }

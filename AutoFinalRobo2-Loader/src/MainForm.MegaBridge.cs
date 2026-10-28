@@ -15,7 +15,7 @@ namespace AFR2Loader
         readonly Label bridgeServiceState = new Label { Dock = DockStyle.Fill, AutoEllipsis = true };
         TabPage bridgeTab;
         bool syncingBridge;
-        static readonly object[] TransportLabels = { "Puente serial del Mega — D0/D1, RESET a GND", "Flasher en ATmega — D18/D19, RESET libre" };
+        static readonly object[] TransportLabels = { "Puente serial del Mega — D0/D1, RESET a GND", "Flasher en ATmega — D18/D19, RESET libre", "Adaptador USB–TTL externo — lógica 3,3 V" };
         Control CreateEspMethodSelector()
         {
             var row = new FlowLayoutPanel { Dock = DockStyle.Fill, WrapContents = false };
@@ -31,13 +31,14 @@ namespace AFR2Loader
             profileDialogs++;
             try
             {
-                ReadSettings(); string next = selected == 1 ? "mega_bridge" : "mega_reset";
+                ReadSettings(); string next = selected == 1 ? "mega_bridge" : selected == 2 ? "usb-ttl" : "mega_reset";
                 await StopSerialMonitor("Cambio manual de método ESP; liberar COM antes de recablear");
                 string detail = selected == 1
                     ? "MÉTODO: flasher ejecutándose en ATmega.\r\n\r\nQUITAR RESET Mega→GND: RESET queda LIBRE.\r\nD18/TX1→E_RX central (RX ESP).\r\nE_TX central (TX ESP)→D19/RX1.\r\nRetirar cables D0/D1 al ESP y jumpers paralelos.\r\n\r\nEl flasher temporal debe estar cargado al baud elegido. Si falta, usar Cargar flasher en ATmega. Luego KEY/RST del ESP y consulta ROM; no escuchar 74880 por este puente fijo."
+                    : selected == 2 ? "MÉTODO: adaptador USB–TTL externo con lógica 3,3 V.\r\n\r\nElegí el COM del adaptador; el USB del Mega solo alimenta el shield. VCC del adaptador sin conectar.\r\nTX del adaptador→RX ESP, TX ESP→RX del adaptador y GND común, por la ruta identificada.\r\nAislá D18/D19, D0/D1 y cualquier otro emisor paralelo al ESP. No unir RESET Mega a GND por este método.\r\nEl asistente KEY/RST puede escuchar el arranque a 74880."
                     : "MÉTODO: usar el conversor USB-serie del Mega con el ATmega detenido.\r\n\r\nUnir RESET del Mega a GND (NO RST del ESP).\r\nRetirar el enlace D18/D19.\r\nD0/RX0, salida del conversor USB→RX ESP por ruta adaptada.\r\nTX ESP→D1/TX0, entrada del conversor USB.\r\nSin jumpers/emisores paralelos.\r\n\r\nEste sentido corresponde al conversor USB, no al TX/RX del micro detenido. El asistente de KEY/RST y escucha 74880 se aplica a este método.";
                 var checks = new[] { "Desconecté alimentación para recablear y mantengo potencia de actuadores desconectada.",
-                    selected == 1 ? "RESET Mega LIBRE; D18→E_RX y E_TX→D19; D0/D1 al ESP retirados." : "RESET Mega a GND; D18/D19 retirados; D0→RX ESP y TX ESP→D1 por ruta adaptada.",
+                    selected == 1 ? "RESET Mega LIBRE; D18→E_RX y E_TX→D19; D0/D1 al ESP retirados." : selected == 2 ? "USB–TTL de lógica 3,3 V, VCC sin conectar, TX/RX cruzados y GND; enlace serie Mega aislado." : "RESET Mega a GND; D18/D19 retirados; D0→RX ESP y TX ESP→D1 por ruta adaptada.",
                     "Ruta de niveles identificada: no TX de 5 V al RX directo ESP. Masa común y alimentación lógica identificadas.",
                     "Retiré jumpers/emisores paralelos. Entiendo que elegir el método no mueve cables ni flashea por sí solo." };
                 if (Confirm("Confirmar método de flasheo ESP", detail, checks))
@@ -93,7 +94,7 @@ namespace AFR2Loader
             syncingBridge = true;
             try
             {
-                operationTransport.SelectedIndex = Operations.UsesMegaBridge(profile) ? 1 : 0;
+                operationTransport.SelectedIndex = Operations.UsesMegaBridge(profile) ? 1 : profile.Get("EspTransport") == "usb-ttl" ? 2 : 0;
                 if (bridgeTransport.Items.Count > 0) bridgeTransport.SelectedIndex = operationTransport.SelectedIndex;
                 bridgeSpeed.SelectedItem = profile.Get("BridgeBaud");
                 UpdateTargetActions(); UpdateConnectionEvidence(""); UpdateBridgeServiceState();

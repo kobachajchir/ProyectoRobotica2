@@ -1,0 +1,21 @@
+{
+  "changeId": "AFR2-20261028-10",
+  "decisionId": "VIS-046",
+  "mode": "APLICAR",
+  "manualVersion": "0.1.9",
+  "authorization": "Borrador previamente autorizado para Desarrollador/primitivas (VIS-019), continuado por pedido humano actual de consistencia y conservación de la esencia de AutoMicro.",
+  "canonicalIdentity": ["docs/design-system/index.md", "docs/design-system/tokens.json", "docs/design-system/components.md", "AutoFinalRobo2-Web/src/styles/tokens.css"],
+  "referenceStructure": "AutoMicro actual: ProtocolSection, BuilderColumn, OutputsColumn, TranslatorColumn, FrameVisualizationShowcase y studio.css; solo lectura.",
+  "targets": ["ProtocolStudioPage.tsx", "CaptureInspector.tsx", "PacketStructure.tsx", "StudioPrimitives.tsx", "guidedBodies.ts", "protocol-studio.css"],
+  "direction": "Confirmada",
+  "referenceOrganization": "Observada en fuente",
+  "composition": "Propuesta",
+  "coverage": "Parcial: fuentes y estados definidos; sin ejecución",
+  "verification": "No verificada",
+  "approval": "Dirección autorizada; aspecto pendiente",
+  "preservedIdeas": ["constructor y traductor", "rutas y catálogo por grupos", "parámetros y override manual", "estructura por campos", "cuatro salidas", "puente hacia traductor", "escáner y mapa seleccionable", "stream continuo", "payload y comprobaciones", "ayuda"],
+  "states": ["constructor listo", "parámetro inválido", "HEX manual prioritario", "respuesta manual", "salida copiada", "copia manual", "entrada vacía", "error de entrada", "captura analizada", "bloque seleccionado", "framing inválido", "payload con observaciones", "UTF-8 inválido", "ayuda abierta"],
+  "responsive": "Constructor 290..360px y salida flexible; una columna bajo1050px. Salidas/conversiones apiladas bajo700px. Cards de campos y mapa usan auto-fit. Fuente, no render comprobado.",
+  "rules": ["identidad AFR2 con tokens de ambos temas", "superficies sólidas de trabajo", "una tarea visible y ayuda compartida", "etiquetas/foco/estado además de color", "bytes originales y procedencia explícita"],
+  "limits": "Sin tests, builds, validadores, navegador, mediciones, móvil, COM, hardware ni promoción ESP; no se afirma equivalencia probada."
+}

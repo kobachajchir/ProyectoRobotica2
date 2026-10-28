@@ -452,3 +452,42 @@ Cinco reglas: (1) tokens propios Control/GOTO, (2) jerarquía dato/control/detal
 explícitos, (5) movimiento ligado al dato. VIS-037 se conserva para los controles,
 pero se sustituye su plataforma/composición. Diseño Propuesto; temas/móvil,
 contraste, teclado y rendimiento No verificados. Sin tests/build/validadores.
+
+## VIS-045 — Protocol Studio desde Desarrollador (28/10/2026)
+
+Confirmada: solicitud humana de copiar y traducir capturas HEX como AutoMicro.
+Observada: constructor/traductor histórico, manual 0.1.9 previamente autorizado,
+TaskSections, Field, Button, SectionHeader, notify y tokens AFR2 existentes.
+Propuesta: acceso por tarjeta y ruta propia, dos tareas, conversión en columnas,
+scanner plegable paginado y constructor con salida adosada. Bajo 700 px las
+conversiones se apilan; el constructor se apila bajo 1050 px. No se redefine
+paleta, fuentes, marca ni movimiento. El código fuente conserva los tokens
+vigentes. No se ejecutaron herramientas de búsqueda de deriva.
+
+Fuentes de identidad: manual y primitivas propias; AutoMicro solo aporta flujo
+instrumental. Cinco reglas: tokens en ambos temas, superficie sólida de trabajo,
+una tarea visible, foco/etiquetas/estados explícitos y datos con procedencia real.
+Cobertura parcial de fuente en coverage-20261028-09.json. Aspecto, contraste,
+teclado, copia y móvil No verificados; sin tests/build/validadores/navegador.
+
+## VIS-046 — Esencia de AutoMicro y consistencia de Protocol Studio (28/10/2026)
+
+Confirmada: pedido humano de conservar funcionalidad, ideas y esencia de
+Protocol Studio, con libertad para alinearlo a la interfaz actual. Continúa
+APLICAR sobre borrador 0.1.9 previamente autorizado para Desarrollador/primitivas.
+Observada en fuente AutoMicro: constructor con parámetros y override manual,
+campos desplegables, cuatro salidas, traductor, mapa seleccionable y stream.
+
+Propuesta: columna de edición 290–360 px y área flexible de estructura/salidas,
+mapa con selección explícita y análisis único. Se conserva la pestaña inicial
+Constructor de la referencia. Superficies y componentes compartidos AFR2;
+acentos de campos toman action/info/border, sin importar paleta cian/violeta.
+Las etiquetas/offsets/separaciones comunican la función además del color.
+Bajo 1050 px el constructor se apila; bajo 700 px, salidas y conversiones.
+No hay nueva animación; los detalles nativos y tabs mantienen teclado/foco.
+
+Cinco reglas protectoras: tokens de ambos temas; superficies sólidas de trabajo;
+una tarea visible; estado y etiquetas accesibles; bytes y procedencia reales.
+Matriz funcional en docs/PROTOCOL_STUDIO_AUTOMICRO.md desde Contracts;
+cobertura coverage-20261028-10.json. Fuente revisada manualmente; interacción,
+contraste, temas y móvil No verificados. Sin tests/build/validadores/navegador.

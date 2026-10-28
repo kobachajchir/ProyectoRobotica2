@@ -1,12 +1,13 @@
-# AFR2 Loader 0.9 — conexión con Codex
+# AFR2 Loader 0.9.1 — conexión con Codex
 
 El servidor pertenece al mismo módulo y comparte la sesión del Loader gráfico.
 
 Desde0.8, `EspTransport` selecciona `mega_bridge` (flasher temporal, D18/D19,
-RESET libre) o `mega_reset` (puente físico D0/D1, RESET-GND). Se consulta en
+RESET libre), `mega_reset` (puente físico D0/D1, RESET-GND) o `usb-ttl`
+(adaptador externo3,3V). `mega-usb` es alias anterior de `mega_reset`. Se consulta en
 loader_status/perfil. Las operaciones ESP existentes usan esa selección y sus
 asistentes: no saltan al otro modo ante un error. `listenBoot` solo gobierna la
-escucha74880 en el modo físico; en el software se guía KEY/RST manualmente y
+escucha74880 en Mega físico o USB–TTL; en el software se guía KEY/RST manualmente y
 se consulta ROM al baud fijo. Importar/proponer un perfil no acredita cableado.
 
 `install_mega_flasher` usa la casilla Backup de ATmega antes de cargar de la
@@ -139,6 +140,14 @@ completas. `received.hasMore`, `firstAvailableCursor` y `cursorWasTruncated`
 informan el recorte de memoria. Los registros completos están en `.rx.txt` y
 `.rx.bin`; si hubo un fallo de disco, el estado lo indica y la captura termina.
 
+El selector local Vista (ASCII / HEX con espacios / Texto decodificado)
+reconvierte la ventana retenida sin reabrir el puerto ni cambiar `captureId`.
+No transforma `received.lines`: sigue siendo texto decodificado según `codec`
+de la captura, igual que `.rx.txt`. `.rx.bin` conserva bytes originales.
+`skippedDisplayBytes` informa bytes omitidos por atraso de la cola visual;
+se conserva `skippedDisplayCharacters` para el texto decodificado omitido.
+Limpiar la vista tampoco borra el journal MCP ni mueve sus cursores.
+
 `state`: opening/open/closing/closed/failed. `portReleased` es independiente
 del éxito de captura: un fallo de lectura puede terminar con puerto liberado.
 `observed` conserva el último mensaje de arranque con hora; no garantiza que
@@ -192,6 +201,26 @@ COM16 es un ejemplo; elegir el COM de esa computadora. Para builds se omite
 `port`. Las cargas usan el perfil visible al aprobar, sin modificarlo a partir
 de texto del chat. `listenBoot` predetermina true para ESP; false pasa directo
 a la consulta ROM y no omite la identificación ni la verificación.
+
+Antes del comando de verificación ESP se exige una consulta nueva al cargador
+(`read_mac`/`read-mac`, sin escritura). Si falla, `checking_bootloader` pasa a
+`verification_paused` y la operación espera el aviso/asistente KEY/RST de la
+ventana. La recuperación pide botones aunque `listenBoot:false`; la opción
+solo omite la guía inicial. Tras recuperarlo se vuelve a comprobar y se
+continúa con la verificación, sin reenviar la escritura. Cancelar conserva
+`writingStarted:true` y `contentVerified:false`. La autoaceptación MCP no
+omite este asistente físico; no se agrega una herramienta MCP nueva.
+
+El perfil incluye `EspTransport`: `mega_reset` (`mega-usb` aceptado como alias para perfiles
+anteriores) o `usb-ttl` para un adaptador externo con lógica3,3V. Cambia las
+instrucciones de conexión; no fija el COM ni configura sus niveles eléctricos.
+La GUI y las acciones MCP usan el mismo generador de argumentos: Python `-u`,
+`no_reset` antes/después, baudios y SPI del perfil y stub normal al escribir.
+Mantener K (KEY) desde la secuencia con RST hasta terminar la operación,
+incluidas escritura y verificación; `listenBoot:false` no elimina ese paso
+manual si ya se entró en programación. El recordatorio de soltarlo se emite
+al finalizar la operación, también al fallar/cancelar, sin convertir el fallo
+en una verificación correcta.
 
 Ejemplo de consulta posterior:
 
@@ -273,3 +302,13 @@ Fuentes del protocolo y registro:
 **Estado de entrega:** implementación en fuente. No compilada, ejecutada ni
 conectada a Codex; no hay tests, validación visual, apertura COM ni flasheo de
 esta revisión. El registro global no se ejecutó desde esta entrega.
+
+## Integración0.9.1 — AFR2-20261028-11
+
+Las funciones0.9.0 de backups y flasher se conservan junto con monitor
+ASCII/HEX/texto y verificación de0.7.4. La consulta nueva antes de verificar
+usa dos intentos y15s (30s con wrapper). Si falla, la recuperación respeta el
+transporte seleccionado: mega_bridge no abre escucha74880 ni exige RESET-GND.
+KEY se mantiene hasta finalizar la operación. No cambia la revisión manual/
+autoaceptación de la sesión ni crea permisos nuevos. Fuente sin ejecutar ni
+compilar esta integración; no se actualiza automáticamente una ventana ya abierta.

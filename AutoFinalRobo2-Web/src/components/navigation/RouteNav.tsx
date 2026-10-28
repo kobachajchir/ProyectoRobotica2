@@ -49,7 +49,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const sidebar = useRef<HTMLElement>(null);
   const location = useLocation();
   const mode = useRobotMode();
-  const title = location.pathname === '/desarrollador' ? 'Desarrollador' : NAV_ITEMS.find((item) => item.to === location.pathname)?.label ?? 'Inicio';
+  const title = location.pathname.startsWith('/desarrollador/protocol-studio') ? 'Protocol Studio' : location.pathname === '/desarrollador' ? 'Desarrollador' : NAV_ITEMS.find((item) => item.to === location.pathname)?.label ?? 'Inicio';
   const sidebarCollapsed = isSidebarCollapsed;
   const overlays = useMemo(
     () => ({

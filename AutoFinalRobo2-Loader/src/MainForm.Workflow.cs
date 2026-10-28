@@ -125,6 +125,13 @@ namespace AFR2Loader
                 ShowStep("bootloader", CheckState.Unchecked, notice.Message);
                 ShowStep("connected", CheckState.Unchecked, "Sin consulta posterior a este arranque.");
             }
+            else if (code == "checking_bootloader" || code == "verification_paused")
+            {
+                ShowStep("writing", CheckState.Checked, "La escritura terminó; falta completar la verificación del Loader.");
+                ShowStep("verifying", CheckState.Unchecked, notice.Message);
+                ShowStep("connected", code == "checking_bootloader" ? CheckState.Indeterminate : CheckState.Unchecked, notice.Message);
+                activeStep = code == "checking_bootloader" ? "connected" : null;
+            }
             else if (code == "syncing") { activeStep = "connected"; ShowStep(activeStep, CheckState.Indeterminate, notice.Message); }
             else if (code == "rom_connected" || code == "device_connected")
             { ShowStep("connected", CheckState.Checked, notice.Message); if (activeStep == "connected") activeStep = null; }
@@ -156,20 +163,20 @@ namespace AFR2Loader
                 else if (code == "reset_observed") bootGuideStatus.Text = "Reinicio detectado. Esperando el mensaje de modo de programación...";
             }
         }
-        Task GuideEspBoot(Func<CancellationToken, Task> listenBoot, CancellationToken token)
+        Task GuideEspBoot(bool forVerification, Func<CancellationToken, Task> listenBoot, CancellationToken token)
         {
             token.ThrowIfCancellationRequested();
-            SetState("Esperando Continuar: asistente K / RST del ESP");
+            SetState(forVerification ? "Verificación detenida: repetir K / RST para recuperar el cargador ESP" : "Esperando Continuar: asistente K / RST del ESP");
             using (var linked = CancellationTokenSource.CreateLinkedTokenSource(token))
-            using (var dialog = new Form { Text = "Entrar en programación ESP · K y RST", Size = new Size(760, 540), MinimumSize = new Size(660, 480), StartPosition = FormStartPosition.CenterParent, Font = Font, MinimizeBox = false, MaximizeBox = false })
+            using (var dialog = new Form { Text = forVerification ? "Recuperar cargador ESP antes de verificar · K y RST" : "Entrar en programación ESP · K y RST", Size = new Size(760, 540), MinimumSize = new Size(660, 480), StartPosition = FormStartPosition.CenterParent, Font = Font, MinimizeBox = false, MaximizeBox = false })
             {
                 bool running = false, complete = false; Exception failure = null;
                 var layout = new TableLayoutPanel { Dock = DockStyle.Fill, Padding = new Padding(20), ColumnCount = 1, RowCount = 4 };
                 layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 65)); layout.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
                 layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 65)); layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 45));
-                layout.Controls.Add(new Label { Text = "Al momento de flashear te voy a avisar para que presiones K y RST.\r\nPrimero pulsá Continuar y esperá el aviso PUERTO LISTO.", Dock = DockStyle.Fill, Font = new Font(Font, FontStyle.Bold) }, 0, 0);
+                layout.Controls.Add(new Label { Text = forVerification ? "La escritura terminó. Repetí K / RST para continuar solo con la verificación.\r\nPrimero pulsá Continuar y esperá PUERTO LISTO. No se volverá a escribir." : "Al momento de flashear te voy a avisar para que presiones K y RST.\r\nPrimero pulsá Continuar y esperá el aviso PUERTO LISTO.", Dock = DockStyle.Fill, Font = new Font(Font, FontStyle.Bold) }, 0, 0);
                 var instructions = new TextBox { Dock = DockStyle.Fill, Multiline = true, ReadOnly = true, ScrollBars = ScrollBars.Vertical, BackColor = Color.White,
-                    Text = "Con el puerto listo:\r\n\r\n1. Apretá y mantené K (KEY) del shield.\r\n\r\n2. Sin soltar K, apretá RST del shield.\r\n\r\n3. Soltá RST y seguí manteniendo K.\r\n\r\n4. Soltá K. El programa busca boot mode:(1,...).\r\n\r\nNo pulses el reset del ATmega. Su RESET sigue unido a GND.\r\nSi aparece modo 3, repetí la secuencia mientras la escucha siga abierta.\r\nAl detectar modo 1 se cerrará esta pantalla y se consultará la ROM." };
+                    Text = "Con el puerto listo:\r\n\r\n1. Apretá y mantené K (KEY) del shield.\r\n\r\n2. Sin soltar K, apretá RST del shield.\r\n\r\n3. Soltá SOLO RST y seguí manteniendo K.\r\n\r\n4. NO SUELTES K hasta terminar la operación, incluidas escritura y verificación si estás cargando.\r\n\r\nEl programa busca boot mode:(1,...). Al detectarlo cierra esta pantalla y consulta la ROM; seguí manteniendo K durante los pasos y confirmaciones siguientes.\r\nNo pulses el reset del ATmega; si usás su puente USB, su RESET sigue unido a GND.\r\nSi aparece modo 3, repetí la secuencia mientras la escucha siga abierta." };
                 EnableTextCopyFeedback(instructions); layout.Controls.Add(instructions, 0, 1);
                 bootGuideStatus = new Label { Text = "Listo para abrir la escucha. Todavía no pulses K / RST.", Dock = DockStyle.Fill, Font = new Font(Font, FontStyle.Bold), TextAlign = ContentAlignment.MiddleLeft };
                 layout.Controls.Add(bootGuideStatus, 0, 2);
@@ -220,7 +227,7 @@ namespace AFR2Loader
                 "Mega D18 / TX1  →  E_RX / RX central del shield\r\n" +
                 "E_TX / TX central del shield  →  Mega D19 / RX1\r\n\r\n" +
                 "Son los pines centrales del selector ESP URAT.\r\n\r\n" +
-                "Desconectá la alimentación antes de mover cables. Retirá los cables de servicio D0/D1 y quitá el puente RESET del ATmega a GND. Dejá K (KEY) libre para el arranque normal." +
+                "Ya podés soltar K (KEY). Desconectá la alimentación antes de mover cables. Retirá el adaptador USB–TTL o los cables de servicio D0/D1 y el puente RESET del ATmega a GND, según la conexión usada. Dejá K libre para el arranque normal." +
                 (EspFlashRules.IsAt(loadedProfile) ? "\r\n\r\nEste perfil usa AT: el programa del microcontrolador debe implementar AT. El firmware de producto AutoFinalRobo2 usa su protocolo propio y no se convierte a AT al cargar el ESP." : ""),
                 "Carga verificada · recordar cableado de funcionamiento", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }

@@ -1,0 +1,18 @@
+{
+  "changeId": "AFR2-20261028-09",
+  "decisionId": "VIS-045",
+  "mode": "APLICAR",
+  "manualVersion": "0.1.9",
+  "authorization": "Continúa el borrador 0.1.9 previamente autorizado para Desarrollador y primitivas AFR2, según index.md / VIS-019. Pedido humano actual de agregar Protocol Studio.",
+  "canonical": ["docs/design-system/index.md", "docs/design-system/tokens.json", "docs/design-system/components.md"],
+  "supporting": ["AutoFinalRobo2-Web/src/styles/tokens.css", "AutoFinalRobo2-Web/src/styles/workspace.css", "AutoFinalRobo2-Web/src/components/ui/TaskSections.tsx", "AutoFinalRobo2-Web/reference/web/src/pages/ProtocolSection.tsx"],
+  "targets": ["AutoFinalRobo2-Web/src/features/developer/DeveloperPage.tsx", "AutoFinalRobo2-Web/src/features/protocolStudio/ProtocolStudioPage.tsx", "AutoFinalRobo2-Web/src/styles/protocol-studio.css"],
+  "direction": "Confirmada",
+  "composition": "Propuesta",
+  "coverage": "Parcial: fuentes y estados definidos; sin ejecución",
+  "verification": "No verificada",
+  "approval": "Dirección autorizada; aspecto pendiente",
+  "states": ["entrada vacía", "entrada inválida", "resultado", "UTF-8 inválido", "framing correcto", "payload con observaciones", "trama inválida", "truncada", "bytes crudos", "copia completada", "copia manual", "constructor con error"],
+  "rules": ["tokens AFR2 en ambos temas", "superficie sólida para trabajar", "una tarea visible con TaskSections", "foco y campos accesibles con texto de estado", "sin animación nueva ni interpretación física ficticia"],
+  "limits": "Sin tests, builds, validadores, mediciones, navegador, teléfono, placas ni promoción ESP. El ejemplo es texto offline identificado; no telemetría."
+}

@@ -1,3 +1,12 @@
+## AFR2-20261028-11 — 28/10/2026
+
+Integración de origin/main2a72b9a y mejoras locales. Loader remoto0.9.0 más
+monitor HEX, limpieza, USB–TTL, Python -u y verificación previa locales: fuente
+integrada0.9.1. Se conservan backups/Preferencias, flasher ATmega y Protocol
+Studio; este último pasa a fichas09/10 por colisión con IDs remotos01/02.
+Sin compilar, probar, validar, ejecutar GUI, COM, flashear ni promover Web.
+[Ficha y resguardo](changes/2026-10-28-11-integracion-local-remoto.md).
+
 ## AFR2-20261028-01 — 28/10/2026
 
 Comprobación resistente de J1/uniones sobre v08: 35 secciones y 7.075 estados,
@@ -7,6 +16,68 @@ separados sin elevar el plato; estudio temporal de espacio del motor.
 V08 sin modificar; J1 sin aprobar, material/perfil pendientes. Sin FEA de
 sólidos/contactos ni ensayo físico.
 [Ficha](changes/2026-10-28-01-j1-joint-strength-study.md).
+
+## AFR2-20261028-10 — 28/10/2026
+
+Web: Protocol Studio alineado al flujo de AutoMicro. Parámetros guiados y HEX
+manual, catálogo por familias, estructura por campos/offsets, cuatro salidas,
+mapa seleccionable, stream continuo y ayuda. Conserva ROBO2, conversiones y
+copias de01. Identidad AFR2 0.1.9 / VIS-046. Solo fuente con cotejo manual;
+sin tests, compilación, validadores, navegador, COM, flasheos ni promoción ESP.
+atmega/esp sin cambios. [Ficha](changes/2026-10-28-10-protocol-studio-essence.md).
+
+## AFR2-20261028-09 — 28/10/2026
+
+Web: Protocol Studio accesible desde Desarrollador. Traductor HEX/texto con
+metadatos de monitor separados, copia multiformato, scanner ROBO2 y constructor
+local con sesión/transacción LE y XOR. BOOT sin correlación y variantes de
+secuencias actuales. Solo fuente/documentación; sin tests, compilación,
+validadores, navegador, puertos, flasheo ni promoción a ESP. atmega/esp sin cambios.
+[Ficha](changes/2026-10-28-09-web-protocol-studio.md).
+
+## AFR2-20261027-30 — 27/10/2026
+
+Loader0.7.4: Monitor serie con selector ASCII / HEX con espacios / Texto
+decodificado. Usa bytes originales y reconvierte la ventana retenida sin
+reabrir COM. Limpieza y copia siguen el formato visible; logs, parser y
+journal MCP independientes de Vista. Solo fuente/documentación, sin
+compilar/ejecutar ni pruebas COM/hardware. atmega/esp/web/CAD sin cambios.
+[Ficha](changes/2026-10-27-30-loader-serial-hex-ascii.md).
+
+## AFR2-20261027-29 — 27/10/2026
+
+Loader0.7.3: consulta nueva al cargador ROM/stub antes de enviar verify_flash.
+Sin respuesta confirmada, detiene la verificación y ofrece repetir KEY/RST;
+tras recuperarlo comprueba otra vez y verifica sin repetir escritura.
+GUI/MCP, Web/LittleFS y AT comparten el control. Solo fuente/documentación,
+sin compilar/ejecutar ni COM/flasheos. atmega/esp/web/CAD sin cambios.
+[Ficha](changes/2026-10-27-29-loader-verification-bootloader-gate.md).
+
+## AFR2-20261027-28 — 27/10/2026
+
+Loader0.7.2: botón Limpiar ventana en Operación, activo durante trabajos.
+Vacía consola/cola de visualización; conserva logs, estados, historial y
+operación en curso. Solo fuente/documentación, sin compilar ni ejecutar.
+atmega/esp/web/CAD sin cambios por esta ficha.
+[Ficha](changes/2026-10-27-28-loader-clear-operation-view.md).
+
+## AFR2-20261027-27 — 27/10/2026
+
+Loader0.7.1: escritura ESP con Python `-u`, mismos argumentos del comando
+manual aportado y KEY sostenido hasta terminar escritura/verificación.
+Conexión USB–TTL/puente Mega configurable, GUI/MCP compartidos y manuales
+alineados. Fuente sin compilar/ejecutar esta revisión. Evidencia del usuario:
+firmware manual COM5/115200, 437936 bytes y hash verificado; sin arranque,
+Wi-Fi ni LittleFS acreditados. atmega/web/CAD sin cambios de esta ficha.
+[Ficha y transcripción](changes/2026-10-27-27-loader-esp-command-key.md).
+
+## AFR2-20261027-26 — 27/10/2026
+
+Preferencias STA del ESP preparadas en `data/config/wifi.json` privado,
+excluido de Git. El firmware ya lee ese archivo de LittleFS; C++ y BIN
+sin cambios. Requiere regenerar/cargar la imagen FS; no se ejecutaron
+builds, tests, validadores, generación FS, COM ni flasheos.
+[Ficha](changes/2026-10-27-26-esp-private-sta-config.md).
 
 ## AFR2-20261027-25 — 27/10/2026
 
