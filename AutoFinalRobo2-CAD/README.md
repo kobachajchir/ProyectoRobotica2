@@ -1,3 +1,5 @@
+> **AFR2-20261028-09:** [prediseno liviano v13](mecanica/brazo-antropomorfo/busqueda_actuadores_v13/README.md). Aluminio, PVC25/20, PLA localizado y transmisiones menores; candidato1.63kg sin carga/con pies propuestos. Alcance reducido373mm, margen preliminar2.36, apoyo sin cerrar. Analisis externo; sin nuevo CAD ni aprobacion fisica. Maestro v09 conservado.
+
 > **AFR2-20261028-08:** [preseleccion v12 a30grados/s](mecanica/brazo-antropomorfo/busqueda_actuadores_v12/README.md). Curva nominalSTS3250, inercia equivalenteRS01 y estabilidad dinamica calculadas. La opcion fuerte pesa hasta5.82kg y no queda aprobada para el auto. Maestro v09 conservado; objetivo activo.
 
 > **AFR2-20261028-07:** [busqueda v11 de actuadores](mecanica/brazo-antropomorfo/busqueda_actuadores_v11/README.md). Par y masa recalculados incluyendo transmisiones: DS51150 insuficiente desde velocidad de catalogo; STS con reductores ofrece margen nominal minimo2.11 bajo presupuestos explicitos. No hay seleccion mecanica cerrada ni resistencia FDM acreditada; v09 conservada.

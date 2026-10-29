@@ -1,0 +1,867 @@
+[
+  {
+    "name": "centrado_PWM_L130_120",
+    "shafts": [
+      {
+        "joint": 1,
+        "d_mm": 8,
+        "envelope_vm_MPa": 137.02021450824253,
+        "required_Rp_n2_Kt2_MPa": 548.0808580329701,
+        "diameter_bending_torsion_only_for_Rp600_mm": 7.7466422215939605
+      },
+      {
+        "joint": 2,
+        "d_mm": 8,
+        "envelope_vm_MPa": 136.6949907921125,
+        "required_Rp_n2_Kt2_MPa": 546.77996316845,
+        "diameter_bending_torsion_only_for_Rp600_mm": 7.7423990228120605
+      },
+      {
+        "joint": 3,
+        "d_mm": 8,
+        "envelope_vm_MPa": 84.74528369732413,
+        "required_Rp_n2_Kt2_MPa": 338.9811347892965,
+        "diameter_bending_torsion_only_for_Rp600_mm": 6.59784248214931
+      },
+      {
+        "joint": 4,
+        "d_mm": 6,
+        "envelope_vm_MPa": 106.17316459556547,
+        "required_Rp_n2_Kt2_MPa": 424.69265838226187,
+        "diameter_bending_torsion_only_for_Rp600_mm": 5.331573490765903
+      },
+      {
+        "joint": 5,
+        "d_mm": 5,
+        "envelope_vm_MPa": 117.562258457445,
+        "required_Rp_n2_Kt2_MPa": 470.24903382978,
+        "diameter_bending_torsion_only_for_Rp600_mm": 4.597011268538538
+      },
+      {
+        "joint": 6,
+        "d_mm": 5,
+        "envelope_vm_MPa": 59.84701874592787,
+        "required_Rp_n2_Kt2_MPa": 239.38807498371148,
+        "diameter_bending_torsion_only_for_Rp600_mm": 3.6625343706694444
+      }
+    ],
+    "tubes": [
+      {
+        "name": "PVC25",
+        "od_mm": 25,
+        "id_mm": 22,
+        "length_between_axes_mm": 130,
+        "envelope_sigma_MPa": 8.558438857104875,
+        "envelope_tau_MPa": 4.496292501190556,
+        "envelope_vm_MPa": 11.571379107072325,
+        "required_effective_strength_n2_Kt2_MPa": 46.2855164282893,
+        "limits": "No incluye aplastamiento, taladros, creep, ovalizacion ni contacto con manguitos. PVC sin resistencia efectiva asignada."
+      },
+      {
+        "name": "PVC20",
+        "od_mm": 20,
+        "id_mm": 17,
+        "length_between_axes_mm": 120,
+        "envelope_sigma_MPa": 8.669145772988335,
+        "envelope_tau_MPa": 4.563403068520318,
+        "envelope_vm_MPa": 11.731497395075511,
+        "required_effective_strength_n2_Kt2_MPa": 46.925989580302044,
+        "limits": "No incluye aplastamiento, taladros, creep, ovalizacion ni contacto con manguitos. PVC sin resistencia efectiva asignada."
+      }
+    ],
+    "plates": [
+      {
+        "name": "Torre",
+        "plate_count": 2,
+        "net_width_mm": 14,
+        "thickness_mm": 4,
+        "nominal_weak_axis_stress_MPa": 69.47155675465788,
+        "required_Rp_n2_Kt2_MPa": 277.88622701863153,
+        "thickness_weak_axis_bending_only_Rp240_n2_Kt2_mm": 4.2990975201209
+      },
+      {
+        "name": "Hombro",
+        "plate_count": 2,
+        "net_width_mm": 17,
+        "thickness_mm": 4,
+        "nominal_weak_axis_stress_MPa": 57.10160143901494,
+        "required_Rp_n2_Kt2_MPa": 228.40640575605977,
+        "thickness_weak_axis_bending_only_Rp240_n2_Kt2_mm": 3.898162425112272
+      },
+      {
+        "name": "Codo",
+        "plate_count": 2,
+        "net_width_mm": 13,
+        "thickness_mm": 4,
+        "nominal_weak_axis_stress_MPa": 46.242206980857844,
+        "required_Rp_n2_Kt2_MPa": 184.96882792343138,
+        "thickness_weak_axis_bending_only_Rp240_n2_Kt2_mm": 3.506729807780198
+      },
+      {
+        "name": "HorquillaJ5",
+        "plate_count": 2,
+        "net_width_mm": 15,
+        "thickness_mm": 2.5,
+        "nominal_weak_axis_stress_MPa": 34.71957658487441,
+        "required_Rp_n2_Kt2_MPa": 138.87830633949764,
+        "thickness_weak_axis_bending_only_Rp240_n2_Kt2_mm": 1.8986232275167154
+      }
+    ],
+    "bearings": [
+      {
+        "joint": 1,
+        "center_spacing_assumed_mm": 10,
+        "radial_upper_N": 526.6395915340805,
+        "axial_upper_N": 18.273771767619348,
+        "required_C0_upper_n2_N": 1089.8267266033997,
+        "limit": "Cota conservadora Fr+Fa. Separacion y retencion axial propuestas, no montaje comprobado."
+      },
+      {
+        "joint": 2,
+        "center_spacing_assumed_mm": 34,
+        "radial_upper_N": 159.96967617650384,
+        "axial_upper_N": 16.025946501863856,
+        "required_C0_upper_n2_N": 351.99124535673536,
+        "limit": "Cota conservadora Fr+Fa. Separacion y retencion axial propuestas, no montaje comprobado."
+      },
+      {
+        "joint": 3,
+        "center_spacing_assumed_mm": 40,
+        "radial_upper_N": 86.58124441468192,
+        "axial_upper_N": 13.299487547299961,
+        "required_C0_upper_n2_N": 199.76146392396376,
+        "limit": "Cota conservadora Fr+Fa. Separacion y retencion axial propuestas, no montaje comprobado."
+      },
+      {
+        "joint": 4,
+        "center_spacing_assumed_mm": 10,
+        "radial_upper_N": 174.48590720237956,
+        "axial_upper_N": 11.553754064664039,
+        "required_C0_upper_n2_N": 372.0793225340872,
+        "limit": "Cota conservadora Fr+Fa. Separacion y retencion axial propuestas, no montaje comprobado."
+      },
+      {
+        "joint": 5,
+        "center_spacing_assumed_mm": 32,
+        "radial_upper_N": 38.06158455965292,
+        "axial_upper_N": 8.53372861806854,
+        "required_C0_upper_n2_N": 93.19062635544293,
+        "limit": "Cota conservadora Fr+Fa. Separacion y retencion axial propuestas, no montaje comprobado."
+      },
+      {
+        "joint": 6,
+        "center_spacing_assumed_mm": 9,
+        "radial_upper_N": 64.6196169154291,
+        "axial_upper_N": 7.703288818720897,
+        "required_C0_upper_n2_N": 144.6458114683,
+        "limit": "Cota conservadora Fr+Fa. Separacion y retencion axial propuestas, no montaje comprobado."
+      }
+    ],
+    "base_plate": {
+      "net_band_width_assumed_mm": 36,
+      "thickness_mm": 4,
+      "required_Rp_n2_Kt2_MPa": 216.13373212560228,
+      "limit": "Requiere bandas continuas y ventanas fuera de anclajes. Acrilico, apriete y soporte de pies pendientes."
+    },
+    "gripper": {
+      "peak_payload_force_N": 5.119541515603754,
+      "MG92B_stall_budget_kgfcm": 3.5,
+      "eta_assumed": 0.7,
+      "total_jaw_normal_upper_budget_N": 20.021910416666664,
+      "minimum_pad_mu_for_factor2": 0.5113939088791586,
+      "caveat": "Par de bloqueo no continuo, sin precarga/friccion real, dedos/racks no verificados."
+    }
+  },
+  {
+    "name": "centrado_PWM_L100_85",
+    "shafts": [
+      {
+        "joint": 1,
+        "d_mm": 8,
+        "envelope_vm_MPa": 104.21621017182508,
+        "required_Rp_n2_Kt2_MPa": 416.86484068730033,
+        "diameter_bending_torsion_only_for_Rp600_mm": 7.068068979507852
+      },
+      {
+        "joint": 2,
+        "d_mm": 8,
+        "envelope_vm_MPa": 103.89900349580545,
+        "required_Rp_n2_Kt2_MPa": 415.5960139832218,
+        "diameter_bending_torsion_only_for_Rp600_mm": 7.0631690012737
+      },
+      {
+        "joint": 3,
+        "d_mm": 8,
+        "envelope_vm_MPa": 67.3839243486187,
+        "required_Rp_n2_Kt2_MPa": 269.5356973944748,
+        "diameter_bending_torsion_only_for_Rp600_mm": 6.110269725346992
+      },
+      {
+        "joint": 4,
+        "d_mm": 6,
+        "envelope_vm_MPa": 98.27923256939482,
+        "required_Rp_n2_Kt2_MPa": 393.1169302775793,
+        "diameter_bending_torsion_only_for_Rp600_mm": 5.196126422049367
+      },
+      {
+        "joint": 5,
+        "d_mm": 5,
+        "envelope_vm_MPa": 109.13804844887531,
+        "required_Rp_n2_Kt2_MPa": 436.55219379550124,
+        "diameter_bending_torsion_only_for_Rp600_mm": 4.484511047581406
+      },
+      {
+        "joint": 6,
+        "d_mm": 5,
+        "envelope_vm_MPa": 55.66592275738026,
+        "required_Rp_n2_Kt2_MPa": 222.66369102952103,
+        "diameter_bending_torsion_only_for_Rp600_mm": 3.575229060683411
+      }
+    ],
+    "tubes": [
+      {
+        "name": "PVC25",
+        "od_mm": 25,
+        "id_mm": 22,
+        "length_between_axes_mm": 100,
+        "envelope_sigma_MPa": 6.521062848325582,
+        "envelope_tau_MPa": 3.4602256324931657,
+        "envelope_vm_MPa": 8.856847348526468,
+        "required_effective_strength_n2_Kt2_MPa": 35.42738939410587,
+        "limits": "No incluye aplastamiento, taladros, creep, ovalizacion ni contacto con manguitos. PVC sin resistencia efectiva asignada."
+      },
+      {
+        "name": "PVC20",
+        "od_mm": 20,
+        "id_mm": 17,
+        "length_between_axes_mm": 85,
+        "envelope_sigma_MPa": 6.9040748816452,
+        "envelope_tau_MPa": 3.6612718766359897,
+        "envelope_vm_MPa": 9.374485865118206,
+        "required_effective_strength_n2_Kt2_MPa": 37.497943460472825,
+        "limits": "No incluye aplastamiento, taladros, creep, ovalizacion ni contacto con manguitos. PVC sin resistencia efectiva asignada."
+      }
+    ],
+    "plates": [
+      {
+        "name": "Torre",
+        "plate_count": 2,
+        "net_width_mm": 14,
+        "thickness_mm": 4,
+        "nominal_weak_axis_stress_MPa": 52.79568560796694,
+        "required_Rp_n2_Kt2_MPa": 211.18274243186775,
+        "thickness_weak_axis_bending_only_Rp240_n2_Kt2_mm": 3.7467802108820267
+      },
+      {
+        "name": "Hombro",
+        "plate_count": 2,
+        "net_width_mm": 17,
+        "thickness_mm": 4,
+        "nominal_weak_axis_stress_MPa": 43.37206536468241,
+        "required_Rp_n2_Kt2_MPa": 173.48826145872965,
+        "thickness_weak_axis_bending_only_Rp240_n2_Kt2_mm": 3.3966124935366757
+      },
+      {
+        "name": "Codo",
+        "plate_count": 2,
+        "net_width_mm": 13,
+        "thickness_mm": 4,
+        "nominal_weak_axis_stress_MPa": 36.74475912948216,
+        "required_Rp_n2_Kt2_MPa": 146.97903651792865,
+        "thickness_weak_axis_bending_only_Rp240_n2_Kt2_mm": 3.125287414962187
+      },
+      {
+        "name": "HorquillaJ5",
+        "plate_count": 2,
+        "net_width_mm": 15,
+        "thickness_mm": 2.5,
+        "nominal_weak_axis_stress_MPa": 32.23212815152535,
+        "required_Rp_n2_Kt2_MPa": 128.9285126061014,
+        "thickness_weak_axis_bending_only_Rp240_n2_Kt2_mm": 1.8293553908726836
+      }
+    ],
+    "bearings": [
+      {
+        "joint": 1,
+        "center_spacing_assumed_mm": 10,
+        "radial_upper_N": 401.5765193905443,
+        "axial_upper_N": 17.004769656287312,
+        "required_C0_upper_n2_N": 837.1625780936632,
+        "limit": "Cota conservadora Fr+Fa. Separacion y retencion axial propuestas, no montaje comprobado."
+      },
+      {
+        "joint": 2,
+        "center_spacing_assumed_mm": 34,
+        "radial_upper_N": 122.7412191422922,
+        "axial_upper_N": 14.74290965959568,
+        "required_C0_upper_n2_N": 274.9682576037757,
+        "limit": "Cota conservadora Fr+Fa. Separacion y retencion axial propuestas, no montaje comprobado."
+      },
+      {
+        "joint": 3,
+        "center_spacing_assumed_mm": 40,
+        "radial_upper_N": 69.56853590925817,
+        "axial_upper_N": 12.16059327894299,
+        "required_C0_upper_n2_N": 163.45825837640234,
+        "limit": "Cota conservadora Fr+Fa. Separacion y retencion axial propuestas, no montaje comprobado."
+      },
+      {
+        "joint": 4,
+        "center_spacing_assumed_mm": 10,
+        "radial_upper_N": 161.48608357019185,
+        "axial_upper_N": 10.622353211282697,
+        "required_C0_upper_n2_N": 344.2168735629491,
+        "limit": "Cota conservadora Fr+Fa. Separacion y retencion axial propuestas, no montaje comprobado."
+      },
+      {
+        "joint": 5,
+        "center_spacing_assumed_mm": 32,
+        "radial_upper_N": 35.32381632564661,
+        "axial_upper_N": 7.899986161637928,
+        "required_C0_upper_n2_N": 86.44760497456907,
+        "limit": "Cota conservadora Fr+Fa. Separacion y retencion axial propuestas, no montaje comprobado."
+      },
+      {
+        "joint": 6,
+        "center_spacing_assumed_mm": 9,
+        "radial_upper_N": 60.096967551522354,
+        "axial_upper_N": 7.1437622818579545,
+        "required_C0_upper_n2_N": 134.48145966676063,
+        "limit": "Cota conservadora Fr+Fa. Separacion y retencion axial propuestas, no montaje comprobado."
+      }
+    ],
+    "base_plate": {
+      "net_band_width_assumed_mm": 36,
+      "thickness_mm": 4,
+      "required_Rp_n2_Kt2_MPa": 164.25324411367492,
+      "limit": "Requiere bandas continuas y ventanas fuera de anclajes. Acrilico, apriete y soporte de pies pendientes."
+    },
+    "gripper": {
+      "peak_payload_force_N": 4.761707777292596,
+      "MG92B_stall_budget_kgfcm": 3.5,
+      "eta_assumed": 0.7,
+      "total_jaw_normal_upper_budget_N": 20.021910416666664,
+      "minimum_pad_mu_for_factor2": 0.4756496935805735,
+      "caveat": "Par de bloqueo no continuo, sin precarga/friccion real, dedos/racks no verificados."
+    }
+  },
+  {
+    "name": "centrado_PWM_L100_85_reserva25",
+    "shafts": [
+      {
+        "joint": 1,
+        "d_mm": 8,
+        "envelope_vm_MPa": 112.26805979318718,
+        "required_Rp_n2_Kt2_MPa": 449.0722391727487,
+        "diameter_bending_torsion_only_for_Rp600_mm": 7.245186337242993
+      },
+      {
+        "joint": 2,
+        "d_mm": 8,
+        "envelope_vm_MPa": 111.93267707139039,
+        "required_Rp_n2_Kt2_MPa": 447.73070828556155,
+        "diameter_bending_torsion_only_for_Rp600_mm": 7.240413420513461
+      },
+      {
+        "joint": 3,
+        "d_mm": 8,
+        "envelope_vm_MPa": 72.0035619594798,
+        "required_Rp_n2_Kt2_MPa": 288.0142478379192,
+        "diameter_bending_torsion_only_for_Rp600_mm": 6.246456455255307
+      },
+      {
+        "joint": 4,
+        "d_mm": 6,
+        "envelope_vm_MPa": 104.07448310500257,
+        "required_Rp_n2_Kt2_MPa": 416.2979324200103,
+        "diameter_bending_torsion_only_for_Rp600_mm": 5.296017311184342
+      },
+      {
+        "joint": 5,
+        "d_mm": 5,
+        "envelope_vm_MPa": 114.9008842779386,
+        "required_Rp_n2_Kt2_MPa": 459.6035371117544,
+        "diameter_bending_torsion_only_for_Rp600_mm": 4.561836188544587
+      },
+      {
+        "joint": 6,
+        "d_mm": 5,
+        "envelope_vm_MPa": 57.71791257735024,
+        "required_Rp_n2_Kt2_MPa": 230.87165030940096,
+        "diameter_bending_torsion_only_for_Rp600_mm": 3.6180350611832144
+      }
+    ],
+    "tubes": [
+      {
+        "name": "PVC25",
+        "od_mm": 25,
+        "id_mm": 22,
+        "length_between_axes_mm": 100,
+        "envelope_sigma_MPa": 7.0271993414109755,
+        "envelope_tau_MPa": 3.7328958114574866,
+        "envelope_vm_MPa": 9.549087076863284,
+        "required_effective_strength_n2_Kt2_MPa": 38.196348307453135,
+        "limits": "No incluye aplastamiento, taladros, creep, ovalizacion ni contacto con manguitos. PVC sin resistencia efectiva asignada."
+      },
+      {
+        "name": "PVC20",
+        "od_mm": 20,
+        "id_mm": 17,
+        "length_between_axes_mm": 85,
+        "envelope_sigma_MPa": 7.379345705246033,
+        "envelope_tau_MPa": 3.91811339695196,
+        "envelope_vm_MPa": 10.025446663947514,
+        "required_effective_strength_n2_Kt2_MPa": 40.10178665579006,
+        "limits": "No incluye aplastamiento, taladros, creep, ovalizacion ni contacto con manguitos. PVC sin resistencia efectiva asignada."
+      }
+    ],
+    "plates": [
+      {
+        "name": "Torre",
+        "plate_count": 2,
+        "net_width_mm": 14,
+        "thickness_mm": 4,
+        "nominal_weak_axis_stress_MPa": 56.86877441821928,
+        "required_Rp_n2_Kt2_MPa": 227.47509767287713,
+        "thickness_weak_axis_bending_only_Rp240_n2_Kt2_mm": 3.8884935962439005
+      },
+      {
+        "name": "Hombro",
+        "plate_count": 2,
+        "net_width_mm": 17,
+        "thickness_mm": 4,
+        "nominal_weak_axis_stress_MPa": 46.72211966033524,
+        "required_Rp_n2_Kt2_MPa": 186.88847864134095,
+        "thickness_weak_axis_bending_only_Rp240_n2_Kt2_mm": 3.525264057389409
+      },
+      {
+        "name": "Codo",
+        "plate_count": 2,
+        "net_width_mm": 13,
+        "thickness_mm": 4,
+        "nominal_weak_axis_stress_MPa": 39.25958575083475,
+        "required_Rp_n2_Kt2_MPa": 157.038343003339,
+        "thickness_weak_axis_bending_only_Rp240_n2_Kt2_mm": 3.230352872712232
+      },
+      {
+        "name": "HorquillaJ5",
+        "plate_count": 2,
+        "net_width_mm": 15,
+        "thickness_mm": 2.5,
+        "nominal_weak_axis_stress_MPa": 33.93058840104399,
+        "required_Rp_n2_Kt2_MPa": 135.72235360417596,
+        "thickness_weak_axis_bending_only_Rp240_n2_Kt2_mm": 1.876873343861586
+      }
+    ],
+    "bearings": [
+      {
+        "joint": 1,
+        "center_spacing_assumed_mm": 10,
+        "radial_upper_N": 432.7417618788519,
+        "axial_upper_N": 18.742106668033728,
+        "required_C0_upper_n2_N": 902.9677370937712,
+        "limit": "Cota conservadora Fr+Fa. Separacion y retencion axial propuestas, no montaje comprobado."
+      },
+      {
+        "joint": 2,
+        "center_spacing_assumed_mm": 34,
+        "radial_upper_N": 132.3699016939945,
+        "axial_upper_N": 16.190069901556228,
+        "required_C0_upper_n2_N": 297.11994319110147,
+        "limit": "Cota conservadora Fr+Fa. Separacion y retencion axial propuestas, no montaje comprobado."
+      },
+      {
+        "joint": 3,
+        "center_spacing_assumed_mm": 40,
+        "radial_upper_N": 74.46708894113533,
+        "axial_upper_N": 13.276842013148457,
+        "required_C0_upper_n2_N": 175.48786190856757,
+        "limit": "Cota conservadora Fr+Fa. Separacion y retencion axial propuestas, no montaje comprobado."
+      },
+      {
+        "joint": 4,
+        "center_spacing_assumed_mm": 10,
+        "radial_upper_N": 171.08903612680132,
+        "axial_upper_N": 11.465798813319488,
+        "required_C0_upper_n2_N": 365.1096698802416,
+        "limit": "Cota conservadora Fr+Fa. Separacion y retencion axial propuestas, no montaje comprobado."
+      },
+      {
+        "joint": 5,
+        "center_spacing_assumed_mm": 32,
+        "radial_upper_N": 37.26666445672833,
+        "axial_upper_N": 8.483574871615938,
+        "required_C0_upper_n2_N": 91.50047865668853,
+        "limit": "Cota conservadora Fr+Fa. Separacion y retencion axial propuestas, no montaje comprobado."
+      },
+      {
+        "joint": 6,
+        "center_spacing_assumed_mm": 9,
+        "radial_upper_N": 62.404484920067574,
+        "axial_upper_N": 7.649356758981129,
+        "required_C0_upper_n2_N": 140.1076833580974,
+        "limit": "Cota conservadora Fr+Fa. Separacion y retencion axial propuestas, no montaje comprobado."
+      }
+    ],
+    "base_plate": {
+      "net_band_width_assumed_mm": 36,
+      "thickness_mm": 4,
+      "required_Rp_n2_Kt2_MPa": 176.92507596779333,
+      "limit": "Requiere bandas continuas y ventanas fuera de anclajes. Acrilico, apriete y soporte de pies pendientes."
+    },
+    "gripper": {
+      "peak_payload_force_N": 4.761707777292596,
+      "MG92B_stall_budget_kgfcm": 3.5,
+      "eta_assumed": 0.7,
+      "total_jaw_normal_upper_budget_N": 20.021910416666664,
+      "minimum_pad_mu_for_factor2": 0.4756496935805735,
+      "caveat": "Par de bloqueo no continuo, sin precarga/friccion real, dedos/racks no verificados."
+    }
+  },
+  {
+    "name": "centrado_PWM_L90_75",
+    "shafts": [
+      {
+        "joint": 1,
+        "d_mm": 8,
+        "envelope_vm_MPa": 94.94375349539347,
+        "required_Rp_n2_Kt2_MPa": 379.77501398157386,
+        "diameter_bending_torsion_only_for_Rp600_mm": 6.850662468067866
+      },
+      {
+        "joint": 2,
+        "d_mm": 8,
+        "envelope_vm_MPa": 94.62815378391174,
+        "required_Rp_n2_Kt2_MPa": 378.51261513564697,
+        "diameter_bending_torsion_only_for_Rp600_mm": 6.845490343583196
+      },
+      {
+        "joint": 3,
+        "d_mm": 8,
+        "envelope_vm_MPa": 62.71664492989228,
+        "required_Rp_n2_Kt2_MPa": 250.86657971956913,
+        "diameter_bending_torsion_only_for_Rp600_mm": 5.965079512526705
+      },
+      {
+        "joint": 4,
+        "d_mm": 6,
+        "envelope_vm_MPa": 95.9148923901232,
+        "required_Rp_n2_Kt2_MPa": 383.6595695604928,
+        "diameter_bending_torsion_only_for_Rp600_mm": 5.15415296342894
+      },
+      {
+        "joint": 5,
+        "d_mm": 5,
+        "envelope_vm_MPa": 106.61421053662816,
+        "required_Rp_n2_Kt2_MPa": 426.45684214651266,
+        "diameter_bending_torsion_only_for_Rp600_mm": 4.449684279750955
+      },
+      {
+        "joint": 6,
+        "d_mm": 5,
+        "envelope_vm_MPa": 54.413135334665164,
+        "required_Rp_n2_Kt2_MPa": 217.65254133866065,
+        "diameter_bending_torsion_only_for_Rp600_mm": 3.5482220689205755
+      }
+    ],
+    "tubes": [
+      {
+        "name": "PVC25",
+        "od_mm": 25,
+        "id_mm": 22,
+        "length_between_axes_mm": 90,
+        "envelope_sigma_MPa": 5.944988068120999,
+        "envelope_tau_MPa": 3.1669629267347315,
+        "envelope_vm_MPa": 8.088995343553963,
+        "required_effective_strength_n2_Kt2_MPa": 32.35598137421585,
+        "limits": "No incluye aplastamiento, taladros, creep, ovalizacion ni contacto con manguitos. PVC sin resistencia efectiva asignada."
+      },
+      {
+        "name": "PVC20",
+        "od_mm": 20,
+        "id_mm": 17,
+        "length_between_axes_mm": 75,
+        "envelope_sigma_MPa": 6.429343467248242,
+        "envelope_tau_MPa": 3.4180781743347173,
+        "envelope_vm_MPa": 8.739921775247058,
+        "required_effective_strength_n2_Kt2_MPa": 34.95968710098823,
+        "limits": "No incluye aplastamiento, taladros, creep, ovalizacion ni contacto con manguitos. PVC sin resistencia efectiva asignada."
+      }
+    ],
+    "plates": [
+      {
+        "name": "Torre",
+        "plate_count": 2,
+        "net_width_mm": 14,
+        "thickness_mm": 4,
+        "nominal_weak_axis_stress_MPa": 48.08235774273959,
+        "required_Rp_n2_Kt2_MPa": 192.32943097095836,
+        "thickness_weak_axis_bending_only_Rp240_n2_Kt2_mm": 3.575245794188411
+      },
+      {
+        "name": "Hombro",
+        "plate_count": 2,
+        "net_width_mm": 17,
+        "thickness_mm": 4,
+        "nominal_weak_axis_stress_MPa": 39.49123070830838,
+        "required_Rp_n2_Kt2_MPa": 157.96492283323352,
+        "thickness_weak_axis_bending_only_Rp240_n2_Kt2_mm": 3.2408090971970642
+      },
+      {
+        "name": "Codo",
+        "plate_count": 2,
+        "net_width_mm": 13,
+        "thickness_mm": 4,
+        "nominal_weak_axis_stress_MPa": 34.19203762927447,
+        "required_Rp_n2_Kt2_MPa": 136.7681505170979,
+        "thickness_weak_axis_bending_only_Rp240_n2_Kt2_mm": 3.0145587082407284
+      },
+      {
+        "name": "HorquillaJ5",
+        "plate_count": 2,
+        "net_width_mm": 15,
+        "thickness_mm": 2.5,
+        "nominal_weak_axis_stress_MPa": 31.486903827647666,
+        "required_Rp_n2_Kt2_MPa": 125.94761531059066,
+        "thickness_weak_axis_bending_only_Rp240_n2_Kt2_mm": 1.8080866237654043
+      }
+    ],
+    "bearings": [
+      {
+        "joint": 1,
+        "center_spacing_assumed_mm": 10,
+        "radial_upper_N": 366.21842062054696,
+        "axial_upper_N": 16.62342186482627,
+        "required_C0_upper_n2_N": 765.6836849707465,
+        "limit": "Cota conservadora Fr+Fa. Separacion y retencion axial propuestas, no montaje comprobado."
+      },
+      {
+        "joint": 2,
+        "center_spacing_assumed_mm": 34,
+        "radial_upper_N": 112.20700506853353,
+        "axial_upper_N": 14.357138047562064,
+        "required_C0_upper_n2_N": 253.1282862321912,
+        "limit": "Cota conservadora Fr+Fa. Separacion y retencion axial propuestas, no montaje comprobado."
+      },
+      {
+        "joint": 3,
+        "center_spacing_assumed_mm": 40,
+        "radial_upper_N": 64.98010399871569,
+        "axial_upper_N": 11.821873326841269,
+        "required_C0_upper_n2_N": 153.60395465111392,
+        "limit": "Cota conservadora Fr+Fa. Separacion y retencion axial propuestas, no montaje comprobado."
+      },
+      {
+        "joint": 4,
+        "center_spacing_assumed_mm": 10,
+        "radial_upper_N": 157.59256220050025,
+        "axial_upper_N": 10.34366327755339,
+        "required_C0_upper_n2_N": 335.8724509561073,
+        "limit": "Cota conservadora Fr+Fa. Separacion y retencion axial propuestas, no montaje comprobado."
+      },
+      {
+        "joint": 5,
+        "center_spacing_assumed_mm": 32,
+        "radial_upper_N": 34.5036240986051,
+        "axial_upper_N": 7.710174965221853,
+        "required_C0_upper_n2_N": 84.42759812765391,
+        "limit": "Cota conservadora Fr+Fa. Separacion y retencion axial propuestas, no montaje comprobado."
+      },
+      {
+        "joint": 6,
+        "center_spacing_assumed_mm": 9,
+        "radial_upper_N": 58.74185357348511,
+        "axial_upper_N": 6.9761461940521885,
+        "required_C0_upper_n2_N": 131.4359995350746,
+        "limit": "Cota conservadora Fr+Fa. Separacion y retencion axial propuestas, no montaje comprobado."
+      }
+    ],
+    "base_plate": {
+      "net_band_width_assumed_mm": 36,
+      "thickness_mm": 4,
+      "required_Rp_n2_Kt2_MPa": 149.58955742185648,
+      "limit": "Requiere bandas continuas y ventanas fuera de anclajes. Acrilico, apriete y soporte de pies pendientes."
+    },
+    "gripper": {
+      "peak_payload_force_N": 4.654477467902719,
+      "MG92B_stall_budget_kgfcm": 3.5,
+      "eta_assumed": 0.7,
+      "total_jaw_normal_upper_budget_N": 20.021910416666664,
+      "minimum_pad_mu_for_factor2": 0.46493839709004325,
+      "caveat": "Par de bloqueo no continuo, sin precarga/friccion real, dedos/racks no verificados."
+    }
+  },
+  {
+    "name": "centrado_PWM_L90_75_reserva25",
+    "shafts": [
+      {
+        "joint": 1,
+        "d_mm": 8,
+        "envelope_vm_MPa": 102.1823848178719,
+        "required_Rp_n2_Kt2_MPa": 408.7295392714876,
+        "diameter_bending_torsion_only_for_Rp600_mm": 7.020069992994668
+      },
+      {
+        "joint": 2,
+        "d_mm": 8,
+        "envelope_vm_MPa": 101.84927921218444,
+        "required_Rp_n2_Kt2_MPa": 407.39711684873777,
+        "diameter_bending_torsion_only_for_Rp600_mm": 7.015043837180191
+      },
+      {
+        "joint": 3,
+        "d_mm": 8,
+        "envelope_vm_MPa": 66.95939239389793,
+        "required_Rp_n2_Kt2_MPa": 267.8375695755917,
+        "diameter_bending_torsion_only_for_Rp600_mm": 6.096277322019852
+      },
+      {
+        "joint": 4,
+        "d_mm": 6,
+        "envelope_vm_MPa": 101.56048219131243,
+        "required_Rp_n2_Kt2_MPa": 406.2419287652497,
+        "diameter_bending_torsion_only_for_Rp600_mm": 5.253062350175339
+      },
+      {
+        "joint": 5,
+        "d_mm": 5,
+        "envelope_vm_MPa": 112.23446900990939,
+        "required_Rp_n2_Kt2_MPa": 448.93787603963756,
+        "diameter_bending_torsion_only_for_Rp600_mm": 4.526284808656047
+      },
+      {
+        "joint": 6,
+        "d_mm": 5,
+        "envelope_vm_MPa": 56.417231233660246,
+        "required_Rp_n2_Kt2_MPa": 225.66892493464098,
+        "diameter_bending_torsion_only_for_Rp600_mm": 3.590670747779536
+      }
+    ],
+    "tubes": [
+      {
+        "name": "PVC25",
+        "od_mm": 25,
+        "id_mm": 22,
+        "length_between_axes_mm": 90,
+        "envelope_sigma_MPa": 6.400584599726187,
+        "envelope_tau_MPa": 3.4137975624874355,
+        "envelope_vm_MPa": 8.71375490883164,
+        "required_effective_strength_n2_Kt2_MPa": 34.85501963532656,
+        "limits": "No incluye aplastamiento, taladros, creep, ovalizacion ni contacto con manguitos. PVC sin resistencia efectiva asignada."
+      },
+      {
+        "name": "PVC20",
+        "od_mm": 20,
+        "id_mm": 17,
+        "length_between_axes_mm": 75,
+        "envelope_sigma_MPa": 6.866226089200962,
+        "envelope_tau_MPa": 3.6551232639139175,
+        "envelope_vm_MPa": 9.339423907888436,
+        "required_effective_strength_n2_Kt2_MPa": 37.357695631553746,
+        "limits": "No incluye aplastamiento, taladros, creep, ovalizacion ni contacto con manguitos. PVC sin resistencia efectiva asignada."
+      }
+    ],
+    "plates": [
+      {
+        "name": "Torre",
+        "plate_count": 2,
+        "net_width_mm": 14,
+        "thickness_mm": 4,
+        "nominal_weak_axis_stress_MPa": 51.742184028413405,
+        "required_Rp_n2_Kt2_MPa": 206.96873611365362,
+        "thickness_weak_axis_bending_only_Rp240_n2_Kt2_mm": 3.708678718998462
+      },
+      {
+        "name": "Hombro",
+        "plate_count": 2,
+        "net_width_mm": 17,
+        "thickness_mm": 4,
+        "nominal_weak_axis_stress_MPa": 42.50123875551049,
+        "required_Rp_n2_Kt2_MPa": 170.00495502204197,
+        "thickness_weak_axis_bending_only_Rp240_n2_Kt2_mm": 3.36195727495049
+      },
+      {
+        "name": "Codo",
+        "plate_count": 2,
+        "net_width_mm": 13,
+        "thickness_mm": 4,
+        "nominal_weak_axis_stress_MPa": 36.50084341366848,
+        "required_Rp_n2_Kt2_MPa": 146.0033736546739,
+        "thickness_weak_axis_bending_only_Rp240_n2_Kt2_mm": 3.1145582886610423
+      },
+      {
+        "name": "HorquillaJ5",
+        "plate_count": 2,
+        "net_width_mm": 15,
+        "thickness_mm": 2.5,
+        "nominal_weak_axis_stress_MPa": 33.14335939762808,
+        "required_Rp_n2_Kt2_MPa": 132.57343759051233,
+        "thickness_weak_axis_bending_only_Rp240_n2_Kt2_mm": 1.8549758237537188
+      }
+    ],
+    "bearings": [
+      {
+        "joint": 1,
+        "center_spacing_assumed_mm": 10,
+        "radial_upper_N": 394.28009857427367,
+        "axial_upper_N": 18.31951806643127,
+        "required_C0_upper_n2_N": 825.1992332814099,
+        "limit": "Cota conservadora Fr+Fa. Separacion y retencion axial propuestas, no montaje comprobado."
+      },
+      {
+        "joint": 2,
+        "center_spacing_assumed_mm": 34,
+        "radial_upper_N": 120.90883931954507,
+        "axial_upper_N": 15.762544267239694,
+        "required_C0_upper_n2_N": 273.34276717356954,
+        "limit": "Cota conservadora Fr+Fa. Separacion y retencion axial propuestas, no montaje comprobado."
+      },
+      {
+        "joint": 3,
+        "center_spacing_assumed_mm": 40,
+        "radial_upper_N": 69.50463415219359,
+        "axial_upper_N": 12.90311496931359,
+        "required_C0_upper_n2_N": 164.81549824301436,
+        "limit": "Cota conservadora Fr+Fa. Separacion y retencion axial propuestas, no montaje comprobado."
+      },
+      {
+        "joint": 4,
+        "center_spacing_assumed_mm": 10,
+        "radial_upper_N": 166.94662586448771,
+        "axial_upper_N": 11.162914659044791,
+        "required_C0_upper_n2_N": 356.219081047065,
+        "limit": "Cota conservadora Fr+Fa. Separacion y retencion axial propuestas, no montaje comprobado."
+      },
+      {
+        "joint": 5,
+        "center_spacing_assumed_mm": 32,
+        "radial_upper_N": 36.39803549558325,
+        "axial_upper_N": 8.278533990339247,
+        "required_C0_upper_n2_N": 89.353138971845,
+        "limit": "Cota conservadora Fr+Fa. Separacion y retencion axial propuestas, no montaje comprobado."
+      },
+      {
+        "joint": 6,
+        "center_spacing_assumed_mm": 9,
+        "radial_upper_N": 60.99513169889368,
+        "axial_upper_N": 7.4689378461557725,
+        "required_C0_upper_n2_N": 136.9281390900989,
+        "limit": "Cota conservadora Fr+Fa. Separacion y retencion axial propuestas, no montaje comprobado."
+      }
+    ],
+    "base_plate": {
+      "net_band_width_assumed_mm": 36,
+      "thickness_mm": 4,
+      "required_Rp_n2_Kt2_MPa": 160.97568364395283,
+      "limit": "Requiere bandas continuas y ventanas fuera de anclajes. Acrilico, apriete y soporte de pies pendientes."
+    },
+    "gripper": {
+      "peak_payload_force_N": 4.654477467902719,
+      "MG92B_stall_budget_kgfcm": 3.5,
+      "eta_assumed": 0.7,
+      "total_jaw_normal_upper_budget_N": 20.021910416666664,
+      "minimum_pad_mu_for_factor2": 0.46493839709004325,
+      "caveat": "Par de bloqueo no continuo, sin precarga/friccion real, dedos/racks no verificados."
+    }
+  }
+]

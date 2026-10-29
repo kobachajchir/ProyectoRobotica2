@@ -1,3 +1,5 @@
+> **AFR2-20261028-09:** [brazo liviano, aluminio y traccion](changes/2026-10-28-09-brazo-liviano-aluminio-traccion.md). Masa del auto1.5kg aproximada integrada; propuesta de eslabones90/75mm y apoyos desplegables, con calculos de masa/CG/cargas/secciones. Candidato preliminar, sin nuevo CAD ni aprobacion fisica. atmega/esp/web/Loader sin cambios.
+
 > **AFR2-20261028-08:** [busqueda de actuadores a30grados/s e inercia](changes/2026-10-28-08-actuadores-30gs-inercia-vuelco.md). No se acepta bajar la velocidad para cerrar el objetivo. RS01 pasa un filtro nominal condicionado, con masa/estructura/apoyo pendientes. Sin cambios de producto en firmware, Web o Loader ni nuevo CAD.
 
 > **AFR2-20261028-07:** [busqueda simultanea de motores por par, masa y resistencia](changes/2026-10-28-07-busqueda-actuadores-par-masa.md). DS51150 descartado para frenada desde catalogo; STS multivuelta con reductores pasa filtro nominal condicionado, sin seleccion final ni nuevo CAD. atmega/esp/web/Loader sin intervencion.
