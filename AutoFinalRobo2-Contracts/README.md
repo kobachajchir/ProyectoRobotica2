@@ -1,3 +1,5 @@
+> **AFR2-20261029-01:** [brazo mas compacto y liviano](changes/2026-10-29-01-brazo-compacto-solo-ruedas.md). Solo ruedas, importacion admitida; se descartan pies y voladizo. Predimensionamiento55/50mm:1.17kg sin carga con reserva25%, margen externo2.65; resistencia, frenado, estabilidad real y nuevo CAD pendientes. atmega/esp/web/Loader sin intervencion.
+
 > **AFR2-20261028-09:** [brazo liviano, aluminio y traccion](changes/2026-10-28-09-brazo-liviano-aluminio-traccion.md). Masa del auto1.5kg aproximada integrada; propuesta de eslabones90/75mm y apoyos desplegables, con calculos de masa/CG/cargas/secciones. Candidato preliminar, sin nuevo CAD ni aprobacion fisica. atmega/esp/web/Loader sin cambios.
 
 > **AFR2-20261028-08:** [busqueda de actuadores a30grados/s e inercia](changes/2026-10-28-08-actuadores-30gs-inercia-vuelco.md). No se acepta bajar la velocidad para cerrar el objetivo. RS01 pasa un filtro nominal condicionado, con masa/estructura/apoyo pendientes. Sin cambios de producto en firmware, Web o Loader ni nuevo CAD.

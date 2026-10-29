@@ -1,3 +1,5 @@
+> **Direccion sustituida por AFR2-20261029-01:** el usuario exige trabajar solo sobre ruedas. Los pies de este informe quedan descartados. Ver [presupuesto compacto v14](../busqueda_actuadores_v14/README.md); este documento conserva el calculo historico.
+
 # Prediseno liviano v13: aluminio, PVC menor y PLA localizado
 
 AFR2-20261028-09. Continuacion autorizada de la busqueda de actuadores. **Es un predimensionamiento; no un brazo nuevo modelado ni una capacidad fisica aprobada.** El maestro Fusion v09 sigue guardado y sin modificar. No se hicieron tests de software, compilaciones, flasheos, FEA ni ensayos.

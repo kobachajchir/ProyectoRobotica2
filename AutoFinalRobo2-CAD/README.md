@@ -1,3 +1,5 @@
+> **AFR2-20261029-01:** [brazo compacto sobre ruedas](mecanica/brazo-antropomorfo/busqueda_actuadores_v14/README.md): actuadores254g, estructura fina y menor alcance. 55/50mm:1.17kg sin carga con reserva25%, filtro externo de par2.65; apoyo hipotetico con margen escaso. Sin nuevo CAD ni capacidad fisica aprobada. Pies de09 descartados por decision humana.
+
 > **AFR2-20261028-09:** [prediseno liviano v13](mecanica/brazo-antropomorfo/busqueda_actuadores_v13/README.md). Aluminio, PVC25/20, PLA localizado y transmisiones menores; candidato1.63kg sin carga/con pies propuestos. Alcance reducido373mm, margen preliminar2.36, apoyo sin cerrar. Analisis externo; sin nuevo CAD ni aprobacion fisica. Maestro v09 conservado.
 
 > **AFR2-20261028-08:** [preseleccion v12 a30grados/s](mecanica/brazo-antropomorfo/busqueda_actuadores_v12/README.md). Curva nominalSTS3250, inercia equivalenteRS01 y estabilidad dinamica calculadas. La opcion fuerte pesa hasta5.82kg y no queda aprobada para el auto. Maestro v09 conservado; objetivo activo.

@@ -1,3 +1,7 @@
+## AFR2-20261029-01 - 29/10/2026
+
+Presupuesto compacto del brazo: motores254.4g, estructura fina, menor alcance, masa1170.3g sin carga con reserva25%. Solo ruedas; pies y voladizo descartados. Filtro externo de par2.65, sin resistencia ni estabilidad fisica aprobadas y sin nuevo CAD. [Ficha](changes/2026-10-29-01-brazo-compacto-solo-ruedas.md).
+
 ## AFR2-20261028-01 — 28/10/2026
 
 Comprobación resistente de J1/uniones sobre v08: 35 secciones y 7.075 estados,

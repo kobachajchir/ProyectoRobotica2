@@ -1,3 +1,5 @@
+> **AFR2-20261029-01:** [presupuesto compacto y cargas](busqueda_actuadores_v14/README.md). Se reducen conjuntamente actuadores, estructura y longitudes; trabajo solo sobre ruedas. Pinza, transmisiones, resistencia y contacto real pendientes; maestro v09 sin editar.
+
 > **Busqueda AFR2-20261028-08:** [mantener30grados/s: par nominal, inercia y vuelco](busqueda_actuadores_v12/README.md). STS3250 queda debajo de x2; RS01+STS supera el filtro de par a costa de masa y carga sobre J1. Sin cierre fisico, compra ni housings nuevos.
 
 > **Busqueda AFR2-20261028-07, objetivo activo:** [actuadores, peso de transmisiones y frenada desde catalogo](busqueda_actuadores_v11/README.md). Dos rutas comparadas: DS51150 limitado por velocidad/estructura y STS multivuelta con reducciones presupuestadas. Esta ultima supera el filtro nominal con minimo2.11, pero faltan reductores reales, variante local, PLA y estabilidad. Sin nuevo CAD.

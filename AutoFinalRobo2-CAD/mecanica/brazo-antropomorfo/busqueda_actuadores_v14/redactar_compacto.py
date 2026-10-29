@@ -1,0 +1,181 @@
+"""Genera el informe desde el resultado numerico; no ejecuta calculos."""
+from pathlib import Path
+import json
+H=Path(__file__).resolve().parent
+d=json.loads((H/'compacto_resultados.json').read_text(encoding='utf-8'))
+rows=d['rows'];r=rows[-1]
+text='''# Brazo compacto: reducir primero masa y alcance
+
+AFR2-20261029-01, 29/10/2026. **Predimensionamiento nuevo, no CAD modificado ni resistencia aprobada.**
+
+Se mantienen 200 g, seis ejes a 30 grados/s y frenada finita de 50 ms.
+Por decision humana se admiten importaciones con envio a Argentina y el auto
+debe trabajar exclusivamente sobre sus ruedas. Los pies de v13 y los estudios
+iniciales de v14 quedan descartados. El voladizo sobre ATmega tampoco se adopta:
+agrega soporte sin descargar la punta. No se agrega lastre ni se traslada la
+electronica como supuesto ahorro del brazo.
+
+## Que se cambia y por que
+
+El maestro v09 pesa 2200.43 g sin carga: aproximadamente 1015 g de PLA,
+437 g de acero y apenas 38 g de PVC. Afinar solamente el tubo deja intacta
+la mayor parte del problema. El nuevo presupuesto reemplaza bloques impresos
+por mejillas de aluminio de 2 mm con bordes plegados de 8 mm, horquillas de
+1.5 mm, encastres abiertos de PLA PrintaLot y ejes de acero conservados donde
+transmiten torque. Los bordes deben comprobarse como perfiles abiertos;
+no se les atribuye automaticamente la rigidez de una caja cerrada.
+
+Se comparan eslabones mas cortos, PVC exterior/interior 25/22 y 20/17 mm
+(producto comercial exacto pendiente), muneca 35+30 mm y distancia J6-centro
+de carga de 45 mm. El hombro queda a 85 mm sobre la referencia superior del
+auto. Son cotas propuestas, no medidas de piezas existentes. La altura debe
+revisarse contra electronica y barrido del HC-SR04 antes de adoptarla.
+
+En la alternativa extrema 55/50 mm los tramos de PVC quedan en 15/10 mm:
+funcionan casi como separadores entre articulaciones. Esto cuestiona la
+conveniencia constructiva del PVC a esa escala; no se declara resuelto un
+eslabon tubular ni sus encastres. La opcion 80/70 conserva tramos 40/30 mm,
+pero exige mas apoyo lateral del auto.
+
+La pinza nueva se presupuesta pivotante, con dedos de aluminio de 2x10x45 mm,
+palma con ventanas y accionamiento ligero. Se elimina la propuesta previa
+de palma grande, cremalleras metalicas, guias y multiples rodamientos.
+**No es una pinza terminada:** apertura exterior de al menos 60 mm, contacto
+en el cubo de 50 mm, transmision, resortes, precarga, pads y recorrido real
+siguen pendientes de dimensionar. Sus reservas de masa no prueban agarre.
+
+## Masa y dimension resultantes
+
+Se cuentan bateria 130 g y control/potencia 150 g adicionales al auto de
+1.5 kg; no se presupone alimentacion compartida gratuita. Los siete servos
+suman 254.4 g: tres ST-3215-C047 de 56 g y cuatro STS3032 de 21.6 g, incluida
+la pinza. Frente a 375.2 g de servos de v09, la reduccion es 32.2 %.
+
+| Eslabones mm | Reserva estructural | Alcance hombro-cubo mm | Brazo sin carga g | Con 200 g g | Margen externo minimo |
+|---|---|---:|---:|---:|---:|
+'''
+for x in rows:
+    p=x['parameters_mm'];reach=sum(p[k] for k in ['link1','link2','wrist45','wrist56','payload_z'])
+    text+=f"| {p['link1']}/{p['link2']} | {'25 %' if x['reserve25'] else 'Sin reserva'} | {reach} | {x['arm_without_payload_g']:.1f} | {x['total_with_payload_g']:.1f} | {min(a['minimum_external_torque_margin'] for a in x['axes']):.2f} |\n"
+text+='''
+La reserva del 25 % se aplica a estructura, rodamientos, transmisiones,
+cables y fijaciones; no a carga, servos, bateria ni electronica. No es una
+medicion ni una garantia de masa final. Las cajas de inercia y CG locales
+propuestos de cada componente estan en el JSON, junto con centroides/tensores
+de cada grupo. Cada grupo se transforma con su propio eje de articulacion.
+
+Desglose de la alternativa 55/50 con reserva:
+
+| Material o funcion | Masa g |
+|---|---:|
+'''
+for m in sorted(set(x['material'] for x in r['parts'])):
+    text+=f"| {m} | {sum(x['mass_g'] for x in r['parts'] if x['material']==m):.1f} |\n"
+text+='''
+## Actuadores y cargas
+
+El filtro usa 10 kgf cm nominales a 12 V para ST-3215-C047 y 1.5 kgf cm
+a 6 V para STS3032, no sus pares de bloqueo como si fueran continuos.
+Se compara con el menor entre nominal y una recta par-velocidad supuesta,
+con bloqueo/speeds inferiores de ficha y eficiencia de reduccion 0.8.
+Esta recta de accionamiento **no caracteriza frenado regenerativo ni demuestra
+capacidad de parada**. Tampoco incluye inercias internas de motor/reductor.
+
+Se calculan 684 trayectorias y 14364 estados por alternativa: 64 combinaciones
+de signos de seis ejes y 12 movimientos individuales, nueve orientaciones
+de J4/J6. Todas terminan extendidas. Una ley cubica de velocidad lleva
+30 grados/s a cero en 50 ms; pico de desaceleracion 900 grados/s2. Se incluyen
+gravedad, aceleracion del CG, inercia del cuerpo y termino giroscopico.
+La posicion extendida no garantiza el maximo global para todo componente,
+ni este conjunto muestreado envuelve cualquier trayectoria del workspace.
+
+Se elige la menor relacion sencilla que supere 2.3 de margen externo,
+conservando las reservas de transmision incluso donde queda accionamiento
+directo. No se declara que esas reducciones ya quepan o sean resistentes.
+
+Alternativa 55/50 con reserva, picos no necesariamente simultaneos:
+
+| Eje | Reduccion propuesta | Par maximo de salida kgf cm | Margen externo | Fuerza resultante N | Momento resultante Nm |
+|---|---:|---:|---:|---:|---:|
+'''
+for i,a in enumerate(r['axes']):
+    text+=f"| {a['axis']} | {a['proposed_ratio']:g}:1 | {a['peak_output_kgfcm']:.3f} | {a['minimum_external_torque_margin']:.2f} | {r['peak_force_N'][i]:.3f} | {r['peak_moment_Nm'][i]:.3f} |\n"
+text+='''
+La reduccion J2=5 exige 675 grados de entrada para 135 de articulacion;
+J3=3 exige 540 para 180 y J5=8 exige 1440 para 180. Requieren modo multivuelta,
+gestion de referencia al encender y cableado compatible. La familia admite
+multivuelta pero no conserva el numero de vueltas al perder alimentacion.
+Se trata de servos TTL, distintos del control PWM anterior; no se modifica
+firmware ni se da por integrada esa interfaz.
+
+La inercia interna maxima necesaria para conservar x2 se guarda por eje en
+`internal_inertia_necessary_max_kgm2`: procede del margen residual dividido
+por n2*eta*aceleracion. Es una cota necesaria aislada, no una aprobacion;
+faltan reacciones internas sobre articulaciones anteriores y datos reales.
+
+Resultantes en la seccion local (Z longitudinal), incluyendo flexion y torsion:
+
+| Seccion | Corte N | Axial N | Flexion Nm | Torsion Nm |
+|---|---:|---:|---:|---:|
+'''
+for i,s in enumerate(r['section_peaks_local']):text+=f"| J{i+1} | "+' | '.join(f'{v:.4f}' for v in s)+' |\n'
+text+='''
+Estos esfuerzos son entradas para dimensionar nervios, ejes, dientes,
+asientos, fijaciones y anclajes al acrilico. No hay analisis de tensiones
+de esta geometria nueva, FEA, comprobacion de PLA FDM ni ensayo fisico.
+Hacer mas fina una pieza no demuestra que resista; las cifras de par tampoco
+aprueban el perfil abierto de aluminio, el PVC o las uniones.
+
+## Estabilidad exclusivamente sobre ruedas
+
+Se gira la familia de frenadas entre -90 y +90 grados de J1 en pasos de 10,
+descartando estados fuera de limites J1, y se calcula la proyeccion dinamica
+de la resultante sobre piso supuesto a Z=-80 mm. Se mantiene el auto parado,
+de 1.5 kg y CG horizontal centrado como hipotesis. No incluye frenada del auto,
+pendiente, deformacion/contacto de rodillos ni adherencia Mecanum.
+
+| Eslabones | Reserva | Semiapoyo minimo X/Y mm | Utilizacion sobre rectangulo hipotetico 180x100 mm |
+|---|---|---|---:|
+'''
+for x in rows:
+    p=x['parameters_mm'];a,b=x['necessary_support_halfspan_mm']
+    text+=f"| {p['link1']}/{p['link2']} | {'25 %' if x['reserve25'] else 'No'} | {a:.2f}/{b:.2f} | {x['tip_utilization_90_50_hypothesis']:.3f} |\n"
+text+='''
+55/50 pasa solamente ese filtro de vuelco hipotetico: queda cerca del borde,
+sin un factor de estabilidad robusto. Necesita aproximadamente 93 mm de
+separacion transversal efectiva, y 111 mm si se exige 20 % adicional sobre
+la semibase calculada. Un desplazamiento del CG del auto de 10 mm puede
+consumir el margen restante. Los 245x200 mm del manual NO son dimensiones
+del poligono de contacto. No hay aprobacion de estabilidad sobre ruedas.
+
+## Decision y siguiente iteracion
+
+La reduccion conjunta de estructura, actuadores y longitud merece continuar:
+el presupuesto baja aproximadamente a la mitad de v09. La variante 80/70 es
+menos extrema para construir; la 55/50 descarga mas el auto, pero deja PVC
+demasiado corto y requiere resolver el empaquetado real. Ninguna se declara
+seleccion final ni se manda a fabricar.
+
+Antes de sustituir el maestro hay que cerrar pinza/ventaja mecanica, masas
+de transmisiones y montajes reales, disponibilidad exacta de STS3032 con envio
+a Argentina, inercia/freno, limites multivuelta y espacio de 5:1/3:1/8:1.
+Luego debe comprobarse resistencia de secciones/uniones y geometria con
+rodamientos y ejes positivos, barrido HC-SR04 y todas las articulaciones.
+No se ejecutaron tests de software, builds, flasheos ni validadores CAD;
+se realizaron los calculos mecanicos solicitados. Fusion v09 se conserva.
+
+## Reproduccion y antecedentes
+
+`C:/Python312/python.exe compacto.py` requiere Python y numpy. Genera el JSON
+desde su propio BOM y trayectorias; no depende de NPZ ignorados ni de Fusion.
+`redactar_compacto.py` genera este informe desde ese JSON.
+
+`modelo_dinamico.py` deriva de las ecuaciones de v13 (commit 4b02f65).
+`calcular_nominal.py`, `contactos.py` y sus resultados conservan experimentos
+previos con pies **descartados**; `sin_pies.py` documenta la primera alternativa
+sin pies que seguia pesada y no cumplia. Esos tres scripts dependen de NPZ
+regenerables anteriores en exports. Sus resultados no son la seleccion actual.
+Las uniones y gripper de `compacto.py` son presupuestos nuevos, no una lectura
+del volumen de v09. [Fuentes y disponibilidad](FUENTES.md).
+'''
+(H/'README.md').write_text(text,encoding='utf-8')

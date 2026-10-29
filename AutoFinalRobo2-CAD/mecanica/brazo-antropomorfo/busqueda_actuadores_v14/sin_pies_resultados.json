@@ -1,0 +1,590 @@
+{
+  "scope": "Actuadores nominales e importacion admitida; solo ruedas, hipotesis de apoyo diferenciadas. Sin CAD ni aprobacion fisica.",
+  "rows": [
+    {
+      "name": "L70_65_equilibrado",
+      "parameters_mm": {
+        "base_top": 60,
+        "tower_h": 40,
+        "axis_y_mm": -32,
+        "link1": 70,
+        "link2": 65,
+        "wrist45": 55,
+        "wrist56": 40,
+        "payload_z": 52
+      },
+      "total_with_payload_g": 1897.6945609480258,
+      "motor_mass_g": 254.4,
+      "ratios": [
+        5,
+        7,
+        4,
+        1,
+        8,
+        1
+      ],
+      "rated_kgfcm": [
+        10.0,
+        10.0,
+        10.0,
+        1.5,
+        1.5,
+        1.5
+      ],
+      "minimum_torque_margin": [
+        5.269459107775953,
+        1.2096198764120687,
+        1.84508839973567,
+        1.6109733567323266,
+        1.7399327727460991,
+        3.150449873769965
+      ],
+      "peak_motor_kgfcm": [
+        1.8977279822218103,
+        4.72897415415328,
+        5.419794521190754,
+        0.9311140955444334,
+        0.8621022740048638,
+        0.47612247777332034
+      ],
+      "peak_force_N": [
+        20.196690912220546,
+        14.035912632659322,
+        11.366669888014792,
+        9.631353911415237,
+        7.542362582857242,
+        6.7594280181090625
+      ],
+      "peak_moment_Nm": [
+        2.442900992458656,
+        2.662521688143921,
+        1.7461896893349564,
+        1.0488514107334574,
+        0.5559664408641803,
+        0.2758645269985156
+      ],
+      "rotor_inertia_necessary_max_kgm2": [
+        0.003873563410378014,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.001709846755769097
+      ],
+      "ground_support": [
+        {
+          "hypothetical_halfspan_mm": [
+            107,
+            62
+          ],
+          "maximum_tip_utilization": 1.0312650810306043,
+          "necessary_halfspan_mm": [
+            65.84303247749823,
+            63.93843502389747
+          ],
+          "states": 99378,
+          "isotropic_mu_necessary_only": 0.09061599957545213
+        },
+        {
+          "hypothetical_halfspan_mm": [
+            90,
+            50
+          ],
+          "maximum_tip_utilization": 1.2787687004779493,
+          "necessary_halfspan_mm": [
+            65.84303247749823,
+            63.93843502389747
+          ],
+          "states": 99378,
+          "isotropic_mu_necessary_only": 0.09061599957545213
+        },
+        {
+          "hypothetical_halfspan_mm": [
+            90,
+            40
+          ],
+          "maximum_tip_utilization": 1.5984608755974368,
+          "necessary_halfspan_mm": [
+            65.84303247749823,
+            63.93843502389747
+          ],
+          "states": 99378,
+          "isotropic_mu_necessary_only": 0.09061599957545213
+        }
+      ],
+      "peak_payload_force_N": 3.905004951512121,
+      "pinza_nominal_normal_N": 61.781895,
+      "pinza_closure_margin_for_30N_preload": 2.0593965,
+      "pad_mu_required_for_30N_preload_factor2": 0.2603336634341414,
+      "scope": "Solo ruedas. Poligonos son hipotesis, no contactos medidos. Masa/CG/geometria nuevos propuestos; cuerpos rigidos, sin inercias internas ni choques completos."
+    },
+    {
+      "name": "L60_60_equilibrado",
+      "parameters_mm": {
+        "base_top": 60,
+        "tower_h": 40,
+        "axis_y_mm": -32,
+        "link1": 60,
+        "link2": 60,
+        "wrist45": 55,
+        "wrist56": 40,
+        "payload_z": 52
+      },
+      "total_with_payload_g": 1891.0827652309656,
+      "motor_mass_g": 254.4,
+      "ratios": [
+        5,
+        7,
+        4,
+        1,
+        8,
+        1
+      ],
+      "rated_kgfcm": [
+        10.0,
+        10.0,
+        10.0,
+        1.5,
+        1.5,
+        1.5
+      ],
+      "minimum_torque_margin": [
+        5.883813795327633,
+        1.3181890511836987,
+        1.9393962880045996,
+        1.6442338748141903,
+        1.769271985383623,
+        3.2079439246398485
+      ],
+      "peak_motor_kgfcm": [
+        1.699577917972362,
+        4.305950432816655,
+        5.156243755776583,
+        0.9122789786638537,
+        0.8478063363868625,
+        0.4675892207711838
+      ],
+      "peak_force_N": [
+        19.866176279013498,
+        13.694207676147874,
+        11.105139594333624,
+        9.434194729517607,
+        7.395687903707325,
+        6.630640566179563
+      ],
+      "peak_moment_Nm": [
+        2.200839257454673,
+        2.420823401375752,
+        1.6581010324079015,
+        1.0286903926739308,
+        0.5457033623074925,
+        0.2709540705494069
+      ],
+      "rotor_inertia_necessary_max_kgm2": [
+        0.004120977832531241,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0017631207947724546
+      ],
+      "ground_support": [
+        {
+          "hypothetical_halfspan_mm": [
+            107,
+            62
+          ],
+          "maximum_tip_utilization": 0.9396448027313621,
+          "necessary_halfspan_mm": [
+            60.178427571706614,
+            58.25797776934445
+          ],
+          "states": 99378,
+          "isotropic_mu_necessary_only": 0.08341071234165129
+        },
+        {
+          "hypothetical_halfspan_mm": [
+            90,
+            50
+          ],
+          "maximum_tip_utilization": 1.165159555386889,
+          "necessary_halfspan_mm": [
+            60.178427571706614,
+            58.25797776934445
+          ],
+          "states": 99378,
+          "isotropic_mu_necessary_only": 0.08341071234165129
+        },
+        {
+          "hypothetical_halfspan_mm": [
+            90,
+            40
+          ],
+          "maximum_tip_utilization": 1.4564494442336113,
+          "necessary_halfspan_mm": [
+            60.178427571706614,
+            58.25797776934445
+          ],
+          "states": 99378,
+          "isotropic_mu_necessary_only": 0.08341071234165129
+        }
+      ],
+      "peak_payload_force_N": 3.8332162664424234,
+      "pinza_nominal_normal_N": 61.781895,
+      "pinza_closure_margin_for_30N_preload": 2.0593965,
+      "pad_mu_required_for_30N_preload_factor2": 0.25554775109616157,
+      "scope": "Solo ruedas. Poligonos son hipotesis, no contactos medidos. Masa/CG/geometria nuevos propuestos; cuerpos rigidos, sin inercias internas ni choques completos."
+    },
+    {
+      "name": "L50_55_equilibrado",
+      "parameters_mm": {
+        "base_top": 60,
+        "tower_h": 40,
+        "axis_y_mm": -32,
+        "link1": 50,
+        "link2": 55,
+        "wrist45": 55,
+        "wrist56": 40,
+        "payload_z": 52
+      },
+      "total_with_payload_g": 1884.4709695139054,
+      "motor_mass_g": 254.4,
+      "ratios": [
+        5,
+        7,
+        4,
+        1,
+        8,
+        1
+      ],
+      "rated_kgfcm": [
+        10.0,
+        10.0,
+        10.0,
+        1.5,
+        1.5,
+        1.5
+      ],
+      "minimum_torque_margin": [
+        6.598919931456041,
+        1.445893291001641,
+        2.0410138934107174,
+        1.6788967553706329,
+        1.79961762053389,
+        3.26757545702786
+      ],
+      "peak_motor_kgfcm": [
+        1.515399505354131,
+        3.897443443524655,
+        4.899525687837971,
+        0.8934438613938832,
+        0.8335103984784262,
+        0.45905596358113754
+      ],
+      "peak_force_N": [
+        19.538851289262226,
+        13.355853481879159,
+        10.84587096943834,
+        9.23790335267273,
+        7.249587435494056,
+        6.502338813433324
+      ],
+      "peak_moment_Nm": [
+        1.9680158739288027,
+        2.188232980210258,
+        1.5725656076418084,
+        1.0086077175169879,
+        0.535478611952818,
+        0.26606167727503327
+      ],
+      "rotor_inertia_necessary_max_kgm2": [
+        0.004350946950652105,
+        0.0,
+        0.0001568179776964197,
+        0.0,
+        0.0,
+        0.001816394834948953
+      ],
+      "ground_support": [
+        {
+          "hypothetical_halfspan_mm": [
+            107,
+            62
+          ],
+          "maximum_tip_utilization": 0.8499080060855253,
+          "necessary_halfspan_mm": [
+            54.63077634133569,
+            52.694296377302564
+          ],
+          "states": 99378,
+          "isotropic_mu_necessary_only": 0.0763505795053509
+        },
+        {
+          "hypothetical_halfspan_mm": [
+            90,
+            50
+          ],
+          "maximum_tip_utilization": 1.0538859275460513,
+          "necessary_halfspan_mm": [
+            54.63077634133569,
+            52.694296377302564
+          ],
+          "states": 99378,
+          "isotropic_mu_necessary_only": 0.0763505795053509
+        },
+        {
+          "hypothetical_halfspan_mm": [
+            90,
+            40
+          ],
+          "maximum_tip_utilization": 1.3173574094325642,
+          "necessary_halfspan_mm": [
+            54.63077634133569,
+            52.694296377302564
+          ],
+          "states": 99378,
+          "isotropic_mu_necessary_only": 0.0763505795053509
+        }
+      ],
+      "peak_payload_force_N": 3.761697446338617,
+      "pinza_nominal_normal_N": 61.781895,
+      "pinza_closure_margin_for_30N_preload": 2.0593965,
+      "pad_mu_required_for_30N_preload_factor2": 0.2507798297559078,
+      "scope": "Solo ruedas. Poligonos son hipotesis, no contactos medidos. Masa/CG/geometria nuevos propuestos; cuerpos rigidos, sin inercias internas ni choques completos."
+    },
+    {
+      "name": "L60_60_sin_contrapeso_funcional",
+      "parameters_mm": {
+        "base_top": 60,
+        "tower_h": 40,
+        "axis_y_mm": -32,
+        "link1": 60,
+        "link2": 60,
+        "wrist45": 55,
+        "wrist56": 40,
+        "payload_z": 52
+      },
+      "total_with_payload_g": 1845.0376466447822,
+      "motor_mass_g": 254.4,
+      "ratios": [
+        5,
+        7,
+        4,
+        1,
+        8,
+        1
+      ],
+      "rated_kgfcm": [
+        10.0,
+        10.0,
+        10.0,
+        1.5,
+        1.5,
+        1.5
+      ],
+      "minimum_torque_margin": [
+        6.145478505691764,
+        1.3181890511836987,
+        1.9393962880045996,
+        1.6442338748141903,
+        1.769271985383623,
+        3.2079439246398485
+      ],
+      "peak_motor_kgfcm": [
+        1.627212590645023,
+        4.305950432816655,
+        5.156243755776583,
+        0.9122789786638537,
+        0.8478063363868625,
+        0.4675892207711838
+      ],
+      "peak_force_N": [
+        16.731136014346752,
+        13.694207676147874,
+        11.105139594333624,
+        9.434194729517607,
+        7.395687903707325,
+        6.630640566179563
+      ],
+      "peak_moment_Nm": [
+        2.4034237755085823,
+        2.420823401375752,
+        1.6581010324079015,
+        1.0286903926739308,
+        0.5457033623074925,
+        0.2709540705494069
+      ],
+      "rotor_inertia_necessary_max_kgm2": [
+        0.004211334733057315,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0017631207947724546
+      ],
+      "ground_support": [
+        {
+          "hypothetical_halfspan_mm": [
+            107,
+            62
+          ],
+          "maximum_tip_utilization": 1.1143080829228174,
+          "necessary_halfspan_mm": [
+            67.38278156003327,
+            69.08710114121467
+          ],
+          "states": 99378,
+          "isotropic_mu_necessary_only": 0.0965437416180598
+        },
+        {
+          "hypothetical_halfspan_mm": [
+            90,
+            50
+          ],
+          "maximum_tip_utilization": 1.3817420228242934,
+          "necessary_halfspan_mm": [
+            67.38278156003327,
+            69.08710114121467
+          ],
+          "states": 99378,
+          "isotropic_mu_necessary_only": 0.0965437416180598
+        },
+        {
+          "hypothetical_halfspan_mm": [
+            90,
+            40
+          ],
+          "maximum_tip_utilization": 1.727177528530367,
+          "necessary_halfspan_mm": [
+            67.38278156003327,
+            69.08710114121467
+          ],
+          "states": 99378,
+          "isotropic_mu_necessary_only": 0.0965437416180598
+        }
+      ],
+      "peak_payload_force_N": 3.8332162664424234,
+      "pinza_nominal_normal_N": 61.781895,
+      "pinza_closure_margin_for_30N_preload": 2.0593965,
+      "pad_mu_required_for_30N_preload_factor2": 0.25554775109616157,
+      "scope": "Solo ruedas. Poligonos son hipotesis, no contactos medidos. Masa/CG/geometria nuevos propuestos; cuerpos rigidos, sin inercias internas ni choques completos."
+    },
+    {
+      "name": "L50_55_reserva25_CG5",
+      "parameters_mm": {
+        "base_top": 60,
+        "tower_h": 40,
+        "axis_y_mm": -32,
+        "link1": 50,
+        "link2": 55,
+        "wrist45": 55,
+        "wrist56": 40,
+        "payload_z": 52
+      },
+      "total_with_payload_g": 2166.988711892382,
+      "motor_mass_g": 254.4,
+      "ratios": [
+        5,
+        7,
+        4,
+        1,
+        8,
+        1
+      ],
+      "rated_kgfcm": [
+        10.0,
+        10.0,
+        10.0,
+        1.5,
+        1.5,
+        1.5
+      ],
+      "minimum_torque_margin": [
+        5.82226686465679,
+        1.248068802593485,
+        1.7890950347582881,
+        1.4690803370228245,
+        1.6119519768309332,
+        2.9016891885330565
+      ],
+      "peak_motor_kgfcm": [
+        1.7175440824781705,
+        4.489603025854663,
+        5.589418005036848,
+        1.021046951754753,
+        0.9305488138356153,
+        0.5169402725583859
+      ],
+      "peak_force_N": [
+        22.362594341815736,
+        15.443946857221666,
+        12.418354530010273,
+        10.444202651378223,
+        8.007088740614202,
+        7.1374767907416405
+      ],
+      "peak_moment_Nm": [
+        2.293369882859111,
+        2.5198670735375743,
+        1.7937989080192576,
+        1.1412234890522965,
+        0.5978936899892513,
+        0.29663210324870476
+      ],
+      "rotor_inertia_necessary_max_kgm2": [
+        0.0040985448940088565,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0014550168835566252
+      ],
+      "ground_support": [
+        {
+          "hypothetical_halfspan_mm": [
+            107,
+            62
+          ],
+          "maximum_tip_utilization": 0.9084798248064524,
+          "necessary_halfspan_mm": [
+            58.28103070715895,
+            56.32574913800005
+          ],
+          "states": 99378,
+          "isotropic_mu_necessary_only": 0.08329465051472734
+        },
+        {
+          "hypothetical_halfspan_mm": [
+            90,
+            50
+          ],
+          "maximum_tip_utilization": 1.126514982760001,
+          "necessary_halfspan_mm": [
+            58.28103070715895,
+            56.32574913800005
+          ],
+          "states": 99378,
+          "isotropic_mu_necessary_only": 0.08329465051472734
+        },
+        {
+          "hypothetical_halfspan_mm": [
+            90,
+            40
+          ],
+          "maximum_tip_utilization": 1.4081437284500011,
+          "necessary_halfspan_mm": [
+            58.28103070715895,
+            56.32574913800005
+          ],
+          "states": 99378,
+          "isotropic_mu_necessary_only": 0.08329465051472734
+        }
+      ],
+      "peak_payload_force_N": 3.761697446338617,
+      "pinza_nominal_normal_N": 61.781895,
+      "pinza_closure_margin_for_30N_preload": 2.0593965,
+      "pad_mu_required_for_30N_preload_factor2": 0.2507798297559078,
+      "scope": "Solo ruedas. Poligonos son hipotesis, no contactos medidos. Masa/CG/geometria nuevos propuestos; cuerpos rigidos, sin inercias internas ni choques completos."
+    }
+  ]
+}
