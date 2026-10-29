@@ -1,3 +1,7 @@
+## AFR2-20261029-02 - 29/10/2026
+
+Banco Fusion compacto v15: eslabones de aluminio55/50mm, pinza con bielas/pernos escalonados, retenciones y eje6mm justificado por flexion/torsion. Masas desde geometria y revision CAD local solicitada. J2 modulo0.8 requiere rediseño; sin integracion global ni aprobacion fisica. [Ficha](changes/2026-10-29-02-banco-brazo-compacto-v15.md).
+
 ## AFR2-20261029-01 - 29/10/2026
 
 Presupuesto compacto del brazo: motores254.4g, estructura fina, menor alcance, masa1170.3g sin carga con reserva25%. Solo ruedas; pies y voladizo descartados. Filtro externo de par2.65, sin resistencia ni estabilidad fisica aprobadas y sin nuevo CAD. [Ficha](changes/2026-10-29-01-brazo-compacto-solo-ruedas.md).

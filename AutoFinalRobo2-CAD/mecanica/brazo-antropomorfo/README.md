@@ -1,3 +1,5 @@
+> **AFR2-20261029-02:** [modulos mecanicos v15](revision_v15/README.md). Banco Fusion editable independiente: eslabones de aluminio, pinza corregida y transmision J2 de estudio. Masas reales de geometria y revision local muestreada; J2 necesita otra iteracion. No es ensamble final ni fabricacion aprobada; v09 conservado.
+
 > **AFR2-20261029-01:** [presupuesto compacto y cargas](busqueda_actuadores_v14/README.md). Se reducen conjuntamente actuadores, estructura y longitudes; trabajo solo sobre ruedas. Pinza, transmisiones, resistencia y contacto real pendientes; maestro v09 sin editar.
 
 > **Busqueda AFR2-20261028-08:** [mantener30grados/s: par nominal, inercia y vuelco](busqueda_actuadores_v12/README.md). STS3250 queda debajo de x2; RS01+STS supera el filtro de par a costa de masa y carga sobre J1. Sin cierre fisico, compra ni housings nuevos.

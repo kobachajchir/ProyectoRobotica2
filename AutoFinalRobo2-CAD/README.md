@@ -1,3 +1,5 @@
+> **AFR2-20261029-02:** [banco mecanico compacto v15](mecanica/brazo-antropomorfo/revision_v15/README.md), con eslabones de aluminio55/50mm, housings, pinza y reductor de estudio. Masas extraidas y revision CAD local de pinza; J2 modulo0.8 no aceptado para PLA, integracion y resistencia global pendientes. Maestro v09 conservado.
+
 > **AFR2-20261029-01:** [brazo compacto sobre ruedas](mecanica/brazo-antropomorfo/busqueda_actuadores_v14/README.md): actuadores254g, estructura fina y menor alcance. 55/50mm:1.17kg sin carga con reserva25%, filtro externo de par2.65; apoyo hipotetico con margen escaso. Sin nuevo CAD ni capacidad fisica aprobada. Pies de09 descartados por decision humana.
 
 > **AFR2-20261028-09:** [prediseno liviano v13](mecanica/brazo-antropomorfo/busqueda_actuadores_v13/README.md). Aluminio, PVC25/20, PLA localizado y transmisiones menores; candidato1.63kg sin carga/con pies propuestos. Alcance reducido373mm, margen preliminar2.36, apoyo sin cerrar. Analisis externo; sin nuevo CAD ni aprobacion fisica. Maestro v09 conservado.
