@@ -3,6 +3,26 @@
 Conserva eje/brida, dos625 y limites de la muneca. No es aprobacion FDM.
 """
 
+
+def j5_cones(c,name,y0,y1,x,z,d0,d1,cut=False):
+    before=sum(b.volume for b in c.bRepBodies)
+    sections=[]
+    for y,d in [(y0,d0),(y1,d1)]:
+      sk=c.sketches.add(datum(c,'Y',y,'Plano_'+name))
+      circle(sk,x,'-('+z+')',d);sections.append(sk)
+    next(o for o in R.allOccurrences if o.component==c).activate()
+    ip=c.features.loftFeatures.createInput(OP.CutFeatureOperation if cut else OP.NewBodyFeatureOperation)
+    for sk in sections:ip.loftSections.add(sk.profiles.item(0))
+    if cut:ip.participantBodies=list(c.bRepBodies)
+    f=c.features.loftFeatures.add(ip);f.name=name
+    if f.healthState!=adsk.fusion.FeatureHealthStates.HealthyFeatureHealthState:
+      raise RuntimeError('Cono J5 no calculado: '+f.errorOrWarningMessage)
+    if cut and before-sum(b.volume for b in c.bRepBodies)<1e-7:
+      raise RuntimeError('Cono J5 no retiro material '+name)
+    for sk in sections:sk.isVisible=False
+    if not cut:
+      for b in f.bodies:b.appearance=AP['steel']
+
 def act17_sts_J5_parametros():
     for name,expression in [
       ('v17_j5_output_y','36.3 mm'),
@@ -76,15 +96,37 @@ def act17_sts_J5_horn():
     points=[('7 mm','0 mm'),('-7 mm','0 mm'),('0 mm','7 mm'),('0 mm','-7 mm')]
     for x,z in points:
       ring(shaft,'V17_Paso_M3_PCD14_J5','Y','29.4 mm',x,z,'3.4 mm',None,'2.7 mm',cut=True)
+      ring(shaft,'V17_Banda_avellanado_M3_J5','Y','29.4 mm',x,z,'6.2 mm',None,'0.3 mm',cut=True)
+      j5_cones(shaft,'V17_Cono90_M3_J5','29.7 mm','31.1 mm',x,z,'6.2 mm','3.4 mm',True)
     act17_one(shaft)
-    shaft.attributes.add('AFR2','fabricacion_v17','Brida22x2.5 conservada,4pasantesM3PCD14, tornillos desdeY27.85. Pieza nueva mecanizada, sin perforaciones viejas; no soldar rellenos.')
+    shaft.attributes.add('AFR2','fabricacion_v17','Brida22x2.5 conservada,4pasantesM3PCD14 y avellanados6.2x90grados. CabezasM3x6ISO10642recesadas0.1 desdeY29.6, gap0.6 hasta tapa625que terminaY29. Pieza nueva mecanizada, no soldar rellenos. Taladros viejos eliminados en CADfinal.')
 
 
 def act17_sts_J5_tornillos_horn():
+    phase17_modo_trabajo()
     g=comp('05_Inclinacion_muneca')
     for i,(x,z) in enumerate([('7 mm','0 mm'),('-7 mm','0 mm'),('0 mm','7 mm'),('0 mm','-7 mm')]):
-      c=piece17(g,'V17_M3x5_ISO7380_horn_J5_'+str(i),'Acero')
-      ring(c,'Cabeza_baja_REF','Y','27.85 mm',x,z,'5.7 mm',None,'1.65 mm','steel')
-      ring(c,'Vastago','Y','29.5 mm',x,z,'3 mm',None,'5 mm','steel');join_all(c,'M3x5_ISO7380_REF')
+      c=piece17(g,'V17_M3x6_ISO10642_horn_J5_'+str(i),'Acero')
+      ring(c,'Vastago','Y','31.3 mm',x,z,'3 mm',None,'4.3 mm','steel')
+      ring(c,'Banda_cabeza_REF','Y','29.6 mm',x,z,'6 mm',None,'0.2 mm','steel')
+      j5_cones(c,'Cono90_cabeza_REF','29.8 mm','31.3 mm',x,z,'6 mm','3 mm')
+      join_all(c,'M3x6_ISO10642_REF');act17_one(c)
+      c.attributes.add('AFR2','fijacion','M3x6 avellanado, longitudTOTAL6incluye cabeza. EnvolventeD6x1.7, cono90+banda0.2. FrenteY29.6, asiento en brida, punta35.6 dentro del alivio de motor. Confirmar norma/lote y tolerancias antes de mecanizar.')
     # La retencion central anterior ya apoya enY32 y queda alojada en la
     # caja6mm de la brida. Se conserva; no agregar un segundo tornillo.
+
+
+def act17_sts_J5_montaje_axial():
+    h=act17_get('V02_A15_Horquilla_J5_PETG');cap=act17_get('V17_Tapa_STS3250_J5')
+    # Abrir el extremo trasero permite introducir motor+horn+eje ya
+    # acoplados desde+Y, con las tapas625 colocadas sobre la horquilla.
+    box(h,'V17_Abertura_insercion_axial_J5','-10.41 mm','68.9 mm','v17_j5_bottom','45.82 mm','3.3 mm','v17_sts_w+0.1 mm',cut=True)
+    # El tope pasa a ser parte de la tapa desmontable: mismo numero de
+    # impresos, sin pared permanente bloqueando el montaje horizontal.
+    box(cap,'V17_Tope_trasero_solidario_a_tapa','-10.11 mm','69 mm','v17_j5_bottom','45.22 mm','3 mm','v17_sts_w+0.1 mm')
+    join_all(cap,'V17_Tapa_y_tope_una_pieza')
+    box(cap,'V17_Ventana_TTL_tope','4 mm','68.9 mm','wrist45-10.5 mm','27 mm','3.3 mm','21 mm',cut=True)
+    ring(cap,'V17_Paso_pivote_tope','Y','68.9 mm','0 mm','wrist45','6.5 mm',None,'3.3 mm',cut=True)
+    h.attributes.add('AFR2','secuencia_montaje_J5','1Montar625/tapas en horquilla. 2Atornillar horn al motor conM3central, antes de acoplar eje. 3Atornillar4M3avellanados de eje a horn fuera del robot. 4Introducir conjunto axialmente desde+Y, eje pasa por22.6/tapas/625. 5Colocar retencion negativa del eje. 6Cerrar tapa+tope trasero con4M3x35. No intentar apretar cabezasM3 a traves de tapas625 cerradas.')
+    cap.attributes.add('AFR2','montaje_J5','Tapa y tope posterior integrados. HolguraX0.3 en abertura de insercion, portTTL y pivote accesibles. CuatroM3x35 sujetan tapa; no pieza flotante ni pared que impida montar motor/eje.')
+    act17_one(h);act17_one(cap)

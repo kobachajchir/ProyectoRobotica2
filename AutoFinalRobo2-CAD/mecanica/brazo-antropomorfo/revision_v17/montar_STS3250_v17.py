@@ -152,7 +152,7 @@ def act17_sts_J2_engranajes():
       lim.isMinimumValueEnabled=False;lim.isMaximumValueEnabled=False
 
 
-def sts17_shared(source,root,anchor,rotor=False,target_y='77.4 mm',target_z=None,tag='J2',target_x='0 mm',source_axis='Z'):
+def sts17_shared(source,root,anchor,rotor=False,target_y='77.4 mm',target_z=None,tag='J2',target_x='0 mm',source_axis='Z',twist_degrees=180):
     c=act17_get(source);g=comp(root)
     if target_z is None:target_z='0 mm' if rotor else 'v17_j2_input_z'
     source_name='V17_Interfaz_modulo_STS'+('_Y' if source_axis=='Y' else '')
@@ -167,7 +167,7 @@ def sts17_shared(source,root,anchor,rotor=False,target_y='77.4 mm',target_z=None
     anchor_native=next(o for o in g.occurrences if o.component==a)
     anchor_proxy=anchor_native.createForAssemblyContext(occ(root))
     ip=R.joints.createInput(jo.createForAssemblyContext(proxy),target.createForAssemblyContext(anchor_proxy))
-    ip.angle=V('180 deg');ip.isFlipped=False;ip.setAsRigidJointMotion()
+    ip.angle=V(str(twist_degrees)+' deg');ip.isFlipped=False;ip.setAsRigidJointMotion()
     j=R.joints.add(ip);j.name='V17_'+tag+'_instancia_'+source
     adsk.doEvents()
     # Comprobar transformacion RELATIVA al grupo, no a coordenadas globales.
@@ -180,6 +180,8 @@ def sts17_shared(source,root,anchor,rotor=False,target_y='77.4 mm',target_z=None
     (HERE17/('diagnostico_instancia_'+tag+'.json')).write_text(json.dumps(dict(source=source,new_path=new.fullPathName,proxy_path=proxy.fullPathName,anchor_path=anchor_proxy.fullPathName,new_matrix=list(new.transform2.asArray()),proxy_matrix=list(proxy.transform2.asArray()),parent_matrix=list(occ(root).transform2.asArray()),anchor_matrix=list(anchor_native.transform2.asArray()),new_ground=new.isGroundToParent,joint_health=int(j.healthState),joint_message=j.errorOrWarningMessage,point=list(p.asArray()),expected=list(expected.asArray())),indent=2),encoding='utf-8')
     if p.distanceTo(expected)>1e-5:raise RuntimeError('Instancia '+tag+' fuera de interfaz: '+source+' '+str(p.asArray()))
     expected_axes=[[-1,0,0],[0,-1,0],[0,0,1]] if source_axis=='Z' else [[-1,0,0],[0,0,1],[0,1,0]]
+    if twist_degrees==270 and source_axis=='Y':expected_axes=[[0,-1,0],[0,0,1],[-1,0,0]]
+    elif twist_degrees!=180:raise RuntimeError('Orientacion no implementada')
     for vector,wanted in zip([adsk.core.Vector3D.create(1,0,0),adsk.core.Vector3D.create(0,1,0),adsk.core.Vector3D.create(0,0,1)],expected_axes):
       vector.transformBy(proxy.transform2);vector.transformBy(inverse)
       if max(abs(v-w) for v,w in zip(vector.asArray(),wanted))>1e-5:raise RuntimeError('Orientacion '+tag+' incorrecta: '+source)
@@ -252,9 +254,9 @@ def act17_sts_J2_retencion():
     # Limite mecanico del codo+-90; entrada2.5veces ese recorrido. El
     # seguidor auxiliar no debe conservar un tope de un servo anterior.
     limits=R.joints.itemByName('T_J3_Correa_2a1').jointMotion.rotationLimits
-    span=math.pi/2*D.userParameters.itemByName('j3_ratio').value
-    limits.minimumValue=-span;limits.maximumValue=span
-    limits.isMinimumValueEnabled=True;limits.isMaximumValueEnabled=True
+    # La articulacion principal ya fija+-90. Fusion normaliza limites
+    # auxiliares mayores de una vuelta: no asignar+-225 al seguidor.
+    limits.isMinimumValueEnabled=False;limits.isMaximumValueEnabled=False
 
 
 def act17_sts_identificacion():

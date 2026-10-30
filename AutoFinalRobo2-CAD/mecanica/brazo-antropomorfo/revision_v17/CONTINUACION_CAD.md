@@ -164,9 +164,10 @@ J1_parametros,motor,housing,cartucho,horn,adapter,union.
 Cada nombre lleva prefijoact_sts_. Revisar estado tras cada fase y guardar.
 
 J5 conserva bridaY32 y625, motor outputY36.3/cuerpo33.7..68.7. CuatroM3
-PCD14 desdeY27.85 con cabezasISO7380, paso frente22.6. Cuna integradaA15.
-J4 conserva24/24 y1:1; centro36 enXsqrt(36^2-8^2),Y8; fase7.5+2atan(Y/X).
-Casebottomlink2-32.4,toplink2+2.6; cunaA12 integrada con puentesx12..24.69
+PCD14 avellanadosISO10642 desdeY29.6; paso frente22.6. Cuna integradaA15.
+Tope posterior solidario a tapa desmontable para insertar motor+horn+eje.
+J4 conserva24/24 y1:1; centroX36,Y0, fase7.5. Motor largo hacia+Y.
+Casebottomlink2-32.4,toplink2+2.6; cunaA12 integrada con puentesx12..23.34
 Zlink2-13..-10; tapa con despejeR19.5 para tapa608. Eje de pinon aZlink2+6,
 hornfrente64.3,separador1.7,cuatroM3x8 y cabezaM3central libre por6.2.
 J1 conserva altura96 y cartucho6000. Motoroutput59.15,bottom26.75,
@@ -181,3 +182,36 @@ Falta comprobar choques y masa de estos montajes; no dar sus scripts como
 CAD aplicado. Despues extraer/recalcular, materiales_final (no repetirbase
 ya aplicado), guardar/exportar, revision nativa final y GitLFS. Sin tests de
 software ni estudio ShapeOptimization/FEA. ControlTTL12V/6V sigue pendiente.
+
+## Alcance actualizado por el usuario: terminar solo el 3D
+
+Prioridad: terminar motor, housing, fijaciones y ensambles nativos J5/J4/J1,
+conservar pinza V7, transmision J3 por correa y limites articulares.
+Se difieren nuevos calculos de masas, cargas, actuadores, vuelco, tensiones
+y optimizacion de material hasta nuevo pedido. Los resultados numericos
+anteriores son evidencia de una geometria anterior, no aprobacion del modelo final.
+Guardar el F3D editable y publicar las fuentes junto con el estado real.
+
+## Cierre de esta pasada: entrega mecanica 3D
+
+J5, J4 y J1 aplicados y guardados en el F3D seleccionado. Las secciones
+anteriores que los enumeran como pendientes son historial de trabajo.
+J5 incluye cuatro M3avellanados y tapa con tope posterior desmontable.
+J4 incluye motor tangencial, cuna integrada, tapa, horn, separador y M3;
+se retiraron los dos M2x8 antiguos que tenian otro prefijo de nombre.
+J1 incluye cuna integrada en montura baja, alivio inferior del cartucho,
+horn adaptado, nuevo patron de adaptador y union atornillada al eje.
+
+`ensambles_y_limites_3D.json` registra47uniones y5vinculos de movimiento.
+J1/J3/J4/J5/J6 conservan+-90; J2 conserva-10..125. J7 conserva+-90
+respecto a su origen90, equivalente a0..180 de referencia del servo.
+Correderas: +-18.85mm. Se desactivan limites independientes de entradaJ3:
+Fusion normalizaba el intervalo mayor de una vuelta a135..225. El codo
+principal conserva su limite y el vinculo su relacion2.5; no se cambia pose.
+Visibilidad de las referencias del auto y estilo de vista restaurados.
+
+No se ejecutaron nuevos calculos, barridos globales de interferencias,
+estudios de material ni tests de software. Densidades/materiales nuevos
+pendientes de sincronizar antes del proximo calculo: `physical_materials_synced`
+no debe interpretarse como verdadero para esta geometria nueva.
+Esperar indicacion del usuario para continuar con el resto.

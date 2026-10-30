@@ -1,4 +1,4 @@
-> **AFR2-20261029-03:** [V7 con codo remoto v17](changes/2026-10-29-03-brazo-v7-codo-remoto-v17.md). Transmision20/50 con tensor y PVC25/20 aplicados; nueva preseleccion de actuadores con margen minimo1.272. J2 nuevo ya integrado y revisado; CAD incompleto enJ1/J4/J5, pinzaV7 conservada. No nuevos calculos de vuelco ni estudio de aligerado resuelto; producto atmega/esp/web/Loader sin cambios.
+> **AFR2-20261029-03, entrega 3D:** [V7 con codo remoto v17](changes/2026-10-29-03-brazo-v7-codo-remoto-v17.md). J1/J4/J5 integrados con motores, housings y fijaciones. Ensambles nativos y limites registrados; correa20/50, tensor, PVC25/20 y pinzaV7 conservados. Nuevos calculos, comprobaciones globales y aligerado diferidos por el usuario. atmega/esp/web/Loader sin cambios.
 
 > **AFR2-20261029-02:** [banco mecanico compacto v15](changes/2026-10-29-02-banco-brazo-compacto-v15.md). CAD nativo separado, eslabones de aluminio y pinza corregida; masas y revision geometrica local. Reductor J2 no aceptado para PLA e integracion global pendiente. atmega/esp/web/Loader sin cambios.
 

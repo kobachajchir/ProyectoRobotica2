@@ -1,5 +1,9 @@
 # Seleccion por carga propia y pieza de 200 g
 
+> Antecedente congelado el 30/10/2026: cifras anteriores al cierre de los
+> montajes J1/J4/J5. El usuario difiere nuevos calculos y comprobaciones
+> hasta terminar y revisar el modelo 3D con sus ensambles y limites.
+
 29/10/2026. Alcance corregido por el usuario: **no continuar calculando
 vuelco**. Esta seleccion trata el par externo y las masas; no acredita
 estabilidad del auto ni resistencia fisica del conjunto.

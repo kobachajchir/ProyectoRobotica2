@@ -9,7 +9,7 @@ def materiales_vigentes(d,folder):
       message=json.loads(line).get('message','')
       if not message.startswith('aplicada '):continue
       phase=message.removeprefix('aplicada ')
-      if phase!='save' and d.attributes.itemByName('AFR2','v17_phase_'+phase):phases.append(phase)
+      if phase not in ['save','modo_trabajo','restaurar_vista','ensambles_limites'] and d.attributes.itemByName('AFR2','v17_phase_'+phase):phases.append(phase)
     return bool(phases and phases[-1].startswith('act_sts_materiales'))
 
 def run(_context: str):
@@ -45,7 +45,7 @@ def run(_context: str):
     data={'document':app.activeDocument.name,'id':app.activeDocument.dataFile.id,
           'integrated_mini_mounts':all(d.attributes.itemByName('AFR2','v17_phase_act_mini_'+which+'_'+phase) for which in ['J6','J7'] for phase in ['horn','fasteners']),
           'integrated_J2_mount':all(d.attributes.itemByName('AFR2','v17_phase_act_sts_J2_'+phase) for phase in ['soporte','engranajes','motor','cuna','rotor','anclajes','retencion']),
-          'integrated_J5_mount':all(d.attributes.itemByName('AFR2','v17_phase_act_sts_J5_'+phase) for phase in ['parametros','motor','housing','tapa','pasantes','fijaciones','horn','tornillos_horn']),
+          'integrated_J5_mount':all(d.attributes.itemByName('AFR2','v17_phase_act_sts_J5_'+phase) for phase in ['parametros','motor','housing','tapa','pasantes','fijaciones','horn','tornillos_horn','montaje_axial']),
           'integrated_J4_mount':all(d.attributes.itemByName('AFR2','v17_phase_act_sts_J4_'+phase) for phase in ['parametros','motor','housing','tapa','pasantes','fijaciones','horn','union']),
           'integrated_J1_mount':all(d.attributes.itemByName('AFR2','v17_phase_act_sts_J1_'+phase) for phase in ['parametros','motor','housing','cartucho','horn','adapter','union']),
           'physical_materials_synced':materiales_vigentes(d,folder),

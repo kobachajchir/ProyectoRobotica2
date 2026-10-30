@@ -17,4 +17,4 @@ def run(context):
     target=folder/'vista_prototipo_v17.png'
     ok=viewport.saveAsImageFile(str(target),1600,1000)
     if not ok:raise RuntimeError('No se exporto la captura nativa')
-    print(json.dumps(dict(image=str(target),scope='Vista del CAD en desarrollo; restantes actuadores aun pendientes de integrar.')))
+    print(json.dumps(dict(image=str(target),scope='Vista del ensamble nativo; la imagen no acredita resistencia ni recorrido libre de choques.')))

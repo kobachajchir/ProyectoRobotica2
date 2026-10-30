@@ -1,7 +1,7 @@
 # Brazo v17: arquitectura V7 y codo por correa
 
-Checkpoint de trabajo, AFR2-20261029-03. **El brazo completo aun no esta
-terminado ni aprobado para fabricar.** Se conserva el antropomorfo y la
+Entrega mecanica 3D, AFR2-20261029-03. **Montajes, ensambles y limites
+completados; no aprobado para fabricar.** Se conserva el antropomorfo y la
 pinza V7; se descartan la pinza compacta v15 y el banco alternativo v16.
 
 Modelo seleccionado:
@@ -29,8 +29,23 @@ el ultimo guardado/exportado en `estado_cad_v17.json`. Una fase fallida
 no cuenta como geometria aplicada aunque conserve mensajes de operaciones.
 Tambien se completo el montaje nativo de J2: STS3250 fijo en la torre,
 engranajes18/72modulo0.8 de aluminio, eje5 con dos625, chavetas y cuatroM4.
-Comparte componentes conJ3. Los nuevos J1/J4/J5 siguen pendientes; las
-fases de J5 preparadas en el repositorio no equivalen a montaje aplicado.
+Comparte componentes conJ3. J5 ya tiene STS3250, cuna integrada, tapa con
+tope trasero desmontable, horn y cuatro M3 avellanados. J4 integrado con
+cuna, tapa, fijaciones y horn al pinon24. J1 integrado con cuna en la
+montura baja, cartucho6000 conservado, horn adaptado y union al eje.
+El journal identifica las fases aplicadas y los guardados.
+Los [ensambles y limites](ENSAMBLES_Y_MOVIMIENTO.md) se registran tambien
+en `ensambles_y_limites_3D.json`: 47 uniones y 5 vinculos de movimiento.
+La entrada auxiliar de J3 queda sin topes adicionales: el codo conserva
+su limite de -90 a +90 grados y el vinculo conserva la relacion2.5.
+
+## Prioridad actual: entrega 3D
+
+Por pedido del usuario se termina solamente la geometria, los ensambles
+y los limites de movimiento. Los nuevos calculos de cargas, masas,
+actuadores, tensiones, vuelco y el estudio de aligerado quedan diferidos
+hasta que el usuario indique retomarlos. Las cifras siguientes pertenecen
+al checkpoint anterior y no certifican el montaje final.
 
 ## Evidencia y limites
 

@@ -45,8 +45,18 @@ Entrega editable, calculos, origen de catalogos y limites:
 
 ## Estados compartidos
 
-CAD: checkpoint de rediseño en curso, no brazo terminado ni fabricacion
-aprobada. v07/v09 conservados; v15/v16 alternativos descartados por usuario.
+Actualizacion de alcance 30/10: el usuario prioriza terminar exclusivamente
+el modelo 3D, sus ensambles y limites de movimiento. Se suspenden nuevos
+calculos de cargas, masas, seleccion de actuadores, tensiones y aligerado
+hasta nueva indicacion. J1/J4/J5 integrados y guardados;47uniones nativas
+y5vinculos de movimiento registrados. No interpretar
+los calculos del checkpoint anterior como aprobacion de estos cambios.
+
+CAD: entrega mecanica3D con montajes, ensambles y limites completados;
+sin nueva aprobacion de resistencia, interferencias globales ni fabricacion.
+J3_Codo conserva+-90; seguidor de correa sin topes auxiliares que recorten
+el recorrido. J1 no eleva la base; J5 integra tope trasero en tapa desmontable.
+v07/v09 conservados; v15/v16 alternativos descartados por usuario.
 atmega/esp/web/Loader: sin cambios ni nuevas comprobaciones de software.
 Sin tests, compilaciones, flasheos ni ensayo fisico. Se hicieron unicamente
 CAD y calculos mecanicos pedidos expresamente. Despieces finales diferidos.

@@ -1,5 +1,9 @@
 # Informe de masas, centros de masa y esfuerzos del brazo v17
 
+> Antecedente congelado el 30/10/2026: estos resultados preceden al cierre
+> de los nuevos montajes J1/J4/J5. Por pedido del usuario se termina solo
+> el 3D, ensambles y limites; no se recalcula ni aprueba aqui el modelo final.
+
 AFR2-20261029-03. Resultados de la revision identificada porSHA, no de un brazo fabricado.
 
 ## Por que se itera el diseno

@@ -65,10 +65,13 @@ def act17_sts_J1_adapter():
 
 def act17_sts_J1_union():
     g=comp('01_Giro_base')
-    for sign in [-1,1]:
+    for sign in [-1]:
       x=f'{sign*7} mm';c=piece17(g,'V17_M3x5_horn_J1_'+str(sign),'Acero')
       ring(c,'Cabeza_baja_REF','Z','v17_j1_horn_front-3.85 mm',x,'0 mm','5.7 mm',None,'1.65 mm','steel')
       ring(c,'Vastago','Z','v17_j1_horn_front-2.2 mm',x,'0 mm','3 mm',None,'5 mm','steel');join_all(c,'M3x5_ISO7380_REF')
+      D.activateRootComponent();occ(g.name).activate()
+      m=adsk.core.Matrix3D.create();m.translation=adsk.core.Vector3D.create(1.4,0,0)
+      twin=g.occurrences.addExistingComponent(c,m);twin.isGroundToParent=True
     c=piece17(g,'V17_M3x6_central_J1','Acero')
     ring(c,'Vastago','Z','v17_j1_horn_front-6 mm','0 mm','0 mm','3 mm',None,'6 mm','steel')
     ring(c,'Cabeza','Z','v17_j1_horn_front','0 mm','0 mm','5.5 mm',None,'3 mm','steel');join_all(c,'M3x6_REF')

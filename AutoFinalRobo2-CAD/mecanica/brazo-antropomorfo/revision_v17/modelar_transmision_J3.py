@@ -10,8 +10,35 @@ HERE17=BASE17/'revision_v17'
 NAME17='AFR2_Brazo_v17_Base_V7_J3_Remoto'
 
 def progress(message):
+    import datetime
     with open(HERE17/'progreso_J3.jsonl','a',encoding='utf-8') as f:
-        f.write(json.dumps(dict(message=message))+'\n')
+        f.write(json.dumps(dict(message=message,utc=datetime.datetime.now(datetime.timezone.utc).isoformat()))+'\n')
+
+
+def phase17_modo_trabajo():
+    viewport=adsk.core.Application.get().activeViewport
+    if not D.attributes.itemByName('AFR2','visual_style_before_work'):
+      D.attributes.add('AFR2','visual_style_before_work',str(int(viewport.visualStyle)))
+    viewport.visualStyle=adsk.core.VisualStyles.ShadedVisualStyle
+    existing=D.attributes.itemByName('AFR2','reference_visibility_before_work')
+    if existing:state=json.loads(existing.value)
+    else:
+      state={o.component.name:o.isLightBulbOn for o in R.occurrences if o.component.name.startswith(('80_','81_','82_'))}
+      D.attributes.add('AFR2','reference_visibility_before_work',json.dumps(state))
+    for o in R.occurrences:
+      if o.component.name in state:o.isLightBulbOn=False
+    print('Referencias ocultas temporalmente para reducir coste grafico; geometria y anclajes conservados.')
+
+
+def phase17_restaurar_vista():
+    attr=D.attributes.itemByName('AFR2','reference_visibility_before_work')
+    if not attr:raise RuntimeError('No hay estado anterior de visibilidad')
+    state=json.loads(attr.value)
+    for o in R.occurrences:
+      if o.component.name in state:o.isLightBulbOn=state[o.component.name]
+    visual=D.attributes.itemByName('AFR2','visual_style_before_work')
+    if visual:adsk.core.Application.get().activeViewport.visualStyle=int(visual.value)
+    print('Visibilidad de referencias restaurada.')
 
 def piece17(parent,name,material='PLA PrintALot',mass=None):
     c=sub(parent,name);c.attributes.add('AFR2','material_v17',material)
@@ -400,9 +427,49 @@ def phase17_paso_tubo():
     c=gc('A05_Encastre_proximal_brazo_PETG')
     ring(c,'V17_Despeje_pared_PVC25','Z','tube_inset','0 mm','0 mm','v17_pvc1_od+socket_clear','v17_pvc1_id-0.2 mm','socket_start+socket_length+v07_socket_extra-tube_inset+0.1 mm',cut=True)
 
+def phase17_limites_transmisiones():
+    # Fusion normaliza los angulos auxiliares al asignar limites mayores
+    # de una vuelta. El codo principal ya limita el movimiento a +-90.
+    # Como en la entrada de J2, dejar el seguidor sin un segundo tope.
+    j=R.joints.itemByName('T_J3_Correa_2a1')
+    limits=j.jointMotion.rotationLimits
+    limits.isMinimumValueEnabled=False;limits.isMaximumValueEnabled=False
+    j.attributes.add('AFR2','limites_v17','Entrada auxiliar sin topes independientes. J3_Codo conserva +-90 grados; MotionLink aplica relacion2.5. Evita intervalo angular normalizado135..225 que recortaba el seguidor. No altera pose ni recorrido del codo.')
+
+
+def phase17_ensambles_limites():
+    # Entrega 3D: inventario de uniones y limites existentes, sin calculos
+    # mecanicos ni barridos de interferencias. No modificar la pose.
+    import math
+    report=dict(document=adsk.core.Application.get().activeDocument.name,
+                scope='Ensamble CAD y limites configurados; no prueba de resistencia ni de recorrido libre de colisiones.',
+                joints=[],motion_links=[m.name for m in R.motionLinks])
+    active={R.entityToken:R}
+    for o in R.allOccurrences:active[o.component.entityToken]=o.component
+    for c in active.values():
+      for j in c.joints:
+        row=dict(component=c.name,name=j.name,motion_type=int(j.jointMotion.jointType))
+        motion=adsk.fusion.RevoluteJointMotion.cast(j.jointMotion)
+        if motion:
+          limits=motion.rotationLimits
+          row['minimum_deg']=math.degrees(limits.minimumValue) if limits.isMinimumValueEnabled else None
+          row['maximum_deg']=math.degrees(limits.maximumValue) if limits.isMaximumValueEnabled else None
+        slider=adsk.fusion.SliderJointMotion.cast(j.jointMotion)
+        if slider:
+          limits=slider.slideLimits
+          row['minimum_mm']=10*limits.minimumValue if limits.isMinimumValueEnabled else None
+          row['maximum_mm']=10*limits.maximumValue if limits.isMaximumValueEnabled else None
+        report['joints'].append(row)
+    (HERE17/'ensambles_y_limites_3D.json').write_text(json.dumps(report,indent=2),encoding='utf-8')
+    D.attributes.add('AFR2','alcance_entrega_3D','Solo geometria, ensambles y limites. Calculos, tensiones y aligerado diferidos por el usuario.')
+    print(json.dumps(dict(joints=len(report['joints']),motion_links=len(report['motion_links']))))
+
+
 def phase17_save():
     app=adsk.core.Application.get();doc=app.activeDocument
-    doc.save('V17 antropomorfo V7: J3 remoto, PVC25/20, interfaces STS y reduccion J2 por fases. Ver estado y comprobaciones por revision; montaje de actuadores y revision global aun en curso.')
+    closed=all(D.attributes.itemByName('AFR2','v17_phase_'+p) for p in ['act_sts_J1_union','act_sts_J4_union','act_sts_J5_montaje_axial','ensambles_limites'])
+    scope=('Entrega 3D ensamblada con limites configurados. Calculos, resistencia, aligerado y revision global de interferencias diferidos.' if closed else 'Rediseño en curso. El archivo guardado no implica revision de interferencias ni masa final ni brazo terminado.')
+    doc.save('V17 antropomorfo V7: J3 remoto, PVC25/20, interfaces STS y reduccion J2. '+scope)
     ok=D.exportManager.execute(D.exportManager.createFusionArchiveExportOptions(str(HERE17/(NAME17+'.f3d'))))
     if not ok:raise RuntimeError('Fallo exportacion F3D')
     stages=[]
@@ -410,10 +477,10 @@ def phase17_save():
       msg=json.loads(line).get('message','')
       if msg.startswith('aplicada '):stages.append(msg.removeprefix('aplicada '))
     state=dict(document=doc.name,saved=not doc.isModified,exported=ok,components=D.allComponents.count,joints=R.joints.count,motion_links=R.motionLinks.count,applied_stages=stages,
-        scope='Rediseño en curso. El archivo guardado no implica revision de interferencias ni masa final ni brazo terminado.')
+        model_3d_assembled=closed,scope=scope)
     state['joints_scope']='joints cuenta solo el componente raiz; ver joint_counts_by_component para montajes rigidos internos.'
     state['joint_counts_by_component']={c.name:c.joints.count for c in D.allComponents if c.joints.count}
-    scripted=[phase for phase in stages if phase!='save' and D.attributes.itemByName('AFR2','v17_phase_'+phase)]
+    scripted=[phase for phase in stages if phase not in ['save','modo_trabajo','restaurar_vista','ensambles_limites'] and D.attributes.itemByName('AFR2','v17_phase_'+phase)]
     state['physical_materials_synced']=bool(scripted and scripted[-1].startswith('act_sts_materiales'))
     (HERE17/'estado_cad_v17.json').write_text(json.dumps(state,indent=2),encoding='utf-8')
     print(json.dumps(dict(document=doc.name,saved=not doc.isModified,exported=ok,components=D.allComponents.count,joints=R.joints.count)))
@@ -424,7 +491,7 @@ def run(context):
     setup();phase=globals().get('FASE17')
     if not phase:raise RuntimeError('Indicar FASE17 explicita')
     history=HERE17/'progreso_J3.jsonl'
-    if phase!='save' and history.exists():
+    if phase not in ['save','ensambles_limites'] and history.exists():
       for line in history.read_text(encoding='utf-8').splitlines():
         if json.loads(line).get('message')=='aplicada '+phase:
           raise RuntimeError('Fase ya aplicada; no se repite una mutacion: '+phase)
