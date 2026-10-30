@@ -1,0 +1,95 @@
+{
+  "scope": "NativosJ2/J3 yJ6/pinza cuando sus fases estan completas. PropuestasSTS3250J1/J4/J5 con reservas restantes; J2=4(18/72modulo0.8),J3=2.5,J4=1. Cableado10g en punta; estructuras CAD conservadas. Sin calculo de vuelco.",
+  "mass_budget_without_payload_g": 2495.423174518829,
+  "axes": [
+    {
+      "joint": "J1",
+      "motor": "STS3250",
+      "rated_kgfcm": 16,
+      "ratio": 1,
+      "assumed_efficiency": 0.95,
+      "external_peak_Nm": 1.1130380212438828,
+      "capacity_Nm": 1.4906108,
+      "margin": 1.3392272065730138,
+      "passes_1_2": true,
+      "required_servo_speed_deg_s": 30
+    },
+    {
+      "joint": "J2",
+      "motor": "STS3250",
+      "rated_kgfcm": 16,
+      "ratio": 4,
+      "assumed_efficiency": 0.8,
+      "external_peak_Nm": 3.706977792506293,
+      "capacity_Nm": 5.0210048,
+      "margin": 1.354473935654546,
+      "passes_1_2": true,
+      "required_servo_speed_deg_s": 120
+    },
+    {
+      "joint": "J3",
+      "motor": "STS3250",
+      "rated_kgfcm": 16,
+      "ratio": 2.5,
+      "assumed_efficiency": 0.8,
+      "external_peak_Nm": 2.466710127307935,
+      "capacity_Nm": 3.138128,
+      "margin": 1.2721916390819796,
+      "passes_1_2": true,
+      "required_servo_speed_deg_s": 75.0
+    },
+    {
+      "joint": "J4",
+      "motor": "STS3250",
+      "rated_kgfcm": 16,
+      "ratio": 1,
+      "assumed_efficiency": 0.8,
+      "external_peak_Nm": 0.7902826819804922,
+      "capacity_Nm": 1.2552512,
+      "margin": 1.5883572152362884,
+      "passes_1_2": true,
+      "required_servo_speed_deg_s": 30
+    },
+    {
+      "joint": "J5",
+      "motor": "STS3250",
+      "rated_kgfcm": 16,
+      "ratio": 1,
+      "assumed_efficiency": 0.95,
+      "external_peak_Nm": 0.9824676082096043,
+      "capacity_Nm": 1.4906108,
+      "margin": 1.5172111401376462,
+      "passes_1_2": true,
+      "required_servo_speed_deg_s": 30
+    },
+    {
+      "joint": "J6",
+      "motor": "STS3032",
+      "rated_kgfcm": 1.5,
+      "ratio": 1,
+      "assumed_efficiency": 0.95,
+      "external_peak_Nm": 0.011333631968121271,
+      "capacity_Nm": 0.1397447625,
+      "margin": 12.330095320993992,
+      "passes_1_2": true,
+      "required_servo_speed_deg_s": 30
+    }
+  ],
+  "payload_peak_force_N": 4.475169190176356,
+  "gripper": {
+    "motor": "STS3032",
+    "rated_kgfcm": 1.5,
+    "assumed_rack_efficiency": 0.85,
+    "pinion_radius_mm": 12,
+    "minimum_pad_friction_for_margin1_2": 0.5153960559859353,
+    "status": "Requisito de friccion, no agarre fisico verificado. MecanismoV7 conservado."
+  },
+  "geometry_sha256": "5b2874703c33126feb9d28906e3299bd4248df4da91c1c5b062e6b7bd25654b0",
+  "limitations": [
+    "Inercia interna/curva par-velocidad y frenado del servo no disponibles",
+    "Masa PLA maciza; perfil FDM y resistencia intercapas sin definir",
+    "CG motor uniforme en envolvente; no interiores",
+    "No demuestra estabilidad sobre contactos de rueda reales",
+    "Muestreo parcial de poses/frenadas; no maximo global ni choque geometrico"
+  ]
+}

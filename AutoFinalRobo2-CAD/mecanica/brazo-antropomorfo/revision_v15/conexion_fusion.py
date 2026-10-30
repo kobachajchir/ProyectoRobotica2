@@ -1,10 +1,10 @@
 """Cliente MCP local alternativo para Fusion, sin editar configuracion del equipo."""
-import json,urllib.request,sys
+import json,urllib.request,sys,os
 URL='http://127.0.0.1:27182/mcp'
 headers={'Content-Type':'application/json','Accept':'application/json, text/event-stream'}
 def call(payload):
     req=urllib.request.Request(URL,json.dumps(payload).encode(),headers)
-    with urllib.request.urlopen(req,timeout=300) as response:
+    with urllib.request.urlopen(req,timeout=float(os.environ.get('AFR2_FUSION_TIMEOUT','300'))) as response:
         session=response.headers.get('Mcp-Session-Id')
         if session:headers['Mcp-Session-Id']=session
         raw=response.read().decode()

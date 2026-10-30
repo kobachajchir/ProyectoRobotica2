@@ -1,0 +1,79 @@
+{
+  "source": "preseleccion_actuadores_integrados.json",
+  "geometry_sha256": "5b2874703c33126feb9d28906e3299bd4248df4da91c1c5b062e6b7bd25654b0",
+  "axes": [
+    {
+      "joint": "J1",
+      "motor": "STS3250",
+      "motor_required_torque_Nm": 1.1716189697304031,
+      "motor_required_torque_kgfcm": 11.947188588665886,
+      "motor_required_speed_deg_s": 30,
+      "rated_torque_margin": 1.3392272065730138,
+      "steady_speed_estimate_deg_s": 297.47530270200707,
+      "estimated_speed_margin": 9.915843423400236,
+      "interpretation": "Filtro de velocidad por recta aproximada conservadora. No valida aceleracion/frenado real."
+    },
+    {
+      "joint": "J2",
+      "motor": "STS3250",
+      "motor_required_torque_Nm": 1.1584305601582163,
+      "motor_required_torque_kgfcm": 11.812704238024365,
+      "motor_required_speed_deg_s": 120,
+      "rated_torque_margin": 1.354473935654546,
+      "steady_speed_estimate_deg_s": 298.6856618577807,
+      "estimated_speed_margin": 2.4890471821481723,
+      "interpretation": "Filtro de velocidad por recta aproximada conservadora. No valida aceleracion/frenado real."
+    },
+    {
+      "joint": "J3",
+      "motor": "STS3250",
+      "motor_required_torque_Nm": 1.2333550636539674,
+      "motor_required_torque_kgfcm": 12.576721547663753,
+      "motor_required_speed_deg_s": 75.0,
+      "rated_torque_margin": 1.2721916390819796,
+      "steady_speed_estimate_deg_s": 291.80950607102625,
+      "estimated_speed_margin": 3.89079341428035,
+      "interpretation": "Filtro de velocidad por recta aproximada conservadora. No valida aceleracion/frenado real."
+    },
+    {
+      "joint": "J4",
+      "motor": "STS3250",
+      "motor_required_torque_Nm": 0.9878533524756152,
+      "motor_required_torque_kgfcm": 10.073300795639849,
+      "motor_required_speed_deg_s": 30,
+      "rated_torque_margin": 1.5883572152362884,
+      "steady_speed_estimate_deg_s": 314.3402928392414,
+      "estimated_speed_margin": 10.478009761308046,
+      "interpretation": "Filtro de velocidad por recta aproximada conservadora. No valida aceleracion/frenado real."
+    },
+    {
+      "joint": "J5",
+      "motor": "STS3250",
+      "motor_required_torque_Nm": 1.0341764296943203,
+      "motor_required_torque_kgfcm": 10.545664724389269,
+      "motor_required_speed_deg_s": 30,
+      "rated_torque_margin": 1.5172111401376462,
+      "steady_speed_estimate_deg_s": 310.0890174804966,
+      "estimated_speed_margin": 10.336300582683219,
+      "interpretation": "Filtro de velocidad por recta aproximada conservadora. No valida aceleracion/frenado real."
+    },
+    {
+      "joint": "J6",
+      "motor": "STS3032",
+      "motor_required_torque_Nm": 0.011930138913811865,
+      "motor_required_torque_kgfcm": 0.12165356073492849,
+      "motor_required_speed_deg_s": 30,
+      "rated_torque_margin": 12.330095320993992,
+      "no_load_speed_deg_s": 666.6666666666667,
+      "interpretation": "STS3032: no se atribuye la velocidad sin carga a la carga nominal; curva cargada pendiente."
+    }
+  ],
+  "power": {
+    "rated_current_12V_A": 7.0,
+    "stall_current_12V_A": 21.0,
+    "rated_current_6V_A": 0.8,
+    "stall_current_6V_A": 2.4,
+    "interpretation": "Sumas de catalogo; no consumo medido ni dimensionamiento electrico final. La tolerancia superior de bloqueo STS3250 exige23.1A si se presupone bloqueo simultaneo de los cinco."
+  },
+  "status": "Preseleccion externa con200g y masas nuevas/reservas. Montajes CAD incompletos. Sin vuelco, sin ensayos."
+}

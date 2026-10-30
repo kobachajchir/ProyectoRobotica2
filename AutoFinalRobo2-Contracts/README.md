@@ -1,3 +1,5 @@
+> **AFR2-20261029-03:** [V7 con codo remoto v17](changes/2026-10-29-03-brazo-v7-codo-remoto-v17.md). Transmision20/50 con tensor y PVC25/20 aplicados; nueva preseleccion de actuadores con margen minimo1.272. J2 nuevo ya integrado y revisado; CAD incompleto enJ1/J4/J5, pinzaV7 conservada. No nuevos calculos de vuelco ni estudio de aligerado resuelto; producto atmega/esp/web/Loader sin cambios.
+
 > **AFR2-20261029-02:** [banco mecanico compacto v15](changes/2026-10-29-02-banco-brazo-compacto-v15.md). CAD nativo separado, eslabones de aluminio y pinza corregida; masas y revision geometrica local. Reductor J2 no aceptado para PLA e integracion global pendiente. atmega/esp/web/Loader sin cambios.
 
 > **AFR2-20261029-01:** [brazo mas compacto y liviano](changes/2026-10-29-01-brazo-compacto-solo-ruedas.md). Solo ruedas, importacion admitida; se descartan pies y voladizo. Predimensionamiento55/50mm:1.17kg sin carga con reserva25%, margen externo2.65; resistencia, frenado, estabilidad real y nuevo CAD pendientes. atmega/esp/web/Loader sin intervencion.

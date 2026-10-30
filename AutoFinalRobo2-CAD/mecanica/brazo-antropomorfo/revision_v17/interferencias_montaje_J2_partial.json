@@ -1,0 +1,1764 @@
+{
+  "document": "AFR2_Brazo_v17_Base_V7_J3_Remoto",
+  "scope": "arm",
+  "method": "Fusion analyzeInterference, sin caras coincidentes. Resultados sin filtrar; requieren clasificacion mecanica.",
+  "samples": [
+    {
+      "name": "extendido",
+      "requested_degrees": [
+        0,
+        90,
+        0,
+        0,
+        0,
+        0
+      ],
+      "actual_degrees": [
+        0.0,
+        90.0,
+        0.0,
+        -0.0,
+        0.0,
+        0.0
+      ],
+      "gripper_absolute_deg": 109.8,
+      "bodies": 411,
+      "raw_interferences": [
+        {
+          "one": "01_Giro_base:1+V17_Housing_STS3250_y_apoyo625:2/Piso_liner",
+          "two": "01_Giro_base:1+V17_M2_tapa625_-14:2/Vastago_M2_REF",
+          "volume_mm3": 4.410796085640222,
+          "bbox_mm": [
+            13.000000000000044,
+            46.10000000000011,
+            172.00000000000006,
+            15.000000000000046,
+            50.000000000000085,
+            174.00000000000009
+          ]
+        },
+        {
+          "one": "01_Giro_base:1+V17_Housing_STS3250_y_apoyo625:2/Piso_liner",
+          "two": "01_Giro_base:1+V17_M2_tapa625_14:2/Vastago_M2_REF",
+          "volume_mm3": 4.410796085640222,
+          "bbox_mm": [
+            -14.999999999999957,
+            46.10000000000011,
+            172.0,
+            -12.999999999999956,
+            50.000000000000085,
+            174.00000000000003
+          ]
+        },
+        {
+          "one": "02_Brazo_PVC:1+V17_Housing_STS3250_y_apoyo625:1/Piso_liner",
+          "two": "02_Brazo_PVC:1+V17_M2_tapa625_-14:1/Vastago_M2_REF",
+          "volume_mm3": 4.410796085639875,
+          "bbox_mm": [
+            18.532758175999252,
+            -84.0,
+            222.0,
+            20.532758175999252,
+            -80.10000000000002,
+            224.00000000000003
+          ]
+        },
+        {
+          "one": "02_Brazo_PVC:1+V17_Housing_STS3250_y_apoyo625:1/Piso_liner",
+          "two": "02_Brazo_PVC:1+V17_M2_tapa625_14:1/Vastago_M2_REF",
+          "volume_mm3": 4.410796085639875,
+          "bbox_mm": [
+            18.532758175999252,
+            -84.0,
+            194.0,
+            20.532758175999252,
+            -80.10000000000002,
+            196.0
+          ]
+        },
+        {
+          "one": "02_Brazo_PVC:1+V17_Correa_OMEGA_HP_3M_6:1/Body2",
+          "two": "03_Antebrazo_PVC:1+V17_Polea_50T_J3:1/Disco_macizo_conservador",
+          "volume_mm3": 635.5269599446069,
+          "bbox_mm": [
+            56.66775103943371,
+            -76.50000000000001,
+            185.12675853621587,
+            93.87324146378415,
+            -70.50000000000001,
+            232.87324146378444
+          ]
+        },
+        {
+          "one": "02_Brazo_PVC:1+V17_Correa_OMEGA_HP_3M_6:1/Body2",
+          "two": "12_Polea_entrada_J3:1+V17_Polea_20T_J3:1/Disco_macizo_conservador",
+          "volume_mm3": 192.04064653062534,
+          "bbox_mm": [
+            9.98346159048552,
+            -76.5,
+            199.45070341448633,
+            21.40118363228129,
+            -70.5,
+            218.5492965855138
+          ]
+        },
+        {
+          "one": "03_Antebrazo_PVC:1+V17_Collar_retencion_codo:1/Collar",
+          "two": "03_Antebrazo_PVC:1+V17_Prisionero_collar_codo:1/Prisionero_M3_REF",
+          "volume_mm3": 4.409213684672218,
+          "bbox_mm": [
+            73.70809924354768,
+            -82.29999999999998,
+            207.50000000000014,
+            75.99999999999983,
+            -79.29999999999998,
+            210.50000000000017
+          ]
+        },
+        {
+          "one": "09_Pinion_hombro:1+V17_Pinon18_J2_Al2024:1/Raiz_engranaje",
+          "two": "09_Pinion_hombro:1+V17_Prisionero_M2_J2:1/M2_REF",
+          "volume_mm3": 2.8764233118225553,
+          "bbox_mm": [
+            -0.9999999999999865,
+            41.5,
+            175.3,
+            1.000000000000013,
+            43.5,
+            177.99999999999994
+          ]
+        },
+        {
+          "one": "09_Pinion_hombro:1+V17_Collar_entrada5:2/Collar",
+          "two": "09_Pinion_hombro:1+V17_Prisionero_collar_entrada5:2/M2_REF",
+          "volume_mm3": 2.8703797039406367,
+          "bbox_mm": [
+            -0.9999999999999447,
+            24.000000000000092,
+            175.29999999999998,
+            1.000000000000056,
+            26.000000000000092,
+            177.99999999999997
+          ]
+        },
+        {
+          "one": "00_Base_control:1+V03_XL4016_vertical_1:1/Disipador",
+          "two": "00_Base_control:1+V03_XL4016_vertical_1:1/Bornera",
+          "volume_mm3": 47.99999999999983,
+          "bbox_mm": [
+            -40.099999999999994,
+            -33.0,
+            33.0,
+            -32.1,
+            -32.0,
+            39.0
+          ]
+        },
+        {
+          "one": "00_Base_control:1+V03_XL4016_vertical_2:1/Disipador",
+          "two": "00_Base_control:1+V03_XL4016_vertical_2:1/Bornera",
+          "volume_mm3": 47.99999999999983,
+          "bbox_mm": [
+            -60.60000000000001,
+            -33.0,
+            33.0,
+            -52.60000000000001,
+            -32.0,
+            39.0
+          ]
+        },
+        {
+          "one": "00_Base_control:1+V03_XL4016_vertical_3:1/Disipador",
+          "two": "00_Base_control:1+V03_XL4016_vertical_3:1/Bornera",
+          "volume_mm3": 47.99999999999983,
+          "bbox_mm": [
+            -80.60000000000001,
+            -33.0,
+            33.0,
+            -72.60000000000001,
+            -32.0,
+            39.0
+          ]
+        },
+        {
+          "one": "12_Polea_entrada_J3:1+V17_Collar_entrada5:1/Collar",
+          "two": "12_Polea_entrada_J3:1+V17_Prisionero_collar_entrada5:1/M2_REF",
+          "volume_mm3": 2.872616235344862,
+          "bbox_mm": [
+            15.361549779674943,
+            -59.99999999999999,
+            204.82879160367574,
+            18.613519360456728,
+            -58.0,
+            208.08076118445754
+          ]
+        }
+      ],
+      "jaw_gap_mm": 50.00000000000007,
+      "expected_jaw_gap_mm": 50.0
+    },
+    {
+      "name": "hombro_minimo",
+      "requested_degrees": [
+        0,
+        -10,
+        0,
+        0,
+        0,
+        0
+      ],
+      "actual_degrees": [
+        0.0,
+        -9.99999999999999,
+        0.0,
+        -0.0,
+        0.0,
+        0.0
+      ],
+      "gripper_absolute_deg": 109.8,
+      "bodies": 411,
+      "raw_interferences": [
+        {
+          "one": "01_Giro_base:1+V17_Housing_STS3250_y_apoyo625:2/Piso_liner",
+          "two": "01_Giro_base:1+V17_M2_tapa625_-14:2/Vastago_M2_REF",
+          "volume_mm3": 4.410796085640222,
+          "bbox_mm": [
+            13.000000000000044,
+            46.10000000000011,
+            172.00000000000006,
+            15.000000000000046,
+            50.000000000000085,
+            174.00000000000009
+          ]
+        },
+        {
+          "one": "01_Giro_base:1+V17_Housing_STS3250_y_apoyo625:2/Piso_liner",
+          "two": "01_Giro_base:1+V17_M2_tapa625_14:2/Vastago_M2_REF",
+          "volume_mm3": 4.410796085640222,
+          "bbox_mm": [
+            -14.999999999999957,
+            46.10000000000011,
+            172.0,
+            -12.999999999999956,
+            50.000000000000085,
+            174.00000000000003
+          ]
+        },
+        {
+          "one": "02_Brazo_PVC:1+V17_Housing_STS3250_y_apoyo625:1/Piso_liner",
+          "two": "02_Brazo_PVC:1+V17_M2_tapa625_-14:1/Vastago_M2_REF",
+          "volume_mm3": 4.410796085640222,
+          "bbox_mm": [
+            -18.179136404241994,
+            -84.0,
+            224.80493720209955,
+            -16.17913640424199,
+            -80.10000000000004,
+            226.8049372020996
+          ]
+        },
+        {
+          "one": "02_Brazo_PVC:1+V17_Housing_STS3250_y_apoyo625:1/Piso_liner",
+          "two": "02_Brazo_PVC:1+V17_M2_tapa625_14:1/Vastago_M2_REF",
+          "volume_mm3": 4.410796085640222,
+          "bbox_mm": [
+            9.395480680099837,
+            -84.0,
+            229.66708617677364,
+            11.395480680099839,
+            -80.10000000000004,
+            231.66708617677364
+          ]
+        },
+        {
+          "one": "02_Brazo_PVC:1+V17_Correa_OMEGA_HP_3M_6:1/Body2",
+          "two": "03_Antebrazo_PVC:1+V17_Polea_50T_J3:1/Disco_macizo_conservador",
+          "volume_mm3": 635.5269599446375,
+          "bbox_mm": [
+            -36.028613900469615,
+            -76.50000000000001,
+            261.36798054186136,
+            11.717869027098992,
+            -70.50000000000001,
+            301.8097841746387
+          ]
+        },
+        {
+          "one": "02_Brazo_PVC:1+V17_Correa_OMEGA_HP_3M_6:1/Body2",
+          "two": "12_Polea_entrada_J3:1+V17_Polea_20T_J3:1/Disco_macizo_conservador",
+          "volume_mm3": 192.04064653062954,
+          "bbox_mm": [
+            -12.941124447584833,
+            -76.5,
+            218.68671510392286,
+            6.157468723442612,
+            -70.5,
+            231.7022187845417
+          ]
+        },
+        {
+          "one": "03_Antebrazo_PVC:1+V17_Collar_retencion_codo:1/Collar",
+          "two": "03_Antebrazo_PVC:1+V17_Prisionero_collar_codo:1/Prisionero_M3_REF",
+          "volume_mm3": 4.421105521038749,
+          "bbox_mm": [
+            -14.641388816508558,
+            -82.29999999999998,
+            281.32783532833867,
+            -11.322065483417207,
+            -79.29999999999998,
+            283.93654271085444
+          ]
+        },
+        {
+          "one": "09_Pinion_hombro:1+V17_Pinon18_J2_Al2024:1/Raiz_engranaje",
+          "two": "09_Pinion_hombro:1+V17_Prisionero_M2_J2:1/M2_REF",
+          "volume_mm3": 2.877922039275175,
+          "bbox_mm": [
+            0.7123670591601645,
+            41.5,
+            174.11911460948716,
+            3.915047756549624,
+            43.50000000000001,
+            177.3956236215585
+          ]
+        },
+        {
+          "one": "09_Pinion_hombro:1+V17_Collar_entrada5:2/Collar",
+          "two": "09_Pinion_hombro:1+V17_Prisionero_collar_entrada5:2/M2_REF",
+          "volume_mm3": 2.8726162893452316,
+          "bbox_mm": [
+            0.7123670591601674,
+            24.000000000000092,
+            174.1191146094871,
+            3.915047756549681,
+            26.000000000000092,
+            177.3956236215585
+          ]
+        },
+        {
+          "one": "00_Base_control:1+V03_XL4016_vertical_1:1/Disipador",
+          "two": "00_Base_control:1+V03_XL4016_vertical_1:1/Bornera",
+          "volume_mm3": 47.99999999999983,
+          "bbox_mm": [
+            -40.099999999999994,
+            -33.0,
+            33.0,
+            -32.1,
+            -32.0,
+            39.0
+          ]
+        },
+        {
+          "one": "00_Base_control:1+V03_XL4016_vertical_2:1/Disipador",
+          "two": "00_Base_control:1+V03_XL4016_vertical_2:1/Bornera",
+          "volume_mm3": 47.99999999999983,
+          "bbox_mm": [
+            -60.60000000000001,
+            -33.0,
+            33.0,
+            -52.60000000000001,
+            -32.0,
+            39.0
+          ]
+        },
+        {
+          "one": "00_Base_control:1+V03_XL4016_vertical_3:1/Disipador",
+          "two": "00_Base_control:1+V03_XL4016_vertical_3:1/Bornera",
+          "volume_mm3": 47.99999999999983,
+          "bbox_mm": [
+            -80.60000000000001,
+            -33.0,
+            33.0,
+            -72.60000000000001,
+            -32.0,
+            39.0
+          ]
+        },
+        {
+          "one": "12_Polea_entrada_J3:1+V17_Collar_entrada5:1/Collar",
+          "two": "12_Polea_entrada_J3:1+V17_Prisionero_collar_entrada5:1/M2_REF",
+          "volume_mm3": 2.8726164509352237,
+          "bbox_mm": [
+            -2.0813545965574773,
+            -60.0,
+            224.60692045005956,
+            1.1947576348114508,
+            -58.00000000000001,
+            227.73593793011815
+          ]
+        }
+      ],
+      "jaw_gap_mm": 49.999999999999964,
+      "expected_jaw_gap_mm": 50.0
+    },
+    {
+      "name": "hombro_maximo",
+      "requested_degrees": [
+        0,
+        125,
+        0,
+        0,
+        0,
+        0
+      ],
+      "actual_degrees": [
+        0.0,
+        125.00000000000001,
+        0.0,
+        -0.0,
+        0.0,
+        0.0
+      ],
+      "gripper_absolute_deg": 109.8,
+      "bodies": 411,
+      "raw_interferences": [
+        {
+          "one": "01_Giro_base:1+V17_Housing_STS3250_y_apoyo625:2/Piso_liner",
+          "two": "01_Giro_base:1+V17_M2_tapa625_-14:2/Vastago_M2_REF",
+          "volume_mm3": 4.410796085640222,
+          "bbox_mm": [
+            13.000000000000044,
+            46.10000000000011,
+            172.00000000000006,
+            15.000000000000046,
+            50.000000000000085,
+            174.00000000000009
+          ]
+        },
+        {
+          "one": "01_Giro_base:1+V17_Housing_STS3250_y_apoyo625:2/Piso_liner",
+          "two": "01_Giro_base:1+V17_M2_tapa625_14:2/Vastago_M2_REF",
+          "volume_mm3": 4.410796085640222,
+          "bbox_mm": [
+            -14.999999999999957,
+            46.10000000000011,
+            172.0,
+            -12.999999999999956,
+            50.000000000000085,
+            174.00000000000003
+          ]
+        },
+        {
+          "one": "02_Brazo_PVC:1+V17_Housing_STS3250_y_apoyo625:1/Piso_liner",
+          "two": "02_Brazo_PVC:1+V17_M2_tapa625_-14:1/Vastago_M2_REF",
+          "volume_mm3": 4.410796085639988,
+          "bbox_mm": [
+            23.030368899386907,
+            -84.0,
+            208.26459879334945,
+            25.03036889938691,
+            -80.10000000000002,
+            210.26459879334948
+          ]
+        },
+        {
+          "one": "02_Brazo_PVC:1+V17_Housing_STS3250_y_apoyo625:1/Piso_liner",
+          "two": "02_Brazo_PVC:1+V17_M2_tapa625_14:1/Vastago_M2_REF",
+          "volume_mm3": 4.41079608564,
+          "bbox_mm": [
+            6.970228681557618,
+            -84.0,
+            185.3283415532577,
+            8.97022868155762,
+            -80.10000000000002,
+            187.32834155325773
+          ]
+        },
+        {
+          "one": "02_Brazo_PVC:1+V17_Correa_OMEGA_HP_3M_6:1/Body2",
+          "two": "03_Antebrazo_PVC:1+V17_Polea_50T_J3:1/Disco_macizo_conservador",
+          "volume_mm3": 635.5269599446392,
+          "bbox_mm": [
+            35.060622569500325,
+            -76.50000000000001,
+            144.97640799164265,
+            81.21388456401377,
+            -70.50000000000001,
+            192.7188773325329
+          ]
+        },
+        {
+          "one": "02_Brazo_PVC:1+V17_Correa_OMEGA_HP_3M_6:1/Body2",
+          "two": "12_Polea_entrada_J3:1+V17_Polea_20T_J3:1/Disco_macizo_conservador",
+          "volume_mm3": 192.04064653062886,
+          "bbox_mm": [
+            6.451002204958549,
+            -76.5,
+            189.0536527248081,
+            22.902208219306246,
+            -70.5,
+            207.34576675881738
+          ]
+        },
+        {
+          "one": "03_Antebrazo_PVC:1+V17_Collar_retencion_codo:1/Collar",
+          "two": "03_Antebrazo_PVC:1+V17_Prisionero_collar_codo:1/Prisionero_M3_REF",
+          "volume_mm3": 4.407022950727341,
+          "bbox_mm": [
+            59.51777552148157,
+            -82.29999999999997,
+            164.28874341034657,
+            62.959851093070576,
+            -79.29999999999995,
+            167.9514991721103
+          ]
+        },
+        {
+          "one": "09_Pinion_hombro:1+V17_Pinon18_J2_Al2024:1/Raiz_engranaje",
+          "two": "09_Pinion_hombro:1+V17_Prisionero_M2_J2:1/M2_REF",
+          "volume_mm3": 2.877922039275162,
+          "bbox_mm": [
+            -3.915047756549575,
+            41.49999999999999,
+            168.60437637844146,
+            -0.7123670591601161,
+            43.499999999999986,
+            171.88088539051282
+          ]
+        },
+        {
+          "one": "09_Pinion_hombro:1+V17_Collar_entrada5:2/Collar",
+          "two": "09_Pinion_hombro:1+V17_Prisionero_collar_entrada5:2/M2_REF",
+          "volume_mm3": 2.8726162893451788,
+          "bbox_mm": [
+            -3.9150477565496358,
+            24.000000000000092,
+            168.60437637844146,
+            -0.7123670591601194,
+            26.000000000000092,
+            171.8808853905129
+          ]
+        },
+        {
+          "one": "00_Base_control:1+V03_XL4016_vertical_1:1/Disipador",
+          "two": "00_Base_control:1+V03_XL4016_vertical_1:1/Bornera",
+          "volume_mm3": 47.99999999999983,
+          "bbox_mm": [
+            -40.099999999999994,
+            -33.0,
+            33.0,
+            -32.1,
+            -32.0,
+            39.0
+          ]
+        },
+        {
+          "one": "00_Base_control:1+V03_XL4016_vertical_2:1/Disipador",
+          "two": "00_Base_control:1+V03_XL4016_vertical_2:1/Bornera",
+          "volume_mm3": 47.99999999999983,
+          "bbox_mm": [
+            -60.60000000000001,
+            -33.0,
+            33.0,
+            -52.60000000000001,
+            -32.0,
+            39.0
+          ]
+        },
+        {
+          "one": "00_Base_control:1+V03_XL4016_vertical_3:1/Disipador",
+          "two": "00_Base_control:1+V03_XL4016_vertical_3:1/Bornera",
+          "volume_mm3": 47.99999999999983,
+          "bbox_mm": [
+            -80.60000000000001,
+            -33.0,
+            33.0,
+            -72.60000000000001,
+            -32.0,
+            39.0
+          ]
+        },
+        {
+          "one": "12_Polea_entrada_J3:1+V17_Collar_entrada5:1/Collar",
+          "two": "12_Polea_entrada_J3:1+V17_Prisionero_collar_entrada5:1/M2_REF",
+          "volume_mm3": 2.872602571716943,
+          "bbox_mm": [
+            11.000298790472272,
+            -59.99999999999999,
+            195.96096356019515,
+            13.908889136211123,
+            -58.0,
+            198.3818871176819
+          ]
+        }
+      ],
+      "jaw_gap_mm": 49.999999999999915,
+      "expected_jaw_gap_mm": 50.0
+    },
+    {
+      "name": "codo_menos90",
+      "requested_degrees": [
+        0,
+        90,
+        -90,
+        0,
+        0,
+        0
+      ],
+      "actual_degrees": [
+        0.0,
+        90.0,
+        0.0,
+        -0.0,
+        0.0,
+        0.0
+      ],
+      "gripper_absolute_deg": 109.8,
+      "bodies": 411,
+      "raw_interferences": [
+        {
+          "one": "01_Giro_base:1+V17_Housing_STS3250_y_apoyo625:2/Piso_liner",
+          "two": "01_Giro_base:1+V17_M2_tapa625_-14:2/Vastago_M2_REF",
+          "volume_mm3": 4.410796085640222,
+          "bbox_mm": [
+            13.000000000000044,
+            46.10000000000011,
+            172.00000000000006,
+            15.000000000000046,
+            50.000000000000085,
+            174.00000000000009
+          ]
+        },
+        {
+          "one": "01_Giro_base:1+V17_Housing_STS3250_y_apoyo625:2/Piso_liner",
+          "two": "01_Giro_base:1+V17_M2_tapa625_14:2/Vastago_M2_REF",
+          "volume_mm3": 4.410796085640222,
+          "bbox_mm": [
+            -14.999999999999957,
+            46.10000000000011,
+            172.0,
+            -12.999999999999956,
+            50.000000000000085,
+            174.00000000000003
+          ]
+        },
+        {
+          "one": "02_Brazo_PVC:1+V17_Housing_STS3250_y_apoyo625:1/Piso_liner",
+          "two": "02_Brazo_PVC:1+V17_M2_tapa625_-14:1/Vastago_M2_REF",
+          "volume_mm3": 4.410796085639872,
+          "bbox_mm": [
+            18.53275817599926,
+            -84.0,
+            221.99999999999994,
+            20.532758175999255,
+            -80.10000000000002,
+            224.0
+          ]
+        },
+        {
+          "one": "02_Brazo_PVC:1+V17_Housing_STS3250_y_apoyo625:1/Piso_liner",
+          "two": "02_Brazo_PVC:1+V17_M2_tapa625_14:1/Vastago_M2_REF",
+          "volume_mm3": 4.410796085639872,
+          "bbox_mm": [
+            18.532758175999252,
+            -84.0,
+            193.99999999999994,
+            20.532758175999255,
+            -80.10000000000002,
+            195.99999999999997
+          ]
+        },
+        {
+          "one": "02_Brazo_PVC:1+V17_Correa_OMEGA_HP_3M_6:1/Body2",
+          "two": "03_Antebrazo_PVC:1+V17_Polea_50T_J3:1/Disco_macizo_conservador",
+          "volume_mm3": 635.526959944641,
+          "bbox_mm": [
+            56.66775103943366,
+            -76.50000000000001,
+            185.1267585362159,
+            93.87324146378425,
+            -70.50000000000001,
+            232.8732414637845
+          ]
+        },
+        {
+          "one": "02_Brazo_PVC:1+V17_Correa_OMEGA_HP_3M_6:1/Body2",
+          "two": "12_Polea_entrada_J3:1+V17_Polea_20T_J3:1/Disco_macizo_conservador",
+          "volume_mm3": 192.0406465306351,
+          "bbox_mm": [
+            9.983461590485438,
+            -76.5,
+            199.4507034144864,
+            21.401183632281466,
+            -70.5,
+            218.54929658551384
+          ]
+        },
+        {
+          "one": "03_Antebrazo_PVC:1+V17_Collar_retencion_codo:1/Collar",
+          "two": "03_Antebrazo_PVC:1+V17_Prisionero_collar_codo:1/Prisionero_M3_REF",
+          "volume_mm3": 4.409213684672222,
+          "bbox_mm": [
+            73.70809924354778,
+            -82.29999999999998,
+            207.50000000000017,
+            75.99999999999994,
+            -79.29999999999998,
+            210.50000000000017
+          ]
+        },
+        {
+          "one": "09_Pinion_hombro:1+V17_Pinon18_J2_Al2024:1/Raiz_engranaje",
+          "two": "09_Pinion_hombro:1+V17_Prisionero_M2_J2:1/M2_REF",
+          "volume_mm3": 2.876423311822551,
+          "bbox_mm": [
+            -0.9999999999999919,
+            41.5,
+            175.30000000000004,
+            1.0000000000000089,
+            43.5,
+            177.99999999999997
+          ]
+        },
+        {
+          "one": "09_Pinion_hombro:1+V17_Collar_entrada5:2/Collar",
+          "two": "09_Pinion_hombro:1+V17_Prisionero_collar_entrada5:2/M2_REF",
+          "volume_mm3": 2.8703797039406465,
+          "bbox_mm": [
+            -0.9999999999999494,
+            24.000000000000092,
+            175.3,
+            1.0000000000000506,
+            26.000000000000092,
+            178.0
+          ]
+        },
+        {
+          "one": "00_Base_control:1+V03_XL4016_vertical_1:1/Disipador",
+          "two": "00_Base_control:1+V03_XL4016_vertical_1:1/Bornera",
+          "volume_mm3": 47.99999999999983,
+          "bbox_mm": [
+            -40.099999999999994,
+            -33.0,
+            33.0,
+            -32.1,
+            -32.0,
+            39.0
+          ]
+        },
+        {
+          "one": "00_Base_control:1+V03_XL4016_vertical_2:1/Disipador",
+          "two": "00_Base_control:1+V03_XL4016_vertical_2:1/Bornera",
+          "volume_mm3": 47.99999999999983,
+          "bbox_mm": [
+            -60.60000000000001,
+            -33.0,
+            33.0,
+            -52.60000000000001,
+            -32.0,
+            39.0
+          ]
+        },
+        {
+          "one": "00_Base_control:1+V03_XL4016_vertical_3:1/Disipador",
+          "two": "00_Base_control:1+V03_XL4016_vertical_3:1/Bornera",
+          "volume_mm3": 47.99999999999983,
+          "bbox_mm": [
+            -80.60000000000001,
+            -33.0,
+            33.0,
+            -72.60000000000001,
+            -32.0,
+            39.0
+          ]
+        },
+        {
+          "one": "12_Polea_entrada_J3:1+V17_Collar_entrada5:1/Collar",
+          "two": "12_Polea_entrada_J3:1+V17_Prisionero_collar_entrada5:1/M2_REF",
+          "volume_mm3": 2.8726162353448474,
+          "bbox_mm": [
+            15.36154977967486,
+            -60.00000000000001,
+            204.82879160367582,
+            18.613519360456653,
+            -58.000000000000014,
+            208.08076118445763
+          ]
+        }
+      ],
+      "jaw_gap_mm": 49.999999999999964,
+      "expected_jaw_gap_mm": 50.0
+    },
+    {
+      "name": "codo_mas90",
+      "requested_degrees": [
+        0,
+        90,
+        90,
+        0,
+        0,
+        0
+      ],
+      "actual_degrees": [
+        0.0,
+        90.0,
+        0.0,
+        -0.0,
+        0.0,
+        0.0
+      ],
+      "gripper_absolute_deg": 109.8,
+      "bodies": 411,
+      "raw_interferences": [
+        {
+          "one": "01_Giro_base:1+V17_Housing_STS3250_y_apoyo625:2/Piso_liner",
+          "two": "01_Giro_base:1+V17_M2_tapa625_-14:2/Vastago_M2_REF",
+          "volume_mm3": 4.410796085640222,
+          "bbox_mm": [
+            13.000000000000044,
+            46.10000000000011,
+            172.00000000000006,
+            15.000000000000046,
+            50.000000000000085,
+            174.00000000000009
+          ]
+        },
+        {
+          "one": "01_Giro_base:1+V17_Housing_STS3250_y_apoyo625:2/Piso_liner",
+          "two": "01_Giro_base:1+V17_M2_tapa625_14:2/Vastago_M2_REF",
+          "volume_mm3": 4.410796085640222,
+          "bbox_mm": [
+            -14.999999999999957,
+            46.10000000000011,
+            172.0,
+            -12.999999999999956,
+            50.000000000000085,
+            174.00000000000003
+          ]
+        },
+        {
+          "one": "02_Brazo_PVC:1+V17_Housing_STS3250_y_apoyo625:1/Piso_liner",
+          "two": "02_Brazo_PVC:1+V17_M2_tapa625_-14:1/Vastago_M2_REF",
+          "volume_mm3": 4.410796085639872,
+          "bbox_mm": [
+            18.53275817599926,
+            -84.0,
+            221.99999999999994,
+            20.532758175999255,
+            -80.10000000000002,
+            224.0
+          ]
+        },
+        {
+          "one": "02_Brazo_PVC:1+V17_Housing_STS3250_y_apoyo625:1/Piso_liner",
+          "two": "02_Brazo_PVC:1+V17_M2_tapa625_14:1/Vastago_M2_REF",
+          "volume_mm3": 4.410796085639872,
+          "bbox_mm": [
+            18.532758175999252,
+            -84.0,
+            193.99999999999994,
+            20.532758175999255,
+            -80.10000000000002,
+            195.99999999999997
+          ]
+        },
+        {
+          "one": "02_Brazo_PVC:1+V17_Correa_OMEGA_HP_3M_6:1/Body2",
+          "two": "03_Antebrazo_PVC:1+V17_Polea_50T_J3:1/Disco_macizo_conservador",
+          "volume_mm3": 635.526959944641,
+          "bbox_mm": [
+            56.66775103943366,
+            -76.50000000000001,
+            185.1267585362159,
+            93.87324146378425,
+            -70.50000000000001,
+            232.8732414637845
+          ]
+        },
+        {
+          "one": "02_Brazo_PVC:1+V17_Correa_OMEGA_HP_3M_6:1/Body2",
+          "two": "12_Polea_entrada_J3:1+V17_Polea_20T_J3:1/Disco_macizo_conservador",
+          "volume_mm3": 192.0406465306351,
+          "bbox_mm": [
+            9.983461590485438,
+            -76.5,
+            199.4507034144864,
+            21.401183632281466,
+            -70.5,
+            218.54929658551384
+          ]
+        },
+        {
+          "one": "03_Antebrazo_PVC:1+V17_Collar_retencion_codo:1/Collar",
+          "two": "03_Antebrazo_PVC:1+V17_Prisionero_collar_codo:1/Prisionero_M3_REF",
+          "volume_mm3": 4.409213684672222,
+          "bbox_mm": [
+            73.70809924354778,
+            -82.29999999999998,
+            207.50000000000017,
+            75.99999999999994,
+            -79.29999999999998,
+            210.50000000000017
+          ]
+        },
+        {
+          "one": "09_Pinion_hombro:1+V17_Pinon18_J2_Al2024:1/Raiz_engranaje",
+          "two": "09_Pinion_hombro:1+V17_Prisionero_M2_J2:1/M2_REF",
+          "volume_mm3": 2.876423311822551,
+          "bbox_mm": [
+            -0.9999999999999919,
+            41.5,
+            175.30000000000004,
+            1.0000000000000089,
+            43.5,
+            177.99999999999997
+          ]
+        },
+        {
+          "one": "09_Pinion_hombro:1+V17_Collar_entrada5:2/Collar",
+          "two": "09_Pinion_hombro:1+V17_Prisionero_collar_entrada5:2/M2_REF",
+          "volume_mm3": 2.8703797039406465,
+          "bbox_mm": [
+            -0.9999999999999494,
+            24.000000000000092,
+            175.3,
+            1.0000000000000506,
+            26.000000000000092,
+            178.0
+          ]
+        },
+        {
+          "one": "00_Base_control:1+V03_XL4016_vertical_1:1/Disipador",
+          "two": "00_Base_control:1+V03_XL4016_vertical_1:1/Bornera",
+          "volume_mm3": 47.99999999999983,
+          "bbox_mm": [
+            -40.099999999999994,
+            -33.0,
+            33.0,
+            -32.1,
+            -32.0,
+            39.0
+          ]
+        },
+        {
+          "one": "00_Base_control:1+V03_XL4016_vertical_2:1/Disipador",
+          "two": "00_Base_control:1+V03_XL4016_vertical_2:1/Bornera",
+          "volume_mm3": 47.99999999999983,
+          "bbox_mm": [
+            -60.60000000000001,
+            -33.0,
+            33.0,
+            -52.60000000000001,
+            -32.0,
+            39.0
+          ]
+        },
+        {
+          "one": "00_Base_control:1+V03_XL4016_vertical_3:1/Disipador",
+          "two": "00_Base_control:1+V03_XL4016_vertical_3:1/Bornera",
+          "volume_mm3": 47.99999999999983,
+          "bbox_mm": [
+            -80.60000000000001,
+            -33.0,
+            33.0,
+            -72.60000000000001,
+            -32.0,
+            39.0
+          ]
+        },
+        {
+          "one": "12_Polea_entrada_J3:1+V17_Collar_entrada5:1/Collar",
+          "two": "12_Polea_entrada_J3:1+V17_Prisionero_collar_entrada5:1/M2_REF",
+          "volume_mm3": 2.8726162353448474,
+          "bbox_mm": [
+            15.36154977967486,
+            -60.00000000000001,
+            204.82879160367582,
+            18.613519360456653,
+            -58.000000000000014,
+            208.08076118445763
+          ]
+        }
+      ],
+      "jaw_gap_mm": 49.999999999999964,
+      "expected_jaw_gap_mm": 50.0
+    },
+    {
+      "name": "muneca_plegada_uno",
+      "requested_degrees": [
+        0,
+        90,
+        0,
+        90,
+        90,
+        90
+      ],
+      "actual_degrees": [
+        0.0,
+        90.0,
+        0.0,
+        90.0,
+        90.0,
+        90.0
+      ],
+      "gripper_absolute_deg": 109.8,
+      "bodies": 411,
+      "raw_interferences": [
+        {
+          "one": "01_Giro_base:1+V17_Housing_STS3250_y_apoyo625:2/Piso_liner",
+          "two": "01_Giro_base:1+V17_M2_tapa625_-14:2/Vastago_M2_REF",
+          "volume_mm3": 4.410796085640222,
+          "bbox_mm": [
+            13.000000000000044,
+            46.10000000000011,
+            172.00000000000006,
+            15.000000000000046,
+            50.000000000000085,
+            174.00000000000009
+          ]
+        },
+        {
+          "one": "01_Giro_base:1+V17_Housing_STS3250_y_apoyo625:2/Piso_liner",
+          "two": "01_Giro_base:1+V17_M2_tapa625_14:2/Vastago_M2_REF",
+          "volume_mm3": 4.410796085640222,
+          "bbox_mm": [
+            -14.999999999999957,
+            46.10000000000011,
+            172.0,
+            -12.999999999999956,
+            50.000000000000085,
+            174.00000000000003
+          ]
+        },
+        {
+          "one": "02_Brazo_PVC:1+V17_Housing_STS3250_y_apoyo625:1/Piso_liner",
+          "two": "02_Brazo_PVC:1+V17_M2_tapa625_-14:1/Vastago_M2_REF",
+          "volume_mm3": 4.410796085639872,
+          "bbox_mm": [
+            18.53275817599926,
+            -84.0,
+            221.99999999999994,
+            20.532758175999255,
+            -80.10000000000002,
+            224.0
+          ]
+        },
+        {
+          "one": "02_Brazo_PVC:1+V17_Housing_STS3250_y_apoyo625:1/Piso_liner",
+          "two": "02_Brazo_PVC:1+V17_M2_tapa625_14:1/Vastago_M2_REF",
+          "volume_mm3": 4.410796085639872,
+          "bbox_mm": [
+            18.532758175999252,
+            -84.0,
+            193.99999999999994,
+            20.532758175999255,
+            -80.10000000000002,
+            195.99999999999997
+          ]
+        },
+        {
+          "one": "02_Brazo_PVC:1+V17_Correa_OMEGA_HP_3M_6:1/Body2",
+          "two": "03_Antebrazo_PVC:1+V17_Polea_50T_J3:1/Disco_macizo_conservador",
+          "volume_mm3": 635.526959944641,
+          "bbox_mm": [
+            56.66775103943366,
+            -76.50000000000001,
+            185.1267585362159,
+            93.87324146378425,
+            -70.50000000000001,
+            232.8732414637845
+          ]
+        },
+        {
+          "one": "02_Brazo_PVC:1+V17_Correa_OMEGA_HP_3M_6:1/Body2",
+          "two": "12_Polea_entrada_J3:1+V17_Polea_20T_J3:1/Disco_macizo_conservador",
+          "volume_mm3": 192.0406465306351,
+          "bbox_mm": [
+            9.983461590485438,
+            -76.5,
+            199.4507034144864,
+            21.401183632281466,
+            -70.5,
+            218.54929658551384
+          ]
+        },
+        {
+          "one": "03_Antebrazo_PVC:1+V17_Collar_retencion_codo:1/Collar",
+          "two": "03_Antebrazo_PVC:1+V17_Prisionero_collar_codo:1/Prisionero_M3_REF",
+          "volume_mm3": 4.409213684672222,
+          "bbox_mm": [
+            73.70809924354778,
+            -82.29999999999998,
+            207.50000000000017,
+            75.99999999999994,
+            -79.29999999999998,
+            210.50000000000017
+          ]
+        },
+        {
+          "one": "09_Pinion_hombro:1+V17_Pinon18_J2_Al2024:1/Raiz_engranaje",
+          "two": "09_Pinion_hombro:1+V17_Prisionero_M2_J2:1/M2_REF",
+          "volume_mm3": 2.876423311822551,
+          "bbox_mm": [
+            -0.9999999999999919,
+            41.5,
+            175.30000000000004,
+            1.0000000000000089,
+            43.5,
+            177.99999999999997
+          ]
+        },
+        {
+          "one": "09_Pinion_hombro:1+V17_Collar_entrada5:2/Collar",
+          "two": "09_Pinion_hombro:1+V17_Prisionero_collar_entrada5:2/M2_REF",
+          "volume_mm3": 2.8703797039406465,
+          "bbox_mm": [
+            -0.9999999999999494,
+            24.000000000000092,
+            175.3,
+            1.0000000000000506,
+            26.000000000000092,
+            178.0
+          ]
+        },
+        {
+          "one": "00_Base_control:1+V03_XL4016_vertical_1:1/Disipador",
+          "two": "00_Base_control:1+V03_XL4016_vertical_1:1/Bornera",
+          "volume_mm3": 47.99999999999983,
+          "bbox_mm": [
+            -40.099999999999994,
+            -33.0,
+            33.0,
+            -32.1,
+            -32.0,
+            39.0
+          ]
+        },
+        {
+          "one": "00_Base_control:1+V03_XL4016_vertical_2:1/Disipador",
+          "two": "00_Base_control:1+V03_XL4016_vertical_2:1/Bornera",
+          "volume_mm3": 47.99999999999983,
+          "bbox_mm": [
+            -60.60000000000001,
+            -33.0,
+            33.0,
+            -52.60000000000001,
+            -32.0,
+            39.0
+          ]
+        },
+        {
+          "one": "00_Base_control:1+V03_XL4016_vertical_3:1/Disipador",
+          "two": "00_Base_control:1+V03_XL4016_vertical_3:1/Bornera",
+          "volume_mm3": 47.99999999999983,
+          "bbox_mm": [
+            -80.60000000000001,
+            -33.0,
+            33.0,
+            -72.60000000000001,
+            -32.0,
+            39.0
+          ]
+        },
+        {
+          "one": "12_Polea_entrada_J3:1+V17_Collar_entrada5:1/Collar",
+          "two": "12_Polea_entrada_J3:1+V17_Prisionero_collar_entrada5:1/M2_REF",
+          "volume_mm3": 2.8726162353448474,
+          "bbox_mm": [
+            15.36154977967486,
+            -60.00000000000001,
+            204.82879160367582,
+            18.613519360456653,
+            -58.000000000000014,
+            208.08076118445763
+          ]
+        }
+      ],
+      "jaw_gap_mm": 50.0,
+      "expected_jaw_gap_mm": 50.0
+    },
+    {
+      "name": "muneca_plegada_otro",
+      "requested_degrees": [
+        0,
+        90,
+        0,
+        -90,
+        -90,
+        -90
+      ],
+      "actual_degrees": [
+        0.0,
+        90.0,
+        0.0,
+        270.0,
+        -90.0,
+        -90.0
+      ],
+      "gripper_absolute_deg": 109.8,
+      "bodies": 411,
+      "raw_interferences": [
+        {
+          "one": "01_Giro_base:1+V17_Housing_STS3250_y_apoyo625:2/Piso_liner",
+          "two": "01_Giro_base:1+V17_M2_tapa625_-14:2/Vastago_M2_REF",
+          "volume_mm3": 4.410796085640222,
+          "bbox_mm": [
+            13.000000000000044,
+            46.10000000000011,
+            172.00000000000006,
+            15.000000000000046,
+            50.000000000000085,
+            174.00000000000009
+          ]
+        },
+        {
+          "one": "01_Giro_base:1+V17_Housing_STS3250_y_apoyo625:2/Piso_liner",
+          "two": "01_Giro_base:1+V17_M2_tapa625_14:2/Vastago_M2_REF",
+          "volume_mm3": 4.410796085640222,
+          "bbox_mm": [
+            -14.999999999999957,
+            46.10000000000011,
+            172.0,
+            -12.999999999999956,
+            50.000000000000085,
+            174.00000000000003
+          ]
+        },
+        {
+          "one": "02_Brazo_PVC:1+V17_Housing_STS3250_y_apoyo625:1/Piso_liner",
+          "two": "02_Brazo_PVC:1+V17_M2_tapa625_-14:1/Vastago_M2_REF",
+          "volume_mm3": 4.410796085639872,
+          "bbox_mm": [
+            18.53275817599926,
+            -84.0,
+            221.99999999999994,
+            20.532758175999255,
+            -80.10000000000002,
+            224.0
+          ]
+        },
+        {
+          "one": "02_Brazo_PVC:1+V17_Housing_STS3250_y_apoyo625:1/Piso_liner",
+          "two": "02_Brazo_PVC:1+V17_M2_tapa625_14:1/Vastago_M2_REF",
+          "volume_mm3": 4.410796085639872,
+          "bbox_mm": [
+            18.532758175999252,
+            -84.0,
+            193.99999999999994,
+            20.532758175999255,
+            -80.10000000000002,
+            195.99999999999997
+          ]
+        },
+        {
+          "one": "02_Brazo_PVC:1+V17_Correa_OMEGA_HP_3M_6:1/Body2",
+          "two": "03_Antebrazo_PVC:1+V17_Polea_50T_J3:1/Disco_macizo_conservador",
+          "volume_mm3": 635.526959944641,
+          "bbox_mm": [
+            56.66775103943366,
+            -76.50000000000001,
+            185.1267585362159,
+            93.87324146378425,
+            -70.50000000000001,
+            232.8732414637845
+          ]
+        },
+        {
+          "one": "02_Brazo_PVC:1+V17_Correa_OMEGA_HP_3M_6:1/Body2",
+          "two": "12_Polea_entrada_J3:1+V17_Polea_20T_J3:1/Disco_macizo_conservador",
+          "volume_mm3": 192.0406465306351,
+          "bbox_mm": [
+            9.983461590485438,
+            -76.5,
+            199.4507034144864,
+            21.401183632281466,
+            -70.5,
+            218.54929658551384
+          ]
+        },
+        {
+          "one": "03_Antebrazo_PVC:1+V17_Collar_retencion_codo:1/Collar",
+          "two": "03_Antebrazo_PVC:1+V17_Prisionero_collar_codo:1/Prisionero_M3_REF",
+          "volume_mm3": 4.409213684672222,
+          "bbox_mm": [
+            73.70809924354778,
+            -82.29999999999998,
+            207.50000000000017,
+            75.99999999999994,
+            -79.29999999999998,
+            210.50000000000017
+          ]
+        },
+        {
+          "one": "09_Pinion_hombro:1+V17_Pinon18_J2_Al2024:1/Raiz_engranaje",
+          "two": "09_Pinion_hombro:1+V17_Prisionero_M2_J2:1/M2_REF",
+          "volume_mm3": 2.876423311822551,
+          "bbox_mm": [
+            -0.9999999999999919,
+            41.5,
+            175.30000000000004,
+            1.0000000000000089,
+            43.5,
+            177.99999999999997
+          ]
+        },
+        {
+          "one": "09_Pinion_hombro:1+V17_Collar_entrada5:2/Collar",
+          "two": "09_Pinion_hombro:1+V17_Prisionero_collar_entrada5:2/M2_REF",
+          "volume_mm3": 2.8703797039406465,
+          "bbox_mm": [
+            -0.9999999999999494,
+            24.000000000000092,
+            175.3,
+            1.0000000000000506,
+            26.000000000000092,
+            178.0
+          ]
+        },
+        {
+          "one": "00_Base_control:1+V03_XL4016_vertical_1:1/Disipador",
+          "two": "00_Base_control:1+V03_XL4016_vertical_1:1/Bornera",
+          "volume_mm3": 47.99999999999983,
+          "bbox_mm": [
+            -40.099999999999994,
+            -33.0,
+            33.0,
+            -32.1,
+            -32.0,
+            39.0
+          ]
+        },
+        {
+          "one": "00_Base_control:1+V03_XL4016_vertical_2:1/Disipador",
+          "two": "00_Base_control:1+V03_XL4016_vertical_2:1/Bornera",
+          "volume_mm3": 47.99999999999983,
+          "bbox_mm": [
+            -60.60000000000001,
+            -33.0,
+            33.0,
+            -52.60000000000001,
+            -32.0,
+            39.0
+          ]
+        },
+        {
+          "one": "00_Base_control:1+V03_XL4016_vertical_3:1/Disipador",
+          "two": "00_Base_control:1+V03_XL4016_vertical_3:1/Bornera",
+          "volume_mm3": 47.99999999999983,
+          "bbox_mm": [
+            -80.60000000000001,
+            -33.0,
+            33.0,
+            -72.60000000000001,
+            -32.0,
+            39.0
+          ]
+        },
+        {
+          "one": "12_Polea_entrada_J3:1+V17_Collar_entrada5:1/Collar",
+          "two": "12_Polea_entrada_J3:1+V17_Prisionero_collar_entrada5:1/M2_REF",
+          "volume_mm3": 2.8726162353448474,
+          "bbox_mm": [
+            15.36154977967486,
+            -60.00000000000001,
+            204.82879160367582,
+            18.613519360456653,
+            -58.000000000000014,
+            208.08076118445763
+          ]
+        }
+      ],
+      "jaw_gap_mm": 50.0,
+      "expected_jaw_gap_mm": 50.0
+    },
+    {
+      "name": "pinza_cerrada",
+      "requested_degrees": [
+        0,
+        90,
+        0,
+        0,
+        0,
+        0
+      ],
+      "actual_degrees": [
+        0.0,
+        89.99999999999994,
+        1.1614898151450446e-13,
+        360.0,
+        0.0,
+        0.0
+      ],
+      "gripper_absolute_deg": 2.842170943040401e-14,
+      "bodies": 410,
+      "raw_interferences": [
+        {
+          "one": "01_Giro_base:1+V17_Housing_STS3250_y_apoyo625:2/Piso_liner",
+          "two": "01_Giro_base:1+V17_M2_tapa625_-14:2/Vastago_M2_REF",
+          "volume_mm3": 4.410796085640222,
+          "bbox_mm": [
+            13.000000000000044,
+            46.10000000000011,
+            172.00000000000006,
+            15.000000000000046,
+            50.000000000000085,
+            174.00000000000009
+          ]
+        },
+        {
+          "one": "01_Giro_base:1+V17_Housing_STS3250_y_apoyo625:2/Piso_liner",
+          "two": "01_Giro_base:1+V17_M2_tapa625_14:2/Vastago_M2_REF",
+          "volume_mm3": 4.410796085640222,
+          "bbox_mm": [
+            -14.999999999999957,
+            46.10000000000011,
+            172.0,
+            -12.999999999999956,
+            50.000000000000085,
+            174.00000000000003
+          ]
+        },
+        {
+          "one": "02_Brazo_PVC:1+V17_Housing_STS3250_y_apoyo625:1/Piso_liner",
+          "two": "02_Brazo_PVC:1+V17_M2_tapa625_-14:1/Vastago_M2_REF",
+          "volume_mm3": 4.410796085639872,
+          "bbox_mm": [
+            18.53275817599926,
+            -84.0,
+            221.99999999999994,
+            20.532758175999255,
+            -80.10000000000002,
+            224.0
+          ]
+        },
+        {
+          "one": "02_Brazo_PVC:1+V17_Housing_STS3250_y_apoyo625:1/Piso_liner",
+          "two": "02_Brazo_PVC:1+V17_M2_tapa625_14:1/Vastago_M2_REF",
+          "volume_mm3": 4.410796085639872,
+          "bbox_mm": [
+            18.532758175999252,
+            -84.0,
+            193.99999999999994,
+            20.532758175999255,
+            -80.10000000000002,
+            195.99999999999997
+          ]
+        },
+        {
+          "one": "02_Brazo_PVC:1+V17_Correa_OMEGA_HP_3M_6:1/Body2",
+          "two": "03_Antebrazo_PVC:1+V17_Polea_50T_J3:1/Disco_macizo_conservador",
+          "volume_mm3": 635.526959944641,
+          "bbox_mm": [
+            56.66775103943366,
+            -76.50000000000001,
+            185.1267585362159,
+            93.87324146378425,
+            -70.50000000000001,
+            232.8732414637845
+          ]
+        },
+        {
+          "one": "02_Brazo_PVC:1+V17_Correa_OMEGA_HP_3M_6:1/Body2",
+          "two": "12_Polea_entrada_J3:1+V17_Polea_20T_J3:1/Disco_macizo_conservador",
+          "volume_mm3": 192.0406465306351,
+          "bbox_mm": [
+            9.983461590485438,
+            -76.5,
+            199.4507034144864,
+            21.401183632281466,
+            -70.5,
+            218.54929658551384
+          ]
+        },
+        {
+          "one": "03_Antebrazo_PVC:1+V17_Collar_retencion_codo:1/Collar",
+          "two": "03_Antebrazo_PVC:1+V17_Prisionero_collar_codo:1/Prisionero_M3_REF",
+          "volume_mm3": 4.409213684672222,
+          "bbox_mm": [
+            73.70809924354778,
+            -82.29999999999998,
+            207.50000000000017,
+            75.99999999999994,
+            -79.29999999999998,
+            210.50000000000017
+          ]
+        },
+        {
+          "one": "09_Pinion_hombro:1+V17_Pinon18_J2_Al2024:1/Raiz_engranaje",
+          "two": "09_Pinion_hombro:1+V17_Prisionero_M2_J2:1/M2_REF",
+          "volume_mm3": 2.876423311822551,
+          "bbox_mm": [
+            -0.9999999999999919,
+            41.5,
+            175.30000000000004,
+            1.0000000000000089,
+            43.5,
+            177.99999999999997
+          ]
+        },
+        {
+          "one": "09_Pinion_hombro:1+V17_Collar_entrada5:2/Collar",
+          "two": "09_Pinion_hombro:1+V17_Prisionero_collar_entrada5:2/M2_REF",
+          "volume_mm3": 2.8703797039406465,
+          "bbox_mm": [
+            -0.9999999999999494,
+            24.000000000000092,
+            175.3,
+            1.0000000000000506,
+            26.000000000000092,
+            178.0
+          ]
+        },
+        {
+          "one": "00_Base_control:1+V03_XL4016_vertical_1:1/Disipador",
+          "two": "00_Base_control:1+V03_XL4016_vertical_1:1/Bornera",
+          "volume_mm3": 47.99999999999983,
+          "bbox_mm": [
+            -40.099999999999994,
+            -33.0,
+            33.0,
+            -32.1,
+            -32.0,
+            39.0
+          ]
+        },
+        {
+          "one": "00_Base_control:1+V03_XL4016_vertical_2:1/Disipador",
+          "two": "00_Base_control:1+V03_XL4016_vertical_2:1/Bornera",
+          "volume_mm3": 47.99999999999983,
+          "bbox_mm": [
+            -60.60000000000001,
+            -33.0,
+            33.0,
+            -52.60000000000001,
+            -32.0,
+            39.0
+          ]
+        },
+        {
+          "one": "00_Base_control:1+V03_XL4016_vertical_3:1/Disipador",
+          "two": "00_Base_control:1+V03_XL4016_vertical_3:1/Bornera",
+          "volume_mm3": 47.99999999999983,
+          "bbox_mm": [
+            -80.60000000000001,
+            -33.0,
+            33.0,
+            -72.60000000000001,
+            -32.0,
+            39.0
+          ]
+        },
+        {
+          "one": "12_Polea_entrada_J3:1+V17_Collar_entrada5:1/Collar",
+          "two": "12_Polea_entrada_J3:1+V17_Prisionero_collar_entrada5:1/M2_REF",
+          "volume_mm3": 2.8726162353448474,
+          "bbox_mm": [
+            15.36154977967486,
+            -60.00000000000001,
+            204.82879160367582,
+            18.613519360456653,
+            -58.000000000000014,
+            208.08076118445763
+          ]
+        }
+      ],
+      "jaw_gap_mm": 4.007083551445446,
+      "expected_jaw_gap_mm": 4.007083551445431
+    },
+    {
+      "name": "pinza_abierta",
+      "requested_degrees": [
+        0,
+        90,
+        0,
+        0,
+        0,
+        0
+      ],
+      "actual_degrees": [
+        0.0,
+        89.99999999999994,
+        1.451647641312219e-13,
+        360.0,
+        0.0,
+        0.0
+      ],
+      "gripper_absolute_deg": 180.0,
+      "bodies": 411,
+      "raw_interferences": [
+        {
+          "one": "01_Giro_base:1+V17_Housing_STS3250_y_apoyo625:2/Piso_liner",
+          "two": "01_Giro_base:1+V17_M2_tapa625_-14:2/Vastago_M2_REF",
+          "volume_mm3": 4.410796085640222,
+          "bbox_mm": [
+            13.000000000000044,
+            46.10000000000011,
+            172.00000000000006,
+            15.000000000000046,
+            50.000000000000085,
+            174.00000000000009
+          ]
+        },
+        {
+          "one": "01_Giro_base:1+V17_Housing_STS3250_y_apoyo625:2/Piso_liner",
+          "two": "01_Giro_base:1+V17_M2_tapa625_14:2/Vastago_M2_REF",
+          "volume_mm3": 4.410796085640222,
+          "bbox_mm": [
+            -14.999999999999957,
+            46.10000000000011,
+            172.0,
+            -12.999999999999956,
+            50.000000000000085,
+            174.00000000000003
+          ]
+        },
+        {
+          "one": "02_Brazo_PVC:1+V17_Housing_STS3250_y_apoyo625:1/Piso_liner",
+          "two": "02_Brazo_PVC:1+V17_M2_tapa625_-14:1/Vastago_M2_REF",
+          "volume_mm3": 4.410796085639872,
+          "bbox_mm": [
+            18.53275817599926,
+            -84.0,
+            221.99999999999994,
+            20.532758175999255,
+            -80.10000000000002,
+            224.0
+          ]
+        },
+        {
+          "one": "02_Brazo_PVC:1+V17_Housing_STS3250_y_apoyo625:1/Piso_liner",
+          "two": "02_Brazo_PVC:1+V17_M2_tapa625_14:1/Vastago_M2_REF",
+          "volume_mm3": 4.410796085639872,
+          "bbox_mm": [
+            18.532758175999252,
+            -84.0,
+            193.99999999999994,
+            20.532758175999255,
+            -80.10000000000002,
+            195.99999999999997
+          ]
+        },
+        {
+          "one": "02_Brazo_PVC:1+V17_Correa_OMEGA_HP_3M_6:1/Body2",
+          "two": "03_Antebrazo_PVC:1+V17_Polea_50T_J3:1/Disco_macizo_conservador",
+          "volume_mm3": 635.526959944641,
+          "bbox_mm": [
+            56.66775103943366,
+            -76.50000000000001,
+            185.1267585362159,
+            93.87324146378425,
+            -70.50000000000001,
+            232.8732414637845
+          ]
+        },
+        {
+          "one": "02_Brazo_PVC:1+V17_Correa_OMEGA_HP_3M_6:1/Body2",
+          "two": "12_Polea_entrada_J3:1+V17_Polea_20T_J3:1/Disco_macizo_conservador",
+          "volume_mm3": 192.0406465306351,
+          "bbox_mm": [
+            9.983461590485438,
+            -76.5,
+            199.4507034144864,
+            21.401183632281466,
+            -70.5,
+            218.54929658551384
+          ]
+        },
+        {
+          "one": "03_Antebrazo_PVC:1+V17_Collar_retencion_codo:1/Collar",
+          "two": "03_Antebrazo_PVC:1+V17_Prisionero_collar_codo:1/Prisionero_M3_REF",
+          "volume_mm3": 4.409213684672222,
+          "bbox_mm": [
+            73.70809924354778,
+            -82.29999999999998,
+            207.50000000000017,
+            75.99999999999994,
+            -79.29999999999998,
+            210.50000000000017
+          ]
+        },
+        {
+          "one": "09_Pinion_hombro:1+V17_Pinon18_J2_Al2024:1/Raiz_engranaje",
+          "two": "09_Pinion_hombro:1+V17_Prisionero_M2_J2:1/M2_REF",
+          "volume_mm3": 2.876423311822551,
+          "bbox_mm": [
+            -0.9999999999999919,
+            41.5,
+            175.30000000000004,
+            1.0000000000000089,
+            43.5,
+            177.99999999999997
+          ]
+        },
+        {
+          "one": "09_Pinion_hombro:1+V17_Collar_entrada5:2/Collar",
+          "two": "09_Pinion_hombro:1+V17_Prisionero_collar_entrada5:2/M2_REF",
+          "volume_mm3": 2.8703797039406465,
+          "bbox_mm": [
+            -0.9999999999999494,
+            24.000000000000092,
+            175.3,
+            1.0000000000000506,
+            26.000000000000092,
+            178.0
+          ]
+        },
+        {
+          "one": "00_Base_control:1+V03_XL4016_vertical_1:1/Disipador",
+          "two": "00_Base_control:1+V03_XL4016_vertical_1:1/Bornera",
+          "volume_mm3": 47.99999999999983,
+          "bbox_mm": [
+            -40.099999999999994,
+            -33.0,
+            33.0,
+            -32.1,
+            -32.0,
+            39.0
+          ]
+        },
+        {
+          "one": "00_Base_control:1+V03_XL4016_vertical_2:1/Disipador",
+          "two": "00_Base_control:1+V03_XL4016_vertical_2:1/Bornera",
+          "volume_mm3": 47.99999999999983,
+          "bbox_mm": [
+            -60.60000000000001,
+            -33.0,
+            33.0,
+            -52.60000000000001,
+            -32.0,
+            39.0
+          ]
+        },
+        {
+          "one": "00_Base_control:1+V03_XL4016_vertical_3:1/Disipador",
+          "two": "00_Base_control:1+V03_XL4016_vertical_3:1/Bornera",
+          "volume_mm3": 47.99999999999983,
+          "bbox_mm": [
+            -80.60000000000001,
+            -33.0,
+            33.0,
+            -72.60000000000001,
+            -32.0,
+            39.0
+          ]
+        },
+        {
+          "one": "12_Polea_entrada_J3:1+V17_Collar_entrada5:1/Collar",
+          "two": "12_Polea_entrada_J3:1+V17_Prisionero_collar_entrada5:1/M2_REF",
+          "volume_mm3": 2.8726162353448474,
+          "bbox_mm": [
+            15.36154977967486,
+            -60.00000000000001,
+            204.82879160367582,
+            18.613519360456653,
+            -58.000000000000014,
+            208.08076118445763
+          ]
+        }
+      ],
+      "jaw_gap_mm": 79.4053072376007,
+      "expected_jaw_gap_mm": 79.40530723760047
+    }
+  ],
+  "unconnected_lumps": [],
+  "restored": false,
+  "original_degrees": [
+    90.0,
+    45.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "gripper_requested_absolute_deg": 109.8
+}

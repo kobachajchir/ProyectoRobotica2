@@ -1,0 +1,38 @@
+{
+  "scope": "Predimensionamiento del tensor con cargas del presupuesto70/60. No describe capacidad del brazo largo actualmente en Fusion ni tension real de montaje.",
+  "minimum_margin": 1.2,
+  "joint_peak_Nm": 2.007074238235445,
+  "input_peak_Nm": 1.254421398897153,
+  "pulley_pitch_radius_mm": 9.549296585513721,
+  "belt_tension_difference_N": 131.3627017093709,
+  "assumed_radial_envelope_N": 200.0,
+  "bearing_centres_y_mm": [
+    -58.6,
+    -39.5
+  ],
+  "bearing_reactions_N": [
+    104.71204188481674,
+    95.28795811518324
+  ],
+  "SKF625_C0_N": 380,
+  "pure_radial_static_bearing_margin": 3.6290000000000004,
+  "shaft_diameter_mm": 5.0,
+  "bending_Nmm": 952.8795811518326,
+  "nominal_bending_MPa": 77.64761370196429,
+  "nominal_torsion_MPa": 51.10972578681143,
+  "nominal_von_mises_MPa": 117.75297925580756,
+  "assumed_keyway_concentration": 3.0,
+  "required_yield_MPa": 423.91072532090715,
+  "proposed_minimum_yield_MPa": 600,
+  "conditional_shaft_margin": 1.6984708265046806,
+  "belt_table_speed_rpm": 20,
+  "commanded_input_speed_rpm": 10.0,
+  "conditional_belt_torque_Nm": 1.6776204241430506,
+  "conditional_belt_margin": 1.337365916762868,
+  "limitations": [
+    "Pretension y fuerza radial no medidas;200N es una envolvente de calculo elegida.",
+    "No hay analisis de fatiga, radio real de chavetero ni material certificado de eje.",
+    "Tabla de correa a20rpm; operacion propuesta a10rpm y frenado requieren confirmacion del proveedor. No es aprobacion de correa generica.",
+    "Recalcular con masas finales e inercias de rotores, cargas de frenado y conexiones reales."
+  ]
+}

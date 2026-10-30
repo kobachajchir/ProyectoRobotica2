@@ -1,3 +1,5 @@
+**AFR2-20261029-03, seleccion vigente en desarrollo:** [V7, codo por correa y PVC menor, v17](mecanica/brazo-antropomorfo/revision_v17/README.md). Conserva pinzaV7 y montura baja; sustituye direccion v15/v16. J2 con STS3250 y reduccion4 integrado y revisado; J1/J4/J5 pendientes. Preseleccion200g con margen minimo1.272, no brazo terminado. Vuelco suspendido por instruccion humana; aligerado Fusion preparado sin resolver.
+
 > **AFR2-20261029-02:** [banco mecanico compacto v15](mecanica/brazo-antropomorfo/revision_v15/README.md), con eslabones de aluminio55/50mm, housings, pinza y reductor de estudio. Masas extraidas y revision CAD local de pinza; J2 modulo0.8 no aceptado para PLA, integracion y resistencia global pendientes. Maestro v09 conservado.
 
 > **AFR2-20261029-01:** [brazo compacto sobre ruedas](mecanica/brazo-antropomorfo/busqueda_actuadores_v14/README.md): actuadores254g, estructura fina y menor alcance. 55/50mm:1.17kg sin carga con reserva25%, filtro externo de par2.65; apoyo hipotetico con margen escaso. Sin nuevo CAD ni capacidad fisica aprobada. Pies de09 descartados por decision humana.

@@ -1,3 +1,7 @@
+## AFR2-20261029-03 - 29/10/2026
+
+Checkpoint CADv17 sobre arquitecturaV7: codo remoto20/50, tensor con cuatro oblongas, encastres y PVC25/20, ejes70/60. PinzaV7 conservada; nueva preseleccion de actuadores con pieza200g y reservas, margen minimo1.272. J2 implementado con STS3250,18/72Al y apoyos625; J1/J4/J5 pendientes. Estudio de aligerado sin ejecutar y nuevos calculos de vuelco suspendidos por usuario. [Ficha](changes/2026-10-29-03-brazo-v7-codo-remoto-v17.md).
+
 ## AFR2-20261029-02 - 29/10/2026
 
 Banco Fusion compacto v15: eslabones de aluminio55/50mm, pinza con bielas/pernos escalonados, retenciones y eje6mm justificado por flexion/torsion. Masas desde geometria y revision CAD local solicitada. J2 modulo0.8 requiere rediseño; sin integracion global ni aprobacion fisica. [Ficha](changes/2026-10-29-02-banco-brazo-compacto-v15.md).
