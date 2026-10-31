@@ -15,6 +15,8 @@ import { robotModel, modelProblems } from './robotModel';
 import { rigid, forwardModel } from './modelKinematics';
 import { ArmLink, ArticulatedArmAsset, ProceduralGripper } from './ArmVisualAdapter';
 import { frameSignature } from './armPointStorage';
+import { AuxiliaryModelAsset } from './AuxiliaryModelAsset';
+import { CUBE_MODEL } from './auxiliaryModels';
 
 export type SceneView = 'perspective' | 'top' | 'side';
 export type SceneTool = 'orbit' | 'move' | 'place';
@@ -256,7 +258,7 @@ function SceneContents({ view, tool, focus, armPanel, carOnly = false }: ScenePr
       return <group key={cube.id} position={toThree(cube.point)} quaternion={cube.location === 'gripper' ? heldOrientation
         : new Quaternion().setFromAxisAngle(new Vector3(0, 1, 0), cube.location === 'bin' ? state.pose.yaw : 0)}
         onClick={event => { event.stopPropagation(); update(s => ({ ...s, selected: `cube:${cube.id}` })); }}>
-        <mesh><boxGeometry args={[.05, .05, .05]} /><meshStandardMaterial color={cube.location !== 'floor' ? palette.accent : reachable ? palette.success : '#c8934e'} roughness={.65} /></mesh>
+        <AuxiliaryModelAsset model={CUBE_MODEL} />
         {selected && <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -.021, 0]}>
           <ringGeometry args={[.04, .044, 40]} /><meshBasicMaterial color={palette.accent} />
         </mesh>}
