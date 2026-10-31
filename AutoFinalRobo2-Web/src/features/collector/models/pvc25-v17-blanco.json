@@ -1,0 +1,492 @@
+{
+  "id": "pvc25-v17-blanco",
+  "revision": "20261031-v17-white",
+  "label": "PVC25/20 V17 · PLA blanco",
+  "units": "m",
+  "mountFrame": "afr2-arm-mount-v17",
+  "tcpFrame": "afr2-grasp-center-v1",
+  "renderBasis": [
+    -0.5,
+    0.5,
+    0.5,
+    0.5
+  ],
+  "cadToRobot": {
+    "position": [
+      -0.014000000000000002,
+      0,
+      0.09464
+    ],
+    "quaternion": [
+      0,
+      0,
+      -0.7071067811865476,
+      0.7071067811865476
+    ]
+  },
+  "mounts": {
+    "standalone": {
+      "position": [
+        0,
+        0,
+        0.018
+      ],
+      "quaternion": [
+        0,
+        0,
+        0,
+        1
+      ]
+    },
+    "mounted": {
+      "position": [
+        -0.014000000000000002,
+        0,
+        0.09464
+      ],
+      "quaternion": [
+        0,
+        0,
+        -0.7071067811865476,
+        0.7071067811865476
+      ]
+    }
+  },
+  "joints": [
+    {
+      "id": "j1",
+      "label": "J1 · Base",
+      "parent": null,
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "origin": {
+        "position": [
+          0,
+          0,
+          0.096
+        ],
+        "quaternion": [
+          0,
+          0,
+          0.0,
+          1.0
+        ]
+      },
+      "sign": 1,
+      "zero": 0,
+      "min": -90,
+      "max": 90,
+      "radius": 0.018,
+      "visualNode": "j1"
+    },
+    {
+      "id": "j2",
+      "label": "J2 · Hombro",
+      "parent": "j1",
+      "axis": [
+        0,
+        1,
+        0
+      ],
+      "origin": {
+        "position": [
+          0,
+          0,
+          0.113
+        ],
+        "quaternion": [
+          0.0,
+          0.0,
+          0,
+          1.0
+        ]
+      },
+      "sign": 1,
+      "zero": 0,
+      "min": -10,
+      "max": 125,
+      "radius": 0.0125,
+      "visualNode": "j2"
+    },
+    {
+      "id": "j3",
+      "label": "J3 · Codo",
+      "parent": "j2",
+      "axis": [
+        0,
+        1,
+        0
+      ],
+      "origin": {
+        "position": [
+          -0.0,
+          0,
+          0.07
+        ],
+        "quaternion": [
+          0,
+          -0.0,
+          -0.0,
+          1.0
+        ]
+      },
+      "sign": 1,
+      "zero": 0,
+      "min": -90,
+      "max": 90,
+      "radius": 0.01,
+      "visualNode": "j3"
+    },
+    {
+      "id": "j4",
+      "label": "J4 · Giro de muneca",
+      "parent": "j3",
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "origin": {
+        "position": [
+          -0.0,
+          0.0,
+          0.06
+        ],
+        "quaternion": [
+          0.0,
+          -0.0,
+          -0.0,
+          1.0
+        ]
+      },
+      "sign": 1,
+      "zero": 0,
+      "min": -90,
+      "max": 90,
+      "radius": 0.012,
+      "visualNode": "j4"
+    },
+    {
+      "id": "j5",
+      "label": "J5 · Inclinacion",
+      "parent": "j4",
+      "axis": [
+        0,
+        1,
+        0
+      ],
+      "origin": {
+        "position": [
+          0.0,
+          -0.0,
+          0.055
+        ],
+        "quaternion": [
+          0.0,
+          0.0,
+          0,
+          1.0
+        ]
+      },
+      "sign": 1,
+      "zero": 0,
+      "min": -90,
+      "max": 90,
+      "radius": 0.012,
+      "visualNode": "j5"
+    },
+    {
+      "id": "j6",
+      "label": "J6 · Herramienta",
+      "parent": "j5",
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "origin": {
+        "position": [
+          0,
+          -0.0,
+          0.065
+        ],
+        "quaternion": [
+          -0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "sign": 1,
+      "zero": 0,
+      "min": -90,
+      "max": 90,
+      "radius": 0.012,
+      "visualNode": "j6"
+    }
+  ],
+  "tcp": {
+    "position": [
+      0,
+      0,
+      0.0785
+    ],
+    "quaternion": [
+      0,
+      0,
+      0,
+      1
+    ]
+  },
+  "gripper": {
+    "min": 4.007083551445421,
+    "max": 79.40530723760047,
+    "open": 50.83139218389988,
+    "palmSize": [
+      0.118,
+      0.06,
+      0.016
+    ],
+    "palmZ": 0.025,
+    "fingerSize": [
+      0.006000000000000001,
+      0.03,
+      0.05
+    ],
+    "fingerZ": 0.056,
+    "padSize": [
+      0.002,
+      0.032,
+      0.024
+    ],
+    "padZ": 0.068,
+    "travelAxis": [
+      1,
+      0,
+      0
+    ],
+    "visualNodes": [
+      "jaw-left",
+      "jaw-right"
+    ],
+    "metersPerOpeningMm": 0.0005
+  },
+  "visual": {
+    "kind": "gltf",
+    "url": "/models/AFR2_Brazo_v17_Blanco.glb",
+    "restToMount": {
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "quaternion": [
+        0.7071067811865476,
+        0,
+        0,
+        0.7071067811865476
+      ]
+    },
+    "restAngles": [
+      20.093270764665345,
+      69.37054430943216,
+      58.507217791014774,
+      74.49469867605188,
+      40.213148063415474,
+      -74.44893058954843
+    ],
+    "restOpening": 50.83139218389988,
+    "baseSize": [
+      0.172,
+      0.063,
+      0.028
+    ],
+    "baseZ": 0.014,
+    "followers": [
+      {
+        "visualNode": "drive-j2",
+        "parentIndex": 0,
+        "driverIndex": 1,
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "ratio": -4,
+        "origin": {
+          "position": [
+            0,
+            0,
+            0.077
+          ],
+          "quaternion": [
+            0,
+            -0.0,
+            0,
+            1.0
+          ]
+        },
+        "gripperRadiansPerMm": 0
+      },
+      {
+        "visualNode": "drive-j3",
+        "parentIndex": 1,
+        "driverIndex": 2,
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "ratio": 2.5,
+        "origin": {
+          "position": [
+            -0.0,
+            0,
+            0.019533
+          ],
+          "quaternion": [
+            -0.0,
+            -0.0,
+            -0.0,
+            1.0
+          ]
+        },
+        "gripperRadiansPerMm": 0
+      },
+      {
+        "visualNode": "drive-j4",
+        "parentIndex": 2,
+        "driverIndex": 3,
+        "axis": [
+          0,
+          0,
+          1
+        ],
+        "ratio": -1,
+        "origin": {
+          "position": [
+            0.036,
+            0,
+            0.066
+          ],
+          "quaternion": [
+            -0.0,
+            -0.0,
+            0.065403,
+            0.997859
+          ]
+        },
+        "gripperRadiansPerMm": 0
+      },
+      {
+        "visualNode": "drive-grip",
+        "parentIndex": 5,
+        "driverIndex": 5,
+        "axis": [
+          0,
+          0,
+          1
+        ],
+        "ratio": 0,
+        "origin": {
+          "position": [
+            -0.0,
+            0.0,
+            0.044
+          ],
+          "quaternion": [
+            0.0,
+            -0.0,
+            0.827986,
+            0.560749
+          ]
+        },
+        "gripperRadiansPerMm": 0.041667
+      }
+    ]
+  },
+  "collision": {
+    "towerRadius": 0.035,
+    "boxes": [
+      {
+        "id": "chassis",
+        "center": [
+          0,
+          0,
+          0.052
+        ],
+        "size": [
+          0.278,
+          0.232,
+          0.08
+        ]
+      }
+    ],
+    "allowedPairs": [
+      [
+        "j4",
+        "j6"
+      ],
+      [
+        "j5",
+        "tcp"
+      ]
+    ]
+  },
+  "initial": [
+    0,
+    15,
+    -40,
+    0,
+    25,
+    0
+  ],
+  "transport": [
+    0,
+    15,
+    -40,
+    0,
+    25,
+    0
+  ],
+  "seeds": [
+    [
+      0,
+      45,
+      -60,
+      0,
+      90,
+      0
+    ],
+    [
+      0,
+      80,
+      30,
+      0,
+      60,
+      0
+    ],
+    [
+      60,
+      20,
+      -60,
+      0,
+      40,
+      0
+    ],
+    [
+      -60,
+      20,
+      -60,
+      0,
+      40,
+      0
+    ]
+  ],
+  "speedDegS": 30,
+  "downward": "zyyzyz",
+  "source": "Fusion v17 abierto, exportacion por solidos 2026-10-31; rig_v17.json. Solo visual/rig; colision Web aproximada, sin calculos resistentes ni prueba fisica."
+}
