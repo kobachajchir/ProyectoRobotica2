@@ -9,7 +9,8 @@ import { MODEL_WHEEL_RADIUS_MM, ROBOT_WHEEL_KEYS, type RobotWheelValues } from '
 
 // AFR2-20261024-06. One cached asset for inspection and all Control cameras.
 // glTF coordinates are meters. Never normalize the mesh to a display size.
-const MODEL_URL = '/models/AutoFinalRobo2.glb';
+import { modelAssetUrl } from './modelAssets';
+const MODEL_URL = modelAssetUrl('auto');
 const draco = new DRACOLoader().setDecoderPath('/draco/').setDecoderConfig({ type: 'wasm' });
 
 const frames = new WeakMap<Object3D, { size: Vector3; offset: Vector3 }>();

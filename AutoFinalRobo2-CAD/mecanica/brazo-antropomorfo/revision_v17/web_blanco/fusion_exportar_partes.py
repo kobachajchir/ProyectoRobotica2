@@ -6,8 +6,8 @@ Conserva pose manual abierta y materiales fisicos. Solo cambia apariencias.
 import adsk.core, adsk.fusion, json, math
 from pathlib import Path
 
-HERE=Path('D:/ProyectoRobotica2/AutoFinalRobo2-CAD/mecanica/brazo-antropomorfo/revision_v17/web_blanco')
-OUT=Path('D:/ProyectoRobotica2/AutoFinalRobo2-CAD/exports/brazo-v17-blanco-20261031')
+HERE=Path(globals().get('ARM_EXPORT_HERE','D:/ProyectoRobotica2/AutoFinalRobo2-CAD/mecanica/brazo-antropomorfo/revision_v17/web_blanco'))
+OUT=Path(globals().get('ARM_EXPORT_OUT','D:/ProyectoRobotica2/AutoFinalRobo2-CAD/exports/brazo-v17-blanco-20261031'))
 EXCLUDE=('80_','81_','82_','90_')
 NAME='AFR2_Brazo_v17_Base_V7_J3_Remoto'
 
@@ -58,9 +58,9 @@ def run(context):
       sliders_cm={j.name:j.jointMotion.slideValue for j in r.joints if hasattr(j.jointMotion,'slideValue')},definitions=[],instances=[],materials={})
     index={};total=0
     for o in r.allOccurrences:
-      if not allowed(o) or not o.isVisible:continue
+      if not allowed(o):continue
       for b in o.component.bRepBodies:
-        if not b.isSolid or not b.isVisible:continue
+        if not b.isSolid:continue
         key=b.entityToken
         if key not in index:
           ident='part_%04d'%len(index);index[key]=ident
@@ -83,7 +83,7 @@ def run(context):
               for k in range(0,len(ii),3):fp.write('f '+' '.join('%d//%d'%(i+offset+1,i+offset+1) for i in ii[k:k+3])+'\n')
               offset+=mesh.nodeCount;count+=mesh.triangleCount
           report['definitions'].append(dict(id=ident,file='parts/'+ident+'.obj',component=o.component.name,body=b.name,triangles=count));total+=count
-        report['instances'].append(dict(id=index[key],path=o.fullPathName,root=o.fullPathName.split('+')[0].split(':')[0],component=o.component.name,body=b.name,matrix_cm=list(o.transform2.asArray())))
+        report['instances'].append(dict(id=index[key],path=o.fullPathName,root=o.fullPathName.split('+')[0].split(':')[0],component=o.component.name,body=b.name,source_visible=o.isVisible and b.isVisible,matrix_cm=list(o.transform2.asArray())))
     with (parts/'materials.mtl').open('w',encoding='utf-8') as fp:
       for key,m in report['materials'].items():fp.write('newmtl '+key+'\nKd '+' '.join(str(v) for v in m['srgb'])+'\nPm '+str(m['metallic'])+'\nPr '+str(m['roughness'])+'\n\n')
     (OUT/'manifest.json').write_text(json.dumps(report,indent=2),encoding='utf-8')

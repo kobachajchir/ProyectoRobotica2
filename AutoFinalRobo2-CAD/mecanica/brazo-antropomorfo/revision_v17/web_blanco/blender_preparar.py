@@ -1,5 +1,5 @@
 """Importacion por piezas y entrega articulada. Ejecutar dentro de Blender."""
-import bpy,json,math
+import bpy,json,math,struct
 from pathlib import Path
 from mathutils import Matrix,Vector
 
@@ -110,7 +110,8 @@ def optimize():
   seen.add(mesh);materials=[];remap={}
   for i,m in enumerate(mesh.materials):
    key=m.name.split('.')[0]
-   canonical=bpy.data.materials[MAN['materials'][key]['name']] if key in MAN['materials'] else m
+   material_names={v['name'] for v in MAN['materials'].values()}
+   canonical=bpy.data.materials[MAN['materials'][key]['name']] if key in MAN['materials'] else bpy.data.materials[key] if key in material_names else m
    if canonical not in materials:materials.append(canonical)
    remap[i]=materials.index(canonical)
   indices=[remap[p.material_index] for p in mesh.polygons]
@@ -128,6 +129,15 @@ def optimize():
  target=HERE/'AFR2_Brazo_v17_Blanco.glb'
  pos_bits=globals().get('POSITION_BITS',11);normal_bits=globals().get('NORMAL_BITS',7)
  bpy.ops.export_scene.gltf(filepath=str(target),export_format='GLB',use_selection=True,export_yup=True,export_apply=True,export_extras=False,export_animations=False,export_cameras=False,export_lights=False,export_texcoords=False,export_tangents=False,export_draco_mesh_compression_enable=True,export_draco_mesh_compression_level=10,export_draco_position_quantization=pos_bits,export_draco_normal_quantization=normal_bits,export_draco_color_quantization=8)
+ # Blender agrega sufijos si otras revisiones estan abiertas en la misma
+ # escena. El GLB entregado siempre mantiene identificadores de rig estables.
+ raw=target.read_bytes();length,kind=struct.unpack_from('<II',raw,12)
+ gltf=json.loads(raw[20:20+length]);names={o.name:GROUPS[o['cad_root']] for o in dest.objects if o.type=='EMPTY'}
+ for node in gltf.get('nodes',[]):
+  if node.get('name') in names:node['name']=names[node['name']]
+ chunk=json.dumps(gltf,separators=(',',':'),ensure_ascii=False).encode('utf-8');chunk+=b' '*((-len(chunk))%4)
+ tail=raw[20+length:]
+ target.write_bytes(struct.pack('<III',0x46546c67,2,20+len(chunk)+len(tail))+struct.pack('<II',len(chunk),kind)+chunk+tail)
  deps=bpy.context.evaluated_depsgraph_get();triangles=0
  for o in meshes:
   ev=o.evaluated_get(deps);m=ev.to_mesh();m.calc_loop_triangles();triangles+=len(m.loop_triangles);ev.to_mesh_clear()

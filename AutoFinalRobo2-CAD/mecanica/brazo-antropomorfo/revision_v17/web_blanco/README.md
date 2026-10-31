@@ -1,5 +1,9 @@
 # Brazo v17 blanco: Blender y simulador Web
 
+> Entrega anterior: el activo Web vigente fue sustituido por la
+> [reexportacion completa](../web_blanco_completo/README.md),425solidos
+> y780972bytes. Las cifras siguientes describen esta primera entrega parcial.
+
 AFR2-20261031-02. Fuente: documento Fusion abierto
 `AFR2_Brazo_v17_Base_V7_J3_Remoto`, con la geometria y postura manuales
 vigentes al exportar el 31/10. No se reconstruye desde el checkpoint de ayer.

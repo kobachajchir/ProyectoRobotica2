@@ -37,7 +37,8 @@ function followerFrame(f: VisualFollower, frames: Matrix4[], q: ArmAngles, openi
 export function ArticulatedArmAsset({ model, q, opening, environment, onIssue }: {
   model: RobotModelDefinition; q: ArmAngles; opening: number; environment: ArmEnvironment; onIssue: (issue: string | null) => void;
 }) {
-  const asset = useLoader(GLTFLoader, model.visual.url!, loader => loader.setDRACOLoader(draco));
+  const url = `${model.visual.url}${model.visual.url!.includes('?') ? '&' : '?'}v=${encodeURIComponent(model.revision)}`;
+  const asset = useLoader(GLTFLoader, url, loader => loader.setDRACOLoader(draco));
   const prepared = useMemo(() => {
     const root = new Group(), scene = asset.scene.clone(true); root.add(scene);
     scene.applyMatrix4(rigid(model.visual.restToMount ?? identity())); root.updateMatrixWorld(true);
