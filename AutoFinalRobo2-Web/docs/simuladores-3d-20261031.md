@@ -1,5 +1,11 @@
 # Simuladores3D — AFR2-20261031-06
 
+Corrección07: la posición del eje del SG90 se convierte de BlenderZ-up a
+glTFY-up antes de aplicarla al nodo CapaSuperior. El marco fijo conserva
+posición/orientación del eje; un hijo gira únicamente alrededor de suY local.
+La versión06 mezclaba esas convenciones y desplazaba el centro de giro.
+Corrección de fuente, sin nueva exportación ni comprobación en navegador.
+
 Se reorganizan Auto, Brazo y Conjunto con la identidad0.1.9 existente y las
 skills Emil, Apple Design y Visual Identity System. La escena es el elemento
 principal; los detalles técnicos se abren cuando hacen falta.
