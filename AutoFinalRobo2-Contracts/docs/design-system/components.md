@@ -1,5 +1,12 @@
 # Componentes y cobertura
 
+VIS-045: simuladores con escenario celeste/crema, encabezado/estado/cámara,
+datos y controles inferiores; matemática opcional con retorno de foco. Puntos
+guardados y controles por rueda se abren bajo demanda. Se conservan primitivas
+compartidas, reglas de reduced motion y acciones de44px. Dirección Confirmada,
+composición/colores Propuesta y aspecto **No verificado**; sin tests/build ni
+validadores. [Cobertura31-06](coverage-20261031-06.json).
+
 Contratos cerrados a nivel documental (`0.1.3`) para ambos temas. Cada control conserva geometría en `default/hover/focus/active/disabled/loading/error/success`. Ninguno fue renderizado todavía en la nueva interfaz.
 
 | Componente | Anatomía y variantes | Teclado, movimiento y límites | Evidencia | Cobertura | Verificación | Aprobación | Decisión |

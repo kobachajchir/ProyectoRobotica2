@@ -1,5 +1,16 @@
 # Fuentes y alcance — 23/10/2026
 
+## Alcance31-06 — simuladores3D
+
+Confirmada: pedido humano de estas tres skills, cielo celeste/suelo crema y
+corrección del montaje/servo respecto al CAD. Supporting Observada: manual y
+tokens0.1.9 autorizados, primitivas compartidas Button/Disclosure/TaskSections.
+Objetivos directos: CollectorPage/Scene, SimulationModel, puntos guardados,
+collector.css y descriptor v17. Dependencias: RobotModel/robotHeadRig, catálogo
+GLB, generador CAD y salida SG90 separada en Blender. Son evidencia geométrica,
+no canon visual. No se usa otra web como referencia. Superficie, jerarquía y
+valores locales Propuesta; aspecto/interacción No verificados. [Cobertura](coverage-20261031-06.json).
+
 ## Alcance13 — control táctil
 
 Pedido humano Confirmado: disposición/gestos de pantalla completa. Supporting:

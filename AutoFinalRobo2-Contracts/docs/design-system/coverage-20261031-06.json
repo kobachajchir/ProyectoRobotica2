@@ -1,0 +1,30 @@
+{
+  "changeId": "AFR2-20261031-06",
+  "decisionId": "VIS-045",
+  "mode": "APLICAR",
+  "manualVersion": "0.1.9",
+  "authorization": "Pedido humano actual y continuidad del borrador autorizado",
+  "confirmed": ["Aplicar las tres skills", "Cielo celeste y suelo crema", "Montura y servo conforme al CAD"],
+  "observed": ["Identidad y primitivas existentes", "Marcos CAD/GLB", "Cuerpos separados del SG90 en Blender"],
+  "proposed": ["Jerarquia y superficies", "Paleta local clara/oscura", "Matematica opcional", "Opciones avanzadas plegadas"],
+  "canonicalSources": ["tokens.json", "manual.md", "components.md"],
+  "targets": [
+    "AutoFinalRobo2-Web/src/features/collector/CollectorPage.tsx",
+    "AutoFinalRobo2-Web/src/features/collector/CollectorScene.tsx",
+    "AutoFinalRobo2-Web/src/features/collector/SimulationModel.tsx",
+    "AutoFinalRobo2-Web/src/features/collector/SavedArmPointsPanel.tsx",
+    "AutoFinalRobo2-Web/src/styles/collector.css"
+  ],
+  "dependencies": ["RobotModel.tsx", "robotHeadRig.ts", "pvc25-v17-blanco.json", "modelAssets.ts", "GLB del auto", "Generador del descriptor CAD"],
+  "reused": ["Button", "TaskSections", "Disclosure", "CollapsiblePanel", "RangeNumberField", "HoldActionButton", "MecanumDrivePad"],
+  "runtimeVerification": "No verificada",
+  "sourceImplemented": true,
+  "publicAssetUpdated": true,
+  "nativeCadModified": false,
+  "tests": false,
+  "build": false,
+  "validators": false,
+  "browser": false,
+  "hardware": false,
+  "packagesPromoted": false
+}

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Button } from '../../components/ui/Button';
 import { SectionHeader } from '../../components/ui/SectionHeader';
@@ -33,7 +33,7 @@ function RobotControls() {
     <div className="afr2-sim-robot-console"><div className="afr2-sim-robot-motion">
     <NumericControl label="Velocidad" value={speed} min={30} max={200} step={10} unit="mm/s" onChange={setSpeed} />
 <MecanumDrivePad disabled={disabled} onStart={intent => drive(intent.vx, intent.vy, intent.wz)} onStop={stop} />
-    </div><div className="afr2-sim-robot-motors"><h3>Motor por rueda</h3>
+    </div><div className="afr2-sim-robot-motors"><Disclosure title="Control por rueda" meta="Avanzado">
     <div className="afr2-collector-wheels">
       {ROBOT_WHEEL_KEYS.map(key => <div key={key} className="afr2-collector-wheel">
         <HoldButton label={`Motor ${key.toUpperCase()} atras`} disabled={disabled} onStart={() => update(s => setManualWheels(s, { fl: 0, fr: 0, rl: 0, rr: 0, [key]: -speed }))} onStop={stop}>− Atras</HoldButton>
@@ -41,7 +41,7 @@ function RobotControls() {
         <HoldButton label={`Motor ${key.toUpperCase()} adelante`} disabled={disabled} onStart={() => update(s => setManualWheels(s, { fl: 0, fr: 0, rl: 0, rr: 0, [key]: speed }))} onStop={stop}>Adelante +</HoldButton>
       </div>)}
     </div>
-    </div></div>
+    </Disclosure></div></div>
     <p className="afr2-collector-hint">Para trasladarse, el brazo debe estar en Transporte. Los motores individuales tambien desplazan y giran el chasis.</p>
     <Link className="afr2-collector-link" to="/control">Abrir control del robot real <UiIcon name="arrow" /></Link>
   </section>;
@@ -133,9 +133,9 @@ function MissionPanel() {
     <NumericControl label="Servo del sensor" value={state.sensorAngle + 90} min={0} max={180} unit="°" disabled={busy}
       onChange={v => update(s => { const next = { ...s, sensorAngle: v - 90 }; return { ...next, reading: measure(next) }; })} />
     <Disclosure title="Montaje del sensor virtual">
-      <NumericControl label="Altura" value={state.sensorHeight * 1000} min={20} max={200} unit="mm" disabled={busy}
+      <NumericControl label="Altura del rayo virtual" value={state.sensorHeight * 1000} min={20} max={200} unit="mm" disabled={busy}
         onChange={v => update(s => ({ ...s, sensorHeight: v / 1000, reading: null, echoes: [] }))} />
-      <p className="afr2-collector-hint">Montaje bajo propuesto a45 mm. El rayo ideal debe cruzar el cubo para detectar un eco.</p>
+      <p className="afr2-collector-hint">Esta altura configura el rayo ideal de simulación, independiente del montaje 3D del sensor.</p>
     </Disclosure>
   </section>;
 }
@@ -146,7 +146,12 @@ function SimulationWorkspace() {
   const armPanel = kind === 'brazo', carOnly = kind === 'auto';
   const [view, setView] = useState<SceneView>('perspective'), [tool, setTool] = useState<SceneTool>('orbit');
   const [revision, setRevision] = useState(0), [task, setTask] = useState('mission');
-  const [matrixExpanded, setMatrixExpanded] = useState(true);
+  const [matrixExpanded, setMatrixExpanded] = useState(false);
+  const mathId = useId();
+  const toggleMath = () => {
+    if (matrixExpanded) document.getElementById(`${mathId}-toggle`)?.focus();
+    setMatrixExpanded(v => !v);
+  };
   const [focus, setFocus] = useState<Point3>(() => armPanel ? armViewFocus() : [-state.pose.y, carOnly ? .1 : .2, -state.pose.x]);
   const modelKey = `${robotModel().id}:${robotModel().revision}`;
   useEffect(() => { setFocus(armPanel ? armViewFocus() : [-state.pose.y, carOnly ? .1 : .2, -state.pose.x]); }, [modelKey, armPanel, carOnly]);
@@ -158,6 +163,12 @@ function SimulationWorkspace() {
     else if (state.selected.startsWith('cube:')) setTask('positions');
   }, [state.selected, armPanel, carOnly]);
   return <section className="afr2-collector-card" aria-label="Espacio de simulacion">
+    <header className="afr2-sim-workspace-heading">
+      <div><span className="afr2-sim-eyebrow">Entorno virtual · escala real</span><h2>{armPanel ? 'Brazo robótico' : carOnly ? 'Auto mecanum' : 'Auto y brazo'}</h2></div>
+      <div className="afr2-collector-actions"><span className="afr2-sim-state" data-busy={busy || points.calculating}>{points.calculating ? 'Calculando recorrido' : busy ? 'En movimiento' : 'Listo para explorar'}</span>
+        <Button id={`${mathId}-toggle`} size="sm" aria-expanded={matrixExpanded} aria-controls={mathId} onClick={toggleMath}>Matemática</Button>
+      </div>
+    </header>
     <div className="afr2-collector-layout" data-matrix-open={matrixExpanded}>
     <div className="afr2-collector-main">
       <section className="afr2-collector-stage" aria-label={armPanel ? 'Simulador del brazo' : carOnly ? 'Simulador del auto' : 'Simulador del conjunto'}>
@@ -170,14 +181,14 @@ function SimulationWorkspace() {
             {!armPanel && <Button size="sm" disabled={busy} aria-pressed={tool === 'move'} onClick={() => { setTool(t => t === 'move' ? 'orbit' : 'move'); update(s => ({ ...s, selected: 'robot' })); }}>Mover auto</Button>}
             {!armPanel && !carOnly && <Button size="sm" disabled={busy} aria-pressed={tool === 'place'} onClick={() => setTool(t => t === 'place' ? 'orbit' : 'place')}>Agregar cubo</Button>}
             {!carOnly && <Button size="sm" aria-pressed={state.workspace} onClick={() => update(s => ({ ...s, workspace: !s.workspace }))}>{state.workspace ? 'Ocultar alcance' : 'Mostrar alcance'}</Button>}
-            {!armPanel && busy && <Button size="sm" onClick={() => update(s => halt(s))}>Pausar</Button>}
+            {busy && <Button size="sm" variant="danger" onClick={() => update(s => halt(s))}>Detener movimiento</Button>}
             {!carOnly && (points.calculating || state.pointRun) && <Button size="sm" variant="danger" onClick={points.cancel}>Cancelar recorrido</Button>}
           </div>
         </div>
         <CollectorScene view={view} tool={busy || armPanel ? 'orbit' : tool} focus={focus} revision={revision} armPanel={armPanel} carOnly={carOnly} />
-        <div className="afr2-collector-scene-footer"><p>{!armPanel && tool === 'place' ? 'Clic en el suelo para agregar un cubo.' : !armPanel && tool === 'move' ? 'Arrastra el auto. Desactiva Mover auto para orbitar.' : armPanel ? 'Arrastra una articulacion con clic izquierdo o derecho para girarla. Arrastra el fondo para orbitar.' : 'Arrastra el fondo para orbitar; selecciona un cubo o una articulacion para operarlo.'}</p><span>Cuadricula100 mm</span></div>
+        <div className="afr2-collector-scene-footer"><p>{!armPanel && tool === 'place' ? 'Clic en el suelo para agregar un cubo.' : !armPanel && tool === 'move' ? 'Arrastra el auto. Desactiva Mover auto para orbitar.' : armPanel ? 'Arrastra una articulacion con clic izquierdo o derecho para girarla. Arrastra el fondo para orbitar.' : 'Arrastra el fondo para orbitar; selecciona un cubo o una articulacion para operarlo.'}</p><span>Cuadrícula · 100 mm</span></div>
       </section>
-      {!armPanel && !carOnly && <div className="afr2-collector-legend"><span className="afr2-collector-legend__reach">Zona de toma</span><span className="afr2-collector-legend__cube">Verde: dentro del alcance</span><span>Ocre: requiere acercarse</span></div>}
+      {!armPanel && !carOnly && <div className="afr2-collector-legend"><span className="afr2-collector-legend__reach">Zona de toma</span><span className="afr2-collector-legend__cube">Cubos de 50 mm</span><span>Selecciona una pieza para operarla</span></div>}
       <div className="afr2-collector-readouts">
         {!armPanel && <div><span>Posicion del auto</span><strong>{(state.pose.x * 1000).toFixed(0)} / {(state.pose.y * 1000).toFixed(0)} <small>mm</small></strong></div>}
         {!armPanel && <div><span>Rumbo</span><strong>{(state.pose.yaw * 180 / Math.PI).toFixed(1)}°</strong></div>}
@@ -185,8 +196,8 @@ function SimulationWorkspace() {
         {!carOnly && <div><span>{armPanel ? 'Gripper' : 'Deposito'}</span><strong>{armPanel ? `${state.opening.toFixed(1)} mm` : `${state.stored} / ${BIN_SLOTS.length} cubos`}</strong></div>}
       </div>
     </div>
-    <aside className="afr2-sim-math-side" aria-label="Matematica del modelo">
-      <SimulationMatrix expanded={matrixExpanded} onToggle={() => setMatrixExpanded(v => !v)} />
+    <aside id={mathId} className="afr2-sim-math-side" aria-label="Matematica del modelo" hidden={!matrixExpanded}>
+      <SimulationMatrix expanded={matrixExpanded} onToggle={toggleMath} />
     </aside>
     </div>
     <div className="afr2-sim-bottom-controls">
@@ -205,7 +216,7 @@ export function CollectorPage() {
   const { kind } = useCollector();
   const [, setParams] = useSearchParams();
   return <div className="afr2-route-view afr2-collector">
-    <SectionHeader title="Simulaciones" description="Explora el movimiento y observa su matematica en tiempo real." />
+    <SectionHeader title="Simulaciones" description="Elige un modelo, explora sus movimientos y prepara una operación conjunta." />
     <TaskSections label="Elegir simulacion" value={kind} onValueChange={next => setParams({ tipo: next as SimulationKind })} items={[
       { id: 'auto', label: 'Auto', content: <SimulationWorkspace key="auto" /> },
       { id: 'brazo', label: 'Brazo robotico', content: <SimulationWorkspace key="brazo" /> },

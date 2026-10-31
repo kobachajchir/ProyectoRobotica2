@@ -1,3 +1,9 @@
+> **Aplicación31-06/VIS-045:** escena amplia con cielo celeste y suelo crema,
+> controles por tarea y matemática opcional. Identidad0.1.9 autorizada conservada;
+> dirección Confirmada, composición/colores Propuesta, ejecución No verificada.
+> Montaje v17 y eje SG90 corregidos desde CAD. [Cobertura](coverage-20261031-06.json).
+> Sin tests/build/validadores/navegador/flasheo; paquetes previos sin promover.
+
 > **Aplicación27-05/VIS-042:** contenido sin tope1120 px, margen lateral reducido, simulador en una tarjeta con matematica adosada/plegable y controles inferiores. Numeros compactos; Control con tarjetas manual/secuencias y pruebas/calibracion. Reemplaza la disposicion lateral041 y el ancho014/015, por pedido humano. [Cobertura](coverage-20261027-05.json). Aspecto No verificado, sin tests/build/validaciones/navegador.
 
 > **Aplicación27-04/VIS-041:** Simulaciones con tres pills, controles derechos y matrices persistentes; gripper independiente, sliders vinculados y motores en pills. Modelos3D con selector de modelo y herramientas conservadas, brazo final pendiente. Borrador0.1.9 autorizado; direccion Confirmada, composicion Propuesta, aspecto No verificado. [Cobertura](coverage-20261027-04.json). Sin tests/build/validaciones/navegador.

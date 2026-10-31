@@ -25,7 +25,7 @@ interface SceneProps { view: SceneView; tool: SceneTool; focus: Point3; revision
 function readPalette() {
   const css = getComputedStyle(document.documentElement);
   const get = (key: string) => css.getPropertyValue(key).trim();
-  return { accent: get('--action'), floor: get('--map-floor'), grid: get('--map-grid-strong'),
+  return { accent: get('--action'), sky: get('--sim-scene-sky'), floor: get('--sim-scene-ground'), grid: get('--sim-scene-grid'),
     text: get('--text-muted'), surface: get('--surface-solid'), error: get('--error'), metal: get('--text-subtle'), success: get('--success') };
 }
 
@@ -208,9 +208,12 @@ function SceneContents({ view, tool, focus, armPanel, carOnly = false }: ScenePr
   const heldOrientation = new Quaternion().setFromRotationMatrix(new Matrix4().makeRotationY(state.pose.yaw)
     .multiply(CAD_TO_THREE).multiply(forwardArm(state.joints).tool));
   return <>
-    <color attach="background" args={[palette.floor || palette.surface]} />
+    <color attach="background" args={[palette.sky || palette.surface]} />
     <ambientLight intensity={1.4} /><directionalLight position={[3, 5, 2]} intensity={2} />
     <directionalLight position={[-3, 2, -2]} intensity={.7} />
+    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -.003, 0]}>
+      <planeGeometry args={[4, 4]} /><meshBasicMaterial color={palette.floor} toneMapped={false} />
+    </mesh>
     <gridHelper args={[4, 40, palette.grid, palette.grid]} />
     {!armPanel && !carOnly && <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -.002, 0]} onClick={event => {
       if (tool !== 'place' || state.running || state.scanning || state.jointTarget || event.delta > 5) return;

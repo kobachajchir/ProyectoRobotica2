@@ -10,6 +10,7 @@ import { MODEL_WHEEL_RADIUS_MM, ROBOT_WHEEL_KEYS, type RobotWheelValues } from '
 // AFR2-20261024-06. One cached asset for inspection and all Control cameras.
 // glTF coordinates are meters. Never normalize the mesh to a display size.
 import { modelAssetUrl } from './modelAssets';
+import { createHeadRig } from './robotHeadRig';
 const MODEL_URL = modelAssetUrl('auto');
 const draco = new DRACOLoader().setDecoderPath('/draco/').setDecoderConfig({ type: 'wasm' });
 
@@ -58,19 +59,10 @@ function createWheelRig(model: Object3D) {
   return pivots;
 }
 
-/** Clone-only head pivot. SG90 body remains fixed; HC-SR04 and bracket rotate.
- * The shaft X follows the sensor center, Z the supplied SG90 CAD origin.
- * This visual reference is inferred from the current asset, not metrology. */
+/** Clone-only head pivot shared with the simulator. The fixed SG90 housing is
+ * independent of its output, horn, bracket and HC-SR04, bound to the CAD shaft. */
 function createServoRig(model: Object3D) {
-  let servo: Object3D|undefined, sensor: Object3D|undefined;const movable:Object3D[]=[];
-  model.traverse(node=>{if(node.name.startsWith('AFR2_SG90:'))servo=node;
-    if(node.name.startsWith('AFR2_HC_SR04:')){sensor=node;movable.push(node);}
-    if(node.name.startsWith('AFR2_Soporte_HCSR04_Referencia:'))movable.push(node);});
-  if(!servo || !sensor)return null;
-  model.updateMatrixWorld(true);const origin=servo.getWorldPosition(new Vector3()),head=sensor.getWorldPosition(new Vector3());
-  const box=new Box3().setFromObject(servo,true),pivot=new Group();
-  pivot.position.copy(model.worldToLocal(new Vector3(head.x,box.max.y,origin.z)));model.add(pivot);model.updateMatrixWorld(true);
-  for(const part of movable)pivot.attach(part);return pivot;
+  return createHeadRig(model);
 }
 export function RobotModel({ wheelAngles, wheelSpeedsMmS, wheelAngleOffsets, animateServo=true }: {
   wheelAngles?: RobotWheelValues; wheelSpeedsMmS?: RobotWheelValues; wheelAngleOffsets?: RobotWheelValues; animateServo?: boolean;
