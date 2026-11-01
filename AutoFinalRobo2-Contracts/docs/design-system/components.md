@@ -1,5 +1,10 @@
 # Componentes y cobertura
 
+VIS-047: laboratorio UI con dispositivo/encoder, guia contextual, sesion y
+catalogo filtrable. Reutiliza controles y tokens0.1.9; scroll inmediato local,
+campos etiquetados y acciones de44px. Los pixels OLED y gestos se conservan.
+Composicion Propuesta; aspecto/interaccion No verificados. [Cobertura](coverage-20261031-12.json).
+
 VIS-046: BrandMark y bienvenida usan el nuevo robot neón oficial. El original
 se conserva íntegro y los derivados mantienen proporción/transparencia.
 Favicon y touch-icon comparten el emblema. Sustituye solo las referencias al

@@ -1,5 +1,13 @@
 # Fuentes y alcance — 23/10/2026
 
+## Alcance31-12 — Simulador UI
+
+Confirmada: pedido humano de mejorar el simulador de Desarrollador. Supporting:
+manual/tokens0.1.9 autorizados, primitivas Button/Disclosure, OLED y EncoderControl.
+Objetivos: UiSimulator, ui-simulator.css y orden en DeveloperPage. Dependencias:
+modelo local01, catalogo y renderers existentes; no son una nueva fuente de marca.
+Composicion Propuesta, ejecucion No verificada. [Cobertura](coverage-20261031-12.json).
+
 ## Alcance31-09 — logo oficial
 
 Canónica Confirmada: imagen `Neon Red Technical Robot Cutout.png`, entregada por

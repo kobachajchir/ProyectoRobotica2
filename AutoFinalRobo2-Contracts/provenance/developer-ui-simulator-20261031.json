@@ -1,0 +1,15 @@
+{
+  "change_id": "AFR2-20261031-01",
+  "state": "source-implemented-uncompiled-unvalidated",
+  "files": [
+    { "path": "AutoFinalRobo2-Web/src/features/developer/uiSimulation.ts", "origin": "Own local adaptation of AutoFinalRobo2-Atmega/src/ui/afr2_screens.c and src/services/afr2_app.c. Simplified fictional services, not AVR execution." },
+    { "path": "AutoFinalRobo2-Web/src/features/developer/UiSimulator.tsx", "origin": "Own simulator composition importing existing EncoderControl, generated AVR tables, linked renderers and shared ScreenCodes." },
+    { "path": "AutoFinalRobo2-Web/src/features/developer/DeveloperPage.tsx", "origin": "Existing AFR2 developer page; adds simulator section." },
+    { "path": "AutoFinalRobo2-Web/src/features/oled/OledCanvas128x64.tsx", "origin": "Existing canvas; adds simulated-data label only. Raster resources/algorithms unchanged." },
+    { "path": "AutoFinalRobo2-Web/src/styles/ui-simulator.css", "origin": "Own composition using current AFR2 surface, accent and spacing tokens." },
+    { "path": "AutoFinalRobo2-Web/src/styles/index.css", "origin": "Imports simulator stylesheet." }
+  ],
+  "resources": "Existing generated font/icon/menu bytes and firmwareRenderer.sources.json preserved; no regeneration or hash update.",
+  "transport": "No connected-client commands.",
+  "checks": "No tests, builds, validators, browser, hardware or flashing executed."
+}

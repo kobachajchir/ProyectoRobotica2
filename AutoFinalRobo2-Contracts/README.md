@@ -137,6 +137,10 @@ Estado vigente [AFR2-20261023-15](changes/2026-10-23-15-esp-web-build-fixes.md):
 
 ## Continuación del proyecto
 
+- **AFR2-20261031-01:** [Simulador UI del ATmega en Desarrollador](changes/2026-10-31-01-developer-ui-simulator.md).
+  Fuente Web con los tres controles de la vista en vivo y servicios ficticios;
+  sin tests, compilacion, validaciones ni promocion ESP. atmega/esp sin cambios.
+
 - [Menús y submenús objetivo](documentation/MENU_PLAN.md), implementados en fuente ATmega19, sin compilar/probar.
 - [PCB OLED/encoder y soporte futuro](hardware/PCB_OLED_ENCODER.md): cabeceras SDA/SCL del shield, señales 1x5 y VCC/GND 1x2, ambos paso 2,54 mm.
 

@@ -48,6 +48,12 @@
 
 # AutoFinalRobo2 — informe maestro vigente
 
+> **Fuente AFR2-20261031-01:** [Simulador UI en Desarrollador](AutoFinalRobo2-Contracts/changes/2026-10-31-01-developer-ui-simulator.md).
+> Navegacion OLED adaptada del ATmega, tres controles compartidos del visor en
+> vivo, guia contextual, edicion/teclado y ejemplos de servicios locales.
+> Datos ficticios identificados; sin envio al equipo. Solo fuente Web y
+> documentos, sin tests, compilacion, validaciones ni promocion ESP.
+
 > **Brazo AFR2-20261028-01:** [J1 y sus uniones: comprobación resistente](AutoFinalRobo2-CAD/mecanica/brazo-antropomorfo/analisis_J1_uniones/README.md). 35 secciones y 7.075 estados, equilibrio de apoyos, eje, acople D, bastidor y anclajes. J1 no queda aprobado; material/perfil sin definir. Propuesta de eje Ø10, brida y apoyos 16 mm conservando altura, con estudio parcial de espacio temporal. V08 sin editar; sin FEA de sólidos/contactos, builds, flasheo ni ensayo físico. Atmega/ESP/Web/Loader sin cambios.
 
 > **Brazo AFR2-20261027-21:** [v08 con housing GX3270BLS ventilado](AutoFinalRobo2-CAD/mecanica/brazo-antropomorfo/revision_v08/README.md), reservas de montaje corregidas y maestros editables. Revisión autorizada: 3.141 configuraciones CAD sin penetraciones reportables, seis ejes/doce rodamientos completos, pinza 50/60,01 mm y pan libre. Masa recalculada 2,277 kg con carga de 200 g. J1, apoyos, alimentación y aceptación física permanecen abiertos; sin FEA, compilación ni flasheo. Atmega/ESP/Web/Loader sin cambios.

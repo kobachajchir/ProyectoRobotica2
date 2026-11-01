@@ -28,6 +28,11 @@
 
 # Función de Contracts
 
+AFR2-20261031-01: [Simulador UI en Desarrollador](changes/2026-10-31-01-developer-ui-simulator.md).
+Estado local Web y respuestas ficticias, reutilizando el encoder del visor en
+vivo y dibujos/identidades del ATmega. Flujo y procedencia registrados;
+atmega/esp sin cambios. Sin tests, compilaciones, validaciones ni promocion ESP.
+
 AFR2-20261027-25: [identificación ESP8266EX y flash 4 MiB por USB–TTL](hardware/diagnostics/20261027-com5-usbttl-user-report/report.md).
 Ejecución aportada por el usuario, esptool 4.5.1/COM5/9600, IDs `5e / 4016`.
 Sin cambios de atmega/esp/web/Loader/CAD, nueva carga ni verificación de contenido.

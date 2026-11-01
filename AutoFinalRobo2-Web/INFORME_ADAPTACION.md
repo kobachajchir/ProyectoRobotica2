@@ -1,3 +1,10 @@
+> **Fuente AFR2-20261031-01:** Simulador UI en Desarrollador; navegacion del
+> ATmega adaptada a estado local, tres controles de `EncoderControl` compartidos
+> con el visor en vivo, edicion/teclado y snapshots ficticios identificados.
+> [Ficha](../AutoFinalRobo2-Contracts/changes/2026-10-31-01-developer-ui-simulator.md).
+> Sin tests, compilacion, validaciones, navegador ni promocion ESP.
+> Firmware, identidades y recursos de dibujo conservados.
+
 > **Compilación14 posterior al pedido de fuente:** ATmega/ESP/Web compilados sin errores ni advertencias finales; carpeta build Windows y siete advertencias de indentación corregidas. Sin tests, navegador, flash ni promoción a ESP/data/dist. Ver Contracts/documentation/builds/2026-10-25-14/README.md. La falta de compilación mencionada más abajo describe la entrega previa.
 
 > **Fuente vigente AFR2-20261025-14:** [sensores, servo y radar autónomo EX01v8](../AutoFinalRobo2-Contracts/contracts/SENSORS_RADAR_8.md). Firmware nominal0.10.0/Web0.3.0,41comandos/64identidades OLED. Fuentes vinculadas y recursos Web copiados; sin compilar, ejecutar tests/validadores, renderizar ni flashear. Paquete ESP anterior; los estados inferiores son históricos.

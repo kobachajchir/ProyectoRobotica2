@@ -38,6 +38,12 @@
 
 # AutoFinalRobo2-Web
 
+> **Fuente AFR2-20261031-01:** Desarrollador agrega **Simulador UI** para navegar
+> la OLED con los tres controles compartidos de la vista en vivo. Edicion,
+> teclado, guia y escenarios con datos ficticios, sin comandos al equipo.
+> [Uso y alcance](docs/modules/ui-simulator.md). Sin tests, compilacion,
+> validaciones, navegador ni promocion ESP de esta entrega.
+
 > **Fuente AFR2-20261027-11:** puntos guardados y trayectorias en Brazo/Conjunto,
 > descriptor de robot independiente del GLB e IK cartesiana en Worker. Los destinos
 > conservan posicion/orientacion al cambiar dimensiones. [Contrato y guia para

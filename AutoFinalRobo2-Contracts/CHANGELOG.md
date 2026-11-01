@@ -1,3 +1,18 @@
+## AFR2-20261031-12 - 31/10/2026
+
+Simulador UI reorganizado: pantalla/encoder, guia contextual, barra de sesion,
+catalogo filtrable y seleccion siempre visible. Integra la base local01 y sus
+documentos. Fuente sin tests, builds, validadores ni navegador; paquetesESP
+previos. [Ficha](changes/2026-10-31-12-ui-simulator-layout.md).
+
+## AFR2-20261031-01 - 31/10/2026
+
+Desarrollador agrega Simulador UI con tres controles compartidos del visor en
+vivo, navegacion adaptada del ATmega, edicion, teclado y servicios ficticios.
+Guia contextual, escenarios y catalogo para inspeccion. Fuente Web y documentos;
+sin tests, builds, validaciones ni promocion ESP.
+[Ficha](changes/2026-10-31-01-developer-ui-simulator.md).
+
 ## AFR2-20261029-03 - 29/10/2026
 
 Checkpoint CADv17 sobre arquitecturaV7: codo remoto20/50, tensor con cuatro oblongas, encastres y PVC25/20, ejes70/60. PinzaV7 conservada; nueva preseleccion de actuadores con pieza200g y reservas, margen minimo1.272. J2 implementado con STS3250,18/72Al y apoyos625; J1/J4/J5 pendientes. Estudio de aligerado sin ejecutar y nuevos calculos de vuelco suspendidos por usuario. [Ficha](changes/2026-10-29-03-brazo-v7-codo-remoto-v17.md).

@@ -1,3 +1,8 @@
+> **Aplicacion31-12/VIS-047:** Simulador UI con pantalla/encoder, guia contextual,
+> barra de sesion y catalogo filtrable. Conserva controles, raster y navegacion.
+> Composicion Propuesta, aspecto/interaccion No verificados; sin tests/build ni
+> navegador. [Cobertura](coverage-20261031-12.json).
+
 > **Aplicación31-09/VIS-046:** nuevo logo oficial del robot neón aportado por
 > el usuario; aplicado en BrandMark, bienvenida e iconos de app. Proporciones
 > y transparencia preservadas, nombres de activos renovados. Fuente/derivados

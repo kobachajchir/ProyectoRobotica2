@@ -1,5 +1,19 @@
 # Decisiones visuales — 23/10/2026
 
+## VIS-047 — Laboratorio de pantallas UI (31/10/2026)
+
+Confirmada: mejorar el Simulador UI existente. Observada: identidad0.1.9
+autorizada, controles compartidos y modelo local01 con datos ficticios.
+Propuesta aplicada: herramienta primero; barra de sesion, dispositivo junto
+al encoder y guia contextual; opciones legibles con seleccion visible y
+catalogo filtrable dentro de Disclosure. Movil conserva tres controles juntos.
+
+Sin nuevas dependencias, colores aislados ni animacion decorativa. Los gestos
+se mantienen en EncoderControl; el scroll es local e inmediato. Sin alterar
+pixels, identidades ni navegacion del ATmega. Direccion Confirmada, composicion
+Propuesta y aspecto/interaccion No verificados por instruccion de no ejecutar
+comprobaciones. [Cobertura](coverage-20261031-12.json).
+
 ## VIS-046 — Nuevo logo del robot neón (31/10/2026)
 
 Confirmada: PNG transparente proporcionado por el usuario como logo oficial.
