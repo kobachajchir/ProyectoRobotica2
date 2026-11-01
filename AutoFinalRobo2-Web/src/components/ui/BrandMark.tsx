@@ -1,10 +1,10 @@
 import { useState } from 'react';
 
-export const AFR2_BRAND_LOGO = '/brand/Logo-1024.webp';
-const SMALL_LOGO = '/brand/Logo-256.webp';
+export const AFR2_BRAND_LOGO = '/brand/Logo-robot-1024.webp';
+const SMALL_LOGO = '/brand/Logo-robot-256.webp';
 export interface BrandMarkProps { size?: 'header' | 'hero'; className?: string }
 
-/** Own mark, with transparent canvas and no badge, frame, glow or card. VIS-016. */
+/** Official user-supplied robot mark, with its original transparency. VIS-046. */
 export function BrandMark({ size = 'header', className = '' }: BrandMarkProps) {
   const [failed, setFailed] = useState(false);
   const px = size === 'hero' ? 80 : 44;

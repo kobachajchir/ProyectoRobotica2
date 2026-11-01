@@ -13,7 +13,7 @@ function runtimeAssets(embedded: boolean): Plugin {
     if (!url || !/^\/models\/[a-zA-Z0-9_./-]+\.glb$/.test(url) || url.includes('..')) throw new Error('Un modelo registrado requiere una ruta GLB local bajo /models/.');
     return url.slice(1);
   });
-  const files = [...new Set(['brand/Logo-1024.webp', 'brand/Logo-256.webp', 'brand/favicon.webp',
+  const files = [...new Set(['brand/Logo-robot-1024.webp', 'brand/Logo-robot-256.webp', 'brand/favicon-robot.webp', 'brand/apple-touch-icon-robot.png',
     'models/AutoFinalRobo2.glb', 'draco/draco_decoder.wasm', 'draco/draco_wasm_wrapper.js', ...modelAssets])];
   return { name: 'afr2-runtime-assets', async generateBundle() {
     this.emitFile({ type: 'asset', fileName: '.afr2-build.json', source: JSON.stringify({ profile: embedded ? 'esp' : 'full' }) });

@@ -1,5 +1,15 @@
 # Fuentes y alcance — 23/10/2026
 
+## Alcance31-09 — logo oficial
+
+Canónica Confirmada: imagen `Neon Red Technical Robot Cutout.png`, entregada por
+el usuario para usar como nuevo logo. Copia exacta en assets/Logo.png y en
+Web/reference/brand/Logo-neon-robot-source.png. Las referencias anteriores del
+logo pasan a históricas; colores/controles de la identidad0.1.9 siguen siendo
+supporting. Objetivos: BrandMark, StartupWelcome, iconosHTML, activos públicos,
+conversor y lista de recursos de Vite. Se mantienen otras áreas fuera de alcance.
+[Procedencia](../../provenance/logo-robot-20261031.json). Ejecución No verificada.
+
 ## Alcance31-06 — simuladores3D
 
 Confirmada: pedido humano de estas tres skills, cielo celeste/suelo crema y

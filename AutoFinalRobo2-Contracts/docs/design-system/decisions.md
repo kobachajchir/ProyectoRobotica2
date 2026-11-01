@@ -1,5 +1,23 @@
 # Decisiones visuales — 23/10/2026
 
+## VIS-046 — Nuevo logo del robot neón (31/10/2026)
+
+Confirmada: PNG transparente proporcionado por el usuario como logo oficial.
+Sustituye el recurso gráfico de VIS-016/017 y las rutas de formato posteriores.
+Observada: BrandMark es compartido por navegación, Inicio y Desarrollador;
+StartupWelcome comparte la ruta grande. Se mantiene el resto de la identidad.
+
+Aplicado: original íntegro archivado y versiones WebP1024x768/256x192,
+favicon64x64 y touch180x180. La reducción mantiene proporciones; los iconos
+se centran sobre lienzo transparente. Los tamaños de contenedor44/80 y el
+fallback AFR2 se conservan. Bienvenida reserva la proporción4:3 correcta.
+Nombres nuevos para renovar caché y selección explícita en Vite para ambos
+perfiles. No generación de imagen ni reinterpretación del emblema.
+
+Fuente y activos públicos actualizados; aspecto/contraste en temas y dispositivos
+No verificados. Sin tests, builds, validadores, navegador ni promociónESP.
+[Cobertura](coverage-20261031-09.json).
+
 ## VIS-045 — Escena y controles de los simuladores (31/10/2026)
 
 Confirmada: pedido humano de aplicar Emil, Apple Design y Visual Identity a

@@ -1,3 +1,8 @@
+> **Aplicación31-09/VIS-046:** nuevo logo oficial del robot neón aportado por
+> el usuario; aplicado en BrandMark, bienvenida e iconos de app. Proporciones
+> y transparencia preservadas, nombres de activos renovados. Fuente/derivados
+> actualizados, ejecución No verificada. [Cobertura](coverage-20261031-09.json).
+
 > **Aplicación31-06/VIS-045:** escena amplia con cielo celeste y suelo crema,
 > controles por tarea y matemática opcional. Identidad0.1.9 autorizada conservada;
 > dirección Confirmada, composición/colores Propuesta, ejecución No verificada.

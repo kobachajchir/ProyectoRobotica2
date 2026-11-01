@@ -1,5 +1,11 @@
 # Componentes y cobertura
 
+VIS-046: BrandMark y bienvenida usan el nuevo robot neón oficial. El original
+se conserva íntegro y los derivados mantienen proporción/transparencia.
+Favicon y touch-icon comparten el emblema. Sustituye solo las referencias al
+recurso gráfico de las filas históricas siguientes. Fuente aplicada; aspecto
+en ejecución No verificado. [Cobertura](coverage-20261031-09.json).
+
 VIS-045: simuladores con escenario celeste/crema, encabezado/estado/cámara,
 datos y controles inferiores; matemática opcional con retorno de foco. Puntos
 guardados y controles por rueda se abren bajo demanda. Se conservan primitivas
