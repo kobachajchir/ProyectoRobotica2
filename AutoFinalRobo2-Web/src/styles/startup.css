@@ -11,8 +11,9 @@ body:has(.afr2-startup[open]) { overflow: hidden; }
 .afr2-startup::backdrop { background: transparent; }
 .afr2-startup::before { position: absolute; inset: 0; z-index: -1; content: ''; pointer-events: none; background: radial-gradient(ellipse at 50% 42%,var(--welcome-halo),transparent 64%),linear-gradient(135deg,var(--welcome-sheen),transparent 45%); }
 @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) { .afr2-startup { background: var(--welcome-tint); backdrop-filter: blur(24px) saturate(1.2); -webkit-backdrop-filter: blur(24px) saturate(1.2); } }
-.afr2-startup__logo { width: min(76vw,32rem); max-width: 100%; opacity: 0; transform: scale(.97); pointer-events: none; background: none; border: 0; border-radius: 0; box-shadow: none; will-change: opacity,transform; }
-.afr2-startup__logo img { display: block; width: 100%; height: auto; max-height: calc(100dvh - 128px); object-fit: contain; }
+.afr2-startup__logo { display: flex; flex-direction: column; align-items: center; gap: clamp(12px,3vh,24px); width: min(76vw,32rem); max-width: 100%; opacity: 0; transform: scale(.97); pointer-events: none; background: none; border: 0; border-radius: 0; box-shadow: none; will-change: opacity,transform; }
+.afr2-startup__logo img { display: block; width: 100%; height: auto; max-height: max(0px,calc(100dvh - 224px)); object-fit: contain; }
+.afr2-startup__title { margin: 0; color: var(--startup-control-color); font: 650 clamp(1.6rem,5vw,2.5rem)/1.15 var(--font-sans); letter-spacing: -.035em; text-align: center; text-wrap: balance; }
 .afr2-startup[data-ready="true"] { animation: afr2-startup-veil-out var(--startup-veil-exit) var(--ease-enter) var(--startup-veil-delay) forwards; }
 .afr2-startup[data-ready="true"] .afr2-startup__logo { animation: afr2-startup-logo-in var(--startup-logo-enter) var(--ease-enter) both,afr2-startup-logo-out var(--startup-logo-exit) var(--ease-enter) var(--startup-logo-out-delay) forwards; }
 .afr2-startup__actions { position: absolute; top: max(16px,env(safe-area-inset-top)); right: max(16px,env(safe-area-inset-right)); }
