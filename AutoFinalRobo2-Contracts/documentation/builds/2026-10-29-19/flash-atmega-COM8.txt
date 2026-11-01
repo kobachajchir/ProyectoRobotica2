@@ -1,0 +1,90 @@
+13:32:26 flash_mega | perfil: Mi AutoFinalRobo2 | puerto: COM8
+13:32:26 Comprobando disponibilidad de COM8...
+13:32:26 COM8 disponible a 13:32:26. Comprobación puntual; la herramienta abrirá el puerto a continuación.
+13:32:26 flash_mega
+13:32:26 Aprobación MCP: automática, activada en la ventana
+13:32:26 Confirmación manual omitida por autorización de sesión: Preparar y cargar ATmega
+Puerto COM8
+D:\ProyectoRobotica2\AutoFinalRobo2-Atmega\build\afr2.hex
+225227 bytes | SHA-256 d5780d1d3989e939614530c62c7a97adb4b612d08c3ea444fee9c37844c0e494
+
+Se grabará aplicación y se verificará mediante avrdude. No cambia fuses ni EEPROM.
+Potencia de motores desconectada y monitor serie cerrado.
+QUITÉ el puente RESET del Mega a GND. RESET queda libre para auto-reset.
+ESP aislado de D0/D1; retiré los cables de servicio y todos los jumpers que los unan.
+D18→E_RX y E_TX→D19 pueden permanecer para operación. No pulsar KEY/RST del shield.
+Seleccioné el HEX de producto completo; no el de comunicación sola.
+13:32:26 Cableado ATmega confirmado por el usuario.
+13:32:26 Cargando aplicación ATmega por bootloader. RESET libre; auto-reset solicitado por avrdude.
+13:32:26 > "C:\Users\kobac\AppData\Local\Arduino15\packages\arduino\tools\avrdude\6.3.0-arduino17\bin\avrdude.exe" "-C" "C:\Users\kobac\AppData\Local\Arduino15\packages\arduino\tools\avrdude\6.3.0-arduino17\etc\avrdude.conf" "-v" "-p" "atmega2560" "-c" "wiring" "-P" "COM8" "-b" "115200" "-D" "-U" "flash:w:afr2.hex:i"
+13:32:26 Carpeta: D:\ProyectoRobotica2\AutoFinalRobo2-Atmega\build
+13:32:26 avrdude.exe: Version 6.3-20190619
+13:32:26              Copyright (c) 2000-2005 Brian Dean, http://www.bdmicro.com/
+13:32:26              Copyright (c) 2007-2014 Joerg Wunsch
+13:32:26              System wide configuration file is "C:\Users\kobac\AppData\Local\Arduino15\packages\arduino\tools\avrdude\6.3.0-arduino17\etc\avrdude.conf"
+13:32:26              Using Port                    : COM8
+13:32:26              Using Programmer              : wiring
+13:32:26              Overriding Baud Rate          : 115200
+13:32:27              AVR Part                      : ATmega2560
+13:32:27              Chip Erase delay              : 9000 us
+13:32:27              PAGEL                         : PD7
+13:32:27              BS2                           : PA0
+13:32:27              RESET disposition             : dedicated
+13:32:27              RETRY pulse                   : SCK
+13:32:27              serial program mode           : yes
+13:32:27              parallel program mode         : yes
+13:32:27              Timeout                       : 200
+13:32:27              StabDelay                     : 100
+13:32:27              CmdexeDelay                   : 25
+13:32:27              SyncLoops                     : 32
+13:32:27              ByteDelay                     : 0
+13:32:27              PollIndex                     : 3
+13:32:27              PollValue                     : 0x53
+13:32:27              Memory Detail                 :
+13:32:27                                       Block Poll               Page                       Polled
+13:32:27                Memory Type Mode Delay Size  Indx Paged  Size   Size #Pages MinW  MaxW   ReadBack
+13:32:27                ----------- ---- ----- ----- ---- ------ ------ ---- ------ ----- ----- ---------
+13:32:27                eeprom        65    10     8    0 no       4096    8      0  9000  9000 0x00 0x00
+13:32:27                flash         65    10   256    0 yes    262144  256   1024  4500  4500 0x00 0x00
+13:32:27                lfuse          0     0     0    0 no          1    0      0  9000  9000 0x00 0x00
+13:32:27                hfuse          0     0     0    0 no          1    0      0  9000  9000 0x00 0x00
+13:32:27                efuse          0     0     0    0 no          1    0      0  9000  9000 0x00 0x00
+13:32:27                lock           0     0     0    0 no          1    0      0  9000  9000 0x00 0x00
+13:32:27                calibration    0     0     0    0 no          1    0      0     0     0 0x00 0x00
+13:32:27                signature      0     0     0    0 no          3    0      0     0     0 0x00 0x00
+13:32:27              Programmer Type : Wiring
+13:32:27              Description     : Wiring
+13:32:27              Programmer Model: AVRISP
+13:32:27              Hardware Version: 15
+13:32:27              Firmware Version Master : 2.10
+13:32:27              Vtarget         : 0.0 V
+13:32:27              SCK period      : 0.1 us
+13:32:27 avrdude.exe: AVR device initialized and ready to accept instructions
+13:32:27 Reading | ################################################## | 100% 0.00s
+13:32:27 avrdude.exe: Device signature = 0x1e9801 (probably m2560)
+13:32:27 avrdude.exe: safemode: lfuse reads as FF
+13:32:27 avrdude.exe: safemode: hfuse reads as D8
+13:32:27 avrdude.exe: safemode: efuse reads as FF
+13:32:27 avrdude.exe: reading input file "afr2.hex"
+13:32:27 avrdude.exe: writing flash (80066 bytes):
+13:32:40 Writing | ################################################## | 100% 12.82s
+13:32:40 avrdude.exe: 80066 bytes of flash written
+13:32:40 avrdude.exe: verifying flash memory against afr2.hex:
+13:32:40 avrdude.exe: load data flash data from input file afr2.hex:
+13:32:40 avrdude.exe: input file afr2.hex contains 80066 bytes
+13:32:40 avrdude.exe: reading on-chip flash data:
+13:32:50 Reading | ################################################## | 100% 10.24s
+13:32:50 avrdude.exe: verifying ...
+13:32:50 avrdude.exe: 80066 bytes of flash verified
+13:32:50 avrdude.exe: safemode: lfuse reads as FF
+13:32:50 avrdude.exe: safemode: hfuse reads as D8
+13:32:50 avrdude.exe: safemode: efuse reads as FF
+13:32:50 avrdude.exe: safemode: Fuses OK (E:FF, H:D8, L:FF)
+13:32:50 avrdude.exe done.  Thank you.
+13:32:50 Código de salida: 0
+13:32:50 ATmega: firma esperada, carga y bytes de flash verificados correctamente.
+13:32:50 ATmega: firma esperada, aplicación escrita y bytes verificados. No demuestra sensores/motores calibrados.
+13:32:50 Si Hall conectado estaba en 0: Calibracion > Geometria > Hall conectado=1; volver y Guardar EEPROM.
+13:32:50 Completado: flash_mega
+13:32:50 Recordatorio de funcionamiento: Mega D18/TX1 → E_RX (RX central); E_TX (TX central) → Mega D19/RX1. Con alimentación desconectada, retirar adaptador USB–TTL o servicio D0/D1 y RESET Mega→GND, si se usaron.
+13:32:50 Registro: C:\Users\kobac\AppData\Local\AutoFinalRobo2Loader\logs\20261029-133226-698-847166.txt | Resumen: .json

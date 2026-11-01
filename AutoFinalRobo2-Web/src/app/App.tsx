@@ -16,6 +16,7 @@ import { DeveloperPage } from '../features/developer/DeveloperPage';
 import { CollectorProvider } from '../features/collector/CollectorContext';
 
 const CollectorPage = lazy(() => import('../features/collector/CollectorPage').then(m => ({ default: m.CollectorPage })));
+const UiSimulatorPage = lazy(() => import('../features/developer/UiSimulatorPage').then(m => ({ default: m.UiSimulatorPage })));
 const ProtocolStudioPage = lazy(() => import('../features/protocolStudio/ProtocolStudioPage').then(m => ({ default: m.ProtocolStudioPage })));
 
 const Model3DPage = lazy(() =>
@@ -60,6 +61,7 @@ export function App() {
                 <Route path="/documentacion" element={<DocsPage />} />
                 <Route path="/desarrollador" element={<DeveloperPage />} />
                 <Route path="/desarrollador/protocol-studio" element={<Suspense fallback={<p role="status">Cargando Protocol Studio...</p>}><ProtocolStudioPage /></Suspense>} />
+                <Route path="/desarrollador/ui-simulator" element={<Suspense fallback={<p role="status">Cargando Simulador UI...</p>}><UiSimulatorPage /></Suspense>} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </AppShell>

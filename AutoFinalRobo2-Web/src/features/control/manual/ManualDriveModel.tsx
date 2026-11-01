@@ -2,14 +2,15 @@ import { useEffect, useMemo } from 'react';
 import { Canvas, useThree } from '@react-three/fiber';
 import { RobotModel, useRobotModel } from '../../../components/three/RobotModel';
 import { MODEL_WHEEL_RADIUS_MM, type RobotWheelValues } from '../../../components/three/robotWheelMotion';
+import { MOTION_REFERENCE } from '../motionReference';
 import { DEFAULT_KINEMATIC_PROFILE } from '../sequences/sequenceTypes';
 
 /** AFR2-20261024-13. Shared final asset, framed by camera; no mesh scaling or pose. */
 function FloatingRobot({ onReady, wheelSpeeds, headingRad }: { onReady: (ready: boolean) => void; wheelSpeeds?: RobotWheelValues; headingRad: number }) {
-  const { size: extent } = useRobotModel();
+  const { size: extent, scene } = useRobotModel();
   const { camera, size, invalidate, gl } = useThree();
   const turnOffsets = useMemo(() => {
-    const angle = headingRad * DEFAULT_KINEMATIC_PROFILE.lxPlusLyMm / MODEL_WHEEL_RADIUS_MM;
+    const angle = headingRad * DEFAULT_KINEMATIC_PROFILE.lxPlusLyMm / MODEL_WHEEL_RADIUS_MM * MOTION_REFERENCE.yawWheelSign;
     return { fl: -angle, fr: angle, rl: -angle, rr: angle };
   }, [headingRad]);
   useEffect(() => { invalidate(); }, [headingRad, invalidate]);
@@ -26,7 +27,7 @@ function FloatingRobot({ onReady, wheelSpeeds, headingRad }: { onReady: (ready: 
     gl.domElement.addEventListener('webglcontextlost', lost); gl.domElement.addEventListener('webglcontextrestored', restored);
     onReady(true);
     return () => { onReady(false); gl.domElement.removeEventListener('webglcontextlost', lost); gl.domElement.removeEventListener('webglcontextrestored', restored); };
-  }, [onReady, gl, invalidate]);
+  }, [onReady, gl, invalidate, scene]);
   return <group position={[0, .03, 0]} rotation={[0, headingRad % (Math.PI * 2), 0]}><RobotModel wheelSpeedsMmS={wheelSpeeds} wheelAngleOffsets={turnOffsets} /></group>;
 }
 

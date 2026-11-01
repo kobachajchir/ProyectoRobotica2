@@ -35,73 +35,103 @@ namespace AFR2Loader
         string lastFailureText, lastFailurePath;
         long shownSkipped;
 
+        Button serialConvert;
+        string copiedSerialText;
+        int copiedSerialFormat;
+        void RememberCopiedSerial(string text) { copiedSerialText = text; copiedSerialFormat = serialFormat.SelectedIndex; if (serialConvert != null) serialConvert.Visible = !String.IsNullOrEmpty(text); }
+        void ShowSerialInConverter(TabControl tabs)
+        {
+            string selected = serialText.SelectionLength > 0 ? serialText.SelectedText : copiedSerialText;
+            if (String.IsNullOrEmpty(selected) || converterTab == null) return;
+            int format = serialText.SelectionLength > 0 ? serialFormat.SelectedIndex : copiedSerialFormat;
+            converterDirection.SelectedIndex = format == 1 ? 0 : 1;
+            converterInput.Text = selected; tabs.SelectedTab = converterTab; converterInput.Focus();
+        }
+        LoaderNotice detailedNotice;
         void InitializeSerial(TabControl tabs)
         {
-            var page = new TabPage("Monitor serie") { Padding = new Padding(12) };
-            var layout = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 6 };
-            foreach (int height in new[] { 84, 58, 124 }) layout.RowStyles.Add(new RowStyle(SizeType.Absolute, height));
-            layout.RowStyles.Add(new RowStyle(SizeType.Percent, 100)); layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 72)); layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 55));
-            var controls = new FlowLayoutPanel { Dock = DockStyle.Fill, WrapContents = true };
-            controls.Controls.Add(new Label { Text = "COM", AutoSize = true, Margin = new Padding(0, 9, 5, 0) });
-            serialPorts.Width = 105; serialPorts.DropDownStyle = ComboBoxStyle.DropDownList; controls.Controls.Add(serialPorts);
-            var refresh = new Button { Text = "Actualizar", Width = 95, Height = 29 }; refresh.Click += (s, e) => { try { RefreshSerialPorts(); } catch (Exception error) { QueueFailure("monitor", error); } }; controls.Controls.Add(refresh);
-            controls.Controls.Add(new Label { Text = "Baudios", AutoSize = true, Margin = new Padding(10, 9, 5, 0) });
-            serialBaud.Width = 110; serialBaud.Items.AddRange(new object[] { "9600", "19200", "38400", "57600", "74880", "115200", "230400", "460800", "921600" }); serialBaud.Text = "74880"; controls.Controls.Add(serialBaud);
-            controls.Controls.Add(new Label { Text = "Codificación", AutoSize = true, Margin = new Padding(10, 9, 5, 0) });
-            serialCodec.Width = 95; serialCodec.DropDownStyle = ComboBoxStyle.DropDownList; serialCodec.Items.AddRange(new object[] { "UTF-8", "ASCII", "Latin-1" }); serialCodec.SelectedIndex = 0; controls.Controls.Add(serialCodec);
-            controls.SetFlowBreak(serialCodec, true);
-            serialOpen = new Button { Text = "Abrir puerto", Width = 125, Height = 30 }; serialOpen.Click += async (s, e) => await OpenSerialMonitor(); controls.Controls.Add(serialOpen);
-            serialClose = new Button { Text = "Cerrar puerto", Width = 125, Height = 30 }; serialClose.Click += async (s, e) => { try { await StopSerialMonitor("Cierre manual"); } catch (Exception error) { QueueFailure("monitor", error); } }; controls.Controls.Add(serialClose);
-            serialApply = new Button { Text = "Aplicar baudios", Width = 145, Height = 30 }; serialApply.Click += async (s, e) => await ApplySerialBaud(); controls.Controls.Add(serialApply);
-            controls.Controls.Add(new Label { Text = "Vista", AutoSize = true, Margin = new Padding(10, 7, 5, 0) });
-            serialFormat.Width = 185; serialFormat.DropDownStyle = ComboBoxStyle.DropDownList;
-            serialFormat.Items.AddRange(new object[] { "ASCII", "HEX con espacios", "Texto decodificado" }); serialFormat.SelectedIndex = 0; controls.Controls.Add(serialFormat);
+            var page = new TabPage("Monitor serie") { Padding = new Padding(UiInset), AutoScroll = true };
+            var layout = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 8, MinimumSize = new Size(0, 720) };
+            foreach (int height in new[] { 48, 48, 42, 90, 44 }) layout.RowStyles.Add(new RowStyle(SizeType.Absolute, height));
+            layout.RowStyles.Add(new RowStyle(SizeType.Percent, 100)); layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 88)); layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 210));
+            var controls = UiRow();
+            serialPorts.Width = 115; serialPorts.DropDownStyle = ComboBoxStyle.DropDownList; controls.Controls.Add(UiField("COM", serialPorts));
+            var refresh = new ActionButton { Text = "Actualizar", Width = 140 }; refresh.Click += (s, e) => { try { RefreshSerialPorts(); } catch (Exception error) { QueueFailure("monitor", error); } }; controls.Controls.Add(refresh);
+            serialOpen = new ActionButton { Text = "Abrir puerto", Width = 155 }; serialOpen.Click += async (s, e) => await OpenSerialMonitor(); controls.Controls.Add(serialOpen);
+            serialClose = new ActionButton { Text = "Cerrar puerto", Width = 155 }; serialClose.Click += async (s, e) => { try { await StopSerialMonitor("Cierre manual"); } catch (Exception error) { QueueFailure("monitor", error); } }; controls.Controls.Add(serialClose);
+            var readMega = new ActionButton { Text = "Leer ATmega", Width = 175 }; readMega.Click += (s, e) => OpenManualSection("leer-atmega"); controls.Controls.Add(readMega);
+            var readEsp = new ActionButton { Text = "Leer ESP", Width = 175 }; readEsp.Click += (s, e) => OpenManualSection("leer-esp"); controls.Controls.Add(readEsp);
             layout.Controls.Add(controls, 0, 0);
+            var codecs = UiRow(); serialBaud.Width = 110; serialBaud.Items.AddRange(new object[] { "9600", "19200", "38400", "57600", "74880", "115200", "230400", "460800", "921600" }); serialBaud.Text = "74880";
+            codecs.Controls.Add(UiField("Baudios", serialBaud)); serialApply = new ActionButton { Text = "Aplicar baudios", Width = 175 }; serialApply.Click += async (s, e) => await ApplySerialBaud(); codecs.Controls.Add(serialApply);
+            serialCodec.Width = 105; serialCodec.DropDownStyle = ComboBoxStyle.DropDownList; serialCodec.Items.AddRange(new object[] { "UTF-8", "ASCII", "Latin-1" }); serialCodec.SelectedIndex = 0; codecs.Controls.Add(UiField("Codificación", serialCodec)); layout.Controls.Add(codecs, 0, 1);
             var statePanel = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 2 };
-            serialState.Font = new Font(Font, FontStyle.Bold); statePanel.Controls.Add(serialState, 0, 0); statePanel.Controls.Add(serialObservation, 0, 1); layout.Controls.Add(statePanel, 0, 1);
-            transferCard.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 36)); transferCard.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
-            transferCard.RowStyles.Add(new RowStyle(SizeType.Absolute, 26)); transferCard.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
-            transferIcon.Image = infoIcon; transferTitle.Text = "Estado de la sesión";
-            transferSummary.Text = "Sin carga en curso. El texto recibido no demuestra una carga verificada.";
-            transferCard.BackColor = transferSummary.BackColor = Color.FromArgb(232, 241, 246);
-            transferTitle.ForeColor = transferSummary.ForeColor = Color.FromArgb(22, 79, 99);
-            transferCard.Controls.Add(transferIcon, 0, 0); transferCard.Controls.Add(transferTitle, 1, 0); transferCard.Controls.Add(transferSummary, 1, 1);
-            EnableTextCopyFeedback(transferSummary); layout.Controls.Add(transferCard, 0, 2);
+            statePanel.RowStyles.Add(new RowStyle(SizeType.Percent, 50)); statePanel.RowStyles.Add(new RowStyle(SizeType.Percent, 50));
+            serialState.Font = new Font(Font, FontStyle.Bold); statePanel.Controls.Add(serialState, 0, 0); statePanel.Controls.Add(serialObservation, 0, 1); layout.Controls.Add(statePanel, 0, 2);
+            transferCard.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 48)); transferCard.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+            transferCard.RowStyles.Add(new RowStyle(SizeType.Absolute, 34)); transferCard.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+            transferIcon.Image = infoIcon; transferIcon.Anchor = AnchorStyles.None; transferIcon.Size = new Size(30, 30);
+            transferTitle.Text = "Estado de la sesión"; transferTitle.Font = new Font(Font.FontFamily, 13, FontStyle.Bold); transferSummary.Text = "Sin carga en curso.";
+            transferCard.BackColor = transferSummary.BackColor = Color.FromArgb(232, 241, 246); transferTitle.ForeColor = transferSummary.ForeColor = Color.FromArgb(22, 79, 99);
+            transferCard.Controls.Add(transferIcon, 0, 0); transferCard.SetRowSpan(transferIcon, 2); transferCard.Controls.Add(transferTitle, 1, 0); transferCard.Controls.Add(transferSummary, 1, 1); EnableTextCopyFeedback(transferSummary); layout.Controls.Add(transferCard, 0, 3);
+            var viewBar = UiRow(); viewBar.FlowDirection = FlowDirection.RightToLeft;
+            serialFormat.Width = 195; serialFormat.DropDownStyle = ComboBoxStyle.DropDownList; serialFormat.Items.AddRange(new object[] { "ASCII", "HEX con espacios", "Texto decodificado" }); serialFormat.SelectedIndex = 0;
+            viewBar.Controls.Add(UiField("Vista", serialFormat)); layout.Controls.Add(viewBar, 0, 4);
             serialText.Dock = DockStyle.Fill; serialText.ReadOnly = true; serialText.WordWrap = false; serialText.DetectUrls = false;
             serialText.BackColor = Color.FromArgb(19, 29, 39); serialText.ForeColor = Color.FromArgb(222, 232, 241); serialText.Font = new Font("Consolas", 10);
-            serialText.BindFollow(serialFollow); EnableTextCopyFeedback(serialText);
-            layout.Controls.Add(serialText, 0, 3);
-            var buttons = new FlowLayoutPanel { Dock = DockStyle.Fill };
-            buttons.Controls.Add(serialFollow); buttons.Controls.Add(serialPause);
-            var clear = new Button { Text = "Limpiar vista", Width = 120, Height = 30 }; clear.Click += (s, e) => ClearSerialView(); buttons.Controls.Add(clear);
-            var copy = new Button { Text = "Copiar texto", Width = 120, Height = 30 }; copy.Click += (s, e) => CopyText(serialText.Text, copy); buttons.Controls.Add(copy);
-            var convert = new Button { Text = "Conversor HEX / ASCII", Width = 185, Height = 30 }; convert.Click += (s, e) => { if (converterTab != null) tabs.SelectedTab = converterTab; }; buttons.Controls.Add(convert);
-            var files = new Button { Text = "Abrir registros", Width = 125, Height = 30 }; files.Click += (s, e) => OpenLogs(); buttons.Controls.Add(files);
-            var failure = new Button { Text = "Ver último error", Width = 140, Height = 30 }; failure.Click += (s, e) => ShowLastFailure(); buttons.Controls.Add(failure);
-            layout.Controls.Add(buttons, 0, 4);
-            layout.Controls.Add(new Label { Dock = DockStyle.Fill, Text = "Lectura 8N1, DTR/RTS inactivos. ESP arranque: 74880; aplicación: elegir los baudios de su firmware. Abrir el COM puede afectar reset según el adaptador.\r\nAntes de diagnosticar/cargar se cierra este monitor. No hay reapertura automática después de flashear ni cambio automático de baudios." }, 0, 5);
+            serialText.BindFollow(serialFollow); EnableTextCopyFeedback(serialText); layout.Controls.Add(serialText, 0, 5);
+            serialText.TextCopied += RememberCopiedSerial;
+            var footer = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2, Padding = new Padding(0, 8, 0, 0) }; footer.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100)); footer.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
+            var buttons = UiRow(); buttons.Controls.Add(serialFollow); buttons.Controls.Add(serialPause);
+            var clear = new ActionButton { Text = "Limpiar vista", Width = 135 }; clear.Click += (s, e) => ClearSerialView(); buttons.Controls.Add(clear);
+            var copy = new ActionButton { Text = "Copiar texto", Width = 140 }; copy.Click += (s, e) => { string text = serialText.SelectionLength > 0 ? serialText.SelectedText : serialText.Text; CopyText(text, serialText); }; buttons.Controls.Add(copy);
+            var files = new ActionButton { Text = "Abrir registros", Width = 155 }; files.Click += (s, e) => OpenLogs(); buttons.Controls.Add(files);
+            var failure = new ActionButton { Text = "Ver último error", Width = 175 }; failure.Click += (s, e) => ShowLastFailure(); buttons.Controls.Add(failure);
+            serialConvert = new ActionButton { Text = "Mostrar en conversor HEX", Width = 260, Visible = false, Anchor = AnchorStyles.Right };
+            serialConvert.Click += (s, e) => ShowSerialInConverter(tabs);
+            footer.Controls.Add(buttons, 0, 0); footer.Controls.Add(serialConvert, 1, 0); layout.Controls.Add(footer, 0, 6); layout.Controls.Add(CreateSerialSendPanel(), 0, 7);
+            Action resizeTools = () => {
+                int width = Math.Max(1, buttons.ClientSize.Width), used = 0, lines = 1;
+                foreach (Control tool in buttons.Controls) { int item = tool.Width + tool.Margin.Horizontal; if (used > 0 && used + item > width) { lines++; used = 0; } used += item; }
+                layout.RowStyles[6].Height = lines * 44 + 20;
+            };
+            buttons.SizeChanged += (s, e) => resizeTools(); serialConvert.VisibleChanged += (s, e) => resizeTools();
+            serialText.SelectionChanged += (s, e) => { if (serialConvert != null) serialConvert.Visible = serialText.SelectionLength > 0 || !String.IsNullOrEmpty(copiedSerialText); };
             page.Controls.Add(layout); tabs.TabPages.Add(page);
-
-            var eventsPage = new TabPage("Eventos y errores") { Padding = new Padding(12) };
-            serialEventsPage = eventsPage;
-            var eventsLayout = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 3 };
-            eventsLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 60)); eventsLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 40)); eventsLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 42));
-            notices.Dock = DockStyle.Fill; notices.ReadOnly = true; notices.AllowUserToAddRows = false; notices.AllowUserToDeleteRows = false; notices.RowHeadersVisible = false;
+            InitializeEventsPage(tabs);
+            timer.Tick += (s, e) => { DrainNotices(); DrainSerial(); UpdateSerialControls(); UpdateSerialSendControls(); };
+            ports.SelectedIndexChanged += (s, e) => { if (serialCapture == null || !serialCapture.Active) { if (serialPorts.Items.Contains(ports.Text)) serialPorts.SelectedItem = ports.Text; } };
+            RefreshSerialPorts(); UpdateSerialControls();
+            serialFormat.SelectedIndexChanged += (s, e) => { RenderSerialView(); serialConvert.Visible = !String.IsNullOrEmpty(copiedSerialText); UpdateSerialControls(); };
+            FormClosed += (s, e) => { infoIcon.Dispose(); warningIcon.Dispose(); errorIcon.Dispose(); };
+        }
+        void InitializeEventsPage(TabControl tabs)
+        {
+            serialEventsPage = new TabPage("Eventos y errores") { Padding = new Padding(UiInset) };
+            var layout = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 3 };
+            layout.RowStyles.Add(new RowStyle(SizeType.Percent, 55)); layout.RowStyles.Add(new RowStyle(SizeType.Percent, 45)); layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 52));
+            notices.Dock = DockStyle.Fill; notices.ReadOnly = true; notices.AllowUserToAddRows = notices.AllowUserToDeleteRows = false; notices.RowHeadersVisible = false;
             notices.SelectionMode = DataGridViewSelectionMode.FullRowSelect; notices.MultiSelect = false; notices.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             foreach (string name in new[] { "Hora", "Origen", "Estado", "Mensaje" }) notices.Columns.Add(name, name);
             notices.Columns[3].FillWeight = 300;
-            notices.SelectionChanged += (s, e) => { if (notices.SelectedRows.Count > 0) { var n = notices.SelectedRows[0].Tag as LoaderNotice; if (n != null) noticeDetail.Text = n.At + " | " + n.Origin + " | " + n.Code + "\r\n" + n.Message + "\r\n\r\n" + n.Detail; } };
-            eventsLayout.Controls.Add(notices, 0, 0); eventsLayout.Controls.Add(noticeDetail, 0, 1);
-            var eventButtons = new FlowLayoutPanel { Dock = DockStyle.Fill };
-            var lastError = new Button { Text = "Ver último error", Width = 150, Height = 32 }; lastError.Click += (s, e) => ShowLastFailure(); eventButtons.Controls.Add(lastError);
-            var copyError = new Button { Text = "Copiar último error", Width = 170, Height = 32 }; copyError.Click += (s, e) => CopyText(lastFailureText, copyError); eventButtons.Controls.Add(copyError);
-            EnableTextCopyFeedback(noticeDetail); noticeDetail.TabStop = false;
-            eventsLayout.Controls.Add(eventButtons, 0, 2); eventsPage.Controls.Add(eventsLayout); tabs.TabPages.Add(eventsPage);
-            timer.Tick += (s, e) => { DrainNotices(); DrainSerial(); UpdateSerialControls(); };
-            ports.SelectedIndexChanged += (s, e) => { if (serialCapture == null || !serialCapture.Active) { if (serialPorts.Items.Contains(ports.Text)) serialPorts.SelectedItem = ports.Text; } };
-            RefreshSerialPorts(); UpdateSerialControls();
-            serialFormat.SelectedIndexChanged += (s, e) => { RenderSerialView(); UpdateSerialControls(); };
-            FormClosed += (s, e) => { infoIcon.Dispose(); warningIcon.Dispose(); errorIcon.Dispose(); };
+            notices.Columns.Add(new DataGridViewButtonColumn { Name = "Actions", HeaderText = "Acciones", Text = "Ver detalles", UseColumnTextForButtonValue = true, FillWeight = 90 });
+            notices.RowTemplate.Height = 38;
+            StyleActionColumn(notices, 4, index => "Ver detalles", true);
+            foreach (DataGridViewColumn column in notices.Columns) column.SortMode = DataGridViewColumnSortMode.NotSortable;
+            notices.CellContentClick += (s, e) => { if (e.RowIndex >= 0 && e.ColumnIndex == 4) ShowNoticeDetails(notices.Rows[e.RowIndex]); };
+            layout.Controls.Add(notices, 0, 0); layout.Controls.Add(noticeDetail, 0, 1); EnableTextCopyFeedback(noticeDetail);
+            var actions = UiRow(); var copy = new ActionButton { Text = "Copiar detalle", Width = 170 }; copy.Click += (s, e) => CopyText(noticeDetail.Text, copy); actions.Controls.Add(copy);
+            layout.Controls.Add(actions, 0, 2); serialEventsPage.Controls.Add(layout); tabs.TabPages.Add(serialEventsPage);
+        }
+        void ShowNoticeDetails(DataGridViewRow selected)
+        {
+            var notice = selected.Tag as LoaderNotice; if (notice == null) return; detailedNotice = notice;
+            foreach (DataGridViewRow row in notices.Rows) {
+                row.DefaultCellStyle.BackColor = Color.White;
+                row.DefaultCellStyle.SelectionBackColor = SystemColors.Highlight;
+                row.DefaultCellStyle.SelectionForeColor = SystemColors.HighlightText;
+            }
+            noticeDetail.Text = notice.At + " | " + notice.Origin + " | " + notice.Code + "\r\n" + notice.Message + "\r\n\r\n" + notice.Detail;
         }
         void RefreshSerialPorts()
         {
@@ -155,6 +185,7 @@ namespace AFR2Loader
         {
             if (serialCapture == null) return;
             if (serialTransition) throw new InvalidOperationException("El monitor está abriendo/cerrando; esperá que termine antes de continuar.");
+            if (serialTxCancellation != null) serialTxCancellation.Cancel();
             serialTransition = true; UpdateSerialControls();
             try { await serialCapture.CloseAsync(reason); }
             finally { serialTransition = false; DrainSerial(); UpdateSerialControls(); }
@@ -289,10 +320,11 @@ namespace AFR2Loader
             using (var dialog = new Form { Text = "Último error | " + (lastFailurePath ?? "sin archivo en disco"), Size = new Size(950, 650), StartPosition = FormStartPosition.CenterParent })
             {
                 var detail = new TextBox { Text = lastFailureText, Dock = DockStyle.Fill, ReadOnly = true, Multiline = true, ScrollBars = ScrollBars.Both, WordWrap = false };
-                var copy = new Button { Text = "Copiar último error", Dock = DockStyle.Bottom, Height = 38 };
+                var copy = new ActionButton { Text = "Copiar último error", Dock = DockStyle.Bottom, Height = 38 };
                 copy.Click += (s, e) => CopyText(detail.Text, copy); EnableTextCopyFeedback(detail);
-                dialog.Controls.Add(detail); dialog.Controls.Add(copy); FocusDialogAction(dialog, copy, detail); dialog.ShowDialog(this);
+                dialog.Controls.Add(detail); dialog.Controls.Add(copy); FocusDialogAction(dialog, copy, detail); ShowStyledDialog(dialog);
             }
         }
     }
 }
+

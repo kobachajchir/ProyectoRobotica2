@@ -4,19 +4,31 @@
 #define AFR2_OLED_WIDTH 128u
 #define AFR2_OLED_HEIGHT 64u
 #define AFR2_OLED_BYTES 1024u
+#define AFR2_OLED_CHUNK 16u
 typedef enum { AFR2_BLACK, AFR2_WHITE, AFR2_INVERT } Afr2Color;
 typedef struct {
     Afr2I2cManager *manager; /* prestado, debe vivir mas que este handle */
     uint8_t buffer[AFR2_OLED_BYTES];
-    uint8_t tx[129]; /* snapshot de pagina, estable hasta fin de transferencia */
+    /* AFR2-20261029-11: exact acknowledged image; valid bits per16columns.
+     * No checksum collisions; unknown chunks are sent after init/recovery. */
+    uint8_t acknowledged[AFR2_OLED_BYTES];
+    uint8_t valid[8],next_chunk[8];
+    uint8_t tx[33]; /* init27bytes or control+<=16data; stable until callback */
     uint8_t command[6];
     uint8_t dirty, page, phase, address7;
     uint8_t contrast,rotation,settings_dirty;
+    uint8_t column,count,chunk,next_page;
     uint32_t retry_ms, clock_ms, errors;
     bool initialized;
+    bool paused;
+    uint8_t last_error,last_failed_phase,consecutive_failures; /* AFR2-20261029-14 */
+    bool configured_once;
 } Afr2Oled;
 void Afr2Oled_Init(Afr2Oled *o,Afr2I2cManager *manager,uint8_t address7,uint32_t now);
 void Afr2Oled_Task(Afr2Oled *o,uint32_t now);
+/* Cooperative low-priority service: pause stops new submissions, not a byte
+ * already on the wire. Resume continues the saved command/data snapshot. */
+void Afr2Oled_Pause(Afr2Oled *o,bool paused);
 void Afr2Oled_Settings(Afr2Oled *o,uint8_t contrast,uint8_t rotation);
 void Afr2Oled_Clear(Afr2Oled *o);
 void Afr2Oled_Pixel(Afr2Oled *o,int16_t x,int16_t y,Afr2Color color);

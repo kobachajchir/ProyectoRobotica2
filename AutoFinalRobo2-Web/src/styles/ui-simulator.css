@@ -72,3 +72,17 @@
  .afr2-ui-simulator-settings { padding:16px; }
  .afr2-ui-simulator-settings-grid { grid-template-columns:minmax(0,1fr); gap:20px; }
 }
+
+.afr2-ui-simulator-flow { color:var(--text); font-size:14px; line-height:1.6; overflow-wrap:anywhere; }
+.afr2-ui-simulator-flow ul { padding-inline-start:22px; }
+.afr2-ui-simulator-flow li { margin-block:8px; }
+.afr2-ui-simulator-flow summary { cursor:pointer; min-height:32px; color:var(--text-strong); }
+.afr2-ui-simulator-flow code { color:var(--text-muted); font-size:12px; }
+
+/* AFR2-20261101-06: same page hierarchy and solid studio materials. */
+.afr2-ui-studio .afr2-ui-simulator { border-radius: var(--radius-xl); }
+.afr2-ui-studio .afr2-ui-simulator-heading h2 { margin: 0 0 8px; font-size: var(--text-lg); font-weight: 600; line-height: 1.4; letter-spacing: normal; }
+.afr2-ui-studio .afr2-ui-simulator select,
+.afr2-ui-studio .afr2-ui-simulator input { border-radius: var(--radius-md); background: var(--surface-subtle); }
+.afr2-ui-studio .afr2-ui-simulator-settings { padding: 0; border-top: 0; }
+.afr2-ui-studio .afr2-ui-simulator-settings-grid { padding-top: var(--space-3); }

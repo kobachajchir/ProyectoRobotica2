@@ -1,3 +1,4 @@
+/* AFR2-20261029-27: quick controls/radar/PWM/WS integration; prior authors retained. */
 /* AFR2-20261023-19. Line5, HC-SR04 and proposed Hall bank, avr-libc.
  * Timer3 samples ECHO only during a measurement (25us, no OC outputs).
  * Timer5 drives optional servo D13 by compare IRQ; Timer1 PWM untouched.
@@ -14,6 +15,19 @@ static volatile uint8_t echo_state, echo_error, echo_done;
 static volatile uint16_t echo_ticks, echo_rise, echo_width, servo_width;
 static uint8_t adc_channel, adc_running,line_kind,scans,history[5];
 static uint16_t raw[5];
+/* AFR2-20261029-26: one ADC owner for IR and opt-in battery acquisition. */
+static uint8_t battery_enabled,battery_count,adc_discard,battery_range;
+static uint16_t battery_sum;
+static uint32_t battery_step_ms;
+void Afr2Battery_Measure(Afr2Sensors *s){
+    battery_enabled=1;battery_count=0;battery_sum=0;battery_range=0;
+    s->battery_state=AFR2_BATTERY_PENDING;s->battery_sequence=0;s->battery_raw=0;
+    if(adc_running==2){ADCSRA&=(uint8_t)~_BV(ADEN);ADCSRA|=_BV(ADEN);adc_running=0;}
+}
+uint8_t Afr2Battery_Status(const Afr2Sensors *s,uint32_t now){
+    return s->battery_sequence && (uint32_t)(now-s->battery_ms)>AFR2_BATTERY_STALE_MS?AFR2_BATTERY_STALE:s->battery_state;
+}
+uint16_t Afr2Battery_Millivolts(const Afr2Sensors *s){return ((uint32_t)s->battery_raw*10000u+512u)/1024u;}
 static uint32_t line_ms, echo_ms;
 static Afr2SensorHead head;
 static volatile uint16_t servo_pending,servo_applied;
@@ -37,13 +51,25 @@ uint8_t Afr2Head_Servo(uint8_t operation,uint8_t angle){
 }
 uint8_t Afr2Head_Start(void){
     if(head.running)return AFR2_OK;
+    head.paused=0;
     ATOMIC_BLOCK(ATOMIC_RESTORESTATE){TIMSK3=0;echo_state=0;echo_done=0;PORTC&=(uint8_t)~_BV(PC7);}
     memset(head.bins,0,sizeof(head.bins));for(uint8_t i=0;i<AFR2_RADAR_BINS;i++)head.bins[i].error=AFR2_ECHO_UNKNOWN;
     if(!++head.scan_revision)++head.scan_revision;
     head.head=head.count=0;head.running=1;head.phase=1;head.direction=1;head.index=head.min_angle/5;
     head.step_ms=Afr2Board_Millis();first_settle=300;Afr2Servo_Set(pulse_for(head.min_angle));return AFR2_OK;
 }
-void Afr2Head_Stop(void){head.running=0;head.phase=0;Afr2Servo_Set(0);}
+/* AFR2-20261029-27: editor pause preserves PWM and samples; STOP invalidates resume. */
+void Afr2Head_CancelResume(void){head.paused=0;}
+void Afr2Head_Pause(void){head.paused=head.running;head.running=0;head.phase=0;}
+void Afr2Head_Resume(void){
+    if(!head.paused)return;
+    head.paused=0;head.running=1;head.phase=1;first_settle=300;
+    head.index=head.angle/5u;
+    if(head.index<head.min_angle/5u)head.index=head.min_angle/5u;
+    if(head.index>head.max_angle/5u)head.index=head.max_angle/5u;
+    head.step_ms=Afr2Board_Millis();Afr2Servo_Set(pulse_for(head.index*5u));
+}
+void Afr2Head_Stop(void){head.paused=0;head.running=0;head.phase=0;Afr2Servo_Set(0);}
 void Afr2Head_Record(uint8_t *out,const Afr2RangeSample *s){
     afr2_put_u32(out,s->id);afr2_put_u32(out+4,s->ms);afr2_put_u16(out+8,s->distance_mm);
     afr2_put_u16(out+10,s->ticks);afr2_put_u16(out+12,s->pulse_us);out[14]=s->angle;out[15]=s->error;
@@ -77,7 +103,7 @@ static void publish_echo(Afr2Sensors *s,uint16_t width,uint8_t error,uint32_t no
     s->echo_error=error;s->distance_mm=error?0:mm;s->ultrasonic_ms=now;
     if(head.running){
         head.queue[head.head]=head.latest;head.head=(head.head+1u)%AFR2_RADAR_QUEUE;if(head.count<AFR2_RADAR_QUEUE)++head.count;
-        head.bins[head.index]=(Afr2RadarBin){head.sequence,now,error?0:mm,error};head.phase=3;
+        head.bins[(echo_angle+2u)/5u<AFR2_RADAR_BINS?(echo_angle+2u)/5u:head.index]=(Afr2RadarBin){head.sequence,now,error?0:mm,error};head.phase=3;
     }
 }
 void Afr2Sensors_Init(void) {
@@ -88,10 +114,17 @@ void Afr2Sensors_Init(void) {
      * Init runs before sei(); two consecutive volatile writes meet JTD sequence. */
     uint8_t jtag=MCUCR|_BV(JTD);MCUCR=jtag;MCUCR=jtag;
     DDRF&=(uint8_t)~0x1f; PORTF&=(uint8_t)~0x1f;
+    /* AFR2-20261030-03: default IR profile samples ADC4..ADC0, not PINF.
+     * Disable digital buffers for ADC inputs; Task enables them only for an
+     * explicitly selected digital profile. Calibration never gates raw. */
+    DIDR0|=0x1f;PRR0&=(uint8_t)~_BV(PRADC);
+    DDRF&=(uint8_t)~_BV(PF5);PORTF&=(uint8_t)~_BV(PF5);DIDR0|=_BV(ADC5D);
     DDRC|=_BV(PC7); PORTC&=(uint8_t)~_BV(PC7); DDRC&=(uint8_t)~_BV(PC6);
     PORTC&=(uint8_t)~_BV(PC6);
     TCCR3A=0; TCCR3B=_BV(WGM32)|_BV(CS31); OCR3A=49; TIMSK3=0;
     /* Prescaler8 gives 0.5us Timer5 units. No output compare pin enabled. */
+    TCCR0A&=(uint8_t)~(_BV(COM0A1)|_BV(COM0A0));
+    TCCR1A&=(uint8_t)~(_BV(COM1C1)|_BV(COM1C0));
     TCCR5A=0; TCCR5B=_BV(CS51); TIMSK5=0; DDRB|=_BV(PB7); PORTB&=(uint8_t)~_BV(PB7);
     Afr2Board_HallInit();
     ADMUX=_BV(REFS0)|4; ADCSRB=0; ADCSRA=_BV(ADEN)|_BV(ADPS2)|_BV(ADPS1)|_BV(ADPS0);
@@ -110,10 +143,10 @@ ISR(TIMER3_COMPA_vect) {
     }
 }
 ISR(TIMER5_COMPA_vect) {
-    if(PORTB&_BV(PB7)) { PORTB&=(uint8_t)~_BV(PB7); OCR5A+=(uint16_t)(40000u-servo_width); }
+    if(PORTB&_BV(PB7)) { PORTB&=(uint8_t)~_BV(PB7); OCR5A=TCNT5+(uint16_t)(40000u-servo_width); }
     else {
         if(servo_applied!=servo_pending){servo_applied=servo_pending;++servo_revision;}
-        servo_width=servo_applied*2u;PORTB|=_BV(PB7); OCR5A+=servo_width;
+        servo_width=servo_applied*2u;PORTB|=_BV(PB7); OCR5A=TCNT5+servo_width;
     }
 }
 void Afr2Servo_Set(uint16_t us) {
@@ -134,19 +167,42 @@ void Afr2Sensors_Task(Afr2Sensors *s,const Afr2Config *c,uint32_t now) {
         if(applied){uint8_t angle=((uint32_t)(applied-1000u)*180u+500u)/1000u;head.angle=head.inverted?180u-angle:angle;}}
     uint8_t updated=0;
     if(c->line_kind!=line_kind){line_kind=c->line_kind;scans=0;adc_running=0;memset(history,0,sizeof(history));
-        ADCSRA&=(uint8_t)~_BV(ADEN);ADCSRA|=_BV(ADEN);}
+        ADCSRA&=(uint8_t)~_BV(ADEN);
+        DDRF&=(uint8_t)~0x1f;PORTF&=(uint8_t)~0x1f;
+        if(line_kind==1)DIDR0&=(uint8_t)~0x1f;else DIDR0|=0x1f;
+        ADCSRA|=_BV(ADEN);}
+    /* Finish the current conversion before selecting any other channel. */
+    if(adc_running && !(ADCSRA&_BV(ADSC))){
+        uint16_t sample=ADC;
+        if(adc_running==1){
+            if(adc_discard){adc_discard=0;ADCSRA|=_BV(ADSC);}
+            else {
+                raw[adc_channel]=sample;
+                if(++adc_channel==5){adc_running=0;line_ms=now;s->line_ms=now;updated=1;}
+                else {ADMUX=_BV(REFS0)|(4u-adc_channel);adc_discard=1;ADCSRA|=_BV(ADSC);}
+            }
+        }else if(adc_discard){adc_discard=0;ADCSRA|=_BV(ADSC);}
+        else {
+            adc_running=0;battery_step_ms=now;battery_sum+=sample;if(sample==1023)battery_range=1;
+            if(++battery_count==8){
+                s->battery_raw=(battery_sum+4u)/8u;s->battery_ms=now;
+                if(!++s->battery_sequence)++s->battery_sequence;
+                s->battery_state=battery_range?AFR2_BATTERY_RANGE:AFR2_BATTERY_VALID;
+                battery_count=0;battery_sum=0;battery_range=0;
+            }
+        }
+    }
     if((uint32_t)(now-line_ms)>=5u) {
         if(c->line_kind==1) { /* Digital: IR1 PF4 .. IR5 PF0 */
             uint8_t pins=PINF; for(uint8_t i=0;i<5;i++)raw[i]=(pins&(1u<<(4u-i)))?1:0;
             line_ms=now; s->line_ms=now;updated=1;
         } else if(c->line_kind==2) {
-            if(!adc_running) { adc_channel=0; ADMUX=_BV(REFS0)|4; ADCSRA|=_BV(ADSC); adc_running=1; }
-            else if(!(ADCSRA&_BV(ADSC))) {
-                raw[adc_channel]=ADC;
-                if(++adc_channel==5) { adc_running=0; line_ms=now; s->line_ms=now;updated=1; }
-                else { ADMUX=_BV(REFS0)|(4u-adc_channel); ADCSRA|=_BV(ADSC); }
-            }
+            if(!adc_running){adc_channel=0;ADCSRB&=(uint8_t)~_BV(MUX5);ADMUX=_BV(REFS0)|4;adc_discard=1;ADCSRA|=_BV(ADSC);adc_running=1;}
         }
+    }
+    /* Battery only takes idle slots between full IR scans, even with IR off. */
+    if(!adc_running && battery_enabled && now>=3u && (uint32_t)(now-battery_step_ms)>=10u){
+        ADMUX=_BV(REFS0)|5;ADCSRB=0;adc_discard=1;ADCSRA|=_BV(ADSC);adc_running=2;
     }
     if(updated) {
         ++head.ir_sequence;

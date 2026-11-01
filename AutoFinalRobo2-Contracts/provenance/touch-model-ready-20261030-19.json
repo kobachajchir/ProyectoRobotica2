@@ -1,0 +1,78 @@
+{
+  "change_id": "AFR2-20261030-19",
+  "module_status": {
+    "web": "source-uncompiled-unverified",
+    "atmega": "unchanged",
+    "esp": "unchanged",
+    "loader": "unchanged",
+    "cad": "unchanged"
+  },
+  "executed_checks": [],
+  "review": "manual read of shared progress state, renderer readiness callback, input gating/cancellation and retry paths",
+  "policy": "model asset ready AND own scene/context ready AND common motor permission before physical input; no automatic resume",
+  "wire_changed": false,
+  "new_downloads": false,
+  "resources": "reuses ModelAssetProgress/ProgressGLTFLoader/cache; no raster or model asset edits",
+  "files": [
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/manual/ManualDriveOverlay.tsx",
+      "sha256": "d44e95fce5721e850f6161b86dbe58714ee2b70f050799c408cdf9e2c1754ea7",
+      "prior_authors": "retained; previous changes preserved"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/manual/ManualDriveModel.tsx",
+      "sha256": "e8c7891c6c9347e12b6a33c2cf46c54b1d5e0f87ed464c8f9dbd983a220828fc",
+      "prior_authors": "retained; previous changes preserved"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/docs/DocsPage.tsx",
+      "sha256": "e15fb01a63a7f54b4d10f0d9595e26f756f38da2c15d527e117aa8014a8497db",
+      "prior_authors": "retained; previous changes preserved"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/TOUCH_MODEL_READY_19.md",
+      "sha256": "59a76b9946f3029a2a89e308e11b768f0e734d4ee0e68453577bfb7ea3c0040e",
+      "prior_authors": "retained; previous changes preserved"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/changes/2026-10-30-19-touch-model-ready.md",
+      "sha256": "bff82404cd4b1785474505b2095af67044314c79c84a98bec5e68475b4a211e4",
+      "prior_authors": "retained; previous changes preserved"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/overlays/connections.json",
+      "sha256": "e06a95bfc56b15793c6d9a17452c9173f316571c2e7005ed4af4fae8ab6d7127",
+      "prior_authors": "retained; previous changes preserved"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/README.md",
+      "sha256": "6407100d43211bbf4b77185975ab12bc58b7a477c25de3721bdbcf680446f970",
+      "prior_authors": "retained; previous changes preserved"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/CHANGELOG.md",
+      "sha256": "55c0ae02b93a25dffdf9770d857981ccd858c252700ee9aeb00a6a6bfb882163",
+      "prior_authors": "retained; previous changes preserved"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/INFORME_ADAPTACION.md",
+      "sha256": "73944a38bff26a2f5c74ac6a2bac3385adda1c9765c610ae8641c9fc0f190d85",
+      "prior_authors": "retained; previous changes preserved"
+    },
+    {
+      "path": "INFORME_MAESTRO.md",
+      "sha256": "afb7e66710ad2abbcf87bb9524be4fcb7cce5fac73b5efd36a221e2d1c143da0",
+      "prior_authors": "retained; previous changes preserved"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/MANUAL_TOUCH_PERMISSIONS_18.md",
+      "sha256": "c99b8eeb71b1ff3a8e0c0aa10fa2b7ae2608254f17f0fa3519d22395f2e56684",
+      "prior_authors": "retained; previous changes preserved"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/changes/2026-10-30-18-manual-touch-permissions.md",
+      "sha256": "eb313e74933be67fb56c84e0eb770474541b13b75fee049db08573acc1bb95b5",
+      "prior_authors": "retained; previous changes preserved"
+    }
+  ]
+}

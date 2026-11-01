@@ -1,0 +1,304 @@
+{
+  "schema": "afr2-adaptations-1",
+  "changeId": "AFR2-20261029-26",
+  "authorship": "Koba Chajchir request and existing authors preserved. Own AFR2 additions by Codex; no reference code copied or edited.",
+  "verification": "Source edits and manual source reading only. No tests, compilation, validators, OLED generator, browser, package promotion, COM, upload or physical checks.",
+  "concurrentEdits": "Workspace contained prior modifications. Hashes identify the current source snapshot, not exclusive authorship or an isolated diff.",
+  "resourceStatus": "No new fonts or bitmap resources. AVR generic renderer and TS counterpart use existing resources. Generator is pending authorized execution.",
+  "moduleStatus": {
+    "atmega": "source-only-uncompiled-runtime-unverified",
+    "esp": "source-only-uncompiled-runtime-unverified",
+    "web": "source-only-generator-build-promotion-pending",
+    "hardware": "mounting-and-calibration-unverified"
+  },
+  "files": [
+    {
+      "file": "AutoFinalRobo2-Atmega/include/afr2_product.h",
+      "sha256": "b199c9c305a7e983e1a2623e7d228aea258e968ec6f587aa55e3192e56c4cf3c",
+      "normalization": "UTF8 text LF",
+      "adaptation": "ADC ownership/nominal battery voltage, EX01v9 reply, menu/action/snapshot and source status"
+    },
+    {
+      "file": "AutoFinalRobo2-Atmega/include/afr2_menu_catalog.h",
+      "sha256": "ec744b5641790e36cff4624e02bd9b1f97b5ac003c576097a3bbfd3d0daba73e",
+      "normalization": "UTF8 text LF",
+      "adaptation": "ADC ownership/nominal battery voltage, EX01v9 reply, menu/action/snapshot and source status"
+    },
+    {
+      "file": "AutoFinalRobo2-Atmega/src/platform/afr2_sensors.c",
+      "sha256": "106b6dac702de1a36c6ffed099d3267470cb73473545351cc475e43b4da24d76",
+      "normalization": "UTF8 text LF",
+      "adaptation": "ADC ownership/nominal battery voltage, EX01v9 reply, menu/action/snapshot and source status"
+    },
+    {
+      "file": "AutoFinalRobo2-Atmega/src/services/afr2_app.c",
+      "sha256": "976711199e98973037d112eca1073643c8a2a6a23e137a83cb7648c215fba419",
+      "normalization": "UTF8 text LF",
+      "adaptation": "ADC ownership/nominal battery voltage, EX01v9 reply, menu/action/snapshot and source status"
+    },
+    {
+      "file": "AutoFinalRobo2-Atmega/src/services/afr2_app_wire.c",
+      "sha256": "83d6ce53af473817f1bbd73c139afb141a0e5def3cf215124c9b771270a6ac6d",
+      "normalization": "UTF8 text LF",
+      "adaptation": "ADC ownership/nominal battery voltage, EX01v9 reply, menu/action/snapshot and source status"
+    },
+    {
+      "file": "AutoFinalRobo2-Atmega/src/ui/afr2_screens.c",
+      "sha256": "993e90a34ab4a527d2f9cd91723bc4e83d6e795e5c9a6c5bfff951781846b07b",
+      "normalization": "UTF8 text LF",
+      "adaptation": "ADC ownership/nominal battery voltage, EX01v9 reply, menu/action/snapshot and source status"
+    },
+    {
+      "file": "AutoFinalRobo2-Atmega/src/ui/afr2_menu_catalog.c",
+      "sha256": "3eb3e73165f51d71a43f8a97cbd9f55f1a5b14b156492569333b6d1b743d76cd",
+      "normalization": "UTF8 text LF",
+      "adaptation": "ADC ownership/nominal battery voltage, EX01v9 reply, menu/action/snapshot and source status"
+    },
+    {
+      "file": "AutoFinalRobo2-Atmega/README.md",
+      "sha256": "7b631ed53c9c8830646d344b386d8366d90a3c6274d2e2b40f641273e1931948",
+      "normalization": "UTF8 text LF",
+      "adaptation": "ADC ownership/nominal battery voltage, EX01v9 reply, menu/action/snapshot and source status"
+    },
+    {
+      "file": "AutoFinalRobo2-Atmega/INFORME_ADAPTACION.md",
+      "sha256": "5559ab87bd18b21a7078d1588d8a48bd8961e027d5730bb85bd49425d18d7f20",
+      "normalization": "UTF8 text LF",
+      "adaptation": "ADC ownership/nominal battery voltage, EX01v9 reply, menu/action/snapshot and source status"
+    },
+    {
+      "file": "AutoFinalRobo2-Atmega/src/ui/INFORME_CARPETA.md",
+      "sha256": "92124762e5c05f5c58f82cbacc5cb10925d850bc41c99bd7c26f7e76f721d17f",
+      "normalization": "UTF8 text LF",
+      "adaptation": "ADC ownership/nominal battery voltage, EX01v9 reply, menu/action/snapshot and source status"
+    },
+    {
+      "file": "AutoFinalRobo2-Atmega/src/services/INFORME_CARPETA.md",
+      "sha256": "67258f9a94355e40d757395f3b324b9b31b9d0c56303a580cb4add7c82e2562d",
+      "normalization": "UTF8 text LF",
+      "adaptation": "ADC ownership/nominal battery voltage, EX01v9 reply, menu/action/snapshot and source status"
+    },
+    {
+      "file": "AutoFinalRobo2-ESP/src/mega_link.cpp",
+      "sha256": "577956c0aed40bc646539e6eca0880b580dd5b00c79c4dc25269f83d195a649d",
+      "normalization": "UTF8 text LF",
+      "adaptation": "Battery command encoding, reply validation/translation and negotiated capability; source status"
+    },
+    {
+      "file": "AutoFinalRobo2-ESP/src/broker_product.cpp",
+      "sha256": "b36d922ec8fe24016c287f5c2bb57e48f7bd034c9374170a0bfa1fc2518654d8",
+      "normalization": "UTF8 text LF",
+      "adaptation": "Battery command encoding, reply validation/translation and negotiated capability; source status"
+    },
+    {
+      "file": "AutoFinalRobo2-ESP/src/broker.cpp",
+      "sha256": "d18972a3d1a647de70a007c808f7452580f3efa61d0482c956af6247950bf02a",
+      "normalization": "UTF8 text LF",
+      "adaptation": "Battery command encoding, reply validation/translation and negotiated capability; source status"
+    },
+    {
+      "file": "AutoFinalRobo2-ESP/README.md",
+      "sha256": "80a9bd4017e34c731477a131077a6d8837ca903b3240eb16975a2e06eac1f246",
+      "normalization": "UTF8 text LF",
+      "adaptation": "Battery command encoding, reply validation/translation and negotiated capability; source status"
+    },
+    {
+      "file": "AutoFinalRobo2-ESP/INFORME_ADAPTACION.md",
+      "sha256": "51e4dc989c92a5029aa926eb10435c4ba7faa2fb5d9e7ef1a80d807357017c38",
+      "normalization": "UTF8 text LF",
+      "adaptation": "Battery command encoding, reply validation/translation and negotiated capability; source status"
+    },
+    {
+      "file": "AutoFinalRobo2-ESP/src/INFORME_CARPETA.md",
+      "sha256": "a6143601feac8c5d76082f985104bd435fbe0ac3108b1fc0311af889e3898554",
+      "normalization": "UTF8 text LF",
+      "adaptation": "Battery command encoding, reply validation/translation and negotiated capability; source status"
+    },
+    {
+      "file": "AutoFinalRobo2-Web/src/protocol/battery.ts",
+      "sha256": "5963621af9e624bfbb0023df48bcec492dfa23efc1e438a729af0e7ef1095632",
+      "normalization": "UTF8 text LF",
+      "adaptation": "Battery shared reader/parser, voltage icon/pill/details, restart confirmation and linked OLED menu/preview; source status"
+    },
+    {
+      "file": "AutoFinalRobo2-Web/src/protocol/wsEnvelope.ts",
+      "sha256": "e7465391f40901babc331d391f8473fb451fd90cf4d1fe46108d6836fcde421e",
+      "normalization": "UTF8 text LF",
+      "adaptation": "Battery shared reader/parser, voltage icon/pill/details, restart confirmation and linked OLED menu/preview; source status"
+    },
+    {
+      "file": "AutoFinalRobo2-Web/src/features/connection/BatteryStatus.tsx",
+      "sha256": "881caf53ce8f4515b3c0821555cebcfc6cbf3515918fadab503b57e706dbda40",
+      "normalization": "UTF8 text LF",
+      "adaptation": "Battery shared reader/parser, voltage icon/pill/details, restart confirmation and linked OLED menu/preview; source status"
+    },
+    {
+      "file": "AutoFinalRobo2-Web/src/features/connection/ConnectionContext.tsx",
+      "sha256": "4197745a53706dcf52dd0890bef64df3f1465fa4a67da20324f7985ca7a41bbd",
+      "normalization": "UTF8 text LF",
+      "adaptation": "Battery shared reader/parser, voltage icon/pill/details, restart confirmation and linked OLED menu/preview; source status"
+    },
+    {
+      "file": "AutoFinalRobo2-Web/src/features/connection/SystemPanel.tsx",
+      "sha256": "47f5414a92969be1d5d2ed1610fedf9f26863d5be2113905f4454a2ec341bb97",
+      "normalization": "UTF8 text LF",
+      "adaptation": "Battery shared reader/parser, voltage icon/pill/details, restart confirmation and linked OLED menu/preview; source status"
+    },
+    {
+      "file": "AutoFinalRobo2-Web/src/components/navigation/RouteNav.tsx",
+      "sha256": "4ca4f91bc56434f4fa14d40f7249d39b257f0661b74ff759456c585edf7db21c",
+      "normalization": "UTF8 text LF",
+      "adaptation": "Battery shared reader/parser, voltage icon/pill/details, restart confirmation and linked OLED menu/preview; source status"
+    },
+    {
+      "file": "AutoFinalRobo2-Web/src/features/oled/firmwareRenderer.ts",
+      "sha256": "f9786a4b5f7cf223f25e581100593fee6568419fdeb042fbc1bdcb5e5289b753",
+      "normalization": "UTF8 text LF",
+      "adaptation": "Battery shared reader/parser, voltage icon/pill/details, restart confirmation and linked OLED menu/preview; source status"
+    },
+    {
+      "file": "AutoFinalRobo2-Web/src/features/oled/FirmwareLibraryPreview.tsx",
+      "sha256": "d34e18ec3134e9df1ae90861f0f252fb8d1872bf12848400d28effe3c67c834c",
+      "normalization": "UTF8 text LF",
+      "adaptation": "Battery shared reader/parser, voltage icon/pill/details, restart confirmation and linked OLED menu/preview; source status"
+    },
+    {
+      "file": "AutoFinalRobo2-Web/src/features/oled/firmwareRenderer.sources.json",
+      "sha256": "e5669e24eda77573109d899df6c72b03f3fd528bf45c5b0a31f58d256d932855",
+      "normalization": "UTF8 text LF",
+      "adaptation": "Battery shared reader/parser, voltage icon/pill/details, restart confirmation and linked OLED menu/preview; source status"
+    },
+    {
+      "file": "AutoFinalRobo2-Web/src/styles/sensors.css",
+      "sha256": "c210845ab8f005a5529cac8001c94d7ff1ccfa4907092e99208b53b16f6d555c",
+      "normalization": "UTF8 text LF",
+      "adaptation": "Battery shared reader/parser, voltage icon/pill/details, restart confirmation and linked OLED menu/preview; source status"
+    },
+    {
+      "file": "AutoFinalRobo2-Web/src/features/docs/DocsPage.tsx",
+      "sha256": "45f19fb2c381890a8327a295d3dd1e1ec931394cb6f0054875878ff62d6acc13",
+      "normalization": "UTF8 text LF",
+      "adaptation": "Battery shared reader/parser, voltage icon/pill/details, restart confirmation and linked OLED menu/preview; source status"
+    },
+    {
+      "file": "AutoFinalRobo2-Web/README.md",
+      "sha256": "c1e654f8297fbaec8f32c0981547addb9ea5d86f005dc00b93f561be8d7b6930",
+      "normalization": "UTF8 text LF",
+      "adaptation": "Battery shared reader/parser, voltage icon/pill/details, restart confirmation and linked OLED menu/preview; source status"
+    },
+    {
+      "file": "AutoFinalRobo2-Web/INFORME_ADAPTACION.md",
+      "sha256": "af94ff6fe92209d7b5a3c652e4aa1e8ed251fb0fe246cbce55365d6a584cf2f2",
+      "normalization": "UTF8 text LF",
+      "adaptation": "Battery shared reader/parser, voltage icon/pill/details, restart confirmation and linked OLED menu/preview; source status"
+    },
+    {
+      "file": "AutoFinalRobo2-Web/src/INFORME_CARPETA.md",
+      "sha256": "80d0580d378a33ea5e92d2fbfd01fade0bffebe318e27e7f4b694a0035eae158",
+      "normalization": "UTF8 text LF",
+      "adaptation": "Battery shared reader/parser, voltage icon/pill/details, restart confirmation and linked OLED menu/preview; source status"
+    },
+    {
+      "file": "AutoFinalRobo2-Contracts/contracts/afr2_battery_wire.h",
+      "sha256": "46b6c6778592c69b137a6086dba563c15f610d6c958d7b79051ab747535209dc",
+      "normalization": "UTF8 text LF",
+      "adaptation": "Own AFR2 contract/catalogue/navigation/pinout/source-status documentation"
+    },
+    {
+      "file": "AutoFinalRobo2-Contracts/contracts/afr2_product_wire.h",
+      "sha256": "5ea050e4dc9f303ac2fc26dd767db789eec59630bc0f63e1ab3fa03a725c3ab9",
+      "normalization": "UTF8 text LF",
+      "adaptation": "Own AFR2 contract/catalogue/navigation/pinout/source-status documentation"
+    },
+    {
+      "file": "AutoFinalRobo2-Contracts/contracts/BATTERY_MEASUREMENT_9.md",
+      "sha256": "924f6f3e5374023d448de5acc143860628fb9ad2da3b7cd7af99cbc9964d528e",
+      "normalization": "UTF8 text LF",
+      "adaptation": "Own AFR2 contract/catalogue/navigation/pinout/source-status documentation"
+    },
+    {
+      "file": "AutoFinalRobo2-Contracts/contracts/commands.json",
+      "sha256": "85d002f914fd066206e7435959beec6c0b9c2f69da7dd818c14b1617c72a06b9",
+      "normalization": "UTF8 text LF",
+      "adaptation": "Own AFR2 contract/catalogue/navigation/pinout/source-status documentation"
+    },
+    {
+      "file": "AutoFinalRobo2-Contracts/documentation/screens.json",
+      "sha256": "87d726cf1d214d3deedc702fa9db4ec8211e88afd1764ef6cbcede79bb4ba536",
+      "normalization": "UTF8 text LF",
+      "adaptation": "Own AFR2 contract/catalogue/navigation/pinout/source-status documentation"
+    },
+    {
+      "file": "AutoFinalRobo2-Contracts/documentation/overlays/connections.json",
+      "sha256": "f4ef824cc3bce1f511a4d6056726e2517a9db391ed7ae3a0a72c18e1eb06d9f4",
+      "normalization": "UTF8 text LF",
+      "adaptation": "Own AFR2 contract/catalogue/navigation/pinout/source-status documentation"
+    },
+    {
+      "file": "AutoFinalRobo2-Contracts/documentation/MENU_PLAN.md",
+      "sha256": "f4acdc101372207620153f2b4f87c2e72ada3b5c3f753944da6b7d20889e44c9",
+      "normalization": "UTF8 text LF",
+      "adaptation": "Own AFR2 contract/catalogue/navigation/pinout/source-status documentation"
+    },
+    {
+      "file": "AutoFinalRobo2-Contracts/documentation/NAVIGATION.md",
+      "sha256": "b7a57cc1d9ab6db93ef1528a68a0158d20557d6d9d0a5faf70c55c4aba0abefa",
+      "normalization": "UTF8 text LF",
+      "adaptation": "Own AFR2 contract/catalogue/navigation/pinout/source-status documentation"
+    },
+    {
+      "file": "AutoFinalRobo2-Contracts/documentation/SCREEN_SYSTEM.md",
+      "sha256": "3908b9cb5c2b6a689c8bf25f8cae6242d1dd3d7263c791248e02f90f7cf580f5",
+      "normalization": "UTF8 text LF",
+      "adaptation": "Own AFR2 contract/catalogue/navigation/pinout/source-status documentation"
+    },
+    {
+      "file": "AutoFinalRobo2-Contracts/hardware/PINOUT.md",
+      "sha256": "f6ba6e53a665fc86b0b2d1905b317888e405267d418577cd57c9f767132d4a25",
+      "normalization": "UTF8 text LF",
+      "adaptation": "Own AFR2 contract/catalogue/navigation/pinout/source-status documentation"
+    },
+    {
+      "file": "AutoFinalRobo2-Contracts/hardware/PINOUT_DEL_AUTO.json",
+      "sha256": "a721e2ffab261e0d270db435e5db2f43d18b82b50caa897ba02a86ee68285912",
+      "normalization": "UTF8 text LF",
+      "adaptation": "Own AFR2 contract/catalogue/navigation/pinout/source-status documentation"
+    },
+    {
+      "file": "AutoFinalRobo2-Contracts/hardware/MEDICION_BATERIA.md",
+      "sha256": "c6935d5008cb7bfb45399aa5bc17d029a06ca915a92888196ddc8a13f177e27b",
+      "normalization": "UTF8 text LF",
+      "adaptation": "Own AFR2 contract/catalogue/navigation/pinout/source-status documentation"
+    },
+    {
+      "file": "AutoFinalRobo2-Contracts/docs/ESTADO_IMPLEMENTACION.md",
+      "sha256": "7f99511f5e3d0ea2af8f1aba446c72a9335cab39996031c848325bc2bdb55203",
+      "normalization": "UTF8 text LF",
+      "adaptation": "Own AFR2 contract/catalogue/navigation/pinout/source-status documentation"
+    },
+    {
+      "file": "AutoFinalRobo2-Contracts/changes/2026-10-29-26-battery-system-restart-confirm.md",
+      "sha256": "a5640fb1f19989887ff32634f41fafd6a35e070da08e03a3672cb3ec8f248878",
+      "normalization": "UTF8 text LF",
+      "adaptation": "Own AFR2 contract/catalogue/navigation/pinout/source-status documentation"
+    },
+    {
+      "file": "AutoFinalRobo2-Contracts/README.md",
+      "sha256": "8e69a3213d08a4f1d4c1af6f2779c74ce018a8b214e75b62f5d75e1fa86967b4",
+      "normalization": "UTF8 text LF",
+      "adaptation": "Own AFR2 contract/catalogue/navigation/pinout/source-status documentation"
+    },
+    {
+      "file": "AutoFinalRobo2-Contracts/INFORME_ADAPTACION.md",
+      "sha256": "0293c03ee4f7aa0fd04db54e640367582a32a03a42adc81db930b932e992da39",
+      "normalization": "UTF8 text LF",
+      "adaptation": "Own AFR2 contract/catalogue/navigation/pinout/source-status documentation"
+    },
+    {
+      "file": "AutoFinalRobo2-Contracts/CHANGELOG.md",
+      "sha256": "165dd94af20202d4eeb60807e2f8186ff7812a8240679739abae1cdb2b559d4f",
+      "normalization": "UTF8 text LF",
+      "adaptation": "Own AFR2 contract/catalogue/navigation/pinout/source-status documentation"
+    }
+  ]
+}

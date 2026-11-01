@@ -122,11 +122,11 @@ namespace AFR2Loader
                 var fileName = new TextBox { Text = name + ".json", Dock = DockStyle.Fill }; layout.Controls.Add(fileName, 0, 1);
                 layout.Controls.Add(new Label { Text = "Se guarda en la biblioteca local:\r\n" + profilesDirectory, Dock = DockStyle.Fill, AutoEllipsis = true }, 0, 2);
                 var buttons = new FlowLayoutPanel { Dock = DockStyle.Fill, FlowDirection = FlowDirection.RightToLeft };
-                var save = new Button { Text = "Guardar", Width = 110, Height = 32, DialogResult = DialogResult.OK };
-                var back = new Button { Text = "Cancelar", Width = 110, Height = 32, DialogResult = DialogResult.Cancel };
+                var save = new ActionButton { Text = "Guardar", Width = 110, Height = 32, DialogResult = DialogResult.OK };
+                var back = new ActionButton { Text = "Cancelar", Width = 110, Height = 32, DialogResult = DialogResult.Cancel };
                 buttons.Controls.Add(save); buttons.Controls.Add(back); layout.Controls.Add(buttons, 0, 3);
                 dialog.Controls.Add(layout); dialog.AcceptButton = save; dialog.CancelButton = back;
-                if (dialog.ShowDialog(this) != DialogResult.OK) return false;
+                if (ShowStyledDialog(dialog) != DialogResult.OK) return false;
                 name = fileName.Text.Trim();
                 if (String.IsNullOrEmpty(name) || name.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0 || name.EndsWith(".", StringComparison.Ordinal))
                     throw new ArgumentException("Escribí un nombre de archivo válido, sin carpetas ni puntos al final.");
@@ -165,7 +165,7 @@ namespace AFR2Loader
             {
                 using (var dialog = new OpenFileDialog { Filter = "Perfil AFR2 (*.json)|*.json" })
                 {
-                    if (dialog.ShowDialog(this) != DialogResult.OK) return;
+                    if (ShowStyledDialog(dialog) != DialogResult.OK) return;
                     Profile imported = Profile.FromJson(File.ReadAllText(dialog.FileName));
                     if (!CanLeaveProfile()) return;
                     profile = imported; profilePath = null; savedProfileJson = null;

@@ -1,3 +1,9 @@
+> **AFR2-20261029-27 — fuente vigente:** ATmega/ESP0.11.0 y Web0.4.0; carrusel de controles, largo al soltar con retorno contextual, radar4/2/1/0.5m/rastro/editor compartido, IR compactos, PWM manual independiente de odometría/HC y atención prioritaria de sesión WS. EEPROMv5 / EX01v9, preservando batería26. Sin compilar, validadores, flasheos, pruebas físicas ni promoción Web. Recursos OLED copiados solamente; memoria y aceptación pendientes. [Contrato y límites](../AutoFinalRobo2-Contracts/contracts/QUICK_RADAR_ACTUATORS_9.md).
+
+> **AFR2-20261029-26:** batería A5/divisor10k/10k/104, Sistema → Batería y copia Web, puente EX01v9, pill con icono por voltaje y confirmación antes de reiniciar ESP/ATmega desde Web. [Contrato y estados](../AutoFinalRobo2-Contracts/contracts/BATTERY_MEASUREMENT_9.md). Solo fuente: sin compilar, generar catálogo OLED, probar, promover paquete ni cargar. Memoria/calibración/paridad físicas pendientes; ambas placas y Web requieren despliegue conjunto autorizado.
+
+> **AFR2-20261029-19 compilado y ATmega cargado:** pedido humano29/10/2026. ATmega/ESP/Web esp y LittleFS completados; promoción local Web a ESP/data/dist. Carga COM8 final13:32:50,80066bytes escritos/verificados, avrdude exit0. ESP/LittleFS sin cargar. SRAM estática7085bytes; sin prueba física/dinámica. Evidencia en AutoFinalRobo2-Contracts/documentation/builds/2026-10-29-19/README.md. Estados inferiores sin build/carga son históricos.
+
 > **Build AFR2-20261027-10:** firmware ESP y Web perfil esp compilados;8activos/1571104bytes gzip promovidos a data/dist e imagen LittleFS3121152bytes generada. [Evidencia](../AutoFinalRobo2-Contracts/documentation/builds/2026-10-27-10/README.md), [carga USB/COM16](../AutoFinalRobo2-Contracts/hardware/CARGA_USB_COM16.md). Sin flasheo ni identificación de jumpers/flash física. Candidato4MiB/FS3MiB nominal conservado; estados inferiores históricos.
 
 > **Compilación AFR2-20261025-14 autorizada y completada:** firmware ATmega (producto/comunicación/biblioteca), ESP y Web full compilan sin errores ni advertencias finales. Firmware0.10.0/EX01v8, Web0.3.0. [Evidencia](../AutoFinalRobo2-Contracts/documentation/builds/2026-10-25-14/README.md). Sin tests, navegador ni flasheos; paquete Web local full generado, **ESP/data/dist conserva el paquete anterior**. La SRAM estática no certifica pila/ISR ni hardware. Estados previos inferiores históricos.
@@ -96,3 +102,8 @@ AutoFinalRobo2-Contracts/changes/2026-10-24-01-firmware-web-integration.md.
 
 
 
+
+
+## AFR2-20261029-19 — OLED táctil y visor bajo demanda
+
+Fuente adaptada con Web/ATmega/ESP: overlay scrim+blur en modales, Volver por ítem del menú, ScreenCode0x030035 con aviso/bitmap/chevrones y suscripción explícita a capturas/metadatos. Contrato en AutoFinalRobo2-Contracts/contracts/TOUCH_OLED_19.md; procedencia por archivo en provenance/touch-oled-20261029-19.json de Contracts. El rumbo es solicitado, no medido, y no agrega giro físico. Sin tests, compilación, validadores, navegador, ejecución del generador OLED, promoción ESP ni flasheo de esta entrega. Memoria/paridad/latencia físicas pendientes.

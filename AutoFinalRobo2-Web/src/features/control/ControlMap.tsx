@@ -1,3 +1,4 @@
+import { ModelAssetProgress } from '../../components/three/ModelAssetProgress';
 import { Suspense, lazy, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { Disclosure } from '../../components/ui/Disclosure';
 import { RenderBoundary } from '../../components/ui/RenderBoundary';
@@ -57,6 +58,7 @@ export function ControlMap({ requestedMotion, onViewChange, simulationFeed = nul
       <div className="afr2-map-tools"><button type="button" aria-label="Alejar mapa" disabled={zoom <= minZoom} onClick={() => changeZoom(.8)}>−</button><span>{Math.round(zoom * 100)}%</span><button type="button" aria-label="Acercar mapa" disabled={zoom >= 2.5} onClick={() => changeZoom(1.25)}>+</button><button type="button" disabled={!pose} onClick={() => { onViewChange(); if (pose) setCenter({ xMm: pose.xMm, yMm: pose.yMm }); }}>Centrar</button>{waypoints && <button type="button" disabled={!waypoints.length} onClick={fitRoute}>Ver ruta</button>}</div>
     </div>
     <div className="afr2-control-map__viewport" data-picking={!!onSelectPoint && !pickingDisabled}><RenderBoundary key={`${view}-${viewerKey}`} fallback={fallback}><Suspense fallback={<div className="afr2-map-loading" role="status">Cargando modelo…</div>}><Scene {...scene} fallback={fallback} /></Suspense></RenderBoundary><div className="afr2-map-caption"><span>1 unidad = 1 m · Cuadricula de 0,5 m</span></div></div>
+    <ModelAssetProgress label="Modelo del auto" />
     {routePanel && <div className="afr2-map-route">{routePanel}</div>}
     {onSelectPoint && !compact && <p className="afr2-map-command">{pickingDisabled ? 'Pausa la simulacion para agregar destinos.' : 'Toca el suelo para agregar un destino a la lista · Ajuste de 0,1 m. Tambien podes ingresar coordenadas con el teclado.'}</p>}
     {sidebarPanel ? <aside className="afr2-map-sidebar" aria-label="Estado y controles de la simulacion">{readings}{sidebarPanel}</aside> : readings}

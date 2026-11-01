@@ -1,3 +1,5 @@
+> **Montaje confirmado por el usuario, AFR2-20261029-15:** motores y Hall ya cableados. Se corrige hall_wired en defaults/migración EEPROMv3; no se cambian pines ni se presume calibración. [Contrato de migración](../contracts/EEPROM_HALL_MIGRATION_3.md).
+
 > **Build AFR2-20261027-10:** captura Hall habilitada por pedido humano y compilada. Preferencia Hall conectado/EEPROM conservada; activarla en menú si estaba0. Aún sin flasheo. [Evidencia](../documentation/builds/2026-10-27-10/README.md), [guía de carga](CARGA_USB_COM16.md). La nota de Hall deshabilitado en la hoja PDF07 describe esa entrega anterior.
 
 # Pinout del auto
@@ -52,6 +54,10 @@ Los cuatro VCC comparten +5 V y los cuatro GND comparten masa. OSOYOO advierte v
 Ruta de potencia del manual; VOUT no se considera una salida regulada de 5 V. VT mide tensión; no es un GPIO del Mega. GND lógico común; no usar una salida M- del puente H como masa.
 
 ## Sensores de línea, ultrasonido y servo
+
+**Fuente AFR2-20261030-03:** IR1..IR5 conservan A4..A0 y pasan por pedido humano a muestreo ADC10 (0..1023), `line_kind=2`. Batería conserva A5. Journal6 migra configuración anterior en RAM; sin calibración ni prueba física de la barra. [Contrato ADC](../contracts/EEPROM_IR_ADC_6.md).
+
+**Fuente AFR2-20261029-26 — batería:** A5/PF5/ADC5 queda asignado al nodo del divisor10k/10k, con capacitor104/100nF a GND. Tomar batería desde voltímetro después de llave, corte comunicado por usuario; no llevar BAT+ directo a A5 ni usar VT como salida ya adaptada sin identificar. Sistema → Batería inicia adquisición. Fuente sin compilar/cargar ni probar físicamente; PDF07 aún no actualizado. [Contrato9](../contracts/BATTERY_MEASUREMENT_9.md).
 
 | Elemento | Señal | Pin Mega / alimentación |
 | --- | --- | --- |

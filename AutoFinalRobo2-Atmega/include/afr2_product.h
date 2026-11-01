@@ -1,3 +1,4 @@
+/* AFR2-20261029-27: quick controls/radar/PWM/WS integration; prior authors retained. */
 /* AFR2-20261023-19. Own AVR product services. No F4 System/HAL/MPU. */
 #ifndef AFR2_PRODUCT_H
 #define AFR2_PRODUCT_H
@@ -6,17 +7,22 @@
 #include "afr2_link.h"
 #include "afr2_sequence.h"
 #include "afr2_sensor_head.h"
-#define AFR2_CONFIG_VERSION 1u
+#include "afr2_battery_wire.h"
+#include "afr2_geometry.h"
+#define AFR2_CONFIG_VERSION 8u /* AFR2-20261030-07: v8 adds long press and servo preference to v7 payload. */
 #define AFR2_NOTICE_MS 3000u
-enum { AFR2_IDLE, AFR2_MANUAL, AFR2_LINE, AFR2_WHEEL_TEST, AFR2_GOTO, AFR2_FAULT, AFR2_SEQUENCE };
+enum { AFR2_IDLE, AFR2_MANUAL, AFR2_LINE, AFR2_WHEEL_TEST, AFR2_GOTO, AFR2_FAULT, AFR2_SEQUENCE, AFR2_PWM_MANUAL };
 enum { AFR2_SOURCE_NONE, AFR2_SOURCE_LOCAL, AFR2_SOURCE_WEB };
 enum { AFR2_OK, AFR2_BAD, AFR2_UNAVAILABLE, AFR2_DENIED, AFR2_BUSY, AFR2_FAILED };
 enum { AFR2_WIFI_STATUS=1, AFR2_WIFI_SCAN, AFR2_WIFI_WEB_DRAFT,
-       AFR2_WIFI_LOCAL_DRAFT, AFR2_WIFI_CONNECT, AFR2_WIFI_CANCEL, AFR2_WIFI_RETRY, AFR2_WIFI_REBOOT_ESP };
+       AFR2_WIFI_LOCAL_DRAFT, AFR2_WIFI_CONNECT, AFR2_WIFI_CANCEL, AFR2_WIFI_RETRY, AFR2_WIFI_REBOOT_ESP, AFR2_WIFI_DISCONNECT, AFR2_WIFI_CHANGE_MODE, AFR2_WIFI_READ_CREDENTIALS };
 typedef struct {
     uint8_t line_kind, line_invert, line_calibrated, motor_signs, motor_ready;
     uint8_t hall_wired, hall_signs, geometry_ready, encoder_steps, encoder_invert, contrast, rotation;
     uint8_t pwm_limit, ramp_step;
+    uint16_t long_press_ms;
+    uint8_t servo_inverted;
+    uint8_t radar_range,radar_trace; /* v5: 0..3=4/2/1/0.5m; trace 0/1 */
     uint16_t line_threshold[5], wheel_mm, radius_sum_mm, speed_limit, test_ms;
     uint16_t kp, ki, kd; /* Q8 fixed point, common defaults; independent accumulators */
     uint16_t line_kp, line_speed;
@@ -26,6 +32,10 @@ typedef struct {
     uint16_t line_raw[5], distance_mm;
     uint8_t line_bits, line_valid, ultrasonic_valid, echo_error, hall_available;
     uint32_t line_ms, ultrasonic_ms, hall_ms;
+    /* Battery is opt-in through Measure; no inferred wiring or charge %. */
+    uint32_t battery_ms,battery_sequence;
+    uint16_t battery_raw;
+    uint8_t battery_state;
     int32_t counts[4];
 } Afr2Sensors;
 typedef struct {
@@ -33,10 +43,13 @@ typedef struct {
     uint8_t op, pending, claimed, available, mode, sta_connected, draft_ready, state;
     uint8_t network_count, selected_network,requested_mode;
     int16_t rssi;
+    uint8_t network_security[8],security,ap_security,ws_clients,details_valid;
+    uint32_t details_ms;
+    uint8_t mask[4],gateway[4];
     char ssid[33], ip[16], ap_ip[16], networks[8][33];
     char draft_ssid[33], password[64];
     char esp_version[16],web_version[16];
-    uint8_t credential_length;
+    uint8_t credential_length, credentials_visible;
     uint32_t display_boot,display_event,display_ms;
     uint16_t display_revision;
     uint8_t display_page,display_ready,ap_active,ap_clients,web_ready;
@@ -71,6 +84,7 @@ uint8_t Afr2Product_HaltMotion(void *ctx); /* transport supervision preserves au
 void Afr2Product_Snapshot(void *ctx,uint32_t now,Afr2LinkSnapshot *out);
 void Afr2Product_WebPulse(Afr2Product *p,uint16_t age);
 uint8_t Afr2Product_Drive(Afr2Product *p,int16_t vx,int16_t vy,int16_t wz,uint16_t ttl);
+uint8_t Afr2Product_DrivePwm(Afr2Product *p,int16_t forward,int16_t strafe,int16_t turn,uint16_t ttl);
 uint8_t Afr2Product_Wheel(Afr2Product *p,uint8_t wheel,int16_t pwm,uint16_t duration);
 uint8_t Afr2Product_StartLine(Afr2Product *p);
 uint8_t Afr2Product_StartGoto(Afr2Product *p,int32_t x,int32_t y);
@@ -87,6 +101,9 @@ void Afr2Motor_Stop(void);
 void Afr2Motor_Write(const int16_t pwm[4],uint8_t signs);
 void Afr2Sensors_Init(void);
 void Afr2Sensors_Task(Afr2Sensors *s,const Afr2Config *c,uint32_t now);
+void Afr2Battery_Measure(Afr2Sensors *s);
+uint8_t Afr2Battery_Status(const Afr2Sensors *s,uint32_t now);
+uint16_t Afr2Battery_Millivolts(const Afr2Sensors *s);
 void Afr2Servo_Set(uint16_t pulse_us); /* 0 disables; 1000..2000 candidate */
 void Afr2Prefs_Load(Afr2Config *c,uint8_t *loaded);
 uint8_t Afr2Prefs_Save(const Afr2Config *c);

@@ -5,6 +5,7 @@
 typedef struct { int8_t rotation; bool click, menu; } Afr2UiInput;
 typedef struct {
     uint8_t ab, transitions;
+    uint16_t long_press_ms;
     int8_t partial;
     bool raw_pressed, stable_pressed, long_sent, armed;
     uint32_t changed_ms, pressed_ms;

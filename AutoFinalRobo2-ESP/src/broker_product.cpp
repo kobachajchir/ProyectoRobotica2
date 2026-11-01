@@ -1,3 +1,4 @@
+/* AFR2-20261029-27: quick controls/radar/PWM/WS integration; prior authors retained. */
 // AFR2-20261024-01. EX01 adapter. ROBO2/profile2 and Wi-Fi remain independent.
 #include "broker.h"
 #include "afr2_sequence_labels.h"
@@ -13,7 +14,15 @@ bool Broker::encodeProduct(BrokerRequest &q,JsonObjectConst p) {
     const char *c=q.command;
     auto fail=[&](){error(q,"BAD_REQUEST","Argumentos fuera del contrato EX01.");return false;};
     if(!strncmp(c,"robot.ultrasonic.",17) || !strcmp(c,"robot.ir.get") || !strncmp(c,"robot.servo.",12) || !strncmp(c,"robot.radar.",12) || !strcmp(c,"robot.screen.status"))return encodeSensors(q,p);
-    if(!strcmp(c,"system.reboot")) {
+    if(!strcmp(c,"system.battery.get") || !strcmp(c,"system.battery.measure")) {
+        q.wireCommand=AFR2_EXT_BATTERY;q.bodyLength=1;q.body[0]=!strcmp(c,"system.battery.measure");
+    } else if(!strcmp(c,"robot.screen.subscribe")) {
+        if(!p["enabled"].is<bool>())return fail();
+        q.body[0]=p["enabled"].as<bool>();
+    } else if(!strcmp(c,"robot.touch.ui")) {
+        if(!p["enabled"].is<bool>() || !number(p["direction"],0,8) || !number(p["heading"],0,23) || !number(p["powerPercent"],0,100))return fail();
+        q.wireCommand=AFR2_EXT_TOUCH_UI;q.bodyLength=4;q.body[0]=p["enabled"].as<bool>();q.body[1]=p["direction"].as<uint8_t>();q.body[2]=p["heading"].as<uint8_t>();q.body[3]=p["powerPercent"].as<uint8_t>();
+    } else if(!strcmp(c,"system.reboot")) {
         if(!p["confirm"].is<bool>() || !p["confirm"].as<bool>())return fail();
         const char *target=p["target"]|"";
         if(!strcmp(target,"atmega")){q.wireCommand=AFR2_EXT_REBOOT;q.bodyLength=1;q.body[0]=0xa5;}
@@ -21,6 +30,11 @@ bool Broker::encodeProduct(BrokerRequest &q,JsonObjectConst p) {
     } else if(!strcmp(c,"wifi.draft.submit") || !strcmp(c,"wifi.draft.cancel")) {
         if(!p["jobId"].is<uint32_t>() || !p["jobId"].as<uint32_t>())return fail();
         afr2_put_u32(q.body,p["jobId"].as<uint32_t>());
+    } else if(!strcmp(c,"robot.drive.pwm")) {
+        if(!number(p["forwardPct"],-100,100) || !number(p["strafePct"],-100,100) || !number(p["turnPct"],-100,100) || !number(p["ttlMs"],200,1000))return fail();
+        q.wireCommand=AFR2_EXT_DRIVE_PWM;q.bodyLength=12;
+        afr2_put_u16(q.body+4,(int16_t)p["forwardPct"].as<int32_t>());afr2_put_u16(q.body+6,(int16_t)p["strafePct"].as<int32_t>());
+        afr2_put_u16(q.body+8,(int16_t)p["turnPct"].as<int32_t>());afr2_put_u16(q.body+10,p["ttlMs"].as<uint16_t>());
     } else if(!strcmp(c,"robot.drive")) {
         if(!number(p["vxMmS"],-1000,1000) || !number(p["vyMmS"],-1000,1000) ||
            !number(p["wzMradS"],-3140,3140) || !number(p["ttlMs"],200,1000))return fail();
@@ -44,7 +58,7 @@ bool Broker::encodeProduct(BrokerRequest &q,JsonObjectConst p) {
         q.wireCommand=AFR2_EXT_GOTO;q.bodyLength=16;afr2_put_u32(q.body+4,p["xMm"].as<int32_t>());afr2_put_u32(q.body+8,p["yMm"].as<int32_t>());
         afr2_put_u16(q.body+12,(int16_t)p["thetaMrad"].as<int32_t>());afr2_put_u16(q.body+14,p["maxSpeedMmS"].as<uint16_t>());
     } else if(!strcmp(c,"robot.calibrate") || !strcmp(c,"robot.config.get")) {
-        if(!number(p["action"],0,56) || (!strcmp(c,"robot.calibrate") && !p["value"].is<int32_t>()))return fail();
+        if(!number(p["action"],0,87) || (!strcmp(c,"robot.calibrate") && !p["value"].is<int32_t>()))return fail();
         q.wireCommand=AFR2_EXT_CONFIG;q.bodyLength=10;q.body[4]=!strcmp(c,"robot.calibrate");q.body[5]=p["action"].as<uint8_t>();
         afr2_put_u32(q.body+6,p["value"]|0);
     } else if(!strcmp(c,"robot.preferences")) {
@@ -57,7 +71,7 @@ bool Broker::encodeProduct(BrokerRequest &q,JsonObjectConst p) {
     } else if(!strcmp(c,"robot.state")) {q.wireCommand=AFR2_EXT_STATE;
     } else if(!strcmp(c,"robot.screen.get")) {q.wireCommand=AFR2_EXT_UI_META;
     } else if(!strcmp(c,"robot.ui.action")) {
-        const char *a=p["action"]|"";uint8_t action=!strcmp(a,"rotate")?0:!strcmp(a,"select")?1:!strcmp(a,"menu")?2:255;
+        const char *a=p["action"]|"";uint8_t action=!strcmp(a,"rotate")?0:!strcmp(a,"select")?1:!strcmp(a,"menu")?2:!strcmp(a,"back")?3:255;
         if(action==255 || !number(p["delta"],-1,1) || (action==0?p["delta"].as<int>()==0:p["delta"].as<int>()!=0) || !p["revision"].is<uint32_t>())return fail();
         q.wireCommand=AFR2_EXT_UI_ACTION;q.bodyLength=6;afr2_put_u32(q.body,p["revision"].as<uint32_t>());q.body[4]=action;q.body[5]=(int8_t)p["delta"].as<int>();
     } else if(!strncmp(c,"robot.sequence.",15)) {
@@ -109,8 +123,27 @@ void Broker::publishStatus() {
         if(auto *client=ws_.client(s.id)){String data;serializeJson(f,data);if(!client->queueIsFull())client->text(data);}}
 }
 bool Broker::dispatchProduct(BrokerRequest q,uint32_t now) {
+    if(!strcmp(q.command,"robot.screen.subscribe")) {
+        auto *s=session(q.client);if(!s)return true;
+        s->screenSubscribed=q.body[0];s->screenSubscriptionAt=now;
+        if(!s->screenSubscribed)s->oledCaptured=false;
+        JsonDocument f;f["payload"]["enabled"]=s->screenSubscribed;answer(q,f);return true;
+    }
     if(!q.wireCommand)return false;
+    if(q.wireCommand==AFR2_EXT_UI_META || q.wireCommand==AFR2_EXT_UI_STATUS || q.wireCommand==AFR2_EXT_UI_ACTION) {
+        auto *s=session(q.client);
+        if(!s || !s->screenSubscribed || (uint32_t)(now-s->screenSubscriptionAt)>3500u){error(q,"CAPABILITY_UNAVAILABLE","Visor de pantalla cerrado o suscripcion vencida.");return true;}
+    }
+    if((q.wireCommand==AFR2_EXT_TOUCH_UI || (q.wireCommand==AFR2_EXT_UI_ACTION && q.body[4]==3)) && !(productFeatures_&AFR2_EXT_F_TOUCH_UI)) {
+        error(q,"CAPABILITY_UNAVAILABLE","Firmware sin control tactil OLED/Volver directo.");return true;
+    }
     if(!mega_.ready() || !productReady_ || extensionVersion_!=AFR2_EXT_VERSION){error(q,"CAPABILITY_UNAVAILABLE","ATmega aun no negocio EX01.");return true;}
+    if(q.wireCommand==AFR2_EXT_BATTERY && !(productFeatures_&AFR2_EXT_F_BATTERY)){
+        error(q,"CAPABILITY_UNAVAILABLE","Medicion de bateria no disponible en el controlador.");return true;
+    }
+    if(q.wireCommand==AFR2_EXT_DRIVE_PWM && !(productFeatures_&AFR2_EXT_F_MANUAL_PWM)){
+        error(q,"CAPABILITY_UNAVAILABLE","Habilitar motores; revisar fallo o calibracion Hall en curso.");return true;
+    }
     if(q.wireCommand==AFR2_EXT_UI_META || q.wireCommand==AFR2_EXT_UI_ACTION) {
         if(!(productFeatures_&AFR2_EXT_F_UI)){error(q,"CAPABILITY_UNAVAILABLE","Servicio UI remoto no disponible.");return true;}
         if(q.wireCommand==AFR2_EXT_UI_ACTION && (!session(q.client)->oledCaptured || afr2_get_u32(q.body)!=session(q.client)->oledRevision)){error(q,"BAD_REQUEST","La captura ya no corresponde a esta sesion.");return true;}
@@ -142,8 +175,23 @@ bool Broker::dispatchProduct(BrokerRequest q,uint32_t now) {
 }
 bool Broker::finishProduct(const BrokerRequest &q,const MegaResult &r) {
     if(!q.wireCommand)return false;
+    if(q.wireCommand==AFR2_EXT_UI_META || q.wireCommand==AFR2_EXT_UI_STATUS || q.wireCommand==AFR2_EXT_UI_ACTION) {
+        auto *s=session(q.client);
+        if(!s || !s->screenSubscribed || (uint32_t)(millis()-s->screenSubscriptionAt)>3500u){error(q,"SUPERSEDED","Visor cerrado o suscripcion vencida.");return true;}
+    }
     if(finishSensors(q,r))return true;
     const uint8_t *p=r.payload;JsonDocument f;JsonObject out=f["payload"].to<JsonObject>();
+    if(q.wireCommand==AFR2_EXT_BATTERY){
+        const uint8_t *b=p+9;uint8_t state=b[12];
+        static const char *states[]={"off","measuring","valid","out-of-range","stale"};
+        out["bootId"]=afr2_get_u32(b);out["sampleId"]=afr2_get_u32(b+4);out["state"]=states[state];
+        out["valid"]=state==AFR2_BATTERY_VALID;
+        if(afr2_get_u32(b+4)){out["ageMs"]=afr2_get_u32(b+8);out["raw"]=afr2_get_u16(b+13);}
+        else {out["ageMs"]=nullptr;out["raw"]=nullptr;}
+        if(state==AFR2_BATTERY_VALID)out["millivolts"]=afr2_get_u16(b+15);else out["millivolts"]=nullptr;
+        out["referenceMv"]=afr2_get_u16(b+17);out["dividerNumerator"]=b[19];out["dividerDenominator"]=b[20];
+        out["calibrated"]=false;out["analogPin"]="A5";answer(q,f);return true;
+    }
     if(r.command==AFR2_EXT_UI_PAGE) {
         if((uint32_t)(millis()-oledAt_)>1800 || afr2_get_u32(p+9)!=oledRevision_ || afr2_get_u16(p+13)!=oledOffset_){error(q,"TIMEOUT","Captura OLED incoherente o vencida.");return true;}
         memcpy(oledData_+oledOffset_,p+16,p[15]);oledOffset_+=p[15];
@@ -160,18 +208,18 @@ bool Broker::finishProduct(const BrokerRequest &q,const MegaResult &r) {
             if(i+2<1024)v|=oledData_[i+2];
             encoded+=abc[(v>>18)&63];encoded+=abc[(v>>12)&63];encoded+=i+1<1024?abc[(v>>6)&63]:'=';encoded+=i+2<1024?abc[v&63]:'=';}
         char code[11];snprintf(code,sizeof(code),"0x%06lX",(unsigned long)oledScreen_);
-        out["screenCode"]=code;out["selection"]=oledSelection_;out["firstVisible"]=oledFirst_;
+        out["screenCode"]=code;out["selection"]=oledSelection_;out["firstVisible"]=oledFirst_;out["itemCount"]=oledCount_;
         out["revision"]=oledRevision_;out["framebufferBase64"]=encoded;
-        if(auto *s=session(q.client)){s->oledRevision=oledRevision_;s->oledCaptured=true;}
+        if(auto *s=session(q.client)){if(!s->screenSubscribed || (uint32_t)(millis()-s->screenSubscriptionAt)>3500u){error(q,"SUPERSEDED","Visor cerrado.");return true;}s->oledRevision=oledRevision_;s->oledCaptured=true;}
     } else if(q.wireCommand==AFR2_EXT_STATE) {
         if(r.command==AFR2_EXT_STATE) {
-            memcpy(stateData_,p,25);productMode_=p[9];productOrigin_=p[10];productFeatures_=afr2_get_u32(p+17);productAt_=millis();
+            memcpy(stateData_,p,28);productMode_=p[9];productOrigin_=p[10];productFeatures_=afr2_get_u32(p+17);productAt_=millis();
             if((productFeatures_&AFR2_EXT_F_POSE) && productRequest(AFR2_EXT_POSE,nullptr,0)){pending_=q;waiting_=true;return true;}
         }
-        const char *modes[]={"idle","manual","line-follow","wheel-test","goto","fault","sequence"};
-        out["mode"]=modes[stateData_[9]];out["stopped"]=stateData_[11]!=0;out["ageMs"]=(uint32_t)(millis()-productAt_);
+        const char *modes[]={"idle","manual","line-follow","wheel-test","goto","fault","sequence","manual-pwm"};
+        out["mode"]=stateData_[9]<8?modes[stateData_[9]]:"unknown";out["motorsEnabled"]=stateData_[13]!=0;out["stopped"]=stateData_[11]!=0;out["ageMs"]=(uint32_t)(millis()-productAt_);
         out["origin"]=stateData_[10]==2?"web":stateData_[10]==1?"local":"none";
-        const char *missions[]={"idle","running","completed","cancelled","failed"};out["gotoState"]=missions[stateData_[15]];out["preferencesState"]=stateData_[16];out["fault"]=stateData_[12];
+        const char *missions[]={"idle","running","completed","cancelled","failed"};out["gotoState"]=missions[stateData_[15]];out["preferencesState"]=stateData_[16];out["fault"]=stateData_[12];out["configurationDirty"]=stateData_[25]!=0;out["longPressMs"]=afr2_get_u16(stateData_+26);
         if(r.command==AFR2_EXT_POSE && p[9] && afr2_get_u32(p+22)<=2000){
             JsonObject pose=out["pose"].to<JsonObject>();pose["schema"]="afr2-pose-1";pose["valid"]=true;
             pose["frameId"]=String("mega-")+String(afr2_get_u32(p+26));pose["sequence"]=afr2_get_u32(p+30);
@@ -182,7 +230,7 @@ bool Broker::finishProduct(const BrokerRequest &q,const MegaResult &r) {
     } else if(q.wireCommand==AFR2_EXT_LINE_CAL) {out["calibrated"]=p[9]!=0;
     } else if(q.wireCommand==AFR2_EXT_CANCEL) {out["gotoState"]="cancelled";out["stopped"]=true;productOrigin_=0;publishStatus();
     } else if(q.wireCommand==AFR2_EXT_UI_META) {
-        oledRevision_=afr2_get_u32(p+9);oledScreen_=afr2_get_u32(p+13);oledSelection_=p[17];oledFirst_=p[18];oledOffset_=0;
+        oledRevision_=afr2_get_u32(p+9);oledScreen_=afr2_get_u32(p+13);oledSelection_=p[17];oledFirst_=p[18];oledCount_=p[22];oledOffset_=0;
         uint8_t body[7];afr2_put_u32(body,oledRevision_);afr2_put_u16(body+4,0);body[6]=40;
         if(!productRequest(AFR2_EXT_UI_PAGE,body,7)){error(q,"BUSY_IN_FLIGHT","No se pudo leer framebuffer.");return true;}
         pending_=q;waiting_=true;return true;
@@ -196,13 +244,14 @@ bool Broker::finishProduct(const BrokerRequest &q,const MegaResult &r) {
         if(q.wireCommand==AFR2_EXT_SEQ_STATUS){if(p[18]==255)out["activeSegmentIndex"]=nullptr;else out["activeSegmentIndex"]=p[18];
             out["segmentCount"]=p[19];out["elapsedMs"]=afr2_get_u32(p+20);out["totalDurationMs"]=afr2_get_u32(p+24);}
         if(q.wireCommand==AFR2_EXT_SEQ_CANCEL){productOrigin_=0;out["stopped"]=true;publishStatus();}
-    } else if(q.wireCommand==AFR2_EXT_DRIVE){out["accepted"]=true;
+    } else if(q.wireCommand==AFR2_EXT_TOUCH_UI){out["enabled"]=q.body[0]!=0;out["powerPercent"]=p[9];out["confirmed"]=true;
+    } else if((q.wireCommand==AFR2_EXT_DRIVE || q.wireCommand==AFR2_EXT_DRIVE_PWM)){out["accepted"]=true;
     } else if(q.wireCommand==AFR2_EXT_WHEEL || q.wireCommand==AFR2_EXT_GOTO){f["status"]="accepted";out["accepted"]=true;
     } else if(q.wireCommand==AFR2_EXT_MODE){out["confirmed"]=true;if(q.body[4]==0){productOrigin_=0;publishStatus();}}
     answer(q,f);return true;
 }
 void Broker::tickProduct(uint32_t now) {
-    if(!mega_.ready()){productReady_=false;extensionVersion_=0;productFeatures_=0;productAttempted_=false;speedLimit_=0;pwmLimit_=0;limitsAt_=0;wifiAwaitWeb_=wifiDraftReady_=false;wifiJob_=0;wifiOffset_=0;wifiVersions_=0;oledDraft_=WifiConfig{};}
+    if(!mega_.ready()){diagReply_=false;diagJob_=0;productReady_=false;extensionVersion_=0;productFeatures_=0;productAttempted_=false;speedLimit_=0;pwmLimit_=0;limitsAt_=0;wifiAwaitWeb_=wifiDraftReady_=false;wifiJob_=0;wifiOffset_=0;wifiVersions_=0;oledDraft_=WifiConfig{};}
     if(safetyRequested_ && mega_.ready() && productReady_) {
         if(waiting_){error(pending_,"SUPERSEDED","Supervision revocada.");waiting_=false;}
         if(mega_.requestProduct(AFR2_EXT_MOTION_HALT,nullptr,0,now,true)){pending_=BrokerRequest{};pending_.wireCommand=AFR2_EXT_MOTION_HALT;strlcpy(pending_.command,"_motion_halt",33);waiting_=true;safetyRequested_=false;}
@@ -219,6 +268,12 @@ void Broker::tickProduct(uint32_t now) {
     }
     if(productReady_ && extensionVersion_>=3 && (!limitsAt_ || (uint32_t)(now-limitsAt_)>=3000u)) {
         if(productRequest(AFR2_EXT_LIMITS,nullptr,0)){BrokerRequest q;strlcpy(q.command,"_limits",33);pending_=q;waiting_=true;limitsAt_=now;}return;
+    }
+    if(productReady_ && extensionVersion_>=10){
+        if(diagReply_){uint8_t b[8];afr2_put_u32(b,diagJob_);afr2_put_u32(b+4,diagPattern_);
+            if(productRequest(AFR2_EXT_DIAG_RESULT,b,8)){pending_=BrokerRequest{};strlcpy(pending_.command,"_diag_result",33);waiting_=true;diagReply_=false;}return;}
+        if((uint32_t)(now-diagPollAt_)>=400u){
+            if(productRequest(AFR2_EXT_DIAG_POLL,nullptr,0)){pending_=BrokerRequest{};strlcpy(pending_.command,"_diag_poll",33);waiting_=true;diagPollAt_=now;}return;}
     }
     tickWifi(now);if(waiting_)return;
     tickNetwork(now);if(waiting_)return;

@@ -1,9 +1,53 @@
+> **AFR2-20261101-06 / VIS-049:** Simulador UI en /desarrollador/ui-simulator, tarjeta debajo de Protocol Studio, ayuda y pestanas con el mismo lenguaje visual. [Ficha](../AutoFinalRobo2-Contracts/changes/2026-11-01-06-ui-simulator-workspace.md). Fuente sin tests/build/navegador ni promocion.
+
+> **AFR2-20261101-04:** encuadre cercano y centrado por geometria en simuladores y Modelos 3D; conserva orbita/zoom manuales. [Ficha](../AutoFinalRobo2-Contracts/changes/2026-11-01-04-close-model-framing.md). Fuente sin tests, builds, validadores ni navegador.
+
+> **AFR2-20261101-03 / VIS-048:** entorno de Modelos 3D con cielo/piso canonicos de Simulaciones y fichas solidas para claro/oscuro. [Cambios y limites](../AutoFinalRobo2-Contracts/changes/2026-11-01-03-models-scene-contrast.md). Solo fuente; sin tests, build, validadores, navegador ni promocion ESP.
+
+> **AFR2-20261101-02:** Simulador UI cotejado con el flujo AVR: retorno contextual, Si/No, Hall, rapidas, Wi-Fi y umbral largo configurable. Arbol desplegable y [documentacion del flujo](../AutoFinalRobo2-Contracts/documentation/UI_SCREEN_FLOW.md). Solo fuente; sin tests, compilaciones, generadores, navegador, promocion ni cargas.
+
 > **Fuente AFR2-20261031-01:** Simulador UI en Desarrollador; navegacion del
 > ATmega adaptada a estado local, tres controles de `EncoderControl` compartidos
 > con el visor en vivo, edicion/teclado y snapshots ficticios identificados.
 > [Ficha](../AutoFinalRobo2-Contracts/changes/2026-10-31-01-developer-ui-simulator.md).
 > Sin tests, compilacion, validaciones, navegador ni promocion ESP.
 > Firmware, identidades y recursos de dibujo conservados.
+
+> **AFR2-20261030-19:** táctil espera modelo y vista3D listos, conectado al mismo estado del componente de progreso; luego permiso de motores igual a Mecanum, sin latch por error antiguo. [Ficha](../AutoFinalRobo2-Contracts/changes/2026-10-30-19-touch-model-ready.md). Solo fuente; sin build, tests, validadores, generación, promoción ni carga.
+
+> **AFR2-20261030-18:** mismo permiso PWM para Mecanum/táctil, error histórico separado de bloqueo actual, modelo visual independiente y motivos de enlace/STOP/PWM visibles. [Ficha](../AutoFinalRobo2-Contracts/changes/2026-10-30-18-manual-touch-permissions.md). Solo fuente; sin generación, build, pruebas, promoción ni carga.
+
+> **AFR2-20261030-18:** selector común de motor030044, pictogramas coherentes del encoder y dashboard con solo modo en el cuerpo. [Ficha y límites](../AutoFinalRobo2-Contracts/changes/2026-10-30-18-motor-selector-encoder-dashboard.md). Fuente AVR/Web sin compilar, probar ni cargar.
+
+> **AFR2-20261030-16:** tamaño y progreso real de assets 3D con componente reutilizable, caché compartida y ETA de descarga. [Detalle y límites](../AutoFinalRobo2-Contracts/changes/2026-10-30-16-model-asset-progress.md). Solo fuente; sin build, pruebas, generadores ni promoción.
+
+> **AFR2-20261030-13:** referencia longitudinal y yaw corregida; odometría/mezcla y cinemática Web coordinadas, Girar CW/CCW. [Ficha e impacto](../AutoFinalRobo2-Contracts/changes/2026-10-30-13-motion-reference.md). Solo fuente; sin generación, compilación, validadores, pruebas, promoción ni carga.
+
+> **AFR2-20261030-09:** Wi-Fi coordinado EX01v11, EEPROMv8 sin cambios; [ficha de fuente y límites](../AutoFinalRobo2-Contracts/changes/2026-10-30-09-wifi-state-flows.md). Sin generación, compilación, validadores, pruebas, navegador, promoción ni cargas; evidencia anterior corresponde a fuentes históricas.
+
+> **AFR2-20261030-07:** fuente coordinada EX01v10/EEPROMv8; [detalle](../AutoFinalRobo2-Contracts/changes/2026-10-30-07-ui-integral.md). Sin compilar, ejecutar, validar, probar, generar, promover ni cargar. Conserva evidencia previa solo para sus fuentes históricas.
+
+> **AFR2-20261030-02:** cabecera dashboard con SSID e IP STA/AP y scroll independiente de ida/vuelta, recortado entre icono y batería fijos. Solo bandas de texto en redibujo parcial. Fuentes AVR/Web vinculadas, sin compilar ni cargar. Ficha en Contracts/changes/2026-10-30-02-dashboard-network-scroll.md.
+
+> **AFR2-20261030-01:** dashboard010001 adaptado de AutoMicro con iconos Wi-Fi/AP/encoder, batería por bandas de voltaje y accesos corto Menú/largo Rápidas al soltar. AVR y copia raster Web vinculados, sin nuevo wire. Fuente sin compilar, probar ni cargar. Ver ../AutoFinalRobo2-Contracts/changes/2026-10-30-01-dashboard-automicro-icons.md.
+
+> **AFR2-20261029-29:** desde dashboard, corto abre menu completo010002; largo al soltar abre pantallas rapidas010003. Ambos accesos conservan retorno al origen por historial. Sustituye el acceso comun de28. Fuente sin compilar/cargar.
+
+> **AFR2-20261029-28:** dashboard abre menu de controles con clic corto; largo conservado al soltar. OLED/Web vinculados; sin compilacion, validadores, prueba ni carga.
+
+> **AFR2-20261029-27 — fuente vigente:** ATmega/ESP0.11.0 y Web0.4.0; carrusel de controles, largo al soltar con retorno contextual, radar4/2/1/0.5m/rastro/editor compartido, IR compactos, PWM manual independiente de odometría/HC y atención prioritaria de sesión WS. EEPROMv5 / EX01v9, preservando batería26. Sin compilar, validadores, flasheos, pruebas físicas ni promoción Web. Recursos OLED copiados solamente; memoria y aceptación pendientes. [Contrato y límites](../AutoFinalRobo2-Contracts/contracts/QUICK_RADAR_ACTUATORS_9.md).
+
+> **AFR2-20261029-26:** batería A5/divisor10k/10k/104, Sistema → Batería y copia Web, puente EX01v9, pill con icono por voltaje y confirmación antes de reiniciar ESP/ATmega desde Web. [Contrato y estados](../AutoFinalRobo2-Contracts/contracts/BATTERY_MEASUREMENT_9.md). Solo fuente: sin compilar, generar catálogo OLED, probar, promover paquete ni cargar. Memoria/calibración/paridad físicas pendientes; ambas placas y Web requieren despliegue conjunto autorizado.
+
+> **AFR2-20261029-19 compilado y ATmega cargado:** pedido humano29/10/2026. ATmega/ESP/Web esp y LittleFS completados; promoción local Web a ESP/data/dist. Carga COM8 final13:32:50,80066bytes escritos/verificados, avrdude exit0. ESP/LittleFS sin cargar. SRAM estática7085bytes; sin prueba física/dinámica. Evidencia en AutoFinalRobo2-Contracts/documentation/builds/2026-10-29-19/README.md. Estados inferiores sin build/carga son históricos.
+
+> **Fuente AFR2-20261029-20:** Hall una vuelta con selección de rueda, conteo manual y clic para terminar; largo cancela con aviso. Drafts por4ruedas, estado CPR con asterisco, guardado asíncrono y diálogo genérico Si/No al salir sin guardar. OLED/Web vinculados en fuente; Web sin build/promoción, recursos generados pendientes del build autorizado. [Ficha](../AutoFinalRobo2-Contracts/changes/2026-10-29-20-hall-wizard-save-confirm.md). Compilación AVR pendiente al redactar; no flashear, placa conserva15.
+
+> **Fuente AFR2-20261029-18:** IR1..IR5 OSOYOO digital (A4..A0), perfil predeterminado habilitado y EEPROMv4 migra solo tipos antiguos deshabilitados; calibración/seguimiento siguen pendientes. Diagnóstico servo/encoder agrega lectura RAW directa y cambios por OLED/serie, sin EEPROM. Vistas IR/Web distinguen deshabilitado/pendiente/cero válido. [Ficha](../AutoFinalRobo2-Contracts/changes/2026-10-29-18-ir-input-acquisition.md). Compilaciones pendientes al registrar la fuente; no cargar por instrucción vigente. Placa conserva15; Web sin build/promoción.
+
+> **Fuente AFR2-20261029-16:** OLED sin esperas artificiales entre etapas, radar con grilla punteada, cono visual nominal15grados por PWM aplicado y discos rellenos por eco válido. Copia Web vinculada; sin build Web/promoción ESP. [Ficha](../AutoFinalRobo2-Contracts/changes/2026-10-29-16-oled-latency-radar-cone.md). Build/carga AVR COM8 autorizados, pendientes al registrar esta nota. Se conserva corrección del watchdog y migración Hall de15, ya cargada y verificada enCOM8 a12:02:57.
+
+> **Fuente AFR2-20261029-15:** corregido bucle Bresenham del radar que bloqueaba main y podía disparar watchdog al girar desde HC-SR04; productos trigonométricos AVR en32bits y contraparte Web vinculada. Hall conectado por montaje confirmado, migración local EEPROMv3 preserva calibraciones y habilitación de control. [Ficha](../AutoFinalRobo2-Contracts/changes/2026-10-29-15-radar-watchdog-hall-wiring.md). Build/carga AVR COM8 autorizados, pendientes al registrar esta nota; sin prueba física del cambio.
 
 > **AFR2-20261028-10:** Protocol Studio recupera el flujo de AutoMicro: parámetros guiados, estructura por campos, cuatro salidas, mapa seleccionable, stream continuo y ayuda. Identidad AFR2 0.1.9 conservada. [Continuidad](../AutoFinalRobo2-Contracts/docs/PROTOCOL_STUDIO_AUTOMICRO.md). Fuente sin tests, build, validadores, navegador ni promoción ESP.
 
@@ -210,3 +254,8 @@ hashes en Contracts/changes/2026-10-24-04-final-model-littlefs.md y
 Web/docs/model-asset-20261024.json. Los párrafos de hitos anteriores son historia.
 
 
+
+
+## AFR2-20261029-19 — OLED táctil y visor bajo demanda
+
+Fuente adaptada con Web/ATmega/ESP: overlay scrim+blur en modales, Volver por ítem del menú, ScreenCode0x030035 con aviso/bitmap/chevrones y suscripción explícita a capturas/metadatos. Contrato en AutoFinalRobo2-Contracts/contracts/TOUCH_OLED_19.md; procedencia por archivo en provenance/touch-oled-20261029-19.json de Contracts. El rumbo es solicitado, no medido, y no agrega giro físico. Sin tests, compilación, validadores, navegador, ejecución del generador OLED, promoción ESP ni flasheo de esta entrega. Memoria/paridad/latencia físicas pendientes.

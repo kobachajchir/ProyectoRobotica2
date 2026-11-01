@@ -1,3 +1,5 @@
+> AFR2-20261029-27: largo al soltar vuelve por contexto; Inicio abre carrusel y Si/No obligatorio no admite retorno. Contrato vigente: Contracts/contracts/QUICK_RADAR_ACTUATORS_9.md.
+
 # Referencias de trabajo
 
 Rutas relativas a la raíz de AutoFinalRobo2-Contracts:

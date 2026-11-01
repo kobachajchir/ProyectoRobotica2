@@ -1,3 +1,4 @@
+/* AFR2-20261029-27: quick controls/radar/PWM/WS integration; prior authors retained. */
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Afr2CommandError } from '../../protocol/afr2Client';
 import { formatAgeLabel } from '../../protocol/wsEnvelope';
@@ -13,7 +14,8 @@ const POLL_INTERVAL_MS = 1200;
 const STALE_SNAPSHOT_MS = 4000;
 
 export function LiveOledViewer({ active = true }: { active?: boolean }) {
-  const { wsState, megaLinkState, capabilities, requestCommand, screenStatus } = useConnection();
+  const { robotState, wsState, megaLinkState, capabilities, requestCommand, screenStatus, registerScreenViewer, screenSubscribed } = useConnection();
+  useEffect(() => active ? registerScreenViewer() : undefined, [active, registerScreenViewer]);
   const [snapshot, setSnapshot] = useState<RemoteOledSnapshot | null>(null);
   const [nowMs, setNowMs] = useState(() => Date.now());
   const [loading, setLoading] = useState(false);
@@ -40,7 +42,7 @@ export function LiveOledViewer({ active = true }: { active?: boolean }) {
   const oledCap = capabilities.oled_128x64;
   const encoderCap = capabilities.ui_encoder_sw;
   const remoteOledImplemented =
-    linksReady && oledCap.present && oledCap.implemented && oledCap.freshness !== 'local-preview';
+    linksReady && screenSubscribed && oledCap.present && oledCap.implemented && oledCap.freshness !== 'local-preview';
   const remoteEncoderImplemented =
     remoteOledImplemented &&
     encoderCap.present &&
@@ -172,7 +174,7 @@ export function LiveOledViewer({ active = true }: { active?: boolean }) {
   const ageMs = snapshot ? Math.max(0, nowMs - snapshot.receivedAtMs) : null;
   const fresh = Boolean(snapshot && ageMs !== null && ageMs <= STALE_SNAPSHOT_MS && !errorMessage);
 
-  const sendRemoteAction = async (action: 'rotate' | 'select' | 'menu', delta: -1 | 0 | 1, label: string, steps = 1) => {
+  const sendRemoteAction = async (action: 'rotate' | 'select' | 'menu' | 'back', delta: -1 | 0 | 1, label: string, steps = 1) => {
     if (!active || !remoteEncoderImplemented || !fresh || actionLockRef.current || inFlightRef.current) return;
     const observed = snapshot;
     const currentSession = sessionRef.current;
@@ -202,7 +204,7 @@ export function LiveOledViewer({ active = true }: { active?: boolean }) {
         const after = latestSnapshot.current as RemoteOledSnapshot | null;
         if (!after) throw new Error('No llego una captura posterior a la accion.');
         if (action === 'rotate' && steps > 1) {
-          const count = getScreenMetadata(before.screenCode)?.itemCount;
+          const count = before.itemCount ?? getScreenMetadata(before.screenCode)?.itemCount;
           if (after.screenCode !== before.screenCode || !count || after.selection !== (before.selection + delta + count) % count) throw new Error('Cambio la pantalla o la seleccion durante el desplazamiento. Revisa la captura antes de continuar.');
         }
       }
@@ -302,10 +304,11 @@ export function LiveOledViewer({ active = true }: { active?: boolean }) {
               scale={4}
             />
           </div><MenuSideControls selection={snapshot.selection} firstVisible={snapshot.firstVisible}
-            count={getScreenMetadata(snapshot.screenCode)?.itemCount ?? null} visibleRows={getScreenMetadata(snapshot.screenCode)?.visibleRows ?? 3}
+            count={snapshot.itemCount ?? getScreenMetadata(snapshot.screenCode)?.itemCount ?? null} visibleRows={getScreenMetadata(snapshot.screenCode)?.visibleRows ?? 3}
             disabled={!controlsAvailable || controlsBusy}
+            onBack={getScreenMetadata(snapshot.screenCode)?.role === 'menu' ? () => void sendRemoteAction('back', 0, 'Volver') : undefined}
             onHighlight={index => { const delta = index - snapshot.selection; if (delta) void sendRemoteAction('rotate', delta < 0 ? -1 : 1, `Resaltar opcion ${index + 1}`, Math.abs(delta)); }}
-            onScroll={direction => { const count = getScreenMetadata(snapshot.screenCode)?.itemCount ?? 0; const steps = Math.min(3, direction < 0 ? snapshot.selection : count - snapshot.selection - 1); if (steps > 0) void sendRemoteAction('rotate', direction, direction < 0 ? 'Desplazar seleccion hacia arriba' : 'Desplazar seleccion hacia abajo', steps); }} />
+            onScroll={direction => { const count = snapshot.itemCount ?? getScreenMetadata(snapshot.screenCode)?.itemCount ?? 0; const steps = Math.min(3, direction < 0 ? snapshot.selection : count - snapshot.selection - 1); if (steps > 0) void sendRemoteAction('rotate', direction, direction < 0 ? 'Desplazar seleccion hacia arriba' : 'Desplazar seleccion hacia abajo', steps); }} />
           </div>
           <p className="afr2-help">
             {!fresh ? 'Ultima captura caducada · ' : ''}
@@ -319,7 +322,7 @@ export function LiveOledViewer({ active = true }: { active?: boolean }) {
         </div>
       )}
 
-      <EncoderControl
+      <EncoderControl longPressMs={robotState?.longPressMs??800}
         available={controlsAvailable}
         busy={controlsBusy}
         disabledReason={blockedReason}
@@ -336,7 +339,7 @@ export function LiveOledViewer({ active = true }: { active?: boolean }) {
           void sendRemoteAction(
             kind === 'long' ? 'menu' : 'select',
             0,
-            kind === 'long' ? 'SW largo (≥ 800 ms · Menu principal)' : 'SW corto (< 800 ms · Confirmar)'
+            kind === 'long' ? 'SW largo (≥ 800 ms · Retorno al soltar)' : 'SW corto (< 800 ms · Confirmar)'
           )
         }
       />

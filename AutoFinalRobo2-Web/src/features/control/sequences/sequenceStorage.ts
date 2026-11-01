@@ -69,7 +69,9 @@ function parseMovementBlock(raw: unknown, idx: number): { ok: true; block: Movem
     block: {
       id: typeof obj.id === 'string' && obj.id.trim() ? obj.id.trim() : `mov-${idx + 1}`,
       kind,
-      label: typeof obj.label === 'string' && obj.label.trim() ? obj.label.trim().slice(0, 48) : `Bloque ${idx + 1}`,
+      label: kind === 'pivot' && (obj.label === 'Girar izquierda' || obj.label === 'Girar derecha')
+        ? obj.pivotDirection === 'cw' ? 'Girar CW' : 'Girar CCW'
+        : typeof obj.label === 'string' && obj.label.trim() ? obj.label.trim().slice(0, 48) : `Bloque ${idx + 1}`,
       durationMs,
       completion: obj.completion === 'distance' ? 'distance' : 'time',
       distanceMm: typeof obj.distanceMm === 'number' ? obj.distanceMm : undefined,

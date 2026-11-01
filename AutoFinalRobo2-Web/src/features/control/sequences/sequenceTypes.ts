@@ -1,3 +1,4 @@
+import geometry from '../../../../../AutoFinalRobo2-Contracts/contracts/geometry.json';
 /**
  * Tipos y constantes del documento versionado de secuencias `afr2-sequence-1` (AFR2-20261023-21 / VIS-018).
  * Unidades canonicas: milimetros (`mm`), milisegundos (`ms`) y milirradianes (`mrad`).
@@ -88,7 +89,7 @@ export interface MecanumKinematicProfile {
 }
 
 export const DEFAULT_KINEMATIC_PROFILE: MecanumKinematicProfile = {
-  lxPlusLyMm: 300,
+  lxPlusLyMm: geometry.lxPlusLyMm,
   maxWheelSpeedMmS: 800,
   calibrated: false,
 };

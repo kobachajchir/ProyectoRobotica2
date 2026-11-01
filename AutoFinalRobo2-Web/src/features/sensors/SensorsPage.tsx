@@ -42,7 +42,7 @@ function DistanceWorkspace(){
     if(r.dropped){setLost(n=>n+r.dropped);c.snapshot=0;setMapReady(false);}
     for(const p of r.samples)if(p.sampleId && (!c.sequence || ((p.sampleId-c.sequence)|0)>0))c.sequence=p.sampleId;
     setPoints(previous=>{const result={...previous};for(const p of r.samples)if(p.sampleId){
-      const old=result[p.angleDeg];if(!old || ((p.sampleId-old.sampleId)|0)>0)result[p.angleDeg]={...p,receivedAtMs:Date.now()};
+      const slot=Math.round(p.angleDeg/5)*5;const old=result[slot];if(!old || ((p.sampleId-old.sampleId)|0)>0)result[slot]={...p,receivedAtMs:Date.now()};
     }return result;});
     if(r.mode==='snapshot'){c.snapshot=r.nextCursor;if(c.snapshot>=37)setMapReady(true);}else c.sequence=r.nextCursor;
   },()=>cursor.current.snapshot<37?{mode:'snapshot',cursor:cursor.current.snapshot}:{mode:'delta',cursor:cursor.current.sequence});
@@ -63,7 +63,7 @@ function DistanceWorkspace(){
   const maxAge=Math.max(200,2*(head?.intervalMs??70)+32,head?.running && config?2*Math.max(5000/config.speedDegS,config.settleMs+32,config.intervalMs):0);
   const sampleFresh=fresh && sample?.valid && age!==null && age<=maxAge;
   const running=head?.running===true,enabled=head?.enabled===true,values=Object.values(points),configured=config??draft;
-  const plotPoints=sampleFresh && sample!.pulseUs>0?[...values.filter(p=>p.angleDeg!==sample!.angleDeg),sample!]:values;
+  const plotPoints=fresh && sample && sample.sampleId && sample.pulseUs>0?[...values.filter(p=>Math.round(p.angleDeg/5)!==Math.round(sample!.angleDeg/5)),sample!]:values;
   const effective=5000/Math.max(5000/configured.speedDegS,configured.settleMs+32,configured.intervalMs);
   const configLocked=running || enabled || busy || !online;
   const pending=!!config && (Object.keys(DEFAULT_CONFIG) as (keyof RadarConfig)[]).some(key=>draft[key]!==config[key]);
@@ -130,15 +130,14 @@ function DistanceWorkspace(){
       {feedback && <p className="afr2-sensor-feedback" role="status">{feedback}</p>}
     </aside>
     <div className="afr2-radar-settings"><Disclosure title="Parametros del escaneo" meta={pending?'Cambios sin aplicar':config?`${configured.minAngleDeg}–${configured.maxAngleDeg}° · ${configured.speedDegS}°/s`:'Sin datos del robot'}>
-      <form className="afr2-sensor-fields" onSubmit={e=>{e.preventDefault();void action('robot.radar.configure',{write:true,...draft},'Parametros aplicados en RAM.');}}>
+      <form className="afr2-sensor-fields" onSubmit={e=>{e.preventDefault();void action('robot.radar.configure',{write:true,...draft,inverted:config?.inverted??draft.inverted},'Parametros aplicados en RAM.');}}>
         <div className="afr2-scan-parameters">
           <ScanAngleRange min={draft.minAngleDeg} max={draft.maxAngleDeg} disabled={configLocked} onChange={(minAngleDeg,maxAngleDeg)=>setDraft(v=>({...v,minAngleDeg,maxAngleDeg}))}/>
           {([['speedDegS','Velocidad angular',1,30,'°/s'],['settleMs','Estabilizacion',50,500,'ms'],['intervalMs','Intervalo',70,1000,'ms']] as const).map(([key,label,min,max,unit])=>
             <ScanRangeField key={key} label={label} value={draft[key]} min={min} max={max} step={1} unit={unit} disabled={configLocked} onChange={value=>setDraft(v=>({...v,[key]:value}))}/>)}
         </div>
         <div className="afr2-scan-config-footer">
-          <div className="afr2-scan-inversion"><label className="afr2-checkbox"><input type="checkbox" checked={draft.inverted} disabled={configLocked} aria-describedby="afr2-servo-inversion-help" onChange={e=>setDraft(v=>({...v,inverted:e.target.checked}))}/> Corregir giro invertido</label>
-            <p id="afr2-servo-inversion-help" className="afr2-help">Para montajes que giran al reves. Intercambia 0° y 180°; mantiene el centro de 90°.</p></div>
+          <p className="afr2-help">Invertir servo se configura desde Sistema → Preferencias.</p>
           <div className="afr2-scan-apply"><p className="afr2-help">{!online?'Conecta el robot para editar.':running?'Detene el radar para editar.':enabled?'Desactiva el servo para editar.':'Enter o salir confirma el numero. El sector se previsualiza antes de aplicar al robot.'}</p>
             <Button type="submit" disabled={configLocked || !config}>Aplicar parametros</Button></div>
         </div>

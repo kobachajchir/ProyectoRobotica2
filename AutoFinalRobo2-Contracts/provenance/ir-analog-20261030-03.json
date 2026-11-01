@@ -1,0 +1,85 @@
+{
+  "schema": "afr2-adaptations-1",
+  "changeId": "AFR2-20261030-03",
+  "authorship": "Own adaptation by Codex at explicit request of Koba Chajchir; existing authors preserved.",
+  "verification": "Source editing and manual reading only. No tests, compilation, validators, generators, COM, upload or physical checks.",
+  "module_status": {
+    "atmega": "source-adapted-uncompiled",
+    "esp": "existing-ADC-translation-read-no-code-change",
+    "web": "existing-ADC-OLED-and-page-read-no-code-change"
+  },
+  "files": [
+    {
+      "file": "AutoFinalRobo2-Atmega/include/afr2_product.h",
+      "adaptation": "Journal version6; payload unchanged",
+      "sha256": "8d76dd53f1a6663d71fe5ba5d515b63bd40498405b7dff26d1a88cb41d8acf17",
+      "normalization": "UTF8 text LF"
+    },
+    {
+      "file": "AutoFinalRobo2-Atmega/src/services/afr2_product.c",
+      "adaptation": "Default ADC2 for IR; calibration still explicit",
+      "sha256": "ebb2361c5455cd36b704c56b752d9a6ac70312d7df88bb9ffd64e0cf443f2c15",
+      "normalization": "UTF8 text LF"
+    },
+    {
+      "file": "AutoFinalRobo2-Atmega/src/platform/afr2_preferences.c",
+      "adaptation": "Migrate pre6 digital/off to ADC in RAM; preserve other settings",
+      "sha256": "ddf0d08058cc064f33c60675f12196046e041d1d343dc9e9af71b2f269704dd6",
+      "normalization": "UTF8 text LF"
+    },
+    {
+      "file": "AutoFinalRobo2-Atmega/src/platform/afr2_sensors.c",
+      "adaptation": "ADC buffers/bank and per-channel discard; shared battery owner preserved",
+      "sha256": "f04027bb9ee19647efa4ad079b9b97db20ae9b5e22f74d7fe37f0373294de8dd",
+      "normalization": "UTF8 text LF"
+    },
+    {
+      "file": "AutoFinalRobo2-Atmega/README.md",
+      "adaptation": "Current source status",
+      "sha256": "30a73a2094a95247ee3775d5bc01a3fe542d5717ceb265ad467bf33edbd26756",
+      "normalization": "UTF8 text LF"
+    },
+    {
+      "file": "AutoFinalRobo2-Atmega/INFORME_ADAPTACION.md",
+      "adaptation": "Current source status",
+      "sha256": "e2fb6538fa67400ffe9c6e5e5630d624f73e5388214817fa524a865b93293977",
+      "normalization": "UTF8 text LF"
+    },
+    {
+      "file": "AutoFinalRobo2-Contracts/README.md",
+      "adaptation": "Current source status",
+      "sha256": "03cdcb6637d0a1b0859306a9e80a72f6417daa390eb73ee2ee86123b756693bc",
+      "normalization": "UTF8 text LF"
+    },
+    {
+      "file": "AutoFinalRobo2-Contracts/INFORME_ADAPTACION.md",
+      "adaptation": "Current source status",
+      "sha256": "120f48961f6df72f555ecd677d3ea6ba6f07b80b62de967b0c1b6a47d9be6c67",
+      "normalization": "UTF8 text LF"
+    },
+    {
+      "file": "AutoFinalRobo2-Contracts/CHANGELOG.md",
+      "adaptation": "Change reference",
+      "sha256": "eae361ed95a7d90921f10cc05299b17dd989b94e7e0fd51341d1f2cca93fa37f",
+      "normalization": "UTF8 text LF"
+    },
+    {
+      "file": "AutoFinalRobo2-Contracts/hardware/PINOUT.md",
+      "adaptation": "Same pins, ADC profile note",
+      "sha256": "a367fe535b05d6ae84105a46b59aa9e36c355773596345f7cb1e3ddccca7e05e",
+      "normalization": "UTF8 text LF"
+    },
+    {
+      "file": "AutoFinalRobo2-Contracts/contracts/EEPROM_IR_ADC_6.md",
+      "adaptation": "New acquisition and journal contract",
+      "sha256": "8319672fc8702ff70fd64aaecad069ba6da8f0214eaa1cae832531a62591559e",
+      "normalization": "UTF8 text LF"
+    },
+    {
+      "file": "AutoFinalRobo2-Contracts/changes/2026-10-30-03-ir-analog-acquisition.md",
+      "adaptation": "Change record",
+      "sha256": "737be64ebbb562f207749ce95deeb20841d1edc47946f9fc63fb0115452e776a",
+      "normalization": "UTF8 text LF"
+    }
+  ]
+}

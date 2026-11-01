@@ -1,13 +1,13 @@
 {
   "schema": "afr2-config-actions-1",
-  "change_id": "AFR2-20261025-01",
+  "change_id": "AFR2-20261030-07",
   "wire_profile": 2,
   "extension": "EX01",
   "command": "0x1A",
   "status": {
-    "atmega": "implemented-compiled-not-runtime-tested",
-    "esp": "implemented-compiled-not-runtime-tested",
-    "web": "implemented-compiled-not-runtime-tested"
+    "atmega": "source-uncompiled-unverified",
+    "esp": "source-uncompiled-unverified",
+    "web": "source-uncompiled-unverified"
   },
   "rules": [
     "IDs are stable; retired2,3,56 are not reassigned. No activation/grant switch for Web control.",
@@ -296,42 +296,46 @@
     {
       "id": 37,
       "symbol": "AFR2_A_WHEEL_MM",
-      "config_access": true,
+      "config_access": false,
       "label": "Diametro rueda mm",
       "min": 10,
       "max": 500,
       "editor_step": 1,
-      "unit": "mm"
+      "unit": "mm",
+      "retired_reason": "Fixed nominal CAD geometry / installed Hall; no user editor"
     },
     {
       "id": 38,
       "symbol": "AFR2_A_RADIUS_MM",
-      "config_access": true,
+      "config_access": false,
       "label": "Lx+Ly mm",
       "min": 1,
       "max": 1000,
       "editor_step": 1,
-      "unit": "mm Lx+Ly"
+      "unit": "mm Lx+Ly",
+      "retired_reason": "Fixed nominal CAD geometry / installed Hall; no user editor"
     },
     {
       "id": 39,
       "symbol": "AFR2_A_HALL_WIRED",
-      "config_access": true,
+      "config_access": false,
       "label": "Hall conectado",
       "min": 0,
       "max": 1,
       "editor_step": 1,
-      "unit": "boolean"
+      "unit": "boolean",
+      "retired_reason": "Fixed nominal CAD geometry / installed Hall; no user editor"
     },
     {
       "id": 40,
       "symbol": "AFR2_A_GEOM_READY",
-      "config_access": true,
+      "config_access": false,
       "label": "Geometria valida",
       "min": 0,
       "max": 1,
       "editor_step": 1,
-      "unit": "boolean"
+      "unit": "boolean",
+      "retired_reason": "Fixed nominal CAD geometry / installed Hall; no user editor"
     },
     {
       "id": 41,
@@ -341,7 +345,8 @@
       "min": 2,
       "max": 4,
       "editor_step": 2,
-      "unit": "transitions per detent2or4"
+      "unit": "transitions per detent2or4",
+      "section": "preferences"
     },
     {
       "id": 42,
@@ -351,7 +356,8 @@
       "min": 0,
       "max": 1,
       "editor_step": 1,
-      "unit": "boolean"
+      "unit": "boolean",
+      "section": "preferences"
     },
     {
       "id": 43,
@@ -416,7 +422,8 @@
       "min": 0,
       "max": 255,
       "editor_step": 8,
-      "unit": "SSD1306 byte"
+      "unit": "SSD1306 byte",
+      "section": "preferences"
     },
     {
       "id": 54,
@@ -426,12 +433,25 @@
       "min": 0,
       "max": 1,
       "editor_step": 1,
-      "unit": "enum0normal1rotate180"
+      "unit": "enum0normal1rotate180",
+      "section": "preferences"
     },
     {
       "id": 55,
       "symbol": "AFR2_A_CLEAR_FAULT",
       "config_access": false
+    },
+    {
+      "id": 81,
+      "symbol": "AFR2_A_LONG_MS",
+      "config_access": true,
+      "label": "Pulsacion larga",
+      "min": 800,
+      "max": 3000,
+      "editor_step": 2,
+      "unit": "ms",
+      "section": "preferences",
+      "step": 100
     }
   ],
   "retired_action_ids": [

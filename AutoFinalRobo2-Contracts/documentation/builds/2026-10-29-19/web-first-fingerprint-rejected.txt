@@ -1,0 +1,92 @@
+13:29:55 build_web_fs | perfil: Mi AutoFinalRobo2 | puerto: COM8
+13:29:55 build_web_fs
+13:29:55 Aprobación MCP: automática, activada en la ventana
+13:29:55 Ejecutando script de preparación FileSystem: D:\ProyectoRobotica2\AutoFinalRobo2-Loader\scripts\Prepare-Web.ps1
+13:29:55 > "C:\Windows\system32\WindowsPowerShell\v1.0\powershell.exe" "-NoProfile" "-File" "D:\ProyectoRobotica2\AutoFinalRobo2-Loader\scripts\Prepare-Web.ps1"
+13:29:55 Carpeta: D:\ProyectoRobotica2\AutoFinalRobo2-Web
+13:29:58 > autofinalrobo2-web@0.3.0 build:esp
+13:29:58 > node tools/sync-oled-library.mjs && tsc -b && vite build --mode esp && node tools/package-web.mjs --profile esp && npm run copy:esp
+13:29:58 OLED library: 56 AVR nodes, 16 icons, 950 font bytes -> D:\ProyectoRobotica2\AutoFinalRobo2-Web\src\features\oled\generated\firmwareLibrary.ts
+13:30:10 [36mvite v7.3.7 [32mbuilding client environment for esp...[36m[39m
+13:30:11 transforming...
+13:30:17 [32mâœ“[39m 193 modules transformed.
+13:30:38 rendering chunks...
+13:30:38 [plugin vite:singlefile] 
+13:30:38 [plugin vite:singlefile] Inlining: bundle.js
+13:30:38 [plugin vite:singlefile] Inlining: style-CuA-LLTq.css
+13:30:38 [plugin vite:singlefile] NOTE: asset not inlined: .afr2-build.json
+13:30:38 [plugin vite:singlefile] NOTE: asset not inlined: brand/Logo-1024.webp
+13:30:38 [plugin vite:singlefile] NOTE: asset not inlined: brand/Logo-256.webp
+13:30:38 [plugin vite:singlefile] NOTE: asset not inlined: brand/favicon.webp
+13:30:38 [plugin vite:singlefile] NOTE: asset not inlined: models/AutoFinalRobo2.glb
+13:30:38 [plugin vite:singlefile] NOTE: asset not inlined: draco/draco_decoder.wasm
+13:30:38 [2mdist/[22m[32m.afr2-build.json             [39m[1m[2m    0.02 kB[22m[1m[22m
+13:30:38 [2mdist/[22m[32mbrand/favicon.webp           [39m[1m[2m    2.95 kB[22m[1m[22m
+13:30:38 [2mdist/[22m[32mbrand/Logo-256.webp          [39m[1m[2m   23.05 kB[22m[1m[22m
+13:30:38 [2mdist/[22m[32mdraco/draco_wasm_wrapper.js  [39m[1m[2m   58.57 kB[22m[1m[22m
+13:30:38 [2mdist/[22m[32mdraco/draco_decoder.wasm     [39m[1m[2m  192.42 kB[22m[1m[22m
+13:30:38 [2mdist/[22m[32mbrand/Logo-1024.webp         [39m[1m[2m  204.69 kB[22m[1m[22m
+13:30:38 [2mdist/[22m[32mmodels/AutoFinalRobo2.glb    [39m[1m[2m  871.76 kB[22m[1m[22m
+13:30:38 [2mdist/[22m[32mindex.html                   [39m[1m[2m2,053.98 kB[22m[1m[22m
+13:30:38 [32mâœ“ built in 27.36s[39m
+13:30:38 [AutoFinalRobo2-Web] Paquete esp generado (7 archivos, 1594894 bytes gzip; estimaciÃ³n FS 1687552 bytes).
+13:30:39 > autofinalrobo2-web@0.3.0 copy:esp
+13:30:39 > node tools/copy-web-to-esp.mjs
+13:30:39 [AutoFinalRobo2-Web] Activos promovidos a AutoFinalRobo2-ESP/data/dist (7 archivos).
+13:30:39 Contenido web AFR2 preparado. El Loader generarA­ LittleFS a continuaciA3n.
+13:30:39 Código de salida: 0
+13:30:39 Generando imagen LittleFS desde ESP/data...
+13:30:39 > "C:\Users\kobac\.platformio\penv\Scripts\platformio.exe" "run" "--project-dir" "D:\ProyectoRobotica2\AutoFinalRobo2-ESP" "-e" "esp12s_candidate" "-t" "buildfs"
+13:30:39 Carpeta: D:\ProyectoRobotica2\AutoFinalRobo2-ESP
+13:30:40 Processing esp12s_candidate (platform: espressif8266 @ 4.2.1; board: esp12e; framework: arduino)
+13:30:40 --------------------------------------------------------------------------------
+13:30:41 Verbose mode can be enabled via `-v, --verbose` option
+13:30:41 CONFIGURATION: https://docs.platformio.org/page/boards/espressif8266/esp12e.html
+13:30:41 PLATFORM: Espressif 8266 (4.2.1) > Espressif ESP8266 ESP-12E
+13:30:41 HARDWARE: ESP8266 80MHz, 80KB RAM, 4MB Flash
+13:30:41 PACKAGES: 
+13:30:41  - framework-arduinoespressif8266 @ 3.30102.0 (3.1.2) 
+13:30:41  - tool-esptool @ 1.413.0 (4.13) 
+13:30:41  - tool-esptoolpy @ 1.30000.201119 (3.0.0) 
+13:30:41  - tool-mklittlefs @ 1.203.210628 (2.3) 
+13:30:41  - tool-mkspiffs @ 1.200.0 (2.0) 
+13:30:41  - toolchain-xtensa @ 2.100300.220621 (10.3.0)
+13:30:41 LDF: Library Dependency Finder -> https://bit.ly/configure-pio-ldf
+13:30:41 LDF Modes: Finder ~ chain, Compatibility ~ strict
+13:30:41 Found 40 compatible libraries
+13:30:41 Scanning dependencies...
+13:30:41 Dependency Graph
+13:30:41 |-- ESPAsyncTCP @ 2.0.0
+13:30:41 |-- ESPAsyncWebServer @ 3.10.3
+13:30:41 |-- ArduinoJson @ 7.4.2
+13:30:41 |-- ESP8266WiFi @ 1.0
+13:30:41 |-- LittleFS @ 0.1.0
+13:30:41 Building in release mode
+13:30:41 Building file system image from 'data' directory to .pio\build\esp12s_candidate\littlefs.bin
+13:30:42 /config/wifi.json
+13:30:42 /dist/brand/favicon.webp.gz
+13:30:42 /dist/brand/Logo-1024.webp.gz
+13:30:42 /dist/brand/Logo-256.webp.gz
+13:30:42 /dist/draco/draco_decoder.wasm.gz
+13:30:42 /dist/draco/draco_wasm_wrapper.js.gz
+13:30:42 /dist/index.html.gz
+13:30:42 /dist/manifest.json
+13:30:42 /dist/models/AutoFinalRobo2.glb.gz
+13:30:42 /INFORME_CARPETA.md
+13:30:42 /README.md
+13:30:42 ========================= [SUCCESS] Took 2.29 seconds =========================
+13:30:42 Código de salida: 0
+13:30:42 Artefacto generado: D:\ProyectoRobotica2\AutoFinalRobo2-ESP\.pio\build\esp12s_candidate\littlefs.bin
+3121152 bytes | SHA-256 e8ec74e420a7cc4be1e068243727ed1b15e8f91ffb8c90129caf75ff7e98625f
+13:30:42 ERROR: System.InvalidOperationException: Las fuentes o el perfil cambiaron durante la preparación. Repetí la compilación antes de flashear.
+   at AFR2Loader.BuildPreparation.Record(Profile p, String section, IEnumerable`1 images, String before)
+   at AFR2Loader.Operations.<BuildWebFs>d__15.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw()
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at AFR2Loader.MainForm.<>c__DisplayClass197.<<ApprovePending>b__195>d__199.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw()
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at AFR2Loader.MainForm.<ExecuteCore>d__e4.MoveNext()
+13:30:42 Registro: C:\Users\kobac\AppData\Local\AutoFinalRobo2Loader\logs\20261029-132954-995-553c9b.txt | Resumen: .json

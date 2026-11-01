@@ -1,6 +1,7 @@
 {
   "schema": "afr2-screens-2",
-  "updated_by": "AFR2-20261025-14",
+  "updated_by": "AFR2-20261101-02",
+  "navigation_source_review": "UI_SCREEN_FLOW.md",
   "screens": [
     {
       "id": "shared:screen/010001",
@@ -9,31 +10,37 @@
       "role": "view",
       "renderer": "atmega:src/ui/afr2_screens.c:Afr2Ui_Render",
       "fields": [
-        "selection",
-        "firstVisible",
         "revision",
-        "snapshot"
+        "snapshot.network_valid/sta/ap",
+        "snapshot.network_ssid/ap_ssid/ip/ap_ip",
+        "snapshot.battery_valid/mv",
+        "snapshot.lines[0]: current mode",
+        "clock_ms",
+        "scroll_started_ms"
       ],
       "actions": [
-        "rotate",
-        "select",
-        "menu"
+        "select-open-full-menu",
+        "long-release-open-quick-controls"
       ],
       "parent": null,
-      "state": "source-integrated-compiled-runtime-unverified",
+      "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261023-19",
+      "change_id": "AFR2-20261030-18",
       "item_count": 1,
-      "back_semantics": "explicit-item-restores-history-selection-scroll; static-parent-is-fallback",
-      "variant": "view-three-data-lines-one-selectable-item",
+      "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
+      "variant": "Network/voltage header retained; centered current mode only; short encoder Menu and long encoder Rapidas.",
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
       "web_fidelity": "copied-AVR-layout-library; live-1024-byte-framebuffer; physical-parity-unverified",
-      "wire_status": "ROBO2-profile2-EX01v8-compiled",
+      "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
       "previous_delivery_status": {
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
-      "build_evidence": "builds/2026-10-25-14/README.md"
+      "build_evidence": "No build for AFR2-20261030-01; previous entries are historical",
+      "resources": "AVR PROGMEM XBM Wi-Fi/AP/encoder from kobac AutoMicro; disconnected Wi-Fi copied; original AFR2 long-press and battery empty/1/2/3/4/unknown; same bytes Web",
+      "validity": "Unknown network uses Red: -- / IP: --; battery icon ? and --V unless fresh valid ADC; bands are voltage, not charge percentage; no automatic measurement enable",
+      "header_layout": "Left icon x0..17; SSID y0 and local STA/AP IP y12, both clipped x21..90; battery at right x93..127. STA preferred when connected; otherwise active AP.",
+      "header_scroll": "Independent ping-pong per line, only when longer than70px; 800ms pause at both ends,1px/40ms; partial text bands only, icons and battery stationary."
     },
     {
       "id": "shared:screen/010002",
@@ -53,15 +60,15 @@
         "menu"
       ],
       "parent": "shared:screen/010001",
-      "state": "source-integrated-compiled-runtime-unverified",
+      "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261023-19",
-      "item_count": 10,
-      "back_semantics": "explicit-item-restores-history-selection-scroll; static-parent-is-fallback",
+      "change_id": "AFR2-20261030-07",
+      "item_count": 7,
+      "back_semantics": "restore invocation history: dashboard for short entry, quick cards for carousel entry; dashboard fallback",
       "variant": "three16px-rows; flash-icons; selected-text800ms-dwell-40ms-scroll; explicit-Volver",
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
       "web_fidelity": "copied-AVR-layout-library; live-1024-byte-framebuffer; physical-parity-unverified",
-      "wire_status": "ROBO2-profile2-EX01v8-compiled",
+      "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
       "previous_delivery_status": {
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
@@ -86,15 +93,15 @@
         "menu"
       ],
       "parent": "shared:screen/010002",
-      "state": "source-integrated-compiled-runtime-unverified",
+      "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261025-14",
+      "change_id": "AFR2-20261030-07",
       "item_count": 4,
-      "back_semantics": "explicit-item-restores-history-selection-scroll; static-parent-is-fallback",
+      "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
       "variant": "three16px-rows; flash-icons; selected-text800ms-dwell-40ms-scroll; explicit-Volver",
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
       "web_fidelity": "copied-AVR-layout-library; live-1024-byte-framebuffer; physical-parity-unverified",
-      "wire_status": "ROBO2-profile2-EX01v8-compiled",
+      "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
       "previous_delivery_status": {
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
@@ -118,16 +125,16 @@
         "select",
         "menu"
       ],
-      "parent": "shared:screen/030025",
-      "state": "source-integrated-compiled-runtime-unverified",
+      "parent": "shared:screen/030004",
+      "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261023-19",
+      "change_id": "AFR2-20261030-07",
       "item_count": 1,
-      "back_semantics": "explicit-item-restores-history-selection-scroll; static-parent-is-fallback",
+      "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
       "variant": "view-three-data-lines-one-selectable-item",
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
       "web_fidelity": "copied-AVR-layout-library; live-1024-byte-framebuffer; physical-parity-unverified",
-      "wire_status": "ROBO2-profile2-EX01v8-compiled",
+      "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
       "previous_delivery_status": {
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
@@ -152,15 +159,15 @@
         "select",
         "menu"
       ],
-      "state": "source-integrated-compiled-runtime-unverified",
+      "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261023-19",
-      "item_count": 4,
-      "back_semantics": "explicit-item-restores-history-selection-scroll; static-parent-is-fallback",
+      "change_id": "AFR2-20261030-07",
+      "item_count": 8,
+      "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
       "variant": "three16px-rows; flash-icons; selected-text800ms-dwell-40ms-scroll; explicit-Volver",
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
       "web_fidelity": "copied-AVR-layout-library; live-1024-byte-framebuffer; physical-parity-unverified",
-      "wire_status": "ROBO2-profile2-EX01v8-compiled",
+      "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
       "previous_delivery_status": {
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
@@ -185,15 +192,15 @@
         "select",
         "menu"
       ],
-      "state": "source-integrated-compiled-runtime-unverified",
+      "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261023-19",
+      "change_id": "AFR2-20261030-07",
       "item_count": 1,
-      "back_semantics": "explicit-item-restores-history-selection-scroll; static-parent-is-fallback",
+      "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
       "variant": "view-three-data-lines-one-selectable-item",
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
       "web_fidelity": "copied-AVR-layout-library; live-1024-byte-framebuffer; physical-parity-unverified",
-      "wire_status": "ROBO2-profile2-EX01v8-compiled",
+      "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
       "previous_delivery_status": {
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
@@ -218,15 +225,15 @@
         "select",
         "menu"
       ],
-      "state": "source-integrated-compiled-runtime-unverified",
+      "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261023-19",
+      "change_id": "AFR2-20261030-07",
       "item_count": 1,
-      "back_semantics": "explicit-item-restores-history-selection-scroll; static-parent-is-fallback",
+      "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
       "variant": "view-three-data-lines-one-selectable-item",
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
       "web_fidelity": "copied-AVR-layout-library; live-1024-byte-framebuffer; physical-parity-unverified",
-      "wire_status": "ROBO2-profile2-EX01v8-compiled",
+      "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
       "previous_delivery_status": {
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
@@ -251,15 +258,15 @@
         "select",
         "menu"
       ],
-      "state": "source-integrated-compiled-runtime-unverified",
+      "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261023-19",
+      "change_id": "AFR2-20261030-07",
       "item_count": 1,
-      "back_semantics": "explicit-item-restores-history-selection-scroll; static-parent-is-fallback",
+      "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
       "variant": "view-three-data-lines-one-selectable-item",
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
       "web_fidelity": "copied-AVR-layout-library; live-1024-byte-framebuffer; physical-parity-unverified",
-      "wire_status": "ROBO2-profile2-EX01v8-compiled",
+      "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
       "previous_delivery_status": {
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
@@ -284,15 +291,15 @@
         "select",
         "menu"
       ],
-      "state": "source-integrated-compiled-runtime-unverified",
+      "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261023-19",
-      "item_count": 4,
-      "back_semantics": "explicit-item-restores-history-selection-scroll; static-parent-is-fallback",
+      "change_id": "AFR2-20261030-07",
+      "item_count": 5,
+      "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
       "variant": "three16px-rows; flash-icons; selected-text800ms-dwell-40ms-scroll; explicit-Volver",
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
       "web_fidelity": "copied-AVR-layout-library; live-1024-byte-framebuffer; physical-parity-unverified",
-      "wire_status": "ROBO2-profile2-EX01v8-compiled",
+      "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
       "previous_delivery_status": {
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
@@ -317,20 +324,26 @@
         "select",
         "menu"
       ],
-      "state": "source-integrated-compiled-runtime-unverified",
+      "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261023-19",
+      "change_id": "AFR2-20261030-13",
       "item_count": 12,
-      "back_semantics": "explicit-item-restores-history-selection-scroll; static-parent-is-fallback",
+      "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
       "variant": "three16px-rows; flash-icons; selected-text800ms-dwell-40ms-scroll; explicit-Volver",
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
       "web_fidelity": "copied-AVR-layout-library; live-1024-byte-framebuffer; physical-parity-unverified",
-      "wire_status": "ROBO2-profile2-EX01v8-compiled",
+      "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
       "previous_delivery_status": {
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
-      "build_evidence": "builds/2026-10-25-14/README.md"
+      "build_evidence": "builds/2026-10-25-14/README.md",
+      "movement_labels": {
+        "arg8": "Girar CCW",
+        "arg9": "Girar CW"
+      },
+      "motion_reference": "contracts/MOTION_REFERENCE_13.md",
+      "build_evidence_applies_to": "historical source only"
     },
     {
       "id": "shared:screen/03000A",
@@ -350,15 +363,15 @@
         "select",
         "menu"
       ],
-      "state": "source-integrated-compiled-runtime-unverified",
+      "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261023-19",
+      "change_id": "AFR2-20261030-07",
       "item_count": 4,
-      "back_semantics": "explicit-item-restores-history-selection-scroll; static-parent-is-fallback",
+      "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
       "variant": "three16px-rows; flash-icons; selected-text800ms-dwell-40ms-scroll; explicit-Volver",
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
       "web_fidelity": "copied-AVR-layout-library; live-1024-byte-framebuffer; physical-parity-unverified",
-      "wire_status": "ROBO2-profile2-EX01v8-compiled",
+      "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
       "previous_delivery_status": {
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
@@ -383,15 +396,15 @@
         "select",
         "menu"
       ],
-      "state": "source-integrated-compiled-runtime-unverified",
+      "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261023-19",
-      "item_count": 6,
-      "back_semantics": "explicit-item-restores-history-selection-scroll; static-parent-is-fallback",
+      "change_id": "AFR2-20261030-07",
+      "item_count": 5,
+      "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
       "variant": "three16px-rows; flash-icons; selected-text800ms-dwell-40ms-scroll; explicit-Volver",
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
       "web_fidelity": "copied-AVR-layout-library; live-1024-byte-framebuffer; physical-parity-unverified",
-      "wire_status": "ROBO2-profile2-EX01v8-compiled",
+      "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
       "previous_delivery_status": {
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
@@ -416,15 +429,15 @@
         "select",
         "menu"
       ],
-      "state": "source-integrated-compiled-runtime-unverified",
+      "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261023-19",
+      "change_id": "AFR2-20261030-07",
       "item_count": 1,
-      "back_semantics": "explicit-item-restores-history-selection-scroll; static-parent-is-fallback",
+      "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
       "variant": "view-three-data-lines-one-selectable-item",
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
       "web_fidelity": "copied-AVR-layout-library; live-1024-byte-framebuffer; physical-parity-unverified",
-      "wire_status": "ROBO2-profile2-EX01v8-compiled",
+      "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
       "previous_delivery_status": {
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
@@ -449,15 +462,15 @@
         "select",
         "menu"
       ],
-      "state": "source-integrated-compiled-runtime-unverified",
+      "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261023-19",
-      "item_count": 9,
-      "back_semantics": "explicit-item-restores-history-selection-scroll; static-parent-is-fallback",
+      "change_id": "AFR2-20261030-07",
+      "item_count": 8,
+      "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
       "variant": "three16px-rows; flash-icons; selected-text800ms-dwell-40ms-scroll; explicit-Volver",
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
       "web_fidelity": "copied-AVR-layout-library; live-1024-byte-framebuffer; physical-parity-unverified",
-      "wire_status": "ROBO2-profile2-EX01v8-compiled",
+      "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
       "previous_delivery_status": {
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
@@ -482,15 +495,15 @@
         "select",
         "menu"
       ],
-      "state": "source-integrated-compiled-runtime-unverified",
+      "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261023-19",
+      "change_id": "AFR2-20261030-07",
       "item_count": 1,
-      "back_semantics": "explicit-item-restores-history-selection-scroll; static-parent-is-fallback",
+      "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
       "variant": "view-three-data-lines-one-selectable-item",
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
       "web_fidelity": "copied-AVR-layout-library; live-1024-byte-framebuffer; physical-parity-unverified",
-      "wire_status": "ROBO2-profile2-EX01v8-compiled",
+      "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
       "previous_delivery_status": {
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
@@ -515,15 +528,15 @@
         "select",
         "menu"
       ],
-      "state": "source-integrated-compiled-runtime-unverified",
+      "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261023-19",
+      "change_id": "AFR2-20261030-07",
       "item_count": 1,
-      "back_semantics": "explicit-item-restores-history-selection-scroll; static-parent-is-fallback",
+      "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
       "variant": "view-three-data-lines-one-selectable-item",
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
       "web_fidelity": "copied-AVR-layout-library; live-1024-byte-framebuffer; physical-parity-unverified",
-      "wire_status": "ROBO2-profile2-EX01v8-compiled",
+      "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
       "previous_delivery_status": {
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
@@ -548,15 +561,15 @@
         "select",
         "menu"
       ],
-      "state": "source-integrated-compiled-runtime-unverified",
+      "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261023-19",
+      "change_id": "AFR2-20261030-07",
       "item_count": 1,
-      "back_semantics": "explicit-item-restores-history-selection-scroll; static-parent-is-fallback",
+      "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
       "variant": "view-three-data-lines-one-selectable-item",
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
       "web_fidelity": "copied-AVR-layout-library; live-1024-byte-framebuffer; physical-parity-unverified",
-      "wire_status": "ROBO2-profile2-EX01v8-compiled",
+      "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
       "previous_delivery_status": {
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
@@ -581,15 +594,15 @@
         "select",
         "menu"
       ],
-      "state": "source-integrated-compiled-runtime-unverified",
+      "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261023-19",
-      "item_count": 9,
-      "back_semantics": "explicit-item-restores-history-selection-scroll; static-parent-is-fallback",
+      "change_id": "AFR2-20261030-07",
+      "item_count": 8,
+      "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
       "variant": "three16px-rows; flash-icons; selected-text800ms-dwell-40ms-scroll; explicit-Volver",
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
       "web_fidelity": "copied-AVR-layout-library; live-1024-byte-framebuffer; physical-parity-unverified",
-      "wire_status": "ROBO2-profile2-EX01v8-compiled",
+      "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
       "previous_delivery_status": {
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
@@ -614,15 +627,15 @@
         "select",
         "menu"
       ],
-      "state": "source-integrated-compiled-runtime-unverified",
+      "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261023-19",
-      "item_count": 7,
-      "back_semantics": "explicit-item-restores-history-selection-scroll; static-parent-is-fallback",
+      "change_id": "AFR2-20261030-07",
+      "item_count": 6,
+      "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
       "variant": "three16px-rows; flash-icons; selected-text800ms-dwell-40ms-scroll; explicit-Volver",
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
       "web_fidelity": "copied-AVR-layout-library; live-1024-byte-framebuffer; physical-parity-unverified",
-      "wire_status": "ROBO2-profile2-EX01v8-compiled",
+      "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
       "previous_delivery_status": {
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
@@ -647,15 +660,15 @@
         "select",
         "menu"
       ],
-      "state": "source-integrated-compiled-runtime-unverified",
+      "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261023-19",
+      "change_id": "AFR2-20261030-07",
       "item_count": 1,
-      "back_semantics": "explicit-item-restores-history-selection-scroll; static-parent-is-fallback",
+      "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
       "variant": "view-three-data-lines-one-selectable-item",
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
       "web_fidelity": "copied-AVR-layout-library; live-1024-byte-framebuffer; physical-parity-unverified",
-      "wire_status": "ROBO2-profile2-EX01v8-compiled",
+      "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
       "previous_delivery_status": {
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
@@ -680,15 +693,15 @@
         "select",
         "menu"
       ],
-      "state": "source-integrated-compiled-runtime-unverified",
+      "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261023-19",
-      "item_count": 7,
-      "back_semantics": "explicit-item-restores-history-selection-scroll; static-parent-is-fallback",
-      "variant": "three16px-rows; flash-icons; selected-text800ms-dwell-40ms-scroll; explicit-Volver",
+      "change_id": "AFR2-20261030-07",
+      "item_count": 6,
+      "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
+      "variant": "choose wheel -> count one manual revolution -> click ends; per-wheel unsaved drafts; mandatory save/discard on exit",
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
       "web_fidelity": "copied-AVR-layout-library; live-1024-byte-framebuffer; physical-parity-unverified",
-      "wire_status": "ROBO2-profile2-EX01v8-compiled",
+      "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
       "previous_delivery_status": {
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
@@ -703,25 +716,25 @@
       "renderer": "atmega:src/ui/afr2_screens.c:Afr2Ui_Render",
       "parent": "shared:screen/020001",
       "fields": [
+        "prepared.hallCpr[4]",
+        "prepared.hallPending mask",
         "selection",
-        "firstVisible",
-        "revision",
-        "snapshot"
+        "revision"
       ],
       "actions": [
         "rotate",
         "select",
         "menu"
       ],
-      "state": "source-integrated-compiled-runtime-unverified",
+      "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261023-19",
+      "change_id": "AFR2-20261030-07",
       "item_count": 1,
-      "back_semantics": "explicit-item-restores-history-selection-scroll; static-parent-is-fallback",
-      "variant": "view-three-data-lines-one-selectable-item",
+      "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
+      "variant": "four per-wheel pulses-per-revolution values FL/FR/RL/RR; pending asterisk; unknown remains --",
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
       "web_fidelity": "copied-AVR-layout-library; live-1024-byte-framebuffer; physical-parity-unverified",
-      "wire_status": "ROBO2-profile2-EX01v8-compiled",
+      "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
       "previous_delivery_status": {
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
@@ -751,20 +764,21 @@
         "select",
         "menu"
       ],
-      "state": "source-integrated-compiled-runtime-unverified",
+      "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261025-14",
-      "item_count": 0,
-      "back_semantics": "short-press-restores-list-selection-scroll; long-opens-main",
-      "variant": "five IR bars digital-or-10bit ADC; sibling-cycle; short-return",
+      "change_id": "AFR2-20261030-07",
+      "item_count": 1,
+      "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
+      "variant": "five raw IR bars digital-or-10bit ADC; explicit disabled/pending acquisition; bounded-sibling-pages; short-return",
+      "presentation_change_id": "AFR2-20261029-18",
       "web_renderer": "web:src/features/oled/firmwareSensorRenderer.ts:renderSensorScreen",
       "web_fidelity": "copied-AVR-layout-library; live-1024-byte-framebuffer; physical-parity-unverified",
-      "wire_status": "ROBO2-profile2-EX01v8-compiled",
+      "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
       "siblings": [
         "0x030016",
         "0x030032"
       ],
-      "navigation_mode": "sibling-cycle",
+      "navigation_mode": "sibling-bounded",
       "build_evidence": "builds/2026-10-25-14/README.md"
     },
     {
@@ -790,29 +804,29 @@
         "select",
         "menu"
       ],
-      "state": "source-integrated-compiled-runtime-unverified",
+      "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261025-14",
-      "item_count": 0,
-      "back_semantics": "short-press-restores-list-selection-scroll; long-opens-main",
-      "variant": "range mm, sample age/error, applied angle/PWM; sibling-cycle",
+      "change_id": "AFR2-20261030-07",
+      "item_count": 1,
+      "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
+      "variant": "range mm, sample age/error, applied angle/PWM; bounded-sibling-pages",
       "web_renderer": "web:src/features/oled/firmwareSensorRenderer.ts:renderSensorScreen",
       "web_fidelity": "copied-AVR-layout-library; live-1024-byte-framebuffer; physical-parity-unverified",
-      "wire_status": "ROBO2-profile2-EX01v8-compiled",
+      "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
       "siblings": [
         "0x030031",
         "0x030017"
       ],
-      "navigation_mode": "sibling-cycle",
+      "navigation_mode": "sibling-bounded",
       "build_evidence": "builds/2026-10-25-14/README.md"
     },
     {
       "id": "shared:screen/030018",
       "local_code": "0x030018",
-      "name": "Encoder UI",
+      "name": "Estado encoder",
       "role": "view",
       "renderer": "atmega:src/ui/afr2_screens.c:Afr2Ui_Render",
-      "parent": "shared:screen/030011",
+      "parent": "shared:screen/030004",
       "fields": [
         "selection",
         "firstVisible",
@@ -824,15 +838,15 @@
         "select",
         "menu"
       ],
-      "state": "source-integrated-compiled-runtime-unverified",
+      "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261023-19",
+      "change_id": "AFR2-20261030-07",
       "item_count": 1,
-      "back_semantics": "explicit-item-restores-history-selection-scroll; static-parent-is-fallback",
+      "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
       "variant": "view-three-data-lines-one-selectable-item",
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
       "web_fidelity": "copied-AVR-layout-library; live-1024-byte-framebuffer; physical-parity-unverified",
-      "wire_status": "ROBO2-profile2-EX01v8-compiled",
+      "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
       "previous_delivery_status": {
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
@@ -842,7 +856,7 @@
     {
       "id": "shared:screen/030019",
       "local_code": "0x030019",
-      "name": "Control del servo",
+      "name": "Servo",
       "role": "menu",
       "renderer": "atmega:src/ui/afr2_screens.c:Afr2Ui_Render",
       "parent": "shared:screen/030030",
@@ -857,15 +871,15 @@
         "select",
         "menu"
       ],
-      "state": "source-integrated-compiled-runtime-unverified",
+      "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261025-14",
+      "change_id": "AFR2-20261030-07",
       "item_count": 4,
-      "back_semantics": "explicit-item-restores-history-selection-scroll; static-parent-is-fallback",
+      "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
       "variant": "three16px-rows; flash-icons; selected-text800ms-dwell-40ms-scroll; explicit-Volver",
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
       "web_fidelity": "copied-AVR-layout-library; live-1024-byte-framebuffer; physical-parity-unverified",
-      "wire_status": "ROBO2-profile2-EX01v8-compiled",
+      "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
       "previous_delivery_status": {
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
@@ -890,15 +904,15 @@
         "select",
         "menu"
       ],
-      "state": "source-integrated-compiled-runtime-unverified",
+      "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261023-19",
-      "item_count": 8,
-      "back_semantics": "explicit-item-restores-history-selection-scroll; static-parent-is-fallback",
+      "change_id": "AFR2-20261030-07",
+      "item_count": 6,
+      "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
       "variant": "three16px-rows; flash-icons; selected-text800ms-dwell-40ms-scroll; explicit-Volver",
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
       "web_fidelity": "copied-AVR-layout-library; live-1024-byte-framebuffer; physical-parity-unverified",
-      "wire_status": "ROBO2-profile2-EX01v8-compiled",
+      "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
       "previous_delivery_status": {
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
@@ -923,15 +937,15 @@
         "select",
         "menu"
       ],
-      "state": "source-integrated-compiled-runtime-unverified",
+      "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261023-19",
+      "change_id": "AFR2-20261030-07",
       "item_count": 7,
-      "back_semantics": "explicit-item-restores-history-selection-scroll; static-parent-is-fallback",
+      "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
       "variant": "three16px-rows; flash-icons; selected-text800ms-dwell-40ms-scroll; explicit-Volver",
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
       "web_fidelity": "copied-AVR-layout-library; live-1024-byte-framebuffer; physical-parity-unverified",
-      "wire_status": "ROBO2-profile2-EX01v8-compiled",
+      "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
       "previous_delivery_status": {
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
@@ -956,15 +970,15 @@
         "select",
         "menu"
       ],
-      "state": "source-integrated-compiled-runtime-unverified",
+      "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261023-19",
+      "change_id": "AFR2-20261030-07",
       "item_count": 8,
-      "back_semantics": "explicit-item-restores-history-selection-scroll; static-parent-is-fallback",
+      "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
       "variant": "three16px-rows; flash-icons; selected-text800ms-dwell-40ms-scroll; explicit-Volver",
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
       "web_fidelity": "copied-AVR-layout-library; live-1024-byte-framebuffer; physical-parity-unverified",
-      "wire_status": "ROBO2-profile2-EX01v8-compiled",
+      "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
       "previous_delivery_status": {
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
@@ -974,10 +988,10 @@
     {
       "id": "shared:screen/03001D",
       "local_code": "0x03001D",
-      "name": "Geometria",
-      "role": "menu",
+      "name": "Geometria nominal",
+      "role": "view",
       "renderer": "atmega:src/ui/afr2_screens.c:Afr2Ui_Render",
-      "parent": "shared:screen/03001A",
+      "parent": "shared:screen/030004",
       "fields": [
         "selection",
         "firstVisible",
@@ -989,15 +1003,15 @@
         "select",
         "menu"
       ],
-      "state": "source-integrated-compiled-runtime-unverified",
+      "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261023-19",
-      "item_count": 6,
-      "back_semantics": "explicit-item-restores-history-selection-scroll; static-parent-is-fallback",
+      "change_id": "AFR2-20261030-07",
+      "item_count": 1,
+      "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
       "variant": "three16px-rows; flash-icons; selected-text800ms-dwell-40ms-scroll; explicit-Volver",
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
       "web_fidelity": "copied-AVR-layout-library; live-1024-byte-framebuffer; physical-parity-unverified",
-      "wire_status": "ROBO2-profile2-EX01v8-compiled",
+      "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
       "previous_delivery_status": {
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
@@ -1010,7 +1024,7 @@
       "name": "Ajustes encoder",
       "role": "menu",
       "renderer": "atmega:src/ui/afr2_screens.c:Afr2Ui_Render",
-      "parent": "shared:screen/03001A",
+      "parent": "shared:screen/030029",
       "fields": [
         "selection",
         "firstVisible",
@@ -1022,15 +1036,15 @@
         "select",
         "menu"
       ],
-      "state": "source-integrated-compiled-runtime-unverified",
+      "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261023-19",
+      "change_id": "AFR2-20261030-07",
       "item_count": 4,
-      "back_semantics": "explicit-item-restores-history-selection-scroll; static-parent-is-fallback",
+      "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
       "variant": "three16px-rows; flash-icons; selected-text800ms-dwell-40ms-scroll; explicit-Volver",
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
       "web_fidelity": "copied-AVR-layout-library; live-1024-byte-framebuffer; physical-parity-unverified",
-      "wire_status": "ROBO2-profile2-EX01v8-compiled",
+      "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
       "previous_delivery_status": {
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
@@ -1053,28 +1067,29 @@
       "actions": [
         "rotate",
         "select",
-        "menu"
+        "long-release-back"
       ],
-      "state": "source-integrated-compiled-runtime-unverified",
+      "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261023-19",
-      "item_count": 13,
-      "back_semantics": "explicit-item-restores-history-selection-scroll; static-parent-is-fallback",
-      "variant": "three16px-rows; flash-icons; selected-text800ms-dwell-40ms-scroll; explicit-Volver",
+      "change_id": "AFR2-20261030-09",
+      "item_count": 5,
+      "back_semantics": "release-long and explicit Volver restore context; notices complete deferred destination only when closed",
+      "variant": "three16px-rows; dynamic selection/count; physical actions",
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
       "web_fidelity": "copied-AVR-layout-library; live-1024-byte-framebuffer; physical-parity-unverified",
-      "wire_status": "ROBO2-profile2-EX01v8-compiled",
+      "wire_status": "EX01v11 source only; EEPROMv8 unchanged; no generation/build/deployment",
       "previous_delivery_status": {
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
-      "build_evidence": "builds/2026-10-25-14/README.md"
+      "build_evidence": "builds/2026-10-25-14/README.md",
+      "build_evidence_applies_to": "previous delivery only; no evidence for change09"
     },
     {
       "id": "shared:screen/030020",
       "local_code": "0x030020",
-      "name": "Estado Wi-Fi",
-      "role": "view",
+      "name": "Estado de red",
+      "role": "menu",
       "renderer": "atmega:src/ui/afr2_screens.c:Afr2Ui_Render",
       "parent": "shared:screen/03001F",
       "fields": [
@@ -1086,63 +1101,69 @@
       "actions": [
         "rotate",
         "select",
-        "menu"
+        "long-release-back"
       ],
-      "state": "source-integrated-compiled-runtime-unverified",
+      "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261023-19",
-      "item_count": 1,
-      "back_semantics": "explicit-item-restores-history-selection-scroll; static-parent-is-fallback",
-      "variant": "view-three-data-lines-one-selectable-item",
+      "change_id": "AFR2-20261030-09",
+      "item_count": 6,
+      "back_semantics": "release-long and explicit Volver restore context; notices complete deferred destination only when closed",
+      "variant": "three16px-rows; dynamic selection/count; physical actions",
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
       "web_fidelity": "copied-AVR-layout-library; live-1024-byte-framebuffer; physical-parity-unverified",
-      "wire_status": "ROBO2-profile2-EX01v8-compiled",
+      "wire_status": "EX01v11 source only; EEPROMv8 unchanged; no generation/build/deployment",
       "previous_delivery_status": {
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
-      "build_evidence": "builds/2026-10-25-14/README.md"
+      "build_evidence": "builds/2026-10-25-14/README.md",
+      "build_evidence_applies_to": "previous delivery only; no evidence for change09",
+      "item_count_rule": "4 unknown / 5 connected / 6 disconnected"
     },
     {
       "id": "shared:screen/030021",
       "local_code": "0x030021",
-      "name": "Redes Wi-Fi",
+      "name": "Redes encontradas",
       "role": "menu",
       "renderer": "atmega:src/ui/afr2_screens.c:Afr2Ui_Render",
-      "parent": "shared:screen/03001F",
+      "parent": "shared:screen/030042",
       "fields": [
+        "prepared.labels[0..2] real SSID or Red oculta",
+        "prepared.row_security[0..2]",
+        "networkCount",
         "selection",
         "firstVisible",
-        "revision",
-        "snapshot"
+        "navigation revision"
       ],
       "actions": [
         "rotate",
         "select",
-        "menu"
+        "long-release-back"
       ],
-      "state": "source-integrated-compiled-runtime-unverified",
+      "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261023-19",
+      "change_id": "AFR2-20261030-09",
       "item_count": 9,
-      "back_semantics": "explicit-item-restores-history-selection-scroll; static-parent-is-fallback",
-      "variant": "three16px-rows; flash-icons; selected-text800ms-dwell-40ms-scroll; explicit-Volver",
+      "back_semantics": "release-long and explicit Volver restore context; notices complete deferred destination only when closed",
+      "variant": "three16px-rows; dynamic selection/count; physical actions",
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
       "web_fidelity": "copied-AVR-layout-library; live-1024-byte-framebuffer; physical-parity-unverified",
-      "wire_status": "ROBO2-profile2-EX01v8-compiled",
+      "wire_status": "EX01v11 source only; EEPROMv8 unchanged; no generation/build/deployment",
       "previous_delivery_status": {
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
-      "build_evidence": "builds/2026-10-25-14/README.md"
+      "build_evidence": "builds/2026-10-25-14/README.md",
+      "build_evidence_applies_to": "previous delivery only; no evidence for change09",
+      "item_count_rule": "networkCount + 1 (Volver), 0..8 networks"
     },
     {
       "id": "shared:screen/030022",
       "local_code": "0x030022",
-      "name": "Ingresar datos",
+      "name": "Ingresar credenciales",
       "role": "menu",
       "renderer": "atmega:src/ui/afr2_screens.c:Afr2Ui_Render",
-      "parent": "shared:screen/03001F",
+      "parent": "shared:screen/030021",
       "fields": [
         "selection",
         "firstVisible",
@@ -1152,30 +1173,31 @@
       "actions": [
         "rotate",
         "select",
-        "menu"
+        "long-release-back"
       ],
-      "state": "source-integrated-compiled-runtime-unverified",
+      "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261023-19",
-      "item_count": 5,
-      "back_semantics": "explicit-item-restores-history-selection-scroll; static-parent-is-fallback",
-      "variant": "three16px-rows; flash-icons; selected-text800ms-dwell-40ms-scroll; explicit-Volver",
+      "change_id": "AFR2-20261030-09",
+      "item_count": 3,
+      "back_semantics": "release-long and explicit Volver restore context; notices complete deferred destination only when closed",
+      "variant": "three16px-rows; dynamic selection/count; physical actions",
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
       "web_fidelity": "copied-AVR-layout-library; live-1024-byte-framebuffer; physical-parity-unverified",
-      "wire_status": "ROBO2-profile2-EX01v8-compiled",
+      "wire_status": "EX01v11 source only; EEPROMv8 unchanged; no generation/build/deployment",
       "previous_delivery_status": {
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
-      "build_evidence": "builds/2026-10-25-14/README.md"
+      "build_evidence": "builds/2026-10-25-14/README.md",
+      "build_evidence_applies_to": "previous delivery only; no evidence for change09"
     },
     {
       "id": "shared:screen/030023",
       "local_code": "0x030023",
-      "name": "Revisar conexion",
-      "role": "view",
+      "name": "Configurar",
+      "role": "menu",
       "renderer": "atmega:src/ui/afr2_screens.c:Afr2Ui_Render",
-      "parent": "shared:screen/030022",
+      "parent": "shared:screen/030020",
       "fields": [
         "selection",
         "firstVisible",
@@ -1185,22 +1207,25 @@
       "actions": [
         "rotate",
         "select",
-        "menu"
+        "long-release-back"
       ],
-      "state": "source-integrated-compiled-runtime-unverified",
+      "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261023-19",
+      "change_id": "AFR2-20261030-09",
       "item_count": 3,
-      "back_semantics": "explicit-item-restores-history-selection-scroll; static-parent-is-fallback",
-      "variant": "view-three-data-lines-one-selectable-item",
+      "back_semantics": "release-long and explicit Volver restore context; notices complete deferred destination only when closed",
+      "variant": "three16px-rows; dynamic selection/count; physical actions",
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
       "web_fidelity": "copied-AVR-layout-library; live-1024-byte-framebuffer; physical-parity-unverified",
-      "wire_status": "ROBO2-profile2-EX01v8-compiled",
+      "wire_status": "EX01v11 source only; EEPROMv8 unchanged; no generation/build/deployment",
       "previous_delivery_status": {
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
-      "build_evidence": "builds/2026-10-25-14/README.md"
+      "build_evidence": "builds/2026-10-25-14/README.md",
+      "build_evidence_applies_to": "previous delivery only; no evidence for change09",
+      "legacy_identity_note": "030023 retained; replaces Revisar conexion with Configurar",
+      "item_count_rule": "2 unknown / 3 known"
     },
     {
       "id": "shared:screen/030024",
@@ -1218,22 +1243,23 @@
       "actions": [
         "rotate",
         "select",
-        "menu"
+        "long-release-back"
       ],
-      "state": "source-integrated-compiled-runtime-unverified",
+      "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261023-19",
-      "item_count": 5,
-      "back_semantics": "explicit-item-restores-history-selection-scroll; static-parent-is-fallback",
-      "variant": "three16px-rows; flash-icons; selected-text800ms-dwell-40ms-scroll; explicit-Volver",
+      "change_id": "AFR2-20261030-09",
+      "item_count": 3,
+      "back_semantics": "release-long and explicit Volver restore context; notices complete deferred destination only when closed",
+      "variant": "three16px-rows; dynamic selection/count; physical actions",
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
       "web_fidelity": "copied-AVR-layout-library; live-1024-byte-framebuffer; physical-parity-unverified",
-      "wire_status": "ROBO2-profile2-EX01v8-compiled",
+      "wire_status": "EX01v11 source only; EEPROMv8 unchanged; no generation/build/deployment",
       "previous_delivery_status": {
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
-      "build_evidence": "builds/2026-10-25-14/README.md"
+      "build_evidence": "builds/2026-10-25-14/README.md",
+      "build_evidence_applies_to": "previous delivery only; no evidence for change09"
     },
     {
       "id": "shared:screen/030025",
@@ -1241,7 +1267,7 @@
       "name": "Pantalla/interfaz",
       "role": "menu",
       "renderer": "atmega:src/ui/afr2_screens.c:Afr2Ui_Render",
-      "parent": "shared:screen/010002",
+      "parent": "shared:screen/030026",
       "fields": [
         "selection",
         "firstVisible",
@@ -1253,15 +1279,15 @@
         "select",
         "menu"
       ],
-      "state": "source-integrated-compiled-runtime-unverified",
+      "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261023-19",
-      "item_count": 5,
-      "back_semantics": "explicit-item-restores-history-selection-scroll; static-parent-is-fallback",
+      "change_id": "AFR2-20261030-07",
+      "item_count": 3,
+      "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
       "variant": "three16px-rows; flash-icons; selected-text800ms-dwell-40ms-scroll; explicit-Volver",
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
       "web_fidelity": "copied-AVR-layout-library; live-1024-byte-framebuffer; physical-parity-unverified",
-      "wire_status": "ROBO2-profile2-EX01v8-compiled",
+      "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
       "previous_delivery_status": {
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
@@ -1286,15 +1312,15 @@
         "select",
         "menu"
       ],
-      "state": "source-integrated-compiled-runtime-unverified",
+      "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261023-19",
-      "item_count": 7,
-      "back_semantics": "explicit-item-restores-history-selection-scroll; static-parent-is-fallback",
+      "change_id": "AFR2-20261030-07",
+      "item_count": 8,
+      "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
       "variant": "three16px-rows; flash-icons; selected-text800ms-dwell-40ms-scroll; explicit-Volver",
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
       "web_fidelity": "copied-AVR-layout-library; live-1024-byte-framebuffer; physical-parity-unverified",
-      "wire_status": "ROBO2-profile2-EX01v8-compiled",
+      "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
       "previous_delivery_status": {
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
@@ -1319,15 +1345,15 @@
         "select",
         "menu"
       ],
-      "state": "source-integrated-compiled-runtime-unverified",
+      "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261023-19",
+      "change_id": "AFR2-20261030-07",
       "item_count": 1,
-      "back_semantics": "explicit-item-restores-history-selection-scroll; static-parent-is-fallback",
+      "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
       "variant": "view-three-data-lines-one-selectable-item",
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
       "web_fidelity": "copied-AVR-layout-library; live-1024-byte-framebuffer; physical-parity-unverified",
-      "wire_status": "ROBO2-profile2-EX01v8-compiled",
+      "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
       "previous_delivery_status": {
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
@@ -1352,20 +1378,21 @@
         "select",
         "menu"
       ],
-      "state": "source-integrated-compiled-runtime-unverified",
+      "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261023-19",
+      "change_id": "AFR2-20261030-07",
       "item_count": 1,
-      "back_semantics": "explicit-item-restores-history-selection-scroll; static-parent-is-fallback",
-      "variant": "view-three-data-lines-one-selectable-item",
+      "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
+      "variant": "six capability pages; current/total; directional bounded encoder; prepared status",
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
       "web_fidelity": "copied-AVR-layout-library; live-1024-byte-framebuffer; physical-parity-unverified",
-      "wire_status": "ROBO2-profile2-EX01v8-compiled",
+      "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
       "previous_delivery_status": {
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
-      "build_evidence": "builds/2026-10-25-14/README.md"
+      "build_evidence": "builds/2026-10-25-14/README.md",
+      "page_count": 6
     },
     {
       "id": "shared:screen/030029",
@@ -1385,15 +1412,15 @@
         "select",
         "menu"
       ],
-      "state": "source-integrated-compiled-runtime-unverified",
+      "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261023-19",
-      "item_count": 4,
-      "back_semantics": "explicit-item-restores-history-selection-scroll; static-parent-is-fallback",
+      "change_id": "AFR2-20261030-07",
+      "item_count": 6,
+      "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
       "variant": "three16px-rows; flash-icons; selected-text800ms-dwell-40ms-scroll; explicit-Volver",
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
       "web_fidelity": "copied-AVR-layout-library; live-1024-byte-framebuffer; physical-parity-unverified",
-      "wire_status": "ROBO2-profile2-EX01v8-compiled",
+      "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
       "previous_delivery_status": {
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
@@ -1418,15 +1445,15 @@
         "select",
         "menu"
       ],
-      "state": "source-integrated-compiled-runtime-unverified",
+      "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261023-19",
+      "change_id": "AFR2-20261030-07",
       "item_count": 1,
-      "back_semantics": "explicit-item-restores-history-selection-scroll; static-parent-is-fallback",
+      "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
       "variant": "view-three-data-lines-one-selectable-item",
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
       "web_fidelity": "copied-AVR-layout-library; live-1024-byte-framebuffer; physical-parity-unverified",
-      "wire_status": "ROBO2-profile2-EX01v8-compiled",
+      "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
       "previous_delivery_status": {
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
@@ -1437,7 +1464,7 @@
       "id": "shared:screen/03002B",
       "local_code": "0x03002B",
       "name": "Diagnostico",
-      "role": "view",
+      "role": "menu",
       "renderer": "atmega:src/ui/afr2_screens.c:Afr2Ui_Render",
       "parent": "shared:screen/030026",
       "fields": [
@@ -1451,15 +1478,15 @@
         "select",
         "menu"
       ],
-      "state": "source-integrated-compiled-runtime-unverified",
+      "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261023-19",
-      "item_count": 1,
-      "back_semantics": "explicit-item-restores-history-selection-scroll; static-parent-is-fallback",
-      "variant": "view-three-data-lines-one-selectable-item",
+      "change_id": "AFR2-20261030-07",
+      "item_count": 3,
+      "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
+      "variant": "diagnostic data, clear fault, return",
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
       "web_fidelity": "copied-AVR-layout-library; live-1024-byte-framebuffer; physical-parity-unverified",
-      "wire_status": "ROBO2-profile2-EX01v8-compiled",
+      "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
       "previous_delivery_status": {
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
@@ -1469,7 +1496,7 @@
     {
       "id": "shared:screen/03002c",
       "local_code": "0x03002c",
-      "name": "Ejecucion de secuencia",
+      "name": "Secuencia",
       "role": "view",
       "renderer": "atmega:src/ui/afr2_sequence_screen.c:Afr2SequenceScreen_Render",
       "wrapper": "atmega:src/services/afr2_app.c:Afr2App_UiSnapshot",
@@ -1489,49 +1516,56 @@
       "parent": "shared:screen/030008",
       "item_count": 1,
       "activation": "once per new running execution; user navigation never forced back",
-      "state": "source-integrated-compiled-runtime-unverified",
+      "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
       "variant": "segmented progress/header; icon; movement label; configured time; explicit Volver",
-      "change_id": "AFR2-20261024-07",
+      "change_id": "AFR2-20261030-07",
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
       "web_fidelity": "copied-AVR-layout-library; live-1024-byte-framebuffer; physical-parity-unverified",
-      "wire_status": "ROBO2-profile2-EX01v8-compiled",
+      "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
       "previous_delivery_status": {
         "state": "source-compiled-hardware-unverified-memory-gated",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
-      "build_evidence": "builds/2026-10-25-14/README.md"
+      "build_evidence": "builds/2026-10-25-14/README.md",
+      "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed"
     },
     {
-      "name": "IP de conexion",
+      "name": "Estado de conexiÃƒÂ³n",
       "role": "view",
       "physical_evidence": false,
       "fields": [
-        "staConnected",
-        "staSsid",
-        "staIp",
-        "apReady",
-        "apIp",
-        "validity"
+        "mode 1=STA/2=AP/3=AP-STA",
+        "connected",
+        "IP octets",
+        "mask octets",
+        "gateway octets",
+        "freshness <=5000ms"
       ],
-      "state": "source-integrated-compiled-runtime-unverified",
+      "state": "source-integrated-uncompiled-runtime-unverified",
       "id": "shared:screen/03002d",
       "actions": [
-        "Volver",
-        "menu"
+        "rotate",
+        "select",
+        "long-release-back"
       ],
-      "parent": "shared:screen/03001f",
-      "change_id": "AFR2-20261024-08",
+      "parent": "shared:screen/030020",
+      "change_id": "AFR2-20261030-09",
       "local_code": "0x03002d",
       "renderer": "atmega:src/ui/afr2_network_screen.c:Afr2NetworkScreen_Render",
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
       "web_fidelity": "copied-AVR-layout-library; live-1024-byte-framebuffer; physical-parity-unverified",
-      "wire_status": "ROBO2-profile2-EX01v8-compiled",
+      "wire_status": "EX01v11 source only; EEPROMv8 unchanged; no generation/build/deployment",
       "previous_delivery_status": {
         "state": "source-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
-      "build_evidence": "builds/2026-10-25-14/README.md"
+      "build_evidence": "builds/2026-10-25-14/README.md",
+      "back_semantics": "release-long and explicit Volver restore context; notices complete deferred destination only when closed",
+      "item_count": 1,
+      "variant": "bounded two pages; 1/2> and <2/2; short/long contextual return",
+      "build_evidence_applies_to": "previous delivery only; no evidence for change09",
+      "page_count": 2
     },
     {
       "name": "Datos de red AP",
@@ -1544,24 +1578,26 @@
         "apReady",
         "validity"
       ],
-      "state": "source-integrated-compiled-runtime-unverified",
+      "state": "source-integrated-uncompiled-runtime-unverified",
       "id": "shared:screen/03002e",
       "actions": [
         "Volver",
         "menu"
       ],
       "parent": "shared:screen/03001f",
-      "change_id": "AFR2-20261024-08",
+      "change_id": "AFR2-20261030-07",
       "local_code": "0x03002e",
       "renderer": "atmega:src/ui/afr2_network_screen.c:Afr2NetworkScreen_Render",
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
       "web_fidelity": "copied-AVR-layout-library; live-1024-byte-framebuffer; physical-parity-unverified",
-      "wire_status": "ROBO2-profile2-EX01v8-compiled",
+      "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
       "previous_delivery_status": {
         "state": "source-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
-      "build_evidence": "builds/2026-10-25-14/README.md"
+      "build_evidence": "builds/2026-10-25-14/README.md",
+      "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
+      "item_count": 1
     },
     {
       "name": "Reinicio",
@@ -1573,7 +1609,7 @@
         "eepromBusy",
         "espAvailable"
       ],
-      "state": "source-integrated-compiled-runtime-unverified",
+      "state": "source-integrated-uncompiled-runtime-unverified",
       "id": "shared:screen/03002f",
       "actions": [
         "Reiniciar ATMEGA",
@@ -1582,18 +1618,20 @@
         "menu"
       ],
       "parent": "shared:screen/030026",
-      "change_id": "AFR2-20261024-08",
+      "change_id": "AFR2-20261030-07",
       "local_code": "0x03002f",
       "renderer": "atmega:src/ui/afr2_screens.c:Afr2Ui_Render",
       "variant": "three16px-rows; flash-icons; selected-text800ms-dwell-40ms-scroll; explicit-Volver",
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
       "web_fidelity": "copied-AVR-layout-library; live-1024-byte-framebuffer; physical-parity-unverified",
-      "wire_status": "ROBO2-profile2-EX01v8-compiled",
+      "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
       "previous_delivery_status": {
         "state": "source-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
-      "build_evidence": "builds/2026-10-25-14/README.md"
+      "build_evidence": "builds/2026-10-25-14/README.md",
+      "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
+      "item_count": 3
     },
     {
       "id": "shared:screen/040001",
@@ -1932,15 +1970,15 @@
         "select",
         "menu"
       ],
-      "state": "source-integrated-compiled-runtime-unverified",
+      "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261025-14",
+      "change_id": "AFR2-20261030-07",
       "item_count": 4,
-      "back_semantics": "explicit-item-restores-history-selection-scroll; static-parent-is-fallback",
+      "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
       "variant": "three16px rows; icons; clipped selected scrolling; explicit Volver",
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
       "web_fidelity": "copied-AVR-layout-library; live-1024-byte-framebuffer; physical-parity-unverified",
-      "wire_status": "ROBO2-profile2-EX01v8-compiled",
+      "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
       "build_evidence": "builds/2026-10-25-14/README.md"
     },
     {
@@ -1966,20 +2004,22 @@
         "select",
         "menu"
       ],
-      "state": "source-integrated-compiled-runtime-unverified",
+      "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261025-14",
-      "item_count": 0,
-      "back_semantics": "short-press-restores-list-selection-scroll; long-opens-main",
-      "variant": "4m radar, four labelled rings,37 bins; sibling-cycle",
+      "change_id": "AFR2-20261030-07",
+      "item_count": 1,
+      "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
+      "variant": "scaled radar; applied-PWM cone; optional historical points; shared compact editor at030033",
+      "presentation_change_id": "AFR2-20261029-16",
+      "presentation_state": "AVR-compiled-not-flashed-per-user; Web-source-linked-not-built; runtime-unverified",
       "web_renderer": "web:src/features/oled/firmwareSensorRenderer.ts:renderSensorScreen",
       "web_fidelity": "copied-AVR-layout-library; live-1024-byte-framebuffer; physical-parity-unverified",
-      "wire_status": "ROBO2-profile2-EX01v8-compiled",
+      "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
       "siblings": [
         "0x030031",
         "0x030017"
       ],
-      "navigation_mode": "sibling-cycle",
+      "navigation_mode": "sibling-bounded",
       "build_evidence": "builds/2026-10-25-14/README.md"
     },
     {
@@ -2005,20 +2045,21 @@
         "select",
         "menu"
       ],
-      "state": "source-integrated-compiled-runtime-unverified",
+      "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261025-14",
-      "item_count": 0,
-      "back_semantics": "short-press-restores-list-selection-scroll; long-opens-main",
-      "variant": "five raw IR values; sibling-cycle; short-return",
+      "change_id": "AFR2-20261030-07",
+      "item_count": 1,
+      "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
+      "variant": "five raw IR values; explicit disabled/pending acquisition; zero remains valid; bounded-sibling-pages; short-return",
+      "presentation_change_id": "AFR2-20261029-18",
       "web_renderer": "web:src/features/oled/firmwareSensorRenderer.ts:renderSensorScreen",
       "web_fidelity": "copied-AVR-layout-library; live-1024-byte-framebuffer; physical-parity-unverified",
-      "wire_status": "ROBO2-profile2-EX01v8-compiled",
+      "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
       "siblings": [
         "0x030016",
         "0x030032"
       ],
-      "navigation_mode": "sibling-cycle",
+      "navigation_mode": "sibling-bounded",
       "build_evidence": "builds/2026-10-25-14/README.md"
     },
     {
@@ -2044,15 +2085,15 @@
         "select",
         "menu"
       ],
-      "state": "source-integrated-compiled-runtime-unverified",
+      "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261025-14",
-      "item_count": 0,
-      "back_semantics": "short-press-restores-servo-list; long-opens-main",
-      "variant": "local live angle control, applied/target PWM; short-return",
+      "change_id": "AFR2-20261030-07",
+      "item_count": 1,
+      "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
+      "variant": "scaled radar; applied-PWM cone; optional historical points; shared compact editor at030033",
       "web_renderer": "web:src/features/oled/firmwareSensorRenderer.ts:renderSensorScreen",
       "web_fidelity": "copied-AVR-layout-library; live-1024-byte-framebuffer; physical-parity-unverified",
-      "wire_status": "ROBO2-profile2-EX01v8-compiled",
+      "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
       "navigation_mode": "live-angle-control",
       "build_evidence": "builds/2026-10-25-14/README.md"
     },
@@ -2074,23 +2115,488 @@
         "select",
         "menu"
       ],
-      "state": "source-integrated-compiled-runtime-unverified",
+      "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261025-14",
-      "item_count": 9,
-      "back_semantics": "explicit-item-restores-history-selection-scroll; static-parent-is-fallback",
+      "change_id": "AFR2-20261030-07",
+      "item_count": 7,
+      "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
       "variant": "radar RAM settings, nine items; explicit Volver",
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
       "web_fidelity": "copied-AVR-layout-library; live-1024-byte-framebuffer; physical-parity-unverified",
-      "wire_status": "ROBO2-profile2-EX01v8-compiled",
+      "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
       "build_evidence": "builds/2026-10-25-14/README.md"
+    },
+    {
+      "id": "shared:screen/030035",
+      "local_code": "0x030035",
+      "name": "Control tactil",
+      "role": "view",
+      "renderer": "atmega:src/ui/afr2_screens.c:render_touch",
+      "fields": [
+        "direction:0..7-clockwise-from-forward;8=rest",
+        "heading:0..23-CCW-15deg-requested",
+        "heading-footer:heading*15-degrees-requested-not-measured",
+        "activation-age-ms",
+        "framebuffer"
+      ],
+      "actions": [
+        "close-touch-from-web",
+        "session-timeout"
+      ],
+      "parent": "return-to-current-context",
+      "state": "source-integrated-uncompiled-runtime-unverified",
+      "physical_evidence": false,
+      "change_id": "AFR2-20261029-27",
+      "item_count": 0,
+      "variant": "activation-1000ms-then-user-silhouette24x22-rotated-three-chevrons-and-angle-footer;AFR2-20261030-15",
+      "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderTouchScreen",
+      "web_fidelity": "same-XBM-Q8-inverse-rotation-clipping; no-differential-test",
+      "wire_status": "EX01v9 source only; no deployment",
+      "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
+      "build_evidence": "builds/2026-10-29-19/README.md"
+    },
+    {
+      "id": "shared:screen/030036",
+      "local_code": "0x030036",
+      "name": "Elegir rueda",
+      "role": "view",
+      "renderer": "atmega:src/ui/afr2_screens.c:Afr2Ui_Render",
+      "wrapper": "atmega:src/services/afr2_app.c:Afr2App_UiSnapshot",
+      "parent": "shared:screen/030014",
+      "fields": [
+        "selection wheel 0..3 = FL FR RL RR"
+      ],
+      "actions": [
+        "rotate selects wheel",
+        "short confirms and begins",
+        "long cancels to Hall menu"
+      ],
+      "state": "source-integrated-uncompiled-runtime-unverified",
+      "physical_evidence": false,
+      "change_id": "AFR2-20261030-07",
+      "item_count": 1,
+      "variant": "Reusable motor selector; reports030044 while selecting motor; short begins Hall count, long returns.",
+      "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
+      "web_fidelity": "linked-in-source; no new build or physical parity evidence",
+      "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
+      "back_semantics": "long release cancels current attempt, preserves earlier drafts and returns with notice"
+    },
+    {
+      "id": "shared:screen/030037",
+      "local_code": "0x030037",
+      "name": "Conteo Hall",
+      "role": "view",
+      "renderer": "atmega:src/ui/afr2_screens.c:Afr2Ui_Render",
+      "wrapper": "atmega:src/services/afr2_app.c:Afr2App_UiSnapshot",
+      "parent": "shared:screen/030014",
+      "fields": [
+        "prepared.lines wheel and signed pulses"
+      ],
+      "actions": [
+        "short ends measurement",
+        "long cancels to Hall menu"
+      ],
+      "state": "source-integrated-uncompiled-runtime-unverified",
+      "physical_evidence": false,
+      "change_id": "AFR2-20261030-07",
+      "item_count": 1,
+      "variant": "turn one full revolution; live signed pulses; click finishes; long cancels with notice",
+      "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
+      "web_fidelity": "linked-in-source; no new build or physical parity evidence",
+      "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
+      "back_semantics": "long release cancels current attempt, preserves earlier drafts and returns with notice"
+    },
+    {
+      "id": "shared:screen/030038",
+      "local_code": "0x030038",
+      "name": "Guardar cambios",
+      "role": "view",
+      "renderer": "atmega:src/ui/afr2_screens.c:Afr2Ui_Render",
+      "wrapper": "atmega:src/services/afr2_app.c:Afr2App_UiSnapshot",
+      "parent": "return-to-current-context",
+      "fields": [
+        "selection 0=Si 1=No",
+        "confirmWait",
+        "service actions and return context"
+      ],
+      "actions": [
+        "rotate selects Si/No",
+        "short executes selected service",
+        "long cannot bypass decision"
+      ],
+      "state": "source-integrated-uncompiled-runtime-unverified",
+      "physical_evidence": false,
+      "change_id": "AFR2-20261030-07",
+      "item_count": 1,
+      "variant": "mandatory two-option save/discard dialog; no Volver; saving status until EEPROM commit",
+      "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
+      "web_fidelity": "linked-in-source; no new build or physical parity evidence",
+      "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
+      "back_semantics": "mandatory save/discard; long ignored; exit only after choice and save commit"
+    },
+    {
+      "id": "shared:screen/030039",
+      "local_code": "0x030039",
+      "name": "Bateria",
+      "role": "menu",
+      "renderer": "atmega:src/ui/afr2_screens.c:Afr2Ui_Render",
+      "wrapper": "atmega:src/services/afr2_app.c:Afr2App_UiSnapshot",
+      "parent": "shared:screen/030026",
+      "fields": [
+        "battery state",
+        "raw ADC10",
+        "millivolts nominal AVCC 5000",
+        "ageMs",
+        "calibrated=false"
+      ],
+      "actions": [
+        "rotate",
+        "select",
+        "long opens main menu",
+        "Volver explicit"
+      ],
+      "item_count": 3,
+      "state": "source-integrated-uncompiled-runtime-unverified",
+      "physical_evidence": false,
+      "change_id": "AFR2-20261030-07",
+      "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
+      "web_fidelity": "linked source; regeneration and physical parity pending",
+      "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
+      "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed"
+    },
+    {
+      "id": "shared:screen/03003a",
+      "local_code": "0x03003a",
+      "name": "Medicion bateria",
+      "role": "view",
+      "renderer": "atmega:src/ui/afr2_screens.c:Afr2Ui_Render",
+      "wrapper": "atmega:src/services/afr2_app.c:Afr2App_UiSnapshot",
+      "parent": "shared:screen/030039",
+      "fields": [
+        "battery state",
+        "raw ADC10",
+        "millivolts nominal AVCC 5000",
+        "ageMs",
+        "calibrated=false"
+      ],
+      "actions": [
+        "rotate",
+        "select",
+        "long opens main menu",
+        "Volver explicit"
+      ],
+      "item_count": 1,
+      "state": "source-integrated-uncompiled-runtime-unverified",
+      "physical_evidence": false,
+      "change_id": "AFR2-20261030-07",
+      "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
+      "web_fidelity": "linked source; regeneration and physical parity pending",
+      "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
+      "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed"
+    },
+    {
+      "id": "shared:screen/010003",
+      "local_code": "0x010003",
+      "name": "Controles rapidos",
+      "role": "view",
+      "parent": "shared:screen/010001",
+      "renderer": "atmega:src/ui/afr2_screens.c:Afr2Ui_Render",
+      "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
+      "fields": [
+        "selection",
+        "firstVisible",
+        "snapshot",
+        "revision"
+      ],
+      "actions": [
+        "rotate",
+        "select",
+        "long-release-back"
+      ],
+      "variant": "seven bounded cards with page indicator; mode selector, actual state and pending action",
+      "item_count": 7,
+      "state": "source-integrated-uncompiled-runtime-unverified",
+      "physical_evidence": false,
+      "change_id": "AFR2-20261030-07",
+      "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
+      "visible_rows": 0,
+      "navigation_mode": "carousel",
+      "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed"
+    },
+    {
+      "id": "shared:screen/03003b",
+      "local_code": "0x03003b",
+      "name": "Opciones radar",
+      "role": "menu",
+      "parent": "shared:screen/030031",
+      "renderer": "atmega:src/ui/afr2_screens.c:Afr2Ui_Render",
+      "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
+      "fields": [
+        "selection",
+        "firstVisible",
+        "snapshot",
+        "revision"
+      ],
+      "actions": [
+        "rotate",
+        "select",
+        "long-release-back"
+      ],
+      "variant": "range and shared servo angle editor",
+      "item_count": 2,
+      "state": "source-integrated-uncompiled-runtime-unverified",
+      "physical_evidence": false,
+      "change_id": "AFR2-20261030-07",
+      "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
+      "visible_rows": 3,
+      "navigation_mode": "menu",
+      "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed"
+    },
+    {
+      "id": "shared:screen/03003c",
+      "local_code": "0x03003c",
+      "name": "Alcance grafico",
+      "role": "menu",
+      "parent": "shared:screen/03003b",
+      "renderer": "atmega:src/ui/afr2_screens.c:Afr2Ui_Render",
+      "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
+      "fields": [
+        "selection",
+        "firstVisible",
+        "snapshot",
+        "revision"
+      ],
+      "actions": [
+        "rotate",
+        "select",
+        "long-release-back"
+      ],
+      "variant": "4m,2m,1m,0.5m; nominal acquisition range unchanged",
+      "item_count": 4,
+      "state": "source-integrated-uncompiled-runtime-unverified",
+      "physical_evidence": false,
+      "change_id": "AFR2-20261030-07",
+      "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
+      "visible_rows": 3,
+      "navigation_mode": "menu",
+      "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed"
+    },
+    {
+      "id": "shared:screen/03003d",
+      "local_code": "0x03003d",
+      "name": "Elegir modo",
+      "role": "menu",
+      "parent": "shared:screen/010003",
+      "renderer": "atmega:src/ui/afr2_screens.c:Afr2Ui_Render",
+      "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
+      "fields": [
+        "selection",
+        "firstVisible",
+        "revision",
+        "snapshot"
+      ],
+      "actions": [
+        "rotate",
+        "select-physical",
+        "long-release-back"
+      ],
+      "item_count": 3,
+      "variant": "Reposo, Manual, Volver; notification after service acceptance",
+      "state": "source-integrated-uncompiled-runtime-unverified",
+      "physical_evidence": false,
+      "change_id": "AFR2-20261030-07",
+      "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
+      "back_semantics": "context history; long release or Volver"
+    },
+    {
+      "id": "shared:screen/03003e",
+      "local_code": "0x03003e",
+      "name": "Prueba encoder",
+      "role": "view",
+      "parent": "shared:screen/030011",
+      "renderer": "atmega:src/ui/afr2_screens.c:Afr2Ui_Render",
+      "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
+      "fields": [
+        "selection",
+        "revision",
+        "snapshot"
+      ],
+      "actions": [
+        "rotate",
+        "select",
+        "long-release-back"
+      ],
+      "state": "source-integrated-uncompiled-runtime-unverified",
+      "change_id": "AFR2-20261030-07",
+      "physical_evidence": false,
+      "item_count": 1,
+      "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
+      "variant": "physical events after entry; first long proves, next exits; rotate/click explicit return"
+    },
+    {
+      "id": "shared:screen/03003f",
+      "local_code": "0x03003f",
+      "name": "Prueba ESP",
+      "role": "menu",
+      "parent": "shared:screen/030011",
+      "renderer": "atmega:src/ui/afr2_screens.c:Afr2Ui_Render",
+      "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
+      "fields": [
+        "selection",
+        "revision",
+        "snapshot"
+      ],
+      "actions": [
+        "rotate",
+        "select",
+        "long-release-back"
+      ],
+      "state": "source-integrated-uncompiled-runtime-unverified",
+      "change_id": "AFR2-20261030-07",
+      "physical_evidence": false,
+      "item_count": 3,
+      "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
+      "variant": "correlated ESP diagnostic; start, timeout, return; asynchronous result notice"
+    },
+    {
+      "id": "shared:screen/030040",
+      "local_code": "0x030040",
+      "name": "Potencia manual",
+      "role": "view",
+      "parent": "shared:screen/030008",
+      "renderer": "atmega:src/ui/afr2_screens.c:Afr2Ui_Render",
+      "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
+      "fields": [
+        "selection",
+        "revision",
+        "snapshot"
+      ],
+      "actions": [
+        "rotate",
+        "select",
+        "long-release-back"
+      ],
+      "state": "source-integrated-uncompiled-runtime-unverified",
+      "change_id": "AFR2-20261030-07",
+      "physical_evidence": false,
+      "item_count": 1,
+      "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
+      "variant": "shared percent representation 0..255 and progress; controller units unchanged"
+    },
+    {
+      "id": "shared:screen/030041",
+      "local_code": "0x030041",
+      "name": "Datos de red",
+      "parent": "shared:screen/030020",
+      "role": "view",
+      "renderer": "atmega:src/ui/afr2_screens.c:Afr2Ui_Render",
+      "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
+      "fields": [
+        "prepared.labels[0] full SSID",
+        "prepared.lines[1] RSSI dBm or unknown",
+        "prepared.lines[2] security",
+        "prepared.row_security[0] 0..6",
+        "freshness <=5000ms"
+      ],
+      "actions": [
+        "rotate",
+        "select",
+        "long-release-back"
+      ],
+      "change_id": "AFR2-20261030-09",
+      "state": "source-integrated-uncompiled-runtime-unverified",
+      "physical_evidence": false,
+      "item_count": 1,
+      "wire_status": "EX01v11 source only; EEPROMv8 unchanged; no generation/build/deployment",
+      "back_semantics": "release-long and explicit Volver restore context; notices complete deferred destination only when closed",
+      "variant": "scrolling SSID; current STA or active AP; no fictitious AP RSSI; lock only protected",
+      "credential_variant": "AFR2-20261030-15: pedido local explicito; SSID y clave guardados ESP, labels[0..2], privado, borrado al salir/30s."
+    },
+    {
+      "id": "shared:screen/030042",
+      "local_code": "0x030042",
+      "name": "Buscar redes",
+      "parent": "shared:screen/03001F",
+      "role": "menu",
+      "renderer": "atmega:src/ui/afr2_screens.c:Afr2Ui_Render",
+      "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
+      "fields": [
+        "snapshot",
+        "selection",
+        "revision"
+      ],
+      "actions": [
+        "rotate",
+        "select",
+        "long-release-back"
+      ],
+      "change_id": "AFR2-20261030-09",
+      "state": "source-integrated-uncompiled-runtime-unverified",
+      "physical_evidence": false,
+      "item_count": 3,
+      "wire_status": "EX01v11 source only; EEPROMv8 unchanged; no generation/build/deployment",
+      "back_semantics": "release-long and explicit Volver restore context; notices complete deferred destination only when closed",
+      "variant": "three16px-rows; dynamic selection/count; physical actions"
+    },
+    {
+      "id": "shared:screen/030043",
+      "local_code": "0x030043",
+      "name": "Cambiar modo",
+      "parent": "shared:screen/03001F",
+      "role": "view",
+      "renderer": "atmega:src/ui/afr2_screens.c:Afr2Ui_Render",
+      "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
+      "fields": [
+        "selection0..2",
+        "observed mode",
+        "operation pending/result"
+      ],
+      "actions": [
+        "rotate",
+        "select",
+        "long-release-back"
+      ],
+      "change_id": "AFR2-20261030-09",
+      "state": "source-integrated-uncompiled-runtime-unverified",
+      "physical_evidence": false,
+      "item_count": 3,
+      "wire_status": "EX01v11 source only; EEPROMv8 unchanged; no generation/build/deployment",
+      "back_semantics": "release-long and explicit Volver restore context; notices complete deferred destination only when closed",
+      "variant": "STA / AP / AP-STA; bounded rotation and underline; physical short requests, long returns",
+      "remote_action_permission": "denied; local library navigation only"
+    },
+    {
+      "id": "shared:screen/030044",
+      "local_code": "0x030044",
+      "name": "Elegir un motor",
+      "role": "view",
+      "renderer": "atmega:src/ui/afr2_screens.c:Afr2MotorSelector_Render",
+      "fields": [
+        "selection/draft: motor index0..3 FL FR RL RR"
+      ],
+      "actions": [
+        "rotate: cyclic selection",
+        "short: confirm current motor in calling flow",
+        "long-release: cancel and return through existing context guard"
+      ],
+      "variant": "Reusable selector for AFR2_A_WHEEL editors and Hall pick; selected motor is not applied until short confirmation.",
+      "status": "source only; linked Web raster; no build or hardware evidence",
+      "parent": "return-to-current-context",
+      "state": "source-integrated-uncompiled-runtime-unverified",
+      "physical_evidence": false,
+      "change_id": "AFR2-20261030-18",
+      "item_count": 4,
+      "navigation_mode": "motor-selector",
+      "web_renderer": "web:src/features/oled/motorSelector.ts:renderMotorSelector",
+      "back_semantics": "Long release cancels draft and returns to caller; Hall cancels only current attempt. Mandatory dirty-change guards on caller remain."
     }
   ],
+  "battery_screens_change": "AFR2-20261029-26; appended nodes 0x030039 and 0x03003a; source only",
   "web_consumer": {
     "changeId": "AFR2-20261024-09",
     "viewer": "web:src/features/oled/LiveOledViewer.tsx",
     "decoder": "web:src/features/oled/remoteSnapshot.ts",
-    "availability": "59 identidades (48 nodos + 11 avisos) en catÃƒÆ’Ã‚Â¡logo compartido; copia actual de biblioteca AVR y visor framebuffer; sin prueba fÃƒÆ’Ã‚Â­sica",
+    "availability": "59 identidades (48 nodos + 11 avisos) en catÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡logo compartido; copia actual de biblioteca AVR y visor framebuffer; sin prueba fÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â­sica",
     "profile": "contracts/WEB_OLED_CONSUMER.md",
     "verification": "source-compiled-runtime-unverified",
     "catalogue": "web:src/features/oled/screenCatalog.ts",
@@ -2118,5 +2624,17 @@
     "physical_evidence": false,
     "scroll": "800ms dwell,1px/40ms,800ms end pause; only selected item",
     "remoteCredentialCapture": false
+  },
+  "quick_controls_change": "AFR2-20261029-27; appended010003/03003b/03003c, existing IDs preserved",
+  "wifi_20261030_09": {
+    "contract": "../contracts/WIFI_UI_11.md",
+    "nodes": 68,
+    "new_codes": [
+      "030041",
+      "030042",
+      "030043"
+    ],
+    "generator": "prepared-not-executed",
+    "physical_evidence": false
   }
 }

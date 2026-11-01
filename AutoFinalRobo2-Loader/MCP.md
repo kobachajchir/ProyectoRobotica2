@@ -1,4 +1,16 @@
-# AFR2 Loader 0.9.2 — conexión con Codex
+> **1.1.2 / AFR2-20261029-13:** KEY/RST del ESP siempre requiere intervención local, restaura la ventana minimizada y presenta el aviso al frente. Ni skipManualChecks ni Autoaceptar ni listenBoot:false lo omiten. Con escucha se pide Continuar antes de abrirla y se espera arranque real; sin escucha o con flasher Mega se exige casilla local y Confirmar antes de consultar ROM. El flasheo ATmega conserva su flujo sin este requisito. Esto sustituye la omisión del botón Continuar documentada en 1.1.1. [Ayuda](MANUAL.html#esp-intervencion).
+
+> **1.1.1 / AFR2-20261029-12:** nueva herramienta `loader_request_session_options` con `skipManualChecks` (booleano) y `requestId`. Activar muestra SIEMPRE una advertencia local en la GUI: el servidor no puede aceptarla y Autoaceptar no la omite. Se retorna jobId; consultar `loader_job` y `loader_status.skipManualChecks`. No iniciar operaciones antes de la aceptación local. Desactivar (`false`, requestId nuevo) restablece las confirmaciones sin advertencia. La autorización termina al desmarcar/cerrar la app; no se persiste. Ejemplo: `{"skipManualChecks":true,"requestId":"checks-01"}`. Durante el diálogo el job pasa a `awaiting_local_confirmation`; al finalizar queda `completed` o `rejected`.
+>
+> Aceptar da por confirmados los diálogos manuales y sus casillas para GUI/MCP, incluido continuar sin backup si esa es la elección y el botón Continuar antes de escuchar KEY/RST. No cambia la elección Backup ni elimina firma, capacidad, hashes, recibos, errores, verificación o acciones físicas. El software no mide cableado, aislación o alimentación. La advertencia no utiliza el asistente genérico ni las preferencias de casillas; requiere clic humano y queda registrada.
+
+> **1.1.0 / AFR2-20261029-01:** build_web_fs conserva su ID y usa el lanzador del perfil (FsScript, FsSourceDir, FsScriptHost, FsScriptArguments). [Contrato y ejemplos](FILESYSTEM_SCRIPTS.md).
+
+> **AFR2-20261028-23 / 0.9.5 — Servidor MCP:** el alta ofrece un prompt genérico con comando/args stdio de Mcp.ps1. Ejecutar prueba genera un prompt para Codex con sessionId/testId de cinco minutos y lo abre para copiar; no ejecuta una carga ni confirma conexión por prepararlo. Las operaciones de flash exigen preparación compilada/revisada de su sección en la misma sesión también desde MCP. El flasher se compila dentro de su instalación; backups conservan sus propias comprobaciones. La verificación ESP es el hash integrado de write_flash; sin read_mac/verify_flash posterior. No cambia la aprobación MCP ni su esquema de herramientas.
+
+> **0.9.5 / AFR2-20261028-16:** la GUI organiza solicitudes en tabla y separa conector/conexión comprobada. Preferencias de casillas en Opciones; los jobs serie comprueban disponibilidad del COM tras cerrar el monitor. El envío de monitor es exclusivamente manual desde la GUI: no se agrega herramienta TX MCP. Snapshot de captura incorpora bytesSent/transmitLog/transmitBinary; RX sigue separado. Aprobación, deduplicación y operaciones disponibles se conservan. Fuente sin compilar ni ejecutar.
+
+# AFR2 Loader 0.9.5 — conexión con Codex
 
 El servidor pertenece al mismo módulo y comparte la sesión del Loader gráfico.
 
@@ -170,7 +182,7 @@ reconecta el COM al finalizar una carga; se hace manualmente desde la ventana.
 | `flash_mega_backup` | Carga la aplicación del último backup completado; muestra origen/destino, comprueba hashes/hfuse y contrasta lectura posterior completa. |
 | `restore_mega_product` | Alias de flash_mega_backup desde0.9. No usa antiguas copias de HEX de PC. |
 | `build_esp` | Familia Web: firmware PlatformIO con el layout elegido. Familia AT: revisar BIN del paquete precompilado, sin compilación Arduino. |
-| `build_web_fs` | Requiere FS activado. Web: build:esp, promoción y buildfs. AT: revisión del paquete del proveedor. |
+| `build_web_fs` | Requiere FS activado. Firmware propio: script configurable del perfil y buildfs; no exige Web ni npm. AT: revisión del paquete del proveedor. |
 | `build_all` | ATmega y preparación ESP según familia; Web/FS solo para familia Web con FS activado. Se detiene ante un error. |
 | `probe_esp` | Asistente de conexión, escucha opcional y consulta ROM/flash. No escribe flash. |
 | `flash_mega` | Asistente de cableado, avrdude y verificación. |
@@ -318,3 +330,26 @@ compilar esta integración; no se actualiza automáticamente una ventana ya abie
 La pestaña Conversor HEX / ASCII es una utilidad GUI local sin asociación a comandos.
 No agrega herramienta MCP, jobs, tráfico serie ni logs del contenido pegado.
 Puede usarse durante una operación sin tocar sus recursos. Fuente sin ejecutar.
+
+
+## Feedback de carga0.9.3
+La GUI muestra actividad de procesos, mensajes parciales y porcentaje informado de escritura. El formato MCP no cambia: loader_job conserva salida, etapa y resultado; el porcentaje visual no declara verificación ni crea nuevas operaciones serie. Fuente sin compilar/ejecutar en esta entrega.
+
+
+## BIN AT reconocido0.9.4
+AtPackage también acepta el BIN completo Ai-Thinker AT v1.5.4.1, identificado por hash y tamaño. Se conserva el resto del esquema MCP, perfil y comprobaciones. Otros BIN requieren manifiesto JSON. La selección no inicia escritura. Fuente sin compilar/ejecutar.
+
+
+
+
+
+## Loader1.1.3 — Verificar flasher (AFR2-20261029-21)
+
+En **Flasher ATmega → Verificar flasher**, el Loader compara la flash instalada con la referencia compilada para los baudios seleccionados, por bootloader y avrdude `-n -D -U flash:v:...:i`. Requiere firma y confirmación de bytes coincidentes. Reinicia el Mega por auto-reset; no escribe firmware, EEPROM ni fuses y no consulta al ESP. Un firmware distinto/otra variante no se acredita. El flasher transparente existente no necesita actualización. GUI/MCP compilados; sin prueba COM de esta revisión.
+
+Desde Codex: `loader_request_operation` con `action: verify_mega_flasher`, `port` y `requestId` nuevo; consultar `loader_job` hasta completar. Se aplican aprobación/exclusión del COM y confirmaciones vigentes. No confundir el último registro local con una comprobación nueva del dispositivo.
+
+
+## Loader1.1.4 — Configuración y carga explícitas (AFR2-20261029-22)
+
+Elegir paquete/sección solo cambia configuración. La selección de paquete invalida la revisión anterior; pulsá Consultar tamaño de flash/Detectar ESP y luego Revisar paquete AT o Compilar según corresponda. La carga se inicia desde Flashear; selección/preparación no abren automáticamente detección ni escritura. Compilar/Revisar con capacidad pendiente informa el requisito sin iniciar una consulta.

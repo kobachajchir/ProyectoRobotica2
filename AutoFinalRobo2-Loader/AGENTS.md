@@ -16,7 +16,10 @@ Comparte el único Git global: no inicializar un repositorio ni submódulo aquí
 - Perfiles, ejecutables y registros de usuario van a LOCALAPPDATA, no a Git.
 - SerialCapture es dueño exclusivo del COM y sus archivos; esperar el cierre
   antes de entregar el puerto a esptool/avrdude, también en operaciones MCP.
-  El monitor es de lectura: no enviar comandos ni activar DTR/RTS por defecto.
+  Desde el pedido AFR2-20261028-16 / Loader0.9.5 el monitor admite envío manual
+  explícito por su mismo worker, con formatos ASCII/HEX/números, CR/LF y repetición
+  cancelable. No enviar al abrir, reabrir o desde MCP; DTR/RTS siguen inactivos.
+  Registrar TX por separado de RX y cancelar pendientes antes de ceder el COM.
 - Un mensaje UART no acredita carga verificada. Mantener eventos tipados de
   escritura/verificación y el error original/código/salida en los informes.
 - Loader0.9: separar mega_bridge (D18/D19, RESET libre, baud fijo) de mega_reset

@@ -15,12 +15,11 @@ namespace AFR2Loader
         readonly Label bridgeServiceState = new Label { Dock = DockStyle.Fill, AutoEllipsis = true };
         TabPage bridgeTab;
         bool syncingBridge;
-        static readonly object[] TransportLabels = { "Puente serial del Mega — D0/D1, RESET a GND", "Flasher en ATmega — D18/D19, RESET libre", "Adaptador USB–TTL externo — lógica 3,3 V" };
+        static readonly object[] TransportLabels = { "Puente serial del Mega — D0/D1, RESET a GND", "Flasher en ATmega — D18/D19, RESET libre", "Adaptador USB–TTL externo" };
         Control CreateEspMethodSelector()
         {
-            var row = new FlowLayoutPanel { Dock = DockStyle.Fill, WrapContents = false };
-            row.Controls.Add(new Label { Text = "Método ESP", AutoSize = true, Margin = new Padding(0, 8, 8, 0) });
-            operationTransport.Items.AddRange(TransportLabels); row.Controls.Add(operationTransport); idleControls.Add(operationTransport);
+            var row = UiRow(); row.WrapContents = true;
+            operationTransport.Items.AddRange(TransportLabels); row.Controls.Add(UiField("Método de flasheo ESP", operationTransport)); idleControls.Add(operationTransport);
             operationTransport.SelectionChangeCommitted += (s, e) => ChooseEspTransport(operationTransport.SelectedIndex);
             AddButton(row, "Configurar flasher...", () => { if (bridgeTab != null) mainTabs.SelectedTab = bridgeTab; }, 180);
             return row;
@@ -35,11 +34,11 @@ namespace AFR2Loader
                 await StopSerialMonitor("Cambio manual de método ESP; liberar COM antes de recablear");
                 string detail = selected == 1
                     ? "MÉTODO: flasher ejecutándose en ATmega.\r\n\r\nQUITAR RESET Mega→GND: RESET queda LIBRE.\r\nD18/TX1→E_RX central (RX ESP).\r\nE_TX central (TX ESP)→D19/RX1.\r\nRetirar cables D0/D1 al ESP y jumpers paralelos.\r\n\r\nEl flasher temporal debe estar cargado al baud elegido. Si falta, usar Cargar flasher en ATmega. Luego KEY/RST del ESP y consulta ROM; no escuchar 74880 por este puente fijo."
-                    : selected == 2 ? "MÉTODO: adaptador USB–TTL externo con lógica 3,3 V.\r\n\r\nElegí el COM del adaptador; el USB del Mega solo alimenta el shield. VCC del adaptador sin conectar.\r\nTX del adaptador→RX ESP, TX ESP→RX del adaptador y GND común, por la ruta identificada.\r\nAislá D18/D19, D0/D1 y cualquier otro emisor paralelo al ESP. No unir RESET Mega a GND por este método.\r\nEl asistente KEY/RST puede escuchar el arranque a 74880."
+                    : selected == 2 ? "MÉTODO: adaptador USB–TTL externo.\r\n\r\nElegí el COM del adaptador; el USB del Mega solo alimenta el shield. VCC del adaptador sin conectar.\r\nTX del adaptador→RX ESP, TX ESP→RX del adaptador y GND común, por la ruta identificada.\r\nAislá D18/D19, D0/D1 y cualquier otro emisor paralelo al ESP. No unir RESET Mega a GND por este método.\r\nEl asistente KEY/RST puede escuchar el arranque a 74880."
                     : "MÉTODO: usar el conversor USB-serie del Mega con el ATmega detenido.\r\n\r\nUnir RESET del Mega a GND (NO RST del ESP).\r\nRetirar el enlace D18/D19.\r\nD0/RX0, salida del conversor USB→RX ESP por ruta adaptada.\r\nTX ESP→D1/TX0, entrada del conversor USB.\r\nSin jumpers/emisores paralelos.\r\n\r\nEste sentido corresponde al conversor USB, no al TX/RX del micro detenido. El asistente de KEY/RST y escucha 74880 se aplica a este método.";
                 var checks = new[] { "Desconecté alimentación para recablear y mantengo potencia de actuadores desconectada.",
-                    selected == 1 ? "RESET Mega LIBRE; D18→E_RX y E_TX→D19; D0/D1 al ESP retirados." : selected == 2 ? "USB–TTL de lógica 3,3 V, VCC sin conectar, TX/RX cruzados y GND; enlace serie Mega aislado." : "RESET Mega a GND; D18/D19 retirados; D0→RX ESP y TX ESP→D1 por ruta adaptada.",
-                    "Ruta de niveles identificada: no TX de 5 V al RX directo ESP. Masa común y alimentación lógica identificadas.",
+                    selected == 1 ? "RESET Mega LIBRE; D18→E_RX y E_TX→D19; D0/D1 al ESP retirados." : selected == 2 ? "USB–TTL externo, VCC sin conectar, TX/RX cruzados y GND; enlace serie Mega aislado." : "RESET Mega a GND; D18/D19 retirados; D0→RX ESP y TX ESP→D1 por ruta adaptada.",
+                    "Masa común y alimentación lógica identificadas.",
                     "Retiré jumpers/emisores paralelos. Entiendo que elegir el método no mueve cables ni flashea por sí solo." };
                 if (Confirm("Confirmar método de flasheo ESP", detail, checks))
                 { SetProfileValue("EspTransport", next); Log("Método ESP seleccionado tras checklist: " + next + ". Cambiarlo no inició una carga ni abrió el puerto."); }
@@ -49,44 +48,36 @@ namespace AFR2Loader
         }
         void InitializeMegaBridge(TabControl tabs)
         {
-            bridgeTab = new TabPage("Flasher ATmega") { Padding = new Padding(16) };
-            var layout = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 5 };
-            foreach (int height in new[] { 52, 134, 83 }) layout.RowStyles.Add(new RowStyle(SizeType.Absolute, height));
-            layout.RowStyles.Add(new RowStyle(SizeType.Percent, 100)); layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 100));
-            layout.Controls.Add(new Label { Text = "Programar el ESP usando el Mega del auto", Dock = DockStyle.Fill, Font = new Font(Font.FontFamily, 17, FontStyle.Bold) }, 0, 0);
-            var options = new FlowLayoutPanel { Dock = DockStyle.Fill, WrapContents = true };
-            options.Controls.Add(new Label { Text = "Conexión ESP", AutoSize = true, Margin = new Padding(0, 8, 8, 0) });
-            bridgeTransport.Items.AddRange(TransportLabels);
-            options.Controls.Add(bridgeTransport); idleControls.Add(bridgeTransport); options.SetFlowBreak(bridgeTransport, true);
-            options.Controls.Add(new Label { Text = "Baudios del flasher", AutoSize = true, Margin = new Padding(0, 8, 8, 0) });
-            bridgeSpeed.Items.AddRange(new object[] { "115200", "57600", "38400", "9600" }); options.Controls.Add(bridgeSpeed); idleControls.Add(bridgeSpeed);
-            var speedHint = new Label { Text = "Cambiar esta velocidad requiere volver a cargar el flasher. El COM se elige en Operación.", Width = 570, Height = 36, Margin = new Padding(12, 5, 0, 0) };
-            options.Controls.Add(speedHint); options.SetFlowBreak(speedHint, true);
-            options.Controls.Add(backupBeforeFlasher); idleControls.Add(backupBeforeFlasher);
-            layout.Controls.Add(options, 0, 1);
-            var actions = new FlowLayoutPanel { Dock = DockStyle.Fill, WrapContents = true };
-            AddButton(actions, "Cargar flasher en ATmega...", InstallFlasher, 260);
-            actions.Controls.Add(CreateFirmwareFlashMenu(false));
-            AddButton(actions, "Detectar ESP sin escribir", () => { target.SelectedIndex = 1; DetectEsp(); }, 215);
-            AddButton(actions, "Elegir puerto / imágenes", () => tabs.SelectedIndex = 0, 210);
-            AddButton(actions, "Manual y plan de prueba", OpenManual, 210);
-            AddButton(actions, "Preferencias...", () => { if (preferencesTab != null) mainTabs.SelectedTab = preferencesTab; }, 145);
+            bridgeTab = new TabPage("Flasher ATmega") { Padding = new Padding(UiInset) };
+            var layout = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 6 };
+            layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 54)); layout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+            layout.RowStyles.Add(new RowStyle(SizeType.AutoSize)); layout.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+            layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 118)); layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 52));
+            var heading = UiRow(); heading.Controls.Add(new Label { Text = "Flasher temporal del Mega", AutoSize = true, Font = new Font(Font.FontFamily, 17, FontStyle.Bold), Margin = new Padding(0, 5, 24, 0) });
+            AddButton(heading, "Información del flasher", () => OpenManualSection("mega-flasher"), 240); layout.Controls.Add(heading, 0, 0);
+            var settingsPanel = new TableLayoutPanel { Dock = DockStyle.Top, AutoSize = true, Padding = new Padding(UiInset), BackColor = Color.White, ColumnCount = 1, RowCount = 3 };
+            for (int i = 0; i < 3; i++) settingsPanel.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+            bridgeTransport.Items.AddRange(TransportLabels); idleControls.Add(bridgeTransport);
+            settingsPanel.Controls.Add(UiField("Método de programación", bridgeTransport), 0, 0);
+            bridgeSpeed.Items.AddRange(new object[] { "115200", "57600", "38400", "9600" }); idleControls.Add(bridgeSpeed);
+            var baudRow = UiRow(); baudRow.Controls.Add(UiField("Baudios del flasher", bridgeSpeed));
+            baudRow.Controls.Add(new Label { Text = "NOTA IMPORTANTE: cambiar la velocidad requiere volver a cargar el flasher.", ForeColor = Color.Firebrick, Font = new Font(Font, FontStyle.Bold), AutoSize = true, MaximumSize = new Size(610, 0), Margin = new Padding(8, 9, 0, 0) });
+            settingsPanel.Controls.Add(baudRow, 0, 1); backupBeforeFlasher.Margin = new Padding(0, 16, 0, 8); settingsPanel.Controls.Add(backupBeforeFlasher, 0, 2); idleControls.Add(backupBeforeFlasher);
+            layout.Controls.Add(settingsPanel, 0, 1);
+            var actions = UiRow();
+            AddButton(actions, "Verificar flasher", VerifyFlasher, 200);
+            AddButton(actions, "Detectar ESP sin escribir", () => { SelectOperationTarget(1); ShowOperation(); DetectEsp(); }, 255);
             layout.Controls.Add(actions, 0, 2);
-            var guide = new TextBox { Dock = DockStyle.Fill, Multiline = true, ReadOnly = true, ScrollBars = ScrollBars.Vertical, BackColor = Color.White,
-                Text = "PRUEBA A — PUENTE POR SOFTWARE\r\n\r\n1. Elegí el COM del Mega. Configurá el HEX del auto para cargarlo al terminar o usá un backup que contenga ese programa. Desconectá potencia de actuadores.\r\n2. Quitá RESET Mega→GND. Conservá D18/TX1→E_RX y E_TX→D19/RX1 por la ruta de niveles del shield. Retirá cables D0/D1 al ESP y jumpers paralelos. TX y RX se cruzan por función; no por la posición física del header.\r\n3. Elegí Backup de ATmega antes de cargar. Marcado: lee flash/hfuse dos veces y conserva un respaldo contrastado antes de escribir; si falla, se detiene. Desmarcado: avisa que no creará backup nuevo. No mostrar de nuevo y el valor predeterminado se cambian en Preferencias. Pulsá Cargar flasher en ATmega: compila solo el servicio y pide confirmar su escritura/verificación.\r\n4. Tras éxito se selecciona la conexión por software y el mismo baud para esptool. Pulsá Detectar ESP sin escribir. El asistente indica KEY/K + RST del ESP; no pide RESET-GND ni escucha a 74880.\r\n5. Si ROM/flash responden, elegí los BIN y cargá ESP primero; después filesystem si corresponde. Cada carga consulta y verifica. No continuar después de una consulta fallida.\r\n6. Al terminar o abandonar: Flashear Firmware ATmega carga el HEX configurado; la flecha del mismo botón ofrece Flashear último backup. El respaldo es lo que estaba en el Mega cuando se leyó: puede ser otro flasher. No incluye EEPROM ni programa fuses/bootloader. Revisá qué contiene antes de operar. KEY libre y resetear ESP para ejecutar flash. El auto no está operativo mientras el Mega ejecuta el flasher.\r\n\r\nPRUEBA B — ALTERNATIVA FÍSICA, SOLO SI A FALLA\r\n\r\nGuardar logs y detenerse. Desconectar alimentación antes de recablear; identificar adaptación de nivel. En una conexión directa, el divisor es solo para TX de 5 V→RX ESP (ejemplo 1k/2k). No duplicar el traductor del shield ni usar resistencias como fuente. Elegir explícitamente Mega en RESET, luego RESET→GND y ruta D0→RX ESP / TX ESP→D1 adaptada. Nunca mantener ese reset en el modo por software.\r\n\r\nLas marcas de verificación corresponden a la acción realizada, no prueban que el cableado haya sido medido. No hay cambio automático a la prueba B ni restauración automática al cerrar." };
-            layout.Controls.Add(guide, 0, 3); layout.Controls.Add(bridgeServiceState, 0, 4); bridgeTab.Controls.Add(layout); tabs.TabPages.Add(bridgeTab);
-            bridgeTransport.SelectionChangeCommitted += (s, e) => {
-                if (syncingBridge || busy || pendingJob != null) return;
-                ChooseEspTransport(bridgeTransport.SelectedIndex);
-            };
-            bridgeSpeed.SelectionChangeCommitted += (s, e) => {
-                if (syncingBridge || busy || pendingJob != null) return;
-                ReadSettings(); SetProfileValue("BridgeBaud", bridgeSpeed.Text); SyncBridgeOptions();
-            };
+            layout.Controls.Add(new Label { Text = "1. Elegí método y baudios.\r\n2. Cargá el flasher temporal o verificá el que ya está instalado.\r\n3. Detectá el ESP y continuá desde Operación.\r\n4. Al terminar, restaurá el backup o el firmware del auto desde Operación.", Dock = DockStyle.Top, AutoSize = true, Padding = new Padding(0, 16, 0, 0), ForeColor = Color.FromArgb(71, 85, 105) }, 0, 3);
+            layout.Controls.Add(bridgeServiceState, 0, 4);
+            var footer = UiRow(); footer.FlowDirection = FlowDirection.RightToLeft; footer.Dock = DockStyle.Fill;
+            AddButton(footer, "Cargar flasher en ATmega...", InstallFlasher, 285); AddButton(footer, "Flashear último backup", () => { ShowOperation(); FlashMegaBackup(); }, 245); layout.Controls.Add(footer, 0, 5);
+            bridgeTab.Controls.Add(layout); tabs.TabPages.Add(bridgeTab);
+            bridgeTransport.SelectionChangeCommitted += (s, e) => ChooseEspTransport(bridgeTransport.SelectedIndex);
+            bridgeSpeed.SelectionChangeCommitted += (s, e) => { if (syncingBridge) return; ReadSettings(); SetProfileValue("BridgeBaud", Convert.ToString(bridgeSpeed.SelectedItem)); SetProfileValue("EspBaud", Convert.ToString(bridgeSpeed.SelectedItem)); SyncBridgeOptions(); };
             ports.SelectedIndexChanged += (s, e) => UpdateBridgeServiceState();
             settings.CellEndEdit += (s, e) => { if (!syncingBridge) { ReadSettings(); SyncBridgeOptions(); } };
-            tabs.SelectedIndexChanged += (s, e) => { if (tabs.SelectedTab == bridgeTab) { ReadSettings(); SyncBridgeOptions(); } };
-            SyncBridgeOptions();
+            tabs.SelectedIndexChanged += (s, e) => { if (tabs.SelectedTab == bridgeTab) { ReadSettings(); SyncBridgeOptions(); } }; SyncBridgeOptions();
         }
         void SyncBridgeOptions()
         {
@@ -109,6 +100,7 @@ namespace AFR2Loader
             {
                 var record = String.IsNullOrEmpty(ports.Text) ? null : MegaServiceRecord.Read(ports.Text);
                 summary += record == null ? "Sin registro de carga del flasher para este COM en esta PC." : "Último registro local: " + record.Status + " a " + record.Baud + " | " + record.At;
+                if (record != null && !String.IsNullOrEmpty(record.CheckStatus)) summary += "\r\nÚltima comprobación en dispositivo: " + record.CheckStatus + " | " + record.CheckedAt;
                 var backup = MegaFlashBackup.Latest();
                 summary += backup == null ? "\r\nSin backup leído del equipo disponible." : "\r\nÚltimo backup: " + backup.Created + " | origen " + backup.Port + " | " + backup.Application;
                 summary += "\r\nEl registro local no detecta si cambiaste de placa o firmware usando otra herramienta.";
@@ -116,8 +108,14 @@ namespace AFR2Loader
             catch (Exception error) { summary += "No se pudo leer el registro de servicio: " + error.Message; }
             bridgeServiceState.Text = summary;
         }
+        void VerifyFlasher()
+        {
+            ShowOperation();
+            Execute("Verificar flasher instalado en ATmega", (ops, p, port, token) => ops.VerifyMegaFlasher(p, port, token), true);
+        }
         void InstallFlasher()
         {
+            ShowOperation();
             Execute("Cargar flasher temporal en ATmega", InstallFlasherCore, true);
         }
         async Task InstallFlasherCore(Operations ops, Profile p, string port, CancellationToken token)

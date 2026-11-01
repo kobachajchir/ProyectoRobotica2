@@ -1,7 +1,7 @@
 {
   "schema": "afr2-command-3",
   "envelope_schema": "afr2-ws-1",
-  "updated_by": "AFR2-20261025-14",
+  "updated_by": "AFR2-20261030-09",
   "commands": [
     {
       "name": "system.hello",
@@ -38,7 +38,8 @@
         }
       },
       "current_source_change": "AFR2-20261025-14",
-      "build_evidence": "../documentation/builds/2026-10-25-14/README.md"
+      "build_evidence": "../documentation/builds/2026-10-25-14/README.md",
+      "integration_change": "AFR2-20261029-27; v9 source only; local session priority, mode7/manual-pwm, byte4 motor enable, numeric actions70/71 and contextual long/back"
     },
     {
       "name": "system.alive",
@@ -73,7 +74,8 @@
         }
       },
       "current_source_change": "AFR2-20261025-14",
-      "build_evidence": "../documentation/builds/2026-10-25-14/README.md"
+      "build_evidence": "../documentation/builds/2026-10-25-14/README.md",
+      "integration_change": "AFR2-20261029-27; v9 source only; local session priority, mode7/manual-pwm, byte4 motor enable, numeric actions70/71 and contextual long/back"
     },
     {
       "name": "robot.stop",
@@ -113,11 +115,11 @@
       "name": "robot.state",
       "owner": "atmega",
       "wire_id": "0x11",
-      "status": "implemented-compiled-runtime-unverified",
+      "status": "source-integrated-uncompiled-runtime-unverified",
       "module_status": {
-        "atmega": "compiled-no-hardware",
-        "esp": "compiled-no-runtime-test",
-        "web": "compiled-full-packaged-not-promoted-no-browser"
+        "atmega": "source-uncompiled-unverified",
+        "esp": "source-uncompiled-unverified",
+        "web": "source-uncompiled-unverified"
       },
       "timeout_ms": 2500,
       "idempotent": true,
@@ -142,13 +144,16 @@
       "previous_delivery_status": {
         "status": "implemented-compiled-runtime-unverified",
         "module_status": {
-          "atmega": "compiled-not-hardware-tested",
-          "esp": "compiled-not-runtime-tested",
-          "web": "compiled-not-browser-tested"
-        }
+          "atmega": "compiled-no-hardware",
+          "esp": "compiled-no-runtime-test",
+          "web": "compiled-full-packaged-not-promoted-no-browser"
+        },
+        "build_evidence": "../documentation/builds/2026-10-25-14/README.md"
       },
       "current_source_change": "AFR2-20261025-14",
-      "build_evidence": "../documentation/builds/2026-10-25-14/README.md"
+      "integration_change": "AFR2-20261029-27; v9 source only; local session priority, mode7/manual-pwm, byte4 motor enable, numeric actions70/71 and contextual long/back",
+      "change_id": "AFR2-20261030-07",
+      "source_note": "EX01v10 appends configurationDirty and longPressMs to state response."
     },
     {
       "name": "robot.drive",
@@ -366,11 +371,11 @@
       "name": "robot.calibrate",
       "owner": "atmega",
       "wire_id": "0x1A",
-      "status": "implemented-compiled-runtime-unverified",
+      "status": "source-integrated-uncompiled-runtime-unverified",
       "module_status": {
-        "atmega": "compiled-no-hardware",
-        "esp": "compiled-no-runtime-test",
-        "web": "compiled-full-packaged-not-promoted-no-browser"
+        "atmega": "source-uncompiled-unverified",
+        "esp": "source-uncompiled-unverified",
+        "web": "source-uncompiled-unverified"
       },
       "timeout_ms": 3500,
       "idempotent": false,
@@ -395,13 +400,15 @@
       "previous_delivery_status": {
         "status": "implemented-compiled-runtime-unverified",
         "module_status": {
-          "atmega": "compiled-not-hardware-tested",
-          "esp": "compiled-not-runtime-tested",
-          "web": "compiled-not-browser-tested"
-        }
+          "atmega": "compiled-no-hardware",
+          "esp": "compiled-no-runtime-test",
+          "web": "compiled-full-packaged-not-promoted-no-browser"
+        },
+        "build_evidence": "../documentation/builds/2026-10-25-14/README.md"
       },
       "current_source_change": "AFR2-20261025-14",
-      "build_evidence": "../documentation/builds/2026-10-25-14/README.md"
+      "integration_change": "AFR2-20261029-27; v9 source only; local session priority, mode7/manual-pwm, byte4 motor enable, numeric actions70/71 and contextual long/back",
+      "change_id": "AFR2-20261030-07"
     },
     {
       "name": "robot.goto.start",
@@ -486,25 +493,25 @@
       "name": "robot.screen.get",
       "owner": "atmega",
       "wire_id": "0x20",
-      "status": "implemented-compiled-runtime-unverified",
+      "status": "compiled-atmega-flashed-runtime-unverified",
       "module_status": {
-        "atmega": "compiled-no-hardware",
-        "esp": "compiled-no-runtime-test",
-        "web": "compiled-full-packaged-not-promoted-no-browser"
+        "atmega": "compiled-flashed-COM8-byte-verified-no-runtime-test",
+        "esp": "compiled-not-flashed",
+        "web": "compiled-esp-promoted-locally-not-flashed-no-browser"
       },
       "timeout_ms": 2500,
       "idempotent": true,
       "payload_schema": {
         "req": {},
         "res": {
-          "screenCode": "0x010001|0x010002|0x020001|0x020002",
+          "screenCode": "registered ScreenCode including0x030035",
           "selection": "uint8",
           "firstVisible": "uint8",
           "state": "object",
-          "framebufferBase64": "string (1024 bytes optional)"
+          "framebufferBase64": "canonical Base64 of exactly1024 bytes (required)"
         }
       },
-      "notes": "Coherent1024byte framebuffer via META/PAGE/RELEASE, no reconstruction or credential exposure.",
+      "notes": "Coherent1024byte framebuffer via META/PAGE/RELEASE, no reconstruction or credential exposure. ESP requires an enabled per-session robot.screen.subscribe, renewed within3500ms.",
       "web_consumer_profile": "contracts/WEB_OLED_CONSUMER.md",
       "web_updated_by": "AFR2-20261023-21",
       "atmega_ex01": {
@@ -514,33 +521,33 @@
         "contract": "EX01_ALIGNMENT_3.md"
       },
       "wire_extension": "EX01",
-      "integration_profile": "contracts/EX01_WEB_INTEGRATION.md",
+      "integration_profile": "contracts/TOUCH_OLED_19.md",
       "previous_delivery_status": {
         "status": "implemented-compiled-runtime-unverified",
         "module_status": {
-          "atmega": "compiled-not-hardware-tested",
-          "esp": "compiled-not-runtime-tested",
-          "web": "compiled-not-browser-tested"
+          "atmega": "compiled-no-hardware",
+          "esp": "compiled-no-runtime-test",
+          "web": "compiled-full-packaged-not-promoted-no-browser"
         }
       },
-      "current_source_change": "AFR2-20261025-14",
-      "build_evidence": "../documentation/builds/2026-10-25-14/README.md"
+      "current_source_change": "AFR2-20261029-19",
+      "build_evidence": "../documentation/builds/2026-10-29-19/README.md"
     },
     {
       "name": "robot.ui.action",
       "owner": "atmega",
       "wire_id": "0x22",
-      "status": "implemented-compiled-runtime-unverified",
+      "status": "compiled-atmega-flashed-runtime-unverified",
       "module_status": {
-        "atmega": "compiled-no-hardware",
-        "esp": "compiled-no-runtime-test",
-        "web": "compiled-full-packaged-not-promoted-no-browser"
+        "atmega": "compiled-flashed-COM8-byte-verified-no-runtime-test",
+        "esp": "compiled-not-flashed",
+        "web": "compiled-esp-promoted-locally-not-flashed-no-browser"
       },
       "timeout_ms": 2000,
       "idempotent": false,
       "payload_schema": {
         "req": {
-          "action": "rotate|select|menu",
+          "action": "rotate|select|menu|back",
           "delta": "int8 (-1|1 for rotate, 0 otherwise)",
           "revision": "uint32 snapshot revision; required for EX01"
         },
@@ -549,7 +556,7 @@
           "selection": "uint8"
         }
       },
-      "notes": "Revision/generation/age-guarded rotate/select/long-menu. Preserves physical-only actions and privacy; no access switch.",
+      "notes": "Revision/generation/age-guarded rotate/select/long-menu. Preserves physical-only actions and privacy; no access switch. back=3 requires negotiated feature0x20000 and activates only the explicit Volver item of current menu with original service semantics.",
       "web_consumer_profile": "contracts/WEB_OLED_CONSUMER.md",
       "web_updated_by": "AFR2-20261023-21",
       "atmega_ex01": {
@@ -559,17 +566,18 @@
         "contract": "EX01_ALIGNMENT_3.md"
       },
       "wire_extension": "EX01",
-      "integration_profile": "contracts/EX01_WEB_INTEGRATION.md",
+      "integration_profile": "contracts/TOUCH_OLED_19.md",
       "previous_delivery_status": {
         "status": "implemented-compiled-runtime-unverified",
         "module_status": {
-          "atmega": "compiled-not-hardware-tested",
-          "esp": "compiled-not-runtime-tested",
-          "web": "compiled-not-browser-tested"
+          "atmega": "compiled-no-hardware",
+          "esp": "compiled-no-runtime-test",
+          "web": "compiled-full-packaged-not-promoted-no-browser"
         }
       },
-      "current_source_change": "AFR2-20261025-14",
-      "build_evidence": "../documentation/builds/2026-10-25-14/README.md"
+      "current_source_change": "AFR2-20261029-19",
+      "build_evidence": "../documentation/builds/2026-10-29-19/README.md",
+      "integration_change": "AFR2-20261029-27; v9 source only; local session priority, mode7/manual-pwm, byte4 motor enable, numeric actions70/71 and contextual long/back"
     },
     {
       "name": "robot.sequence.begin",
@@ -850,11 +858,11 @@
       "name": "wifi.status",
       "owner": "esp",
       "wire_id": null,
-      "status": "implemented-compiled-runtime-unverified",
+      "status": "source-integrated-uncompiled-runtime-unverified",
       "module_status": {
-        "atmega": "not-applicable",
-        "esp": "compiled-no-runtime-test",
-        "web": "compiled-full-packaged-not-promoted-no-browser"
+        "atmega": "not-applicable-to-native-WS-command",
+        "esp": "source-uncompiled-unverified",
+        "web": "source-uncompiled-unverified"
       },
       "timeout_ms": 2500,
       "idempotent": true,
@@ -867,7 +875,17 @@
           "staIp": "string | null",
           "rssiDbm": "int16 | null",
           "apSsid": "string | null",
-          "apIp": "string | null"
+          "apIp": "string | null",
+          "staMask": "IPv4 string or empty",
+          "staGateway": "IPv4 string or empty",
+          "apMask": "IPv4 string or empty",
+          "apGateway": "IPv4 string or empty",
+          "securityCode": "0 unknown / 1 open / 2 WEP / 3 WPA / 4 WPA2 / 5 WPA-WPA2 / 6 protected",
+          "security": "unknown|open|WEP|WPA|WPA2|WPA/WPA2|protected",
+          "secure": "boolean|null (unknown)",
+          "apSecurityCode": "same enum",
+          "apSecurity": "same text enum",
+          "disconnectedByUser": "boolean"
         }
       },
       "notes": "Local ESP status independent of Mega. Credentials are never included in this report.",
@@ -879,18 +897,20 @@
           "web": "compiled-not-browser-tested"
         }
       },
-      "current_source_change": "AFR2-20261025-14",
-      "build_evidence": "../documentation/builds/2026-10-25-14/README.md"
+      "current_source_change": "AFR2-20261030-09",
+      "build_evidence": "../documentation/builds/2026-10-25-14/README.md",
+      "contract": "WIFI_UI_11.md",
+      "build_evidence_applies_to": "previous delivery only"
     },
     {
       "name": "wifi.scan",
       "owner": "esp",
       "wire_id": null,
-      "status": "implemented-compiled-runtime-unverified",
+      "status": "source-integrated-uncompiled-runtime-unverified",
       "module_status": {
-        "atmega": "not-applicable",
-        "esp": "compiled-no-runtime-test",
-        "web": "compiled-full-packaged-not-promoted-no-browser"
+        "atmega": "not-applicable-to-native-WS-command",
+        "esp": "source-uncompiled-unverified",
+        "web": "source-uncompiled-unverified"
       },
       "timeout_ms": 10000,
       "idempotent": true,
@@ -898,7 +918,7 @@
         "req": {},
         "res": {
           "status": "started|completed",
-          "networks": "Array<{ ssid: string, rssiDbm: number, channel: number, secure: boolean }>"
+          "networks": "Array<{ssid:string,rssiDbm:number,channel:number,secure:boolean,securityCode:0..6,security:string}>, max16"
         }
       },
       "notes": "Asynchronous local scan; accepted is start, terminal event distinguishes result/empty/error/timeout.",
@@ -910,18 +930,20 @@
           "web": "compiled-not-browser-tested"
         }
       },
-      "current_source_change": "AFR2-20261025-14",
-      "build_evidence": "../documentation/builds/2026-10-25-14/README.md"
+      "current_source_change": "AFR2-20261030-09",
+      "build_evidence": "../documentation/builds/2026-10-25-14/README.md",
+      "contract": "WIFI_UI_11.md",
+      "build_evidence_applies_to": "previous delivery only"
     },
     {
       "name": "wifi.configure",
       "owner": "esp",
       "wire_id": null,
-      "status": "implemented-compiled-runtime-unverified",
+      "status": "source-integrated-uncompiled-runtime-unverified",
       "module_status": {
-        "atmega": "not-applicable",
-        "esp": "compiled-no-runtime-test",
-        "web": "compiled-full-packaged-not-promoted-no-browser"
+        "atmega": "not-applicable-to-native-WS-command",
+        "esp": "source-uncompiled-unverified",
+        "web": "source-uncompiled-unverified"
       },
       "timeout_ms": 6000,
       "idempotent": false,
@@ -946,20 +968,22 @@
           "web": "compiled-not-browser-tested"
         }
       },
-      "current_source_change": "AFR2-20261025-14",
-      "build_evidence": "../documentation/builds/2026-10-25-14/README.md"
+      "current_source_change": "AFR2-20261030-09",
+      "build_evidence": "../documentation/builds/2026-10-25-14/README.md",
+      "contract": "WIFI_UI_11.md",
+      "build_evidence_applies_to": "previous delivery only"
     },
     {
       "name": "robot.config.get",
       "wire_id": "0x1A",
       "owner": "atmega",
-      "status": "implemented-compiled-runtime-unverified",
+      "status": "source-integrated-uncompiled-runtime-unverified",
       "timeout_ms": 2500,
       "idempotent": true,
       "module_status": {
-        "atmega": "compiled-no-hardware",
-        "esp": "compiled-no-runtime-test",
-        "web": "compiled-full-packaged-not-promoted-no-browser"
+        "atmega": "source-uncompiled-unverified",
+        "esp": "source-uncompiled-unverified",
+        "web": "source-uncompiled-unverified"
       },
       "payload_schema": {
         "req": {
@@ -975,25 +999,26 @@
       "previous_delivery_status": {
         "status": "implemented-compiled-runtime-unverified",
         "module_status": {
-          "atmega": "compiled-not-hardware-tested",
-          "esp": "compiled-not-runtime-tested",
-          "web": "compiled-not-browser-tested"
-        }
+          "atmega": "compiled-no-hardware",
+          "esp": "compiled-no-runtime-test",
+          "web": "compiled-full-packaged-not-promoted-no-browser"
+        },
+        "build_evidence": "../documentation/builds/2026-10-25-14/README.md"
       },
       "current_source_change": "AFR2-20261025-14",
-      "build_evidence": "../documentation/builds/2026-10-25-14/README.md"
+      "change_id": "AFR2-20261030-07"
     },
     {
       "name": "robot.preferences",
       "wire_id": "0x1B",
       "owner": "atmega",
-      "status": "implemented-compiled-runtime-unverified",
+      "status": "source-integrated-uncompiled-runtime-unverified",
       "timeout_ms": 2500,
       "idempotent": false,
       "module_status": {
-        "atmega": "compiled-no-hardware",
-        "esp": "compiled-no-runtime-test",
-        "web": "compiled-full-packaged-not-promoted-no-browser"
+        "atmega": "source-uncompiled-unverified",
+        "esp": "source-uncompiled-unverified",
+        "web": "source-uncompiled-unverified"
       },
       "payload_schema": {
         "req": {
@@ -1008,13 +1033,14 @@
       "previous_delivery_status": {
         "status": "implemented-compiled-runtime-unverified",
         "module_status": {
-          "atmega": "compiled-not-hardware-tested",
-          "esp": "compiled-not-runtime-tested",
-          "web": "compiled-not-browser-tested"
-        }
+          "atmega": "compiled-no-hardware",
+          "esp": "compiled-no-runtime-test",
+          "web": "compiled-full-packaged-not-promoted-no-browser"
+        },
+        "build_evidence": "../documentation/builds/2026-10-25-14/README.md"
       },
       "current_source_change": "AFR2-20261025-14",
-      "build_evidence": "../documentation/builds/2026-10-25-14/README.md"
+      "change_id": "AFR2-20261030-07"
     },
     {
       "name": "robot.line.calibrate",
@@ -1299,11 +1325,11 @@
       "name": "robot.radar.configure",
       "owner": "atmega",
       "wire_id": "0x65",
-      "status": "implemented-compiled-runtime-unverified",
+      "status": "source-integrated-uncompiled-runtime-unverified",
       "module_status": {
-        "atmega": "compiled-no-hardware",
-        "esp": "compiled-no-runtime-test",
-        "web": "compiled-full-packaged-not-promoted-no-browser"
+        "atmega": "source-uncompiled-unverified",
+        "esp": "source-uncompiled-unverified",
+        "web": "source-uncompiled-unverified"
       },
       "timeout_ms": 2500,
       "idempotent": true,
@@ -1320,9 +1346,17 @@
         "res": "same configuration plus stepDeg5,persisted:false"
       },
       "contract": "SENSORS_RADAR_8.md",
-      "change_id": "AFR2-20261025-14",
+      "change_id": "AFR2-20261030-07",
       "current_source_change": "AFR2-20261025-14",
-      "build_evidence": "../documentation/builds/2026-10-25-14/README.md"
+      "previous_delivery_status": {
+        "status": "implemented-compiled-runtime-unverified",
+        "module_status": {
+          "atmega": "compiled-no-hardware",
+          "esp": "compiled-no-runtime-test",
+          "web": "compiled-full-packaged-not-promoted-no-browser"
+        },
+        "build_evidence": "../documentation/builds/2026-10-25-14/README.md"
+      }
     },
     {
       "name": "robot.radar.start",
@@ -1394,11 +1428,11 @@
       "name": "robot.screen.status",
       "owner": "atmega",
       "wire_id": "0x69",
-      "status": "implemented-compiled-runtime-unverified",
+      "status": "compiled-atmega-flashed-runtime-unverified",
       "module_status": {
-        "atmega": "compiled-no-hardware",
-        "esp": "compiled-no-runtime-test",
-        "web": "compiled-full-packaged-not-promoted-no-browser"
+        "atmega": "compiled-flashed-COM8-byte-verified-no-runtime-test",
+        "esp": "compiled-not-flashed",
+        "web": "compiled-esp-promoted-locally-not-flashed-no-browser"
       },
       "timeout_ms": 2500,
       "idempotent": true,
@@ -1408,29 +1442,254 @@
       },
       "contract": "SENSORS_RADAR_8.md",
       "change_id": "AFR2-20261025-14",
-      "current_source_change": "AFR2-20261025-14",
-      "build_evidence": "../documentation/builds/2026-10-25-14/README.md"
+      "current_source_change": "AFR2-20261029-19",
+      "previous_delivery_status": {
+        "status": "implemented-compiled-runtime-unverified",
+        "module_status": {
+          "atmega": "compiled-no-hardware",
+          "esp": "compiled-no-runtime-test",
+          "web": "compiled-full-packaged-not-promoted-no-browser"
+        }
+      },
+      "integration_profile": "contracts/TOUCH_OLED_19.md",
+      "notes": " ESP requires an enabled per-session robot.screen.subscribe, renewed within3500ms.",
+      "build_evidence": "../documentation/builds/2026-10-29-19/README.md"
     },
     {
       "name": "wifi.info",
       "owner": "esp",
       "wire_id": null,
-      "status": "implemented-compiled-runtime-unverified",
+      "status": "source-integrated-uncompiled-runtime-unverified",
       "module_status": {
-        "atmega": "not-applicable",
-        "esp": "compiled-no-runtime-test",
-        "web": "compiled-full-packaged-not-promoted-no-browser"
+        "atmega": "not-applicable-to-native-WS-command",
+        "esp": "source-uncompiled-unverified",
+        "web": "source-uncompiled-unverified"
       },
       "timeout_ms": 2500,
       "idempotent": true,
       "payload_schema": {
         "req": {},
-        "res": "wifi.status plus connectionInterface,connectionRssiDbm,apClients,channel,rssiSource"
+        "res": "wifi.status plus connectionInterface,connectionRssiDbm,apClients,channel,rssiSource,wsClients (ready WebSocket clients)"
       },
-      "contract": "SENSORS_RADAR_8.md",
+      "contract": "WIFI_UI_11.md",
       "change_id": "AFR2-20261025-14",
-      "current_source_change": "AFR2-20261025-14",
-      "build_evidence": "../documentation/builds/2026-10-25-14/README.md"
+      "current_source_change": "AFR2-20261030-09",
+      "build_evidence": "../documentation/builds/2026-10-25-14/README.md",
+      "build_evidence_applies_to": "previous delivery only"
+    },
+    {
+      "name": "robot.screen.subscribe",
+      "owner": "esp",
+      "wire_id": null,
+      "status": "compiled-atmega-flashed-runtime-unverified",
+      "module_status": {
+        "atmega": "compiled-flashed-COM8-byte-verified-no-runtime-test",
+        "esp": "compiled-not-flashed",
+        "web": "compiled-esp-promoted-locally-not-flashed-no-browser"
+      },
+      "timeout_ms": 2000,
+      "idempotent": true,
+      "payload_schema": {
+        "req": {
+          "enabled": "boolean"
+        },
+        "res": {
+          "enabled": "boolean"
+        }
+      },
+      "notes": "Per-session broker gate. Renewal1000ms; expires3500ms. No UART command or autonomous framebuffer push. Disable invalidates session capture; disconnect clears session.",
+      "change_id": "AFR2-20261029-19",
+      "integration_profile": "contracts/TOUCH_OLED_19.md",
+      "build_evidence": "../documentation/builds/2026-10-29-19/README.md"
+    },
+    {
+      "name": "robot.touch.ui",
+      "owner": "atmega",
+      "wire_id": "0x24",
+      "status": "source-integrated-uncompiled-runtime-unverified",
+      "module_status": {
+        "atmega": "source-uncompiled-unverified",
+        "esp": "source-uncompiled-unverified",
+        "web": "source-uncompiled-unverified"
+      },
+      "timeout_ms": 2000,
+      "idempotent": true,
+      "payload_schema": {
+        "req": {
+          "enabled": "boolean",
+          "direction": "uint8 0..7 clockwise N,NE,E,SE,S,SW,W,NW;8=rest",
+          "heading": "uint8 0..23 counterclockwise,15degrees/step",
+          "powerPercent": "uint8 0..100, presentation only"
+        },
+        "res": {
+          "enabled": "boolean",
+          "confirmed": "boolean",
+          "powerPercent": "confirmed presentation percent"
+        }
+      },
+      "notes": "EX01v10 required. Four-byte body enabled,direction,heading,powerPercent. Renewals only update UI. First enable retains existing takeover STOP. Latest power notice1200ms; percent is not applied wheel PWM.",
+      "change_id": "AFR2-20261030-07",
+      "integration_profile": "contracts/TOUCH_OLED_19.md",
+      "previous_delivery_status": {
+        "status": "compiled-atmega-flashed-runtime-unverified",
+        "module_status": {
+          "atmega": "compiled-flashed-COM8-byte-verified-no-runtime-test",
+          "esp": "compiled-not-flashed",
+          "web": "compiled-esp-promoted-locally-not-flashed-no-browser"
+        },
+        "build_evidence": "../documentation/builds/2026-10-29-19/README.md"
+      }
+    },
+    {
+      "name": "system.battery.get",
+      "owner": "atmega",
+      "wire_id": "0x55",
+      "status": "source-integrated-uncompiled-runtime-unverified",
+      "module_status": {
+        "atmega": "source-only",
+        "esp": "source-only",
+        "web": "source-only-generator-pending"
+      },
+      "timeout_ms": 2500,
+      "idempotent": true,
+      "payload_schema": {
+        "req": {},
+        "res": {
+          "bootId": "u32",
+          "sampleId": "u32",
+          "state": "off|measuring|valid|out-of-range|stale",
+          "valid": "boolean",
+          "ageMs": "u32|null",
+          "raw": "u10|null",
+          "millivolts": "u16|null",
+          "referenceMv": 5000,
+          "dividerNumerator": 2,
+          "dividerDenominator": 1,
+          "calibrated": false,
+          "analogPin": "A5"
+        }
+      },
+      "current_source_change": "AFR2-20261029-26",
+      "notes": "EX01v9 feature0x40000; body byte0=Get/1=Measure. Source only. See BATTERY_MEASUREMENT_9.md."
+    },
+    {
+      "name": "system.battery.measure",
+      "owner": "atmega",
+      "wire_id": "0x55",
+      "status": "source-integrated-uncompiled-runtime-unverified",
+      "module_status": {
+        "atmega": "source-only",
+        "esp": "source-only",
+        "web": "source-only-generator-pending"
+      },
+      "timeout_ms": 2500,
+      "idempotent": false,
+      "payload_schema": {
+        "req": {},
+        "res": {
+          "bootId": "u32",
+          "sampleId": "u32",
+          "state": "off|measuring|valid|out-of-range|stale",
+          "valid": "boolean",
+          "ageMs": "u32|null",
+          "raw": "u10|null",
+          "millivolts": "u16|null",
+          "referenceMv": 5000,
+          "dividerNumerator": 2,
+          "dividerDenominator": 1,
+          "calibrated": false,
+          "analogPin": "A5"
+        }
+      },
+      "current_source_change": "AFR2-20261029-26",
+      "notes": "EX01v9 feature0x40000; body byte0=Get/1=Measure. Source only. See BATTERY_MEASUREMENT_9.md."
+    },
+    {
+      "name": "robot.drive.pwm",
+      "owner": "atmega-via-esp",
+      "wire_id": "EX01:0x1e",
+      "status": "implemented-source-uncompiled-runtime-unverified",
+      "module_status": {
+        "atmega": "source-only-no-build-no-hardware",
+        "esp": "source-only-no-build-no-runtime",
+        "web": "source-only-no-build-no-promotion"
+      },
+      "timeout_ms": 600,
+      "idempotent": false,
+      "payload_schema": {
+        "req": {
+          "forwardPct": "integer -100..100",
+          "strafePct": "integer -100..100",
+          "turnPct": "integer -100..100",
+          "ttlMs": "integer 200..1000"
+        },
+        "res": {
+          "accepted": "boolean"
+        }
+      },
+      "notes": "EX01v9 feature0x80000. Signed percentages of the configured PWM limit, central AVR mecanum mix, ramps and watchdog/STOP. No HC/odometry requirement. Explicit motor enable required. No automatic restart after reconnect."
+    },
+    {
+      "name": "wifi.disconnect",
+      "owner": "esp",
+      "wire_id": null,
+      "status": "source-integrated-uncompiled-runtime-unverified",
+      "module_status": {
+        "atmega": "not-applicable-to-native-WS-command",
+        "esp": "source-uncompiled-unverified",
+        "web": "source-uncompiled-unverified"
+      },
+      "timeout_ms": 4000,
+      "idempotent": true,
+      "payload_schema": {
+        "req": {},
+        "res": "wifi.status plus confirmed:boolean; envelope accepted|completed"
+      },
+      "notes": "Accepted is not disconnected. Completion requires observed staConnected=false. Suppresses automatic reconnect until explicit retry/configure; preserves stored credentials.",
+      "current_source_change": "AFR2-20261030-09",
+      "contract": "WIFI_UI_11.md"
+    },
+    {
+      "name": "wifi.retry",
+      "owner": "esp",
+      "wire_id": null,
+      "status": "source-integrated-uncompiled-runtime-unverified",
+      "module_status": {
+        "atmega": "not-applicable-to-native-WS-command",
+        "esp": "source-uncompiled-unverified",
+        "web": "source-uncompiled-unverified"
+      },
+      "timeout_ms": 4000,
+      "idempotent": false,
+      "payload_schema": {
+        "req": {},
+        "res": "wifi.status plus confirmed:boolean; envelope accepted|completed"
+      },
+      "notes": "Requires STA interface and stored credentials; actual connection observed separately. AP-only is unavailable.",
+      "current_source_change": "AFR2-20261030-09",
+      "contract": "WIFI_UI_11.md"
+    },
+    {
+      "name": "wifi.mode",
+      "owner": "esp",
+      "wire_id": null,
+      "status": "source-integrated-uncompiled-runtime-unverified",
+      "module_status": {
+        "atmega": "not-applicable-to-native-WS-command",
+        "esp": "source-uncompiled-unverified",
+        "web": "source-uncompiled-unverified"
+      },
+      "timeout_ms": 4000,
+      "idempotent": true,
+      "payload_schema": {
+        "req": {
+          "mode": "STA|AP|AP_STA"
+        },
+        "res": "wifi.status plus confirmed:boolean; envelope accepted|completed"
+      },
+      "notes": "Session-only radio mode; does not replace credentials. completed confirmed=true only after actual SDK mode/AP start observed.",
+      "current_source_change": "AFR2-20261030-09",
+      "contract": "WIFI_UI_11.md"
     }
   ],
   "uart_profile": "UART_PROFILE_2.md",
@@ -1456,8 +1715,9 @@
   "wire_profile": 2,
   "extension": {
     "name": "EX01",
-    "version": 6,
-    "contract": "EX01_SEQUENCE_DISTANCE_6.md"
+    "version": 11,
+    "contract": "WIFI_UI_11.md",
+    "state": "source-only-uncompiled-unverified"
   },
   "system_events": {
     "system.boot": {
@@ -1492,10 +1752,10 @@
   "direct_control": {
     "contract": "DIRECT_CONTROL_7.md",
     "changeId": "AFR2-20261025-01",
-    "extensionVersion": 8,
+    "extensionVersion": 11,
     "firmwareVersion": "0.10.0",
     "webVersion": "0.3.0",
-    "commandCount": 41,
+    "commandCount": 49,
     "webPulseWire": "0x12:age:u16LE; echo2bytes",
     "webInputCaducityMs": 1500,
     "grantsPermission": false,
@@ -1514,5 +1774,32 @@
     "autonomousRadar": true,
     "eepromChanged": false,
     "state": "compiled-runtime-unverified"
+  },
+  "battery": {
+    "contract": "BATTERY_MEASUREMENT_9.md",
+    "changeId": "AFR2-20261029-26",
+    "extensionVersion": 9,
+    "feature": "0x40000",
+    "state": "source-only-uncompiled-runtime-unverified"
+  },
+  "wifi_ui": {
+    "changeId": "AFR2-20261030-09",
+    "contract": "WIFI_UI_11.md",
+    "oledJobOps": {
+      "disconnect": 9,
+      "changeMode": 10
+    },
+    "updateSubtype1": "index,ssidLen,security,total,jobIdLE,ssid; body 9+ssidLen including subtype",
+    "updateSubtype4": "18-byte current metadata; follows acknowledged base status",
+    "result6": "no ready WebSocket client, only WEB_DRAFT",
+    "state": "source-only-uncompiled-runtime-unverified"
+  },
+  "motion_reference": {
+    "changeId": "AFR2-20261030-13",
+    "contract": "MOTION_REFERENCE_13.md",
+    "profile": "motion_reference.json",
+    "wireChanged": false,
+    "logicalAxes": "X forward / Y left / yaw CCW",
+    "state": "source-only-uncompiled-unverified"
   }
 }

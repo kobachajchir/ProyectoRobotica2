@@ -7,9 +7,12 @@
  * Todos los metodos se llaman en main. ISR del backend solo publica estado.
  * El backend conserva data hasta DONE/ERROR o abort; nunca guarda stack temporal.
  */
-typedef enum { AFR2_I2C_OK, AFR2_I2C_BUSY, AFR2_I2C_ERROR, AFR2_I2C_TIMEOUT } Afr2I2cResult;
+typedef enum { AFR2_I2C_OK, AFR2_I2C_BUSY, AFR2_I2C_ERROR, AFR2_I2C_TIMEOUT,
+    AFR2_I2C_NACK /* AFR2-20261028-19: address-only probe, no slave ACK */
+} Afr2I2cResult;
 typedef struct {
     void *ctx;
+    /* data=NULL,size=0 means address-only probe (backend must support it). */
     Afr2I2cResult (*start)(void *ctx,uint8_t address7,const uint8_t *data,uint16_t size);
     Afr2I2cResult (*poll)(void *ctx); /* BUSY o resultado, solo tras STOP completado */
     void (*abort)(void *ctx); /* desactiva IRQ/transferencia antes de retornar; sin espera */
@@ -27,4 +30,8 @@ bool Afr2I2c_Init(Afr2I2cManager *m,const Afr2I2cHardware *hw);
 Afr2I2cResult Afr2I2c_Submit(Afr2I2cManager *m,uint8_t address7,const uint8_t *data,
     uint16_t size,uint32_t now,uint16_t timeout_ms,Afr2I2cDone done,void *client);
 void Afr2I2c_Tick(Afr2I2cManager *m,uint32_t now);
+/* Diagnostic only: START, SLA+W, ACK/NACK, STOP; no command/data bytes.
+ * Same bus owner, callback and deadline as Submit. Excludes reserved addresses. */
+Afr2I2cResult Afr2I2c_Probe(Afr2I2cManager *m,uint8_t address7,uint32_t now,
+    uint16_t timeout_ms,Afr2I2cDone done,void *client);
 #endif

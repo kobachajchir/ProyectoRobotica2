@@ -8,6 +8,16 @@
 
 > **AFR2-20261028-08, antecedente:** [30grados/s, inercia y apoyo dinamico](AutoFinalRobo2-CAD/mecanica/brazo-antropomorfo/busqueda_actuadores_v12/README.md). STS3250 no alcanza x2 con este presupuesto; RS01+STS pasa solo el filtro de par pero pesa5.45-5.82kg y aumenta exigencias de cuna/apoyo. Masa y contactos reales del auto pendientes; sin nuevo CAD ni aprobacion fisica.
 
+> **AFR2-20261030-19:** por aclaración del usuario, táctil espera carga/preparación y vista del modelo3D; después usa las condiciones de motores de Mecanum. [Ficha](AutoFinalRobo2-Contracts/changes/2026-10-30-19-touch-model-ready.md). Fuente Web, sin build/pruebas/cargas; conserva reintento tras error.
+
+> **AFR2-20261030-18:** revisadas condiciones de motores; fuentes Web corrigen bloqueo adicional del táctil por error persistente y modelo3D, con mismo permiso PWM que Mecanum. [Detalle](AutoFinalRobo2-Contracts/changes/2026-10-30-18-manual-touch-permissions.md). Firmware sin cambios; sin build/pruebas/cargas.
+
+> **Movimiento AFR2-20261030-13:** avance/retroceso y yaw corregidos en fuente AVR/Web; efectos en diagonales, curvas, línea, GOTO, odometría y secuencias, con controles Girar CW/CCW. [Ficha](AutoFinalRobo2-Contracts/changes/2026-10-30-13-motion-reference.md). ESP/EEPROM/wire sin cambios; sin generación, compilación, validadores, pruebas ni cargas.
+
+> **Wi-Fi AFR2-20261030-09:** fuentes AVR/ESP/Web coordinadas EX01v11; Estado de red, búsqueda/credenciales, seguridad y desconexión observada. [Ficha y límites](AutoFinalRobo2-Contracts/changes/2026-10-30-09-wifi-state-flows.md). Sin generación, compilación, validadores, pruebas, promoción ni cargas.
+
+> **AFR2-20261028-08, objetivo de actuadores activo:** [30grados/s, inercia y apoyo dinamico](AutoFinalRobo2-CAD/mecanica/brazo-antropomorfo/busqueda_actuadores_v12/README.md). STS3250 no alcanza x2 con este presupuesto; RS01+STS pasa solo el filtro de par pero pesa5.45-5.82kg y aumenta exigencias de cuna/apoyo. Masa y contactos reales del auto pendientes; sin nuevo CAD ni aprobacion fisica.
+
 > **AFR2-20261028-07, busqueda de actuadores activa:** [par, masa y esfuerzos del brazo](AutoFinalRobo2-CAD/mecanica/brazo-antropomorfo/busqueda_actuadores_v11/README.md). DS51150 pasa el filtro a30grados/s pero falla desde velocidad de catalogo. STS3215 con reducciones pasa un filtro nominal condicionado (minimo2.11;3919g), con variante, reductores, PLA y estabilidad pendientes. Sin nuevo CAD ni aprobacion fisica.
 
 > **Vigente Loader AFR2-20261028-05 / 0.9.0:** backup de flash opcional antes del flasher, aviso suprimible y preferencias locales; botón de firmware ATmega con desplegable de último backup leído. [Ficha](AutoFinalRobo2-Contracts/changes/2026-10-28-05-loader-mega-backups.md) · [Plan A/B](AutoFinalRobo2-Contracts/hardware/PLAN_PRUEBA_FLASHER_MEGA.md). Solo fuente/documentación. Sin compilación, ejecución GUI/MCP, tests, validaciones, COM o cargas; atmega/esp/web conservan su estado previo. Sustituye recuperación por copia HEX de03 en Loader.

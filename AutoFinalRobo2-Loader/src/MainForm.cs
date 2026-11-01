@@ -67,16 +67,16 @@ namespace AFR2Loader
             configMenu.DropDownItems.Add("Exportar perfil...", null, (s, e) => ExportProfile());
             configMenu.DropDownItems.Add("Guardar perfil actual", null, (s, e) => SaveProfile());
             configMenu.DropDownItems.Add("Guardar perfil como...", null, (s, e) => SaveProfileAs());
-            var help = new ToolStripMenuItem("Opciones / ayuda");
+            var help = optionsMenu;
             help.DropDownItems.Add("Manual detallado", null, (s, e) => OpenManual());
-            help.DropDownItems.Add("Carpeta de registros", null, (s, e) => OpenLogs());
+            InitializeLogMenu(help);
             help.DropDownItems.Add("Acerca de...", null, (s, e) => About());
             menu.Items.Add(configMenu); menu.Items.Add(help); MainMenuStrip = menu;
 
-            var tabs = new TabControl { Dock = DockStyle.Fill, Padding = new Point(20, 8) };
+            var tabs = new TabControl { Dock = DockStyle.Fill, Padding = new Point(12, 8) };
             var operations = new TabPage("Operación") { Padding = new Padding(16) };
-            var configuration = new TabPage("Configuración") { Padding = new Padding(12) };
-            tabs.TabPages.Add(operations); tabs.TabPages.Add(configuration);
+            var configuration = new TabPage("Configuración") { Padding = new Padding(UiInset) };
+            tabs.TabPages.Add(operations); InitializeMegaBridge(tabs); tabs.TabPages.Add(configuration);
             var layout = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 6 };
             layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 48));
             layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 48));
@@ -85,60 +85,49 @@ namespace AFR2Loader
             layout.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
             layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 42));
             operations.Controls.Add(layout);
-            layout.Controls.Add(new Label { Dock = DockStyle.Fill, Text = "Prepará los archivos. Confirmá el cableado. Cargá y verificá.", Font = new Font(Font.FontFamily, 17, FontStyle.Bold), ForeColor = Color.FromArgb(23, 39, 51), TextAlign = ContentAlignment.MiddleLeft }, 0, 0);
-            var selectors = new FlowLayoutPanel { Dock = DockStyle.Fill, WrapContents = false };
-            selectors.Controls.Add(new Label { Text = "Puerto", AutoSize = true, Margin = new Padding(0, 9, 8, 0) });
-            ports.Width = 120; ports.DropDownStyle = ComboBoxStyle.DropDownList; ports.Margin = new Padding(0, 4, 8, 0);
-            selectors.Controls.Add(ports); idleControls.Add(ports);
-            AddButton(selectors, "Actualizar puertos", RefreshPorts, 145);
-            selectors.Controls.Add(new Label { Text = "Destino", AutoSize = true, Margin = new Padding(20, 9, 8, 0) });
-            target.Width = 280; target.DropDownStyle = ComboBoxStyle.DropDownList; target.Margin = new Padding(0, 4, 8, 0);
-            target.Items.AddRange(new object[] { "Firmware ATmega (producto completo)", "Firmware ESP", "Web / LittleFS en ESP", "Firmware ESP + Web / LittleFS" });
-            target.SelectedIndex = 0; selectors.Controls.Add(target); idleControls.Add(target);
-            detectTarget = AddButton(selectors, "Detectar ATmega", DetectSelected, 165);
-            layout.RowStyles[1].Height = 212; layout.Controls.Add(CreateEspOptions(selectors), 0, 1);
-            var actions = new FlowLayoutPanel { Dock = DockStyle.Fill, WrapContents = true };
-            var compileMenu = new ToolStrip { GripStyle = ToolStripGripStyle.Hidden, Dock = DockStyle.None, AutoSize = true, Margin = new Padding(0, 4, 8, 4), Padding = new Padding(0), RenderMode = ToolStripRenderMode.System };
-            compileTarget = new ToolStripSplitButton("Compilar ATmega") { AutoSize = false, Size = new Size(245, 32), ToolTipText = "Compilar el destino seleccionado. La flecha permite elegir otro firmware y compilarlo." };
-            compileTarget.ButtonClick += (s, e) => Build(false);
-            for (int index = 0; index < target.Items.Count; index++)
-            {
-                int selected = index;
-                compileTarget.DropDownItems.Add(Convert.ToString(target.Items[index]), null, (s, e) => { target.SelectedIndex = selected; Build(false); });
-            }
-            compileMenu.Items.Add(compileTarget); actions.Controls.Add(compileMenu); idleControls.Add(compileMenu);
-            AddButton(actions, "Compilar todo", () => Build(true), 140);
-            var flashMenu = CreateFirmwareFlashMenu(true); actions.Controls.Add(flashMenu);
-            flashTarget.BackColor = Color.FromArgb(22, 79, 99); flashTarget.ForeColor = Color.White;
-            AddButton(actions, "Cargar flasher en ATmega...", InstallFlasher, 260);
-            layout.RowStyles[2].Height = 90;
-            listen.Text = "Guiar K / RST y detectar modo de programación antes de consultar o cargar ESP"; listen.Checked = true;
-            listen.AutoSize = true; listen.Margin = new Padding(0, 8, 0, 0); idleControls.Add(listen); actions.SetFlowBreak(flashMenu, true); actions.Controls.Add(listen);
-            target.SelectedIndexChanged += (s, e) => UpdateTargetActions(); UpdateTargetActions();
-            layout.Controls.Add(actions, 0, 2);
-            var stateBox = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 2 };
+            layout.Controls.Add(new Label { Dock = DockStyle.Fill, Text = "Preparar y cargar", Font = new Font(Font.FontFamily, 17, FontStyle.Bold), ForeColor = Color.FromArgb(23, 39, 51), TextAlign = ContentAlignment.MiddleLeft }, 0, 0);
+            operationTab = operations;
+            target.Items.AddRange(new object[] { "ATmega", "Firmware ESP", "FileSystem", "Firmware ESP + FileSystem" });
+            target.SelectedIndex = 0;
+            layout.RowStyles[1].SizeType = SizeType.AutoSize;
+            layout.RowStyles[2].Height = 0;
+            layout.Controls.Add(CreateEspOptions(CreateOperationSelectors()), 0, 1);
+            target.SelectedIndexChanged += (s, e) => { if (!syncingDestination) SelectOperationTarget(target.SelectedIndex); };
+            var stateBox = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 3 };
+            layout.RowStyles[3].Height = 160;
+            stateBox.RowStyles.Add(new RowStyle(SizeType.Percent, 35));
+            stateBox.RowStyles.Add(new RowStyle(SizeType.Percent, 30));
+            stateBox.RowStyles.Add(new RowStyle(SizeType.Percent, 35));
             status.Text = "Sin operación. Ningún puerto se abre al iniciar."; status.Dock = DockStyle.Fill;
             status.Font = new Font(Font, FontStyle.Bold); status.ForeColor = Color.FromArgb(22, 79, 99);
             lastResult.Text = "El mensaje boot mode:(1,...) confirma arranque UART; esptool confirma comunicación de ida y vuelta.";
             lastResult.Dock = DockStyle.Fill; lastResult.AutoEllipsis = true;
-            stateBox.Controls.Add(status); stateBox.Controls.Add(lastResult); layout.Controls.Add(stateBox, 0, 3);
+            stateBox.Controls.Add(status); stateBox.Controls.Add(lastResult); stateBox.Controls.Add(commandProgress); layout.Controls.Add(stateBox, 0, 3);
             console.Dock = DockStyle.Fill; console.ReadOnly = true; console.WordWrap = false;
             console.BackColor = Color.FromArgb(19, 29, 39); console.ForeColor = Color.FromArgb(222, 232, 241);
             console.Font = new Font("Consolas", 9); console.DetectUrls = false;
             console.BindFollow(followLog); layout.Controls.Add(CreateWorkflowPanel(console), 0, 4);
-            var footer = new FlowLayoutPanel { Dock = DockStyle.Fill };
-            progress.Width = 150; progress.Height = 20; progress.Margin = new Padding(0, 9, 15, 0);
-            footer.Controls.Add(progress);
-            cancel = new Button { Text = "Cancelar operación", Width = 160, Height = 30, Enabled = false };
-            cancel.Click += (s, e) => Cancel(); footer.Controls.Add(cancel);
-            var copy = new Button { Text = "Copiar registro", Width = 140, Height = 30 };
+            var footer = new FlowLayoutPanel { Dock = DockStyle.Fill, WrapContents = false, AutoSize = true };
+            var copy = new ActionButton { Text = "Copiar registro", Width = 150 };
             copy.Click += (s, e) => CopyText(console.Text, copy); footer.Controls.Add(copy);
-            var clear = new Button { Text = "Limpiar ventana", Width = 140, Height = 30 };
+            var clear = new ActionButton { Text = "Limpiar ventana", Width = 150 };
             clear.Click += (s, e) => ClearOperationView(); footer.Controls.Add(clear);
             EnableTextCopyFeedback(console);
-            var manual = new Button { Text = "Manual", Width = 100, Height = 30 }; manual.Click += (s, e) => OpenManual(); footer.Controls.Add(manual);
-            layout.Controls.Add(footer, 0, 5);
-
+            var compileMenu = new ToolStrip { GripStyle = ToolStripGripStyle.Hidden, Dock = DockStyle.None, AutoSize = true, Padding = new Padding(0), Margin = new Padding(0, 4, 8, 4), RenderMode = ToolStripRenderMode.System };
+            compileTarget = new ToolStripSplitButton("Compilar") { AutoSize = false, Size = new Size(285, UiButtonHeight), DropDownButtonWidth = UiSplitWidth };
+            compileTarget.ButtonClick += (s, e) => Build(false);
+            compileTarget.DropDownItems.Add("Compilar destino seleccionado", null, (s, e) => Build(false));
+            compileTarget.DropDownItems.Add("Compilar todo", null, (s, e) => Build(true));
+            compileMenu.Items.Add(compileTarget); idleControls.Add(compileMenu); footer.Controls.Add(compileMenu);
+            cancel = new ActionButton { Text = "Cancelar operación", Width = 180, Enabled = false };
+            cancel.Click += (s, e) => Cancel(); footer.Controls.Add(cancel);
+            var flashMenu = CreateFirmwareFlashMenu(true);
+            var footerLayout = new TableLayoutPanel { Dock = DockStyle.Top, AutoSize = true, ColumnCount = 2, RowCount = 1, Padding = new Padding(0, 12, 0, 0) };
+            footerLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100)); footerLayout.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
+            footerLayout.Controls.Add(footer, 0, 0); footerLayout.Controls.Add(flashMenu, 1, 0);
+            layout.RowStyles[5].Height = 104; footer.WrapContents = true; footer.AutoSize = false; footerLayout.AutoSize = false; footerLayout.Dock = DockStyle.Fill;
+            layout.Controls.Add(footerLayout, 0, 5);
+            UpdateDestinationVisibility();
             var configLayout = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 3 };
             configLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 58)); configLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100)); configLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 42));
             configLayout.Controls.Add(new Label { Text = "Configurá rutas para esta computadora. {Repo}, {Env} y %USERPROFILE% se resuelven al ejecutar.\r\nNo se instalan herramientas ni se descargan dependencias al abrir la aplicación. Un build puede usar la red mediante npm/PlatformIO.", Dock = DockStyle.Fill }, 0, 0);
@@ -150,30 +139,44 @@ namespace AFR2Loader
             settings.Columns.Add(new DataGridViewButtonColumn { Name = "Browse", HeaderText = "", Width = 45, Text = "...", UseColumnTextForButtonValue = true });
             settings.CellContentClick += (s, e) => { if (e.ColumnIndex == 2 && e.RowIndex >= 0) Browse(e.RowIndex); };
             idleControls.Add(settings); configLayout.Controls.Add(settings, 0, 1);
-            var configButtons = new FlowLayoutPanel { Dock = DockStyle.Fill };
-            AddButton(configButtons, "Guardar", SaveProfile, 105);
-            AddButton(configButtons, "Guardar como...", () => SaveProfileAs(), 130);
+            var configButtons = UiRow();
+
             AddButton(configButtons, "Detectar rutas vacías", () => { ReadSettings(); profile.Discover(); FillSettings(); Log("Detección de rutas terminada; revisar valores antes de guardar."); }, 175);
             AddButton(configButtons, "Importar...", ImportProfile, 110); AddButton(configButtons, "Exportar...", ExportProfile, 110);
             configLayout.Controls.Add(configButtons, 0, 2); configuration.Controls.Add(configLayout);
             Controls.Add(tabs); Controls.Add(menu); InitializeActivityBar();
-            timer.Interval = 100; timer.Tick += (s, e) => DrainLog(); timer.Start();
+            timer.Interval = 100; timer.Tick += (s, e) => { DrainLog(); DrainCommandFeedback(); }; timer.Start();
             FillSettings(); RefreshPorts();
             FormClosing += WindowClosing;
             InitializeIntegration(tabs, layout, configLayout, footer);
             InitializeSerial(tabs);
-            InitializeMegaBridge(tabs);
             InitializePreferences(tabs);
             InitializeConverter(tabs);
+            var megaPage = new TabPage("ATmega") { Padding = new Padding(UiInset) };
+            var megaActions = new FlowLayoutPanel { Dock = DockStyle.Fill, AutoScroll = true };
+            var megaOpen = new ActionButton { Text = "Preparar / cargar ATmega", Width = 260 };
+            megaOpen.Click += (sender, args) => { SelectOperationTarget(0); ShowOperation(); };
+            var megaRead = new ActionButton { Text = "Leer ATmega", Width = 175 };
+            megaRead.Click += (sender, args) => OpenManualSection("leer-atmega");
+            megaActions.Controls.Add(megaOpen); megaActions.Controls.Add(megaRead); megaPage.Controls.Add(megaActions); tabs.TabPages.Add(megaPage);
+            bridgeTab.Text = "Flasher";
+            string[] tabOrder = { "Operación", "Flasher", "ATmega", "Monitor serie", "Historial de sesión", "Eventos y errores", "Conversor HEX / ASCII", "Servidor MCP", "Configuración" };
+            var orderedPages = tabs.TabPages.Cast<TabPage>().OrderBy(page => { int index = Array.IndexOf(tabOrder, page.Text); return index < 0 ? 8 : index; }).ToArray();
+            tabs.TabPages.Clear(); tabs.TabPages.AddRange(orderedPages);
+            StyleControls(this);
+            ArrangeOperationWorkspace(layout);
+            InitializeBrand();
+            timer.Tick += (sender, args) => { if (++preparationTick % 30 == 0 && !busy) UpdatePreparationControls(); };
+            UpdatePreparationControls();
             Log("AFR2 Loader " + LoaderVersion.Value + " | Hecho por Koba Chajchir");
             Log("Perfiles y registros: " + Profile.UserRoot);
         }
 
         Button AddButton(Control parent, string text, Action action, int width)
         {
-            var b = new Button { Text = text, Width = width, Height = 33, Margin = new Padding(0, 4, 8, 4) };
+            var b = new ActionButton { Text = text, Width = width, Height = 33, Margin = new Padding(0, 4, 8, 4) };
             b.Click += (s, e) => { try { action(); } catch (Exception error) { MessageBox.Show(this, error.Message, "AFR2 Loader", MessageBoxButtons.OK, MessageBoxIcon.Error); } };
-            parent.Controls.Add(b); idleControls.Add(b); return b;
+            parent.Controls.Add(b); idleControls.Add(b); ButtonStyle(b); return b;
         }
         void Log(string line)
         {
@@ -222,7 +225,7 @@ namespace AFR2Loader
             foreach (Field field in Profile.Fields)
             { int i = settings.Rows.Add(field.Label, profile.Get(field.Key)); settings.Rows[i].Tag = field; settings.Rows[i].Cells[1].ToolTipText = field.Hint; }
             SyncEspOptions();
-            SyncBridgeOptions();
+            SyncBridgeOptions(); ApplyConfigurationFilter();
         }
         void ReadSettings()
         {
@@ -235,12 +238,12 @@ namespace AFR2Loader
             if (field.Kind == "folder")
             {
                 using (var dialog = new FolderBrowserDialog { Description = field.Hint })
-                { if (Directory.Exists(profile.Resolve(field.Key))) dialog.SelectedPath = profile.Resolve(field.Key); if (dialog.ShowDialog(this) == DialogResult.OK) settings.Rows[index].Cells[1].Value = dialog.SelectedPath; }
+                { if (Directory.Exists(profile.Resolve(field.Key))) dialog.SelectedPath = profile.Resolve(field.Key); if (ShowStyledDialog(dialog) == DialogResult.OK) settings.Rows[index].Cells[1].Value = dialog.SelectedPath; }
             }
             else if (field.Kind == "file")
                 using (var dialog = new OpenFileDialog { Title = field.Label + " - " + field.Hint, CheckFileExists = true })
-                { if (dialog.ShowDialog(this) == DialogResult.OK) settings.Rows[index].Cells[1].Value = dialog.FileName; }
-            else MessageBox.Show(this, field.Hint, field.Label);
+                { if (ShowStyledDialog(dialog) == DialogResult.OK) settings.Rows[index].Cells[1].Value = dialog.FileName; }
+            else ShowFieldHelp(field);
         }
         void ExportProfile()
         {
@@ -249,7 +252,7 @@ namespace AFR2Loader
             {
                 ReadSettings();
                 using (var dialog = new SaveFileDialog { Filter = "Perfil AFR2 (*.json)|*.json", FileName = "afr2-perfil.json" })
-                    if (dialog.ShowDialog(this) == DialogResult.OK) { profile.Save(dialog.FileName); Log("Perfil exportado sin credenciales: " + dialog.FileName); }
+                    if (ShowStyledDialog(dialog) == DialogResult.OK) { profile.Save(dialog.FileName); Log("Perfil exportado sin credenciales: " + dialog.FileName); }
             }
             finally { profileDialogs--; }
         }
@@ -262,25 +265,38 @@ namespace AFR2Loader
         }
         bool Confirm(string title, string text, string[] checks)
         {
+            if (sessionChecksAccepted) { Log("Confirmación manual omitida por autorización de sesión: " + title + "\r\n" + text + "\r\n" + String.Join("\r\n", checks)); return true; }
             SetState("Esperando confirmación: " + title);
-            using (var dialog = new Form { Text = title, Size = new Size(800, 660), MinimumSize = new Size(650, 560), StartPosition = FormStartPosition.CenterParent, Font = Font, MinimizeBox = false, MaximizeBox = false })
+            using (var dialog = new Form { Text = title, Size = new Size(850, 690), MinimumSize = new Size(700, 540), StartPosition = FormStartPosition.CenterParent, Font = Font, MinimizeBox = false, MaximizeBox = false })
             {
-                var grid = new TableLayoutPanel { Dock = DockStyle.Fill, Padding = new Padding(16), ColumnCount = 1, RowCount = 3 };
-                grid.RowStyles.Add(new RowStyle(SizeType.Percent, 100)); grid.RowStyles.Add(new RowStyle(SizeType.Absolute, checks.Length * 39 + 8)); grid.RowStyles.Add(new RowStyle(SizeType.Absolute, 42));
+                dialog.Height = Math.Min(dialog.Height, Screen.FromControl(this).WorkingArea.Height - 40);
+                var grid = new TableLayoutPanel { Dock = DockStyle.Fill, Padding = new Padding(UiInset), ColumnCount = 1, RowCount = 5 };
+                grid.RowStyles.Add(new RowStyle(SizeType.Percent, 45)); grid.RowStyles.Add(new RowStyle(SizeType.Percent, 55));
+                grid.RowStyles.Add(new RowStyle(SizeType.Absolute, 46)); grid.RowStyles.Add(new RowStyle(SizeType.Absolute, 48)); grid.RowStyles.Add(new RowStyle(SizeType.Absolute, 48));
                 var detail = new TextBox { Text = text, Multiline = true, ReadOnly = true, ScrollBars = ScrollBars.Vertical, Dock = DockStyle.Fill, BackColor = Color.White };
                 detail.TabStop = false; EnableTextCopyFeedback(detail); grid.Controls.Add(detail, 0, 0);
-                var checklist = new FlowLayoutPanel { Dock = DockStyle.Fill, FlowDirection = FlowDirection.TopDown, WrapContents = false, AutoScroll = true };
-                var boxes = new List<CheckBox>();
-                foreach (string check in checks) { var box = new CheckBox { Text = check, Width = 715, Height = 35 }; boxes.Add(box); checklist.Controls.Add(box); }
+                bool require = preferences == null || preferences.RequireChecklist;
+                var checklist = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, AutoScroll = true };
+                var boxes = new System.Collections.Generic.List<CheckBox>();
+                if (require) foreach (string check in checks) {
+                    var box = new CheckBox { Text = check, AutoSize = true, MaximumSize = new Size(735, 0), Dock = DockStyle.Top, Checked = preferences != null && preferences.ChecklistsInitiallyChecked, Margin = new Padding(0, 8, 0, 8) };
+                    checklist.RowStyles.Add(new RowStyle(SizeType.AutoSize)); checklist.Controls.Add(box, 0, boxes.Count); boxes.Add(box);
+                }
+                else checklist.Controls.Add(new Label { Text = "Casillas desactivadas en Opciones → Preferencias → Asistentes.\r\nRevisá la información antes de confirmar.", Dock = DockStyle.Top, AutoSize = true });
                 grid.Controls.Add(checklist, 0, 1);
+                var review = UiRow(); var all = new ActionButton { Text = "Seleccionar todos / aceptar todo", Width = 310, Visible = require && boxes.Count > 0 };
+                all.Click += (s, e) => { foreach (var box in boxes) box.Checked = true; }; review.Controls.Add(all);
+                var manual = new LinkLabel { Text = "Ver explicación en el manual", AutoSize = true, Margin = new Padding(8, 12, 0, 0) }; manual.LinkClicked += (s, e) => OpenManualSection(ManualForAction(title)); review.Controls.Add(manual); grid.Controls.Add(review, 0, 2);
+                var portRow = UiRow(); var portState = new Label { Text = portCheckState, AutoSize = true, Margin = new Padding(0, 10, 12, 0) }; portRow.Controls.Add(portState);
+                var checkPort = new ActionButton { Text = "Comprobar COM", Width = 185 };
+                checkPort.Click += (s, e) => { try { PortAvailability.Check(ports.Text); portCheckState = ports.Text + " disponible a " + DateTime.Now.ToString("HH:mm:ss") + " (comprobación puntual)"; } catch (Exception error) { portCheckState = error.Message; } portState.Text = portCheckState; }; portRow.Controls.Add(checkPort); grid.Controls.Add(portRow, 0, 3);
                 var buttons = new FlowLayoutPanel { Dock = DockStyle.Fill, FlowDirection = FlowDirection.RightToLeft };
-                var next = new Button { Text = "Confirmar y continuar", Width = 185, Height = 32, Enabled = checks.Length == 0, DialogResult = DialogResult.OK };
-                var back = new Button { Text = "Cancelar", Width = 120, Height = 32, DialogResult = DialogResult.Cancel };
+                var next = new ActionButton { Text = "Confirmar y continuar", Width = 230, Enabled = boxes.All(b => b.Checked), DialogResult = DialogResult.OK };
+                var back = new ActionButton { Text = "Cancelar", Width = 140, DialogResult = DialogResult.Cancel };
                 foreach (var box in boxes) box.CheckedChanged += (s, e) => next.Enabled = boxes.All(b => b.Checked);
-                buttons.Controls.Add(next); buttons.Controls.Add(back); grid.Controls.Add(buttons, 0, 2);
-                dialog.Controls.Add(grid); dialog.AcceptButton = next; dialog.CancelButton = back;
-                FocusDialogAction(dialog, boxes.Count > 0 ? (Control)boxes[0] : next, detail);
-                return dialog.ShowDialog(this) == DialogResult.OK;
+                buttons.Controls.Add(next); buttons.Controls.Add(back); grid.Controls.Add(buttons, 0, 4);
+                dialog.Controls.Add(grid); dialog.AcceptButton = next; dialog.CancelButton = back; FocusDialogAction(dialog, boxes.Count > 0 ? (Control)boxes[0] : next, detail);
+                return ShowStyledDialog(dialog) == DialogResult.OK;
             }
         }
         async void Execute(string title, Func<Operations, Profile, string, CancellationToken, Task> body, bool usesSerial = false)
@@ -305,15 +321,21 @@ namespace AFR2Loader
             if (busy || pendingJob != null || profileDialogs > 0) return;
             if (serialTransition) throw new InvalidOperationException("Esperá que el monitor termine de abrir/cerrar el puerto antes de iniciar otra operación.");
             ReadSettings(); Profile snapshot = profile.Copy(); string port = ports.Text; DrainNotices();
+            idleControls.RemoveAll(c => c.IsDisposed);
             currentJob = reservedJob ?? NewJob(title, "window", port, "running"); reservedJob = null;
             currentJob.Status = "running"; currentJob.Stage = title;
+            ShowOperation(); followLog.Checked = true; DrainLog(); console.GoToEnd();
             ResetWorkflow(title);
+            ResetCommandFeedback();
             busy = true; foreach (Control c in idleControls) c.Enabled = false; configMenu.Enabled = false;
             cancel.Enabled = true; progress.Style = ProgressBarStyle.Marquee; lastResult.ForeColor = Color.FromArgb(71, 85, 105);
             cancellation = new CancellationTokenSource(); runner = new Runner(Log);
+            runner.Feedback = QueueCommandFeedback;
+            lastResult.Text = "Operación en curso. Esperá el resultado de escritura y verificación.";
             var ops = new Operations(runner, Log, SetState, Confirm);
             ops.BridgeToolPath = Path.Combine(appDir, "tools", "esp_bridge_esptool.py");
             ops.BootAssistant = GuideEspBoot;
+            ops.EspPhysicalConfirmation = ConfirmEspPhysicalIntervention;
             ops.WritingStarted = () => { if (currentJob != null) currentJob.WritingStarted = true; };
             ops.Changed = (code, message) => QueueNotice(new LoaderNotice { Origin = "cargador " + port, Code = code, Message = message });
             UpdateSerialControls();
@@ -332,6 +354,7 @@ namespace AFR2Loader
                     await StopSerialMonitor("Puerto entregado al cargador");
                     cancellation.Token.ThrowIfCancellationRequested();
                 }
+                if (usesSerial) { SetState("Comprobando disponibilidad de " + port + "..."); PortAvailability.Check(port); portCheckState = port + " disponible a " + DateTime.Now.ToString("HH:mm:ss"); Log(portCheckState + ". Comprobación puntual; la herramienta abrirá el puerto a continuación."); }
                 SetState(title);
                 await body(ops, snapshot, port, cancellation.Token);
                 resultState = "completed";
@@ -363,8 +386,8 @@ namespace AFR2Loader
             {
                 if (ops.EspSessionStarted)
                 {
-                    lastResult.Text += " Ya podés soltar K (KEY).";
-                    Log("Operación ESP finalizada: ya podés soltar K (KEY). El Loader no reinicia automáticamente el ESP.");
+                    lastResult.Text += " Ya podés soltar KEY.";
+                    Log("Operación ESP finalizada: ya podés soltar KEY. El Loader no reinicia automáticamente el ESP.");
                 }
                 try
                 {
@@ -381,12 +404,22 @@ namespace AFR2Loader
                 currentJob = null;
                 foreach (Control c in idleControls) c.Enabled = true; configMenu.Enabled = true;
                 cancel.Enabled = false; progress.Style = ProgressBarStyle.Blocks; progress.Value = 0; DrainLog();
+                lock (commandFeedbackGate) pendingCommandFeedback = null;
+                commandProgress.Text = resultState == "completed" ? "Proceso finalizado. " + (ops.Verified ? "Contenido verificado." : "Consultá el resultado de la operación.")
+                    : "Proceso detenido. " + (ops.WroteAnything && !ops.Verified ? "Escritura iniciada; contenido sin verificar." : "Consultá el resultado y el registro.");
+                commandProgress.ForeColor = lastResult.ForeColor;
+                workflowTips.SetToolTip(commandProgress, commandProgress.Text);
                 DrainNotices(); UpdateSerialControls(); SyncBridgeOptions();
             }
             if (resultState == "completed" && ops.Verified) RemindOperatingWiring(snapshot, ops.InstalledMegaFlasher, ops.MegaFirmwareFlashed, ops.FlashedMegaBackup);
         }
         void Build(bool all)
         {
+            ReadSettings();
+            if ((all || target.SelectedIndex != 0) && !CapacityConfirmed) {
+                MessageBox.Show(this, "Primero pulsá Consultar tamaño de flash o Detectar ESP. Después volvé a preparar el paquete. No se inició ninguna operación.", "Detección pendiente");
+                return;
+            }
             int selected = target.SelectedIndex;
             Execute(all ? "Compilar ATmega + preparar ESP según perfil" : EspFlashRules.IsAt(profile) && selected != 0 ? "Revisar paquete AT" : "Compilar " + TargetName(selected), async (ops, p, port, token) =>
             {
@@ -407,9 +440,17 @@ namespace AFR2Loader
         }
         void DetectEsp()
         {
+            ShowOperation();
             bool shouldListen = listen.Checked;
             Execute("Detectar ESP y consultar ROM", async (ops, p, port, token) =>
-            { await ops.PrepareEspSession(p, port, false, shouldListen, token); await ops.Probe(p, port, token); }, true);
+            { confirmedFlashCapacity = null;
+                await ops.PrepareEspSession(p, port, false, shouldListen, token);
+                long bytes = await ops.Probe(p, port, token);
+                if (bytes % 1048576L != 0 || bytes < 1048576L || bytes > 16777216L) throw new InvalidOperationException("Capacidad detectada no compatible con los layouts del Loader.");
+                SetProfileValue("FlashMB", (bytes / 1048576L).ToString(System.Globalization.CultureInfo.InvariantCulture));
+                confirmedFlashCapacity = profile.Get("FlashMB");
+                SyncEspOptions(); UpdateDestinationVisibility();
+            }, true);
         }
         void DetectSelected()
         {
@@ -418,10 +459,14 @@ namespace AFR2Loader
         }
         void Flash()
         {
+            if (busy || pendingJob != null || profileDialogs > 0 || syncingEspOptions || syncingDestination || serialTransition) return;
+            ReadSettings();
+            if (!SelectedSectionPrepared()) { UpdatePreparationControls(); MessageBox.Show(this, "Primero compilá esta sección con el perfil actual (AT: revisar paquete).", "Preparación pendiente"); return; }
             int selected = target.SelectedIndex; bool shouldListen = listen.Checked;
+            bool communicationOnly = selected == 0 && megaVariant.SelectedIndex == 1;
             Execute("Flashear y verificar " + target.Text, async (ops, p, port, token) =>
             {
-                if (selected == 0) await ops.FlashMega(p, port, token);
+                if (selected == 0) { if (communicationOnly) p.Values["Hex"] = Path.Combine(p.Resolve("AtmegaDir"), "build", "afr2-communication.hex"); await ops.FlashMega(p, port, token); }
                 else await ops.FlashEsp(p, port, selected == 1 || selected == 3, selected == 2 || selected == 3, shouldListen, token);
             }, true);
         }
@@ -449,14 +494,13 @@ namespace AFR2Loader
         }
         void OpenManual()
         {
-            string file = Path.Combine(appDir, "MANUAL.html");
-            if (!File.Exists(file)) { MessageBox.Show(this, "No se encontró MANUAL.html. Distribuí la carpeta completa."); return; }
-            Process.Start(new ProcessStartInfo(file) { UseShellExecute = true });
+            OpenManualSection("inicio");
         }
         void OpenLogs() { string dir = Path.Combine(Profile.UserRoot, "logs"); Directory.CreateDirectory(dir); Process.Start("explorer.exe", Runner.Quote(dir)); }
         void About()
         {
-            MessageBox.Show(this, "AFR2 Loader " + LoaderVersion.Value + "\r\nCompilación, carga e integración MCP de AutoFinalRobo2\r\n\r\nHecho por Koba Chajchir\r\nGitHub: https://github.com/kobachajchir\r\nLinkedIn: https://www.linkedin.com/in/kchajchir\r\nTeléfono: +54 388 488 9973\r\n\r\nDatos de la sección Desarrollador de AutoFinalRobo2.\r\nInterfaz WinForms / .NET Framework; herramientas externas configurables.\r\nMCP comparte la sesión; revisión manual o aceptación automática activada en la ventana.\r\nNo controla físicamente los botones KEY/RST ni verifica el cableado.", "Acerca de AFR2 Loader", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            ShowAboutLoader();
         }
     }
 }
+

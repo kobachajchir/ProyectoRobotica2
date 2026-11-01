@@ -1,0 +1,159 @@
+{
+  "change": "AFR2-20261028-23",
+  "date": "2026-10-28",
+  "loaderVersion": "0.9.5",
+  "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+  "status": {
+    "loader": "Compilación C# y revisión visual GUI; sin firmware compilado, COM, TX, detecciones ni flasheos. Verificación/KEY/preparación real sin comprobar físicamente.",
+    "atmega": "Sin cambios de producto por23; se preservan trabajos concurrentes.",
+    "esp": "Sin cambios por23.",
+    "web": "Sin cambios por23.",
+    "cad": "Sin cambios por23."
+  },
+  "files": [
+    {
+      "path": "AutoFinalRobo2-Loader/src/BuildPreparation.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Recibos por sección de sesión, fuentes/perfil/layout/artefactos y comprobación al cargar.",
+      "sha256": "cfddc87cc68f0ef2b0821f298e89cc45166a1b98f78498a965aebc24ef4210df"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/MainForm.Preparation.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Capacidad confirmada, bloqueo visual de Flashear y aviso KEY no modal.",
+      "sha256": "3f4d5355385a831afa120a8344dd4f6868705b039900dd00556df2dc2b59d6f9"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/MainForm.Brand.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Marca AFR2 de ficha22, logos UNER aportados y propósito académico en Acerca de.",
+      "sha256": "99d20792847642ec85561864dd9314683c8aff9d09700e5889caa7680bdc8408"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/MainForm.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Operación visible y seguimiento al iniciar, bloqueo de preparación, FileSystem y marca.",
+      "sha256": "a8c98085f07cdea56595fc155069dafcab15596154eff1b8cf7b6593b8b22050"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/MainForm.Design.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Visibilidad AT/capacidad, ayuda por ancla específica y acción de eventos a alto completo.",
+      "sha256": "17944b481418f7c524222767c112e28d4ab28263a673de4af808d08569108098"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/MainForm.Workflow.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "ESP Detectado, aviso KEY, etapas y recordatorio de D18/D19 tras instalar.",
+      "sha256": "8414833585e75f6ea79d1207492ef60040f8621e7b487b8fa4b5bdaf5712e834"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/MainForm.EspModes.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "FileSystem, ocultar sección AT y confirmar capacidad antes de mostrar particiones.",
+      "sha256": "9b05129e0b321e785baa50268767e9232b4f8956313f0752f2b43437fe8d74f5"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/MainForm.MegaBridge.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Carga lleva a Operación; ayuda junto al título y backup junto a cargar.",
+      "sha256": "962d93b66d670d229b388ccfccb7d0cd06ecc810b0db0d35f5d5c9e335fbf6dc"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/MainForm.Integration.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Servidor MCP, historial con cajas de atajos y doble clic.",
+      "sha256": "aac162bea57b2705d2fc0c799c192ddb46f4ac13b85413d230a0e70fab69cd68"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/MainForm.Configuration.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Nombre de subsección FileSystem conservando filtro por placa.",
+      "sha256": "ac9cb78792bb033e3aadc94a123713a8c88d962a088f22e343c19ab6c45ec919"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/MainForm.McpConnection.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Prompt genérico para alta y diálogo de prompt específico para prueba.",
+      "sha256": "726685daa9017396d904ae92e9cc4ebab798978c92fa136be313e3eb9924859d"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/MainForm.Serial.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Copia conservada con formato al conversor, Leer ATmega y detalles sin amarillo.",
+      "sha256": "df62a69217a536f473a2c8d696c953894bb0d6a196798726a04eb17e32d8c2cd"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/MainForm.Usability.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Detecta copia del monitor para mostrar acceso al conversor.",
+      "sha256": "11aac1ff28293aa638e59348af27cac0569e09ccac9970bf6d35ff21c4c51fa8"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/LogTextBox.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Evento WM_COPY del monitor sin alterar seguimiento del registro.",
+      "sha256": "96a4fee60018b0ed167e822ceaee40e29a63bd820d96aa789822f2e410db63e2"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/Operations.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Preparación requerida, verificación integrada por imagen y evento KEY con porcentaje real.",
+      "sha256": "15023f2fa90e88ed3fafcad2c3100fb06c0106ef8cfb854819a881b90990b5fd"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/Operations.EspModes.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Revisión AT prepara imágenes y escritura requiere hash integrado sin verify_flash posterior.",
+      "sha256": "4564bcb011cfbef070acad5c3f9dba43bf4326e385eee9a2cf18c97affdc53a0"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/Operations.MegaBridge.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Instalación exige D18/D19 desconectados; recordatorios KEY coherentes.",
+      "sha256": "3891dd53ffe64e16c7247d5fdbc510a16e42812011dad477634e2e110cb53bf2"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/Profile.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Rótulos FileSystem sin modificar claves del esquema.",
+      "sha256": "9fbf5848da0a8d68a7f0604b549fc90eff49e9e75dbcccf7787249fe375754b1"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/FailureDetails.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Diagnóstico KEY refiere al aviso del Loader.",
+      "sha256": "dca2247bf76940c5b900bc594d70dbfbb702a6a5204799a3760ca4a86708935f"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/MANUAL.html",
+      "adaptation": "Manual renovado, anclas por campo, conexiones, FileSystem, verificación y marca.",
+      "sha256": "34f6f39cc513ce0b5c965596216adb80d218f44cd3ac6d5b40c8c73293766533"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/README.md",
+      "adaptation": "Flujo vigente y estado.",
+      "sha256": "d8ee729f439052fe1273a37d43d124495e4399c3d9ce017228373034e0312cdf"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/MCP.md",
+      "adaptation": "Prompts y preparación MCP sin cambios del esquema.",
+      "sha256": "fa58cf75f9ed10331f0d51397c86f0a0adb90b67c32743410ad395020598fe1b"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/assets/brand/LogoUner.png",
+      "adaptation": "Copia sin alterar de Documentacion/LogoUner.png aportada por el usuario.",
+      "sha256": "d5a0b9d005b5f55443de3f96a62fdfb294bca80c472c55e0b14ba3bc7a75f32d"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/assets/brand/logoChicoUner.png",
+      "adaptation": "Copia sin alterar de Documentacion/logoChicoUner.png aportada por el usuario.",
+      "sha256": "0baf4da21acfc69643ae9c06e59e97794160f943f9d649b6a28c8fdf380bac51"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/assets/brand/afr2-loader-logo-blue.png",
+      "adaptation": "Recurso aportado en ficha22, solo consumido en esta entrega; sin reescribir.",
+      "sha256": "1bc52f9952bfdc03ad6052cbebc61506fdc9377d4b5b55d8636ec95f7643ced6"
+    }
+  ]
+}

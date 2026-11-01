@@ -1,3 +1,27 @@
+> **AFR2-20261101-02:** [Arbol y gestos del C vigente](UI_SCREEN_FLOW.md), cotejados con el Simulador UI. Esta revision distingue el flujo actual del diseno e hitos historicos inferiores; corto en IR/servo no retorna, largo vuelve por contexto. Solo fuente, sin ejecucion.
+
+> AFR2-20261030-18: selector común030044 para motores FL/FR/RL/RR, giro circular, corto confirma y largo retorna; misma raster Web. Dashboard010001: modo y accesos corto Menú/largo Rápidas. Solo fuente.
+
+> AFR2-20261030-15: largo desde presentacion tactil detiene y sale al contexto previo, cerrando Web al rechazo de reactivacion. Wi-Fi ingreso agrega consulta local de credenciales persistidas ESP; variante privada030041, clave borrada al salir/30s. EX01v12, solo fuente.
+
+> **AFR2-20261030-13:** etiquetas de Mecanum030009 Girar CCW/CW vinculadas AVR/Web, con las mismas identidades y recursos. Referencia física de mezcla/odometría documentada en [MOTION_REFERENCE_13](../contracts/MOTION_REFERENCE_13.md). Sin generación/build/comprobación visual o física.
+
+> **AFR2-20261030-09:** 68 nodos en fuente, nuevas identidades030041 Datos de red/030042 Buscar redes/030043 Cambiar modo;03002d pasa a Conexión en dos páginas y030023 a Configurar. Enum de seguridad, candado propio12bytes, ayudas de gestos comunes y copia raster Web incluidos. [Contrato](../contracts/WIFI_UI_11.md). Generado anterior, memoria/paridad/hardware sin comprobar.
+
+> **Vigente fuente07:** pruebas03003e/03003f y componente030040, capacidades6páginas, catálogo reformado y recuento dinámico. [Ficha](../changes/2026-10-30-07-ui-integral.md). Recursos generados pendientes.
+
+> **AFR2-20261030-06:** nueva pantalla 03003d y séptima tarjeta rápida; AVR/Web en fuente, catálogo generado pendiente. [Ficha](../changes/2026-10-30-06-quick-mode.md).
+
+> **AFR2-20261029-29:** desde dashboard, corto abre menu completo010002; largo al soltar abre pantallas rapidas010003. Ambos accesos conservan retorno al origen por historial. Sustituye el acceso comun de28. Fuente sin compilar/cargar.
+
+> **AFR2-20261029-28:** clic corto desde dashboard abre Controles rapidos (010003); largo conserva su comportamiento al soltar. Fuente AVR y Web, sin compilar ni cargar. Sustituye la reserva anterior del corto en Inicio.
+
+> **Vigente AFR2-20261029-27:** largo >=800ms ejecutado exclusivamente al soltar: Inicio -> Controles rápidos -> Inicio, resto atrás por contexto/historial; corto reservado en Inicio. Configuración y pruebas conserva el árbol previo bajo la sexta tarjeta. Excepción Sí/No obligatoria y cancelación Hall sin perder drafts. Radar y servo comparten editor; escala/rastro se guardan con EEPROMv5. [Contrato fuente y aceptación pendiente](../contracts/QUICK_RADAR_ACTUATORS_9.md). Las reglas anteriores que describen largo global a menú/Volver obligatorio son históricas. Sin build, validadores ni carga.
+
+> **AFR2-20261029-26, fuente sin compilar:** Sistema → Batería0x030039 y Medición0x03003A, acción69, renderer genérico AVR/TS y Volver explícito. Sistema8ítems, lookup vinculado. Catálogo generado pendiente de ejecución autorizada; no paridad ni hardware verificados. [Contrato9](../contracts/BATTERY_MEASUREMENT_9.md).
+
+> **AFR2-20261029-20:** Hall una vuelta conserva Iniciar/Guardar/Descartar/Volver, sin Finalizar vuelta separado. Iniciar elige rueda1FL/2FR/3RL/4RR → corto comienza → corto termina. Largo en selector/conteo cancela al menú Hall con aviso, sin borrar drafts previos. Estado muestra4CPR y pendientes. Volver con drafts pregunta Si/No sin Volver; largo no evade esa decisión. [Contrato y excepciones contextuales](../contracts/HALL_CALIBRATION_WIZARD.md). Fuente OLED/Web vinculada, sin prueba física; no flashear.
+
 > **Actualización de compilación14:** pedido humano posterior autoriza compilar/corregir. ATmega/ESP/Web full: exit0, sin errores ni advertencias finales. [Informe](builds/2026-10-25-14/README.md). Sin tests, validadores independientes, navegador, montaje físico ni flasheos. Paquete local full generado; no promovido a ESP/data/dist. El texto de entrega sin compilar inferior es histórico.
 
 > **AFR2-20261025-14:**53nodos/64identidades. Radar/numérica e IR gráfica/valores son hermanas con códigos propios, giro alterna y corto retorna al listado; pantalla angular con control local. Renderer entero C y TypeScript,16iconos y LUT trigonométrica copiados a biblioteca Web. Visor conectado conserva framebuffer1024bytes; metadatos por comando69 no congelan render. Fuente EX01v8 sin compilar ni comparar paridad. [Contrato8](../contracts/SENSORS_RADAR_8.md).
@@ -81,3 +105,18 @@ deadline y callback en main. OLED conserva raster/dirty pages/snapshot y PROGMEM
 Las mismas cuatro vistas se integran con encoder físico; no cambia catálogo ni
 Web ni se añade UI remota. Hardware, memoria, tiempos y funcionamiento pendientes
 de comprobación. No se ejecutaron builds/tests/validadores/flasheos.
+
+
+## AFR2-20261029-19 — OLED táctil y visor bajo demanda
+
+Fuente adaptada con Web/ATmega/ESP: overlay scrim+blur en modales, Volver por ítem del menú, ScreenCode0x030035 con aviso/bitmap/chevrones y suscripción explícita a capturas/metadatos. Contrato en AutoFinalRobo2-Contracts/contracts/TOUCH_OLED_19.md; procedencia por archivo en provenance/touch-oled-20261029-19.json de Contracts. El rumbo es solicitado, no medido, y no agrega giro físico. Sin tests, compilación, validadores, navegador, ejecución del generador OLED, promoción ESP ni flasheo de esta entrega. Memoria/paridad/latencia físicas pendientes.
+
+
+## AFR2-20261030-01 — Dashboard de AutoMicro adaptado
+
+ScreenCode010001: cabecera con Wi-Fi/STA o AP, SSID/IP con scroll y batería por voltaje válido; centro con modo real y estado de motores; pie con encoder corto → Menú010002 y encoder con barra de duración → Rápidas010003 (largo >=800ms al soltar). Sin cambios de navegación ni activación de actuadores. Iconos PROGMEM y copia raster Web vinculados; no se añade framebuffer. Batería vacía/1/2/3/4 barras por bandas0/<6/<7/<8/>=8V, no porcentaje ni autonomía; inválida/deshabilitada/caducada muestra ? y --V. Medición sigue explícita desde Sistema → Batería. Red desconocida se distingue de desconexión confirmada. Fuente sin compilar, validar, probar, promover ni cargar. [Ficha](../changes/2026-10-30-01-dashboard-automicro-icons.md).
+
+
+## AFR2-20261030-02 — Cabecera de red
+
+Dashboard010001: icono Wi-Fi/AP izquierdo, SSID arriba e IP local STA/AP debajo; batería derecha. Ventanas21..90 con scroll independiente ida/vuelta, pausa800ms en extremos y paso40ms. Solo bandas de texto se actualizan en scroll; iconos fijos. Fuente OLED/Web vinculada sin build ni carga. [Ficha](../changes/2026-10-30-02-dashboard-network-scroll.md).

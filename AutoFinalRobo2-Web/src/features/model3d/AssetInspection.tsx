@@ -1,3 +1,6 @@
+import { frameModel } from '../../components/three/frameModel';
+import { InspectionEnvironment, useInspectionPalette } from '../../components/three/InspectionEnvironment';
+import { UiIcon } from '../../components/ui/UiIcon';
 import { useEffect, useMemo, useState } from 'react';
 import { Canvas, useLoader, useThree } from '@react-three/fiber';
 import { Box3, PropertyBinding, Vector3 } from 'three';
@@ -31,13 +34,13 @@ export function clearInspectionAssetCache() {
   useLoader.clear(GLTFLoader, modelAssetUrl('cubo'));
 }
 
-function Camera({ extent, targetY }: { extent: number; targetY: number }) {
+function Camera({ modelSize }: { modelSize: Vector3 }) {
+  const targetY = modelSize.y / 2;
   const { camera, size, invalidate } = useThree();
   useEffect(() => {
-    const distance = extent * 1.7 / Math.min(1, size.width / size.height);
-    camera.position.set(distance, targetY + distance * .65, distance);
-    camera.lookAt(0, targetY, 0); camera.updateProjectionMatrix(); invalidate();
-  }, [camera, size.width, size.height, extent, targetY, invalidate]);
+    frameModel(camera, new Box3(new Vector3(-modelSize.x / 2, 0, -modelSize.z / 2), new Vector3(modelSize.x / 2, modelSize.y, modelSize.z / 2)), size);
+    invalidate();
+  }, [camera, size.width, size.height, modelSize, invalidate]);
   return <OrbitControls targetY={targetY} />;
 }
 
@@ -45,10 +48,11 @@ function Camera({ extent, targetY }: { extent: number; targetY: number }) {
 export function AssetInspection({ model, referencesVisible, onToggleReferences }: {
   model: 'brazo' | 'cubo'; referencesVisible: boolean; onToggleReferences: () => void;
 }) {
+  const palette = useInspectionPalette();
   const asset = useLoader(GLTFLoader, modelAssetUrl(model), loader => loader.setDRACOLoader(draco));
   const prepared = useMemo(() => {
     const scene = asset.scene.clone(true); scene.updateMatrixWorld(true);
-    const bounds = new Box3().setFromObject(scene), size = bounds.getSize(new Vector3()), center = bounds.getCenter(new Vector3());
+    const bounds = new Box3().setFromObject(scene, true), size = bounds.getSize(new Vector3()), center = bounds.getCenter(new Vector3());
     const offset = new Vector3(-center.x, -bounds.min.y, -center.z);
     const definitions = model === 'brazo' ? ARM_REFERENCES : CUBE_REFERENCES;
     const references = definitions.flatMap(ref => {
@@ -79,9 +83,8 @@ export function AssetInspection({ model, referencesVisible, onToggleReferences }
       </Button>
     </div>
     <div className="afr2-model-inspection__viewport">
-      <Canvas frameloop="demand" dpr={[1, 1.5]} camera={{ fov: 45, near: .001, far: 20 }} onPointerMissed={() => setSelected(null)} fallback={<p>WebGL no esta disponible.</p>}>
-        <ambientLight intensity={.9} /><directionalLight position={[4, 6, 4]} intensity={1.4} /><directionalLight position={[-4, -2, -4]} intensity={.5} />
-        <gridHelper args={[prepared.extent * 3, 12, '#b81d33', '#1e293b']} />
+      <Canvas frameloop="demand" dpr={[1, 1.5]} camera={{ fov: 45, near: .001, far: 20 }} onPointerMissed={() => setSelected(null)} fallback={<p className="afr2-model-inspection__fallback">WebGL no esta disponible.</p>}>
+        <InspectionEnvironment palette={palette} extent={prepared.extent} />
         <group position={prepared.offset} onClick={event => {
           let target = event.object;
           while (target) {
@@ -91,14 +94,18 @@ export function AssetInspection({ model, referencesVisible, onToggleReferences }
           }
         }}><primitive object={prepared.scene} dispose={null} /></group>
         {referencesVisible && prepared.references.map(ref => <mesh key={ref.node} position={ref.position} onClick={event => { event.stopPropagation(); setSelected(ref.node); }}>
-          <sphereGeometry args={[prepared.extent * .018, 12, 8]} /><meshBasicMaterial color={ref.node === selected ? '#fbbf24' : '#e11d48'} depthTest={false} />
+          <sphereGeometry args={[prepared.extent * (ref.node === selected ? .024 : .018), 12, 8]} /><meshBasicMaterial color={palette.reference} depthTest={false} toneMapped={false} />
         </mesh>)}
-        <Camera extent={prepared.extent} targetY={prepared.size.y / 2} />
+        <Camera modelSize={prepared.size} />
       </Canvas>
       {referencesVisible && selectedRef && <aside className="afr2-model-info" role="region" aria-label={selectedRef.label}>
-        <header className="afr2-model-info__header"><h3>{selectedRef.label}</h3><Button size="sm" onClick={() => setSelected(null)}>Cerrar</Button></header>
+        <header className="afr2-model-info__heading">
+          <span className="afr2-model-info__icon"><UiIcon name="cube" /></span>
+          <div><p className="afr2-kicker">Componente del modelo</p><h3>{selectedRef.label}</h3></div>
+          <button type="button" className="afr2-model-info__close afr2-pressable" aria-label="Cerrar ficha del componente" onClick={() => setSelected(null)}><UiIcon name="close" /></button>
+        </header>
         <div className="afr2-model-info__body"><p>{selectedRef.detail}</p><p>Escala: 1 unidad = 1 m.</p></div>
-        <footer><Link to="/simulaciones?tipo=brazo">Abrir simulador del brazo</Link></footer>
+        <footer><Link to={model === 'brazo' ? '/simulaciones?tipo=brazo' : '/simulaciones?tipo=conjunta'} className="afr2-model-info__action afr2-pressable"><UiIcon name="control" />{model === 'brazo' ? 'Abrir simulador del brazo' : 'Abrir simulador del conjunto'}<UiIcon name="arrow" /></Link></footer>
       </aside>}
     </div>
     <p className="afr2-help afr2-model-inspection__help">{MODEL_ASSETS[model].label}: {prepared.references.length} referencias. Selecciona un punto o un componente de la lista.</p>

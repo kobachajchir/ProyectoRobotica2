@@ -1,0 +1,9 @@
+# Límite PWM255 / journal v7 — AFR2-20261030-04
+
+Pedido del usuario, 30/10/2026: el límite PWM debe ser255. El80 era el default de software; no era el máximo representable. Nuevo default `pwm_limit=255` (u8, rango configurable1..255). PWM individual sigue siendo i16 con signo −255..255 y magnitud limitada por `pwm_limit`;330 continúa fuera de rango. Duración100..2000ms y selección interna de rueda0..3 sin cambios.
+
+`AFR2_CONFIG_VERSION=7`. Conserva dos slots128bytes, payload60bytes desde v5, CRC/commit y lectura de v1..v7 con migraciones previas. Al leer registros anteriores a7 con `pwm_limit==80`, cambia únicamente ese límite a255 en RAM. Otros límites configurados se conservan. No es posible distinguir un80 elegido manualmente del antiguo default en esos registros; ambos pasan a255. Un registro v7 conserva cualquier elección posterior1..255, incluido80. Sin escritura automática: persistencia mediante Guardar EEPROM existente. Calibraciones, habilitación de motores, rampas y demás preferencias conservadas. Firmware anterior puede rechazar v7; downgrade no garantizado.
+
+El límite es compartido por prueba individual, movimiento PWM manual y saturación PID; el nuevo default amplía su techo, sin emitir órdenes de movimiento. EX01/IDs/longitudes/offsets sin cambio: respuesta `AFR2_EXT_LIMITS`, PWM u8 en offset2 del cuerpo. ESP ya convierte a porcentaje sobre255 y Web consume el límite publicado; no se modifican sus fuentes ni sus límites adicionales de prueba Web. No hay cambios de pantalla, navegación ni recursos OLED.
+
+Estado: ATmega solo fuente, sin compilar/cargar; ESP/Web sin cambios ni nueva compilación/promoción. Lectura manual exclusivamente, sin tests, validadores, generadores, COM ni pruebas físicas. No acredita la configuración ni el firmware actualmente cargados.

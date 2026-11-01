@@ -1,0 +1,24 @@
+{
+  "schema": "afr2-adaptations-1",
+  "changeId": "AFR2-20261101-03",
+  "authorship": "Adaptacion propia del entorno canonico del simulador; autores anteriores y materiales/modelos conservados.",
+  "module_status": {"atmega": "unchanged", "esp": "unchanged-not-promoted", "web": "source-adapted-not-executed", "cad": "unchanged"},
+  "verification": "Lectura de componentes, CSS, tokens y proveedor de tema. Sin ejecutar tests, builds, validadores, navegador ni hardware.",
+  "files": [
+    {"file": "AutoFinalRobo2-Web/src/components/three/InspectionEnvironment.tsx", "adaptation": "Entorno compartido de inspeccion con paleta del simulador y actualizacion por tema."},
+    {"file": "AutoFinalRobo2-Web/src/features/model3d/ModelInspection.tsx", "adaptation": "Entorno comun para auto; ficha solida en lugar de vidrio."},
+    {"file": "AutoFinalRobo2-Web/src/features/model3d/AssetInspection.tsx", "adaptation": "Entorno de brazo/cubo, referencias visibles, cabecera y accion comunes."},
+    {"file": "AutoFinalRobo2-Web/src/styles/model-inspection.css", "adaptation": "Superficies, tipografia, datos, controles, foco y seleccion tematicos."},
+    {"file": "AutoFinalRobo2-Web/src/styles/tokens.css", "adaptation": "Paleta de escena promovida desde collector.css sin variar los valores; tinta de referencias."},
+    {"file": "AutoFinalRobo2-Web/src/styles/collector.css", "adaptation": "Retirar definiciones duplicadas de escena; consume tokens globales actuales."},
+    {"file": "AutoFinalRobo2-Web/README.md", "adaptation": "Estado de entrega y limites."},
+    {"file": "AutoFinalRobo2-Web/INFORME_ADAPTACION.md", "adaptation": "Estado de fuente y referencia a ficha."},
+    {"file": "AutoFinalRobo2-Contracts/changes/2026-11-01-03-models-scene-contrast.md", "adaptation": "Causa, correcciones y estado por modulo."},
+    {"file": "AutoFinalRobo2-Contracts/docs/design-system/coverage-20261101-03.json", "adaptation": "Cobertura de temas, estados y fuentes; sin mediciones inventadas."},
+    {"file": "AutoFinalRobo2-Contracts/docs/design-system/index.md", "adaptation": "Referencia VIS-048."},
+    {"file": "AutoFinalRobo2-Contracts/docs/design-system/decisions.md", "adaptation": "Decisiones confirmadas y propuestas VIS-048."},
+    {"file": "AutoFinalRobo2-Contracts/docs/design-system/sources.md", "adaptation": "Fuente canonica y alcance autorizado."},
+    {"file": "AutoFinalRobo2-Contracts/README.md", "adaptation": "Referencia de entrega."},
+    {"file": "AutoFinalRobo2-Contracts/CHANGELOG.md", "adaptation": "Registro AFR2-20261101-03."}
+  ]
+}

@@ -1,3 +1,41 @@
+> **AFR2-20261101-02:** Simulador UI actualizado por cotejo de Afr2Ui_Apply: corto/largo contextual, Hall, Si/No, rapidas y Wi-Fi. Arbol completo y limites en [UI_SCREEN_FLOW](documentation/UI_SCREEN_FLOW.md). Solo fuente; sin tests, builds, generadores ni hardware.
+
+> **AFR2-20261030-07:** contratos y UI vinculada actualizados; [procedencia, estado y pendientes](changes/2026-10-30-07-ui-integral.md). Solo fuente, sin ejecución de generadores, pruebas/builds/validadores ni cargas.
+
+> **AFR2-20261030-03:** cinco IR por ADC10 (0..1023), A4..A0, perfil2 y EEPROMv6 con migración de modos anteriores en RAM. ADC compartido con bateríaA5; descarte por cambio de canal. ESP/Web/OLED ya admiten ese rango. [Contrato y límites](contracts/EEPROM_IR_ADC_6.md). Solo fuente; sin compilación, pruebas ni carga. No acredita la causa de los ceros.
+
+> **AFR2-20261030-02:** cabecera dashboard con SSID e IP STA/AP y scroll independiente de ida/vuelta, recortado entre icono y batería fijos. Solo bandas de texto en redibujo parcial. Fuentes AVR/Web vinculadas, sin compilar ni cargar. Ficha en Contracts/changes/2026-10-30-02-dashboard-network-scroll.md.
+
+> **AFR2-20261030-01:** dashboard010001 adaptado de AutoMicro con iconos Wi-Fi/AP/encoder, batería por bandas de voltaje y accesos corto Menú/largo Rápidas al soltar. AVR y copia raster Web vinculados, sin nuevo wire. Fuente sin compilar, probar ni cargar. Ver changes/2026-10-30-01-dashboard-automicro-icons.md.
+
+> **AFR2-20261029-29:** desde dashboard, corto abre menu completo010002; largo al soltar abre pantallas rapidas010003. Ambos accesos conservan retorno al origen por historial. Sustituye el acceso comun de28. Fuente sin compilar/cargar.
+
+> **AFR2-20261029-28:** dashboard abre menu de controles con clic corto; largo conservado al soltar. OLED/Web vinculados; sin compilacion, validadores, prueba ni carga.
+
+> **AFR2-20261029-27 — fuente vigente:** ATmega/ESP0.11.0 y Web0.4.0; carrusel de controles, largo al soltar con retorno contextual, radar4/2/1/0.5m/rastro/editor compartido, IR compactos, PWM manual independiente de odometría/HC y atención prioritaria de sesión WS. EEPROMv5 / EX01v9, preservando batería26. Sin compilar, validadores, flasheos, pruebas físicas ni promoción Web. Recursos OLED copiados solamente; memoria y aceptación pendientes. [Contrato y límites](contracts/QUICK_RADAR_ACTUATORS_9.md).
+
+> **AFR2-20261029-26:** [Batería y reinicios](contracts/BATTERY_MEASUREMENT_9.md): productor A5, puente ESP y Web con pill/icono por voltaje, confirmación de reinicios. Fuentes vinculadas, sin compilación, generación OLED, pruebas, promoción ni carga.
+
+> **AFR2-20261029-22:** corregido en fuente el argumento PowerShell de preparación FileSystem; el perfil instalado puede ajustarse sin recompilar. Sin ejecutar scripts, compilar ni flashear. [Causa y solución](changes/2026-10-29-22-loader-powershell-filesystem.md).
+
+> **AFR2-20261029-19 compilado y ATmega cargado:** pedido humano29/10/2026. ATmega/ESP/Web esp y LittleFS completados; promoción local Web a ESP/data/dist. Carga COM8 final13:32:50,80066bytes escritos/verificados, avrdude exit0. ESP/LittleFS sin cargar. SRAM estática7085bytes; sin prueba física/dinámica. Evidencia en AutoFinalRobo2-Contracts/documentation/builds/2026-10-29-19/README.md. Estados inferiores sin build/carga son históricos.
+
+> **Loader 1.1.2 / AFR2-20261029-13:** intervención KEY/RST ESP obligatoria y visible al frente aun con app minimizada/omisión de confirmaciones. Sin cambio en carga ATmega. GUI/MCP compilados y distribución generada; sin ejecución ni hardware. [Ficha](changes/2026-10-29-13-loader-esp-physical-required.md).
+
+> **Loader 1.1.1 / AFR2-20261029-12:** autorización local por sesión para omitir confirmaciones manuales desde GUI/MCP, con advertencia obligatoria y comprobaciones automáticas conservadas. GUI/MCP compilados y distribución generada; sin ejecución ni hardware. [Ficha](changes/2026-10-29-12-loader-session-checks.md).
+
+> **Loader 1.1.0 / AFR2-20261029-01:** preparación de FileSystem mediante script configurable; nuestra Web también usa ese lanzador. Incluye ejemplo sin Web y guía de integración. Fuente/documentación sin compilar ni ejecutar. [Ficha](changes/2026-10-29-01-loader-filesystem-scripts.md).
+
+> **Loader AFR2-20261028-23 / 0.9.5:** preparación previa por sección, FileSystem/capacidad confirmada, verificación ESP integrada sin reconexión adicional, aviso KEY al primer porcentaje, prompts de Servidor MCP y manual/cableado/UNER renovados. Interfaz compilada y revisada visualmente; sin COM, flash ni compilación de firmware por el agente. [Ficha y límites](changes/2026-10-28-23-loader-flujo-manual-mcp.md).
+
+> **Loader AFR2-20261028-17 / 0.9.5:** KEY corregido, botones y desplegables con contraste y separación propios, etapas sin scroll por operación, flasher visible y distribución revisada con capturas. Loader compilado y GUI revisada por pedido expreso; sin COM, carga ni firmware compilado. [Detalle y límites](changes/2026-10-28-17-loader-095-revision-visual.md).
+
+> **Loader AFR2-20261028-16 / 0.9.5:** flujo ATmega/ESP, Configuración por placa, flasher separado, Preferencias en Opciones, tablas MCP/Eventos, colores/iconos y espaciado compartidos. Monitor con envío ASCII/HEX/números, CR/LF y repeticiones cancelables por el mismo dueño del COM, con registros TX separados. [Ficha y límites](changes/2026-10-28-16-loader-095-interfaz-envio-serie.md). Solo fuente, revisión manual: sin tests, validadores, compilación, GUI, COM ni flasheos.
+
+> **Loader AFR2-20261028-15 / 0.9.4:** selección directa del BIN completo Ai-Thinker AT v1.5.4.1 descargado: reconocido por tamaño y SHA-256, mapa completo 4 MiB desde 0x0, DIO/40 MHz del archivo. Otros BIN requieren manifiesto del proveedor. Conserva consulta física, confirmaciones y verificación. Solo fuente, sin compilar, ejecutar ni flashear. [Ficha](changes/2026-10-28-15-loader-at-bin-directo.md).
+
+> **Loader AFR2-20261028-13 / 0.9.3:** [Feedback de carga](changes/2026-10-28-13-loader-feedback-carga.md): tiempo del proceso, último mensaje, segundos sin salida y porcentaje de escritura informado por esptool. Detección por flasher reportada por el usuario; escritura y nueva interfaz pendientes de comprobar. Solo fuente; sin compilar, ejecutar ni abrir COM.
+
 > **Loader AFR2-20261028-12 / 0.9.2:** [Conversor universal HEX / ASCII](changes/2026-10-28-12-loader-conversor-universal.md) para texto pegado, con vista legible/escapada, ASCII literal a HEX y copia normalizada. Sin asociación a comandos, COM ni jobs. Solo fuente; sin compilar/ejecutar/probar. Web/atmega/esp/CAD sin cambios de esta ficha.
 
 > **Integración AFR2-20261028-11 / Loader0.9.1:** se incorporó origin/main2a72b9a (Loader0.9.0, servicio AVR y cambios CAD) conservando monitor HEX, USB–TTL, verificación y Protocol Studio locales. [Resoluciones y resguardo](changes/2026-10-28-11-integracion-local-remoto.md). Protocol Studio reasignado a09/10 para evitar IDs remotos repetidos. Solo fuente y Git; sin compilar, probar, validar, COM, flash ni promoción ESP.
@@ -104,3 +142,11 @@ permanecen bloqueadas por defecto hasta aprobar SRAM/pila y calibración real.
 Contrato en AutoFinalRobo2-Contracts/contracts/EX01_WEB_INTEGRATION.md y ficha
 AutoFinalRobo2-Contracts/changes/2026-10-24-01-firmware-web-integration.md.
 
+
+
+
+
+
+## AFR2-20261029-19 — OLED táctil y visor bajo demanda
+
+Fuente adaptada con Web/ATmega/ESP: overlay scrim+blur en modales, Volver por ítem del menú, ScreenCode0x030035 con aviso/bitmap/chevrones y suscripción explícita a capturas/metadatos. Contrato en AutoFinalRobo2-Contracts/contracts/TOUCH_OLED_19.md; procedencia por archivo en provenance/touch-oled-20261029-19.json de Contracts. El rumbo es solicitado, no medido, y no agrega giro físico. Sin tests, compilación, validadores, navegador, ejecución del generador OLED, promoción ESP ni flasheo de esta entrega. Memoria/paridad/latencia físicas pendientes.

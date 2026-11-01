@@ -1,0 +1,14 @@
+# AFR2-20261030-15
+
+Estado: ATmega, ESP, Web y Loader modificados en fuente. Sin tests, compilación, validadores, generadores, promoción, puertos, flasheos ni prueba física. No acredita estabilidad medida ni memoria dinámica suficiente.
+
+- WS: descartar notificaciones periódicas cuando la cola está llena en vez de cerrar con 1013. Expiración de transporte 30s en ESP y Web; comparación con reloj firmado evita interpretar un timestamp posterior al inicio del tick como 49 días de inactividad. Supervisión física Web 1500ms y TTL de movimiento conservados.
+- Táctil: carga/fallo del modelo 3D deja de condicionar los mandos físicos. Activación detiene primero el movimiento local antes de tomar presentación. Largo al soltar invoca STOP y desactiva presentación, preservando nodo previo. Un latch rechaza reactivaciones periódicas hasta recibir disabled; Web cierra al recibir ese rechazo tras activación confirmada. Conserva guardas de edición, Hall y confirmaciones pendientes.
+- Wi-Fi: opción Traer credenciales ESP dentro de ingreso de credenciales. Recupera configuración persistida en ESP, no credenciales supuestas ni escaneo. OLED 030041 comparte variante raster Web con labels[0] SSID, labels[1..2] clave en dos mitades desplazables. Solo solicitud local; vista privada, borrado al salir/30s. Configuración inexistente informa fallo. Clave vacía representa red abierta. Se reutilizan buffers; crecen flags de estado, presupuesto final pendiente de compilación autorizada.
+- Loader: antes de instalar flasher, comparar flash real con referencia compilada usando avrdude -n -D flash:v. Coincidencia omite backup incluso seleccionado; no publica ni reemplaza último respaldo. Solo mismatch explícito con firma válida permite seguir con backup seleccionado. Error de transporte/comprobación no concluyente aborta. Comprobación no es una consulta UART: el puente existente es binario transparente.
+
+## Wire EX01 v12 (despliegue conjunto AVR/ESP)
+
+Operación WIFI_POLL 11 = leer configuración persistida, sin payload de entrada. Respuesta conserva el framing/offsets vigentes. WIFI_UPDATE subtipo5: byte0=5, bytes1..4 jobId LE, byte5 offset, byte6 total33..96, bytes7..fin fragmento de hasta32. Datos: SSID ASCII/UTF8 en campo fijo33 terminado NUL seguido por contraseña0..63 bytes; terminador de clave agregado en AVR. Offset secuencial y job pendiente reclamado; resultado ACK normal. Último fragmento abre variante privada y termina job. Fallo/timeout no acredita recepción. No viaja por WS/HTTP. Versionado compartido en contracts/afr2_product_wire.h; firmware anterior no se declara compatible.
+
+Procedencia por archivo: ../provenance/connection-touch-credentials-loader-20261030-15.json. Recursos gráficos sin cambios; sincronización del catálogo generado Web y empaquetado ESP pendientes de build autorizado. No se modifica distribución ejecutable del Loader.

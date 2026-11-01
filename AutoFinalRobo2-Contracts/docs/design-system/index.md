@@ -1,3 +1,7 @@
+> **VIS-049 / AFR2-20261101-06:** Protocol Studio es la referencia Confirmada para el acceso y shell del Simulador UI. Tarjeta debajo, ruta propia, cabecera/ayuda/retorno y TaskSections compartidos; composicion Propuesta, ejecucion No verificada. [Cobertura](coverage-20261101-06.json).
+
+> **Aplicacion01-03 / VIS-048:** Modelos 3D adopta cielo/piso de Simulaciones en ambos temas y fichas solidas de componentes. Direccion Confirmada; composicion/tinta Propuestas; ejecucion No verificada. [Cobertura](coverage-20261101-03.json). Sin tests/build/validadores/navegador.
+
 > **Aplicacion31-12/VIS-047:** Simulador UI con pantalla/encoder, guia contextual,
 > barra de sesion y catalogo filtrable. Conserva controles, raster y navegacion.
 > Composicion Propuesta, aspecto/interaccion No verificados; sin tests/build ni

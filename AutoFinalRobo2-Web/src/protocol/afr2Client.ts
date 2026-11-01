@@ -1,3 +1,5 @@
+/* AFR2-20261029-27: quick controls/radar/PWM/WS integration; prior authors retained. */
+import { version as WEB_VERSION } from '../../package.json';
 import {
   AFR2_PRODUCT_ID,
   AFR2_WS_SCHEMA,
@@ -53,6 +55,8 @@ export interface Afr2ClientStateSnapshot {
   lastError: string | null;
   reconnectAttempt: number;
   capabilities: Afr2CapabilitiesMap;
+  connectionDiagnostics?: Record<string, unknown>;
+  lastSocketClose?: {code:number;reason:string;clean:boolean;atMs:number};
 }
 
 type StateListener = (state: Afr2ClientStateSnapshot) => void;
@@ -60,7 +64,7 @@ type EventListener = (evt: Afr2WsEventFrame) => void;
 
 const HELLO_TIMEOUT_MS = 5000;
 const ALIVE_INTERVAL_MS = 500;
-const SESSION_EXPIRY_MS = 6000;
+const SESSION_EXPIRY_MS = 30000;
 const BACKOFF_BASE_MS = 500;
 const BACKOFF_MAX_MS = 15000;
 
@@ -74,6 +78,9 @@ export function getDefaultWsEndpoint(): string {
 export class Afr2Client {
   private socket: WebSocket | null = null;
   private generationId = 0;
+  private closedGeneration = -1;
+  private heartbeatPending = false;
+  private queuedDriveCommand: 'robot.drive' | 'robot.drive.pwm' = 'robot.drive';
   private seqCounter = 0;
   private pending = new Map<string, PendingTransaction>();
   private aliveTimer: ReturnType<typeof setInterval> | null = null;
@@ -178,9 +185,11 @@ export class Afr2Client {
       });
     };
 
-    ws.onclose = () => {
+    ws.onclose = (event) => {
       if (currentGen !== this.generationId) return;
-      this.handleSocketClosed(currentGen, 'Conexion WebSocket cerrada.');
+      const reason = event.reason || 'Sin motivo remoto';
+      this.updateState({lastSocketClose:{code:event.code,reason,clean:event.wasClean,atMs:Date.now()}});
+      this.handleSocketClosed(currentGen, `WebSocket cerrado (${event.code}): ${reason}`);
     };
   }
 
@@ -204,12 +213,12 @@ export class Afr2Client {
         'system.hello',
         {
           client: 'afr2-web',
-          clientVersion: '0.3.0',
+          clientVersion: WEB_VERSION,
         },
         HELLO_TIMEOUT_MS,
         true
       );
-      if (gen !== this.generationId) return;
+      if (gen !== this.generationId || this.closedGeneration === gen) return;
 
       const payload = res.payload ?? {};
       if (payload.product !== AFR2_PRODUCT_ID || payload.controlMode !== 'direct') {
@@ -239,7 +248,7 @@ export class Afr2Client {
 
       this.startHeartbeat(gen);
     } catch (err) {
-      if (gen !== this.generationId) return;
+      if (gen !== this.generationId || this.closedGeneration === gen) return;
       const msg = err instanceof Error ? err.message : 'Fallo en handshake system.hello';
       this.handleSocketClosed(gen, msg);
     }
@@ -254,22 +263,25 @@ export class Afr2Client {
         this.state.lastTrafficMs !== null &&
         now - this.state.lastTrafficMs > SESSION_EXPIRY_MS
       ) {
-        this.handleSocketClosed(gen, 'Sesion expirada (> 6000 ms sin latido del broker).');
+        this.handleSocketClosed(gen, 'Sesion expirada (> 30000 ms sin respuesta del broker).');
         return;
       }
+      if(this.heartbeatPending)return;
+      this.heartbeatPending=true;
       void this.sendRawRequest('system.alive', { clientTs: now, interactive: document.visibilityState === 'visible' && document.hasFocus() }, 4000, true)
         .then((res) => {
-          if (gen !== this.generationId) return;
+          if (gen !== this.generationId || this.closedGeneration === gen) return;
           const p = res.payload ?? {};
           this.applyBrokerStatus(p);
         })
         .catch(() => {
-          // La expiracion de ventana de 6000 ms gestiona el corte definitivo
-        });
+          // La expiracion de transporte de 30000 ms gestiona el corte definitivo
+        }).finally(() => {if(gen===this.generationId)this.heartbeatPending=false;});
     }, ALIVE_INTERVAL_MS);
   }
 
   private stopHeartbeat(): void {
+    this.heartbeatPending=false;
     if (this.aliveTimer) {
       clearInterval(this.aliveTimer);
       this.aliveTimer = null;
@@ -299,6 +311,8 @@ export class Afr2Client {
   }
 
   private handleSocketClosed(gen: number, reason: string): void {
+    if(gen!==this.generationId || this.closedGeneration===gen)return;
+    this.closedGeneration=gen;
     this.teardownSocket(reason);
     this.updateState({
       wsState: 'disconnected',
@@ -344,6 +358,7 @@ export class Afr2Client {
     const remoteCaps = payload.capabilities;
     this.updateState({
       megaLinkState: (payload.megaLink as MegaLinkState) ?? this.state.megaLinkState,
+      ...(payload.connectionDiagnostics && typeof payload.connectionDiagnostics==='object' ? {connectionDiagnostics:payload.connectionDiagnostics as Record<string,unknown>} : {}),
       ...(remoteCaps && typeof remoteCaps === 'object'
         ? { capabilities: { ...this.state.capabilities, ...(remoteCaps as Partial<Afr2CapabilitiesMap>) } }
         : {}),
@@ -403,6 +418,9 @@ export class Afr2Client {
     if (!this.queuedDrivePayload || this.driveInFlightId) return;
     const nextPayload = this.queuedDrivePayload;
     this.queuedDrivePayload = null;
+    if(this.queuedDriveCommand==='robot.drive.pwm'){
+      void this.sendPwm(Number(nextPayload.forwardPct??0),Number(nextPayload.strafePct??0),Number(nextPayload.turnPct??0),Number(nextPayload.ttlMs??400)).catch(()=>undefined);return;
+    }
     void this.sendDrive(
       Number(nextPayload.vxMmS ?? 0),
       Number(nextPayload.vyMmS ?? 0),
@@ -436,7 +454,7 @@ export class Afr2Client {
     this.queuedDrivePayload = null;
     for (const [reqId, tx] of this.pending.entries()) {
       if (
-        tx.cmd === 'robot.drive' ||
+        tx.cmd === 'robot.drive' || tx.cmd === 'robot.drive.pwm' ||
         tx.cmd === 'robot.test.wheel' ||
         tx.cmd === 'robot.goto.start' ||
         tx.cmd === 'robot.sequence.begin' ||
@@ -477,12 +495,19 @@ export class Afr2Client {
     };
 
     if (this.driveInFlightId) {
-      this.queuedDrivePayload = payload;
+      this.queuedDriveCommand='robot.drive';this.queuedDrivePayload = payload;
       return null;
     }
 
     const reqPromise = this.sendRawRequest('robot.drive', payload, 600, false);
     return reqPromise;
+  }
+
+  /** AFR2-20261029-27: percentages are explicit; never reinterpret mm/s. */
+  public async sendPwm(forwardPct:number,strafePct:number,turnPct:number,ttlMs=400):Promise<Afr2WsResponse|null>{
+    const payload={forwardPct:Math.round(forwardPct),strafePct:Math.round(strafePct),turnPct:Math.round(turnPct),ttlMs:Math.round(ttlMs)};
+    if(this.driveInFlightId){this.queuedDriveCommand='robot.drive.pwm';this.queuedDrivePayload=payload;return null;}
+    return this.sendRawRequest('robot.drive.pwm',payload,600,false);
   }
 
   private sendRawRequest<TPayload = Record<string, unknown>>(
@@ -526,7 +551,7 @@ export class Afr2Client {
         ts: Date.now(),
       };
 
-      if (cmd === 'robot.drive') {
+      if (cmd === 'robot.drive' || cmd === 'robot.drive.pwm') {
         this.driveInFlightId = requestId;
       }
 

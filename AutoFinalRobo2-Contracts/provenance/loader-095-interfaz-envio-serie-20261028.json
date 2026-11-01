@@ -1,0 +1,228 @@
+{
+  "change": "AFR2-20261028-16",
+  "date": "2026-10-28",
+  "loaderVersion": "0.9.5",
+  "reference": {
+    "name": "Captura RealTerm aportada por usuario",
+    "scope": "Solo funciones pedidas: editor libre, formato ASCII/HEX/números, CR/LF, cantidad y pausa de repetición. No se copia código ni ejecuta RealTerm."
+  },
+  "skill": "emil-design-eng (criterios de jerarquía, consistencia y feedback; adaptación WinForms sin animaciones nuevas)",
+  "userOverrides": [
+    "El pedido humano explícito autoriza implementar TX manual y reemplaza la regla anterior de monitor exclusivamente de lectura.",
+    "Preferencias permiten desactivar casillas, sin desactivar comprobaciones técnicas ni aprobación propia MCP.",
+    "El usuario corrige el nombre visible del botón a Q y pide retirar avisos repetidos de niveles en los asistentes. No acredita tolerancia eléctrica."
+  ],
+  "status": {
+    "loader": "Fuente implementada, revisión manual por lectura/diff. Sin pruebas, validadores, compilación, GUI/MCP, COM ni flasheo.",
+    "atmega": "Sin nuevos cambios de fuente/firmware por16.",
+    "esp": "Sin nuevos cambios de fuente/firmware por16.",
+    "web": "Sin cambios por16.",
+    "cad": "Sin cambios por16."
+  },
+  "files": [
+    {
+      "path": "AutoFinalRobo2-Loader/src/MainForm.Design.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Nuevo sistema compartido de espaciado, iconos GDI, colores semánticos, menús divididos, ayuda y destino visible separado del índice interno.",
+      "sha256": "e0e9214c2754fbda405de5655b9cb91c2d1837bb55608fe6149ca1dd91d09139"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/MainForm.Configuration.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Nueva navegación General/ATmega/ESP y subsecciones, filtro combinado, explicación de campos y enlaces al manual.",
+      "sha256": "e3a4fd1f11fc27f8ee89d5f3917d2fcf3d9f67c30bd50374f9059e21ad65ca94"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/MainForm.Options.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Preferencias modales por sección, modos de casillas, limpieza no recursiva de registros con cantidad/tamaño y confirmación.",
+      "sha256": "d3f2b76492ebf6f37fef7756d39baff5aed17c05f32b90e6453498be8e34780a"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/MainForm.RequestTable.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Solicitudes MCP en tabla con detalles y estado de cada trabajo, sin cambiar el protocolo de aprobación.",
+      "sha256": "a72be30472bc0e01dec0242bb5175a67ab77bd4f670d37210453e39d726e2800"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/MainForm.SerialSend.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Editor TX ASCII/HEX/decimal, CR/LF, repetición y pausa, cancelación y estados; envío solo por pulsación explícita.",
+      "sha256": "5c137a0eeadb90329327e2b7bb49779bbfd118cfe274cf13823062caf9e0ebb5"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/PortAvailability.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Comprobación puntual de disponibilidad con handle Windows exclusivo, sin configurar DTR/RTS ni enviar bytes.",
+      "sha256": "c0d545dfc34b8ddb30e18aec8fb09540bfe78c2b065c9d9f4188c9ad82880c40"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/MainForm.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Operación agrupada, acciones inferiores, configuración y asistentes reorganizados, comprobación COM tras cerrar monitor, variante comunicación de AVR y nombre Q.",
+      "sha256": "f52fed3355c2bf605086486de3c8c4f043c73883ff1f2a67baa402d65e011318"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/MainForm.EspModes.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Destino ATmega/ESP y variante/sección ESP independientes; filesystem por sección/layout, sin casilla redundante.",
+      "sha256": "596e43f03588e1f7951408c0a9e99cc79d7870cbc772f896039220c38d28df10"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/MainForm.MegaBridge.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Pestaña contigua a Operación con método/baud/nota/backup, acciones de restauración y detección, instalar abajo derecha; retira avisos repetidos y usa Q.",
+      "sha256": "0166fad71a7ce9655a7f17cd5e49791edd70e752568958443e6030f5e9caa9ff"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/MainForm.Preferences.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Preferencias en Opciones; conserva nuevas preferencias al suprimir aviso de backup; botones divididos con ancho común.",
+      "sha256": "2b74eefcdf082f1c39da3eb7cb32d0c0fcf4c602babafecf78c63ffddd06ac38"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/LoaderPreferences.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Persistencia de RequireChecklist/ChecklistsInitiallyChecked con valores predeterminados compatibles con schema1.",
+      "sha256": "72140858d348167a398cb1868764809dfe0066315ca35e4e511e53132d1fe2f2"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/MainForm.McpConnection.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Registro colapsado, conector separado de conexión, prueba/resultado contiguos.",
+      "sha256": "7be863475e259b29903d03edad55954df69a948f4813d4eb44c4ef430c32abaa"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/MainForm.Integration.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Estado de operación sin superponer evidencia/progreso; tabla y acciones MCP, guardar dividido y configuración agrupada.",
+      "sha256": "a2823033e9dacbe6c54337c82f2cec9d4d3a7ec0768ae015688a650b85e0b268"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/MainForm.Serial.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Filas de COM/baudios/vista agrupadas, tarjeta alineada, herramientas y selección textual hacia conversor, acciones y detalle amarillo en Eventos.",
+      "sha256": "6aefcd4b6cb045d938abf5a229e2c909ecf1942f7e3d1cfe7bbf948d38e32eb5"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/SerialCapture.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Cola TX en mismo worker, cancelación entre bloques, RX entre bloques TX y registros separados con estados/errores; no abre puerto adicional.",
+      "sha256": "41d8e7dfaf10a135008a9d55fd36897ba1eb6be3cca6a5da141d247d1137ebc8"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/MainForm.Converter.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Conversión/vista, editores y acciones por sección, nota de controles y Convertir a la derecha del estado.",
+      "sha256": "3a1ed2ed23c8488444d796997cb7ecbfc927764934fcc266c2514eeed4663fc4"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/MainForm.Workflow.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Barra inferior con seguir registro, progreso, COM/baud/monitor/MCP y solicitudes; etapas conservadas y Q en asistentes.",
+      "sha256": "92589058ca10f6a5cdb11be5ac0c53f90765e103d724e81b633d46f1ad341357"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/MainForm.Profiles.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Aplica el estilo compartido a formularios propios de perfiles sin alterar persistencia.",
+      "sha256": "722a6bca6ccbce4252a0607f26014a4f250180c1ed5aa50ca4c3c5d9821c065c"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/Operations.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Referencias de botón Q y retiro de advertencias repetidas de 3,3V/5V solicitado por usuario; contratos de carga conservados.",
+      "sha256": "cc64ffa708d1eacbcefa1a84de28d4e7001d2f157ca23466ec1b8830907c2188"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/Operations.MegaBridge.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Nomenclatura Q y casillas menos redundantes; servicio/backup y verificación conservados.",
+      "sha256": "0787d4de9f64e223f93d180fee31b35f64cca0f0ce0b5408994dabf7f923ad15"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/Operations.EspModes.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Nomenclatura Q; conserva selección directa BIN, comprobaciones y confirmación de imagen completa.",
+      "sha256": "e480250dcc1f890e0fd0f51b10868eb08161eea8814ab6a44014af155c760094"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/FailureDetails.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Nomenclatura Q en explicación de errores; no modifica resultados de herramientas.",
+      "sha256": "a684c01df3a56bfd388fa40d993bf0b88931b2ad32706d4614c7f8afc735900d"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/McpServer.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Describe Q/RST, sin nueva operación de transmisión por MCP.",
+      "sha256": "dd7016f6054635bb2bac22c90a76ebc544ed5d156651474985543b7544d3413e"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/Profile.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Nomenclatura Q en ayuda; claves y esquema del perfil conservados.",
+      "sha256": "7cc94f28475413340e5b3c67b115a2b91e9781ade6cd2bc626f59dd35cc4fbc6"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/JobState.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Versión solicitada 0.9.5.",
+      "sha256": "9063ffe7678064bec367ebf4dfe8587165c8cc484604b9a9b303a916e20766e8"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/AGENTS.md",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Registra autorización explícita del usuario para TX manual de monitor, conservando dueño único y prohibición de envío al abrir/MCP.",
+      "sha256": "6f7c8f9842dd68992daf1d00027f403765d29905dcad27de9e76fa698dd1419f"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/README.md",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Flujo vigente 0.9.5 y documentación de envío/límites/logs.",
+      "sha256": "5829fa8045590b5c03ced4d75337badb72543fd841c44c4e1019d383fdbff341"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/MANUAL.html",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Guía actualizada con flujo por placa, flasher, preferencias, monitor, conversor y MCP; mantiene secciones técnicas.",
+      "sha256": "716bb82cfcde54387f5c05fc42328433cff44a96c6b77b235cd804b1bfe670ac"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/MCP.md",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Estado GUI0.9.5, captura extendida de TX y ausencia de herramienta TX MCP.",
+      "sha256": "6b1424c1cee01b59926d15c98704b28ba1cbd4a8d84da79e1baf87ca7f902f10"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/LOADER_FLASH_MODES.md",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Distingue selección visual de sección de los mapas de firmware; mantiene esquemas.",
+      "sha256": "d7123bbac0603fedf42cb38b1628017854cc85f70589b8774b042cce8f248486"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/README.md",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Índice de entrega y estado real.",
+      "sha256": "fe801b11c6f240246a3cada01344e21181e81f9b9c5c092d40adfa1e76fd93fc"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/INFORME_ADAPTACION.md",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Índice de entrega y estado real.",
+      "sha256": "bdbc07e31f76838e67bb96e392541fe33bdd17859354a7ba1c42a37d49f8cc5e"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/CHANGELOG.md",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Registro de entrega0.9.5.",
+      "sha256": "76d4deeec59a549daee2eb98e5ce3568b6e2b0eb522160fbab6934a6a84132b4"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/changes/2026-10-28-16-loader-095-interfaz-envio-serie.md",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Pedido, decisiones, inferencias, funcionalidades y límites de evidencia por módulo.",
+      "sha256": "c9a88508af06b6b271d2f1507fb1c3e063ac9c3e5c9d743c2541aa31392f0aa4"
+    }
+  ]
+}

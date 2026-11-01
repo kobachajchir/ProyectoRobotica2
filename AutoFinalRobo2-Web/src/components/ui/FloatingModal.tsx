@@ -15,6 +15,7 @@ interface Props {
   title: string;
   description?: string;
   kicker?: string;
+  headerStatus?: ReactNode;
   size?: 'md' | 'lg' | 'fullscreen';
   origin?: ModalOrigin | null;
   initialFocusRef?: RefObject<HTMLElement | null>;
@@ -26,7 +27,7 @@ interface Props {
 
 /** Adapted from ST2026-Radal PublicCatalogSearch (335d3ed): native dialog,
  * material reveal, 240/200 ms, glass backdrop and deferred exit. See provenance. */
-export function FloatingModal({ open, title, description, kicker = 'AutoFinalRobo2', size = 'md', origin = null, initialFocusRef, onClose, onBeforeClose, onBeforeStop, children }: Props) {
+export function FloatingModal({ open, title, description, kicker = 'AutoFinalRobo2', headerStatus, size = 'md', origin = null, initialFocusRef, onClose, onBeforeClose, onBeforeStop, children }: Props) {
   const id = useId();
   const dialog = useRef<HTMLDialogElement>(null);
   const panel = useRef<HTMLDivElement>(null);
@@ -184,7 +185,7 @@ export function FloatingModal({ open, title, description, kicker = 'AutoFinalRob
       <div ref={panel} className="afr2-floating-modal__surface">
         <div ref={material} className="afr2-floating-modal__material" aria-hidden="true" />
         <div className="afr2-floating-modal__content">
-          <header className="afr2-floating-modal__header">
+          <header className="afr2-floating-modal__header" data-has-status={!!headerStatus}>
             <div>
               <p className="afr2-kicker">{kicker}</p>
               <h2 id={`${id}-title`}>{title}</h2>
@@ -194,6 +195,7 @@ export function FloatingModal({ open, title, description, kicker = 'AutoFinalRob
               {stopAvailable && <Button variant="emergency" onClick={() => { onBeforeStop?.(); void triggerEmergencyStop('modal-stop'); }}>
                 ■ STOP
               </Button>}
+              {headerStatus}
               <button
                 data-modal-close
                 className={`afr2-icon-button${size === 'fullscreen' ? ' afr2-fullscreen-close' : ''}`}

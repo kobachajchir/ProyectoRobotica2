@@ -33,7 +33,11 @@ namespace AFR2Loader
                         else if (args[i] == "--esp-mode") mode = args[i + 1];
                         else throw new ArgumentException("Opción de inicio desconocida: " + args[i]);
                     }
-                    Application.Run(new MainForm(appDir, profile, mode));
+                    using (var welcome = new StartupPresentation(appDir))
+                    using (var main = new MainForm(appDir, profile, mode)) {
+                        main.Shown += (sender, e) => welcome.Finish(main);
+                        Application.Run(main);
+                    }
                 }
                 catch (Exception error) { MessageBox.Show(error.ToString(), "AFR2 Loader - error de inicio", MessageBoxButtons.OK, MessageBoxIcon.Error); }
                 finally { instance.ReleaseMutex(); }

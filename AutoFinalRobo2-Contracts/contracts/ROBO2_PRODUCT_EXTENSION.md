@@ -1,3 +1,5 @@
+> **Fuente vigente de movimiento13:** se conserva X adelante/Y izquierda/yaw CCW; la mezcla a ruedas aplica signos longitudinal/yaw -1 y la odometría su inversa. Las ecuaciones sin referencia física inferiores son históricas. [Perfil y alcance](MOTION_REFERENCE_13.md). EX01v11 sin nuevo formato; sin compilación ni prueba física de13.
+
 > AFR2-20261025-01: las reglas anteriores de acceso quedan sustituidas por [control directo EX01v7](DIRECT_CONTROL_7.md). Sin adquisición, renovación, liberación ni habilitación OLED. Los formatos anteriores solo se conservan donde DIRECT_CONTROL_7 mantiene compatibilidad.
 
 > Estado vigente **AFR2-20261024-02**, 24/10/2026: integración ROBO2/perfil2 + EX01v3 compilada en Atmega/ESP/Web; GOTO completo, configuración por catálogo compartido y jobs Wi-Fi OLED conectados. Paquete Web actualizado en ESP/data/dist. Sin pruebas de navegador/hardware ni flasheo; secuencias físicas mantienen bloqueo de memoria. Ver [matriz vigente](EX01_ALIGNMENT_3.md) y [evidencia](../changes/2026-10-24-02-project-alignment.md). Los estados previos que siguen son históricos.

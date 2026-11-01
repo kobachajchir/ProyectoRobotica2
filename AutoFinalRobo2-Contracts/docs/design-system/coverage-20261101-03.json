@@ -1,0 +1,29 @@
+{
+  "changeId": "AFR2-20261101-03",
+  "decisionId": "VIS-048",
+  "mode": "APLICAR",
+  "manualVersion": "0.1.9",
+  "authorization": "Pedido explicito: mismo fondo/piso de Simulaciones y fichas legibles en ambos temas; continuidad del borrador autorizado.",
+  "confirmed": ["Simulaciones como referencia de cielo/piso", "Auto, brazo y cubo", "Legibilidad clara/oscura"],
+  "observed": ["collector.css define paleta dual", "CollectorScene usa suelo basico sin tone mapping", "Inspeccion usaba oled-bezel y grilla fija", "Fichas AssetInspection carecian de fondo propio"],
+  "proposed": ["Fichas solidas y cabecera sutil", "Tinta de escena carmesi profunda", "Escala de grilla adaptada al modelo", "Seleccion por tamano en esferas"],
+  "canonicalSources": ["AutoFinalRobo2-Web/src/features/collector/CollectorScene.tsx", "AutoFinalRobo2-Web/src/styles/collector.css (paleta previa ahora compartida en tokens.css)"],
+  "supporting": ["docs/design-system/manual.md", "docs/design-system/tokens.json", "AutoFinalRobo2-Web/src/styles/tokens.css", "ThemeProvider.tsx", "Button.tsx"],
+  "targets": ["ModelInspection.tsx", "AssetInspection.tsx", "InspectionEnvironment.tsx", "model-inspection.css"],
+  "sharedChanges": ["Mover tres variables de escena de collector.css a tokens.css sin cambiar valores", "Agregar --sim-scene-ink para referencias de inspeccion"],
+  "themes": {
+    "light": {"sky": "#d6eaf5", "ground": "#eee3cc", "grid": "#c1b393", "card": "#ffffff", "text": "#1e293b", "muted": "#475569"},
+    "dark": {"sky": "#7896ac", "ground": "#b8a98d", "grid": "#897b60", "card": "#14233b", "text": "#e2e8f0", "muted": "#94a3b8"}
+  },
+  "contrastPairs": ["text / surface-solid", "text-strong / surface-subtle", "text-muted / surface-solid", "action / surface-solid", "text-on-action / action", "sim-scene-ink / sim-scene-sky", "sim-scene-ink / sim-scene-ground"],
+  "statesInSource": ["base", "selected", "hover", "focus-visible", "active", "disabled", "loading", "error", "references-hidden", "mobile-card"],
+  "ratios": "No medidos: no se ejecutaron validadores ni navegador.",
+  "runtimeVerification": "No verificada",
+  "sourceImplemented": true,
+  "browser": false,
+  "tests": false,
+  "build": false,
+  "validators": false,
+  "hardware": false,
+  "packagesPromoted": false
+}

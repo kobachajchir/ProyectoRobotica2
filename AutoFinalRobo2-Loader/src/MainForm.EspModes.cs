@@ -16,59 +16,93 @@ namespace AFR2Loader
         Button atPackageButton;
         bool syncingEspOptions;
 
+        Control CreateOperationSelectors()
+        {
+            var selectors = UiRow(); selectors.WrapContents = true;
+            var portGroup = UiRow(); portGroup.WrapContents = false; portGroup.Margin = new Padding(0, 0, 24, 0);
+            ports.Width = 115; ports.DropDownStyle = ComboBoxStyle.DropDownList;
+            portGroup.Controls.Add(UiField("Puerto", ports)); idleControls.Add(ports);
+            AddButton(portGroup, "Actualizar puertos", RefreshPorts, 165).Margin = new Padding(16, 4, 0, 4);
+            var targetGroup = UiRow(); targetGroup.WrapContents = false; targetGroup.Margin = new Padding(0);
+            deviceTarget.Items.AddRange(new object[] { "ATmega", "ESP" }); deviceTarget.SelectedIndex = 0;
+            idleControls.Add(deviceTarget); targetGroup.Controls.Add(UiField("Destino", deviceTarget));
+            detectTarget = AddButton(targetGroup, "Detectar ATmega", DetectSelected, 180); detectTarget.Margin = new Padding(16, 4, 0, 4);
+            deviceTarget.SelectionChangeCommitted += (s, e) => SelectOperationTarget(deviceTarget.SelectedIndex == 0 ? 0 : espSection.SelectedIndex + 1);
+            selectors.Controls.Add(portGroup); selectors.Controls.Add(targetGroup); return selectors;
+        }
         Control CreateEspOptions(Control selectors)
         {
-            var panel = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 4, Margin = new Padding(0) };
-            panel.RowStyles.Add(new RowStyle(SizeType.Absolute, 44)); panel.RowStyles.Add(new RowStyle(SizeType.Absolute, 42)); panel.RowStyles.Add(new RowStyle(SizeType.Absolute, 42)); panel.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+            var panel = new TableLayoutPanel { Dock = DockStyle.Top, AutoSize = true, ColumnCount = 1, RowCount = 6, Margin = new Padding(0) };
+            for (int i = 0; i < 6; i++) panel.RowStyles.Add(new RowStyle(SizeType.AutoSize));
             panel.Controls.Add(selectors, 0, 0);
-            var options = new FlowLayoutPanel { Dock = DockStyle.Fill, WrapContents = false };
-            options.Controls.Add(new Label { Text = "ESP", AutoSize = true, Margin = new Padding(0, 8, 6, 0) });
-            espMode.Items.AddRange(new object[] { "Web propio / Arduino", "Firmware AT / paquete" }); options.Controls.Add(espMode); idleControls.Add(espMode);
-            includeFilesystem.Margin = new Padding(10, 6, 10, 0); options.Controls.Add(includeFilesystem); idleControls.Add(includeFilesystem);
-            options.Controls.Add(filesystemLayout); idleControls.Add(filesystemLayout);
-            atPackageButton = AddButton(options, "Paquete AT...", SelectAtPackage, 125);
-            atPackageButton.Visible = false;
-            panel.Controls.Add(options, 0, 1); panel.Controls.Add(CreateEspMethodSelector(), 0, 2); panel.Controls.Add(memorySummary, 0, 3);
-            espMode.SelectionChangeCommitted += (s, e) => { string chosen = espMode.SelectedIndex == 1 ? "at" : "web"; ReadSettings(); SetProfileValue("EspFirmwareMode", chosen); SyncEspOptions(); };
-            includeFilesystem.CheckedChanged += (s, e) => {
-                if (syncingEspOptions) return;
-                bool requested = includeFilesystem.Checked;
-                try
-                {
-                    ReadSettings();
-                    if (!EspFlashRules.IsAt(profile))
-                    {
-                        string directory = Path.GetDirectoryName(profile.Resolve("Linker"));
-                        var candidates = Directory.GetFiles(directory, "eagle.flash." + profile.Get("FlashMB") + "m*.ld")
-                            .Select(p => WebFlashLayout.Read(p, profile.Number("FlashMB") * 1048576L)).Where(l => (l.FsBytes > 0) == requested).ToArray();
-                        var chosen = candidates.FirstOrDefault(l => l.FsBytes == profile.Number("FsBytes")) ?? candidates.OrderByDescending(l => l.FsBytes).FirstOrDefault();
-                        if (chosen == null) throw new ArgumentException("No hay linker instalado para esa capacidad/selección de filesystem.");
-                        ApplyWebLayout(chosen);
-                    }
-                    else
-                    {
-                        if (requested)
-                        {
-                            var package = AtFirmwarePackage.Read(profile.Resolve("AtPackage"));
-                            if (package.Selected(profile).FsBytes == 0) throw new ArgumentException("Este layout AT no declara filesystem. Elegí otra variante del paquete antes de incluirlo.");
-                        }
-                        SetProfileValue("AtUseFilesystem", requested ? "true" : "false");
-                    }
-                    if (!requested && target.SelectedIndex >= 2) target.SelectedIndex = 1;
-                    SyncEspOptions();
-                }
-                catch (Exception error) { SyncEspOptions(); memorySummary.Text = error.Message; memorySummary.ForeColor = Color.Firebrick; }
+            var mega = UiRow();
+            megaVariant.Items.AddRange(new object[] { "Firmware completo del auto", "Solo comunicación" }); megaVariant.SelectedIndex = 0;
+            mega.Controls.Add(UiField("Variante ATmega", megaVariant)); idleControls.Add(megaVariant); megaOptionsRow = mega;
+            megaVariant.SelectionChangeCommitted += (s, e) => UpdateTargetActions(); panel.Controls.Add(mega, 0, 1);
+            var options = UiRow();
+            espMode.Width = 195; espMode.Items.AddRange(new object[] { "Firmware propio", "Paquete AT" });
+            options.Controls.Add(UiField("Variante de firmware ESP", espMode)); idleControls.Add(espMode);
+            espSection.Items.AddRange(new object[] { "Firmware ESP", "FileSystem", "Firmware ESP + FileSystem" }); espSection.SelectedIndex = 0;
+            espSectionField = UiField("Sección del paquete", espSection); options.Controls.Add(espSectionField); idleControls.Add(espSection);
+            atPackageButton = AddButton(options, "Paquete AT / BIN...", SelectAtPackage, 185); atPackageButton.Visible = false;
+            espOptionsRow = options; panel.Controls.Add(options, 0, 2);
+            var capacity = UiRow(); AddButton(capacity, "Consultar tamaño de flash…", () => ConfirmFlashCapacity(), 280); capacity.Controls.Add(capacityState); capacityRow = capacity; panel.Controls.Add(capacity, 0, 3);
+            var memory = UiRow(); memory.Controls.Add(UiField("Tamaño del FileSystem", filesystemLayout)); idleControls.Add(filesystemLayout);
+            memorySummary.AutoSize = true; memorySummary.MaximumSize = new Size(650, 0); memorySummary.MinimumSize = new Size(0, 48); memorySummary.Width = 650; memorySummary.Dock = DockStyle.None; memory.Controls.Add(memorySummary);
+            espMemoryRow = memory; panel.Controls.Add(memory, 0, 4);
+            espMethodRow = CreateEspMethodSelector();
+            listen.Text = "Escuchar arranque ESP (74880)"; listen.AutoSize = true; listen.Checked = true;
+            workflowTips.SetToolTip(listen, "Activar escucha del arranque en USB–TTL/puente USB. Desmarcar no omite la intervención física KEY/RST obligatoria. El flasher Mega usa su baud fijo.");
+            ((FlowLayoutPanel)espMethodRow).Controls.Add(listen); ((FlowLayoutPanel)espMethodRow).WrapContents = true; idleControls.Add(listen);
+            panel.Controls.Add(espMethodRow, 0, 5);
+            espMode.SelectionChangeCommitted += (s, e) => {
+                try { ReadSettings(); SetProfileValue("EspFirmwareMode", espMode.SelectedIndex == 1 ? "at" : "web");
+                    if (espMode.SelectedIndex == 1) { SetProfileValue("AtUseFilesystem", "false"); SelectOperationTarget(1); } else ApplySectionFilesystem();
+                } catch (Exception error) { MessageBox.Show(this, error.Message, "Variante ESP"); }
+                SyncEspOptions(); UpdateDestinationVisibility();
+            };
+            espSection.SelectionChangeCommitted += (s, e) => {
+                int previous = target.SelectedIndex;
+                try { SelectOperationTarget(espSection.SelectedIndex + 1); ApplySectionFilesystem(); SyncEspOptions(); }
+                catch (Exception error) { SelectOperationTarget(previous); SyncEspOptions(); MessageBox.Show(this, error.Message, "Sección del paquete"); }
             };
             filesystemLayout.SelectionChangeCommitted += (s, e) => {
                 if (syncingEspOptions) return;
                 var web = filesystemLayout.SelectedItem as WebFlashLayout; var at = filesystemLayout.SelectedItem as AtFlashLayout; ReadSettings();
+                if (!CapacityConfirmed) return;
                 if (web != null) ApplyWebLayout(web);
-                else if (at != null) { SetProfileValue("AtLayoutId", at.Id); if (at.FsBytes == 0) SetProfileValue("AtUseFilesystem", "false"); }
+                else if (at != null) { SetProfileValue("AtLayoutId", at.Id); SetProfileValue("AtUseFilesystem", target.SelectedIndex >= 2 ? "true" : "false"); }
                 else if (!EspFlashRules.IsAt(profile)) SetProfileValue("WebLayoutPreset", "custom");
-                SyncEspOptions();
+                SyncEspOptions(); UpdateDestinationVisibility();
             };
             settings.CellEndEdit += (s, e) => { if (!syncingEspOptions) { ReadSettings(); SyncEspOptions(); } };
-            return panel;
+            UpdateDestinationVisibility(); return panel;
+        }
+        void ApplySectionFilesystem()
+        {
+            ReadSettings(); bool filesystem = target.SelectedIndex >= 2;
+            // AFR2-20261029-22: selection is configuration only. Detection has its own button.
+            if (filesystem && !CapacityConfirmed) {
+                SetProfileValue(EspFlashRules.IsAt(profile) ? "AtUseFilesystem" : "WebUseFilesystem", "true");
+                return;
+            }
+            if (EspFlashRules.IsAt(profile))
+            {
+                if (filesystem && AtFirmwarePackage.Read(profile.Resolve("AtPackage")).Selected(profile).FsBytes == 0)
+                    throw new ArgumentException("Este paquete AT es monolítico y no tiene Web/filesystem separable. Elegí Firmware ESP.");
+                SetProfileValue("AtUseFilesystem", filesystem ? "true" : "false"); return;
+            }
+            if (filesystem)
+            {
+                string directory = Path.GetDirectoryName(profile.Resolve("Linker"));
+                var layouts = Directory.GetFiles(directory, "eagle.flash." + profile.Get("FlashMB") + "m*.ld")
+                    .Select(p => WebFlashLayout.Read(p, profile.Number("FlashMB") * 1048576L)).Where(l => l.FsBytes > 0).ToArray();
+                var chosen = layouts.Where(l => l.FsBytes == profile.Number("FsBytes")).OrderByDescending(l => l.FirmwareMax).FirstOrDefault() ?? layouts.OrderByDescending(l => l.FsBytes).FirstOrDefault();
+                if (chosen == null) throw new ArgumentException("No hay layouts de filesystem instalados para la capacidad del perfil.");
+                ApplyWebLayout(chosen);
+            }
+            // Firmware-only keeps its compiled linker and memory map. Selecting a
+            // section controls which images are written, not the firmware's ABI.
         }
         void SetProfileValue(string key, string value)
         {
@@ -96,10 +130,16 @@ namespace AFR2Loader
                 Profile.ValidateValue("AtUseFilesystem", profile.Get("AtUseFilesystem"));
                 espMode.SelectedIndex = at ? 1 : 0; includeFilesystem.Checked = EspFlashRules.UseFilesystem(profile);
                 filesystemLayout.Items.Clear(); memorySummary.ForeColor = Color.FromArgb(22, 79, 99);
+                capacityState.Text = CapacityConfirmed ? "Capacidad confirmada: " + profile.Get("FlashMB") + " MiB (detectada por esptool)" : "Consultá el ESP para detectar su capacidad real.";
+                if (!CapacityConfirmed) {
+                    string packageName = at && !String.IsNullOrWhiteSpace(profile.Get("AtPackage")) ? "Paquete seleccionado: " + Path.GetFileName(profile.Resolve("AtPackage")) + ". " : "";
+                    memorySummary.Text = packageName + "Usá Consultar tamaño de flash para detectar el ESP; luego prepará o revisá el paquete. Flashear se solicita por separado.";
+                    return;
+                }
                 if (at)
                 {
                     if (String.IsNullOrWhiteSpace(profile.Get("AtPackage")))
-                    { memorySummary.Text = "AT por USB: elegí un paquete con archivos, offsets, capacidad y layouts declarados por su proveedor. No usa el layout Arduino/LittleFS."; return; }
+                    { memorySummary.Text = "AT por USB: elegí el BIN completo Ai-Thinker v1.5.4.1 reconocido o un manifiesto JSON del paquete. No usa el layout Web/LittleFS."; return; }
                     var package = AtFirmwarePackage.Read(profile.Resolve("AtPackage"));
                     foreach (var layout in package.Layouts) filesystemLayout.Items.Add(layout);
                     var selected = package.Selected(profile);
@@ -107,7 +147,7 @@ namespace AFR2Loader
                     memorySummary.Text = package.Name + " | Flash requerida: " + EspFlashRules.Bytes(package.FlashBytes) + " | Regiones de firmware: " + EspFlashRules.Bytes(selected.CodeBytes) + " | FS " + selected.Filesystem + ": " + EspFlashRules.Bytes(selected.FsBytes) +
                         "\r\nSistema/sin asignar: " + EspFlashRules.Bytes(package.FlashBytes - selected.CodeBytes - selected.FsBytes) + (includeFilesystem.Checked ? ". Se incluirán las imágenes FS del paquete." : ". La reserva FS del paquete existe, pero sus imágenes no se cargarán.") + " La flash física se consulta antes de escribir.";
                     if (package.FlashBytes != profile.Number("FlashMB") * 1048576L) throw new ArgumentException("La flash esperada del perfil no coincide con el paquete AT. Ajustá Flash esperada en Configuración.");
-                    if (includeFilesystem.Checked && selected.FsBytes == 0) throw new ArgumentException("Este layout AT no tiene filesystem; desmarcá la casilla o elegí otra variante.");
+                    if (includeFilesystem.Checked && selected.FsBytes == 0) throw new ArgumentException("Este layout AT no tiene filesystem separable; elegí Firmware ESP u otra variante.");
                 }
                 else
                 {
@@ -121,8 +161,8 @@ namespace AFR2Loader
                     }
                     filesystemLayout.SelectedItem = profile.Get("WebLayoutPreset") == "custom" ? filesystemLayout.Items[0] : filesystemLayout.Items.Cast<object>().OfType<WebFlashLayout>().FirstOrDefault(l => Path.GetFileName(l.Path) == profile.Get("WebLayoutPreset"));
                     if (filesystemLayout.SelectedIndex < 0) filesystemLayout.SelectedIndex = 0;
-                    memorySummary.Text = selected.Summary() + (includeFilesystem.Checked ? "" : " Sin FS no se cargan los activos Web.");
-                    if (includeFilesystem.Checked != (selected.FsBytes > 0)) throw new ArgumentException("La casilla filesystem no coincide con el linker. Elegí un layout compatible.");
+                    memorySummary.Text = selected.Summary() + (includeFilesystem.Checked ? "" : " Sin FileSystem no se cargan sus archivos.");
+                    if (includeFilesystem.Checked != (selected.FsBytes > 0)) throw new ArgumentException("El filesystem configurado no coincide con el linker. Elegí un tamaño compatible.");
                 }
             }
             catch (Exception error) { memorySummary.Text = error.Message; memorySummary.ForeColor = Color.Firebrick; }
@@ -134,31 +174,29 @@ namespace AFR2Loader
             profileDialogs++;
             try
             {
-                using (var dialog = new OpenFileDialog { Title = "Paquete AT: mapa de carga y variantes de filesystem", Filter = "Paquete AFR2 AT (*.json)|*.json" })
+                using (var dialog = new OpenFileDialog { Title = "Firmware AT: BIN completo reconocido o manifiesto JSON", Filter = "Firmware AT (*.bin;*.json)|*.bin;*.json|BIN completo (*.bin)|*.bin|Paquete AFR2 AT (*.json)|*.json", CheckFileExists = true })
                 {
-                    if (dialog.ShowDialog(this) != DialogResult.OK) return;
+                    if (ShowStyledDialog(dialog) != DialogResult.OK) return;
                     var package = AtFirmwarePackage.Read(dialog.FileName); ReadSettings();
+                    BuildPreparation.Invalidate("at");
                     SetProfileValue("AtPackage", dialog.FileName); SetProfileValue("AtLayoutId", package.Layouts[0].Id);
                     if (package.Layouts[0].FsBytes == 0) SetProfileValue("AtUseFilesystem", "false");
-                    SetProfileValue("EspFirmwareMode", "at"); SyncEspOptions();
+                    SetProfileValue("EspFirmwareMode", "at"); SelectOperationTarget(1); SyncEspOptions();
+                    status.Text = "Paquete seleccionado · preparación pendiente";
+                    lastResult.Text = "Revisá la configuración y pulsá Revisar paquete AT. La carga comienza únicamente al pulsar Flashear.";
+                    Log("Paquete AT seleccionado: " + dialog.FileName + ". No se inició detección, preparación ni flasheo.");
+                    ActiveControl = atPackageButton;
                 }
             }
-            finally { profileDialogs--; }
+            catch (Exception error) { MessageBox.Show(this, error.Message, "Firmware AT", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+            finally { profileDialogs--; UpdatePreparationControls(); }
         }
         void UpdateEspTargetLabels()
         {
             if (compileTarget == null || flashTarget == null) return;
-            if (!EspFlashRules.UseFilesystem(profile) && target.SelectedIndex >= 2 && !busy && pendingJob == null) target.SelectedIndex = 1;
-            bool at = EspFlashRules.IsAt(profile);
-            string[] labels = { "Firmware ATmega (producto completo)", at ? "Firmware ESP AT" : "Firmware ESP Web / Arduino", at ? "Filesystem del paquete AT" : "Web / LittleFS en ESP", at ? "Paquete AT + filesystem" : "Firmware ESP + Web / LittleFS" };
-            int selected = target.SelectedIndex;
-            for (int i = 0; i < labels.Length; i++)
-            {
-                if (Convert.ToString(target.Items[i]) != labels[i]) target.Items[i] = labels[i];
-                if (i < compileTarget.DropDownItems.Count) compileTarget.DropDownItems[i].Text = labels[i];
-            }
-            if (target.SelectedIndex != selected) target.SelectedIndex = selected;
-            UpdateTargetActions();
+            UpdateDestinationVisibility(); UpdateTargetActions();
         }
     }
 }
+
+

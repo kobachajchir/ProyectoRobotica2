@@ -6,6 +6,7 @@ export interface RemoteOledSnapshot {
   revision: number | null;
   selection: number;
   firstVisible: number;
+  itemCount: number|null;
   buffer: Afr2OledBuffer;
   receivedAtMs: number;
   representation: 'framebuffer';
@@ -27,5 +28,5 @@ export function parseRemoteOled(payload: Record<string, unknown>): RemoteOledSna
   } else {
     throw new Error('Falta el framebuffer del ATmega. La biblioteca local no reemplaza una captura remota.');
   }
-  return { screenCode, revision: uint(payload.revision, 0xffffffff) ? payload.revision : null, selection: payload.selection, firstVisible: payload.firstVisible, buffer, receivedAtMs: Date.now(), representation: 'framebuffer' };
+  return { screenCode, revision: uint(payload.revision, 0xffffffff) ? payload.revision : null, selection: payload.selection, firstVisible: payload.firstVisible, itemCount:uint(payload.itemCount,255)?payload.itemCount:null, buffer, receivedAtMs: Date.now(), representation: 'framebuffer' };
 }

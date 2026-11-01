@@ -1,19 +1,19 @@
 {
   "name": "autofinalrobo2-web",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "prestart": "node tools/sync-oled-library.mjs",
+    "prestart": "node tools/catalog-model-assets.mjs && node tools/sync-oled-library.mjs",
     "start": "vite",
-    "predev": "node tools/sync-oled-library.mjs",
+    "predev": "node tools/catalog-model-assets.mjs && node tools/sync-oled-library.mjs",
     "dev": "vite",
     "proxy:lan": "node tools/lan-proxy.mjs",
-    "build": "node tools/sync-oled-library.mjs && tsc -b && vite build",
+    "build": "node tools/catalog-model-assets.mjs && node tools/sync-oled-library.mjs && tsc -b && vite build",
     "postbuild": "node tools/package-web.mjs --profile full",
     "package:littlefs": "node tools/package-web.mjs",
     "copy:esp": "node tools/copy-web-to-esp.mjs",
-    "build:esp": "node tools/sync-oled-library.mjs && tsc -b && vite build --mode esp && node tools/package-web.mjs --profile esp && npm run copy:esp",
+    "build:esp": "node tools/catalog-model-assets.mjs && node tools/sync-oled-library.mjs && tsc -b && vite build --mode esp && node tools/package-web.mjs --profile esp && npm run copy:esp",
     "preview": "vite preview"
   },
   "dependencies": {

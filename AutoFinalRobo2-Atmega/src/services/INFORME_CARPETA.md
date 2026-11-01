@@ -1,3 +1,5 @@
+> **AFR2-20261029-26:** fuentes de batería0x55/EX01v9 y navegación/pill/confirmaciones vinculadas según Contracts/contracts/BATTERY_MEASUREMENT_9.md. Screens0x030039/0x03003A y acción69. Revisión solo por lectura/edición, sin build/generador/pruebas/carga; adaptación por archivo en Contracts/provenance/battery-system-20261029-26.json.
+
 # Carpeta src/services
 
 Estado vigente AFR2-20261023-15: backend/composición integrados en fuente; el texto anterior de migración se conserva debajo como antecedente. Sin compilar/probar.
@@ -22,3 +24,8 @@ Estado: material preparado sin build, tests, validadores ni prueba física. Los 
 
 
 AFR2-20261023-15: TWI AVR por IRQ y composición OLED/encoder/USART1 implementados en fuente, sin DMA ni Arduino. Ver docs/COMPOSICION.md y Contracts/changes/2026-10-23-15-robo2-atmega-ui.md. Sin builds/tests/validadores/flasheos; hardware y recursos finales pendientes.
+
+
+## AFR2-20261029-19 — OLED táctil y visor bajo demanda
+
+Fuente adaptada con Web/ATmega/ESP: overlay scrim+blur en modales, Volver por ítem del menú, ScreenCode0x030035 con aviso/bitmap/chevrones y suscripción explícita a capturas/metadatos. Contrato en AutoFinalRobo2-Contracts/contracts/TOUCH_OLED_19.md; procedencia por archivo en provenance/touch-oled-20261029-19.json de Contracts. El rumbo es solicitado, no medido, y no agrega giro físico. Sin tests, compilación, validadores, navegador, ejecución del generador OLED, promoción ESP ni flasheo de esta entrega. Memoria/paridad/latencia físicas pendientes.

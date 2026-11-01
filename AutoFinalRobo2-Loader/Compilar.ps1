@@ -1,9 +1,10 @@
 ﻿[CmdletBinding()]
-param([switch]$Mcp)
+param([switch]$Mcp, [string]$OutputDirectory)
 $ErrorActionPreference = 'Stop'
 # Solo devuelve la ruta del EXE por stdout; mensajes de compilación por stderr.
 $sourceRoot = Join-Path $PSScriptRoot 'src'
 $outputRoot = Join-Path $env:LOCALAPPDATA 'AutoFinalRobo2Loader/bin'
+if ($OutputDirectory) { $outputRoot = [IO.Path]::GetFullPath($OutputDirectory) }
 [void][System.IO.Directory]::CreateDirectory($outputRoot)
 $name = if ($Mcp) { 'AFR2Loader.Mcp' } else { 'AFR2Loader' }
 $program = Join-Path $outputRoot ($name + '.exe')
@@ -13,6 +14,8 @@ $stamp = Join-Path $outputRoot ($name + '.sha256')
 $compiler = Join-Path ([System.Runtime.InteropServices.RuntimeEnvironment]::GetRuntimeDirectory()) 'csc.exe'
 $targetKind = if ($Mcp) { 'exe' } else { 'winexe' }
 $sourceIdentity = 'afr2-launcher-v2-' + $targetKind + "`n" + (@($sources | ForEach-Object { $_.Name + ':' + (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash }) -join "`n")
+$iconPath = Join-Path $PSScriptRoot 'assets/brand/afr2-loader.ico'
+if (Test-Path -LiteralPath $iconPath) { $sourceIdentity += "`nicon:" + (Get-FileHash -LiteralPath $iconPath -Algorithm SHA256).Hash }
 $rebuild = (-not (Test-Path -LiteralPath $program)) -or (-not (Test-Path -LiteralPath $stamp))
 if (-not $rebuild) { $rebuild = [System.IO.File]::ReadAllText($stamp) -ne $sourceIdentity }
 if ($rebuild) {
@@ -24,6 +27,7 @@ if ($rebuild) {
             '/reference:System.dll', '/reference:System.Core.dll', '/reference:System.Drawing.dll',
             '/reference:System.Windows.Forms.dll', '/reference:System.Web.Extensions.dll',
             ('/out:' + $temporary)) + @($sources | ForEach-Object { $_.FullName })
+        if (Test-Path -LiteralPath $iconPath) { $compilerArgs += ('/win32icon:' + $iconPath) }
         $compilerOutput = @(& $compiler @compilerArgs 2>&1)
         $compilerExit = $LASTEXITCODE
         foreach ($line in $compilerOutput) { [Console]::Error.WriteLine([string]$line) }

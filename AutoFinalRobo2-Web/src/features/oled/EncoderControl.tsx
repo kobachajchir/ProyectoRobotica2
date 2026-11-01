@@ -1,9 +1,12 @@
+import { EncoderGlyph } from './EncoderGlyph';
+/* AFR2-20261029-27: quick controls/radar/PWM/WS integration; prior authors retained. */
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 export const AFR2_LONG_PRESS_MS = 800;
 export const AFR2_ENCODER_LONG_MS = 800;
 
 export interface EncoderControlProps {
+  longPressMs?: number;
   onRotate: (delta: -1 | 1) => void;
   onPress: (kind: 'short' | 'long') => void;
   onRefresh?: () => void;
@@ -23,94 +26,6 @@ export interface EncoderControlProps {
   lastEventLabel?: string;
   compact?: boolean;
   label?: string;
-}
-
-const ICON_ENCODER_BITS = new Uint8Array([
-  0xf8, 0x03, 0xfc, 0x07, 0x0e, 0x0e, 0xf7, 0x1d, 0xfb, 0x1b, 0xfb, 0x1b, 0xfb,
-  0x1b, 0xfb, 0x1b, 0xfb, 0x1b, 0xf7, 0x1d, 0x0e, 0x0e, 0xfc, 0x07, 0xf8, 0x03,
-]);
-
-function MonoBitmapEncoderIcon({
-  scale = 2,
-  color,
-}: {
-  scale?: number;
-  color: string;
-}) {
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const width = 13;
-  const height = 13;
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    const bytesPerRow = Math.ceil(width / 8);
-    canvas.width = width * scale;
-    canvas.height = height * scale;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = color;
-
-    for (let y = 0; y < height; y += 1) {
-      for (let x = 0; x < width; x += 1) {
-        const byte = ICON_ENCODER_BITS[y * bytesPerRow + (x >> 3)] ?? 0;
-        const bit = 1 << (x & 7);
-        if (byte & bit) {
-          ctx.fillRect(x * scale, y * scale, scale, scale);
-        }
-      }
-    }
-  }, [color, scale]);
-
-  return (
-    <canvas
-      ref={canvasRef}
-      width={width * scale}
-      height={height * scale}
-      className="block shrink-0"
-      aria-hidden="true"
-    />
-  );
-}
-
-function TurnArrowIcon({ direction }: { direction: 'left' | 'right' }) {
-  if (direction === 'left') {
-    return (
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className="h-4 w-4 shrink-0"
-        aria-hidden="true"
-      >
-        <path d="M9 7H5v4" />
-        <path d="M5 11a7 7 0 1 0 2-4.9L5 7" />
-      </svg>
-    );
-  }
-
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className="h-4 w-4 shrink-0"
-      aria-hidden="true"
-    >
-      <path d="M15 7h4v4" />
-      <path d="M19 11a7 7 0 1 1-2-4.9L19 7" />
-    </svg>
-  );
 }
 
 function RefreshSyncIcon({ spinning = false }: { spinning?: boolean }) {
@@ -138,12 +53,12 @@ function RefreshSyncIcon({ spinning = false }: { spinning?: boolean }) {
  * Controles fisicos del encoder unico KY-040 adaptados de `ScreenStreamWorkspace.tsx` (AFR2-20261023-21 / VIS-018).
  * - Muestra siempre Giro izquierdo, SW y Giro derecho mas el boton manual de Actualizar, incluso deshabilitados.
  * - Unico boton SW (sin boton USER, Menu ni Atras).
- * - Umbral propio de 800 ms: corto (< 800 ms) confirma al soltar; largo (>= 800 ms) envia menu una vez y
- *   conserva su estado visual de atencion hasta soltar, aunque la solicitud ya este en curso.
+ * - Umbral configurable (800..3000 ms): corto y largo se emiten solo al soltar; nunca ambos.
  * - Perdida de disponibilidad, cancelacion de puntero, perdida de foco/captura o cierre del modal cancelan el gesto de inmediato.
  */
 export function EncoderControl({
   onRotate,
+  longPressMs=800,
   onPress,
   onRefresh,
   available = true,
@@ -158,6 +73,7 @@ export function EncoderControl({
   compact = false,
   label = 'Controles fisicos · Encoder unico KY-040',
 }: EncoderControlProps) {
+  const threshold=Math.max(800,Math.min(3000,longPressMs));
   const isAvailable = available && !disabled;
   const controlsDisabled = !isAvailable || busy;
 
@@ -165,6 +81,7 @@ export function EncoderControl({
   const [longVisualActive, setLongVisualActive] = useState(false);
   const [pressedRotate, setPressedRotate] = useState<'left' | 'right' | null>(null);
 
+  const gestureThreshold=useRef(threshold);
   const pressStartRef = useRef<number | null>(null);
   const longFiredRef = useRef(false);
   const activeInputSourceRef = useRef<'pointer' | 'keyboard' | null>(null);
@@ -248,7 +165,7 @@ export function EncoderControl({
     if (controlsDisabled || pressStartRef.current !== null) return;
     clearTimers();
     const start = performance.now();
-    pressStartRef.current = start;
+    gestureThreshold.current=threshold;pressStartRef.current = start;
     longFiredRef.current = false;
     activeInputSourceRef.current = source;
     activeKeyRef.current = key ?? null;
@@ -258,7 +175,7 @@ export function EncoderControl({
 
     const tick = () => {
       if (pressStartRef.current === null || longFiredRef.current) return;
-      const ratio = Math.min(1, (performance.now() - start) / AFR2_LONG_PRESS_MS);
+      const ratio = Math.min(1, (performance.now() - start) / gestureThreshold.current);
       setBarScale(ratio);
       if (ratio < 1) {
         rafRef.current = requestAnimationFrame(tick);
@@ -276,13 +193,13 @@ export function EncoderControl({
       }
       setBarScale(1);
       setLongVisualActive(true);
-      onPress('long');
-    }, AFR2_LONG_PRESS_MS);
+      // Qualify visually; navigation is emitted only on release.
+    }, gestureThreshold.current);
   };
 
   const finishPress = () => {
     if (pressStartRef.current === null) return;
-    const wasLong = longFiredRef.current;
+    const wasLong = longFiredRef.current || performance.now()-pressStartRef.current>=gestureThreshold.current;
     clearTimers();
     pressStartRef.current = null;
     longFiredRef.current = false;
@@ -292,9 +209,9 @@ export function EncoderControl({
     setLongVisualActive(false);
     setBarScale(0);
 
-    // Soltar despues de pulsacion larga (>= 800 ms) nunca envia confirmacion corta.
-    if (!wasLong && isAvailable && !busy) {
-      onPress('short');
+    // Soltar despues del umbral largo configurado nunca envia confirmacion corta.
+    if (isAvailable && !busy) {
+      onPress(wasLong?'long':'short');
     }
   };
 
@@ -311,10 +228,10 @@ export function EncoderControl({
           : 'idle';
 
   const swStatusCopy = longVisualActive
-    ? `Menu enviado (≥ ${AFR2_LONG_PRESS_MS} ms) · solta SW para finalizar el gesto`
+    ? `Largo preparado (≥ ${threshold} ms) · solta SW para volver`
     : pressing
-      ? `Pulsando SW… solta antes de ${AFR2_LONG_PRESS_MS} ms para confirmar o mantene para Menu`
-      : 'Corto (< 800 ms): confirmar · Largo (≥ 800 ms): abrir Menu principal';
+      ? `Pulsando SW… solta antes de ${threshold} ms para confirmar o mantene para volver`
+      : 'Inicio: corto abre menu; largo abre pantallas rapidas al soltar. En el resto: corto confirma, largo vuelve.';
 
   const reasonToShow =
     disabledReason ??
@@ -337,7 +254,7 @@ export function EncoderControl({
             {label}
           </span>
           <p className="text-xs text-[var(--text-muted)] mt-0.5">
-            Sin boton Menu ni Atras dedicado: retroceso solo mediante la opcion <code>Volver</code> en pantalla.
+            Sin boton dedicado: largo al soltar vuelve por contexto, igual que la opcion <code>Volver</code> en pantalla.
           </p>
         </div>
 
@@ -376,14 +293,14 @@ export function EncoderControl({
             aria-label="Giro izquierdo del encoder (-1)"
             className="afr2-oled-live-btn min-h-12 w-full rounded-[var(--radius-sm)] px-3.5 py-2.5 text-sm font-semibold flex items-center justify-center gap-2.5"
           >
-            <TurnArrowIcon direction="left" />
+            <EncoderGlyph kind="turn" scale={1} mirror />
             <span>Giro izquierdo</span>
           </button>
         </div>
 
         <div className="flex flex-col gap-1">
           <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
-            Pulsador SW ({AFR2_LONG_PRESS_MS} ms)
+            Pulsador SW ({threshold} ms)
           </span>
           <button
             type="button"
@@ -391,8 +308,8 @@ export function EncoderControl({
             data-state={swStateAttr}
             aria-label={
               longVisualActive
-                ? 'Pulsacion larga activa (Menu principal enviado). Soltar para terminar gesto.'
-                : 'Pulsador SW del encoder: pulsacion corta confirma, mantener 800 ms abre Menu principal'
+                ? 'Largo preparado; soltar para ejecutar el retorno contextual.'
+                : 'Pulsador SW del encoder: pulsacion corta confirma, mantener y soltar vuelve al contexto anterior'
             }
             onPointerDown={(e) => {
               if (e.button !== 0 || controlsDisabled) return;
@@ -457,7 +374,8 @@ export function EncoderControl({
               aria-hidden="true"
             />
             <span className="relative z-10 flex items-center gap-2">
-              <MonoBitmapEncoderIcon
+              <EncoderGlyph
+                kind={longVisualActive?'long':'short'}
                 scale={2}
                 color={
                   swStateAttr === 'long'
@@ -469,7 +387,7 @@ export function EncoderControl({
               />
               <span>
                 {longVisualActive
-                  ? 'SW · Menu (soltar)'
+                  ? 'SW largo (soltar)'
                   : pressing
                     ? 'SW · Manteniendo…'
                     : 'SW (Corto / Largo)'}
@@ -490,7 +408,7 @@ export function EncoderControl({
             aria-label="Giro derecho del encoder (+1)"
             className="afr2-oled-live-btn min-h-12 w-full rounded-[var(--radius-sm)] px-3.5 py-2.5 text-sm font-semibold flex items-center justify-center gap-2.5"
           >
-            <TurnArrowIcon direction="right" />
+            <EncoderGlyph kind="turn" scale={1} />
             <span>Giro derecho</span>
           </button>
         </div>
@@ -506,7 +424,7 @@ export function EncoderControl({
                 : 'text-[var(--text-muted)]'
           }`}
         >
-          {swStatusCopy}
+          <span className="inline-flex items-center gap-2"><EncoderGlyph kind={longVisualActive?'long':'short'} scale={1}/>{swStatusCopy}</span>
         </p>
 
         {reasonToShow && (

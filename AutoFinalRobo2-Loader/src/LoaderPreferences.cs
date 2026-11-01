@@ -10,6 +10,8 @@ namespace AFR2Loader
         public int Schema = 1;
         public bool BackupMegaBeforeFlasher = true;
         public bool ShowNoMegaBackupWarning = true;
+        public bool RequireChecklist = true;
+        public bool ChecklistsInitiallyChecked = false;
         public static string FilePath { get { return Path.Combine(Profile.UserRoot, "preferences.json"); } }
         public static LoaderPreferences Read()
         {

@@ -1,230 +1,106 @@
-import { Chevron } from '../../components/ui/Chevron';
+/* AFR2-20261030-09. Network state and operations confirmed by ESP observations. */
+import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { TaskSections } from '../../components/ui/TaskSections';
-import React, { useState } from 'react';
 import { GlassSurface } from '../../components/ui/GlassSurface';
 import { SectionHeader } from '../../components/ui/SectionHeader';
 import { Button } from '../../components/ui/Button';
-import { Field } from '../../components/ui/Field';
-import { WifiCredentialsFields, validWifiCredentials } from './WifiCredentialsFields';
 import { StatusNotice } from '../../components/ui/StatusNotice';
+import { WifiCredentialsFields, validWifiCredentials } from './WifiCredentialsFields';
 import { useConnection } from '../connection/ConnectionContext';
+import type { Afr2CommandName, WifiStatusSnapshot } from '../../protocol/wsEnvelope';
 
-export function WifiPage() {
-  const {
-    wsState,
-    wifiStatus,
-    wifiNetworks,
-    wifiScanState, wifiScanError, wifiScanTruncated,
-    refreshWifiStatus,
-    scanWifiNetworks,
-    executeCommandWithToast,
-  } = useConnection();
-
-  const [wifiView, setWifiView] = useState('estado');
-  const scanning = wifiScanState === 'scanning';
-  const [persist, setPersist] = useState(true);
-  const [configAccepted, setConfigAccepted] = useState(false);
-  const [targetMode, setTargetMode] = useState<'STA' | 'AP' | 'AP_STA'>('AP_STA');
-  const [ssid, setSsid] = useState('');
-  const [password, setPassword] = useState('');
-  const [submittingConfig, setSubmittingConfig] = useState(false);
-
-  const handleScan = () => scanWifiNetworks();
-
-  const handleConfigureSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!validWifiCredentials(ssid, password)) return;
-    setSubmittingConfig(true);
-    try {
-      setConfigAccepted(false);
-      const result = await executeCommandWithToast(
-        'wifi.configure',
-        {
-          mode: targetMode,
-          ssid,
-          password,
-          persist,
-        },
-        {
-          loadingTitle: `Aplicando configuracion Wi-Fi (${targetMode})...`,
-          acceptedTitle: 'Configuracion Wi-Fi aceptada por el ESP8266 (posible reconexion)',
-          successTitle: 'Configuracion Wi-Fi aplicada',
-        },
-        6000
-      );
-      setConfigAccepted(result?.status === 'accepted');
-      // Limpiar contraseña efimera tras el envio
-      setPassword('');
-    } finally {
-      setSubmittingConfig(false);
-    }
+function Lock(){return <svg width="13" height="15" viewBox="0 0 13 15" fill="none" aria-label="Red protegida"><path d="M3 6V4a3.5 3.5 0 0 1 7 0v2M1 6h11v8H1z" stroke="currentColor" strokeWidth="1.5"/><path d="M6.5 9v2" stroke="currentColor" strokeWidth="1.5"/></svg>;}
+const security=(value?:string)=>value==='open'?'Abierta':value==='unknown' || !value?'Sin dato de seguridad':value;
+const modeLabel=(mode:string)=>mode==='AP_STA'?'AP-STA':mode;
+type Goal={kind:'connect'|'disconnect'|'ap';started:number};
+export function WifiPage(){
+  const {wsState,wifiStatus,wifiNetworks,wifiScanState,wifiScanError,wifiScanTruncated,refreshWifiStatus,scanWifiNetworks,requestCommand}=useConnection();
+  const [view,setView]=useState('estado'),[configuring,setConfiguring]=useState(false);
+  const [ssid,setSsid]=useState(''),[password,setPassword]=useState(''),[persist,setPersist]=useState(true);
+  const [targetMode,setTargetMode]=useState<'STA'|'AP'|'AP_STA'>('AP_STA');
+  const [message,setMessage]=useState(''),[failed,setFailed]=useState(false),[busy,setBusy]=useState(false),[goal,setGoal]=useState<Goal|null>(null);
+  const mounted=useRef(true),epoch=useRef(0),scanRequested=useRef(false),modeSeeded=useRef(false);
+  const connected=wifiStatus.staConnected,scanning=wifiScanState==='scanning',online=wsState==='ready';
+  const fresh=online && typeof wifiStatus.receivedAtMs==='number' && Date.now()-wifiStatus.receivedAtMs<5000;
+  useEffect(()=>{if(!modeSeeded.current && ['STA','AP','AP_STA'].includes(wifiStatus.mode)){modeSeeded.current=true;setTargetMode(wifiStatus.mode as 'STA'|'AP'|'AP_STA');}},[wifiStatus.mode]);
+  useEffect(()=>{mounted.current=true;return()=>{mounted.current=false;++epoch.current;};},[]);
+  useEffect(()=>{if(scanRequested.current && wifiScanState==='completed'){scanRequested.current=false;setView('redes');setMessage('Redes listas.');setFailed(false);}},[wifiScanState]);
+  useEffect(()=>{
+    if(!goal)return;
+    let cancelled=false,timer:ReturnType<typeof setTimeout>|undefined;
+    const poll=async()=>{
+      if(cancelled)return;
+      if(wsState!=='ready'){setMessage('La conexion Web se interrumpio. El resultado Wi-Fi sigue sin confirmar; reconecta y consulta Estado de red.');setGoal(null);return;}
+      try{
+        const res=await requestCommand<WifiStatusSnapshot>('wifi.status',{},2500);
+        if(cancelled)return;
+        const status=res.payload,confirmed=res.status==='completed' && (goal.kind==='disconnect'?status.staConnected===false:goal.kind==='ap'?status.mode==='AP' && !!status.apIp && status.apIp!=='0.0.0.0':status.staConnected===true);
+        if(confirmed){setMessage(goal.kind==='disconnect'?'Operacion exitosa: red desconectada.':goal.kind==='ap'?'Operacion exitosa: AP activo.':'Operacion exitosa: red conectada.');setFailed(false);setGoal(null);void refreshWifiStatus();return;}
+      }catch{if(cancelled)return;}
+      if(Date.now()-goal.started>(goal.kind==='disconnect'?5000:25000)){setMessage('No se confirmo el estado esperado dentro del plazo. Consulta Estado de red.');setFailed(true);setGoal(null);return;}
+      timer=setTimeout(()=>void poll(),700);
+    };
+    void poll();return()=>{cancelled=true;if(timer)clearTimeout(timer);};
+  },[goal,wsState,requestCommand,refreshWifiStatus]);
+  const operate=async(command:Afr2CommandName,payload:Record<string,unknown>,next?:Goal['kind'])=>{
+    if(busy || goal)return;const ticket=++epoch.current;setBusy(true);setMessage('Solicitud enviada; esperando confirmacion del ESP.');setFailed(false);
+    try{
+      const res=await requestCommand<Record<string,unknown>>(command,payload,4000);
+      if(!mounted.current || ticket!==epoch.current)return;
+      if(next){setGoal({kind:next,started:Date.now()});setMessage(next==='disconnect'?'Desconectando…':'Conectando…');}
+      else if(res.status==='completed' && res.payload.confirmed===true){setMessage('Operacion exitosa: modo actualizado.');void refreshWifiStatus();}
+      else setMessage('Operacion aceptada; consulta el estado para confirmar el resultado.');
+    }catch(e){if(mounted.current && ticket===epoch.current){setMessage(e instanceof Error?e.message:'Sin confirmacion del ESP.');setFailed(true);}}
+    finally{if(mounted.current && ticket===epoch.current)setBusy(false);}
   };
-
-  return (<div className="afr2-route-view afr2-page-stack"><SectionHeader title="Wi-Fi" description="Consulta la conexion o elegi una red para el robot." />
-<TaskSections label="Secciones de Wi-Fi" value={wifiView} onValueChange={setWifiView} items={[
-{ id: 'estado', label: 'Estado', content: (<GlassSurface variant="panel" className="p-5 sm:p-6">
-        <SectionHeader
-          eyebrow="wifi.status · wifi.scan · wifi.configure"
-          title="Conexion del robot"
-          description="El modulo ESP12S opera con firmware propio sin comandos AT. Las credenciales se envian de forma efimera y jamas se almacenan en el navegador ni en el repositorio."
-          badge={`Modo: ${wifiStatus.mode}`}
-          badgeTone={wifiStatus.staConnected ? 'success' : 'neutral'}
-          actions={
-            <>
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => void refreshWifiStatus()}
-              >
-                Actualizar estado
-              </Button>
-              <Button
-                variant="primary"
-                size="sm"
-                loading={scanning}
-                disabled={wsState !== 'ready' || wifiStatus.scanRunning === true}
-                onClick={() => { setWifiView('redes'); void handleScan(); }}
-              >
-                Buscar redes
-              </Button>
-            </>
-          }
-        />
-
-        {wifiStatus.configError && <StatusNotice tone="error" title="No se pudo aplicar toda la configuracion" description={wifiStatus.configError} />}
-        {wifiStatus.fallbackActive && <StatusNotice tone="warning" title="Punto de acceso de recuperacion activo" description="Podes volver a configurar la red desde este punto de acceso." />}
-        {wifiStatus.applying && <StatusNotice tone="info" title="Aplicando configuracion de red…" />}
-        {wifiStatus.staStatus && wifiStatus.staStatus !== 'disabled' && <StatusNotice
-          tone={wifiStatus.staConnected ? 'success' : ['wrong-password', 'network-not-found', 'connection-failed'].includes(wifiStatus.staStatus) ? 'warning' : 'info'}
-          title={wifiStatus.staConnected ? 'Conectado a la red' : ({
-            'connecting': 'Conectando a la red…', 'network-not-found': 'No se encontro la red',
-            'wrong-password': 'La red rechazo la contraseña', 'connection-failed': 'Fallo la conexion',
-          } as Record<string, string>)[wifiStatus.staStatus] ?? 'Sin conexion a la red'} />}
-        <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-3">
-          <div className="afr2-surface-cell p-4">
-            <p className="text-xs font-semibold uppercase" style={{ color: 'var(--text-muted)' }}>
-              Estacion (STA)
-            </p>
-            <p className="afr2-tabular mt-1 text-base font-bold" style={{ color: 'var(--text-strong)' }}>
-              {wifiStatus.staSsid ?? '—'}
-            </p>
-            <p className="afr2-tabular mt-1 text-xs" style={{ color: 'var(--text-muted)' }}>
-              IP: {wifiStatus.staIp ?? '—'} · RSSI:{' '}
-              {wifiStatus.rssiDbm !== null ? `${wifiStatus.rssiDbm} dBm` : '—'}
-            </p>
-          </div>
-
-          <div className="afr2-surface-cell p-4">
-            <p className="text-xs font-semibold uppercase" style={{ color: 'var(--text-muted)' }}>
-              Punto de acceso (AP)
-            </p>
-            <p className="afr2-tabular mt-1 text-base font-bold" style={{ color: 'var(--text-strong)' }}>
-              {wifiStatus.apSsid ?? '—'}
-            </p>
-            <p className="afr2-tabular mt-1 text-xs" style={{ color: 'var(--text-muted)' }}>
-              IP AP: {wifiStatus.apIp ?? '—'}
-            </p>
-          </div>
-
-          <div className="afr2-surface-cell p-4">
-            <p className="text-xs font-semibold uppercase" style={{ color: 'var(--text-muted)' }}>
-              Puente Hardware Shield
-            </p>
-            <p className="afr2-tabular mt-1 text-base font-bold" style={{ color: 'var(--text-strong)' }}>
-              D18/D19 (Operacion)
-            </p>
-            <p className="mt-1 text-xs" style={{ color: 'var(--text-muted)' }}>
-              KEY/RST son fisicos del shield; ningun comando Web conmuta jumpers ni flashea.
-            </p>
+  const scan=()=>{scanRequested.current=true;setMessage('Buscando redes…');setView('redes');void scanWifiNetworks();};
+  const configure=async(e:FormEvent)=>{
+    e.preventDefault();if(!validWifiCredentials(ssid,password))return;
+    await operate('wifi.configure',{mode:targetMode,ssid,password,persist},targetMode==='AP'?'ap':'connect');setPassword('');
+  };
+  const config=<GlassSurface variant="panel" className="p-5 sm:p-6">
+    <SectionHeader title="Modificar credenciales" description="El cambio puede interrumpir esta conexion Web. La aceptacion no confirma una conexion nueva."/>
+    <form onSubmit={e=>void configure(e)} className="afr2-page-stack">
+      <WifiCredentialsFields id="wifi-cfg" mode={targetMode} ssid={ssid} password={password} persist={persist} onSsid={setSsid} onPassword={setPassword} onPersist={setPersist}/>
+      <div className="afr2-action-row"><Button type="submit" disabled={!online || busy || !!goal || scanning || !validWifiCredentials(ssid,password)}>Conectar</Button><Button type="button" onClick={()=>{setConfiguring(false);setPassword('');}}>Volver</Button></div>
+    </form>
+  </GlassSurface>;
+  return <div className="afr2-route-view afr2-page-stack">
+    <SectionHeader title="Wi-Fi" description="Estado de red, modos y credenciales del robot."/>
+    {message && <StatusNotice tone={failed?'warning':goal?'info':'neutral'} title={message}/>}
+    {configuring?config:<TaskSections label="Secciones Wi-Fi" value={view} onValueChange={setView} items={[
+      {id:'estado',label:'Estado de red',content:<GlassSurface variant="panel" className="p-5 sm:p-6">
+        <SectionHeader title={!fresh?'Sin datos actuales':connected?'Conectado':'Desconectado'} description="Estado de la conexion STA; el punto de acceso AP se informa por separado." actions={<Button disabled={!online} onClick={()=>void refreshWifiStatus()}>Actualizar estado</Button>}/>
+        {wifiStatus.fallbackActive && <StatusNotice tone="info" title="AP / fallback activo"/>}
+        {wifiStatus.configError && <StatusNotice tone="warning" title={wifiStatus.configError}/>}
+        <div className="afr2-page-stack">
+          <section><h2>Estado de conexion</h2><dl className="afr2-status-list">
+            <div><dt>Modo</dt><dd>{fresh?modeLabel(wifiStatus.mode):'—'}</dd></div><div><dt>IP STA</dt><dd>{fresh?wifiStatus.staIp||'—':'—'}</dd></div>
+            <div><dt>Mascara STA</dt><dd>{fresh?wifiStatus.staMask||'—':'—'}</dd></div><div><dt>Puerta de enlace STA</dt><dd>{fresh?wifiStatus.staGateway||'—':'—'}</dd></div>
+            <div><dt>IP AP</dt><dd>{fresh?wifiStatus.apIp||'—':'—'}</dd></div><div><dt>Mascara AP</dt><dd>{fresh?wifiStatus.apMask||'—':'—'}</dd></div>
+            <div><dt>Puerta de enlace AP</dt><dd>{fresh?wifiStatus.apGateway||'—':'—'}</dd></div>
+          </dl></section>
+          <section><h2>Datos de red</h2><dl className="afr2-status-list">
+            <div><dt>Nombre STA</dt><dd>{fresh?wifiStatus.staSsid||'—':'—'}</dd></div><div><dt>Senal actual</dt><dd>{fresh && wifiStatus.rssiDbm!==null?`${wifiStatus.rssiDbm} dBm`:'—'}</dd></div>
+            <div><dt>Seguridad STA</dt><dd>{fresh && wifiStatus.secure===true && <Lock/>}{fresh?security(wifiStatus.security):'—'}</dd></div>
+            <div><dt>Nombre AP</dt><dd>{fresh?wifiStatus.apSsid||'—':'—'}</dd></div><div><dt>Seguridad AP</dt><dd>{fresh && wifiStatus.apSecurity && !['open','unknown'].includes(wifiStatus.apSecurity) && <Lock/>}{fresh?security(wifiStatus.apSecurity):'—'}</dd></div>
+          </dl></section>
+          <section><h2>Cambiar modo</h2><label>Opciones de modos <select value={targetMode} disabled={busy || !!goal} onChange={e=>setTargetMode(e.target.value as typeof targetMode)}><option value="STA">STA</option><option value="AP">AP</option><option value="AP_STA">AP-STA</option></select></label><Button disabled={!online || busy || !!goal} onClick={()=>void operate('wifi.mode',{mode:targetMode})}>Aplicar modo</Button></section>
+          <div className="afr2-action-row">
+            <Button disabled={!online || busy || !!goal} onClick={()=>{setSsid(wifiStatus.staSsid??'');setConfiguring(true);}}>Configurar</Button>
+            {fresh && connected?<Button disabled={busy || !!goal} onClick={()=>void operate('wifi.disconnect',{},'disconnect')}>Desconectar</Button>:fresh && <><Button disabled={busy || !!goal} onClick={()=>{setSsid(wifiStatus.staSsid??'');setConfiguring(true);}}>Conectar</Button><Button disabled={busy || !!goal || wifiStatus.mode==='AP'} onClick={()=>void operate('wifi.retry',{},'connect')}>Reintentar</Button></>}
           </div>
         </div>
-      </GlassSurface>) },
-{ id: 'redes', label: 'Buscar red', content: (<GlassSurface variant="panel" className="relative p-5 sm:p-6 lg:col-span-6">
-          <SectionHeader
-            eyebrow="Escaneo Asincrono 2,4 GHz"
-            title="Redes cercanas"
-            description="Seleccione una red de la lista para copiar su SSID al formulario de configuracion."
-            badge={`${wifiNetworks.length} redes`}
-          />
-
-          <div className="afr2-action-row"><Button loading={scanning} disabled={wsState !== 'ready' || wifiStatus.scanRunning === true} onClick={() => void handleScan()}>Buscar redes</Button></div>
-          <div
-            aria-busy={scanning}
-            className="mt-4 flex flex-col gap-2"
-          >
-            {scanning && (
-              <StatusNotice
-                tone="info"
-                title="Escaneo Wi-Fi en curso..."
-                description="Esperando el resultado de la ESP. La aceptacion del pedido todavia no significa que la busqueda termino."
-              />
-            )}
-
-            {wifiScanError && <StatusNotice tone="error" title="Busqueda sin completar" description={wifiScanError} />}
-            {wifiScanTruncated && <StatusNotice tone="info" title="Se muestran las primeras 16 redes" description="La ESP encontro mas resultados; podes escribir el SSID si tu red no aparece." />}
-            {!scanning && wifiScanState !== 'failed' && wifiNetworks.length === 0 ? (
-              <div className="afr2-surface-cell p-6 text-center text-xs" style={{ color: 'var(--text-muted)' }}>
-                {wifiScanState === 'completed' ? 'La busqueda termino sin encontrar redes.' : 'Todavia no hay resultados en esta sesion. Busca redes con la ESP conectada.'}
-              </div>
-            ) : (
-              wifiNetworks.map((net) => (
-                <button
-                  key={`${net.ssid}-${net.channel}`}
-                  type="button"
-                  onClick={() => { setSsid(net.ssid); setWifiView('configurar'); }}
-                  className="afr2-pressable afr2-surface-cell flex items-center justify-between p-3 text-left"
-                >
-                  <div>
-                    <p className="text-sm font-bold" style={{ color: 'var(--text-strong)' }}>
-                      {net.ssid || '(SSID oculto)'}
-                    </p>
-                    <p className="afr2-tabular text-xs" style={{ color: 'var(--text-muted)' }}>
-                      Canal {net.channel} · {net.secure ? 'Protegida' : 'Abierta'}
-                    </p>
-                  </div>
-                  <span className="afr2-tabular text-xs font-bold" style={{ color: 'var(--action)' }}>
-                    {net.rssiDbm} dBm
-                  </span>
-                </button>
-              ))
-            )}
-          </div>
-        </GlassSurface>) },
-{ id: 'configurar', label: 'Configurar', content: (<GlassSurface variant="panel" className="p-5 sm:p-6 lg:col-span-6">
-          <SectionHeader
-            eyebrow="Credenciales Efimeras"
-            title="Configurar red"
-            description="La conexion puede cortarse al cambiar de red. Si cambia la IP, conectate a la nueva red y abri la direccion correspondiente."
-          />
-
-          {configAccepted && <StatusNotice tone="info" title="Configuracion aceptada" description="La ESP va a aplicar los cambios. Consulta Estado para ver si logro conectarse; este aviso todavia no confirma la conexion." />}
-          <form onSubmit={(e) => void handleConfigureSubmit(e)} className="mt-4 flex flex-col gap-4">
-            <Field id="wifi-cfg-mode" label="Modo de operacion objetivo">
-              <span className="afr2-select-wrap"><select
-                id="wifi-cfg-mode"
-                value={targetMode}
-                onChange={(e) => setTargetMode(e.target.value as 'STA' | 'AP' | 'AP_STA')}
-                className="afr2-glass-field min-h-[42px] px-3 py-1.5 text-sm"
-              >
-                <option value="AP_STA">Mixto AP + Estacion (AP_STA recomendado)</option>
-                <option value="STA">Solo Estacion (STA)</option>
-                <option value="AP">Solo Punto de Acceso (AP)</option>
-              </select><Chevron /></span>
-            </Field>
-
-            <WifiCredentialsFields id="wifi-cfg" mode={targetMode} ssid={ssid} password={password} persist={persist}
-              onSsid={setSsid} onPassword={setPassword} onPersist={setPersist} />
-            <div className="flex flex-wrap items-center gap-2 pt-1">
-              <Button
-                type="submit"
-                variant="primary"
-                loading={submittingConfig}
-                disabled={wsState !== 'ready' || scanning || wifiStatus.applying || wifiStatus.scanRunning || !validWifiCredentials(ssid, password)}
-              >
-                Aplicar configuracion
-              </Button>
-            </div>
-          </form>
-        </GlassSurface>) }]} />
-</div>);
+      </GlassSurface>},
+      {id:'redes',label:'Buscar redes',content:<GlassSurface variant="panel" className="p-5 sm:p-6">
+        <SectionHeader title="Redes encontradas" actions={<Button disabled={!online || busy || !!goal || scanning || wifiStatus.scanRunning===true} onClick={scan}><span aria-hidden="true">↻</span> Refrescar</Button>}/>
+        {scanning && <StatusNotice tone="info" title="Busqueda en curso…"/>}{wifiScanError && <StatusNotice tone="warning" title={wifiScanError}/>}
+        {wifiScanTruncated && <StatusNotice tone="info" title="Se muestran las primeras 16 redes"/>}
+        {!scanning && !wifiNetworks.length && <p>Sin redes disponibles en esta sesion.</p>}
+        <div className="afr2-page-stack">{wifiNetworks.map((net,index)=><button type="button" key={`${net.ssid}-${net.channel}-${index}`} className="afr2-pressable afr2-surface-cell flex items-center justify-between p-3 text-left" onClick={()=>{setSsid(net.ssid);setPassword('');setTargetMode(wifiStatus.mode==='AP'?'AP_STA':wifiStatus.mode==='STA'?'STA':'AP_STA');setConfiguring(true);}}>
+          <span><strong>{net.ssid||'Red oculta'}</strong><br/>{security(net.security??(net.secure?'protected':'open'))} · {net.rssiDbm} dBm</span>{net.secure && <Lock/>}
+        </button>)}</div><Button onClick={()=>setView('estado')}>Volver</Button>
+      </GlassSurface>}
+    ]}/>} 
+  </div>;
 }

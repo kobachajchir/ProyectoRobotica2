@@ -24,15 +24,19 @@ namespace AFR2Loader
             new Field("BridgeBaud", "Baudios flasher ATmega", "115200, 57600, 38400 o 9600; requiere cargar esa variante y usar igual EspBaud", "text"),
             new Field("BridgeStartupSeconds", "Espera al abrir puente", "Segundos después de abrir COM, antes de esptool; permite salir del bootloader Mega. 3 recomendado, 1..15", "text"),
             new Field("EspFirmwareMode", "Firmware ESP", "web: firmware Arduino propio; at: paquete AT. Ambos se cargan por USB/ROM.", "text"),
-            new Field("WebUseFilesystem", "Incluir LittleFS Web", "true o false; el firmware y su linker deben corresponder a la elección", "text"),
-            new Field("WebLayoutPreset", "Layout Web", "custom conserva el perfil; otro valor es el nombre de un linker instalado elegido arriba", "text"),
-            new Field("AtPackage", "Paquete AT", "Manifiesto afr2-esp-at-package-1 con archivos, regiones y layouts del proveedor", "file"),
+            new Field("WebUseFilesystem", "Incluir FileSystem", "true o false; el firmware y su linker deben corresponder a la elección", "text"),
+            new Field("WebLayoutPreset", "Layout FileSystem", "custom conserva el perfil; otro valor es el nombre de un linker instalado elegido arriba", "text"),
+            new Field("AtPackage", "Paquete AT / BIN", "BIN completo Ai-Thinker v1.5.4.1 reconocido o manifiesto afr2-esp-at-package-1 con regiones/layouts del proveedor", "file"),
             new Field("AtLayoutId", "Layout del paquete AT", "ID declarado dentro del paquete; no usa offsets Arduino/LittleFS", "text"),
             new Field("AtUseFilesystem", "Incluir filesystem AT", "true o false; solo regiones filesystem declaradas en el paquete", "text"),
             new Field("Repo", "Raíz del repositorio", "Carpeta ProyectoRobotica2. No se necesita Git para cargar archivos externos.", "folder"),
             new Field("AtmegaDir", "Proyecto ATmega", "Carpeta con Makefile", "folder"),
             new Field("EspDir", "Proyecto ESP", "Carpeta con platformio.ini", "folder"),
             new Field("WebDir", "Proyecto Web", "Carpeta con package.json", "folder"),
+            new Field("FsScript", "Script de preparación FileSystem", "Archivo lanzado antes de buildfs. Predeterminado: scripts/Prepare-Web.ps1 del Loader.", "file"),
+            new Field("FsSourceDir", "Fuentes del FileSystem", "Carpeta de trabajo y entradas del script. Separada de ESP/data; sus archivos se registran para invalidar la preparación si cambian.", "folder"),
+            new Field("FsScriptHost", "Ejecutable del script", "Intérprete: powershell.exe, pwsh.exe, python.exe u otro ejecutable. No se lanza una línea de shell implícita.", "file"),
+            new Field("FsScriptArguments", "Argumentos del script (JSON)", "Lista JSON de argumentos separados. Ejemplo PowerShell: [\"-NoProfile\",\"-ExecutionPolicy\",\"Bypass\",\"-File\",\"{Script}\"]. {Script} se sustituye por la ruta configurada; ver manual.", "text"),
             new Field("Make", "GNU Make", "make.exe; no nmake.exe", "file"),
             new Field("Gcc", "Compilador AVR", "avr-gcc.exe", "file"),
             new Field("Ar", "Bibliotecario AVR", "avr-ar.exe", "file"),
@@ -48,11 +52,11 @@ namespace AFR2Loader
             new Field("PioEnv", "Entorno PlatformIO", "Nombre entre env:... de platformio.ini", "text"),
             new Field("Hex", "HEX ATmega", "Firmware de producto afr2.hex; no el HEX de comunicación sola", "file"),
             new Field("EspBin", "BIN firmware ESP", "firmware.bin del entorno elegido", "file"),
-            new Field("FsBin", "Imagen LittleFS", "littlefs.bin del mismo entorno/layout", "file"),
+            new Field("FsBin", "Imagen FileSystem", "littlefs.bin del mismo entorno/layout", "file"),
             new Field("Linker", "Linker ESP", "eagle.flash.4m3m.ld o el linker exacto de tu build; valida rangos", "file"),
             new Field("FirmwareOffset", "Offset firmware ESP", "Offset flash, no dirección de memoria CPU; habitual 0x0", "text"),
-            new Field("FsOffset", "Offset LittleFS", "Debe coincidir con _FS_start del linker menos 0x40200000", "text"),
-            new Field("FsBytes", "Tamaño LittleFS (bytes)", "Debe coincidir exactamente con el rango del linker y littlefs.bin", "text"),
+            new Field("FsOffset", "Offset FileSystem", "Debe coincidir con _FS_start del linker menos 0x40200000", "text"),
+            new Field("FsBytes", "Tamaño FileSystem (bytes)", "Debe coincidir exactamente con el rango del linker y littlefs.bin", "text"),
             new Field("FirmwareMax", "Límite BIN firmware (bytes)", "Límite de programa del layout; perfil actual 1044464", "text"),
             new Field("FlashMB", "Flash esperada (MiB)", "Se compara contra flash_id real antes de cada escritura", "text"),
             new Field("FlashMode", "Modo SPI", "keep, dio, dout, qio o qout. keep conserva la cabecera del BIN", "text"),
@@ -73,6 +77,7 @@ namespace AFR2Loader
             if (!Fields.Any(f => f.Key == key)) throw new ArgumentException("Opción de perfil desconocida: " + key);
             if (value == null || value.Length > 4096 || value.Any(Char.IsControl)) throw new ArgumentException("Valor inválido para " + key + ": máximo 4096 caracteres, sin caracteres de control.");
             if (key == "PioEnv" && !System.Text.RegularExpressions.Regex.IsMatch(value, @"^[a-zA-Z0-9_-]{1,100}$")) throw new ArgumentException("El entorno PlatformIO debe contener letras, números, _ o -.");
+            if (key == "FsScriptArguments") ParseScriptArguments(value);
             if (key == "EspFirmwareMode" && value != "web" && value != "at") throw new ArgumentException("Firmware ESP: web o at.");
             if (key == "EspTransport" && value != "mega_reset" && value != "mega_bridge" && value != "usb-ttl" && value != "mega-usb") throw new ArgumentException("Conexión ESP: mega_reset, mega_bridge o usb-ttl (mega-usb es alias anterior de mega_reset).");
             if (key == "BridgeBaud" && !new[] { "115200", "57600", "38400", "9600" }.Contains(value)) throw new ArgumentException("Baudios flasher: 115200, 57600, 38400 o 9600.");
@@ -87,6 +92,16 @@ namespace AFR2Loader
             v = v.Replace("{Env}", Get("PioEnv"));
             return v;
         }
+        public static string[] ParseScriptArguments(string json)
+        {
+            object parsed;
+            try { parsed = new JavaScriptSerializer().DeserializeObject(json); }
+            catch (Exception) { throw new ArgumentException("Argumentos del script: se necesita una lista JSON de textos."); }
+            var values = parsed as object[];
+            if (values == null || values.Any(v => !(v is string) || ((string)v).Any(Char.IsControl)))
+                throw new ArgumentException("Argumentos del script: se necesita una lista JSON de textos sin caracteres de control.");
+            return values.Cast<string>().ToArray();
+        }
         public long Number(string key)
         {
             string v = Get(key).Trim();
@@ -100,8 +115,10 @@ namespace AFR2Loader
             if (p == null || p.Schema != 1 || p.Values == null) throw new Exception("Perfil incompatible. Se necesita schema 1.");
             foreach (var kv in p.Values) ValidateValue(kv.Key, kv.Value);
             if (p.Get("EspTransport") == "mega-usb") p.Values["EspTransport"] = "mega_reset";
+            bool migrateFsSources = !p.Values.ContainsKey("FsSourceDir");
             Profile defaults = Defaults("");
             foreach (var kv in defaults.Values) if (!p.Values.ContainsKey(kv.Key)) p.Values[kv.Key] = kv.Value;
+            if (migrateFsSources) p.Values["FsSourceDir"] = p.Get("WebDir");
             return p;
         }
         public void Save(string path)
@@ -127,6 +144,12 @@ namespace AFR2Loader
             v["AtPackage"] = ""; v["AtLayoutId"] = ""; v["AtUseFilesystem"] = "false";
             v["AtmegaDir"] = "{Repo}\\AutoFinalRobo2-Atmega";
             v["EspDir"] = "{Repo}\\AutoFinalRobo2-ESP"; v["WebDir"] = "{Repo}\\AutoFinalRobo2-Web";
+            // AFR2-20261029-06: el script suministrado acompaña también la distribución portable.
+            v["FsScript"] = Path.Combine(String.IsNullOrWhiteSpace(appDir) ? AppDomain.CurrentDomain.BaseDirectory : appDir, "scripts", "Prepare-Web.ps1");
+            v["FsSourceDir"] = "{Repo}\\AutoFinalRobo2-Web";
+            v["FsScriptHost"] = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "WindowsPowerShell", "v1.0", "powershell.exe");
+            // AFR2-20261029-22: Bypass solo para el proceso hijo; perfiles guardados conservan sus argumentos.
+            v["FsScriptArguments"] = "[\"-NoProfile\",\"-ExecutionPolicy\",\"Bypass\",\"-File\",\"{Script}\"]";
             v["PioEnv"] = "esp12s_candidate"; v["EsptoolMajor"] = "4";
             v["Hex"] = "{Repo}\\AutoFinalRobo2-Atmega\\build\\afr2.hex";
             v["EspBin"] = "{Repo}\\AutoFinalRobo2-ESP\\.pio\\build\\{Env}\\firmware.bin";

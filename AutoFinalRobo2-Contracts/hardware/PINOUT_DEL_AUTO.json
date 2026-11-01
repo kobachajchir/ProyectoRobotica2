@@ -1,8 +1,8 @@
 {
   "title": "Pinout del auto",
   "subtitle": "AutoFinalRobo2 | OSOYOO Mecanum 4WD | Arduino Mega 2560",
-  "revision": "AFR2-20261027-07",
-  "date": "27/10/2026",
+  "revision": "AFR2-20261029-26",
+  "date": "29/10/2026",
   "author": "Hecho por Koba Chajchir",
   "orientation": "DEL/TRAS e IZQ/DER se interpretan mirando en el sentido de avance del auto.",
   "sections": [
@@ -267,6 +267,36 @@
         0.5
       ],
       "note": "Usar E_RX/E_TX del selector. El puerto directo ESP UART es de 3,3 V. Aislar selección D4/D5 y D0/D1; Bluetooth desconectado de UART1. D5 ya controla un motor."
+    },
+    {
+      "title": "Bateria - medicion propuesta en fuente",
+      "columns": [
+        "Elemento",
+        "Conexion"
+      ],
+      "rows": [
+        [
+          "Toma del voltimetro + despues de llave",
+          "10 kohm superior hacia nodo de medida"
+        ],
+        [
+          "Nodo de medida",
+          "A5 / PF5 / ADC5; no BAT+ directo"
+        ],
+        [
+          "Resistencia inferior 10 kohm",
+          "Nodo de medida a GND"
+        ],
+        [
+          "Capacitor104 / 100nF",
+          "Nodo de medida a GND, en paralelo a resistencia inferior"
+        ]
+      ],
+      "widths": [
+        0.4,
+        0.6
+      ],
+      "note": "AFR2-20261029-26: sin diodo; GND comun; AVCC5V nominal. Fuente sin compilar ni montaje/calibracion probados. PDF previo sin regenerar."
     }
   ],
   "status": "Build AFR2-20261027-10: captura Hall habilitada y firmware compilado. Aún sin flashear. Si la preferencia estaba en 0, activar Hall conectado=1 en Geometria y guardar EEPROM. Funcionamiento físico no probado.",

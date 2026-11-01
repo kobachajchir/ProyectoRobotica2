@@ -1,3 +1,5 @@
+import { MotorSelector, type MotorId } from '../../components/ui/MotorSelector';
+import { MOTOR_IDS } from '../../domain/motorSelection';
 import { Chevron } from '../../components/ui/Chevron';
 import { useEffect, useRef, useState } from 'react';
 import config from '../../../../AutoFinalRobo2-Contracts/contracts/ATMEGA_CONFIG_ACTIONS.json';
@@ -10,12 +12,13 @@ import { CalibrationExplanation } from './CalibrationExplanation';
 import { CALIBRATION_GUIDE } from './calibrationGuide';
 
 // IDs/ranges come from the same catalogue as the AVR numeric editors.
-const actions = config.actions.filter(a => a.config_access).map(action => ({
+const allActions = config.actions.filter(a => a.config_access).map(action => ({
   ...action, label: action.label ? withoutAccents(action.label) : action.label,
 }));
-export function CalibrationPanel() {
+export function CalibrationPanel({preferences=false}:{preferences?:boolean}={}) {
+  const actions=allActions.filter(a=>preferences ? [41,42,53,54,68,81].includes(a.id) : ![41,42,53,54,68,81].includes(a.id));
   const { wsState, megaLinkState, capabilities, requestCommand, executeCommandWithToast, robotState, stopRecord, setOperationActivity, triggerEmergencyStop } = useConnection();
-  const [action, setAction] = useState(4);
+  const [action, setAction] = useState(preferences?41:4);
   const [value, setValue] = useState(0);
   const [feedback, setFeedback] = useState('Selecciona un parametro y consulta su valor actual.');
   const [busy, setBusy] = useState(false);
@@ -62,8 +65,8 @@ export function CalibrationPanel() {
     finally { locked.current = false; setOperationActivity('configuration', false); if (mounted.current) setBusy(false); }
   };
   return <div className="afr2-calibration-layout"><section className="afr2-calibration-editor space-y-4">
-    <h2 className="text-base font-semibold">Configuracion y calibracion</h2>
-    <p className="afr2-help">Los cambios se aplican en RAM con las salidas apagadas. Guardar en EEPROM y descartar son acciones explicitas. Los Hall se calibran por rueda desde la OLED; marcar geometria no mide el robot.</p>
+    <h2 className="text-base font-semibold">{preferences?'Preferencias del sistema':'Calibracion'}</h2>
+    <p className="afr2-help">Los cambios se aplican en RAM con las salidas apagadas. Guardar en EEPROM y descartar son acciones explicitas. Los Hall se calibran por rueda desde la OLED. La geometria nominal proviene del CAD y no se edita.</p>
     <p className="afr2-help">Aplicar, guardar o descartar envia la accion directamente. Antes de escribir se vuelve a consultar que las salidas esten apagadas.</p>
     {!writable && <StatusNotice tone="info" title="Edicion bloqueada">Conecta el Mega y detene las salidas. Podes consultar sin modificar la configuracion.</StatusNotice>}
     <form className="space-y-4" onSubmit={e => {e.preventDefault();if (loadedAction === action) void write('robot.calibrate', {action, value}, {loadingTitle:'Aplicando parametro…',successTitle:'Parametro aplicado en RAM'});}}>
@@ -72,9 +75,9 @@ export function CalibrationPanel() {
           {actions.map(a => <option key={a.id} value={a.id}>{CALIBRATION_GUIDE[a.id]?.title ?? a.label ?? a.symbol} · {CALIBRATION_GUIDE[a.id]?.unit ?? a.unit ?? ''}</option>)}
         </select><Chevron /></span>
       </label>
-      <label className="block">Valor ({selected.min}…{selected.max})
-        <input disabled={busy} className="afr2-glass-field w-full min-h-11 px-3" type="number" required min={selected.min} max={selected.max} step={action === 41 ? 2 : 1} value={value} onChange={e => setValue(Number(e.target.value))} />
-      </label>
+      {action===12?<MotorSelector value={MOTOR_IDS[value&3] as MotorId} onChange={motor=>setValue(MOTOR_IDS.indexOf(motor))} disabled={busy} />:<>      <label className="block">Valor ({selected.min}…{selected.max})
+        <input disabled={busy} className="afr2-glass-field w-full min-h-11 px-3" type="number" required min={selected.min} max={selected.max} step={action === 41 ? 2 : action===81?100:1} value={value} onChange={e => setValue(Number(e.target.value))} />
+      </label></>}
       <div className="afr2-action-row">
         <Button type="button" disabled={!ready || busy} onClick={() => void read()}>Consultar</Button>
         <Button type="submit" disabled={!writable || busy || loadedAction !== action || !Number.isInteger(value)}>Aplicar en RAM</Button>
@@ -83,10 +86,10 @@ export function CalibrationPanel() {
     <p role="status" className="afr2-help">{feedback}</p>
     <p className="afr2-help" role="status">EEPROM: {robotState?.preferencesState === 1 ? 'guardando' : robotState?.preferencesState === 2 ? 'guardado confirmado por AVR' : robotState?.preferencesState === 3 ? 'fallo de guardado' : 'sin guardado confirmado en esta sesion'}.</p>
     <div className="afr2-action-row">
-      <Button disabled={!writable || busy} onClick={() => void write('robot.line.calibrate',{confirm:true},{loadingTitle:'Confirmando linea…',successTitle:'Calibracion de linea confirmada'})}>Confirmar linea</Button>
-      <Button disabled={!writable || busy} onClick={() => void write('robot.line.calibrate',{confirm:false},{loadingTitle:'Invalidando linea…',successTitle:'Calibracion de linea invalidada'})}>Invalidar linea</Button>
-      <Button disabled={!writable || busy} onClick={() => void write('robot.preferences',{action:'save'},{loadingTitle:'Solicitando guardado…',successTitle:'Preferencias guardadas',acceptedTitle:'Guardado EEPROM en curso'})}>Guardar EEPROM</Button>
-      <Button disabled={!writable || busy} onClick={() => void write('robot.preferences',{action:'discard'},{loadingTitle:'Descartando…',successTitle:'Configuracion guardada restaurada'})}>Descartar cambios</Button>
+      {!preferences && <Button disabled={!writable || busy} onClick={() => void write('robot.line.calibrate',{confirm:true},{loadingTitle:'Confirmando linea…',successTitle:'Calibracion de linea confirmada'})}>Confirmar linea</Button>}
+      {!preferences && <Button disabled={!writable || busy} onClick={() => void write('robot.line.calibrate',{confirm:false},{loadingTitle:'Invalidando linea…',successTitle:'Calibracion de linea invalidada'})}>Invalidar linea</Button>}
+      {preferences && <Button disabled={!writable || busy} onClick={() => void write('robot.preferences',{action:'save'},{loadingTitle:'Solicitando guardado…',successTitle:'Preferencias guardadas',acceptedTitle:'Guardado EEPROM en curso'})}>Guardar EEPROM</Button>}
+      {robotState?.configurationDirty===true && <Button disabled={!writable || busy} onClick={() => void write('robot.preferences',{action:'discard'},{loadingTitle:'Descartando…',successTitle:'Configuracion guardada restaurada'})}>Descartar cambios</Button>}
     </div>
   </section><CalibrationExplanation selected={selected} value={value} received={loadedAction === action ? receivedValue : null} /></div>;
 }

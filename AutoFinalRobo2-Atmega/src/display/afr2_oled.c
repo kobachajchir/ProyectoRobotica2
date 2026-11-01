@@ -12,29 +12,73 @@
 #define READ_BYTE(p) (*(const uint8_t *)(p))
 #endif
 enum { IDLE, WAIT_INIT, WAIT_COMMAND, SEND_DATA, WAIT_DATA, WAIT_SETTINGS };
+/* AFR2-20261029-10: promote the user-confirmed diagnostic's settle time.
+ * Page addressing is deliberately retained with this driver's page writes. */
+#ifndef AFR2_OLED_STARTUP_MS
+#define AFR2_OLED_STARTUP_MS 500u
+#endif
 static const uint8_t init_commands[] FLASH={
   0x00,0xae,0xd5,0x80,0xa8,0x3f,0xd3,0x00,0x40,0x8d,0x14,
-  0x20,0x02,0xa1,0xc8,0xda,0x12,0x81,0xcf,0xd9,0xf1,0xdb,0x40,0xa4,0xa6,0xaf
+  0x20,0x02,0xa1,0xc8,0xda,0x12,0x81,0xcf,0xd9,0xf1,0xdb,0x40,0xa4,0xa6,0x2e,0xaf
 };
 static void completed(void *ctx,Afr2I2cResult result) {
     Afr2Oled *o=ctx;
     if (result!=AFR2_I2C_OK) {
-        o->errors++; o->dirty=0xff; o->initialized=false;
-        o->phase=IDLE; o->retry_ms=o->clock_ms+1000u; return;
+        /* AFR2-20261029-14: ordinary transfer faults must NOT issue DISPLAY
+         * OFF and restart all64chunks. TWI Manager already starts bus recovery.
+         * Invalidate only the uncertain chunk; retain other ACKed pages. */
+        o->errors++;o->last_error=(uint8_t)result;o->last_failed_phase=o->phase;
+        if(o->consecutive_failures<3u)++o->consecutive_failures;
+        if(o->phase==WAIT_INIT) {
+            o->initialized=false;o->dirty=0xff;
+            memset(o->valid,0,sizeof(o->valid));
+        } else if(o->phase==WAIT_SETTINGS) {
+            o->settings_dirty=1;
+        } else if(o->phase==WAIT_COMMAND || o->phase==WAIT_DATA) {
+            o->valid[o->page]&=(uint8_t)~(1u<<o->chunk);
+            o->dirty|=(uint8_t)(1u<<o->page);
+        }
+        /* A panel power interruption can lose configuration, too. Persistent
+         * failure escalates to configuration/RAM resync WITHOUT DISPLAY OFF. */
+        if(o->consecutive_failures>=3u) {
+            o->initialized=false;o->dirty=0xff;
+            memset(o->valid,0,sizeof(o->valid));
+        }
+        o->phase=IDLE;o->retry_ms=o->clock_ms+50u;return;
     }
-    if (o->phase==WAIT_INIT) { o->initialized=true; o->dirty=0xff; o->settings_dirty=1; o->phase=IDLE; }
+    if (o->phase==WAIT_INIT) {
+        o->initialized=true;o->configured_once=true;o->consecutive_failures=0;
+        o->dirty=0xff; o->settings_dirty=1;
+        memset(o->valid,0,sizeof(o->valid)); o->phase=IDLE;
+    }
     else if (o->phase==WAIT_COMMAND) o->phase=SEND_DATA;
-    else o->phase=IDLE;
+    else {
+        if(o->phase==WAIT_DATA) {
+            /* Commit only bytes actually ACKed, never the current mutable
+             * render buffer. Redraws during TX remain detectable next time. */
+            memcpy(&o->acknowledged[(uint16_t)o->page*128u+o->column],&o->tx[1],o->count);
+            o->valid[o->page]|=(uint8_t)(1u<<o->chunk);
+            o->consecutive_failures=0;
+        }
+        if(o->phase==WAIT_SETTINGS)o->consecutive_failures=0;
+        o->phase=IDLE;
+    }
+    /* AFR2-20261029-16: callback records progress only. Main executes services
+     * between bounded stages; adding a timed gap needlessly slows every block. */
 }
 void Afr2Oled_Init(Afr2Oled *o,Afr2I2cManager *m,uint8_t address7,uint32_t now) {
     if (!o) return;
     memset(o,0,sizeof(*o)); o->manager=m; o->address7=address7;
-    o->dirty=0xff; o->retry_ms=now+100u; o->clock_ms=now;o->contrast=0xcf;o->settings_dirty=1;
+    o->dirty=0xff; o->retry_ms=now+AFR2_OLED_STARTUP_MS; o->clock_ms=now;o->contrast=0xcf;o->settings_dirty=1;
 }
 static bool send(Afr2Oled *o,const uint8_t *data,uint16_t size,uint8_t next,uint32_t now) {
+    /* Publish attempted stage BEFORE Submit so immediate start failures are
+     * classified just like deferred failures. BUSY restores the saved phase. */
+    uint8_t previous=o->phase;o->phase=next;
     Afr2I2cResult r=Afr2I2c_Submit(o->manager,o->address7,data,size,now,40,completed,o);
-    if (r==AFR2_I2C_OK) {o->phase=next; return true;}
-    if (r!=AFR2_I2C_BUSY) completed(o,r);
+    if (r==AFR2_I2C_OK)return true;
+    if (r==AFR2_I2C_BUSY)o->phase=previous;
+    else completed(o,r);
     return false;
 }
 void Afr2Oled_Settings(Afr2Oled *o,uint8_t contrast,uint8_t rotation) {
@@ -43,15 +87,20 @@ void Afr2Oled_Settings(Afr2Oled *o,uint8_t contrast,uint8_t rotation) {
         o->contrast=contrast;o->rotation=rotation;o->settings_dirty=1;
     }
 }
+void Afr2Oled_Pause(Afr2Oled *o,bool paused) { if(o)o->paused=paused; }
 void Afr2Oled_Task(Afr2Oled *o,uint32_t now) {
     if (!o || !o->manager) return;
     o->clock_ms=now;
-    if ((int32_t)(now-o->retry_ms)<0) return;
-    if (o->phase==SEND_DATA) { (void)send(o,o->tx,129,WAIT_DATA,now); return; }
+    if (o->paused || (int32_t)(now-o->retry_ms)<0) return;
+    if (o->phase==SEND_DATA) { (void)send(o,o->tx,(uint16_t)o->count+1u,WAIT_DATA,now); return; }
     if (o->phase!=IDLE || o->manager->busy) return;
     if (!o->initialized) {
-        for (uint8_t i=0;i<sizeof(init_commands);i++) o->tx[i]=READ_BYTE(&init_commands[i]);
-        (void)send(o,o->tx,sizeof(init_commands),WAIT_INIT,now); return;
+        /* Only cold startup sends0xAE. A recovery reapplies configuration
+         * and0xAF without deliberately blanking an already running panel. */
+        uint8_t skip=o->configured_once?1u:0u;
+        uint8_t length=sizeof(init_commands)-skip;o->tx[0]=0;
+        for(uint8_t i=1;i<length;i++)o->tx[i]=READ_BYTE(&init_commands[i+skip]);
+        (void)send(o,o->tx,length,WAIT_INIT,now); return;
     }
     if(o->settings_dirty) {
         o->command[0]=0;o->command[1]=0x81;o->command[2]=o->contrast;
@@ -59,12 +108,31 @@ void Afr2Oled_Task(Afr2Oled *o,uint32_t now) {
         if(send(o,o->command,5,WAIT_SETTINGS,now))o->settings_dirty=0;
         return;
     }
-    for (uint8_t page=0;page<8;page++) {
+    /* At most one page comparison and one submission per main-loop call.
+     * Round-robin pages AND chunks avoid starving the bottom of the screen. */
+    for (uint8_t visited=0;visited<8;visited++) {
+        uint8_t page=(o->next_page+visited)&7u;
         if (!(o->dirty&(1u<<page))) continue;
-        o->page=page; o->command[0]=0; o->command[1]=(uint8_t)(0xb0u+page);
-        o->command[2]=0; o->command[3]=0x10;
-        o->tx[0]=0x40; memcpy(&o->tx[1],&o->buffer[(uint16_t)page*128u],128);
-        if (send(o,o->command,4,WAIT_COMMAND,now)) o->dirty&=(uint8_t)~(1u<<page);
+        for(uint8_t n=0;n<8;n++) {
+            uint8_t chunk=(o->next_chunk[page]+n)&7u;
+            uint8_t left=chunk*AFR2_OLED_CHUNK,right=left+AFR2_OLED_CHUNK;
+            uint16_t base=(uint16_t)page*128u;
+            if(o->valid[page]&(1u<<chunk)) {
+                while(left<right && o->buffer[base+left]==o->acknowledged[base+left])++left;
+                if(left==right)continue;
+                while(right>left && o->buffer[base+right-1u]==o->acknowledged[base+right-1u])--right;
+            }
+            o->page=page;o->chunk=chunk;o->column=left;o->count=right-left;
+            o->command[0]=0;o->command[1]=(uint8_t)(0xb0u+page);
+            o->command[2]=left&0x0fu;o->command[3]=0x10u|(left>>4);
+            o->tx[0]=0x40;memcpy(&o->tx[1],&o->buffer[base+left],o->count);
+            if(send(o,o->command,4,WAIT_COMMAND,now)) {
+                o->next_page=(page+1u)&7u;o->next_chunk[page]=(chunk+1u)&7u;
+            }
+            return;
+        }
+        /* Clear/redraw with identical final pixels generates no bus traffic. */
+        o->dirty&=(uint8_t)~(1u<<page);o->next_page=(page+1u)&7u;
         return;
     }
 }

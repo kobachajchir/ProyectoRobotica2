@@ -1,3 +1,4 @@
+/* AFR2-20261029-27: quick controls/radar/PWM/WS integration; prior authors retained. */
 /* AFR2-20261025-14. Same services as local encoder; read commands never move hardware. */
 #include "afr2_app.h"
 #include "afr2_product_wire.h"
@@ -28,6 +29,7 @@ uint8_t Afr2App_SensorCommand(void *ctx,uint8_t cmd,const uint8_t *d,uint8_t n,u
     case AFR2_EXT_SERVO_SET:
         if(n!=2)return AFR2_RESULT_BAD_REQUEST;
         if(!p->stopped || p->fault || p->hall_measuring)return AFR2_RESULT_UNAVAILABLE;
+        if(d[0] && a->ui->node==AFR2_N_SERVO_ANGLE)return AFR2_RESULT_UNAVAILABLE;
         r=Afr2Head_Servo(d[0],d[1]);
         /* target is accepted now, applied pulse is reported only after Timer5 latches it. */
         servo(out,h,p->now);*length=18;break;
@@ -37,10 +39,11 @@ uint8_t Afr2App_SensorCommand(void *ctx,uint8_t cmd,const uint8_t *d,uint8_t n,u
     case AFR2_EXT_RADAR_CONFIG:
         if(n!=9 || d[0]>1)return AFR2_RESULT_BAD_REQUEST;
         if(d[0]){if(!p->stopped || p->fault)return AFR2_RESULT_UNAVAILABLE;
-            r=Afr2Head_Configure(d[1],d[2],d[3],afr2_get_u16(d+4),afr2_get_u16(d+6),d[8]);}
+            r=Afr2Head_Configure(d[1],d[2],d[3],afr2_get_u16(d+4),afr2_get_u16(d+6),d[8]);if(!r)p->config.servo_inverted=d[8];}
         out[0]=h->min_angle;out[1]=h->max_angle;out[2]=h->speed;afr2_put_u16(out+3,h->settle_ms);afr2_put_u16(out+5,h->interval_ms);out[7]=h->inverted;*length=8;break;
     case AFR2_EXT_RADAR_START:
         if(n)return AFR2_RESULT_BAD_REQUEST;
+        if(a->ui->node==AFR2_N_SERVO_ANGLE)return AFR2_RESULT_UNAVAILABLE;
         if(!p->stopped || p->fault || p->hall_measuring || (p->sequence.state>=1 && p->sequence.state<=3))return AFR2_RESULT_UNAVAILABLE;
         r=Afr2Head_Start();out[0]=h->running;*length=1;break;
     case AFR2_EXT_RADAR_STOP:

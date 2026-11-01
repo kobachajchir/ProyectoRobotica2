@@ -1,3 +1,7 @@
+## Alcance01-03 - Modelos 3D
+
+Canonica Confirmada por el usuario: CollectorScene.tsx y paleta cielo/piso/grilla de collector.css; se comparten sus mismos valores desde tokens.css. Supporting: identidad0.1.9 autorizada, tokens, ThemeProvider, Button. Objetivos: ModelInspection, AssetInspection, InspectionEnvironment y model-inspection.css. Fichas solidas y tinta de referencias Propuestas. Revision de fuente 01/11/2026; ejecucion No verificada. [Cobertura](coverage-20261101-03.json).
+
 # Fuentes y alcance — 23/10/2026
 
 ## Alcance31-12 — Simulador UI

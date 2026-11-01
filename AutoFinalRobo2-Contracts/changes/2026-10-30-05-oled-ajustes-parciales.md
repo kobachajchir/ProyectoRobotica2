@@ -1,0 +1,15 @@
+> Continuación AFR2-20261030-06 implementa selector rápido y registra revisión de vistas; ver [ficha](2026-10-30-06-quick-mode.md).
+
+# AFR2-20261030-05 — ajustes OLED parciales
+
+Cambios en fuente para ScreenCode 010001 y menús: indicador L bajo el encoder de pulsación larga; margen superior del cuerpo del dashboard; se omite «Motores bloqueados» únicamente cuando el modo es REPOSO, conservando fallos y otros estados. El título mostrado de 010002 es «Menu principal» (la fuente actual es ASCII); se omite el chevron de selección en filas Volver. Renderers AVR y Web adaptados juntos; no hay cambio de wire. La entrada desde Inicio ya llama Afr2Ui_Open, que reinicia selección e inicio visible.
+
+La referencia D:/AutoProyecto/Firmware/Core/Src/fonts.c contiene Icon_Volver_bits idéntico al recurso AVR actual, atribuido a kobac en afr2_icons.c. No se modificó el bitmap; su escalado y legibilidad quedan pendientes de revisión visual. RSSI STA llega desde ESP al estado de red AVR; las variantes gráficas, umbrales, validez y presupuesto real de memoria quedan pendientes, sin afirmar capacidad disponible.
+
+Continuación: menú principal ordenado Estado, Wi-Fi, Sensores, Pruebas, Calibración, Sistema y Volver. Control manual y Modos/misiones se mantienen accesibles desde Estado. Sistema ofrece Versiones, Preferencias, Batería, Reinicio, Diagnóstico, Capacidades, Pantalla y Volver; Diagnóstico ofrece Alertas (datos), Limpiar fallo y Volver. Capacidades presenta cuatro páginas con explicaciones de UI/TWI/UART, STOP, línea/Hall y requisito GOTO; giro cambia página, clic y largo vuelven. Carrusel rápido y vistas hermanas IR/radar muestran posición y chevrones; el giro se limita a las direcciones indicadas. Icono Volver en vistas aumenta de 8 a 12 píxeles usando el recurso original.
+
+Pendientes: pantalla rápida de selección de modos y notificación de cambio; revisión del resto de vistas para determinar si hay más paginación; revisión visual del escalado. El productor solo admite selección directa de reposo/manual y arrancar línea; GOTO, prueba, secuencia y fallo son estados de ejecución o error, no modos seleccionables por la misma acción. No se inventaron transiciones ni confirmaciones. RSSI sigue sin iconos variables por ausencia de presupuesto actualizado. La copia generada del catálogo Web permanece pendiente de ejecutar el generador autorizado, aunque el renderer y el preview adaptan los índices alterados en fuente.
+
+ATmega y Web: solo fuente parcial; ESP: sin cambios ni promoción. Sin tests, compilación, validadores, generador, navegador, flasheo o prueba física. Paridad y memoria no verificadas.
+
+Procedencia por archivo: afr2_screens.c y afr2_menu_catalog.c adaptan el renderer y catálogo propios de AFR2 conservando autorías previas; afr2_network_screen.c escala el bitmap atribuido a kobac; afr2_sensor_screens.c y firmwareSensorRenderer.ts adaptan indicadores de vistas hermanas; firmwareRenderer.ts y FirmwareLibraryPreview.tsx son contrapartes Web; firmwareRenderer.sources.json registra hashes de orígenes portados; documentation/screens.json actualiza metadatos. Sin cambios en las referencias originales.

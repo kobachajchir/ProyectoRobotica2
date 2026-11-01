@@ -8,6 +8,8 @@ export interface ParameterGuide {
 const entry = (title: string, group: string, unit: string, meaning: string, effect: string, example: string, detail: string): ParameterGuide =>
   ({ title, group, unit, meaning, effect, example, detail });
 export const CALIBRATION_GUIDE: Record<number, ParameterGuide> = {
+  81: entry('Tiempo de pulsacion larga','Sistema / Encoder','ms','Umbral que distingue corto y largo al soltar SW.','Se aplica con SW liberado; no cambia el debounce ni introduce tiempo de corto.','800 ms = 0,8 s. Rango 800–3000 ms, pasos de 100 ms.','Guardar desde Preferencias para conservarlo al reiniciar.'),
+  68: entry('Invertir servo','Sistema / Servo','0/1','Invierte la correspondencia entre angulo solicitado y pulso del unico servo.','Requiere salidas detenidas y servo/radar desactivados.','0: normal; 1: invertido.','Se aplica en RAM y se conserva mediante Guardar EEPROM.'),
   4: entry('Limite general de velocidad', 'Movimiento', 'mm/s',
     'Es el techo de velocidad usado por el controlador del robot y sus consignas de ruedas. No ordena avanzar ni representa una velocidad medida.',
     'Un valor mayor permite consignas mas rapidas; uno menor limita el movimiento. Si se reduce por debajo de la velocidad de linea configurada, el firmware tambien reduce esa velocidad.',
@@ -138,6 +140,7 @@ export function explainEditorValue(id: number, value: number) {
   if (id === 25) return ['Sin tipo definido', 'Lectura digital', 'Lectura analogica ADC'][value] ?? 'Tipo fuera de rango.';
   if (id === 44) return ({ 1: 'STA · red existente', 2: 'AP · punto de acceso', 3: 'AP + STA' } as Record<number, string>)[value] ?? 'Modo fuera de rango.';
   if ([36, 39, 40, 42].includes(id)) return value === 1 ? 'Opcion declarada activa (1).' : value === 0 ? 'Opcion declarada inactiva (0).' : 'Solo se admiten 0 o 1.';
+  if(id===81)return `${value} ms = ${(value/1000).toFixed(1)} s; largo se ejecuta al soltar.`;
   if (id === 54) return value === 1 ? 'Orientacion solicitada 180°.' : value === 0 ? 'Orientacion normal.' : 'Solo se admiten 0 o 1.';
   if (id === 37) return `Una vuelta equivale nominalmente a ${(Math.PI * value).toFixed(1)} mm para este diametro.`;
   if (id === 31) return `Limite equivalente a ${(value / 255 * 100).toFixed(1)}% de la escala PWM.`;

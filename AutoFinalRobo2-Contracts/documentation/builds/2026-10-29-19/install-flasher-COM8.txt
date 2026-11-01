@@ -1,0 +1,233 @@
+13:34:53 install_mega_flasher | perfil: Mi AutoFinalRobo2 | puerto: COM8
+13:34:53 Comprobando disponibilidad de COM8...
+13:34:53 COM8 disponible a 13:34:53. Comprobación puntual; la herramienta abrirá el puerto a continuación.
+13:34:53 install_mega_flasher
+13:34:53 Aprobación MCP: automática, activada en la ventana
+13:34:53 Backup antes de cargar flasher: True
+13:34:53 Confirmación manual omitida por autorización de sesión: Cargar flasher temporal en ATmega
+Puerto COM8 | puente USART0↔USART1 a 115200
+Se compilará la fuente de servicio y se reemplazará la aplicación del Mega.
+
+BACKUP ACTIVADO: antes de escribir se leerá la flash del Mega dos veces. Si falla, se detiene. EEPROM no incluida; no se programan fuses.
+Registro anterior: product_verified. El backup leerá lo que hay AHORA en el Mega: puede ser otro flasher. Los respaldos anteriores se conservan.
+Potencia de motores/servos desconectada; USB y alimentación lógica identificados.
+Quité RESET Mega→GND. RESET del Mega queda LIBRE durante todo este flujo.
+D18 y D19 DESCONECTADOS del ESP durante la carga del flasher. D0/D1 al ESP y jumpers paralelos retirados.
+Alimentación lógica y masa común identificadas.
+Revisé la opción de backup. Mientras use el flasher, el auto no ejecutará su aplicación.
+13:34:53 Puente software: cableado confirmado; RESET Mega libre.
+13:34:53 Compilando flasher temporal para ATmega a 115200...
+13:34:53 > "C:\Program Files (x86)\Atmel\Studio\7.0\shellUtils\make.exe" "-B" "esp-bridge-firmware" "BRIDGE_BAUD=115200" "CC=\"C:/Users/kobac/AppData/Local/Arduino15/packages/arduino/tools/avr-gcc/7.3.0-atmel3.6.1-arduino7/bin/avr-gcc.exe\"" "OBJCOPY=\"C:/Users/kobac/AppData/Local/Arduino15/packages/arduino/tools/avr-gcc/7.3.0-atmel3.6.1-arduino7/bin/avr-objcopy.exe\""
+13:34:53 Carpeta: D:\ProyectoRobotica2\AutoFinalRobo2-Atmega
+13:34:53 powershell.exe -NoProfile -NonInteractive -Command "[void][System.IO.Directory]::CreateDirectory('build')"
+13:34:53 "C:/Users/kobac/AppData/Local/Arduino15/packages/arduino/tools/avr-gcc/7.3.0-atmel3.6.1-arduino7/bin/avr-gcc.exe" -DF_CPU=16000000UL -Iinclude -I../AutoFinalRobo2-Contracts/contracts -mmcu=atmega2560 -std=gnu11 -MMD -MP -Os -Wall -Wextra -ffunction-sections -fdata-sections -DAFR2_BRIDGE_BAUD=115200UL -Wl,--gc-sections,-Map,build/afr2-esp-bridge-115200.map -o build/afr2-esp-bridge-115200.elf service/esp_uart_bridge.c
+13:34:54 "C:/Users/kobac/AppData/Local/Arduino15/packages/arduino/tools/avr-gcc/7.3.0-atmel3.6.1-arduino7/bin/avr-objcopy.exe" -O ihex -R .eeprom build/afr2-esp-bridge-115200.elf build/afr2-esp-bridge-115200.hex
+13:34:54 Código de salida: 0
+13:34:54 Artefacto generado: D:\ProyectoRobotica2\AutoFinalRobo2-Atmega\build\afr2-esp-bridge-115200.hex
+2308 bytes | SHA-256 0940be1a3d420d541590d1d952f2ce098761c85c27080ba93cf090e69b61f717
+13:34:54 Flasher ATmega compilado. Todavía no se reemplazó la aplicación.
+13:34:54 Backup ATmega: leyendo flash y hfuse sin escritura; se contrastarán dos lecturas...
+13:34:54 > "C:\Users\kobac\AppData\Local\Arduino15\packages\arduino\tools\avrdude\6.3.0-arduino17\bin\avrdude.exe" "-C" "C:\Users\kobac\AppData\Local\Arduino15\packages\arduino\tools\avrdude\6.3.0-arduino17\etc\avrdude.conf" "-v" "-n" "-D" "-p" "atmega2560" "-c" "wiring" "-P" "COM8" "-b" "115200" "-U" "flash:r:read-1.bin:r" "-U" "hfuse:r:hfuse-1.bin:r"
+13:34:54 Carpeta: C:\Users\kobac\AppData\Local\AutoFinalRobo2Loader\backups\mega-20261029-133454-2f402619
+13:34:54 avrdude.exe: Version 6.3-20190619
+13:34:54              Copyright (c) 2000-2005 Brian Dean, http://www.bdmicro.com/
+13:34:54              Copyright (c) 2007-2014 Joerg Wunsch
+13:34:54              System wide configuration file is "C:\Users\kobac\AppData\Local\Arduino15\packages\arduino\tools\avrdude\6.3.0-arduino17\etc\avrdude.conf"
+13:34:54              Using Port                    : COM8
+13:34:54              Using Programmer              : wiring
+13:34:54              Overriding Baud Rate          : 115200
+13:34:54              AVR Part                      : ATmega2560
+13:34:54              Chip Erase delay              : 9000 us
+13:34:54              PAGEL                         : PD7
+13:34:54              BS2                           : PA0
+13:34:54              RESET disposition             : dedicated
+13:34:54              RETRY pulse                   : SCK
+13:34:54              serial program mode           : yes
+13:34:54              parallel program mode         : yes
+13:34:54              Timeout                       : 200
+13:34:54              StabDelay                     : 100
+13:34:54              CmdexeDelay                   : 25
+13:34:54              SyncLoops                     : 32
+13:34:54              ByteDelay                     : 0
+13:34:54              PollIndex                     : 3
+13:34:54              PollValue                     : 0x53
+13:34:54              Memory Detail                 :
+13:34:54                                       Block Poll               Page                       Polled
+13:34:54                Memory Type Mode Delay Size  Indx Paged  Size   Size #Pages MinW  MaxW   ReadBack
+13:34:54                ----------- ---- ----- ----- ---- ------ ------ ---- ------ ----- ----- ---------
+13:34:54                eeprom        65    10     8    0 no       4096    8      0  9000  9000 0x00 0x00
+13:34:54                flash         65    10   256    0 yes    262144  256   1024  4500  4500 0x00 0x00
+13:34:54                lfuse          0     0     0    0 no          1    0      0  9000  9000 0x00 0x00
+13:34:54                hfuse          0     0     0    0 no          1    0      0  9000  9000 0x00 0x00
+13:34:54                efuse          0     0     0    0 no          1    0      0  9000  9000 0x00 0x00
+13:34:54                lock           0     0     0    0 no          1    0      0  9000  9000 0x00 0x00
+13:34:54                calibration    0     0     0    0 no          1    0      0     0     0 0x00 0x00
+13:34:54                signature      0     0     0    0 no          3    0      0     0     0 0x00 0x00
+13:34:54              Programmer Type : Wiring
+13:34:54              Description     : Wiring
+13:34:54              Programmer Model: AVRISP
+13:34:54              Hardware Version: 15
+13:34:54              Firmware Version Master : 2.10
+13:34:54              Vtarget         : 0.0 V
+13:34:54              SCK period      : 0.1 us
+13:34:54 avrdude.exe: AVR device initialized and ready to accept instructions
+13:34:54 Reading | ################################################## | 100% 0.01s
+13:34:54 avrdude.exe: Device signature = 0x1e9801 (probably m2560)
+13:34:54 avrdude.exe: safemode: lfuse reads as FF
+13:34:54 avrdude.exe: safemode: hfuse reads as D8
+13:34:54 avrdude.exe: safemode: efuse reads as FF
+13:34:54 avrdude.exe: reading flash memory:
+13:35:28 Reading | ################################################## | 100% 33.55s
+13:35:28 avrdude.exe: writing output file "read-1.bin"
+13:35:28 avrdude.exe: reading hfuse memory:
+13:35:28 Reading | ################################################## | 100% 0.00s
+13:35:28 avrdude.exe: writing output file "hfuse-1.bin"
+13:35:28 avrdude.exe: safemode: lfuse reads as FF
+13:35:28 avrdude.exe: safemode: hfuse reads as D8
+13:35:28 avrdude.exe: safemode: efuse reads as FF
+13:35:28 avrdude.exe: safemode: Fuses OK (E:FF, H:D8, L:FF)
+13:35:28 avrdude.exe done.  Thank you.
+13:35:28 Código de salida: 0
+13:35:28 > "C:\Users\kobac\AppData\Local\Arduino15\packages\arduino\tools\avrdude\6.3.0-arduino17\bin\avrdude.exe" "-C" "C:\Users\kobac\AppData\Local\Arduino15\packages\arduino\tools\avrdude\6.3.0-arduino17\etc\avrdude.conf" "-v" "-n" "-D" "-p" "atmega2560" "-c" "wiring" "-P" "COM8" "-b" "115200" "-U" "flash:r:read-2.bin:r" "-U" "hfuse:r:hfuse-2.bin:r"
+13:35:28 Carpeta: C:\Users\kobac\AppData\Local\AutoFinalRobo2Loader\backups\mega-20261029-133454-2f402619
+13:35:28 avrdude.exe: Version 6.3-20190619
+13:35:28              Copyright (c) 2000-2005 Brian Dean, http://www.bdmicro.com/
+13:35:28              Copyright (c) 2007-2014 Joerg Wunsch
+13:35:28              System wide configuration file is "C:\Users\kobac\AppData\Local\Arduino15\packages\arduino\tools\avrdude\6.3.0-arduino17\etc\avrdude.conf"
+13:35:28              Using Port                    : COM8
+13:35:28              Using Programmer              : wiring
+13:35:28              Overriding Baud Rate          : 115200
+13:35:28              AVR Part                      : ATmega2560
+13:35:28              Chip Erase delay              : 9000 us
+13:35:28              PAGEL                         : PD7
+13:35:28              BS2                           : PA0
+13:35:28              RESET disposition             : dedicated
+13:35:28              RETRY pulse                   : SCK
+13:35:28              serial program mode           : yes
+13:35:28              parallel program mode         : yes
+13:35:28              Timeout                       : 200
+13:35:28              StabDelay                     : 100
+13:35:28              CmdexeDelay                   : 25
+13:35:28              SyncLoops                     : 32
+13:35:28              ByteDelay                     : 0
+13:35:28              PollIndex                     : 3
+13:35:28              PollValue                     : 0x53
+13:35:28              Memory Detail                 :
+13:35:28                                       Block Poll               Page                       Polled
+13:35:28                Memory Type Mode Delay Size  Indx Paged  Size   Size #Pages MinW  MaxW   ReadBack
+13:35:28                ----------- ---- ----- ----- ---- ------ ------ ---- ------ ----- ----- ---------
+13:35:28                eeprom        65    10     8    0 no       4096    8      0  9000  9000 0x00 0x00
+13:35:28                flash         65    10   256    0 yes    262144  256   1024  4500  4500 0x00 0x00
+13:35:28                lfuse          0     0     0    0 no          1    0      0  9000  9000 0x00 0x00
+13:35:28                hfuse          0     0     0    0 no          1    0      0  9000  9000 0x00 0x00
+13:35:28                efuse          0     0     0    0 no          1    0      0  9000  9000 0x00 0x00
+13:35:28                lock           0     0     0    0 no          1    0      0  9000  9000 0x00 0x00
+13:35:28                calibration    0     0     0    0 no          1    0      0     0     0 0x00 0x00
+13:35:28                signature      0     0     0    0 no          3    0      0     0     0 0x00 0x00
+13:35:28              Programmer Type : Wiring
+13:35:28              Description     : Wiring
+13:35:28              Programmer Model: AVRISP
+13:35:28              Hardware Version: 15
+13:35:28              Firmware Version Master : 2.10
+13:35:28              Vtarget         : 0.0 V
+13:35:28              SCK period      : 0.1 us
+13:35:28 avrdude.exe: AVR device initialized and ready to accept instructions
+13:35:28 Reading | ################################################## | 100% 0.01s
+13:35:28 avrdude.exe: Device signature = 0x1e9801 (probably m2560)
+13:35:28 avrdude.exe: safemode: lfuse reads as FF
+13:35:28 avrdude.exe: safemode: hfuse reads as D8
+13:35:28 avrdude.exe: safemode: efuse reads as FF
+13:35:28 avrdude.exe: reading flash memory:
+13:36:02 Reading | ################################################## | 100% 33.56s
+13:36:02 avrdude.exe: writing output file "read-2.bin"
+13:36:02 avrdude.exe: reading hfuse memory:
+13:36:02 Reading | ################################################## | 100% -0.00s
+13:36:02 avrdude.exe: writing output file "hfuse-2.bin"
+13:36:02 avrdude.exe: safemode: lfuse reads as FF
+13:36:02 avrdude.exe: safemode: hfuse reads as D8
+13:36:02 avrdude.exe: safemode: efuse reads as FF
+13:36:02 avrdude.exe: safemode: Fuses OK (E:FF, H:D8, L:FF)
+13:36:02 avrdude.exe done.  Thank you.
+13:36:02 Código de salida: 0
+13:36:02 Backup ATmega leído y contrastado. Aplicación recuperable: 253952 bytes. No incluye EEPROM; no se escribieron fuses.
+13:36:02 Último backup: C:\Users\kobac\AppData\Local\AutoFinalRobo2Loader\backups\mega-20261029-133454-2f402619\backup.json | aplicación SHA-256 71279f426befbb354fc8a991ca4dd2a66479ef514077ce6cf76b80830be6457c
+13:36:02 Backup leído del Mega: C:\Users\kobac\AppData\Local\AutoFinalRobo2Loader\backups\mega-20261029-133454-2f402619\backup.json
+13:36:02 Confirmación manual omitida por autorización de sesión: Escribir flasher en ATmega
+D:\ProyectoRobotica2\AutoFinalRobo2-Atmega\build\afr2-esp-bridge-115200.hex
+2308 bytes | SHA-256 0940be1a3d420d541590d1d952f2ce098761c85c27080ba93cf090e69b61f717
+
+Backup leído del Mega: C:\Users\kobac\AppData\Local\AutoFinalRobo2Loader\backups\mega-20261029-133454-2f402619\backup.json
+Se grabará/verificará solo la aplicación, sin fuses ni EEPROM.
+Confirmo reemplazar temporalmente el programa del auto. D18/D19 DESCONECTADOS, RESET Mega libre y potencia de actuadores desconectada.
+13:36:02 Cargando aplicación ATmega por bootloader. RESET libre; auto-reset solicitado por avrdude.
+13:36:02 > "C:\Users\kobac\AppData\Local\Arduino15\packages\arduino\tools\avrdude\6.3.0-arduino17\bin\avrdude.exe" "-C" "C:\Users\kobac\AppData\Local\Arduino15\packages\arduino\tools\avrdude\6.3.0-arduino17\etc\avrdude.conf" "-v" "-p" "atmega2560" "-c" "wiring" "-P" "COM8" "-b" "115200" "-D" "-U" "flash:w:afr2-esp-bridge-115200.hex:i"
+13:36:02 Carpeta: D:\ProyectoRobotica2\AutoFinalRobo2-Atmega\build
+13:36:02 avrdude.exe: Version 6.3-20190619
+13:36:02              Copyright (c) 2000-2005 Brian Dean, http://www.bdmicro.com/
+13:36:02              Copyright (c) 2007-2014 Joerg Wunsch
+13:36:02              System wide configuration file is "C:\Users\kobac\AppData\Local\Arduino15\packages\arduino\tools\avrdude\6.3.0-arduino17\etc\avrdude.conf"
+13:36:02              Using Port                    : COM8
+13:36:02              Using Programmer              : wiring
+13:36:02              Overriding Baud Rate          : 115200
+13:36:02              AVR Part                      : ATmega2560
+13:36:02              Chip Erase delay              : 9000 us
+13:36:02              PAGEL                         : PD7
+13:36:02              BS2                           : PA0
+13:36:02              RESET disposition             : dedicated
+13:36:02              RETRY pulse                   : SCK
+13:36:02              serial program mode           : yes
+13:36:02              parallel program mode         : yes
+13:36:02              Timeout                       : 200
+13:36:02              StabDelay                     : 100
+13:36:02              CmdexeDelay                   : 25
+13:36:02              SyncLoops                     : 32
+13:36:02              ByteDelay                     : 0
+13:36:02              PollIndex                     : 3
+13:36:02              PollValue                     : 0x53
+13:36:02              Memory Detail                 :
+13:36:02                                       Block Poll               Page                       Polled
+13:36:02                Memory Type Mode Delay Size  Indx Paged  Size   Size #Pages MinW  MaxW   ReadBack
+13:36:02                ----------- ---- ----- ----- ---- ------ ------ ---- ------ ----- ----- ---------
+13:36:02                eeprom        65    10     8    0 no       4096    8      0  9000  9000 0x00 0x00
+13:36:02                flash         65    10   256    0 yes    262144  256   1024  4500  4500 0x00 0x00
+13:36:02                lfuse          0     0     0    0 no          1    0      0  9000  9000 0x00 0x00
+13:36:02                hfuse          0     0     0    0 no          1    0      0  9000  9000 0x00 0x00
+13:36:02                efuse          0     0     0    0 no          1    0      0  9000  9000 0x00 0x00
+13:36:02                lock           0     0     0    0 no          1    0      0  9000  9000 0x00 0x00
+13:36:02                calibration    0     0     0    0 no          1    0      0     0     0 0x00 0x00
+13:36:02                signature      0     0     0    0 no          3    0      0     0     0 0x00 0x00
+13:36:02              Programmer Type : Wiring
+13:36:02              Description     : Wiring
+13:36:02              Programmer Model: AVRISP
+13:36:02              Hardware Version: 15
+13:36:02              Firmware Version Master : 2.10
+13:36:02              Vtarget         : 0.0 V
+13:36:02              SCK period      : 0.1 us
+13:36:02 avrdude.exe: AVR device initialized and ready to accept instructions
+13:36:02 Reading | ################################################## | 100% 0.01s
+13:36:02 avrdude.exe: Device signature = 0x1e9801 (probably m2560)
+13:36:02 avrdude.exe: safemode: lfuse reads as FF
+13:36:03 avrdude.exe: safemode: hfuse reads as D8
+13:36:03 avrdude.exe: safemode: efuse reads as FF
+13:36:03 avrdude.exe: reading input file "afr2-esp-bridge-115200.hex"
+13:36:03 avrdude.exe: writing flash (816 bytes):
+13:36:03 Writing | ################################################## | 100% 0.17s
+13:36:03 avrdude.exe: 816 bytes of flash written
+13:36:03 avrdude.exe: verifying flash memory against afr2-esp-bridge-115200.hex:
+13:36:03 avrdude.exe: load data flash data from input file afr2-esp-bridge-115200.hex:
+13:36:03 avrdude.exe: input file afr2-esp-bridge-115200.hex contains 816 bytes
+13:36:03 avrdude.exe: reading on-chip flash data:
+13:36:03 Reading | ################################################## | 100% 0.13s
+13:36:03 avrdude.exe: verifying ...
+13:36:03 avrdude.exe: 816 bytes of flash verified
+13:36:03 avrdude.exe: safemode: lfuse reads as FF
+13:36:03 avrdude.exe: safemode: hfuse reads as D8
+13:36:03 avrdude.exe: safemode: efuse reads as FF
+13:36:03 avrdude.exe: safemode: Fuses OK (E:FF, H:D8, L:FF)
+13:36:03 avrdude.exe done.  Thank you.
+13:36:03 Código de salida: 0
+13:36:03 Flasher temporal ATmega escrito y verificado a 115200. Falta detectar el ESP; al terminar usá Flashear Firmware ATmega o Flashear último backup.
+13:36:03 Conexión visible cambiada a flasher por software y baudios esptool alineados. Guardá el perfil si querés conservarlo. Falta consultar la ROM ESP.
+13:36:03 Completado: install_mega_flasher
+13:36:03 Servicio temporal: RESET Mega LIBRE, D18→E_RX / E_TX→D19. El Mega aún ejecuta el flasher; restaurar el firmware del auto antes de operar.
+13:36:03 Registro: C:\Users\kobac\AppData\Local\AutoFinalRobo2Loader\logs\20261029-133453-585-a6d2a8.txt | Resumen: .json

@@ -62,6 +62,8 @@
 .afr2-network-pill[data-mode=sta] {color:var(--success);background:var(--success-subtle);border-color:var(--success-border)}
 .afr2-network-pill[data-mode=ap] {color:var(--warning);background:var(--warning-subtle);border-color:var(--warning-border)}
 .afr2-network-pill:active {transform:scale(.97)}.afr2-network-pill:focus-visible {outline:2px solid var(--action);outline-offset:3px;transition:none}
+.afr2-battery-pill > strong {font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.afr2-battery-pill[data-fresh=true] {color:var(--text-strong)}
 .afr2-network-details {display:grid;gap:0;margin:0}.afr2-network-details > div {display:flex;justify-content:space-between;gap:1rem;padding:.75rem 0;border-bottom:1px solid var(--border-subtle)}
 .afr2-network-details dt {color:var(--text-muted)}.afr2-network-details dd {margin:0;text-align:right;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
 @media(max-width:600px){.afr2-sensor-panel {padding:1rem}.afr2-ir-readings {gap:.4rem}.afr2-ir-bar {height:7rem}.afr2-wheel-readings {grid-template-columns:repeat(2,minmax(0,1fr))}.afr2-network-pill > small {display:none}.afr2-network-pill > span {max-width:8rem}}

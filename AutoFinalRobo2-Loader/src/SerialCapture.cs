@@ -22,7 +22,7 @@ namespace AFR2Loader
         public bool Header;
         public int Weight { get { return Bytes.Length + Text.Length; } }
     }
-    // One worker owns the port and all capture streams. UI never closes a port during Read.
+    // One worker owns reads, queued writes and logs. UI never opens a second handle.
     public sealed class SerialCapture
     {
         readonly object gate = new object();
@@ -30,6 +30,9 @@ namespace AFR2Loader
         readonly TaskCompletionSource<bool> opened = new TaskCompletionSource<bool>();
         readonly ConcurrentQueue<SerialDisplayChunk> display = new ConcurrentQueue<SerialDisplayChunk>();
         readonly Action<LoaderNotice> notify;
+        sealed class PendingWrite { public byte[] Bytes; public CancellationToken Token; public TaskCompletionSource<bool> Done = new TaskCompletionSource<bool>(); }
+        readonly ConcurrentQueue<PendingWrite> writes = new ConcurrentQueue<PendingWrite>();
+        long transmitted;
         readonly Encoding encoding;
         readonly JobState journal;
         Task worker;
@@ -52,6 +55,17 @@ namespace AFR2Loader
             Prefix = Path.Combine(Profile.UserRoot, "logs", "serial-" + DateTime.Now.ToString("yyyyMMdd-HHmmss-fff") + "-" + Id.Substring(0, 6));
         }
         public bool Active { get { lock (gate) return !released; } }
+        public Task SendAsync(byte[] data, CancellationToken token)
+        {
+            if (data == null || data.Length == 0 || data.Length > 65536) throw new ArgumentException("Envío: entre 1 y 65536 bytes.");
+            token.ThrowIfCancellationRequested();
+            lock (gate)
+            {
+                if (released || state != "open" || stop.IsCancellationRequested) throw new InvalidOperationException("Abrí el puerto del monitor antes de enviar.");
+                if (writes.Count >= 16) throw new InvalidOperationException("Hay demasiados envíos pendientes.");
+                var request = new PendingWrite { Bytes = (byte[])data.Clone(), Token = token }; writes.Enqueue(request); return request.Done.Task;
+            }
+        }
         public string State { get { lock (gate) return state; } }
         public SerialViewState ViewState() { lock (gate) return new SerialViewState { Observed = observed, Bytes = bytes, Skipped = skippedCharacters, SkippedBytes = skippedBytes }; }
         public Task OpenAsync()
@@ -81,7 +95,7 @@ namespace AFR2Loader
         {
             lock (gate) { journal.Status = state; journal.Stage = observed; journal.Result = errorText; journal.Ended = ended; journal.LogPath = Prefix + ".rx.txt"; }
             lock (gate) return new { id = Id, state = state, port = Port, baud = Baud, codec = Codec, framing = "8N1", dtr = false, rts = false,
-                bytesReceived = bytes, started = Started, ended = ended, observed = observed, error = errorText,
+                bytesReceived = bytes, bytesSent = transmitted, transmitLog = Prefix + ".tx.txt", transmitBinary = Prefix + ".tx.bin", started = Started, ended = ended, observed = observed, error = errorText,
                 portReleased = released, skippedDisplayCharacters = skippedCharacters, skippedDisplayBytes = skippedBytes,
                 textLog = Prefix + ".rx.txt", binaryLog = Prefix + ".rx.bin", eventsLog = Prefix + ".events.txt", report = Prefix + ".json",
                 received = journal.Snapshot(cursor, limit) };
@@ -122,23 +136,65 @@ namespace AFR2Loader
         }
         void ReadLoop()
         {
-            SerialPort serial = null; FileStream binary = null; StreamWriter transcript = null, events = null;
+            SerialPort serial = null; FileStream binary = null, transmitBinary = null; StreamWriter transcript = null, events = null, transmitText = null;
             try
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(Prefix));
                 binary = new FileStream(Prefix + ".rx.bin", FileMode.CreateNew, FileAccess.Write, FileShare.Read);
                 transcript = new StreamWriter(Prefix + ".rx.txt", false, new UTF8Encoding(false)) { AutoFlush = true };
                 events = new StreamWriter(Prefix + ".events.txt", false, new UTF8Encoding(false)) { AutoFlush = true };
-                Event("opening", "Abriendo " + Port + " a " + Baud + " baudios, " + Codec + ", 8N1.", "DTR/RTS inactivos; un driver puede afectar reset al abrir. Solo lectura.", events);
-                serial = new SerialPort(Port, Baud, Parity.None, 8, StopBits.One) { Handshake = Handshake.None, DtrEnable = false, RtsEnable = false, ReadTimeout = 200 };
+                Event("opening", "Abriendo " + Port + " a " + Baud + " baudios, " + Codec + ", 8N1.", "DTR/RTS inactivos; un driver puede afectar reset al abrir. Recepción activa; envío solo por acción explícita del usuario.", events);
+                serial = new SerialPort(Port, Baud, Parity.None, 8, StopBits.One) { Handshake = Handshake.None, DtrEnable = false, RtsEnable = false, ReadTimeout = 100, WriteTimeout = 2000 };
                 stop.Token.ThrowIfCancellationRequested(); serial.Open();
                 lock (gate) state = "open";
-                Event("open", "Puerto abierto; esperando texto. No se envían comandos.", Prefix + ".rx.txt", events);
+                Event("open", "Puerto abierto; recepción activa. Envío manual disponible.", Prefix + ".rx.txt", events);
                 opened.TrySetResult(true);
                 Decoder decoder = encoding.GetDecoder(); var buffer = new byte[4096]; var characters = new char[encoding.GetMaxCharCount(buffer.Length)];
                 var observer = new BootObserver();
                 while (!stop.IsCancellationRequested)
                 {
+                    PendingWrite request;
+                    while (!stop.IsCancellationRequested && writes.TryDequeue(out request))
+                    {
+                        if (request.Token.IsCancellationRequested) { request.Done.TrySetCanceled(); continue; }
+                        int written = 0;
+                        try
+                        {
+                            if (transmitBinary == null) { transmitBinary = new FileStream(Prefix + ".tx.bin", FileMode.CreateNew, FileAccess.Write, FileShare.Read); transmitText = new StreamWriter(Prefix + ".tx.txt", false, new UTF8Encoding(false)) { AutoFlush = true }; }
+                            string hex = BitConverter.ToString(request.Bytes).Replace('-', ' ');
+                            transmitText.WriteLine(DateTimeOffset.Now.ToString("o") + " [requested] " + hex);
+                            int chunk = Math.Max(1, Math.Min(256, Baud / 100));
+                            while (written < request.Bytes.Length)
+                            {
+                                stop.Token.ThrowIfCancellationRequested(); request.Token.ThrowIfCancellationRequested();
+                                int chunkBytes = Math.Min(chunk, request.Bytes.Length - written);
+                                serial.WriteTimeout = 2000; serial.Write(request.Bytes, written, chunkBytes);
+                                transmitBinary.Write(request.Bytes, written, chunkBytes); transmitBinary.Flush(); written += chunkBytes;
+                                lock (gate) transmitted += chunkBytes;
+                                if (serial.BytesToRead > 0)
+                                {
+                                    int rxCount = serial.Read(buffer, 0, buffer.Length);
+                                    lock (gate) bytes += rxCount;
+                                    binary.Write(buffer, 0, rxCount); binary.Flush();
+                                    int rxLength = decoder.GetChars(buffer, 0, rxCount, characters, 0, false);
+                                    var rxRaw = new byte[rxCount]; Buffer.BlockCopy(buffer, 0, rxRaw, 0, rxCount);
+                                    ReceiveText(new String(characters, 0, rxLength), rxRaw, transcript, events, observer);
+                                }
+                            }
+                            transmitText.WriteLine(DateTimeOffset.Now.ToString("o") + " [written] " + request.Bytes.Length + " bytes; no acredita recepción por el dispositivo.");
+                            Event("transmitted", "TX " + request.Bytes.Length + " bytes", hex, events); request.Done.TrySetResult(true);
+                        }
+                        catch (OperationCanceledException)
+                        {
+                            if (transmitText != null) transmitText.WriteLine(DateTimeOffset.Now.ToString("o") + " [cancelled] " + written + " bytes aceptados por el puerto de " + request.Bytes.Length);
+                            request.Done.TrySetCanceled();
+                        }
+                        catch (Exception error) {
+                            request.Done.TrySetException(error);
+                            if (transmitText != null) transmitText.WriteLine(DateTimeOffset.Now.ToString("o") + " [failed] " + written + " bytes confirmados por Write; el bloque que falló puede haber salido parcialmente.");
+                            throw;
+                        }
+                    }
                     int count;
                     try { count = serial.Read(buffer, 0, buffer.Length); }
                     catch (TimeoutException) { continue; }
@@ -153,7 +209,7 @@ namespace AFR2Loader
                 ReceiveText(new String(characters, 0, remaining), new byte[0], transcript, events, observer);
             }
             catch (OperationCanceledException) { opened.TrySetCanceled(); }
-            catch (Exception error) { Failure(error, "Falló la lectura/apertura o el registro serie", events); opened.TrySetException(error); }
+            catch (Exception error) { Failure(error, "Falló la captura, el envío o el registro serie", events); opened.TrySetException(error); }
             finally
             {
                 bool portClosed = serial == null;
@@ -165,7 +221,8 @@ namespace AFR2Loader
                 if (events != null)
                     try { events.WriteLine(DateTimeOffset.Now.ToString("o") + (portClosed ? " [closed] " : " [release_unconfirmed] ") + closeReason); }
                     catch (Exception error) { Failure(error, "Falló el registro del cierre"); }
-                foreach (IDisposable stream in new IDisposable[] { binary, transcript, events })
+                PendingWrite pendingWrite; while (writes.TryDequeue(out pendingWrite)) pendingWrite.Done.TrySetCanceled();
+                foreach (IDisposable stream in new IDisposable[] { binary, transcript, transmitBinary, transmitText, events })
                     if (stream != null) { try { stream.Dispose(); } catch (Exception error) { Failure(error, "Falló el cierre del registro serie"); } }
                 lock (gate) { released = portClosed; if (state != "failed") state = "closed"; ended = DateTimeOffset.Now.ToString("o"); }
                 try { File.WriteAllText(Prefix + ".json", new JavaScriptSerializer().Serialize(Snapshot(0, 1)), new UTF8Encoding(false)); }

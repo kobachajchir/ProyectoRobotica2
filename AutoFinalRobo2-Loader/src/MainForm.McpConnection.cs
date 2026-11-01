@@ -26,53 +26,62 @@ namespace AFR2Loader
         bool mcpTestExpired;
         int mcpConnectionTick;
 
+        readonly Label mcpConnectorState = new Label { AutoSize = true, Dock = DockStyle.Top, Font = new Font("Segoe UI", 12, FontStyle.Bold) };
         Control CreateMcpServerPanel()
         {
-            var panel = new TableLayoutPanel { Dock = DockStyle.Top, AutoSize = true, ColumnCount = 1, RowCount = 6, Margin = new Padding(0, 0, 0, 8) };
-            panel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
-            for (int i = 0; i < panel.RowCount; i++) panel.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-            panel.Controls.Add(new Label { Text = "Estado del servidor MCP", AutoSize = true, Dock = DockStyle.Top, Font = new Font(Font, FontStyle.Bold) }, 0, 0);
-            panel.Controls.Add(mcpServerState, 0, 1);
-            panel.Controls.Add(new Label { Text = "Transporte: stdio · Canal local de Windows: " + LocalBridge.PipeName, AutoSize = true, Dock = DockStyle.Top, Margin = new Padding(3, 4, 3, 4) }, 0, 2);
-            var actions = new FlowLayoutPanel { Dock = DockStyle.Top, AutoSize = true };
-            var test = new Button { Text = "Ejecutar prueba", Width = 160, Height = 32 };
-            test.Click += (s, e) => StartMcpConnectionTest(); actions.Controls.Add(test); panel.Controls.Add(actions, 0, 3);
-            mcpTestPanel = new TableLayoutPanel { Dock = DockStyle.Top, AutoSize = true, ColumnCount = 1, RowCount = 3, Visible = false, Margin = new Padding(0, 4, 0, 8) };
-            mcpTestPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
-            for (int i = 0; i < 3; i++) mcpTestPanel.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-            mcpTestPanel.Controls.Add(new Label { Text = "Instrucción para ejecutar en el chat de Codex", AutoSize = true, Dock = DockStyle.Top }, 0, 0);
-            mcpTestPanel.Controls.Add(mcpTestCommand, 0, 1);
-            var copy = new Button { Text = "Copiar instrucción de prueba", Width = 240, Height = 32 };
-            copy.Click += (s, e) => CopyText(mcpTestCommand.Text, copy); mcpTestPanel.Controls.Add(copy, 0, 2);
-            EnableTextCopyFeedback(mcpTestCommand); panel.Controls.Add(mcpTestPanel, 0, 4); panel.Controls.Add(mcpTestResult, 0, 5);
-            timer.Tick += (s, e) => { if (++mcpConnectionTick % 10 == 0) UpdateMcpServerState(); };
-            UpdateMcpServerState(); return panel;
+            var panel = new TableLayoutPanel { Dock = DockStyle.Top, AutoSize = true, ColumnCount = 1, RowCount = 6, Padding = new Padding(UiInset), Margin = new Padding(0, 0, 0, 16), BackColor = Color.White };
+            panel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100)); for (int i = 0; i < 6; i++) panel.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+            panel.Controls.Add(new Label { Text = "Estado de MCP", AutoSize = true, Font = new Font(Font, FontStyle.Bold), Margin = new Padding(0, 0, 0, 8) }, 0, 0);
+            panel.Controls.Add(mcpConnectorState, 0, 1); panel.Controls.Add(mcpServerState, 0, 2);
+            panel.Controls.Add(new Label { Text = "Transporte: stdio · Canal local de Windows: " + LocalBridge.PipeName, AutoSize = true, MaximumSize = new Size(990, 0), Margin = new Padding(0, 8, 0, 8) }, 0, 3);
+            var actions = UiRow(); var test = new ActionButton { Text = "Ejecutar prueba", Width = 185 }; test.Click += (s, e) => StartMcpConnectionTest(); actions.Controls.Add(test);
+            mcpTestResult.Dock = DockStyle.None; mcpTestResult.MaximumSize = new Size(700, 0); mcpTestResult.Margin = new Padding(16, 9, 0, 0); actions.Controls.Add(mcpTestResult); panel.Controls.Add(actions, 0, 4);
+            mcpTestPanel = new TableLayoutPanel { Dock = DockStyle.Top, AutoSize = true, ColumnCount = 1, RowCount = 3, Visible = false, Margin = new Padding(0, 8, 0, 0) };
+            mcpTestPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100)); for (int i = 0; i < 3; i++) mcpTestPanel.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+            mcpTestPanel.Controls.Add(new Label { Text = "Instrucción de prueba para Codex", AutoSize = true }, 0, 0); mcpTestPanel.Controls.Add(mcpTestCommand, 0, 1);
+            var copy = new ActionButton { Text = "Copiar instrucción de prueba", Width = 280 }; copy.Click += (s, e) => CopyText(mcpTestCommand.Text, copy); mcpTestPanel.Controls.Add(copy, 0, 2);
+            mcpTestCommand.ForeColor = Color.Firebrick; mcpTestCommand.BackColor = Color.FromArgb(255, 240, 241);
+            EnableTextCopyFeedback(mcpTestCommand); panel.Controls.Add(mcpTestPanel, 0, 5);
+            timer.Tick += (s, e) => { if (++mcpConnectionTick % 10 == 0) UpdateMcpServerState(); }; UpdateMcpServerState(); return panel;
         }
-
         Control CreateMcpRegistrationPanel()
         {
-            var panel = new TableLayoutPanel { Dock = DockStyle.Top, AutoSize = true, ColumnCount = 1, RowCount = 4, Margin = new Padding(0, 0, 0, 8) };
-            panel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
-            for (int i = 0; i < 4; i++) panel.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-            panel.Controls.Add(new Label { Text = "Comando para añadir servidor MCP", AutoSize = true, Dock = DockStyle.Top, Font = new Font(Font, FontStyle.Bold) }, 0, 0);
-            string command = "codex mcp add afr2-loader -- powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File \"" + Path.Combine(appDir, "Mcp.ps1") + "\"";
-            var text = new TextBox { Dock = DockStyle.Top, Text = command, ReadOnly = true, Multiline = true, BackColor = Color.White, Height = 52, ScrollBars = ScrollBars.Vertical, TabStop = false };
+            var root = new TableLayoutPanel { Dock = DockStyle.Top, AutoSize = true, ColumnCount = 1, RowCount = 2, Margin = new Padding(0, 0, 0, 16) };
+            root.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100)); root.RowStyles.Add(new RowStyle(SizeType.AutoSize)); root.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+            var toggle = new ActionButton { Text = "Mostrar prompt agregar MCP", Width = 340 };
+            var panel = new TableLayoutPanel { Dock = DockStyle.Top, AutoSize = true, ColumnCount = 1, RowCount = 4, Visible = false, Padding = new Padding(UiInset), BackColor = Color.White };
+            panel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100)); for (int i = 0; i < 4; i++) panel.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+            panel.Controls.Add(new Label { Text = "Prompt para añadir el servidor MCP en cualquier IA", AutoSize = true, Font = new Font(Font, FontStyle.Bold) }, 0, 0);
+            string configuration = new JavaScriptSerializer().Serialize(new { mcpServers = new Dictionary<string, object> { { "afr2-loader", new { command = "powershell.exe", args = new[] { "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-File", Path.Combine(appDir, "Mcp.ps1") } } } } });
+            string command = "Configurá en tu cliente de IA este servidor MCP local de Windows. Nombre: afr2-loader. Transporte: stdio (sin URL HTTP ni credenciales). Usá el siguiente comando y argumentos, adaptando solo el formato de configuración a tu cliente:\r\n\r\n" + configuration + "\r\n\r\nLa ventana AFR2 Loader debe estar abierta en la misma PC y usuario. El servidor comparte esa ventana mediante un canal local. Registrarlo no demuestra conexión: reconectá el cliente y pedime el prompt generado por Ejecutar prueba. No abras COM, no compiles firmware, no flashees ni actives autoaceptación para configurar o comprobar la conexión. Si tu cliente no admite servidores stdio locales, explicá esa limitación y no inventes una URL.";
+            var text = new TextBox { Dock = DockStyle.Top, Text = command, ForeColor = Color.Firebrick, ReadOnly = true, Multiline = true, BackColor = Color.FromArgb(255, 240, 241), Height = 210, ScrollBars = ScrollBars.Vertical, TabStop = false };
             panel.Controls.Add(text, 0, 1); EnableTextCopyFeedback(text);
-            var copy = new Button { Text = "Copiar comando para añadir servidor MCP", Width = 335, Height = 32 };
-            copy.Click += (s, e) => CopyText(command, copy); panel.Controls.Add(copy, 0, 2);
-            panel.Controls.Add(new Label { Text = "Ejecutá este comando en PowerShell y reconectá el servidor en Codex. Luego usá Ejecutar prueba y pegá la instrucción en el chat.", AutoSize = true, Dock = DockStyle.Top }, 0, 3);
-            return panel;
+            var copy = new ActionButton { Text = "Copiar prompt", Width = 185 }; copy.Click += (s, e) => CopyText(command, copy); panel.Controls.Add(copy, 0, 2);
+            panel.Controls.Add(new Label { Text = "Pegá este prompt en la IA que quieras configurar. Después reconectá el servidor y usá Ejecutar prueba para generar un prompt de conexión de esta sesión.", AutoSize = true, MaximumSize = new Size(950, 0) }, 0, 3);
+            toggle.Click += (s, e) => { panel.Visible = !panel.Visible; toggle.Text = panel.Visible ? "Ocultar prompt agregar MCP" : "Mostrar prompt agregar MCP"; };
+            root.Controls.Add(toggle, 0, 0); root.Controls.Add(panel, 0, 1); return root;
         }
-
         void StartMcpConnectionTest()
         {
             pendingMcpTestId = Guid.NewGuid().ToString("N");
             mcpTestDeadlineUtc = DateTime.UtcNow.AddMinutes(5); mcpTestExpired = false;
             string arguments = new JavaScriptSerializer().Serialize(new { sessionId = sessionId, testId = pendingMcpTestId });
             mcpTestCommand.Text = "En el servidor MCP afr2-loader, ejecutá loader_connection_test con estos argumentos: " + arguments + ". Informá el resultado que devuelva. Esta prueba solo comprueba la conexión con la ventana; no abras puertos ni solicites operaciones. Si la herramienta no aparece, reconectá el servidor MCP en Codex.";
-            mcpTestCommand.Select(0, 0); mcpTestPanel.Visible = true;
+            mcpTestCommand.Select(0, 0); mcpTestPanel.Visible = true; ShowMcpTestPrompt();
             UpdateMcpServerState();
             Log("Prueba de conexión MCP preparada; esperando la instrucción desde Codex.");
+        }
+        void ShowMcpTestPrompt()
+        {
+            using (var dialog = new Form { Text = "Prompt para probar la conexión en Codex", Size = new Size(800, 430), Font = Font, StartPosition = FormStartPosition.CenterParent }) {
+                var layout = new TableLayoutPanel { Dock = DockStyle.Fill, Padding = new Padding(16), ColumnCount = 1, RowCount = 3 };
+                layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 46)); layout.RowStyles.Add(new RowStyle(SizeType.Percent, 100)); layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 48));
+                layout.Controls.Add(new Label { Text = "Copiá este prompt en Codex. Usa la sesión y el identificador de prueba actuales; vence en cinco minutos.", Dock = DockStyle.Fill }, 0, 0);
+                var text = new TextBox { Text = mcpTestCommand.Text, ForeColor = Color.Firebrick, BackColor = Color.FromArgb(255, 240, 241), ReadOnly = true, Multiline = true, ScrollBars = ScrollBars.Vertical, Dock = DockStyle.Fill };
+                EnableTextCopyFeedback(text); layout.Controls.Add(text, 0, 1);
+                var copy = new ActionButton { Text = "Copiar prompt de prueba", Width = 270, Anchor = AnchorStyles.Right }; copy.Click += (s, e) => CopyText(text.Text, copy); layout.Controls.Add(copy, 0, 2);
+                dialog.Controls.Add(layout); ShowStyledDialog(dialog);
+            }
         }
 
         string ObserveMcpClient(Dictionary<string, object> request)
@@ -135,6 +144,8 @@ namespace AFR2Loader
         {
             if (pendingMcpTestId != null && DateTime.UtcNow > mcpTestDeadlineUtc) { pendingMcpTestId = null; mcpTestExpired = true; }
             bool connected = VerifiedMcpClientAlive();
+            mcpConnectorState.Text = bridge != null ? "Conector MCP activado" : "Conector MCP iniciando";
+            mcpConnectorState.ForeColor = bridge != null ? Color.FromArgb(24, 107, 66) : Color.FromArgb(87, 99, 112);
             if (pendingMcpTestId != null)
             {
                 mcpServerState.Text = "Esperando prueba desde Codex"; mcpServerState.ForeColor = Color.FromArgb(140, 83, 0);
@@ -142,18 +153,18 @@ namespace AFR2Loader
             }
             else if (connected)
             {
-                mcpServerState.Text = "Servidor MCP conectado"; mcpServerState.ForeColor = Color.FromArgb(24, 107, 66);
+                mcpServerState.Text = "Conexión comprobada"; mcpServerState.ForeColor = Color.FromArgb(24, 107, 66);
                 mcpTestResult.Text = (mcpTestExpired ? "Nueva prueba vencida sin respuesta. " : "") + "Última prueba correcta: " + mcpVerifiedUtc.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss") + " · " + mcpPeers[verifiedMcpClientId].Name;
             }
             else if (verifiedMcpClientId != null)
             {
-                mcpServerState.Text = "Servidor MCP desconectado"; mcpServerState.ForeColor = Color.FromArgb(164, 40, 40);
+                mcpServerState.Text = "Conexión cerrada / cliente sin respuesta"; mcpServerState.ForeColor = Color.FromArgb(164, 40, 40);
                 mcpTestResult.Text = "El cliente cerró o dejó de responder. Última prueba correcta: " + mcpVerifiedUtc.ToLocalTime().ToString("HH:mm:ss") + ". Reconectá el servidor y ejecutá otra prueba.";
             }
             else
             {
                 bool detected = mcpPeers.Values.Any(p => (DateTime.UtcNow - p.SeenUtc).TotalSeconds <= 30);
-                mcpServerState.Text = detected ? "Servidor MCP activado · conexión sin comprobar" : "Servidor MCP sin conexión comprobada";
+                mcpServerState.Text = detected ? "Cliente detectado · conexión sin comprobar" : "Conexión sin comprobar";
                 mcpServerState.ForeColor = Color.FromArgb(87, 99, 112);
                 mcpTestResult.Text = mcpTestExpired ? "No se recibió una respuesta válida a tiempo. Ejecutá otra prueba; comprobá que Codex haya reconectado este servidor." : "Ejecutá una prueba desde Codex para comprobar la conexión con esta ventana.";
             }

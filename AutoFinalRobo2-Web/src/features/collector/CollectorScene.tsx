@@ -1,6 +1,8 @@
-import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { frameModel } from '../../components/three/frameModel';
+import { ModelAssetProgress } from '../../components/three/ModelAssetProgress';
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState, type RefObject } from 'react';
 import { Canvas, useThree, type ThreeEvent } from '@react-three/fiber';
-import { BufferGeometry, CanvasTexture, Matrix4, Plane, Quaternion, Vector3 } from 'three';
+import { Box3, BufferGeometry, CanvasTexture, Group, Matrix4, Plane, Quaternion, Vector3 } from 'three';
 import { useRobotModel } from '../../components/three/RobotModel';
 import { SimulationRobot, SimulationOrbit } from './SimulationModel';
 import { RenderBoundary } from '../../components/ui/RenderBoundary';
@@ -47,19 +49,16 @@ function Stroke({ points, color }: { points: Point3[]; color: string }) {
   useEffect(() => () => geometry.dispose(), [geometry]);
   return <lineSegments geometry={geometry}><lineBasicMaterial color={color} transparent opacity={.7} /></lineSegments>;
 }
-function Camera({ view, focus, armPanel, carOnly }: Pick<SceneProps, 'view' | 'focus' | 'armPanel' | 'carOnly'>) {
-  const { camera, size, invalidate } = useThree();
-  const model = robotModel(), modelKey = `${model.id}:${model.revision}`;
-  const reach = model.joints.reduce((sum, j) => sum + Math.hypot(...j.origin.position), Math.hypot(...model.tcp.position));
-  useEffect(() => {
-    const target = new Vector3(...focus);
-    camera.up.set(0, 1, 0);
-    if (view === 'top') { camera.position.copy(target).add(new Vector3(0, 3, 0)); camera.up.set(0, 0, -1); }
-    else if (view === 'side') camera.position.copy(target).add(new Vector3(3, 0, 0));
-    else camera.position.copy(target).add(new Vector3(1.4, 1.2, 1.5));
-    camera.zoom = Math.min(size.width / (armPanel ? Math.max(.3, reach * 2.1) : carOnly ? 1.1 : Math.max(2.8, reach * 2.1)), size.height / (armPanel ? Math.max(.3, reach * 1.4) : carOnly ? .9 : Math.max(2, reach * 1.4)));
-    camera.lookAt(target); camera.updateProjectionMatrix(); invalidate();
-  }, [camera, size.width, size.height, view, focus, armPanel, carOnly, invalidate, modelKey, reach]);
+function Camera({view,modelRoot,onFrame}:{view:SceneView;modelRoot:RefObject<Group|null>;onFrame:(center:Point3)=>void}) {
+  const {camera,size,invalidate}=useThree();
+  const model=robotModel(),modelKey=`${model.id}:${model.revision}`;
+  useEffect(()=>{
+    if(!modelRoot.current)return;
+    modelRoot.current.updateWorldMatrix(true,true);
+    const center=frameModel(camera,new Box3().setFromObject(modelRoot.current,true),size,view);
+    if(center)onFrame(center.toArray() as Point3);
+    invalidate();
+  },[camera,size.width,size.height,view,modelRoot,onFrame,invalidate,modelKey]);
   return null;
 }
 function Workspace({ accent, error, standalone }: { accent: string; error: string; standalone: boolean }) {
@@ -185,6 +184,8 @@ function Basket({ accent, surface }: { accent: string; surface: string }) {
 
 function SceneContents({ view, tool, focus, armPanel, carOnly = false }: SceneProps) {
   const { state, update } = useCollector();
+  const modelRoot = useRef<Group>(null);
+  const [framedFocus, setFramedFocus] = useState<Point3>(focus);
   const { resolvedTheme } = useTheme();
   const [palette, setPalette] = useState(readPalette);
   useEffect(() => {
@@ -221,9 +222,10 @@ function SceneContents({ view, tool, focus, armPanel, carOnly = false }: ScenePr
       event.stopPropagation();
       update(s => positionCube(s, Math.max(0, ...s.cubes.map(c => c.id)) + 1, [-p.z, -p.x, .025]));
     }}><planeGeometry args={[4, 4]} /><meshBasicMaterial transparent opacity={0} depthWrite={false} /></mesh>}
-    <Camera view={view} focus={focus} armPanel={armPanel} carOnly={carOnly} />
-    <SimulationOrbit enabled={!dragging && !jointDragging && tool === 'orbit'} focus={focus} />
+    <Camera view={view} modelRoot={modelRoot} onFrame={setFramedFocus} />
+    <SimulationOrbit enabled={!dragging && !jointDragging && tool === 'orbit'} focus={framedFocus} />
     <group position={armPanel ? [0, 0, 0] : toThree([state.pose.x, state.pose.y, 0])} rotation={[0, armPanel ? 0 : state.pose.yaw, 0]}>
+      <group ref={modelRoot}>
       {!armPanel && <group
         onClick={event => { event.stopPropagation(); update(s => ({ ...s, selected: 'robot' })); }}
         onPointerDown={event => {
@@ -246,6 +248,7 @@ function SceneContents({ view, tool, focus, armPanel, carOnly = false }: ScenePr
       </group>}
       {!carOnly && <ArmRig accent={palette.accent} metal={palette.metal} text={palette.text} standalone={armPanel} onInteracting={setJointDragging} />}
       {!armPanel && !carOnly && <group onClick={event => { event.stopPropagation(); update(s => ({ ...s, selected: 'bin' })); }}><Basket accent={palette.accent} surface={palette.surface} /></group>}
+      </group>
       {!armPanel && state.selected === 'robot' && <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, .003, 0]}>
         <ringGeometry args={[.18, .184, 64]} /><meshBasicMaterial color={palette.accent} />
       </mesh>}
@@ -286,6 +289,7 @@ export function CollectorScene(props: SceneProps) {
     import('../../components/three/RobotModel').then(m => { m.clearRobotModelCache(); setAttempt(v => v + 1); });
   }} />}>
     <div className="afr2-collector-viewport" data-tool={props.tool}>
+      <div className="afr2-model-asset-overlay"><ModelAssetProgress label="Modelo del auto" hideWhenReady /></div>
       <Canvas orthographic frameloop="demand" dpr={[1, 1.5]} camera={{ near: .001, far: 30, zoom: 300 }} onContextMenu={event => event.preventDefault()}
         fallback={<p>WebGL no esta disponible en este dispositivo.</p>}>
         <Suspense fallback={null}><SceneContents key={props.revision} {...props} /></Suspense>

@@ -3,21 +3,20 @@ import { useFrame, useLoader, useThree } from '@react-three/fiber';
 import { advanceServo } from './servoMotion';
 import { useConnection } from '../../features/connection/ConnectionContext';
 import { Box3, Group, Vector3, type Object3D } from 'three';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { ProgressGLTFLoader, ROBOT_MODEL_URL, resetModelAsset } from './modelAssetLoading';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 import { MODEL_WHEEL_RADIUS_MM, ROBOT_WHEEL_KEYS, type RobotWheelValues } from './robotWheelMotion';
 
 // AFR2-20261024-06. One cached asset for inspection and all Control cameras.
 // glTF coordinates are meters. Never normalize the mesh to a display size.
-import { modelAssetUrl } from './modelAssets';
 import { createHeadRig } from './robotHeadRig';
-const MODEL_URL = modelAssetUrl('auto');
+const MODEL_URL = ROBOT_MODEL_URL;
 const draco = new DRACOLoader().setDecoderPath('/draco/').setDecoderConfig({ type: 'wasm' });
 
 const frames = new WeakMap<Object3D, { size: Vector3; offset: Vector3 }>();
 
 export function useRobotModel() {
-  const { scene } = useLoader(GLTFLoader, MODEL_URL, loader => loader.setDRACOLoader(draco));
+  const { scene } = useLoader(ProgressGLTFLoader, MODEL_URL, loader => loader.setDRACOLoader(draco));
   const framing = useMemo(() => {
     const cached = frames.get(scene);if (cached) return cached;
     // Rotated CAD parts have conservative local boxes. Only actual vertices
@@ -130,5 +129,6 @@ export function RobotModel({ wheelAngles, wheelSpeedsMmS, wheelAngleOffsets, ani
 }
 
 export function clearRobotModelCache() {
-  useLoader.clear(GLTFLoader, MODEL_URL);
+  useLoader.clear(ProgressGLTFLoader, MODEL_URL);
+  resetModelAsset(MODEL_URL);
 }

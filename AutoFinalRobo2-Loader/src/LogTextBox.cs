@@ -15,6 +15,7 @@ namespace AFR2Loader
         static extern IntPtr SendValue(IntPtr handle, int message, IntPtr parameter, IntPtr value);
         CheckBox follow;
         bool updating;
+        public event Action<string> TextCopied;
 
         public void BindFollow(CheckBox option)
         {
@@ -31,6 +32,7 @@ namespace AFR2Loader
         protected override void OnMouseDown(MouseEventArgs e) { PauseFollow(); base.OnMouseDown(e); }
         protected override void WndProc(ref Message message)
         {
+            string copied = message.Msg == 0x0301 ? SelectedText : null;
             // Wheel, scrollbars and keyboard navigation belong to the reader.
             if (message.Msg == 0x020A || message.Msg == 0x020E || message.Msg == 0x0115 || message.Msg == 0x0114) PauseFollow();
             if (message.Msg == 0x0100)
@@ -41,6 +43,7 @@ namespace AFR2Loader
                     (key == Keys.A && (ModifierKeys & Keys.Control) != 0)) PauseFollow();
             }
             base.WndProc(ref message);
+            if (!String.IsNullOrEmpty(copied) && TextCopied != null) TextCopied(copied);
         }
         public void AppendBatch(string text)
         {

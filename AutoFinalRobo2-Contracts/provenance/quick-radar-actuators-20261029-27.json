@@ -1,0 +1,53 @@
+{
+  "changeId": "AFR2-20261029-27",
+  "origin": "Own integration over existing AFR2 ports; original kobac/F4 authors preserved",
+  "files": {
+    "AutoFinalRobo2-Atmega": [
+      "include/afr2_menu_catalog.h",
+      "include/afr2_product.h",
+      "include/afr2_screens.h",
+      "include/afr2_sensor_head.h",
+      "src/input/afr2_encoder_ui.c",
+      "src/platform/afr2_preferences.c",
+      "src/platform/afr2_sensors.c",
+      "src/services/afr2_product.c",
+      "src/services/afr2_app.c",
+      "src/services/afr2_app_wire.c",
+      "src/services/afr2_sensor_commands.c",
+      "src/ui/afr2_menu_catalog.c",
+      "src/ui/afr2_screens.c",
+      "src/ui/afr2_sensor_screens.c"
+    ],
+    "AutoFinalRobo2-ESP": [
+      "src/broker.h",
+      "src/broker.cpp",
+      "src/broker_product.cpp",
+      "src/mega_link.cpp",
+      "src/wifi_service.h",
+      "src/wifi_service.cpp"
+    ],
+    "AutoFinalRobo2-Web": [
+      "src/protocol/wsEnvelope.ts",
+      "src/protocol/robotState.ts",
+      "src/protocol/afr2Client.ts",
+      "src/features/connection/ConnectionContext.tsx",
+      "src/features/connection/SystemPanel.tsx",
+      "src/features/connection/useRobotMode.ts",
+      "src/features/control/ControlPage.tsx",
+      "src/features/control/manual/ManualDriveOverlay.tsx",
+      "src/features/oled/EncoderControl.tsx",
+      "src/features/oled/firmwareSensorRenderer.ts",
+      "src/features/oled/firmwareRenderer.ts",
+      "src/features/oled/FirmwareLibraryPreview.tsx",
+      "src/features/oled/LiveOledViewer.tsx"
+    ]
+  },
+  "copied_resources": "Existing AVR catalogue/font/icon bytes; copy-only generator, no validation/build",
+  "evidence": {
+    "compiled": false,
+    "validatorsRun": false,
+    "hardwareTested": false,
+    "flashed": false,
+    "webPromoted": false
+  }
+}

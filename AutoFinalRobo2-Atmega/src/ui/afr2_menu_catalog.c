@@ -1,3 +1,4 @@
+/* AFR2-20261029-27: quick controls/radar/PWM/WS integration; prior authors retained. */
 /* New AFR2 catalogue. Strings/tables in flash; original F4 authors remain in reference/. */
 #include "afr2_menu_catalog.h"
 #include <avr/pgmspace.h>
@@ -40,8 +41,8 @@ static const Afr2MenuItem items[] PROGMEM={
  { "Diagonal AD-D", 255, AFR2_A_MOVE, 5, 0,0,0 },
  { "Diagonal AT-I", 255, AFR2_A_MOVE, 6, 0,0,0 },
  { "Diagonal AT-D", 255, AFR2_A_MOVE, 7, 0,0,0 },
- { "Giro izquierda", 255, AFR2_A_MOVE, 8, 0,0,0 },
- { "Giro derecha", 255, AFR2_A_MOVE, 9, 0,0,0 },
+ { "Girar CCW", 255, AFR2_A_MOVE, 8, 0,0,0 },
+ { "Girar CW", 255, AFR2_A_MOVE, 9, 0,0,0 },
  { "Detener", 255, AFR2_A_STOP, 0, 0,0,0 },
  { "Volver", AFR2_N_CONTROL, 0, 0, 0,0,0 },
  { "Reposo/detenido", 255, AFR2_A_STOP, 0, 0,0,0 },
@@ -74,7 +75,7 @@ static const Afr2MenuItem items[] PROGMEM={
  { "OLED e I2C", AFR2_N_DISPLAY, 0, 0, 0,0,0 },
  { "Encoder UI", AFR2_N_ENCODER_VIEW, 0, 0, 0,0,0 },
  { "UART Mega-ESP", AFR2_N_LINK_VIEW, 0, 0, 0,0,0 },
- { "Servo ultrasonido", AFR2_N_SERVO, 0, 0, 0,0,0 },
+ { "Servo", AFR2_N_SERVO, 0, 0, 0,0,0 },
  { "Volver", AFR2_N_MENU, 0, 0, 0,0,0 },
  { "Rueda FL FR RL RR", 255, AFR2_A_WHEEL, 0, 0, 3, 1 },
  { "PWM con signo", 255, AFR2_A_TEST_PWM, 0, -255, 255, 5 },
@@ -132,7 +133,7 @@ static const Afr2MenuItem items[] PROGMEM={
  { "Invertir sentido", 255, AFR2_A_ENC_INVERT, 0, 0, 1, 1 },
  { "Diagnostico", AFR2_N_ENCODER_VIEW, 0, 0, 0,0,0 },
  { "Volver", AFR2_N_CALIB, 0, 0, 0,0,0 },
- { "Estado STA/AP/IP", AFR2_N_WIFI_VIEW, 0, 0, 0,0,0 },
+ { "Ver estado", AFR2_N_WIFI_VIEW, 0, 0, 0,0,0 },
  { "Actualizar estado", 255, AFR2_A_WIFI_STATUS, 0, 0,0,0 },
  { "Modo", 255, AFR2_A_WIFI_MODE, 0, 1, 3, 1 },
  { "Buscar redes", 255, AFR2_A_WIFI_SCAN, 0, 0,0,0 },
@@ -200,7 +201,7 @@ static const Afr2MenuItem extra[] PROGMEM={
  { "Volver", AFR2_N_SYSTEM, 0, 0, 0,0,0 },
  { "Distancia y servo", AFR2_N_DISTANCE_SERVO, 0, 0, 0,0,0 },
  { "Ver distancia", AFR2_N_RADAR_VIEW, 0, 0, 0,0,0 },
- { "Control del servo", AFR2_N_SERVO, 0, 0, 0,0,0 },
+ { "Servo", AFR2_N_SERVO, 0, 0, 0,0,0 },
  { "Radar automatico", AFR2_N_RADAR_CONFIG, 0, 0, 0,0,0 },
  { "Volver", AFR2_N_SENSORS, 0, 0, 0,0,0 },
  { "Angulo", AFR2_N_SERVO_ANGLE, 0, 0, 0,0,0 },
@@ -217,73 +218,239 @@ static const Afr2MenuItem extra[] PROGMEM={
  { "Invertir servo", 255, AFR2_A_SERVO_INVERT, 0, 0,1,1 },
  { "Volver", AFR2_N_DISTANCE_SERVO, 0, 0, 0,0,0 },
 
+ /* AFR2-20261029-26: append, preserving every existing flash item offset. */
+ { "Bateria", AFR2_N_BATTERY, 0, 0, 0,0,0 },
+ { "Realizar medicion de bateria", 255, AFR2_A_BATTERY_MEASURE, 0, 0,0,0 },
+ { "Ver medicion", AFR2_N_BATTERY_VIEW, 0, 0, 0,0,0 },
+ { "Volver", AFR2_N_SYSTEM, 0, 0, 0,0,0 },
+ { "Volver", AFR2_N_BATTERY, 0, 0, 0,0,0 },
+ /* AFR2-20261029-27: append quick controls/radar; preserve previous offsets. */
+ { "Barrido del radar", 255, AFR2_A_RADAR_TOGGLE, 0, 0,0,0 },
+ { "Servo", 255, AFR2_A_SERVO_TOGGLE, 0, 0,0,0 },
+ { "Motores", 255, AFR2_A_MOTOR_TOGGLE, 0, 0,0,0 },
+ { "Seguir linea", 255, AFR2_A_LINE_TOGGLE, 0, 0,0,0 },
+ { "Rastro del radar", 255, AFR2_A_RADAR_TRACE, 0, 0,1,0 },
+ { "Menu principal", AFR2_N_MENU, 0, 0, 0,0,0 },
+ { "Alcance del grafico", AFR2_N_RADAR_RANGE, 0, 0, 0,0,0 },
+ { "Angulo del servo", AFR2_N_SERVO_ANGLE, 0, 0, 0,0,0 },
+ { "4 m", 255, AFR2_A_RADAR_RANGE, 0, 0,0,0 },
+ { "2 m", 255, AFR2_A_RADAR_RANGE, 1, 0,0,0 },
+ { "1 m", 255, AFR2_A_RADAR_RANGE, 2, 0,0,0 },
+ { "0.5 m", 255, AFR2_A_RADAR_RANGE, 3, 0,0,0 },
+ { "Seleccion de modo", AFR2_N_QUICK_MODES, 0, 0, 0,0,0 },
+ { "Reposo", 255, AFR2_A_QUICK_MODE, 0, 0,0,0 },
+ { "Manual", 255, AFR2_A_QUICK_MODE, 1, 0,0,0 },
+ { "Volver", AFR2_N_QUICK, 0, 0,0,0,0 },
+
+};
+/* AFR2-20261030-07: explicit reorganized menus; old resource offsets retained. */
+static const Afr2MenuItem reform[] PROGMEM={
+ { "Resumen robot", AFR2_N_ROBOT_VIEW, 0, 0, 0, 0, 0 },
+ { "Enlace y control", AFR2_N_LINK_VIEW, 0, 0, 0, 0, 0 },
+ { "Alertas", AFR2_N_ALERT_VIEW, 0, 0, 0, 0, 0 },
+ { "Estado OLED/I2C", AFR2_N_DISPLAY, 0, 0, 0, 0, 0 },
+ { "Estado encoder", AFR2_N_ENCODER_VIEW, 0, 0, 0, 0, 0 },
+ { "Control manual", AFR2_N_CONTROL, 0, 0, 0, 0, 0 },
+ { "Modos/misiones", AFR2_N_MODES, 0, 0, 0, 0, 0 },
+ { "Volver", AFR2_N_MENU, 0, 0, 0, 0, 0 },
+ { "Motor individual", AFR2_N_WHEEL, 0, 0, 0, 0, 0 },
+ { "Hall una vuelta", AFR2_N_HALL_TEST, 0, 0, 0, 0, 0 },
+ { "Linea cinco", AFR2_N_LINE_VIEW, 0, 0, 0, 0, 0 },
+ { "HC-SR04", AFR2_N_US_VIEW, 0, 0, 0, 0, 0 },
+ { "Prueba encoder", AFR2_N_ENCODER_TEST, 0, 0, 0, 0, 0 },
+ { "Prueba ESP", AFR2_N_ESP_TEST, 0, 0, 0, 0, 0 },
+ { "Servo", AFR2_N_SERVO, 0, 0, 0, 0, 0 },
+ { "Volver", AFR2_N_MENU, 0, 0, 0, 0, 0 },
+ { "Linea", AFR2_N_LINE_CALIB, 0, 0, 0, 0, 0 },
+ { "Motores", AFR2_N_MOTOR_CALIB, 0, 0, 0, 0, 0 },
+ { "Hall", AFR2_N_HALL_TEST, 0, 0, 0, 0, 0 },
+ { "Ver odometria", AFR2_N_POSE, 0, 0, 0, 0, 0 },
+ { "Descartar cambios", 255, AFR2_A_DISCARD, 0, 0, 0, 0 },
+ { "Volver", AFR2_N_MENU, 0, 0, 0, 0, 0 },
+ { "Contraste", 255, AFR2_A_CONTRAST, 0, 0, 255, 8 },
+ { "Rotacion 0/180", 255, AFR2_A_ROTATION, 0, 0, 1, 1 },
+ { "Volver", AFR2_N_SYSTEM, 0, 0, 0, 0, 0 },
+ { "Encoder", AFR2_N_ENCODER_CONFIG, 0, 0, 0, 0, 0 },
+ { "Invertir servo", 255, AFR2_A_SERVO_INVERT, 0, 0, 1, 1 },
+ { "Guardar EEPROM", 255, AFR2_A_SAVE, 0, 0, 0, 0 },
+ { "Descartar cambios", 255, AFR2_A_DISCARD, 0, 0, 0, 0 },
+ { "Estado", AFR2_N_PREFS_VIEW, 0, 0, 0, 0, 0 },
+ { "Volver", AFR2_N_SYSTEM, 0, 0, 0, 0, 0 },
+ { "Transiciones por paso", 255, AFR2_A_ENC_STEPS, 0, 2, 4, 2 },
+ { "Invertir giro", 255, AFR2_A_ENC_INVERT, 0, 0, 1, 1 },
+ { "Pulsacion larga ms", 255, AFR2_A_LONG_MS, 0, 800, 3000, 100 },
+ { "Volver", AFR2_N_PREFS, 0, 0, 0, 0, 0 },
+ { "Iniciar radar", 255, AFR2_A_RADAR_TOGGLE, 0, 0, 0, 0 },
+ { "Desde grados", 255, AFR2_A_RADAR_MIN, 0, 0, 175, 5 },
+ { "Hasta grados", 255, AFR2_A_RADAR_MAX, 0, 5, 180, 5 },
+ { "Velocidad grados/s", 255, AFR2_A_RADAR_SPEED, 0, 1, 30, 1 },
+ { "Estabilizar ms", 255, AFR2_A_RADAR_SETTLE, 0, 50, 500, 10 },
+ { "Intervalo HC ms", 255, AFR2_A_US_INTERVAL, 0, 70, 1000, 10 },
+ { "Volver", AFR2_N_DISTANCE_SERVO, 0, 0, 0, 0, 0 },
+ { "Alcance del grafico", AFR2_N_RADAR_RANGE, 0, 0, 0, 0, 0 },
+ { "Volver", AFR2_N_RADAR_VIEW, 0, 0, 0, 0, 0 },
+ { "Estado/requisitos", AFR2_N_LINE_REQ, 0, 0, 0, 0, 0 },
+ { "Velocidad mm/s", 255, AFR2_A_LINE_SPEED, 0, 10, 500, 10 },
+ { "Ganancia", 255, AFR2_A_LINE_KP, 0, 0, 1000, 10 },
+ { "Iniciar", 255, AFR2_A_LINE_TOGGLE, 0, 0, 0, 0 },
+ { "Volver", AFR2_N_MODES, 0, 0, 0, 0, 0 },
+ { "Rueda FL FR RL RR", 255, AFR2_A_WHEEL, 0, 0, 3, 1 },
+ { "PWM con signo", 255, AFR2_A_TEST_PWM, 0, -255, 255, 5 },
+ { "Duracion ms", 255, AFR2_A_TEST_MS, 0, 100, 2000, 100 },
+ { "Iniciar", 255, AFR2_A_WHEEL_TOGGLE, 0, 0, 0, 0 },
+ { "Resultado", AFR2_N_WHEEL_VIEW, 0, 0, 0, 0, 0 },
+ { "Volver", AFR2_N_TESTS, 0, 0, 0, 0, 0 },
+ { "Odometria", AFR2_N_POSE, 0, 0, 0, 0, 0 },
+ { "Objetivo X mm", 255, AFR2_A_GOTO_X, 0, -5000, 5000, 10 },
+ { "Objetivo Y mm", 255, AFR2_A_GOTO_Y, 0, -5000, 5000, 10 },
+ { "Limite mm/s", 255, AFR2_A_SPEED, 0, 10, 1000, 10 },
+ { "Revisar objetivo", AFR2_N_GOTO_REVIEW, 0, 0, 0, 0, 0 },
+ { "Iniciar", 255, AFR2_A_GOTO_TOGGLE, 0, 0, 0, 0 },
+ { "Resultado", AFR2_N_GOTO_RESULT, 0, 0, 0, 0, 0 },
+ { "Volver", AFR2_N_MODES, 0, 0, 0, 0, 0 },
+ { "Iniciar prueba", 255, AFR2_A_ESP_TEST, 0, 0, 0, 0 },
+ { "Timeout ms", 255, AFR2_A_ESP_TIMEOUT, 0, 1000, 5000, 250 },
+ { "Volver", AFR2_N_TESTS, 0, 0, 0, 0, 0 },
+ { "Detener", 255, AFR2_A_STOP, 0, 0, 0, 0 },
+ { "Limite velocidad mm/s", 255, AFR2_A_SPEED, 0, 10, 1000, 10 },
+ { "Potencia manual %", 255, AFR2_A_POWER, 0, 0, 100, 5 },
+ { "Mecanum", AFR2_N_MOVE, 0, 0, 0, 0, 0 },
+ { "Volver", AFR2_N_STATE, 0, 0, 0, 0, 0 },
+};
+/* AFR2-20261030-09: network state, scan and credential flows. */
+static const Afr2MenuItem wifiReform[] PROGMEM={
+ { "Estado de red", 32, 0, 0, 0, 0, 0 },
+ { "Cambiar modo", 67, 0, 0, 0, 0, 0 },
+ { "Buscar redes", 66, 0, 0, 0, 0, 0 },
+ { "AP / fallback", 36, 0, 0, 0, 0, 0 },
+ { "Volver", 1, 0, 0, 0, 0, 0 },
+ { "Estado de conexion", 45, 0, 0, 0, 0, 0 },
+ { "Datos de red", 65, 0, 0, 0, 0, 0 },
+ { "Configurar", 35, 0, 0, 0, 0, 0 },
+ { "Conectar", 255, 47, 0, 0, 0, 0 },
+ { "Reintentar", 255, 46, 0, 0, 0, 0 },
+ { "Volver", 31, 0, 0, 0, 0, 0 },
+ { "Ingresar aqui", 255, 50, 0, 0, 0, 0 },
+ { "Ingresar en Web", 255, 51, 0, 0, 0, 0 },
+ { "Volver", 33, 0, 0, 0, 0, 0 },
+ { "Modificar credenciales", 34, 0, 0, 0, 0, 0 },
+ { "Conectar", 255, 47, 0, 0, 0, 0 },
+ { "Volver", 32, 0, 0, 0, 0, 0 },
+ { "Modo AP", 255, 52, 2, 0, 0, 0 },
+ { "Modo AP-STA", 255, 52, 3, 0, 0, 0 },
+ { "Volver", 31, 0, 0, 0, 0, 0 },
+ { "Redes encontradas", 33, 0, 0, 0, 0, 0 },
+ { "Refrescar", 255, 45, 0, 0, 0, 0 },
+ { "Volver", 31, 0, 0, 0, 0, 0 },
 };
 static const Afr2MenuNode nodes[] PROGMEM={
  { "AutoFinalRobo2", AFR2_N_HOME, 1, 1, 0, 0x10001UL },
- { "Menu principal", AFR2_N_HOME, 0, 10, 1, 0x10002UL },
+ { "Menu principal", AFR2_N_HOME, 0, 7, 1, 0x10002UL },
  { "Sensores", AFR2_N_MENU, 0, 4, 11, 0x20001UL },
- { "Estado OLED", AFR2_N_DISPLAY_MENU, 1, 1, 15, 0x20002UL },
- { "Estado", AFR2_N_MENU, 0, 4, 16, 0x30004UL },
+ { "Estado OLED", AFR2_N_STATE, 1, 1, 15, 0x20002UL },
+ { "Estado", AFR2_N_MENU, 0, 8, 0x4000u, 0x30004UL },
  { "Resumen robot", AFR2_N_STATE, 1, 1, 20, 0x30005UL },
  { "Enlace y control", AFR2_N_STATE, 1, 1, 21, 0x30006UL },
  { "Alertas", AFR2_N_STATE, 1, 1, 22, 0x30007UL },
- { "Control manual", AFR2_N_MENU, 0, 4, 23, 0x30008UL },
+ { "Control manual", AFR2_N_MENU, 0, 5, 0x4042u, 0x30008UL },
  { "Mecanum", AFR2_N_CONTROL, 0, 12, 27, 0x30009UL },
  { "Modos/misiones", AFR2_N_MENU, 0, 4, 39, 0x3000aUL },
- { "Seguimiento linea", AFR2_N_MODES, 0, 6, 43, 0x3000bUL },
+ { "Seguimiento linea", AFR2_N_MODES, 0, 5, 0x402cu, 0x3000bUL },
  { "Requisitos linea", AFR2_N_LINE_MODE, 1, 1, 49, 0x3000cUL },
- { "GOTO relativo", AFR2_N_MODES, 0, 9, 50, 0x3000dUL },
+ { "GOTO relativo", AFR2_N_MODES, 0, 8, 0x4037u, 0x3000dUL },
  { "Revisar objetivo", AFR2_N_GOTO_MENU, 1, 1, 59, 0x3000eUL },
  { "Resultado GOTO", AFR2_N_GOTO_MENU, 1, 1, 60, 0x3000fUL },
  { "Odometria", AFR2_N_GOTO_MENU, 1, 1, 61, 0x30010UL },
- { "Pruebas", AFR2_N_MENU, 0, 9, 62, 0x30011UL },
- { "Motor individual", AFR2_N_TESTS, 0, 7, 71, 0x30012UL },
+ { "Pruebas", AFR2_N_MENU, 0, 8, 0x4008u, 0x30011UL },
+ { "Motor individual", AFR2_N_TESTS, 0, 6, 0x4031u, 0x30012UL },
  { "Estado motores", AFR2_N_WHEEL, 1, 1, 78, 0x30013UL },
- { "Hall una vuelta", AFR2_N_TESTS, 0, 7, 79, 0x30014UL },
+ { "Hall una vuelta", AFR2_N_TESTS, 0, 6, 79, 0x30014UL },
  { "Hall / velocidad", AFR2_N_SENSORS, 1, 1, 86, 0x30015UL },
  { "Linea IR1..IR5", AFR2_N_SENSORS, 1, 1, 87, 0x30016UL },
  { "Distancia numerica", AFR2_N_DISTANCE_SERVO, 1, 1, 88, 0x30017UL },
- { "Encoder UI", AFR2_N_TESTS, 1, 1, 89, 0x30018UL },
- { "Control del servo", AFR2_N_DISTANCE_SERVO, 0, 4, 0x800du, 0x30019UL },
- { "Calibracion", AFR2_N_MENU, 0, 8, 94, 0x3001aUL },
+ { "Estado encoder", AFR2_N_STATE, 1, 1, 89, 0x30018UL },
+ { "Servo", AFR2_N_DISTANCE_SERVO, 0, 4, 0x800du, 0x30019UL },
+ { "Calibracion", AFR2_N_MENU, 0, 6, 0x4010u, 0x3001aUL },
  { "Calibrar linea", AFR2_N_CALIB, 0, 7, 102, 0x3001bUL },
  { "Calibrar motores", AFR2_N_CALIB, 0, 8, 109, 0x3001cUL },
- { "Geometria", AFR2_N_CALIB, 0, 6, 117, 0x3001dUL },
- { "Ajustes encoder", AFR2_N_CALIB, 0, 4, 123, 0x3001eUL },
- { "Wi-Fi", AFR2_N_MENU, 0, 13, 127, 0x3001fUL },
- { "Estado Wi-Fi", AFR2_N_WIFI, 1, 1, 138, 0x30020UL },
- { "Redes Wi-Fi", AFR2_N_WIFI, 0, 9, 139, 0x30021UL },
- { "Ingresar datos", AFR2_N_WIFI, 0, 5, 148, 0x30022UL },
- { "Revisar conexion", AFR2_N_WIFI_SETUP, 1, 3, 153, 0x30023UL },
- { "AP / fallback", AFR2_N_WIFI, 0, 5, 156, 0x30024UL },
- { "Pantalla/interfaz", AFR2_N_MENU, 0, 5, 161, 0x30025UL },
- { "Sistema", AFR2_N_MENU, 0, 7, 166, 0x30026UL },
+ { "Geometria nominal", AFR2_N_STATE, 1, 1, 122, 0x3001dUL },
+ { "Ajustes encoder", AFR2_N_CALIB, 0, 4, 0x401fu, 0x3001eUL },
+ { "Wi-Fi", AFR2_N_MENU, 0, 5, 0x2000u, 0x3001fUL },
+ { "Estado de red", AFR2_N_WIFI, 0, 6, 0x2005u, 0x30020UL },
+ { "Redes encontradas", AFR2_N_WIFI_SEARCH, 0, 9, 139, 0x30021UL },
+ { "Credenciales", AFR2_N_WIFI_NETWORKS, 0, 3, 0x200bu, 0x30022UL },
+ { "Configurar", AFR2_N_WIFI_VIEW, 0, 3, 0x200eu, 0x30023UL },
+ { "AP / fallback", AFR2_N_WIFI, 0, 3, 0x2011u, 0x30024UL },
+ { "Pantalla/interfaz", AFR2_N_SYSTEM, 0, 3, 0x4016u, 0x30025UL },
+ { "Sistema", AFR2_N_MENU, 0, 8, 166, 0x30026UL },
  { "Versiones", AFR2_N_SYSTEM, 1, 1, 172, 0x30027UL },
  { "Capacidades", AFR2_N_SYSTEM, 1, 1, 173, 0x30028UL },
- { "Preferencias", AFR2_N_SYSTEM, 0, 4, 174, 0x30029UL },
+ { "Preferencias", AFR2_N_SYSTEM, 0, 6, 0x4019u, 0x30029UL },
  { "Estado EEPROM", AFR2_N_PREFS, 1, 1, 178, 0x3002aUL },
- { "Diagnostico", AFR2_N_SYSTEM, 1, 1, 179, 0x3002bUL },
+ { "Diagnostico", AFR2_N_SYSTEM, 0, 3, 179, 0x3002bUL },
  { "Secuencia", AFR2_N_CONTROL, 1, 1, sizeof(items)/sizeof(items[0])-1, 0x3002cUL },
- { "IP de conexion", AFR2_N_WIFI, 1, 1, 0x8003u, 0x3002dUL },
+ { "Estado conexion", AFR2_N_WIFI_VIEW, 1, 1, 0x8003u, 0x3002dUL },
  { "Datos de red AP", AFR2_N_WIFI, 1, 1, 0x8004u, 0x3002eUL },
  { "Reinicio", AFR2_N_SYSTEM, 0, 3, 0x8005u, 0x3002fUL },
  { "Distancia y servo", AFR2_N_SENSORS, 0, 4, 0x8009u, 0x30030UL },
  { "Radar", AFR2_N_DISTANCE_SERVO, 1, 1, 88, 0x30031UL },
  { "IR valores", AFR2_N_SENSORS, 1, 1, 87, 0x30032UL },
  { "Angulo del servo", AFR2_N_SERVO, 1, 1, 98, 0x30033UL },
- { "Radar automatico", AFR2_N_DISTANCE_SERVO, 0, 9, 0x8011u, 0x30034UL },
+ { "Radar automatico", AFR2_N_DISTANCE_SERVO, 0, 7, 0x4023u, 0x30034UL },
+ { "Elegir rueda", AFR2_N_HALL_TEST, 1, 1, 85, 0x30036UL },
+ { "Conteo Hall", AFR2_N_HALL_TEST, 1, 1, 85, 0x30037UL },
+ { "Guardar cambios", AFR2_N_HALL_TEST, 1, 1, 85, 0x30038UL },
+ { "Bateria", AFR2_N_SYSTEM, 0, 3, 0x801bu, 0x30039UL },
+ { "Medicion bateria", AFR2_N_BATTERY, 1, 1, 0x801eu, 0x3003aUL },
+ { "Controles rapidos", AFR2_N_HOME, 1, 7, 0x801fu, 0x10003UL },
+ { "Opciones radar", AFR2_N_RADAR_VIEW, 0, 2, 0x402au, 0x3003bUL },
+ { "Alcance grafico", AFR2_N_RADAR_OPTIONS, 0, 4, 0x8027u, 0x3003cUL },
+ { "Elegir modo", AFR2_N_QUICK, 0, 3, 0x802cu, 0x3003dUL },
+ { "Prueba encoder", AFR2_N_TESTS, 1, 1, 89, 0x3003eUL },
+ { "Prueba ESP", AFR2_N_TESTS, 0, 3, 0x403fu, 0x3003fUL },
+ { "Potencia manual", AFR2_N_CONTROL, 1, 1, 26, 0x30040UL },
+ { "Datos de red", AFR2_N_WIFI_VIEW, 1, 1, 138, 0x30041UL },
+ { "Buscar redes", AFR2_N_WIFI, 0, 3, 0x2014u, 0x30042UL },
+ { "Cambiar modo", AFR2_N_WIFI, 1, 3, 138, 0x30043UL },
 };
 void Afr2Menu_Node(uint8_t index,Afr2MenuNode *out) {
     if(index>=AFR2_N_COUNT)index=AFR2_N_HOME;
     memcpy_P(out,&nodes[index],sizeof(*out));
+    if(index==AFR2_N_WIFI_SETUP)++out->count;
 }
 void Afr2Menu_Item(uint8_t node,uint8_t index,Afr2MenuItem *out) {
     Afr2MenuNode n;Afr2Menu_Node(node,&n);
     if(index>=n.count)index=n.count-1;
+    if(node==AFR2_N_WIFI_SETUP){if(!index){memset(out,0,sizeof(*out));strcpy(out->label,"Traer credenciales ESP");out->target=255;out->action=AFR2_A_WIFI_READ_CREDENTIALS;return;}--index;}
+    if(n.first&0x2000u){memcpy_P(out,&wifiReform[(n.first&0x1fffu)+index],sizeof(*out));return;}
+    if(n.first&0x4000u){memcpy_P(out,&reform[(n.first&0x3fffu)+index],sizeof(*out));return;}
+    if(node==AFR2_N_QUICK && index==6){memcpy_P(out,&extra[43],sizeof(*out));return;}
+    if(node==AFR2_N_MENU) {
+        static const uint8_t map[] PROGMEM={1,7,5,4,6,9,10};
+        memcpy_P(out,&items[pgm_read_byte(&map[index])],sizeof(*out));return;
+    }
+    if(node==AFR2_N_STATE && index>=3) {
+        static const uint8_t map[] PROGMEM={2,3,19};
+        memcpy_P(out,&items[pgm_read_byte(&map[index-3])],sizeof(*out));return;
+    }
+    if(node==AFR2_N_DISPLAY_MENU && index==4){memcpy_P(out,&extra[7],sizeof(*out));return;}
+    if(node==AFR2_N_SYSTEM) {
+        static const uint8_t map[] PROGMEM={166,168,0,0,169,167,8,171};
+        if(index==2 || index==3){memcpy_P(out,&extra[index==2?26:0],sizeof(*out));return;}
+        memcpy_P(out,&items[pgm_read_byte(&map[index])],sizeof(*out));return;
+    }
+    if(node==AFR2_N_DIAG) {
+        static const uint8_t map[] PROGMEM={18,170,179};
+        memcpy_P(out,&items[pgm_read_byte(&map[index])],sizeof(*out));return;
+    }
+    /* AFR2-20261029-20: keep flash offsets/wire actions stable. END is now
+     * invoked by the counting page's click, not a standalone menu option. */
+    if(node==AFR2_N_HALL_TEST && index>=3)++index;
     if(n.first&0x8000u){memcpy_P(out,&extra[(n.first&0x7fffu)+index],sizeof(*out));return;}
     if(node==AFR2_N_SYSTEM) {
         if(index==5){memcpy_P(out,&extra[0],sizeof(*out));return;}
-        if(index>5)--index;
+        if(index==6){memcpy_P(out,&extra[26],sizeof(*out));return;}
+        if(index>6)index-=2;
     }
     if(node==AFR2_N_WIFI) {
         if(index==1 || index==2){memcpy_P(out,&extra[index],sizeof(*out));return;}

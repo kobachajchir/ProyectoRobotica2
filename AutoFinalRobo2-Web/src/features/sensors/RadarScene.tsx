@@ -1,3 +1,4 @@
+import { ModelAssetProgress } from '../../components/three/ModelAssetProgress';
 import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import {
@@ -245,9 +246,9 @@ function Plot({ range, angle, enabled, points, currentId, historical, scanMin, s
 export function RadarScene(props: Props) {
   const [palette, setPalette] = useState(readPalette);
   useEffect(() => { const frame = requestAnimationFrame(() => setPalette(readPalette())); return () => cancelAnimationFrame(frame); }, [props.dark]);
-  return <Canvas orthographic frameloop="demand" dpr={[1, 1.5]} camera={{ near: .01, far: 30 }}
+  return <div style={{ position: 'relative', width: '100%', height: '100%' }}><div className="afr2-model-asset-overlay"><ModelAssetProgress label="Modelo del auto" hideWhenReady /></div><Canvas orthographic frameloop="demand" dpr={[1, 1.5]} camera={{ near: .01, far: 30 }}
     fallback={<p>WebGL no disponible. Las mediciones siguen disponibles a la derecha.</p>}>
     <color attach="background" args={[palette.floor]} />
     <Plot {...props} palette={palette} />
-  </Canvas>;
+  </Canvas></div>;
 }

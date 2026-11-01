@@ -12,7 +12,7 @@ namespace AFR2Loader
     public static class McpServer
     {
         static readonly JavaScriptSerializer Json = new JavaScriptSerializer { MaxJsonLength = 1048576, RecursionLimit = 32 };
-        static readonly string[] Actions = { "build_mega", "build_esp", "build_web_fs", "build_all", "probe_esp", "flash_mega", "flash_esp", "flash_fs", "flash_esp_fs", "install_mega_flasher", "restore_mega_product", "flash_mega_backup" };
+        static readonly string[] Actions = { "build_mega", "build_esp", "build_web_fs", "build_all", "probe_esp", "flash_mega", "flash_esp", "flash_fs", "flash_esp_fs", "install_mega_flasher", "verify_mega_flasher", "restore_mega_product", "flash_mega_backup" };
         static object Schema(object properties, params string[] required)
         { return new { type = "object", properties = properties, required = required, additionalProperties = false }; }
         static object Tool(string name, string description, object schema, bool readOnly)
@@ -29,8 +29,10 @@ namespace AFR2Loader
                     Schema(new { captureId = new { type = "string" }, cursor = new { type = "integer", minimum = 0 }, limit = new { type = "integer", minimum = 1, maximum = 120 } }), true),
                 Tool("loader_request_profile", "Solicita cambios de perfil. La ventana los revisa o los aplica y guarda automáticamente si el usuario activó Autoaceptar. Consultar el jobId devuelto.",
                     Schema(new { values = new { type = "object", additionalProperties = new { type = "string" } }, requestId = new { type = "string", description = "ID único para deduplicar reintentos" } }, "values", "requestId"), false),
+                Tool("loader_request_session_options", "Solicita omitir o restablecer confirmaciones manuales durante esta sesión mediante skipManualChecks. Activar exige SIEMPRE aceptar localmente la advertencia en la GUI, incluso con Autoaceptar; el servidor no puede aceptarla. Devuelve jobId: consultar loader_job y loader_status.skipManualChecks. No persiste al reiniciar ni omite comprobaciones automáticas. La intervención KEY/RST del ESP SIEMPRE requiere confirmación local y aparece al frente. Desactivar no requiere advertencia.",
+                    Schema(new { skipManualChecks = new { type = "boolean" }, requestId = new { type = "string" } }, "skipManualChecks", "requestId"), false),
                 Tool("loader_request_operation", "Solicita una operación con el perfil visible y devuelve jobId. ESP Web usa Arduino/LittleFS; ESP AT revisa/carga el paquete del proveedor por USB. build_all omite Web en AT y filesystem desactivado. Consultar loader_profile. Autoaceptar permite inicio automático; awaiting_approval espera revisión. accepted no significa ejecutada ni verificada. Mantiene asistentes físicos. No repetir si existe el job.",
-                    Schema(new { action = new { type = "string", @enum = Actions }, port = new { type = "string", description = "COM para diagnóstico/carga; no necesario para builds" }, listenBoot = new { type = "boolean", description = "Escuchar KEY/RST antes de consulta ESP, default true" }, requestId = new { type = "string", description = "ID único para deduplicar reintentos" } }, "action", "requestId"), false),
+                    Schema(new { action = new { type = "string", @enum = Actions }, port = new { type = "string", description = "COM para diagnóstico/carga; no necesario para builds" }, listenBoot = new { type = "boolean", description = "Escuchar arranque ESP a 74880, default true; false NO omite intervención física local KEY/RST. Puente software usa baud fijo." }, requestId = new { type = "string", description = "ID único para deduplicar reintentos" } }, "action", "requestId"), false),
                 Tool("loader_job", "Estado y lote incremental del registro. Usar nextCursor para continuar; no espera ni ejecuta procesos.",
                     Schema(new { jobId = new { type = "string" }, cursor = new { type = "integer", minimum = 0 }, limit = new { type = "integer", minimum = 1, maximum = 120 } }, "jobId"), true),
                 Tool("loader_request_cancel", "Solicita cancelar un trabajo pendiente o activo. Autoaceptar permite pedir la interrupción sin revisión adicional; en modo manual la ventana confirma. Consultar loader_job para el resultado; no provoca reintento ni borrado.",
@@ -58,6 +60,10 @@ namespace AFR2Loader
                 case "loader_request_profile":
                     keys = new[] { "values", "requestId" }; StringValue(args, "requestId");
                     Object(args["values"]); break;
+                case "loader_request_session_options":
+                    keys = new[] { "skipManualChecks", "requestId" }; StringValue(args, "requestId");
+                    if (!args.ContainsKey("skipManualChecks") || !(args["skipManualChecks"] is bool)) throw new ArgumentException("skipManualChecks debe ser booleano.");
+                    break;
                 case "loader_serial":
                     keys = new[] { "captureId", "cursor", "limit" };
                     if (args.ContainsKey("captureId") && !(args["captureId"] is string)) throw new ArgumentException("captureId debe ser texto.");
@@ -155,3 +161,4 @@ namespace AFR2Loader
         }
     }
 }
+

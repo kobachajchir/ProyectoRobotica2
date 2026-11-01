@@ -1,0 +1,18 @@
+{
+  "schema": "afr2-adaptations-1",
+  "changeId": "AFR2-20261101-04",
+  "authorship": "Adaptacion propia de encuadre; autores anteriores, escalas y modelos conservados.",
+  "module_status": {"atmega": "unchanged", "esp": "unchanged-not-promoted", "web": "source-adapted-not-executed", "cad": "unchanged"},
+  "verification": "Lectura de camaras, grupos de modelo, limites y controles Orbit. Sin tests, builds, validadores ni navegador.",
+  "files": [
+    {"file": "AutoFinalRobo2-Web/src/components/three/frameModel.ts", "adaptation": "Ajuste ortografico/perspectiva por proyeccion de limites, centro y margen de encuadre."},
+    {"file": "AutoFinalRobo2-Web/src/features/collector/CollectorScene.tsx", "adaptation": "Medir ensamblaje visible sin entorno; compartir centro con Orbit; encuadrar al abrir/Centrar/cambiar vista/tamano."},
+    {"file": "AutoFinalRobo2-Web/src/features/model3d/ModelInspection.tsx", "adaptation": "Camara del auto con encuadre compartido."},
+    {"file": "AutoFinalRobo2-Web/src/features/model3d/AssetInspection.tsx", "adaptation": "Brazo/cubo con limites precisos y camara compartida."},
+    {"file": "AutoFinalRobo2-Web/README.md", "adaptation": "Referencia y estado de fuente."},
+    {"file": "AutoFinalRobo2-Web/INFORME_ADAPTACION.md", "adaptation": "Referencia y limites."},
+    {"file": "AutoFinalRobo2-Contracts/README.md", "adaptation": "Referencia de entrega."},
+    {"file": "AutoFinalRobo2-Contracts/CHANGELOG.md", "adaptation": "Registro AFR2-20261101-04."},
+    {"file": "AutoFinalRobo2-Contracts/changes/2026-11-01-04-close-model-framing.md", "adaptation": "Alcance, geometria y estados por modulo."}
+  ]
+}

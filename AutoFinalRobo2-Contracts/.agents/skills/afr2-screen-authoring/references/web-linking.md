@@ -1,3 +1,5 @@
+> AFR2-20261029-27: largo al soltar vuelve por contexto; Inicio abre carrusel y Si/No obligatorio no admite retorno. Contrato vigente: Contracts/contracts/QUICK_RADAR_ACTUATORS_9.md.
+
 # Copia Web de la biblioteca ATmega
 
 Rutas desde D:/ProyectoRobotica2. La fuente de verdad de diseño es AutoFinalRobo2-Atmega/src/{display,ui}; la identidad compartida vive en AutoFinalRobo2-Contracts/documentation/screens.json. Copia ejecutable de dibujo en AutoFinalRobo2-Web/src/features/oled/{oledRasterizer,firmwareRenderer}.ts; recursos generados en generated/firmwareLibrary.ts.

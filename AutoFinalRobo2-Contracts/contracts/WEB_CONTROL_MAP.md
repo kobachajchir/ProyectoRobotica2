@@ -1,3 +1,5 @@
+> **AFR2-20261030-13:** X adelante/Y izquierda/ángulo CCW conservados. Mezcla y odometría AVR y cinemática Web aplican el mismo ajuste de referencia longitudinal/yaw. [Contrato](MOTION_REFERENCE_13.md). No invertir otra vez botones, objetivos o pose. Solo fuente sin prueba física.
+
 > **Vigente AFR2-20261025-02:** [ruedas simuladas](WEB_TOUCH_SIMULATION.md) en GOTO/secuencias y Control táctil. GOTO usa recorrido analítico y secuencias integran cada rueda con su reloj existente; pausa/reinicio/repetición conservan ángulos deterministas. No nuevo contrato de pose ni feedback real; vistas anteriores conservadas. Web compilada, visual No verificada.
 
 > AFR2-20261025-01: las reglas anteriores de acceso quedan sustituidas por [control directo EX01v7](DIRECT_CONTROL_7.md). Sin adquisición, renovación, liberación ni habilitación OLED. Los formatos anteriores solo se conservan donde DIRECT_CONTROL_7 mantiene compatibilidad.

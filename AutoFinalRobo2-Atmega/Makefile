@@ -16,16 +16,28 @@ else
 MKDIR_BUILD = mkdir -p build
 endif
 .DEFAULT_GOAL := help
-.PHONY: help library firmware communication-firmware esp-bridge-firmware
+.PHONY: help library firmware communication-firmware esp-bridge-firmware i2c-diagnostic-firmware
 help:
 	@echo AVR C: leer INFORME_ADAPTACION.md y docs/COMPOSICION.md.
 	@echo Bajo pedido expreso: library, firmware o communication-firmware. Sin upload.
 	@echo Servicio opcional: esp-bridge-firmware BRIDGE_BAUD=115200. Reemplaza temporalmente el producto al cargarlo.
+	@echo Diagnostico opcional: i2c-diagnostic-firmware. I2C D20/D21, USART0 D0/D1 115200; sin upload.
 library: libafr2_ui.a
 libafr2_ui.a: $(OBJECTS)
 	$(AR) rcs $@ $^
 firmware: build/afr2.hex
 communication-firmware: build/afr2-communication.hex
+# AFR2-20261028-19: separate diagnostic image; no product main/menu renderer,
+# EEPROM, ESP protocol or bridge. Compile shared sources afresh for this target.
+I2C_DIAG_SOURCES = service/i2c_uart0_diagnostic.c src/services/afr2_i2c_manager.c src/platform/afr2_twi.c src/platform/afr2_board.c src/input/afr2_encoder_ui.c
+I2C_DIAG_SOURCES += src/display/afr2_oled.c src/display/font7x10.c
+# AFR2-20261029-10: product defaults now match confirmed diagnostic09 too;
+# diagnostic keeps explicit options for controlled comparison builds.
+DIAG_PULLUPS ?= 1
+i2c-diagnostic-firmware: build/afr2-i2c-diagnostic.hex
+build/afr2-i2c-diagnostic.elf: $(I2C_DIAG_SOURCES) include/afr2_i2c_manager.h include/afr2_twi.h include/afr2_board.h include/board_pinmap.h include/afr2_encoder_ui.h include/afr2_oled.h
+	$(MKDIR_BUILD)
+	$(CC) $(CPPFLAGS) -DAFR2_TWI_INTERNAL_PULLUPS=$(DIAG_PULLUPS) -DAFR2_OLED_STARTUP_MS=500u $(filter-out -fstack-usage -MMD -MP,$(CFLAGS)) -Wl,--gc-sections,-Map,build/afr2-i2c-diagnostic.map -o $@ $(I2C_DIAG_SOURCES)
 # Standalone service, never part of firmware/library/default build. Rate in filename
 # prevents reusing a HEX from a different fixed-baud selection.
 BRIDGE_BAUD ?= 115200

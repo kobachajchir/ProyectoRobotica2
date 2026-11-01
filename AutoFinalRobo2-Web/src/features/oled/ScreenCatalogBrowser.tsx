@@ -42,7 +42,7 @@ export function ScreenCatalogBrowser({ active = true }: { active?: boolean }) {
     </ul></nav>
     <section className="afr2-screen-library" aria-label="Pantalla seleccionada"><header><p className="afr2-kicker">Biblioteca del ATmega · vista local</p><h2>{current.name}</h2><code>{current.code}</code></header>
       <FirmwareLibraryPreview key={previewSession} active={active} screen={current} onNavigate={setSelected} />
-      {current.siblings.length>0 && <p className="afr2-help">Vistas hermanas: {current.siblings.map(code=>AFR2_SCREEN_META[code]?.name??code).join(' ↔ ')}. Giro alterna; SW corto vuelve al listado.</p>}
+      {current.siblings.length>0 && <p className="afr2-help">Vistas hermanas: {current.siblings.map(code=>AFR2_SCREEN_META[code]?.name??code).join(' ↔ ')}. Gira hacia la pagina indicada; en radar SW corto abre opciones y en IR usa largo para volver.</p>}
       {current.navigationMode==='live-angle-control' && <p className="afr2-help">En el equipo, giro controla el angulo y SW corto vuelve. El control Web del actuador esta en Sensores → Distancia y servo.</p>}
       <p className="afr2-help">{current.returnsToContext ? 'El aviso regresa al contexto anterior.' : current.parent ? `Padre: ${AFR2_SCREEN_META[current.parent]?.name ?? current.parent}.` : 'Pantalla inicial.'} Acciones: {current.actions.join(' · ')}.</p>
       {current.localCredentials && <p className="afr2-help">La clave AP se muestra solo en la OLED fisica; su captura remota permanece protegida.</p>}

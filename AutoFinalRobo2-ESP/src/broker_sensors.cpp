@@ -65,7 +65,7 @@ bool Broker::finishSensors(const BrokerRequest &q,const MegaResult &r){
     case AFR2_EXT_UI_STATUS:
         o["screenCode"]=afr2_get_u32(p);o["navigationRevision"]=afr2_get_u32(p+4);o["selection"]=p[8];o["firstVisible"]=p[9];o["private"]=p[10]!=0;
         if(screenRevision_!=afr2_get_u32(p+4) || screenCode_!=afr2_get_u32(p)){
-            screenRevision_=afr2_get_u32(p+4);screenCode_=afr2_get_u32(p);JsonDocument change;change.set(o);broadcast("robot.screen.changed",change);
+            screenRevision_=afr2_get_u32(p+4);screenCode_=afr2_get_u32(p);JsonDocument change;change.set(o);for(const auto &s:sessions_)if(s.used && s.ready && s.screenSubscribed && (uint32_t)(millis()-s.screenSubscriptionAt)<=3500u){JsonDocument f;f["schema"]="afr2-ws-1";f["type"]="evt";f["event"]="robot.screen.changed";f["ts"]=millis();f["payload"].set(change);if(auto *client=ws_.client(s.id)){String data;serializeJson(f,data);if(!client->queueIsFull())client->text(data);}}
         }break;
     case AFR2_EXT_MOTION_HALT:o["stopped"]=true;break;
     }

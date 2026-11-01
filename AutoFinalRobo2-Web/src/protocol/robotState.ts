@@ -1,7 +1,8 @@
+/* AFR2-20261029-27: quick controls/radar/PWM/WS integration; prior authors retained. */
 /** AFR2-20261024-15. Optional pose from the compiled EX01 AVR/ESP producers.
  * Hall/geometry calibration and physical acceptance remain pending.
  * Never integrate drive commands into measured position. */
-export const ROBOT_MODES = ['idle', 'manual', 'line-follow', 'wheel-test', 'goto', 'sequence', 'fault', 'unknown'] as const;
+export const ROBOT_MODES = ['idle', 'manual-pwm', 'manual', 'line-follow', 'wheel-test', 'goto', 'sequence', 'fault', 'unknown'] as const;
 export type RobotMode = typeof ROBOT_MODES[number];
 export interface RobotPose {
   schema: 'afr2-pose-1';
@@ -20,6 +21,8 @@ export interface RobotStateSnapshot {
   pose: RobotPose | null;
   gotoState: string;
   preferencesState: number | null;
+  configurationDirty: boolean | null;
+  longPressMs: number | null;
   origin: 'none' | 'local' | 'web' | 'unknown';
   fault: number | null;
 }
@@ -41,6 +44,8 @@ export function parseRobotState(value: Record<string, unknown>): RobotStateSnaps
     ageMs: uint32(value.ageMs) ? value.ageMs : null,
     receivedAtMs: Date.now(), pose,
     gotoState: typeof value.gotoState === 'string' ? value.gotoState : 'unknown',
+    configurationDirty: typeof value.configurationDirty==='boolean'?value.configurationDirty:null,
+    longPressMs: uint32(value.longPressMs) && value.longPressMs>=800 && value.longPressMs<=3000 ? value.longPressMs : null,
     preferencesState: uint32(value.preferencesState) ? value.preferencesState : null,
     origin: value.origin === 'none' || value.origin === 'local' || value.origin === 'web' ? value.origin : 'unknown',
     fault: uint32(value.fault) ? value.fault : null,

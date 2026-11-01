@@ -1,3 +1,5 @@
+import { MotorSelector } from '../../components/ui/MotorSelector';
+/* AFR2-20261029-27: quick controls/radar/PWM/WS integration; prior authors retained. */
 import { Chevron } from '../../components/ui/Chevron';
 import { SectionHeader } from '../../components/ui/SectionHeader';
 import { CollapsiblePanel } from '../../components/ui/CollapsiblePanel';
@@ -39,7 +41,7 @@ export function ControlPage() {
     capabilities,
     robotState,
     triggerEmergencyStop,
-    sendDriveCommand,
+    sendPwmCommand,
     executeCommandWithToast,
     stopRecord,
     setOperationActivity,
@@ -48,7 +50,8 @@ export function ControlPage() {
   const [activeTask, setActiveTask] = useState<ControlTaskId>(() => entryParams.get('tarea') === 'wheel' ? 'wheel' : 'drive');
   const [cardExpanded, setCardExpanded] = useState(true);
   const [linearSpeedMmS, setLinearSpeedMmS] = useState(100);
-  const [angularSpeedMradS, setAngularSpeedMradS] = useState(800);
+  const [manualPowerPct,setManualPowerPct]=useState(50);
+  const [turnPowerPct,setTurnPowerPct]=useState(50);
   const [activePadId, setActivePadId] = useState<string | null>(null);
   const [requestedMotion, setRequestedMotion] = useState<RequestedMotion | null>(null);
   const [selectedMode, setSelectedMode] = useState<RobotModeOption>('idle');
@@ -88,7 +91,7 @@ export function ControlPage() {
 
   const holdTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const holdGeneration = useRef(0);
-  const holdVector = useRef<RequestedMotion & { id: string } | null>(null);
+  const holdVector = useRef<{id:string;label:string;forwardPct:number;strafePct:number;turnPct:number}|null>(null);
   const consumedStop = useRef(stopRecord.lastIssuedAtMs);
   useEffect(() => {
     mounted.current = true;
@@ -104,10 +107,17 @@ export function ControlPage() {
     wsState === 'ready' &&
     megaLinkState === 'ready' &&
     stopRecord.status !== 'sending' && stopRecord.status !== 'unconfirmed-offline';
-  const canDrive = canPrepareControl && capabilities.mecanum_drive.implemented;
+  // AFR2-20261030-18: one permission and one reason for pad and touch.
+  const driveBlockedReason = wsState !== 'ready' ? 'Falta conexion WebSocket con el ESP.'
+    : megaLinkState !== 'ready' ? 'Falta enlace del ESP con el ATmega.'
+    : stopRecord.status === 'sending' ? 'Esperando la confirmacion de STOP.'
+    : stopRecord.status === 'unconfirmed-offline' ? 'El ultimo STOP sigue sin confirmar. Volve a enviar STOP con el enlace activo.'
+    : !capabilities.manual_pwm?.implemented ? capabilities.manual_pwm?.reason || 'El ESP todavia no informa PWM manual disponible.'
+    : null;
+  const canDrive = driveBlockedReason === null;
 
   const gotoAvailable =
-    canDrive &&
+    canPrepareControl && capabilities.mecanum_drive.implemented &&
     capabilities.wheel_odometry.present &&
     capabilities.wheel_odometry.implemented &&
     capabilities.wheel_odometry.calibrated &&
@@ -126,10 +136,10 @@ export function ControlPage() {
       setActivePadId(null);
       setRequestedMotion(null);
       if (emitZero && hadHold) {
-        void sendDriveCommand(0, 0, 0).catch(() => { void triggerEmergencyStop('safety'); });
+        void sendPwmCommand(0, 0, 0).catch(() => { void triggerEmergencyStop('safety'); });
       }
     },
-    [sendDriveCommand, setOperationActivity, triggerEmergencyStop]
+    [sendPwmCommand, setOperationActivity, triggerEmergencyStop]
   );
 
   const activeHoldStop = useRef(stopActiveHold);activeHoldStop.current=stopActiveHold;
@@ -180,10 +190,10 @@ export function ControlPage() {
 
   const startHoldVector = async (id: string, label: string, vx: number, vy: number, wz: number) => {
     if (!canDrive || document.visibilityState !== 'visible') return;
-    const next = { id, label, vxMmS: vx, vyMmS: vy, wzMradS: wz };
+    const next = { id, label, forwardPct:vx, strafePct:vy, turnPct:wz };
     // Direct command heartbeat; drag/speed changes replace the target.
     if (holdVector.current) {
-      holdVector.current = next; setActivePadId(id); setRequestedMotion(next);
+      holdVector.current = next; setActivePadId(id); setRequestedMotion(null);
       return;
     }
     stopActiveHold(false);
@@ -194,11 +204,11 @@ export function ControlPage() {
     if (!mounted.current || generation !== holdGeneration.current || latestStop.current !== stopAtStart || !holdVector.current) return;
     setActivePadId(holdVector.current.id);
     setDriveError(null);
-    setRequestedMotion(holdVector.current);
+    setRequestedMotion(null);
     const send = () => {
       if (generation !== holdGeneration.current || !holdVector.current) return;
       const target = holdVector.current;
-      void sendDriveCommand(target.vxMmS, target.vyMmS, target.wzMradS).catch(e => {
+      void sendPwmCommand(target.forwardPct, target.strafePct, target.turnPct).catch(e => {
         if (generation !== holdGeneration.current) return;
         stopActiveHold(false); setDriveError(e instanceof Error ? e.message : 'Consigna rechazada.');
         void triggerEmergencyStop('safety');
@@ -314,12 +324,12 @@ export function ControlPage() {
                 {!canDrive && (
                   <StatusNotice
                     tone="info"
-                    title="Simulacion local disponible"
-                    badge="Control tactil"
+                    title={wsState !== 'ready' || megaLinkState !== 'ready' ? 'Simulacion local disponible' : 'Movimiento manual no disponible'}
+                    badge="Movimiento manual"
                   >
                     {wsState !== 'ready' || megaLinkState !== 'ready'
                       ? 'Abri Control tactil para simular sin conexion al robot. Las ordenes fisicas requieren enlace Web↔ESP↔ATmega2560.'
-                      : `Control tactil permite simular localmente. Robot: ${capabilities.mecanum_drive.reason || 'Espera la confirmacion de parada antes de operar.'}`}
+                      : driveBlockedReason}
                   </StatusNotice>
                 )}
 
@@ -335,7 +345,7 @@ export function ControlPage() {
                   <div className="lg:col-span-7 afr2-glass-panel rounded-[var(--radius-md)] p-5 space-y-4">
                     <h2 className="text-base font-semibold text-[var(--text)]">Mover el robot</h2>
                     <MecanumDrivePad disabled={!canDrive} activeId={activePadId}
-                      onStart={intent => { void startHoldVector(intent.id, intent.label, intent.vx * linearSpeedMmS, intent.vy * linearSpeedMmS, intent.wz * angularSpeedMradS); }}
+                      onStart={intent => { void startHoldVector(intent.id, intent.label, intent.vx * manualPowerPct, intent.vy * manualPowerPct, intent.wz * turnPowerPct); }}
                       onStop={() => stopActiveHold(true)} />
                   </div>
                   {/* Parametros de velocidad y modo operativo */}
@@ -344,8 +354,8 @@ export function ControlPage() {
                       Parametros y modo operativo
                     </h2>
 
-                    <RangeNumberField label="Velocidad lineal" value={linearSpeedMmS} min={10} max={maxSpeed} step={10} unit="mm/s" onChange={setLinearSpeedMmS} />
-                    <RangeNumberField label="Velocidad angular" value={angularSpeedMradS} min={200} max={2000} step={100} unit="mrad/s" onChange={setAngularSpeedMradS} />
+                    <RangeNumberField label="Potencia de traslacion" value={manualPowerPct} min={0} max={100} step={5} unit="% del limite PWM" onChange={setManualPowerPct} />
+                    <RangeNumberField label="Potencia de giro" value={turnPowerPct} min={10} max={100} step={5} unit="% del limite PWM" onChange={setTurnPowerPct} />
                     <div className="space-y-2 pt-2 border-t border-[var(--border-default)]">
                       <span className="block text-xs font-medium text-[var(--text-muted)]">
                         Modo operativo
@@ -355,7 +365,7 @@ export function ControlPage() {
                           <button
                             key={mode}
                             type="button"
-                            disabled={!canPrepareControl || (mode !== 'idle' && !capabilities.mecanum_drive.implemented) || (mode === 'line-follow' && !capabilities.line_follow.implemented)}
+                            disabled={!canPrepareControl || (mode === 'manual' && !capabilities.manual_pwm?.implemented) || (mode === 'line-follow' && !capabilities.line_follow.implemented)}
                             aria-pressed={selectedMode === mode}
                             onClick={() => void handleModeSubmit(mode)}
                             className="afr2-segmented-btn disabled:opacity-55 disabled:cursor-not-allowed"
@@ -396,20 +406,7 @@ export function ControlPage() {
                 <form onSubmit={handleWheelTestSubmit} className="space-y-4">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label htmlFor="wheel-select" className="block text-xs font-medium text-[var(--text-muted)] mb-1">
-                        Rueda Mecanum
-                      </label>
-                      <span className="afr2-select-wrap"><select
-                        id="wheel-select"
-                        value={testWheel}
-                        onChange={(e) => setTestWheel(e.target.value as WheelId)}
-                        className="afr2-glass-field w-full min-h-11 rounded-[var(--radius-sm)] px-3 py-2 text-base text-[var(--text)]"
-                      >
-                        <option value="FL">FL — Delantera Izquierda</option>
-                        <option value="FR">FR — Delantera Derecha</option>
-                        <option value="RL">RL — Trasera Izquierda</option>
-                        <option value="RR">RR — Trasera Derecha</option>
-                      </select><Chevron /></span>
+                      <MotorSelector value={testWheel} onChange={setTestWheel} />
                     </div>
 
                     <div>
@@ -510,7 +507,7 @@ export function ControlPage() {
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div>
                       <label htmlFor="goto-x" className="block text-xs font-medium text-[var(--text-muted)] mb-1">
-                        ΔX (mm)
+                        Î”X (mm)
                       </label>
                       <input
                         id="goto-x"
@@ -525,7 +522,7 @@ export function ControlPage() {
                     </div>
                     <div>
                       <label htmlFor="goto-y" className="block text-xs font-medium text-[var(--text-muted)] mb-1">
-                        ΔY (mm)
+                        Î”Y (mm)
                       </label>
                       <input
                         id="goto-y"
@@ -540,7 +537,7 @@ export function ControlPage() {
                     </div>
                     <div>
                       <label htmlFor="goto-theta" className="block text-xs font-medium text-[var(--text-muted)] mb-1">
-                        Δθ (mrad)
+                        Î”Î¸ (mrad)
                       </label>
                       <input
                         id="goto-theta"
@@ -631,9 +628,9 @@ export function ControlPage() {
       />
 
       <ManualDriveOverlay open={manualOverlayOpen} origin={manualOrigin} onClose={() => setManualOverlayOpen(false)}
-        onRelease={() => stopActiveHold(true)} canDrive={canDrive && maxSpeed >= 10} speed={linearSpeedMmS} maxSpeed={maxSpeed}
-        onSpeedChange={setLinearSpeedMmS} stopSignal={stopRecord.lastIssuedAtMs} error={driveError}
-        onDirectionChange={(direction: ManualDirection) => { const speed = Math.floor(Math.min(linearSpeedMmS, maxSpeed) / (Math.abs(direction.vx) + Math.abs(direction.vy))); void startHoldVector(`touch-${direction.id}`, direction.label, direction.vx * speed, direction.vy * speed, 0); }} />
+        onRelease={() => stopActiveHold(true)} canDrive={canDrive} blockedReason={driveBlockedReason} speed={manualPowerPct} maxSpeed={100}
+        onSpeedChange={setManualPowerPct} stopSignal={stopRecord.lastIssuedAtMs} error={driveError}
+        onDirectionChange={(direction: ManualDirection) => { const speed = Math.floor(manualPowerPct / (Math.abs(direction.vx) + Math.abs(direction.vy))); void startHoldVector(`touch-${direction.id}`, direction.label, direction.vx * speed, direction.vy * speed, 0); }} />
       <Disclosure
         title="Supervision del control Web"
         meta="ATmega2560 autoritativo"

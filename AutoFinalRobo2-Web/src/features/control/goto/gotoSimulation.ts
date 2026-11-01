@@ -1,3 +1,4 @@
+import { MOTION_REFERENCE } from '../motionReference';
 /** AFR2-20261024-10. Local ideal Mecanum translation planner, not robot odometry.
  * X points forward, Y left, in millimetres. Heading remains zero. A map target
  * is absolute in this simulated frame; cardinal steps start at the last endpoint.
@@ -78,7 +79,8 @@ export function sampleGotoPlan(plan: GotoPlan, atMs: number): {
   }
   // Constant heading permits analytic wheel travel from net X/Y displacement.
   // It remains deterministic when scrubbing, replaying or returning to origin.
-  const wheelAngles = wheelAnglesFromTravel({ fl: point.xMm - point.yMm, fr: point.xMm + point.yMm,
-    rl: point.xMm + point.yMm, rr: point.xMm - point.yMm });
+  const forwardTravelMm = point.xMm * MOTION_REFERENCE.forwardWheelSign;
+  const wheelAngles = wheelAnglesFromTravel({ fl: forwardTravelMm - point.yMm, fr: forwardTravelMm + point.yMm,
+    rl: forwardTravelMm + point.yMm, rr: forwardTravelMm - point.yMm });
   return { pose: pose(point, Math.floor(cursor / 10)), trail, activeIndex, completed, wheelAngles };
 }

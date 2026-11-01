@@ -18,7 +18,8 @@ namespace AFR2Loader
         {
             if (data == null) return;
             Form owner = source == null ? this : source.FindForm() ?? this;
-            try { Clipboard.SetDataObject(data, true, 3, 100); ClipboardToast.Display(owner, "Copiado al portapapeles"); }
+            try { Clipboard.SetDataObject(data, true, 3, 100); ClipboardToast.Display(owner, "Copiado al portapapeles");
+                if (source == serialText || source == serialConvert) { string copied = data.GetData(DataFormats.UnicodeText) as string; if (!String.IsNullOrEmpty(copied)) RememberCopiedSerial(copied); } }
             catch (ExternalException) { ClipboardToast.Display(owner, "No se pudo copiar. Volvé a intentarlo."); }
         }
         void EnableTextCopyFeedback(TextBoxBase text)

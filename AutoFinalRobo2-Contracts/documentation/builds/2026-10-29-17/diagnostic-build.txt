@@ -1,0 +1,3 @@
+powershell.exe -NoProfile -NonInteractive -Command "[void][System.IO.Directory]::CreateDirectory('build')"
+avr-gcc.exe -DF_CPU=16000000UL -Iinclude -I../AutoFinalRobo2-Contracts/contracts -DAFR2_TWI_INTERNAL_PULLUPS=1 -DAFR2_OLED_STARTUP_MS=500u -mmcu=atmega2560 -std=gnu11 -Os -Wall -Wextra -ffunction-sections -fdata-sections -Wl,--gc-sections,-Map,build/afr2-i2c-diagnostic.map -o build/afr2-i2c-diagnostic.elf service/i2c_uart0_diagnostic.c src/services/afr2_i2c_manager.c src/platform/afr2_twi.c src/platform/afr2_board.c src/input/afr2_encoder_ui.c src/display/afr2_oled.c src/display/font7x10.c
+avr-objcopy.exe -O ihex -R .eeprom build/afr2-i2c-diagnostic.elf build/afr2-i2c-diagnostic.hex

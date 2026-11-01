@@ -1,0 +1,93 @@
+{
+  "change": "AFR2-20261028-13",
+  "date": "2026-10-28",
+  "loaderVersion": "0.9.3",
+  "userEvidence": "Usuario informa detección ESP mediante flasher Mega; sin datos de COM/baud/log/hash. No confirma escritura ni nueva interfaz.",
+  "state": {
+    "loader": "Fuente modificada, revisión manual por lectura/diff; sin compilación, validadores, tests, GUI, COM ni flash.",
+    "atmega": "Sin cambios, detección mediante servicio reportada por usuario.",
+    "esp": "Sin cambios, escritura y verificación pendientes de evidencia.",
+    "web": "Sin cambios.",
+    "cad": "Sin cambios."
+  },
+  "files": [
+    {
+      "path": "AutoFinalRobo2-Loader/src/Runner.cs",
+      "author": "Koba Chajchir / fuentes propias AFR2",
+      "adaptation": "Lectura stdout/stderr por bloques, fragmentos parciales, heartbeat y drenaje; conserva salida/cancelación/timeout.",
+      "sha256": "3274ae5db06713c761abe5d4d6669daae089c266e4464af6cb9974d6cbdf8f29"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/CommandFeedback.cs",
+      "author": "Koba Chajchir / fuentes propias AFR2",
+      "adaptation": "Instantánea de actividad y extracción limitada a porcentaje Writing at; sin efectos en verificación.",
+      "sha256": "d253be110b901af7fe7dc55148672f79ee43487fe4d209bf5492a22b54e6c591"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/MainForm.Progress.cs",
+      "author": "Koba Chajchir / fuentes propias AFR2",
+      "adaptation": "Panel de actividad coalescido en hilo UI y barra determinada solo por porcentaje informado.",
+      "sha256": "cbcb19e6ce53d537e3b197b3123b648091a59e909ddf7f0b4b65cd1700bf63d1"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/MainForm.cs",
+      "author": "Koba Chajchir / fuentes propias AFR2",
+      "adaptation": "Integra panel, temporizador y ciclo de vida por operación; limpia resultado previo.",
+      "sha256": "69e38818e14d442fc051ca24269c01db67d88af78d0f336cc273e3b29f17adfb"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/MainForm.Workflow.cs",
+      "author": "Koba Chajchir / fuentes propias AFR2",
+      "adaptation": "Resumen global y tooltip de actividad desde todas las pestañas.",
+      "sha256": "f36b04f21173ce97e3469be264e43d01ca73f215a8a8666f2c0c6399811e8495"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/JobState.cs",
+      "author": "Koba Chajchir / fuentes propias AFR2",
+      "adaptation": "Versión de fuente 0.9.3.",
+      "sha256": "94ab5595b8fe9ce6fc2fd02c4e5665bd163bd75b2e08a44b5f827e63ff81e395"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/README.md",
+      "author": "Koba Chajchir / fuentes propias AFR2",
+      "adaptation": "Documenta feedback y límites.",
+      "sha256": "358d34407a4b7ed3b0391ae12eb3899903f655f13102a6221656bb55058f6bc0"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/MANUAL.html",
+      "author": "Koba Chajchir / fuentes propias AFR2",
+      "adaptation": "Manual vigente 0.9.3 y explicación del avance.",
+      "sha256": "304069b94c34abe031e1f27186bb22e881a62e23b972956beae1375e7b3ba13c"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/MCP.md",
+      "author": "Koba Chajchir / fuentes propias AFR2",
+      "adaptation": "Versión vigente y distinción GUI/MCP sin ampliar operaciones.",
+      "sha256": "3f56af0e4d72f71b14187cdfdf4872152bd5b77d9b9af5fe8bd74fbf533dda21"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/README.md",
+      "author": "Koba Chajchir / fuentes propias AFR2",
+      "adaptation": "Índice de cambio y estado real.",
+      "sha256": "7c77f17e7c9f70f71ad41885ca6deec950b82eecf23d28c65f1c7420cb94cd7a"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/INFORME_ADAPTACION.md",
+      "author": "Koba Chajchir / fuentes propias AFR2",
+      "adaptation": "Informe de cambio y estado real.",
+      "sha256": "84f3c2482c8de2bd27a15c591616fd5fef07c9c0b6eaa9c6c65b4ab13260c7c9"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/CHANGELOG.md",
+      "author": "Koba Chajchir / fuentes propias AFR2",
+      "adaptation": "Entrada cronológica del cambio.",
+      "sha256": "562c61775bb61ade1794d21c7895bf995ac1f1634a17d27a5a9ee82e850797d8"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/changes/2026-10-28-13-loader-feedback-carga.md",
+      "author": "Koba Chajchir / fuentes propias AFR2",
+      "adaptation": "Pedido, evidencia humana limitada, implementación y pendientes.",
+      "sha256": "e3aa7d06f87832ebcabb7f788e489553a2e8d07d33e8db0eabde96d10c7a685f"
+    }
+  ]
+}

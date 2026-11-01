@@ -1,3 +1,19 @@
+> **AFR2-20261101-02:** [Arbol y gestos del C vigente](UI_SCREEN_FLOW.md), cotejados con el Simulador UI. Esta revision distingue el flujo actual del diseno e hitos historicos inferiores; corto en IR/servo no retorna, largo vuelve por contexto. Solo fuente, sin ejecucion.
+
+> **Árbol fuente07:** Sistema y Estado/Pruebas reorganizados; ajustes de encoder/servo en Preferencias y geometría nominal fija. [Matriz vigente](../changes/2026-10-30-07-ui-integral.md). Árboles inferiores son históricos.
+
+> **AFR2-20261030-05 parcial:** orden vigente de fuente y pendientes en [ficha](../changes/2026-10-30-05-oled-ajustes-parciales.md); el árbol histórico inferior conserva contexto.
+
+> **AFR2-20261029-29:** desde dashboard, corto abre menu completo010002; largo al soltar abre pantallas rapidas010003. Ambos accesos conservan retorno al origen por historial. Sustituye el acceso comun de28. Fuente sin compilar/cargar.
+
+> **AFR2-20261029-28:** clic corto desde dashboard abre Controles rapidos (010003); largo conserva su comportamiento al soltar. Fuente AVR y Web, sin compilar ni cargar. Sustituye la reserva anterior del corto en Inicio.
+
+> **Vigente AFR2-20261029-27:** largo >=800ms ejecutado exclusivamente al soltar: Inicio -> Controles rápidos -> Inicio, resto atrás por contexto/historial; corto reservado en Inicio. Configuración y pruebas conserva el árbol previo bajo la sexta tarjeta. Excepción Sí/No obligatoria y cancelación Hall sin perder drafts. Radar y servo comparten editor; escala/rastro se guardan con EEPROMv5. [Contrato fuente y aceptación pendiente](../contracts/QUICK_RADAR_ACTUATORS_9.md). Las reglas anteriores que describen largo global a menú/Volver obligatorio son históricas. Sin build, validadores ni carga.
+
+> **AFR2-20261029-26:** Batería añadida a Sistema en fuente con Realizar medición / Ver medición / Volver, detalle0x03003A. Web agrega pill e icono por voltaje y confirmación de reinicios. Fuente EX01v9 sin build/generador/pruebas. [Contrato9](../contracts/BATTERY_MEASUREMENT_9.md).
+
+> **AFR2-20261029-20:** Hall una vuelta conserva Iniciar/Guardar/Descartar/Volver, sin Finalizar vuelta separado. Iniciar elige rueda1FL/2FR/3RL/4RR → corto comienza → corto termina. Largo en selector/conteo cancela al menú Hall con aviso, sin borrar drafts previos. Estado muestra4CPR y pendientes. Volver con drafts pregunta Si/No sin Volver; largo no evade esa decisión. [Contrato y excepciones contextuales](../contracts/HALL_CALIBRATION_WIZARD.md). Fuente OLED/Web vinculada, sin prueba física; no flashear.
+
 ## Vigente AFR2-20261025-14
 
 Sensores → Distancia y servo (Ver distancia: Radar↔Numérica; Control del servo: Ángulo/Centrar/Desactivar/Volver; Radar automático: Iniciar/Detener/Límites/Velocidad/Estabilización/Intervalo/Inversión/Volver; Volver), Línea IR (Gráfica↔Valores), Ruedas y Volver. Vistas hermanas cortas retornan al listado; largo abre principal. Árbol integrado en fuente C y copia Web, sin ensayo. Ver SENSORS_RADAR_8.
@@ -100,6 +116,11 @@ Menú principal (SW largo)
     Parámetros del encoder
     Volver
   Sistema
+    Batería
+      Realizar medición de batería
+      Ver medición (voltios / estado / edad / calibración)
+        Volver
+      Volver
     Reinicio
       Reiniciar ATMEGA
       Reiniciar ESP

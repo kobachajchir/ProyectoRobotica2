@@ -1,4 +1,4 @@
-/* VIS-036: local, nonmodal component cards use the shared popover material. */
+/* AFR2-20261101-03 / VIS-048: shared simulator environment and solid component cards. Prior authors retained. */
 .afr2-models-page { display: flex; flex-direction: column; gap: 24px; }
 .afr2-models-page .afr2-workspace { margin-top: 24px; }
 .afr2-models-viewer { margin: 18px 0; }
@@ -44,7 +44,7 @@
   overflow: hidden;
   border: 1px solid var(--border-default);
   border-radius: var(--radius-lg);
-  background: var(--oled-bezel);
+  background: var(--sim-scene-sky);
 }
 .afr2-model-inspection__points,
 .afr2-model-inspection__leaders {
@@ -57,8 +57,8 @@
 .afr2-model-inspection__points { z-index: 1; }
 .afr2-model-inspection__points[hidden] { display: none; }
 .afr2-model-inspection__toolbar select:disabled { opacity: .55; cursor: not-allowed; }
-.afr2-model-inspection__leaders { overflow: hidden; color: var(--action); }
-.afr2-model-inspection__leaders line { stroke: currentColor; stroke-width: 1.5; opacity: .75; }
+.afr2-model-inspection__leaders { overflow: hidden; color: var(--sim-scene-ink); }
+.afr2-model-inspection__leaders line { stroke: currentColor; stroke-width: 1.5; opacity: 1; }
 .afr2-model-inspection__leaders circle { fill: currentColor; stroke: var(--surface-solid); stroke-width: 1.5; }
 .afr2-model-inspection__leaders g[data-selected="true"] line { stroke-width: 2; opacity: 1; }
 .afr2-model-point {
@@ -84,7 +84,7 @@
   place-items: center;
   width: 28px;
   height: 28px;
-  border: 1px solid var(--action-border);
+  border: 1px solid var(--action);
   border-radius: var(--radius-pill);
   background: var(--surface-solid);
   color: var(--action);
@@ -99,7 +99,7 @@
   background: var(--action);
   color: var(--text-on-action);
   border-color: var(--action);
-  outline: 3px solid var(--action-subtle);
+  outline: 3px solid var(--surface-solid);
   outline-offset: 2px;
 }
 .afr2-model-point:active .afr2-model-point__number { transform: scale(.95); }
@@ -134,18 +134,25 @@
   width: min(320px, calc(100% - 32px));
   max-height: calc(100% - 32px);
   color: var(--text);
+  background: var(--surface-solid);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  box-shadow: var(--glass-popover-shadow);
   overflow: hidden;
+  overflow-wrap: anywhere;
 }
 .afr2-model-info__heading {
   display: flex;
   align-items: flex-start;
   gap: var(--space-2);
   padding: var(--space-4) var(--space-3) var(--space-3) var(--space-4);
+  background: var(--surface-subtle);
+  border-bottom: 1px solid var(--border-default);
   flex-shrink: 0;
 }
 .afr2-model-info__heading > div { flex: 1; min-width: 0; }
-.afr2-model-info__heading h2 { margin-top: var(--space-1); font-size: var(--text-lg); font-weight: 700; line-height: 1.25; color: var(--text-strong); }
-.afr2-model-info__heading .afr2-kicker { font-size: var(--text-xs); }
+.afr2-model-info__heading :is(h2, h3) { margin-top: var(--space-1); font-size: var(--text-lg); font-weight: 700; line-height: 1.25; color: var(--text-strong); }
+.afr2-model-info__heading .afr2-kicker { margin: 0; color: var(--text-muted); font-size: 12px; }
 .afr2-model-info__icon { color: var(--action); padding-top: var(--space-1); }
 .afr2-model-info__close {
   display: grid;
@@ -154,27 +161,28 @@
   width: var(--touch-target-min);
   height: var(--touch-target-min);
   margin-top: -8px;
-  border: 1px solid var(--border-subtle);
+  border: 1px solid var(--border-strong);
   border-radius: var(--radius-sm);
-  background: transparent;
-  color: var(--text-muted);
+  background: var(--surface-solid);
+  color: var(--text-strong);
   cursor: pointer;
 }
 .afr2-model-info__body {
   min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
-  padding: 0 var(--space-4) var(--space-4);
-  font-size: var(--text-sm);
-  line-height: 1.6;
+  padding: var(--space-4);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.65;
 }
 .afr2-model-info__model { margin-bottom: var(--space-2); color: var(--action); font-weight: 600; }
 .afr2-model-info dl { display: grid; gap: var(--space-2); margin-top: var(--space-4); }
 .afr2-model-info dl > div { padding-top: var(--space-2); border-top: 1px solid var(--border-subtle); }
-.afr2-model-info dt { color: var(--text-muted); font-size: var(--text-xs); }
-.afr2-model-info dd { color: var(--text-strong); font-weight: 600; }
+.afr2-model-info dt { color: var(--text-muted); font-size: 14px; }
+.afr2-model-info dd { margin: 4px 0 0; color: var(--text-strong); font-weight: 600; }
 .afr2-model-info footer { flex-shrink: 0; padding: var(--space-3) var(--space-4) var(--space-4); border-top: 1px solid var(--border-subtle); }
-.afr2-model-info footer .afr2-help { margin-top: var(--space-2); text-align: center; }
+.afr2-model-info footer .afr2-help { margin: var(--space-2) 0 0; color: var(--text-muted); text-align: center; }
 .afr2-model-info__action {
   display: flex;
   align-items: center;
@@ -188,6 +196,8 @@
   font-size: var(--text-sm);
   font-weight: 600;
   text-decoration: none;
+  padding: var(--space-2) var(--space-3);
+  text-align: center;
 }
 .afr2-model-inspection__help { margin-top: var(--space-3); }
 .afr2-model-inspection__loading { display: grid; place-items: center; min-height: 480px; border-radius: var(--radius-lg); background: var(--surface-subtle); color: var(--text-muted); font-size: var(--text-sm); }
@@ -202,3 +212,18 @@
 @media (prefers-reduced-transparency: reduce) {
   .afr2-model-info { background: var(--surface-solid); backdrop-filter: none; -webkit-backdrop-filter: none; }
 }
+
+.afr2-model-info__body > p { margin: 0 0 var(--space-3); color: var(--text); }
+.afr2-model-info__body > .afr2-model-info__model { color: var(--action); }
+.afr2-model-info__heading :is(h2, h3) { margin-bottom: 0; }
+.afr2-model-info__action > svg { flex-shrink: 0; }
+.afr2-model-point:focus-visible { outline: 2px solid var(--sim-scene-ink); outline-offset: 2px; background: var(--surface-solid); }
+.afr2-model-info__close:focus-visible,
+.afr2-model-info__action:focus-visible,
+.afr2-model-inspection__toolbar select:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
+@media (hover: hover) and (pointer: fine) {
+  .afr2-model-info__close:hover { background: var(--surface-subtle); border-color: var(--text-muted); }
+  .afr2-model-info__action:hover { background: var(--action-hover); color: var(--text-on-action); }
+}
+.afr2-model-info__action:active { background: var(--action-active); color: var(--text-on-action); }
+.afr2-model-inspection__fallback { margin: var(--space-4); padding: var(--space-4); border: 1px solid var(--border-strong); border-radius: var(--radius-md); background: var(--surface-solid); color: var(--text); font-size: 14px; }

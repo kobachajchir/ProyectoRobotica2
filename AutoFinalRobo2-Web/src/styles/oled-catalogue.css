@@ -26,7 +26,7 @@
 .afr2-screen-library header code { color:var(--text-muted); font-size:12px; }
 .afr2-oled-with-side { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:12px; align-items:center; }
 .afr2-oled-with-side > :only-child { grid-column:1/-1; }
-.afr2-oled-side { display:flex; align-items:stretch; gap:8px; }
+.afr2-oled-side { display:grid; grid-template-columns:repeat(2,44px); align-items:stretch; gap:8px; }
 .afr2-oled-row-selector, .afr2-oled-page-controls { display:flex; flex-direction:column; justify-content:space-between; gap:8px; }
 .afr2-oled-side button { width:44px; min-height:44px; display:grid; place-items:center; padding:8px; border:1px solid var(--border-default); border-radius:var(--radius-sm); background:var(--surface-solid); color:var(--text); cursor:pointer; }
 .afr2-oled-side button[aria-pressed="true"] { color:var(--text-on-action); background:var(--action); border-color:var(--action-border); }
@@ -38,3 +38,8 @@
 .afr2-oled-data-required p { margin:0; color:var(--text-muted); font-size:13px; }
 @media (max-width:1050px) { .afr2-screen-catalogue { grid-template-columns:minmax(0,1fr); } .afr2-screen-tree { max-height:340px; } }
 @media (prefers-reduced-motion:reduce) { .afr2-screen-tree-toggle .afr2-chevron { transition:none; } }
+
+/* AFR2-20261029-19: explicit return below row/scroll controls. */
+.afr2-oled-side .afr2-oled-back { grid-column: 1 / -1; width: 100%; min-height: 40px; padding: 8px 10px; border: 1px solid var(--border-strong); border-radius: var(--radius-sm); background: var(--surface-solid); color: var(--text); font-size: 12px; cursor: pointer; }
+.afr2-oled-back:disabled { opacity: .45; cursor: default; }
+.afr2-oled-back:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }

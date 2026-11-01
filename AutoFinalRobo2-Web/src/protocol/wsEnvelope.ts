@@ -1,3 +1,4 @@
+/* AFR2-20261029-27: quick controls/radar/PWM/WS integration; prior authors retained. */
 /**
  * Sobre JSON y tipos del contrato Web <-> ESP <-> ATmega2560 (AFR2-20261023-09 / AFR2-20261023-21)
  * Esquema: afr2-ws-1
@@ -26,9 +27,12 @@ export type Afr2CommandName =
   | 'system.alive'
   | 'system.info'
   | 'system.reboot'
+  | 'system.battery.get'
+  | 'system.battery.measure'
   | 'robot.stop'
   | 'robot.state'
   | 'robot.drive'
+  | 'robot.drive.pwm'
   | 'robot.mode'
   | 'robot.test.wheel'
   | 'robot.sensors'
@@ -42,6 +46,8 @@ export type Afr2CommandName =
   | 'robot.radar.stop'
   | 'robot.radar.get'
   | 'robot.screen.status'
+  | 'robot.screen.subscribe'
+  | 'robot.touch.ui'
   | 'wifi.info'
   | 'robot.encoders'
   | 'robot.calibrate'
@@ -58,6 +64,9 @@ export type Afr2CommandName =
   | 'robot.sequence.start'
   | 'robot.sequence.cancel'
   | 'robot.sequence.status'
+  | 'wifi.disconnect'
+  | 'wifi.retry'
+  | 'wifi.mode'
   | 'wifi.status'
   | 'wifi.scan'
   | 'wifi.configure'
@@ -139,6 +148,7 @@ export interface SubsystemCapability {
     stepMs?: number;
     maxSpeedMmS?: number;
     maxPwmPct?: number;
+    maxInputPct?: number;
     wheelDiameterMm?: number;
     radiusSumMm?: number;
     distanceBlocks?: boolean;
@@ -146,6 +156,8 @@ export interface SubsystemCapability {
 }
 
 export interface Afr2CapabilitiesMap {
+  battery_voltage?: SubsystemCapability;
+  manual_pwm?: SubsystemCapability;
   uart_bridge: SubsystemCapability;
   mecanum_drive: SubsystemCapability;
   wheel_odometry: SubsystemCapability;
@@ -334,9 +346,11 @@ export interface WifiStatusSnapshot {
   scanRunning?: boolean;
   configPersisted?: boolean | null;
   configError?: string | null;
-  staStatus?: 'disabled' | 'connected' | 'network-not-found' | 'connection-failed' | 'wrong-password' | 'connecting';
+  staStatus?: 'disabled' | 'connected' | 'network-not-found' | 'connection-failed' | 'wrong-password' | 'connecting' | 'disconnected';
   mode: 'AP' | 'STA' | 'AP_STA' | 'OFF' | 'unknown';
   staConnected: boolean;
+  staMask?:string|null; staGateway?:string|null; apMask?:string|null; apGateway?:string|null;
+  security?:string; secure?:boolean|null; apSecurity?:string; wsClients?:number; disconnectedByUser?:boolean;
   staSsid: string | null;
   staIp: string | null;
   rssiDbm: number | null;
@@ -357,6 +371,7 @@ export const EMPTY_WIFI_SNAPSHOT: WifiStatusSnapshot = {
 };
 
 export interface WifiNetworkCandidate {
+  security?:string; securityCode?:number;
   ssid: string;
   rssiDbm: number;
   channel: number;

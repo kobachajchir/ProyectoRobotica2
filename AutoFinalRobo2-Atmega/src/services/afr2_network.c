@@ -12,7 +12,7 @@ static void clear_ap(Afr2Wifi *w) {
 uint8_t Afr2App_UiPrivate(const Afr2App *a) {
     const Afr2Ui *u=a->ui;const Afr2Wifi *w=&a->product->wifi;
     uint8_t ap_notice=u->notices && u->notification[u->tail].kind==AFR2_NOTICE_NETWORK+AFR2_NET_AP_READY;
-    return u->keyboard || ((u->node==AFR2_N_AP_INFO || ap_notice) && w->display_ready && w->ap_password[0]);
+    return (u->node==AFR2_N_WIFI_DATA && w->credentials_visible) || u->keyboard || ((u->node==AFR2_N_AP_INFO || ap_notice) && w->display_ready && w->ap_password[0]);
 }
 uint8_t Afr2App_NetworkCommand(Afr2App *a,uint8_t cmd,const uint8_t *d,uint8_t n,uint8_t *out,uint8_t *length) {
     Afr2Wifi *w=&a->product->wifi;

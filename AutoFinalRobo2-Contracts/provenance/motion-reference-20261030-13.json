@@ -1,0 +1,196 @@
+{
+  "change_id": "AFR2-20261030-13",
+  "scope": "source only; D:/ProyectoRobotica2",
+  "module_status": {
+    "atmega": "source-uncompiled-unverified",
+    "web": "source-uncompiled-unverified-generated-resources-pending",
+    "esp": "unchanged-existing-forwarding",
+    "contracts": "documented",
+    "cad": "unchanged",
+    "loader": "unchanged"
+  },
+  "user_observation": "forward/back and yaw reversed; CW/CCW labels requested; lateral retained",
+  "executed_checks": [],
+  "review": "manual source/diff reading, chassis/wheel inverse equations and call paths; no executed tests or validators",
+  "shared_screen": "030009 unchanged identity; MOVE arg8 CCW / arg9 CW",
+  "wire_changed": false,
+  "eeprom_changed": false,
+  "resource_changes": "labels only; no new graphics, glyphs or buffers; memory/flash/stack not measured",
+  "generated_resources": "not executed or edited by this change; authored Web label counterpart supplied",
+  "files": [
+    {
+      "path": "AutoFinalRobo2-Atmega/src/services/afr2_product.c",
+      "adaptation": "motion reference, labels or delivery record; source snapshot",
+      "sha256": "8ac8f792726ecbdb65a85ac43992601df4a2ea7ab57c4f5e93289d28a0a2bf35",
+      "prior_authors": "retained; no reference/Documentacion changes"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/ui/afr2_menu_catalog.c",
+      "adaptation": "motion reference, labels or delivery record; source snapshot",
+      "sha256": "3be47cb4f9a132ab6c918410a6231dfb1b62b3ea825474c6039334b74d47e88a",
+      "prior_authors": "retained; no reference/Documentacion changes"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/motionReference.ts",
+      "adaptation": "motion reference, labels or delivery record; source snapshot",
+      "sha256": "b58ce4e8585748b64f7a65799008998a3c6558cd8fb2ad856f6d4d25801fd2a6",
+      "prior_authors": "retained; no reference/Documentacion changes"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/sequences/mecanumKinematics.ts",
+      "adaptation": "motion reference, labels or delivery record; source snapshot",
+      "sha256": "12f7d7cd494db724ed2f5423fdfe5346a225a43e5834388915d83fd22b961113",
+      "prior_authors": "retained; no reference/Documentacion changes"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/sequences/sequenceStorage.ts",
+      "adaptation": "motion reference, labels or delivery record; source snapshot",
+      "sha256": "e00783e24f86d6f709be715ab36b16d9ce9420dc29e8c426e635ad6b38e46b69",
+      "prior_authors": "retained; no reference/Documentacion changes"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/sequences/SequenceEditorPanel.tsx",
+      "adaptation": "motion reference, labels or delivery record; source snapshot",
+      "sha256": "e0d3837caf3fd91ea0e84bfdeaa897806a696e8ec4f01c6d623e08c0b76f55e6",
+      "prior_authors": "retained; no reference/Documentacion changes"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/goto/gotoSimulation.ts",
+      "adaptation": "motion reference, labels or delivery record; source snapshot",
+      "sha256": "730927ff0a898bb2c8ebbc50c89f3362eb1a6985ee8fbb1df40c6a8ec78d837f",
+      "prior_authors": "retained; no reference/Documentacion changes"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/manual/ManualDriveModel.tsx",
+      "adaptation": "motion reference, labels or delivery record; source snapshot",
+      "sha256": "190656cd3ad608aee098613b35aaf9956be3dbebc94778f9267a0ab66fa27ace",
+      "prior_authors": "retained; no reference/Documentacion changes"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/ChassisSpinGraphic.tsx",
+      "adaptation": "motion reference, labels or delivery record; source snapshot",
+      "sha256": "9a8ed48eb15a4f99c91260722ba3669f2f7b98b645878f86ae06f9b92e6a5735",
+      "prior_authors": "retained; no reference/Documentacion changes"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/components/robot/MecanumDrivePad.tsx",
+      "adaptation": "motion reference, labels or delivery record; source snapshot",
+      "sha256": "37eedd4093821a4745de70f0b4531e403eeba4dad02b8f7dcf1236b09fb076fb",
+      "prior_authors": "retained; no reference/Documentacion changes"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/oled/firmwareRenderer.ts",
+      "adaptation": "motion reference, labels or delivery record; source snapshot",
+      "sha256": "f9007bd4b48675e89683b1f3b9c7b0e62ae81af0f99049d82d3bbb7986295425",
+      "prior_authors": "retained; no reference/Documentacion changes"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/oled/firmwareRenderer.sources.json",
+      "adaptation": "motion reference, labels or delivery record; source snapshot",
+      "sha256": "4ad4448d974d66e0cda73b1d71e5928aea2bbe34f38b83a097ab4279a7820aea",
+      "prior_authors": "retained; no reference/Documentacion changes"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/docs/DocsPage.tsx",
+      "adaptation": "motion reference, labels or delivery record; source snapshot",
+      "sha256": "d401eacda96e735ab02f09484982849a3417b5a235bf9a236aab27f1add70d2a",
+      "prior_authors": "retained; no reference/Documentacion changes"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/afr2_motion_reference.h",
+      "adaptation": "motion reference, labels or delivery record; source snapshot",
+      "sha256": "09fc97ad0a7cc00cef2bf87be432f35979de9db93800226f08d3a5ae7d377c2d",
+      "prior_authors": "retained; no reference/Documentacion changes"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/motion_reference.json",
+      "adaptation": "motion reference, labels or delivery record; source snapshot",
+      "sha256": "4bc149b3b9587920f450e0cd890e461b0154aeeefc42d482bf96bcf9cda74e1f",
+      "prior_authors": "retained; no reference/Documentacion changes"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/MOTION_REFERENCE_13.md",
+      "adaptation": "motion reference, labels or delivery record; source snapshot",
+      "sha256": "dec70a3ce118d70d1d27629ded8394225279819b82a3d2981a6da77c7f3b7820",
+      "prior_authors": "retained; no reference/Documentacion changes"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/changes/2026-10-30-13-motion-reference.md",
+      "adaptation": "motion reference, labels or delivery record; source snapshot",
+      "sha256": "21603f246995cf5177c445b549810d8275ea3550b7b6387ed61746b23af9a816",
+      "prior_authors": "retained; no reference/Documentacion changes"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/screens.json",
+      "adaptation": "motion reference, labels or delivery record; source snapshot",
+      "sha256": "394291b3e65de6a6e2ecb353902a522c561ea33f374c71b8217ce3b886a9ab8c",
+      "prior_authors": "retained; no reference/Documentacion changes"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/overlays/connections.json",
+      "adaptation": "motion reference, labels or delivery record; source snapshot",
+      "sha256": "2a69baf428e58e18aac564f9861c3a7bc528633cf4bc630512602e21d6d5618c",
+      "prior_authors": "retained; no reference/Documentacion changes"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/commands.json",
+      "adaptation": "motion reference, labels or delivery record; source snapshot",
+      "sha256": "82365a5e1af951fdc4224b9a061f0b66dc8f3209aeb9a0e40d4563b79a00173b",
+      "prior_authors": "retained; no reference/Documentacion changes"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/README.md",
+      "adaptation": "motion reference, labels or delivery record; source snapshot",
+      "sha256": "6555e1bd672e0a37f852357465fddbc64a4c1ee00c1ad3e5bd25862d4c697d1a",
+      "prior_authors": "retained; no reference/Documentacion changes"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/CHANGELOG.md",
+      "adaptation": "motion reference, labels or delivery record; source snapshot",
+      "sha256": "a58c50adee3aea0a10e2888a28bcfb44d7302cbf25346c3259c4334cafc34e2c",
+      "prior_authors": "retained; no reference/Documentacion changes"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/NAVIGATION.md",
+      "adaptation": "motion reference, labels or delivery record; source snapshot",
+      "sha256": "fbff80dd68d475debf9534f39e9d55c058279cc535429786573b1e881cfbd20a",
+      "prior_authors": "retained; no reference/Documentacion changes"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/SCREEN_SYSTEM.md",
+      "adaptation": "motion reference, labels or delivery record; source snapshot",
+      "sha256": "d8cd619da13934b46a903baf9a07aec84f11c7620af1b2faa4b251a3c23e248c",
+      "prior_authors": "retained; no reference/Documentacion changes"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/ROBO2_PRODUCT_EXTENSION.md",
+      "adaptation": "motion reference, labels or delivery record; source snapshot",
+      "sha256": "7e4d70adc4a95024c1c49476d2026a3d7416abbd623bfcc88388a33f29e8aed4",
+      "prior_authors": "retained; no reference/Documentacion changes"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/WEB_CONTROL_MAP.md",
+      "adaptation": "motion reference, labels or delivery record; source snapshot",
+      "sha256": "43b6e32fae911c3636466cb81d3702d4af54212c80325d8697a55f426a3191a1",
+      "prior_authors": "retained; no reference/Documentacion changes"
+    },
+    {
+      "path": "INFORME_MAESTRO.md",
+      "adaptation": "motion reference, labels or delivery record; source snapshot",
+      "sha256": "9835fc4189a45ae8fab4d9b7237a4a4ddeec2f0b7661ffe02fb95ce0834847cc",
+      "prior_authors": "retained; no reference/Documentacion changes"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/INFORME_ADAPTACION.md",
+      "adaptation": "motion reference, labels or delivery record; source snapshot",
+      "sha256": "37852261dc24c07acd1ffe33429e8fce9ffb62e99a446cb702ecf28561bd11f8",
+      "prior_authors": "retained; no reference/Documentacion changes"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/INFORME_ADAPTACION.md",
+      "adaptation": "motion reference, labels or delivery record; source snapshot",
+      "sha256": "f03a5cf855d00bd769289164cdf4a2012f4ff220406c8a1d9f026fb3d205bb71",
+      "prior_authors": "retained; no reference/Documentacion changes"
+    }
+  ]
+}

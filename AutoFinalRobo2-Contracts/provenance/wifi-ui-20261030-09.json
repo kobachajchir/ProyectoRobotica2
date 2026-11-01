@@ -1,0 +1,293 @@
+{
+  "change_id": "AFR2-20261030-09",
+  "scope": "source only; D:/ProyectoRobotica2",
+  "module_status": {
+    "atmega": "source-uncompiled-unverified",
+    "esp": "source-uncompiled-unverified",
+    "web": "source-uncompiled-unverified-generator-promotion-pending",
+    "contracts": "documented",
+    "cad": "unchanged",
+    "loader": "unchanged"
+  },
+  "executed_checks": [],
+  "read_only_review": "source reading and diffs; payload lengths, producer/consumer, state/permissions and matching C/TypeScript algorithms reviewed manually",
+  "hash_definition": "sha256 of current file bytes; renderer source pins separately use UTF8 text normalized to LF",
+  "new_screen_codes": [
+    "030041",
+    "030042",
+    "030043"
+  ],
+  "resource": {
+    "name": "Icon_Lock_bits",
+    "author": "AFR2 original",
+    "dimensions": "8x12",
+    "bitmap_bytes": 12,
+    "web_copy": "reformResources.ts:WIFI_LOCK",
+    "refresh": "existing original bitmap reused",
+    "encoder": "existing encoder bitmap plus complete L via matching helper"
+  },
+  "nominal_added_fields_bytes": {
+    "Afr2Wifi": 24,
+    "Afr2Ui": 2,
+    "Afr2UiSnapshot": 3,
+    "WifiService_before_padding": 118,
+    "Broker_before_padding": 27
+  },
+  "memory_evidence": "none; field count is not linked flash/SRAM/stack approval",
+  "generated_resources": "not executed or edited by this change; explicit authored counterparts and generator source prepared",
+  "unrelated_changes": "08 touch pill,10 predev pins snapshot and11 touch header retained;09 refreshes reviewed pins again after its final AVR/TS edits",
+  "files": [
+    {
+      "path": "AutoFinalRobo2-Atmega/include/afr2_product.h",
+      "adaptation": "AVR Wi-Fi state, navigation, snapshot and raster",
+      "sha256": "b8a910110e5d315fa3524dd72ce7236bb0adca6e30431c80b6019c4a18a10123",
+      "prior_authors": "retained; reference and Documentacion original not edited by this change"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/include/afr2_menu_catalog.h",
+      "adaptation": "AVR Wi-Fi state, navigation, snapshot and raster",
+      "sha256": "59183e55bdbf785d000ccbd37585921312e34439868a292ff0e9e67ddbbfde91",
+      "prior_authors": "retained; reference and Documentacion original not edited by this change"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/include/afr2_screens.h",
+      "adaptation": "AVR Wi-Fi state, navigation, snapshot and raster",
+      "sha256": "aab4eb8914b95010eaadc59a1a5e916d59d45666115e6c09e2b4df880eaafd4c",
+      "prior_authors": "retained; reference and Documentacion original not edited by this change"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/include/afr2_icons.h",
+      "adaptation": "AVR Wi-Fi state, navigation, snapshot and raster",
+      "sha256": "129533a005cf36802cf54bd036e87791d62794a790484b0c47177a7864f7ea28",
+      "prior_authors": "retained; reference and Documentacion original not edited by this change"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/services/afr2_app.c",
+      "adaptation": "AVR Wi-Fi state, navigation, snapshot and raster",
+      "sha256": "ff88f19429b01b865e185495b18497fed75d3c579026a0bac3b6b9d5b842e6c6",
+      "prior_authors": "retained; reference and Documentacion original not edited by this change"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/services/afr2_app_wire.c",
+      "adaptation": "AVR Wi-Fi state, navigation, snapshot and raster",
+      "sha256": "bbf83960667e903ffd02151a3dcee91d3816c8765331e34182a5da501c2f21cc",
+      "prior_authors": "retained; reference and Documentacion original not edited by this change"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/ui/afr2_menu_catalog.c",
+      "adaptation": "AVR Wi-Fi state, navigation, snapshot and raster",
+      "sha256": "a4d0a88d153bd9925286be35bfb86271b29c64df2af918ca9d5884fdadc51ad9",
+      "prior_authors": "retained; reference and Documentacion original not edited by this change"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/ui/afr2_screens.c",
+      "adaptation": "AVR Wi-Fi state, navigation, snapshot and raster",
+      "sha256": "cd7c7d72606ab087923f6ea9a14cef9275866208e095690a39531adbb2a6fcbd",
+      "prior_authors": "retained; reference and Documentacion original not edited by this change"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/ui/afr2_network_screen.c",
+      "adaptation": "AVR Wi-Fi state, navigation, snapshot and raster",
+      "sha256": "24233b53b4b5c24716c5c88f5bb1555ae9dd45ec8126484245bc122a3e02572b",
+      "prior_authors": "retained; reference and Documentacion original not edited by this change"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/ui/afr2_sensor_screens.c",
+      "adaptation": "AVR Wi-Fi state, navigation, snapshot and raster",
+      "sha256": "e6226358f630e923120e947901dcb85d0cb5d642379b27f57b4d25d49f9bf50e",
+      "prior_authors": "retained; reference and Documentacion original not edited by this change"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/ui/afr2_icons.c",
+      "adaptation": "AVR Wi-Fi state, navigation, snapshot and raster",
+      "sha256": "41af3c12edbb5f8b731c73c1b179f7ddab68da166a393c4c89df16048a379865",
+      "prior_authors": "retained; reference and Documentacion original not edited by this change"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/wifi_service.h",
+      "adaptation": "ESP radio, correlated OLED jobs and native Web commands",
+      "sha256": "1bcf775cd2b49f30852a338a99689d126783b59c90d6c8984aee9db537bef1ae",
+      "prior_authors": "retained; reference and Documentacion original not edited by this change"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/wifi_service.cpp",
+      "adaptation": "ESP radio, correlated OLED jobs and native Web commands",
+      "sha256": "3f2a6378033dd9efbe5617bb71a2b6c9741b522ad0b9b055db45a699f12ca989",
+      "prior_authors": "retained; reference and Documentacion original not edited by this change"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/broker.h",
+      "adaptation": "ESP radio, correlated OLED jobs and native Web commands",
+      "sha256": "5922d338946ace3175e2afd49f8bb03b070be161f86faffe4c0d6010233aadf2",
+      "prior_authors": "retained; reference and Documentacion original not edited by this change"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/broker.cpp",
+      "adaptation": "ESP radio, correlated OLED jobs and native Web commands",
+      "sha256": "8c308a30a51eda2b7a685dca14aa13c1e2833c14f11d88ae31192cfcb6ea7c7f",
+      "prior_authors": "retained; reference and Documentacion original not edited by this change"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/broker_wifi.cpp",
+      "adaptation": "ESP radio, correlated OLED jobs and native Web commands",
+      "sha256": "ec29479ba7bda0f93d21f85180375cb5a6a50561b5a376fdda9461591620f7f7",
+      "prior_authors": "retained; reference and Documentacion original not edited by this change"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/mega_link.cpp",
+      "adaptation": "ESP radio, correlated OLED jobs and native Web commands",
+      "sha256": "8d143b34d1c242c5d3839bb1f17042d5025375d1a034b6e1facf3fed006adad8",
+      "prior_authors": "retained; reference and Documentacion original not edited by this change"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/wifi/WifiPage.tsx",
+      "adaptation": "Web native Wi-Fi, exact raster counterpart, prepared generator and reviewed source pins",
+      "sha256": "a8e51df6bf05fdd1d9dcc9f432954a06a06f50894aa0dad125132bb9207fd006",
+      "prior_authors": "retained; reference and Documentacion original not edited by this change"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/protocol/wsEnvelope.ts",
+      "adaptation": "Web native Wi-Fi, exact raster counterpart, prepared generator and reviewed source pins",
+      "sha256": "3f3f140bb519c3ed46b335e5ef0a74533c4f1a2a820cf69f6dc9c0f90c725f07",
+      "prior_authors": "retained; reference and Documentacion original not edited by this change"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/oled/firmwareRenderer.ts",
+      "adaptation": "Web native Wi-Fi, exact raster counterpart, prepared generator and reviewed source pins",
+      "sha256": "ee343e10f96ee82c01e2b5c66d8e7e3cb61c6c642d9b342b97eda4f92a0784d7",
+      "prior_authors": "retained; reference and Documentacion original not edited by this change"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/oled/firmwareSensorRenderer.ts",
+      "adaptation": "Web native Wi-Fi, exact raster counterpart, prepared generator and reviewed source pins",
+      "sha256": "7559b5e8c581fdf2dd0f8214279e1943747700b43043136cfa70b0a526ce2d6c",
+      "prior_authors": "retained; reference and Documentacion original not edited by this change"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/oled/FirmwareLibraryPreview.tsx",
+      "adaptation": "Web native Wi-Fi, exact raster counterpart, prepared generator and reviewed source pins",
+      "sha256": "49c38e20ebe386ead7a09e08546a874d4a60db83fe98002dbebda23d40b00d05",
+      "prior_authors": "retained; reference and Documentacion original not edited by this change"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/oled/firmwareHints.ts",
+      "adaptation": "Web native Wi-Fi, exact raster counterpart, prepared generator and reviewed source pins",
+      "sha256": "01f4a5d912a61b2b3f239b9f21119f727fdd6fd12b94a08cfa73815fb7f07e45",
+      "prior_authors": "retained; reference and Documentacion original not edited by this change"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/oled/wifiCatalogue.ts",
+      "adaptation": "Web native Wi-Fi, exact raster counterpart, prepared generator and reviewed source pins",
+      "sha256": "3f02ba5d82bad3d8f361a3601b9dd6c5ac6a92d5e89579f258841f8243568c28",
+      "prior_authors": "retained; reference and Documentacion original not edited by this change"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/oled/reformResources.ts",
+      "adaptation": "Web native Wi-Fi, exact raster counterpart, prepared generator and reviewed source pins",
+      "sha256": "f3183bda264195d9620a141bb7bdbde05feeeba06e1befb955f91e87861ad1a2",
+      "prior_authors": "retained; reference and Documentacion original not edited by this change"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/oled/firmwareRenderer.sources.json",
+      "adaptation": "Web native Wi-Fi, exact raster counterpart, prepared generator and reviewed source pins",
+      "sha256": "c39ea4edff7f9a585d5cbcc53bba4d0441f0b4660d61a9c64328bd5d909c59b8",
+      "prior_authors": "retained; reference and Documentacion original not edited by this change"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/tools/sync-oled-library.mjs",
+      "adaptation": "Web native Wi-Fi, exact raster counterpart, prepared generator and reviewed source pins",
+      "sha256": "b6619deb08187fcc892ed43272a3e694a97ca49f797f3bd19e6107c41e4118bc",
+      "prior_authors": "retained; reference and Documentacion original not edited by this change"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/docs/DocsPage.tsx",
+      "adaptation": "Web native Wi-Fi, exact raster counterpart, prepared generator and reviewed source pins",
+      "sha256": "e43da21c0251aff07ca0c5b79e7ec8a607f3a44cf3dc355f20adb482cba555bf",
+      "prior_authors": "retained; reference and Documentacion original not edited by this change"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/afr2_product_wire.h",
+      "adaptation": "Contracts, identities, flow and current-delivery records",
+      "sha256": "6c401ef261ec926a7163d64df8835817aa22542c2c57607e197c02e355f10535",
+      "prior_authors": "retained; reference and Documentacion original not edited by this change"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/commands.json",
+      "adaptation": "Contracts, identities, flow and current-delivery records",
+      "sha256": "a9f947c2e672c0b2a833536479230031461f064722e8664af463377f709bafe5",
+      "prior_authors": "retained; reference and Documentacion original not edited by this change"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/WIFI_UI_11.md",
+      "adaptation": "Contracts, identities, flow and current-delivery records",
+      "sha256": "b388332b1a41ba9c1c9bb704567f3e3dc919316a12c44595708a44bab89e3e17",
+      "prior_authors": "retained; reference and Documentacion original not edited by this change"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/screens.json",
+      "adaptation": "Contracts, identities, flow and current-delivery records",
+      "sha256": "c4df54e53983dca7af908214e13b8c24603184380fff42a710e264f3c321366d",
+      "prior_authors": "retained; reference and Documentacion original not edited by this change"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/overlays/connections.json",
+      "adaptation": "Contracts, identities, flow and current-delivery records",
+      "sha256": "530725bcf2364c46744b9d917f651e0873a89a081ed00c4d2fd51b258c9c044c",
+      "prior_authors": "retained; reference and Documentacion original not edited by this change"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/NAVIGATION.md",
+      "adaptation": "Contracts, identities, flow and current-delivery records",
+      "sha256": "3e6c926bcb42a11dc888fd0d75b9ee54fe91103d97bec2d453bfff639c9d05c2",
+      "prior_authors": "retained; reference and Documentacion original not edited by this change"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/SCREEN_SYSTEM.md",
+      "adaptation": "Contracts, identities, flow and current-delivery records",
+      "sha256": "69496730a375e5a5887162efe78e7ba3a139b920fb84dcd859747db3ed8e4b08",
+      "prior_authors": "retained; reference and Documentacion original not edited by this change"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/changes/2026-10-30-09-wifi-state-flows.md",
+      "adaptation": "Contracts, identities, flow and current-delivery records",
+      "sha256": "3ba5fc63c08e655318c5a72fa94dc98ec2107dc2498481e19ec80efcc7d57f55",
+      "prior_authors": "retained; reference and Documentacion original not edited by this change"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/README.md",
+      "adaptation": "Contracts, identities, flow and current-delivery records",
+      "sha256": "e9208ee553f729c9ae688ebfa689c76d4169860ef1d2a3dd809186d35a1329f5",
+      "prior_authors": "retained; reference and Documentacion original not edited by this change"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/CHANGELOG.md",
+      "adaptation": "Contracts, identities, flow and current-delivery records",
+      "sha256": "150a2977a467cbc351d780385113e5f369e4edc37c90bd1dfe45617f5b444306",
+      "prior_authors": "retained; reference and Documentacion original not edited by this change"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/INFORME_ADAPTACION.md",
+      "adaptation": "Contracts, identities, flow and current-delivery records",
+      "sha256": "331471ac1a9a032e9768a326cf023af366ef70d9970c55011d19ef50151a4687",
+      "prior_authors": "retained; reference and Documentacion original not edited by this change"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/INFORME_ADAPTACION.md",
+      "adaptation": "Contracts, identities, flow and current-delivery records",
+      "sha256": "7bbe9bdb1e5aa458c5d4de7c4b6def221632ba2d493be65b5d5d57030e0e5685",
+      "prior_authors": "retained; reference and Documentacion original not edited by this change"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/INFORME_ADAPTACION.md",
+      "adaptation": "Contracts, identities, flow and current-delivery records",
+      "sha256": "2127672c8e9263fea6f50fbfe2c70ea74a2a47fa49b4ff9f6d5967907e018b5e",
+      "prior_authors": "retained; reference and Documentacion original not edited by this change"
+    },
+    {
+      "path": "INFORME_MAESTRO.md",
+      "adaptation": "Contracts, identities, flow and current-delivery records",
+      "sha256": "f199a58c53af30f8dbf0ba38ebb0efa8244c6df5c8e45891e20825134338ed02",
+      "prior_authors": "retained; reference and Documentacion original not edited by this change"
+    }
+  ]
+}

@@ -1,3 +1,4 @@
+import { MOTION_REFERENCE } from '../motionReference';
 import type { PoseSample } from '../controlMapTypes';
 import { ROBOT_WHEEL_KEYS, wheelAnglesFromTravel, type RobotWheelValues } from '../../../components/three/robotWheelMotion';
 import { distanceDurationMs, meanAbsoluteSpeed, wheelDurationMs } from './blockCompletion';
@@ -37,10 +38,10 @@ export function snapDurationMs(value: number, isFinish = false): number {
 /**
  * Cinematica inversa Mecanum sin recortes silenciosos de velocidad:
  * Convierte consignas del chasis (vxMmS, vyMmS, wzMradS) a las 4 ruedas (mm/s).
- * v_FL = vx - vy - wz * (lx + ly)
- * v_FR = vx + vy + wz * (lx + ly)
- * v_RL = vx + vy - wz * (lx + ly)
- * v_RR = vx - vy + wz * (lx + ly)
+ * f = forwardWheelSign * vx; r = yawWheelSign * wz * (lx + ly)
+ * v_FL = f - vy - r; v_FR = f + vy + r
+ * v_RL = f + vy - r; v_RR = f - vy + r
+ * Fixed reference matches AVR; wheel tracks keep their own signed basis.
  * Donde wz(rad/s) = wzMradS / 1000.
  */
 export function inverseMecanumKinematics(
@@ -49,29 +50,30 @@ export function inverseMecanumKinematics(
   wzMradS: number,
   lxPlusLyMm: number
 ): WheelSpeedVectorMmS {
-  const rotTangentialMmS = (wzMradS * lxPlusLyMm) / 1000;
+  const forwardWheelMmS = vxMmS * MOTION_REFERENCE.forwardWheelSign;
+  const rotTangentialMmS = (wzMradS * lxPlusLyMm) / 1000 * MOTION_REFERENCE.yawWheelSign;
   return {
-    fl: Math.round(vxMmS - vyMmS - rotTangentialMmS),
-    fr: Math.round(vxMmS + vyMmS + rotTangentialMmS),
-    rl: Math.round(vxMmS + vyMmS - rotTangentialMmS),
-    rr: Math.round(vxMmS - vyMmS + rotTangentialMmS),
+    fl: Math.round(forwardWheelMmS - vyMmS - rotTangentialMmS),
+    fr: Math.round(forwardWheelMmS + vyMmS + rotTangentialMmS),
+    rl: Math.round(forwardWheelMmS + vyMmS - rotTangentialMmS),
+    rr: Math.round(forwardWheelMmS - vyMmS + rotTangentialMmS),
   };
 }
 
 /**
  * Cinematica directa Mecanum determinista desde las 4 ruedas (mm/s) hacia el chasis:
- * vx = (v_FL + v_FR + v_RL + v_RR) / 4
+ * vx = forwardWheelSign * (v_FL + v_FR + v_RL + v_RR) / 4
  * vy = (-v_FL + v_FR + v_RL - v_RR) / 4
- * wz(mrad/s) = ((-v_FL + v_FR - v_RL + v_RR) / (4 * (lx + ly))) * 1000
+ * wz(mrad/s) = yawWheelSign * ((-v_FL + v_FR - v_RL + v_RR) / (4 * (lx + ly))) * 1000
  */
 export function forwardMecanumKinematics(
   wheels: WheelSpeedVectorMmS,
   lxPlusLyMm: number
 ): { vxMmS: number; vyMmS: number; wzMradS: number } {
   const safeL = Math.max(50, lxPlusLyMm);
-  const vxMmS = (wheels.fl + wheels.fr + wheels.rl + wheels.rr) / 4;
+  const vxMmS = MOTION_REFERENCE.forwardWheelSign * (wheels.fl + wheels.fr + wheels.rl + wheels.rr) / 4;
   const vyMmS = (-wheels.fl + wheels.fr + wheels.rl - wheels.rr) / 4;
-  const wzMradS = ((-wheels.fl + wheels.fr - wheels.rl + wheels.rr) * 1000) / (4 * safeL);
+  const wzMradS = MOTION_REFERENCE.yawWheelSign * ((-wheels.fl + wheels.fr - wheels.rl + wheels.rr) * 1000) / (4 * safeL);
   return { vxMmS, vyMmS, wzMradS };
 }
 
@@ -114,7 +116,7 @@ export function createDefaultMovementBlock(kind: MovementBlockKind): MovementBlo
       return {
         id,
         kind: 'pivot',
-        label: 'Girar izquierda',
+        label: 'Girar CCW',
         durationMs: 800,
         vxMmS: 0,
         vyMmS: 0,
@@ -945,7 +947,7 @@ export function createStarterSequenceDocument(
     {
       id: 'demo-mov-4',
       kind: 'pivot',
-      label: 'Girar izquierda 90°',
+      label: 'Girar CCW 90°',
       durationMs: 1000,
       vxMmS: 0,
       vyMmS: 0,

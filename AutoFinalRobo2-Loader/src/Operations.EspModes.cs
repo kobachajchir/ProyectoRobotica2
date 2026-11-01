@@ -17,6 +17,7 @@ namespace AFR2Loader
         }
         void ReviewAtPackage(Profile p)
         {
+            string preparationInputs = BuildPreparation.Begin(p, "at");
             string manifest = p.Resolve("AtPackage"); NeedFile(manifest);
             var package = AtFirmwarePackage.Read(manifest); var layout = package.Selected(p);
             if (package.FlashBytes != p.Number("FlashMB") * 1048576L) throw new ArgumentException("Flash esperada del perfil distinta de la declarada en el paquete AT.");
@@ -27,6 +28,7 @@ namespace AFR2Loader
                 log("BIN precompilado del paquete AT: " + Describe(file));
                 Steps.Add(new { suppliedArtifact = file, bytes = new FileInfo(file).Length, sha256 = Hash(file) });
             }
+            BuildPreparation.Record(p, "at", new[] { manifest }.Concat(layout.Regions.Select(r => AtFirmwarePackage.RegionPath(manifest, r))), preparationInputs);
             Stage("package_ready", "Paquete AT revisado: regiones, capacidades, archivos y hashes. Sin conexión física ni escritura.");
         }
         static void CheckAtRegion(AtFlashRegion region, string file)
@@ -38,6 +40,7 @@ namespace AFR2Loader
         }
         async Task FlashAtPackage(Profile p, string port, bool firmware, bool filesystem, bool listen, CancellationToken token)
         {
+            BuildPreparation.Require(p, "at", p.Resolve("AtPackage"));
             string manifest = p.Resolve("AtPackage"); NeedFile(manifest); string manifestHash = Hash(manifest);
             var package = AtFirmwarePackage.Read(manifest); var layout = package.Selected(p);
             if (p.Number("FlashMB") * 1048576L != package.FlashBytes) throw new ArgumentException("La capacidad esperada del perfil no coincide con el paquete AT.");
@@ -51,27 +54,25 @@ namespace AFR2Loader
             long detected = await Probe(p, port, token);
             if (detected != package.FlashBytes) throw new ArgumentException("Flash física distinta de la requerida por el paquete AT. No se escribe.");
             string details = "Firmware AT por USB / ROM. No se envían comandos AT para instalar el firmware.\r\n" + package.Name + " | layout " + layout.Id + "\r\nFlash " + detected + " B | SPI " + package.FlashMode + " / " + package.FlashFreq + "\r\n\r\n";
+            if (String.Equals(Path.GetExtension(manifest), ".bin", StringComparison.OrdinalIgnoreCase))
+                details += "Imagen completa reconocida por SHA-256: 4 MiB desde 0x0. Reemplaza toda la flash, incluidos firmware Web, LittleFS y datos previos. Su mapa no incluye un filesystem separable.\r\n\r\n";
             for (int i = 0; i < regions.Length; i++) details += regions[i].Name + " | " + regions[i].Role + " | offset " + regions[i].Offset + " | reserva " + regions[i].Capacity + " B\r\n" + Describe(files[i]) + "\r\n\r\n";
             if (!confirm("Cargar paquete AT y verificar", details, new[] {
                 "El paquete y sus offsets corresponden al ESP8266 y a la revisión que quiero instalar.",
                 firmware ? "Revisé todas las imágenes de firmware/sistema; cambiar a AT reemplaza el firmware Web de las regiones elegidas." : "El firmware AT ya instalado usa exactamente este layout y filesystem.",
                 "Revisé las regiones de datos seleccionadas y conservé sus preferencias antes de reemplazarlas.",
-                "Mantengo K (KEY) hasta terminar escritura y verificación; solo RST queda suelto."
+                "Mantengo KEY hasta el aviso del primer porcentaje de escritura; solo RST queda suelto."
             })) throw new OperationCanceledException("Carga AT no confirmada.");
             EnsureUnchanged(manifest, manifestHash); token.ThrowIfCancellationRequested();
             for (int i = 0; i < files.Length; i++) EnsureUnchanged(files[i], hashes[i]);
             Profile transfer = p.Copy(); transfer.Values["FlashMode"] = package.FlashMode; transfer.Values["FlashFreq"] = package.FlashFreq;
             var write = EspArgs(transfer, port, false); write.Add(Spell(transfer, "write_flash")); AddFlashOptions(transfer, write);
             for (int i = 0; i < regions.Length; i++) write.AddRange(new[] { regions[i].Offset, files[i] });
-            Stage("writing", "Escribiendo paquete AT según su mapa de regiones. Mantené K (KEY) apretado..."); MarkWriting();
-            await Command(transfer, "Python", write, Path.GetDirectoryName(transfer.Resolve("Esptool")), token);
-            await EnsureBootloaderBeforeVerification(transfer, port, token);
-            Stage("verifying", "Verificando cada BIN AT contra la flash. Seguí manteniendo K (KEY)...");
+            Stage("writing", "Escribiendo paquete AT según su mapa de regiones. Mantené KEY apretado..."); MarkWriting();
+            var written = await Command(transfer, "Python", write, Path.GetDirectoryName(transfer.Resolve("Esptool")), token);
             EnsureUnchanged(manifest, manifestHash);
             for (int i = 0; i < files.Length; i++) EnsureUnchanged(files[i], hashes[i]);
-            var verify = EspArgs(transfer, port, false); verify.Add(Spell(transfer, "verify_flash")); AddFlashOptions(transfer, verify);
-            for (int i = 0; i < regions.Length; i++) verify.AddRange(new[] { regions[i].Offset, files[i] });
-            await Command(transfer, "Python", verify, Path.GetDirectoryName(transfer.Resolve("Esptool")), token);
+            RequireIntegratedEspVerification(written, files.Length);
             Verified = true; Stage("verified", "Paquete AT: contenido de las regiones seleccionadas escrito y verificado por USB.");
             log(EspRestoration(p));
             if (UsesMegaBridge(p)) CompletionMessage = "Paquete AT escrito y verificado. El Mega sigue ejecutando el flasher temporal; restaurar su producto no lo convierte en compatible con AT.";

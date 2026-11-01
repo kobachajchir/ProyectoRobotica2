@@ -14,8 +14,8 @@ const DIRECTIONS: DriveIntent[] = [
   { id: 's', label: 'Atras', symbol: '↓', vx: -1, vy: 0, wz: 0 },
   { id: 'se', label: 'Diagonal derecha atras', symbol: '↘', vx: -1, vy: -1, wz: 0 },
 ];
-const LEFT: DriveIntent = { id: 'rot-ccw', label: 'Girar izquierda', symbol: '↶', vx: 0, vy: 0, wz: 1 };
-const RIGHT: DriveIntent = { id: 'rot-cw', label: 'Girar derecha', symbol: '↷', vx: 0, vy: 0, wz: -1 };
+const LEFT: DriveIntent = { id: 'rot-ccw', label: 'Girar CCW', symbol: '↶', vx: 0, vy: 0, wz: 1 };
+const RIGHT: DriveIntent = { id: 'rot-cw', label: 'Girar CW', symbol: '↷', vx: 0, vy: 0, wz: -1 };
 
 /** Identical presentation for physical and simulated movement. Factors leave
  * physical limits/units and simulation integration entirely in their adapters. */
@@ -25,7 +25,7 @@ export function MecanumDrivePad({ disabled = false, activeId, onStart, onStop }:
   const action = (intent: DriveIntent, className = '') => <HoldActionButton key={intent.id}
     label={intent.label} disabled={disabled} active={activeId === intent.id} onStart={() => onStart(intent)} onStop={onStop}
     className={`afr2-drive-pad__button ${className}`}>
-    <span aria-hidden="true">{intent.symbol}</span>{intent.wz !== 0 && <small>{intent.wz > 0 ? 'Giro izq.' : 'Giro der.'}</small>}
+    <span aria-hidden="true">{intent.symbol}</span>{intent.wz !== 0 && <small>{intent.wz > 0 ? 'Girar CCW' : 'Girar CW'}</small>}
   </HoldActionButton>;
   return <div className="afr2-drive-pad" role="group" aria-label="Movimiento Mecanum">
     {DIRECTIONS.slice(0, 4).map(intent => action(intent))}

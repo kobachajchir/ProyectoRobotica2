@@ -1,9 +1,10 @@
+/* AFR2-20261029-27: quick controls/radar/PWM/WS integration; prior authors retained. */
 #include "afr2_encoder_ui.h"
 #include <string.h>
 void Afr2EncoderUi_Init(Afr2EncoderUi *e,bool clk,bool dt,bool pressed,uint32_t now) {
     if(!e)return;
     memset(e,0,sizeof(*e)); e->ab=(uint8_t)((clk?2u:0u)|(dt?1u:0u));
-    e->transitions=4; e->raw_pressed=e->stable_pressed=pressed;
+    e->transitions=4;e->long_press_ms=800; e->raw_pressed=e->stable_pressed=pressed;
     e->armed=!pressed; e->changed_ms=e->pressed_ms=now;
 }
 /* AFR2-20261024-11. Decode preserved, now called for EVERY captured AB edge
@@ -36,14 +37,13 @@ Afr2UiInput Afr2EncoderUi_Button(Afr2EncoderUi *e,bool pressed,uint32_t now) {
             if(e->armed && !e->long_sent) {
                 /* Release at the long threshold must not become a short click.
                  * changed_ms is the raw release edge, excluding release debounce. */
-                if((uint32_t)(e->changed_ms-e->pressed_ms)>=800u)out.menu=true;
+                if((uint32_t)(e->changed_ms-e->pressed_ms)>=e->long_press_ms)out.menu=true;
                 else out.click=true;
             }
             e->armed=true;
         }
     }
-    if(e->armed && e->stable_pressed && e->raw_pressed && !e->long_sent &&
-          (uint32_t)(now-e->pressed_ms)>=800u){out.menu=true;e->long_sent=true;}
+    /* AFR2-20261029-27: classify on release; holding never navigates. */
     return out;
 }
 Afr2UiInput Afr2EncoderUi_Poll(Afr2EncoderUi *e,bool clk,bool dt,bool pressed,uint32_t now) {

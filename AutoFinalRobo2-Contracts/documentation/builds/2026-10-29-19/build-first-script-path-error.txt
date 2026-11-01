@@ -1,0 +1,252 @@
+13:28:52 build_all | perfil: Mi AutoFinalRobo2 | puerto: COM8
+13:28:52 build_all
+13:28:52 Aprobación MCP: automática, activada en la ventana
+13:28:52 Compilando ATmega: producto, comunicación y biblioteca...
+13:28:52 > "C:\Program Files (x86)\Atmel\Studio\7.0\shellUtils\make.exe" "-B" "firmware" "communication-firmware" "library" "CC=\"C:/Users/kobac/AppData/Local/Arduino15/packages/arduino/tools/avr-gcc/7.3.0-atmel3.6.1-arduino7/bin/avr-gcc.exe\"" "AR=\"C:/Users/kobac/AppData/Local/Arduino15/packages/arduino/tools/avr-gcc/7.3.0-atmel3.6.1-arduino7/bin/avr-ar.exe\"" "OBJCOPY=\"C:/Users/kobac/AppData/Local/Arduino15/packages/arduino/tools/avr-gcc/7.3.0-atmel3.6.1-arduino7/bin/avr-objcopy.exe\""
+13:28:52 Carpeta: D:\ProyectoRobotica2\AutoFinalRobo2-Atmega
+13:28:53 "C:/Users/kobac/AppData/Local/Arduino15/packages/arduino/tools/avr-gcc/7.3.0-atmel3.6.1-arduino7/bin/avr-gcc.exe" -mmcu=atmega2560 -std=gnu11 -MMD -MP -Os -Wall -Wextra -fstack-usage -ffunction-sections -fdata-sections -DF_CPU=16000000UL -Iinclude -I../AutoFinalRobo2-Contracts/contracts  -c -o src/main.o src/main.c
+13:28:53 "C:/Users/kobac/AppData/Local/Arduino15/packages/arduino/tools/avr-gcc/7.3.0-atmel3.6.1-arduino7/bin/avr-gcc.exe" -mmcu=atmega2560 -std=gnu11 -MMD -MP -Os -Wall -Wextra -fstack-usage -ffunction-sections -fdata-sections -DF_CPU=16000000UL -Iinclude -I../AutoFinalRobo2-Contracts/contracts  -c -o src/services/afr2_i2c_manager.o src/services/afr2_i2c_manager.c
+13:28:53 "C:/Users/kobac/AppData/Local/Arduino15/packages/arduino/tools/avr-gcc/7.3.0-atmel3.6.1-arduino7/bin/avr-gcc.exe" -mmcu=atmega2560 -std=gnu11 -MMD -MP -Os -Wall -Wextra -fstack-usage -ffunction-sections -fdata-sections -DF_CPU=16000000UL -Iinclude -I../AutoFinalRobo2-Contracts/contracts  -c -o src/display/afr2_oled.o src/display/afr2_oled.c
+13:28:53 "C:/Users/kobac/AppData/Local/Arduino15/packages/arduino/tools/avr-gcc/7.3.0-atmel3.6.1-arduino7/bin/avr-gcc.exe" -mmcu=atmega2560 -std=gnu11 -MMD -MP -Os -Wall -Wextra -fstack-usage -ffunction-sections -fdata-sections -DF_CPU=16000000UL -Iinclude -I../AutoFinalRobo2-Contracts/contracts  -c -o src/display/font7x10.o src/display/font7x10.c
+13:28:53 "C:/Users/kobac/AppData/Local/Arduino15/packages/arduino/tools/avr-gcc/7.3.0-atmel3.6.1-arduino7/bin/avr-gcc.exe" -mmcu=atmega2560 -std=gnu11 -MMD -MP -Os -Wall -Wextra -fstack-usage -ffunction-sections -fdata-sections -DF_CPU=16000000UL -Iinclude -I../AutoFinalRobo2-Contracts/contracts  -c -o src/input/afr2_encoder_ui.o src/input/afr2_encoder_ui.c
+13:28:53 "C:/Users/kobac/AppData/Local/Arduino15/packages/arduino/tools/avr-gcc/7.3.0-atmel3.6.1-arduino7/bin/avr-gcc.exe" -mmcu=atmega2560 -std=gnu11 -MMD -MP -Os -Wall -Wextra -fstack-usage -ffunction-sections -fdata-sections -DF_CPU=16000000UL -Iinclude -I../AutoFinalRobo2-Contracts/contracts  -c -o src/ui/afr2_screens.o src/ui/afr2_screens.c
+13:28:53 "C:/Users/kobac/AppData/Local/Arduino15/packages/arduino/tools/avr-gcc/7.3.0-atmel3.6.1-arduino7/bin/avr-gcc.exe" -mmcu=atmega2560 -std=gnu11 -MMD -MP -Os -Wall -Wextra -fstack-usage -ffunction-sections -fdata-sections -DF_CPU=16000000UL -Iinclude -I../AutoFinalRobo2-Contracts/contracts  -c -o src/ui/afr2_sequence_screen.o src/ui/afr2_sequence_screen.c
+13:28:53 "C:/Users/kobac/AppData/Local/Arduino15/packages/arduino/tools/avr-gcc/7.3.0-atmel3.6.1-arduino7/bin/avr-gcc.exe" -mmcu=atmega2560 -std=gnu11 -MMD -MP -Os -Wall -Wextra -fstack-usage -ffunction-sections -fdata-sections -DF_CPU=16000000UL -Iinclude -I../AutoFinalRobo2-Contracts/contracts  -c -o src/ui/afr2_network_screen.o src/ui/afr2_network_screen.c
+13:28:54 "C:/Users/kobac/AppData/Local/Arduino15/packages/arduino/tools/avr-gcc/7.3.0-atmel3.6.1-arduino7/bin/avr-gcc.exe" -mmcu=atmega2560 -std=gnu11 -MMD -MP -Os -Wall -Wextra -fstack-usage -ffunction-sections -fdata-sections -DF_CPU=16000000UL -Iinclude -I../AutoFinalRobo2-Contracts/contracts  -c -o src/ui/afr2_icons.o src/ui/afr2_icons.c
+13:28:54 "C:/Users/kobac/AppData/Local/Arduino15/packages/arduino/tools/avr-gcc/7.3.0-atmel3.6.1-arduino7/bin/avr-gcc.exe" -mmcu=atmega2560 -std=gnu11 -MMD -MP -Os -Wall -Wextra -fstack-usage -ffunction-sections -fdata-sections -DF_CPU=16000000UL -Iinclude -I../AutoFinalRobo2-Contracts/contracts  -c -o src/services/afr2_network.o src/services/afr2_network.c
+13:28:54 "C:/Users/kobac/AppData/Local/Arduino15/packages/arduino/tools/avr-gcc/7.3.0-atmel3.6.1-arduino7/bin/avr-gcc.exe" -mmcu=atmega2560 -std=gnu11 -MMD -MP -Os -Wall -Wextra -fstack-usage -ffunction-sections -fdata-sections -DF_CPU=16000000UL -Iinclude -I../AutoFinalRobo2-Contracts/contracts  -c -o src/services/afr2_link.o src/services/afr2_link.c
+13:28:54 "C:/Users/kobac/AppData/Local/Arduino15/packages/arduino/tools/avr-gcc/7.3.0-atmel3.6.1-arduino7/bin/avr-gcc.exe" -mmcu=atmega2560 -std=gnu11 -MMD -MP -Os -Wall -Wextra -fstack-usage -ffunction-sections -fdata-sections -DF_CPU=16000000UL -Iinclude -I../AutoFinalRobo2-Contracts/contracts  -c -o src/platform/afr2_uart1.o src/platform/afr2_uart1.c
+13:28:54 "C:/Users/kobac/AppData/Local/Arduino15/packages/arduino/tools/avr-gcc/7.3.0-atmel3.6.1-arduino7/bin/avr-gcc.exe" -mmcu=atmega2560 -std=gnu11 -MMD -MP -Os -Wall -Wextra -fstack-usage -ffunction-sections -fdata-sections -DF_CPU=16000000UL -Iinclude -I../AutoFinalRobo2-Contracts/contracts  -c -o src/platform/afr2_twi.o src/platform/afr2_twi.c
+13:28:54 "C:/Users/kobac/AppData/Local/Arduino15/packages/arduino/tools/avr-gcc/7.3.0-atmel3.6.1-arduino7/bin/avr-gcc.exe" -mmcu=atmega2560 -std=gnu11 -MMD -MP -Os -Wall -Wextra -fstack-usage -ffunction-sections -fdata-sections -DF_CPU=16000000UL -Iinclude -I../AutoFinalRobo2-Contracts/contracts  -c -o src/platform/afr2_board.o src/platform/afr2_board.c
+13:28:54 "C:/Users/kobac/AppData/Local/Arduino15/packages/arduino/tools/avr-gcc/7.3.0-atmel3.6.1-arduino7/bin/avr-gcc.exe" -mmcu=atmega2560 -std=gnu11 -MMD -MP -Os -Wall -Wextra -fstack-usage -ffunction-sections -fdata-sections -DF_CPU=16000000UL -Iinclude -I../AutoFinalRobo2-Contracts/contracts  -c -o src/platform/afr2_motor.o src/platform/afr2_motor.c
+13:28:54 "C:/Users/kobac/AppData/Local/Arduino15/packages/arduino/tools/avr-gcc/7.3.0-atmel3.6.1-arduino7/bin/avr-gcc.exe" -mmcu=atmega2560 -std=gnu11 -MMD -MP -Os -Wall -Wextra -fstack-usage -ffunction-sections -fdata-sections -DF_CPU=16000000UL -Iinclude -I../AutoFinalRobo2-Contracts/contracts  -c -o src/platform/afr2_sensors.o src/platform/afr2_sensors.c
+13:28:55 "C:/Users/kobac/AppData/Local/Arduino15/packages/arduino/tools/avr-gcc/7.3.0-atmel3.6.1-arduino7/bin/avr-gcc.exe" -mmcu=atmega2560 -std=gnu11 -MMD -MP -Os -Wall -Wextra -fstack-usage -ffunction-sections -fdata-sections -DF_CPU=16000000UL -Iinclude -I../AutoFinalRobo2-Contracts/contracts  -c -o src/platform/afr2_preferences.o src/platform/afr2_preferences.c
+13:28:55 "C:/Users/kobac/AppData/Local/Arduino15/packages/arduino/tools/avr-gcc/7.3.0-atmel3.6.1-arduino7/bin/avr-gcc.exe" -mmcu=atmega2560 -std=gnu11 -MMD -MP -Os -Wall -Wextra -ffunction-sections -fdata-sections -DF_CPU=16000000UL -Iinclude -I../AutoFinalRobo2-Contracts/contracts  -c -o src/platform/afr2_watchdog.o src/platform/afr2_watchdog.c
+13:28:55 "C:/Users/kobac/AppData/Local/Arduino15/packages/arduino/tools/avr-gcc/7.3.0-atmel3.6.1-arduino7/bin/avr-gcc.exe" -mmcu=atmega2560 -std=gnu11 -MMD -MP -Os -Wall -Wextra -fstack-usage -ffunction-sections -fdata-sections -DF_CPU=16000000UL -Iinclude -I../AutoFinalRobo2-Contracts/contracts  -c -o src/services/afr2_product.o src/services/afr2_product.c
+13:28:55 "C:/Users/kobac/AppData/Local/Arduino15/packages/arduino/tools/avr-gcc/7.3.0-atmel3.6.1-arduino7/bin/avr-gcc.exe" -mmcu=atmega2560 -std=gnu11 -MMD -MP -Os -Wall -Wextra -fstack-usage -ffunction-sections -fdata-sections -DF_CPU=16000000UL -Iinclude -I../AutoFinalRobo2-Contracts/contracts  -c -o src/services/afr2_sequence.o src/services/afr2_sequence.c
+13:28:55 "C:/Users/kobac/AppData/Local/Arduino15/packages/arduino/tools/avr-gcc/7.3.0-atmel3.6.1-arduino7/bin/avr-gcc.exe" -mmcu=atmega2560 -std=gnu11 -MMD -MP -Os -Wall -Wextra -fstack-usage -ffunction-sections -fdata-sections -DF_CPU=16000000UL -Iinclude -I../AutoFinalRobo2-Contracts/contracts  -c -o src/services/afr2_app.o src/services/afr2_app.c
+13:28:55 "C:/Users/kobac/AppData/Local/Arduino15/packages/arduino/tools/avr-gcc/7.3.0-atmel3.6.1-arduino7/bin/avr-gcc.exe" -mmcu=atmega2560 -std=gnu11 -MMD -MP -Os -Wall -Wextra -fstack-usage -ffunction-sections -fdata-sections -DF_CPU=16000000UL -Iinclude -I../AutoFinalRobo2-Contracts/contracts  -c -o src/services/afr2_app_wire.o src/services/afr2_app_wire.c
+13:28:56 "C:/Users/kobac/AppData/Local/Arduino15/packages/arduino/tools/avr-gcc/7.3.0-atmel3.6.1-arduino7/bin/avr-gcc.exe" -mmcu=atmega2560 -std=gnu11 -MMD -MP -Os -Wall -Wextra -fstack-usage -ffunction-sections -fdata-sections -DF_CPU=16000000UL -Iinclude -I../AutoFinalRobo2-Contracts/contracts  -c -o src/ui/afr2_menu_catalog.o src/ui/afr2_menu_catalog.c
+13:28:56 "C:/Users/kobac/AppData/Local/Arduino15/packages/arduino/tools/avr-gcc/7.3.0-atmel3.6.1-arduino7/bin/avr-gcc.exe" -mmcu=atmega2560 -std=gnu11 -MMD -MP -Os -Wall -Wextra -fstack-usage -ffunction-sections -fdata-sections -DF_CPU=16000000UL -Iinclude -I../AutoFinalRobo2-Contracts/contracts  -c -o src/services/afr2_sensor_commands.o src/services/afr2_sensor_commands.c
+13:28:56 "C:/Users/kobac/AppData/Local/Arduino15/packages/arduino/tools/avr-gcc/7.3.0-atmel3.6.1-arduino7/bin/avr-gcc.exe" -mmcu=atmega2560 -std=gnu11 -MMD -MP -Os -Wall -Wextra -fstack-usage -ffunction-sections -fdata-sections -DF_CPU=16000000UL -Iinclude -I../AutoFinalRobo2-Contracts/contracts  -c -o src/ui/afr2_sensor_screens.o src/ui/afr2_sensor_screens.c
+13:28:56 powershell.exe -NoProfile -NonInteractive -Command "[void][System.IO.Directory]::CreateDirectory('build')"
+13:28:56 "C:/Users/kobac/AppData/Local/Arduino15/packages/arduino/tools/avr-gcc/7.3.0-atmel3.6.1-arduino7/bin/avr-gcc.exe" -mmcu=atmega2560 -std=gnu11 -MMD -MP -Os -Wall -Wextra -fstack-usage -ffunction-sections -fdata-sections -Wl,--gc-sections,-Map,build/afr2.map -o build/afr2.elf src/main.o src/services/afr2_i2c_manager.o src/display/afr2_oled.o src/display/font7x10.o src/input/afr2_encoder_ui.o src/ui/afr2_screens.o src/ui/afr2_sequence_screen.o src/ui/afr2_network_screen.o src/ui/afr2_icons.o src/services/afr2_network.o src/services/afr2_link.o src/platform/afr2_uart1.o src/platform/afr2_twi.o src/platform/afr2_board.o src/platform/afr2_motor.o src/platform/afr2_sensors.o src/platform/afr2_preferences.o src/platform/afr2_watchdog.o src/services/afr2_product.o src/services/afr2_sequence.o src/services/afr2_app.o src/services/afr2_app_wire.o src/ui/afr2_menu_catalog.o src/services/afr2_sensor_commands.o src/ui/afr2_sensor_screens.o -lm
+13:28:56 "C:/Users/kobac/AppData/Local/Arduino15/packages/arduino/tools/avr-gcc/7.3.0-atmel3.6.1-arduino7/bin/avr-objcopy.exe" -O ihex -R .eeprom build/afr2.elf build/afr2.hex
+13:28:56 "C:/Users/kobac/AppData/Local/Arduino15/packages/arduino/tools/avr-gcc/7.3.0-atmel3.6.1-arduino7/bin/avr-gcc.exe" -mmcu=atmega2560 -std=gnu11 -MMD -MP -Os -Wall -Wextra -fstack-usage -ffunction-sections -fdata-sections -DF_CPU=16000000UL -Iinclude -I../AutoFinalRobo2-Contracts/contracts  -c -o src/communication_main.o src/communication_main.c
+13:28:56 powershell.exe -NoProfile -NonInteractive -Command "[void][System.IO.Directory]::CreateDirectory('build')"
+13:28:57 "C:/Users/kobac/AppData/Local/Arduino15/packages/arduino/tools/avr-gcc/7.3.0-atmel3.6.1-arduino7/bin/avr-gcc.exe" -mmcu=atmega2560 -std=gnu11 -MMD -MP -Os -Wall -Wextra -fstack-usage -ffunction-sections -fdata-sections -Wl,--gc-sections,-Map,build/afr2-communication.map -o build/afr2-communication.elf src/communication_main.o src/services/afr2_link.o src/platform/afr2_uart1.o src/platform/afr2_board.o
+13:28:57 "C:/Users/kobac/AppData/Local/Arduino15/packages/arduino/tools/avr-gcc/7.3.0-atmel3.6.1-arduino7/bin/avr-objcopy.exe" -O ihex -R .eeprom build/afr2-communication.elf build/afr2-communication.hex
+13:28:57 "C:/Users/kobac/AppData/Local/Arduino15/packages/arduino/tools/avr-gcc/7.3.0-atmel3.6.1-arduino7/bin/avr-ar.exe" rcs libafr2_ui.a src/services/afr2_i2c_manager.o src/display/afr2_oled.o src/display/font7x10.o src/input/afr2_encoder_ui.o src/ui/afr2_screens.o src/ui/afr2_sequence_screen.o src/ui/afr2_network_screen.o src/ui/afr2_icons.o src/services/afr2_network.o src/services/afr2_link.o src/platform/afr2_uart1.o src/platform/afr2_twi.o src/platform/afr2_board.o src/platform/afr2_motor.o src/platform/afr2_sensors.o src/platform/afr2_preferences.o src/platform/afr2_watchdog.o src/services/afr2_product.o src/services/afr2_sequence.o src/services/afr2_app.o src/services/afr2_app_wire.o src/ui/afr2_menu_catalog.o src/services/afr2_sensor_commands.o src/ui/afr2_sensor_screens.o
+13:28:57 Código de salida: 0
+13:28:57 Artefacto generado: D:\ProyectoRobotica2\AutoFinalRobo2-Atmega\build\afr2.hex
+225227 bytes | SHA-256 bad49fb19c83208c54e1eaa496793181137ce3b057ea402ec67c335a1cc5a78a
+13:28:57 Artefacto generado: D:\ProyectoRobotica2\AutoFinalRobo2-Atmega\build\afr2-communication.hex
+13321 bytes | SHA-256 72630befb7094f9cded5277b1ca6dd6e340f6e6b6832254735fd8261764b7993
+13:28:57 Artefacto generado: D:\ProyectoRobotica2\AutoFinalRobo2-Atmega\libafr2_ui.a
+216154 bytes | SHA-256 8967098bb28817e096ce1ef8edb38ded7d05751938ba7795a81b3bbf0403c8b6
+13:28:57 Compilación ATmega completada: producto, comunicación y biblioteca.
+13:28:57 Compilando firmware ESP...
+13:28:57 > "C:\Users\kobac\.platformio\penv\Scripts\platformio.exe" "run" "--project-dir" "D:\ProyectoRobotica2\AutoFinalRobo2-ESP" "-e" "esp12s_candidate"
+13:28:57 Carpeta: D:\ProyectoRobotica2\AutoFinalRobo2-ESP
+13:28:58 Processing esp12s_candidate (platform: espressif8266 @ 4.2.1; board: esp12e; framework: arduino)
+13:28:58 --------------------------------------------------------------------------------
+13:29:01 Verbose mode can be enabled via `-v, --verbose` option
+13:29:01 CONFIGURATION: https://docs.platformio.org/page/boards/espressif8266/esp12e.html
+13:29:01 PLATFORM: Espressif 8266 (4.2.1) > Espressif ESP8266 ESP-12E
+13:29:01 HARDWARE: ESP8266 80MHz, 80KB RAM, 4MB Flash
+13:29:01 PACKAGES: 
+13:29:01  - framework-arduinoespressif8266 @ 3.30102.0 (3.1.2) 
+13:29:01  - tool-esptool @ 1.413.0 (4.13) 
+13:29:01  - tool-esptoolpy @ 1.30000.201119 (3.0.0) 
+13:29:01  - toolchain-xtensa @ 2.100300.220621 (10.3.0)
+13:29:01 LDF: Library Dependency Finder -> https://bit.ly/configure-pio-ldf
+13:29:01 LDF Modes: Finder ~ chain, Compatibility ~ strict
+13:29:01 Found 40 compatible libraries
+13:29:01 Scanning dependencies...
+13:29:03 Dependency Graph
+13:29:03 |-- ESPAsyncTCP @ 2.0.0
+13:29:03 |-- ESPAsyncWebServer @ 3.10.3
+13:29:03 |-- ArduinoJson @ 7.4.2
+13:29:03 |-- ESP8266WiFi @ 1.0
+13:29:03 |-- LittleFS @ 0.1.0
+13:29:03 Building in release mode
+13:29:05 Compiling .pio\build\esp12s_candidate\src\broker.cpp.o
+13:29:05 Compiling .pio\build\esp12s_candidate\src\broker_network.cpp.o
+13:29:05 Compiling .pio\build\esp12s_candidate\src\broker_product.cpp.o
+13:29:05 Compiling .pio\build\esp12s_candidate\src\broker_sensors.cpp.o
+13:29:05 Compiling .pio\build\esp12s_candidate\src\broker_system.cpp.o
+13:29:05 Compiling .pio\build\esp12s_candidate\src\broker_wifi.cpp.o
+13:29:05 Compiling .pio\build\esp12s_candidate\src\main.cpp.o
+13:29:05 Compiling .pio\build\esp12s_candidate\src\mega_link.cpp.o
+13:29:05 Compiling .pio\build\esp12s_candidate\src\storage.cpp.o
+13:29:05 Compiling .pio\build\esp12s_candidate\src\wifi_service.cpp.o
+13:29:05 Generating LD script .pio\build\esp12s_candidate\ld\local.eagle.app.v6.common.ld
+13:29:05 Compiling .pio\build\esp12s_candidate\lib443\ESPAsyncTCP\AsyncPrinter.cpp.o
+13:29:11 Compiling .pio\build\esp12s_candidate\lib443\ESPAsyncTCP\ESPAsyncTCP.cpp.o
+13:29:16 Compiling .pio\build\esp12s_candidate\lib443\ESPAsyncTCP\ESPAsyncTCPbuffer.cpp.o
+13:29:16 Compiling .pio\build\esp12s_candidate\lib443\ESPAsyncTCP\SyncClient.cpp.o
+13:29:16 Compiling .pio\build\esp12s_candidate\lib443\ESPAsyncTCP\tcp_axtls.c.o
+13:29:16 Compiling .pio\build\esp12s_candidate\libad8\Hash\Hash.cpp.o
+13:29:16 Compiling .pio\build\esp12s_candidate\libe0b\ESP8266WiFi\BearSSLHelpers.cpp.o
+13:29:16 Compiling .pio\build\esp12s_candidate\libe0b\ESP8266WiFi\CertStoreBearSSL.cpp.o
+13:29:17 Compiling .pio\build\esp12s_candidate\libe0b\ESP8266WiFi\ESP8266WiFi.cpp.o
+13:29:17 Compiling .pio\build\esp12s_candidate\libe0b\ESP8266WiFi\ESP8266WiFiAP.cpp.o
+13:29:17 Compiling .pio\build\esp12s_candidate\libe0b\ESP8266WiFi\ESP8266WiFiGeneric.cpp.o
+13:29:18 Archiving .pio\build\esp12s_candidate\libad8\libHash.a
+13:29:18 Archiving .pio\build\esp12s_candidate\lib443\libESPAsyncTCP.a
+13:29:18 Compiling .pio\build\esp12s_candidate\libe0b\ESP8266WiFi\ESP8266WiFiGratuitous.cpp.o
+13:29:18 Compiling .pio\build\esp12s_candidate\libe0b\ESP8266WiFi\ESP8266WiFiMulti.cpp.o
+13:29:18 Compiling .pio\build\esp12s_candidate\libe0b\ESP8266WiFi\ESP8266WiFiSTA-WPS.cpp.o
+13:29:18 Compiling .pio\build\esp12s_candidate\libe0b\ESP8266WiFi\ESP8266WiFiSTA.cpp.o
+13:29:18 Compiling .pio\build\esp12s_candidate\libe0b\ESP8266WiFi\ESP8266WiFiScan.cpp.o
+13:29:18 Compiling .pio\build\esp12s_candidate\libe0b\ESP8266WiFi\WiFiClient.cpp.o
+13:29:18 Compiling .pio\build\esp12s_candidate\libe0b\ESP8266WiFi\WiFiClientSecureBearSSL.cpp.o
+13:29:18 Indexing .pio\build\esp12s_candidate\libad8\libHash.a
+13:29:18 Indexing .pio\build\esp12s_candidate\lib443\libESPAsyncTCP.a
+13:29:18 Compiling .pio\build\esp12s_candidate\libe0b\ESP8266WiFi\WiFiServer.cpp.o
+13:29:18 Compiling .pio\build\esp12s_candidate\libe0b\ESP8266WiFi\WiFiServerSecureBearSSL.cpp.o
+13:29:19 Compiling .pio\build\esp12s_candidate\libe0b\ESP8266WiFi\WiFiUdp.cpp.o
+13:29:19 Compiling .pio\build\esp12s_candidate\libe0b\ESP8266WiFi\enable_wifi_at_boot_time.cpp.o
+13:29:19 Compiling .pio\build\esp12s_candidate\lib0f9\ESPAsyncWebServer\AsyncEventSource.cpp.o
+13:29:19 Compiling .pio\build\esp12s_candidate\lib0f9\ESPAsyncWebServer\AsyncJson.cpp.o
+13:29:20 Compiling .pio\build\esp12s_candidate\lib0f9\ESPAsyncWebServer\AsyncWebHeader.cpp.o
+13:29:20 Compiling .pio\build\esp12s_candidate\lib0f9\ESPAsyncWebServer\AsyncWebServerRequest.cpp.o
+13:29:20 Compiling .pio\build\esp12s_candidate\lib0f9\ESPAsyncWebServer\AsyncWebSocket.cpp.o
+13:29:20 Compiling .pio\build\esp12s_candidate\lib0f9\ESPAsyncWebServer\BackPort_SHA1Builder.cpp.o
+13:29:20 Compiling .pio\build\esp12s_candidate\lib0f9\ESPAsyncWebServer\ChunkPrint.cpp.o
+13:29:20 Compiling .pio\build\esp12s_candidate\lib0f9\ESPAsyncWebServer\Middleware.cpp.o
+13:29:20 Compiling .pio\build\esp12s_candidate\lib0f9\ESPAsyncWebServer\WebAuthentication.cpp.o
+13:29:20 Compiling .pio\build\esp12s_candidate\lib0f9\ESPAsyncWebServer\WebHandlers.cpp.o
+13:29:21 Compiling .pio\build\esp12s_candidate\lib0f9\ESPAsyncWebServer\WebRequest.cpp.o
+13:29:21 Compiling .pio\build\esp12s_candidate\lib0f9\ESPAsyncWebServer\WebResponses.cpp.o
+13:29:21 Archiving .pio\build\esp12s_candidate\libe0b\libESP8266WiFi.a
+13:29:21 Indexing .pio\build\esp12s_candidate\libe0b\libESP8266WiFi.a
+13:29:21 Compiling .pio\build\esp12s_candidate\lib0f9\ESPAsyncWebServer\WebServer.cpp.o
+13:29:21 Compiling .pio\build\esp12s_candidate\libd0a\LittleFS\LittleFS.cpp.o
+13:29:22 Compiling .pio\build\esp12s_candidate\libd0a\LittleFS\lfs.c.o
+13:29:22 Compiling .pio\build\esp12s_candidate\libd0a\LittleFS\lfs_util.c.o
+13:29:23 Archiving .pio\build\esp12s_candidate\libFrameworkArduinoVariant.a
+13:29:23 Indexing .pio\build\esp12s_candidate\libFrameworkArduinoVariant.a
+13:29:23 Compiling .pio\build\esp12s_candidate\FrameworkArduino\Crypto.cpp.o
+13:29:23 Compiling .pio\build\esp12s_candidate\FrameworkArduino\Esp-frag.cpp.o
+13:29:23 Compiling .pio\build\esp12s_candidate\FrameworkArduino\Esp-version.cpp.o
+13:29:23 Compiling .pio\build\esp12s_candidate\FrameworkArduino\Esp.cpp.o
+13:29:23 Compiling .pio\build\esp12s_candidate\FrameworkArduino\FS.cpp.o
+13:29:24 Compiling .pio\build\esp12s_candidate\FrameworkArduino\FSnoop.cpp.o
+13:29:24 Archiving .pio\build\esp12s_candidate\libd0a\libLittleFS.a
+13:29:24 Indexing .pio\build\esp12s_candidate\libd0a\libLittleFS.a
+13:29:24 Compiling .pio\build\esp12s_candidate\FrameworkArduino\FunctionalInterrupt.cpp.o
+13:29:24 Compiling .pio\build\esp12s_candidate\FrameworkArduino\HardwareSerial.cpp.o
+13:29:24 Compiling .pio\build\esp12s_candidate\FrameworkArduino\IPAddress.cpp.o
+13:29:24 Compiling .pio\build\esp12s_candidate\FrameworkArduino\LwipDhcpServer-NonOS.cpp.o
+13:29:24 Compiling .pio\build\esp12s_candidate\FrameworkArduino\LwipDhcpServer.cpp.o
+13:29:24 Compiling .pio\build\esp12s_candidate\FrameworkArduino\LwipIntf.cpp.o
+13:29:25 Compiling .pio\build\esp12s_candidate\FrameworkArduino\LwipIntfCB.cpp.o
+13:29:25 Compiling .pio\build\esp12s_candidate\FrameworkArduino\MD5Builder.cpp.o
+13:29:25 Compiling .pio\build\esp12s_candidate\FrameworkArduino\Print.cpp.o
+13:29:25 Compiling .pio\build\esp12s_candidate\FrameworkArduino\Schedule.cpp.o
+13:29:25 Compiling .pio\build\esp12s_candidate\FrameworkArduino\StackThunk.cpp.o
+13:29:25 Compiling .pio\build\esp12s_candidate\FrameworkArduino\Stream.cpp.o
+13:29:25 Archiving .pio\build\esp12s_candidate\lib0f9\libESPAsyncWebServer.a
+13:29:25 Compiling .pio\build\esp12s_candidate\FrameworkArduino\StreamSend.cpp.o
+13:29:25 Compiling .pio\build\esp12s_candidate\FrameworkArduino\Tone.cpp.o
+13:29:25 Compiling .pio\build\esp12s_candidate\FrameworkArduino\TypeConversion.cpp.o
+13:29:25 Indexing .pio\build\esp12s_candidate\lib0f9\libESPAsyncWebServer.a
+13:29:26 Compiling .pio\build\esp12s_candidate\FrameworkArduino\Updater.cpp.o
+13:29:26 Compiling .pio\build\esp12s_candidate\FrameworkArduino\WMath.cpp.o
+13:29:26 Compiling .pio\build\esp12s_candidate\FrameworkArduino\WString.cpp.o
+13:29:26 Compiling .pio\build\esp12s_candidate\FrameworkArduino\abi.cpp.o
+13:29:26 Compiling .pio\build\esp12s_candidate\FrameworkArduino\aes_unwrap.cpp.o
+13:29:26 Compiling .pio\build\esp12s_candidate\FrameworkArduino\base64.cpp.o
+13:29:26 Compiling .pio\build\esp12s_candidate\FrameworkArduino\cbuf.cpp.o
+13:29:27 Compiling .pio\build\esp12s_candidate\FrameworkArduino\cont.S.o
+13:29:27 Compiling .pio\build\esp12s_candidate\FrameworkArduino\cont_util.cpp.o
+13:29:27 Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_app_entry_noextra4k.cpp.o
+13:29:27 Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_eboot_command.cpp.o
+13:29:27 Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_features.cpp.o
+13:29:27 Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_flash_quirks.cpp.o
+13:29:27 Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_flash_utils.cpp.o
+13:29:27 Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_i2s.cpp.o
+13:29:27 Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_main.cpp.o
+13:29:27 Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_non32xfer.cpp.o
+13:29:27 Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_noniso.cpp.o
+13:29:27 Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_phy.cpp.o
+13:29:27 Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_postmortem.cpp.o
+13:29:27 Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_si2c.cpp.o
+13:29:27 Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_sigma_delta.cpp.o
+13:29:27 Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_spi_utils.cpp.o
+13:29:28 Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_timer.cpp.o
+13:29:28 Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_vm.cpp.o
+13:29:28 Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_waveform_phase.cpp.o
+13:29:28 Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_waveform_pwm.cpp.o
+13:29:28 Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_wiring.cpp.o
+13:29:28 Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_wiring_analog.cpp.o
+13:29:28 Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_wiring_digital.cpp.o
+13:29:28 Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_wiring_pulse.cpp.o
+13:29:28 Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_wiring_pwm.cpp.o
+13:29:28 Compiling .pio\build\esp12s_candidate\FrameworkArduino\core_esp8266_wiring_shift.cpp.o
+13:29:28 Compiling .pio\build\esp12s_candidate\FrameworkArduino\crc32.cpp.o
+13:29:29 Compiling .pio\build\esp12s_candidate\FrameworkArduino\debug.cpp.o
+13:29:29 Compiling .pio\build\esp12s_candidate\FrameworkArduino\exc-c-wrapper-handler.S.o
+13:29:29 Compiling .pio\build\esp12s_candidate\FrameworkArduino\exc-sethandler.cpp.o
+13:29:29 Compiling .pio\build\esp12s_candidate\FrameworkArduino\flash_hal.cpp.o
+13:29:29 Compiling .pio\build\esp12s_candidate\FrameworkArduino\gdb_hooks.cpp.o
+13:29:29 Compiling .pio\build\esp12s_candidate\FrameworkArduino\heap.cpp.o
+13:29:29 Compiling .pio\build\esp12s_candidate\FrameworkArduino\hwdt_app_entry.cpp.o
+13:29:29 Compiling .pio\build\esp12s_candidate\FrameworkArduino\libb64\cdecode.cpp.o
+13:29:29 Compiling .pio\build\esp12s_candidate\FrameworkArduino\libb64\cencode.cpp.o
+13:29:29 Compiling .pio\build\esp12s_candidate\FrameworkArduino\libc_replacements.cpp.o
+13:29:30 Compiling .pio\build\esp12s_candidate\FrameworkArduino\mmu_iram.cpp.o
+13:29:30 Compiling .pio\build\esp12s_candidate\FrameworkArduino\reboot_uart_dwnld.cpp.o
+13:29:30 Compiling .pio\build\esp12s_candidate\FrameworkArduino\spiffs\spiffs_cache.cpp.o
+13:29:30 Compiling .pio\build\esp12s_candidate\FrameworkArduino\spiffs\spiffs_check.cpp.o
+13:29:30 Compiling .pio\build\esp12s_candidate\FrameworkArduino\spiffs\spiffs_gc.cpp.o
+13:29:30 Compiling .pio\build\esp12s_candidate\FrameworkArduino\spiffs\spiffs_hydrogen.cpp.o
+13:29:30 Compiling .pio\build\esp12s_candidate\FrameworkArduino\spiffs\spiffs_nucleus.cpp.o
+13:29:30 Compiling .pio\build\esp12s_candidate\FrameworkArduino\spiffs_api.cpp.o
+13:29:30 Compiling .pio\build\esp12s_candidate\FrameworkArduino\sqrt32.cpp.o
+13:29:30 Compiling .pio\build\esp12s_candidate\FrameworkArduino\stdlib_noniso.cpp.o
+13:29:30 Compiling .pio\build\esp12s_candidate\FrameworkArduino\time.cpp.o
+13:29:30 Compiling .pio\build\esp12s_candidate\FrameworkArduino\uart.cpp.o
+13:29:30 Compiling .pio\build\esp12s_candidate\FrameworkArduino\umm_malloc\umm_info.c.o
+13:29:30 Compiling .pio\build\esp12s_candidate\FrameworkArduino\umm_malloc\umm_integrity.c.o
+13:29:30 Compiling .pio\build\esp12s_candidate\FrameworkArduino\umm_malloc\umm_local.c.o
+13:29:31 Compiling .pio\build\esp12s_candidate\FrameworkArduino\umm_malloc\umm_malloc.cpp.o
+13:29:31 Compiling .pio\build\esp12s_candidate\FrameworkArduino\umm_malloc\umm_poison.c.o
+13:29:31 Compiling .pio\build\esp12s_candidate\FrameworkArduino\wpa2_eap_patch.cpp.o
+13:29:31 Archiving .pio\build\esp12s_candidate\libFrameworkArduino.a
+13:29:31 Indexing .pio\build\esp12s_candidate\libFrameworkArduino.a
+13:29:32 Linking .pio\build\esp12s_candidate\firmware.elf
+13:29:34 Retrieving maximum program size .pio\build\esp12s_candidate\firmware.elf
+13:29:34 Checking size .pio\build\esp12s_candidate\firmware.elf
+13:29:34 Advanced Memory Usage is available via "PlatformIO Home > Project Inspect"
+13:29:34 RAM:   [======    ]  57.6% (used 47224 bytes from 81920 bytes)
+13:29:34 Flash: [====      ]  41.8% (used 436643 bytes from 1044464 bytes)
+13:29:34 Building .pio\build\esp12s_candidate\firmware.bin
+13:29:36 Creating BIN file ".pio\build\esp12s_candidate\firmware.bin" using "C:\Users\kobac\.platformio\packages\framework-arduinoespressif8266\bootloaders\eboot\eboot.elf" and ".pio\build\esp12s_candidate\firmware.elf"
+13:29:36 ========================= [SUCCESS] Took 38.15 seconds =========================
+13:29:36 Código de salida: 0
+13:29:36 Artefacto generado: D:\ProyectoRobotica2\AutoFinalRobo2-ESP\.pio\build\esp12s_candidate\firmware.bin
+440800 bytes | SHA-256 50aaef87a998f643aa18f832ade2a838c108a7133a4de3a480b66c0a5db476e5
+13:29:36 Compilación del firmware ESP completada.
+13:29:36 ERROR: System.IO.DirectoryNotFoundException: Could not find a part of the path 'C:\Users\kobac\AppData\Local\AutoFinalRobo2Loader\bin\scripts\Prepare-Web.ps1'.
+   at System.IO.__Error.WinIOError(Int32 errorCode, String maybeFullPath)
+   at System.IO.FileStream.Init(String path, FileMode mode, FileAccess access, Int32 rights, Boolean useRights, FileShare share, Int32 bufferSize, FileOptions options, SECURITY_ATTRIBUTES secAttrs, String msgPath, Boolean bFromProxy, Boolean useLongPath, Boolean checkHost)
+   at System.IO.FileStream..ctor(String path, FileMode mode, FileAccess access, FileShare share)
+   at AFR2Loader.Operations.Hash(String path)
+   at AFR2Loader.BuildPreparation.Fingerprint(String path, Boolean hash)
+   at AFR2Loader.BuildPreparation.Inputs(Profile p, String section, Boolean generatedData, Boolean hash)
+   at AFR2Loader.Operations.<BuildWebFs>d__15.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw()
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at AFR2Loader.Operations.<BuildAll>d__4c.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw()
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at AFR2Loader.MainForm.<>c__DisplayClass197.<<ApprovePending>b__195>d__199.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw()
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at AFR2Loader.MainForm.<ExecuteCore>d__e4.MoveNext()
+13:29:36 Registro: C:\Users\kobac\AppData\Local\AutoFinalRobo2Loader\logs\20261029-132852-934-6234e8.txt | Resumen: .json

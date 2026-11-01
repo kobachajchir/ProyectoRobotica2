@@ -1,0 +1,38 @@
+{
+  "schema": "afr2-adaptations-1",
+  "changeId": "AFR2-20261101-02",
+  "authorship": "Adaptacion propia del flujo AVR activo; autores F4/AFR2 previos conservados. Sin editar reference ni D:/AutoProyecto.",
+  "verification": "Lectura de Afr2Ui_Apply/Open/go_back/back/dismiss/Tick/ReportedScreen, Afr2Menu_Node/Item, servicios/snapshots app, respuestas app_wire, main y encoder. Sin ejecutar tests, builds, validadores, generadores, navegador ni hardware.",
+  "module_status": {"atmega": "read-only-unchanged", "esp": "unchanged-not-promoted", "web": "source-adapted-not-executed"},
+  "sources": [
+    "AutoFinalRobo2-Atmega/src/ui/afr2_screens.c",
+    "AutoFinalRobo2-Atmega/src/ui/afr2_menu_catalog.c",
+    "AutoFinalRobo2-Atmega/include/afr2_menu_catalog.h",
+    "AutoFinalRobo2-Atmega/src/services/afr2_app.c",
+    "AutoFinalRobo2-Atmega/src/services/afr2_app_wire.c",
+    "AutoFinalRobo2-Atmega/src/services/afr2_product.c",
+    "AutoFinalRobo2-Atmega/include/afr2_product.h",
+    "AutoFinalRobo2-Atmega/src/input/afr2_encoder_ui.c",
+    "AutoFinalRobo2-Atmega/src/main.c"
+  ],
+  "files": [
+    {"file": "AutoFinalRobo2-Web/src/features/developer/uiSimulation.ts", "adaptation": "Port local de prioridades/retornos/asistentes/guardas y snapshots; fixtures de servicios identificados."},
+    {"file": "AutoFinalRobo2-Web/src/features/developer/uiSimulationFlow.ts", "adaptation": "Matriz contextual de gestos y nodos/opciones derivados del catalogo compartido."},
+    {"file": "AutoFinalRobo2-Web/src/features/developer/UiSimulationTree.tsx", "adaptation": "Arbol desplegable con referencias para destinos compartidos y ciclos."},
+    {"file": "AutoFinalRobo2-Web/src/features/developer/UiSimulator.tsx", "adaptation": "Guia, arbol, umbral largo configurable y disponibilidad de cliente Web ficticio."},
+    {"file": "AutoFinalRobo2-Web/src/features/oled/EncoderControl.tsx", "adaptation": "Texto de largo al soltar y retorno contextual; mecanismo compartido conservado."},
+    {"file": "AutoFinalRobo2-Web/src/styles/ui-simulator.css", "adaptation": "Estilos acotados de legibilidad del arbol; tokens previos conservados."},
+    {"file": "AutoFinalRobo2-Web/README.md", "adaptation": "Referencia a flujo actualizado y limites de fuente."},
+    {"file": "AutoFinalRobo2-Web/INFORME_ADAPTACION.md", "adaptation": "Estado Web sin ejecucion/promocion."},
+    {"file": "AutoFinalRobo2-Contracts/documentation/UI_SCREEN_FLOW.md", "adaptation": "Arbol completo, matriz de gestos y separacion de flujo actual/historico."},
+    {"file": "AutoFinalRobo2-Contracts/documentation/NAVIGATION.md", "adaptation": "Enlace al flujo C vigente."},
+    {"file": "AutoFinalRobo2-Contracts/documentation/SCREEN_SYSTEM.md", "adaptation": "Enlace al flujo y limites de revision."},
+    {"file": "AutoFinalRobo2-Contracts/documentation/MENU_PLAN.md", "adaptation": "Distinguir arbol real del diseno historico."},
+    {"file": "AutoFinalRobo2-Contracts/documentation/screens.json", "adaptation": "Enlace a revision de navegacion, sin alterar identidades."},
+    {"file": "AutoFinalRobo2-Contracts/documentation/overlays/connections.json", "adaptation": "Actualizar revision de flujo del simulador local."},
+    {"file": "AutoFinalRobo2-Contracts/changes/2026-11-01-02-ui-simulator-avr-flow.md", "adaptation": "Pedido, entrega y estado real por modulo."},
+    {"file": "AutoFinalRobo2-Contracts/README.md", "adaptation": "Referencia de entrega."},
+    {"file": "AutoFinalRobo2-Contracts/INFORME_ADAPTACION.md", "adaptation": "Referencia de entrega y limites."},
+    {"file": "AutoFinalRobo2-Contracts/CHANGELOG.md", "adaptation": "Registro AFR2-20261101-02."}
+  ]
+}

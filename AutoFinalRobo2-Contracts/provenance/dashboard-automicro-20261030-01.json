@@ -1,0 +1,78 @@
+{
+  "change_id": "AFR2-20261030-01",
+  "date": "2026-10-30",
+  "states": {
+    "atmega": "source-only-uncompiled-unflashed",
+    "esp": "unchanged-no-package-promotion",
+    "web": "linked-raster-source-and-copied-resources-unbuilt-unpublished"
+  },
+  "authors": "kobac AutoMicro originals preserved; AFR2 adaptation and original battery/long-press assets",
+  "upstream": [
+    {
+      "path": "AutoFinalRobo2-Atmega/reference/f4/Core/Src/oled_utils.c",
+      "sha256_normalized_lf": "2abbadfc0b4ed13cfeb76a130973c6d10df378123309d6ec83b28c27883137f9"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/reference/f4/Core/Src/fonts.c",
+      "sha256_normalized_lf": "35463b100bc455e75f7660219c41f7f4024b3666200fab17629dabcd7158066a"
+    }
+  ],
+  "files": [
+    {
+      "path": "AutoFinalRobo2-Atmega/include/afr2_icons.h",
+      "adaptation": "Append stable resource IDs16..23, original IDs retained",
+      "sha256_normalized_lf": "5b5eec154bc0003ff890f881827ec736713901790fbb7cdc439718d953004466"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/ui/afr2_icons.c",
+      "adaptation": "kobac AutoMicro Wi-Fi-off XBM copied; original AFR2 battery six states and encoder long; PROGMEM table",
+      "sha256_normalized_lf": "6637f0a1483e4ece10f8556d4ce707151f50b69a18ce4be1d7ab561dc65d768c"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/include/afr2_screens.h",
+      "adaptation": "Fresh battery validity and millivolts added to prepared snapshot",
+      "sha256_normalized_lf": "5b41741f896bc3d199f0856bd0b6fabab4599e4b45621878bc5f0a46044e0e8b"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/services/afr2_app.c",
+      "adaptation": "Prepare battery and readable actual mode/motor status for dashboard only",
+      "sha256_normalized_lf": "44b2f29bfbc9a7f79f26c61f3bc85d420378ce7749bbdab2c0bf7983e4112192"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/ui/afr2_screens.c",
+      "adaptation": "Pure render_dashboard adapted from kobac OledUtils_RenderDashboard; header scroll; existing differential transfer retained",
+      "sha256_normalized_lf": "927bc1505b85a29c6553395a2aa9da9f3e32ca2ac147e3894ffc2fe9027dcc41"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/oled/firmwareRenderer.ts",
+      "adaptation": "Linked literal raster layout port and optional prepared battery fields, no fabricated snapshot",
+      "sha256_normalized_lf": "6d91ea0267e6d4f224a283e4e137d8620b171c3b2f30b049c0e73ebdc20499cc"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/oled/generated/firmwareLibrary.ts",
+      "adaptation": "Copied current AVR glyphs/XBM with --copy-only, validators bypassed",
+      "sha256_normalized_lf": "5ff01042afa08521fd66eadefae9d4ba28f5b93b5cf31b87a55011f634045cab"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/oled/firmwareRenderer.sources.json",
+      "adaptation": "Reviewed C source fingerprints after layout port",
+      "sha256_normalized_lf": "604f3682602f91426378005ead2705b1d536dbeb67c00764a51d6b79ee8e7cca"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/screens.json",
+      "adaptation": "Shared010001 identity/layout/validity, no new ScreenCode",
+      "sha256_normalized_lf": "a3c0e4cc05948cc32b966149da22d57630b7a4fe5c41ad811d29e7d5c0f9ff05"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/overlays/connections.json",
+      "adaptation": "Shared C/Web source linkage",
+      "sha256_normalized_lf": "c40c5ef667e950bade91551a175da4e0b58ead5c60cc10433858df9e652aedc6"
+    }
+  ],
+  "execution": "source reads and edits; resource generator --copy-only; no tests/validators/builds/flashing/physical checks",
+  "pending": [
+    "AVR flash/SRAM/stack budget",
+    "compile all linked source",
+    "raster/device verification and deployment by express authorization"
+  ]
+}

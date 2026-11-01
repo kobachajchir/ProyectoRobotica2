@@ -1,3 +1,4 @@
+/* AFR2-20261029-27: quick controls/radar/PWM/WS integration; prior authors retained. */
 #include <user_interface.h>
 #include "afr2_build_info.h"
 // AFR2-20261023-11. New afr2-ws-1 dispatcher. See provenance/esp-firmware.json.
@@ -6,6 +7,10 @@
 Broker::Session *Broker::session(uint32_t id) {
     for (auto &s:sessions_) if (s.used && s.id==id) return &s;
     return nullptr;
+}
+/* AFR2-20261029-27: keep transport evidence without writing debug to the Mega UART. */
+void Broker::closeWs(AsyncWebSocketClient *client,uint16_t code,const char *reason){
+    wsCloseCode_=code;strlcpy(wsCloseReason_,reason,sizeof(wsCloseReason_));client->close(code,reason);
 }
 void Broker::begin() {
     apJoin_=WiFi.onSoftAPModeStationConnected([this](const WiFiEventSoftAPModeStationConnected &e){networkEvent(AFR2_NET_CLIENT_JOIN,e.aid);});
@@ -24,13 +29,13 @@ void Broker::event(AsyncWebSocketClient *client, AwsEventType type, void *arg, u
     uint32_t id=client->id();
     if (type==WS_EVT_CONNECT) {
         for (auto &s:sessions_) if (!s.used) {
-            s={}; s.used=true; s.id=id; s.inputSeen=s.lastSeen=s.window=millis();networkEvent(AFR2_NET_WS_OPEN);return;
+            ++wsOpened_;s={}; s.used=true; s.id=id; s.inputSeen=s.lastSeen=s.window=millis();networkEvent(AFR2_NET_WS_OPEN);return;
         }
-        client->close(1013,"Session limit"); return;
+        closeWs(client,1013,"Session limit"); return;
     }
     Session *s=session(id); if (!s) return;
     if (type==WS_EVT_DISCONNECT) {
-        networkEvent(AFR2_NET_WS_CLOSE);
+        ++wsClosed_;networkEvent(AFR2_NET_WS_CLOSE);
         stopWebOperations();
         *s=Session{}; return;
     }
@@ -38,9 +43,9 @@ void Broker::event(AsyncWebSocketClient *client, AwsEventType type, void *arg, u
     auto *info=static_cast<AwsFrameInfo *>(arg);
     // TCP segmentation of one final text frame is supported. RFC continuation frames are rejected.
     if (!info || !info->final || info->opcode!=WS_TEXT || info->len==0 || info->len>1024 ||
-        info->index+len>info->len) { client->close(1009,"Text frame limit"); return; }
+        info->index+len>info->len) { closeWs(client,1009,"Text frame limit"); return; }
     if (!info->index) { s->bytes=0; s->expected=(uint16_t)info->len; }
-    if (info->index!=s->bytes || s->expected!=info->len) { client->close(1002,"Frame order"); return; }
+    if (info->index!=s->bytes || s->expected!=info->len) { closeWs(client,1002,"Frame order"); return; }
     memcpy(s->input+s->bytes,data,len); s->bytes+=(uint16_t)len;
     if (s->bytes==s->expected) {
         s->input[s->bytes]=0; ingest(*s);
@@ -54,13 +59,13 @@ void Broker::ingest(Session &s) {
     if (failed || !doc.is<JsonObject>() || doc["schema"]!="afr2-ws-1" || doc["type"]!="req" ||
         !doc["requestId"].is<const char *>() || !doc["cmd"].is<const char *>() ||
         !doc["payload"].is<JsonObject>() || !doc["ts"].is<double>()) {
-        if (auto *client=ws_.client(s.id)) client->close(1008,"Invalid envelope");
+        if (auto *client=ws_.client(s.id)) closeWs(client,1008,"Invalid envelope");
         return;
     }
     const char *id=doc["requestId"], *command=doc["cmd"];
     if (!strlen(id) || strlen(id)>64 || !strlen(command) || strlen(command)>32 ||
         doc["requestId"].as<JsonString>().size()!=strlen(id) || doc["cmd"].as<JsonString>().size()!=strlen(command)) {
-        if (auto *client=ws_.client(s.id)) client->close(1008,"Identifier limit");
+        if (auto *client=ws_.client(s.id)) closeWs(client,1008,"Identifier limit");
         return;
     }
     strlcpy(req.id,id,sizeof(req.id)); strlcpy(req.command,command,sizeof(req.command));
@@ -80,6 +85,7 @@ void Broker::ingest(Session &s) {
         (stopQueued_ && stop_.client==req.client && !strcmp(stop_.id,id))) {
         error(req,"BAD_REQUEST","requestId en vuelo."); return;
     }
+    if(s.controlKind && !strcmp(s.controlId,id)){error(req,"BAD_REQUEST","Control requestId en vuelo.");return;}
     uint32_t now=millis();
     if ((uint32_t)(now-s.window)>=1000u) { s.window=now; s.rate=0; }
     if (++s.rate>40 && strcmp(command,"robot.stop")) {
@@ -88,7 +94,7 @@ void Broker::ingest(Session &s) {
     JsonObject payload=doc["payload"];
     req.generation=generation_;
     if(!encodeProduct(req,payload))return;
-    if(req.wireCommand==AFR2_EXT_DRIVE || req.wireCommand==AFR2_EXT_WHEEL || req.wireCommand==AFR2_EXT_MODE ||
+    if(req.wireCommand==AFR2_EXT_DRIVE || req.wireCommand==AFR2_EXT_DRIVE_PWM || req.wireCommand==AFR2_EXT_WHEEL || req.wireCommand==AFR2_EXT_MODE ||
        req.wireCommand==AFR2_EXT_GOTO || req.wireCommand==AFR2_EXT_PREFS || req.wireCommand==AFR2_EXT_LINE_CAL ||
        (req.wireCommand==AFR2_EXT_CONFIG && req.body[4]) ||
        (req.wireCommand>=AFR2_EXT_SEQ_BEGIN && req.wireCommand<=AFR2_EXT_SEQ_START))s.inputSeen=now;
@@ -102,6 +108,11 @@ void Broker::ingest(Session &s) {
         if(payload["interactive"].as<bool>())s.inputSeen=millis();
     }
     if(!strcmp(command,"system.hello"))strlcpy((char *)req.body,payload["clientVersion"].as<const char *>(),16);
+    if(!strcmp(command,"wifi.mode")){
+        if(!payload["mode"].is<const char *>() || payload["mode"].as<JsonString>().size()!=strlen(payload["mode"].as<const char *>())){error(req,"BAD_REQUEST","Modo Wi-Fi invalido.");return;}
+        const char *mode=payload["mode"]|"";req.body[0]=!strcmp(mode,"STA")?1:!strcmp(mode,"AP")?2:!strcmp(mode,"AP_STA")?3:0;
+        if(!req.body[0]){error(req,"BAD_REQUEST","Modo Wi-Fi invalido.");return;}req.bodyLength=1;
+    }
     if (!strcmp(command,"wifi.configure") || !strcmp(command,"wifi.draft.submit")) {
         if (!payload["mode"].is<const char *>() || !payload["ssid"].is<const char *>() ||
             !payload["password"].is<const char *>() ||
@@ -117,6 +128,15 @@ void Broker::ingest(Session &s) {
         strlcpy(req.wifi.password,payload["password"],sizeof(req.wifi.password));
         req.wifi.persist=payload["persist"] | true;
         if (!WifiService::valid(req.wifi)) { error(req,"BAD_REQUEST","SSID o frase WPA fuera de rango."); return; }
+    }
+    /* Validated local session control never waits behind UART reads or captures.
+     * One slot per session, consumed in loop before product background work. */
+    if(!strcmp(command,"system.hello") || !strcmp(command,"system.alive")){
+        if(s.controlKind){error(req,"BUSY_IN_FLIGHT","Control de sesion pendiente.",true);return;}
+        s.controlKind=!strcmp(command,"system.hello")?1:2;
+        strlcpy(s.controlId,req.id,sizeof(s.controlId));
+        if(s.controlKind==1)strlcpy(s.controlVersion,(const char *)req.body,sizeof(s.controlVersion));
+        s.lastSeen=now;strlcpy(s.recent[s.nextRecent],req.id,65);s.nextRecent=(s.nextRecent+1)%4;return;
     }
     if (!strcmp(command,"robot.stop") || !strcmp(command,"robot.sequence.cancel")) {
         if (stopQueued_ || (waiting_ && !strcmp(pending_.command,"robot.stop"))) {
@@ -139,7 +159,7 @@ void Broker::answer(const BrokerRequest &req, JsonDocument &frame) {
         if (frame["status"].isNull()) frame["status"]="completed";
     }
     if (auto *client=ws_.client(req.client)) {
-        if (client->queueIsFull()) { client->close(1013,"Slow consumer"); return; }
+        if (client->queueIsFull()) { closeWs(client,1013,"Slow consumer"); return; }
         String text; serializeJson(frame,text); client->text(text);
     }
 }
@@ -165,7 +185,7 @@ void Broker::capabilities(JsonObject out) {
         c["present"]=(i!=2 && i!=3) || implemented;c["implemented"]=implemented;c["calibrated"]=implemented;
         c["valid"]=implemented;c["freshness"]=implemented?"fresh":"unknown";
         c["reason"]=implemented?"Servicio negociado con ATmega; hardware sin certificar.":
-            i==6 || i==7?"Esperando extension UI EX01.":i==8?"Requiere EX01 v4, calibracion y presupuesto SRAM aprobado.":"Requiere productor y calibracion vigentes.";
+            i==6 || i==7?"Esperando extension UI EX01.":i==10?"Habilitar motores; revisar fallo o enlace.":i==8?"Requiere EX01 v4, calibracion y presupuesto SRAM aprobado.":"Requiere productor y calibracion vigentes.";
         if(i==8){JsonObject limits=c["limits"].to<JsonObject>();limits["maxSegments"]=32;limits["maxDurationMs"]=120000;limits["stepMs"]=10;limits["distanceBlocks"]=fresh && extensionVersion_>=6 && (f&AFR2_EXT_F_DISTANCE);}
         if(i==1 || i==3 || i==8 || i==10) {
             JsonObject limits=c["limits"].to<JsonObject>();
@@ -177,13 +197,29 @@ void Broker::capabilities(JsonObject out) {
     }
 }
 void Broker::status(JsonObject out,uint32_t now,uint32_t client) {
+    JsonObject diagnostics=out["connectionDiagnostics"].to<JsonObject>();
+    diagnostics["staConnected"]=WiFi.status()==WL_CONNECTED;diagnostics["wifiStatus"]=(int)WiFi.status();
+    diagnostics["wsOpened"]=wsOpened_;diagnostics["wsClosed"]=wsClosed_;
+    diagnostics["lastServerCloseCode"]=wsCloseCode_;diagnostics["lastServerCloseReason"]=wsCloseReason_;
+    diagnostics["bootId"]=mega_.ownBootId();
     out["megaLink"]=mega_.state(); out["controlMode"]="direct";out["extensionVersion"]=AFR2_EXT_VERSION;
     JsonObject head=out["sensorHead"].to<JsonObject>();head["known"]=sensorKnown_ && mega_.ready();head["running"]=radarRunning_;head["enabled"]=servoEnabled_;head["ageMs"]=(uint32_t)(now-sensorAt_); out["brokerTs"]=now;
     if (mega_.hasReply()) out["megaAgeMs"]=mega_.age(now); else out["megaAgeMs"]=nullptr;
     capabilities(out["capabilities"].to<JsonObject>());
+    JsonObject pwm=out["capabilities"]["manual_pwm"].to<JsonObject>();
+    bool manual=productReady_ && mega_.ready() && (uint32_t)(now-productAt_)<2000u && (productFeatures_&AFR2_EXT_F_MANUAL_PWM);
+    pwm["present"]=true;pwm["implemented"]=manual;pwm["valid"]=manual;pwm["calibrated"]=false;pwm["freshness"]=manual?"fresh":"unknown";
+    pwm["reason"]=manual?"PWM manual habilitado; sin odometria ni HC.":"Habilitar motores; revisar fallo, medicion Hall o enlace.";
+    pwm["limits"]["maxInputPct"]=100;pwm["limits"]["maxPwmPct"]=(uint16_t)pwmLimit_*100/255;
+
     const char *headNames[]={"sensor_head","radar_scanner"};
-    for(const char *name:headNames){JsonObject capability=out["capabilities"][name].to<JsonObject>();bool available=productReady_ && mega_.ready() && (productFeatures_&(!strcmp(name,"radar_scanner")?AFR2_EXT_F_RADAR:AFR2_EXT_F_SENSOR_HEAD));capability["present"]=true;capability["implemented"]=available;capability["valid"]=available;capability["calibrated"]=false;capability["freshness"]=available?"fresh":"unknown";capability["reason"]="EX01v8; calibracion fisica pendiente.";}
+    for(const char *name:headNames){JsonObject capability=out["capabilities"][name].to<JsonObject>();bool available=productReady_ && mega_.ready() && (productFeatures_&(!strcmp(name,"radar_scanner")?AFR2_EXT_F_RADAR:AFR2_EXT_F_SENSOR_HEAD));capability["present"]=true;capability["implemented"]=available;capability["valid"]=available;capability["calibrated"]=false;capability["freshness"]=available?"fresh":"unknown";capability["reason"]="EX01v9; calibracion fisica pendiente.";}
     draftStatus(out["wifiDraft"].to<JsonObject>());
+    JsonObject battery=out["capabilities"]["battery_voltage"].to<JsonObject>();
+    bool batteryAvailable=productReady_ && mega_.ready() && (productFeatures_&AFR2_EXT_F_BATTERY);
+    battery["present"]=true;battery["implemented"]=batteryAvailable;battery["valid"]=batteryAvailable;
+    battery["calibrated"]=false;battery["freshness"]=batteryAvailable?"fresh":"unknown";
+    battery["reason"]="EX01v9; A5, divisor 10k/10k, AVCC nominal; medicion explicita.";
 }
 void Broker::dispatch(const BrokerRequest &req,uint32_t now) {
     Session *s=session(req.client); if (!s) return;
@@ -201,20 +237,34 @@ void Broker::dispatch(const BrokerRequest &req,uint32_t now) {
     if(dispatchSystem(req,now))return;
     if (!strcmp(req.command,"system.alive")) { status(payload,now,req.client); answer(req,frame); return; }
     if(!strcmp(req.command,"wifi.info")){
-        wifi_.status(payload);auto *peer=ws_.client(req.client);
+        wifi_.status(payload);payload["wsClients"]=readyWifiClients();auto *peer=ws_.client(req.client);
         bool ap=peer && peer->client() && peer->client()->localIP()==WiFi.softAPIP();
         payload["connectionInterface"]=ap?"AP":"STA";payload["connectionRssiDbm"]=nullptr;
         if(!ap && WiFi.status()==WL_CONNECTED)payload["connectionRssiDbm"]=WiFi.RSSI();
         payload["apClients"]=WiFi.softAPgetStationNum();payload["channel"]=WiFi.channel();payload["rssiSource"]="esp-sta";answer(req,frame);return;
     }
+    if((!strcmp(req.command,"wifi.disconnect") || !strcmp(req.command,"wifi.retry") || !strcmp(req.command,"wifi.mode")) && (wifiPhase_==6 || wifiPhase_==7 || wifiAwaitWeb_ || wifiDraftReady_)){error(req,"BUSY_IN_FLIGHT","Hay una operacion Wi-Fi pendiente.",true);return;}
+    if(!strcmp(req.command,"wifi.disconnect")){
+        if(!wifi_.disconnectStation()){error(req,"BUSY_IN_FLIGHT","No se pudo solicitar la desconexion.",true);return;}
+        wifi_.status(payload);bool observed=payload["staConnected"].is<bool>() && !payload["staConnected"].as<bool>();frame["status"]=observed?"completed":"accepted";payload["confirmed"]=observed;answer(req,frame);return;
+    }
+    if(!strcmp(req.command,"wifi.retry")){
+        if(!wifi_.retry()){error(req,"BUSY_IN_FLIGHT","No se pudo solicitar la reconexion.",true);return;}
+        wifi_.status(payload);bool observed=payload["staConnected"]|false;frame["status"]=observed?"completed":"accepted";payload["confirmed"]=observed;answer(req,frame);return;
+    }
+    if(!strcmp(req.command,"wifi.mode")){
+        uint8_t mode=req.body[0];if(!wifi_.changeMode(mode)){error(req,"BUSY_IN_FLIGHT","El modo no fue confirmado.",true);return;}
+        wifi_.status(payload);payload["confirmed"]=true;answer(req,frame);return;
+    }
     if (!strcmp(req.command,"wifi.status")) { wifi_.status(payload); answer(req,frame); return; }
     if(dispatchWifiDraft(req,now))return;
     if (!strcmp(req.command,"wifi.scan")) {
+        if(wifiPhase_==6 || wifiPhase_==7 || wifiAwaitWeb_ || wifiDraftReady_){error(req,"BUSY_IN_FLIGHT","Hay una operacion Wi-Fi pendiente.",true);return;}
         if (!wifi_.scan()) { error(req,"BUSY_IN_FLIGHT","Servicio Wi-Fi ocupado.",true); return; }
         frame["status"]="accepted"; payload["status"]="started"; answer(req,frame); return;
     }
     if (!strcmp(req.command,"wifi.configure")) {
-        if (wifi_.busy() || wifiAwaitWeb_ || wifiDraftReady_ || wifiPhase_==6) { error(req,"BUSY_IN_FLIGHT","Servicio Wi-Fi ocupado.",true); return; }
+        if (wifi_.busy() || wifiAwaitWeb_ || wifiDraftReady_ || wifiPhase_==6 || wifiPhase_==7) { error(req,"BUSY_IN_FLIGHT","Servicio Wi-Fi ocupado.",true); return; }
         if (!wifi_.stage(req.wifi,now)) {
             error(req,"INTERNAL_ERROR","No se pudo guardar la configuracion; no fue aplicada."); return;
         }
@@ -252,6 +302,13 @@ void Broker::finish(const MegaResult &r) {
     BrokerRequest req=pending_; waiting_=false;
     if(finishSystem(req,r))return;
     if(req.client==0 && finishNetwork(req,r))return;
+    if(req.client==0 && (!strcmp(req.command,"_diag_poll") || !strcmp(req.command,"_diag_result"))){
+        if(!r.timeout && !r.transportFault && r.length>=18 && r.payload[8]==AFR2_RESULT_OK && !strcmp(req.command,"_diag_poll") && r.payload[9]){
+            uint32_t job=afr2_get_u32(r.payload+10);
+            if(job!=diagJob_){diagJob_=job;diagPattern_=afr2_get_u32(r.payload+14);diagReply_=true;}
+        }
+        return;
+    }
     if(req.client==0 && finishWifi(req,r))return;
     if(req.client && (!session(req.client) || (req.generation!=generation_ && strcmp(req.command,"robot.stop") && strcmp(req.command,"robot.sequence.cancel")))) {
         error(req,"SUPERSEDED","Respuesta de una operacion revocada.");return;
@@ -317,14 +374,23 @@ void Broker::broadcast(const char *name,JsonDocument &payload) {
     frame["payload"]=payload.as<JsonObject>(); frame["ts"]=millis();
     String text; serializeJson(frame,text);
     for (auto &s:sessions_) if (s.used && s.ready) if (auto *client=ws_.client(s.id)) {
-        if (!client->queueIsFull()) client->text(text); else client->close(1013,"Slow consumer");
+        if (!client->queueIsFull()) client->text(text); // Periodic snapshots are disposable under backpressure; keep the session.
+
     }
 }
 void Broker::tick(uint32_t now) {
+    if(stopQueued_){BrokerRequest req=stop_;stopQueued_=false;dispatch(req,now);}
+    for(auto &s:sessions_)if(s.used && s.controlKind){
+        BrokerRequest req;req.client=s.id;req.generation=generation_;
+        strlcpy(req.id,s.controlId,sizeof(req.id));strlcpy(req.command,s.controlKind==1?"system.hello":"system.alive",sizeof(req.command));
+        if(s.controlKind==1)strlcpy((char *)req.body,s.controlVersion,16);
+        s.controlKind=0;dispatch(req,now);
+    }
+
     if(!mega_.ready() || !productReady_){networkLinked_=false;networkPending_=true;networkPage_=0;wifiResetPending_=false;}
     tickProduct(now);tickSystem(now);
-    for (auto &s:sessions_) if (s.used && (uint32_t)(now-s.lastSeen)>6000u) {
-        if (auto *client=ws_.client(s.id)) client->close(1001,"Heartbeat expired");
+    for (auto &s:sessions_) if (s.used && (int32_t)(now-s.lastSeen)>30000) {
+        if (auto *client=ws_.client(s.id)) closeWs(client,1001,"Heartbeat expired");
     }
     // Dedicated STOP slot bypasses the ordinary queue, including an in-flight read.
     if (stopQueued_) { BrokerRequest req=stop_; stopQueued_=false; dispatch(req,now); }

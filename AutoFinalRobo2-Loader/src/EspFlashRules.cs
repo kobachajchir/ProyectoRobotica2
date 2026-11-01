@@ -30,7 +30,7 @@ namespace AFR2Loader
         public string Summary()
         {
             return "Flash esperada: " + EspFlashRules.Bytes(FlashBytes) + " | Código: máximo " + EspFlashRules.Bytes(FirmwareMax) +
-                " | LittleFS: " + EspFlashRules.Bytes(FsBytes) + "\r\nFS desde 0x" + FsStart.ToString("X") + " | Otras reservas/espacio: " + EspFlashRules.Bytes(FlashBytes - FirmwareMax - FsBytes) + ". El tamaño físico se consulta antes de cargar.";
+                " | FileSystem: " + EspFlashRules.Bytes(FsBytes) + "\r\nFS desde 0x" + FsStart.ToString("X") + " | Reservado/no asignable a código: " + EspFlashRules.Bytes(FlashBytes - FirmwareMax - FsBytes) + ". El código usa el máximo del linker; en ESP8266 no todo el sobrante de FileSystem es ejecutable. El tamaño físico se consulta antes de cargar.";
         }
     }
     public sealed class AtFlashRegion
@@ -64,7 +64,9 @@ namespace AFR2Loader
         public AtFlashLayout[] Layouts { get; set; }
         public static AtFirmwarePackage Read(string path)
         {
-            var package = new JavaScriptSerializer().Deserialize<AtFirmwarePackage>(System.IO.File.ReadAllText(path));
+            var package = String.Equals(System.IO.Path.GetExtension(path), ".bin", StringComparison.OrdinalIgnoreCase)
+                ? ReadKnownFullImage(path)
+                : new JavaScriptSerializer().Deserialize<AtFirmwarePackage>(System.IO.File.ReadAllText(path));
             if (package == null || package.Schema != "afr2-esp-at-package-1" || package.Chip != "esp8266" || String.IsNullOrWhiteSpace(package.Name) || package.Layouts == null || package.Layouts.Length == 0)
                 throw new ArgumentException("Se necesita un paquete afr2-esp-at-package-1 para esp8266, con layouts explícitos.");
             if (!new long[] { 1048576, 2097152, 4194304, 8388608, 16777216 }.Contains(package.FlashBytes)) throw new ArgumentException("Capacidad AT admitida: 1, 2, 4, 8 o 16 MiB.");
@@ -89,6 +91,24 @@ namespace AFR2Loader
                 if ((layout.FsBytes == 0) != (layout.Filesystem == "none")) throw new ArgumentException("El tipo y las regiones filesystem AT no coinciden.");
             }
             return package;
+        }
+        // AFR2-20261028-15. Exact vendor image downloaded in AFR2-20261028-14.
+        // Geometry comes from its full-flash size/header; placement at zero is
+        // the full-image interpretation, not a rule for arbitrary AT binaries.
+        static AtFirmwarePackage ReadKnownFullImage(string path)
+        {
+            const string knownHash = "ac30e8b6aee2cfbd58fd1e39d72486641f56fefab345038cb94c847167992103";
+            if (new FileInfo(path).Length != 4194304 || !String.Equals(Operations.Hash(path), knownHash, StringComparison.OrdinalIgnoreCase))
+                throw new ArgumentException("BIN AT sin mapa reconocido. La selección directa admite la imagen completa Ai-Thinker v1.5.4.1 descargada (#0040). Para otro BIN, elegí un manifiesto JSON con el mapa de su proveedor; no se deducen offsets por el nombre.");
+            return new AtFirmwarePackage {
+                Schema = "afr2-esp-at-package-1", Name = "Ai-Thinker AT v1.5.4.1 (#0040), imagen completa 4 MiB",
+                Chip = "esp8266", FlashBytes = 4194304, FlashMode = "dio", FlashFreq = "40m",
+                Layouts = new[] { new AtFlashLayout {
+                    Id = "ai-thinker-0040-full-4m", Label = "Imagen completa AT · 4 MiB · desde 0x0", Filesystem = "none",
+                    Regions = new[] { new AtFlashRegion { Name = "Imagen completa Ai-Thinker", Role = "firmware", Offset = "0x0",
+                        Capacity = 4194304, File = System.IO.Path.GetFileName(path), Sha256 = knownHash } }
+                } }
+            };
         }
         public AtFlashLayout Selected(Profile profile)
         {

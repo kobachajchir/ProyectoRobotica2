@@ -11,6 +11,7 @@ namespace AFR2Loader
     {
         public string Port, Baud, Status, At, ProductSource, ProductSnapshot, ProductSha256, BridgeHex, BridgeSha256, SourceSha256;
         public string BackupManifest;
+        public string CheckStatus, CheckedAt;
         public bool BackupRequested;
         public static string RecordPath(string port)
         {
@@ -57,8 +58,8 @@ namespace AFR2Loader
                 (previous == null ? "" : "\r\nRegistro anterior: " + previous.Status + ". El backup leerá lo que hay AHORA en el Mega: puede ser otro flasher. Los respaldos anteriores se conservan."), new[] {
                 "Potencia de motores/servos desconectada; USB y alimentación lógica identificados.",
                 "Quité RESET Mega→GND. RESET del Mega queda LIBRE durante todo este flujo.",
-                "D18/TX1→E_RX y E_TX→D19/RX1; D0/D1 al ESP y jumpers paralelos retirados.",
-                "Uso la ruta de niveles del shield identificada; no aplico TX de 5 V al RX directo ESP.",
+                "D18 y D19 DESCONECTADOS del ESP durante la carga del flasher. D0/D1 al ESP y jumpers paralelos retirados.",
+                "Alimentación lógica y masa común identificadas.",
                 "Revisé la opción de backup. Mientras use el flasher, el auto no ejecutará su aplicación."
             })) throw new OperationCanceledException("Instalación del flasher no confirmada.");
             Stage("wiring_confirmed", "Puente software: cableado confirmado; RESET Mega libre.");
@@ -68,14 +69,30 @@ namespace AFR2Loader
                 "CC=\"" + Slash(p.Resolve("Gcc")) + "\"", "OBJCOPY=\"" + Slash(p.Resolve("Objcopy")) + "\"" }, directory, token);
             string hex = BridgeHex(p); NeedFile(hex); EnsureUnchanged(source, sourceHash);
             Artifact(hex); Stage("build_mega_completed", "Flasher ATmega compilado. Todavía no se reemplazó la aplicación.");
-            MegaFlashBackup backup = backupBeforeLoad ? await BackupMegaFlash(p, port, token) : null;
+            // AFR2-20261030-15: compare actual flash before deciding whether to back up.
+            bool installedFlasher = false;
+            Stage("checking_flasher", "Comprobando software ATmega antes del backup...");
+            try {
+                var check = await Command(p, "Avrdude", new[] { "-C", p.Resolve("AvrdudeConfig"), "-v", "-n", "-D",
+                    "-p", p.Get("Mcu"), "-c", p.Get("Programmer"), "-P", port, "-b", p.Get("MegaBaud"),
+                    "-U", "flash:v:" + Path.GetFileName(hex) + ":i" }, Path.GetDirectoryName(hex), token);
+                RequireMegaSignature(p, check);
+                installedFlasher = System.Text.RegularExpressions.Regex.IsMatch(check.Output, @"[1-9]\d*\s+bytes of flash verified", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+                if (!installedFlasher) throw new ArgumentException("Comprobación sin resultado concluyente; se detiene antes del backup y escritura.");
+            } catch (CommandFailure ex) {
+                // Only a real byte mismatch identifies a different program. Transport failures abort.
+                if (ex.OutputTail.IndexOf("0x1e9801", StringComparison.OrdinalIgnoreCase) < 0 ||
+                    !System.Text.RegularExpressions.Regex.IsMatch(ex.OutputTail, "verification error.*(mismatch|content mismatch)", System.Text.RegularExpressions.RegexOptions.IgnoreCase)) throw;
+            }
+            if (installedFlasher) Stage("backup_skipped", "El ATmega contiene el flasher verificado: se omite backup y se conservan los respaldos anteriores.");
+            MegaFlashBackup backup = backupBeforeLoad && !installedFlasher ? await BackupMegaFlash(p, port, token) : null;
             string backupDescription = backup == null ? "Sin backup nuevo. Los anteriores se conservan, si existían." : "Backup leído del Mega: " + backup.Manifest;
             var record = new MegaServiceRecord { Port = port, Baud = p.Get("BridgeBaud"), Status = "prepared", At = DateTimeOffset.Now.ToString("o"),
                 BackupRequested = backupBeforeLoad, BackupManifest = backup == null ? null : backup.Manifest, BridgeHex = hex, BridgeSha256 = Hash(hex), SourceSha256 = sourceHash };
             record.Save(); Steps.Add(new { service = "mega_bridge", baud = record.Baud, sourceSha256 = sourceHash, backupRequested = backupBeforeLoad, backup = record.BackupManifest, hex = hex, hexSha256 = record.BridgeSha256 });
             log(backupDescription);
             if (!confirm("Escribir flasher en ATmega", Describe(hex) + "\r\n\r\n" + backupDescription + "\r\nSe grabará/verificará solo la aplicación, sin fuses ni EEPROM.",
-                new[] { "Confirmo reemplazar temporalmente el programa del auto. RESET Mega libre y potencia de actuadores desconectada." })) throw new OperationCanceledException("Escritura de servicio no confirmada.");
+                new[] { "Confirmo reemplazar temporalmente el programa del auto. D18/D19 DESCONECTADOS, RESET Mega libre y potencia de actuadores desconectada." })) throw new OperationCanceledException("Escritura de servicio no confirmada.");
             token.ThrowIfCancellationRequested(); EnsureUnchanged(hex, record.BridgeSha256);
             record.Status = "bridge_write_started"; record.Save();
             await UploadMegaApplication(p, port, hex, token);
@@ -100,7 +117,11 @@ namespace AFR2Loader
         public async Task PrepareEspSession(Profile p, string port, bool filesystem, bool listen, CancellationToken token)
         {
             if (!PrepareEsp(p, filesystem)) throw new OperationCanceledException("Cableado ESP no confirmado.");
-            if (!UsesMegaBridge(p)) { if (listen) await ListenBoot(p, port, token); return; }
+            if (!UsesMegaBridge(p)) {
+                if (listen) await ListenBoot(p, port, token);
+                else RequirePhysicalEsp("Intervención física necesaria · KEY y RST del ESP", "1. Apretá y mantené KEY del shield.\r\n2. Sin soltar KEY, apretá RST del ESP.\r\n3. Soltá SOLO RST y seguí manteniendo KEY.\r\n4. Confirmá abajo para consultar la ROM y continuar.\r\n\r\nMantené KEY hasta el aviso del Loader o el fin de la operación. No pulses RESET del ATmega. La escucha 74880 está desactivada: la respuesta ROM comprobará la comunicación.", token);
+                return;
+            }
             CheckBridge(p);
             MegaServiceRecord record = MegaServiceRecord.Read(port);
             if (record != null && (record.Status != "bridge_verified" || record.Baud != p.Get("BridgeBaud"))) throw new ArgumentException("El registro de este COM no acredita flasher verificado a ese baud. Usá Cargar flasher en ATmega antes de consultar ESP. Estado: " + record.Status);
@@ -109,9 +130,16 @@ namespace AFR2Loader
         void GuideMegaBridgeBoot(Profile p, bool forVerification, CancellationToken token)
         {
             token.ThrowIfCancellationRequested(); CheckBridge(p); EspSessionStarted = true;
-            if (!confirm(forVerification ? "Recuperar cargador para verificar — puente software" : "Entrar ESP en programación — puente software", "Mega ejecutando flasher a " + p.Get("BridgeBaud") + ". RESET del Mega LIBRE.\r\n\r\nMantené KEY/K del ESP, pulsá y soltá SOLO RST del ESP; conservá KEY hasta terminar la operación. Luego Continuar.\r\nNo se escucha 74880: el puente tiene baud fijo. La consulta comprobará comunicación bidireccional.\r\nEl wrapper esperará al Mega DESPUÉS de abrir el mismo COM para esptool." + (forVerification ? "\r\nNo se repetirá la escritura, solo consulta y verificación." : ""),
-                new[] { "El flasher está instalado al baud elegido; RESET Mega libre, enlace D18/D19 adaptado y potencia de actuadores desconectada.", "Mantengo KEY/K, pulsé y solté solo RST del ESP. No presioné RESET del Mega." })) throw new OperationCanceledException("Entrada manual ESP no confirmada.");
+            RequirePhysicalEsp("Intervención física necesaria · ESP por flasher ATmega", "Mega ejecutando flasher a " + p.Get("BridgeBaud") + ". RESET del Mega LIBRE.\r\n\r\n1. Apretá y mantené KEY del ESP.\r\n2. Pulsá y soltá SOLO RST del ESP.\r\n3. Seguí manteniendo KEY y confirmá abajo.\r\n\r\nConservá KEY hasta el aviso del Loader o el fin de la operación. No pulses RESET del ATmega.\r\nNo se escucha 74880: el puente tiene baud fijo. La consulta comprobará comunicación bidireccional.\r\nEl wrapper esperará al Mega DESPUÉS de abrir el mismo COM para esptool." + (forVerification ? "\r\nNo se repetirá la escritura, solo consulta y verificación." : ""), token);
             Stage("boot_entry_requested", "Secuencia KEY/RST confirmada manualmente; falta respuesta ROM. No se afirma modo observado por UART.");
+            token.ThrowIfCancellationRequested();
+        }
+        void RequirePhysicalEsp(string title, string text, CancellationToken token)
+        {
+            token.ThrowIfCancellationRequested();
+            if (EspPhysicalConfirmation == null) throw new InvalidOperationException("Falta el asistente obligatorio de intervención física ESP.");
+            Stage("esp_physical_required", "Esperando intervención física local: KEY y RST del ESP.");
+            if (!EspPhysicalConfirmation(title, text, token)) throw new OperationCanceledException("Intervención física ESP no confirmada.");
             token.ThrowIfCancellationRequested();
         }
         string EspRestoration(Profile p)

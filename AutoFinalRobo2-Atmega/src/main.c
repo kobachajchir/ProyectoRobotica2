@@ -29,7 +29,7 @@ static uint16_t capabilities(void *ctx) {
     return c;
 }
 int main(void) {
-    Afr2I2cHardware hardware;uint32_t sampled=0;
+    Afr2I2cHardware hardware;uint32_t sampled=0,oled_slot_ms=0;
     Afr2Board_Init();Afr2Product_Init(&product,Afr2Boot_Cause());Afr2Uart1_Init();
     Afr2Twi_Init(&hardware);(void)Afr2I2c_Init(&manager,&hardware);
     Afr2Oled_Init(&oled,&manager,AFR2_OLED_ADDRESS7,0);Afr2Ui_Init(&ui);
@@ -58,6 +58,7 @@ int main(void) {
         else for(uint8_t budget=64;budget && !link.reply_length && Afr2Uart1_Read(&b);--budget)Afr2Link_Push(&link,b,now);
         /* AFR2-20261024-11. Bound UI work; Hall counters are captured by IRQ
          * first, even at an encoder IRQ entry. Actions remain exclusively here. */
+        if(!encoder.raw_pressed && !encoder.stable_pressed)encoder.long_press_ms=product.config.long_press_ms;
         if(encoder.transitions!=product.config.encoder_steps) {
             encoder.transitions=product.config.encoder_steps;encoder.partial=0;
         }
@@ -82,6 +83,17 @@ int main(void) {
             Afr2UiSnapshot view;Afr2App_UiSnapshot(&app,&view);Afr2Ui_Render(&ui,&oled,&view);
         }
         Afr2Oled_Settings(&oled,product.config.contrast,product.config.rotation);
-        Afr2Oled_Task(&oled,now);Afr2Watchdog_Kick();
+        /* AFR2-20261029-11: low-priority bounded sender runs AFTER services,
+         * input and render. No periodic forced full-frame retransmission. */
+        /* AFR2-20261029-16: low priority is bounded, never starvation. Even
+         * persistent input/UART work allows one OLED stage every2ms. Task is
+         * nonblocking and any new transfer remains limited to16data bytes. */
+        now=Afr2Board_Millis();
+        uint8_t oled_slot=rotary_drained && !link.reply_length;
+        if((uint32_t)(now-oled_slot_ms)>=2u)oled_slot=1;
+        Afr2Oled_Pause(&oled,!oled_slot);
+        Afr2Oled_Task(&oled,now);
+        if(oled_slot)oled_slot_ms=now;
+        Afr2Watchdog_Kick();
     }
 }

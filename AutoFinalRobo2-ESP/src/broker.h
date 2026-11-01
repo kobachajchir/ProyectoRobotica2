@@ -1,3 +1,4 @@
+/* AFR2-20261029-27: quick controls/radar/PWM/WS integration; prior authors retained. */
 // AFR2-20261023-11. Bounded WebSocket ingress, requests dispatched in loop().
 #pragma once
 #include <ESPAsyncWebServer.h>
@@ -25,8 +26,11 @@ private:
         uint32_t id=0, lastSeen=0, window=0, inputSeen=0;
         uint16_t bytes=0, expected=0, rate=0;
         bool used=false, ready=false;
+        uint8_t controlKind=0;char controlId[65]={},controlVersion[16]={};
         uint32_t oledRevision=0;
         bool oledCaptured=false;
+        bool screenSubscribed=false;
+        uint32_t screenSubscriptionAt=0;
         char input[1025]={};
         char recent[4][65]={}; uint8_t nextRecent=0;
     } sessions_[1];
@@ -41,6 +45,9 @@ private:
     Session *session(uint32_t id);
     void event(AsyncWebSocketClient *client, AwsEventType type, void *arg, uint8_t *data, size_t len);
     void ingest(Session &session);
+    void closeWs(AsyncWebSocketClient *client,uint16_t code,const char *reason);
+    uint32_t wsOpened_=0,wsClosed_=0;
+    uint16_t wsCloseCode_=0;char wsCloseReason_[24]={};
     void dispatch(const BrokerRequest &request, uint32_t now);
     void answer(const BrokerRequest &request, JsonDocument &frame);
     void error(const BrokerRequest &request, const char *code, const char *message, bool retryable=false, const char *source="esp");
@@ -89,9 +96,9 @@ private:
     uint16_t speedLimit_=0,wheelMm_=0,radiusMm_=0;
     uint8_t pwmLimit_=0;
     uint32_t limitsAt_=0;
-    uint8_t productOrigin_=0,productMode_=255,oledSelection_=0,oledFirst_=0;
+    uint8_t productOrigin_=0,productMode_=255,oledSelection_=0,oledFirst_=0,oledCount_=0;
     bool productReady_=false,productAttempted_=false,safetyRequested_=false;
-    uint8_t oledData_[1024]={},stateData_[25]={};
+    uint8_t oledData_[1024]={},stateData_[28]={};
     char sequenceId_[65]={},executionId_[65]={};
     WifiConfig oledDraft_;
     uint32_t wifiPollAt_=0,wifiStatusAt_=0,wifiJob_=0,wifiDraftToken_=0,wifiJobAt_=0;
@@ -104,4 +111,9 @@ private:
     uint8_t wifiNetworkCount_=0,wifiNetworkIndex_=0;
     char webVersion_[16]={};
     uint8_t wifiVersions_=0;
+    uint8_t wifiSecurity_[8]={},wifiDetails_[18]={};
+    bool wifiDetailsPending_=false;
+    uint8_t readyWifiClients();
+    uint32_t diagPollAt_=0,diagJob_=0,diagPattern_=0;
+    bool diagReply_=false;
 };

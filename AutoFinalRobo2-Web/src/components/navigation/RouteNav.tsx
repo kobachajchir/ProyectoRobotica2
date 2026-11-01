@@ -1,4 +1,5 @@
 import { NetworkPill,NetworkDetails } from '../../features/connection/NetworkConnection';
+import { BatteryPill, BatteryDetails } from '../../features/connection/BatteryStatus';
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { BrandMark } from '../ui/BrandMark';
@@ -44,12 +45,12 @@ export function AppShell({ children }: { children: ReactNode }) {
       return true;
     }
   });
-  const [modal, setModal] = useState<'oled' | 'settings' | 'network' | null>(null);
+  const [modal, setModal] = useState<'oled' | 'settings' | 'network' | 'battery' | null>(null);
   const [origin, setOrigin] = useState<ModalOrigin | null>(null);
   const sidebar = useRef<HTMLElement>(null);
   const location = useLocation();
   const mode = useRobotMode();
-  const title = location.pathname.startsWith('/desarrollador/protocol-studio') ? 'Protocol Studio' : location.pathname === '/desarrollador' ? 'Desarrollador' : NAV_ITEMS.find((item) => item.to === location.pathname)?.label ?? 'Inicio';
+  const title = location.pathname.startsWith('/desarrollador/ui-simulator') ? 'Simulador UI' : location.pathname.startsWith('/desarrollador/protocol-studio') ? 'Protocol Studio' : location.pathname === '/desarrollador' ? 'Desarrollador' : NAV_ITEMS.find((item) => item.to === location.pathname)?.label ?? 'Inicio';
   const sidebarCollapsed = isSidebarCollapsed;
   const overlays = useMemo(
     () => ({
@@ -182,6 +183,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             </div>
             <div className="afr2-action-row">
               <NetworkPill onOpen={source=>{setOrigin(source);setModal('network');}} />
+              <BatteryPill onOpen={source => { setOrigin(source); setModal('battery'); }} />
               {stopAvailable && <Button variant="emergency" onClick={() => void triggerEmergencyStop('user-stop')}>
                 ■ STOP
               </Button>}
@@ -214,6 +216,9 @@ export function AppShell({ children }: { children: ReactNode }) {
         </FloatingModal>
         <FloatingModal open={modal==='network'} origin={origin} onClose={()=>setModal(v=>v==='network'?null:v)} title="Red conectada" description="Wi-Fi y punto de acceso del auto">
           <NetworkDetails onClose={()=>setModal(null)}/>
+        </FloatingModal>
+        <FloatingModal open={modal === 'battery'} origin={origin} onClose={() => setModal(value => value === 'battery' ? null : value)} title="Bateria" description="Voltaje medido por el controlador">
+          <BatteryDetails />
         </FloatingModal>
         <FloatingModal
           open={modal === 'settings'}

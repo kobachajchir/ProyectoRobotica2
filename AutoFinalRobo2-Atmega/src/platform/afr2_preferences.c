@@ -1,3 +1,4 @@
+/* AFR2-20261029-27: quick controls/radar/PWM/WS integration; prior authors retained. */
 /* AFR2-20261023-19. Own versioned EEPROM journal, two 128-byte records.
  * Explicit LE encoding; CRC16-CCITT; commit marker is written last.
  * No credentials stored here. One byte is scheduled per main-loop pass.
@@ -27,10 +28,11 @@ static void encode(const Afr2Config *c,uint8_t *b) {
     for(uint8_t i=0;i<5;i++){afr2_put_u16(b+n,c->line_threshold[i]);n+=2;}
     W(wheel_mm);W(radius_sum_mm);W(speed_limit);W(test_ms);W(kp);W(ki);W(kd);W(line_kp);W(line_speed);
     for(uint8_t i=0;i<4;i++){afr2_put_u32(b+n,c->counts_per_rev[i]);n+=4;}
+    B(radar_range);B(radar_trace);W(long_press_ms);B(servo_inverted);
 #undef B
 #undef W
 }
-static void decode(Afr2Config *c,const uint8_t *b) {
+static void decode(Afr2Config *c,const uint8_t *b,uint8_t version) {
     uint8_t n=0;
 #define B(field) c->field=b[n++]
 #define W(field) do{c->field=afr2_get_u16(b+n);n+=2;}while(0)
@@ -39,14 +41,39 @@ static void decode(Afr2Config *c,const uint8_t *b) {
     for(uint8_t i=0;i<5;i++){c->line_threshold[i]=afr2_get_u16(b+n);n+=2;}
     W(wheel_mm);W(radius_sum_mm);W(speed_limit);W(test_ms);W(kp);W(ki);W(kd);W(line_kp);W(line_speed);
     for(uint8_t i=0;i<4;i++){c->counts_per_rev[i]=afr2_get_u32(b+n);n+=4;}
+    c->radar_range=0;c->radar_trace=1;
+    if(version>=5u){B(radar_range);B(radar_trace);}
+    c->long_press_ms=800;c->servo_inverted=0;
+    if(version>=8u){W(long_press_ms);B(servo_inverted);}
+    c->wheel_mm=AFR2_FIXED_WHEEL_MM;c->radius_sum_mm=AFR2_FIXED_RADIUS_SUM_MM;c->geometry_ready=1;c->hall_wired=1;
 #undef B
 #undef W
 }
 static uint8_t load_slot(uint8_t slot,Afr2Config *c,uint32_t *seq) {
     eeprom_read_block(image,(const void *)(uintptr_t)((uint16_t)slot*128u),128);
-    if(memcmp(image,"AFR2",4) || image[4]!=AFR2_CONFIG_VERSION ||
-        afr2_get_u16(image+6)!=58u || image[127]!=0xa5 || crc(image)!=afr2_get_u16(image+14))return 0;
-    decode(c,image+16); if(!Afr2Product_ConfigValid(c))return 0;
+    if(memcmp(image,"AFR2",4) || image[4]<1u || image[4]>AFR2_CONFIG_VERSION ||
+        afr2_get_u16(image+6)!=(image[4]>=8u?63u:image[4]>=5u?60u:58u) || image[127]!=0xa5 || crc(image)!=afr2_get_u16(image+14))return 0;
+    decode(c,image+16,image[4]); if(!Afr2Product_ConfigValid(c))return 0;
+    /* AFR2-20261029-10: same58-byte payload, migrate valid v1 UI fields only.
+     * Do not discard wheel/Hall/motor/line calibration or auto-write EEPROM.
+     * v2 records retain subsequent intentional user orientation adjustments. */
+    if(image[4]==1u) { c->encoder_invert=1;c->rotation=1;c->encoder_steps=4; }
+    /* AFR2-20261029-15: old EEPROM may still mark the installed Hall absent.
+     * Apply confirmed wiring only; retain CPR, geometry, motor flags and
+     * polarities. Future intentional v3 Hall disable remains respected. */
+    if(image[4]<3u)c->hall_wired=1;
+    /* AFR2-20261029-18: only migrate old disabled line acquisition. Preserve
+     * explicitly configured digital/ADC profiles and their calibration. */
+    if(image[4]<4u && !c->line_kind){c->line_kind=1;c->line_invert=31;c->line_calibrated=0;}
+    /* AFR2-20261030-03: requested ADC profile must override an older saved
+     * digital/off selection too. Keep thresholds/polarity and all other
+     * preferences; invalidate only calibration tied to a different mode.
+     * Migration is RAM-only until the user explicitly saves EEPROM. */
+    if(image[4]<6u && c->line_kind!=2u){c->line_kind=2;c->line_calibrated=0;}
+    /* AFR2-20261030-04: replace legacy default80 with requested255 in RAM.
+     * Preserve other configured limits and all calibration. No auto-save;
+     * v7 records respect any subsequent explicit user limit, including80. */
+    if(image[4]<7u && c->pwm_limit==80u)c->pwm_limit=255u;
     *seq=afr2_get_u32(image+8); return 1;
 }
 void Afr2Prefs_Load(Afr2Config *c,uint8_t *loaded) {
@@ -60,7 +87,7 @@ void Afr2Prefs_Load(Afr2Config *c,uint8_t *loaded) {
 uint8_t Afr2Prefs_Save(const Afr2Config *c) {
     if(writing || !Afr2Product_ConfigValid(c))return 0;
     memset(image,0,sizeof(image));memcpy(image,"AFR2",4);image[4]=AFR2_CONFIG_VERSION;
-    afr2_put_u16(image+6,58);afr2_put_u32(image+8,sequence+1u);encode(c,image+16);
+    afr2_put_u16(image+6,63);afr2_put_u32(image+8,sequence+1u);encode(c,image+16);
     afr2_put_u16(image+14,crc(image));image[127]=0xa5;
     cursor=0;writing=1;state=1;return 1;
 }

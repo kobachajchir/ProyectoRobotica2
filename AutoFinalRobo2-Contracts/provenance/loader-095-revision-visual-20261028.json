@@ -1,0 +1,160 @@
+{
+  "change": "AFR2-20261028-17",
+  "date": "2026-10-28",
+  "loaderVersion": "0.9.5",
+  "authorization": "Pedido humano de corrección KEY y mejora de interfaz con capturas y revisión iterativa.",
+  "status": {
+    "loader": "Compilado, GUI revisada con capturas y muestra visual señalizada; sin operaciones físicas.",
+    "atmega": "Sin cambios por17.",
+    "esp": "Sin cambios por17.",
+    "web": "Sin cambios por17.",
+    "cad": "Sin cambios por17."
+  },
+  "skill": "computer-use:computer-use, control y capturas de Windows",
+  "files": [
+    {
+      "path": "AutoFinalRobo2-Loader/src/ActionButton.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Dibujo de botones y desplegables con contraste, separación, flecha y estados.",
+      "sha256": "0cee01b218c3999d35c903059d69753772c8d218cce26d28fc06a1594bdd3202"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/MainForm.Design.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Espaciado y alineación compartidos, renderizadores, tablas y áreas adaptables de Operación.",
+      "sha256": "f88320b6fe53c0374c98098db639ef49bdc1817343e06ed462efde22ec72a11a"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/MainForm.Workflow.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Etapas por acción GUI/MCP, sin scroll, disposición en cuatro columnas; textos KEY.",
+      "sha256": "83d98db8163d13961df80d07bdb8dbd8f2733686995b891e54b8f75995c6d7be"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/MainForm.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Inicialización directa de Flasher, pie de acciones, pestañas compactas y composición adaptable; textos KEY.",
+      "sha256": "9d43030c259684c11cddf5c5793a7dc943d480e755c10c7b64297ed11b3d5be1"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/MainForm.Integration.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Resumen y pies alineados; historial y guardado; textos KEY.",
+      "sha256": "aa366d3b05d3d63253e66ba24f509c8c4f7fd9c92c722488ce4ae7b8ee963475"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/MainForm.EspModes.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Campos alineados, memoria con texto completo y guía KEY breve.",
+      "sha256": "7dddf5f54b0147bb44642c0164388522ae9f9795f9c64ac80f41a38452a60c77"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/MainForm.MegaBridge.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Método alineado y botones compartidos; textos KEY.",
+      "sha256": "23f8304deaefa0da3327d68868c4676304787f7ccc133c880d278f03c3d797c2"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/MainForm.Preferences.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Botones de diálogo compartidos.",
+      "sha256": "0ac2f1cf9936be7cb9fbd6843b7dba94c39b6e14e6c0e017f6b5884ac43b1893"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/MainForm.Profiles.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Botones de diálogo compartidos.",
+      "sha256": "b12e45c577a99c2385060c7c87bc31981752549ad35dbfa9f676a7504f58c23c"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/MainForm.Options.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Botones de preferencias compartidos.",
+      "sha256": "ad53c05946c2747343c297209327a32925d507e2569dda618e33baba5908c35f"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/MainForm.Configuration.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Conserva filtro por placa; controles heredan estilo compartido.",
+      "sha256": "e3a4fd1f11fc27f8ee89d5f3917d2fcf3d9f67c30bd50374f9059e21ad65ca94"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/MainForm.McpConnection.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Botones de estado/registro MCP compartidos.",
+      "sha256": "baab275f7c4dae1282bca93a86154329b142bdfdde20861eef31aae16cfe42db"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/MainForm.Serial.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Herramientas con altura adaptable y botones sin recortes.",
+      "sha256": "7c6146263ee9bc3cfd61dbedb61b596db1556f0c4a5bd482dcfec79941c34dd2"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/MainForm.SerialSend.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Panel TX más alto y ancho suficiente para Detener envío.",
+      "sha256": "95e61ad301e9e80069854533157a7c64a540a25bf194d6fda823a6e0ac2bc7a5"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/MainForm.Converter.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Acciones de entrada agrupadas y espacio bajo cada editor.",
+      "sha256": "6f7d84dfd45ca57ec7da18809e0e56f48e89025199334ead0d2376f6bc4c0058"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/FailureDetails.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Corrección de etiqueta visible KEY.",
+      "sha256": "51d99b0108525db88effd92fe8b079326c2084d3e35ad035627707af2c173991"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/Profile.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Descripción de espera KEY/RST.",
+      "sha256": "42028e736135c50d91282a4cabd68154bafee6815f84bf1e8292738259236f69"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/McpServer.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Descripción KEY/RST sin cambiar esquema.",
+      "sha256": "9d3ed9b50906a44557d26452c6e444794df97398b2b3f5c3ab4887415ef6c6f9"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/Operations.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Corrección de etiqueta visible KEY, sin cambios de ejecución.",
+      "sha256": "5732e3b4cdece1c8a37ad06de1d54339c07a79844bcb95f28577e82d8de952eb"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/Operations.EspModes.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Corrección de etiqueta visible KEY, sin cambios de ejecución.",
+      "sha256": "840ac00f1cfdb75ed58e1c523fa08f80fba784633de7d450ee651a2c50f8cf78"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/Operations.MegaBridge.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Corrección de etiqueta visible KEY, sin cambios de ejecución.",
+      "sha256": "b64b2b20376018688b45a7fec827152669a237be2556e4ad3dc79e5f190af40a"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/README.md",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Documentación vigente y referencia física KEY.",
+      "sha256": "fca9dad42ef06054346ced49dcb600c1ce4346ab31f16b8d911bdf6052f4428d"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/MANUAL.html",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Documentación vigente y referencia física KEY.",
+      "sha256": "bdf691b3a03181a4fc0cacae8bb3e557e3005e74e3ae88626fa6ed7ff38119ed"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/MCP.md",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Documentación vigente y referencia física KEY.",
+      "sha256": "6b1424c1cee01b59926d15c98704b28ba1cbd4a8d84da79e1baf87ca7f902f10"
+    }
+  ]
+}

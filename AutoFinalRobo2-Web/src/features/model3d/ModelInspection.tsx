@@ -1,7 +1,9 @@
+import { frameModel } from '../../components/three/frameModel';
+import { InspectionEnvironment, useInspectionPalette } from '../../components/three/InspectionEnvironment';
 import { useEffect, useMemo, useRef, useState, type RefObject } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Link } from 'react-router-dom';
-import { Vector3 } from 'three';
+import { Box3, Vector3 } from 'three';
 import { OrbitControls } from '../../components/three/OrbitControls';
 import { RobotModel, useRobotModel } from '../../components/three/RobotModel';
 import { Button } from '../../components/ui/Button';
@@ -25,11 +27,7 @@ function InspectionScene({ modelSize, anchors, elements, referencesVisible }: {
   const { camera, size: viewport, invalidate } = useThree();
   const targetY = modelSize.y / 2;
   useEffect(() => {
-    const extent = Math.max(modelSize.x, modelSize.y, modelSize.z, .01);
-    const distance = extent * 1.5 / Math.min(1, viewport.width / viewport.height);
-    camera.position.set(distance, targetY + distance * .65, distance);
-    camera.lookAt(0, targetY, 0);
-    camera.updateProjectionMatrix();
+    frameModel(camera, new Box3(new Vector3(-modelSize.x / 2, 0, -modelSize.z / 2), new Vector3(modelSize.x / 2, modelSize.y, modelSize.z / 2)), viewport);
     invalidate();
   }, [camera, viewport.width, viewport.height, modelSize, targetY, invalidate]);
   return <><RobotModel animateServo={false} /><OrbitControls targetY={targetY} />
@@ -97,6 +95,7 @@ function ProjectedPoints({ anchors, elements }: {
 
 function CarInspection({ referencesVisible, onToggleReferences }: { referencesVisible: boolean; onToggleReferences: () => void }) {
   const { scene, size, offset } = useRobotModel();
+  const palette = useInspectionPalette();
   const anchors = useMemo(() => getComponentAnchors(scene, offset), [scene, offset]);
   const [selected, setSelected] = useState<string | null>(null);
   const elements = useRef(new Map<string, PointElements>());
@@ -179,11 +178,8 @@ function CarInspection({ referencesVisible, onToggleReferences }: { referencesVi
     </div>
     <div className="afr2-model-inspection__viewport">
       <Canvas frameloop="demand" dpr={[1, 1.5]} camera={{ position: [.5, .4, .5], fov: 45, near: .005, far: 80 }}
-        fallback={<p className="p-6">WebGL no esta disponible. La vista Superior de Control sigue disponible.</p>}>
-        <ambientLight intensity={.9} />
-        <directionalLight position={[4, 6, 4]} intensity={1.4} />
-        <directionalLight position={[-4, -2, -4]} intensity={.5} />
-        <gridHelper args={[6, 12, '#b81d33', '#1e293b']} />
+        fallback={<p className="afr2-model-inspection__fallback">WebGL no esta disponible. La vista Superior de Control sigue disponible.</p>}>
+        <InspectionEnvironment palette={palette} extent={Math.max(size.x, size.y, size.z)} />
         <InspectionScene modelSize={size} anchors={anchors} elements={elements} referencesVisible={referencesVisible} />
       </Canvas>
       <div id="afr2-model-references" className="afr2-model-inspection__points" hidden={!referencesVisible} role="group" aria-label="Componentes del modelo 3D">
@@ -203,7 +199,7 @@ function CarInspection({ referencesVisible, onToggleReferences }: { referencesVi
           <span className="afr2-model-point__label">{item.label}</span>
         </button>)}
       </div>
-      {referencesVisible && component && <aside id="afr2-model-info" ref={panel} className="afr2-glass-popover afr2-model-info" aria-labelledby="afr2-model-info-title">
+      {referencesVisible && component && <aside id="afr2-model-info" ref={panel} className="afr2-model-info" aria-labelledby="afr2-model-info-title">
         <header className="afr2-model-info__heading">
           <span className="afr2-model-info__icon"><UiIcon name={component.icon} /></span>
           <div><p className="afr2-kicker">Componente del robot</p><h2 id="afr2-model-info-title">{component.label}</h2></div>

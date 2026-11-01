@@ -15,9 +15,14 @@ static void labeled(Afr2Oled *o,uint8_t y,const char *label,uint8_t left,const c
     Afr2Oled_TextWindow(o,left,128,y,text,Afr2Ui_TextOffset(text,128-left,elapsed),AFR2_WHITE);
 }
 static void back(Afr2Oled *o) {
-    Afr2Icon_Draw(o,AFR2_ICON_BACK,0,54,8);TXT(o,14,53,"Volver");
+    Afr2Icon_Draw(o,AFR2_ICON_BACK,0,51,12);TXT(o,14,53,"Volver");
 }
 void Afr2NetworkScreen_Render(Afr2Oled *o,const Afr2Ui *u,const Afr2UiSnapshot *s) {
+    if(u->node==AFR2_N_NETWORK){
+        Afr2Oled_Clear(o);if(u->selection)TXT(o,0,0,"<2/2 Conexion");else TXT(o,0,0,"1/2> Conexion");
+        for(uint8_t i=0;i<3;i++)Afr2Oled_Text(o,0,14+12*i,s->lines[i],AFR2_WHITE);
+        Afr2Ui_GestureHint(o,0,53,0,PSTR("Volver"));Afr2Ui_GestureHint(o,66,53,1,PSTR("Volver"));return;
+    }
     uint8_t ap=u->node==AFR2_N_AP_INFO;uint32_t elapsed=u->clock_ms-u->scroll_started_ms;
     Afr2Icon_Draw(o,ap?AFR2_ICON_AP:AFR2_ICON_WIFI,0,0,14);
     if(ap)TXT(o,21,1,"Datos de red AP");else TXT(o,21,1,"IP de conexion");
@@ -56,5 +61,5 @@ void Afr2NetworkNotice_Render(Afr2Oled *o,const Afr2Ui *u,const Afr2UiSnapshot *
     case AFR2_NET_STA_LOST:TXT(o,24,9,"Wi-Fi sin red");line(o,32,"STA desconectada",elapsed);break;
     case AFR2_NET_AP_STOPPED:TXT(o,24,9,"Red AP apagada");line(o,32,"Sin acceso por AP",elapsed);break;
     }
-    if(kind!=AFR2_NET_AP_READY)TXT(o,0,54,"Click: cerrar");
+    if(kind!=AFR2_NET_AP_READY){Afr2Ui_GestureHint(o,0,53,0,PSTR("Cerrar"));Afr2Ui_GestureHint(o,66,53,1,PSTR("Cerrar"));}
 }

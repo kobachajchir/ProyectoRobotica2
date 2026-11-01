@@ -6,7 +6,8 @@
       "path": ["web:developer-ui-simulator", "web:shared-encoder-control", "web:local-ui-state", "web:linked-firmware-renderer", "web:oled-canvas"],
       "state": "source-implemented-uncompiled-unvalidated",
       "note": "Local AVR UI navigation adaptation with fictional service snapshots. No connected-client commands, firmware edits or ESP promotion; shared ScreenCodes/resources unchanged.",
-      "changeId": "AFR2-20261031-01"
+      "changeId": "AFR2-20261101-02",
+      "navigation_review": "documentation/UI_SCREEN_FLOW.md"
     },
     {
       "id": "shared:flow/web-esp-atmega",
@@ -282,7 +283,205 @@
       "changeId": "AFR2-20261025-14",
       "note": "AP vs STA reflects socket local IP; dBm is router RSSI, no AP-client signal fabricated.",
       "build_evidence": "builds/2026-10-25-14/README.md"
+    },
+    {
+      "id": "shared:flow/touch-oled-19",
+      "path": [
+        "web:ManualDriveOverlay",
+        "esp:broker-product-touch-ui",
+        "atmega:Afr2Ui_Touch",
+        "atmega:render_touch",
+        "web:renderTouchScreen"
+      ],
+      "state": "source-adapted-uncompiled-runtime-unverified",
+      "changeId": "AFR2-20261029-19",
+      "note": "Presentation only, exclusive OLED, timeout2500ms; bitmap and Q8 rotation copied; no physical yaw feedback."
+    },
+    {
+      "id": "shared:flow/screen-subscription-19",
+      "path": [
+        "web:LiveOledViewer",
+        "web:ConnectionContext-viewer-count",
+        "esp:session-screen-subscription",
+        "atmega:UI_META-PAGE-RELEASE"
+      ],
+      "state": "source-adapted-uncompiled-runtime-unverified",
+      "changeId": "AFR2-20261029-19",
+      "note": "Framebuffer remains request/response. Metadata polling removed from global head reader. No viewer=no repeated queries; explicit enabled/disabled with timeout."
+    },
+    {
+      "id": "shared:flow/battery-v9",
+      "path": [
+        "atmega:ADC5-single-owner-with-IR",
+        "atmega:battery-average-age",
+        "atmega:EX01v9-0x55",
+        "esp:battery-adapter",
+        "web:shared-cache-reader",
+        "web:battery-pill-icon-modal",
+        "atmega:Sistema-Bateria",
+        "web:linked-firmware-library"
+      ],
+      "state": "source-integrated-uncompiled-runtime-unverified",
+      "changeId": "AFR2-20261029-26",
+      "note": "Measure enables acquisition; Get cache only. Nominal5V, 10k/10k, no charge percentage. Generator/build/hardware pending."
+    },
+    {
+      "id": "shared:flow/restart-confirmation-26",
+      "path": [
+        "web:SystemPanel-restart-trigger",
+        "web:FloatingModal-cancel-or-confirm",
+        "web:system.reboot-confirm-true",
+        "esp:existing-system-handler",
+        "atmega:existing-stopped-output-gate"
+      ],
+      "state": "source-integrated-uncompiled-runtime-unverified",
+      "changeId": "AFR2-20261029-26",
+      "note": "Only confirm sends. Cancel/Escape/backdrop/close send nothing. Physical reboot and browser interaction untested."
+    },
+    {
+      "id": "shared:flow/quick-radar-pwm-27",
+      "path": [
+        "atmega:encoder-ui-release",
+        "atmega:contextual-ui-and-services",
+        "atmega:radar-range-and-pwm",
+        "esp:EX01v9",
+        "web:literal-renderers-and-pwm-client"
+      ],
+      "state": "source-integrated-uncompiled-runtime-unverified",
+      "changeId": "AFR2-20261029-27",
+      "note": "010003 quick carousel; 03003b/c radar options/range; explicit PWM percentages; WS session-control priority; no hardware or deployment evidence."
+    },
+    {
+      "id": "shared:flow/dashboard-short-menu-28",
+      "path": [
+        "atmega:encoder-short",
+        "atmega:ui-home",
+        "atmega:quick-controls",
+        "web:firmware-preview"
+      ],
+      "state": "source-integrated-uncompiled-runtime-unverified",
+      "changeId": "AFR2-20261029-28"
+    },
+    {
+      "id": "shared:flow/dashboard-short-menu-long-quick-29",
+      "path": [
+        "atmega:encoder-short-to-full-menu",
+        "atmega:encoder-long-release-to-quick-cards",
+        "web:linked-navigation-preview"
+      ],
+      "state": "source-integrated-uncompiled-runtime-unverified",
+      "changeId": "AFR2-20261029-29"
+    },
+    {
+      "id": "shared:flow/quick-mode-selection",
+      "path": [
+        "atmega:encoder-ui",
+        "atmega:ui-wrapper",
+        "atmega:product-service",
+        "atmega:renderer",
+        "web:oled-viewer"
+      ],
+      "state": "source-integrated-uncompiled-runtime-unverified",
+      "note": "010003 -> 03003d; only physical mode action, existing framebuffer; local preview does not execute. No deployment or physical evidence.",
+      "changeId": "AFR2-20261030-06"
+    },
+    {
+      "id": "shared:flow/ui-reform-07",
+      "path": [
+        "atmega:encoder-ui",
+        "atmega:ui-wrapper",
+        "esp:diagnostic-poll-result",
+        "web:touch-presentation",
+        "web:oled-raster"
+      ],
+      "state": "source-integrated-uncompiled-runtime-unverified",
+      "changeId": "AFR2-20261030-07",
+      "note": "EX01v10; EEPROMv8; menu reform and CAD nominal geometry. Source only, no regeneration/build/runtime evidence."
+    },
+    {
+      "id": "shared:flow/wifi-ui-09",
+      "path": [
+        "atmega:encoder-ui",
+        "atmega:wifi-job-poll",
+        "esp:broker_wifi",
+        "esp:WifiService",
+        "web:WifiPage",
+        "web:oled-raster"
+      ],
+      "state": "source-integrated-uncompiled-runtime-unverified",
+      "changeId": "AFR2-20261030-09",
+      "contract": "contracts/WIFI_UI_11.md",
+      "note": "EX01v11 exact negotiated product version; correlated real-SSID/security scan packets; disconnect observed before success; metadata after base status ACK; Web entry requires live ready WebSocket client. Local library has no radio actions. Generator/build/runtime/promotion pending."
+    },
+    {
+      "id": "shared:flow/motion-reference-13",
+      "path": [
+        "web:logical-chassis-commands",
+        "esp:unchanged-forwarding",
+        "atmega:drive-mixing",
+        "atmega:inverse-odometry",
+        "web:sequence-kinematics"
+      ],
+      "changeId": "AFR2-20261030-13",
+      "state": "source-integrated-uncompiled-runtime-unverified",
+      "contract": "contracts/MOTION_REFERENCE_13.md",
+      "note": "forward/yaw corrected in chassis-to-wheel basis; lateral and individual wheel trims preserved; CW/CCW labels linked AVR/Web; no new wire or executed checks"
+    },
+    {
+      "id": "shared:flow/motor-selector",
+      "path": [
+        "atmega:encoder-ui",
+        "atmega:Afr2MotorSelector_Step",
+        "atmega:Afr2MotorSelector_Render",
+        "web:motorSelector/renderMotorSelector",
+        "web:MotorSelector"
+      ],
+      "state": "source-integrated-uncompiled-runtime-unverified",
+      "note": "AFR2-20261030-18:030044 shared layout, wrap selection; short confirms in calling flow; long contextual return; no actuator command while rotating. Native Web uses same motor order and underline.",
+      "changeId": "AFR2-20261030-18"
+    },
+    {
+      "id": "shared:flow/manual-touch-permissions-18",
+      "path": [
+        "web:ControlPage.canDrive",
+        "web:MecanumDrivePad",
+        "web:ManualDriveOverlay",
+        "esp:robot.drive.pwm",
+        "atmega:Afr2Product_DrivePwm"
+      ],
+      "changeId": "AFR2-20261030-18",
+      "state": "web-source-uncompiled-runtime-unverified",
+      "contract": "contracts/MANUAL_TOUCH_PERMISSIONS_18.md",
+      "note": "same manual PWM permission; historical command error cancels gesture, not permission; model presentation independent; existing firmware guards retained",
+      "superseded_model_policy": "AFR2-20261030-19; touch additionally requires loaded model and ready viewer; common motor policy retained"
+    },
+    {
+      "id": "shared:flow/touch-model-ready-19",
+      "path": [
+        "web:modelAssetLoading-store",
+        "web:ModelAssetProgress",
+        "web:ManualDriveModel.onReady",
+        "web:ManualDriveOverlay.modelLoaded",
+        "web:ControlPage.canDrive"
+      ],
+      "changeId": "AFR2-20261030-19",
+      "state": "web-source-uncompiled-runtime-unverified",
+      "contract": "contracts/TOUCH_MODEL_READY_19.md",
+      "note": "asset ready and local viewer ready before new gesture; one shared progress/cache; loading and recovery never start motors; real PWM guards retained"
     }
   ],
-  "updated_by": "AFR2-20261025-01"
+  "updated_by": "AFR2-20261030-19",
+  "dashboard_20261030_01": {
+    "screen": "0x010001",
+    "atmega": "src/ui/afr2_screens.c:render_dashboard",
+    "web": "src/features/oled/firmwareRenderer.ts:dashboard",
+    "wire": "existing 1024-byte framebuffer, unchanged",
+    "state": "source only; uncompiled; no runtime or physical evidence"
+  },
+  "dashboard_header_20261030_02": {
+    "screen": "0x010001",
+    "fields": "STA SSID+local IP or AP SSID+AP IP",
+    "scroll": "70px clipped independent ping-pong lanes,40ms tick,800ms endpoint pauses",
+    "state": "linked AVR/Web source,uncompiled,unverified"
+  }
 }

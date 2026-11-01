@@ -1,3 +1,71 @@
+> **AFR2-20261029-22:** solución a «running scripts is disabled» al preparar FileSystem: [ajustar argumentos PowerShell del perfil](FILESYSTEM_SCRIPTS.md). Predeterminado corregido solo en fuente; sin compilar ni ejecutar. [Ficha](../AutoFinalRobo2-Contracts/changes/2026-10-29-22-loader-powershell-filesystem.md).
+
+> **Loader 1.1.2 / AFR2-20261029-13:** intervención KEY/RST del ESP obligatoria y al frente, aun minimizado o con omisión de confirmaciones. ATmega sin ese requisito. [Ayuda](MANUAL.html#esp-intervencion) · [Ficha](../AutoFinalRobo2-Contracts/changes/2026-10-29-13-loader-esp-physical-required.md).
+
+> **Loader 1.1.1 / AFR2-20261029-12:** omisión opcional de confirmaciones manuales durante la sesión, debajo de Autoaceptar MCP. GUI y MCP requieren aceptar localmente la advertencia antes de activar. No se persiste ni omite comprobaciones automáticas. [Ayuda](MANUAL.html#mcp-session-checks) · [Ficha](../AutoFinalRobo2-Contracts/changes/2026-10-29-12-loader-session-checks.md).
+
+> **Distribución para compartir — AFR2-Loader-dist-1.1:** carpeta y ZIP en la raíz del proyecto, con GUI/MCP precompilados, manual y scripts de runtime. Generador: Preparar-Distribucion.ps1. No incluye fuentes ni datos personales. [Ficha y límites](../AutoFinalRobo2-Contracts/changes/2026-10-29-06-loader-distribution.md).
+
+> **Bienvenida 1.1.0 / AFR2-20261029-04:** icono animado durante la preparación de la UI, salida al estar lista y Esc para omitir. Respeta animaciones reducidas de Windows. Compilado, sin ejecutar GUI ni hardware. [Ficha](../AutoFinalRobo2-Contracts/changes/2026-10-29-04-loader-startup-animation.md).
+
+> **Inicio para usuarios:** abrí **AFR2 Loader.exe**, con el icono de la app, en esta carpeta. Ejecuta Iniciar.ps1 y conserva sus opciones de inicio. Mantené el EXE junto a los scripts, src, assets y manual. Para regenerarlo: Generar-Ejecutable.ps1. Versión 1.1.0; lanzador y aplicación compilados por pedido expreso, sin ejecutar GUI ni hardware. [Ficha](../AutoFinalRobo2-Contracts/changes/2026-10-29-03-loader-executable-launcher.md).
+
+> **Loader 1.1.0 / AFR2-20261029-01:** el contenido de LittleFS se prepara mediante scripts configurables. Nuestra Web usa scripts/Prepare-Web.ps1; otros proyectos pueden usar su propio script sin npm. [Guía y ejemplos](FILESYSTEM_SCRIPTS.md) · [Estado y archivos](../AutoFinalRobo2-Contracts/changes/2026-10-29-01-loader-filesystem-scripts.md). Sin compilar ni ejecutar esta revisión.
+
+> **Loader 1.0.0 / AFR2-20261028-25:** lectura ESP documentada, consulta automática de capacidad por esptool y navegación reorganizada. Fuente sin compilar ni probar. [Ficha](../AutoFinalRobo2-Contracts/changes/2026-10-28-25-loader-version-1.md).
+
+> **Loader AFR2-20261028-23 / 0.9.5:** preparación previa por sección, FileSystem/capacidad confirmada, verificación ESP integrada sin reconexión adicional, aviso KEY al primer porcentaje, prompts de Servidor MCP y manual/cableado/UNER renovados. Interfaz compilada y revisada visualmente; sin COM, flash ni compilación de firmware por el agente. [Ficha y límites](../AutoFinalRobo2-Contracts/changes/2026-10-28-23-loader-flujo-manual-mcp.md).
+
+## Flujo actualizado
+
+Al iniciar una operación se abre Operación y se reactiva Seguir registro. Instalar el flasher exige D18/D19 desconectados del ESP; se reconectan después, con alimentación cortada, para usar el puente. Detectar ESP tiene su etapa ESP Detectado.
+
+Confirmá la capacidad total ESP antes de ver particiones. Firmware propio ofrece Firmware ESP / FileSystem / ambos; AT oculta la sección y requiere revisar sus BIN precompilados. Flashear solo se habilita tras compilar/preparar esa sección en la sesión actual. Cambiar perfil, fuentes, linker o imágenes requiere prepararla otra vez. Código usa el límite real del linker ESP8266, sin inventar que toda flash libre sea ejecutable.
+
+Esptool escribe y verifica hashes en la misma sesión. Se eliminan la reconexión read_mac, el bucle KEY/RST posterior y verify_flash adicional. Se exige confirmación de hash por imagen y salida correcta; si falta, no se marca verificado. El primer porcentaje de escritura dispara una ventana no modal para soltar KEY; Connecting solo no la dispara.
+
+Servidor MCP genera prompt genérico de configuración stdio para cualquier IA compatible y prompt de prueba de conexión específico de esta sesión para Codex. Copiar del monitor habilita Mostrar en conversor HEX. Leer ATmega abre el manual exacto; no abre COM. El manual y Acerca de incluyen propósito académico, logo AFR2 y recursos UNER/FCAL.
+
+Las secciones históricas inferiores quedan sustituidas donde contradigan este flujo.
+
+> **Revisión visual AFR2-20261028-17 / 0.9.5:** botón físico KEY; botones y desplegables con fondo visible, iconos separados y alineados, etapas por operación sin scroll, Flasher junto a Operación y monitor/conversor reorganizados. Compilado y revisado en GUI con capturas; sin abrir COM ni ejecutar operaciones de firmware. [Ficha](../AutoFinalRobo2-Contracts/changes/2026-10-28-17-loader-095-revision-visual.md).
+
+> **AFR2-20261028-16 / 0.9.5:** interfaz organizada por destino ATmega/ESP y Configuración por placa/subsección. Flasher junto a Operación, Preferencias en Opciones, ayuda por campo, colores/iconos y márgenes comunes. Monitor con envío explícito ASCII/HEX/números, CR/LF, cantidad y pausa de repetición, Detener, y archivos TX independientes. Conserva feedback, conversor y BIN AT reconocido. **Fuentes sin compilar, ejecutar ni probar.** [Ficha completa](../AutoFinalRobo2-Contracts/changes/2026-10-28-16-loader-095-interfaz-envio-serie.md).
+
+## Flujo vigente 0.9.5
+
+1. En Operación elegí Puerto y Destino: ATmega o ESP. Actualizar puertos y Detectar tienen funciones separadas.
+2. ATmega ofrece firmware completo del auto o solo comunicación. ESP ofrece Web propio o Paquete AT y sección Firmware / Web / Firmware + Web. La sección incluye el filesystem cuando corresponde; el tamaño se elige por layouts existentes. La imagen AT monolítica solo admite Firmware.
+3. Elegí Método de flasheo ESP si corresponde. Configurar flasher abre la pestaña contigua. Instalar el flasher solo está allí, abajo a la derecha; Detectar ESP lleva a Operación antes de abrir el asistente.
+4. Compilar y Flashear tienen botones divididos del mismo tamaño. Flashear queda abajo a la derecha. La barra inferior muestra operación, progreso, COM/baud, monitor y MCP. Las etapas de operación se mantienen.
+5. Configuración separa General, ATmega y ESP con subsecciones; la búsqueda filtra dentro de lo elegido. Cada campo tiene ayuda y acceso al manual. Guardar/Guardar como comparten botón.
+6. Opciones → Preferencias permite ajustar backups, casillas de asistentes y registros. Las casillas pueden ser requeridas, estar marcadas por defecto u ocultarse; la confirmación final y las comprobaciones técnicas siguen activas. El COM se comprueba después de cerrar el monitor y antes de la operación; es una comprobación puntual, no una reserva. La referencia al botón del shield es KEY por indicación del usuario.
+7. Codex/MCP distingue conector activado de conexión comprobada. El comando de registro comienza oculto; las solicitudes aparecen en tabla. No cambia el esquema de aprobación/autoaceptación.
+
+## Enviar desde Monitor serie (0.9.5)
+
+Abrí el puerto desde el monitor y escribí los datos en su editor inferior. Elegí:
+
+| Formato | Ejemplo | Bytes enviados sin terminadores |
+| --- | --- | --- |
+| ASCII literal | `AT` | `41 54` |
+| HEX | `41 54` o `0x41 0x54` | `41 54` |
+| Números decimales | `65 84` | `41 54` |
+
+Las casillas CR y LF agregan `0D` y `0A`, en ese orden, a **cada envío**. Los escapes escritos son literales en ASCII. También se pueden enviar solo terminadores con entrada vacía. ASCII rechaza caracteres fuera de0..127; números acepta bytes0..255. Hasta64KiB por envío, incluidos terminadores; de1 a1000 repeticiones y pausa0..60000ms. La carga útil se toma al pulsar Enviar y los controles quedan bloqueados durante la repetición.
+
+Detener cancela lo pendiente. Cerrar monitor, cambiar baudios o iniciar una operación de carga también detiene TX antes de ceder el COM. El mismo worker administra RX/TX, sin abrir un segundo handle. No se transmite al abrir/reconectar ni desde MCP. Se escriben bloques cortos con cancelación entre bloques y timeout de2s por Write; los bytes ya aceptados por el puerto no se pueden retirar. La confirmación del driver no es un ACK del dispositivo.
+
+Los registros `.rx.bin/.rx.txt` conservan RX y `.tx.bin/.tx.txt` registran los bloques TX aceptados y las solicitudes. Si una escritura falla, el bloque que falló puede haber salido parcialmente; queda anotado sin reintento automático. El registro TX binario no presenta ese bloque incierto como confirmado.
+
+Seleccionar texto en vista ASCII o decodificada muestra el acceso al conversor: copia la selección y la pega como ASCII literal. Convertir sigue siendo una acción explícita. HEX normalizado y resultado tienen su copia con toast. Eventos usa Ver detalles y resalta en amarillo el detalle abierto.
+
+Las descripciones de versiones inferiores se conservan como historia y quedan reemplazadas por este flujo donde difieran.
+
+> **AFR2-20261028-15 / 0.9.4:** en modo AT, **Paquete AT / BIN...** permite seleccionar directamente Ai-Thinker_ESP8266_DIO_32Mbit_V1.5.4.1_20161202.bin. Se reconoce el contenido exacto por SHA-256; no se convierte el BIN ni hace falta un JSON adicional. Mapa de imagen completa: 4 MiB desde 0x0, DIO/40 MHz declarados en archivo. Reemplaza toda la flash; no incluye filesystem separable. Otros BIN requieren manifiesto del proveedor. Seleccionar no flashea ni abre COM. Fuente sin compilar/probar. [Ficha](../AutoFinalRobo2-Contracts/changes/2026-10-28-15-loader-at-bin-directo.md).
+
+> **AFR2-20261028-13 / 0.9.3:** feedback de carga en Operación y resumen desde cualquier pestaña: tiempo del proceso, último mensaje y segundos sin salida; porcentaje y barra determinados solo cuando esptool informa Writing at …%. Cada porcentaje corresponde a una imagen; 100% no sustituye la verificación final. Sin porcentaje se muestra actividad; tras 15 s sin salida cambia el color del texto, sin inferir bloqueo ni modificar timeouts. Captura también mensajes parciales sin salto de línea. Fuente sin compilar/ejecutar. [Ficha](../AutoFinalRobo2-Contracts/changes/2026-10-28-13-loader-feedback-carga.md).
+
 # AFR2 Loader - Windows
 
 > **AFR2-20261028-12 / 0.9.2:** pestaña **Conversor HEX / ASCII**, universal e independiente de comandos y del puerto serie. Pegar HEX, convertir a ASCII legible/escapado o ASCII literal a HEX y copiar resultado/HEX normalizado. Acceso también desde Monitor serie. Fuente sin compilar ni ejecutar. [Ficha](../AutoFinalRobo2-Contracts/changes/2026-10-28-12-loader-conversor-universal.md).
@@ -8,7 +76,7 @@
 
 Herramienta gráfica en español para compilar y cargar el software de
 AutoFinalRobo2 y cargar paquetes ESP8266 AT precompilados para otros usos.
-Hecho por Koba Chajchir. Versión **0.9.2**,
+Hecho por Koba Chajchir. Versión **0.9.5**,
 AFR2-20261028-12, 28/10/2026. Desde **AFR2-20261027-14** es un módulo propio
 en la raíz, `AutoFinalRobo2-Loader`, al mismo nivel que Atmega, ESP, Web,
 Contracts y CAD. Comparte su único Git. [Registro de integración](../AutoFinalRobo2-Contracts/changes/2026-10-27-14-loader-root-module.md).
@@ -467,3 +535,22 @@ No se identifican comandos, protocolos ni arranques; 41 es A y02 es \x02.
 No transmite, no abre COM y no añade jobs/logs del texto pegado. Los borradores
 son solo de la ventana. Disponible durante operaciones porque es independiente
 de sus recursos. Fuente0.9.2 sin compilación, tests, validadores ni ejecución GUI.
+
+
+
+
+
+
+
+
+
+## Loader1.1.3 — Verificar flasher (AFR2-20261029-21)
+
+En **Flasher ATmega → Verificar flasher**, el Loader compara la flash instalada con la referencia compilada para los baudios seleccionados, por bootloader y avrdude `-n -D -U flash:v:...:i`. Requiere firma y confirmación de bytes coincidentes. Reinicia el Mega por auto-reset; no escribe firmware, EEPROM ni fuses y no consulta al ESP. Un firmware distinto/otra variante no se acredita. El flasher transparente existente no necesita actualización. GUI/MCP compilados; sin prueba COM de esta revisión.
+
+Desde Codex: `loader_request_operation` con `action: verify_mega_flasher`, `port` y `requestId` nuevo; consultar `loader_job` hasta completar. Se aplican aprobación/exclusión del COM y confirmaciones vigentes. No confundir el último registro local con una comprobación nueva del dispositivo.
+
+
+## Loader1.1.4 — Configuración y carga explícitas (AFR2-20261029-22)
+
+Elegir paquete/sección solo cambia configuración. La selección de paquete invalida la revisión anterior; pulsá Consultar tamaño de flash/Detectar ESP y luego Revisar paquete AT o Compilar según corresponda. La carga se inicia desde Flashear; selección/preparación no abren automáticamente detección ni escritura. Compilar/Revisar con capacidad pendiente informa el requisito sin iniciar una consulta.

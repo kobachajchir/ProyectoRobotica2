@@ -8,7 +8,7 @@ ATmega2560: C avr-libc sin Arduino y sin DMA; I2C Manager obligatorio, OLED unic
 Los cambios de contrato van exclusivamente a AutoFinalRobo2-Contracts con ID AFR2-YYYYMMDD-NN y estado real de atmega/esp/web. No asumir compatibilidad, memoria suficiente ni hardware probado. Sin credenciales en fuentes.
 
 ## OLED y navegación
-Para pantallas usar la skill local AutoFinalRobo2-Contracts/.agents/skills/afr2-screen-authoring/SKILL.md (resolver desde D:/ProyectoRobotica2). No hay botón menú: largo SW abre menú, corto confirma; atrás solo por opción del submenú. Mantenerlo en firmware y Web.
+Para pantallas usar la skill local AutoFinalRobo2-Contracts/.agents/skills/afr2-screen-authoring/SKILL.md (resolver desde D:/ProyectoRobotica2). No hay botón menú: el largo se ejecuta al soltar (>=800 ms), abre controles rápidos desde dashboard y vuelve al contexto anterior desde el resto; corto confirma/alterna y desde dashboard abre el menú completo (010002); largo desde dashboard abre pantallas rápidas (010003). Volver explícito conserva el mismo retorno. Sí/No de cambios pendientes es obligatorio; largo no lo evita. Mantenerlo en firmware y Web.
 
 ## Contexto ampliado
 Leer documentation/MENU_PLAN.md para el árbol objetivo (diseño, no implementado) y hardware/PCB_OLED_ENCODER.md para el trabajo CAD futuro. El usuario agregará el proyecto a Codex. Pieza nueva, soporte, PCB KiCad y modificación de cubierta siguen pendientes de planos. Para el auto base seguir ../AutoFinalRobo2-CAD/docs/PLAN_MODELO_3D_FUSION.md, usando el MCP de Fusion existente, sin cables y con inferencias explícitas. Guardar/publicar este plan no inicia el modelado. Conectores externos: señales 1x5 y VCC/GND común 1x2 de 2,54 mm; usar SDA/SCL expuestos por el shield.

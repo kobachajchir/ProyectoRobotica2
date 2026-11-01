@@ -1,3 +1,13 @@
+> **AFR2-20261029-16 compilado, NO cargado por indicación del usuario:** producto/comunicación/biblioteca exit0, sin errores/advertencias, final29/10/2026 12:15:28. Flash75518bytes; SRAM6918bytes, margen1274bytes; main259 y renderer73bytes según .su individuales, sin certificación dinámica de pila. COM8 conserva15 (cargada12:02:57). [Evidencia](../../AutoFinalRobo2-Contracts/documentation/builds/2026-10-29-16/README.md). El usuario pidió continuar con otros cambios y posponer la carga; no se solicitará flasheo hasta nueva instrucción.
+
+> **Fuente AFR2-20261029-16:** OLED sin esperas artificiales entre etapas, radar con grilla punteada, cono visual nominal15grados por PWM aplicado y discos rellenos por eco válido. Copia Web vinculada; sin build Web/promoción ESP. [Ficha](../../AutoFinalRobo2-Contracts/changes/2026-10-29-16-oled-latency-radar-cone.md). Build/carga AVR COM8 autorizados, pendientes al registrar esta nota. Se conserva corrección del watchdog y migración Hall de15, ya cargada y verificada enCOM8 a12:02:57.
+
+> **Fuente AFR2-20261029-15:** corregido bucle Bresenham del radar que bloqueaba main y podía disparar watchdog al girar desde HC-SR04; productos trigonométricos AVR en32bits y contraparte Web vinculada. Hall conectado por montaje confirmado, migración local EEPROMv3 preserva calibraciones y habilitación de control. [Ficha](../../AutoFinalRobo2-Contracts/changes/2026-10-29-15-radar-watchdog-hall-wiring.md). Build/carga AVR COM8 autorizados, pendientes al registrar esta nota; sin prueba física del cambio.
+
+> **AFR2-20261029-14 compilado y cargado:** 29/10/2026 11:37:12, COM8, Loader1.1.2,74516bytes escritos y verificados, exit0. Producto/comunicación/biblioteca compilados sin errores/advertencias. SRAM estática6889bytes, margen1303bytes; main259bytes según .su individual, sin certificación de máximo dinámico. [Evidencia](../../AutoFinalRobo2-Contracts/documentation/builds/2026-10-29-14/README.md). La entrega sin compilar indicada debajo es histórica; sin ensayo físico posterior de UI.
+
+> **Fuente AFR2-20261029-14:** recuperación OLED sin apagar ante error aislado, conserva páginas confirmadas y acota la postergación por trabajo pendiente. Reconfiguración sin0xAE tras fallos persistentes. Sin nueva compilación, tests, validadores, carga ni prueba física; COM8 conserva11. SRAM/pila y causa del negro permanente pendientes. [Investigación y cambios](../../AutoFinalRobo2-Contracts/changes/2026-10-29-14-oled-fault-recovery.md).
+
 > AFR2-20261024-11: captura IRQ/cola UI y Hall centralizadas en board. [Pines y límites de prioridad](../../AutoFinalRobo2-Contracts/hardware/INTERRUPCIONES_ENCODER_HALL.md). Fuente actual sin compilar ni probar; los hitos inferiores conservan su contexto histórico.
 
 # Composición AVR integrada
@@ -7,6 +17,16 @@ AFR2-20261023-19: composición de producto y EX01 ya escritos, sin compilar/prob
 [API/complemento](../../AutoFinalRobo2-Contracts/contracts/ROBO2_PRODUCT_EXTENSION.md).
 Las restricciones y estados de las fichas anteriores abajo son históricos.
 
+
+> **Fuente AFR2-20261029-11:** OLED al final de main, sin refresh completo
+> periódico. Se pausa ante input/respuesta pendiente y reanuda estado/snapshot.
+> Diferencias exactas por páginas/tramos16. Sin nuevo build/carga; presupuesto
+> SRAM/pila pendiente. [Ficha](../../AutoFinalRobo2-Contracts/changes/2026-10-29-11-oled-delta-cooperative.md).
+
+> **AFR2-20261029-10:** composición de producto incorpora configuración de
+> OLED/encoder confirmada en diagnóstico09, sin introducir scanner/debug UART0.
+> [Migración UI EEPROM](../../AutoFinalRobo2-Contracts/contracts/EEPROM_UI_MIGRATION_2.md).
+> Solo fuente; nuevo build/carga de producto pendientes.
 
 AFR2-20261023-15. Estado: fuente escrita, sin compilación ni ejecución en placa.
 Lectura previa: README/INFORME_ADAPTACION, maestro y guías internas de módulos;

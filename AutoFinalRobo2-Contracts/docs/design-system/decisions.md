@@ -1,3 +1,7 @@
+## VIS-048 - Modelos 3D con entorno compartido y fichas legibles
+
+Confirmada: pedido humano de reutilizar cielo/piso de Simulaciones y corregir legibilidad en ambos temas. Observada: fondo OLED y fichas de assets sin superficie propia. Propuesta aplicada: InspectionEnvironment, tokens compartidos sin variar colores, fichas solidas con jerarquia comun y tinta carmesi profunda para referencias sobre escena. Alcance: Auto/Brazo/Cubo; materiales, escala y modelos conservados. Borrador0.1.9 autorizado para esta adaptacion. No se ejecutaron navegador, tests, builds ni validadores; ratios reales/aspecto No verificados. [Cobertura](coverage-20261101-03.json).
+
 # Decisiones visuales — 23/10/2026
 
 ## VIS-047 — Laboratorio de pantallas UI (31/10/2026)

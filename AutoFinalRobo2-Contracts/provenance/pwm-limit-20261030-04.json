@@ -1,0 +1,16 @@
+{
+  "schema": "afr2-adaptations-1",
+  "changeId": "AFR2-20261030-04",
+  "authorship": "Own adaptation by Codex at explicit user request; existing authors preserved.",
+  "verification": "Source editing and manual reading only. No tests, compilation, validators, generators, COM, upload or physical checks.",
+  "module_status": {"atmega": "source-adapted-uncompiled", "esp": "unchanged", "web": "unchanged"},
+  "files": [
+    {"file": "AutoFinalRobo2-Atmega/src/services/afr2_product.c", "adaptation": "Default PWM limit255 instead of80"},
+    {"file": "AutoFinalRobo2-Atmega/include/afr2_product.h", "adaptation": "Journal version7; payload unchanged"},
+    {"file": "AutoFinalRobo2-Atmega/src/platform/afr2_preferences.c", "adaptation": "Pre7 saved PWM80 migrates to255 in RAM; other limits/calibrations preserved"},
+    {"file": "AutoFinalRobo2-Contracts/contracts/EEPROM_PWM_LIMIT_7.md", "adaptation": "PWM and persistence contract"},
+    {"file": "AutoFinalRobo2-Contracts/changes/2026-10-30-04-pwm-limit-255.md", "adaptation": "Change record and actual module status"},
+    {"file": "AutoFinalRobo2-Contracts/README.md", "adaptation": "Current change reference"},
+    {"file": "AutoFinalRobo2-Contracts/CHANGELOG.md", "adaptation": "Change reference"}
+  ]
+}

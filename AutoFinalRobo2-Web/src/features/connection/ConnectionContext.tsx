@@ -1,4 +1,6 @@
+/* AFR2-20261029-27: quick controls/radar/PWM/WS integration; prior authors retained. */
 import type { HeadReading, ScreenStatus } from '../../protocol/sensorHead';
+import { parseBattery, type BatteryReading } from '../../protocol/battery';
 import { parseRobotState, type RobotStateSnapshot } from '../../protocol/robotState';
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Afr2Client, Afr2CommandError, type Afr2ClientStateSnapshot } from '../../protocol/afr2Client';
@@ -22,6 +24,8 @@ export interface StopStatusRecord {
 }
 
 interface ConnectionContextValue extends Afr2ClientStateSnapshot {
+  battery: BatteryReading | null;
+  refreshBattery: (measure?: boolean) => Promise<void>;
   systemInfo: Record<string, unknown> | null;
   systemInfoUpdatedAtMs: number | null;
   bootReports: { device: string; bootId: number; receivedAtMs: number; observation: string }[];
@@ -35,6 +39,8 @@ interface ConnectionContextValue extends Afr2ClientStateSnapshot {
   sensors: SensorsSnapshot;
   headReading: HeadReading | null;
   screenStatus: ScreenStatus | null;
+  registerScreenViewer: () => () => void;
+  screenSubscribed: boolean;
   wifiStatus: WifiStatusSnapshot;
   wifiNetworks: WifiNetworkCandidate[];
   wifiScanState: 'idle' | 'scanning' | 'completed' | 'failed';
@@ -48,6 +54,7 @@ interface ConnectionContextValue extends Afr2ClientStateSnapshot {
   setEndpointUrl: (url: string) => void;
   triggerEmergencyStop: (reason?: string) => Promise<boolean>;
   sendDriveCommand: (vxMmS: number, vyMmS: number, wzMradS: number) => Promise<void>;
+  sendPwmCommand: (forwardPct:number,strafePct:number,turnPct:number)=>Promise<void>;
   requestCommand: <TPayload = Record<string, unknown>>(
     cmd: Afr2CommandName, payload: Record<string, unknown>, timeoutMs?: number
   ) => Promise<Afr2WsResponse<TPayload>>;
@@ -91,7 +98,15 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
   const hasWebOperation = useCallback(() => ['manual', 'command', 'commandPending', 'configuration', 'sequence'].some(name => activityRef.current[name]), []);
   useEffect(() => { client.connect(`${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/ws`); return () => client.disconnect(); }, [client]);
   const [headReading,setHeadReading]=useState<HeadReading|null>(null);
+  const [battery, setBattery] = useState<BatteryReading | null>(null);
+  const batteryGeneration = useRef(0);
   const [screenStatus,setScreenStatus]=useState<ScreenStatus|null>(null);
+  const [screenViewers, setScreenViewers] = useState(0);
+  const [screenSubscribed, setScreenSubscribed] = useState(false);
+  const registerScreenViewer = useCallback(() => {
+    setScreenViewers(n => n + 1); let released = false;
+    return () => { if (!released) { released = true; setScreenViewers(n => Math.max(0, n - 1)); } };
+  }, []);
   const requestTail=useRef<Promise<unknown>>(Promise.resolve());
   const requestEpoch=useRef(0);
   const [robotState, setRobotState] = useState<RobotStateSnapshot | null>(null);
@@ -341,11 +356,72 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
     [client]
   );
 
+  // AFR2-20261029-26: cached battery reads never start an unwired ADC input.
+  const refreshBattery = useCallback(async (measure = false): Promise<void> => {
+    const generation = batteryGeneration.current;
+    const current = connectionRef.current;
+    if (current.wsState !== 'ready' || current.megaLinkState !== 'ready' || !current.capabilities.battery_voltage?.implemented) {
+      throw new Error('La medicion de bateria requiere el controlador con EX01 v9 conectado.');
+    }
+    const requestedAt = Date.now();
+    const response = await requestCommand(measure ? 'system.battery.measure' : 'system.battery.get', {}, 2500);
+    if (generation !== batteryGeneration.current) return;
+    const reading = response.status === 'completed' ? parseBattery(response.payload) : null;
+    if (!reading) throw new Error('La respuesta de bateria no contiene una medicion reconocida.');
+    // Conservative age includes the request round trip and local queue delay.
+    setBattery({ ...reading, ageMs: reading.ageMs === null ? null : reading.ageMs + Math.max(0, Date.now() - requestedAt) });
+  }, [requestCommand]);
+  useEffect(() => {
+    ++batteryGeneration.current; setBattery(null);
+    let cancelled = false, pending = false;
+    if (snapshot.wsState !== 'ready' || snapshot.megaLinkState !== 'ready' || !snapshot.capabilities.battery_voltage?.implemented) return;
+    const read = async () => {
+      if (cancelled || pending || document.visibilityState !== 'visible') return;
+      pending = true;
+      try { await refreshBattery(); } catch { /* Age expires; polling produces no toasts. */ }
+      finally { pending = false; }
+    };
+    void read();
+    const timer = window.setInterval(() => void read(), 1000);
+    document.addEventListener('visibilitychange', read);
+    return () => { cancelled = true; ++batteryGeneration.current; clearInterval(timer); document.removeEventListener('visibilitychange', read); };
+  }, [snapshot.wsState, snapshot.megaLinkState, snapshot.endpointUrl, snapshot.capabilities.battery_voltage?.implemented, bootRevision, refreshBattery]);
+
+  // AFR2-20261029-19: no screen traffic without a visible viewer.
+  useEffect(() => {
+    let cancelled = false, busy = false;
+    setScreenSubscribed(false); setScreenStatus(null);
+    if (snapshot.wsState !== 'ready') return;
+    if (!screenViewers) { void requestCommand('robot.screen.subscribe', { enabled: false }, 2000).catch(() => undefined); return; }
+    const update = async () => {
+      if (busy || cancelled) return;
+      busy = true;
+      const enabled = screenViewers > 0 && document.visibilityState === 'visible' && snapshot.megaLinkState === 'ready';
+      try {
+        const r = await requestCommand('robot.screen.subscribe', { enabled }, 2000);
+        if (cancelled) return;
+        setScreenSubscribed(enabled && r.status === 'completed');
+        if (enabled && r.status === 'completed') {
+          const status = await requestCommand<ScreenStatus>('robot.screen.status', {}, 2000);
+          if (!cancelled && status.status === 'completed') setScreenStatus(status.payload);
+        } else setScreenStatus(null);
+      } catch { if (!cancelled) { setScreenSubscribed(false); setScreenStatus(null); } }
+      finally { busy = false; }
+    };
+    void update(); const timer = window.setInterval(() => void update(), 1000);
+    const visible = () => { setScreenSubscribed(false); void update(); };
+    document.addEventListener('visibilitychange', visible);
+    return () => {
+      cancelled = true; clearInterval(timer); document.removeEventListener('visibilitychange', visible);
+      void requestCommand('robot.screen.subscribe', { enabled: false }, 2000).catch(() => undefined);
+    };
+  }, [screenViewers, snapshot.wsState, snapshot.megaLinkState, bootRevision, requestCommand]);
+
   // One shared head reader feeds every animated robot instance. Each response owns its age.
   useEffect(()=>{
     ++requestEpoch.current;
-    if(snapshot.wsState!=='ready' || snapshot.megaLinkState!=='ready' || !snapshot.capabilities.sensor_head?.implemented){setHeadReading(null);setScreenStatus(null);return;}
-    let cancelled=false,headPending=false,screenPending=false;
+    if(snapshot.wsState!=='ready' || snapshot.megaLinkState!=='ready' || !snapshot.capabilities.sensor_head?.implemented){setHeadReading(null);return;}
+    let cancelled=false,headPending=false;
     const head=async()=>{
       if(cancelled || headPending || document.visibilityState!=='visible')return;headPending=true;
       try{const r=await requestCommand<Omit<HeadReading,'receivedAtMs'>>('robot.ultrasonic.get',{},2000);
@@ -354,13 +430,9 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
         }
       }catch{if(!cancelled)setHeadReading(null);}finally{headPending=false;}
     };
-    const screen=async()=>{
-      if(cancelled || screenPending || document.visibilityState!=='visible')return;screenPending=true;
-      try{const r=await requestCommand<ScreenStatus>('robot.screen.status',{},2000);if(!cancelled && r.status==='completed')setScreenStatus(r.payload);}catch{if(!cancelled)setScreenStatus(null);}finally{screenPending=false;}
-    };
-    void head();void screen();const a=window.setInterval(()=>void head(),100),b=window.setInterval(()=>void screen(),250);
-    const visible=()=>{void head();void screen();};document.addEventListener('visibilitychange',visible);
-    return()=>{cancelled=true;clearInterval(a);clearInterval(b);document.removeEventListener('visibilitychange',visible);};
+    void head();const a=window.setInterval(()=>void head(),100);
+    const visible=()=>{void head();};document.addEventListener('visibilitychange',visible);
+    return()=>{cancelled=true;clearInterval(a);document.removeEventListener('visibilitychange',visible);};
   },[snapshot.wsState,snapshot.megaLinkState,snapshot.endpointUrl,snapshot.capabilities.sensor_head?.implemented,bootRevision,requestCommand,setOperationActivity]);
 
   useEffect(()=>{const fence=()=>{++requestEpoch.current;};const visibility=()=>{if(document.visibilityState!=='visible')fence();};window.addEventListener('blur',fence);document.addEventListener('visibilitychange',visibility);return()=>{window.removeEventListener('blur',fence);document.removeEventListener('visibilitychange',visibility);};},[]);
@@ -460,6 +532,11 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
     [client, setOperationActivity]
   );
 
+  const sendPwmCommand = useCallback(async(forwardPct:number,strafePct:number,turnPct:number):Promise<void>=>{
+    ++motionEpoch.current;setOperationActivity('command',true);
+    try{await client.sendPwm(forwardPct,strafePct,turnPct,400);}finally{++motionEpoch.current;}
+  },[client,setOperationActivity]);
+
   const refreshSensors = useCallback(async (): Promise<void> => {
     const res = await executeCommandWithToast< Partial<SensorsSnapshot> >(
       'robot.sensors',
@@ -524,10 +601,11 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
   const value = useMemo<ConnectionContextValue>(
     () => ({
       ...snapshot,
+      battery, refreshBattery,
       systemInfo, systemInfoUpdatedAtMs, bootReports, refreshSystemInfo, stopAvailable, webOperationActive, hasWebOperation, setOperationActivity,
       wifiDraft,
       robotState,
-      sensors, headReading, screenStatus,
+      sensors, headReading, screenStatus, registerScreenViewer, screenSubscribed,
       wifiStatus,
       wifiNetworks,
       wifiScanState, wifiScanError, wifiScanTruncated,
@@ -539,6 +617,7 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
       setEndpointUrl,
       triggerEmergencyStop,
       sendDriveCommand,
+      sendPwmCommand,
       requestCommand,
       executeCommandWithToast,
       refreshSensors,
@@ -546,10 +625,10 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
       scanWifiNetworks,
     }),
     [
-      snapshot, systemInfo, systemInfoUpdatedAtMs, bootReports, refreshSystemInfo, stopAvailable, webOperationActive, hasWebOperation, setOperationActivity,
+      snapshot, battery, refreshBattery, systemInfo, systemInfoUpdatedAtMs, bootReports, refreshSystemInfo, stopAvailable, webOperationActive, hasWebOperation, setOperationActivity,
       wifiDraft,
       robotState,
-      sensors, headReading, screenStatus,
+      sensors, headReading, screenStatus, registerScreenViewer, screenSubscribed,
       wifiStatus,
       wifiNetworks,
       wifiScanState, wifiScanError, wifiScanTruncated,
@@ -561,6 +640,7 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
       setEndpointUrl,
       triggerEmergencyStop,
       sendDriveCommand,
+      sendPwmCommand,
       requestCommand,
       executeCommandWithToast,
       refreshSensors,

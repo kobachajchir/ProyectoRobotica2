@@ -1,7 +1,16 @@
+/* AFR2-20261029-27: quick controls/radar/PWM/WS integration; prior authors retained. */
 // AFR2-20261023-11. Adaptation of ESP01 Wi-Fi states and async scan, new config schema.
 #include "wifi_service.h"
 #include <ESP8266WiFi.h>
 #include <string.h>
+extern "C" {
+#include <user_interface.h>
+}
+static uint8_t scanSecurity(uint8_t enc){
+    switch(enc){case ENC_TYPE_NONE:return 1;case ENC_TYPE_WEP:return 2;case ENC_TYPE_TKIP:return 3;case ENC_TYPE_CCMP:return 4;case ENC_TYPE_AUTO:return 5;default:return 6;}
+}
+static const char *securityName(uint8_t n){static const char *names[]={"unknown","open","WEP","WPA","WPA2","WPA/WPA2","protected"};return names[n<=6?n:0];}
+
 static void configJson(const WifiConfig &c, JsonDocument &d) {
     d["schema"]="afr2-wifi-1"; d["mode"]=c.mode; d["ssid"]=c.ssid; d["password"]=c.password;
 }
@@ -14,7 +23,7 @@ bool WifiService::valid(const WifiConfig &c) {
     return true;
 }
 void WifiService::begin() {
-    WiFi.persistent(false); WiFi.setAutoReconnect(true);
+    WiFi.persistent(false); WiFi.setAutoReconnect(false);
     WiFi.hostname("autofinalrobo2");
     apSsid_="AutoFinalRobo2-"+String(ESP.getChipId(),HEX);
     WifiConfig config;
@@ -39,6 +48,7 @@ void WifiService::startFallback() {
     if (!apOn_) configError_="AP_START_FAILED"; // Explicit open provisioning AP, no embedded credential.
 }
 void WifiService::apply(const WifiConfig &c) {
+    disconnectedByUser_=false;
     memset(apPassword_,0,sizeof(apPassword_));
     WiFi.scanDelete(); scanReady_=false;
     staWanted_=strcmp(c.mode,"AP")!=0;
@@ -75,7 +85,7 @@ void WifiService::tick(uint32_t now) {
     if (applyPending_ && (uint32_t)(now-stagedAt_)>=350u) {
         applyPending_=false; apply(pending_); pending_=WifiConfig{};
     }
-    if (staWanted_ && WiFi.status()!=WL_CONNECTED) {
+    if (staWanted_ && !disconnectedByUser_ && WiFi.status()!=WL_CONNECTED) {
         if (!apOn_ && (uint32_t)(now-staStarted_)>=15000u) startFallback();
         if ((uint32_t)(now-lastRetry_)>=30000u && !scanPending_ && !applyPending_) {
             lastRetry_=now; WiFi.reconnect();
@@ -85,6 +95,7 @@ void WifiService::tick(uint32_t now) {
         int n=WiFi.scanComplete();
         if (n!=WIFI_SCAN_RUNNING) {
             scanPending_=false;
+            if(scanRestoreAp_ && !staWanted_){WiFi.mode(WIFI_AP);scanRestoreAp_=false;}
             if (!scanTimedOut_) scanReady_=true;
             else WiFi.scanDelete();
         } else if (!scanTimedOut_ && (uint32_t)(now-scanStarted_)>20000u) {
@@ -96,7 +107,8 @@ void WifiService::tick(uint32_t now) {
 bool WifiService::scan() {
     if (busy() || scanReady_) return false;
     // AP-only mode needs the station interface for asynchronous scanning.
-    if (WiFi.getMode()==WIFI_AP) WiFi.mode(WIFI_AP_STA);
+    scanRestoreAp_=WiFi.getMode()==WIFI_AP;
+    if(scanRestoreAp_ && !WiFi.mode(WIFI_AP_STA)){scanRestoreAp_=false;return false;}
     scanStarted_=millis(); scanTimedOut_=false;
     int result=WiFi.scanNetworks(true,true);
     scanPending_=result==WIFI_SCAN_RUNNING;
@@ -105,20 +117,39 @@ bool WifiService::scan() {
 }
 bool WifiService::retry() {
     if(busy() || !staWanted_)return false;
+    disconnectedByUser_=false;
+    if(WiFi.status()==WL_CONNECTED)return true;
     staStarted_=lastRetry_=millis();return WiFi.reconnect();
+}
+bool WifiService::disconnectStation(){
+    if(busy() || !(WiFi.getMode()&WIFI_STA))return false;
+    disconnectedByUser_=true;WiFi.setAutoReconnect(false);
+    if(WiFi.status()!=WL_CONNECTED)return true;
+    if(!WiFi.disconnect(false,false)){disconnectedByUser_=false;return false;}
+    return true; // accepted; caller must observe status before announcing success
+}
+bool WifiService::changeMode(uint8_t mode){
+    if(busy() || mode<1 || mode>3)return false;
+    WiFiMode_t target=mode==1?WIFI_STA:mode==2?WIFI_AP:WIFI_AP_STA;
+    if(!WiFi.mode(target))return false;
+    staWanted_=mode!=2;
+    if(mode&2u){if(!apOn_)apOn_=WiFi.softAP(apSsid_.c_str(),apPassword_[0]?apPassword_:nullptr);}
+    else apOn_=false;
+    if(staWanted_)staStarted_=lastRetry_=millis();
+    return WiFi.getMode()==target && (!(mode&2u) || apOn_);
 }
 bool WifiService::takeScan(JsonObject out) {
     if (!scanReady_) return false;
     scanReady_=false; int n=scanTimedOut_?WIFI_SCAN_FAILED:WiFi.scanComplete();
     out["status"]=n>=0?"completed":"failed";
     JsonArray list=out["networks"].to<JsonArray>();
-    int count=n>16?16:n; out["truncated"]=n>16;
+    int count=n>16?16:n; out["truncated"]=n>16;authCount_=0;authScanAt_=millis();
     for (int i=0;i<count;++i) {
         JsonObject entry=list.add<JsonObject>(); entry["ssid"]=WiFi.SSID(i);
         entry["rssiDbm"]=WiFi.RSSI(i); entry["channel"]=WiFi.channel(i);
-        entry["secure"]=WiFi.encryptionType(i)!=ENC_TYPE_NONE;
+        uint8_t auth=scanSecurity(WiFi.encryptionType(i));if(WiFi.BSSID(i)){memcpy(scanBssid_[authCount_],WiFi.BSSID(i),6);scanAuth_[authCount_++]=auth;}entry["securityCode"]=auth;entry["security"]=securityName(auth);entry["secure"]=auth!=1;
     }
-    if (!scanPending_) WiFi.scanDelete();
+    if (!scanPending_){WiFi.scanDelete();if(scanRestoreAp_ && !staWanted_){WiFi.mode(WIFI_AP);scanRestoreAp_=false;}}
     return true;
 }
 void WifiService::displayInfo(WifiDisplayInfo &out) const {
@@ -134,19 +165,30 @@ void WifiService::displayInfo(WifiDisplayInfo &out) const {
 void WifiService::status(JsonObject out) const {
     WiFiMode_t mode=WiFi.getMode();
     out["mode"]=mode==WIFI_AP?"AP":mode==WIFI_STA?"STA":mode==WIFI_AP_STA?"AP_STA":"OFF";
-    bool connected=WiFi.status()==WL_CONNECTED;
+    bool connected=(mode&WIFI_STA) && WiFi.status()==WL_CONNECTED && (uint32_t)WiFi.localIP()!=0;
     out["staConnected"]=connected;
     out["staSsid"]=nullptr; out["staIp"]=nullptr; out["rssiDbm"]=nullptr;
     if (connected) { out["staSsid"]=WiFi.SSID(); out["staIp"]=WiFi.localIP().toString(); out["rssiDbm"]=WiFi.RSSI(); }
     out["apSsid"]=nullptr; out["apIp"]=nullptr;
     if (apOn_) { out["apSsid"]=apSsid_; out["apIp"]=WiFi.softAPIP().toString(); }
+    out["staMask"]=connected?WiFi.subnetMask().toString():String();out["staGateway"]=connected?WiFi.gatewayIP().toString():String();
+    uint8_t auth=0;
+    if(connected && WiFi.BSSID() && (uint32_t)(millis()-authScanAt_)<=120000u)for(uint8_t i=0;i<authCount_;i++)if(!memcmp(scanBssid_[i],WiFi.BSSID(),6)){auth=scanAuth_[i];break;}
+    out["securityCode"]=auth;out["security"]=securityName(auth);
+    if(auth)out["secure"]=auth!=1;else out["secure"]=nullptr;
+    uint8_t apAuth=0;struct softap_config apConfig={};
+    if(apOn_ && wifi_softap_get_config(&apConfig))apAuth=apConfig.authmode==AUTH_OPEN?1:apConfig.authmode==AUTH_WEP?2:apConfig.authmode==AUTH_WPA_PSK?3:apConfig.authmode==AUTH_WPA2_PSK?4:apConfig.authmode==AUTH_WPA_WPA2_PSK?5:6;
+    out["apSecurityCode"]=apAuth;out["apSecurity"]=securityName(apAuth);
+    struct ip_info info={};bool apInfo=apOn_ && wifi_get_ip_info(SOFTAP_IF,&info);
+    out["apMask"]=apInfo?IPAddress(info.netmask.addr).toString():String();out["apGateway"]=apInfo?IPAddress(info.gw.addr).toString():String();
+    out["disconnectedByUser"]=disconnectedByUser_;
     out["ageMs"]=0; out["applying"]=applyPending_;
     out["fallbackActive"]=fallbackActive_ && apOn_;
     out["scanRunning"]=scanPending_;
     if (persisted_<0) out["configPersisted"]=nullptr; else out["configPersisted"]=persisted_==1;
     out["configError"]=configError_;
     const auto sta=WiFi.status();
-    out["staStatus"]=!staWanted_?"disabled":connected?"connected":
+    out["staStatus"]=!staWanted_?"disabled":connected?"connected":disconnectedByUser_?"disconnected":
         sta==WL_NO_SSID_AVAIL?"network-not-found":sta==WL_CONNECT_FAILED?"connection-failed":
         sta==WL_WRONG_PASSWORD?"wrong-password":"connecting";
 }

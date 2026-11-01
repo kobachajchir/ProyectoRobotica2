@@ -1,3 +1,4 @@
+/* AFR2-20261029-27: quick controls/radar/PWM/WS integration; prior authors retained. */
 #include "afr2_build_info.h"
 // AFR2-20261023-15. ROBO2 profile 2, shared parser and explicit nibble routing.
 #include "mega_link.h"
@@ -78,27 +79,31 @@ static bool bodyValid(uint8_t command,const uint8_t *p,uint16_t caps) {
 static bool productReply(uint8_t cmd,const uint8_t *p,uint8_t n,const uint8_t *q,uint8_t qn) {
     if(cmd>=AFR2_EXT_US_GET && cmd<=AFR2_EXT_MOTION_HALT)return n>=9 && afr2_sensor_reply_valid(cmd,p+9,n-9,q,qn);
     switch(cmd) {
+    case AFR2_EXT_BATTERY:return qn==1 && q[0]<=1 && n==32 && afr2_battery_reply_valid(p+9,n-9);
     case AFR2_EXT_NETWORK_STATE:return qn>=8 && n==16 && !memcmp(p+9,q,7);
     case AFR2_EXT_NETWORK_EVENT:return qn==10 && n==13 && afr2_get_u32(p+9)==afr2_get_u32(q+4);
     case AFR2_EXT_INFO:return qn==1 && n>=16 && p[9]==q[0] && p[9]<5 && p[15]<=48 && n==16+p[15] && afr2_get_u32(p+10);
     case AFR2_EXT_REBOOT:return qn==1 && n==14 && p[9]==1 && afr2_get_u32(p+10);
     case AFR2_EXT_HELLO:return n==19 && !memcmp(p+9,"EX01",4) && afr2_get_u16(p+13)==AFR2_EXT_VERSION && !(afr2_get_u32(p+15)&~AFR2_EXT_FEATURE_MASK);
-    case AFR2_EXT_STATE:return n==25 && p[9]<=6 && p[10]<=2 && p[11]<=1 && p[13]==0 && p[14]<=1 && p[15]<=4 && p[16]<=3 && !(afr2_get_u32(p+17)&~AFR2_EXT_FEATURE_MASK);
+    case AFR2_EXT_STATE:return n==28 && p[25]<=1 && afr2_get_u16(p+26)>=800 && afr2_get_u16(p+26)<=3000 && p[9]<=7 && p[10]<=2 && p[11]<=1 && p[13]<=1 && p[14]<=1 && p[15]<=4 && p[16]<=3 && !(afr2_get_u32(p+17)&~AFR2_EXT_FEATURE_MASK);
     case AFR2_EXT_LIMITS:return n==17 && afr2_get_u16(p+9)>=10 && afr2_get_u16(p+9)<=1000 && p[11]>0 && p[12]==10;
     case AFR2_EXT_CONFIG:return n==13;
     case AFR2_EXT_PREFS:return n==9;
     case AFR2_EXT_LINE_CAL:return n==10 && p[9]<=1;
     case AFR2_EXT_HALL_CAL:return n==15 && p[9]<=1 && p[10]<=1;
     case AFR2_EXT_WIFI_UPDATE:return n==9;
-    case AFR2_EXT_WIFI_POLL:return qn==1 && n>=23 && p[9]<=1 && p[14]<=8 && p[15]<=96 && p[16]==q[0] && p[17]<=40 && n==23+p[17] && (uint16_t)p[16]+p[17]<=p[15] && p[18]>=1 && p[18]<=3;
+    case AFR2_EXT_WIFI_POLL:return qn==1 && n>=23 && p[9]<=1 && p[14]<=11 && p[15]<=96 && p[16]==q[0] && p[17]<=40 && n==23+p[17] && (uint16_t)p[16]+p[17]<=p[15] && p[18]>=1 && p[18]<=3;
     case AFR2_EXT_WEB_PULSE:return qn==2 && n==11 && afr2_get_u16(p+9)==afr2_get_u16(q);
-    case AFR2_EXT_DRIVE:case AFR2_EXT_WHEEL:case AFR2_EXT_MODE:case AFR2_EXT_GOTO:return n==9;
+    case AFR2_EXT_DRIVE_PWM:case AFR2_EXT_DRIVE:case AFR2_EXT_WHEEL:case AFR2_EXT_MODE:case AFR2_EXT_GOTO:return n==9;
     case AFR2_EXT_CANCEL:return n==10 && p[9]<=4;
     case AFR2_EXT_POSE:return n==34 && p[9]<=1 && (!p[9] ||
         ((int32_t)afr2_get_u32(p+18)>=-3142 && (int32_t)afr2_get_u32(p+18)<=3142 && afr2_get_u32(p+22)!=AFR2_AGE_UNKNOWN && afr2_get_u32(p+26) && afr2_get_u32(p+30)));
-    case AFR2_EXT_UI_META:return n==22 && afr2_get_u16(p+19)==1024 && p[21]<=1;
+    case AFR2_EXT_UI_META:return n==23 && afr2_get_u16(p+19)==1024 && p[21]<=1;
     case AFR2_EXT_UI_PAGE:return qn==7 && q[6]>0 && q[6]<=40 && n==16+q[6] &&
         afr2_get_u32(p+9)==afr2_get_u32(q) && afr2_get_u16(p+13)==afr2_get_u16(q+4) && p[15]==q[6];
+    case AFR2_EXT_TOUCH_UI:return qn==4 && n==10 && p[9]<=100;
+    case AFR2_EXT_DIAG_POLL:return qn==0 && n==18 && p[9]<=1;
+    case AFR2_EXT_DIAG_RESULT:return qn==8 && n==9;
     case AFR2_EXT_UI_RELEASE:return n==9;
     case AFR2_EXT_UI_ACTION:return n==14;
     case AFR2_EXT_SEQ_BEGIN:case AFR2_EXT_SEQ_COMMIT:

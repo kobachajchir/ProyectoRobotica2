@@ -62,7 +62,7 @@ type SelectionTarget =
 const MOVEMENT_PALETTE: { kind: MovementBlockKind; label: string; hint: string }[] = [
   { kind: 'constant', label: 'Desplazamiento', hint: 'vx / vy constante' },
   { kind: 'ramp', label: 'Rampa', hint: 'Interpolacion lineal' },
-  { kind: 'pivot', label: 'Giro sobre eje', hint: 'Antihorario / horario' },
+  { kind: 'pivot', label: 'Giro sobre eje', hint: 'CCW / CW' },
   { kind: 'curve', label: 'Curva', hint: 'Avance + giro' },
   { kind: 'wait', label: 'Espera', hint: 'Consigna 0 mm/s' },
   { kind: 'finish', label: 'Finalizacion', hint: 'Terminal (0 ms)' },
@@ -93,7 +93,7 @@ function formatMovementSummary(block: MovementBlock): string {
     case 'ramp':
       return `${block.durationMs} ms · (${block.fromVxMmS},${block.fromVyMmS}) → (${block.toVxMmS},${block.toVyMmS}) mm/s`;
     case 'pivot':
-      return `${block.durationMs} ms · ${block.pivotDirection === 'ccw' ? 'Izq. +' : 'Der. -'}${Math.abs(block.wzMradS)} mrad/s`;
+      return `${block.durationMs} ms · ${block.pivotDirection === 'ccw' ? 'CCW +' : 'CW -'}${Math.abs(block.wzMradS)} mrad/s`;
     case 'curve':
       return `${block.durationMs} ms · vx ${block.vxMmS} mm/s · ${block.arcSide === 'left' ? 'Izq.' : 'Der.'} ${Math.abs(block.wzMradS)} mrad/s`;
     case 'wait':
@@ -1008,13 +1008,13 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
                     onClick={() =>
                       updateField({
                         pivotDirection: 'ccw',
-                        label: b.label === 'Girar derecha' ? 'Girar izquierda' : b.label,
+                        label: b.label === 'Girar CW' ? 'Girar CCW' : b.label,
                       })
                     }
                     className="afr2-spin-axis-btn rounded-[var(--radius-sm)] p-2.5 flex items-center gap-2 text-left"
                   >
                     <ChassisSpinGraphic direction="ccw" active={b.pivotDirection === 'ccw'} size="sm" />
-                    <span className="font-semibold text-xs">Girar izquierda</span>
+                    <span className="font-semibold text-xs">Girar CCW</span>
                   </button>
                   <button
                     type="button"
@@ -1023,13 +1023,13 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
                     onClick={() =>
                       updateField({
                         pivotDirection: 'cw',
-                        label: b.label === 'Girar izquierda' ? 'Girar derecha' : b.label,
+                        label: b.label === 'Girar CCW' ? 'Girar CW' : b.label,
                       })
                     }
                     className="afr2-spin-axis-btn rounded-[var(--radius-sm)] p-2.5 flex items-center gap-2 text-left"
                   >
                     <ChassisSpinGraphic direction="cw" active={b.pivotDirection === 'cw'} size="sm" />
-                    <span className="font-semibold text-xs">Girar derecha</span>
+                    <span className="font-semibold text-xs">Girar CW</span>
                   </button>
                 </div>
               </div>

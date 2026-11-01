@@ -1,0 +1,88 @@
+{
+  "change": "AFR2-20261028-15",
+  "date": "2026-10-28",
+  "loaderVersion": "0.9.4",
+  "artifactOrigin": "AFR2-20261028-14, Ai-Thinker #0040; binario sin modificación",
+  "mapEvidence": "Tamaño 4 MiB, cabecera E9 03 02 40: DIO,40MHz,4MiB. Offset0 inferido de imagen completa con cabecera inicial; no probado en hardware.",
+  "status": "Fuente revisada manualmente. Sin tests, validadores, compilación, GUI, COM ni flasheos. Atmega/ESP/Web/CAD sin cambios por15.",
+  "files": [
+    {
+      "path": "AutoFinalRobo2-Loader/src/EspFlashRules.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Reconoce BIN exacto por tamaño/hash y construye paquete en memoria con mapa de imagen completa; JSON conserva reglas.",
+      "sha256": "9701da05c46c5608a52c1b94ec82b837a8efa9b0afdff8594a77ed812d1b2a60"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/MainForm.EspModes.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Selector BIN/JSON y errores legibles; selección no abre COM.",
+      "sha256": "d60056983d423de89d3dc4397f011b6c4e201497fcf46277d1ffbc9cd8e71004"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/Operations.EspModes.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Confirmación informa reemplazo de toda la flash con imagen monolítica; conserva gates de carga.",
+      "sha256": "bfb5b28631b6cdb77994bcfda71bb1a4cf2faabce9abf26db7fdaec88d687741"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/Profile.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Ayuda del campo AtPackage incluye BIN reconocido.",
+      "sha256": "42028e736135c50d91282a4cabd68154bafee6815f84bf1e8292738259236f69"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/JobState.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Versión 0.9.4 con feedback y conversor conservados.",
+      "sha256": "4c6380bd807a180d63e8ea4c893fa7bdfbee87b646221ff8430e8a203508a6ba"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/README.md",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Uso del selector directo y limitaciones.",
+      "sha256": "a84e682f8fe332998ad36dc2d33923cfb21a2d9b2d5ebc155c5f37174c8e096b"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/MANUAL.html",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Manual actualizado a 0.9.4 y pasos de selección.",
+      "sha256": "ef6cc2ecd3efb5c0443ec2d9d973d0126866908fd15ced09ccd3637652f7331b"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/MCP.md",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Perfil AtPackage admite BIN reconocido; esquema MCP intacto.",
+      "sha256": "d5889106907b9616d56ba2fc407df1d822cc332e28b25bb4c539e3a374d96c74"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/LOADER_FLASH_MODES.md",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Excepción de BIN reconocido al contrato anterior exclusivo JSON.",
+      "sha256": "80690a1459394018c4282a59c612be405a4bc0bee257b7124551528ada9abcc1"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/README.md",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Índice de entrega y estado real.",
+      "sha256": "bad7dfde656c5af574d4a7ae71bf7a3bbd3506beee5a46252d08ba92a045d4bd"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/INFORME_ADAPTACION.md",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Índice de entrega y estado real.",
+      "sha256": "18ac3b0ca2708deb2e3ca1a0a7654560a00c697838942e97cdd16fd96d277b23"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/CHANGELOG.md",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Entrada de cambio.",
+      "sha256": "07b2b02fe6a4ae4a87a6dc1157487e33496a32c41e48c86caf58b6d6c86613f0"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/changes/2026-10-28-15-loader-at-bin-directo.md",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Pedido, mapa e inferencias explícitas y límites de evidencia.",
+      "sha256": "1ffd745503781fc3a560bedb604b0f0e1ad0e5dbe4d32c675b30c844982ec193"
+    }
+  ]
+}

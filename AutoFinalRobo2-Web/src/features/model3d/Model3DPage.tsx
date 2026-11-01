@@ -1,3 +1,4 @@
+import { ModelAssetProgress } from '../../components/three/ModelAssetProgress';
 import { Disclosure } from '../../components/ui/Disclosure';
 import React, { Component, Suspense, useState } from 'react';
 import { clearRobotModelCache } from '../../components/three/RobotModel';
@@ -62,6 +63,7 @@ export function Model3DPage() {
   const [viewerKey, setViewerKey] = useState(1);
   const retryModel = () => { clearRobotModelCache(); clearInspectionAssetCache(); setViewerKey(k => k + 1); };
   const viewer = (model: 'auto' | 'brazo' | 'cubo') => <div className="afr2-models-viewer">
+    {model === 'auto' && viewerEnabled && <ModelAssetProgress label="Modelo del auto" />}
     {!viewerEnabled ? <div className="afr2-model-inspection__loading"><p>Visor en pausa</p>
       <Button onClick={() => setViewerEnabled(true)}>Reanudar visor</Button></div>
       : <ViewerErrorBoundary key={`${model}-${viewerKey}`} onReset={retryModel}>
