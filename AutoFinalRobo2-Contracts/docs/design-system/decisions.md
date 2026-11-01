@@ -1,5 +1,60 @@
 # Decisiones visuales — 23/10/2026
 
+## VIS-047 — Laboratorio de pantallas UI (31/10/2026)
+
+Confirmada: mejorar el Simulador UI existente. Observada: identidad0.1.9
+autorizada, controles compartidos y modelo local01 con datos ficticios.
+Propuesta aplicada: herramienta primero; barra de sesion, dispositivo junto
+al encoder y guia contextual; opciones legibles con seleccion visible y
+catalogo filtrable dentro de Disclosure. Movil conserva tres controles juntos.
+
+Sin nuevas dependencias, colores aislados ni animacion decorativa. Los gestos
+se mantienen en EncoderControl; el scroll es local e inmediato. Sin alterar
+pixels, identidades ni navegacion del ATmega. Direccion Confirmada, composicion
+Propuesta y aspecto/interaccion No verificados por instruccion de no ejecutar
+comprobaciones. [Cobertura](coverage-20261031-12.json).
+
+## VIS-046 — Nuevo logo del robot neón (31/10/2026)
+
+Confirmada: PNG transparente proporcionado por el usuario como logo oficial.
+Sustituye el recurso gráfico de VIS-016/017 y las rutas de formato posteriores.
+Observada: BrandMark es compartido por navegación, Inicio y Desarrollador;
+StartupWelcome comparte la ruta grande. Se mantiene el resto de la identidad.
+
+Aplicado: original íntegro archivado y versiones WebP1024x768/256x192,
+favicon64x64 y touch180x180. La reducción mantiene proporciones; los iconos
+se centran sobre lienzo transparente. Los tamaños de contenedor44/80 y el
+fallback AFR2 se conservan. Bienvenida reserva la proporción4:3 correcta.
+Nombres nuevos para renovar caché y selección explícita en Vite para ambos
+perfiles. No generación de imagen ni reinterpretación del emblema.
+
+Fuente y activos públicos actualizados; aspecto/contraste en temas y dispositivos
+No verificados. Sin tests, builds, validadores, navegador ni promociónESP.
+[Cobertura](coverage-20261031-09.json).
+
+## VIS-045 — Escena y controles de los simuladores (31/10/2026)
+
+Confirmada: pedido humano de aplicar Emil, Apple Design y Visual Identity a
+Auto/Brazo/Conjunto, fondo celeste y suelo crema, montaje conforme al CAD y eje
+del servo corregido. Supporting Observada: identidad0.1.9 autorizada, Button,
+TaskSections, Disclosure, CollapsiblePanel y controles compartidos. Los objetivos
+no se elevan a fuente canónica. No hay nuevas referencias externas.
+
+Propuesta implementada: encabezado contextual, escena amplia, cámara agrupada,
+lecturas debajo y controles por tarea; matemática opcional y puntos/motores
+avanzados inicialmente plegados. Sustituye la apertura inicial de VIS-043,
+conserva el análisis a la derecha cuando se solicita. Fondo/suelo/retícula usan
+tokens locales para ambos temas; los valores exactos son Propuesta, no cambian
+la paleta de marca. Botones de44px, ayudas14px, foco vuelve al botón Matemática
+al cerrar el panel y la parada también cubre movimiento articular. No se agrega
+movimiento decorativo ni dependencias; primitivas conservan reduced motion.
+
+Se actualiza la montura v17 con el marco CAD/GLB y se separa la salida del SG90
+en Blender conservando materiales. Fuente implementada y activo público
+actualizado; aspecto, animación y montaje en navegador **No verificados**.
+Sin tests/build/validadores/flasheo por instrucción humana. Los paquetes
+dist/artifacts/ESP conservan la revisión05. [Cobertura](coverage-20261031-06.json).
+
 ## VIS-044 — Enseñar y recuperar destinos del brazo (27/10/2026)
 
 Confirmada: plan humano de puntos individuales persistentes, misma biblioteca en

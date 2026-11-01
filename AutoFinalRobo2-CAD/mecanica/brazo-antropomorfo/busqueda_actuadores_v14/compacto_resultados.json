@@ -1,0 +1,4709 @@
+{
+  "scope": "Presupuesto nuevo; filtro externo de cuerpos rigidos, sin CAD, inercia interna, curva de frenado, resistencia ni apoyo medido acreditados.",
+  "rows": [
+    {
+      "parameters_mm": {
+        "base_top": 45,
+        "tower_h": 40,
+        "axis_y_mm": -32,
+        "link1": 80,
+        "link2": 70,
+        "wrist45": 35,
+        "wrist56": 30,
+        "payload_z": 45
+      },
+      "reserve25": false,
+      "total_with_payload_g": 1259.3924018025662,
+      "arm_without_payload_g": 1059.3924018025662,
+      "motor_mass_g": 254.4,
+      "axes": [
+        {
+          "axis": "J1",
+          "proposed_ratio": 1.5,
+          "minimum_external_torque_margin": 2.6135023631387666,
+          "peak_output_kgfcm": 4.591539754947163,
+          "selected_by": "smallest simple ratio >=2.3, else best external margin",
+          "internal_inertia_necessary_max_kgm2": 0.004885093569185747
+        },
+        {
+          "axis": "J2",
+          "proposed_ratio": 6.0,
+          "minimum_external_torque_margin": 2.6966744702649894,
+          "peak_output_kgfcm": 17.799701272539313,
+          "selected_by": "smallest simple ratio >=2.3, else best external margin",
+          "internal_inertia_necessary_max_kgm2": 0.0013440670204811363
+        },
+        {
+          "axis": "J3",
+          "proposed_ratio": 4.0,
+          "minimum_external_torque_margin": 3.025728716955485,
+          "peak_output_kgfcm": 10.575964666190789,
+          "selected_by": "smallest simple ratio >=2.3, else best external margin",
+          "internal_inertia_necessary_max_kgm2": 0.0026455339482387924
+        },
+        {
+          "axis": "J4",
+          "proposed_ratio": 1.0,
+          "minimum_external_torque_margin": 5.434109663352696,
+          "peak_output_kgfcm": 0.2760341790884178,
+          "selected_by": "smallest simple ratio >=2.3, else best external margin",
+          "internal_inertia_necessary_max_kgm2": 0.0029590194720702785
+        },
+        {
+          "axis": "J5",
+          "proposed_ratio": 8.0,
+          "minimum_external_torque_margin": 2.8510900440367544,
+          "peak_output_kgfcm": 3.367133219829042,
+          "selected_by": "smallest simple ratio >=2.3, else best external margin",
+          "internal_inertia_necessary_max_kgm2": 0.00017471759847403765
+        },
+        {
+          "axis": "J6",
+          "proposed_ratio": 1.0,
+          "minimum_external_torque_margin": 11.929913856758704,
+          "peak_output_kgfcm": 0.1257343529894978,
+          "selected_by": "smallest simple ratio >=2.3, else best external margin",
+          "internal_inertia_necessary_max_kgm2": 0.0038973574121776654
+        }
+      ],
+      "necessary_support_halfspan_mm": [
+        58.69065138177246,
+        59.88040692278517
+      ],
+      "tip_utilization_90_50_hypothesis": 1.1976081384557034,
+      "peak_force_N": [
+        11.186402352481213,
+        9.754115009457847,
+        8.069127820692632,
+        6.5616941260347765,
+        5.652280974650168,
+        4.951058719835734
+      ],
+      "peak_moment_Nm": [
+        1.7897903647160822,
+        1.7848745700799389,
+        1.0624186867984924,
+        0.5538181935748008,
+        0.3385482136913622,
+        0.1884766418047671
+      ],
+      "peak_payload_force_N": 3.671944460278642,
+      "section_peak_columns": [
+        "shear_N",
+        "axial_N",
+        "bending_Nm",
+        "torsion_Nm"
+      ],
+      "section_peaks_local": [
+        [
+          2.048710721937246,
+          11.052615244410182,
+          1.7513734079549192,
+          0.4502762333785259
+        ],
+        [
+          9.753898264053877,
+          0.2514589376595442,
+          1.7837094497645978,
+          0.06481373079978456
+        ],
+        [
+          8.069062803273951,
+          0.2660612390337701,
+          1.0619951870472362,
+          0.031422428464242265
+        ],
+        [
+          6.561667952967594,
+          0.22349853834515604,
+          0.553189074966953,
+          0.027069705823574326
+        ],
+        [
+          5.652257338446025,
+          0.2370319684188624,
+          0.33849252232611754,
+          0.0145950921939168
+        ],
+        [
+          4.951054624190978,
+          0.20942066705554024,
+          0.18844661452722514,
+          0.012330327927444587
+        ]
+      ],
+      "parts": [
+        {
+          "root": "00",
+          "name": "STS3215 J1",
+          "mass_g": 56,
+          "cg_local_mm": [
+            48,
+            -32,
+            27
+          ],
+          "box_mm": [
+            45.23,
+            24.73,
+            36.5
+          ],
+          "material": "Servo"
+        },
+        {
+          "root": "00",
+          "name": "Control y potencia TTL presupuesto",
+          "mass_g": 150,
+          "cg_local_mm": [
+            -35,
+            -32,
+            25
+          ],
+          "box_mm": [
+            60,
+            35,
+            30
+          ],
+          "material": "Electronica"
+        },
+        {
+          "root": "00",
+          "name": "Bateria brazo presupuesto",
+          "mass_g": 130,
+          "cg_local_mm": [
+            10,
+            -60,
+            25
+          ],
+          "box_mm": [
+            65,
+            35,
+            28
+          ],
+          "material": "Potencia"
+        },
+        {
+          "root": "00",
+          "name": "Montura ranurada superior 2mm",
+          "mass_g": 25.515,
+          "cg_local_mm": [
+            0,
+            -32,
+            8
+          ],
+          "box_mm": [
+            90,
+            75,
+            2
+          ],
+          "material": "Al6061"
+        },
+        {
+          "root": "00",
+          "name": "Contraplaca inferior unica 2mm",
+          "mass_g": 13.608,
+          "cg_local_mm": [
+            0,
+            -32,
+            -5
+          ],
+          "box_mm": [
+            90,
+            35,
+            2
+          ],
+          "material": "Al6061"
+        },
+        {
+          "root": "00",
+          "name": "Cartucho J1 y fijacion servo PLA",
+          "mass_g": 18,
+          "cg_local_mm": [
+            0,
+            -32,
+            25
+          ],
+          "box_mm": [
+            50,
+            45,
+            35
+          ],
+          "material": "PLA"
+        },
+        {
+          "root": "00",
+          "name": "Par608 J1",
+          "mass_g": 24,
+          "cg_local_mm": [
+            0,
+            -32,
+            30
+          ],
+          "box_mm": [
+            22,
+            22,
+            22
+          ],
+          "material": "Rodamiento"
+        },
+        {
+          "root": "01",
+          "name": "Eje J1 8x35",
+          "mass_g": 13.81044130518073,
+          "cg_local_mm": [
+            0,
+            0,
+            0
+          ],
+          "box_mm": [
+            8,
+            8,
+            35
+          ],
+          "material": "Acero"
+        },
+        {
+          "root": "01",
+          "name": "Plataforma anular J1 2mm",
+          "mass_g": 12.214512237157116,
+          "cg_local_mm": [
+            0,
+            0,
+            3
+          ],
+          "box_mm": [
+            56,
+            56,
+            2
+          ],
+          "material": "Al6061"
+        },
+        {
+          "root": "02",
+          "name": "Mejilla 2mm y borde 8mm -1",
+          "mass_g": 11.723256118578558,
+          "cg_local_mm": [
+            0,
+            -15,
+            40.0
+          ],
+          "box_mm": [
+            28,
+            10,
+            108
+          ],
+          "material": "Al6061"
+        },
+        {
+          "root": "02",
+          "name": "Mejilla 2mm y borde 8mm 1",
+          "mass_g": 11.723256118578558,
+          "cg_local_mm": [
+            0,
+            15,
+            40.0
+          ],
+          "box_mm": [
+            28,
+            10,
+            108
+          ],
+          "material": "Al6061"
+        },
+        {
+          "root": "02",
+          "name": "PVC propuesto OD25",
+          "mass_g": 6.422986180264332,
+          "cg_local_mm": [
+            0,
+            0,
+            40.0
+          ],
+          "box_mm": [
+            25,
+            25,
+            40
+          ],
+          "material": "PVC"
+        },
+        {
+          "root": "02",
+          "name": "Dos encastres PLA abiertos",
+          "mass_g": 12,
+          "cg_local_mm": [
+            0,
+            0,
+            40.0
+          ],
+          "box_mm": [
+            30,
+            30,
+            80
+          ],
+          "material": "PLA"
+        },
+        {
+          "root": "03",
+          "name": "Mejilla 2mm y borde 8mm -1",
+          "mass_g": 10.643256118578558,
+          "cg_local_mm": [
+            0,
+            -15,
+            35.0
+          ],
+          "box_mm": [
+            28,
+            10,
+            98
+          ],
+          "material": "Al6061"
+        },
+        {
+          "root": "03",
+          "name": "Mejilla 2mm y borde 8mm 1",
+          "mass_g": 10.643256118578558,
+          "cg_local_mm": [
+            0,
+            15,
+            35.0
+          ],
+          "box_mm": [
+            28,
+            10,
+            98
+          ],
+          "material": "Al6061"
+        },
+        {
+          "root": "03",
+          "name": "PVC propuesto OD20",
+          "mass_g": 3.7922950319645787,
+          "cg_local_mm": [
+            0,
+            0,
+            35.0
+          ],
+          "box_mm": [
+            20,
+            20,
+            30
+          ],
+          "material": "PVC"
+        },
+        {
+          "root": "03",
+          "name": "Dos encastres PLA abiertos",
+          "mass_g": 12,
+          "cg_local_mm": [
+            0,
+            0,
+            35.0
+          ],
+          "box_mm": [
+            30,
+            30,
+            70
+          ],
+          "material": "PLA"
+        },
+        {
+          "root": "01",
+          "name": "STS3215 J2",
+          "mass_g": 56,
+          "cg_local_mm": [
+            0,
+            46,
+            20
+          ],
+          "box_mm": [
+            24.73,
+            36.5,
+            45.23
+          ],
+          "material": "Servo"
+        },
+        {
+          "root": "02",
+          "name": "STS3215 J3",
+          "mass_g": 56,
+          "cg_local_mm": [
+            0,
+            46,
+            65
+          ],
+          "box_mm": [
+            24.73,
+            36.5,
+            45.23
+          ],
+          "material": "Servo"
+        },
+        {
+          "root": "02",
+          "name": "Eje 8x45",
+          "mass_g": 17.75628167808951,
+          "cg_local_mm": [
+            0,
+            0,
+            0
+          ],
+          "box_mm": [
+            8,
+            45,
+            8
+          ],
+          "material": "Acero"
+        },
+        {
+          "root": "02",
+          "name": "Par608",
+          "mass_g": 24,
+          "cg_local_mm": [
+            0,
+            0,
+            0
+          ],
+          "box_mm": [
+            22,
+            45,
+            22
+          ],
+          "material": "Rodamiento"
+        },
+        {
+          "root": "03",
+          "name": "Eje 8x45",
+          "mass_g": 17.75628167808951,
+          "cg_local_mm": [
+            0,
+            0,
+            0
+          ],
+          "box_mm": [
+            8,
+            45,
+            8
+          ],
+          "material": "Acero"
+        },
+        {
+          "root": "03",
+          "name": "Par608",
+          "mass_g": 24,
+          "cg_local_mm": [
+            0,
+            0,
+            0
+          ],
+          "box_mm": [
+            22,
+            45,
+            22
+          ],
+          "material": "Rodamiento"
+        },
+        {
+          "root": "01",
+          "name": "Horquilla hombro y fijaciones PLA",
+          "mass_g": 16,
+          "cg_local_mm": [
+            0,
+            0,
+            20
+          ],
+          "box_mm": [
+            40,
+            45,
+            40
+          ],
+          "material": "PLA"
+        },
+        {
+          "root": "00",
+          "name": "Transmision reserva completa",
+          "mass_g": 22,
+          "cg_local_mm": [
+            0,
+            25,
+            40
+          ],
+          "box_mm": [
+            45,
+            25,
+            40
+          ],
+          "material": "Transmision"
+        },
+        {
+          "root": "01",
+          "name": "Transmision reserva completa",
+          "mass_g": 25,
+          "cg_local_mm": [
+            0,
+            25,
+            25
+          ],
+          "box_mm": [
+            45,
+            25,
+            40
+          ],
+          "material": "Transmision"
+        },
+        {
+          "root": "02",
+          "name": "Transmision reserva completa",
+          "mass_g": 22,
+          "cg_local_mm": [
+            0,
+            25,
+            75
+          ],
+          "box_mm": [
+            45,
+            25,
+            40
+          ],
+          "material": "Transmision"
+        },
+        {
+          "root": "03",
+          "name": "Transmision reserva completa",
+          "mass_g": 12,
+          "cg_local_mm": [
+            0,
+            25,
+            70
+          ],
+          "box_mm": [
+            45,
+            25,
+            40
+          ],
+          "material": "Transmision"
+        },
+        {
+          "root": "04",
+          "name": "Transmision reserva completa",
+          "mass_g": 16,
+          "cg_local_mm": [
+            0,
+            25,
+            30
+          ],
+          "box_mm": [
+            45,
+            25,
+            40
+          ],
+          "material": "Transmision"
+        },
+        {
+          "root": "03",
+          "name": "STS3032 J4",
+          "mass_g": 21.6,
+          "cg_local_mm": [
+            8,
+            0,
+            56
+          ],
+          "box_mm": [
+            32,
+            12,
+            27.5
+          ],
+          "material": "Servo"
+        },
+        {
+          "root": "04",
+          "name": "STS3032 J5",
+          "mass_g": 21.6,
+          "cg_local_mm": [
+            0,
+            27,
+            19
+          ],
+          "box_mm": [
+            32,
+            12,
+            27.5
+          ],
+          "material": "Servo"
+        },
+        {
+          "root": "05",
+          "name": "STS3032 J6",
+          "mass_g": 21.6,
+          "cg_local_mm": [
+            8,
+            0,
+            0
+          ],
+          "box_mm": [
+            32,
+            12,
+            27.5
+          ],
+          "material": "Servo"
+        },
+        {
+          "root": "04",
+          "name": "Par625",
+          "mass_g": 10,
+          "cg_local_mm": [
+            0,
+            0,
+            6
+          ],
+          "box_mm": [
+            16,
+            28,
+            16
+          ],
+          "material": "Rodamiento"
+        },
+        {
+          "root": "04",
+          "name": "Eje o dos munones equivalentes 5x25",
+          "mass_g": 3.8533597391687304,
+          "cg_local_mm": [
+            0,
+            0,
+            6
+          ],
+          "box_mm": [
+            5,
+            25,
+            5
+          ],
+          "material": "Acero"
+        },
+        {
+          "root": "04",
+          "name": "Horquilla plegada 1.5mm",
+          "mass_g": 6.075,
+          "cg_local_mm": [
+            0,
+            0,
+            16
+          ],
+          "box_mm": [
+            32,
+            32,
+            30
+          ],
+          "material": "Al6061"
+        },
+        {
+          "root": "04",
+          "name": "Cubiertas y encastres PLA",
+          "mass_g": 6,
+          "cg_local_mm": [
+            0,
+            0,
+            14
+          ],
+          "box_mm": [
+            35,
+            35,
+            25
+          ],
+          "material": "PLA"
+        },
+        {
+          "root": "05",
+          "name": "Par625",
+          "mass_g": 10,
+          "cg_local_mm": [
+            0,
+            0,
+            0
+          ],
+          "box_mm": [
+            16,
+            28,
+            16
+          ],
+          "material": "Rodamiento"
+        },
+        {
+          "root": "05",
+          "name": "Eje o dos munones equivalentes 5x25",
+          "mass_g": 3.8533597391687304,
+          "cg_local_mm": [
+            0,
+            0,
+            0
+          ],
+          "box_mm": [
+            5,
+            25,
+            5
+          ],
+          "material": "Acero"
+        },
+        {
+          "root": "05",
+          "name": "Horquilla plegada 1.5mm",
+          "mass_g": 6.075,
+          "cg_local_mm": [
+            0,
+            0,
+            10
+          ],
+          "box_mm": [
+            32,
+            32,
+            30
+          ],
+          "material": "Al6061"
+        },
+        {
+          "root": "05",
+          "name": "Cubiertas y encastres PLA",
+          "mass_g": 6,
+          "cg_local_mm": [
+            0,
+            0,
+            8
+          ],
+          "box_mm": [
+            35,
+            35,
+            25
+          ],
+          "material": "PLA"
+        },
+        {
+          "root": "06",
+          "name": "Par625",
+          "mass_g": 10,
+          "cg_local_mm": [
+            0,
+            0,
+            0
+          ],
+          "box_mm": [
+            16,
+            28,
+            16
+          ],
+          "material": "Rodamiento"
+        },
+        {
+          "root": "06",
+          "name": "Eje o dos munones equivalentes 5x25",
+          "mass_g": 3.8533597391687304,
+          "cg_local_mm": [
+            0,
+            0,
+            0
+          ],
+          "box_mm": [
+            5,
+            25,
+            5
+          ],
+          "material": "Acero"
+        },
+        {
+          "root": "06",
+          "name": "Horquilla plegada 1.5mm",
+          "mass_g": 6.075,
+          "cg_local_mm": [
+            0,
+            0,
+            10
+          ],
+          "box_mm": [
+            32,
+            32,
+            30
+          ],
+          "material": "Al6061"
+        },
+        {
+          "root": "06",
+          "name": "Cubiertas y encastres PLA",
+          "mass_g": 6,
+          "cg_local_mm": [
+            0,
+            0,
+            8
+          ],
+          "box_mm": [
+            35,
+            35,
+            25
+          ],
+          "material": "PLA"
+        },
+        {
+          "root": "06",
+          "name": "STS3032 pinza",
+          "mass_g": 21.6,
+          "cg_local_mm": [
+            25,
+            0,
+            10
+          ],
+          "box_mm": [
+            32,
+            12,
+            27.5
+          ],
+          "material": "Servo"
+        },
+        {
+          "root": "06",
+          "name": "Dos dedos 2x10x45",
+          "mass_g": 4.86,
+          "cg_local_mm": [
+            0,
+            0,
+            35
+          ],
+          "box_mm": [
+            65,
+            10,
+            45
+          ],
+          "material": "Al6061"
+        },
+        {
+          "root": "06",
+          "name": "Palma 1.5mm con ventanas",
+          "mass_g": 4.7385,
+          "cg_local_mm": [
+            0,
+            0,
+            9
+          ],
+          "box_mm": [
+            60,
+            30,
+            1.5
+          ],
+          "material": "Al6061"
+        },
+        {
+          "root": "06",
+          "name": "Bisagras cable reenvio fijaciones",
+          "mass_g": 10,
+          "cg_local_mm": [
+            0,
+            0,
+            18
+          ],
+          "box_mm": [
+            60,
+            30,
+            20
+          ],
+          "material": "Varios"
+        },
+        {
+          "root": "06",
+          "name": "Pads y topes PLA",
+          "mass_g": 8,
+          "cg_local_mm": [
+            0,
+            0,
+            38
+          ],
+          "box_mm": [
+            65,
+            15,
+            30
+          ],
+          "material": "PLA"
+        },
+        {
+          "root": "01",
+          "name": "Cableado conectores y tornilleria restante",
+          "mass_g": 25,
+          "cg_local_mm": [
+            0,
+            0,
+            20
+          ],
+          "box_mm": [
+            35,
+            35,
+            40
+          ],
+          "material": "Varios"
+        },
+        {
+          "root": "03",
+          "name": "Cableado y tornilleria distal restante",
+          "mass_g": 12,
+          "cg_local_mm": [
+            0,
+            0,
+            35.0
+          ],
+          "box_mm": [
+            20,
+            20,
+            70
+          ],
+          "material": "Varios"
+        },
+        {
+          "root": "90",
+          "name": "Carga cubo 50mm",
+          "mass_g": 200,
+          "cg_local_mm": [
+            0,
+            0,
+            0
+          ],
+          "box_mm": [
+            50,
+            50,
+            50
+          ],
+          "material": "Carga"
+        }
+      ],
+      "groups": [
+        {
+          "root": "00",
+          "mass_g": 439.123,
+          "cg_local_mm": [
+            -2.873910043427468,
+            -37.43355734042627,
+            24.36237682836017
+          ],
+          "inertia_kgm2": [
+            [
+              0.00026730039000246624,
+              4.3257149363617946e-05,
+              -4.571319557390522e-06
+            ],
+            [
+              4.3257149363617946e-05,
+              0.0005142322087585846,
+              -1.7288631112467348e-05
+            ],
+            [
+              -4.571319557390522e-06,
+              -1.7288631112467348e-05,
+              0.0006676748426942709
+            ]
+          ]
+        },
+        {
+          "root": "01",
+          "mass_g": 148.02495354233784,
+          "cg_local_mm": [
+            0.0,
+            21.6247323400406,
+            17.57570919262173
+          ],
+          "inertia_kgm2": [
+            [
+              0.00010950721463781403,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              4.359382305828399e-05,
+              -1.0885154874417854e-05
+            ],
+            [
+              0.0,
+              -1.0885154874417854e-05,
+              9.596116841607277e-05
+            ]
+          ]
+        },
+        {
+          "root": "02",
+          "mass_g": 161.62578009551095,
+          "cg_local_mm": [
+            0.0,
+            19.34097393468248,
+            43.09201126566008
+          ],
+          "inertia_kgm2": [
+            [
+              0.000263704981792644,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.00018119968675905793,
+              -7.398437278354659e-05
+            ],
+            [
+              0.0,
+              -7.398437278354659e-05,
+              0.00010329644776425176
+            ]
+          ]
+        },
+        {
+          "root": "03",
+          "mass_g": 124.43508894721121,
+          "cg_local_mm": [
+            1.38867582658543,
+            2.410895532266371,
+            30.275690613420757
+          ],
+          "inertia_kgm2": [
+            [
+              0.00012484501011734482,
+              4.1660274797562904e-07,
+              -4.445160662000893e-06
+            ],
+            [
+              4.1660274797562904e-07,
+              0.00011263490917412056,
+              -1.1917292815973777e-05
+            ],
+            [
+              -4.445160662000893e-06,
+              -1.1917292815973777e-05,
+              2.999103218324211e-05
+            ]
+          ]
+        },
+        {
+          "root": "04",
+          "mass_g": 63.528359739168735,
+          "cg_local_mm": [
+            0.0,
+            15.476552582764121,
+            18.17645163791415
+          ],
+          "inertia_kgm2": [
+            [
+              2.253019132198947e-05,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.4818336501071385e-05,
+              -5.209712749602814e-06
+            ],
+            [
+              0.0,
+              -5.209712749602814e-06,
+              1.950277715316462e-05
+            ]
+          ]
+        },
+        {
+          "root": "05",
+          "mass_g": 47.528359739168735,
+          "cg_local_mm": [
+            3.6357240382018343,
+            0.0,
+            2.2881075761252867
+          ],
+          "inertia_kgm2": [
+            [
+              5.3375336203013495e-06,
+              0.0,
+              3.953849891544495e-07
+            ],
+            [
+              0.0,
+              7.0430125195416364e-06,
+              0.0
+            ],
+            [
+              3.953849891544495e-07,
+              0.0,
+              6.1937372054036974e-06
+            ]
+          ]
+        },
+        {
+          "root": "06",
+          "mass_g": 75.12685973916874,
+          "cg_local_mm": [
+            7.187842029798849,
+            0.0,
+            13.59695458517115
+          ],
+          "inertia_kgm2": [
+            [
+              1.803667660187703e-05,
+              0.0,
+              1.94235547599242e-06
+            ],
+            [
+              0.0,
+              3.626002808549388e-05,
+              0.0
+            ],
+            [
+              1.94235547599242e-06,
+              0.0,
+              2.5303384789780264e-05
+            ]
+          ]
+        },
+        {
+          "root": "90",
+          "mass_g": 200.0,
+          "cg_local_mm": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "inertia_kgm2": [
+            [
+              8.333333333333336e-05,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              8.333333333333336e-05,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              8.333333333333336e-05
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "parameters_mm": {
+        "base_top": 45,
+        "tower_h": 40,
+        "axis_y_mm": -32,
+        "link1": 80,
+        "link2": 70,
+        "wrist45": 35,
+        "wrist56": 30,
+        "payload_z": 45
+      },
+      "reserve25": true,
+      "total_with_payload_g": 1390.6405022532078,
+      "arm_without_payload_g": 1190.6405022532078,
+      "motor_mass_g": 254.4,
+      "axes": [
+        {
+          "axis": "J1",
+          "proposed_ratio": 1.5,
+          "minimum_external_torque_margin": 2.4597142078271683,
+          "peak_output_kgfcm": 4.878615556967658,
+          "selected_by": "smallest simple ratio >=2.3, else best external margin",
+          "internal_inertia_necessary_max_kgm2": 0.003889401884422184
+        },
+        {
+          "axis": "J2",
+          "proposed_ratio": 6.0,
+          "minimum_external_torque_margin": 2.4989842040818515,
+          "peak_output_kgfcm": 19.178510055567493,
+          "selected_by": "smallest simple ratio >=2.3, else best external margin",
+          "internal_inertia_necessary_max_kgm2": 0.0010451763550023646
+        },
+        {
+          "axis": "J3",
+          "proposed_ratio": 4.0,
+          "minimum_external_torque_margin": 2.8476007015242977,
+          "peak_output_kgfcm": 11.237530592990323,
+          "selected_by": "smallest simple ratio >=2.3, else best external margin",
+          "internal_inertia_necessary_max_kgm2": 0.0023228599591080664
+        },
+        {
+          "axis": "J4",
+          "proposed_ratio": 1.0,
+          "minimum_external_torque_margin": 5.130568753956547,
+          "peak_output_kgfcm": 0.2923652468048972,
+          "selected_by": "smallest simple ratio >=2.3, else best external margin",
+          "internal_inertia_necessary_max_kgm2": 0.0028570628641447974
+        },
+        {
+          "axis": "J5",
+          "proposed_ratio": 8.0,
+          "minimum_external_torque_margin": 2.7620460757686476,
+          "peak_output_kgfcm": 3.475684234314746,
+          "selected_by": "smallest simple ratio >=2.3, else best external margin",
+          "internal_inertia_necessary_max_kgm2": 0.00016148135570162874
+        },
+        {
+          "axis": "J6",
+          "proposed_ratio": 1.0,
+          "minimum_external_torque_margin": 11.826893752965807,
+          "peak_output_kgfcm": 0.12682958275699804,
+          "selected_by": "smallest simple ratio >=2.3, else best external margin",
+          "internal_inertia_necessary_max_kgm2": 0.003890519775231206
+        }
+      ],
+      "necessary_support_halfspan_mm": [
+        60.24895190954424,
+        61.284253171080486
+      ],
+      "tip_utilization_90_50_hypothesis": 1.2256850634216097,
+      "peak_force_N": [
+        12.45816490099543,
+        10.802413826511447,
+        8.8471318678936,
+        7.032823586387841,
+        5.97444660788458,
+        5.176913331589396
+      ],
+      "peak_moment_Nm": [
+        1.9277401656858684,
+        1.9224954593256491,
+        1.1287183995858125,
+        0.5787292413349224,
+        0.34943794886088003,
+        0.1921537815024469
+      ],
+      "peak_payload_force_N": 3.671944460278642,
+      "section_peak_columns": [
+        "shear_N",
+        "axial_N",
+        "bending_Nm",
+        "torsion_Nm"
+      ],
+      "section_peaks_local": [
+        [
+          2.2111798116104957,
+          12.316151033022852,
+          1.8869624205912339,
+          0.47842875251736877
+        ],
+        [
+          10.802193183342203,
+          0.27087218221341425,
+          1.9212701077423424,
+          0.0688876938437089
+        ],
+        [
+          8.84706020870187,
+          0.28975099998632775,
+          1.1282475215021635,
+          0.034019569138484584
+        ],
+        [
+          7.032795839983819,
+          0.23858481454939845,
+          0.578051425226783,
+          0.028671236475792457
+        ],
+        [
+          5.974423269487224,
+          0.2501443172373128,
+          0.3493818372637841,
+          0.014716680346971394
+        ],
+        [
+          5.176909271213503,
+          0.21874565048441452,
+          0.1921241548561339,
+          0.012437733277439147
+        ]
+      ],
+      "parts": [
+        {
+          "root": "00",
+          "name": "STS3215 J1",
+          "mass_g": 56,
+          "cg_local_mm": [
+            48,
+            -32,
+            27
+          ],
+          "box_mm": [
+            45.23,
+            24.73,
+            36.5
+          ],
+          "material": "Servo"
+        },
+        {
+          "root": "00",
+          "name": "Control y potencia TTL presupuesto",
+          "mass_g": 150,
+          "cg_local_mm": [
+            -35,
+            -32,
+            25
+          ],
+          "box_mm": [
+            60,
+            35,
+            30
+          ],
+          "material": "Electronica"
+        },
+        {
+          "root": "00",
+          "name": "Bateria brazo presupuesto",
+          "mass_g": 130,
+          "cg_local_mm": [
+            10,
+            -60,
+            25
+          ],
+          "box_mm": [
+            65,
+            35,
+            28
+          ],
+          "material": "Potencia"
+        },
+        {
+          "root": "00",
+          "name": "Montura ranurada superior 2mm",
+          "mass_g": 31.89375,
+          "cg_local_mm": [
+            0,
+            -32,
+            8
+          ],
+          "box_mm": [
+            90,
+            75,
+            2
+          ],
+          "material": "Al6061"
+        },
+        {
+          "root": "00",
+          "name": "Contraplaca inferior unica 2mm",
+          "mass_g": 17.01,
+          "cg_local_mm": [
+            0,
+            -32,
+            -5
+          ],
+          "box_mm": [
+            90,
+            35,
+            2
+          ],
+          "material": "Al6061"
+        },
+        {
+          "root": "00",
+          "name": "Cartucho J1 y fijacion servo PLA",
+          "mass_g": 22.5,
+          "cg_local_mm": [
+            0,
+            -32,
+            25
+          ],
+          "box_mm": [
+            50,
+            45,
+            35
+          ],
+          "material": "PLA"
+        },
+        {
+          "root": "00",
+          "name": "Par608 J1",
+          "mass_g": 30.0,
+          "cg_local_mm": [
+            0,
+            -32,
+            30
+          ],
+          "box_mm": [
+            22,
+            22,
+            22
+          ],
+          "material": "Rodamiento"
+        },
+        {
+          "root": "01",
+          "name": "Eje J1 8x35",
+          "mass_g": 17.26305163147591,
+          "cg_local_mm": [
+            0,
+            0,
+            0
+          ],
+          "box_mm": [
+            8,
+            8,
+            35
+          ],
+          "material": "Acero"
+        },
+        {
+          "root": "01",
+          "name": "Plataforma anular J1 2mm",
+          "mass_g": 15.268140296446395,
+          "cg_local_mm": [
+            0,
+            0,
+            3
+          ],
+          "box_mm": [
+            56,
+            56,
+            2
+          ],
+          "material": "Al6061"
+        },
+        {
+          "root": "02",
+          "name": "Mejilla 2mm y borde 8mm -1",
+          "mass_g": 14.654070148223198,
+          "cg_local_mm": [
+            0,
+            -15,
+            40.0
+          ],
+          "box_mm": [
+            28,
+            10,
+            108
+          ],
+          "material": "Al6061"
+        },
+        {
+          "root": "02",
+          "name": "Mejilla 2mm y borde 8mm 1",
+          "mass_g": 14.654070148223198,
+          "cg_local_mm": [
+            0,
+            15,
+            40.0
+          ],
+          "box_mm": [
+            28,
+            10,
+            108
+          ],
+          "material": "Al6061"
+        },
+        {
+          "root": "02",
+          "name": "PVC propuesto OD25",
+          "mass_g": 8.028732725330416,
+          "cg_local_mm": [
+            0,
+            0,
+            40.0
+          ],
+          "box_mm": [
+            25,
+            25,
+            40
+          ],
+          "material": "PVC"
+        },
+        {
+          "root": "02",
+          "name": "Dos encastres PLA abiertos",
+          "mass_g": 15.0,
+          "cg_local_mm": [
+            0,
+            0,
+            40.0
+          ],
+          "box_mm": [
+            30,
+            30,
+            80
+          ],
+          "material": "PLA"
+        },
+        {
+          "root": "03",
+          "name": "Mejilla 2mm y borde 8mm -1",
+          "mass_g": 13.304070148223197,
+          "cg_local_mm": [
+            0,
+            -15,
+            35.0
+          ],
+          "box_mm": [
+            28,
+            10,
+            98
+          ],
+          "material": "Al6061"
+        },
+        {
+          "root": "03",
+          "name": "Mejilla 2mm y borde 8mm 1",
+          "mass_g": 13.304070148223197,
+          "cg_local_mm": [
+            0,
+            15,
+            35.0
+          ],
+          "box_mm": [
+            28,
+            10,
+            98
+          ],
+          "material": "Al6061"
+        },
+        {
+          "root": "03",
+          "name": "PVC propuesto OD20",
+          "mass_g": 4.740368789955723,
+          "cg_local_mm": [
+            0,
+            0,
+            35.0
+          ],
+          "box_mm": [
+            20,
+            20,
+            30
+          ],
+          "material": "PVC"
+        },
+        {
+          "root": "03",
+          "name": "Dos encastres PLA abiertos",
+          "mass_g": 15.0,
+          "cg_local_mm": [
+            0,
+            0,
+            35.0
+          ],
+          "box_mm": [
+            30,
+            30,
+            70
+          ],
+          "material": "PLA"
+        },
+        {
+          "root": "01",
+          "name": "STS3215 J2",
+          "mass_g": 56,
+          "cg_local_mm": [
+            0,
+            46,
+            20
+          ],
+          "box_mm": [
+            24.73,
+            36.5,
+            45.23
+          ],
+          "material": "Servo"
+        },
+        {
+          "root": "02",
+          "name": "STS3215 J3",
+          "mass_g": 56,
+          "cg_local_mm": [
+            0,
+            46,
+            65
+          ],
+          "box_mm": [
+            24.73,
+            36.5,
+            45.23
+          ],
+          "material": "Servo"
+        },
+        {
+          "root": "02",
+          "name": "Eje 8x45",
+          "mass_g": 22.195352097611888,
+          "cg_local_mm": [
+            0,
+            0,
+            0
+          ],
+          "box_mm": [
+            8,
+            45,
+            8
+          ],
+          "material": "Acero"
+        },
+        {
+          "root": "02",
+          "name": "Par608",
+          "mass_g": 30.0,
+          "cg_local_mm": [
+            0,
+            0,
+            0
+          ],
+          "box_mm": [
+            22,
+            45,
+            22
+          ],
+          "material": "Rodamiento"
+        },
+        {
+          "root": "03",
+          "name": "Eje 8x45",
+          "mass_g": 22.195352097611888,
+          "cg_local_mm": [
+            0,
+            0,
+            0
+          ],
+          "box_mm": [
+            8,
+            45,
+            8
+          ],
+          "material": "Acero"
+        },
+        {
+          "root": "03",
+          "name": "Par608",
+          "mass_g": 30.0,
+          "cg_local_mm": [
+            0,
+            0,
+            0
+          ],
+          "box_mm": [
+            22,
+            45,
+            22
+          ],
+          "material": "Rodamiento"
+        },
+        {
+          "root": "01",
+          "name": "Horquilla hombro y fijaciones PLA",
+          "mass_g": 20.0,
+          "cg_local_mm": [
+            0,
+            0,
+            20
+          ],
+          "box_mm": [
+            40,
+            45,
+            40
+          ],
+          "material": "PLA"
+        },
+        {
+          "root": "00",
+          "name": "Transmision reserva completa",
+          "mass_g": 27.5,
+          "cg_local_mm": [
+            0,
+            25,
+            40
+          ],
+          "box_mm": [
+            45,
+            25,
+            40
+          ],
+          "material": "Transmision"
+        },
+        {
+          "root": "01",
+          "name": "Transmision reserva completa",
+          "mass_g": 31.25,
+          "cg_local_mm": [
+            0,
+            25,
+            25
+          ],
+          "box_mm": [
+            45,
+            25,
+            40
+          ],
+          "material": "Transmision"
+        },
+        {
+          "root": "02",
+          "name": "Transmision reserva completa",
+          "mass_g": 27.5,
+          "cg_local_mm": [
+            0,
+            25,
+            75
+          ],
+          "box_mm": [
+            45,
+            25,
+            40
+          ],
+          "material": "Transmision"
+        },
+        {
+          "root": "03",
+          "name": "Transmision reserva completa",
+          "mass_g": 15.0,
+          "cg_local_mm": [
+            0,
+            25,
+            70
+          ],
+          "box_mm": [
+            45,
+            25,
+            40
+          ],
+          "material": "Transmision"
+        },
+        {
+          "root": "04",
+          "name": "Transmision reserva completa",
+          "mass_g": 20.0,
+          "cg_local_mm": [
+            0,
+            25,
+            30
+          ],
+          "box_mm": [
+            45,
+            25,
+            40
+          ],
+          "material": "Transmision"
+        },
+        {
+          "root": "03",
+          "name": "STS3032 J4",
+          "mass_g": 21.6,
+          "cg_local_mm": [
+            8,
+            0,
+            56
+          ],
+          "box_mm": [
+            32,
+            12,
+            27.5
+          ],
+          "material": "Servo"
+        },
+        {
+          "root": "04",
+          "name": "STS3032 J5",
+          "mass_g": 21.6,
+          "cg_local_mm": [
+            0,
+            27,
+            19
+          ],
+          "box_mm": [
+            32,
+            12,
+            27.5
+          ],
+          "material": "Servo"
+        },
+        {
+          "root": "05",
+          "name": "STS3032 J6",
+          "mass_g": 21.6,
+          "cg_local_mm": [
+            8,
+            0,
+            0
+          ],
+          "box_mm": [
+            32,
+            12,
+            27.5
+          ],
+          "material": "Servo"
+        },
+        {
+          "root": "04",
+          "name": "Par625",
+          "mass_g": 12.5,
+          "cg_local_mm": [
+            0,
+            0,
+            6
+          ],
+          "box_mm": [
+            16,
+            28,
+            16
+          ],
+          "material": "Rodamiento"
+        },
+        {
+          "root": "04",
+          "name": "Eje o dos munones equivalentes 5x25",
+          "mass_g": 4.816699673960913,
+          "cg_local_mm": [
+            0,
+            0,
+            6
+          ],
+          "box_mm": [
+            5,
+            25,
+            5
+          ],
+          "material": "Acero"
+        },
+        {
+          "root": "04",
+          "name": "Horquilla plegada 1.5mm",
+          "mass_g": 7.59375,
+          "cg_local_mm": [
+            0,
+            0,
+            16
+          ],
+          "box_mm": [
+            32,
+            32,
+            30
+          ],
+          "material": "Al6061"
+        },
+        {
+          "root": "04",
+          "name": "Cubiertas y encastres PLA",
+          "mass_g": 7.5,
+          "cg_local_mm": [
+            0,
+            0,
+            14
+          ],
+          "box_mm": [
+            35,
+            35,
+            25
+          ],
+          "material": "PLA"
+        },
+        {
+          "root": "05",
+          "name": "Par625",
+          "mass_g": 12.5,
+          "cg_local_mm": [
+            0,
+            0,
+            0
+          ],
+          "box_mm": [
+            16,
+            28,
+            16
+          ],
+          "material": "Rodamiento"
+        },
+        {
+          "root": "05",
+          "name": "Eje o dos munones equivalentes 5x25",
+          "mass_g": 4.816699673960913,
+          "cg_local_mm": [
+            0,
+            0,
+            0
+          ],
+          "box_mm": [
+            5,
+            25,
+            5
+          ],
+          "material": "Acero"
+        },
+        {
+          "root": "05",
+          "name": "Horquilla plegada 1.5mm",
+          "mass_g": 7.59375,
+          "cg_local_mm": [
+            0,
+            0,
+            10
+          ],
+          "box_mm": [
+            32,
+            32,
+            30
+          ],
+          "material": "Al6061"
+        },
+        {
+          "root": "05",
+          "name": "Cubiertas y encastres PLA",
+          "mass_g": 7.5,
+          "cg_local_mm": [
+            0,
+            0,
+            8
+          ],
+          "box_mm": [
+            35,
+            35,
+            25
+          ],
+          "material": "PLA"
+        },
+        {
+          "root": "06",
+          "name": "Par625",
+          "mass_g": 12.5,
+          "cg_local_mm": [
+            0,
+            0,
+            0
+          ],
+          "box_mm": [
+            16,
+            28,
+            16
+          ],
+          "material": "Rodamiento"
+        },
+        {
+          "root": "06",
+          "name": "Eje o dos munones equivalentes 5x25",
+          "mass_g": 4.816699673960913,
+          "cg_local_mm": [
+            0,
+            0,
+            0
+          ],
+          "box_mm": [
+            5,
+            25,
+            5
+          ],
+          "material": "Acero"
+        },
+        {
+          "root": "06",
+          "name": "Horquilla plegada 1.5mm",
+          "mass_g": 7.59375,
+          "cg_local_mm": [
+            0,
+            0,
+            10
+          ],
+          "box_mm": [
+            32,
+            32,
+            30
+          ],
+          "material": "Al6061"
+        },
+        {
+          "root": "06",
+          "name": "Cubiertas y encastres PLA",
+          "mass_g": 7.5,
+          "cg_local_mm": [
+            0,
+            0,
+            8
+          ],
+          "box_mm": [
+            35,
+            35,
+            25
+          ],
+          "material": "PLA"
+        },
+        {
+          "root": "06",
+          "name": "STS3032 pinza",
+          "mass_g": 21.6,
+          "cg_local_mm": [
+            25,
+            0,
+            10
+          ],
+          "box_mm": [
+            32,
+            12,
+            27.5
+          ],
+          "material": "Servo"
+        },
+        {
+          "root": "06",
+          "name": "Dos dedos 2x10x45",
+          "mass_g": 6.075,
+          "cg_local_mm": [
+            0,
+            0,
+            35
+          ],
+          "box_mm": [
+            65,
+            10,
+            45
+          ],
+          "material": "Al6061"
+        },
+        {
+          "root": "06",
+          "name": "Palma 1.5mm con ventanas",
+          "mass_g": 5.923125000000001,
+          "cg_local_mm": [
+            0,
+            0,
+            9
+          ],
+          "box_mm": [
+            60,
+            30,
+            1.5
+          ],
+          "material": "Al6061"
+        },
+        {
+          "root": "06",
+          "name": "Bisagras cable reenvio fijaciones",
+          "mass_g": 12.5,
+          "cg_local_mm": [
+            0,
+            0,
+            18
+          ],
+          "box_mm": [
+            60,
+            30,
+            20
+          ],
+          "material": "Varios"
+        },
+        {
+          "root": "06",
+          "name": "Pads y topes PLA",
+          "mass_g": 10.0,
+          "cg_local_mm": [
+            0,
+            0,
+            38
+          ],
+          "box_mm": [
+            65,
+            15,
+            30
+          ],
+          "material": "PLA"
+        },
+        {
+          "root": "01",
+          "name": "Cableado conectores y tornilleria restante",
+          "mass_g": 31.25,
+          "cg_local_mm": [
+            0,
+            0,
+            20
+          ],
+          "box_mm": [
+            35,
+            35,
+            40
+          ],
+          "material": "Varios"
+        },
+        {
+          "root": "03",
+          "name": "Cableado y tornilleria distal restante",
+          "mass_g": 15.0,
+          "cg_local_mm": [
+            0,
+            0,
+            35.0
+          ],
+          "box_mm": [
+            20,
+            20,
+            70
+          ],
+          "material": "Varios"
+        },
+        {
+          "root": "90",
+          "name": "Carga cubo 50mm",
+          "mass_g": 200,
+          "cg_local_mm": [
+            0,
+            0,
+            0
+          ],
+          "box_mm": [
+            50,
+            50,
+            50
+          ],
+          "material": "Carga"
+        }
+      ],
+      "groups": [
+        {
+          "root": "00",
+          "mass_g": 464.90375,
+          "cg_local_mm": [
+            -2.714540375292735,
+            -36.457911987158624,
+            24.18694192077393
+          ],
+          "inertia_kgm2": [
+            [
+              0.0003011224228801126,
+              4.202588492779418e-05,
+              -4.349920704016687e-06
+            ],
+            [
+              4.202588492779418e-05,
+              0.000530744892290713,
+              -2.1827437130803956e-05
+            ],
+            [
+              -4.349920704016687e-06,
+              -2.1827437130803956e-05,
+              0.0007028057035821612
+            ]
+          ]
+        },
+        {
+          "root": "01",
+          "mass_g": 171.0311919279223,
+          "cg_local_mm": [
+            0.0,
+            19.629460346711763,
+            17.37726544139301
+          ],
+          "inertia_kgm2": [
+            [
+              0.00012385495364259483,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              5.1303049591592903e-05,
+              -1.2711425596883322e-05
+            ],
+            [
+              0.0,
+              -1.2711425596883322e-05,
+              0.000108684621663347
+            ]
+          ]
+        },
+        {
+          "root": "02",
+          "mass_g": 188.0322251193887,
+          "cg_local_mm": [
+            0.0,
+            17.35606754601708,
+            41.460844894651
+          ],
+          "inertia_kgm2": [
+            [
+              0.00030777981544272256,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.00021617965738739495,
+              -8.36950326863065e-05
+            ],
+            [
+              0.0,
+              -8.36950326863065e-05,
+              0.00011616209553532643
+            ]
+          ]
+        },
+        {
+          "root": "03",
+          "mass_g": 150.143861184014,
+          "cg_local_mm": [
+            1.1508962047287368,
+            2.4976046109564596,
+            29.35050279959945
+          ],
+          "inertia_kgm2": [
+            [
+              0.0001519167187228808,
+              4.3158607677327625e-07,
+              -4.605033116229216e-06
+            ],
+            [
+              4.3158607677327625e-07,
+              0.00013604608756272467,
+              -1.5243561450150207e-05
+            ],
+            [
+              -4.605033116229216e-06,
+              -1.5243561450150207e-05,
+              3.6686153438909176e-05
+            ]
+          ]
+        },
+        {
+          "root": "04",
+          "mass_g": 74.01044967396092,
+          "cg_local_mm": [
+            0.0,
+            14.635771094106758,
+            18.116363350721528
+          ],
+          "inertia_kgm2": [
+            [
+              2.6984312852985466e-05,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.7717878451757194e-05,
+              -6.457155218498442e-06
+            ],
+            [
+              0.0,
+              -6.457155218498442e-06,
+              2.3083487316536444e-05
+            ]
+          ]
+        },
+        {
+          "root": "05",
+          "mass_g": 54.01044967396091,
+          "cg_local_mm": [
+            3.199380879869049,
+            0.0,
+            2.5168740645671224
+          ],
+          "inertia_kgm2": [
+            [
+              6.235706580854123e-06,
+              0.0,
+              4.349158383571987e-07
+            ],
+            [
+              0.0,
+              7.858418581114707e-06,
+              0.0
+            ],
+            [
+              4.349158383571987e-07,
+              0.0,
+              7.103434882964844e-06
+            ]
+          ]
+        },
+        {
+          "root": "06",
+          "mass_g": 88.50857467396091,
+          "cg_local_mm": [
+            6.101103785584598,
+            0.0,
+            13.816408517532786
+          ],
+          "inertia_kgm2": [
+            [
+              2.2066605032519746e-05,
+              0.0,
+              2.0608605994677036e-06
+            ],
+            [
+              0.0,
+              4.2631991712939354e-05,
+              0.0
+            ],
+            [
+              2.0608605994677036e-06,
+              0.0,
+              2.9285828313123866e-05
+            ]
+          ]
+        },
+        {
+          "root": "90",
+          "mass_g": 200.0,
+          "cg_local_mm": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "inertia_kgm2": [
+            [
+              8.333333333333336e-05,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              8.333333333333336e-05,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              8.333333333333336e-05
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "parameters_mm": {
+        "base_top": 45,
+        "tower_h": 40,
+        "axis_y_mm": -32,
+        "link1": 65,
+        "link2": 60,
+        "wrist45": 35,
+        "wrist56": 30,
+        "payload_z": 45
+      },
+      "reserve25": true,
+      "total_with_payload_g": 1379.2996045512236,
+      "arm_without_payload_g": 1179.2996045512236,
+      "motor_mass_g": 254.4,
+      "axes": [
+        {
+          "axis": "J1",
+          "proposed_ratio": 1.0,
+          "minimum_external_torque_margin": 2.5392272755410636,
+          "peak_output_kgfcm": 3.938205963808096,
+          "selected_by": "smallest simple ratio >=2.3, else best external margin",
+          "internal_inertia_necessary_max_kgm2": 0.006628894088559289
+        },
+        {
+          "axis": "J2",
+          "proposed_ratio": 5.0,
+          "minimum_external_torque_margin": 2.459404025765934,
+          "peak_output_kgfcm": 16.264102839932033,
+          "selected_by": "smallest simple ratio >=2.3, else best external margin",
+          "internal_inertia_necessary_max_kgm2": 0.0011661803398641474
+        },
+        {
+          "axis": "J3",
+          "proposed_ratio": 3.0,
+          "minimum_external_torque_margin": 2.378076007946585,
+          "peak_output_kgfcm": 10.092192141799313,
+          "selected_by": "smallest simple ratio >=2.3, else best external margin",
+          "internal_inertia_necessary_max_kgm2": 0.0016542568262174465
+        },
+        {
+          "axis": "J4",
+          "proposed_ratio": 1.0,
+          "minimum_external_torque_margin": 5.304483653403698,
+          "peak_output_kgfcm": 0.2827796441671573,
+          "selected_by": "smallest simple ratio >=2.3, else best external margin",
+          "internal_inertia_necessary_max_kgm2": 0.0029169068098581154
+        },
+        {
+          "axis": "J5",
+          "proposed_ratio": 8.0,
+          "minimum_external_torque_margin": 2.8495752025246492,
+          "peak_output_kgfcm": 3.3689231965152744,
+          "selected_by": "smallest simple ratio >=2.3, else best external margin",
+          "internal_inertia_necessary_max_kgm2": 0.00017449933643302242
+        },
+        {
+          "axis": "J6",
+          "proposed_ratio": 1.0,
+          "minimum_external_torque_margin": 12.11506588389907,
+          "peak_output_kgfcm": 0.12381278107562756,
+          "selected_by": "smallest simple ratio >=2.3, else best external margin",
+          "internal_inertia_necessary_max_kgm2": 0.003909353991802732
+        }
+      ],
+      "necessary_support_halfspan_mm": [
+        51.815906112681844,
+        52.86565023367439
+      ],
+      "tip_utilization_90_50_hypothesis": 1.0573130046734878,
+      "peak_force_N": [
+        11.993029019291601,
+        10.333271967072555,
+        8.47644146913603,
+        6.775267343778824,
+        5.7621584392911585,
+        4.997824268387117
+      ],
+      "peak_moment_Nm": [
+        1.6310063622024367,
+        1.6259023520533504,
+        1.0104819196026316,
+        0.5586326936153526,
+        0.3376200341608183,
+        0.18579704066584207
+      ],
+      "peak_payload_force_N": 3.5476049570023203,
+      "section_peak_columns": [
+        "shear_N",
+        "axial_N",
+        "bending_Nm",
+        "torsion_Nm"
+      ],
+      "section_peaks_local": [
+        [
+          1.9666222789387273,
+          11.881586390246108,
+          1.6011689627703354,
+          0.38620607514978667
+        ],
+        [
+          10.333018923872483,
+          0.25795031290873044,
+          1.624530453254808,
+          0.06699626156771409
+        ],
+        [
+          8.47635642978791,
+          0.27703329178685593,
+          1.0099871779063812,
+          0.03280538392946519
+        ],
+        [
+          6.775232277577766,
+          0.22945096402958565,
+          0.5579722375053947,
+          0.02773120997471853
+        ],
+        [
+          5.762130585550101,
+          0.24263506808897264,
+          0.3375670642442295,
+          0.014326002053747929
+        ],
+        [
+          4.997818627495853,
+          0.2124205047707489,
+          0.18576882789059404,
+          0.01214188609535303
+        ]
+      ],
+      "parts": [
+        {
+          "root": "00",
+          "name": "STS3215 J1",
+          "mass_g": 56,
+          "cg_local_mm": [
+            48,
+            -32,
+            27
+          ],
+          "box_mm": [
+            45.23,
+            24.73,
+            36.5
+          ],
+          "material": "Servo"
+        },
+        {
+          "root": "00",
+          "name": "Control y potencia TTL presupuesto",
+          "mass_g": 150,
+          "cg_local_mm": [
+            -35,
+            -32,
+            25
+          ],
+          "box_mm": [
+            60,
+            35,
+            30
+          ],
+          "material": "Electronica"
+        },
+        {
+          "root": "00",
+          "name": "Bateria brazo presupuesto",
+          "mass_g": 130,
+          "cg_local_mm": [
+            10,
+            -60,
+            25
+          ],
+          "box_mm": [
+            65,
+            35,
+            28
+          ],
+          "material": "Potencia"
+        },
+        {
+          "root": "00",
+          "name": "Montura ranurada superior 2mm",
+          "mass_g": 31.89375,
+          "cg_local_mm": [
+            0,
+            -32,
+            8
+          ],
+          "box_mm": [
+            90,
+            75,
+            2
+          ],
+          "material": "Al6061"
+        },
+        {
+          "root": "00",
+          "name": "Contraplaca inferior unica 2mm",
+          "mass_g": 17.01,
+          "cg_local_mm": [
+            0,
+            -32,
+            -5
+          ],
+          "box_mm": [
+            90,
+            35,
+            2
+          ],
+          "material": "Al6061"
+        },
+        {
+          "root": "00",
+          "name": "Cartucho J1 y fijacion servo PLA",
+          "mass_g": 22.5,
+          "cg_local_mm": [
+            0,
+            -32,
+            25
+          ],
+          "box_mm": [
+            50,
+            45,
+            35
+          ],
+          "material": "PLA"
+        },
+        {
+          "root": "00",
+          "name": "Par608 J1",
+          "mass_g": 30.0,
+          "cg_local_mm": [
+            0,
+            -32,
+            30
+          ],
+          "box_mm": [
+            22,
+            22,
+            22
+          ],
+          "material": "Rodamiento"
+        },
+        {
+          "root": "01",
+          "name": "Eje J1 8x35",
+          "mass_g": 17.26305163147591,
+          "cg_local_mm": [
+            0,
+            0,
+            0
+          ],
+          "box_mm": [
+            8,
+            8,
+            35
+          ],
+          "material": "Acero"
+        },
+        {
+          "root": "01",
+          "name": "Plataforma anular J1 2mm",
+          "mass_g": 15.268140296446395,
+          "cg_local_mm": [
+            0,
+            0,
+            3
+          ],
+          "box_mm": [
+            56,
+            56,
+            2
+          ],
+          "material": "Al6061"
+        },
+        {
+          "root": "02",
+          "name": "Mejilla 2mm y borde 8mm -1",
+          "mass_g": 12.629070148223196,
+          "cg_local_mm": [
+            0,
+            -15,
+            32.5
+          ],
+          "box_mm": [
+            28,
+            10,
+            93
+          ],
+          "material": "Al6061"
+        },
+        {
+          "root": "02",
+          "name": "Mejilla 2mm y borde 8mm 1",
+          "mass_g": 12.629070148223196,
+          "cg_local_mm": [
+            0,
+            15,
+            32.5
+          ],
+          "box_mm": [
+            28,
+            10,
+            93
+          ],
+          "material": "Al6061"
+        },
+        {
+          "root": "02",
+          "name": "PVC propuesto OD25",
+          "mass_g": 5.017957953331509,
+          "cg_local_mm": [
+            0,
+            0,
+            32.5
+          ],
+          "box_mm": [
+            25,
+            25,
+            25
+          ],
+          "material": "PVC"
+        },
+        {
+          "root": "02",
+          "name": "Dos encastres PLA abiertos",
+          "mass_g": 15.0,
+          "cg_local_mm": [
+            0,
+            0,
+            32.5
+          ],
+          "box_mm": [
+            30,
+            30,
+            65
+          ],
+          "material": "PLA"
+        },
+        {
+          "root": "03",
+          "name": "Mejilla 2mm y borde 8mm -1",
+          "mass_g": 11.954070148223197,
+          "cg_local_mm": [
+            0,
+            -15,
+            30.0
+          ],
+          "box_mm": [
+            28,
+            10,
+            88
+          ],
+          "material": "Al6061"
+        },
+        {
+          "root": "03",
+          "name": "Mejilla 2mm y borde 8mm 1",
+          "mass_g": 11.954070148223197,
+          "cg_local_mm": [
+            0,
+            15,
+            30.0
+          ],
+          "box_mm": [
+            28,
+            10,
+            88
+          ],
+          "material": "Al6061"
+        },
+        {
+          "root": "03",
+          "name": "PVC propuesto OD20",
+          "mass_g": 3.1602458599704826,
+          "cg_local_mm": [
+            0,
+            0,
+            30.0
+          ],
+          "box_mm": [
+            20,
+            20,
+            20
+          ],
+          "material": "PVC"
+        },
+        {
+          "root": "03",
+          "name": "Dos encastres PLA abiertos",
+          "mass_g": 15.0,
+          "cg_local_mm": [
+            0,
+            0,
+            30.0
+          ],
+          "box_mm": [
+            30,
+            30,
+            60
+          ],
+          "material": "PLA"
+        },
+        {
+          "root": "01",
+          "name": "STS3215 J2",
+          "mass_g": 56,
+          "cg_local_mm": [
+            0,
+            46,
+            20
+          ],
+          "box_mm": [
+            24.73,
+            36.5,
+            45.23
+          ],
+          "material": "Servo"
+        },
+        {
+          "root": "02",
+          "name": "STS3215 J3",
+          "mass_g": 56,
+          "cg_local_mm": [
+            0,
+            46,
+            50
+          ],
+          "box_mm": [
+            24.73,
+            36.5,
+            45.23
+          ],
+          "material": "Servo"
+        },
+        {
+          "root": "02",
+          "name": "Eje 8x45",
+          "mass_g": 22.195352097611888,
+          "cg_local_mm": [
+            0,
+            0,
+            0
+          ],
+          "box_mm": [
+            8,
+            45,
+            8
+          ],
+          "material": "Acero"
+        },
+        {
+          "root": "02",
+          "name": "Par608",
+          "mass_g": 30.0,
+          "cg_local_mm": [
+            0,
+            0,
+            0
+          ],
+          "box_mm": [
+            22,
+            45,
+            22
+          ],
+          "material": "Rodamiento"
+        },
+        {
+          "root": "03",
+          "name": "Eje 8x45",
+          "mass_g": 22.195352097611888,
+          "cg_local_mm": [
+            0,
+            0,
+            0
+          ],
+          "box_mm": [
+            8,
+            45,
+            8
+          ],
+          "material": "Acero"
+        },
+        {
+          "root": "03",
+          "name": "Par608",
+          "mass_g": 30.0,
+          "cg_local_mm": [
+            0,
+            0,
+            0
+          ],
+          "box_mm": [
+            22,
+            45,
+            22
+          ],
+          "material": "Rodamiento"
+        },
+        {
+          "root": "01",
+          "name": "Horquilla hombro y fijaciones PLA",
+          "mass_g": 20.0,
+          "cg_local_mm": [
+            0,
+            0,
+            20
+          ],
+          "box_mm": [
+            40,
+            45,
+            40
+          ],
+          "material": "PLA"
+        },
+        {
+          "root": "00",
+          "name": "Transmision reserva completa",
+          "mass_g": 27.5,
+          "cg_local_mm": [
+            0,
+            25,
+            40
+          ],
+          "box_mm": [
+            45,
+            25,
+            40
+          ],
+          "material": "Transmision"
+        },
+        {
+          "root": "01",
+          "name": "Transmision reserva completa",
+          "mass_g": 31.25,
+          "cg_local_mm": [
+            0,
+            25,
+            25
+          ],
+          "box_mm": [
+            45,
+            25,
+            40
+          ],
+          "material": "Transmision"
+        },
+        {
+          "root": "02",
+          "name": "Transmision reserva completa",
+          "mass_g": 27.5,
+          "cg_local_mm": [
+            0,
+            25,
+            60
+          ],
+          "box_mm": [
+            45,
+            25,
+            40
+          ],
+          "material": "Transmision"
+        },
+        {
+          "root": "03",
+          "name": "Transmision reserva completa",
+          "mass_g": 15.0,
+          "cg_local_mm": [
+            0,
+            25,
+            60
+          ],
+          "box_mm": [
+            45,
+            25,
+            40
+          ],
+          "material": "Transmision"
+        },
+        {
+          "root": "04",
+          "name": "Transmision reserva completa",
+          "mass_g": 20.0,
+          "cg_local_mm": [
+            0,
+            25,
+            30
+          ],
+          "box_mm": [
+            45,
+            25,
+            40
+          ],
+          "material": "Transmision"
+        },
+        {
+          "root": "03",
+          "name": "STS3032 J4",
+          "mass_g": 21.6,
+          "cg_local_mm": [
+            8,
+            0,
+            46
+          ],
+          "box_mm": [
+            32,
+            12,
+            27.5
+          ],
+          "material": "Servo"
+        },
+        {
+          "root": "04",
+          "name": "STS3032 J5",
+          "mass_g": 21.6,
+          "cg_local_mm": [
+            0,
+            27,
+            19
+          ],
+          "box_mm": [
+            32,
+            12,
+            27.5
+          ],
+          "material": "Servo"
+        },
+        {
+          "root": "05",
+          "name": "STS3032 J6",
+          "mass_g": 21.6,
+          "cg_local_mm": [
+            8,
+            0,
+            0
+          ],
+          "box_mm": [
+            32,
+            12,
+            27.5
+          ],
+          "material": "Servo"
+        },
+        {
+          "root": "04",
+          "name": "Par625",
+          "mass_g": 12.5,
+          "cg_local_mm": [
+            0,
+            0,
+            6
+          ],
+          "box_mm": [
+            16,
+            28,
+            16
+          ],
+          "material": "Rodamiento"
+        },
+        {
+          "root": "04",
+          "name": "Eje o dos munones equivalentes 5x25",
+          "mass_g": 4.816699673960913,
+          "cg_local_mm": [
+            0,
+            0,
+            6
+          ],
+          "box_mm": [
+            5,
+            25,
+            5
+          ],
+          "material": "Acero"
+        },
+        {
+          "root": "04",
+          "name": "Horquilla plegada 1.5mm",
+          "mass_g": 7.59375,
+          "cg_local_mm": [
+            0,
+            0,
+            16
+          ],
+          "box_mm": [
+            32,
+            32,
+            30
+          ],
+          "material": "Al6061"
+        },
+        {
+          "root": "04",
+          "name": "Cubiertas y encastres PLA",
+          "mass_g": 7.5,
+          "cg_local_mm": [
+            0,
+            0,
+            14
+          ],
+          "box_mm": [
+            35,
+            35,
+            25
+          ],
+          "material": "PLA"
+        },
+        {
+          "root": "05",
+          "name": "Par625",
+          "mass_g": 12.5,
+          "cg_local_mm": [
+            0,
+            0,
+            0
+          ],
+          "box_mm": [
+            16,
+            28,
+            16
+          ],
+          "material": "Rodamiento"
+        },
+        {
+          "root": "05",
+          "name": "Eje o dos munones equivalentes 5x25",
+          "mass_g": 4.816699673960913,
+          "cg_local_mm": [
+            0,
+            0,
+            0
+          ],
+          "box_mm": [
+            5,
+            25,
+            5
+          ],
+          "material": "Acero"
+        },
+        {
+          "root": "05",
+          "name": "Horquilla plegada 1.5mm",
+          "mass_g": 7.59375,
+          "cg_local_mm": [
+            0,
+            0,
+            10
+          ],
+          "box_mm": [
+            32,
+            32,
+            30
+          ],
+          "material": "Al6061"
+        },
+        {
+          "root": "05",
+          "name": "Cubiertas y encastres PLA",
+          "mass_g": 7.5,
+          "cg_local_mm": [
+            0,
+            0,
+            8
+          ],
+          "box_mm": [
+            35,
+            35,
+            25
+          ],
+          "material": "PLA"
+        },
+        {
+          "root": "06",
+          "name": "Par625",
+          "mass_g": 12.5,
+          "cg_local_mm": [
+            0,
+            0,
+            0
+          ],
+          "box_mm": [
+            16,
+            28,
+            16
+          ],
+          "material": "Rodamiento"
+        },
+        {
+          "root": "06",
+          "name": "Eje o dos munones equivalentes 5x25",
+          "mass_g": 4.816699673960913,
+          "cg_local_mm": [
+            0,
+            0,
+            0
+          ],
+          "box_mm": [
+            5,
+            25,
+            5
+          ],
+          "material": "Acero"
+        },
+        {
+          "root": "06",
+          "name": "Horquilla plegada 1.5mm",
+          "mass_g": 7.59375,
+          "cg_local_mm": [
+            0,
+            0,
+            10
+          ],
+          "box_mm": [
+            32,
+            32,
+            30
+          ],
+          "material": "Al6061"
+        },
+        {
+          "root": "06",
+          "name": "Cubiertas y encastres PLA",
+          "mass_g": 7.5,
+          "cg_local_mm": [
+            0,
+            0,
+            8
+          ],
+          "box_mm": [
+            35,
+            35,
+            25
+          ],
+          "material": "PLA"
+        },
+        {
+          "root": "06",
+          "name": "STS3032 pinza",
+          "mass_g": 21.6,
+          "cg_local_mm": [
+            25,
+            0,
+            10
+          ],
+          "box_mm": [
+            32,
+            12,
+            27.5
+          ],
+          "material": "Servo"
+        },
+        {
+          "root": "06",
+          "name": "Dos dedos 2x10x45",
+          "mass_g": 6.075,
+          "cg_local_mm": [
+            0,
+            0,
+            35
+          ],
+          "box_mm": [
+            65,
+            10,
+            45
+          ],
+          "material": "Al6061"
+        },
+        {
+          "root": "06",
+          "name": "Palma 1.5mm con ventanas",
+          "mass_g": 5.923125000000001,
+          "cg_local_mm": [
+            0,
+            0,
+            9
+          ],
+          "box_mm": [
+            60,
+            30,
+            1.5
+          ],
+          "material": "Al6061"
+        },
+        {
+          "root": "06",
+          "name": "Bisagras cable reenvio fijaciones",
+          "mass_g": 12.5,
+          "cg_local_mm": [
+            0,
+            0,
+            18
+          ],
+          "box_mm": [
+            60,
+            30,
+            20
+          ],
+          "material": "Varios"
+        },
+        {
+          "root": "06",
+          "name": "Pads y topes PLA",
+          "mass_g": 10.0,
+          "cg_local_mm": [
+            0,
+            0,
+            38
+          ],
+          "box_mm": [
+            65,
+            15,
+            30
+          ],
+          "material": "PLA"
+        },
+        {
+          "root": "01",
+          "name": "Cableado conectores y tornilleria restante",
+          "mass_g": 31.25,
+          "cg_local_mm": [
+            0,
+            0,
+            20
+          ],
+          "box_mm": [
+            35,
+            35,
+            40
+          ],
+          "material": "Varios"
+        },
+        {
+          "root": "03",
+          "name": "Cableado y tornilleria distal restante",
+          "mass_g": 15.0,
+          "cg_local_mm": [
+            0,
+            0,
+            30.0
+          ],
+          "box_mm": [
+            20,
+            20,
+            60
+          ],
+          "material": "Varios"
+        },
+        {
+          "root": "90",
+          "name": "Carga cubo 50mm",
+          "mass_g": 200,
+          "cg_local_mm": [
+            0,
+            0,
+            0
+          ],
+          "box_mm": [
+            50,
+            50,
+            50
+          ],
+          "material": "Carga"
+        }
+      ],
+      "groups": [
+        {
+          "root": "00",
+          "mass_g": 464.90375,
+          "cg_local_mm": [
+            -2.714540375292735,
+            -36.457911987158624,
+            24.18694192077393
+          ],
+          "inertia_kgm2": [
+            [
+              0.0003011224228801126,
+              4.202588492779418e-05,
+              -4.349920704016687e-06
+            ],
+            [
+              4.202588492779418e-05,
+              0.000530744892290713,
+              -2.1827437130803956e-05
+            ],
+            [
+              -4.349920704016687e-06,
+              -2.1827437130803956e-05,
+              0.0007028057035821612
+            ]
+          ]
+        },
+        {
+          "root": "01",
+          "mass_g": 171.0311919279223,
+          "cg_local_mm": [
+            0.0,
+            19.629460346711763,
+            17.37726544139301
+          ],
+          "inertia_kgm2": [
+            [
+              0.00012385495364259483,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              5.1303049591592903e-05,
+              -1.2711425596883322e-05
+            ],
+            [
+              0.0,
+              -1.2711425596883322e-05,
+              0.000108684621663347
+            ]
+          ]
+        },
+        {
+          "root": "02",
+          "mass_g": 180.97145034738978,
+          "cg_local_mm": [
+            0.0,
+            18.033231173952792,
+            32.72048260513479
+          ],
+          "inertia_kgm2": [
+            [
+              0.00023192810561358312,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0001432182710580237,
+              -6.326670501814262e-05
+            ],
+            [
+              0.0,
+              -6.326670501814262e-05,
+              0.000112428949663475
+            ]
+          ]
+        },
+        {
+          "root": "03",
+          "mass_g": 145.86373825402876,
+          "cg_local_mm": [
+            1.184667293382132,
+            2.5708925637633073,
+            24.719314257619594
+          ],
+          "inertia_kgm2": [
+            [
+              0.00011672983807933399,
+              4.4425023501829944e-07,
+              -3.677302496283334e-06
+            ],
+            [
+              4.4425023501829944e-07,
+              0.00010133445425736106,
+              -1.3230257153392647e-05
+            ],
+            [
+              -3.677302496283334e-06,
+              -1.3230257153392647e-05,
+              3.574109328382161e-05
+            ]
+          ]
+        },
+        {
+          "root": "04",
+          "mass_g": 74.01044967396092,
+          "cg_local_mm": [
+            0.0,
+            14.635771094106758,
+            18.116363350721528
+          ],
+          "inertia_kgm2": [
+            [
+              2.6984312852985466e-05,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.7717878451757194e-05,
+              -6.457155218498442e-06
+            ],
+            [
+              0.0,
+              -6.457155218498442e-06,
+              2.3083487316536444e-05
+            ]
+          ]
+        },
+        {
+          "root": "05",
+          "mass_g": 54.01044967396091,
+          "cg_local_mm": [
+            3.199380879869049,
+            0.0,
+            2.5168740645671224
+          ],
+          "inertia_kgm2": [
+            [
+              6.235706580854123e-06,
+              0.0,
+              4.349158383571987e-07
+            ],
+            [
+              0.0,
+              7.858418581114707e-06,
+              0.0
+            ],
+            [
+              4.349158383571987e-07,
+              0.0,
+              7.103434882964844e-06
+            ]
+          ]
+        },
+        {
+          "root": "06",
+          "mass_g": 88.50857467396091,
+          "cg_local_mm": [
+            6.101103785584598,
+            0.0,
+            13.816408517532786
+          ],
+          "inertia_kgm2": [
+            [
+              2.2066605032519746e-05,
+              0.0,
+              2.0608605994677036e-06
+            ],
+            [
+              0.0,
+              4.2631991712939354e-05,
+              0.0
+            ],
+            [
+              2.0608605994677036e-06,
+              0.0,
+              2.9285828313123866e-05
+            ]
+          ]
+        },
+        {
+          "root": "90",
+          "mass_g": 200.0,
+          "cg_local_mm": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "inertia_kgm2": [
+            [
+              8.333333333333336e-05,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              8.333333333333336e-05,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              8.333333333333336e-05
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "parameters_mm": {
+        "base_top": 45,
+        "tower_h": 40,
+        "axis_y_mm": -32,
+        "link1": 55,
+        "link2": 50,
+        "wrist45": 35,
+        "wrist56": 30,
+        "payload_z": 45
+      },
+      "reserve25": true,
+      "total_with_payload_g": 1370.3122984399058,
+      "arm_without_payload_g": 1170.3122984399058,
+      "motor_mass_g": 254.4,
+      "axes": [
+        {
+          "axis": "J1",
+          "proposed_ratio": 1.0,
+          "minimum_external_torque_margin": 3.053987067630293,
+          "peak_output_kgfcm": 3.274408102768879,
+          "selected_by": "smallest simple ratio >=2.3, else best external margin",
+          "internal_inertia_necessary_max_kgm2": 0.010773055354356685
+        },
+        {
+          "axis": "J2",
+          "proposed_ratio": 5.0,
+          "minimum_external_torque_margin": 2.8418098719239353,
+          "peak_output_kgfcm": 14.075537000270739,
+          "selected_by": "smallest simple ratio >=2.3, else best external margin",
+          "internal_inertia_necessary_max_kgm2": 0.001849352907351213
+        },
+        {
+          "axis": "J3",
+          "proposed_ratio": 3.0,
+          "minimum_external_torque_margin": 2.651474561369368,
+          "peak_output_kgfcm": 9.051567135384877,
+          "selected_by": "smallest simple ratio >=2.3, else best external margin",
+          "internal_inertia_necessary_max_kgm2": 0.002556580932386721
+        },
+        {
+          "axis": "J4",
+          "proposed_ratio": 1.0,
+          "minimum_external_torque_margin": 5.462668436727786,
+          "peak_output_kgfcm": 0.2745910752911302,
+          "selected_by": "smallest simple ratio >=2.3, else best external margin",
+          "internal_inertia_necessary_max_kgm2": 0.0029680289239083454
+        },
+        {
+          "axis": "J5",
+          "proposed_ratio": 8.0,
+          "minimum_external_torque_margin": 2.9291279299880144,
+          "peak_output_kgfcm": 3.27742598802753,
+          "selected_by": "smallest simple ratio >=2.3, else best external margin",
+          "internal_inertia_necessary_max_kgm2": 0.00018565611161637177
+        },
+        {
+          "axis": "J6",
+          "proposed_ratio": 1.0,
+          "minimum_external_torque_margin": 12.373547888717948,
+          "peak_output_kgfcm": 0.12122634619353452,
+          "selected_by": "smallest simple ratio >=2.3, else best external margin",
+          "internal_inertia_necessary_max_kgm2": 0.0039255013822720175
+        }
+      ],
+      "necessary_support_halfspan_mm": [
+        45.361360100354915,
+        46.42315523032998
+      ],
+      "tip_utilization_90_50_hypothesis": 0.9284631046065996,
+      "peak_force_N": [
+        11.618098943799463,
+        9.955397108082536,
+        8.16268421674304,
+        6.557766881075127,
+        5.5828534836180355,
+        4.846537900951141
+      ],
+      "peak_moment_Nm": [
+        1.4093587608898461,
+        1.4043355401893958,
+        0.904170939989758,
+        0.5416558086177985,
+        0.32763604759114573,
+        0.18042630562836973
+      ],
+      "peak_payload_force_N": 3.4425575619572024,
+      "section_peak_columns": [
+        "shear_N",
+        "axial_N",
+        "bending_Nm",
+        "torsion_Nm"
+      ],
+      "section_peaks_local": [
+        [
+          1.7792559433427317,
+          11.528036564658844,
+          1.3866204706272272,
+          0.3211097422101843
+        ],
+        [
+          9.955113597888287,
+          0.247042488339125,
+          1.4028148148519795,
+          0.06552824879556206
+        ],
+        [
+          8.162586073405455,
+          0.265974338433827,
+          0.903647314036362,
+          0.031771225568247005
+        ],
+        [
+          6.557724285298328,
+          0.22145875841991086,
+          0.5410106369777256,
+          0.02692818568503762
+        ],
+        [
+          5.58282104756854,
+          0.23606429230736578,
+          0.32758550001658754,
+          0.013991066527108631
+        ],
+        [
+          4.846530538666625,
+          0.20688584823900752,
+          0.18039904014131528,
+          0.011888243478988253
+        ]
+      ],
+      "parts": [
+        {
+          "root": "00",
+          "name": "STS3215 J1",
+          "mass_g": 56,
+          "cg_local_mm": [
+            48,
+            -32,
+            27
+          ],
+          "box_mm": [
+            45.23,
+            24.73,
+            36.5
+          ],
+          "material": "Servo"
+        },
+        {
+          "root": "00",
+          "name": "Control y potencia TTL presupuesto",
+          "mass_g": 150,
+          "cg_local_mm": [
+            -35,
+            -32,
+            25
+          ],
+          "box_mm": [
+            60,
+            35,
+            30
+          ],
+          "material": "Electronica"
+        },
+        {
+          "root": "00",
+          "name": "Bateria brazo presupuesto",
+          "mass_g": 130,
+          "cg_local_mm": [
+            10,
+            -60,
+            25
+          ],
+          "box_mm": [
+            65,
+            35,
+            28
+          ],
+          "material": "Potencia"
+        },
+        {
+          "root": "00",
+          "name": "Montura ranurada superior 2mm",
+          "mass_g": 31.89375,
+          "cg_local_mm": [
+            0,
+            -32,
+            8
+          ],
+          "box_mm": [
+            90,
+            75,
+            2
+          ],
+          "material": "Al6061"
+        },
+        {
+          "root": "00",
+          "name": "Contraplaca inferior unica 2mm",
+          "mass_g": 17.01,
+          "cg_local_mm": [
+            0,
+            -32,
+            -5
+          ],
+          "box_mm": [
+            90,
+            35,
+            2
+          ],
+          "material": "Al6061"
+        },
+        {
+          "root": "00",
+          "name": "Cartucho J1 y fijacion servo PLA",
+          "mass_g": 22.5,
+          "cg_local_mm": [
+            0,
+            -32,
+            25
+          ],
+          "box_mm": [
+            50,
+            45,
+            35
+          ],
+          "material": "PLA"
+        },
+        {
+          "root": "00",
+          "name": "Par608 J1",
+          "mass_g": 30.0,
+          "cg_local_mm": [
+            0,
+            -32,
+            30
+          ],
+          "box_mm": [
+            22,
+            22,
+            22
+          ],
+          "material": "Rodamiento"
+        },
+        {
+          "root": "01",
+          "name": "Eje J1 8x35",
+          "mass_g": 17.26305163147591,
+          "cg_local_mm": [
+            0,
+            0,
+            0
+          ],
+          "box_mm": [
+            8,
+            8,
+            35
+          ],
+          "material": "Acero"
+        },
+        {
+          "root": "01",
+          "name": "Plataforma anular J1 2mm",
+          "mass_g": 15.268140296446395,
+          "cg_local_mm": [
+            0,
+            0,
+            3
+          ],
+          "box_mm": [
+            56,
+            56,
+            2
+          ],
+          "material": "Al6061"
+        },
+        {
+          "root": "02",
+          "name": "Mejilla 2mm y borde 8mm -1",
+          "mass_g": 11.279070148223196,
+          "cg_local_mm": [
+            0,
+            -15,
+            27.5
+          ],
+          "box_mm": [
+            28,
+            10,
+            83
+          ],
+          "material": "Al6061"
+        },
+        {
+          "root": "02",
+          "name": "Mejilla 2mm y borde 8mm 1",
+          "mass_g": 11.279070148223196,
+          "cg_local_mm": [
+            0,
+            15,
+            27.5
+          ],
+          "box_mm": [
+            28,
+            10,
+            83
+          ],
+          "material": "Al6061"
+        },
+        {
+          "root": "02",
+          "name": "PVC propuesto OD25",
+          "mass_g": 3.0107747719989053,
+          "cg_local_mm": [
+            0,
+            0,
+            27.5
+          ],
+          "box_mm": [
+            25,
+            25,
+            15
+          ],
+          "material": "PVC"
+        },
+        {
+          "root": "02",
+          "name": "Dos encastres PLA abiertos",
+          "mass_g": 15.0,
+          "cg_local_mm": [
+            0,
+            0,
+            27.5
+          ],
+          "box_mm": [
+            30,
+            30,
+            55
+          ],
+          "material": "PLA"
+        },
+        {
+          "root": "03",
+          "name": "Mejilla 2mm y borde 8mm -1",
+          "mass_g": 10.604070148223197,
+          "cg_local_mm": [
+            0,
+            -15,
+            25.0
+          ],
+          "box_mm": [
+            28,
+            10,
+            78
+          ],
+          "material": "Al6061"
+        },
+        {
+          "root": "03",
+          "name": "Mejilla 2mm y borde 8mm 1",
+          "mass_g": 10.604070148223197,
+          "cg_local_mm": [
+            0,
+            15,
+            25.0
+          ],
+          "box_mm": [
+            28,
+            10,
+            78
+          ],
+          "material": "Al6061"
+        },
+        {
+          "root": "03",
+          "name": "PVC propuesto OD20",
+          "mass_g": 1.5801229299852413,
+          "cg_local_mm": [
+            0,
+            0,
+            25.0
+          ],
+          "box_mm": [
+            20,
+            20,
+            10
+          ],
+          "material": "PVC"
+        },
+        {
+          "root": "03",
+          "name": "Dos encastres PLA abiertos",
+          "mass_g": 15.0,
+          "cg_local_mm": [
+            0,
+            0,
+            25.0
+          ],
+          "box_mm": [
+            30,
+            30,
+            50
+          ],
+          "material": "PLA"
+        },
+        {
+          "root": "01",
+          "name": "STS3215 J2",
+          "mass_g": 56,
+          "cg_local_mm": [
+            0,
+            46,
+            20
+          ],
+          "box_mm": [
+            24.73,
+            36.5,
+            45.23
+          ],
+          "material": "Servo"
+        },
+        {
+          "root": "02",
+          "name": "STS3215 J3",
+          "mass_g": 56,
+          "cg_local_mm": [
+            0,
+            46,
+            40
+          ],
+          "box_mm": [
+            24.73,
+            36.5,
+            45.23
+          ],
+          "material": "Servo"
+        },
+        {
+          "root": "02",
+          "name": "Eje 8x45",
+          "mass_g": 22.195352097611888,
+          "cg_local_mm": [
+            0,
+            0,
+            0
+          ],
+          "box_mm": [
+            8,
+            45,
+            8
+          ],
+          "material": "Acero"
+        },
+        {
+          "root": "02",
+          "name": "Par608",
+          "mass_g": 30.0,
+          "cg_local_mm": [
+            0,
+            0,
+            0
+          ],
+          "box_mm": [
+            22,
+            45,
+            22
+          ],
+          "material": "Rodamiento"
+        },
+        {
+          "root": "03",
+          "name": "Eje 8x45",
+          "mass_g": 22.195352097611888,
+          "cg_local_mm": [
+            0,
+            0,
+            0
+          ],
+          "box_mm": [
+            8,
+            45,
+            8
+          ],
+          "material": "Acero"
+        },
+        {
+          "root": "03",
+          "name": "Par608",
+          "mass_g": 30.0,
+          "cg_local_mm": [
+            0,
+            0,
+            0
+          ],
+          "box_mm": [
+            22,
+            45,
+            22
+          ],
+          "material": "Rodamiento"
+        },
+        {
+          "root": "01",
+          "name": "Horquilla hombro y fijaciones PLA",
+          "mass_g": 20.0,
+          "cg_local_mm": [
+            0,
+            0,
+            20
+          ],
+          "box_mm": [
+            40,
+            45,
+            40
+          ],
+          "material": "PLA"
+        },
+        {
+          "root": "00",
+          "name": "Transmision reserva completa",
+          "mass_g": 27.5,
+          "cg_local_mm": [
+            0,
+            25,
+            40
+          ],
+          "box_mm": [
+            45,
+            25,
+            40
+          ],
+          "material": "Transmision"
+        },
+        {
+          "root": "01",
+          "name": "Transmision reserva completa",
+          "mass_g": 31.25,
+          "cg_local_mm": [
+            0,
+            25,
+            25
+          ],
+          "box_mm": [
+            45,
+            25,
+            40
+          ],
+          "material": "Transmision"
+        },
+        {
+          "root": "02",
+          "name": "Transmision reserva completa",
+          "mass_g": 27.5,
+          "cg_local_mm": [
+            0,
+            25,
+            50
+          ],
+          "box_mm": [
+            45,
+            25,
+            40
+          ],
+          "material": "Transmision"
+        },
+        {
+          "root": "03",
+          "name": "Transmision reserva completa",
+          "mass_g": 15.0,
+          "cg_local_mm": [
+            0,
+            25,
+            50
+          ],
+          "box_mm": [
+            45,
+            25,
+            40
+          ],
+          "material": "Transmision"
+        },
+        {
+          "root": "04",
+          "name": "Transmision reserva completa",
+          "mass_g": 20.0,
+          "cg_local_mm": [
+            0,
+            25,
+            30
+          ],
+          "box_mm": [
+            45,
+            25,
+            40
+          ],
+          "material": "Transmision"
+        },
+        {
+          "root": "03",
+          "name": "STS3032 J4",
+          "mass_g": 21.6,
+          "cg_local_mm": [
+            8,
+            0,
+            36
+          ],
+          "box_mm": [
+            32,
+            12,
+            27.5
+          ],
+          "material": "Servo"
+        },
+        {
+          "root": "04",
+          "name": "STS3032 J5",
+          "mass_g": 21.6,
+          "cg_local_mm": [
+            0,
+            27,
+            19
+          ],
+          "box_mm": [
+            32,
+            12,
+            27.5
+          ],
+          "material": "Servo"
+        },
+        {
+          "root": "05",
+          "name": "STS3032 J6",
+          "mass_g": 21.6,
+          "cg_local_mm": [
+            8,
+            0,
+            0
+          ],
+          "box_mm": [
+            32,
+            12,
+            27.5
+          ],
+          "material": "Servo"
+        },
+        {
+          "root": "04",
+          "name": "Par625",
+          "mass_g": 12.5,
+          "cg_local_mm": [
+            0,
+            0,
+            6
+          ],
+          "box_mm": [
+            16,
+            28,
+            16
+          ],
+          "material": "Rodamiento"
+        },
+        {
+          "root": "04",
+          "name": "Eje o dos munones equivalentes 5x25",
+          "mass_g": 4.816699673960913,
+          "cg_local_mm": [
+            0,
+            0,
+            6
+          ],
+          "box_mm": [
+            5,
+            25,
+            5
+          ],
+          "material": "Acero"
+        },
+        {
+          "root": "04",
+          "name": "Horquilla plegada 1.5mm",
+          "mass_g": 7.59375,
+          "cg_local_mm": [
+            0,
+            0,
+            16
+          ],
+          "box_mm": [
+            32,
+            32,
+            30
+          ],
+          "material": "Al6061"
+        },
+        {
+          "root": "04",
+          "name": "Cubiertas y encastres PLA",
+          "mass_g": 7.5,
+          "cg_local_mm": [
+            0,
+            0,
+            14
+          ],
+          "box_mm": [
+            35,
+            35,
+            25
+          ],
+          "material": "PLA"
+        },
+        {
+          "root": "05",
+          "name": "Par625",
+          "mass_g": 12.5,
+          "cg_local_mm": [
+            0,
+            0,
+            0
+          ],
+          "box_mm": [
+            16,
+            28,
+            16
+          ],
+          "material": "Rodamiento"
+        },
+        {
+          "root": "05",
+          "name": "Eje o dos munones equivalentes 5x25",
+          "mass_g": 4.816699673960913,
+          "cg_local_mm": [
+            0,
+            0,
+            0
+          ],
+          "box_mm": [
+            5,
+            25,
+            5
+          ],
+          "material": "Acero"
+        },
+        {
+          "root": "05",
+          "name": "Horquilla plegada 1.5mm",
+          "mass_g": 7.59375,
+          "cg_local_mm": [
+            0,
+            0,
+            10
+          ],
+          "box_mm": [
+            32,
+            32,
+            30
+          ],
+          "material": "Al6061"
+        },
+        {
+          "root": "05",
+          "name": "Cubiertas y encastres PLA",
+          "mass_g": 7.5,
+          "cg_local_mm": [
+            0,
+            0,
+            8
+          ],
+          "box_mm": [
+            35,
+            35,
+            25
+          ],
+          "material": "PLA"
+        },
+        {
+          "root": "06",
+          "name": "Par625",
+          "mass_g": 12.5,
+          "cg_local_mm": [
+            0,
+            0,
+            0
+          ],
+          "box_mm": [
+            16,
+            28,
+            16
+          ],
+          "material": "Rodamiento"
+        },
+        {
+          "root": "06",
+          "name": "Eje o dos munones equivalentes 5x25",
+          "mass_g": 4.816699673960913,
+          "cg_local_mm": [
+            0,
+            0,
+            0
+          ],
+          "box_mm": [
+            5,
+            25,
+            5
+          ],
+          "material": "Acero"
+        },
+        {
+          "root": "06",
+          "name": "Horquilla plegada 1.5mm",
+          "mass_g": 7.59375,
+          "cg_local_mm": [
+            0,
+            0,
+            10
+          ],
+          "box_mm": [
+            32,
+            32,
+            30
+          ],
+          "material": "Al6061"
+        },
+        {
+          "root": "06",
+          "name": "Cubiertas y encastres PLA",
+          "mass_g": 7.5,
+          "cg_local_mm": [
+            0,
+            0,
+            8
+          ],
+          "box_mm": [
+            35,
+            35,
+            25
+          ],
+          "material": "PLA"
+        },
+        {
+          "root": "06",
+          "name": "STS3032 pinza",
+          "mass_g": 21.6,
+          "cg_local_mm": [
+            25,
+            0,
+            10
+          ],
+          "box_mm": [
+            32,
+            12,
+            27.5
+          ],
+          "material": "Servo"
+        },
+        {
+          "root": "06",
+          "name": "Dos dedos 2x10x45",
+          "mass_g": 6.075,
+          "cg_local_mm": [
+            0,
+            0,
+            35
+          ],
+          "box_mm": [
+            65,
+            10,
+            45
+          ],
+          "material": "Al6061"
+        },
+        {
+          "root": "06",
+          "name": "Palma 1.5mm con ventanas",
+          "mass_g": 5.923125000000001,
+          "cg_local_mm": [
+            0,
+            0,
+            9
+          ],
+          "box_mm": [
+            60,
+            30,
+            1.5
+          ],
+          "material": "Al6061"
+        },
+        {
+          "root": "06",
+          "name": "Bisagras cable reenvio fijaciones",
+          "mass_g": 12.5,
+          "cg_local_mm": [
+            0,
+            0,
+            18
+          ],
+          "box_mm": [
+            60,
+            30,
+            20
+          ],
+          "material": "Varios"
+        },
+        {
+          "root": "06",
+          "name": "Pads y topes PLA",
+          "mass_g": 10.0,
+          "cg_local_mm": [
+            0,
+            0,
+            38
+          ],
+          "box_mm": [
+            65,
+            15,
+            30
+          ],
+          "material": "PLA"
+        },
+        {
+          "root": "01",
+          "name": "Cableado conectores y tornilleria restante",
+          "mass_g": 31.25,
+          "cg_local_mm": [
+            0,
+            0,
+            20
+          ],
+          "box_mm": [
+            35,
+            35,
+            40
+          ],
+          "material": "Varios"
+        },
+        {
+          "root": "03",
+          "name": "Cableado y tornilleria distal restante",
+          "mass_g": 15.0,
+          "cg_local_mm": [
+            0,
+            0,
+            25.0
+          ],
+          "box_mm": [
+            20,
+            20,
+            50
+          ],
+          "material": "Varios"
+        },
+        {
+          "root": "90",
+          "name": "Carga cubo 50mm",
+          "mass_g": 200,
+          "cg_local_mm": [
+            0,
+            0,
+            0
+          ],
+          "box_mm": [
+            50,
+            50,
+            50
+          ],
+          "material": "Carga"
+        }
+      ],
+      "groups": [
+        {
+          "root": "00",
+          "mass_g": 464.90375,
+          "cg_local_mm": [
+            -2.714540375292735,
+            -36.457911987158624,
+            24.18694192077393
+          ],
+          "inertia_kgm2": [
+            [
+              0.0003011224228801126,
+              4.202588492779418e-05,
+              -4.349920704016687e-06
+            ],
+            [
+              4.202588492779418e-05,
+              0.000530744892290713,
+              -2.1827437130803956e-05
+            ],
+            [
+              -4.349920704016687e-06,
+              -2.1827437130803956e-05,
+              0.0007028057035821612
+            ]
+          ]
+        },
+        {
+          "root": "01",
+          "mass_g": 171.0311919279223,
+          "cg_local_mm": [
+            0.0,
+            19.629460346711763,
+            17.37726544139301
+          ],
+          "inertia_kgm2": [
+            [
+              0.00012385495364259483,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              5.1303049591592903e-05,
+              -1.2711425596883322e-05
+            ],
+            [
+              0.0,
+              -1.2711425596883322e-05,
+              0.000108684621663347
+            ]
+          ]
+        },
+        {
+          "root": "02",
+          "mass_g": 176.26426716605718,
+          "cg_local_mm": [
+            0.0,
+            18.51481331111474,
+            26.83836741524896
+          ],
+          "inertia_kgm2": [
+            [
+              0.00019166050014852556,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.00010497590889759413,
+              -4.982798794033504e-05
+            ],
+            [
+              0.0,
+              -4.982798794033504e-05,
+              0.0001098418247774582
+            ]
+          ]
+        },
+        {
+          "root": "03",
+          "mass_g": 141.58361532404354,
+          "cg_local_mm": [
+            1.2204802060218007,
+            2.648611558207032,
+            20.110424318125634
+          ],
+          "inertia_kgm2": [
+            [
+              8.778746421385669e-05,
+              4.576800772581753e-07,
+              -2.74571867782789e-06
+            ],
+            [
+              4.576800772581753e-07,
+              7.286863654349601e-05,
+              -1.1208590880702887e-05
+            ],
+            [
+              -2.74571867782789e-06,
+              -1.1208590880702887e-05,
+              3.479401866093539e-05
+            ]
+          ]
+        },
+        {
+          "root": "04",
+          "mass_g": 74.01044967396092,
+          "cg_local_mm": [
+            0.0,
+            14.635771094106758,
+            18.116363350721528
+          ],
+          "inertia_kgm2": [
+            [
+              2.6984312852985466e-05,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.7717878451757194e-05,
+              -6.457155218498442e-06
+            ],
+            [
+              0.0,
+              -6.457155218498442e-06,
+              2.3083487316536444e-05
+            ]
+          ]
+        },
+        {
+          "root": "05",
+          "mass_g": 54.01044967396091,
+          "cg_local_mm": [
+            3.199380879869049,
+            0.0,
+            2.5168740645671224
+          ],
+          "inertia_kgm2": [
+            [
+              6.235706580854123e-06,
+              0.0,
+              4.349158383571987e-07
+            ],
+            [
+              0.0,
+              7.858418581114707e-06,
+              0.0
+            ],
+            [
+              4.349158383571987e-07,
+              0.0,
+              7.103434882964844e-06
+            ]
+          ]
+        },
+        {
+          "root": "06",
+          "mass_g": 88.50857467396091,
+          "cg_local_mm": [
+            6.101103785584598,
+            0.0,
+            13.816408517532786
+          ],
+          "inertia_kgm2": [
+            [
+              2.2066605032519746e-05,
+              0.0,
+              2.0608605994677036e-06
+            ],
+            [
+              0.0,
+              4.2631991712939354e-05,
+              0.0
+            ],
+            [
+              2.0608605994677036e-06,
+              0.0,
+              2.9285828313123866e-05
+            ]
+          ]
+        },
+        {
+          "root": "90",
+          "mass_g": 200.0,
+          "cg_local_mm": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "inertia_kgm2": [
+            [
+              8.333333333333336e-05,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              8.333333333333336e-05,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              8.333333333333336e-05
+            ]
+          ]
+        }
+      ]
+    }
+  ]
+}

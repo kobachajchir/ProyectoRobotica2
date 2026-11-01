@@ -1,4 +1,12 @@
-> **AFR2-20261028-08, objetivo de actuadores activo:** [30grados/s, inercia y apoyo dinamico](AutoFinalRobo2-CAD/mecanica/brazo-antropomorfo/busqueda_actuadores_v12/README.md). STS3250 no alcanza x2 con este presupuesto; RS01+STS pasa solo el filtro de par pero pesa5.45-5.82kg y aumenta exigencias de cuna/apoyo. Masa y contactos reales del auto pendientes; sin nuevo CAD ni aprobacion fisica.
+> **AFR2-20261029-03, entrega 3D:** [brazo V7 con codo remoto v17](AutoFinalRobo2-CAD/mecanica/brazo-antropomorfo/revision_v17/README.md). Montajes J1/J4/J5 integrados, PVC25/20, ejes70/60, tensor y pinzaV7 conservados. Ensambles nativos y limites registrados; eje auxiliar J3 sin tope adicional al codo. Por pedido del usuario, nuevos calculos, comprobaciones globales y aligerado diferidos. No aprobacion de resistencia ni fabricacion. atmega/esp/web/Loader sin cambios.
+
+> **AFR2-20261029-02, banco mecanico v15:** [eslabones de aluminio, pinza y transmisiones](AutoFinalRobo2-CAD/mecanica/brazo-antropomorfo/revision_v15/README.md). Fusion independiente del maestro v09; masas desde geometria y revision CAD local muestreada de pinza. J2 modulo0.8 requiere otra iteracion para PLA. Sin brazo completo integrado ni capacidad fisica aprobada; 1.17kg de01 no es peso final actualizado.
+
+> **AFR2-20261029-01, brazo compacto:** [masa, actuadores y eslabones menores](AutoFinalRobo2-CAD/mecanica/brazo-antropomorfo/busqueda_actuadores_v14/README.md). Presupuesto55/50mm:1.17kg sin carga con reserva25%, alcance215mm; margen externo2.65. Solo ruedas, sin pies ni voladizo; estabilidad condicionada a contactos hipoteticos, resistencia y CAD nuevos pendientes. Fusion v09 conservado. Sustituye la direccion con pies de09.
+
+> **AFR2-20261028-09, objetivo activo:** [prediseno liviano con aluminio y PVC menor](AutoFinalRobo2-CAD/mecanica/brazo-antropomorfo/busqueda_actuadores_v13/README.md). Candidato90/75mm:1.63kg sin carga incluyendo pies propuestos, alcance373mm; margen preliminar de par2.36 con200g/30grados/s/50ms. Falla vuelco sobre ejes inferidos; requiere estudiar apoyos desplegables. Sin nuevo CAD ni aprobacion fisica; v09 conservada.
+
+> **AFR2-20261028-08, antecedente:** [30grados/s, inercia y apoyo dinamico](AutoFinalRobo2-CAD/mecanica/brazo-antropomorfo/busqueda_actuadores_v12/README.md). STS3250 no alcanza x2 con este presupuesto; RS01+STS pasa solo el filtro de par pero pesa5.45-5.82kg y aumenta exigencias de cuna/apoyo. Masa y contactos reales del auto pendientes; sin nuevo CAD ni aprobacion fisica.
 
 > **AFR2-20261028-07, busqueda de actuadores activa:** [par, masa y esfuerzos del brazo](AutoFinalRobo2-CAD/mecanica/brazo-antropomorfo/busqueda_actuadores_v11/README.md). DS51150 pasa el filtro a30grados/s pero falla desde velocidad de catalogo. STS3215 con reducciones pasa un filtro nominal condicionado (minimo2.11;3919g), con variante, reductores, PLA y estabilidad pendientes. Sin nuevo CAD ni aprobacion fisica.
 
@@ -39,6 +47,12 @@
 > **Interfaz AFR2-20261027-06:** calibracion con ayuda contextual derecha e interpretacion del valor; matematica destacada y uniforme en Auto/Brazo/Conjunto; pad de movimiento, boton mantenido y numero/barra compartidos con Control. [Ficha](AutoFinalRobo2-Contracts/changes/2026-10-27-06-calibration-live-math-shared-controls.md). Solo fuente; sin tests/build/validaciones/navegador/promocion ESP. Adaptadores fisico y simulado separados.
 
 # AutoFinalRobo2 — informe maestro vigente
+
+> **Fuente AFR2-20261031-01:** [Simulador UI en Desarrollador](AutoFinalRobo2-Contracts/changes/2026-10-31-01-developer-ui-simulator.md).
+> Navegacion OLED adaptada del ATmega, tres controles compartidos del visor en
+> vivo, guia contextual, edicion/teclado y ejemplos de servicios locales.
+> Datos ficticios identificados; sin envio al equipo. Solo fuente Web y
+> documentos, sin tests, compilacion, validaciones ni promocion ESP.
 
 > **Brazo AFR2-20261028-01:** [J1 y sus uniones: comprobación resistente](AutoFinalRobo2-CAD/mecanica/brazo-antropomorfo/analisis_J1_uniones/README.md). 35 secciones y 7.075 estados, equilibrio de apoyos, eje, acople D, bastidor y anclajes. J1 no queda aprobado; material/perfil sin definir. Propuesta de eje Ø10, brida y apoyos 16 mm conservando altura, con estudio parcial de espacio temporal. V08 sin editar; sin FEA de sólidos/contactos, builds, flasheo ni ensayo físico. Atmega/ESP/Web/Loader sin cambios.
 

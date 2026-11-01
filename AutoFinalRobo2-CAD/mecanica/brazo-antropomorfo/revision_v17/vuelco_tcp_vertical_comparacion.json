@@ -1,0 +1,1446 @@
+{
+  "scope": "CAD en curso,200g,AGV1.5kg centrado y detenido; apoyo rectangular inferido, no medido. Frenada cubica50ms desde30deg/s articulares; no velocidad nominal maxima del fabricante.",
+  "document": "AFR2_Brazo_v17_Base_V7_J3_Remoto",
+  "parameters": {
+    "pvc_od": {
+      "expression": "32 mm",
+      "value_internal": 3.2,
+      "unit": "mm"
+    },
+    "pvc_id": {
+      "expression": "28.3 mm",
+      "value_internal": 2.83,
+      "unit": "mm"
+    },
+    "pvc_wall": {
+      "expression": "( pvc_od - pvc_id ) / 2",
+      "value_internal": 0.18500000000000005,
+      "unit": "mm"
+    },
+    "link1": {
+      "expression": "70 mm",
+      "value_internal": 7.0,
+      "unit": "mm"
+    },
+    "link2": {
+      "expression": "60 mm",
+      "value_internal": 6.0,
+      "unit": "mm"
+    },
+    "shoulder_z": {
+      "expression": "base_top + 113 mm",
+      "value_internal": 20.9,
+      "unit": "mm"
+    },
+    "base_w": {
+      "expression": "160 mm",
+      "value_internal": 16.0,
+      "unit": "mm"
+    },
+    "base_h": {
+      "expression": "v05_motor_face + 32 mm - lid_t",
+      "value_internal": 9.299999999999999,
+      "unit": "mm"
+    },
+    "base_wall": {
+      "expression": "4 mm",
+      "value_internal": 0.4,
+      "unit": "mm"
+    },
+    "base_floor": {
+      "expression": "4 mm",
+      "value_internal": 0.4,
+      "unit": "mm"
+    },
+    "lid_t": {
+      "expression": "3 mm",
+      "value_internal": 0.30000000000000004,
+      "unit": "mm"
+    },
+    "base_top": {
+      "expression": "base_h + lid_t",
+      "value_internal": 9.6,
+      "unit": "mm"
+    },
+    "tower_h": {
+      "expression": "shoulder_z - base_top",
+      "value_internal": 11.299999999999999,
+      "unit": "mm"
+    },
+    "socket_clear": {
+      "expression": "0.35 mm",
+      "value_internal": 0.034999999999999996,
+      "unit": "mm"
+    },
+    "socket_wall": {
+      "expression": "3 mm",
+      "value_internal": 0.30000000000000004,
+      "unit": "mm"
+    },
+    "socket_od": {
+      "expression": "pvc_od + socket_clear + 2 * socket_wall",
+      "value_internal": 3.8350000000000004,
+      "unit": "mm"
+    },
+    "socket_start": {
+      "expression": "14 mm",
+      "value_internal": 1.4000000000000001,
+      "unit": "mm"
+    },
+    "socket_length": {
+      "expression": "12 mm",
+      "value_internal": 1.2000000000000002,
+      "unit": "mm"
+    },
+    "tube_inset": {
+      "expression": "14 mm",
+      "value_internal": 1.4000000000000001,
+      "unit": "mm"
+    },
+    "tube1_cut": {
+      "expression": "link1 - 2 * tube_inset",
+      "value_internal": 4.199999999999999,
+      "unit": "mm"
+    },
+    "tube2_cut": {
+      "expression": "link2 - 2 * tube_inset",
+      "value_internal": 3.1999999999999997,
+      "unit": "mm"
+    },
+    "socket_overlap": {
+      "expression": "socket_start + socket_length - tube_inset",
+      "value_internal": 1.2000000000000004,
+      "unit": "mm"
+    },
+    "fit_clear": {
+      "expression": "0.25 mm",
+      "value_internal": 0.025,
+      "unit": "mm"
+    },
+    "servo_clear": {
+      "expression": "0.6 mm",
+      "value_internal": 0.06,
+      "unit": "mm"
+    },
+    "housing_wall": {
+      "expression": "3 mm",
+      "value_internal": 0.30000000000000004,
+      "unit": "mm"
+    },
+    "fork_y": {
+      "expression": "28 mm",
+      "value_internal": 2.8000000000000003,
+      "unit": "mm"
+    },
+    "fork_t": {
+      "expression": "9 mm",
+      "value_internal": 0.9,
+      "unit": "mm"
+    },
+    "b608_id": {
+      "expression": "8 mm",
+      "value_internal": 0.8,
+      "unit": "mm"
+    },
+    "b608_od": {
+      "expression": "22 mm",
+      "value_internal": 2.2,
+      "unit": "mm"
+    },
+    "b608_w": {
+      "expression": "7 mm",
+      "value_internal": 0.7000000000000001,
+      "unit": "mm"
+    },
+    "b625_id": {
+      "expression": "5 mm",
+      "value_internal": 0.5,
+      "unit": "mm"
+    },
+    "b625_od": {
+      "expression": "16 mm",
+      "value_internal": 1.6,
+      "unit": "mm"
+    },
+    "b625_w": {
+      "expression": "5 mm",
+      "value_internal": 0.5,
+      "unit": "mm"
+    },
+    "gx_l": {
+      "expression": "40 mm",
+      "value_internal": 4.0,
+      "unit": "mm"
+    },
+    "gx_w": {
+      "expression": "20 mm",
+      "value_internal": 2.0,
+      "unit": "mm"
+    },
+    "gx_h": {
+      "expression": "40.5 mm",
+      "value_internal": 4.05,
+      "unit": "mm"
+    },
+    "ds_l": {
+      "expression": "40 mm",
+      "value_internal": 4.0,
+      "unit": "mm"
+    },
+    "ds_w": {
+      "expression": "20 mm",
+      "value_internal": 2.0,
+      "unit": "mm"
+    },
+    "ds_h": {
+      "expression": "40.5 mm",
+      "value_internal": 4.05,
+      "unit": "mm"
+    },
+    "mg_l": {
+      "expression": "40.7 mm",
+      "value_internal": 4.07,
+      "unit": "mm"
+    },
+    "mg_w": {
+      "expression": "19.7 mm",
+      "value_internal": 1.97,
+      "unit": "mm"
+    },
+    "mg_h": {
+      "expression": "42.9 mm",
+      "value_internal": 4.29,
+      "unit": "mm"
+    },
+    "micro_l": {
+      "expression": "22.8 mm",
+      "value_internal": 2.2800000000000002,
+      "unit": "mm"
+    },
+    "micro_w": {
+      "expression": "12.2 mm",
+      "value_internal": 1.22,
+      "unit": "mm"
+    },
+    "micro_h": {
+      "expression": "28.5 mm",
+      "value_internal": 2.85,
+      "unit": "mm"
+    },
+    "std_shaft_x": {
+      "expression": "10 mm",
+      "value_internal": 1.0,
+      "unit": "mm"
+    },
+    "micro_shaft_x": {
+      "expression": "5.5 mm",
+      "value_internal": 0.55,
+      "unit": "mm"
+    },
+    "std_ear": {
+      "expression": "7 mm",
+      "value_internal": 0.7000000000000001,
+      "unit": "mm"
+    },
+    "std_ear_z": {
+      "expression": "8 mm",
+      "value_internal": 0.8,
+      "unit": "mm"
+    },
+    "std_hole_pitch_x": {
+      "expression": "49 mm",
+      "value_internal": 4.9,
+      "unit": "mm"
+    },
+    "std_hole_pitch_y": {
+      "expression": "10 mm",
+      "value_internal": 1.0,
+      "unit": "mm"
+    },
+    "std_mount_d": {
+      "expression": "4.2 mm",
+      "value_internal": 0.42000000000000004,
+      "unit": "mm"
+    },
+    "std_horn_d": {
+      "expression": "22 mm",
+      "value_internal": 2.2,
+      "unit": "mm"
+    },
+    "std_spline_d": {
+      "expression": "6 mm",
+      "value_internal": 0.6000000000000001,
+      "unit": "mm"
+    },
+    "gear_module": {
+      "expression": "1.5 mm",
+      "value_internal": 0.15000000000000002,
+      "unit": "mm"
+    },
+    "pinion_teeth": {
+      "expression": "20",
+      "value_internal": 20.0,
+      "unit": ""
+    },
+    "wheel_teeth": {
+      "expression": "40",
+      "value_internal": 40.0,
+      "unit": ""
+    },
+    "gear_ratio": {
+      "expression": "wheel_teeth / pinion_teeth",
+      "value_internal": 2.0,
+      "unit": ""
+    },
+    "gear_centers": {
+      "expression": "gear_module * ( pinion_teeth + wheel_teeth ) / 2",
+      "value_internal": 4.500000000000001,
+      "unit": "mm"
+    },
+    "gear_t": {
+      "expression": "6 mm",
+      "value_internal": 0.6000000000000001,
+      "unit": "mm"
+    },
+    "wrist45": {
+      "expression": "55 mm",
+      "value_internal": 5.5,
+      "unit": "mm"
+    },
+    "wrist56": {
+      "expression": "65 mm",
+      "value_internal": 6.5,
+      "unit": "mm"
+    },
+    "tcp_offset": {
+      "expression": "78.5 mm",
+      "value_internal": 7.8500000000000005,
+      "unit": "mm"
+    },
+    "tool_reach": {
+      "expression": "wrist45 + wrist56 + tcp_offset",
+      "value_internal": 19.85,
+      "unit": "mm"
+    },
+    "grip_open": {
+      "expression": "grip_min + 2 * grip_r * grip_angle / ( 1 rad )",
+      "value_internal": 5.0,
+      "unit": "mm"
+    },
+    "grip_max": {
+      "expression": "grip_min + 2 * grip_r * 3.141592653589793",
+      "value_internal": 7.940530723760046,
+      "unit": "mm"
+    },
+    "finger_t": {
+      "expression": "6 mm",
+      "value_internal": 0.6000000000000001,
+      "unit": "mm"
+    },
+    "finger_depth": {
+      "expression": "16 mm",
+      "value_internal": 1.6,
+      "unit": "mm"
+    },
+    "finger_length": {
+      "expression": "40 mm",
+      "value_internal": 4.0,
+      "unit": "mm"
+    },
+    "pad_t": {
+      "expression": "2 mm",
+      "value_internal": 0.2,
+      "unit": "mm"
+    },
+    "palm_w": {
+      "expression": "118 mm",
+      "value_internal": 11.8,
+      "unit": "mm"
+    },
+    "palm_d": {
+      "expression": "60 mm",
+      "value_internal": 6.0,
+      "unit": "mm"
+    },
+    "palm_t": {
+      "expression": "4 mm",
+      "value_internal": 0.4,
+      "unit": "mm"
+    },
+    "part_size": {
+      "expression": "50 mm",
+      "value_internal": 5.0,
+      "unit": "mm"
+    },
+    "part_mass": {
+      "expression": "200 g",
+      "value_internal": 0.2,
+      "unit": "g"
+    },
+    "nano_l": {
+      "expression": "45 mm",
+      "value_internal": 4.5,
+      "unit": "mm"
+    },
+    "nano_w": {
+      "expression": "18 mm",
+      "value_internal": 1.8,
+      "unit": "mm"
+    },
+    "pca_l": {
+      "expression": "70 mm",
+      "value_internal": 7.0,
+      "unit": "mm"
+    },
+    "pca_w": {
+      "expression": "25 mm",
+      "value_internal": 2.5,
+      "unit": "mm"
+    },
+    "buck_l": {
+      "expression": "65 mm",
+      "value_internal": 6.5,
+      "unit": "mm"
+    },
+    "buck_w": {
+      "expression": "48 mm",
+      "value_internal": 4.800000000000001,
+      "unit": "mm"
+    },
+    "pcb_t": {
+      "expression": "1.6 mm",
+      "value_internal": 0.16000000000000003,
+      "unit": "mm"
+    },
+    "q1": {
+      "expression": "20 deg",
+      "value_internal": 0.3490658503988659,
+      "unit": "deg"
+    },
+    "q2": {
+      "expression": "35 deg",
+      "value_internal": 0.6108652381980153,
+      "unit": "deg"
+    },
+    "q3": {
+      "expression": "-15 deg",
+      "value_internal": -0.2617993877991494,
+      "unit": "deg"
+    },
+    "q4": {
+      "expression": "0 deg",
+      "value_internal": 0.0,
+      "unit": "deg"
+    },
+    "q5": {
+      "expression": "65 deg",
+      "value_internal": 1.1344640137963142,
+      "unit": "deg"
+    },
+    "q6": {
+      "expression": "0 deg",
+      "value_internal": 0.0,
+      "unit": "deg"
+    },
+    "grip_module": {
+      "expression": "1 mm",
+      "value_internal": 0.1,
+      "unit": "mm"
+    },
+    "grip_teeth": {
+      "expression": "24",
+      "value_internal": 24.0,
+      "unit": ""
+    },
+    "grip_r": {
+      "expression": "grip_module * grip_teeth / 2",
+      "value_internal": 1.2000000000000002,
+      "unit": "mm"
+    },
+    "grip_min": {
+      "expression": "50 mm - 2 * grip_r * ( 109.8 deg ) / ( 1 rad )",
+      "value_internal": 0.40070835514454206,
+      "unit": "mm"
+    },
+    "grip_deck": {
+      "expression": "36 mm",
+      "value_internal": 3.6,
+      "unit": "mm"
+    },
+    "grip_angle": {
+      "expression": "( 50 mm - grip_min ) / ( 2 * grip_r ) * 180 deg / 3.141592653589793",
+      "value_internal": 1.9163715186897738,
+      "unit": "deg"
+    },
+    "shoulder_phase": {
+      "expression": "9 deg",
+      "value_internal": 0.15707963267948966,
+      "unit": "deg"
+    },
+    "shaft_shoulder_l": {
+      "expression": "96 mm",
+      "value_internal": 9.600000000000001,
+      "unit": "mm"
+    },
+    "grip_contact": {
+      "expression": "109.8 deg",
+      "value_internal": 1.9163715186897738,
+      "unit": "deg"
+    },
+    "grip_mid": {
+      "expression": "grip_min + grip_r * 3.141592653589793",
+      "value_internal": 4.170619539452295,
+      "unit": "mm"
+    },
+    "agv_mount_z": {
+      "expression": "6 mm",
+      "value_internal": 0.6000000000000001,
+      "unit": "mm"
+    },
+    "agv_mount_t": {
+      "expression": "6 mm",
+      "value_internal": 0.6000000000000001,
+      "unit": "mm"
+    },
+    "agv_upper_t": {
+      "expression": "3 mm",
+      "value_internal": 0.30000000000000004,
+      "unit": "mm"
+    },
+    "agv_back_t": {
+      "expression": "3 mm",
+      "value_internal": 0.30000000000000004,
+      "unit": "mm"
+    },
+    "agv_center_x": {
+      "expression": "0.333 mm",
+      "value_internal": 0.0333,
+      "unit": "mm"
+    },
+    "agv_center_y": {
+      "expression": "-8.501 mm",
+      "value_internal": -0.8501,
+      "unit": "mm"
+    },
+    "electronics_z": {
+      "expression": "v05_rack_rail_z + 4 mm",
+      "value_internal": 2.6,
+      "unit": "mm"
+    },
+    "electronics_pitch": {
+      "expression": "23 mm",
+      "value_internal": 2.3000000000000003,
+      "unit": "mm"
+    },
+    "agv_A_x": {
+      "expression": "31.051 mm",
+      "value_internal": 3.1051,
+      "unit": "mm"
+    },
+    "agv_A_y": {
+      "expression": "19.739 mm",
+      "value_internal": 1.9739000000000002,
+      "unit": "mm"
+    },
+    "agv_B_x": {
+      "expression": "67.997 mm",
+      "value_internal": 6.7997000000000005,
+      "unit": "mm"
+    },
+    "agv_B_y": {
+      "expression": "19.739 mm",
+      "value_internal": 1.9739000000000002,
+      "unit": "mm"
+    },
+    "agv_C_x": {
+      "expression": "31.051 mm",
+      "value_internal": 3.1051,
+      "unit": "mm"
+    },
+    "agv_C_y": {
+      "expression": "-21.036 mm",
+      "value_internal": -2.1036,
+      "unit": "mm"
+    },
+    "agv_D_x": {
+      "expression": "68.418 mm",
+      "value_internal": 6.841800000000001,
+      "unit": "mm"
+    },
+    "agv_D_y": {
+      "expression": "-21.036 mm",
+      "value_internal": -2.1036,
+      "unit": "mm"
+    },
+    "agv_E_x": {
+      "expression": "-68.298597443 mm",
+      "value_internal": -6.829859744300001,
+      "unit": "mm"
+    },
+    "agv_E_y": {
+      "expression": "-12.157024165 mm",
+      "value_internal": -1.2157024165,
+      "unit": "mm"
+    },
+    "agv_F_x": {
+      "expression": "-31.142269400 mm",
+      "value_internal": -3.11422694,
+      "unit": "mm"
+    },
+    "agv_F_y": {
+      "expression": "-12.199106379 mm",
+      "value_internal": -1.2199106379,
+      "unit": "mm"
+    },
+    "pan_axis_x": {
+      "expression": "-5.150029370 mm",
+      "value_internal": -0.5150029370000001,
+      "unit": "mm"
+    },
+    "pan_axis_y": {
+      "expression": "42.999972322 mm",
+      "value_internal": 4.2999972322,
+      "unit": "mm"
+    },
+    "pan_radius_bound": {
+      "expression": "31.4 mm",
+      "value_internal": 3.14,
+      "unit": "mm"
+    },
+    "pan_clearance": {
+      "expression": "3 mm",
+      "value_internal": 0.30000000000000004,
+      "unit": "mm"
+    },
+    "pan_top_z": {
+      "expression": "51 mm",
+      "value_internal": 5.1000000000000005,
+      "unit": "mm"
+    },
+    "pan_bottom_z": {
+      "expression": "5 mm",
+      "value_internal": 0.5,
+      "unit": "mm"
+    },
+    "agv_pan_lift": {
+      "expression": "0 mm",
+      "value_internal": 0.0,
+      "unit": "mm"
+    },
+    "agv_mount_z_final": {
+      "expression": "agv_mount_z + agv_pan_lift",
+      "value_internal": 0.6000000000000001,
+      "unit": "mm"
+    },
+    "v05_axis_y": {
+      "expression": "-14 mm",
+      "value_internal": -1.4000000000000001,
+      "unit": "mm"
+    },
+    "v05_motor_bottom": {
+      "expression": "electronics_z + buck_l + 5 mm - mg_h - 32 mm",
+      "value_internal": 2.1099999999999994,
+      "unit": "mm"
+    },
+    "v05_motor_face": {
+      "expression": "v05_motor_bottom + mg_h",
+      "value_internal": 6.3999999999999995,
+      "unit": "mm"
+    },
+    "v05_rack_y": {
+      "expression": "-18 mm",
+      "value_internal": -1.8,
+      "unit": "mm"
+    },
+    "v05_rack_rail_z": {
+      "expression": "agv_mount_z + agv_mount_t + 10 mm",
+      "value_internal": 2.2,
+      "unit": "mm"
+    },
+    "v05_logic_z": {
+      "expression": "agv_mount_z + agv_mount_t + 3 mm",
+      "value_internal": 1.5000000000000002,
+      "unit": "mm"
+    },
+    "v07_motor_l": {
+      "expression": "40.5 mm",
+      "value_internal": 4.05,
+      "unit": "mm"
+    },
+    "v07_motor_w": {
+      "expression": "21 mm",
+      "value_internal": 2.1,
+      "unit": "mm"
+    },
+    "v07_case_h": {
+      "expression": "41.7 mm",
+      "value_internal": 4.170000000000001,
+      "unit": "mm"
+    },
+    "v07_boss_h": {
+      "expression": "3.45 mm",
+      "value_internal": 0.34500000000000003,
+      "unit": "mm"
+    },
+    "v07_spline_h": {
+      "expression": "5 mm",
+      "value_internal": 0.5,
+      "unit": "mm"
+    },
+    "v07_spline_d": {
+      "expression": "5.94 mm",
+      "value_internal": 0.594,
+      "unit": "mm"
+    },
+    "v07_ear_span": {
+      "expression": "55.1 mm",
+      "value_internal": 5.510000000000001,
+      "unit": "mm"
+    },
+    "v07_mount_pitch": {
+      "expression": "48 mm",
+      "value_internal": 4.800000000000001,
+      "unit": "mm"
+    },
+    "v07_mount_cross": {
+      "expression": "10 mm",
+      "value_internal": 1.0,
+      "unit": "mm"
+    },
+    "v07_mount_d": {
+      "expression": "4.5 mm",
+      "value_internal": 0.45,
+      "unit": "mm"
+    },
+    "v07_ear_t": {
+      "expression": "2.5 mm",
+      "value_internal": 0.25,
+      "unit": "mm"
+    },
+    "v07_ear_back": {
+      "expression": "30.65 mm",
+      "value_internal": 3.065,
+      "unit": "mm"
+    },
+    "v07_axis_offset": {
+      "expression": "10.5 mm",
+      "value_internal": 1.05,
+      "unit": "mm"
+    },
+    "v07_spline_tip_y": {
+      "expression": "42 mm",
+      "value_internal": 4.2,
+      "unit": "mm"
+    },
+    "v07_spline_base_y": {
+      "expression": "v07_spline_tip_y + v07_spline_h",
+      "value_internal": 4.7,
+      "unit": "mm"
+    },
+    "v07_case_front_y": {
+      "expression": "v07_spline_base_y + v07_boss_h",
+      "value_internal": 5.045,
+      "unit": "mm"
+    },
+    "v07_case_back_y": {
+      "expression": "v07_case_front_y + v07_case_h",
+      "value_internal": 9.215,
+      "unit": "mm"
+    },
+    "v07_tab_rear_y": {
+      "expression": "v07_case_back_y - v07_ear_back",
+      "value_internal": 6.15,
+      "unit": "mm"
+    },
+    "v07_clear": {
+      "expression": "0.6 mm",
+      "value_internal": 0.06,
+      "unit": "mm"
+    },
+    "v07_mount_wall": {
+      "expression": "6 mm",
+      "value_internal": 0.6000000000000001,
+      "unit": "mm"
+    },
+    "v07_rib_t": {
+      "expression": "4 mm",
+      "value_internal": 0.4,
+      "unit": "mm"
+    },
+    "v07_socket_extra": {
+      "expression": "2 mm",
+      "value_internal": 0.2,
+      "unit": "mm"
+    },
+    "v07_J1_outer": {
+      "expression": "50 mm",
+      "value_internal": 5.0,
+      "unit": "mm"
+    },
+    "v07_motor_mass": {
+      "expression": "90 g",
+      "value_internal": 0.09,
+      "unit": "g"
+    },
+    "v07_control_V": {
+      "expression": "7.4",
+      "value_internal": 7.4,
+      "unit": ""
+    },
+    "v07_brake_time": {
+      "expression": "0.1 s",
+      "value_internal": 0.1,
+      "unit": "s"
+    },
+    "v08_housing_wall": {
+      "expression": "3 mm",
+      "value_internal": 0.30000000000000004,
+      "unit": "mm"
+    },
+    "v08_rear_clear": {
+      "expression": "0.8 mm",
+      "value_internal": 0.08000000000000002,
+      "unit": "mm"
+    },
+    "v08_cable_window": {
+      "expression": "16 mm",
+      "value_internal": 1.6,
+      "unit": "mm"
+    },
+    "v08_edge_radius": {
+      "expression": "0.8 mm",
+      "value_internal": 0.08000000000000002,
+      "unit": "mm"
+    },
+    "v08_horn_clear": {
+      "expression": "3.2 mm",
+      "value_internal": 0.32000000000000006,
+      "unit": "mm"
+    },
+    "v09_face": {
+      "expression": "55 mm",
+      "value_internal": 5.5,
+      "unit": "mm"
+    },
+    "v09_bearing_d": {
+      "expression": "26 mm",
+      "value_internal": 2.6,
+      "unit": "mm"
+    },
+    "v09_bearing_w": {
+      "expression": "8 mm",
+      "value_internal": 0.8,
+      "unit": "mm"
+    },
+    "v09_lower": {
+      "expression": "72.5 mm",
+      "value_internal": 7.25,
+      "unit": "mm"
+    },
+    "v09_upper": {
+      "expression": "85.5 mm",
+      "value_internal": 8.55,
+      "unit": "mm"
+    },
+    "v09_shaft": {
+      "expression": "10 mm",
+      "value_internal": 1.0,
+      "unit": "mm"
+    },
+    "v09_flange": {
+      "expression": "60 mm",
+      "value_internal": 6.0,
+      "unit": "mm"
+    },
+    "v09_pcd": {
+      "expression": "50 mm",
+      "value_internal": 5.0,
+      "unit": "mm"
+    },
+    "v09_flange_t": {
+      "expression": "3 mm",
+      "value_internal": 0.30000000000000004,
+      "unit": "mm"
+    },
+    "v09_cap_z": {
+      "expression": "89.5 mm",
+      "value_internal": 8.950000000000001,
+      "unit": "mm"
+    },
+    "v09_bornera_x": {
+      "expression": "-51 mm",
+      "value_internal": -5.1000000000000005,
+      "unit": "mm"
+    },
+    "v09_bornera_y": {
+      "expression": "23 mm",
+      "value_internal": 2.3000000000000003,
+      "unit": "mm"
+    },
+    "v09_XL1_dx": {
+      "expression": "-5.5 mm",
+      "value_internal": -0.55,
+      "unit": "mm"
+    },
+    "v09_XL2_dx": {
+      "expression": "-3 mm",
+      "value_internal": -0.30000000000000004,
+      "unit": "mm"
+    },
+    "j3_belt_pitch": {
+      "expression": "3 mm",
+      "value_internal": 0.30000000000000004,
+      "unit": "mm"
+    },
+    "j3_belt_length": {
+      "expression": "225 mm",
+      "value_internal": 22.5,
+      "unit": "mm"
+    },
+    "j3_small_teeth": {
+      "expression": "24",
+      "value_internal": 24.0,
+      "unit": ""
+    },
+    "j3_large_teeth": {
+      "expression": "54",
+      "value_internal": 54.0,
+      "unit": ""
+    },
+    "j3_ratio": {
+      "expression": "j3_large_teeth / j3_small_teeth",
+      "value_internal": 2.25,
+      "unit": ""
+    },
+    "j3_rsmall": {
+      "expression": "j3_belt_pitch * j3_small_teeth / 6.283185307179586",
+      "value_internal": 1.1459155902616467,
+      "unit": "mm"
+    },
+    "j3_rlarge": {
+      "expression": "j3_belt_pitch * j3_large_teeth / 6.283185307179586",
+      "value_internal": 2.578310078088705,
+      "unit": "mm"
+    },
+    "j3_length_A": {
+      "expression": "j3_belt_length - 3.141592653589793 * ( j3_rsmall + j3_rlarge )",
+      "value_internal": 10.799999999999997,
+      "unit": "mm"
+    },
+    "j3_centre": {
+      "expression": "( j3_length_A + sqrt(j3_length_A * j3_length_A - 8 * ( j3_rlarge - j3_rsmall ) * ( j3_rlarge - j3_rsmall )) ) / 4",
+      "value_internal": 5.202823009248021,
+      "unit": "mm"
+    },
+    "j3_slide": {
+      "expression": "0 mm",
+      "value_internal": 0.0,
+      "unit": "mm"
+    },
+    "j3_motor_z": {
+      "expression": "link1 - j3_centre + j3_slide",
+      "value_internal": 1.7971769907519786,
+      "unit": "mm"
+    },
+    "j3_fixed_z": {
+      "expression": "link1 - j3_centre",
+      "value_internal": 1.7971769907519786,
+      "unit": "mm"
+    },
+    "j3_pulley_y": {
+      "expression": "-54 mm",
+      "value_internal": -5.4,
+      "unit": "mm"
+    },
+    "v17_min_margin": {
+      "expression": "1.2",
+      "value_internal": 1.2,
+      "unit": ""
+    },
+    "j3_servo_y_offset": {
+      "expression": "-5 mm",
+      "value_internal": -0.5,
+      "unit": "mm"
+    },
+    "j3_transverse_shift": {
+      "expression": "-9 mm",
+      "value_internal": -0.9,
+      "unit": "mm"
+    },
+    "v17_pvc1_od": {
+      "expression": "25 mm",
+      "value_internal": 2.5,
+      "unit": "mm"
+    },
+    "v17_pvc1_wall": {
+      "expression": "1.2 mm",
+      "value_internal": 0.12,
+      "unit": "mm"
+    },
+    "v17_pvc1_id": {
+      "expression": "v17_pvc1_od - 2 * v17_pvc1_wall",
+      "value_internal": 2.26,
+      "unit": "mm"
+    },
+    "v17_pvc2_od": {
+      "expression": "20 mm",
+      "value_internal": 2.0,
+      "unit": "mm"
+    },
+    "v17_pvc2_wall": {
+      "expression": "1 mm",
+      "value_internal": 0.1,
+      "unit": "mm"
+    },
+    "v17_pvc2_id": {
+      "expression": "v17_pvc2_od - 2 * v17_pvc2_wall",
+      "value_internal": 1.8,
+      "unit": "mm"
+    },
+    "v17_socket1_od": {
+      "expression": "v17_pvc1_od + socket_clear + 2 * socket_wall",
+      "value_internal": 3.1350000000000002,
+      "unit": "mm"
+    },
+    "v17_socket2_od": {
+      "expression": "v17_pvc2_od + socket_clear + 2 * socket_wall",
+      "value_internal": 2.6350000000000002,
+      "unit": "mm"
+    },
+    "v17_neck1": {
+      "expression": "22 mm",
+      "value_internal": 2.2,
+      "unit": "mm"
+    },
+    "v17_neck2": {
+      "expression": "20 mm",
+      "value_internal": 2.0,
+      "unit": "mm"
+    },
+    "v17_core_d": {
+      "expression": "26 mm",
+      "value_internal": 2.6,
+      "unit": "mm"
+    }
+  },
+  "mass_arm_without_payload_g": 2235.114883355833,
+  "contact_rectangle_mm": {
+    "center": [
+      0,
+      -32
+    ],
+    "half_width": 107,
+    "half_length": 62,
+    "floor_z": -80
+  },
+  "worst": {
+    "utilization": 0.8624603478062699,
+    "yaw_deg": 70,
+    "wrist_deg": [
+      0,
+      90
+    ],
+    "type": "frenada50ms",
+    "time_fraction": 0.5,
+    "speed_before_deg_s": [
+      29.999999999999996,
+      29.999999999999996,
+      29.999999999999996,
+      29.999999999999996,
+      29.999999999999996,
+      29.999999999999996
+    ],
+    "cop_relative_chassis_mm": [
+      -0.5152977065479732,
+      53.472541563988734
+    ],
+    "vertical_force_N": 41.80839509213364,
+    "moment_at_ground_Nm": [
+      2.2356011442877786,
+      0.021543770105428003,
+      -0.5989006264176744
+    ],
+    "min_axle_pair_N": 2.8751560598750565
+  },
+  "by_yaw": [
+    {
+      "yaw_deg": -90,
+      "peak_utilization": 0.4477560020800361,
+      "static_utilization": 0.3863960305443477,
+      "peak_cop_mm": [
+        -3.27614933981127,
+        -27.760872128962237
+      ]
+    },
+    {
+      "yaw_deg": -85,
+      "peak_utilization": 0.4475717841889501,
+      "static_utilization": 0.386882356195106,
+      "peak_cop_mm": [
+        0.18535750795258066,
+        -27.749450619714906
+      ]
+    },
+    {
+      "yaw_deg": -80,
+      "peak_utilization": 0.4529231004462327,
+      "static_utilization": 0.3830076599959424,
+      "peak_cop_mm": [
+        -7.136355348967722,
+        -28.081232227666426
+      ]
+    },
+    {
+      "yaw_deg": -75,
+      "peak_utilization": 0.46180131796522883,
+      "static_utilization": 0.37480143072453825,
+      "peak_cop_mm": [
+        -6.92175011926591,
+        -28.631681713844188
+      ]
+    },
+    {
+      "yaw_deg": -70,
+      "peak_utilization": 0.46674656689879335,
+      "static_utilization": 0.3623261227407055,
+      "peak_cop_mm": [
+        -3.3546433922952583,
+        -28.938287147725188
+      ]
+    },
+    {
+      "yaw_deg": -65,
+      "peak_utilization": 0.46665858095345575,
+      "static_utilization": 0.3456766806709982,
+      "peak_cop_mm": [
+        0.22561184096066014,
+        -28.932832019114258
+      ]
+    },
+    {
+      "yaw_deg": -60,
+      "peak_utilization": 0.46153802975538766,
+      "static_utilization": 0.3249798168227749,
+      "peak_cop_mm": [
+        3.7917676763595702,
+        -28.615357844834033
+      ]
+    },
+    {
+      "yaw_deg": -55,
+      "peak_utilization": 0.45142388379107945,
+      "static_utilization": 0.30039304682702833,
+      "peak_cop_mm": [
+        7.316683514690298,
+        -27.988280795046926
+      ]
+    },
+    {
+      "yaw_deg": -50,
+      "peak_utilization": 0.4363931178184081,
+      "static_utilization": 0.2721034908493238,
+      "peak_cop_mm": [
+        10.773532618020804,
+        -27.056373304741303
+      ]
+    },
+    {
+      "yaw_deg": -45,
+      "peak_utilization": 0.4165601250422503,
+      "static_utilization": 0.24032644949235277,
+      "peak_cop_mm": [
+        14.136006277372157,
+        -25.82672775261952
+      ]
+    },
+    {
+      "yaw_deg": -40,
+      "peak_utilization": 0.3920758465131206,
+      "static_utilization": 0.22619541423915515,
+      "peak_cop_mm": [
+        17.378514037879594,
+        -24.308702483813477
+      ]
+    },
+    {
+      "yaw_deg": -35,
+      "peak_utilization": 0.36312662237463783,
+      "static_utilization": 0.24504001610699247,
+      "peak_cop_mm": [
+        20.47637845760594,
+        -22.513850587227545
+      ]
+    },
+    {
+      "yaw_deg": -30,
+      "peak_utilization": 0.3642664866870057,
+      "static_utilization": 0.26189376309150425,
+      "peak_cop_mm": [
+        38.976514075509606,
+        3.7403992378482083
+      ]
+    },
+    {
+      "yaw_deg": -25,
+      "peak_utilization": 0.3695806847117442,
+      "static_utilization": 0.2766283880015678,
+      "peak_cop_mm": [
+        39.54513326415663,
+        7.311456280030838
+      ]
+    },
+    {
+      "yaw_deg": -20,
+      "peak_utilization": 0.3719658930487323,
+      "static_utilization": 0.28913175144460773,
+      "peak_cop_mm": [
+        39.800350556214354,
+        10.918482799763469
+      ]
+    },
+    {
+      "yaw_deg": -15,
+      "peak_utilization": 0.37140395882229715,
+      "static_utilization": 0.2993086952750852,
+      "peak_cop_mm": [
+        39.740223593985796,
+        14.53402714724877
+      ]
+    },
+    {
+      "yaw_deg": -10,
+      "peak_utilization": 0.36789915869120704,
+      "static_utilization": 0.3070817668054435,
+      "peak_cop_mm": [
+        39.365209979959154,
+        18.13057284687702
+      ]
+    },
+    {
+      "yaw_deg": -5,
+      "peak_utilization": 0.36734123536869906,
+      "static_utilization": 0.3123918082678279,
+      "peak_cop_mm": [
+        27.080903337950872,
+        22.775156592859343
+      ]
+    },
+    {
+      "yaw_deg": 0,
+      "peak_utilization": 0.4112718491725294,
+      "static_utilization": 0.3151984070404189,
+      "peak_cop_mm": [
+        28.814190186578287,
+        25.498854648696824
+      ]
+    },
+    {
+      "yaw_deg": 5,
+      "peak_utilization": 0.46023337715835433,
+      "static_utilization": 0.31548020321188625,
+      "peak_cop_mm": [
+        36.391224014318084,
+        28.534469383817967
+      ]
+    },
+    {
+      "yaw_deg": 10,
+      "peak_utilization": 0.5126750746461203,
+      "static_utilization": 0.313235052143212,
+      "peak_cop_mm": [
+        34.808735412858816,
+        31.785854628059454
+      ]
+    },
+    {
+      "yaw_deg": 15,
+      "peak_utilization": 0.5626926516189786,
+      "static_utilization": 0.30848004078968805,
+      "peak_cop_mm": [
+        32.948891762373854,
+        34.88694440037668
+      ]
+    },
+    {
+      "yaw_deg": 20,
+      "peak_utilization": 0.6099054441147275,
+      "static_utilization": 0.35322132480530866,
+      "peak_cop_mm": [
+        30.825847596047655,
+        37.814137535113105
+      ]
+    },
+    {
+      "yaw_deg": 25,
+      "peak_utilization": 0.6539541342746102,
+      "static_utilization": 0.4003872120159463,
+      "peak_cop_mm": [
+        28.455760561915074,
+        40.545156325025836
+      ]
+    },
+    {
+      "yaw_deg": 30,
+      "peak_utilization": 0.6945034849691842,
+      "static_utilization": 0.44592252429605744,
+      "peak_cop_mm": [
+        25.856668453403568,
+        43.05921606808942
+      ]
+    },
+    {
+      "yaw_deg": 35,
+      "peak_utilization": 0.7312448911552962,
+      "static_utilization": 0.48948071042421704,
+      "peak_cop_mm": [
+        23.048351930833604,
+        45.33718325162837
+      ]
+    },
+    {
+      "yaw_deg": 40,
+      "peak_utilization": 0.7638987285468022,
+      "static_utilization": 0.5307302663028379,
+      "peak_cop_mm": [
+        20.052183978649843,
+        47.361721169901735
+      ]
+    },
+    {
+      "yaw_deg": 45,
+      "peak_utilization": 0.7922164817242268,
+      "static_utilization": 0.569357257904521,
+      "peak_cop_mm": [
+        16.890967244104058,
+        49.117421866902056
+      ]
+    },
+    {
+      "yaw_deg": 50,
+      "peak_utilization": 0.8159826354871632,
+      "static_utilization": 0.605067710499562,
+      "peak_cop_mm": [
+        13.588760495340996,
+        50.59092340020412
+      ]
+    },
+    {
+      "yaw_deg": 55,
+      "peak_utilization": 0.8350163150550788,
+      "static_utilization": 0.6375898459811522,
+      "peak_cop_mm": [
+        10.1706955196457,
+        51.771011533414885
+      ]
+    },
+    {
+      "yaw_deg": 60,
+      "peak_utilization": 0.8491726626336125,
+      "static_utilization": 0.6666761512608741,
+      "peak_cop_mm": [
+        6.662785855367285,
+        52.64870508328397
+      ]
+    },
+    {
+      "yaw_deg": 65,
+      "peak_utilization": 0.8583439398698549,
+      "static_utilization": 0.692105261992758,
+      "peak_cop_mm": [
+        3.0917288131846496,
+        53.217324271931005
+      ]
+    },
+    {
+      "yaw_deg": 70,
+      "peak_utilization": 0.8624603478062699,
+      "static_utilization": 0.7136836472896172,
+      "peak_cop_mm": [
+        -0.5152977065479732,
+        53.472541563988734
+      ]
+    },
+    {
+      "yaw_deg": 75,
+      "peak_utilization": 0.8614905580929061,
+      "static_utilization": 0.7312470826099574,
+      "peak_cop_mm": [
+        -4.130842054033283,
+        53.412414601760176
+      ]
+    },
+    {
+      "yaw_deg": 80,
+      "peak_utilization": 0.855441951415057,
+      "static_utilization": 0.7446618996058983,
+      "peak_cop_mm": [
+        -7.727387753661524,
+        53.037400987733534
+      ]
+    },
+    {
+      "yaw_deg": 85,
+      "peak_utilization": 0.8481525312692157,
+      "static_utilization": 0.7538260034200134,
+      "peak_cop_mm": [
+        -6.452492376066853,
+        52.58545693869138
+      ]
+    },
+    {
+      "yaw_deg": 90,
+      "peak_utilization": 0.8388821678391928,
+      "static_utilization": 0.7586696496888398,
+      "peak_cop_mm": [
+        -9.965711916190001,
+        52.010694406029955
+      ]
+    }
+  ],
+  "safe_yaws_sampled_fs1_2": [
+    -90,
+    -85,
+    -80,
+    -75,
+    -70,
+    -65,
+    -60,
+    -55,
+    -50,
+    -45,
+    -40,
+    -35,
+    -30,
+    -25,
+    -20,
+    -15,
+    -10,
+    -5,
+    0,
+    5,
+    10,
+    15,
+    20,
+    25,
+    30,
+    35,
+    40,
+    45,
+    50
+  ],
+  "wrench_states": 216,
+  "configurations": 7822,
+  "limitations": [
+    "Rectangulo de centros del CAD, no poligono real de rodillos",
+    "Masa auto aproximada; CG centrado supuesto",
+    "No aceleracion/frenada del chasis, pendiente, flexibilidad, deslizamiento ni reparto por rigidez de las cuatro ruedas",
+    "Muestreo de brazo extendido y9 munecas; no envolvente global",
+    "No autoriza operacion fisica ni acredita un interbloqueo de control implementado"
+  ],
+  "wrist_poses_deg": [
+    [
+      0,
+      90
+    ]
+  ]
+}

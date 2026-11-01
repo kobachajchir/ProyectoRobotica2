@@ -15,6 +15,8 @@ import { robotModel, modelProblems } from './robotModel';
 import { rigid, forwardModel } from './modelKinematics';
 import { ArmLink, ArticulatedArmAsset, ProceduralGripper } from './ArmVisualAdapter';
 import { frameSignature } from './armPointStorage';
+import { AuxiliaryModelAsset } from './AuxiliaryModelAsset';
+import { CUBE_MODEL } from './auxiliaryModels';
 
 export type SceneView = 'perspective' | 'top' | 'side';
 export type SceneTool = 'orbit' | 'move' | 'place';
@@ -23,7 +25,7 @@ interface SceneProps { view: SceneView; tool: SceneTool; focus: Point3; revision
 function readPalette() {
   const css = getComputedStyle(document.documentElement);
   const get = (key: string) => css.getPropertyValue(key).trim();
-  return { accent: get('--action'), floor: get('--map-floor'), grid: get('--map-grid-strong'),
+  return { accent: get('--action'), sky: get('--sim-scene-sky'), floor: get('--sim-scene-ground'), grid: get('--sim-scene-grid'),
     text: get('--text-muted'), surface: get('--surface-solid'), error: get('--error'), metal: get('--text-subtle'), success: get('--success') };
 }
 
@@ -206,9 +208,12 @@ function SceneContents({ view, tool, focus, armPanel, carOnly = false }: ScenePr
   const heldOrientation = new Quaternion().setFromRotationMatrix(new Matrix4().makeRotationY(state.pose.yaw)
     .multiply(CAD_TO_THREE).multiply(forwardArm(state.joints).tool));
   return <>
-    <color attach="background" args={[palette.floor || palette.surface]} />
+    <color attach="background" args={[palette.sky || palette.surface]} />
     <ambientLight intensity={1.4} /><directionalLight position={[3, 5, 2]} intensity={2} />
     <directionalLight position={[-3, 2, -2]} intensity={.7} />
+    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -.003, 0]}>
+      <planeGeometry args={[4, 4]} /><meshBasicMaterial color={palette.floor} toneMapped={false} />
+    </mesh>
     <gridHelper args={[4, 40, palette.grid, palette.grid]} />
     {!armPanel && !carOnly && <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -.002, 0]} onClick={event => {
       if (tool !== 'place' || state.running || state.scanning || state.jointTarget || event.delta > 5) return;
@@ -256,7 +261,7 @@ function SceneContents({ view, tool, focus, armPanel, carOnly = false }: ScenePr
       return <group key={cube.id} position={toThree(cube.point)} quaternion={cube.location === 'gripper' ? heldOrientation
         : new Quaternion().setFromAxisAngle(new Vector3(0, 1, 0), cube.location === 'bin' ? state.pose.yaw : 0)}
         onClick={event => { event.stopPropagation(); update(s => ({ ...s, selected: `cube:${cube.id}` })); }}>
-        <mesh><boxGeometry args={[.05, .05, .05]} /><meshStandardMaterial color={cube.location !== 'floor' ? palette.accent : reachable ? palette.success : '#c8934e'} roughness={.65} /></mesh>
+        <AuxiliaryModelAsset model={CUBE_MODEL} />
         {selected && <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -.021, 0]}>
           <ringGeometry args={[.04, .044, 40]} /><meshBasicMaterial color={palette.accent} />
         </mesh>}

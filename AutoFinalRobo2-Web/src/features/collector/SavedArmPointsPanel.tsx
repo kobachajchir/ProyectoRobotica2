@@ -9,7 +9,7 @@ import { modelProblems, robotModel, ROBOT_MODELS } from './robotModel';
 
 export function SavedArmPointsPanel() {
   const { state, changeModel } = useCollector(), library = useArmPoints();
-  const [expanded, setExpanded] = useState(true), [name, setName] = useState('');
+  const [expanded, setExpanded] = useState(false), [name, setName] = useState('');
   const [rename, setRename] = useState(''), [confirm, setConfirm] = useState<'update' | 'delete' | 'storage' | 'frame' | null>(null);
   const file = useRef<HTMLInputElement>(null), uid = useId();
   const model = robotModel(), point = library.selected, busy = pointBusy(state);

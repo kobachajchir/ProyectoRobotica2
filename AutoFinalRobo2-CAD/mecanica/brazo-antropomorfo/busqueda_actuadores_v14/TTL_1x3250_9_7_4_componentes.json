@@ -1,0 +1,2499 @@
+{
+  "parameters_mm": {
+    "base_top": 60,
+    "tower_h": 40,
+    "link1": 90,
+    "link2": 75,
+    "wrist45": 55,
+    "wrist56": 65,
+    "payload_z": 88,
+    "axis_y_mm": -32
+  },
+  "parts": [
+    {
+      "root": "00",
+      "name": "Montura superior simple",
+      "mass_g": 87.25249406741959,
+      "cg_local_mm": [
+        0,
+        -5,
+        5
+      ],
+      "box_mm": [
+        150,
+        60,
+        4
+      ],
+      "material": "Al6061",
+      "detail": {
+        "outer_mm": [
+          150,
+          60,
+          4
+        ],
+        "plane": "XY",
+        "symmetric_windows_mm": [
+          [
+            20,
+            15
+          ],
+          [
+            20,
+            24
+          ]
+        ],
+        "through_holes_d_n": [
+          [
+            3.4,
+            6
+          ],
+          [
+            10.5,
+            1
+          ]
+        ],
+        "net_volume_mm3": 32315.738543488736
+      }
+    },
+    {
+      "root": "00",
+      "name": "Carcasa base con ventanas",
+      "mass_g": 16,
+      "cg_local_mm": [
+        -86.2,
+        -44.5,
+        54
+      ],
+      "box_mm": [
+        29,
+        50,
+        41
+      ],
+      "material": "PLA",
+      "detail": {
+        "inner_mm": [
+          40,
+          20,
+          40
+        ],
+        "wall_mm": 2,
+        "side_window_fraction": 0.3,
+        "net_volume_mm3": 9280.0
+      }
+    },
+    {
+      "root": "00",
+      "name": "STS3215_C047_00",
+      "mass_g": 56,
+      "cg_local_mm": [
+        -86.2,
+        -44.5,
+        54
+      ],
+      "box_mm": [
+        24.73,
+        45.23,
+        36.5
+      ],
+      "material": "Servo",
+      "detail": "Starware90g; 63kgfcm7.4V,270grados"
+    },
+    {
+      "root": "00",
+      "name": "Control y potencia TTL 12V6V propuestos",
+      "mass_g": 150,
+      "cg_local_mm": [
+        50,
+        -82,
+        50
+      ],
+      "box_mm": [
+        60,
+        30,
+        25
+      ],
+      "material": "Electronica",
+      "detail": "Nano7,PCA968512,XL401650,borneras8g; dimension de paquete propuesta"
+    },
+    {
+      "root": "00",
+      "name": "Bateria adicional2S y sujecion",
+      "mass_g": 130,
+      "cg_local_mm": [
+        -38,
+        -100,
+        50
+      ],
+      "box_mm": [
+        65,
+        35,
+        28
+      ],
+      "material": "Potencia",
+      "detail": "Reserva de compra; masa y corriente del producto pendientes"
+    },
+    {
+      "root": "00",
+      "name": "Cableado y protecciones",
+      "mass_g": 20,
+      "cg_local_mm": [
+        0,
+        -20,
+        10
+      ],
+      "box_mm": [
+        80,
+        50,
+        10
+      ],
+      "material": "Cables",
+      "detail": "Presupuesto a concretar, no peso medido"
+    },
+    {
+      "root": "00",
+      "name": "Fijaciones base",
+      "mass_g": 18,
+      "cg_local_mm": [
+        0,
+        -10,
+        5
+      ],
+      "box_mm": [
+        130,
+        45,
+        10
+      ],
+      "material": "Acero",
+      "detail": "Tornillos/tuercas presupuestados; no sustituir por aluminio"
+    },
+    {
+      "root": "00",
+      "name": "Par608 base",
+      "mass_g": 25,
+      "cg_local_mm": [
+        0,
+        -32,
+        43
+      ],
+      "box_mm": [
+        22,
+        22,
+        17
+      ],
+      "material": "Rodamiento",
+      "detail": "2x608 de12.5g; eje8mm"
+    },
+    {
+      "root": "01",
+      "name": "Eje yaw acero8mm",
+      "mass_g": 21.70212205099829,
+      "cg_local_mm": [
+        0,
+        0,
+        -17.5
+      ],
+      "box_mm": [
+        8,
+        8,
+        55
+      ],
+      "material": "Acero",
+      "detail": {
+        "axis": "Z",
+        "od_mm": 8,
+        "id_mm": 0,
+        "length_mm": 40,
+        "net_volume_mm3": 2010.6192982974676
+      }
+    },
+    {
+      "root": "01",
+      "name": "Brida yaw aluminio",
+      "mass_g": 15.49716240089309,
+      "cg_local_mm": [
+        0,
+        0,
+        2
+      ],
+      "box_mm": [
+        50,
+        50,
+        3
+      ],
+      "material": "Al6061",
+      "detail": {
+        "axis": "Z",
+        "od_mm": 50,
+        "id_mm": 8,
+        "length_mm": 3,
+        "net_volume_mm3": 5739.689778108552
+      }
+    },
+    {
+      "root": "01",
+      "name": "Hub integral brida yaw",
+      "mass_g": 4.275079283004991,
+      "cg_local_mm": [
+        0,
+        0,
+        -2.5
+      ],
+      "box_mm": [
+        20,
+        20,
+        6
+      ],
+      "material": "Al6061",
+      "detail": {
+        "axis": "Z",
+        "od_mm": 20,
+        "id_mm": 8,
+        "length_mm": 12,
+        "net_volume_mm3": 3166.7253948185116
+      }
+    },
+    {
+      "root": "01",
+      "name": "Plataforma PLA abierta",
+      "mass_g": 6.556252540629612,
+      "cg_local_mm": [
+        0,
+        0,
+        5
+      ],
+      "box_mm": [
+        62,
+        62,
+        3
+      ],
+      "material": "PLA",
+      "detail": {
+        "axis": "Z",
+        "od_mm": 62,
+        "id_mm": 40,
+        "length_mm": 3,
+        "net_volume_mm3": 5287.300435991622
+      }
+    },
+    {
+      "root": "01",
+      "name": "Costilla torre-1",
+      "mass_g": 7.469022009651995,
+      "cg_local_mm": [
+        -20,
+        0,
+        24
+      ],
+      "box_mm": [
+        22,
+        4,
+        40
+      ],
+      "material": "Al6061",
+      "detail": {
+        "outer_mm": [
+          40,
+          22,
+          4
+        ],
+        "plane": "XZ",
+        "symmetric_windows_mm": [
+          [
+            15,
+            8
+          ]
+        ],
+        "through_holes_d_n": [
+          [
+            8,
+            1
+          ],
+          [
+            3.4,
+            2
+          ]
+        ],
+        "net_volume_mm3": 2766.304448019257
+      }
+    },
+    {
+      "root": "01",
+      "name": "Costilla torre1",
+      "mass_g": 7.469022009651995,
+      "cg_local_mm": [
+        20,
+        0,
+        24
+      ],
+      "box_mm": [
+        22,
+        4,
+        40
+      ],
+      "material": "Al6061",
+      "detail": {
+        "outer_mm": [
+          40,
+          22,
+          4
+        ],
+        "plane": "XZ",
+        "symmetric_windows_mm": [
+          [
+            15,
+            8
+          ]
+        ],
+        "through_holes_d_n": [
+          [
+            8,
+            1
+          ],
+          [
+            3.4,
+            2
+          ]
+        ],
+        "net_volume_mm3": 2766.304448019257
+      }
+    },
+    {
+      "root": "01",
+      "name": "Nervios y bosses torre",
+      "mass_g": 5,
+      "cg_local_mm": [
+        0,
+        0,
+        15
+      ],
+      "box_mm": [
+        45,
+        30,
+        30
+      ],
+      "material": "PLA",
+      "detail": "Presupuesto a concretar, no peso medido"
+    },
+    {
+      "root": "01",
+      "name": "Housing hombro aligerado",
+      "mass_g": 16,
+      "cg_local_mm": [
+        -35,
+        60,
+        27.5
+      ],
+      "box_mm": [
+        29,
+        41,
+        50
+      ],
+      "material": "PLA",
+      "detail": {
+        "inner_mm": [
+          41.5,
+          22,
+          42.7
+        ],
+        "wall_mm": 2,
+        "side_window_fraction": 0.3,
+        "net_volume_mm3": 10436.3
+      }
+    },
+    {
+      "root": "01",
+      "name": "STS3250_01",
+      "mass_g": 75.5,
+      "cg_local_mm": [
+        -35,
+        60,
+        27.5
+      ],
+      "box_mm": [
+        24.72,
+        36.5,
+        45.22
+      ],
+      "material": "Servo",
+      "detail": "63kgfcm7.4V; directo, sin rueda20/40 de v09"
+    },
+    {
+      "root": "01",
+      "name": "Par608 hombro",
+      "mass_g": 25,
+      "cg_local_mm": [
+        0,
+        0,
+        40
+      ],
+      "box_mm": [
+        22,
+        38,
+        22
+      ],
+      "material": "Rodamiento",
+      "detail": "Presupuesto a concretar, no peso medido"
+    },
+    {
+      "root": "01",
+      "name": "Tornilleria y horn hombro",
+      "mass_g": 9,
+      "cg_local_mm": [
+        0,
+        0,
+        35
+      ],
+      "box_mm": [
+        40,
+        45,
+        20
+      ],
+      "material": "Acero",
+      "detail": "Presupuesto a concretar, no peso medido"
+    },
+    {
+      "root": "02",
+      "name": "Eje hombro acero8mm",
+      "mass_g": 18.150865715380387,
+      "cg_local_mm": [
+        0,
+        0,
+        0
+      ],
+      "box_mm": [
+        8,
+        46,
+        8
+      ],
+      "material": "Acero",
+      "detail": {
+        "axis": "Y",
+        "od_mm": 8,
+        "id_mm": 0,
+        "length_mm": 46,
+        "net_volume_mm3": 2312.2121930420876
+      }
+    },
+    {
+      "root": "02",
+      "name": "Manguito PVC25 15",
+      "mass_g": 7.813305863092128,
+      "cg_local_mm": [
+        0,
+        0,
+        15
+      ],
+      "box_mm": [
+        31,
+        31,
+        25
+      ],
+      "material": "PLA",
+      "detail": {
+        "axis": "Z",
+        "od_mm": 31,
+        "id_mm": 25.3,
+        "length_mm": 25,
+        "net_volume_mm3": 6301.053115396878
+      }
+    },
+    {
+      "root": "02",
+      "name": "Manguito PVC25 125.0",
+      "mass_g": 7.813305863092128,
+      "cg_local_mm": [
+        0,
+        0,
+        75.0
+      ],
+      "box_mm": [
+        31,
+        31,
+        25
+      ],
+      "material": "PLA",
+      "detail": {
+        "axis": "Z",
+        "od_mm": 31,
+        "id_mm": 25.3,
+        "length_mm": 25,
+        "net_volume_mm3": 6301.053115396878
+      }
+    },
+    {
+      "root": "02",
+      "name": "Puente proximal hombro-1",
+      "mass_g": 12.545022009651996,
+      "cg_local_mm": [
+        0,
+        -17,
+        12
+      ],
+      "box_mm": [
+        45,
+        4,
+        30
+      ],
+      "material": "Al6061",
+      "detail": {
+        "outer_mm": [
+          30,
+          45,
+          4
+        ],
+        "plane": "XZ",
+        "symmetric_windows_mm": [
+          [
+            10,
+            12
+          ]
+        ],
+        "through_holes_d_n": [
+          [
+            8,
+            1
+          ],
+          [
+            3.4,
+            2
+          ]
+        ],
+        "net_volume_mm3": 4646.3044480192575
+      }
+    },
+    {
+      "root": "02",
+      "name": "Puente proximal hombro1",
+      "mass_g": 12.545022009651996,
+      "cg_local_mm": [
+        0,
+        17,
+        12
+      ],
+      "box_mm": [
+        45,
+        4,
+        30
+      ],
+      "material": "Al6061",
+      "detail": {
+        "outer_mm": [
+          30,
+          45,
+          4
+        ],
+        "plane": "XZ",
+        "symmetric_windows_mm": [
+          [
+            10,
+            12
+          ]
+        ],
+        "through_holes_d_n": [
+          [
+            8,
+            1
+          ],
+          [
+            3.4,
+            2
+          ]
+        ],
+        "net_volume_mm3": 4646.3044480192575
+      }
+    },
+    {
+      "root": "02",
+      "name": "Tubo25x1.5 corte",
+      "mass_g": 9.634479270396497,
+      "cg_local_mm": [
+        0,
+        0,
+        45.0
+      ],
+      "box_mm": [
+        25,
+        25,
+        60
+      ],
+      "material": "PVC",
+      "detail": {
+        "axis": "Z",
+        "od_mm": 25,
+        "id_mm": 22,
+        "length_mm": 110.0,
+        "net_volume_mm3": 12181.525514294422
+      }
+    },
+    {
+      "root": "02",
+      "name": "Placa codo-1",
+      "mass_g": 8.92845594048117,
+      "cg_local_mm": [
+        0,
+        -20,
+        87.0
+      ],
+      "box_mm": [
+        35,
+        4,
+        35
+      ],
+      "material": "Al6061",
+      "detail": {
+        "outer_mm": [
+          35,
+          35,
+          4
+        ],
+        "plane": "XZ",
+        "symmetric_windows_mm": [],
+        "through_holes_d_n": [
+          [
+            22,
+            1
+          ],
+          [
+            3.4,
+            2
+          ]
+        ],
+        "net_volume_mm3": 3306.8355335115443
+      }
+    },
+    {
+      "root": "02",
+      "name": "Boss metalico codo-1",
+      "mass_g": 4.453207586463532,
+      "cg_local_mm": [
+        0,
+        -20,
+        90.0
+      ],
+      "box_mm": [
+        28,
+        7,
+        28
+      ],
+      "material": "Al6061",
+      "detail": {
+        "axis": "Y",
+        "od_mm": 28,
+        "id_mm": 22,
+        "length_mm": 7,
+        "net_volume_mm3": 1649.3361431346414
+      }
+    },
+    {
+      "root": "02",
+      "name": "Placa codo1",
+      "mass_g": 8.92845594048117,
+      "cg_local_mm": [
+        0,
+        20,
+        87.0
+      ],
+      "box_mm": [
+        35,
+        4,
+        35
+      ],
+      "material": "Al6061",
+      "detail": {
+        "outer_mm": [
+          35,
+          35,
+          4
+        ],
+        "plane": "XZ",
+        "symmetric_windows_mm": [],
+        "through_holes_d_n": [
+          [
+            22,
+            1
+          ],
+          [
+            3.4,
+            2
+          ]
+        ],
+        "net_volume_mm3": 3306.8355335115443
+      }
+    },
+    {
+      "root": "02",
+      "name": "Boss metalico codo1",
+      "mass_g": 4.453207586463532,
+      "cg_local_mm": [
+        0,
+        20,
+        90.0
+      ],
+      "box_mm": [
+        28,
+        7,
+        28
+      ],
+      "material": "Al6061",
+      "detail": {
+        "axis": "Y",
+        "od_mm": 28,
+        "id_mm": 22,
+        "length_mm": 7,
+        "net_volume_mm3": 1649.3361431346414
+      }
+    },
+    {
+      "root": "02",
+      "name": "Housing codo con ventanas",
+      "mass_g": 16,
+      "cg_local_mm": [
+        0,
+        60,
+        53.5
+      ],
+      "box_mm": [
+        29,
+        41,
+        50
+      ],
+      "material": "PLA",
+      "detail": {
+        "inner_mm": [
+          41.5,
+          22,
+          42.7
+        ],
+        "wall_mm": 2,
+        "side_window_fraction": 0.3,
+        "net_volume_mm3": 10436.3
+      }
+    },
+    {
+      "root": "02",
+      "name": "STS3215_C047_02",
+      "mass_g": 56,
+      "cg_local_mm": [
+        0,
+        60,
+        53.5
+      ],
+      "box_mm": [
+        24.72,
+        36.5,
+        45.22
+      ],
+      "material": "Servo",
+      "detail": "Desplazado24mm para reductor28/20; par maximo55kgfcm6V conservador en variante PWM"
+    },
+    {
+      "root": "02",
+      "name": "Par608 codo",
+      "mass_g": 25,
+      "cg_local_mm": [
+        0,
+        0,
+        90.0
+      ],
+      "box_mm": [
+        22,
+        47,
+        22
+      ],
+      "material": "Rodamiento",
+      "detail": "Presupuesto a concretar, no peso medido"
+    },
+    {
+      "root": "02",
+      "name": "Fijaciones brazo",
+      "mass_g": 7,
+      "cg_local_mm": [
+        0,
+        0,
+        45.0
+      ],
+      "box_mm": [
+        30,
+        30,
+        140.0
+      ],
+      "material": "Acero",
+      "detail": "Presupuesto a concretar, no peso medido"
+    },
+    {
+      "root": "03",
+      "name": "Eje codo acero8mm",
+      "mass_g": 27.62088261036146,
+      "cg_local_mm": [
+        0,
+        0,
+        0
+      ],
+      "box_mm": [
+        8,
+        70,
+        8
+      ],
+      "material": "Acero",
+      "detail": {
+        "axis": "Y",
+        "od_mm": 8,
+        "id_mm": 0,
+        "length_mm": 70,
+        "net_volume_mm3": 3518.583772020568
+      }
+    },
+    {
+      "root": "03",
+      "name": "Manguito PVC20 15",
+      "mass_g": 6.425507308368836,
+      "cg_local_mm": [
+        0,
+        0,
+        15
+      ],
+      "box_mm": [
+        26,
+        26,
+        25
+      ],
+      "material": "PLA",
+      "detail": {
+        "axis": "Z",
+        "od_mm": 26,
+        "id_mm": 20.3,
+        "length_mm": 25,
+        "net_volume_mm3": 5181.860732555513
+      }
+    },
+    {
+      "root": "03",
+      "name": "Manguito PVC20 105.0",
+      "mass_g": 6.425507308368836,
+      "cg_local_mm": [
+        0,
+        0,
+        60.0
+      ],
+      "box_mm": [
+        26,
+        26,
+        25
+      ],
+      "material": "PLA",
+      "detail": {
+        "axis": "Z",
+        "od_mm": 26,
+        "id_mm": 20.3,
+        "length_mm": 25,
+        "net_volume_mm3": 5181.860732555513
+      }
+    },
+    {
+      "root": "03",
+      "name": "Puente proximal codo-1",
+      "mass_g": 5.885266507238996,
+      "cg_local_mm": [
+        0,
+        -14,
+        9
+      ],
+      "box_mm": [
+        35,
+        3,
+        25
+      ],
+      "material": "Al6061",
+      "detail": {
+        "outer_mm": [
+          25,
+          35,
+          3
+        ],
+        "plane": "XZ",
+        "symmetric_windows_mm": [
+          [
+            8,
+            10
+          ]
+        ],
+        "through_holes_d_n": [
+          [
+            8,
+            1
+          ],
+          [
+            3.4,
+            2
+          ]
+        ],
+        "net_volume_mm3": 2179.728336014443
+      }
+    },
+    {
+      "root": "03",
+      "name": "Puente proximal codo1",
+      "mass_g": 5.885266507238996,
+      "cg_local_mm": [
+        0,
+        14,
+        9
+      ],
+      "box_mm": [
+        35,
+        3,
+        25
+      ],
+      "material": "Al6061",
+      "detail": {
+        "outer_mm": [
+          25,
+          35,
+          3
+        ],
+        "plane": "XZ",
+        "symmetric_windows_mm": [
+          [
+            8,
+            10
+          ]
+        ],
+        "through_holes_d_n": [
+          [
+            8,
+            1
+          ],
+          [
+            3.4,
+            2
+          ]
+        ],
+        "net_volume_mm3": 2179.728336014443
+      }
+    },
+    {
+      "root": "03",
+      "name": "Tubo20x1.5 corte",
+      "mass_g": 5.6884425479468685,
+      "cg_local_mm": [
+        0,
+        0,
+        37.5
+      ],
+      "box_mm": [
+        20,
+        20,
+        45
+      ],
+      "material": "PVC",
+      "detail": {
+        "axis": "Z",
+        "od_mm": 20,
+        "id_mm": 17,
+        "length_mm": 90.0,
+        "net_volume_mm3": 7846.127652340509
+      }
+    },
+    {
+      "root": "03",
+      "name": "Placa J4-1",
+      "mass_g": 3.4247158580375,
+      "cg_local_mm": [
+        0,
+        -12,
+        73.0
+      ],
+      "box_mm": [
+        24,
+        2,
+        30
+      ],
+      "material": "Al6061",
+      "detail": {
+        "outer_mm": [
+          30,
+          24,
+          2
+        ],
+        "plane": "XZ",
+        "symmetric_windows_mm": [
+          [
+            8,
+            6
+          ]
+        ],
+        "through_holes_d_n": [
+          [
+            5,
+            1
+          ],
+          [
+            3.4,
+            2
+          ]
+        ],
+        "net_volume_mm3": 1268.4132807546296
+      }
+    },
+    {
+      "root": "03",
+      "name": "Placa J41",
+      "mass_g": 3.4247158580375,
+      "cg_local_mm": [
+        0,
+        12,
+        73.0
+      ],
+      "box_mm": [
+        24,
+        2,
+        30
+      ],
+      "material": "Al6061",
+      "detail": {
+        "outer_mm": [
+          30,
+          24,
+          2
+        ],
+        "plane": "XZ",
+        "symmetric_windows_mm": [
+          [
+            8,
+            6
+          ]
+        ],
+        "through_holes_d_n": [
+          [
+            5,
+            1
+          ],
+          [
+            3.4,
+            2
+          ]
+        ],
+        "net_volume_mm3": 1268.4132807546296
+      }
+    },
+    {
+      "root": "03",
+      "name": "Housing J4 con ventanas",
+      "mass_g": 7,
+      "cg_local_mm": [
+        31.5,
+        0,
+        59
+      ],
+      "box_mm": [
+        36,
+        16,
+        32
+      ],
+      "material": "PLA",
+      "detail": {
+        "inner_mm": [
+          23,
+          12,
+          27
+        ],
+        "wall_mm": 2,
+        "side_window_fraction": 0.25,
+        "net_volume_mm3": 4023.0
+      }
+    },
+    {
+      "root": "03",
+      "name": "STS3032_03",
+      "mass_g": 21.6,
+      "cg_local_mm": [
+        31.5,
+        0,
+        59
+      ],
+      "box_mm": [
+        32,
+        12,
+        27.5
+      ],
+      "material": "Servo",
+      "detail": "Motor desplazado fuera del tubo ID17; transmision1:1, giro180 por confirmar variante"
+    },
+    {
+      "root": "03",
+      "name": "Par626 J4",
+      "mass_g": 18,
+      "cg_local_mm": [
+        0,
+        0,
+        75.0
+      ],
+      "box_mm": [
+        19,
+        19,
+        16
+      ],
+      "material": "Rodamiento",
+      "detail": "2x626-2Z,6x19x6; presupuesto9g/unidad vs8.8g de catalogo SKF"
+    },
+    {
+      "root": "03",
+      "name": "Fijaciones antebrazo",
+      "mass_g": 6,
+      "cg_local_mm": [
+        0,
+        0,
+        37.5
+      ],
+      "box_mm": [
+        25,
+        25,
+        120.0
+      ],
+      "material": "Acero",
+      "detail": "Presupuesto a concretar, no peso medido"
+    },
+    {
+      "root": "04",
+      "name": "Eje J4 acero6",
+      "mass_g": 6.214698587331329,
+      "cg_local_mm": [
+        0,
+        0,
+        0
+      ],
+      "box_mm": [
+        6,
+        6,
+        28
+      ],
+      "material": "Acero",
+      "detail": {
+        "axis": "Z",
+        "od_mm": 6,
+        "id_mm": 0,
+        "length_mm": 28,
+        "net_volume_mm3": 791.6813487046279
+      }
+    },
+    {
+      "root": "04",
+      "name": "Horquilla J5-1",
+      "mass_g": 10.922894822546874,
+      "cg_local_mm": [
+        0,
+        -16,
+        32
+      ],
+      "box_mm": [
+        30,
+        2.5,
+        60
+      ],
+      "material": "Al6061",
+      "detail": {
+        "outer_mm": [
+          60,
+          30,
+          2.5
+        ],
+        "plane": "XZ",
+        "symmetric_windows_mm": [
+          [
+            12,
+            12
+          ]
+        ],
+        "through_holes_d_n": [
+          [
+            5,
+            1
+          ],
+          [
+            3.4,
+            2
+          ]
+        ],
+        "net_volume_mm3": 4045.516600943287
+      }
+    },
+    {
+      "root": "04",
+      "name": "Horquilla J51",
+      "mass_g": 10.922894822546874,
+      "cg_local_mm": [
+        0,
+        16,
+        32
+      ],
+      "box_mm": [
+        30,
+        2.5,
+        60
+      ],
+      "material": "Al6061",
+      "detail": {
+        "outer_mm": [
+          60,
+          30,
+          2.5
+        ],
+        "plane": "XZ",
+        "symmetric_windows_mm": [
+          [
+            12,
+            12
+          ]
+        ],
+        "through_holes_d_n": [
+          [
+            5,
+            1
+          ],
+          [
+            3.4,
+            2
+          ]
+        ],
+        "net_volume_mm3": 4045.516600943287
+      }
+    },
+    {
+      "root": "04",
+      "name": "Travesano horquilla J5",
+      "mass_g": 8.59982558516707,
+      "cg_local_mm": [
+        0,
+        0,
+        7
+      ],
+      "box_mm": [
+        35,
+        38,
+        2.5
+      ],
+      "material": "Al6061",
+      "detail": {
+        "outer_mm": [
+          35,
+          38,
+          2.5
+        ],
+        "plane": "XY",
+        "symmetric_windows_mm": [],
+        "through_holes_d_n": [
+          [
+            5,
+            1
+          ],
+          [
+            3.4,
+            4
+          ]
+        ],
+        "net_volume_mm3": 3185.1205870989143
+      }
+    },
+    {
+      "root": "04",
+      "name": "Separadores union horquilla",
+      "mass_g": 6,
+      "cg_local_mm": [
+        0,
+        0,
+        15
+      ],
+      "box_mm": [
+        35,
+        35,
+        20
+      ],
+      "material": "Al6061",
+      "detail": "Separadores/escuadras a concretar para union atornillada"
+    },
+    {
+      "root": "04",
+      "name": "Housing J5 ventanas",
+      "mass_g": 15,
+      "cg_local_mm": [
+        0,
+        51,
+        17.5
+      ],
+      "box_mm": [
+        29,
+        41,
+        50
+      ],
+      "material": "PLA",
+      "detail": {
+        "inner_mm": [
+          41.5,
+          22,
+          42.7
+        ],
+        "wall_mm": 2,
+        "side_window_fraction": 0.35,
+        "net_volume_mm3": 9859.85
+      }
+    },
+    {
+      "root": "04",
+      "name": "STS3215_C047_04",
+      "mass_g": 56,
+      "cg_local_mm": [
+        0,
+        51,
+        17.5
+      ],
+      "box_mm": [
+        24.73,
+        36.5,
+        45.23
+      ],
+      "material": "Servo",
+      "detail": "13kgfcm6V de TowerPro; no nominal continuo publicado"
+    },
+    {
+      "root": "04",
+      "name": "Par625 J5",
+      "mass_g": 10,
+      "cg_local_mm": [
+        0,
+        0,
+        55
+      ],
+      "box_mm": [
+        16,
+        38,
+        16
+      ],
+      "material": "Rodamiento",
+      "detail": "Presupuesto a concretar, no peso medido"
+    },
+    {
+      "root": "04",
+      "name": "Bosses y fijaciones J5",
+      "mass_g": 5,
+      "cg_local_mm": [
+        0,
+        0,
+        15
+      ],
+      "box_mm": [
+        35,
+        35,
+        25
+      ],
+      "material": "PLA",
+      "detail": "Presupuesto a concretar, no peso medido"
+    },
+    {
+      "root": "04",
+      "name": "Tornilleria J5",
+      "mass_g": 5,
+      "cg_local_mm": [
+        0,
+        0,
+        20
+      ],
+      "box_mm": [
+        30,
+        35,
+        20
+      ],
+      "material": "Acero",
+      "detail": "Presupuesto a concretar, no peso medido"
+    },
+    {
+      "root": "05",
+      "name": "Eje J5 acero5",
+      "mass_g": 6.7819131409369655,
+      "cg_local_mm": [
+        0,
+        0,
+        0
+      ],
+      "box_mm": [
+        5,
+        44,
+        5
+      ],
+      "material": "Acero",
+      "detail": {
+        "axis": "Y",
+        "od_mm": 5,
+        "id_mm": 0,
+        "length_mm": 44,
+        "net_volume_mm3": 863.9379797371931
+      }
+    },
+    {
+      "root": "05",
+      "name": "Housing J6 abierto",
+      "mass_g": 7,
+      "cg_local_mm": [
+        7.5,
+        0,
+        49
+      ],
+      "box_mm": [
+        36,
+        16,
+        32
+      ],
+      "material": "PLA",
+      "detail": {
+        "inner_mm": [
+          23,
+          12,
+          27
+        ],
+        "wall_mm": 2,
+        "side_window_fraction": 0.35,
+        "net_volume_mm3": 3601.8
+      }
+    },
+    {
+      "root": "05",
+      "name": "STS3032_05",
+      "mass_g": 21.6,
+      "cg_local_mm": [
+        7.5,
+        0,
+        49
+      ],
+      "box_mm": [
+        32,
+        12,
+        27.5
+      ],
+      "material": "Servo",
+      "detail": "1.8kgfcm4.8V; giro180 variante pendiente"
+    },
+    {
+      "root": "05",
+      "name": "Par625 J6",
+      "mass_g": 10,
+      "cg_local_mm": [
+        0,
+        0,
+        65
+      ],
+      "box_mm": [
+        16,
+        16,
+        15
+      ],
+      "material": "Rodamiento",
+      "detail": "Presupuesto a concretar, no peso medido"
+    },
+    {
+      "root": "05",
+      "name": "Nervios J6",
+      "mass_g": 3,
+      "cg_local_mm": [
+        0,
+        0,
+        15
+      ],
+      "box_mm": [
+        28,
+        25,
+        25
+      ],
+      "material": "PLA",
+      "detail": "Presupuesto a concretar, no peso medido"
+    },
+    {
+      "root": "05",
+      "name": "Tornilleria J6",
+      "mass_g": 4,
+      "cg_local_mm": [
+        0,
+        0,
+        15
+      ],
+      "box_mm": [
+        20,
+        25,
+        20
+      ],
+      "material": "Acero",
+      "detail": "Presupuesto a concretar, no peso medido"
+    },
+    {
+      "root": "90",
+      "name": "Pieza50mm200g",
+      "mass_g": 200,
+      "cg_local_mm": [
+        0,
+        0,
+        0
+      ],
+      "box_mm": [
+        50,
+        50,
+        50
+      ],
+      "material": "Carga",
+      "detail": "Usuario"
+    },
+    {
+      "root": "06",
+      "name": "V02_E05_Acople_J6 / Brida",
+      "mass_g": 8.475801348992125,
+      "cg_local_mm": [
+        -1.3609189161989856e-09,
+        0.018754863812490412,
+        -10.155996832966315
+      ],
+      "box_mm": [
+        0,
+        0,
+        0
+      ],
+      "material": "Acero",
+      "tensor_kg_m2": [
+        [
+          6.167932730831742e-07,
+          -1.5174424721076903e-37,
+          -6.900187064865728e-38
+        ],
+        [
+          -1.5174424721076905e-37,
+          6.141301046048639e-07,
+          -2.3297538965885985e-09
+        ],
+        [
+          -6.900187064865727e-38,
+          -2.3297538965885977e-09,
+          2.5754221360093144e-07
+        ]
+      ],
+      "detail": "Geometria/CG/tensor v09, pinza50mm. Volumen nativo; MG92B reemplazo de masa pendiente de montaje."
+    },
+    {
+      "root": "06",
+      "name": "V02_A20_Bastidor_pinza / Plataforma, palma, guias y labios unidos - una impresion",
+      "mass_g": 61.06192690019751,
+      "cg_local_mm": [
+        0.4941778246109277,
+        0.009807069399258891,
+        32.4893120239614
+      ],
+      "box_mm": [
+        0,
+        0,
+        0
+      ],
+      "material": "PLA",
+      "tensor_kg_m2": [
+        [
+          2.5227751830234917e-05,
+          2.9401165348751233e-10,
+          6.035736757417758e-07
+        ],
+        [
+          2.9401165348751233e-10,
+          6.066242569713605e-05,
+          1.7858117059885637e-08
+        ],
+        [
+          6.035736757417759e-07,
+          1.7858117059885637e-08,
+          6.907172542385609e-05
+        ]
+      ],
+      "detail": "Geometria/CG/tensor v09, pinza50mm. Volumen nativo; MG92B reemplazo de masa pendiente de montaje."
+    },
+    {
+      "root": "06",
+      "name": "V03_Prisionero_J6_M2_5x12_REF / Prisionero",
+      "mass_g": 0.4624031687002676,
+      "cg_local_mm": [
+        1.3071004831130478e-10,
+        -8.000000000000023,
+        6.000000000000073
+      ],
+      "box_mm": [
+        0,
+        0,
+        0
+      ],
+      "material": "Acero",
+      "tensor_kg_m2": [
+        [
+          5.72946422703452e-09,
+          1.171455112219692e-40,
+          9.07699818959364e-48
+        ],
+        [
+          1.171455112219692e-40,
+          3.612524520685707e-10,
+          2.021140511893629e-40
+        ],
+        [
+          9.076998169221736e-48,
+          2.021140511893629e-40,
+          5.729464273840438e-09
+        ]
+      ],
+      "detail": "Geometria/CG/tensor v09, pinza50mm. Volumen nativo; MG92B reemplazo de masa pendiente de montaje."
+    },
+    {
+      "root": "06",
+      "name": "V03_Horn_movil_V02_M06_MG90S_J6 / Plato_horn_REF",
+      "mass_g": 0.4790501540123749,
+      "cg_local_mm": [
+        8.437476510500759e-10,
+        -2.245706638127886e-14,
+        -17.71531100478463
+      ],
+      "box_mm": [
+        0,
+        0,
+        0
+      ],
+      "material": "Polimero",
+      "tensor_kg_m2": [
+        [
+          7.908721581951588e-09,
+          -1.7718469262831196e-39,
+          1.2793177819397654e-39
+        ],
+        [
+          -1.77184692628312e-39,
+          7.284697677425363e-09,
+          1.5641771404885178e-39
+        ],
+        [
+          1.2793177819397654e-39,
+          1.5641771404885178e-39,
+          1.4505889818159808e-08
+        ]
+      ],
+      "detail": "Geometria/CG/tensor v09, pinza50mm. Volumen nativo; MG92B reemplazo de masa pendiente de montaje."
+    },
+    {
+      "root": "06",
+      "name": "V03_Tornillo_union_V02_M06_MG90S_J6-1 / Vastago",
+      "mass_g": 0.32121606785709156,
+      "cg_local_mm": [
+        -5.500000000339554,
+        -2.352857549867146e-14,
+        -18.751919385796487
+      ],
+      "box_mm": [
+        0,
+        0,
+        0
+      ],
+      "material": "Acero",
+      "tensor_kg_m2": [
+        [
+          1.194945209995451e-09,
+          -2.945767209163666e-40,
+          -1.4425327234196407e-40
+        ],
+        [
+          -2.945767209163666e-40,
+          1.1949451517420056e-09,
+          2.086416441569897e-40
+        ],
+        [
+          -1.4425327234196407e-40,
+          2.0864164415698974e-40,
+          4.510619311891683e-10
+        ]
+      ],
+      "detail": "Geometria/CG/tensor v09, pinza50mm. Volumen nativo; MG92B reemplazo de masa pendiente de montaje."
+    },
+    {
+      "root": "06",
+      "name": "V03_Tornillo_union_V02_M06_MG90S_J61 / Vastago",
+      "mass_g": 0.32121606785709134,
+      "cg_local_mm": [
+        5.499999999660447,
+        -2.3740544647308157e-14,
+        -18.75191938579649
+      ],
+      "box_mm": [
+        0,
+        0,
+        0
+      ],
+      "material": "Acero",
+      "tensor_kg_m2": [
+        [
+          1.1949452099954293e-09,
+          -2.9457672091635507e-40,
+          -1.442532723419591e-40
+        ],
+        [
+          -2.9457672091635507e-40,
+          1.1949451517419621e-09,
+          2.0864164415698264e-40
+        ],
+        [
+          -1.442532723419591e-40,
+          2.0864164415698264e-40,
+          4.5106193118917233e-10
+        ]
+      ],
+      "detail": "Geometria/CG/tensor v09, pinza50mm. Volumen nativo; MG92B reemplazo de masa pendiente de montaje."
+    },
+    {
+      "root": "06",
+      "name": "V03_Separador_medio_J6 / Separador",
+      "mass_g": 0.22096706088290116,
+      "cg_local_mm": [
+        5.099317276162088e-10,
+        -2.0336973060882383e-14,
+        -7.499999999999937
+      ],
+      "box_mm": [
+        0,
+        0,
+        0
+      ],
+      "material": "Acero",
+      "tensor_kg_m2": [
+        [
+          1.2039019737228492e-09,
+          -2.9678483749368946e-40,
+          2.263181756075992e-40
+        ],
+        [
+          -2.967848374936895e-40,
+          1.2039022799283876e-09,
+          2.578484237273377e-40
+        ],
+        [
+          2.263181756075992e-40,
+          2.578484237273377e-40,
+          2.370976410170761e-09
+        ]
+      ],
+      "detail": "Geometria/CG/tensor v09, pinza50mm. Volumen nativo; MG92B reemplazo de masa pendiente de montaje."
+    },
+    {
+      "root": "06",
+      "name": "V03_Separador_axial_J6 / Separador",
+      "mass_g": 1.3258023652974071,
+      "cg_local_mm": [
+        5.099337818559116e-10,
+        -1.8077309387451008e-14,
+        1.0000000000000795
+      ],
+      "box_mm": [
+        0,
+        0,
+        0
+      ],
+      "material": "Acero",
+      "tensor_kg_m2": [
+        [
+          1.1090335407787902e-08,
+          -2.7339792825440443e-39,
+          6.080382148927771e-40
+        ],
+        [
+          -2.7339792825440443e-39,
+          1.1090337245021105e-08,
+          2.185983398881278e-39
+        ],
+        [
+          6.080382148927772e-40,
+          2.185983398881278e-39,
+          1.4225858461024577e-08
+        ]
+      ],
+      "detail": "Geometria/CG/tensor v09, pinza50mm. Volumen nativo; MG92B reemplazo de masa pendiente de montaje."
+    },
+    {
+      "root": "06",
+      "name": "V03_Tornillo_original_horn_V02_M06_MG90S_J6 / Vastago",
+      "mass_g": 0.32602506081157395,
+      "cg_local_mm": [
+        -3.1193220535662954e-10,
+        -2.380804768178321e-14,
+        -17.315431164901582
+      ],
+      "box_mm": [
+        0,
+        0,
+        0
+      ],
+      "material": "Acero",
+      "tensor_kg_m2": [
+        [
+          1.9939408921240905e-09,
+          -4.915443658004127e-40,
+          -3.0999254100428747e-40
+        ],
+        [
+          -4.915443658004127e-40,
+          1.9939408410623533e-09,
+          3.392673617490063e-40
+        ],
+        [
+          -3.0999254100428747e-40,
+          3.392673617490063e-40,
+          3.9537564598481096e-10
+        ]
+      ],
+      "detail": "Geometria/CG/tensor v09, pinza50mm. Volumen nativo; MG92B reemplazo de masa pendiente de montaje."
+    },
+    {
+      "root": "06",
+      "name": "V03_Tornillo_rosca_plastico_J7-1 / Vastago_REF",
+      "mass_g": 0.37534806547293154,
+      "cg_local_mm": [
+        -7.500000000298424,
+        5.079181899329642e-15,
+        30.871879106438893
+      ],
+      "box_mm": [
+        0,
+        0,
+        0
+      ],
+      "material": "Acero",
+      "tensor_kg_m2": [
+        [
+          3.661358799997642e-09,
+          -9.025946149513155e-40,
+          -6.285545979043024e-40
+        ],
+        [
+          -9.025946149513155e-40,
+          3.6613587457508872e-09,
+          6.153710947911303e-40
+        ],
+        [
+          -6.285545979043024e-40,
+          6.153710947911303e-40,
+          4.200371467230099e-10
+        ]
+      ],
+      "detail": "Geometria/CG/tensor v09, pinza50mm. Volumen nativo; MG92B reemplazo de masa pendiente de montaje."
+    },
+    {
+      "root": "06",
+      "name": "V03_Tornillo_rosca_plastico_J71 / Vastago_REF",
+      "mass_g": 0.3753480654729321,
+      "cg_local_mm": [
+        19.299999999701576,
+        5.4419806064246094e-15,
+        30.87187910643889
+      ],
+      "box_mm": [
+        0,
+        0,
+        0
+      ],
+      "material": "Acero",
+      "tensor_kg_m2": [
+        [
+          3.6613587999977723e-09,
+          -9.02594614951397e-40,
+          -6.285545979043167e-40
+        ],
+        [
+          -9.02594614951397e-40,
+          3.6613587457511908e-09,
+          6.153710947911818e-40
+        ],
+        [
+          -6.285545979043167e-40,
+          6.153710947911818e-40,
+          4.200371467230668e-10
+        ]
+      ],
+      "detail": "Geometria/CG/tensor v09, pinza50mm. Volumen nativo; MG92B reemplazo de masa pendiente de montaje."
+    },
+    {
+      "root": "06",
+      "name": "V02_Mandibula_-1 / Carro",
+      "mass_g": 8.531858074531153,
+      "cg_local_mm": [
+        -25.106888510194707,
+        6.728951243210874,
+        64.2005745434922
+      ],
+      "box_mm": [
+        0,
+        0,
+        0
+      ],
+      "material": "PLA",
+      "tensor_kg_m2": [
+        [
+          3.2556940017105757e-06,
+          -3.3040590550201957e-07,
+          7.598254421479938e-07
+        ],
+        [
+          -3.3040590550201957e-07,
+          3.93562737322414e-06,
+          9.95819066500118e-07
+        ],
+        [
+          7.598254421479936e-07,
+          9.95819066500118e-07,
+          2.2392441637261875e-06
+        ]
+      ],
+      "detail": "Geometria/CG/tensor v09, pinza50mm. Volumen nativo; MG92B reemplazo de masa pendiente de montaje."
+    },
+    {
+      "root": "06",
+      "name": "V02_Almohadilla_-1 / Goma",
+      "mass_g": 1.1967999999999999,
+      "cg_local_mm": [
+        -26.000000000000032,
+        6.532565511068091e-29,
+        77.00000000000001
+      ],
+      "box_mm": [
+        0,
+        0,
+        0
+      ],
+      "material": "Pads",
+      "tensor_kg_m2": [
+        [
+          1.4082346666666603e-07,
+          1.2179304110939732e-38,
+          4.5760464885063177e-38
+        ],
+        [
+          1.2179304110939732e-38,
+          1.1569066666666492e-07,
+          3.2187298191436724e-40
+        ],
+        [
+          4.5760464885063177e-38,
+          3.218729819143672e-40,
+          2.593066666666667e-08
+        ]
+      ],
+      "detail": "Geometria/CG/tensor v09, pinza50mm. Volumen nativo; MG92B reemplazo de masa pendiente de montaje."
+    },
+    {
+      "root": "06",
+      "name": "V02_Mandibula_1 / Carro",
+      "mass_g": 8.53185807453116,
+      "cg_local_mm": [
+        25.106888510194644,
+        -6.728951243210868,
+        64.20057454349217
+      ],
+      "box_mm": [
+        0,
+        0,
+        0
+      ],
+      "material": "PLA",
+      "tensor_kg_m2": [
+        [
+          3.2556940017105867e-06,
+          -3.30405905502016e-07,
+          -7.598254421479973e-07
+        ],
+        [
+          -3.304059055020161e-07,
+          3.935627373224194e-06,
+          -9.95819066500117e-07
+        ],
+        [
+          -7.598254421479973e-07,
+          -9.958190665001172e-07,
+          2.2392441637262277e-06
+        ]
+      ],
+      "detail": "Geometria/CG/tensor v09, pinza50mm. Volumen nativo; MG92B reemplazo de masa pendiente de montaje."
+    },
+    {
+      "root": "06",
+      "name": "V02_Almohadilla_1 / Goma",
+      "mass_g": 1.1968000000000005,
+      "cg_local_mm": [
+        26.0,
+        1.517355277062035e-30,
+        77.00000000000001
+      ],
+      "box_mm": [
+        0,
+        0,
+        0
+      ],
+      "material": "Pads",
+      "tensor_kg_m2": [
+        [
+          1.4082346666666603e-07,
+          1.2179304110939732e-38,
+          4.5760464885063177e-38
+        ],
+        [
+          1.2179304110939732e-38,
+          1.1569066666666492e-07,
+          3.2187298191436732e-40
+        ],
+        [
+          4.5760464885063177e-38,
+          3.218729819143673e-40,
+          2.5930666666666673e-08
+        ]
+      ],
+      "detail": "Geometria/CG/tensor v09, pinza50mm. Volumen nativo; MG92B reemplazo de masa pendiente de montaje."
+    },
+    {
+      "root": "06",
+      "name": "V02_Pinon24_Pinza / Raiz_engranaje",
+      "mass_g": 2.0396434721845287,
+      "cg_local_mm": [
+        4.692388922899667e-12,
+        -1.2993760210438474e-11,
+        46.00000000000004
+      ],
+      "box_mm": [
+        0,
+        0,
+        0
+      ],
+      "material": "PLA",
+      "tensor_kg_m2": [
+        [
+          7.894297366892686e-08,
+          -5.149024478405516e-10,
+          -2.1140254966107486e-38
+        ],
+        [
+          -5.149024478405558e-10,
+          8.018779394924056e-08,
+          -2.7960859188739488e-39
+        ],
+        [
+          -2.1140254966107486e-38,
+          -2.796085918873948e-39,
+          1.5369171835900873e-07
+        ]
+      ],
+      "detail": "Geometria/CG/tensor v09, pinza50mm. Volumen nativo; MG92B reemplazo de masa pendiente de montaje."
+    },
+    {
+      "root": "06",
+      "name": "V03_Horn_movil_V02_M07_MG90S_Pinza / Plato_horn_REF",
+      "mass_g": 0.4790501540123749,
+      "cg_local_mm": [
+        -2.8582304660918566e-10,
+        7.938806545790011e-10,
+        42.784688995215355
+      ],
+      "box_mm": [
+        0,
+        0,
+        0
+      ],
+      "material": "Polimero",
+      "tensor_kg_m2": [
+        [
+          7.25129425936804e-09,
+          -2.3668840018047865e-10,
+          -1.9580506296421674e-39
+        ],
+        [
+          -2.3668840018047865e-10,
+          7.823508514505742e-09,
+          -2.6123079638029993e-40
+        ],
+        [
+          -1.9580506296421674e-39,
+          -2.6123079638029993e-40,
+          1.4387273332656665e-08
+        ]
+      ],
+      "detail": "Geometria/CG/tensor v09, pinza50mm. Volumen nativo; MG92B reemplazo de masa pendiente de montaje."
+    },
+    {
+      "root": "06",
+      "name": "V03_M2x8_union_horn_-1 (1) / Tornillo_vastago",
+      "mass_g": 0.37534806547293154,
+      "cg_local_mm": [
+        2.03242752157283,
+        -5.645284614006117,
+        46.37187910643894
+      ],
+      "box_mm": [
+        0,
+        0,
+        0
+      ],
+      "material": "Acero",
+      "tensor_kg_m2": [
+        [
+          3.6613587519752877e-09,
+          -1.7289073214666744e-17,
+          -3.4947819055873735e-40
+        ],
+        [
+          -1.728907332728269e-17,
+          3.6613587937730876e-09,
+          -1.753945426654423e-40
+        ],
+        [
+          -3.4947819055873735e-40,
+          -1.753945426654423e-40,
+          4.200371467230045e-10
+        ]
+      ],
+      "detail": "Geometria/CG/tensor v09, pinza50mm. Volumen nativo; MG92B reemplazo de masa pendiente de montaje."
+    },
+    {
+      "root": "06",
+      "name": "V03_Tuerca_M2_horn_-1 (1) / Tuerca_REF",
+      "mass_g": 0.16927655199779396,
+      "cg_local_mm": [
+        2.0324275213795397,
+        -5.645284613469235,
+        41.200000000000045
+      ],
+      "box_mm": [
+        0,
+        0,
+        0
+      ],
+      "material": "Acero",
+      "tensor_kg_m2": [
+        [
+          3.022997184089386e-10,
+          2.1912989547132583e-17,
+          -7.57565455973577e-41
+        ],
+        [
+          2.191298954815359e-17,
+          3.0229966543243037e-10,
+          -1.1031258110984915e-41
+        ],
+        [
+          -7.57565455973577e-41,
+          -1.1031258110984915e-41,
+          5.323747216556435e-10
+        ]
+      ],
+      "detail": "Geometria/CG/tensor v09, pinza50mm. Volumen nativo; MG92B reemplazo de masa pendiente de montaje."
+    },
+    {
+      "root": "06",
+      "name": "V03_M2x8_union_horn_1 (1) / Tornillo_vastago",
+      "mass_g": 0.3753480654729314,
+      "cg_local_mm": [
+        -2.0324275213706673,
+        5.64528461344459,
+        46.37187910643893
+      ],
+      "box_mm": [
+        0,
+        0,
+        0
+      ],
+      "material": "Acero",
+      "tensor_kg_m2": [
+        [
+          3.6613587519752857e-09,
+          -1.7289075296029983e-17,
+          -3.4947819055873666e-40
+        ],
+        [
+          -1.7289075139536786e-17,
+          3.66135879377309e-09,
+          -1.753945426654423e-40
+        ],
+        [
+          -3.4947819055873666e-40,
+          -1.753945426654423e-40,
+          4.2003714672299905e-10
+        ]
+      ],
+      "detail": "Geometria/CG/tensor v09, pinza50mm. Volumen nativo; MG92B reemplazo de masa pendiente de montaje."
+    },
+    {
+      "root": "06",
+      "name": "V03_Tuerca_M2_horn_1 (1) / Tuerca_REF",
+      "mass_g": 0.16927655199779398,
+      "cg_local_mm": [
+        -2.032427521563957,
+        5.645284613981473,
+        41.200000000000045
+      ],
+      "box_mm": [
+        0,
+        0,
+        0
+      ],
+      "material": "Acero",
+      "tensor_kg_m2": [
+        [
+          3.022997184089387e-10,
+          2.1912989262789247e-17,
+          -7.575654559735776e-41
+        ],
+        [
+          2.1912989276734952e-17,
+          3.0229966543243114e-10,
+          -1.1031258110984928e-41
+        ],
+        [
+          -7.575654559735776e-41,
+          -1.1031258110984928e-41,
+          5.323747216556441e-10
+        ]
+      ],
+      "detail": "Geometria/CG/tensor v09, pinza50mm. Volumen nativo; MG92B reemplazo de masa pendiente de montaje."
+    },
+    {
+      "root": "06",
+      "name": "V03_Tornillo_original_horn_V02_M07_MG90S_Pinza / Vastago",
+      "mass_g": 0.326025060811574,
+      "cg_local_mm": [
+        1.0566057827051285e-10,
+        -2.9348354639279614e-10,
+        43.184568835098375
+      ],
+      "box_mm": [
+        0,
+        0,
+        0
+      ],
+      "material": "Acero",
+      "tensor_kg_m2": [
+        [
+          1.9939408469212765e-09,
+          -1.627398562105161e-17,
+          -2.0602516936619966e-40
+        ],
+        [
+          -1.627398568777294e-17,
+          1.9939408862650155e-09,
+          -9.43630714993296e-41
+        ],
+        [
+          -2.0602516936619966e-40,
+          -9.43630714993296e-41,
+          3.9537564598481096e-10
+        ]
+      ],
+      "detail": "Geometria/CG/tensor v09, pinza50mm. Volumen nativo; MG92B reemplazo de masa pendiente de montaje."
+    },
+    {
+      "root": "06",
+      "name": "Reserva adaptacion MG92B",
+      "mass_g": 2,
+      "cg_local_mm": [
+        30,
+        0,
+        35
+      ],
+      "box_mm": [
+        30,
+        20,
+        20
+      ],
+      "material": "PLA"
+    },
+    {
+      "root": "00",
+      "name": "Portal y portarrodamientos Al",
+      "mass_g": 45,
+      "cg_local_mm": [
+        0,
+        -32,
+        32
+      ],
+      "box_mm": [
+        86,
+        35,
+        45
+      ],
+      "material": "Al6061"
+    },
+    {
+      "root": "00",
+      "name": "Reserva cuatro pies plegables y anclajes",
+      "mass_g": 350,
+      "cg_local_mm": [
+        0,
+        -32,
+        0
+      ],
+      "box_mm": [
+        150,
+        160,
+        20
+      ],
+      "material": "Varios"
+    },
+    {
+      "root": "00",
+      "name": "Contraplaca inferior unica150x60x2 ventana130x40",
+      "mass_g": 20.52,
+      "cg_local_mm": [
+        0,
+        -32,
+        -4
+      ],
+      "box_mm": [
+        150,
+        60,
+        2
+      ],
+      "material": "Al6061"
+    },
+    {
+      "root": "00",
+      "name": "Metrica de traslado y soporte J1",
+      "mass_g": 20,
+      "cg_local_mm": [
+        -70,
+        -32,
+        25
+      ],
+      "box_mm": [
+        50,
+        40,
+        4
+      ],
+      "material": "Al6061"
+    },
+    {
+      "root": "01",
+      "name": "Transmision yaw5a1",
+      "mass_g": 50,
+      "cg_local_mm": [
+        -25,
+        0,
+        -33
+      ],
+      "box_mm": [
+        150,
+        70,
+        12
+      ],
+      "material": "Al6061"
+    },
+    {
+      "root": "01",
+      "name": "Reductor hombro8-9a1",
+      "mass_g": 90,
+      "cg_local_mm": [
+        -15,
+        34,
+        44
+      ],
+      "box_mm": [
+        72,
+        26,
+        65
+      ],
+      "material": "Al6061"
+    },
+    {
+      "root": "02",
+      "name": "Reductor codo6a1",
+      "mass_g": 70,
+      "cg_local_mm": [
+        10,
+        34,
+        80
+      ],
+      "box_mm": [
+        50,
+        26,
+        58
+      ],
+      "material": "Al6061"
+    },
+    {
+      "root": "03",
+      "name": "Accionamiento J4 3a1",
+      "mass_g": 17,
+      "cg_local_mm": [
+        24,
+        0,
+        73
+      ],
+      "box_mm": [
+        36,
+        25,
+        32
+      ],
+      "material": "Al6061"
+    },
+    {
+      "root": "04",
+      "name": "Rueda salida J4 60T",
+      "mass_g": 5,
+      "cg_local_mm": [
+        0,
+        0,
+        0
+      ],
+      "box_mm": [
+        38,
+        38,
+        5
+      ],
+      "material": "Al6061"
+    },
+    {
+      "root": "04",
+      "name": "Reductor J5 3-4a1",
+      "mass_g": 45,
+      "cg_local_mm": [
+        0,
+        28,
+        45
+      ],
+      "box_mm": [
+        38,
+        15,
+        45
+      ],
+      "material": "Al6061"
+    },
+    {
+      "root": "06",
+      "name": "STS3032_pinza",
+      "mass_g": 21.6,
+      "cg_local_mm": [
+        31.5,
+        0,
+        24
+      ],
+      "box_mm": [
+        32,
+        12,
+        27.5
+      ],
+      "material": "Servo"
+    },
+    {
+      "root": "06",
+      "name": "Reductor y soporte pinza3a1",
+      "mass_g": 18,
+      "cg_local_mm": [
+        12,
+        0,
+        44
+      ],
+      "box_mm": [
+        50,
+        35,
+        15
+      ],
+      "material": "Al6061"
+    }
+  ]
+}

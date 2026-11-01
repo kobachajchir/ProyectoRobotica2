@@ -9,7 +9,7 @@ import { getScreenMetadata } from './screenCatalog';
 export interface OledCanvas128x64Props {
   oledBuffer: Afr2OledBuffer;
   screenCode: string;
-  sourceMode: 'local-firmware-preview' | 'remote-snapshot';
+  sourceMode: 'local-firmware-preview' | 'local-ui-simulation' | 'remote-snapshot';
   showGrid?: boolean;
   compact?: boolean;
   scale?: number;
@@ -100,7 +100,7 @@ export function OledCanvas128x64({
         >
           {sourceMode === 'remote-snapshot'
             ? compact ? 'Captura recibida' : 'SNAPSHOT REMOTO (wire)'
-            : 'VISTA LOCAL · BIBLIOTECA ATmega'}
+            : sourceMode === 'local-ui-simulation' ? 'SIMULACION UI · DATOS FICTICIOS' : 'VISTA LOCAL · BIBLIOTECA ATmega'}
         </span>
       </div>
 

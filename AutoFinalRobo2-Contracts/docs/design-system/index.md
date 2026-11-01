@@ -1,3 +1,19 @@
+> **Aplicacion31-12/VIS-047:** Simulador UI con pantalla/encoder, guia contextual,
+> barra de sesion y catalogo filtrable. Conserva controles, raster y navegacion.
+> Composicion Propuesta, aspecto/interaccion No verificados; sin tests/build ni
+> navegador. [Cobertura](coverage-20261031-12.json).
+
+> **Aplicación31-09/VIS-046:** nuevo logo oficial del robot neón aportado por
+> el usuario; aplicado en BrandMark, bienvenida e iconos de app. Proporciones
+> y transparencia preservadas, nombres de activos renovados. Fuente/derivados
+> actualizados, ejecución No verificada. [Cobertura](coverage-20261031-09.json).
+
+> **Aplicación31-06/VIS-045:** escena amplia con cielo celeste y suelo crema,
+> controles por tarea y matemática opcional. Identidad0.1.9 autorizada conservada;
+> dirección Confirmada, composición/colores Propuesta, ejecución No verificada.
+> Montaje v17 y eje SG90 corregidos desde CAD. [Cobertura](coverage-20261031-06.json).
+> Sin tests/build/validadores/navegador/flasheo; paquetes previos sin promover.
+
 > **Aplicación28-02 / VIS-046:** Protocol Studio conserva el flujo AutoMicro con formularios, campos desplegables, salidas y mapa de bloques seleccionables. Componentes/tokens AFR2 0.1.9 y superficies sólidas; dirección Confirmada, referencia Observada en fuente, composición Propuesta y aspecto No verificado. [Cobertura](coverage-20261028-10.json). Sin tests/build/validadores/navegador.
 
 > **Aplicación28-01 / VIS-045:** Protocol Studio desde Desarrollador con Traductor/Constructor, superficies sólidas y primitivas AFR2. Continúa identidad 0.1.9 autorizada para Desarrollador; dirección Confirmada, composición Propuesta y aspecto No verificado. [Cobertura](coverage-20261028-09.json). Sin tests, build, validadores ni navegador.

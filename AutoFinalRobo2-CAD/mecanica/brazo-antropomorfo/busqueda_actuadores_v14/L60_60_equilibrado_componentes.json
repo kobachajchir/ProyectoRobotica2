@@ -1,0 +1,1638 @@
+{
+  "parameters_mm": {
+    "base_top": 60,
+    "tower_h": 40,
+    "axis_y_mm": -32,
+    "link1": 60,
+    "link2": 60,
+    "wrist45": 55,
+    "wrist56": 40,
+    "payload_z": 52
+  },
+  "parts": [
+    {
+      "root": "00",
+      "name": "Montura superior simple",
+      "mass_g": 87.25249406741959,
+      "cg_local_mm": [
+        0,
+        -32,
+        5
+      ],
+      "box_mm": [
+        150,
+        60,
+        4
+      ],
+      "material": "Al6061",
+      "detail": {
+        "outer_mm": [
+          150,
+          60,
+          4
+        ],
+        "plane": "XY",
+        "symmetric_windows_mm": [
+          [
+            20,
+            15
+          ],
+          [
+            20,
+            24
+          ]
+        ],
+        "through_holes_d_n": [
+          [
+            3.4,
+            6
+          ],
+          [
+            10.5,
+            1
+          ]
+        ],
+        "net_volume_mm3": 32315.738543488736
+      }
+    },
+    {
+      "root": "00",
+      "name": "Carcasa base con ventanas",
+      "mass_g": 16,
+      "cg_local_mm": [
+        86.2,
+        -44.5,
+        54
+      ],
+      "box_mm": [
+        29,
+        50,
+        41
+      ],
+      "material": "PLA",
+      "detail": {
+        "inner_mm": [
+          40,
+          20,
+          40
+        ],
+        "wall_mm": 2,
+        "side_window_fraction": 0.3,
+        "net_volume_mm3": 9280.0
+      }
+    },
+    {
+      "root": "00",
+      "name": "STS3215_C047_00",
+      "mass_g": 56,
+      "cg_local_mm": [
+        86.2,
+        -44.5,
+        54
+      ],
+      "box_mm": [
+        24.73,
+        45.23,
+        36.5
+      ],
+      "material": "Servo",
+      "detail": "Starware90g; 63kgfcm7.4V,270grados"
+    },
+    {
+      "root": "01",
+      "name": "Control y potencia TTL 12V6V propuestos",
+      "mass_g": 150,
+      "cg_local_mm": [
+        -70,
+        20,
+        -10
+      ],
+      "box_mm": [
+        60,
+        30,
+        25
+      ],
+      "material": "Electronica",
+      "detail": "Nano7,PCA968512,XL401650,borneras8g; dimension de paquete propuesta"
+    },
+    {
+      "root": "01",
+      "name": "Bateria adicional2S y sujecion",
+      "mass_g": 130,
+      "cg_local_mm": [
+        -70,
+        -20,
+        -10.5
+      ],
+      "box_mm": [
+        65,
+        35,
+        28
+      ],
+      "material": "Potencia",
+      "detail": "Reserva de compra; masa y corriente del producto pendientes"
+    },
+    {
+      "root": "00",
+      "name": "Cableado y protecciones",
+      "mass_g": 20,
+      "cg_local_mm": [
+        0,
+        -20,
+        10
+      ],
+      "box_mm": [
+        80,
+        50,
+        10
+      ],
+      "material": "Cables",
+      "detail": "Presupuesto a concretar, no peso medido"
+    },
+    {
+      "root": "00",
+      "name": "Fijaciones base",
+      "mass_g": 18,
+      "cg_local_mm": [
+        0,
+        -10,
+        5
+      ],
+      "box_mm": [
+        130,
+        45,
+        10
+      ],
+      "material": "Acero",
+      "detail": "Tornillos/tuercas presupuestados; no sustituir por aluminio"
+    },
+    {
+      "root": "00",
+      "name": "Par608 base",
+      "mass_g": 25,
+      "cg_local_mm": [
+        0,
+        -32,
+        43
+      ],
+      "box_mm": [
+        22,
+        22,
+        17
+      ],
+      "material": "Rodamiento",
+      "detail": "2x608 de12.5g; eje8mm"
+    },
+    {
+      "root": "01",
+      "name": "Eje yaw acero8mm",
+      "mass_g": 21.70212205099829,
+      "cg_local_mm": [
+        0,
+        0,
+        -17.5
+      ],
+      "box_mm": [
+        8,
+        8,
+        55
+      ],
+      "material": "Acero",
+      "detail": {
+        "axis": "Z",
+        "od_mm": 8,
+        "id_mm": 0,
+        "length_mm": 40,
+        "net_volume_mm3": 2010.6192982974676
+      }
+    },
+    {
+      "root": "01",
+      "name": "Brida yaw aluminio",
+      "mass_g": 20.662883201190787,
+      "cg_local_mm": [
+        0,
+        0,
+        2.5
+      ],
+      "box_mm": [
+        50,
+        50,
+        4
+      ],
+      "material": "Al6061",
+      "detail": {
+        "axis": "Z",
+        "od_mm": 50,
+        "id_mm": 8,
+        "length_mm": 3,
+        "net_volume_mm3": 5739.689778108552
+      }
+    },
+    {
+      "root": "01",
+      "name": "Hub integral brida yaw",
+      "mass_g": 4.275079283004991,
+      "cg_local_mm": [
+        0,
+        0,
+        -2.5
+      ],
+      "box_mm": [
+        20,
+        20,
+        6
+      ],
+      "material": "Al6061",
+      "detail": {
+        "axis": "Z",
+        "od_mm": 20,
+        "id_mm": 8,
+        "length_mm": 12,
+        "net_volume_mm3": 3166.7253948185116
+      }
+    },
+    {
+      "root": "01",
+      "name": "Plataforma y brazo contrapeso Al integral",
+      "mass_g": 39.435650326515486,
+      "cg_local_mm": [
+        -45,
+        0,
+        5.5
+      ],
+      "box_mm": [
+        141,
+        75,
+        2
+      ],
+      "material": "Al6061",
+      "detail": {
+        "axis": "Z",
+        "od_mm": 62,
+        "id_mm": 40,
+        "length_mm": 3,
+        "net_volume_mm3": 5287.300435991622
+      }
+    },
+    {
+      "root": "01",
+      "name": "Costilla torre-1",
+      "mass_g": 7.469022009651995,
+      "cg_local_mm": [
+        -20,
+        0,
+        24
+      ],
+      "box_mm": [
+        22,
+        4,
+        40
+      ],
+      "material": "Al6061",
+      "detail": {
+        "outer_mm": [
+          40,
+          22,
+          4
+        ],
+        "plane": "XZ",
+        "symmetric_windows_mm": [
+          [
+            15,
+            8
+          ]
+        ],
+        "through_holes_d_n": [
+          [
+            8,
+            1
+          ],
+          [
+            3.4,
+            2
+          ]
+        ],
+        "net_volume_mm3": 2766.304448019257
+      }
+    },
+    {
+      "root": "01",
+      "name": "Costilla torre1",
+      "mass_g": 7.469022009651995,
+      "cg_local_mm": [
+        20,
+        0,
+        24
+      ],
+      "box_mm": [
+        22,
+        4,
+        40
+      ],
+      "material": "Al6061",
+      "detail": {
+        "outer_mm": [
+          40,
+          22,
+          4
+        ],
+        "plane": "XZ",
+        "symmetric_windows_mm": [
+          [
+            15,
+            8
+          ]
+        ],
+        "through_holes_d_n": [
+          [
+            8,
+            1
+          ],
+          [
+            3.4,
+            2
+          ]
+        ],
+        "net_volume_mm3": 2766.304448019257
+      }
+    },
+    {
+      "root": "01",
+      "name": "Nervios y bosses torre",
+      "mass_g": 5,
+      "cg_local_mm": [
+        0,
+        0,
+        15
+      ],
+      "box_mm": [
+        45,
+        30,
+        30
+      ],
+      "material": "PLA",
+      "detail": "Presupuesto a concretar, no peso medido"
+    },
+    {
+      "root": "01",
+      "name": "Housing hombro aligerado",
+      "mass_g": 16,
+      "cg_local_mm": [
+        -42,
+        60,
+        27.5
+      ],
+      "box_mm": [
+        29,
+        41,
+        50
+      ],
+      "material": "PLA",
+      "detail": {
+        "inner_mm": [
+          41.5,
+          22,
+          42.7
+        ],
+        "wall_mm": 2,
+        "side_window_fraction": 0.3,
+        "net_volume_mm3": 10436.3
+      }
+    },
+    {
+      "root": "01",
+      "name": "STS3215_C047_01",
+      "mass_g": 56,
+      "cg_local_mm": [
+        -35,
+        60,
+        27.5
+      ],
+      "box_mm": [
+        24.72,
+        36.5,
+        45.22
+      ],
+      "material": "Servo",
+      "detail": "63kgfcm7.4V; directo, sin rueda20/40 de v09"
+    },
+    {
+      "root": "01",
+      "name": "Par608 hombro",
+      "mass_g": 25,
+      "cg_local_mm": [
+        0,
+        0,
+        40
+      ],
+      "box_mm": [
+        22,
+        51,
+        22
+      ],
+      "material": "Rodamiento",
+      "detail": "Presupuesto a concretar, no peso medido"
+    },
+    {
+      "root": "01",
+      "name": "Tornilleria y horn hombro",
+      "mass_g": 9,
+      "cg_local_mm": [
+        0,
+        0,
+        35
+      ],
+      "box_mm": [
+        40,
+        45,
+        20
+      ],
+      "material": "Acero",
+      "detail": "Presupuesto a concretar, no peso medido"
+    },
+    {
+      "root": "02",
+      "name": "Eje hombro acero8mm",
+      "mass_g": 23.67504223745268,
+      "cg_local_mm": [
+        0,
+        0,
+        0
+      ],
+      "box_mm": [
+        8,
+        60,
+        8
+      ],
+      "material": "Acero",
+      "detail": {
+        "axis": "Y",
+        "od_mm": 8,
+        "id_mm": 0,
+        "length_mm": 46,
+        "net_volume_mm3": 2312.2121930420876
+      }
+    },
+    {
+      "root": "02",
+      "name": "Tubo25x1.5 corte",
+      "mass_g": 4.8172396351982485,
+      "cg_local_mm": [
+        0,
+        0,
+        30.0
+      ],
+      "box_mm": [
+        25,
+        25,
+        30
+      ],
+      "material": "PVC",
+      "detail": {
+        "axis": "Z",
+        "od_mm": 25,
+        "id_mm": 22,
+        "length_mm": 110.0,
+        "net_volume_mm3": 12181.525514294422
+      }
+    },
+    {
+      "root": "02",
+      "name": "Boss metalico codo-1",
+      "mass_g": 4.453207586463532,
+      "cg_local_mm": [
+        0,
+        -20,
+        60.0
+      ],
+      "box_mm": [
+        28,
+        7,
+        28
+      ],
+      "material": "Al6061",
+      "detail": {
+        "axis": "Y",
+        "od_mm": 28,
+        "id_mm": 22,
+        "length_mm": 7,
+        "net_volume_mm3": 1649.3361431346414
+      }
+    },
+    {
+      "root": "02",
+      "name": "Boss metalico codo1",
+      "mass_g": 4.453207586463532,
+      "cg_local_mm": [
+        0,
+        20,
+        60.0
+      ],
+      "box_mm": [
+        28,
+        7,
+        28
+      ],
+      "material": "Al6061",
+      "detail": {
+        "axis": "Y",
+        "od_mm": 28,
+        "id_mm": 22,
+        "length_mm": 7,
+        "net_volume_mm3": 1649.3361431346414
+      }
+    },
+    {
+      "root": "02",
+      "name": "Housing codo con ventanas",
+      "mass_g": 16,
+      "cg_local_mm": [
+        0,
+        60,
+        23.5
+      ],
+      "box_mm": [
+        29,
+        41,
+        50
+      ],
+      "material": "PLA",
+      "detail": {
+        "inner_mm": [
+          41.5,
+          22,
+          42.7
+        ],
+        "wall_mm": 2,
+        "side_window_fraction": 0.3,
+        "net_volume_mm3": 10436.3
+      }
+    },
+    {
+      "root": "02",
+      "name": "STS3215_C047_02",
+      "mass_g": 56,
+      "cg_local_mm": [
+        0,
+        60,
+        23.5
+      ],
+      "box_mm": [
+        24.72,
+        36.5,
+        45.22
+      ],
+      "material": "Servo",
+      "detail": "Desplazado24mm para reductor28/20; par maximo55kgfcm6V conservador en variante PWM"
+    },
+    {
+      "root": "02",
+      "name": "Par608 codo",
+      "mass_g": 25,
+      "cg_local_mm": [
+        0,
+        0,
+        60.0
+      ],
+      "box_mm": [
+        22,
+        47,
+        22
+      ],
+      "material": "Rodamiento",
+      "detail": "Presupuesto a concretar, no peso medido"
+    },
+    {
+      "root": "02",
+      "name": "Fijaciones brazo",
+      "mass_g": 7,
+      "cg_local_mm": [
+        0,
+        0,
+        30.0
+      ],
+      "box_mm": [
+        30,
+        30,
+        140.0
+      ],
+      "material": "Acero",
+      "detail": "Presupuesto a concretar, no peso medido"
+    },
+    {
+      "root": "03",
+      "name": "Eje codo acero8mm",
+      "mass_g": 27.62088261036146,
+      "cg_local_mm": [
+        0,
+        0,
+        0
+      ],
+      "box_mm": [
+        8,
+        70,
+        8
+      ],
+      "material": "Acero",
+      "detail": {
+        "axis": "Y",
+        "od_mm": 8,
+        "id_mm": 0,
+        "length_mm": 70,
+        "net_volume_mm3": 3518.583772020568
+      }
+    },
+    {
+      "root": "03",
+      "name": "Tubo20x1.5 corte",
+      "mass_g": 1.7697376815834702,
+      "cg_local_mm": [
+        0,
+        0,
+        22.0
+      ],
+      "box_mm": [
+        20,
+        20,
+        14
+      ],
+      "material": "PVC",
+      "detail": {
+        "axis": "Z",
+        "od_mm": 20,
+        "id_mm": 17,
+        "length_mm": 90.0,
+        "net_volume_mm3": 7846.127652340509
+      }
+    },
+    {
+      "root": "03",
+      "name": "Housing J4 con ventanas",
+      "mass_g": 8,
+      "cg_local_mm": [
+        7.5,
+        0,
+        44
+      ],
+      "box_mm": [
+        36,
+        16,
+        32
+      ],
+      "material": "PLA",
+      "detail": {
+        "inner_mm": [
+          23,
+          12,
+          27
+        ],
+        "wall_mm": 2,
+        "side_window_fraction": 0.25,
+        "net_volume_mm3": 4023.0
+      }
+    },
+    {
+      "root": "03",
+      "name": "STS3032_J4_directo",
+      "mass_g": 21.6,
+      "cg_local_mm": [
+        7.5,
+        0,
+        44
+      ],
+      "box_mm": [
+        32,
+        12,
+        27.5
+      ],
+      "material": "Servo",
+      "detail": "Motor desplazado fuera del tubo ID17; transmision1:1, giro180 por confirmar variante"
+    },
+    {
+      "root": "03",
+      "name": "Par625 J4",
+      "mass_g": 10,
+      "cg_local_mm": [
+        0,
+        0,
+        73.5
+      ],
+      "box_mm": [
+        16,
+        16,
+        12
+      ],
+      "material": "Rodamiento",
+      "detail": "2x626-2Z,6x19x6; presupuesto9g/unidad vs8.8g de catalogo SKF"
+    },
+    {
+      "root": "03",
+      "name": "Fijaciones antebrazo",
+      "mass_g": 6,
+      "cg_local_mm": [
+        0,
+        0,
+        30.0
+      ],
+      "box_mm": [
+        25,
+        25,
+        120.0
+      ],
+      "material": "Acero",
+      "detail": "Presupuesto a concretar, no peso medido"
+    },
+    {
+      "root": "04",
+      "name": "Eje J4 acero5",
+      "mass_g": 4.3157629078689785,
+      "cg_local_mm": [
+        0,
+        0,
+        17.5
+      ],
+      "box_mm": [
+        5,
+        5,
+        28
+      ],
+      "material": "Acero",
+      "detail": {
+        "axis": "Z",
+        "od_mm": 6,
+        "id_mm": 0,
+        "length_mm": 28,
+        "net_volume_mm3": 791.6813487046279
+      }
+    },
+    {
+      "root": "04",
+      "name": "Horquilla J5-1",
+      "mass_g": 10.922894822546874,
+      "cg_local_mm": [
+        0,
+        -16,
+        32
+      ],
+      "box_mm": [
+        30,
+        2.5,
+        60
+      ],
+      "material": "Al6061",
+      "detail": {
+        "outer_mm": [
+          60,
+          30,
+          2.5
+        ],
+        "plane": "XZ",
+        "symmetric_windows_mm": [
+          [
+            12,
+            12
+          ]
+        ],
+        "through_holes_d_n": [
+          [
+            5,
+            1
+          ],
+          [
+            3.4,
+            2
+          ]
+        ],
+        "net_volume_mm3": 4045.516600943287
+      }
+    },
+    {
+      "root": "04",
+      "name": "Horquilla J51",
+      "mass_g": 10.922894822546874,
+      "cg_local_mm": [
+        0,
+        16,
+        32
+      ],
+      "box_mm": [
+        30,
+        2.5,
+        60
+      ],
+      "material": "Al6061",
+      "detail": {
+        "outer_mm": [
+          60,
+          30,
+          2.5
+        ],
+        "plane": "XZ",
+        "symmetric_windows_mm": [
+          [
+            12,
+            12
+          ]
+        ],
+        "through_holes_d_n": [
+          [
+            5,
+            1
+          ],
+          [
+            3.4,
+            2
+          ]
+        ],
+        "net_volume_mm3": 4045.516600943287
+      }
+    },
+    {
+      "root": "04",
+      "name": "Travesano horquilla J5",
+      "mass_g": 8.59982558516707,
+      "cg_local_mm": [
+        0,
+        0,
+        24.75
+      ],
+      "box_mm": [
+        35,
+        38,
+        2.5
+      ],
+      "material": "Al6061",
+      "detail": {
+        "outer_mm": [
+          35,
+          38,
+          2.5
+        ],
+        "plane": "XY",
+        "symmetric_windows_mm": [],
+        "through_holes_d_n": [
+          [
+            5,
+            1
+          ],
+          [
+            3.4,
+            4
+          ]
+        ],
+        "net_volume_mm3": 3185.1205870989143
+      }
+    },
+    {
+      "root": "04",
+      "name": "Separadores union horquilla",
+      "mass_g": 6,
+      "cg_local_mm": [
+        0,
+        0,
+        15
+      ],
+      "box_mm": [
+        35,
+        35,
+        20
+      ],
+      "material": "Al6061",
+      "detail": "Separadores/escuadras a concretar para union atornillada"
+    },
+    {
+      "root": "04",
+      "name": "Housing J5 ventanas",
+      "mass_g": 8,
+      "cg_local_mm": [
+        -20,
+        53.75,
+        37.5
+      ],
+      "box_mm": [
+        16,
+        32,
+        36
+      ],
+      "material": "PLA",
+      "detail": {
+        "inner_mm": [
+          41.5,
+          22,
+          42.7
+        ],
+        "wall_mm": 2,
+        "side_window_fraction": 0.35,
+        "net_volume_mm3": 9859.85
+      }
+    },
+    {
+      "root": "04",
+      "name": "STS3032_J5",
+      "mass_g": 21.6,
+      "cg_local_mm": [
+        -20,
+        53.75,
+        37.5
+      ],
+      "box_mm": [
+        12,
+        27.5,
+        32
+      ],
+      "material": "Servo",
+      "detail": "13kgfcm6V de TowerPro; no nominal continuo publicado"
+    },
+    {
+      "root": "04",
+      "name": "Par625 J5",
+      "mass_g": 10,
+      "cg_local_mm": [
+        0,
+        0,
+        55
+      ],
+      "box_mm": [
+        16,
+        38,
+        16
+      ],
+      "material": "Rodamiento",
+      "detail": "Presupuesto a concretar, no peso medido"
+    },
+    {
+      "root": "04",
+      "name": "Bosses y fijaciones J5",
+      "mass_g": 5,
+      "cg_local_mm": [
+        0,
+        0,
+        15
+      ],
+      "box_mm": [
+        35,
+        35,
+        25
+      ],
+      "material": "PLA",
+      "detail": "Presupuesto a concretar, no peso medido"
+    },
+    {
+      "root": "04",
+      "name": "Tornilleria J5",
+      "mass_g": 5,
+      "cg_local_mm": [
+        0,
+        0,
+        20
+      ],
+      "box_mm": [
+        30,
+        35,
+        20
+      ],
+      "material": "Acero",
+      "detail": "Presupuesto a concretar, no peso medido"
+    },
+    {
+      "root": "05",
+      "name": "Housing J6 abierto",
+      "mass_g": 7,
+      "cg_local_mm": [
+        7.5,
+        0,
+        5.25
+      ],
+      "box_mm": [
+        36,
+        16,
+        32
+      ],
+      "material": "PLA",
+      "detail": {
+        "inner_mm": [
+          23,
+          12,
+          27
+        ],
+        "wall_mm": 2,
+        "side_window_fraction": 0.35,
+        "net_volume_mm3": 3601.8
+      }
+    },
+    {
+      "root": "05",
+      "name": "STS3032_05",
+      "mass_g": 21.6,
+      "cg_local_mm": [
+        7.5,
+        0,
+        5.25
+      ],
+      "box_mm": [
+        32,
+        12,
+        27.5
+      ],
+      "material": "Servo",
+      "detail": "1.8kgfcm4.8V; giro180 variante pendiente"
+    },
+    {
+      "root": "05",
+      "name": "Par625 J6",
+      "mass_g": 10,
+      "cg_local_mm": [
+        0,
+        0,
+        34.75
+      ],
+      "box_mm": [
+        16,
+        16,
+        15
+      ],
+      "material": "Rodamiento",
+      "detail": "Presupuesto a concretar, no peso medido"
+    },
+    {
+      "root": "05",
+      "name": "Nervios J6",
+      "mass_g": 3,
+      "cg_local_mm": [
+        0,
+        0,
+        15
+      ],
+      "box_mm": [
+        28,
+        25,
+        25
+      ],
+      "material": "PLA",
+      "detail": "Presupuesto a concretar, no peso medido"
+    },
+    {
+      "root": "05",
+      "name": "Tornilleria J6",
+      "mass_g": 4,
+      "cg_local_mm": [
+        0,
+        0,
+        15
+      ],
+      "box_mm": [
+        20,
+        25,
+        20
+      ],
+      "material": "Acero",
+      "detail": "Presupuesto a concretar, no peso medido"
+    },
+    {
+      "root": "90",
+      "name": "Pieza50mm200g",
+      "mass_g": 200,
+      "cg_local_mm": [
+        0,
+        0,
+        0
+      ],
+      "box_mm": [
+        50,
+        50,
+        50
+      ],
+      "material": "Carga",
+      "detail": "Usuario"
+    },
+    {
+      "root": "00",
+      "name": "Portal y portarrodamientos Al",
+      "mass_g": 45,
+      "cg_local_mm": [
+        0,
+        -32,
+        32
+      ],
+      "box_mm": [
+        86,
+        35,
+        45
+      ],
+      "material": "Al6061"
+    },
+    {
+      "root": "00",
+      "name": "Contraplaca inferior unica150x60x2 ventana130x40",
+      "mass_g": 20.52,
+      "cg_local_mm": [
+        0,
+        -32,
+        -4
+      ],
+      "box_mm": [
+        150,
+        60,
+        2
+      ],
+      "material": "Al6061"
+    },
+    {
+      "root": "00",
+      "name": "Metrica de traslado y soporte J1",
+      "mass_g": 20,
+      "cg_local_mm": [
+        70,
+        -32,
+        25
+      ],
+      "box_mm": [
+        50,
+        40,
+        4
+      ],
+      "material": "Al6061"
+    },
+    {
+      "root": "01",
+      "name": "Transmision yaw5a1",
+      "mass_g": 50,
+      "cg_local_mm": [
+        25,
+        0,
+        -33
+      ],
+      "box_mm": [
+        150,
+        70,
+        12
+      ],
+      "material": "Al6061"
+    },
+    {
+      "root": "01",
+      "name": "Reductor hombro8-9a1",
+      "mass_g": 90,
+      "cg_local_mm": [
+        -15,
+        34,
+        44
+      ],
+      "box_mm": [
+        72,
+        26,
+        65
+      ],
+      "material": "Al6061"
+    },
+    {
+      "root": "02",
+      "name": "Reductor codo6a1",
+      "mass_g": 70,
+      "cg_local_mm": [
+        10,
+        34,
+        50
+      ],
+      "box_mm": [
+        50,
+        26,
+        58
+      ],
+      "material": "Al6061"
+    },
+    {
+      "root": "04",
+      "name": "Reductor J5 3-4a1",
+      "mass_g": 45,
+      "cg_local_mm": [
+        0,
+        28,
+        45
+      ],
+      "box_mm": [
+        38,
+        15,
+        45
+      ],
+      "material": "Al6061"
+    },
+    {
+      "root": "02",
+      "name": "Mejilla Al continua-1",
+      "mass_g": 16.220064175977004,
+      "cg_local_mm": [
+        0,
+        -15,
+        30.0
+      ],
+      "box_mm": [
+        35,
+        3,
+        95
+      ],
+      "material": "Al6061"
+    },
+    {
+      "root": "02",
+      "name": "Mejilla Al continua1",
+      "mass_g": 16.220064175977004,
+      "cg_local_mm": [
+        0,
+        15,
+        30.0
+      ],
+      "box_mm": [
+        35,
+        3,
+        95
+      ],
+      "material": "Al6061"
+    },
+    {
+      "root": "02",
+      "name": "Cubierta y separadores no estructurales",
+      "mass_g": 8,
+      "cg_local_mm": [
+        0,
+        0,
+        30.0
+      ],
+      "box_mm": [
+        28,
+        28,
+        30
+      ],
+      "material": "PLA"
+    },
+    {
+      "root": "03",
+      "name": "Mejilla Al continua-1",
+      "mass_g": 18.535732120938043,
+      "cg_local_mm": [
+        0,
+        -13,
+        30.0
+      ],
+      "box_mm": [
+        35,
+        3,
+        95
+      ],
+      "material": "Al6061"
+    },
+    {
+      "root": "03",
+      "name": "Mejilla Al continua1",
+      "mass_g": 18.535732120938043,
+      "cg_local_mm": [
+        0,
+        13,
+        30.0
+      ],
+      "box_mm": [
+        35,
+        3,
+        95
+      ],
+      "material": "Al6061"
+    },
+    {
+      "root": "03",
+      "name": "Cubierta y separadores no estructurales",
+      "mass_g": 8,
+      "cg_local_mm": [
+        0,
+        0,
+        30.0
+      ],
+      "box_mm": [
+        28,
+        28,
+        30
+      ],
+      "material": "PLA"
+    },
+    {
+      "root": "03",
+      "name": "Cartucho y apoyo J4 en Al",
+      "mass_g": 20,
+      "cg_local_mm": [
+        0,
+        0,
+        70
+      ],
+      "box_mm": [
+        30,
+        30,
+        27
+      ],
+      "material": "Al6061"
+    },
+    {
+      "root": "04",
+      "name": "Acople y brida J4 Al",
+      "mass_g": 8,
+      "cg_local_mm": [
+        0,
+        0,
+        10
+      ],
+      "box_mm": [
+        30,
+        30,
+        27
+      ],
+      "material": "Al6061"
+    },
+    {
+      "root": "05",
+      "name": "Trunnion J5 izquierdo acero5",
+      "mass_g": 1.8496126748009905,
+      "cg_local_mm": [
+        0,
+        -18,
+        0
+      ],
+      "box_mm": [
+        5,
+        12,
+        5
+      ],
+      "material": "Acero"
+    },
+    {
+      "root": "05",
+      "name": "Trunnion J5 derecho acero5",
+      "mass_g": 2.7744190122014856,
+      "cg_local_mm": [
+        0,
+        21,
+        0
+      ],
+      "box_mm": [
+        5,
+        18,
+        5
+      ],
+      "material": "Acero"
+    },
+    {
+      "root": "01",
+      "name": "Cunas colgantes control y bateria",
+      "mass_g": 8,
+      "cg_local_mm": [
+        -70,
+        0,
+        -8
+      ],
+      "box_mm": [
+        70,
+        75,
+        30
+      ],
+      "material": "PLA"
+    },
+    {
+      "root": "06",
+      "name": "Palma Al70x70x2 con ventanas",
+      "mass_g": 23.868000000000002,
+      "cg_local_mm": [
+        0,
+        0,
+        15
+      ],
+      "box_mm": [
+        70,
+        70,
+        2
+      ],
+      "material": "Al6061"
+    },
+    {
+      "root": "06",
+      "name": "Puente J6 con escotadura portaeje",
+      "mass_g": 10.5,
+      "cg_local_mm": [
+        0,
+        0,
+        5.5
+      ],
+      "box_mm": [
+        45,
+        70,
+        2
+      ],
+      "material": "Al6061"
+    },
+    {
+      "root": "06",
+      "name": "Separadores y fijaciones palma",
+      "mass_g": 7,
+      "cg_local_mm": [
+        0,
+        0,
+        10
+      ],
+      "box_mm": [
+        40,
+        60,
+        12
+      ],
+      "material": "Al6061"
+    },
+    {
+      "root": "06",
+      "name": "STS3032_pinza",
+      "mass_g": 21.6,
+      "cg_local_mm": [
+        67.5,
+        0,
+        26.75
+      ],
+      "box_mm": [
+        32,
+        12,
+        27.5
+      ],
+      "material": "Servo"
+    },
+    {
+      "root": "06",
+      "name": "Dos engranes6a1 y fijaciones",
+      "mass_g": 18,
+      "cg_local_mm": [
+        30,
+        0,
+        10
+      ],
+      "box_mm": [
+        85,
+        64,
+        5
+      ],
+      "material": "Al6061"
+    },
+    {
+      "root": "06",
+      "name": "Pinon20T modulo0.8",
+      "mass_g": 5,
+      "cg_local_mm": [
+        25,
+        0,
+        21.5
+      ],
+      "box_mm": [
+        18,
+        18,
+        5
+      ],
+      "material": "Al6061"
+    },
+    {
+      "root": "06",
+      "name": "Dos cremalleras Al modulo0.8",
+      "mass_g": 11.34,
+      "cg_local_mm": [
+        0,
+        0,
+        21.5
+      ],
+      "box_mm": [
+        70,
+        32,
+        5
+      ],
+      "material": "Al6061"
+    },
+    {
+      "root": "06",
+      "name": "Dos ejes guia3x80",
+      "mass_g": 8.878140839044756,
+      "cg_local_mm": [
+        0,
+        0,
+        20
+      ],
+      "box_mm": [
+        80,
+        22,
+        3
+      ],
+      "material": "Acero"
+    },
+    {
+      "root": "06",
+      "name": "Cuatro LM3UU presupuesto2.5g",
+      "mass_g": 10,
+      "cg_local_mm": [
+        0,
+        0,
+        20
+      ],
+      "box_mm": [
+        70,
+        30,
+        10
+      ],
+      "material": "Rodamiento"
+    },
+    {
+      "root": "06",
+      "name": "Dos625 eje pinza",
+      "mass_g": 10,
+      "cg_local_mm": [
+        25,
+        0,
+        9.25
+      ],
+      "box_mm": [
+        16,
+        16,
+        19
+      ],
+      "material": "Rodamiento"
+    },
+    {
+      "root": "06",
+      "name": "Eje pinza acero5x30",
+      "mass_g": 4.624031687002477,
+      "cg_local_mm": [
+        25,
+        0,
+        12
+      ],
+      "box_mm": [
+        5,
+        5,
+        30
+      ],
+      "material": "Acero"
+    },
+    {
+      "root": "06",
+      "name": "Dedo Al-1",
+      "mass_g": 6,
+      "cg_local_mm": [
+        -25,
+        0,
+        52
+      ],
+      "box_mm": [
+        3,
+        12,
+        55
+      ],
+      "material": "Al6061"
+    },
+    {
+      "root": "06",
+      "name": "Dedo Al1",
+      "mass_g": 6,
+      "cg_local_mm": [
+        25,
+        0,
+        52
+      ],
+      "box_mm": [
+        3,
+        12,
+        55
+      ],
+      "material": "Al6061"
+    },
+    {
+      "root": "06",
+      "name": "Pads y muelles guiados de precarga",
+      "mass_g": 8,
+      "cg_local_mm": [
+        0,
+        0,
+        45
+      ],
+      "box_mm": [
+        64,
+        14,
+        30
+      ],
+      "material": "Varios"
+    },
+    {
+      "root": "06",
+      "name": "GuardasPLA y soportes auxiliares",
+      "mass_g": 7,
+      "cg_local_mm": [
+        25,
+        0,
+        15
+      ],
+      "box_mm": [
+        75,
+        60,
+        20
+      ],
+      "material": "PLA"
+    }
+  ]
+}

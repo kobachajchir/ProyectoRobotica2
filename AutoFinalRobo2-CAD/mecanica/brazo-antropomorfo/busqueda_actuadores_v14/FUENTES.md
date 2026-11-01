@@ -1,0 +1,11 @@
+# Fuentes de v14
+
+Consulta 28/10/2026. Fuentes tecnicas primarias; no se atribuye a los vendedores una garantia de frenado.
+
+- [FEETECH ST-3215-C047, A/0, 20/07/2023, PDF alojado por Seeed](https://files.seeedstudio.com/products/Feetech/108090003_FEETECH_ST-3215-C047-Datasheet.pdf): 10 kgf cm nominales a12V, 30 kgf cm de bloqueo +/-10%, 45rpm sin carga +/-10%, 55+/-1g. Cotas del dibujo45.23x24.73x35mm, envolvente36.5mm. Control TTL y modo multivuelta, sin persistencia del contador al apagar. Se usan 56g,27kgfcm y243grados/s inferiores.
+- [FEETECH STS3032, pagina fabricante](https://www.feetechrc.com/6v-45kg-magnetic-code-360-degree-serial-bus-steering-gear.html) y [PDF fabricante](https://www.feetechrc.com/Data/feetechrc/upload/file/20211019/6377025719620052024350972.pdf): ficha utilizada en la busqueda previa20.6+/-1g,1.5kgfcm nominal/4.5bloqueo a6V, envolvente32x12x27.5mm. La pagina indexada confirma el nominal; las aperturas directas pagina/PDF devolvieron timeout en esta consulta. No confundir con variantes antiguas de20g/23.2x12.1x28.5 ni afirmar descarga nueva exitosa. Limites de corriente y frenado siguen pendientes.
+- [Starware STS3215](https://tienda.starware.com.ar/producto/servo-motor-smart-starware-sts3215-360g-30kg-12v-encoder-magnetico-ttl/): pagina muestra stock argentino a$66999. El sufijoC047 no esta identificado; el peso comercial80g no sustituye la masa de ficha55+/-1g. La variante calculada debe confirmarse antes de comprar.
+- [RobotDoo STS3032](https://robotdoo.com/products/feetech-sts3032-360-degree-serial-bus-servo) y [politica de envios](https://robotdoo.com/policies/shipping-policy): dice envios internacionales, pero el selector consultado no incluye Argentina y la tabla no detalla Sudamerica. **No se cuenta como envio argentino confirmado**.
+- Manual y geometria de auto: `Documentacion/ManualOsoyoo.pdf` y extraccion `../busqueda_actuadores_v13/apoyos_CAD.json`. Los ejes inferidos y dimensiones exteriores no acreditan contactos de rodillos.
+
+Aluminio, PVC, secciones y reservas de masa son propuestas de ingenieria; no nuevas especificaciones de un proveedor. PLA PrintaLot es decision humana; su resistencia FDM no se obtiene de la ficha de resina. No hay compra ni comunicacion con vendedores.

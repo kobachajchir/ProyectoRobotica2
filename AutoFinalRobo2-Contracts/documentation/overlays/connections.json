@@ -2,6 +2,13 @@
   "schema": "afr2-connections-1",
   "connections": [
     {
+      "id": "shared:flow/web-local-ui-simulator",
+      "path": ["web:developer-ui-simulator", "web:shared-encoder-control", "web:local-ui-state", "web:linked-firmware-renderer", "web:oled-canvas"],
+      "state": "source-implemented-uncompiled-unvalidated",
+      "note": "Local AVR UI navigation adaptation with fictional service snapshots. No connected-client commands, firmware edits or ESP promotion; shared ScreenCodes/resources unchanged.",
+      "changeId": "AFR2-20261031-01"
+    },
+    {
       "id": "shared:flow/web-esp-atmega",
       "path": [
         "web:protocol-client",

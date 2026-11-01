@@ -1,0 +1,353 @@
+[
+  {
+    "name": "centrado_PWM_L130_120",
+    "shafts": [
+      {
+        "joint": 1,
+        "d_mm": 8,
+        "envelope_vm_MPa": 138.29718607484335,
+        "required_Rp_n2_Kt2_MPa": 553.1887442993734,
+        "diameter_bending_torsion_only_for_Rp600_mm": 7.7712671252668235
+      },
+      {
+        "joint": 2,
+        "d_mm": 8,
+        "envelope_vm_MPa": 138.0407118680363,
+        "required_Rp_n2_Kt2_MPa": 552.1628474721452,
+        "diameter_bending_torsion_only_for_Rp600_mm": 7.768227782458756
+      },
+      {
+        "joint": 3,
+        "d_mm": 5,
+        "envelope_vm_MPa": 351.5668839412096,
+        "required_Rp_n2_Kt2_MPa": 1406.2675357648384,
+        "diameter_bending_torsion_only_for_Rp600_mm": 6.6317776110897455
+      },
+      {
+        "joint": 4,
+        "d_mm": 5,
+        "envelope_vm_MPa": 182.8443814479949,
+        "required_Rp_n2_Kt2_MPa": 731.3775257919796,
+        "diameter_bending_torsion_only_for_Rp600_mm": 5.328179584568244
+      },
+      {
+        "joint": 5,
+        "d_mm": 5,
+        "envelope_vm_MPa": 117.5646562312932,
+        "required_Rp_n2_Kt2_MPa": 470.2586249251728,
+        "diameter_bending_torsion_only_for_Rp600_mm": 4.597092556354637
+      },
+      {
+        "joint": 6,
+        "d_mm": 5,
+        "envelope_vm_MPa": 59.849684082465906,
+        "required_Rp_n2_Kt2_MPa": 239.39873632986362,
+        "diameter_bending_torsion_only_for_Rp600_mm": 3.6625882173491684
+      }
+    ],
+    "tubes": [
+      {
+        "name": "PVC25",
+        "od_mm": 25,
+        "id_mm": 22,
+        "length_between_axes_mm": 130,
+        "envelope_sigma_MPa": 8.639001037568498,
+        "envelope_tau_MPa": 4.530687643666889,
+        "envelope_vm_MPa": 11.671063811861242,
+        "required_effective_strength_n2_Kt2_MPa": 46.684255247444966,
+        "limits": "No incluye aplastamiento, taladros, creep, ovalizacion ni contacto con manguitos. PVC sin resistencia efectiva asignada."
+      },
+      {
+        "name": "PVC20",
+        "od_mm": 20,
+        "id_mm": 17,
+        "length_between_axes_mm": 120,
+        "envelope_sigma_MPa": 8.80397112547865,
+        "envelope_tau_MPa": 4.634920345142583,
+        "envelope_vm_MPa": 11.914586329189602,
+        "required_effective_strength_n2_Kt2_MPa": 47.65834531675841,
+        "limits": "No incluye aplastamiento, taladros, creep, ovalizacion ni contacto con manguitos. PVC sin resistencia efectiva asignada."
+      }
+    ],
+    "plates": [
+      {
+        "name": "Torre",
+        "plate_count": 2,
+        "net_width_mm": 22,
+        "thickness_mm": 3,
+        "nominal_weak_axis_stress_MPa": 79.2937051247799,
+        "required_Rp_n2_Kt2_MPa": 317.1748204991196,
+        "thickness_weak_axis_bending_only_Rp276_n2_Kt2_mm": 3.2132799358690733
+      },
+      {
+        "name": "Hombro",
+        "plate_count": 2,
+        "net_width_mm": 25,
+        "thickness_mm": 3,
+        "nominal_weak_axis_stress_MPa": 69.6827084214672,
+        "required_Rp_n2_Kt2_MPa": 278.7308336858688,
+        "thickness_weak_axis_bending_only_Rp276_n2_Kt2_mm": 3.012555590120119
+      },
+      {
+        "name": "Codo",
+        "plate_count": 2,
+        "net_width_mm": 25,
+        "thickness_mm": 3,
+        "nominal_weak_axis_stress_MPa": 43.38156368810429,
+        "required_Rp_n2_Kt2_MPa": 173.52625475241717,
+        "thickness_weak_axis_bending_only_Rp276_n2_Kt2_mm": 2.3762770495213394
+      },
+      {
+        "name": "HorquillaJ5",
+        "plate_count": 2,
+        "net_width_mm": 20,
+        "thickness_mm": 2.5,
+        "nominal_weak_axis_stress_MPa": 26.04073209093361,
+        "required_Rp_n2_Kt2_MPa": 104.16292836373444,
+        "thickness_weak_axis_bending_only_Rp276_n2_Kt2_mm": 1.5333172457903088
+      }
+    ],
+    "gripper": {
+      "peak_payload_force_N": 5.119541515603754,
+      "MG92B_stall_budget_kgfcm": 3.5,
+      "eta_assumed": 0.7,
+      "total_jaw_normal_upper_budget_N": 20.021910416666664,
+      "minimum_pad_mu_for_factor2": 0.5113939088791586,
+      "caveat": "Par de bloqueo no continuo, sin precarga/friccion real, dedos/racks no verificados."
+    }
+  },
+  {
+    "name": "centrado_PWM_L100_85",
+    "shafts": [
+      {
+        "joint": 1,
+        "d_mm": 8,
+        "envelope_vm_MPa": 104.96286483725758,
+        "required_Rp_n2_Kt2_MPa": 419.85145934903034,
+        "diameter_bending_torsion_only_for_Rp600_mm": 7.08565152321899
+      },
+      {
+        "joint": 2,
+        "d_mm": 8,
+        "envelope_vm_MPa": 104.71574799368257,
+        "required_Rp_n2_Kt2_MPa": 418.8629919747303,
+        "diameter_bending_torsion_only_for_Rp600_mm": 7.082222097357737
+      },
+      {
+        "joint": 3,
+        "d_mm": 5,
+        "envelope_vm_MPa": 278.1655450489328,
+        "required_Rp_n2_Kt2_MPa": 1112.6621801957313,
+        "diameter_bending_torsion_only_for_Rp600_mm": 6.132383443296129
+      },
+      {
+        "joint": 4,
+        "d_mm": 5,
+        "envelope_vm_MPa": 169.2597022600578,
+        "required_Rp_n2_Kt2_MPa": 677.0388090402312,
+        "diameter_bending_torsion_only_for_Rp600_mm": 5.192899648655345
+      },
+      {
+        "joint": 5,
+        "d_mm": 5,
+        "envelope_vm_MPa": 109.1403473762918,
+        "required_Rp_n2_Kt2_MPa": 436.5613895051672,
+        "diameter_bending_torsion_only_for_Rp600_mm": 4.484589907934036
+      },
+      {
+        "joint": 6,
+        "d_mm": 5,
+        "envelope_vm_MPa": 55.66838428960911,
+        "required_Rp_n2_Kt2_MPa": 222.67353715843643,
+        "diameter_bending_torsion_only_for_Rp600_mm": 3.5752812484032224
+      }
+    ],
+    "tubes": [
+      {
+        "name": "PVC25",
+        "od_mm": 25,
+        "id_mm": 22,
+        "length_between_axes_mm": 100,
+        "envelope_sigma_MPa": 6.568713803757237,
+        "envelope_tau_MPa": 3.4777758517837682,
+        "envelope_vm_MPa": 8.912506699095479,
+        "required_effective_strength_n2_Kt2_MPa": 35.650026796381916,
+        "limits": "No incluye aplastamiento, taladros, creep, ovalizacion ni contacto con manguitos. PVC sin resistencia efectiva asignada."
+      },
+      {
+        "name": "PVC20",
+        "od_mm": 20,
+        "id_mm": 17,
+        "length_between_axes_mm": 85,
+        "envelope_sigma_MPa": 6.979966695860919,
+        "envelope_tau_MPa": 3.70248841422245,
+        "envelope_vm_MPa": 9.478670605505922,
+        "required_effective_strength_n2_Kt2_MPa": 37.91468242202369,
+        "limits": "No incluye aplastamiento, taladros, creep, ovalizacion ni contacto con manguitos. PVC sin resistencia efectiva asignada."
+      }
+    ],
+    "plates": [
+      {
+        "name": "Torre",
+        "plate_count": 2,
+        "net_width_mm": 22,
+        "thickness_mm": 3,
+        "nominal_weak_axis_stress_MPa": 60.1265048449332,
+        "required_Rp_n2_Kt2_MPa": 240.5060193797328,
+        "thickness_weak_axis_bending_only_Rp276_n2_Kt2_mm": 2.7975669625464143
+      },
+      {
+        "name": "Hombro",
+        "plate_count": 2,
+        "net_width_mm": 25,
+        "thickness_mm": 3,
+        "nominal_weak_axis_stress_MPa": 52.8205499757625,
+        "required_Rp_n2_Kt2_MPa": 211.28219990305,
+        "thickness_weak_axis_bending_only_Rp276_n2_Kt2_mm": 2.622445402571777
+      },
+      {
+        "name": "Codo",
+        "plate_count": 2,
+        "net_width_mm": 25,
+        "thickness_mm": 3,
+        "nominal_weak_axis_stress_MPa": 34.31169739314298,
+        "required_Rp_n2_Kt2_MPa": 137.2467895725719,
+        "thickness_weak_axis_bending_only_Rp276_n2_Kt2_mm": 2.1129834519407664
+      },
+      {
+        "name": "HorquillaJ5",
+        "plate_count": 2,
+        "net_width_mm": 20,
+        "thickness_mm": 2.5,
+        "nominal_weak_axis_stress_MPa": 24.175072552014214,
+        "required_Rp_n2_Kt2_MPa": 96.70029020805686,
+        "thickness_weak_axis_bending_only_Rp276_n2_Kt2_mm": 1.4773767210770758
+      }
+    ],
+    "gripper": {
+      "peak_payload_force_N": 4.761707777292596,
+      "MG92B_stall_budget_kgfcm": 3.5,
+      "eta_assumed": 0.7,
+      "total_jaw_normal_upper_budget_N": 20.021910416666664,
+      "minimum_pad_mu_for_factor2": 0.4756496935805735,
+      "caveat": "Par de bloqueo no continuo, sin precarga/friccion real, dedos/racks no verificados."
+    }
+  },
+  {
+    "name": "centrado_PWM_L100_85_reserva25",
+    "shafts": [
+      {
+        "joint": 1,
+        "d_mm": 8,
+        "envelope_vm_MPa": 112.78663238142947,
+        "required_Rp_n2_Kt2_MPa": 451.1465295257179,
+        "diameter_bending_torsion_only_for_Rp600_mm": 7.257210476989146
+      },
+      {
+        "joint": 2,
+        "d_mm": 8,
+        "envelope_vm_MPa": 112.52725200018712,
+        "required_Rp_n2_Kt2_MPa": 450.1090080007485,
+        "diameter_bending_torsion_only_for_Rp600_mm": 7.253925547190646
+      },
+      {
+        "joint": 3,
+        "d_mm": 5,
+        "envelope_vm_MPa": 297.346496911644,
+        "required_Rp_n2_Kt2_MPa": 1189.385987646576,
+        "diameter_bending_torsion_only_for_Rp600_mm": 6.270041079933896
+      },
+      {
+        "joint": 4,
+        "d_mm": 5,
+        "envelope_vm_MPa": 179.46483286816982,
+        "required_Rp_n2_Kt2_MPa": 717.8593314726793,
+        "diameter_bending_torsion_only_for_Rp600_mm": 5.294999617773851
+      },
+      {
+        "joint": 5,
+        "d_mm": 5,
+        "envelope_vm_MPa": 115.1100994435568,
+        "required_Rp_n2_Kt2_MPa": 460.4403977742272,
+        "diameter_bending_torsion_only_for_Rp600_mm": 4.564661967250702
+      },
+      {
+        "joint": 6,
+        "d_mm": 5,
+        "envelope_vm_MPa": 57.827479938485176,
+        "required_Rp_n2_Kt2_MPa": 231.3099197539407,
+        "diameter_bending_torsion_only_for_Rp600_mm": 3.6203220794027016
+      }
+    ],
+    "tubes": [
+      {
+        "name": "PVC25",
+        "od_mm": 25,
+        "id_mm": 22,
+        "length_between_axes_mm": 100,
+        "envelope_sigma_MPa": 7.059967292813278,
+        "envelope_tau_MPa": 3.7405375527771683,
+        "envelope_vm_MPa": 9.582171034102965,
+        "required_effective_strength_n2_Kt2_MPa": 38.32868413641186,
+        "limits": "No incluye aplastamiento, taladros, creep, ovalizacion ni contacto con manguitos. PVC sin resistencia efectiva asignada."
+      },
+      {
+        "name": "PVC20",
+        "od_mm": 20,
+        "id_mm": 17,
+        "length_between_axes_mm": 85,
+        "envelope_sigma_MPa": 7.463110066790186,
+        "envelope_tau_MPa": 3.9623862329200037,
+        "envelope_vm_MPa": 10.139010101855455,
+        "required_effective_strength_n2_Kt2_MPa": 40.55604040742182,
+        "limits": "No incluye aplastamiento, taladros, creep, ovalizacion ni contacto con manguitos. PVC sin resistencia efectiva asignada."
+      }
+    ],
+    "plates": [
+      {
+        "name": "Torre",
+        "plate_count": 2,
+        "net_width_mm": 22,
+        "thickness_mm": 3,
+        "nominal_weak_axis_stress_MPa": 64.60275126771893,
+        "required_Rp_n2_Kt2_MPa": 258.4110050708757,
+        "thickness_weak_axis_bending_only_Rp276_n2_Kt2_mm": 2.899782231877977
+      },
+      {
+        "name": "Hombro",
+        "plate_count": 2,
+        "net_width_mm": 25,
+        "thickness_mm": 3,
+        "nominal_weak_axis_stress_MPa": 56.757574764758715,
+        "required_Rp_n2_Kt2_MPa": 227.03029905903486,
+        "thickness_weak_axis_bending_only_Rp276_n2_Kt2_mm": 2.718390118447827
+      },
+      {
+        "name": "Codo",
+        "plate_count": 2,
+        "net_width_mm": 25,
+        "thickness_mm": 3,
+        "nominal_weak_axis_stress_MPa": 36.676036223072174,
+        "required_Rp_n2_Kt2_MPa": 146.7041448922887,
+        "thickness_weak_axis_bending_only_Rp276_n2_Kt2_mm": 2.1845285329271675
+      },
+      {
+        "name": "HorquillaJ5",
+        "plate_count": 2,
+        "net_width_mm": 20,
+        "thickness_mm": 2.5,
+        "nominal_weak_axis_stress_MPa": 25.494877317569962,
+        "required_Rp_n2_Kt2_MPa": 101.97950927027985,
+        "thickness_weak_axis_bending_only_Rp276_n2_Kt2_mm": 1.517120515640591
+      }
+    ],
+    "gripper": {
+      "peak_payload_force_N": 4.761707777292596,
+      "MG92B_stall_budget_kgfcm": 3.5,
+      "eta_assumed": 0.7,
+      "total_jaw_normal_upper_budget_N": 20.021910416666664,
+      "minimum_pad_mu_for_factor2": 0.4756496935805735,
+      "caveat": "Par de bloqueo no continuo, sin precarga/friccion real, dedos/racks no verificados."
+    }
+  }
+]

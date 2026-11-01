@@ -1,0 +1,406 @@
+{
+  "scope": "Presupuesto previo, geometria e inercias internas por cerrar. Pinza aun sin transformar a su montaje definitivo.",
+  "mass_without_load_g": 1272.5687,
+  "parameters": {
+    "base_top": 35,
+    "tower_h": 40,
+    "axis_y_mm": 0,
+    "link1": 55,
+    "link2": 50,
+    "wrist45": 30,
+    "wrist56": 42,
+    "payload_z": 45
+  },
+  "axes": [
+    {
+      "axis": "J1",
+      "motor": "ST3215",
+      "ratio": 1,
+      "peak_Nm": 0.4193063832151096,
+      "capacity_nominal_Nm": 0.980665,
+      "margin": 2.3387790867397937
+    },
+    {
+      "axis": "J2",
+      "motor": "STS3250",
+      "ratio": 3,
+      "peak_Nm": 1.656615433525316,
+      "capacity_nominal_Nm": 3.7657536,
+      "margin": 2.2731610027237217
+    },
+    {
+      "axis": "J3",
+      "motor": "STS3250",
+      "ratio": 3,
+      "peak_Nm": 1.111798390316922,
+      "capacity_nominal_Nm": 3.7657536,
+      "margin": 3.387083155361071
+    },
+    {
+      "axis": "J4",
+      "motor": "ST3009",
+      "ratio": 1,
+      "peak_Nm": 0.09557695075479264,
+      "capacity_nominal_Nm": 0.3726527,
+      "margin": 3.898980842735387
+    },
+    {
+      "axis": "J5",
+      "motor": "ST3215",
+      "ratio": 1,
+      "peak_Nm": 0.4414454960355344,
+      "capacity_nominal_Nm": 0.980665,
+      "margin": 2.2214860244515005
+    },
+    {
+      "axis": "J6",
+      "motor": "ST3009",
+      "ratio": 1,
+      "peak_Nm": 0.0768525276960145,
+      "capacity_nominal_Nm": 0.3726527,
+      "margin": 4.848932249489634
+    }
+  ],
+  "peak_force_N": [
+    13.570634684752639,
+    11.467161078903532,
+    9.354982900699476,
+    8.063206366269933,
+    6.901915464436388,
+    5.800908412725511
+  ],
+  "peak_moment_Nm": [
+    1.6622686921462837,
+    1.6848025135869444,
+    1.1339376162985544,
+    0.6838640726494598,
+    0.452727449139616,
+    0.20300264076181954
+  ],
+  "support_halfspan_mm": [
+    49.86876643930081,
+    51.05490052326184
+  ],
+  "parts": [
+    {
+      "root": "00",
+      "name": "STS3215 J1",
+      "mass_g": 56,
+      "cg_local_mm": [
+        30,
+        0,
+        25
+      ],
+      "box_mm": [
+        45.23,
+        36.5,
+        24.73
+      ],
+      "material": "Servo"
+    },
+    {
+      "root": "00",
+      "name": "Control+alimentacion",
+      "mass_g": 280,
+      "cg_local_mm": [
+        -20,
+        0,
+        20
+      ],
+      "box_mm": [
+        80,
+        80,
+        30
+      ],
+      "material": "Presupuesto"
+    },
+    {
+      "root": "00",
+      "name": "Montura+apoyosJ1+retencion",
+      "mass_g": 96,
+      "cg_local_mm": [
+        0,
+        0,
+        14
+      ],
+      "box_mm": [
+        90,
+        80,
+        28
+      ],
+      "material": "Presupuesto"
+    },
+    {
+      "root": "01",
+      "name": "SalidaJ1",
+      "mass_g": 12,
+      "cg_local_mm": [
+        0,
+        0,
+        4
+      ],
+      "box_mm": [
+        48,
+        48,
+        8
+      ],
+      "material": "Presupuesto"
+    },
+    {
+      "root": "01",
+      "name": "STS3250 J2",
+      "mass_g": 75.5,
+      "cg_local_mm": [
+        -32,
+        35,
+        0
+      ],
+      "box_mm": [
+        45.22,
+        36.5,
+        24.72
+      ],
+      "material": "Servo"
+    },
+    {
+      "root": "01",
+      "name": "TransmisionJ2 completa sin motor",
+      "mass_g": 110,
+      "cg_local_mm": [
+        -12,
+        0,
+        0
+      ],
+      "box_mm": [
+        74,
+        52,
+        54
+      ],
+      "material": "Presupuesto"
+    },
+    {
+      "root": "02",
+      "name": "Eslabon1 CAD",
+      "mass_g": 30.8586,
+      "cg_local_mm": [
+        0,
+        0,
+        27.5
+      ],
+      "box_mm": [
+        28,
+        32,
+        83
+      ],
+      "material": "Al6061"
+    },
+    {
+      "root": "02",
+      "name": "STS3250 J3 remoto junto al hombro",
+      "mass_g": 75.5,
+      "cg_local_mm": [
+        0,
+        -35,
+        0
+      ],
+      "box_mm": [
+        45.22,
+        36.5,
+        24.72
+      ],
+      "material": "Servo"
+    },
+    {
+      "root": "02",
+      "name": "TransmisionJ3 completa sin motor",
+      "mass_g": 105,
+      "cg_local_mm": [
+        0,
+        -20,
+        27.5
+      ],
+      "box_mm": [
+        50,
+        52,
+        55
+      ],
+      "material": "Presupuesto"
+    },
+    {
+      "root": "03",
+      "name": "Eslabon2 CAD",
+      "mass_g": 29.4546,
+      "cg_local_mm": [
+        0,
+        0,
+        25
+      ],
+      "box_mm": [
+        28,
+        32,
+        78
+      ],
+      "material": "Al6061"
+    },
+    {
+      "root": "03",
+      "name": "ST3009 J4",
+      "mass_g": 46,
+      "cg_local_mm": [
+        0,
+        0,
+        36.5
+      ],
+      "box_mm": [
+        20,
+        30,
+        36.5
+      ],
+      "material": "Servo"
+    },
+    {
+      "root": "03",
+      "name": "Apoyos+eje+carcasa J4",
+      "mass_g": 33,
+      "cg_local_mm": [
+        0,
+        0,
+        50
+      ],
+      "box_mm": [
+        32,
+        32,
+        30
+      ],
+      "material": "Presupuesto"
+    },
+    {
+      "root": "04",
+      "name": "STS3215 J5",
+      "mass_g": 56,
+      "cg_local_mm": [
+        0,
+        25,
+        20
+      ],
+      "box_mm": [
+        45.23,
+        36.5,
+        24.73
+      ],
+      "material": "Servo"
+    },
+    {
+      "root": "04",
+      "name": "Horquilla+eje+apoyos J5",
+      "mass_g": 32,
+      "cg_local_mm": [
+        0,
+        0,
+        20
+      ],
+      "box_mm": [
+        44,
+        40,
+        40
+      ],
+      "material": "Presupuesto"
+    },
+    {
+      "root": "05",
+      "name": "ST3009 J6",
+      "mass_g": 46,
+      "cg_local_mm": [
+        0,
+        0,
+        10
+      ],
+      "box_mm": [
+        20,
+        30,
+        36.5
+      ],
+      "material": "Servo"
+    },
+    {
+      "root": "05",
+      "name": "Eje+apoyos+housingJ6",
+      "mass_g": 33,
+      "cg_local_mm": [
+        0,
+        0,
+        15
+      ],
+      "box_mm": [
+        32,
+        32,
+        30
+      ],
+      "material": "Presupuesto"
+    },
+    {
+      "root": "06",
+      "name": "Pinza CAD completa incluyendo motor",
+      "mass_g": 126.2555,
+      "cg_local_mm": [
+        27.8366,
+        22.5086,
+        6.9574
+      ],
+      "box_mm": [
+        104,
+        88,
+        90
+      ],
+      "material": "Presupuesto"
+    },
+    {
+      "root": "06",
+      "name": "Interfaz pinza+resorte+cable",
+      "mass_g": 10,
+      "cg_local_mm": [
+        0,
+        0,
+        5
+      ],
+      "box_mm": [
+        35,
+        30,
+        20
+      ],
+      "material": "Presupuesto"
+    },
+    {
+      "root": "01",
+      "name": "Tornilleria+cables generales",
+      "mass_g": 20,
+      "cg_local_mm": [
+        0,
+        0,
+        10
+      ],
+      "box_mm": [
+        40,
+        40,
+        40
+      ],
+      "material": "Presupuesto"
+    },
+    {
+      "root": "90",
+      "name": "Carga",
+      "mass_g": 200,
+      "cg_local_mm": [
+        0,
+        0,
+        0
+      ],
+      "box_mm": [
+        50,
+        50,
+        50
+      ],
+      "material": "Carga"
+    }
+  ]
+}

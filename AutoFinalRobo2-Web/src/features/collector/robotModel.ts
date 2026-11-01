@@ -1,5 +1,7 @@
 /** Robot geometry is configuration, never a property of a saved destination.
  * SI units at the engine boundary; joint UI/records use degrees and gripper mm. */
+import pvc25V17 from './models/pvc25-v17-blanco.json';
+
 export type Point3 = [number, number, number];
 export type Quaternion4 = [number, number, number, number];
 export type ArmAngles = number[];
@@ -11,6 +13,10 @@ export interface JointDefinition {
   radius: number; visualNode: string;
 }
 export interface CollisionBox { id: string; center: Point3; size: Point3 }
+export interface VisualFollower {
+  visualNode: string; parentIndex: number; driverIndex: number; axis: Point3;
+  ratio: number; origin: RigidTransform; gripperRadiansPerMm?: number;
+}
 export interface RobotModelDefinition {
   id: string; revision: string; label: string; units: 'm';
   /** Stable semantics, not a geometry version: change when redefining these frames. */
@@ -21,7 +27,7 @@ export interface RobotModelDefinition {
   gripper: { min: number; max: number; open: number; palmSize: Point3; palmZ: number;
     fingerSize: Point3; fingerZ: number; padSize: Point3; padZ: number;
     travelAxis: Point3; visualNodes: [string, string]; metersPerOpeningMm: number };
-  visual: { kind: 'procedural' | 'gltf'; url?: string; restToMount?: RigidTransform; restAngles?: ArmAngles; restOpening?: number; baseSize: Point3; baseZ: number };
+  visual: { kind: 'procedural' | 'gltf'; url?: string; restToMount?: RigidTransform; restAngles?: ArmAngles; restOpening?: number; baseSize: Point3; baseZ: number; followers?: VisualFollower[] };
   collision: { towerRadius: number; boxes: CollisionBox[]; allowedPairs: [string, string][] };
   initial: ArmAngles; transport: ArmAngles; seeds: ArmAngles[]; speedDegS: number;
   /** Optional analytic branch for this serial Z,Y,Y,Z,Y,Z family. */
@@ -66,8 +72,9 @@ export const PVC32_V03: RobotModelDefinition = {
   source: 'AutoFinalRobo2-CAD/mecanica/brazo-antropomorfo/parametros_prototipo_v03.csv; revision_v03/modelo_v03.json; tcp_offset. Proxies Web aproximados.',
 };
 /** Register future descriptors here. Loading a GLB is not rig inference. */
-export const ROBOT_MODELS: RobotModelDefinition[] = [PVC32_V03];
-let active = PVC32_V03;
+export const PVC25_V17 = pvc25V17 as RobotModelDefinition;
+export const ROBOT_MODELS: RobotModelDefinition[] = [PVC25_V17, PVC32_V03];
+let active = PVC25_V17;
 export function robotModel() { return active; }
 export function activateRobotModel(id: string) {
   const model = ROBOT_MODELS.find(item => item.id === id);
@@ -93,6 +100,9 @@ export function modelProblems(m: RobotModelDefinition): string[] {
   if (m.collision.boxes.some(box => !vector(box.center, 3) || !vector(box.size, 3) || box.size.some(v => v <= 0))) errors.push('Geometria de exclusion invalida.');
   if (m.visual.kind === 'gltf' && (!m.visual.url || !m.visual.restToMount || !transform(m.visual.restToMount) || m.joints.some(j => !j.visualNode) || !m.gripper.visualNodes.every(Boolean)
     || !m.visual.restAngles || m.visual.restAngles.length !== m.joints.length || !m.visual.restAngles.every(Number.isFinite) || !Number.isFinite(m.visual.restOpening))) errors.push('Archivo, transformacion, postura de exportacion o nodos del rig GLB incompletos.');
+  if (m.visual.followers?.some(f => !f.visualNode || !Number.isInteger(f.parentIndex) || !Number.isInteger(f.driverIndex)
+    || !m.joints[f.parentIndex] || !m.joints[f.driverIndex] || !transform(f.origin) || !vector(f.axis, 3) || Math.abs(Math.hypot(...f.axis) - 1) > .0001
+    || !Number.isFinite(f.ratio) || (f.gripperRadiansPerMm !== undefined && !Number.isFinite(f.gripperRadiansPerMm)))) errors.push('Transmision visual incompleta.');
   if (![m.initial, m.transport, ...m.seeds].every(q => q.length === m.joints.length && q.every((a, i) => Number.isFinite(a) && a >= m.joints[i].min && a <= m.joints[i].max))) errors.push('Posturas fuera de limites.');
   return errors;
 }

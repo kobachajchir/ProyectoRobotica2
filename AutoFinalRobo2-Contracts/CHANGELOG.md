@@ -1,3 +1,30 @@
+## AFR2-20261031-12 - 31/10/2026
+
+Simulador UI reorganizado: pantalla/encoder, guia contextual, barra de sesion,
+catalogo filtrable y seleccion siempre visible. Integra la base local01 y sus
+documentos. Fuente sin tests, builds, validadores ni navegador; paquetesESP
+previos. [Ficha](changes/2026-10-31-12-ui-simulator-layout.md).
+
+## AFR2-20261031-01 - 31/10/2026
+
+Desarrollador agrega Simulador UI con tres controles compartidos del visor en
+vivo, navegacion adaptada del ATmega, edicion, teclado y servicios ficticios.
+Guia contextual, escenarios y catalogo para inspeccion. Fuente Web y documentos;
+sin tests, builds, validaciones ni promocion ESP.
+[Ficha](changes/2026-10-31-01-developer-ui-simulator.md).
+
+## AFR2-20261029-03 - 29/10/2026
+
+Checkpoint CADv17 sobre arquitecturaV7: codo remoto20/50, tensor con cuatro oblongas, encastres y PVC25/20, ejes70/60. PinzaV7 conservada; nueva preseleccion de actuadores con pieza200g y reservas, margen minimo1.272. J2 implementado con STS3250,18/72Al y apoyos625; J1/J4/J5 pendientes. Estudio de aligerado sin ejecutar y nuevos calculos de vuelco suspendidos por usuario. [Ficha](changes/2026-10-29-03-brazo-v7-codo-remoto-v17.md).
+
+## AFR2-20261029-02 - 29/10/2026
+
+Banco Fusion compacto v15: eslabones de aluminio55/50mm, pinza con bielas/pernos escalonados, retenciones y eje6mm justificado por flexion/torsion. Masas desde geometria y revision CAD local solicitada. J2 modulo0.8 requiere rediseño; sin integracion global ni aprobacion fisica. [Ficha](changes/2026-10-29-02-banco-brazo-compacto-v15.md).
+
+## AFR2-20261029-01 - 29/10/2026
+
+Presupuesto compacto del brazo: motores254.4g, estructura fina, menor alcance, masa1170.3g sin carga con reserva25%. Solo ruedas; pies y voladizo descartados. Filtro externo de par2.65, sin resistencia ni estabilidad fisica aprobadas y sin nuevo CAD. [Ficha](changes/2026-10-29-01-brazo-compacto-solo-ruedas.md).
+
 ## AFR2-20261028-12 — 28/10/2026
 
 Loader0.9.2: Conversor HEX / ASCII universal, independiente de comandos,

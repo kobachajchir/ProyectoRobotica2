@@ -1,5 +1,23 @@
 # Componentes y cobertura
 
+VIS-047: laboratorio UI con dispositivo/encoder, guia contextual, sesion y
+catalogo filtrable. Reutiliza controles y tokens0.1.9; scroll inmediato local,
+campos etiquetados y acciones de44px. Los pixels OLED y gestos se conservan.
+Composicion Propuesta; aspecto/interaccion No verificados. [Cobertura](coverage-20261031-12.json).
+
+VIS-046: BrandMark y bienvenida usan el nuevo robot neón oficial. El original
+se conserva íntegro y los derivados mantienen proporción/transparencia.
+Favicon y touch-icon comparten el emblema. Sustituye solo las referencias al
+recurso gráfico de las filas históricas siguientes. Fuente aplicada; aspecto
+en ejecución No verificado. [Cobertura](coverage-20261031-09.json).
+
+VIS-045: simuladores con escenario celeste/crema, encabezado/estado/cámara,
+datos y controles inferiores; matemática opcional con retorno de foco. Puntos
+guardados y controles por rueda se abren bajo demanda. Se conservan primitivas
+compartidas, reglas de reduced motion y acciones de44px. Dirección Confirmada,
+composición/colores Propuesta y aspecto **No verificado**; sin tests/build ni
+validadores. [Cobertura31-06](coverage-20261031-06.json).
+
 Contratos cerrados a nivel documental (`0.1.3`) para ambos temas. Cada control conserva geometría en `default/hover/focus/active/disabled/loading/error/success`. Ninguno fue renderizado todavía en la nueva interfaz.
 
 | Componente | Anatomía y variantes | Teclado, movimiento y límites | Evidencia | Cobertura | Verificación | Aprobación | Decisión |

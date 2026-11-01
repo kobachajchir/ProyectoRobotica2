@@ -6,6 +6,7 @@ import { SectionHeader } from '../../components/ui/SectionHeader';
 import { Button } from '../../components/ui/Button';
 import { TaskSections } from '../../components/ui/TaskSections';
 import { ModelInspection } from './ModelInspection';
+import { clearInspectionAssetCache } from './AssetInspection';
 
 interface ViewerErrorBoundaryState {
   hasError: boolean;
@@ -55,12 +56,12 @@ class ViewerErrorBoundary extends Component<
 }
 
 export function Model3DPage() {
-  const [selectedModel, setSelectedModel] = useState<'auto' | 'brazo'>('auto');
+  const [selectedModel, setSelectedModel] = useState<'auto' | 'brazo' | 'cubo'>('auto');
   const [referencesVisible, setReferencesVisible] = useState(true);
   const [viewerEnabled, setViewerEnabled] = useState(true);
   const [viewerKey, setViewerKey] = useState(1);
-  const retryModel = () => { clearRobotModelCache(); setViewerKey(k => k + 1); };
-  const viewer = (model: 'auto' | 'brazo') => <div className="afr2-models-viewer">
+  const retryModel = () => { clearRobotModelCache(); clearInspectionAssetCache(); setViewerKey(k => k + 1); };
+  const viewer = (model: 'auto' | 'brazo' | 'cubo') => <div className="afr2-models-viewer">
     {!viewerEnabled ? <div className="afr2-model-inspection__loading"><p>Visor en pausa</p>
       <Button onClick={() => setViewerEnabled(true)}>Reanudar visor</Button></div>
       : <ViewerErrorBoundary key={`${model}-${viewerKey}`} onReset={retryModel}>
@@ -74,12 +75,13 @@ export function Model3DPage() {
       <SectionHeader title="Modelos 3D" description="Elegi un modelo para explorarlo y conocer sus componentes."
         actions={<><Button size="sm" onClick={() => setViewerEnabled(v => !v)}>{viewerEnabled ? 'Pausar visor' : 'Activar visor'}</Button>
           <Button size="sm" onClick={() => setViewerKey(k => k + 1)}>Restablecer vista</Button></>} />
-      <TaskSections label="Elegir modelo 3D" value={selectedModel} onValueChange={value => setSelectedModel(value as 'auto' | 'brazo')} items={[
+      <TaskSections label="Elegir modelo 3D" value={selectedModel} onValueChange={value => setSelectedModel(value as 'auto' | 'brazo' | 'cubo')} items={[
         { id: 'auto', label: 'Auto', content: viewer('auto') },
         { id: 'brazo', label: 'Brazo robotico', content: viewer('brazo') },
+        { id: 'cubo', label: 'Cubo auxiliar', content: viewer('cubo') },
       ]} />
       <Disclosure title="Acerca del modelo">
-        <p className="afr2-help">{selectedModel === 'auto' ? 'Auto Mecanum 4WD con el ensamble actual de Fusion y Blender. Escala: 1 unidad = 1 m, con suelo en la base de las ruedas.' : 'El modelo final del brazo y sus referencias estan pendientes. Este visor renderizara ese archivo, separado del modelo del auto.'}</p>
+        <p className="afr2-help">{selectedModel === 'auto' ? 'Auto Mecanum 4WD con el ensamble actual de Fusion y Blender. Escala: 1 unidad = 1 m, con suelo en la base de las ruedas.' : selectedModel === 'brazo' ? 'Brazo V17 completo en PLA blanco, con sus eslabones y transmisiones. Usa el mismo archivo que el simulador.' : 'Cubo auxiliar de 50 × 50 × 50 mm con su material original. Se utiliza como pieza manipulada en el simulador.'}</p>
       </Disclosure>
     </GlassSurface>
   </div>;

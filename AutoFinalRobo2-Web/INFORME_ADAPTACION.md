@@ -1,3 +1,10 @@
+> **Fuente AFR2-20261031-01:** Simulador UI en Desarrollador; navegacion del
+> ATmega adaptada a estado local, tres controles de `EncoderControl` compartidos
+> con el visor en vivo, edicion/teclado y snapshots ficticios identificados.
+> [Ficha](../AutoFinalRobo2-Contracts/changes/2026-10-31-01-developer-ui-simulator.md).
+> Sin tests, compilacion, validaciones, navegador ni promocion ESP.
+> Firmware, identidades y recursos de dibujo conservados.
+
 > **AFR2-20261028-10:** Protocol Studio recupera el flujo de AutoMicro: parámetros guiados, estructura por campos, cuatro salidas, mapa seleccionable, stream continuo y ayuda. Identidad AFR2 0.1.9 conservada. [Continuidad](../AutoFinalRobo2-Contracts/docs/PROTOCOL_STUDIO_AUTOMICRO.md). Fuente sin tests, build, validadores, navegador ni promoción ESP.
 
 > **AFR2-20261028-09:** Protocol Studio en **Desarrollador**, con Traductor de capturas HEX/texto y Constructor ROBO2. Copia HEX/RealTerm/C/Python/decimal, lectura de arranque ESP y tramas con XOR. [Uso](docs/modules/protocol-studio.md). Fuente implementada; sin tests, compilación, validadores, navegador ni promoción ESP en esta revisión.

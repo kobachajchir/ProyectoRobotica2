@@ -1,0 +1,598 @@
+{
+  "scope": "Presupuesto previo, geometria e inercias internas por cerrar. Pinza aun sin transformar a su montaje definitivo.",
+  "mass_without_load_g": 1261.5815907616934,
+  "parameters": {
+    "base_top": 35,
+    "tower_h": 40,
+    "axis_y_mm": 0,
+    "link1": 55,
+    "link2": 50,
+    "wrist45": 30,
+    "wrist56": 32,
+    "payload_z": 45
+  },
+  "axes": [
+    {
+      "axis": "J1",
+      "motor": "ST3215",
+      "ratio": 1,
+      "peak_Nm": 0.35512568284634727,
+      "capacity_nominal_Nm": 0.980665,
+      "margin": 2.7614589633166737
+    },
+    {
+      "axis": "J2",
+      "motor": "STS3250",
+      "ratio": 3,
+      "peak_Nm": 1.4943550589275618,
+      "capacity_nominal_Nm": 3.7657536,
+      "margin": 2.51998584774259
+    },
+    {
+      "axis": "J3",
+      "motor": "STS3250",
+      "ratio": 3,
+      "peak_Nm": 0.9786403179794474,
+      "capacity_nominal_Nm": 3.7657536,
+      "margin": 3.8479444703187524
+    },
+    {
+      "axis": "J4",
+      "motor": "ST3009",
+      "ratio": 1,
+      "peak_Nm": 0.035937693127512216,
+      "capacity_nominal_Nm": 0.14709975,
+      "margin": 4.093188438057737
+    },
+    {
+      "axis": "J5",
+      "motor": "ST3215",
+      "ratio": 1,
+      "peak_Nm": 0.36731859742360823,
+      "capacity_nominal_Nm": 0.980665,
+      "margin": 2.6697940340577238
+    },
+    {
+      "axis": "J6",
+      "motor": "ST3009",
+      "ratio": 1,
+      "peak_Nm": 0.016959880988016526,
+      "capacity_nominal_Nm": 0.14709975,
+      "margin": 8.673395179125219
+    }
+  ],
+  "peak_force_N": [
+    13.217256443668926,
+    10.746391995341618,
+    8.440513904788777,
+    7.437920039833301,
+    6.271357514250389,
+    5.507556564994623
+  ],
+  "peak_moment_Nm": [
+    1.498364618615038,
+    1.5196267972648074,
+    0.996330686643546,
+    0.5859099320557781,
+    0.3746388648038286,
+    0.18837046871389793
+  ],
+  "support_halfspan_mm": [
+    45.11584433787587,
+    46.32014676048537
+  ],
+  "parts": [
+    {
+      "root": "00",
+      "name": "STS3215 J1",
+      "mass_g": 56,
+      "cg_local_mm": [
+        30,
+        0,
+        25
+      ],
+      "box_mm": [
+        45.23,
+        36.5,
+        24.73
+      ],
+      "material": "Servo"
+    },
+    {
+      "root": "00",
+      "name": "Control+alimentacion",
+      "mass_g": 280,
+      "cg_local_mm": [
+        -20,
+        0,
+        20
+      ],
+      "box_mm": [
+        80,
+        80,
+        30
+      ],
+      "material": "Presupuesto"
+    },
+    {
+      "root": "01",
+      "name": "SalidaJ1",
+      "mass_g": 12,
+      "cg_local_mm": [
+        0,
+        0,
+        4
+      ],
+      "box_mm": [
+        48,
+        48,
+        8
+      ],
+      "material": "Presupuesto"
+    },
+    {
+      "root": "01",
+      "name": "STS3250 J2",
+      "mass_g": 75.5,
+      "cg_local_mm": [
+        -32,
+        35,
+        0
+      ],
+      "box_mm": [
+        45.22,
+        36.5,
+        24.72
+      ],
+      "material": "Servo"
+    },
+    {
+      "root": "02",
+      "name": "Eslabon1 CAD",
+      "mass_g": 30.8586,
+      "cg_local_mm": [
+        0,
+        0,
+        27.5
+      ],
+      "box_mm": [
+        28,
+        32,
+        83
+      ],
+      "material": "Al6061"
+    },
+    {
+      "root": "02",
+      "name": "STS3250 J3 remoto junto al hombro",
+      "mass_g": 75.5,
+      "cg_local_mm": [
+        0,
+        -35,
+        0
+      ],
+      "box_mm": [
+        45.22,
+        36.5,
+        24.72
+      ],
+      "material": "Servo"
+    },
+    {
+      "root": "03",
+      "name": "Eslabon2 CAD",
+      "mass_g": 29.4546,
+      "cg_local_mm": [
+        0,
+        0,
+        25
+      ],
+      "box_mm": [
+        28,
+        32,
+        78
+      ],
+      "material": "Al6061"
+    },
+    {
+      "root": "03",
+      "name": "STS3032 J4",
+      "mass_g": 21.6,
+      "cg_local_mm": [
+        0,
+        0,
+        36.5
+      ],
+      "box_mm": [
+        23,
+        12,
+        27.5
+      ],
+      "material": "Servo"
+    },
+    {
+      "root": "03",
+      "name": "Apoyos+eje+carcasa J4",
+      "mass_g": 33,
+      "cg_local_mm": [
+        0,
+        0,
+        50
+      ],
+      "box_mm": [
+        32,
+        32,
+        30
+      ],
+      "material": "Presupuesto"
+    },
+    {
+      "root": "04",
+      "name": "STS3215 J5",
+      "mass_g": 56,
+      "cg_local_mm": [
+        0,
+        25,
+        20
+      ],
+      "box_mm": [
+        45.23,
+        36.5,
+        24.73
+      ],
+      "material": "Servo"
+    },
+    {
+      "root": "04",
+      "name": "Horquilla+eje+apoyos J5",
+      "mass_g": 32,
+      "cg_local_mm": [
+        0,
+        0,
+        20
+      ],
+      "box_mm": [
+        44,
+        40,
+        40
+      ],
+      "material": "Presupuesto"
+    },
+    {
+      "root": "05",
+      "name": "STS3032 J6",
+      "mass_g": 21.6,
+      "cg_local_mm": [
+        0,
+        0,
+        10
+      ],
+      "box_mm": [
+        23,
+        12,
+        27.5
+      ],
+      "material": "Servo"
+    },
+    {
+      "root": "05",
+      "name": "Eje+apoyos+housingJ6",
+      "mass_g": 33,
+      "cg_local_mm": [
+        0,
+        0,
+        15
+      ],
+      "box_mm": [
+        32,
+        32,
+        30
+      ],
+      "material": "Presupuesto"
+    },
+    {
+      "root": "06",
+      "name": "Pinza CAD completa incluyendo motor",
+      "mass_g": 126.2555,
+      "cg_local_mm": [
+        17.06429470154526,
+        13.79814286655704,
+        6.9574
+      ],
+      "box_mm": [
+        104,
+        88,
+        90
+      ],
+      "material": "Presupuesto"
+    },
+    {
+      "root": "06",
+      "name": "Interfaz pinza+resorte+cable",
+      "mass_g": 10,
+      "cg_local_mm": [
+        0,
+        0,
+        5
+      ],
+      "box_mm": [
+        35,
+        30,
+        20
+      ],
+      "material": "Presupuesto"
+    },
+    {
+      "root": "01",
+      "name": "Tornilleria+cables generales",
+      "mass_g": 20,
+      "cg_local_mm": [
+        0,
+        0,
+        10
+      ],
+      "box_mm": [
+        40,
+        40,
+        40
+      ],
+      "material": "Presupuesto"
+    },
+    {
+      "root": "90",
+      "name": "Carga",
+      "mass_g": 200,
+      "cg_local_mm": [
+        -10.77230529845474,
+        -8.710457133442961,
+        0
+      ],
+      "box_mm": [
+        50,
+        50,
+        50
+      ],
+      "material": "Carga"
+    },
+    {
+      "root": "00",
+      "name": "Montura+apoyosJ1 con688",
+      "mass_g": 80,
+      "cg_local_mm": [
+        0,
+        0,
+        14
+      ],
+      "box_mm": [
+        90,
+        80,
+        28
+      ],
+      "material": "Presupuesto"
+    },
+    {
+      "root": "01",
+      "name": "J2 polea salida disco macizo",
+      "mass_g": 66.98635086061132,
+      "cg_local_mm": [
+        0,
+        24,
+        40
+      ],
+      "box_mm": [
+        57.29577951308232,
+        17,
+        57.29577951308232
+      ],
+      "material": "Al6061"
+    },
+    {
+      "root": "01",
+      "name": "J2 polea entrada disco macizo",
+      "mass_g": 8.638366709945247,
+      "cg_local_mm": [
+        -40.39471137933559,
+        24,
+        40
+      ],
+      "box_mm": [
+        20,
+        17,
+        20
+      ],
+      "material": "Al6061"
+    },
+    {
+      "root": "01",
+      "name": "J2 correa OMEGA_HP_210_3M_6",
+      "mass_g": 3.024,
+      "cg_local_mm": [
+        0,
+        24,
+        40.0
+      ],
+      "box_mm": [
+        60,
+        6,
+        60
+      ],
+      "material": "Elastomero"
+    },
+    {
+      "root": "01",
+      "name": "J2 dos688 y eje8x45",
+      "mass_g": 25.75628167808951,
+      "cg_local_mm": [
+        0,
+        0,
+        40
+      ],
+      "box_mm": [
+        16,
+        45,
+        16
+      ],
+      "material": "Presupuesto"
+    },
+    {
+      "root": "01",
+      "name": "J2 rodamiento625 entrada eje5x18 acople",
+      "mass_g": 10.774419012201486,
+      "cg_local_mm": [
+        0,
+        32,
+        40
+      ],
+      "box_mm": [
+        16,
+        23,
+        16
+      ],
+      "material": "Presupuesto"
+    },
+    {
+      "root": "01",
+      "name": "J2 soporte motor abierto Al2 y PLA",
+      "mass_g": 20,
+      "cg_local_mm": [
+        0,
+        35,
+        40
+      ],
+      "box_mm": [
+        45,
+        40,
+        35
+      ],
+      "material": "Presupuesto"
+    },
+    {
+      "root": "01",
+      "name": "J2 fijaciones salida y separadores",
+      "mass_g": 12,
+      "cg_local_mm": [
+        0,
+        0,
+        40
+      ],
+      "box_mm": [
+        32,
+        32,
+        20
+      ],
+      "material": "Presupuesto"
+    },
+    {
+      "root": "02",
+      "name": "J3 polea salida disco macizo",
+      "mass_g": 44.04385772555834,
+      "cg_local_mm": [
+        0,
+        -24,
+        55
+      ],
+      "box_mm": [
+        45.83662361046586,
+        17,
+        45.83662361046586
+      ],
+      "material": "Al6061"
+    },
+    {
+      "root": "02",
+      "name": "J3 polea entrada disco macizo",
+      "mass_g": 6.034914084996438,
+      "cg_local_mm": [
+        0,
+        -24,
+        0
+      ],
+      "box_mm": [
+        20,
+        17,
+        20
+      ],
+      "material": "Al6061"
+    },
+    {
+      "root": "02",
+      "name": "J3 correa OMEGA_HP_210_3M_6",
+      "mass_g": 3.024,
+      "cg_local_mm": [
+        0,
+        -24,
+        27.5
+      ],
+      "box_mm": [
+        60,
+        6,
+        60
+      ],
+      "material": "Elastomero"
+    },
+    {
+      "root": "02",
+      "name": "J3 dos688 y eje8x45",
+      "mass_g": 25.75628167808951,
+      "cg_local_mm": [
+        0,
+        0,
+        55
+      ],
+      "box_mm": [
+        16,
+        45,
+        16
+      ],
+      "material": "Presupuesto"
+    },
+    {
+      "root": "02",
+      "name": "J3 rodamiento625 entrada eje5x18 acople",
+      "mass_g": 10.774419012201486,
+      "cg_local_mm": [
+        0,
+        -32,
+        0
+      ],
+      "box_mm": [
+        16,
+        23,
+        16
+      ],
+      "material": "Presupuesto"
+    },
+    {
+      "root": "02",
+      "name": "J3 soporte motor abierto Al2 y PLA",
+      "mass_g": 20,
+      "cg_local_mm": [
+        0,
+        -35,
+        0
+      ],
+      "box_mm": [
+        45,
+        40,
+        35
+      ],
+      "material": "Presupuesto"
+    },
+    {
+      "root": "02",
+      "name": "J3 fijaciones salida y separadores",
+      "mass_g": 12,
+      "cg_local_mm": [
+        0,
+        0,
+        55
+      ],
+      "box_mm": [
+        32,
+        32,
+        20
+      ],
+      "material": "Presupuesto"
+    }
+  ]
+}

@@ -1,5 +1,20 @@
 # Manual operativo — 0.1.3 draft
 
+## Emblema vigente — VIS-046 / 31-10-2026
+
+Confirmada: el usuario designa `Neon Red Technical Robot Cutout.png` como nuevo
+logo oficial de la app. Maestro exacto en `assets/Logo.png` y
+`Web/reference/brand/Logo-neon-robot-source.png`. Esta decisión sustituye las
+referencias gráficas anteriores del emblema en este manual; se conserva la
+identidad0.1.9 existente para controles, superficies y estados.
+
+BrandMark comparte `/brand/Logo-robot-256.webp` entre navegación, Inicio y
+Desarrollador. Bienvenida usa `/brand/Logo-robot-1024.webp`; favicon64 y touch180
+usan sus derivados propios. Mantener proporciones, transparencia, contención
+completa, fallback AFR2 y espacio reservado. No añadir fondos ni recortar el
+dibujo. WebP implica reducción de resolución/color; original sin cambios.
+Fuente implementada, aspecto en ejecución No verificado; sin build ni tests.
+
 ## Propósito y composición
 **Inferida / Aprobada (VIS-001, VIS-013):** consola instrumental del robot: conexión y requisitos comprensibles, acciones explícitas y lecturas con validez. Orden: título y propósito → estado de enlaces → acción primaria → datos → feedback y ayuda. Inicio organiza accesos; cada página conserva su tarea dominante. Identidad propia mediante el isotipo oficial `D:/ProyectoRobotica2/assets/Logo.png` (robot Mecanum en wireframe carmesí/rubí sobre fondo `#000000`) enmarcado en medallón `BrandMark` (`36×36 px` en cabecera, `64×64 px` en Inicio) con fallback de monograma `AFR2`, junto al wordmark `AutoFinalRobo2`. Sin logotipos de terceros ni la barra decorativa superior de 5 px de origen (§3.4).
 

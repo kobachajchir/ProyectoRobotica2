@@ -1,0 +1,66 @@
+{
+  "scope": "Predimensionamiento de dientes sobre esfuerzos v14; falta recalcular con masas nuevas. Sin fatiga/contacto/root fillet/FDM aprobados.",
+  "rows": [
+    {
+      "name": "J2_v14_estrecho",
+      "module_mm": 0.8,
+      "output_teeth": 50,
+      "face_mm": 12,
+      "reference_output_Nm": 1.3803386492105,
+      "tangential_N": 69.016932460525,
+      "lewis_factor": 0.4266,
+      "nominal_bending_MPa": 16.852470224968013,
+      "required_FDM_strength_MPa_factor2_K15": 50.557410674904034,
+      "output_wheel_mass_g_ideal": 14.839078727828783,
+      "outside_diameter_mm": 41.6,
+      "mass_thin_web2mm_ideal_g": 9.090768419478778
+    },
+    {
+      "name": "J2_propuesto",
+      "module_mm": 1.25,
+      "output_teeth": 50,
+      "face_mm": 12,
+      "reference_output_Nm": 1.3803386492105,
+      "tangential_N": 44.170836774736,
+      "lewis_factor": 0.4266,
+      "nominal_bending_MPa": 6.902771804146898,
+      "required_FDM_strength_MPa_factor2_K15": 20.708315412440694,
+      "output_wheel_mass_g_ideal": 37.30631990129565,
+      "outside_diameter_mm": 65.0,
+      "mass_thin_web2mm_ideal_g": 19.678691351109165
+    },
+    {
+      "name": "J3_propuesto",
+      "module_mm": 1.25,
+      "output_teeth": 48,
+      "face_mm": 10,
+      "reference_output_Nm": 0.8876554952055,
+      "tangential_N": 29.588516506850002,
+      "lewis_factor": 0.4242083333333333,
+      "nominal_bending_MPa": 5.579997219639722,
+      "required_FDM_strength_MPa_factor2_K15": 16.739991658919166,
+      "output_wheel_mass_g_ideal": 28.589977162057366,
+      "outside_diameter_mm": 62.5,
+      "mass_thin_web2mm_ideal_g": 16.078242770934935
+    },
+    {
+      "name": "J5_propuesto",
+      "module_mm": 0.8,
+      "output_teeth": 72,
+      "face_mm": 6,
+      "reference_output_Nm": 0.321405696829,
+      "tangential_N": 11.159920028784722,
+      "lewis_factor": 0.44413888888888886,
+      "nominal_bending_MPa": 5.234811446362212,
+      "required_FDM_strength_MPa_factor2_K15": 15.704434339086635,
+      "output_wheel_mass_g_ideal": 16.06002649718464,
+      "outside_diameter_mm": 59.2,
+      "mass_thin_web2mm_ideal_g": 8.635846103882294
+    }
+  ],
+  "J2_total_gears_g_ideal": 64.69433748773623,
+  "J2_total_gears_thin_web2mm_ideal_g": 41.18600386444629,
+  "J2_motor_offset_mm": 81.25,
+  "J2_intermediate_offset_mm": 43.75,
+  "J2_note": "Ruedas por si solas consumen/superan la reserva25g de transmision v14. Agregar eje, rodamientos, housing, tornillos y acople; no conservar1.17kg como masa final."
+}

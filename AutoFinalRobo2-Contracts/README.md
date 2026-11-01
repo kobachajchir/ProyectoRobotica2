@@ -1,3 +1,11 @@
+> **AFR2-20261029-03, entrega 3D:** [V7 con codo remoto v17](changes/2026-10-29-03-brazo-v7-codo-remoto-v17.md). J1/J4/J5 integrados con motores, housings y fijaciones. Ensambles nativos y limites registrados; correa20/50, tensor, PVC25/20 y pinzaV7 conservados. Nuevos calculos, comprobaciones globales y aligerado diferidos por el usuario. atmega/esp/web/Loader sin cambios.
+
+> **AFR2-20261029-02:** [banco mecanico compacto v15](changes/2026-10-29-02-banco-brazo-compacto-v15.md). CAD nativo separado, eslabones de aluminio y pinza corregida; masas y revision geometrica local. Reductor J2 no aceptado para PLA e integracion global pendiente. atmega/esp/web/Loader sin cambios.
+
+> **AFR2-20261029-01:** [brazo mas compacto y liviano](changes/2026-10-29-01-brazo-compacto-solo-ruedas.md). Solo ruedas, importacion admitida; se descartan pies y voladizo. Predimensionamiento55/50mm:1.17kg sin carga con reserva25%, margen externo2.65; resistencia, frenado, estabilidad real y nuevo CAD pendientes. atmega/esp/web/Loader sin intervencion.
+
+> **AFR2-20261028-09:** [brazo liviano, aluminio y traccion](changes/2026-10-28-09-brazo-liviano-aluminio-traccion.md). Masa del auto1.5kg aproximada integrada; propuesta de eslabones90/75mm y apoyos desplegables, con calculos de masa/CG/cargas/secciones. Candidato preliminar, sin nuevo CAD ni aprobacion fisica. atmega/esp/web/Loader sin cambios.
+
 > **Loader AFR2-20261028-12 / 0.9.2:** [Conversor universal HEX / ASCII](changes/2026-10-28-12-loader-conversor-universal.md) para texto pegado, con vista legible/escapada, ASCII literal a HEX y copia normalizada. Sin asociación a comandos, COM ni jobs. Solo fuente; sin compilar/ejecutar/probar. Web/atmega/esp/CAD sin cambios de esta ficha.
 
 > **Integración AFR2-20261028-11 / Loader0.9.1:** se incorporó origin/main2a72b9a (Loader0.9.0, servicio AVR y cambios CAD) conservando monitor HEX, USB–TTL, verificación y Protocol Studio locales. [Resoluciones y resguardo](changes/2026-10-28-11-integracion-local-remoto.md). Protocol Studio reasignado a09/10 para evitar IDs remotos repetidos. Solo fuente y Git; sin compilar, probar, validar, COM, flash ni promoción ESP.
@@ -144,6 +152,10 @@ Módulos hermanos: ../AutoFinalRobo2-Atmega, ../AutoFinalRobo2-ESP, ../AutoFinal
 Estado vigente [AFR2-20261023-15](changes/2026-10-23-15-esp-web-build-fixes.md): ESP compilada con perfil candidato, sin errores ni warnings finales; Web compilada y empaquetada localmente (6 assets, 2.925.630 bytes gzip, integridad cotejada). ESP/data/dist conserva el paquete anterior. ATmega se trabaja en paralelo y no se tocó/compiló en esta ficha; nuevo protocolo pendiente de la documentación que entregará el usuario. Sin verificación física, identificación de flash/layout ni flasheo. [Plan ESP](docs/PLAN_ESP.md) · [Perfil provisional UART 1](contracts/UART_PROFILE_1.md) · [Implementación inicial](changes/2026-10-23-11-esp-server-and-mega-link.md).
 
 ## Continuación del proyecto
+
+- **AFR2-20261031-01:** [Simulador UI del ATmega en Desarrollador](changes/2026-10-31-01-developer-ui-simulator.md).
+  Fuente Web con los tres controles de la vista en vivo y servicios ficticios;
+  sin tests, compilacion, validaciones ni promocion ESP. atmega/esp sin cambios.
 
 - [Menús y submenús objetivo](documentation/MENU_PLAN.md), implementados en fuente ATmega19, sin compilar/probar.
 - [PCB OLED/encoder y soporte futuro](hardware/PCB_OLED_ENCODER.md): cabeceras SDA/SCL del shield, señales 1x5 y VCC/GND 1x2, ambos paso 2,54 mm.

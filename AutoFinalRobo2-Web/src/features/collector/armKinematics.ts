@@ -2,6 +2,7 @@ import { Vector3 } from 'three';
 import { activateRobotModel, robotModel, type ArmAngles, type ArmEnvironment, type Point3 } from './robotModel';
 import { forwardModel, rigid } from './modelKinematics';
 import { clearConfiguration, routeTo, samplePath } from './armMotion';
+import { CUBE_MODEL } from './auxiliaryModels';
 export type { ArmAngles, ArmEnvironment, Point3 } from './robotModel';
 
 /** Compatibility facade for collection, now backed by the active descriptor.
@@ -10,7 +11,7 @@ export let STANDALONE_MOUNT = robotModel().mounts.standalone.position;
 export let JOINTS = robotModel().joints;
 export let TRANSPORT = robotModel().transport;
 export let ARM_MOUNT = robotModel().mounts.mounted.position;
-export const CUBE_SIZE = .05;
+export const CUBE_SIZE = CUBE_MODEL.size[0];
 export let GRIP_MIN_MM = robotModel().gripper.min;
 export const rad = (deg: number) => deg * Math.PI / 180;
 export const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value));

@@ -1,5 +1,34 @@
 # Fuentes y alcance — 23/10/2026
 
+## Alcance31-12 — Simulador UI
+
+Confirmada: pedido humano de mejorar el simulador de Desarrollador. Supporting:
+manual/tokens0.1.9 autorizados, primitivas Button/Disclosure, OLED y EncoderControl.
+Objetivos: UiSimulator, ui-simulator.css y orden en DeveloperPage. Dependencias:
+modelo local01, catalogo y renderers existentes; no son una nueva fuente de marca.
+Composicion Propuesta, ejecucion No verificada. [Cobertura](coverage-20261031-12.json).
+
+## Alcance31-09 — logo oficial
+
+Canónica Confirmada: imagen `Neon Red Technical Robot Cutout.png`, entregada por
+el usuario para usar como nuevo logo. Copia exacta en assets/Logo.png y en
+Web/reference/brand/Logo-neon-robot-source.png. Las referencias anteriores del
+logo pasan a históricas; colores/controles de la identidad0.1.9 siguen siendo
+supporting. Objetivos: BrandMark, StartupWelcome, iconosHTML, activos públicos,
+conversor y lista de recursos de Vite. Se mantienen otras áreas fuera de alcance.
+[Procedencia](../../provenance/logo-robot-20261031.json). Ejecución No verificada.
+
+## Alcance31-06 — simuladores3D
+
+Confirmada: pedido humano de estas tres skills, cielo celeste/suelo crema y
+corrección del montaje/servo respecto al CAD. Supporting Observada: manual y
+tokens0.1.9 autorizados, primitivas compartidas Button/Disclosure/TaskSections.
+Objetivos directos: CollectorPage/Scene, SimulationModel, puntos guardados,
+collector.css y descriptor v17. Dependencias: RobotModel/robotHeadRig, catálogo
+GLB, generador CAD y salida SG90 separada en Blender. Son evidencia geométrica,
+no canon visual. No se usa otra web como referencia. Superficie, jerarquía y
+valores locales Propuesta; aspecto/interacción No verificados. [Cobertura](coverage-20261031-06.json).
+
 ## Alcance13 — control táctil
 
 Pedido humano Confirmado: disposición/gestos de pantalla completa. Supporting:
