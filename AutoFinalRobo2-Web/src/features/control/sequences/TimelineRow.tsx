@@ -24,9 +24,9 @@ export interface TimelineRowProps {
   subtitle?: string;
   details?: React.ReactNode;
   blocks: TimelineVisualBlock[];
-  /** Duracion total de la escala temporal unica compartida entre todas las pistas (ms). */
+  /** Duración total de la escala temporal única compartida entre todas las pistas (ms). */
   scaleTotalMs: number;
-  /** Posicion actual del cursor temporal compartido (ms). */
+  /** Posición actual del cursor temporal compartido (ms). */
   cursorMs: number;
   selectedId: string | null;
   readOnly?: boolean;
@@ -113,9 +113,9 @@ function SortableBlockCell({
 }
 
 /**
- * Fila de linea de tiempo adaptada de `reference/web/src/components/TimelineRow.tsx` (AFR2-20261023-21 / VIS-018).
- * - Soporta reordenamiento por arrastre (`@dnd-kit`), teclado y botones explicitos (`‹`/`›`).
- * - Comparte una unica escala temporal (`scaleTotalMs`) y cursor (`cursorMs`).
+ * Fila de línea de tiempo adaptada de `reference/web/src/components/TimelineRow.tsx` (AFR2-20261023-21 / VIS-018).
+ * - Soporta reordenamiento por arrastre (`@dnd-kit`), teclado y botones explícitos (`‹`/`›`).
+ * - Comparte una única escala temporal (`scaleTotalMs`) y cursor (`cursorMs`).
  * - Cuando una pista de rueda termina antes que `scaleTotalMs`, muestra el tramo restante en consigna 0 mm/s.
  */
 export function TimelineRow({

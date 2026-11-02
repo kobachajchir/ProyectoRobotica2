@@ -7,10 +7,10 @@ export interface ChassisSpinGraphicProps {
 
 /**
  * Vista superior del chasis Mecanum de 4 ruedas con flecha circular antihoraria (`ccw`, izquierda)
- * u horaria (`cw`, derecha) alrededor del centro geometrico (AFR2-20261023-21 / VIS-018).
+ * u horaria (`cw`, derecha) alrededor del centro geométrico (AFR2-20261023-21 / VIS-018).
  * - Se emplea en los dos controles de giro sobre el eje de Control («Girar CCW» y «Girar CW»)
- *   y como simbolo reutilizable en los bloques de giro (`pivot`) del editor de secuencias.
- * - Representa la accion solicitada o programada; no anuncia giro fisico medido.
+ *   y como símbolo reutilizable en los bloques de giro (`pivot`) del editor de secuencias.
+ * - Representa la acción solicitada o programada; no anuncia giro físico medido.
  */
 export function ChassisSpinGraphic({
   direction,
@@ -107,7 +107,7 @@ export function ChassisSpinGraphic({
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      {/* Eje central de rotacion */}
+      {/* Eje central de rotación */}
       <circle cx="32" cy="32" r="2.4" fill="currentColor" />
     </svg>
   );

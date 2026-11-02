@@ -2,6 +2,8 @@
  * No hardware reads, I2C calls, delays, commands or dynamic allocation. */
 #include "afr2_screens.h"
 #include "afr2_sequence_labels.h"
+#include "afr2_ui_components.h"
+#include "afr2_icons.h"
 #include <avr/pgmspace.h>
 #include <stdio.h>
 #include <string.h>
@@ -18,32 +20,18 @@ static const uint8_t icons[AFR2_SEQ_LABEL_COUNT][8] PROGMEM={
     {0,0x02,0x06,0x8c,0xd8,0x70,0x20,0},
     {0x66,0xff,0x66,0x3c,0x3c,0x66,0xff,0x66}
 };
-static void outline(Afr2Oled *o,uint8_t x,uint8_t y,uint8_t w,uint8_t h) {
-    Afr2Oled_Rect(o,x,y,w,1,AFR2_WHITE);Afr2Oled_Rect(o,x,y+h-1,w,1,AFR2_WHITE);
-    Afr2Oled_Rect(o,x,y,1,h,AFR2_WHITE);Afr2Oled_Rect(o,x+w-1,y,1,h,AFR2_WHITE);
-}
 void Afr2SequenceScreen_Render(Afr2Oled *o,const Afr2UiSnapshot *s) {
-    uint8_t count=s->sequence_count, index=s->sequence_index;
-    uint8_t completed=s->sequence_state==4?count:index<count?index:0;
-    for(uint8_t i=0;i<count;i++) {
-        uint8_t x=1+(uint16_t)i*126/count;
-        uint8_t w=(uint16_t)(i+1)*126/count-(uint16_t)i*126/count-1;
-        if(i<completed)Afr2Oled_FillRect(o,x,0,w,7,AFR2_WHITE);
-        else {outline(o,x,0,w,7);if(s->sequence_state==3 && i==index && s->sequence_duration_ms) {
-            uint8_t fill=(uint32_t)(w>2?w-2:0)*s->sequence_elapsed_ms/s->sequence_duration_ms;
-            if(fill)Afr2Oled_FillRect(o,x+1,2,fill,3,AFR2_WHITE);
-        }}
-    }
+    uint8_t count=s->sequence_count,index=s->sequence_index;
+    char name[19],time[18];strcpy_P(name,PSTR("Secuencia"));
+    Afr2Component_Header(o,AFR2_ICON_MOTOR,name,index<count?index+1:count,count);
     uint8_t kind=s->sequence_kind<AFR2_SEQ_LABEL_COUNT?s->sequence_kind:AFR2_SEQ_WHEELS;
     if(s->sequence_state==4)kind=AFR2_SEQ_FINISH;
-    for(uint8_t y=0;y<8;y++){uint8_t bits=pgm_read_byte(&icons[kind][y]);
-        for(uint8_t x=0;x<8;x++)if(bits&(0x80u>>x))Afr2Oled_Rect(o,56+2*x,10+2*y,2,2,AFR2_WHITE);}
-    char name[19],time[18];strcpy_P(name,names[kind]);
-    if(s->sequence_state==5)strcpy_P(name,PSTR("Cancelada"));
-    if(s->sequence_state==6)strcpy_P(name,PSTR("Error de ejecucion"));
-    Afr2Oled_Text(o,(128-7*strlen(name))/2,28,name,AFR2_WHITE);
+    /* Keep the canonical step resources, also copied into the Web library. */
+    for(uint8_t y=0;y<8;y++)for(uint8_t x=0;x<8;x++)if(pgm_read_byte(&icons[kind][y])&(0x80u>>x))Afr2Oled_Pixel(o,2+x,18+y,AFR2_WHITE);
+    strcpy_P(name,names[kind]);if(s->sequence_state==5)strcpy_P(name,PSTR("Cancelada"));if(s->sequence_state==6)strcpy_P(name,PSTR("Error de ejecucion"));
+    Afr2Oled_TextWindow(o,14,128,17,name,0,AFR2_WHITE);
+    uint32_t percent=s->sequence_state==4?100:s->sequence_duration_ms?(uint32_t)((uint64_t)s->sequence_elapsed_ms*100/s->sequence_duration_ms):0;
+    Afr2Component_Progress(o,30,s->sequence_duration_ms>0 || s->sequence_state==4,percent>100?100:percent,s->sensor_now_ms);
     snprintf_P(time,sizeof(time),PSTR("Tiempo %lu.%02lu s"),(unsigned long)(s->sequence_duration_ms/1000),(unsigned long)((s->sequence_duration_ms%1000)/10));
-    Afr2Oled_Text(o,0,42,time,AFR2_WHITE);
-    snprintf_P(time,sizeof(time),PSTR("%u/%u  > Volver"),index<count?index+1:count,count);
-    Afr2Oled_Text(o,0,54,time,AFR2_WHITE);
+    Afr2Oled_Text(o,0,40,time,AFR2_WHITE);Afr2Ui_GestureHint(o,94,52,1,PSTR("Volver"));
 }

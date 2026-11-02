@@ -1,6 +1,6 @@
 {
   "schema": "afr2-screens-2",
-  "updated_by": "AFR2-20261101-02",
+  "updated_by": "AFR2-20261102-05",
   "navigation_source_review": "UI_SCREEN_FLOW.md",
   "screens": [
     {
@@ -25,10 +25,10 @@
       "parent": null,
       "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261030-18",
+      "change_id": "AFR2-20261102-05",
       "item_count": 1,
       "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
-      "variant": "Network/voltage header retained; centered current mode only; short encoder Menu and long encoder Rapidas.",
+      "variant": "Inverted14px header; chamfered76+4+48 panels for real battery voltage, current mode and AP/STA status; Menu/Rapidas footer.",
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
       "web_fidelity": "copied-AVR-layout-library; live-1024-byte-framebuffer; physical-parity-unverified",
       "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
@@ -36,11 +36,12 @@
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
-      "build_evidence": "No build for AFR2-20261030-01; previous entries are historical",
+      "build_evidence": "Not built or tested for AFR2-20261102-05",
       "resources": "AVR PROGMEM XBM Wi-Fi/AP/encoder from kobac AutoMicro; disconnected Wi-Fi copied; original AFR2 long-press and battery empty/1/2/3/4/unknown; same bytes Web",
-      "validity": "Unknown network uses Red: -- / IP: --; battery icon ? and --V unless fresh valid ADC; bands are voltage, not charge percentage; no automatic measurement enable",
-      "header_layout": "Left icon x0..17; SSID y0 and local STA/AP IP y12, both clipped x21..90; battery at right x93..127. STA preferred when connected; otherwise active AP.",
-      "header_scroll": "Independent ping-pong per line, only when longer than70px; 800ms pause at both ends,1px/40ms; partial text bands only, icons and battery stationary."
+      "validity": "Unknown battery shows -- V; network uses -- unless a fresh active AP/STA snapshot is available. IP and SSID remain in network details/QR.",
+      "header_layout": "AutoFinal header at y0..13; body panels y17..48; voltage5x7 at scale2; contextual hints y50..63.",
+      "header_scroll": "Current mode clipped to40px with the common800ms dwell/40ms marquee; full dashboard redraw keeps paired layout deterministic.",
+      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
     },
     {
       "id": "shared:screen/010002",
@@ -62,7 +63,7 @@
       "parent": "shared:screen/010001",
       "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261030-07",
+      "change_id": "AFR2-20261102-05",
       "item_count": 7,
       "back_semantics": "restore invocation history: dashboard for short entry, quick cards for carousel entry; dashboard fallback",
       "variant": "three16px-rows; flash-icons; selected-text800ms-dwell-40ms-scroll; explicit-Volver",
@@ -73,7 +74,8 @@
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
-      "build_evidence": "builds/2026-10-25-14/README.md"
+      "build_evidence": "Not built or tested for AFR2-20261102-05",
+      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
     },
     {
       "id": "shared:screen/020001",
@@ -95,7 +97,7 @@
       "parent": "shared:screen/010002",
       "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261030-07",
+      "change_id": "AFR2-20261102-05",
       "item_count": 4,
       "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
       "variant": "three16px-rows; flash-icons; selected-text800ms-dwell-40ms-scroll; explicit-Volver",
@@ -106,7 +108,8 @@
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
-      "build_evidence": "builds/2026-10-25-14/README.md"
+      "build_evidence": "Not built or tested for AFR2-20261102-05",
+      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
     },
     {
       "id": "shared:screen/020002",
@@ -161,7 +164,7 @@
       ],
       "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261030-07",
+      "change_id": "AFR2-20261102-05",
       "item_count": 8,
       "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
       "variant": "three16px-rows; flash-icons; selected-text800ms-dwell-40ms-scroll; explicit-Volver",
@@ -172,7 +175,8 @@
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
-      "build_evidence": "builds/2026-10-25-14/README.md"
+      "build_evidence": "Not built or tested for AFR2-20261102-05",
+      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
     },
     {
       "id": "shared:screen/030005",
@@ -293,7 +297,7 @@
       ],
       "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261030-07",
+      "change_id": "AFR2-20261102-05",
       "item_count": 5,
       "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
       "variant": "three16px-rows; flash-icons; selected-text800ms-dwell-40ms-scroll; explicit-Volver",
@@ -304,7 +308,8 @@
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
-      "build_evidence": "builds/2026-10-25-14/README.md"
+      "build_evidence": "Not built or tested for AFR2-20261102-05",
+      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
     },
     {
       "id": "shared:screen/030009",
@@ -326,7 +331,7 @@
       ],
       "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261030-13",
+      "change_id": "AFR2-20261102-05",
       "item_count": 12,
       "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
       "variant": "three16px-rows; flash-icons; selected-text800ms-dwell-40ms-scroll; explicit-Volver",
@@ -337,13 +342,14 @@
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
-      "build_evidence": "builds/2026-10-25-14/README.md",
+      "build_evidence": "Not built or tested for AFR2-20261102-05",
       "movement_labels": {
         "arg8": "Girar CCW",
         "arg9": "Girar CW"
       },
       "motion_reference": "contracts/MOTION_REFERENCE_13.md",
-      "build_evidence_applies_to": "historical source only"
+      "build_evidence_applies_to": "historical source only",
+      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
     },
     {
       "id": "shared:screen/03000A",
@@ -365,7 +371,7 @@
       ],
       "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261030-07",
+      "change_id": "AFR2-20261102-05",
       "item_count": 4,
       "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
       "variant": "three16px-rows; flash-icons; selected-text800ms-dwell-40ms-scroll; explicit-Volver",
@@ -376,7 +382,8 @@
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
-      "build_evidence": "builds/2026-10-25-14/README.md"
+      "build_evidence": "Not built or tested for AFR2-20261102-05",
+      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
     },
     {
       "id": "shared:screen/03000B",
@@ -398,7 +405,7 @@
       ],
       "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261030-07",
+      "change_id": "AFR2-20261102-05",
       "item_count": 5,
       "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
       "variant": "three16px-rows; flash-icons; selected-text800ms-dwell-40ms-scroll; explicit-Volver",
@@ -409,7 +416,8 @@
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
-      "build_evidence": "builds/2026-10-25-14/README.md"
+      "build_evidence": "Not built or tested for AFR2-20261102-05",
+      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
     },
     {
       "id": "shared:screen/03000C",
@@ -464,7 +472,7 @@
       ],
       "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261030-07",
+      "change_id": "AFR2-20261102-05",
       "item_count": 8,
       "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
       "variant": "three16px-rows; flash-icons; selected-text800ms-dwell-40ms-scroll; explicit-Volver",
@@ -475,7 +483,8 @@
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
-      "build_evidence": "builds/2026-10-25-14/README.md"
+      "build_evidence": "Not built or tested for AFR2-20261102-05",
+      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
     },
     {
       "id": "shared:screen/03000E",
@@ -596,7 +605,7 @@
       ],
       "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261030-07",
+      "change_id": "AFR2-20261102-05",
       "item_count": 8,
       "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
       "variant": "three16px-rows; flash-icons; selected-text800ms-dwell-40ms-scroll; explicit-Volver",
@@ -607,7 +616,8 @@
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
-      "build_evidence": "builds/2026-10-25-14/README.md"
+      "build_evidence": "Not built or tested for AFR2-20261102-05",
+      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
     },
     {
       "id": "shared:screen/030012",
@@ -629,7 +639,7 @@
       ],
       "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261030-07",
+      "change_id": "AFR2-20261102-05",
       "item_count": 6,
       "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
       "variant": "three16px-rows; flash-icons; selected-text800ms-dwell-40ms-scroll; explicit-Volver",
@@ -640,7 +650,8 @@
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
-      "build_evidence": "builds/2026-10-25-14/README.md"
+      "build_evidence": "Not built or tested for AFR2-20261102-05",
+      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
     },
     {
       "id": "shared:screen/030013",
@@ -695,7 +706,7 @@
       ],
       "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261030-07",
+      "change_id": "AFR2-20261102-05",
       "item_count": 6,
       "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
       "variant": "choose wheel -> count one manual revolution -> click ends; per-wheel unsaved drafts; mandatory save/discard on exit",
@@ -706,7 +717,8 @@
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
-      "build_evidence": "builds/2026-10-25-14/README.md"
+      "build_evidence": "Not built or tested for AFR2-20261102-05",
+      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
     },
     {
       "id": "shared:screen/030015",
@@ -766,10 +778,10 @@
       ],
       "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261030-07",
+      "change_id": "AFR2-20261102-05",
       "item_count": 1,
       "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
-      "variant": "five raw IR bars digital-or-10bit ADC; explicit disabled/pending acquisition; bounded-sibling-pages; short-return",
+      "variant": "Five real IR channels in one framed group; channel number above, equal12px-wide vertical bars, numeric readings below; no fictitious extra channels.",
       "presentation_change_id": "AFR2-20261029-18",
       "web_renderer": "web:src/features/oled/firmwareSensorRenderer.ts:renderSensorScreen",
       "web_fidelity": "copied-AVR-layout-library; live-1024-byte-framebuffer; physical-parity-unverified",
@@ -779,7 +791,8 @@
         "0x030032"
       ],
       "navigation_mode": "sibling-bounded",
-      "build_evidence": "builds/2026-10-25-14/README.md"
+      "build_evidence": "Not built or tested for AFR2-20261102-05",
+      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
     },
     {
       "id": "shared:screen/030017",
@@ -873,7 +886,7 @@
       ],
       "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261030-07",
+      "change_id": "AFR2-20261102-05",
       "item_count": 4,
       "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
       "variant": "three16px-rows; flash-icons; selected-text800ms-dwell-40ms-scroll; explicit-Volver",
@@ -884,7 +897,8 @@
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
-      "build_evidence": "builds/2026-10-25-14/README.md"
+      "build_evidence": "Not built or tested for AFR2-20261102-05",
+      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
     },
     {
       "id": "shared:screen/03001A",
@@ -906,7 +920,7 @@
       ],
       "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261030-07",
+      "change_id": "AFR2-20261102-05",
       "item_count": 6,
       "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
       "variant": "three16px-rows; flash-icons; selected-text800ms-dwell-40ms-scroll; explicit-Volver",
@@ -917,7 +931,8 @@
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
-      "build_evidence": "builds/2026-10-25-14/README.md"
+      "build_evidence": "Not built or tested for AFR2-20261102-05",
+      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
     },
     {
       "id": "shared:screen/03001B",
@@ -939,7 +954,7 @@
       ],
       "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261030-07",
+      "change_id": "AFR2-20261102-05",
       "item_count": 7,
       "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
       "variant": "three16px-rows; flash-icons; selected-text800ms-dwell-40ms-scroll; explicit-Volver",
@@ -950,7 +965,8 @@
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
-      "build_evidence": "builds/2026-10-25-14/README.md"
+      "build_evidence": "Not built or tested for AFR2-20261102-05",
+      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
     },
     {
       "id": "shared:screen/03001C",
@@ -972,7 +988,7 @@
       ],
       "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261030-07",
+      "change_id": "AFR2-20261102-05",
       "item_count": 8,
       "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
       "variant": "three16px-rows; flash-icons; selected-text800ms-dwell-40ms-scroll; explicit-Volver",
@@ -983,7 +999,8 @@
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
-      "build_evidence": "builds/2026-10-25-14/README.md"
+      "build_evidence": "Not built or tested for AFR2-20261102-05",
+      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
     },
     {
       "id": "shared:screen/03001D",
@@ -1038,7 +1055,7 @@
       ],
       "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261030-07",
+      "change_id": "AFR2-20261102-05",
       "item_count": 4,
       "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
       "variant": "three16px-rows; flash-icons; selected-text800ms-dwell-40ms-scroll; explicit-Volver",
@@ -1049,7 +1066,8 @@
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
-      "build_evidence": "builds/2026-10-25-14/README.md"
+      "build_evidence": "Not built or tested for AFR2-20261102-05",
+      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
     },
     {
       "id": "shared:screen/03001F",
@@ -1071,8 +1089,8 @@
       ],
       "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261030-09",
-      "item_count": 5,
+      "change_id": "AFR2-20261102-05",
+      "item_count": 7,
       "back_semantics": "release-long and explicit Volver restore context; notices complete deferred destination only when closed",
       "variant": "three16px-rows; dynamic selection/count; physical actions",
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
@@ -1082,8 +1100,9 @@
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
-      "build_evidence": "builds/2026-10-25-14/README.md",
-      "build_evidence_applies_to": "previous delivery only; no evidence for change09"
+      "build_evidence": "Not built or tested for AFR2-20261102-05",
+      "build_evidence_applies_to": "previous delivery only; no evidence for change09",
+      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
     },
     {
       "id": "shared:screen/030020",
@@ -1105,7 +1124,7 @@
       ],
       "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261030-09",
+      "change_id": "AFR2-20261102-05",
       "item_count": 6,
       "back_semantics": "release-long and explicit Volver restore context; notices complete deferred destination only when closed",
       "variant": "three16px-rows; dynamic selection/count; physical actions",
@@ -1116,9 +1135,10 @@
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
-      "build_evidence": "builds/2026-10-25-14/README.md",
+      "build_evidence": "Not built or tested for AFR2-20261102-05",
       "build_evidence_applies_to": "previous delivery only; no evidence for change09",
-      "item_count_rule": "4 unknown / 5 connected / 6 disconnected"
+      "item_count_rule": "4 unknown / 5 connected / 6 disconnected",
+      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
     },
     {
       "id": "shared:screen/030021",
@@ -1142,7 +1162,7 @@
       ],
       "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261030-09",
+      "change_id": "AFR2-20261102-05",
       "item_count": 9,
       "back_semantics": "release-long and explicit Volver restore context; notices complete deferred destination only when closed",
       "variant": "three16px-rows; dynamic selection/count; physical actions",
@@ -1153,9 +1173,10 @@
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
-      "build_evidence": "builds/2026-10-25-14/README.md",
+      "build_evidence": "Not built or tested for AFR2-20261102-05",
       "build_evidence_applies_to": "previous delivery only; no evidence for change09",
-      "item_count_rule": "networkCount + 1 (Volver), 0..8 networks"
+      "item_count_rule": "networkCount + 1 (Volver), 0..8 networks",
+      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
     },
     {
       "id": "shared:screen/030022",
@@ -1177,7 +1198,7 @@
       ],
       "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261030-09",
+      "change_id": "AFR2-20261102-05",
       "item_count": 3,
       "back_semantics": "release-long and explicit Volver restore context; notices complete deferred destination only when closed",
       "variant": "three16px-rows; dynamic selection/count; physical actions",
@@ -1188,8 +1209,9 @@
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
-      "build_evidence": "builds/2026-10-25-14/README.md",
-      "build_evidence_applies_to": "previous delivery only; no evidence for change09"
+      "build_evidence": "Not built or tested for AFR2-20261102-05",
+      "build_evidence_applies_to": "previous delivery only; no evidence for change09",
+      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
     },
     {
       "id": "shared:screen/030023",
@@ -1211,7 +1233,7 @@
       ],
       "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261030-09",
+      "change_id": "AFR2-20261102-05",
       "item_count": 3,
       "back_semantics": "release-long and explicit Volver restore context; notices complete deferred destination only when closed",
       "variant": "three16px-rows; dynamic selection/count; physical actions",
@@ -1222,10 +1244,11 @@
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
-      "build_evidence": "builds/2026-10-25-14/README.md",
+      "build_evidence": "Not built or tested for AFR2-20261102-05",
       "build_evidence_applies_to": "previous delivery only; no evidence for change09",
       "legacy_identity_note": "030023 retained; replaces Revisar conexion with Configurar",
-      "item_count_rule": "2 unknown / 3 known"
+      "item_count_rule": "2 unknown / 3 known",
+      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
     },
     {
       "id": "shared:screen/030024",
@@ -1247,7 +1270,7 @@
       ],
       "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261030-09",
+      "change_id": "AFR2-20261102-05",
       "item_count": 3,
       "back_semantics": "release-long and explicit Volver restore context; notices complete deferred destination only when closed",
       "variant": "three16px-rows; dynamic selection/count; physical actions",
@@ -1258,8 +1281,9 @@
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
-      "build_evidence": "builds/2026-10-25-14/README.md",
-      "build_evidence_applies_to": "previous delivery only; no evidence for change09"
+      "build_evidence": "Not built or tested for AFR2-20261102-05",
+      "build_evidence_applies_to": "previous delivery only; no evidence for change09",
+      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
     },
     {
       "id": "shared:screen/030025",
@@ -1281,7 +1305,7 @@
       ],
       "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261030-07",
+      "change_id": "AFR2-20261102-05",
       "item_count": 3,
       "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
       "variant": "three16px-rows; flash-icons; selected-text800ms-dwell-40ms-scroll; explicit-Volver",
@@ -1292,7 +1316,8 @@
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
-      "build_evidence": "builds/2026-10-25-14/README.md"
+      "build_evidence": "Not built or tested for AFR2-20261102-05",
+      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
     },
     {
       "id": "shared:screen/030026",
@@ -1314,7 +1339,7 @@
       ],
       "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261030-07",
+      "change_id": "AFR2-20261102-05",
       "item_count": 8,
       "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
       "variant": "three16px-rows; flash-icons; selected-text800ms-dwell-40ms-scroll; explicit-Volver",
@@ -1325,7 +1350,8 @@
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
-      "build_evidence": "builds/2026-10-25-14/README.md"
+      "build_evidence": "Not built or tested for AFR2-20261102-05",
+      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
     },
     {
       "id": "shared:screen/030027",
@@ -1414,7 +1440,7 @@
       ],
       "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261030-07",
+      "change_id": "AFR2-20261102-05",
       "item_count": 6,
       "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
       "variant": "three16px-rows; flash-icons; selected-text800ms-dwell-40ms-scroll; explicit-Volver",
@@ -1425,7 +1451,8 @@
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
-      "build_evidence": "builds/2026-10-25-14/README.md"
+      "build_evidence": "Not built or tested for AFR2-20261102-05",
+      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
     },
     {
       "id": "shared:screen/03002A",
@@ -1480,7 +1507,7 @@
       ],
       "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261030-07",
+      "change_id": "AFR2-20261102-05",
       "item_count": 3,
       "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
       "variant": "diagnostic data, clear fault, return",
@@ -1491,7 +1518,8 @@
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
-      "build_evidence": "builds/2026-10-25-14/README.md"
+      "build_evidence": "Not built or tested for AFR2-20261102-05",
+      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
     },
     {
       "id": "shared:screen/03002c",
@@ -1518,8 +1546,8 @@
       "activation": "once per new running execution; user navigation never forced back",
       "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "variant": "segmented progress/header; icon; movement label; configured time; explicit Volver",
-      "change_id": "AFR2-20261030-07",
+      "variant": "Step count in header; canonical step icon and name, shared124x8 progress component, duration and long/back footer; no percentage text for indeterminate progress.",
+      "change_id": "AFR2-20261102-05",
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
       "web_fidelity": "copied-AVR-layout-library; live-1024-byte-framebuffer; physical-parity-unverified",
       "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
@@ -1527,8 +1555,9 @@
         "state": "source-compiled-hardware-unverified-memory-gated",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
-      "build_evidence": "builds/2026-10-25-14/README.md",
-      "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed"
+      "build_evidence": "Not built or tested for AFR2-20261102-05",
+      "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
+      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
     },
     {
       "name": "Estado de conexiÃƒÂ³n",
@@ -1618,7 +1647,7 @@
         "menu"
       ],
       "parent": "shared:screen/030026",
-      "change_id": "AFR2-20261030-07",
+      "change_id": "AFR2-20261102-05",
       "local_code": "0x03002f",
       "renderer": "atmega:src/ui/afr2_screens.c:Afr2Ui_Render",
       "variant": "three16px-rows; flash-icons; selected-text800ms-dwell-40ms-scroll; explicit-Volver",
@@ -1629,9 +1658,10 @@
         "state": "source-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
-      "build_evidence": "builds/2026-10-25-14/README.md",
+      "build_evidence": "Not built or tested for AFR2-20261102-05",
       "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
-      "item_count": 3
+      "item_count": 3,
+      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
     },
     {
       "id": "shared:screen/040001",
@@ -1972,14 +2002,15 @@
       ],
       "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261030-07",
+      "change_id": "AFR2-20261102-05",
       "item_count": 4,
       "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
       "variant": "three16px rows; icons; clipped selected scrolling; explicit Volver",
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
       "web_fidelity": "copied-AVR-layout-library; live-1024-byte-framebuffer; physical-parity-unverified",
       "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
-      "build_evidence": "builds/2026-10-25-14/README.md"
+      "build_evidence": "Not built or tested for AFR2-20261102-05",
+      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
     },
     {
       "id": "shared:screen/030031",
@@ -2117,14 +2148,15 @@
       ],
       "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261030-07",
+      "change_id": "AFR2-20261102-05",
       "item_count": 7,
       "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
       "variant": "radar RAM settings, nine items; explicit Volver",
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
       "web_fidelity": "copied-AVR-layout-library; live-1024-byte-framebuffer; physical-parity-unverified",
       "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
-      "build_evidence": "builds/2026-10-25-14/README.md"
+      "build_evidence": "Not built or tested for AFR2-20261102-05",
+      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
     },
     {
       "id": "shared:screen/030035",
@@ -2258,11 +2290,13 @@
       "item_count": 3,
       "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261030-07",
+      "change_id": "AFR2-20261102-05",
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
       "web_fidelity": "linked source; regeneration and physical parity pending",
       "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
-      "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed"
+      "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
+      "build_evidence": "Not built or tested for AFR2-20261102-05",
+      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
     },
     {
       "id": "shared:screen/03003a",
@@ -2313,15 +2347,17 @@
         "select",
         "long-release-back"
       ],
-      "variant": "seven bounded cards with page indicator; mode selector, actual state and pending action",
+      "variant": "Seven actual quick-action cards; title and n/7 counter in inverted header, framed status and inverted action band, turn glyph and long/back footer.",
       "item_count": 7,
       "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261030-07",
+      "change_id": "AFR2-20261102-05",
       "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
       "visible_rows": 0,
       "navigation_mode": "carousel",
-      "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed"
+      "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
+      "build_evidence": "Not built or tested for AFR2-20261102-05",
+      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
     },
     {
       "id": "shared:screen/03003b",
@@ -2346,11 +2382,13 @@
       "item_count": 2,
       "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261030-07",
+      "change_id": "AFR2-20261102-05",
       "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
       "visible_rows": 3,
       "navigation_mode": "menu",
-      "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed"
+      "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
+      "build_evidence": "Not built or tested for AFR2-20261102-05",
+      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
     },
     {
       "id": "shared:screen/03003c",
@@ -2375,11 +2413,13 @@
       "item_count": 4,
       "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261030-07",
+      "change_id": "AFR2-20261102-05",
       "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
       "visible_rows": 3,
       "navigation_mode": "menu",
-      "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed"
+      "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
+      "build_evidence": "Not built or tested for AFR2-20261102-05",
+      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
     },
     {
       "id": "shared:screen/03003d",
@@ -2404,9 +2444,11 @@
       "variant": "Reposo, Manual, Volver; notification after service acceptance",
       "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261030-07",
+      "change_id": "AFR2-20261102-05",
       "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
-      "back_semantics": "context history; long release or Volver"
+      "back_semantics": "context history; long release or Volver",
+      "build_evidence": "Not built or tested for AFR2-20261102-05",
+      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
     },
     {
       "id": "shared:screen/03003e",
@@ -2452,11 +2494,13 @@
         "long-release-back"
       ],
       "state": "source-integrated-uncompiled-runtime-unverified",
-      "change_id": "AFR2-20261030-07",
+      "change_id": "AFR2-20261102-05",
       "physical_evidence": false,
       "item_count": 3,
       "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
-      "variant": "correlated ESP diagnostic; start, timeout, return; asynchronous result notice"
+      "variant": "correlated ESP diagnostic; start, timeout, return; asynchronous result notice",
+      "build_evidence": "Not built or tested for AFR2-20261102-05",
+      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
     },
     {
       "id": "shared:screen/030040",
@@ -2477,11 +2521,13 @@
         "long-release-back"
       ],
       "state": "source-integrated-uncompiled-runtime-unverified",
-      "change_id": "AFR2-20261030-07",
+      "change_id": "AFR2-20261102-05",
       "physical_evidence": false,
       "item_count": 1,
       "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
-      "variant": "shared percent representation 0..255 and progress; controller units unchanged"
+      "variant": "shared percent representation 0..255 and progress; controller units unchanged",
+      "build_evidence": "Not built or tested for AFR2-20261102-05",
+      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
     },
     {
       "id": "shared:screen/030041",
@@ -2530,13 +2576,15 @@
         "select",
         "long-release-back"
       ],
-      "change_id": "AFR2-20261030-09",
+      "change_id": "AFR2-20261102-05",
       "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
       "item_count": 3,
       "wire_status": "EX01v11 source only; EEPROMv8 unchanged; no generation/build/deployment",
       "back_semantics": "release-long and explicit Volver restore context; notices complete deferred destination only when closed",
-      "variant": "three16px-rows; dynamic selection/count; physical actions"
+      "variant": "three16px-rows; dynamic selection/count; physical actions",
+      "build_evidence": "Not built or tested for AFR2-20261102-05",
+      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
     },
     {
       "id": "shared:screen/030043",
@@ -2589,6 +2637,62 @@
       "navigation_mode": "motor-selector",
       "web_renderer": "web:src/features/oled/motorSelector.ts:renderMotorSelector",
       "back_semantics": "Long release cancels draft and returns to caller; Hall cancels only current attempt. Mandatory dirty-change guards on caller remain."
+    },
+    {
+      "id": "shared:screen/030045",
+      "local_code": "0x030045",
+      "name": "QR conectar AP",
+      "role": "view",
+      "renderer": "atmega:src/ui/afr2_qr_screen.c:Afr2Qr_Render",
+      "web_renderer": "web:src/features/oled/qrScreen.ts:renderQrScreen",
+      "parent": "shared:screen/03001f",
+      "fields": [
+        "snapshot.network_valid/boot/revision",
+        "snapshot.network_sta/ap/server",
+        "snapshot.network_ap_ssid/password",
+        "snapshot.qr_allowed"
+      ],
+      "actions": [
+        "short-return-context",
+        "long-release-return-context"
+      ],
+      "item_count": 1,
+      "navigation_mode": "qr-display",
+      "variant": "62x62 at(1,1), quiet zone4modules, integer scale, right column at67, long encoder+back footer",
+      "payload": "WIFI:T:WPA;S:<escaped actual AP SSID>;P:<escaped actual AP password>;; (nopass when open)",
+      "privacy": "local-only; remote capture and remote entry blocked",
+      "state": "source-integrated-uncompiled-runtime-unverified",
+      "physical_evidence": false,
+      "build_evidence": "No build, test, validator, browser or flash for this change",
+      "change_id": "AFR2-20261102-05"
+    },
+    {
+      "id": "shared:screen/030046",
+      "local_code": "0x030046",
+      "name": "QR abrir Web",
+      "role": "view",
+      "renderer": "atmega:src/ui/afr2_qr_screen.c:Afr2Qr_Render",
+      "web_renderer": "web:src/features/oled/qrScreen.ts:renderQrScreen",
+      "parent": "shared:screen/03001f",
+      "fields": [
+        "snapshot.network_valid/boot/revision",
+        "snapshot.network_sta/ap/server",
+        "snapshot.network_ip/ap_ip",
+        "snapshot.qr_allowed"
+      ],
+      "actions": [
+        "short-return-context",
+        "long-release-return-context"
+      ],
+      "item_count": 1,
+      "navigation_mode": "qr-display",
+      "variant": "62x62 at(1,1), quiet zone4modules, integer scale, right column at67, long encoder+back footer",
+      "payload": "http://<STA IP when connected, otherwise AP IP>/; requires current Web-ready state",
+      "privacy": "public local IP; normal framebuffer capture",
+      "state": "source-integrated-uncompiled-runtime-unverified",
+      "physical_evidence": false,
+      "build_evidence": "No build, test, validator, browser or flash for this change",
+      "change_id": "AFR2-20261102-05"
     }
   ],
   "battery_screens_change": "AFR2-20261029-26; appended nodes 0x030039 and 0x03003a; source only",

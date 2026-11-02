@@ -21,7 +21,7 @@ interface Position { node: number; selection: number; firstVisible: number }
 const clock = () => Math.floor(performance.now()) >>> 0;
 export function FirmwareLibraryPreview({ screen, onNavigate, active = true }: { screen: Afr2ScreenMetadata; onNavigate: (code: Afr2ScreenCode) => void; active?: boolean }) {
   const foundNode = library.nodes.findIndex(item => Number(item[5]) === Number.parseInt(screen.code.slice(2), 16));
-  const node = foundNode<0 && ['0x03003d','0x03003e','0x03003f','0x030040','0x030041','0x030042','0x030043','0x030044'].includes(screen.code) ? 61+['0x03003d','0x03003e','0x03003f','0x030040','0x030041','0x030042','0x030043','0x030044'].indexOf(screen.code) : foundNode;
+  const node = foundNode<0 && ['0x03003d','0x03003e','0x03003f','0x030040','0x030041','0x030042','0x030043','0x030044'].includes(screen.code) ? screen.code==='0x030044'?70:61+['0x03003d','0x03003e','0x03003f','0x030040','0x030041','0x030042','0x030043','0x030044'].indexOf(screen.code) : foundNode;
   const [position, setPosition] = useState<Position>({ node, selection: 0, firstVisible: 0 });
   const [clockMs, setClockMs] = useState(clock);
   const [feedback, setFeedback] = useState<string | null>(null);
@@ -41,7 +41,7 @@ export function FirmwareLibraryPreview({ screen, onNavigate, active = true }: { 
   const visible = saveChoice?2:current?.[2] && node!==library.symbols.AFR2_N_DIAG ? 1 : 3;
   const siblingViews=[library.symbols.AFR2_N_RADAR_VIEW,library.symbols.AFR2_N_US_VIEW,library.symbols.AFR2_N_LINE_VIEW,library.symbols.AFR2_N_IR_VALUES] as number[];
   const sensorView=siblingViews.includes(node) || node===library.symbols.AFR2_N_SERVO_ANGLE;
-  const drawable = !!current && (quick || home || caps || node===62 || node===64 || node===65 || node===67 || node===45 || !current[2] || node===library.symbols.AFR2_N_DIAG || sensorView || motorPick || hallPick || hallCount || saveChoice || hallStatus || batteryView) && !dynamic;
+  const drawable = !!current && (quick || home || caps || node===62 || node===64 || node===65 || node===67 || node===68 || node===69 || node===45 || !current[2] || node===library.symbols.AFR2_N_DIAG || sensorView || motorPick || hallPick || hallCount || saveChoice || hallStatus || batteryView) && !dynamic;
   useEffect(() => {
     if (position.node !== node) { history.current = []; setPosition({ node, selection: 0, firstVisible: 0 }); }
     scrollStarted.current = clock(); setClockMs(clock()); setFeedback(null);
@@ -68,7 +68,7 @@ export function FirmwareLibraryPreview({ screen, onNavigate, active = true }: { 
     if(caps || quick){const selection=Math.max(0,Math.min(caps?5:6,state.selection+delta));if(quick)quickSelection.current=selection;setPosition({...state,selection});scrollStarted.current=clock();setClockMs(clock());return;}
     if(hallPick || saveChoice){setPosition({...state,selection:(state.selection+delta%count+count)%count});setFeedback(null);return;}
     if(sensorView){
-      if(node===library.symbols.AFR2_N_SERVO_ANGLE){setFeedback('El control fisico del servo requiere el equipo. Usa Distancia y servo para enviar una orden.');return;}
+      if(node===library.symbols.AFR2_N_SERVO_ANGLE){setFeedback('El control físico del servo requiere el equipo. Usá Distancia y servo para enviar una orden.');return;}
       if((delta>0 && (node===library.symbols.AFR2_N_RADAR_VIEW || node===library.symbols.AFR2_N_LINE_VIEW)) || (delta<0 && (node===library.symbols.AFR2_N_US_VIEW || node===library.symbols.AFR2_N_IR_VALUES))){const target=node===library.symbols.AFR2_N_RADAR_VIEW?library.symbols.AFR2_N_US_VIEW:node===library.symbols.AFR2_N_US_VIEW?library.symbols.AFR2_N_RADAR_VIEW:node===library.symbols.AFR2_N_LINE_VIEW?library.symbols.AFR2_N_IR_VALUES:library.symbols.AFR2_N_LINE_VIEW;navigate({node:target,selection:0,firstVisible:0});}return;
     }
     if (!count || !active) return;
@@ -91,12 +91,12 @@ export function FirmwareLibraryPreview({ screen, onNavigate, active = true }: { 
   const press = (kind: 'short' | 'long') => {
     if (!active || !current) return;
     if(motorPick){if(kind==='long')navigate(history.current.pop()??{node:library.symbols.AFR2_N_TESTS,selection:0,firstVisible:0});else {const chosen=MOTOR_IDS[state.selection&3];navigate(history.current.pop()??{node:library.symbols.AFR2_N_TESTS,selection:0,firstVisible:0});setFeedback(`Motor ${chosen} confirmado en la vista local; sin modificar el equipo.`);}return;}
-    if(node===45 || node===65){if(kind==='long' || kind==='short')navigate(history.current.pop()??{node:32,selection:0,firstVisible:0});return;}
-    if(node===67 && kind==='short'){setFeedback('Cambiar el modo requiere confirmacion del ESP; la biblioteca no modifica la radio.');return;}
-    if(node===62){if(kind==='long')navigate(history.current.pop()??{node:library.symbols.AFR2_N_TESTS,selection:0,firstVisible:0});else setFeedback('La deteccion de pulsaciones requiere el encoder fisico.');return;}
-    if(saveChoice){setFeedback('La eleccion Si/No requiere cambios reales del controlador; la biblioteca no guarda ni descarta mediciones.');return;}
+    if(node===45 || node===65 || node===68 || node===69){if(kind==='long' || kind==='short')navigate(history.current.pop()??{node:node===68 || node===69?31:32,selection:0,firstVisible:0});return;}
+    if(node===67 && kind==='short'){setFeedback('Cambiar el modo requiere confirmación del ESP; la biblioteca no modifica la radio.');return;}
+    if(node===62){if(kind==='long')navigate(history.current.pop()??{node:library.symbols.AFR2_N_TESTS,selection:0,firstVisible:0});else setFeedback('La detección de pulsaciones requiere el encoder físico.');return;}
+    if(saveChoice){setFeedback('La elección Sí/No requiere cambios reales del controlador; la biblioteca no guarda ni descarta mediciones.');return;}
     if(hallPick || hallCount){
-      if(kind==='long'){navigate(history.current.pop()??{node:library.symbols.AFR2_N_HALL_TEST,selection:0,firstVisible:0});setFeedback('Vista previa cerrada; no habia un conteo fisico activo.');}
+      if(kind==='long'){navigate(history.current.pop()??{node:library.symbols.AFR2_N_HALL_TEST,selection:0,firstVisible:0});setFeedback('Vista previa cerrada; no había un conteo físico activo.');}
       else setFeedback('Confirmar la rueda y contar pulsos requiere el controlador conectado. No se simulan mediciones.');
       return;
     }
@@ -114,12 +114,12 @@ export function FirmwareLibraryPreview({ screen, onNavigate, active = true }: { 
     }
     if (!count) { setFeedback('Esta pantalla necesita datos preparados por el controlador.'); return; }
     const item = firmwareMenuItem(node, state.selection);
-    if(item.action===library.symbols.AFR2_A_WHEEL){history.current.push({...state});navigate({node:68,selection:0,firstVisible:0});return;}
+    if(item.action===library.symbols.AFR2_A_WHEEL){history.current.push({...state});navigate({node:70,selection:0,firstVisible:0});return;}
     if(item.action===library.symbols.AFR2_A_HALL_BEGIN){
       const target=library.nodes.findIndex(n=>Number(n[5])===0x030036);
       if(target>=0){history.current.push({...state});navigate({node:target,selection:0,firstVisible:0});}return;
     }
-    if (item.action) { setFeedback('Esta accion se ejecuta con el equipo conectado. La biblioteca local solo permite navegar.'); return; }
+    if (item.action) { setFeedback('Esta acción se ejecuta con el equipo conectado. La biblioteca local solo permite navegar.'); return; }
     if (item.label.startsWith('Volver')) navigate(history.current.pop() ?? { node: item.target, selection: 0, firstVisible: 0 });
     else {
       if (item.target === library.symbols.AFR2_N_HOME || item.target === library.symbols.AFR2_N_QUICK) history.current = [];
@@ -128,7 +128,13 @@ export function FirmwareLibraryPreview({ screen, onNavigate, active = true }: { 
     }
   };
   return <div className="afr2-page-stack afr2-library-preview">
-    <p className="afr2-help">Vista local del diseño. Botones 1–3: resaltar fila. <EncoderGlyph kind="short" scale={1}/> Confirmar. <EncoderGlyph kind="long" scale={1}/> Volver al soltar. <EncoderGlyph kind="turn" scale={1}/> Desplazar seleccion. Acciones y datos del equipo requieren el visor conectado.</p>
+    <p className="afr2-help">Vista local del diseño. Botones 1–3: resaltar fila. Acciones y datos del equipo requieren el visor conectado.</p>
+    {/* AFR2-20261102-02: cada gesto con su icono arriba y el texto abajo, los tres en fila. */}
+    <ul className="afr2-gesture-legend" aria-label="Gestos del encoder">
+      <li><EncoderGlyph kind="short" scale={2}/><span>Confirmar</span></li>
+      <li><EncoderGlyph kind="long" scale={2}/><span>Volver al soltar</span></li>
+      <li><EncoderGlyph kind="turn" scale={2}/><span>Desplazar selección</span></li>
+    </ul>
     <div className="afr2-oled-with-side">
       {drawable ? <OledCanvas128x64 compact oledBuffer={buffer} screenCode={screen.code} sourceMode="local-firmware-preview" showGrid={false} />
         : <div className="afr2-oled-data-required"><strong>{screen.name}</strong><p>Esta vista necesita un snapshot del equipo. Consultala en el visor conectado.</p></div>}

@@ -3,10 +3,16 @@
   "connections": [
     {
       "id": "shared:flow/web-local-ui-simulator",
-      "path": ["web:developer-ui-simulator", "web:shared-encoder-control", "web:local-ui-state", "web:linked-firmware-renderer", "web:oled-canvas"],
+      "path": [
+        "web:help-oled",
+        "web:shared-encoder-control",
+        "web:local-ui-state",
+        "web:linked-firmware-renderer",
+        "web:oled-canvas"
+      ],
       "state": "source-implemented-uncompiled-unvalidated",
-      "note": "Local AVR UI navigation adaptation with fictional service snapshots. No connected-client commands, firmware edits or ESP promotion; shared ScreenCodes/resources unchanged.",
-      "changeId": "AFR2-20261101-02",
+      "note": "Help OLED opens interactive UI simulation with explicit fictional service snapshots; static no-data library remains selectable. Shared current AVR layouts and QR screens. No real commands or ESP promotion.",
+      "changeId": "AFR2-20261102-05",
       "navigation_review": "documentation/UI_SCREEN_FLOW.md"
     },
     {
@@ -468,6 +474,18 @@
       "state": "web-source-uncompiled-runtime-unverified",
       "contract": "contracts/TOUCH_MODEL_READY_19.md",
       "note": "asset ready and local viewer ready before new gesture; one shared progress/cache; loading and recovery never start motors; real PWM guards retained"
+    },
+    {
+      "id": "shared:flow/oled-runtime-qr",
+      "path": [
+        "esp:network-display-state",
+        "atmega:prepared-network-snapshot",
+        "atmega:runtime-qr-encoder",
+        "atmega:oled-framebuffer"
+      ],
+      "state": "source-implemented-uncompiled-unvalidated",
+      "note": "Local AP WIFI QR and actual local-IP Web QR; stale state and moving auto/radar show unavailable; AP QR private. Web simulation uses fictional fixtures and the paired QR encoder. Existing wire unchanged.",
+      "changeId": "AFR2-20261102-05"
     }
   ],
   "updated_by": "AFR2-20261030-19",

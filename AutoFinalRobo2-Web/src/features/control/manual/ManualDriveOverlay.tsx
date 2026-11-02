@@ -19,9 +19,9 @@ const DIRECTIONS: ManualDirection[] = [
   { id: 'n', label: 'adelante', vx: 1, vy: 0, angle: 0 },
   { id: 'ne', label: 'adelante a la derecha', vx: 1, vy: -1, angle: 45 },
   { id: 'e', label: 'la derecha', vx: 0, vy: -1, angle: 90 },
-  { id: 'se', label: 'atras a la derecha', vx: -1, vy: -1, angle: 135 },
-  { id: 's', label: 'atras', vx: -1, vy: 0, angle: 180 },
-  { id: 'sw', label: 'atras a la izquierda', vx: -1, vy: 1, angle: 225 },
+  { id: 'se', label: 'atrás a la derecha', vx: -1, vy: -1, angle: 135 },
+  { id: 's', label: 'atrás', vx: -1, vy: 0, angle: 180 },
+  { id: 'sw', label: 'atrás a la izquierda', vx: -1, vy: 1, angle: 225 },
   { id: 'w', label: 'la izquierda', vx: 0, vy: 1, angle: 270 },
   { id: 'nw', label: 'adelante a la izquierda', vx: 1, vy: 1, angle: 315 },
 ];
@@ -83,14 +83,14 @@ export function ManualDriveOverlay({ open, origin, onClose, onRelease, onDirecti
       try {
         const response = await requestCommand<{powerPercent:number}>('robot.touch.ui', { enabled: true, ...next }, 2000);
         if (!cancelled) {
-          if (response.status !== 'completed' || !Number.isInteger(response.payload.powerPercent) || response.payload.powerPercent!==next.powerPercent) throw new Error('Presentacion de potencia sin confirmar; requiere EX01 v10.');
+          if (response.status !== 'completed' || !Number.isInteger(response.payload.powerPercent) || response.payload.powerPercent!==next.powerPercent) throw new Error('Presentación de potencia sin confirmar; requiere EX01 v10.');
           if(activated && last.split(':')[2]!==String(response.payload.powerPercent)){
             setPowerNotice(response.payload.powerPercent);if(powerNoticeTimer.current)clearTimeout(powerNoticeTimer.current);
             powerNoticeTimer.current=setTimeout(()=>setPowerNotice(null),1200);
           }
           activated = true; last = key; sentAt = Date.now(); setOledError(null);
         }
-      } catch (err) { if (!cancelled && activated && err instanceof Afr2CommandError && err.code === 'CAPABILITY_UNAVAILABLE') { cancelled=true; exitTouch.current.onRelease(); exitTouch.current.onClose(); return; } if (!cancelled) setOledError(err instanceof Error ? err.message : 'No se pudo activar la OLED tactil.'); }
+      } catch (err) { if (!cancelled && activated && err instanceof Afr2CommandError && err.code === 'CAPABILITY_UNAVAILABLE') { cancelled=true; exitTouch.current.onRelease(); exitTouch.current.onClose(); return; } if (!cancelled) setOledError(err instanceof Error ? err.message : 'No se pudo activar la OLED táctil.'); }
       finally { busy = false; }
     };
     const disable = () => { activated = false; last = ''; void requestCommand('robot.touch.ui', { enabled: false, direction: 8, heading: 0, powerPercent:touchLatest.current.powerPercent }, 2000).catch(() => undefined); };
@@ -274,9 +274,9 @@ export function ManualDriveOverlay({ open, origin, onClose, onRelease, onDirecti
     const movementLabel = !connected ? 'Simulando' : mode === 'preview' ? 'Vista local' : 'Moviendo';
     directionLabel = `${movementLabel} hacia ${direction.label}`;
   } else {
-    directionLabel = !connected ? 'Simulacion detenida' : mode === 'preview' ? 'Vista local detenida' : 'Desliza y mantene para mover';
+    directionLabel = !connected ? 'Simulación detenida' : mode === 'preview' ? 'Vista local detenida' : 'Deslizá y mantené para mover';
   }
-  return <FloatingModal open={open} origin={origin} size="fullscreen" title="Conduccion manual" kicker="Control tactil"
+  return <FloatingModal open={open} origin={origin} size="fullscreen" title="Conducción manual" kicker="Control táctil"
     headerStatus={<span className="afr2-manual-connection" data-connected={connected} role="status" aria-live="polite">
       <span className="afr2-manual-connection-dot" aria-hidden="true" />{connected ? 'Conectado' : 'Desconectado'}
     </span>}
@@ -321,22 +321,22 @@ export function ManualDriveOverlay({ open, origin, onClose, onRelease, onDirecti
             </g>
           </svg>
         </span>)}</div>
-        <div ref={input} className="afr2-manual-input" role="group" tabIndex={0} aria-label="Un dedo desplaza; gira dos dedos para rotar la vista local"
+        <div ref={input} className="afr2-manual-input" role="group" tabIndex={0} aria-label="Un dedo desplaza; girá dos dedos para rotar la vista local"
           aria-describedby={`${uid}-help ${uid}-heading`} aria-keyshortcuts="ArrowUp ArrowDown ArrowLeft ArrowRight Q E 0" aria-disabled={!enabled} onPointerDown={down} onPointerMove={move}
           onPointerUp={end} onPointerCancel={end} onLostPointerCapture={lost}
           onBlur={cancel} onContextMenu={event => { event.preventDefault(); cancel(); }} />
-        <span className="afr2-manual-gesture-hint" aria-hidden="true">{twisting ? 'Gira los dos dedos · Levanta ambos para volver al arrastre' : pressed && !direction ? 'Arrastra para elegir una direccion' : ''}</span>
+        <span className="afr2-manual-gesture-hint" aria-hidden="true">{twisting ? 'Girá los dos dedos · Levantá ambos para volver al arrastre' : pressed && !direction ? 'Arrastrá para elegir una dirección' : ''}</span>
       </div>
       <footer className="afr2-manual-footer">
         <ModelAssetProgress label="Modelo del auto" />
         <p className="afr2-manual-direction" role="status" aria-live="polite">{directionLabel}</p>
-        <p id={`${uid}-help`} className="afr2-help">Un dedo desplaza en pantalla · Dos dedos giran la vista local · Solta para detener.
+        <p id={`${uid}-help`} className="afr2-help">Un dedo desplaza en pantalla · Dos dedos giran la vista local · Soltá para detener.
           <span className="afr2-manual-keyboard-help">Flechas: mover · Q/E: girar 15° · 0: centrar rumbo.</span>
-          <span>{modelBlockedReason ? modelBlockedReason : !connected ? 'Auto desconectado. Simulacion local sin movimientos fisicos.' : !canDrive ? `Control bloqueado: ${blockedReason || 'PWM manual no disponible.'}` : error ? `Ultima orden sin confirmar: ${error}. Solta y volve a deslizar para reintentar.` : mode === 'preview' ? 'Vista local sin movimientos. Cerra y volve a abrir para controlar el auto.' : 'Vista superior · Direccion y ruedas solicitadas, sin feedback fisico.'}</span></p>
+          <span>{modelBlockedReason ? modelBlockedReason : !connected ? 'Auto desconectado. Simulación local sin movimientos físicos.' : !canDrive ? `Control bloqueado: ${blockedReason || 'PWM manual no disponible.'}` : error ? `Última orden sin confirmar: ${error}. Soltá y volvé a deslizar para reintentar.` : mode === 'preview' ? 'Vista local sin movimientos. Cerrá y volvé a abrir para controlar el auto.' : 'Vista superior · Dirección y ruedas solicitadas, sin feedback físico.'}</span></p>
         {mode==='robot' && powerNotice!==null && <div role="status" className="afr2-power-notice"><strong>Velocidad modificada: {Math.round(powerNotice*255/100)} /255</strong><progress max={100} value={powerNotice} aria-label="Potencia representada"/><output>{powerNotice}%</output></div>}
         {oledError && <p className="afr2-help" role="status">OLED: {oledError}</p>}
         {modelUnavailable && <Button onClick={() => { ready(false); clearRobotModelCache(); setModelFailed(false); setViewerKey(value => value + 1); }}>Reintentar modelo 3D</Button>}
-        <div className="afr2-manual-speed"><label htmlFor={`${uid}-speed`}>{mode === 'preview' ? connected ? 'Velocidad de la vista local' : 'Velocidad simulada' : 'Potencia de movimiento'}</label><output htmlFor={`${uid}-speed`}>{displayedSpeed} <span>{mode==='preview'?'mm/s':'% del limite PWM'}</span></output>
+        <div className="afr2-manual-speed"><label htmlFor={`${uid}-speed`}>{mode === 'preview' ? connected ? 'Velocidad de la vista local' : 'Velocidad simulada' : 'Potencia de movimiento'}</label><output htmlFor={`${uid}-speed`}>{displayedSpeed} <span>{mode==='preview'?'mm/s':'% del límite PWM'}</span></output>
           <input id={`${uid}-speed`} type="range" min={mode==='preview'?10:0} max={displayedMaxSpeed} step={10} value={displayedSpeed}
             onChange={event => { const value = Math.min(displayedMaxSpeed, Number(event.target.value)); if (modeRef.current === 'preview') setPreviewSpeed(value); else onSpeedChange(value); }} /></div>
       </footer>

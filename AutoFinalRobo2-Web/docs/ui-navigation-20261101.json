@@ -1,0 +1,92 @@
+{
+  "changeId": "AFR2-20261101-12",
+  "decisionId": "VIS-053",
+  "source": "src/app/navigation.ts, src/app/App.tsx, src/components/navigation/RouteNav.tsx",
+  "supersedes": "Rutas de ui-control-map-20261023.json, ui-floating-20261023.json y ui-refactor-20261023.json (se conservan como historia)",
+  "breakpoints": {
+    "sm": 600,
+    "md": 840,
+    "lg": 1200,
+    "xl": 1600
+  },
+  "layout": {
+    "base": "Celular: sin barra lateral; barra inferior Inicio, Conducir, Programas, Sensores y Más; barra superior en una fila con pills icono+valor y STOP",
+    "md": "Rail lateral (76 px) con grupos; barra inferior oculta",
+    "lg": "Barra lateral expandida (248 px) por defecto; el usuario puede plegarla (afr2.sidebar-collapsed)"
+  },
+  "sidebar": {
+    "top": [
+      "OLED en vivo (modal global)",
+      "Inicio /"
+    ],
+    "groups": {
+      "Operar": [
+        "Conducir /conducir",
+        "Programas /programas"
+      ],
+      "Preparar": [
+        "Puesta a punto /puesta-a-punto",
+        "Sensores /sensores"
+      ],
+      "Explorar": [
+        "Modelos y simulación /modelos",
+        "Infraestructura /infraestructura"
+      ],
+      "Sistema": [
+        "Conexión /conexion",
+        "Ayuda /ayuda"
+      ]
+    },
+    "bottom": [
+      "Configuración (modal): Apariencia, Sistema, Acerca de → Desarrollador /desarrollador"
+    ]
+  },
+  "moreSheet": [
+    "OLED en vivo",
+    "Puesta a punto",
+    "Modelos y simulación",
+    "Infraestructura",
+    "Conexión",
+    "Ayuda",
+    "Configuración"
+  ],
+  "operationalStatusBar": [
+    "/conducir",
+    "/programas"
+  ],
+  "routes": {
+    "/conducir": "ControlPage area=drive (pad, Control táctil, potencia, modo)",
+    "/programas": "ControlPage area=programs; ?tarea=secuencias|goto",
+    "/puesta-a-punto": "ControlPage area=setup; ?tarea=ruedas|calibracion|preferencias; ?rueda=FL|FR|RL|RR",
+    "/sensores": "SensorsPage; ?seccion=distancia|linea|ruedas",
+    "/modelos": "ModelsPage: tres banners (auto, brazo, conjunto) y enlace al cubo",
+    "/infraestructura": "InfrastructurePage: flujo visual Web/CAD, etapas seleccionables, pesos GLB, manifiesto local preparado o del ESP y ocupación LittleFS cuando la informa la placa; fuente AFR2-20261102-04 sin verificación de ejecución",
+    "/conexion": "WifiPage titulada Conexión; pestañas Estado de red, Buscar redes, Diagnóstico",
+    "/ayuda": "DocsPage titulada Ayuda; ?seccion=web|esp|atmega|oled; en OLED: vista previa + lista (?pantalla=0x…) o árbol conceptual (?vista=arbol)",
+    "/desarrollador": "DeveloperPage (también desde Configuración → Acerca de y triple toque del logo de Inicio)",
+    "/desarrollador/protocol-studio": "ProtocolStudioPage",
+    "/modelos/:modelo": "Model3DPage: inspección de auto|brazo|conjunto|cubo con referencias visibles e «Ir a simulación»",
+    "/simulacion/:tipo": "SimulatorPage: simulador auto|brazo|conjunta con selector y «Ver modelo 3D»"
+  },
+  "redirects": {
+    "/control": "/conducir; ?tarea=wheel → /puesta-a-punto?tarea=ruedas; calibrate → /puesta-a-punto?tarea=calibracion; goto|sequences → /programas",
+    "/simulaciones": "/simulacion/:tipo según ?tipo (brazo por defecto)",
+    "/brazo": "/simulacion/brazo",
+    "/simulacion": "/simulacion/conjunta",
+    "/modelo-3d": "/modelos",
+    "/wifi": "/conexion",
+    "/oled": "/ayuda?seccion=oled",
+    "/documentacion": "/ayuda",
+    "/desarrollador/ui-simulator": "/ayuda?seccion=oled&vista=arbol"
+  },
+  "moved": {
+    "Configuración → Sistema → Preferencias": "Puesta a punto → Preferencias",
+    "Configuración → Detalles de la conexión, Diagnóstico WebSocket": "Conexión → Diagnóstico",
+    "Configuración → Batería (copia)": "Quitada; queda la pill y su modal",
+    "Control → Supervisión del control Web": "Ayuda → Web",
+    "Página Pantalla OLED": "Visor en vivo como modal global; catálogo en Ayuda → OLED",
+    "Telemetría en párrafo de Control": "Barra de estado operativo bajo la barra superior"
+  },
+  "verification": "AFR2-20261102-01: verificado en navegador local sin robot (5 anchos, claro/oscuro); sin build:esp",
+  "updatedBy": "AFR2-20261102-04"
+}

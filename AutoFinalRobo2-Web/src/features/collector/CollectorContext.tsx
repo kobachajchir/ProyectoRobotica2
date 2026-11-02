@@ -13,10 +13,12 @@ const CollectorContext = createContext<{ state: CollectorState; update: Dispatch
 
 /** Separate in-memory workspaces for the new Arm and Combined routes. No actuator commands and no
  * persistence of a running mission across reloads. Idle simulation has no timer. */
-export function CollectorProvider({ children }: { children: ReactNode }) {
+/** AFR2-20261102-01: el tipo puede venir de la ruta (/simulacion/:tipo); `?tipo=` queda como respaldo. */
+export function CollectorProvider({ children, kind: routeKind }: { children: ReactNode; kind?: SimulationKind }) {
   const { pathname } = useLocation();
   const [params] = useSearchParams();
-  const kind: SimulationKind = params.get('tipo') === 'auto' ? 'auto' : params.get('tipo') === 'conjunta' ? 'conjunta' : 'brazo';
+  const requested = routeKind ?? params.get('tipo');
+  const kind: SimulationKind = requested === 'auto' ? 'auto' : requested === 'conjunta' ? 'conjunta' : 'brazo';
   const [simulation, updateSimulation] = useState<CollectorState>(() => initialCollector());
   const [arm, updateArm] = useState<CollectorState>(() => ({ ...initialCollector(), cubes: [], environment: 'standalone', selected: 'j0' }));
   const [car, updateCar] = useState<CollectorState>(() => ({ ...initialCollector(), cubes: [], workspace: false, references: false }));
@@ -40,15 +42,15 @@ export function CollectorProvider({ children }: { children: ReactNode }) {
     return () => window.clearInterval(timer);
   }, [active, update]);
   useEffect(() => { update(s => halt(s)); return () => update(s => halt(s)); }, [pathname, update]);
-  useEffect(() => { if (modalOpen) update(s => halt(s, 'Simulacion detenida al abrir un panel.')); }, [modalOpen, update]);
+  useEffect(() => { if (modalOpen) update(s => halt(s, 'Simulación detenida al abrir un panel.')); }, [modalOpen, update]);
   useEffect(() => {
     if (lastStop.current !== stopRecord.lastIssuedAtMs) {
       lastStop.current = stopRecord.lastIssuedAtMs;
-      update(s => halt(s, 'Simulacion detenida por STOP.'));
+      update(s => halt(s, 'Simulación detenida por STOP.'));
     }
   }, [stopRecord.lastIssuedAtMs, update]);
   useEffect(() => {
-    const stop = () => update(s => halt(s, 'Simulacion detenida al perder el foco.'));
+    const stop = () => update(s => halt(s, 'Simulación detenida al perder el foco.'));
     const visibility = () => { if (document.visibilityState !== 'visible') stop(); };
     window.addEventListener('blur', stop);
     document.addEventListener('visibilitychange', visibility);

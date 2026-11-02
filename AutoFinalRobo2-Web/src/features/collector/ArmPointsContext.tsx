@@ -54,7 +54,7 @@ export function useArmPointsController(state: CollectorState, update: Dispatch<S
     const old = points.find(p => p.id === replaceId);
     const point = old ? { ...captured, id: old.id, createdAt: old.createdAt } : captured;
     commit(old ? points.map(p => p.id === old.id ? point : p) : [...points, point]);
-    setSelectedId(point.id); setMessage('Postura guardada. El destino conserva posicion y orientacion respecto del montaje.');
+    setSelectedId(point.id); setMessage('Postura guardada. El destino conserva posición y orientación respecto del montaje.');
   };
   const rename = (name: string) => {
     if (!selected || !name.trim()) return;
@@ -64,7 +64,7 @@ export function useArmPointsController(state: CollectorState, update: Dispatch<S
   const reviewFrames = () => {
     if (!selected || pointBusy(state)) return;
     commit(points.map(p => p.id === selected.id ? { ...p, updatedAt: new Date().toISOString(), source: { ...p.source, frameSignature: frameSignature() } } : p));
-    setMessage('Marco revisado explicitamente. El destino numerico no cambio; calcula su trayectoria.');
+    setMessage('Marco revisado explícitamente. El destino numérico no cambió; calculá su trayectoria.');
   };
   const execute = (plan: ArmMotionPlan) => {
     const snapshot = latest.current, point = snapshot.points.find(p => p.id === plan.pointId);
@@ -80,10 +80,10 @@ export function useArmPointsController(state: CollectorState, update: Dispatch<S
   };
   const calculate = (go = false) => {
     if (state.rigIssue || !selected || pointBusy(state) || state.cubes.some(c => c.location === 'gripper') || calculating || document.visibilityState !== 'visible') return;
-    if (selected.source.frameSignature !== frameSignature()) { setMessage('Cambio el marco del montaje o del TCP. Revisa el destino antes de usarlo.'); return; }
+    if (selected.source.frameSignature !== frameSignature()) { setMessage('Cambió el marco del montaje o del TCP. Revisá el destino antes de usarlo.'); return; }
     const problems = modelProblems(robotModel());
     if (problems.length) { setMessage(problems.join(' ')); return; }
-    if (restoreOpening && (selected.opening < robotModel().gripper.min || selected.opening > robotModel().gripper.max)) { setMessage('La apertura guardada no esta dentro del rango del modelo activo. Desactiva restaurarla o actualiza el punto.'); return; }
+    if (restoreOpening && (selected.opening < robotModel().gripper.min || selected.opening > robotModel().gripper.max)) { setMessage('La apertura guardada no está dentro del rango del modelo activo. Desactivá restaurarla o actualizá el punto.'); return; }
     if (go && validPlan) { execute(validPlan); return; }
     cancelCalculation(); const id = generation.current, fingerprint = context;
     const model = robotModel();
@@ -91,7 +91,7 @@ export function useArmPointsController(state: CollectorState, update: Dispatch<S
     const payload: MotionRequest = { requestId: id, context: fingerprint, pointId: selected.id, model, from: [...state.joints],
       target: { position: selected.position, quaternion: selected.quaternion }, taught, opening: state.opening,
       finishOpening: restoreOpening ? selected.opening : undefined, environment: motionEnvironment(state) };
-    setMessage('Calculando posicion, orientacion y recorrido…'); setCalculating(true); setPreview(null); requestContext.current = fingerprint;
+    setMessage('Calculando posición, orientación y recorrido…'); setCalculating(true); setPreview(null); requestContext.current = fingerprint;
     try {
       const job = new ArmMotionWorker(); worker.current = job;
       job.onmessage = (event: MessageEvent<{ requestId: number; context: string; result: MotionResult }>) => {

@@ -1,3 +1,23 @@
+> **AFR2-20261102-04:** `#/infraestructura` en Explorar, Inicio y Más; recorridos visuales de Web y modelos 3D, pesos GLB, tabla gzip y LittleFS. Vite dev/preview lee el paquete local preparado y lo distingue del reporte del ESP. [Ficha](../AutoFinalRobo2-Contracts/changes/2026-11-02-04-infrastructure-explorer.md). Solo fuente; sin tests, compilación, validaciones, navegador ni promoción.
+
+> **AFR2-20261102-03:** simulador con escena y controles lado a lado, zoom +/− flotante con porcentaje, cámara inicial igual a los banners de Modelos y banners re-renderizados (`tools/banner-renders`).
+
+> **AFR2-20261102-02:** Ayuda → OLED: pantalla a la izquierda, lista a la derecha y «Ver árbol de pantallas» (`?vista=arbol`); el Simulador UI de Desarrollador redirige ahí. [Ficha](../AutoFinalRobo2-Contracts/changes/2026-11-02-02-oled-help-tree-view.md).
+
+> **AFR2-20261102-01:** `/modelos` con tres banners → `/modelos/:modelo` (inspección, «Ir a simulación») → `/simulacion/:tipo`; banner de Inicio (`HomeHero`); mapa de pantallas en Simulador UI. Renders en `public/brand/models/` (scripts en `tools/banner-renders/`). Revisado en navegador local; sin build:esp. [Ficha](../AutoFinalRobo2-Contracts/changes/2026-11-02-01-browser-review-models-flow-tree.md).
+
+> **AFR2-20261101-12 / VIS-053:** rutas por tarea (`src/app/navigation.ts`): Conducir, Programas, Puesta a punto, Sensores, Modelos y simulacion, Conexion y Ayuda, con redirecciones; barra inferior en celular. [Mapa](docs/ui-navigation-20261101.json) · [Ficha](../AutoFinalRobo2-Contracts/changes/2026-11-01-12-visual-plan-phase5-structure.md). Fuente sin tests/build/navegador ni promocion.
+
+> **AFR2-20261101-11:** textos de la interfaz con tildes otra vez (sustituye AFR2-20261026-03); el texto dibujado en la replica OLED no cambia. [Ficha](../AutoFinalRobo2-Contracts/changes/2026-11-01-11-web-accents-restored.md). Fuente sin tests/build/navegador ni promocion.
+
+> **AFR2-20261101-10 / VIS-051:** `PageHeader` (h1 unico) y `SectionHeader` h2/h3 con la escala `--type-*` (`styles/headers.css`); Modelos 3D sin vidrio exterior y chips de estado en Control. [Ficha](../AutoFinalRobo2-Contracts/changes/2026-11-01-10-visual-plan-phase4-headers.md). Fuente sin tests/build/navegador ni promocion.
+
+> **AFR2-20261101-09 / VIS-052:** `SegmentedControl` (`src/components/ui`, `styles/segmented.css`) reemplaza los siete estilos de selector; TaskSections conserva su API. [Ficha](../AutoFinalRobo2-Contracts/changes/2026-11-01-09-visual-plan-phase3-segmented.md). Fuente sin tests/build/navegador ni promocion.
+
+> **AFR2-20261101-08 / VIS-050:** iconos en `src/components/ui/icons/registry.ts` (Lucide ISC + propios), `UiIcon size` 16/20/24; glifos y SVG sueltos reemplazados. Plan visual con fase 7 OLED. [Ficha](../AutoFinalRobo2-Contracts/changes/2026-11-01-08-visual-plan-phase2-icons.md). Fuente sin tests/build/navegador ni promocion.
+
+> **AFR2-20261101-07 / VIS-050..054:** plan visual fase 1: tokens `--type-*`, espaciado por rol, breakpoints 600/840/1200/1600 en `@theme`, `--attention*` y Segoe UI Variable; seis variables CSS sin definir corregidas. [Ficha](../AutoFinalRobo2-Contracts/changes/2026-11-01-07-visual-plan-phase1-tokens.md). Fuente sin tests/build/navegador ni promocion.
+
 > **AFR2-20261101-06 / VIS-049:** Simulador UI en /desarrollador/ui-simulator, tarjeta debajo de Protocol Studio, ayuda y pestanas con el mismo lenguaje visual. [Ficha](../AutoFinalRobo2-Contracts/changes/2026-11-01-06-ui-simulator-workspace.md). Fuente sin tests/build/navegador ni promocion.
 
 > **AFR2-20261101-04:** encuadre cercano y centrado por geometria en simuladores y Modelos 3D; conserva orbita/zoom manuales. [Ficha](../AutoFinalRobo2-Contracts/changes/2026-11-01-04-close-model-framing.md). Fuente sin tests, builds, validadores ni navegador.
@@ -271,3 +291,7 @@ Web/docs/model-asset-20261024.json. Los párrafos de hitos anteriores son histor
 ## AFR2-20261029-19 — OLED táctil y visor bajo demanda
 
 Fuente adaptada con Web/ATmega/ESP: overlay scrim+blur en modales, Volver por ítem del menú, ScreenCode0x030035 con aviso/bitmap/chevrones y suscripción explícita a capturas/metadatos. Contrato en AutoFinalRobo2-Contracts/contracts/TOUCH_OLED_19.md; procedencia por archivo en provenance/touch-oled-20261029-19.json de Contracts. El rumbo es solicitado, no medido, y no agrega giro físico. Sin tests, compilación, validadores, navegador, ejecución del generador OLED, promoción ESP ni flasheo de esta entrega. Memoria/paridad/latencia físicas pendientes.
+
+## AFR2-20261102-05 — Ayuda OLED
+
+Ayuda → OLED abre Simular flujo con datos ficticios y mantiene Biblioteca sin datos como alternativa. Reutiliza el reductor UI y el dibujo AVR portado; navegar conserva contexto y ajustes locales. Nuevos QR030045/030046 están en Wi-Fi. En el auto usan SSID/clave/IP reales; los ejemplos Web son ficticios. Detalles en Contracts/contracts/OLED_RUNTIME_QR_20261102.md. Sin tests/build/validadores/navegador/promoción ESP de esta entrega.

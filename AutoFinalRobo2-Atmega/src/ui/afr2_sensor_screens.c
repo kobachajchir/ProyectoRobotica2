@@ -3,6 +3,7 @@
  * oled_utils.c / screenWrappers.c / eventManagers.c. Five AFR2 channels only.
  * Radar/servo layouts are new. Integer raster only; no hardware calls. */
 #include "afr2_screens.h"
+#include "afr2_ui_components.h"
 #include "afr2_icons.h"
 #include <avr/pgmspace.h>
 #include <stdio.h>
@@ -103,13 +104,15 @@ void Afr2SensorScreen_Render(Afr2Oled *o,uint8_t node,const Afr2UiSnapshot *s){
         if(h){if(h->enabled)snprintf_P(text,sizeof(text),PSTR("Ang %03u PWM %u"),h->angle,h->pulse_us);else snprintf_P(text,sizeof(text),PSTR("Ang -- PWM 0"));txt(o,0,27,text);snprintf_P(text,sizeof(text),PSTR("Eco %u Edad %lums"),h->latest.error,(unsigned long)(h->latest.id?(s->sensor_now_ms-h->latest.ms):0));txt(o,0,39,text);}
         Afr2Ui_GestureHint(o,0,53,0,PSTR("Opciones"));return;
     }
-    if(node==AFR2_N_LINE_VIEW){TXT(0,0,"IR linea 1/2>");}else {TXT(0,0,"IR valores <2/2");}
+    if(node==AFR2_N_LINE_VIEW){strcpy_P(text,PSTR("Sensores IR"));Afr2Component_Header(o,AFR2_ICON_SENSORS,text,1,2);}else {TXT(0,0,"IR valores <2/2");}
     if(!s->ir_valid){if(s->ir_kind){TXT(0,25,"Esperando IR");}else {TXT(0,25,"IR deshabilitado");}Afr2Ui_GestureHint(o,0,53,1,PSTR("Volver"));return;}
     if(node==AFR2_N_LINE_VIEW){
+        Afr2Component_Panel(o,0,15,128,35);
         for(uint8_t i=0;i<5;i++){
-            uint8_t x=8+24*i;Afr2Oled_Rect(o,x,14,14,28,AFR2_WHITE);
-            uint16_t max=s->ir_kind==1?1:1023;uint8_t height=(uint32_t)s->ir_raw[i]*24u/max;if(height>24)height=24;
-            Afr2Oled_FillRect(o,x+2,40-height,10,height,AFR2_WHITE);small_number(o,x+7,43,s->ir_raw[i]);
+            uint8_t center=15+24*i;Afr2Component_Mini(o,center-1,17,i+1);
+            Afr2Oled_Rect(o,center-6,24,12,16,AFR2_WHITE);
+            uint16_t max=s->ir_kind==1?1:1023;uint8_t height=(uint32_t)s->ir_raw[i]*12u/max;if(height>12)height=12;
+            Afr2Oled_FillRect(o,center-4,38-height,8,height,AFR2_WHITE);small_number(o,center,43,s->ir_raw[i]);
         }
     }else for(uint8_t i=0;i<5;i++){
         snprintf_P(text,sizeof(text),PSTR("%u:%4u"),i+1,s->ir_raw[i]);

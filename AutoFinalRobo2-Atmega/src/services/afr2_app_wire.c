@@ -173,6 +173,7 @@ uint8_t Afr2App_Command(void *ctx,uint8_t cmd,const uint8_t *d,uint8_t n,uint8_t
     }
     case AFR2_EXT_UI_PAGE: {
         if(n!=7)return AFR2_RESULT_BAD_REQUEST;
+        if(Afr2App_UiPrivate(a)){a->snapshot_active=0;return AFR2_RESULT_UNAVAILABLE;}
         uint16_t offset=afr2_get_u16(d+4);uint8_t count=d[6];
         if(!a->snapshot_active || afr2_get_u32(d)!=a->snapshot_revision)return AFR2_RESULT_UNAVAILABLE;
         if(!count || count>40 || offset>1024u-count)return AFR2_RESULT_BAD_REQUEST;
@@ -196,7 +197,7 @@ uint8_t Afr2App_Command(void *ctx,uint8_t cmd,const uint8_t *d,uint8_t n,uint8_t
         if(d[4]==0 && a->ui->node==AFR2_N_SERVO_ANGLE)return AFR2_RESULT_UNAVAILABLE;
         if(d[4]==1 && !a->ui->notices && a->ui->node!=AFR2_N_RADAR_VIEW && a->ui->node!=AFR2_N_US_VIEW && a->ui->node!=AFR2_N_LINE_VIEW && a->ui->node!=AFR2_N_IR_VALUES && a->ui->node!=AFR2_N_SERVO_ANGLE) {
             Afr2MenuItem selected;Afr2Ui_MenuItem(a->ui,a->ui->selection,&selected);
-            if(selected.step || selected.target==AFR2_N_AP_INFO || !Afr2App_RemoteUiAllowed(selected.action))return AFR2_RESULT_UNAVAILABLE;
+            if(selected.step || selected.target==AFR2_N_AP_INFO || selected.target==AFR2_N_QR_AP || !Afr2App_RemoteUiAllowed(selected.action))return AFR2_RESULT_UNAVAILABLE;
         }
         if(d[4]==3) {
             if(a->ui->notices)return AFR2_RESULT_UNAVAILABLE;

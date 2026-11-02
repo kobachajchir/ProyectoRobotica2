@@ -1,0 +1,109 @@
+/* AFR2-20261101-09 / VIS-052 — SegmentedControl: ranura con pill deslizante.
+   Única implementación de pestañas y elecciones. La pill es .afr2-seg__active (copia de la
+   fila con estilo activo) recortada con clip-path; solo se anima clip-path.
+   Los selectores llevan el prefijo .afr2-seg para ganar a reglas globales de botones:
+   la copia tiene que medir exactamente igual que los botones. */
+
+.afr2-seg {
+  --seg-pad: 4px;
+  --seg-h: 44px;
+  --seg-x: 16px;
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  width: fit-content;
+  max-width: 100%;
+  min-width: 0;
+  padding: var(--seg-pad);
+  border-radius: var(--radius-pill);
+  background: var(--surface-subtle);
+  box-shadow: var(--seg-track-inset);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+}
+.afr2-seg::-webkit-scrollbar { display: none; }
+.afr2-seg[data-size="sm"] { --seg-x: 12px; }
+@media (hover: hover) and (pointer: fine) {
+  .afr2-seg[data-size="sm"] { --seg-h: 36px; }
+}
+
+.afr2-seg__row { display: flex; width: max-content; }
+
+.afr2-seg .afr2-seg__item,
+.afr2-seg .afr2-seg__ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  min-height: var(--seg-h);
+  padding: 0 var(--seg-x);
+  border-radius: var(--radius-pill);
+  font: var(--type-label);
+  letter-spacing: var(--type-label-tracking);
+  white-space: nowrap;
+}
+
+.afr2-seg .afr2-seg__item {
+  margin: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  scroll-snap-align: center;
+  transition: color var(--duration-fast) ease;
+}
+.afr2-seg .afr2-seg__item:disabled { color: var(--text-disabled); cursor: not-allowed; }
+.afr2-seg .afr2-seg__item:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+.afr2-seg__label { display: inline-flex; align-items: center; gap: 6px; transition: transform var(--duration-button-press) var(--ease-out); }
+.afr2-seg__label > svg { flex: none; }
+
+@media (hover: hover) and (pointer: fine) {
+  .afr2-seg .afr2-seg__item:not(:disabled):hover { color: var(--text); }
+}
+/* Pulsación: solo con puntero; el teclado no anima. */
+html:not([data-input="keyboard"]) .afr2-seg__item:active:not(:disabled) .afr2-seg__label { transform: scale(0.97); }
+
+/* Capa de la pill: la sombra se aplica con filter al contenedor para que siga la forma recortada. */
+.afr2-seg__glow {
+  position: absolute;
+  top: var(--seg-pad);
+  left: var(--seg-pad);
+  z-index: 1;
+  pointer-events: none;
+  filter: var(--seg-pill-shadow);
+}
+.afr2-seg__active {
+  background: var(--seg-pill-bg);
+  color: var(--text-strong);
+  clip-path: inset(0 100% 0 0 round 9999px);
+}
+.afr2-seg__active .afr2-seg__ghost { color: inherit; }
+.afr2-seg[data-ready="true"] .afr2-seg__active {
+  transition: clip-path var(--duration-segmented) var(--ease-in-out);
+}
+
+/* Columnas iguales a todo el ancho: siempre, o solo en celular con 2 a 4 opciones. */
+.afr2-seg[data-fill="always"],
+.afr2-seg[data-fill="mobile"] { width: 100%; }
+.afr2-seg[data-fill="always"] .afr2-seg__row,
+.afr2-seg[data-fill="mobile"] .afr2-seg__row { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); width: 100%; }
+.afr2-seg[data-fill="always"] .afr2-seg__glow,
+.afr2-seg[data-fill="mobile"] .afr2-seg__glow { right: var(--seg-pad); }
+.afr2-seg[data-fill="always"] .afr2-seg__item,
+.afr2-seg[data-fill="mobile"] .afr2-seg__item { padding-inline: 8px; }
+.afr2-seg[data-fill="always"] .afr2-seg__ghost,
+.afr2-seg[data-fill="mobile"] .afr2-seg__ghost { padding-inline: 8px; }
+@media (min-width: 600px) {
+  .afr2-seg[data-fill="mobile"] { width: fit-content; }
+  .afr2-seg[data-fill="mobile"] .afr2-seg__row { display: flex; width: max-content; }
+  .afr2-seg[data-fill="mobile"] .afr2-seg__glow { right: auto; }
+  .afr2-seg[data-fill="mobile"] .afr2-seg__item,
+  .afr2-seg[data-fill="mobile"] .afr2-seg__ghost { padding-inline: var(--seg-x); }
+}
+
+@media (prefers-contrast: more) {
+  .afr2-seg { box-shadow: inset 0 0 0 1px var(--border-strong); }
+}

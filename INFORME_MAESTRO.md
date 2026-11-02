@@ -1,3 +1,5 @@
+> **AFR2-20261102-05:** UI OLED128-5 en fuentes ATmega/Web y simulación en Ayuda; QR 030045/030046 del AP/Web con estado vigente del ESP. [Alcance y presupuesto](AutoFinalRobo2-Contracts/contracts/OLED_RUNTIME_QR_20261102.md). Fuente y recursos copiados; sin tests, build, validación, navegador ni carga al equipo.
+
 > **AFR2-20261029-03, entrega 3D:** [brazo V7 con codo remoto v17](AutoFinalRobo2-CAD/mecanica/brazo-antropomorfo/revision_v17/README.md). Montajes J1/J4/J5 integrados, PVC25/20, ejes70/60, tensor y pinzaV7 conservados. Ensambles nativos y limites registrados; eje auxiliar J3 sin tope adicional al codo. Por pedido del usuario, nuevos calculos, comprobaciones globales y aligerado diferidos. No aprobacion de resistencia ni fabricacion. atmega/esp/web/Loader sin cambios.
 
 > **AFR2-20261029-02, banco mecanico v15:** [eslabones de aluminio, pinza y transmisiones](AutoFinalRobo2-CAD/mecanica/brazo-antropomorfo/revision_v15/README.md). Fusion independiente del maestro v09; masas desde geometria y revision CAD local muestreada de pinza. J2 modulo0.8 requiere otra iteracion para PLA. Sin brazo completo integrado ni capacidad fisica aprobada; 1.17kg de01 no es peso final actualizado.
@@ -57,6 +59,8 @@
 > **Interfaz AFR2-20261027-06:** calibracion con ayuda contextual derecha e interpretacion del valor; matematica destacada y uniforme en Auto/Brazo/Conjunto; pad de movimiento, boton mantenido y numero/barra compartidos con Control. [Ficha](AutoFinalRobo2-Contracts/changes/2026-10-27-06-calibration-live-math-shared-controls.md). Solo fuente; sin tests/build/validaciones/navegador/promocion ESP. Adaptadores fisico y simulado separados.
 
 # AutoFinalRobo2 — informe maestro vigente
+
+> **Infraestructura AFR2-20261102-04:** nuevo destino Explorar con recorrido visual de React/Vite y Fusion/Blender/Draco hasta gzip, LittleFS, flash, HTTP y navegador; pesos y reporte de archivos con procedencia local/ESP. [Ficha](AutoFinalRobo2-Contracts/changes/2026-11-02-04-infrastructure-explorer.md). atmega sin cambios; esp/web fuente modificada. Sin tests, compilación, validaciones, navegador, promoción de paquete ni flasheos.
 
 > **Fuente AFR2-20261031-01:** [Simulador UI en Desarrollador](AutoFinalRobo2-Contracts/changes/2026-10-31-01-developer-ui-simulator.md).
 > Navegacion OLED adaptada del ATmega, tres controles compartidos del visor en

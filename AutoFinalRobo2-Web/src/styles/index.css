@@ -4,6 +4,11 @@
 @source "../../index.html";
 @import "./tokens.css";
 @import "./workspace.css";
+@import "./segmented.css";
+@import "./headers.css";
+@import "./models.css";
+@import "./infrastructure.css";
+@import "./screen-tree.css";
 @import "./startup.css";
 @import "./notifications.css";
 @import "./control-map.css";
@@ -16,9 +21,17 @@
 @import "./calibration.css";
 @import "./manual-drive.css";
 @import "./oled-catalogue.css";
-@import "./ui-simulator.css";
 @import "./sensors.css";
 @import "./radar.css";
+
+/* VIS-053 (AFR2-20261101-07): breakpoints mobile-first compartidos con tokens.css (--bp-*).
+   Sustituyen los valores por defecto de Tailwind (640/768/1024/1280) en las variantes sm/md/lg/xl. */
+@theme {
+  --breakpoint-sm: 37.5rem; /* 600px */
+  --breakpoint-md: 52.5rem; /* 840px */
+  --breakpoint-lg: 75rem;   /* 1200px */
+  --breakpoint-xl: 100rem;  /* 1600px */
+}
 
 *,
 *::before,

@@ -1,0 +1,21 @@
+{
+  "changeId": "AFR2-20261102-04",
+  "mode": "APLICAR",
+  "authorization": "Pedido humano de agregar Infraestructura a Explorar; continuidad de primitivas y tokens actuales previamente autorizados, sin redefinir identidad.",
+  "canonicalSources": ["manual.md", "tokens.json", "components.md", "decisions.md"],
+  "supporting": ["Web/src/styles/tokens.css", "PageHeader", "UiIcon", "GlassSurface", "SegmentedControl", "Button", "Disclosure", "Web/src/app/navigation.ts"],
+  "targets": ["/infraestructura", "navegación Explorar", "enlace contextual en /modelos"],
+  "confirmed": ["Flujo visual educativo", "Web y CAD hasta flash/HTTP/navegador", "Tamaños de archivos y conjunto 3D"],
+  "observed": ["Recursos 3D independientes", "gzip por archivo", "ESP sirve comprimido", "Decodificador Draco WASM local", "Manifiesto con tamaños declarados", "Tokens y controles compartidos vigentes"],
+  "proposed": ["Mapa de dos orígenes con convergencia", "Recorridos de ocho etapas", "Detalle entrada/salida", "Métricas y tabla con barras", "Reflujo y scroll local"],
+  "coverage": "Parcial: fuente implementada, ejecución no verificada",
+  "themes": ["light", "dark"],
+  "runtimeVerification": "No verificada por instrucción expresa de no ejecutar validaciones",
+  "tests": false,
+  "build": false,
+  "validators": false,
+  "browser": false,
+  "hardware": false,
+  "packagesPromoted": false,
+  "limitations": ["Paquete local puede ser anterior a las fuentes", "ESP anterior requiere nueva versión para la consulta de manifiesto", "No se mide tamaño de imagen .bin ni RAM a partir de gzip", "Contraste, temas, móvil y teclado sin comprobar en ejecución"]
+}

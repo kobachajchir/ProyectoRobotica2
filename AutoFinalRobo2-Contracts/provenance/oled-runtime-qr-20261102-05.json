@@ -1,0 +1,86 @@
+{
+  "change_id": "AFR2-20261102-05",
+  "state": "source-only-uncompiled-unvalidated",
+  "upstream_qr": {
+    "author": "Project Nayuki",
+    "license": "MIT",
+    "commit": "bcfe1b018cec5f1f91b5705eca5bb4cdd34e9f8d",
+    "url": "https://github.com/nayuki/QR-Code-generator",
+    "adaptations": [
+      "AVR ECC tables in PROGMEM",
+      "TypeScript exported namespace"
+    ]
+  },
+  "design": "Project OLED128-5; existing AFR2/kobac font/icon authors retained; no AutoMicro repository edits",
+  "files": [
+    {
+      "path": "AutoFinalRobo2-Atmega/src/ui/afr2_ui_components.c",
+      "sha256_normalized_lf": "d7366a994df9d18c4c6894a377e16cee47dcb62cd94ed346a85bad8a9d7c5ab0"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/ui/afr2_qr_screen.c",
+      "sha256_normalized_lf": "4dad0bef32a65d69568615d937507cb95b36f7ac7576073797a30e27bf02e41d"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/include/afr2_qr_screen.h",
+      "sha256_normalized_lf": "22e16bbf94eb88641ec613b6778df5345d615923b64e088954696b3ddbbe3efa"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/third_party/qrcodegen.c",
+      "sha256_normalized_lf": "b40b1de6445fc947beca12270331bb295ffffdec76bb17e9678c8e9c68b3b493"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/include/qrcodegen.h",
+      "sha256_normalized_lf": "e82df4bff37d18b5863b9e7486fe6bda1b6cda8c3b9ecebfec473907265cb589"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/ui/afr2_screens.c",
+      "sha256_normalized_lf": "90920d0b1111c55963c47c0baefb965d248452e68532233a5d92fbc23e49faf5"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/ui/afr2_sensor_screens.c",
+      "sha256_normalized_lf": "ce074c42cdd85496311607e98def988ff38163cdfcdff58746409ffad864470d"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/ui/afr2_sequence_screen.c",
+      "sha256_normalized_lf": "0e49552a1f988a2e0667e2f30a52f86e7123fa996f1a5027406b6d063095dab3"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/oled/oledComponents.ts",
+      "sha256_normalized_lf": "7389247f4b85918e8b5a62a6c4032f9f09ae3265315f1419861760085d329006"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/oled/qrScreen.ts",
+      "sha256_normalized_lf": "3d915024eb32fa5441ca13bcbfe61655b86beac2530f7d2b45c48e76948527ab"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/oled/vendor/qrcodegen.ts",
+      "sha256_normalized_lf": "11fd4bbbe613e0e4bddef4cb207515e83e459c6ff03da3349b2128c9e80fb897"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/oled/firmwareRenderer.ts",
+      "sha256_normalized_lf": "b7f36fd1c39a753115b23ec4654acae67a02bf7f629c32a9b77a337fa586d550"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/oled/firmwareSensorRenderer.ts",
+      "sha256_normalized_lf": "b2ec230cd048f77fd91cc06feb01130d2b0b7bb229bc58e0cb2118788db8a210"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/oled/UiSimulationPreview.tsx",
+      "sha256_normalized_lf": "5149b161c35141e309d6ed433f24b1b4c39d9dbf9233872b72187ae9b1ae5b59"
+    }
+  ],
+  "execution": {
+    "tests": false,
+    "build": false,
+    "validators": false,
+    "browser": false,
+    "flash": false,
+    "resource_copy": "sync-oled-library.mjs --copy-only"
+  },
+  "limits": [
+    "Flash/SRAM/stack and latency not measured",
+    "No physical scan evidence",
+    "No ESP Web package promotion"
+  ]
+}

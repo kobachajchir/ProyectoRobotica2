@@ -7,20 +7,18 @@ import { Button } from '../../components/ui/Button';
 import { StatusNotice } from '../../components/ui/StatusNotice';
 import { useConnection } from '../connection/ConnectionContext';
 import type { Afr2CommandName } from '../../protocol/wsEnvelope';
-import { withoutAccents } from '../../utils/displayText';
 import { CalibrationExplanation } from './CalibrationExplanation';
 import { CALIBRATION_GUIDE } from './calibrationGuide';
 
 // IDs/ranges come from the same catalogue as the AVR numeric editors.
-const allActions = config.actions.filter(a => a.config_access).map(action => ({
-  ...action, label: action.label ? withoutAccents(action.label) : action.label,
-}));
+// AFR2-20261101-11: etiquetas del catálogo con sus tildes (se quito withoutAccents).
+const allActions = config.actions.filter(a => a.config_access);
 export function CalibrationPanel({preferences=false}:{preferences?:boolean}={}) {
   const actions=allActions.filter(a=>preferences ? [41,42,53,54,68,81].includes(a.id) : ![41,42,53,54,68,81].includes(a.id));
   const { wsState, megaLinkState, capabilities, requestCommand, executeCommandWithToast, robotState, stopRecord, setOperationActivity, triggerEmergencyStop } = useConnection();
   const [action, setAction] = useState(preferences?41:4);
   const [value, setValue] = useState(0);
-  const [feedback, setFeedback] = useState('Selecciona un parametro y consulta su valor actual.');
+  const [feedback, setFeedback] = useState('Seleccioná un parámetro y consultá su valor actual.');
   const [busy, setBusy] = useState(false);
   const [loadedAction, setLoadedAction] = useState<number | null>(null);
   const [receivedValue, setReceivedValue] = useState<number | null>(null);
@@ -33,7 +31,7 @@ export function CalibrationPanel({preferences=false}:{preferences?:boolean}={}) 
   useEffect(() => { ++epoch.current; setLoadedAction(null); }, [wsState, megaLinkState, stopRecord.lastIssuedAtMs]);
   useEffect(() => {
     mounted.current = true;
-    const cancel = () => { ++epoch.current; if (mounted.current) setFeedback('Interaccion interrumpida. Volve a consultar antes de editar.'); setLoadedAction(null); };
+    const cancel = () => { ++epoch.current; if (mounted.current) setFeedback('Interacción interrumpida. Volvé a consultar antes de editar.'); setLoadedAction(null); };
     const onVisibility = () => { if (document.visibilityState !== 'visible') cancel(); };
     window.addEventListener('blur', cancel); document.addEventListener('visibilitychange', onVisibility);
     return () => { mounted.current = false; ++epoch.current; setOperationActivity('configuration', false); window.removeEventListener('blur', cancel); document.removeEventListener('visibilitychange', onVisibility); };
@@ -45,7 +43,7 @@ export function CalibrationPanel({preferences=false}:{preferences?:boolean}={}) 
     try {
       const res = await requestCommand<{ value: number }>('robot.config.get', { action });
       if (!current(ticket)) return;
-      if (res.status !== 'completed' || !Number.isInteger(res.payload.value)) throw new Error('El controlador no entrego un valor valido.');
+      if (res.status !== 'completed' || !Number.isInteger(res.payload.value)) throw new Error('El controlador no entregó un valor válido.');
       setValue(res.payload.value);setReceivedValue(res.payload.value);setLoadedAction(action);setFeedback(`Valor recibido: ${res.payload.value} ${selected.unit ?? ''}`);
     } catch(e) {if (current(ticket)) setFeedback(e instanceof Error ? e.message : 'No se pudo consultar.');}
     finally {locked.current = false; if (mounted.current) setBusy(false);}
@@ -60,17 +58,17 @@ export function CalibrationPanel({preferences=false}:{preferences?:boolean}={}) 
       if (!current(ticket) || !latest.current.writable) return;
       if (state.status !== 'completed' || state.payload.stopped !== true) throw new Error('Se necesita confirmar salidas apagadas antes de editar.');
       const result = await executeCommandWithToast(command, payload, labels);
-      if (current(ticket) && result) { setLoadedAction(null); setFeedback('Solicitud confirmada. Consulta nuevamente el parametro antes de otra edicion.'); }
-    } catch (error) { if (current(ticket)) setFeedback(error instanceof Error ? error.message : 'No se pudo aplicar la configuracion.'); }
+      if (current(ticket) && result) { setLoadedAction(null); setFeedback('Solicitud confirmada. Consultá nuevamente el parámetro antes de otra edición.'); }
+    } catch (error) { if (current(ticket)) setFeedback(error instanceof Error ? error.message : 'No se pudo aplicar la configuración.'); }
     finally { locked.current = false; setOperationActivity('configuration', false); if (mounted.current) setBusy(false); }
   };
   return <div className="afr2-calibration-layout"><section className="afr2-calibration-editor space-y-4">
-    <h2 className="text-base font-semibold">{preferences?'Preferencias del sistema':'Calibracion'}</h2>
-    <p className="afr2-help">Los cambios se aplican en RAM con las salidas apagadas. Guardar en EEPROM y descartar son acciones explicitas. Los Hall se calibran por rueda desde la OLED. La geometria nominal proviene del CAD y no se edita.</p>
-    <p className="afr2-help">Aplicar, guardar o descartar envia la accion directamente. Antes de escribir se vuelve a consultar que las salidas esten apagadas.</p>
-    {!writable && <StatusNotice tone="info" title="Edicion bloqueada">Conecta el Mega y detene las salidas. Podes consultar sin modificar la configuracion.</StatusNotice>}
-    <form className="space-y-4" onSubmit={e => {e.preventDefault();if (loadedAction === action) void write('robot.calibrate', {action, value}, {loadingTitle:'Aplicando parametro…',successTitle:'Parametro aplicado en RAM'});}}>
-      <label className="block">Parametro
+    <h2 className="text-base font-semibold">{preferences?'Preferencias del sistema':'Calibración'}</h2>
+    <p className="afr2-help">Los cambios se aplican en RAM con las salidas apagadas. Guardar en EEPROM y descartar son acciones explícitas. Los Hall se calibran por rueda desde la OLED. La geometría nominal proviene del CAD y no se edita.</p>
+    <p className="afr2-help">Aplicar, guardar o descartar envía la acción directamente. Antes de escribir se vuelve a consultar que las salidas estén apagadas.</p>
+    {!writable && <StatusNotice tone="info" title="Edición bloqueada">Conectá el Mega y detené las salidas. Podés consultar sin modificar la configuración.</StatusNotice>}
+    <form className="space-y-4" onSubmit={e => {e.preventDefault();if (loadedAction === action) void write('robot.calibrate', {action, value}, {loadingTitle:'Aplicando parámetro…',successTitle:'Parámetro aplicado en RAM'});}}>
+      <label className="block">Parámetro
         <span className="afr2-select-wrap"><select disabled={busy} className="afr2-glass-field w-full min-h-11 px-3" value={action} onChange={e => {setAction(Number(e.target.value));setLoadedAction(null);setReceivedValue(null);setFeedback('Consulta el valor actual antes de editar.');}}>
           {actions.map(a => <option key={a.id} value={a.id}>{CALIBRATION_GUIDE[a.id]?.title ?? a.label ?? a.symbol} · {CALIBRATION_GUIDE[a.id]?.unit ?? a.unit ?? ''}</option>)}
         </select><Chevron /></span>
@@ -84,12 +82,12 @@ export function CalibrationPanel({preferences=false}:{preferences?:boolean}={}) 
       </div>
     </form>
     <p role="status" className="afr2-help">{feedback}</p>
-    <p className="afr2-help" role="status">EEPROM: {robotState?.preferencesState === 1 ? 'guardando' : robotState?.preferencesState === 2 ? 'guardado confirmado por AVR' : robotState?.preferencesState === 3 ? 'fallo de guardado' : 'sin guardado confirmado en esta sesion'}.</p>
+    <p className="afr2-help" role="status">EEPROM: {robotState?.preferencesState === 1 ? 'guardando' : robotState?.preferencesState === 2 ? 'guardado confirmado por AVR' : robotState?.preferencesState === 3 ? 'fallo de guardado' : 'sin guardado confirmado en esta sesión'}.</p>
     <div className="afr2-action-row">
-      {!preferences && <Button disabled={!writable || busy} onClick={() => void write('robot.line.calibrate',{confirm:true},{loadingTitle:'Confirmando linea…',successTitle:'Calibracion de linea confirmada'})}>Confirmar linea</Button>}
-      {!preferences && <Button disabled={!writable || busy} onClick={() => void write('robot.line.calibrate',{confirm:false},{loadingTitle:'Invalidando linea…',successTitle:'Calibracion de linea invalidada'})}>Invalidar linea</Button>}
+      {!preferences && <Button disabled={!writable || busy} onClick={() => void write('robot.line.calibrate',{confirm:true},{loadingTitle:'Confirmando línea…',successTitle:'Calibración de línea confirmada'})}>Confirmar línea</Button>}
+      {!preferences && <Button disabled={!writable || busy} onClick={() => void write('robot.line.calibrate',{confirm:false},{loadingTitle:'Invalidando línea…',successTitle:'Calibración de línea invalidada'})}>Invalidar línea</Button>}
       {preferences && <Button disabled={!writable || busy} onClick={() => void write('robot.preferences',{action:'save'},{loadingTitle:'Solicitando guardado…',successTitle:'Preferencias guardadas',acceptedTitle:'Guardado EEPROM en curso'})}>Guardar EEPROM</Button>}
-      {robotState?.configurationDirty===true && <Button disabled={!writable || busy} onClick={() => void write('robot.preferences',{action:'discard'},{loadingTitle:'Descartando…',successTitle:'Configuracion guardada restaurada'})}>Descartar cambios</Button>}
+      {robotState?.configurationDirty===true && <Button disabled={!writable || busy} onClick={() => void write('robot.preferences',{action:'discard'},{loadingTitle:'Descartando…',successTitle:'Configuración guardada restaurada'})}>Descartar cambios</Button>}
     </div>
   </section><CalibrationExplanation selected={selected} value={value} received={loadedAction === action ? receivedValue : null} /></div>;
 }

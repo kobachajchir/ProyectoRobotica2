@@ -1,0 +1,51 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+:root{--canvas:#f3f6fb;--surface:#fff;--border:rgba(15,23,42,.16);--text-strong:#0f172a;--muted:#475569;--action:#b81d33;
+--font:"Segoe UI Variable Text","Segoe UI",system-ui,-apple-system,Roboto,sans-serif;--display:"Segoe UI Variable Display","Segoe UI",system-ui,sans-serif}
+.dark{--canvas:#0b1220;--surface:#14233b;--border:rgba(226,232,240,.16);--text-strong:#f8fafc;--muted:#94a3b8;--action:#ff6b7d}
+*{box-sizing:border-box}body{margin:0;background:var(--canvas);font-family:var(--font);color:var(--text-strong)}
+main{padding:20px 16px 32px;display:flex;flex-direction:column;gap:24px;max-width:1200px}
+/* ---- banner ---- */
+.hero{position:relative;isolation:isolate;overflow:hidden;border-radius:24px;background:#121821;border:1px solid rgba(226,232,240,.10);
+ box-shadow:0 12px 32px rgba(15,23,42,.10);color:#f8fafc;display:flex;flex-direction:column}
+.hero__media{order:2;margin-top:-28px}
+.hero__media img{display:block;width:100%;height:auto;aspect-ratio:16/10;object-fit:cover;object-position:center 60%;
+ -webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 18%);mask-image:linear-gradient(to bottom,transparent 0,#000 18%)}
+.hero__copy{order:1;position:relative;z-index:1;padding:24px 20px 0;max-width:34rem}
+.hero__kicker{display:inline-flex;align-items:center;gap:8px;margin:0 0 12px;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#cbd5e1}
+.hero__kicker::before{content:"";width:6px;height:6px;border-radius:50%;background:#ff6b7d;box-shadow:0 0 0 4px rgba(255,107,125,.18)}
+.hero h1{margin:0;font-family:var(--display);font-size:clamp(28px,4vw,40px);line-height:1.12;font-weight:700;letter-spacing:-.03em;text-wrap:balance}
+.hero__lead{margin:12px 0 0;font-size:15px;line-height:1.55;color:#cbd5e1;max-width:36ch}
+.hero__status{display:flex;flex-wrap:wrap;gap:8px;margin:20px 0 0;padding:0;list-style:none}
+.hero__status li{display:inline-flex;align-items:center;gap:8px;min-height:32px;padding:6px 12px;border-radius:999px;font-size:13px;
+ background:rgba(15,23,42,.55);border:1px solid rgba(226,232,240,.14);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);color:#e2e8f0;font-variant-numeric:tabular-nums}
+.hero__status b{font-weight:600;color:#f8fafc}
+.dot{width:7px;height:7px;border-radius:50%;background:#94a3b8}.dot.ok{background:#4ade80}
+.hero__tag{position:absolute;right:12px;bottom:12px;z-index:1;font-size:11px;color:#334155;background:rgba(255,255,255,.7);padding:4px 8px;border-radius:999px}
+@media (min-width:840px){
+ .hero{display:block;aspect-ratio:2.4;min-height:300px}
+ .hero__media{position:absolute;inset:0;margin:0;z-index:-1}
+ .hero__media img{height:100%;aspect-ratio:auto;object-position:right center;-webkit-mask-image:none;mask-image:none}
+ .hero::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(11,18,32,.88) 0%,rgba(11,18,32,.62) 32%,rgba(11,18,32,0) 58%)}
+ .hero__copy{padding:clamp(28px,4vw,48px);max-width:46%}
+}
+/* cards preview */
+.grid{display:grid;gap:12px;grid-template-columns:1fr}
+@media (min-width:600px){.grid{grid-template-columns:repeat(2,1fr)}}
+@media (min-width:1200px){.grid{grid-template-columns:repeat(3,1fr)}}
+.card{display:flex;align-items:center;gap:14px;min-height:72px;padding:14px 16px;border-radius:18px;background:var(--surface);border:1px solid var(--border)}
+.card svg{flex:none;color:var(--action)}.card b{display:block;font-size:15px}.card span{font-size:13px;color:var(--muted)}
+</style></head><body><main>
+<section class="hero" aria-labelledby="hero-title">
+ <picture class="hero__media"><source media="(min-width:840px)" srcset="../assets/home-hero-1600.webp 1600w" sizes="(min-width:1200px) 1150px, 100vw">
+  <img src="../assets/home-hero-mobile-720.webp" alt="Render del AutoFinalRobo2: auto Mecanum con el brazo V17 sosteniendo un cubo" width="720" height="450"></picture>
+ <div class="hero__copy"><p class="hero__kicker">AutoFinalRobo2 · Mecanum + brazo V17</p><h1 id="hero-title">Movimiento en todas las direcciones</h1>
+  <p class="hero__lead">Conducí la base Mecanum, revisá sus sensores y probá el brazo en simulación antes de llevarlo al robot.</p>
+  <ul class="hero__status" aria-label="Estado del robot"><li><span class="dot ok"></span>Wi-Fi <b>Conectado</b></li><li><span class="dot"></span>ATmega <b>—</b></li><li>Modo <b>—</b></li></ul></div>
+ <span class="hero__tag">Render CAD</span>
+</section>
+<nav class="grid">
+ <a class="card"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 11h4M8 9v4M15 12h.01M18 10h.01"/><rect x="2" y="6" width="20" height="12" rx="4"/></svg><div><b>Conducir</b><span>Mové la base y mirá los sensores en vivo</span></div></a>
+ <a class="card"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="19" r="3"/><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/><circle cx="18" cy="5" r="3"/></svg><div><b>Programas</b><span>Armá recorridos, simulalos y ejecutalos</span></div></a>
+ <a class="card"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2M20 14h2M15 13v2M9 13v2"/></svg><div><b>Modelos y simulación</b><span>Explorá el auto y el brazo V17</span></div></a>
+</nav></main></body></html>

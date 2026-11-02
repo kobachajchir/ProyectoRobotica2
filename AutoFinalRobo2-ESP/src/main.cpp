@@ -80,6 +80,16 @@ void setup() {
         auto *response=request->beginResponse(200,"application/json; charset=utf-8",body);
         response->addHeader("Cache-Control","no-store"); request->send(response);
     });
+    // AFR2-20261102-04: public asset metadata only. Never expose /config or arbitrary paths.
+    server.on("/api/web-manifest",HTTP_GET,[](AsyncWebServerRequest *request) {
+        if (!storage.webReady()) { request->send(503,"application/json","{\"error\":\"Web package unavailable\"}"); return; }
+        auto *response=request->beginResponse(LittleFS,"/dist/manifest.json","application/json; charset=utf-8");
+        if (!response) { request->send(503,"application/json","{\"error\":\"Manifest unavailable\"}"); return; }
+        response->addHeader("Cache-Control","no-store");
+        response->addHeader("X-Content-Type-Options","nosniff");
+        response->addHeader("X-AFR2-Package-Source","esp-littlefs");
+        request->send(response);
+    });
     server.onNotFound(staticRequest); server.begin();broker.networkServerReady();
 }
 void loop() {

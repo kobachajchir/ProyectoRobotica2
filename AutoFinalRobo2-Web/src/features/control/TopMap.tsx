@@ -22,7 +22,7 @@ export function TopMap({ pose, trail, zoom, center, fresh, waypoints = [], onSel
   const scaleEnd = size.width - 24, scaleY = size.height - 24;
   const lines = trail.map((p, index) => { const v = point(p.xMm, p.yMm); return `${index === 0 || p.segmentStart ? 'M' : 'L'}${v.x},${v.y}`; }).join(' ');
   const route = [{ xMm: 0, yMm: 0 }, ...waypoints].map(p => { const v = point(p.xMm, p.yMm); return `${v.x},${v.y}`; }).join(' ');
-  return <svg ref={canvas} className="afr2-control-map__svg" viewBox={`0 0 ${size.width} ${size.height}`} role="img" aria-label={pose ? `Mapa superior de simulacion. X ${pose.xMm} milimetros, Y ${pose.yMm} milimetros.` : 'Mapa superior sin posicion simulada.'}
+  return <svg ref={canvas} className="afr2-control-map__svg" viewBox={`0 0 ${size.width} ${size.height}`} role="img" aria-label={pose ? `Mapa superior de simulación. X ${pose.xMm} milímetros, Y ${pose.yMm} milímetros.` : 'Mapa superior sin posición simulada.'}
     onPointerDown={event => { if (onSelectPoint && !pickingDisabled && event.button === 0) pressed.current = { id: event.pointerId, x: event.clientX, y: event.clientY }; }}
     onPointerCancel={() => { pressed.current = null; }}
     onPointerUp={event => {
@@ -46,7 +46,7 @@ export function TopMap({ pose, trail, zoom, center, fresh, waypoints = [], onSel
       <rect x="-10" y="-7" width="20" height="24" rx="4" fill="var(--action-subtle)" />
       <path d="M0-39v-15m-5 5 5-5 5 5" fill="none" stroke="var(--text-muted)" strokeWidth="1.5" />
     </g>
-    {!pose && <text x={cx} y={cy + 80} textAnchor="middle" fill="var(--text-muted)" fontSize="12">Ubicacion desconocida</text>}
+    {!pose && <text x={cx} y={cy + 80} textAnchor="middle" fill="var(--text-muted)" fontSize="12">Ubicación desconocida</text>}
     <g transform={`translate(24 ${size.height - 52})`} stroke="var(--text-muted)" strokeWidth="1.5" fill="none"><path d="M0 24V0m-4 5 4-5 4 5M0 24h24m-5-4 5 4-5 4" /><text x="-4" y="-10" fill="var(--text-muted)" stroke="none" fontSize="11">+X</text><text x="30" y="28" fill="var(--text-muted)" stroke="none" fontSize="11">−Y</text></g>
     <path d={`M${scaleEnd - scaleLength} ${scaleY}h${scaleLength}m-${scaleLength} -4v8m${scaleLength} -8v8`} fill="none" stroke="var(--text-muted)" strokeWidth="2" /><text x={scaleEnd - scaleLength / 2} y={scaleY - 15} textAnchor="middle" fill="var(--text-muted)" fontSize="11">{size.width < 440 ? '0,5 m' : '1 m'}</text>
   </svg>;

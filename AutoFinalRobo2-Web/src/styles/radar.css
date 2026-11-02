@@ -11,14 +11,11 @@
 .afr2-radar-map .afr2-kicker {display:flex;align-items:center;gap:.5rem}
 .afr2-radar-map .afr2-kicker svg {width:1.1rem;height:1.1rem}
 .afr2-radar-map .afr2-control-map__heading {align-items:center;padding-bottom:1.25rem}
-.afr2-radar-intro {margin:.5rem 0 0;font-size:.82rem;line-height:1.5;color:var(--text-muted)}
+.afr2-radar-intro {margin:.5rem 0 0;font-size:var(--type-label-size);line-height:1.5;color:var(--text-muted)}
 .afr2-radar-map .afr2-control-map__toolbar {gap:1rem;padding-bottom:1.25rem}
 .afr2-radar-toolgroup {display:flex;align-items:center;gap:.75rem}
-.afr2-radar-toolgroup > span {font-size:.75rem;color:var(--text-muted)}
-.afr2-radar-map .afr2-map-views button {display:inline-flex;align-items:center;justify-content:center;gap:.4rem;transition:transform 120ms var(--ease-out)}
-.afr2-radar-map .afr2-map-views button:active:not(:focus-visible) {transform:scale(.97)}
-.afr2-radar-map .afr2-map-views button:focus-visible {outline:2px solid var(--focus);outline-offset:2px;transition:none}
-.afr2-radar-map .afr2-map-views button > svg {width:.95rem;height:.95rem}
+.afr2-radar-toolgroup > span {font-size:var(--type-caption-size);color:var(--text-muted)}
+/* AFR2-20261101-09: alcance y vista usan SegmentedControl (segmented.css). */
 .afr2-radar-viewport {
   position:relative;grid-column:1;grid-row:3;min-height:31rem;height:auto;
   align-self:stretch;aspect-ratio:auto;isolation:isolate;background:var(--map-floor);
@@ -45,7 +42,7 @@
   border:1px solid var(--glass-dense-border);color:var(--text-muted);pointer-events:none;
 }
 .afr2-radar-empty > svg {width:1.1rem;height:1.1rem;flex-shrink:0;color:var(--action)}
-.afr2-radar-empty strong {display:block;font-size:.75rem;font-weight:550;color:var(--text)}
+.afr2-radar-empty strong {display:block;font-size:var(--type-caption-size);font-weight:550;color:var(--text)}
 .afr2-radar-empty span {display:block;margin-top:.15rem;font-size:.68rem;line-height:1.4}
 .afr2-radar-viewport .afr2-map-caption {top:auto;bottom:1rem;left:1.25rem;right:1.25rem;z-index:2;font-size:.67rem;font-variant-numeric:tabular-nums}
 .afr2-radar-viewport .afr2-map-caption span {margin:0}
@@ -69,7 +66,7 @@
 .afr2-radar-secondary strong > small {margin-left:.2rem;font-size:.7rem;font-weight:450;letter-spacing:0;color:var(--text-muted)}
 .afr2-radar-manual {border-top:1px solid var(--border-subtle);padding-top:1rem}
 .afr2-radar-manual .afr2-action-row {display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-top:1rem}
-.afr2-radar-manual .afr2-action-row > button {padding-inline:.5rem;font-size:.75rem}
+.afr2-radar-manual .afr2-action-row > button {padding-inline:.5rem;font-size:var(--type-caption-size)}
 .afr2-radar-switch {display:grid;gap:.7rem;padding-top:1rem;border-top:1px solid var(--border-subtle)}
 .afr2-radar-switch strong {display:flex;align-items:center;gap:.5rem;color:var(--text);font-size:.8rem;font-weight:550}
 .afr2-radar-switch strong > svg {width:1rem;height:1rem;color:var(--text-muted)}
@@ -94,17 +91,17 @@
 .afr2-scan-parameters .afr2-scan-zone {border-radius:.85rem;background:var(--surface-subtle)}
 .afr2-scan-config-footer {display:grid;grid-template-columns:1fr 1fr;gap:2rem;border-top:1px solid var(--border-subtle);padding-top:.75rem}
 .afr2-scan-config-footer .afr2-scan-inversion {padding:0;border:0}
-.afr2-scan-config-footer .afr2-scan-inversion .afr2-checkbox {font-size:.75rem}
+.afr2-scan-config-footer .afr2-scan-inversion .afr2-checkbox {font-size:var(--type-caption-size)}
 .afr2-scan-config-footer .afr2-help {font-size:.7rem;line-height:1.5;margin:.25rem 0 0}
 .afr2-scan-apply {display:flex;align-items:center;gap:1rem;justify-content:flex-end}
 .afr2-scan-apply > button {flex-shrink:0}
 .afr2-radar-settings .afr2-scan-timing {font-size:.68rem;line-height:1.5}
 .afr2-radar-footer {display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem 1rem;padding:1rem 1.5rem;border-top:1px solid var(--border-subtle);color:var(--text-muted);font-size:.67rem;line-height:1.5}
-@media(max-width:1279px) {
+@media (max-width: 1199.98px) {
   .afr2-scan-parameters {grid-template-columns:repeat(2,minmax(0,1fr));gap:1.25rem 2rem}
   .afr2-scan-apply {flex-wrap:wrap;justify-content:flex-start}
 }
-@media(max-width:1000px) {
+@media (max-width: 1199.98px) {
   .afr2-radar-map {grid-template-columns:1fr}
   .afr2-radar-viewport {grid-column:1;grid-row:auto;min-height:27rem;height:clamp(27rem,65vw,36rem)}
   .afr2-radar-sidebar {grid-column:1;grid-row:auto;display:grid;grid-template-columns:1fr 1fr;gap:1.25rem 2rem;border-left:0}
@@ -112,11 +109,10 @@
   .afr2-radar-diagnostics {margin:0;border-top:1px solid var(--border-subtle);padding-top:1rem}
   .afr2-radar-distance > strong {font-size:3.25rem}
 }
-@media(max-width:600px) {
+@media (max-width: 599.98px) {
   .afr2-radar-map .afr2-control-map__heading {gap:.75rem}
   .afr2-radar-map .afr2-control-map__toolbar {padding-inline:1rem;gap:.75rem}
   .afr2-radar-toolgroup {width:100%;justify-content:space-between}
-  .afr2-radar-map .afr2-control-map__toolbar > .afr2-map-views {width:100%;display:grid;grid-template-columns:1fr 1fr}
   .afr2-radar-viewport {min-height:23rem;height:23rem}
   .afr2-radar-zone-label {top:.8rem;left:1rem;padding:.45rem .6rem;gap:.5rem}
   .afr2-radar-zone-label > span {max-width:5rem;font-size:.61rem}
@@ -136,7 +132,4 @@
 @media(prefers-reduced-transparency:reduce),(prefers-contrast:more) {
   .afr2-radar-zone-label,.afr2-radar-empty {background:var(--surface-solid);border-color:var(--border-strong)}
 }
-@media(prefers-reduced-motion:reduce) {
-  .afr2-radar-map .afr2-map-views button {transition:none}
-  .afr2-radar-map .afr2-map-views button:active:not(:focus-visible) {transform:none}
-}
+

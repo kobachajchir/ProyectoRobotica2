@@ -1,3 +1,27 @@
+> **AFR2-20261102-07:** reforma visual de Infraestructura (mapa de flujo animado, línea de metro, barras y glosario en tarjetas). [Ficha](changes/2026-11-02-07-infrastructure-visual-redesign.md).
+
+> **AFR2-20261102-05:** componentes OLED128-5 activos en fuentes AVR/Web; Ayuda → OLED con simulación local; QR de conexión AP y acceso Web generados dentro del auto. [Ficha](changes/2026-11-02-05-oled-runtime-components-qr.md). Sin compilar/probar/validar/flashear.
+
+> **AFR2-20261102-04:** Explorar → Infraestructura, flujo Web/CAD hasta flash/HTTP/navegador, tamaños GLB/gzip y reporte del paquete local o del ESP. [Ficha](changes/2026-11-02-04-infrastructure-explorer.md) · [Contrato HTTP](contracts/WEB_INFRASTRUCTURE.md). atmega sin cambios; esp/web solo fuente, sin tests, compilación, validaciones, navegador, promoción ni flasheos.
+
+> **AFR2-20261102-03:** simuladores con controles a la derecha, zoom flotante y cámara de los banners; banners re-renderizados. [Ficha](changes/2026-11-02-03-simulator-side-controls-zoom-banners.md).
+
+> **AFR2-20261102-02:** Ayuda → OLED reúne vista previa, lista y árbol de pantallas; el Simulador UI de Desarrollador se retiró. [Ficha](changes/2026-11-02-02-oled-help-tree-view.md).
+
+> **AFR2-20261102-01 / VIS-055/056:** Web revisada en navegador; Modelos por banners con inspección directa y simulador aparte; banner de Inicio; mapa de pantallas desde el dashboard. [Ficha](changes/2026-11-02-01-browser-review-models-flow-tree.md). Sin build:esp ni hardware.
+
+> **AFR2-20261101-12 / VIS-053:** plan visual fase 5: Web organizada por tareas con barra inferior en celular y rutas nuevas con redirecciones. [Ficha](changes/2026-11-01-12-visual-plan-phase5-structure.md). Fuente sin tests/build/navegador.
+
+> **AFR2-20261101-11:** la Web recupera las tildes (sustituye AFR2-20261026-03); la replica OLED sigue sin ellas por su fuente de pixeles. [Ficha](changes/2026-11-01-11-web-accents-restored.md). Fuente sin tests/build/navegador.
+
+> **AFR2-20261101-10 / VIS-051:** plan visual fase 4: un h1 por pagina con PageHeader, encabezados internos sin saltos y chips de estado en Control. [Ficha](changes/2026-11-01-10-visual-plan-phase4-headers.md). Fuente sin tests/build/navegador.
+
+> **AFR2-20261101-09 / VIS-052:** plan visual fase 3: un solo selector segmentado con pill deslizante en pestanas y elecciones. [Ficha](changes/2026-11-01-09-visual-plan-phase3-segmented.md). Fuente sin tests/build/navegador.
+
+> **AFR2-20261101-08 / VIS-050:** plan visual fase 2: una sola familia de iconos (Lucide + propios), STOP con octagono y sin glifos como icono; fase 7 OLED agregada al plan. [Ficha](changes/2026-11-01-08-visual-plan-phase2-icons.md). Fuente sin tests/build/navegador.
+
+> **AFR2-20261101-07 / VIS-050..054:** plan visual fase 1: decisiones y tokens de tipo, espaciado, breakpoints y atencion; variables CSS sin definir corregidas. [Ficha](changes/2026-11-01-07-visual-plan-phase1-tokens.md). Fuente sin tests/build/navegador.
+
 > **AFR2-20261101-06 / VIS-049:** Simulador UI en seccion propia, con tarjeta debajo de Protocol Studio y el mismo shell visual, ayuda y pestanas. [Ficha](changes/2026-11-01-06-ui-simulator-workspace.md). Fuente sin tests/build/navegador.
 
 > **AFR2-20261101-05:** reparados simbolos mal codificados de Control tactil, calibracion y encoder; archivos UTF-8. [Ficha](changes/2026-11-01-05-web-text-encoding.md). Solo texto, sin tests/build/navegador.
@@ -298,6 +322,19 @@ Módulos hermanos: ../AutoFinalRobo2-Atmega, ../AutoFinalRobo2-ESP, ../AutoFinal
 Estado vigente [AFR2-20261023-15](changes/2026-10-23-15-esp-web-build-fixes.md): ESP compilada con perfil candidato, sin errores ni warnings finales; Web compilada y empaquetada localmente (6 assets, 2.925.630 bytes gzip, integridad cotejada). ESP/data/dist conserva el paquete anterior. ATmega se trabaja en paralelo y no se tocó/compiló en esta ficha; nuevo protocolo pendiente de la documentación que entregará el usuario. Sin verificación física, identificación de flash/layout ni flasheo. [Plan ESP](docs/PLAN_ESP.md) · [Perfil provisional UART 1](contracts/UART_PROFILE_1.md) · [Implementación inicial](changes/2026-10-23-11-esp-server-and-mega-link.md).
 
 ## Continuación del proyecto
+
+- **AFR2-20261101-05:** [pantalla QR de contenido elegido](.agents/skills/oled128-ui-design/references/qr.md),
+  generador local y bitmaps62×62/128×64. Ejemplo creado; escaneo físico pendiente,
+  sin integrar en firmware/Web ni ejecutar tests/validadores.
+
+- **AFR2-20261101-02:** [componentes OLED128-2](.agents/skills/oled128-ui-design/references/components.md)
+  y [atlas](.agents/skills/oled128-ui-design/assets/component-atlas.png).
+  Cinco/ocho sensores simultáneos desde referencia AutoMicro, barras y gestos
+  consistentes. Solo diseño/skill; navegación de firmware/Web todavía sin migrar.
+
+- **AFR2-20261101-01:** [skill de diseño OLED128](.agents/skills/oled128-ui-design/SKILL.md).
+  Guía de iconos, plantillas y flujo para interfaces consistentes entre proyectos;
+  borrador documentado, sin migrar pantallas ni ejecutar validaciones.
 
 - **AFR2-20261031-01:** [Simulador UI del ATmega en Desarrollador](changes/2026-10-31-01-developer-ui-simulator.md).
   Fuente Web con los tres controles de la vista en vivo y servicios ficticios;

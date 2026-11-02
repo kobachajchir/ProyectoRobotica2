@@ -1,0 +1,75 @@
+/* AFR2-20261102-01 — Árbol de pantallas como mapa conceptual (Simulador UI → Árbol y catálogo).
+   Ramas de izquierda a derecha desde el dashboard; conectores SVG; ficha a la derecha (abajo en celular).
+   Movimiento: abrir/cerrar ramas cambia la disposición al instante; los nodos nuevos entran con un
+   fundido de 120 ms (se usa decenas de veces: casi imperceptible). */
+.afr2-tree-map { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.afr2-tree-map__toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+.afr2-tree-map__toolbar .afr2-help { margin: 0; max-width: 60ch; }
+.afr2-tree-map__layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; min-width: 0; }
+.afr2-tree-map__canvas {
+  position: relative; min-width: 0; height: min(62dvh, 560px); overflow: auto; overscroll-behavior: contain;
+  border: 1px solid var(--border-default); border-radius: var(--radius-lg); background: var(--surface-subtle);
+  background-image: radial-gradient(var(--border-subtle) 1px, transparent 1px); background-size: 20px 20px;
+}
+.afr2-tree-map__plane { position: relative; }
+.afr2-tree-map__edges { position: absolute; inset: 0; overflow: visible; pointer-events: none; }
+.afr2-tree-map__edges path { fill: none; stroke: var(--border-strong); stroke-width: 1.5; }
+.afr2-tree-map__edges path[data-reference="true"] { stroke-dasharray: 4 4; }
+
+.afr2-tree-node { position: absolute; display: flex; border-radius: var(--radius-md); }
+@starting-style { .afr2-tree-node { opacity: 0; } }
+.afr2-tree-node { transition: opacity 120ms var(--ease-out); }
+.afr2-tree-node__body {
+  flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; gap: 2px; padding: 6px 12px;
+  border: 1px solid var(--border-default); border-radius: var(--radius-md); background: var(--surface-solid);
+  color: var(--text-strong); text-align: left; cursor: pointer; box-shadow: var(--workspace-card-shadow);
+}
+.afr2-tree-node__body strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: var(--type-label); font-weight: 650; letter-spacing: var(--type-label-tracking); }
+.afr2-tree-node__body code, .afr2-tree-node__via { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-muted); font: var(--type-caption); letter-spacing: var(--type-caption-tracking); }
+.afr2-tree-node__body code { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.afr2-tree-node__toggle {
+  flex: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; width: 44px; margin-left: -1px;
+  border: 1px solid var(--border-default); border-radius: 0 var(--radius-md) var(--radius-md) 0; background: var(--surface-subtle);
+  color: var(--text-muted); font: var(--type-caption); cursor: pointer;
+}
+.afr2-tree-node:has(.afr2-tree-node__toggle) .afr2-tree-node__body { border-top-right-radius: 0; border-bottom-right-radius: 0; }
+.afr2-tree-node[data-root="true"] .afr2-tree-node__body { border-color: var(--action-border); background: var(--action-subtle); }
+.afr2-tree-node[data-root="true"] .afr2-tree-node__body strong { color: var(--action); }
+.afr2-tree-node[data-reference="true"] .afr2-tree-node__body { border-style: dashed; background: transparent; box-shadow: none; }
+.afr2-tree-node[data-group="true"] .afr2-tree-node__body { border-style: dashed; background: var(--surface-subtle); }
+.afr2-tree-node[data-selected="true"] .afr2-tree-node__body { border-color: var(--action); box-shadow: 0 0 0 2px var(--action-subtle); }
+.afr2-tree-node__body:focus-visible, .afr2-tree-node__toggle:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; position: relative; z-index: 1; }
+html:not([data-input="keyboard"]) .afr2-tree-node__body:active { transform: scale(.98); }
+@media (hover: hover) and (pointer: fine) {
+  .afr2-tree-node__body:hover { border-color: var(--action-border); }
+  .afr2-tree-node__toggle:hover { color: var(--text-strong); }
+}
+
+.afr2-tree-map__detail { display: flex; flex-direction: column; gap: 12px; min-width: 0; padding: var(--card-padding); border: 1px solid var(--border-default); border-radius: var(--radius-lg); background: var(--surface-solid); }
+.afr2-tree-map__detail h3 { margin: 0; font: var(--type-heading); letter-spacing: var(--type-heading-tracking); color: var(--text-strong); overflow-wrap: anywhere; }
+.afr2-tree-map__detail .afr2-kicker { margin: 0; }
+.afr2-tree-map__facts, .afr2-tree-map__gestures { display: grid; gap: 8px; margin: 0; }
+.afr2-tree-map__facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.afr2-tree-map__facts dt, .afr2-tree-map__gestures dt { color: var(--text-muted); font: var(--type-caption); letter-spacing: var(--type-caption-tracking); }
+.afr2-tree-map__facts dd, .afr2-tree-map__gestures dd { margin: 2px 0 0; color: var(--text); font: var(--type-label); overflow-wrap: anywhere; }
+.afr2-tree-map__preview { display: flex; justify-content: center; }
+.afr2-tree-map__preview > * { max-width: 100%; }
+.afr2-tree-map__path { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin: 0; font: var(--type-caption); color: var(--text-muted); }
+.afr2-tree-map__path span { display: inline-flex; align-items: center; gap: 4px; }
+.afr2-tree-map__path button, .afr2-tree-map__children button {
+  min-height: 32px; padding: 4px 8px; border: 1px solid transparent; border-radius: var(--radius-sm); background: transparent;
+  color: var(--action); font: var(--type-label); cursor: pointer; text-align: left;
+}
+.afr2-tree-map__children ul { display: grid; gap: 4px; margin: 6px 0 0; padding: 0; list-style: none; }
+.afr2-tree-map__children button { display: flex; width: 100%; min-height: 44px; align-items: center; justify-content: space-between; gap: 8px; border-color: var(--border-subtle); color: var(--text-strong); }
+.afr2-tree-map__children code { color: var(--text-muted); font: var(--type-caption); font-family: var(--font-mono); }
+@media (hover: hover) and (pointer: fine) {
+  .afr2-tree-map__children button:hover, .afr2-tree-map__path button:hover { background: var(--surface-subtle); }
+}
+@media (min-width: 1200px) {
+  .afr2-tree-map__layout { grid-template-columns: minmax(0, 1fr) 340px; align-items: start; }
+  .afr2-tree-map__canvas { height: min(70dvh, 680px); }
+}
+@media (prefers-reduced-motion: reduce) { .afr2-tree-node { transition: none; } }
+html[data-input="keyboard"] .afr2-tree-node { transition: none; }
+@media (pointer: coarse) { .afr2-tree-map__path button { min-height: 44px; } }

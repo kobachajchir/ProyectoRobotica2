@@ -1,4 +1,35 @@
-# Manual operativo — 0.1.3 draft
+# Manual operativo — 0.1.10 draft
+
+> Encabezado histórico «0.1.3 draft» actualizado: el manual vigente es 0.1.10
+> draft. Las secciones siguientes se leen con las sustituciones de decisions.md.
+
+## Plan visual 01-11 — VIS-050..VIS-054, 0.1.10
+
+Aplicación autorizada del borrador para la fase 1 del
+[plan visual](../../../AutoFinalRobo2-Web/docs/plan-visual-20261101/PLAN.md)
+(AFR2-20261101-07). Detalle y sustituciones en [decisions.md](decisions.md);
+valores en `tokens.json` → `visualPlan20261101`.
+
+- **Iconos (VIS-050, fase 2):** Lucide copiado al repo, grilla 24 px, trazo
+  1,75 px, `currentColor`, tamaños 16/20/24 px. STOP con `octagon-x`; ningún
+  glifo Unicode como icono.
+- **Tipo (VIS-051):** familia Segoe UI Variable Text/Display → `system-ui`, sin
+  descargas. Niveles `--type-display`, `--type-title` (un `<h1>` por página),
+  `--type-heading`, `--type-subheading`, `--type-body`, `--type-label`,
+  `--type-caption` y `--type-data`, cada uno con su `--type-*-tracking`. Se usan
+  como `font: var(--type-title); letter-spacing: var(--type-title-tracking)`.
+- **Espaciado (VIS-051):** `--page-gutter`, `--page-top`, `--section-gap`,
+  `--card-padding`, `--stack-gap` (celular → desde 840 px) y `--content-max`
+  1200 px solo para texto y formularios.
+- **Selector segmentado (VIS-052, fase 3):** pill por `clip-path`, 250 ms con
+  `--ease-in-out`; teclado y movimiento reducido instantáneos.
+- **Breakpoints (VIS-053):** `min-width` 600/840/1200/1600 px (`--bp-*` y
+  `@theme`). Celular con barra inferior y «Más» (fase 5).
+- **Atención y colores (VIS-054):** `--attention*` en ambos temas para la
+  pulsación larga. Todo color fijo vive en `tokens.css`, salvo las excepciones
+  registradas en VIS-054.
+
+Estado: fuente modificada; aspecto, contraste y comportamiento No verificados.
 
 ## Emblema vigente — VIS-046 / 31-10-2026
 

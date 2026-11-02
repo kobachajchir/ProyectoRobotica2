@@ -73,6 +73,9 @@ typedef struct {
     uint8_t network_valid,network_sta,network_ap,network_clients,network_server;
     int16_t network_rssi;
     uint8_t network_rssi_valid;
+    uint32_t network_boot;
+    uint16_t network_revision;
+    uint8_t qr_allowed;
     uint8_t row_security[3];
     /* Borrowed immutable main-loop strings, valid through Render. No ISR writes,
      * allocations or hardware reads. AP passphrase never enters remote capture. */

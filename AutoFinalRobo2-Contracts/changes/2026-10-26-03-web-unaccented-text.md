@@ -1,3 +1,5 @@
+> **Sustituida por [AFR2-20261101-11](2026-11-01-11-web-accents-restored.md)** (01/11/2026): el usuario pidio recuperar las tildes en la Web.
+
 # AFR2-20261026-03 - Textos de la Web sin tildes
 
 Pedido humano: quitar los acentos de las palabras de toda la interfaz Web

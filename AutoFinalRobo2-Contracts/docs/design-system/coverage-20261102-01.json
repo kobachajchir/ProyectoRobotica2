@@ -1,0 +1,23 @@
+{
+  "changeId": "AFR2-20261102-01",
+  "decisionId": ["VIS-055", "VIS-056"],
+  "mode": "APLICAR",
+  "manualVersion": "0.1.10",
+  "authorization": "Pedidos explicitos: revisar en navegador; separar simuladores y modelos con banners de renders; banner de Inicio; arbol de pantallas como mapa conceptual.",
+  "canonicalSources": ["Web/src/styles/models.css", "Web/src/styles/screen-tree.css", "Web/src/features/models/modelCatalog.ts", "Web/src/features/developer/ScreenTreeMap.tsx"],
+  "supporting": ["skills apple-design, visual-identity-system, animate", "tarjetas de Inicio (afr2-section-card)", "SegmentedControl", "PageHeader", "tokens --banner-*"],
+  "confirmed": ["Tres banners con renders", "Inspeccion directa con referencias visibles", "Ir a simulacion abajo a la derecha", "Selector entre simuladores", "Banner de Inicio", "Arbol desde el dashboard con nodos clicables"],
+  "observed": ["Pill sin animacion por ResizeObserver recreado", "Pill oscura en tema oscuro", "StatusNotice sin estilos", "Rail desbordado a 768 px", "Cabecera de inspeccion desbordada a 360 px"],
+  "proposed": ["Banners oscuros en ambos temas", "Inspeccion del conjunto compuesta con la cadena del simulador", "Descripcion de pantalla armada con rol, gestos y ramas", "Referencias repetidas como nodos punteados"],
+  "targets": ["/modelos", "/modelos/:modelo", "/simulacion/:tipo", "/", "/desarrollador/ui-simulator"],
+  "exceptions": ["Ayuda OLED sin mapa", "Imagenes sin build:esp ni presupuesto LittleFS medido"],
+  "themes": ["light", "dark"],
+  "sourceImplemented": true,
+  "runtimeVerification": "Verificada en navegador local sin robot (5 anchos, claro/oscuro)",
+  "tests": false,
+  "build": false,
+  "validators": false,
+  "browser": true,
+  "hardware": false,
+  "packagesPromoted": false
+}

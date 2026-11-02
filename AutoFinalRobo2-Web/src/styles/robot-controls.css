@@ -9,10 +9,18 @@
 .afr2-drive-pad__button[aria-pressed="true"] { background: var(--action-subtle) !important; border-color: var(--action-border) !important; color: var(--action) !important; }
 .afr2-drive-pad button:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
 .afr2-range-number { display: flex; flex-direction: column; gap: 5px; color: var(--text-strong); }
-.afr2-range-number__heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 13px; line-height: 1.4; }
+.afr2-range-number__heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: var(--type-label-size); line-height: 1.4; }
 .afr2-range-number__heading > label { min-width: 0; font-size: inherit; font-weight: 600; }
 .afr2-range-number__value { display: inline-flex; align-items: center; justify-content: flex-end; gap: 6px; flex-shrink: 0; }
-.afr2-range-number input.afr2-compact-number { width: 76px; min-height: 0; height: 22px; border: 1px solid var(--border-default); background: var(--surface-subtle); color: var(--text-strong); border-radius: 6px; padding: 1px 6px; font: inherit; font-size: 13px; font-variant-numeric: tabular-nums; text-align: right; line-height: 1.3; }
+.afr2-range-number input.afr2-compact-number { width: 76px; min-height: 0; height: 22px; border: 1px solid var(--border-default); background: var(--surface-subtle); color: var(--text-strong); border-radius: 6px; padding: 1px 6px; font: inherit; font-size: var(--type-label-size); font-variant-numeric: tabular-nums; text-align: right; line-height: 1.3; }
 .afr2-range-number__value > span { min-width: 20px; color: var(--text-muted); font-size: 11px; }
 .afr2-range-number input[type="range"] { width: 100%; min-height: 36px; margin: 0; accent-color: var(--action); }
 @media (hover: hover) and (pointer: fine) { .afr2-drive-pad__button:hover:not(:disabled) { border-color: var(--action-border) !important; } }
+
+/* AFR2-20261102-01 (revisión en navegador a 360 px): los números compactos y deslizadores siguen
+   compactos con mouse; en pantallas táctiles llegan al mínimo de 44 px. */
+@media (pointer: coarse) {
+  .afr2-range-number input.afr2-compact-number,
+  .afr2-scan-field .afr2-scan-number input[type=text].afr2-compact-number { height: 44px; min-height: 44px; }
+  .afr2-range-number input[type="range"] { min-height: 44px; }
+}

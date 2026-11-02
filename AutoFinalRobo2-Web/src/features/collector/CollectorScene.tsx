@@ -1,12 +1,13 @@
-import { frameModel } from '../../components/three/frameModel';
+import { BANNER_VIEW_DIRECTION, frameModel } from '../../components/three/frameModel';
 import { ModelAssetProgress } from '../../components/three/ModelAssetProgress';
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState, type RefObject } from 'react';
-import { Canvas, useThree, type ThreeEvent } from '@react-three/fiber';
-import { Box3, BufferGeometry, CanvasTexture, Group, Matrix4, Plane, Quaternion, Vector3 } from 'three';
+import { Canvas, useFrame, useThree, type ThreeEvent } from '@react-three/fiber';
+import { Box3, BufferGeometry, CanvasTexture, Group, Matrix4, OrthographicCamera, Plane, Quaternion, Vector3 } from 'three';
 import { useRobotModel } from '../../components/three/RobotModel';
 import { SimulationRobot, SimulationOrbit } from './SimulationModel';
 import { RenderBoundary } from '../../components/ui/RenderBoundary';
 import { Button } from '../../components/ui/Button';
+import { UiIcon } from '../../components/ui/UiIcon';
 import { useTheme } from '../../app/providers/ThemeProvider';
 import { getComponentAnchors } from '../model3d/modelComponents';
 import { ARM_MOUNT, STANDALONE_MOUNT, CAD_TO_THREE, forwardArm, groundWorkspacePoints, localToWorld, rad, toThree, workspacePoints, type Point3 } from './armKinematics';
@@ -23,6 +24,9 @@ import { CUBE_MODEL } from './auxiliaryModels';
 export type SceneView = 'perspective' | 'top' | 'side';
 export type SceneTool = 'orbit' | 'move' | 'place';
 interface SceneProps { view: SceneView; tool: SceneTool; focus: Point3; revision: number; armPanel: boolean; carOnly?: boolean }
+/** AFR2-20261102-03: zoom de la cámara ortográfica relativo al encuadre inicial (100 %). */
+interface ZoomLink { base: number; target: number | null; step: (factor: number) => void; reset: () => void }
+const ZOOM_MIN = .25, ZOOM_MAX = 8;
 
 function readPalette() {
   const css = getComputedStyle(document.documentElement);
@@ -49,16 +53,41 @@ function Stroke({ points, color }: { points: Point3[]; color: string }) {
   useEffect(() => () => geometry.dispose(), [geometry]);
   return <lineSegments geometry={geometry}><lineBasicMaterial color={color} transparent opacity={.7} /></lineSegments>;
 }
-function Camera({view,modelRoot,onFrame}:{view:SceneView;modelRoot:RefObject<Group|null>;onFrame:(center:Point3)=>void}) {
+function Camera({view,modelRoot,onFrame,zoom}:{view:SceneView;modelRoot:RefObject<Group|null>;onFrame:(center:Point3)=>void;zoom:RefObject<ZoomLink>}) {
   const {camera,size,invalidate}=useThree();
   const model=robotModel(),modelKey=`${model.id}:${model.revision}`;
   useEffect(()=>{
     if(!modelRoot.current)return;
     modelRoot.current.updateWorldMatrix(true,true);
-    const center=frameModel(camera,new Box3().setFromObject(modelRoot.current,true),size,view);
+    const center=frameModel(camera,new Box3().setFromObject(modelRoot.current,true),size,view,BANNER_VIEW_DIRECTION);
     if(center)onFrame(center.toArray() as Point3);
+    if(zoom.current&&camera instanceof OrthographicCamera){zoom.current.base=camera.zoom;zoom.current.target=null;}
     invalidate();
-  },[camera,size.width,size.height,view,modelRoot,onFrame,invalidate,modelKey]);
+  },[camera,size.width,size.height,view,modelRoot,onFrame,invalidate,modelKey,zoom]);
+  return null;
+}
+/** Lleva el zoom pedido por los botones con una transición corta y avisa el porcentaje (incluida la rueda del mouse). */
+function ZoomBridge({ zoom, onZoom }: { zoom: RefObject<ZoomLink>; onZoom: (percent: number) => void }) {
+  const { camera, invalidate } = useThree();
+  const last = useRef(0);
+  useEffect(() => {
+    const link = zoom.current; if (!link) return;
+    const clamp = (value: number) => Math.min(link.base * ZOOM_MAX, Math.max(link.base * ZOOM_MIN, value));
+    link.step = factor => { link.target = clamp((link.target ?? camera.zoom) * factor); invalidate(); };
+    link.reset = () => { link.target = link.base; invalidate(); };
+  }, [camera, invalidate, zoom]);
+  useFrame((_, delta) => {
+    const link = zoom.current; if (!link || !(camera instanceof OrthographicCamera)) return;
+    if (link.target !== null) {
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const next = reduce ? link.target : camera.zoom + (link.target - camera.zoom) * Math.min(1, delta * 14);
+      camera.zoom = Math.abs(next - link.target) < link.target * .002 ? link.target : next;
+      camera.updateProjectionMatrix();
+      if (camera.zoom === link.target) link.target = null; else invalidate();
+    }
+    const percent = Math.round(camera.zoom / (link.base || camera.zoom) * 100);
+    if (percent !== last.current) { last.current = percent; onZoom(percent); }
+  });
   return null;
 }
 function Workspace({ accent, error, standalone }: { accent: string; error: string; standalone: boolean }) {
@@ -182,7 +211,7 @@ function Basket({ accent, surface }: { accent: string; surface: string }) {
   </group></>;
 }
 
-function SceneContents({ view, tool, focus, armPanel, carOnly = false }: SceneProps) {
+function SceneContents({ view, tool, focus, armPanel, carOnly = false, zoom, onZoom }: SceneProps & { zoom: RefObject<ZoomLink>; onZoom: (percent: number) => void }) {
   const { state, update } = useCollector();
   const modelRoot = useRef<Group>(null);
   const [framedFocus, setFramedFocus] = useState<Point3>(focus);
@@ -222,7 +251,8 @@ function SceneContents({ view, tool, focus, armPanel, carOnly = false }: ScenePr
       event.stopPropagation();
       update(s => positionCube(s, Math.max(0, ...s.cubes.map(c => c.id)) + 1, [-p.z, -p.x, .025]));
     }}><planeGeometry args={[4, 4]} /><meshBasicMaterial transparent opacity={0} depthWrite={false} /></mesh>}
-    <Camera view={view} modelRoot={modelRoot} onFrame={setFramedFocus} />
+    <Camera view={view} modelRoot={modelRoot} onFrame={setFramedFocus} zoom={zoom} />
+    <ZoomBridge zoom={zoom} onZoom={onZoom} />
     <SimulationOrbit enabled={!dragging && !jointDragging && tool === 'orbit'} focus={framedFocus} />
     <group position={armPanel ? [0, 0, 0] : toThree([state.pose.x, state.pose.y, 0])} rotation={[0, armPanel ? 0 : state.pose.yaw, 0]}>
       <group ref={modelRoot}>
@@ -284,6 +314,8 @@ function SceneFailure({ retry }: { retry: () => void }) {
 }
 export function CollectorScene(props: SceneProps) {
   const [attempt, setAttempt] = useState(0);
+  const zoom = useRef<ZoomLink>({ base: 1, target: null, step: () => {}, reset: () => {} });
+  const [zoomPercent, setZoomPercent] = useState(100);
   return <RenderBoundary key={attempt} fallback={<SceneFailure retry={() => {
     // Cache reset is shared with the existing model viewer.
     import('../../components/three/RobotModel').then(m => { m.clearRobotModelCache(); setAttempt(v => v + 1); });
@@ -291,9 +323,14 @@ export function CollectorScene(props: SceneProps) {
     <div className="afr2-collector-viewport" data-tool={props.tool}>
       <div className="afr2-model-asset-overlay"><ModelAssetProgress label="Modelo del auto" hideWhenReady /></div>
       <Canvas orthographic frameloop="demand" dpr={[1, 1.5]} camera={{ near: .001, far: 30, zoom: 300 }} onContextMenu={event => event.preventDefault()}
-        fallback={<p>WebGL no esta disponible en este dispositivo.</p>}>
-        <Suspense fallback={null}><SceneContents key={props.revision} {...props} /></Suspense>
+        fallback={<p>WebGL no está disponible en este dispositivo.</p>}>
+        <Suspense fallback={null}><SceneContents key={props.revision} {...props} zoom={zoom} onZoom={setZoomPercent} /></Suspense>
       </Canvas>
+      <div className="afr2-sim-zoom" role="group" aria-label="Zoom de la escena">
+        <button type="button" className="afr2-sim-zoom__button" aria-label="Alejar" disabled={zoomPercent <= ZOOM_MIN * 100} onClick={() => zoom.current.step(.8)}><UiIcon name="minus" size={18} /></button>
+        <button type="button" className="afr2-sim-zoom__value" aria-label={`Zoom ${zoomPercent} %. Volver a 100 %`} title="Volver a 100 %" onClick={() => zoom.current.reset()}><span aria-hidden="true">{zoomPercent}%</span></button>
+        <button type="button" className="afr2-sim-zoom__button" aria-label="Acercar" disabled={zoomPercent >= ZOOM_MAX * 100} onClick={() => zoom.current.step(1.25)}><UiIcon name="plus" size={18} /></button>
+      </div>
     </div>
   </RenderBoundary>;
 }

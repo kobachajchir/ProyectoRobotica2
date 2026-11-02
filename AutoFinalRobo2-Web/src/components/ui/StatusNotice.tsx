@@ -40,7 +40,7 @@ export function StatusNotice({
             <div className="flex flex-wrap items-center gap-2">
               <strong className="font-semibold text-[var(--text)]">{title}</strong>
               {badge && (
-                <span className="inline-flex items-center rounded-md px-2 py-0.5 text-xs font-mono border border-[var(--border)] bg-[var(--surface-solid)] text-[var(--text-muted)]">
+                <span className="inline-flex items-center rounded-md px-2 py-0.5 text-xs font-mono border border-[var(--border-default)] bg-[var(--surface-solid)] text-[var(--text-muted)]">
                   {badge}
                 </span>
               )}

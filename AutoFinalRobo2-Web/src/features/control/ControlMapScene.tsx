@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Canvas, useThree, type ThreeEvent } from '@react-three/fiber';
 import { OrthographicCamera } from 'three';
 import { Line2 } from 'three/addons/lines/Line2.js';
@@ -8,6 +8,12 @@ import { RobotModel } from '../../components/three/RobotModel';
 import type { MapSceneProps, TrailPoint } from './controlMapTypes';
 
 const world = (xMm: number, yMm: number): [number, number, number] => [-yMm / 1000, 0, -xMm / 1000];
+
+function readMapPalette() {
+  const css = getComputedStyle(document.documentElement);
+  const get = (key: string) => css.getPropertyValue(key).trim();
+  return { floor: get('--map-floor'), grid: get('--map-grid'), accent: get('--action'), muted: get('--map-waypoint-muted') };
+}
 
 function Polyline({ points, color }: { points: [number, number, number][]; color: string }) {
   const { size } = useThree();
@@ -95,17 +101,23 @@ function Destinations({ waypoints = [], accent, muted }: Pick<MapSceneProps, 'wa
 }
 
 export function ControlMapScene({ fallback, ...props }: MapSceneProps & { fallback?: ReactNode }) {
-  const color = props.dark ? { floor: '#101b2b', grid: '#27364b', accent: '#ff6b7d' } : { floor: '#f5f7fa', grid: '#dbe1e9', accent: '#b81d33' };
+  // AFR2-20261101-07: colores desde tokens.css (mismos valores que antes estaban fijos aquí).
+  const [color, setColor] = useState(readMapPalette);
+  useEffect(() => {
+    // ThemeProvider aplica la clase .dark en un efecto; leer después de ese commit.
+    const frame = requestAnimationFrame(() => setColor(readMapPalette()));
+    return () => cancelAnimationFrame(frame);
+  }, [props.dark]);
   const floorCenter = world(Math.round(props.center.xMm / 500) * 500, Math.round(props.center.yMm / 500) * 500);
   const position = props.pose ? world(props.pose.xMm, props.pose.yMm) : [0, 0, 0] as [number, number, number];
   const floorSize = Math.max(16, Math.ceil(8 / props.zoom));
   return <Canvas orthographic={props.view === 'top'} frameloop="demand" dpr={[1, 1.5]} camera={{ position: [1, 1, 1], fov: 45, near: .01, far: 400 }}
-    fallback={fallback ?? <div className="afr2-map-fallback">WebGL no esta disponible.</div>}>
+    fallback={fallback ?? <div className="afr2-map-fallback">WebGL no está disponible.</div>}>
     <color attach="background" args={[color.floor]} /><ambientLight intensity={1.6} /><directionalLight position={[3, 5, 2]} intensity={1.8} />
     <CameraRig {...props} />
     <gridHelper position={floorCenter} args={[floorSize, floorSize * 2, color.grid, color.grid]} />
     {props.onSelectPoint && <DestinationPlane {...props} />}
-    <Destinations waypoints={props.waypoints} accent={color.accent} muted={props.dark ? '#63738a' : '#8a98aa'} />
+    <Destinations waypoints={props.waypoints} accent={color.accent} muted={color.muted} />
     <Trajectory trail={props.trail} color={color.accent} />
     <group position={position} rotation={[0, props.pose ? props.pose.thetaMrad / 1000 : 0, 0]}><RobotModel wheelAngles={props.wheelAngles} /></group>
   </Canvas>;

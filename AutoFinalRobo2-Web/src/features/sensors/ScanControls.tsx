@@ -119,6 +119,6 @@ export function ScanAngleRange({ min, max, disabled, onChange }: AngleProps) {
         aria-describedby={`${id}-help`} aria-valuetext={`${max} grados; desde ${min + 5}`} onChange={event => setHandle('max', Number(event.target.value))} />
     </div>
     <div className="afr2-scan-field__limits" aria-hidden="true"><span>0°</span><span>90°</span><span>180°</span></div>
-    <p id={`${id}-help`} className="afr2-help">Separacion minima 5° · Paso 5°</p>
+    <p id={`${id}-help`} className="afr2-help">Separación mínima 5° · Paso 5°</p>
   </fieldset>;
 }

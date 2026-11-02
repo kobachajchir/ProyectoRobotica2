@@ -441,6 +441,8 @@ void Afr2App_UiSnapshot(Afr2App *a,Afr2UiSnapshot *s) {
     s->battery_valid=Afr2Battery_Status(&p->sensors,p->now)==AFR2_BATTERY_VALID;
     s->battery_mv=s->battery_valid?Afr2Battery_Millivolts(&p->sensors):0;
     s->network_valid=p->wifi.available && p->wifi.display_ready;
+    s->network_boot=p->wifi.display_boot;s->network_revision=p->wifi.display_revision;
+    s->qr_allowed=p->stopped && !s->head->running;
     s->network_rssi=p->wifi.rssi;s->network_rssi_valid=p->wifi.available && p->wifi.sta_connected && (uint32_t)(p->now-p->wifi.status_ms)<=5000u && p->wifi.rssi>-127 && p->wifi.rssi<0;
     s->network_sta=p->wifi.sta_connected;s->network_ap=p->wifi.ap_active;
     s->network_clients=p->wifi.ap_clients;s->network_server=p->wifi.web_ready;

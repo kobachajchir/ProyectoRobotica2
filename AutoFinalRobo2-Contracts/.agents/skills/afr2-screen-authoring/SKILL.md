@@ -9,6 +9,15 @@ Usar para añadir o portar una pantalla, menú, diálogo, aviso, recurso gráfic
 
 ## Antes de editar
 
+Para diseñar la composición y el flujo, usar también
+[OLED128-5](../oled128-ui-design/SKILL.md): vocabulario de iconos y plantillas
+consistentes entre proyectos. Es un borrador de diseño; no implica migrar
+pantallas existentes ni ejecutar validaciones. Esta skill sigue siendo la
+autoridad de integración específica ATmega/Web de AutoFinalRobo2.
+La revisión2 diseña largo=volver por pedido posterior del usuario; el contrato
+activo de firmware aún usa largo=principal. No confundir diseño y migración ni
+cambiar firmware/renderer activo al editar documentación.
+
 Leer [arquitectura y navegación](references/architecture.md), `documentation/SCREEN_SYSTEM.md`, `documentation/NAVIGATION.md` y `documentation/screens.json` desde la raíz de Contracts. Localizar el renderer original y sus wrappers/contexto hasta conocer datos, variante y acciones; no deducir comportamiento solo del nombre o ID. Para reportes Web consultar el contrato propio, no asumir payloads históricos.
 
 ## Crear o adaptar

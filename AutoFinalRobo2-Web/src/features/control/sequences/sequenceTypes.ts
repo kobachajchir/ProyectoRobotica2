@@ -1,7 +1,7 @@
 import geometry from '../../../../../AutoFinalRobo2-Contracts/contracts/geometry.json';
 /**
  * Tipos y constantes del documento versionado de secuencias `afr2-sequence-1` (AFR2-20261023-21 / VIS-018).
- * Unidades canonicas: milimetros (`mm`), milisegundos (`ms`) y milirradianes (`mrad`).
+ * Unidades canónicas: milímetros (`mm`), milisegundos (`ms`) y milirradianes (`mrad`).
  */
 
 export const AFR2_SEQUENCE_SCHEMA = 'afr2-sequence-2' as const;
@@ -45,7 +45,7 @@ export interface MovementBlock {
   id: string;
   kind: MovementBlockKind;
   label: string;
-  /** Duracion en ms (multiplo de 10 ms; 0 ms para 'finish'). */
+  /** Duración en ms (múltiplo de 10 ms; 0 ms para 'finish'). */
   durationMs: number;
   /** Velocidad longitudinal en mm/s (constant, curve). */
   vxMmS: number;
@@ -58,7 +58,7 @@ export interface MovementBlock {
   fromVyMmS: number;
   toVxMmS: number;
   toVyMmS: number;
-  /** Sentido explicito para giro sobre el eje ('pivot'). */
+  /** Sentido explícito para giro sobre el eje ('pivot'). */
   pivotDirection: 'ccw' | 'cw';
   /** Lado de curvatura para 'curve'. */
   arcSide: 'left' | 'right';
@@ -70,7 +70,7 @@ export interface WheelBlock {
   id: string;
   kind: WheelBlockKind;
   label: string;
-  /** Duracion en ms (multiplo de 10 ms; 0 ms para 'finish'). */
+  /** Duración en ms (múltiplo de 10 ms; 0 ms para 'finish'). */
   durationMs: number;
   /** Velocidad firmada de rueda en mm/s (constant). */
   speedMmS: number;
@@ -82,9 +82,9 @@ export interface WheelBlock {
 export interface MecanumKinematicProfile {
   /** Suma de semidistancias longitudinal y lateral (lx + ly) en mm. Valor ilustrativo inicial: 300 mm. */
   lxPlusLyMm: number;
-  /** Velocidad maxima nominal por rueda en mm/s. Valor ilustrativo inicial: 800 mm/s. */
+  /** Velocidad máxima nominal por rueda en mm/s. Valor ilustrativo inicial: 800 mm/s. */
   maxWheelSpeedMmS: number;
-  /** Indica si el perfil fisico fue calibrado contra el robot real. Por defecto false (no calibrado). */
+  /** Indica si el perfil físico fue calibrado contra el robot real. Por defecto false (no calibrado). */
   calibrated: boolean;
 }
 

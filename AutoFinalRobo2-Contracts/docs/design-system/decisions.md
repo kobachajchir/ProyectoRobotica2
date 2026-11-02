@@ -1,3 +1,130 @@
+## VIS-055..VIS-056 — Modelos por banners y mapa de pantallas (02/11/2026)
+
+Confirmada: pedidos humanos de separar simuladores y modelos 3D, entrar directo a la inspección por tres banners horizontales con renders, «Ir a simulación» abajo a la derecha, banner de Inicio y árbol de pantallas como mapa conceptual desde el dashboard. Manual 0.1.10 draft; ficha AFR2-20261102-01, [cobertura](coverage-20261102-01.json).
+
+**VIS-055 — Banners de render.** Propuesta: los banners (Inicio y Modelos) son oscuros en ambos temas porque los renders tienen fondo azul noche; tokens `--banner-*` con tinta clara y acento rubí `#ff6b7d`. Escritorio: render a la derecha y degradado a la izquierda (2,4:1); celular: texto arriba y render abajo con fundido. Etiqueta «Render CAD» obligatoria. Mismo material e iconos que las tarjetas de Inicio; hover −2 px solo con puntero fino y pulsación `scale(.98)`. Una decisión por pantalla: portada → inspección → simulación, sin selectores apilados.
+
+**VIS-056 — Mapa de pantallas.** Propuesta: árbol de izquierda a derecha desde el dashboard 010001, con nodos tarjeta (nombre y ScreenCode), conectores curvos, referencias repetidas punteadas y ficha lateral con tipo, gestos, vista previa OLED y camino. Abrir y cerrar ramas no anima la disposición; los nodos nuevos entran con un fundido de 120 ms.
+
+Verificado en el navegador local sin robot (5 anchos, claro y oscuro); sin build ni hardware.
+
+## VIS-050..VIS-054 — Plan visual 01-11, fase 1: decisiones y tokens (01/11/2026)
+
+Confirmada: pedido humano de implementar la fase 1 del
+[plan visual](../../../AutoFinalRobo2-Web/docs/plan-visual-20261101/PLAN.md),
+con autorización expresa del manual en borrador y de las opciones por defecto
+del plan. Modo APLICAR sobre manual0.1.10 draft. Ficha AFR2-20261101-07,
+[cobertura](coverage-20261101-07.json). Ninguna decisión está verificada en
+navegador: no se ejecutaron tests, builds, validadores, navegador ni `build:esp`.
+
+### VIS-050 — Familia de iconos única
+
+Propuesta / Aprobada por opción por defecto. Lucide (ISC) con los paths usados
+copiados al repo en `components/ui/icons/registry.ts`, con crédito y licencia;
+sin paquete nuevo en el bundle. Grilla 24 px, trazo 1,75 px, extremos y uniones
+redondeados, color `currentColor`. Tamaños 16 (texto/insignias), 20 (botones,
+barra lateral) y 24 px (tarjetas). Un concepto, un icono. Icono-botón con
+`aria-label`; icono junto a texto con `aria-hidden`. STOP usa `octagon-x`, nunca
+«■» (cumple el icono explícito de VIS-013). Iconos de dominio (rueda Mecanum,
+servo, brazo, OLED) se dibujan propios en la misma grilla. Aplicación: fase 2.
+
+Aplicada en AFR2-20261101-08 ([cobertura](coverage-20261101-08.json)): 58 iconos
+en `registry.ts` (44 Lucide, 14 propios). Propuestas registradas: batería sin
+lectura con raya en vez de contorno punteado; señal Wi-Fi con iconos de nivel en
+vez de arcos atenuados; `touch` para Control táctil; `board` y `encoder` en las
+fichas del modelo. Flechas y «×» dentro de texto siguen siendo texto.
+
+### VIS-051 — Escala tipográfica y espaciado por rol
+
+Propuesta / Aprobada por autorización del borrador. Ocho niveles con nombre:
+`--type-display` 28–36 px/1,15/700/-0,03 em; `--type-title` 24–30 px/1,2/700/
+-0,02 em (`<h1>` único por página); `--type-heading` 18/1,3/650/-0,01 em;
+`--type-subheading` 15/1,35/600; `--type-body` 15/1,55/400 (inputs siguen en
+16 px); `--type-label` 13/1,3/550/+0,01 em; `--type-caption` 12/1,4/450/+0,01 em;
+`--type-data` 28/1/600/-0,02 em con cifras tabulares. Tracking por tamaño
+(apple-design): negativo al crecer, levemente positivo en texto chico. Tamaños
+en rem para respetar el texto del usuario.
+
+Familia: vuelve a VIS-004 con Segoe UI Variable Text para texto y Display para
+títulos, luego `system-ui`, sin descarga. Se retira Inter de `--font-sans`
+porque estaba declarada y nunca se cargaba (Observada). En Windows con Segoe UI
+Variable instalada el texto cambia de la fuente de sistema a esa familia; en otros
+sistemas sigue `system-ui`.
+
+Sustituye: «títulos 20–24 px» y «ayuda mínima 14 px» de VIS-004 cuando se
+apliquen los niveles en fase 4. Riesgo registrado: `--type-caption` de 12 px
+queda debajo del mínimo anterior de 14 px; usar solo para metadatos y unidades,
+nunca para instrucciones ni avisos.
+
+Espaciado por rol, mobile-first con un paso en 840 px: `--page-gutter` 16→32,
+`--page-top` 20→32, `--section-gap` 24→40, `--card-padding` 16→24 (hoy 28 fijo),
+`--stack-gap` 12→16 px. `--content-max` 1200 px limita solo texto y formularios;
+escenas 3D, mapa y radar siguen a todo el ancho y `--container-max: none` de
+VIS-042 (pedido humano) se conserva. Los `--workspace-*` actuales siguen en uso
+hasta la fase 5.
+
+Cabeceras aplicadas en AFR2-20261101-10 ([cobertura](coverage-20261101-10.json)):
+`PageHeader` (`<h1>` único) y `SectionHeader` (`<h2>`/`<h3>`). Conflicto
+registrado: el plan recupera tildes, pero AFR2-20261026-03 (pedido humano) las
+quitó de la Web; se mantienen sin tildes hasta que el usuario decida.
+**Resuelto en AFR2-20261101-11:** el usuario eligió recuperar las tildes; la
+réplica OLED sigue sin ellas porque replica la fuente de píxeles del ATmega.
+
+### VIS-052 — Selector segmentado con pill deslizante
+
+Propuesta / Aprobada por opción por defecto. Un solo `SegmentedControl` (ranura
+`--surface-subtle`, pill `--surface-solid` con `--glass-chrome-shadow`) para
+pestañas y elecciones. Indicador por `clip-path` sobre una copia activa, 250 ms
+(`--duration-segmented`) con `--ease-in-out`: es movimiento dentro de la
+pantalla (animate). Sustituye `easeStandard` de §6.8 solo para este indicador.
+Teclado y movimiento reducido: 0 ms. Sin transición en el primer render ni en
+ajustes por `ResizeObserver`. Aplicación: fase 3.
+
+Aplicada en AFR2-20261101-09 ([cobertura](coverage-20261101-09.json)). Propuestas
+registradas: sombra y borde de la pill con `filter: drop-shadow()` (`clip-path`
+recorta `box-shadow`); `activation="manual"` cuando elegir envía una orden al
+robot; `reselect` para reenviar el modo; columnas iguales en celular con 2 a 4
+opciones. Fuera: `.afr2-oled-side` (fase 7) y botones toggle con `aria-pressed`.
+
+### VIS-053 — Breakpoints mobile-first y navegación en celular
+
+Propuesta / Aprobada por opción por defecto. Cuatro cortes con `min-width`:
+`sm` 600, `md` 840, `lg` 1200, `xl` 1600 px. Se publican como `--bp-*` en
+`tokens.css` (referencia) y como `--breakpoint-*` en `@theme` de `index.css`, que
+reemplaza los valores por defecto de Tailwind (640/768/1024/1280). Efecto ya
+presente en fuente: 15 clases `sm:`/`md:`/`lg:` en 7 archivos cambian su punto
+de activación (ver ficha). Las 32 consultas `max-width` de los CSS se migran en
+fase 5; hasta entonces conviven ambos sistemas. Sustituye `mobileBreakpoint`
+820 px (VIS-009) al migrar.
+
+Navegación en celular: barra inferior con Inicio, Conducir, Programas,
+Sensores y Más; «Más» abre hoja inferior. Rail desde `md`, barra expandida desde
+`lg`. Sustituirá el rail móvil de 64 px de VIS-015 en fase 5.
+
+Aplicada en AFR2-20261101-12 ([cobertura](coverage-20261101-12.json)). La
+estructura (`workspace.css`) es mobile-first; las 17 hojas de componentes usan
+los 4 cortes como complemento `max-width` hasta invertirlas con verificación
+visual. «Más» es un modal; la hoja inferior con arrastre es de la fase 6.
+
+### VIS-054 — Atención por tema y colores solo en tokens
+
+Propuesta / Aprobada por autorización del borrador. `--attention`,
+`--attention-ink`, `--attention-border`, `--attention-ring` y
+`--attention-subtle` en ambos temas reemplazan el ámbar fijo de la pulsación
+larga del encoder Web. No es error ni STOP. Claro conserva los valores
+anteriores; oscuro usa `#fbbf24` con borde `#fcd34d` (Propuesta, contraste no
+medido en pantalla).
+
+Observada y corregida: `--dur-fast`, `--dur-press`, `--on-action`, `--accent`,
+`--border` y `--glass-field` se usaban sin estar definidas; pasan a
+`--duration-fast`, `--duration-button-press`, `--text-on-action`, `--action`
+(o `--focus` en foco), `--border-default` y `--glass-field-bg`. La paleta del
+mapa (`--map-*`) se traslada a `tokens.css` sin cambiar valores, y
+ControlMapScene/ThemeProvider leen tokens en vez de repetir colores.
+Excepciones registradas: réplica OLED de `OledCanvas128x64` (requiere skill
+oled128-ui-design), luz/sombra neutras WebGL del radar y `theme-color` inicial
+de `index.html`.
+
 ## VIS-048 - Modelos 3D con entorno compartido y fichas legibles
 
 Confirmada: pedido humano de reutilizar cielo/piso de Simulaciones y corregir legibilidad en ambos temas. Observada: fondo OLED y fichas de assets sin superficie propia. Propuesta aplicada: InspectionEnvironment, tokens compartidos sin variar colores, fichas solidas con jerarquia comun y tinta carmesi profunda para referencias sobre escena. Alcance: Auto/Brazo/Cubo; materiales, escala y modelos conservados. Borrador0.1.9 autorizado para esta adaptacion. No se ejecutaron navegador, tests, builds ni validadores; ratios reales/aspecto No verificados. [Cobertura](coverage-20261101-03.json).

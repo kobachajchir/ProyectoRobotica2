@@ -1,0 +1,23 @@
+{
+  "changeId": "AFR2-20261101-12",
+  "decisionId": ["VIS-053", "VIS-051"],
+  "mode": "APLICAR",
+  "manualVersion": "0.1.10",
+  "authorization": "Pedido explicito: Si, fase 5. Barra inferior, 4 grupos y nombres de paginas como opciones por defecto autorizadas.",
+  "canonicalSources": ["Web/src/app/navigation.ts", "Web/src/styles/workspace.css (bloque VIS-053)", "Web/docs/ui-navigation-20261101.json"],
+  "supporting": ["SegmentedControl", "PageHeader", "FloatingModal", "UiIcon"],
+  "confirmed": ["Fase 5 del plan", "Barra inferior en celular", "Cuatro grupos y nombres de paginas"],
+  "observed": ["16 breakpoints max-width en 24 CSS", "Rail movil de 64 px", "Preferencias del robot en Configuracion", "Diagnostico de conexion en Configuracion", "Bateria repetida en Configuracion"],
+  "proposed": ["ControlPage con area y una sola instancia", "Mas como modal", "Breakpoints de hojas de componentes como complemento max-width", "Tokens --type-*-size"],
+  "targets": ["navigation.ts", "App.tsx", "RouteNav.tsx", "ControlPage.tsx", "OperationalStatusBar.tsx", "ModelsPage.tsx", "WifiPage.tsx", "SystemPanel.tsx", "DocsPage.tsx", "HomePage.tsx", "workspace.css", "17 hojas CSS"],
+  "exceptions": ["Hojas de componentes sin invertir a min-width", "82 font-size fuera de escala", "Clases Tailwind de texto"],
+  "themes": ["light", "dark"],
+  "sourceImplemented": true,
+  "runtimeVerification": "No verificada",
+  "tests": false,
+  "build": false,
+  "validators": false,
+  "browser": false,
+  "hardware": false,
+  "packagesPromoted": false
+}

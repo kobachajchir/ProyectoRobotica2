@@ -1,4 +1,5 @@
 import { useId, useState, type ReactNode } from 'react';
+import { SegmentedControl } from './SegmentedControl';
 
 interface TaskItem {
   id: string;
@@ -36,33 +37,16 @@ export function TaskSections({
   };
   return (
     <div className="afr2-workspace">
-      <div role="tablist" aria-label={resolvedLabel} className="afr2-task-nav">
-        {items.map((item, index) => (
-          <button
-            key={item.id}
-            type="button"
-            role="tab"
-            id={`${uid}-tab-${item.id}`}
-            aria-controls={`${uid}-panel-${item.id}`}
-            aria-selected={active === item.id}
-            tabIndex={active === item.id ? 0 : -1}
-            onClick={() => select(item.id)}
-            onKeyDown={(event) => {
-              let next = index;
-              if (event.key === 'ArrowRight') next = (index + 1) % items.length;
-              else if (event.key === 'ArrowLeft') next = (index - 1 + items.length) % items.length;
-              else if (event.key === 'Home') next = 0;
-              else if (event.key === 'End') next = items.length - 1;
-              else return;
-              event.preventDefault();
-              select(items[next].id);
-              document.getElementById(`${uid}-tab-${items[next].id}`)?.focus();
-            }}
-          >
-            {item.label}
-          </button>
-        ))}
-      </div>
+      {/* AFR2-20261101-09 / VIS-052: misma API; la navegación usa la ranura con pill deslizante. */}
+      <SegmentedControl
+        className="afr2-task-nav"
+        variant="tabs"
+        ariaLabel={resolvedLabel}
+        idPrefix={uid}
+        items={items.map((item) => ({ value: item.id, label: item.label }))}
+        value={active}
+        onChange={select}
+      />
       {items.map((item) => (
         <section
           key={item.id}

@@ -1,8 +1,9 @@
 import { MotorSelector } from '../../components/ui/MotorSelector';
 /* AFR2-20261029-27: quick controls/radar/PWM/WS integration; prior authors retained. */
 import { Chevron } from '../../components/ui/Chevron';
-import { SectionHeader } from '../../components/ui/SectionHeader';
-import { CollapsiblePanel } from '../../components/ui/CollapsiblePanel';
+import { UiIcon } from '../../components/ui/UiIcon';
+import { SegmentedControl } from '../../components/ui/SegmentedControl';
+import { PageHeader } from '../../components/ui/PageHeader';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Button } from '../../components/ui/Button';
@@ -30,10 +31,22 @@ import type { ModalOrigin } from '../../components/ui/FloatingModal';
 
 type WheelId = 'FL' | 'FR' | 'RL' | 'RR';
 type RobotModeOption = 'idle' | 'manual' | 'line-follow';
-type ControlTaskId = 'drive' | 'sequences' | 'wheel' | 'goto' | 'calibrate';
+type ControlTaskId = 'drive' | 'sequences' | 'wheel' | 'goto' | 'calibrate' | 'preferences';
+/** AFR2-20261101-12 / VIS-053: Control se reparte en Conducir, Programas y Puesta a punto. */
+export type ControlArea = 'drive' | 'programs' | 'setup';
+const AREA_TASKS: Record<ControlArea, readonly ControlTaskId[]> = {
+  drive: ['drive'], programs: ['sequences', 'goto'], setup: ['wheel', 'calibrate', 'preferences'],
+};
+const TASK_PARAM: Record<string, ControlTaskId> = {
+  secuencias: 'sequences', goto: 'goto', ruedas: 'wheel', wheel: 'wheel', calibracion: 'calibrate', preferencias: 'preferences',
+};
+function initialTask(area: ControlArea, param: string | null): ControlTaskId {
+  const requested = param ? TASK_PARAM[param] : undefined;
+  return requested && AREA_TASKS[area].includes(requested) ? requested : AREA_TASKS[area][0];
+}
 
-export function ControlPage() {
-  const [entryParams] = useSearchParams();
+export function ControlPage({ area = 'drive' }: { area?: ControlArea }) {
+  const [entryParams, setEntryParams] = useSearchParams();
   const {
     wsState,
     megaLinkState,
@@ -47,8 +60,7 @@ export function ControlPage() {
     setOperationActivity,
   } = useConnection();
 
-  const [activeTask, setActiveTask] = useState<ControlTaskId>(() => entryParams.get('tarea') === 'wheel' ? 'wheel' : 'drive');
-  const [cardExpanded, setCardExpanded] = useState(true);
+  const [activeTask, setActiveTask] = useState<ControlTaskId>(() => initialTask(area, entryParams.get('tarea')));
   const [linearSpeedMmS, setLinearSpeedMmS] = useState(100);
   const [manualPowerPct,setManualPowerPct]=useState(50);
   const [turnPowerPct,setTurnPowerPct]=useState(50);
@@ -80,7 +92,7 @@ export function ControlPage() {
   const maxPwm = Math.min(60, capabilities.wheel_test.limits?.maxPwmPct ?? 25);
   useEffect(() => {setLinearSpeedMmS(v => Math.min(v,maxSpeed));setTestPwmPct(v => Math.min(v,maxPwm));}, [maxSpeed,maxPwm]);
 
-  // Estado para conectar la simulacion de Secuencias con el ControlMap existente
+  // Estado para conectar la simulación de Secuencias con el ControlMap existente
   const [simMapPose, setSimMapPose] = useState<RobotPose | null>(null);
   const [simMapTrail, setSimMapTrail] = useState<TrailPoint[]>([]);
   const [simWheelAngles, setSimWheelAngles] = useState<RobotWheelValues>();
@@ -108,11 +120,11 @@ export function ControlPage() {
     megaLinkState === 'ready' &&
     stopRecord.status !== 'sending' && stopRecord.status !== 'unconfirmed-offline';
   // AFR2-20261030-18: one permission and one reason for pad and touch.
-  const driveBlockedReason = wsState !== 'ready' ? 'Falta conexion WebSocket con el ESP.'
+  const driveBlockedReason = wsState !== 'ready' ? 'Falta conexión WebSocket con el ESP.'
     : megaLinkState !== 'ready' ? 'Falta enlace del ESP con el ATmega.'
-    : stopRecord.status === 'sending' ? 'Esperando la confirmacion de STOP.'
-    : stopRecord.status === 'unconfirmed-offline' ? 'El ultimo STOP sigue sin confirmar. Volve a enviar STOP con el enlace activo.'
-    : !capabilities.manual_pwm?.implemented ? capabilities.manual_pwm?.reason || 'El ESP todavia no informa PWM manual disponible.'
+    : stopRecord.status === 'sending' ? 'Esperando la confirmación de STOP.'
+    : stopRecord.status === 'unconfirmed-offline' ? 'El último STOP sigue sin confirmar. Volvé a enviar STOP con el enlace activo.'
+    : !capabilities.manual_pwm?.implemented ? capabilities.manual_pwm?.reason || 'El ESP todavía no informa PWM manual disponible.'
     : null;
   const canDrive = driveBlockedReason === null;
 
@@ -185,7 +197,6 @@ export function ControlPage() {
     setManualOverlayOpen(false);
     const taskId = nextTask as ControlTaskId;
     setActiveTask(taskId);
-    setCardExpanded(true);
   };
 
   const startHoldVector = async (id: string, label: string, vx: number, vy: number, wz: number) => {
@@ -270,8 +281,8 @@ export function ControlPage() {
       },
       {
         loadingTitle: 'Enviando objetivo relativo GOTO...',
-        successTitle: 'Mision GOTO completada',
-        acceptedTitle: 'Mision GOTO aceptada (en progreso)',
+        successTitle: 'Misión GOTO completada',
+        acceptedTitle: 'Misión GOTO aceptada (en progreso)',
       }
     );
   };
@@ -324,20 +335,20 @@ export function ControlPage() {
                 {!canDrive && (
                   <StatusNotice
                     tone="info"
-                    title={wsState !== 'ready' || megaLinkState !== 'ready' ? 'Simulacion local disponible' : 'Movimiento manual no disponible'}
+                    title={wsState !== 'ready' || megaLinkState !== 'ready' ? 'Simulación local disponible' : 'Movimiento manual no disponible'}
                     badge="Movimiento manual"
                   >
                     {wsState !== 'ready' || megaLinkState !== 'ready'
-                      ? 'Abri Control tactil para simular sin conexion al robot. Las ordenes fisicas requieren enlace Web↔ESP↔ATmega2560.'
+                      ? 'Abrí Control táctil para simular sin conexión al robot. Las órdenes físicas requieren enlace Web↔ESP↔ATmega2560.'
                       : driveBlockedReason}
                   </StatusNotice>
                 )}
 
                 <div className="afr2-manual-heading">
-                  <h2>Conduccion manual</h2>
-                  <Button variant="primary" aria-haspopup="dialog" aria-expanded={manualOverlayOpen} icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5" /></svg>}
+                  <h2>Conducción manual</h2>
+                  <Button variant="primary" aria-haspopup="dialog" aria-expanded={manualOverlayOpen} icon={<UiIcon name="touch" />}
                     onClick={event => { stopActiveHold(true); setDriveError(null); setManualOrigin({ element: event.currentTarget, keyboard: event.detail === 0 }); setManualOverlayOpen(true); }}>
-                    Control tactil
+                    Control táctil
                   </Button>
                 </div>
 
@@ -348,32 +359,33 @@ export function ControlPage() {
                       onStart={intent => { void startHoldVector(intent.id, intent.label, intent.vx * manualPowerPct, intent.vy * manualPowerPct, intent.wz * turnPowerPct); }}
                       onStop={() => stopActiveHold(true)} />
                   </div>
-                  {/* Parametros de velocidad y modo operativo */}
+                  {/* Parámetros de velocidad y modo operativo */}
                   <div className="lg:col-span-5 afr2-glass-panel rounded-[var(--radius-md)] p-5 space-y-5">
                     <h2 className="text-base font-semibold text-[var(--text)]">
-                      Parametros y modo operativo
+                      Parámetros y modo operativo
                     </h2>
 
-                    <RangeNumberField label="Potencia de traslacion" value={manualPowerPct} min={0} max={100} step={5} unit="% del limite PWM" onChange={setManualPowerPct} />
-                    <RangeNumberField label="Potencia de giro" value={turnPowerPct} min={10} max={100} step={5} unit="% del limite PWM" onChange={setTurnPowerPct} />
+                    <RangeNumberField label="Potencia de traslación" value={manualPowerPct} min={0} max={100} step={5} unit="% del límite PWM" onChange={setManualPowerPct} />
+                    <RangeNumberField label="Potencia de giro" value={turnPowerPct} min={10} max={100} step={5} unit="% del límite PWM" onChange={setTurnPowerPct} />
                     <div className="space-y-2 pt-2 border-t border-[var(--border-default)]">
                       <span className="block text-xs font-medium text-[var(--text-muted)]">
                         Modo operativo
                       </span>
-                      <div className="afr2-segmented" role="group" aria-label="Modo operativo del robot">
-                        {(['idle', 'manual', 'line-follow'] as RobotModeOption[]).map((mode) => (
-                          <button
-                            key={mode}
-                            type="button"
-                            disabled={!canPrepareControl || (mode === 'manual' && !capabilities.manual_pwm?.implemented) || (mode === 'line-follow' && !capabilities.line_follow.implemented)}
-                            aria-pressed={selectedMode === mode}
-                            onClick={() => void handleModeSubmit(mode)}
-                            className="afr2-segmented-btn disabled:opacity-55 disabled:cursor-not-allowed"
-                          >
-                            {mode === 'idle' ? 'Reposo' : mode === 'manual' ? 'Manual' : 'Linea'}
-                          </button>
-                        ))}
-                      </div>
+                      {/* AFR2-20261101-09 / VIS-052: elegir envia la orden al robot, por eso las flechas
+                          solo mueven el foco (activation manual) y Enter/Espacio o un toque confirman. */}
+                      <SegmentedControl
+                        ariaLabel="Modo operativo del robot"
+                        activation="manual"
+                        reselect
+                        fill="always"
+                        value={selectedMode}
+                        onChange={(mode) => void handleModeSubmit(mode)}
+                        items={(['idle', 'manual', 'line-follow'] as RobotModeOption[]).map((mode) => ({
+                          value: mode,
+                          label: mode === 'idle' ? 'Reposo' : mode === 'manual' ? 'Manual' : 'Línea',
+                          disabled: !canPrepareControl || (mode === 'manual' && !capabilities.manual_pwm?.implemented) || (mode === 'line-follow' && !capabilities.line_follow.implemented),
+                        }))}
+                      />
                     </div>
                   </div>
                 </div>
@@ -399,7 +411,7 @@ export function ControlPage() {
                     Prueba individual de rueda (`robot.test.wheel`)
                   </h2>
                   <p className="text-xs text-[var(--text-muted)] mt-1">
-                    Acciona una sola rueda con limite de PWM (≤ 60 %) y duracion acotada (100–2000 ms).
+                    Acciona una sola rueda con límite de PWM (≤ 60 %) y duración acotada (100–2000 ms).
                   </p>
                 </div>
 
@@ -431,7 +443,7 @@ export function ControlPage() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label htmlFor="wheel-pwm-input" className="block text-xs font-medium text-[var(--text-muted)] mb-1">
-                        PWM (%) — max. 60 %
+                        PWM (%) — máx. 60 %
                       </label>
                       <input
                         id="wheel-pwm-input"
@@ -447,7 +459,7 @@ export function ControlPage() {
                     </div>
                     <div>
                       <label htmlFor="wheel-dur-input" className="block text-xs font-medium text-[var(--text-muted)] mb-1">
-                        Duracion (ms)
+                        Duración (ms)
                       </label>
                       <input
                         id="wheel-dur-input"
@@ -482,14 +494,14 @@ export function ControlPage() {
             content: (
               <div className="afr2-page-stack">
               <GotoSimulatorPanel commands={gotoCommands} onCommandsChange={setGotoCommands} speedMmS={gotoSimSpeedMmS} onSpeedChange={setGotoSimSpeedMmS} />
-              <Disclosure title="Enviar un objetivo al robot" meta="Requiere odometria y calibracion">
+              <Disclosure title="Enviar un objetivo al robot" meta="Requiere odometría y calibración">
               <div className="afr2-glass-panel rounded-[var(--radius-md)] p-5 space-y-4 max-w-2xl">
                 <div>
                   <h2 className="text-base font-semibold text-[var(--text)]">
                     Posicionamiento relativo (`robot.goto.start`)
                   </h2>
                   <p className="text-xs text-[var(--text-muted)] mt-1">
-                    Desplazamiento relativo (`xMm`, `yMm`, `thetaMrad`) sujeto a odometria de ruedas.
+                    Desplazamiento relativo (`xMm`, `yMm`, `thetaMrad`) sujeto a odometría de ruedas.
                   </p>
                 </div>
 
@@ -497,7 +509,7 @@ export function ControlPage() {
                   <StatusNotice
                     tone="warning"
                     title="GOTO deshabilitado"
-                    badge="Sin odometria"
+                    badge="Sin odometría"
                   >
                     {capabilities.goto_relative.reason} ({capabilities.wheel_odometry.reason})
                   </StatusNotice>
@@ -571,8 +583,8 @@ export function ControlPage() {
                           'robot.goto.cancel',
                           {},
                           {
-                            loadingTitle: 'Cancelando mision GOTO...',
-                            successTitle: 'Mision GOTO cancelada',
+                            loadingTitle: 'Cancelando misión GOTO...',
+                            successTitle: 'Misión GOTO cancelada',
                           }
                         )
                       }
@@ -588,65 +600,59 @@ export function ControlPage() {
           },
           {
             id: 'calibrate',
-            label: 'Calibracion',
+            label: 'Calibración',
             content: (
               <CalibrationPanel />
             ),
           },
+          {
+            // AFR2-20261101-12: parámetros del robot en EEPROM; antes en Configuración → Sistema.
+            id: 'preferences',
+            label: 'Preferencias',
+            content: <CalibrationPanel preferences />,
+          },
 
   ];
-  const controlGroup = activeTask === 'drive' || activeTask === 'sequences' ? 'movement' : activeTask === 'wheel' || activeTask === 'calibrate' ? 'checks' : 'goto';
-  const renderControlCard = (id: ControlTaskId, title: string) => <CollapsiblePanel
-    className={`afr2-control-card afr2-control-card--${id}`} title={title} expanded={cardExpanded && activeTask === id}
-    onToggle={() => {
-      if (cardExpanded && activeTask === id) { stopActiveHold(true); setManualOverlayOpen(false); setCardExpanded(false); }
-      else handleTaskChange(id);
-    }}>
-    {controlTasks.find(task => task.id === id)?.content}
-  </CollapsiblePanel>;
+  // La misma instancia sirve a las tres rutas (React conserva el estado al cambiar de ruta),
+  // así los borradores de GOTO y prueba de rueda sobreviven; al cambiar de área se detiene el movimiento.
+  const previousArea = useRef(area);
+  useEffect(() => {
+    if (previousArea.current === area) return;
+    previousArea.current = area;
+    handleTaskChange(initialTask(area, entryParams.get('tarea')));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [area]);
+  const task = (id: ControlTaskId) => controlTasks.find(item => item.id === id)?.content;
+  const changeTask = (id: string) => {
+    if (id === activeTask) return;
+    handleTaskChange(id);
+    const param = Object.entries(TASK_PARAM).find(([, value]) => value === id)?.[0];
+    if (param) setEntryParams(previous => { const next = new URLSearchParams(previous); next.set('tarea', param); return next; }, { replace: true });
+  };
+  const header = area === 'drive'
+    ? <PageHeader title="Conducir" description="Mové la base en cualquier dirección y mirá los sensores en vivo." />
+    : area === 'programs'
+      ? <PageHeader title="Programas" description="Armá recorridos, simulalos y ejecutalos en el robot." />
+      : <PageHeader title="Puesta a punto" description="Probá cada rueda y calibrá antes de operar." />;
   return (
     <div className="afr2-route-view afr2-control-workspace">
-      <SectionHeader title="Control" description="Movimientos, secuencias y simulacion desde la Web." />
+      {header}
       {driveError && <StatusNotice tone="error" title="Consigna sin confirmar">{driveError}</StatusNotice>}
-      {robotState && <p className="afr2-help" role="status">Modo AVR: {robotState.mode} · GOTO: {robotState.gotoState} · Salidas apagadas: {robotState.stopped === null ? 'desconocido' : robotState.stopped ? 'si' : 'no'} · Fallo: {robotState.fault ?? 'desconocido'}</p>}
-
-
-
-      <TaskSections ariaLabel="Tareas de Control" activeId={controlGroup}
-        onChange={group => { if (group !== controlGroup) handleTaskChange(group === 'movement' ? 'drive' : group === 'checks' ? 'wheel' : 'goto'); }}
-        items={[
-          { id: 'movement', label: 'Movimiento', content: <div className="afr2-control-cards">
-            {renderControlCard('drive', 'Conduccion manual')}
-            {renderControlCard('sequences', 'Secuencias')}
-          </div> },
-          { id: 'checks', label: 'Pruebas y calibracion', content: <div className="afr2-control-cards">
-            {renderControlCard('wheel', 'Prueba de rueda')}
-            {renderControlCard('calibrate', 'Calibracion')}
-          </div> },
-          { id: 'goto', label: 'GOTO', content: controlTasks.find(task => task.id === 'goto')?.content },
-        ]}
-      />
+      {area === 'drive' && task('drive')}
+      {area === 'programs' && <TaskSections ariaLabel="Tipos de programa" value={activeTask} onValueChange={changeTask} items={[
+        { id: 'sequences', label: 'Secuencias', content: task('sequences') },
+        { id: 'goto', label: 'GOTO', content: task('goto') },
+      ]} />}
+      {area === 'setup' && <TaskSections ariaLabel="Puesta a punto" value={activeTask} onValueChange={changeTask} items={[
+        { id: 'wheel', label: 'Ruedas', content: task('wheel') },
+        { id: 'calibrate', label: 'Calibración', content: task('calibrate') },
+        { id: 'preferences', label: 'Preferencias', content: task('preferences') },
+      ]} />}
 
       <ManualDriveOverlay open={manualOverlayOpen} origin={manualOrigin} onClose={() => setManualOverlayOpen(false)}
         onRelease={() => stopActiveHold(true)} canDrive={canDrive} blockedReason={driveBlockedReason} speed={manualPowerPct} maxSpeed={100}
         onSpeedChange={setManualPowerPct} stopSignal={stopRecord.lastIssuedAtMs} error={driveError}
         onDirectionChange={(direction: ManualDirection) => { const speed = Math.floor(manualPowerPct / (Math.abs(direction.vx) + Math.abs(direction.vy))); void startHoldVector(`touch-${direction.id}`, direction.label, direction.vx * speed, direction.vy * speed, 0); }} />
-      <Disclosure
-        title="Supervision del control Web"
-        meta="ATmega2560 autoritativo"
-      >
-        <ul className="list-disc pl-5 space-y-1 text-xs">
-          <li>
-            La supervision se prepara automaticamente al operar desde la Web. Una orden pierde vigencia si se interrumpe la conexion o deja de renovarse.
-          </li>
-          <li>
-            La perdida de foco, ocultamiento de pestaña, cambio de tarea o desconexion detiene inmediatamente el envio de consignas, cancela cualquier secuencia fisica activa y emite <code>robot.stop</code>.
-          </li>
-          <li>
-            La confirmacion de parada fisica proviene unicamente del productor autoritativo en el ATmega2560.
-          </li>
-        </ul>
-      </Disclosure>
     </div>
   );
 }

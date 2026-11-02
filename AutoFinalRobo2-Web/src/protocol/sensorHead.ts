@@ -21,6 +21,6 @@ export interface RadarReply {
 }
 export interface ScreenStatus { screenCode: number; navigationRevision: number; selection: number; firstVisible: number; private: boolean }
 export const SENSOR_ERRORS: Record<RangeSample['error'],string> = {
-  none:'Lectura valida', 'no-rise':'Sin subida de ECHO', 'no-fall':'ECHO no termino', 'echo-high':'ECHO ocupado',
-  'out-of-range':'Fuera de 2 cm–4 m', moving:'Servo en movimiento', stale:'Lectura vencida', unknown:'Sin medicion',
+  none:'Lectura valida', 'no-rise':'Sin subida de ECHO', 'no-fall':'ECHO no terminó', 'echo-high':'ECHO ocupado',
+  'out-of-range':'Fuera de 2 cm–4 m', moving:'Servo en movimiento', stale:'Lectura vencida', unknown:'Sin medición',
 };

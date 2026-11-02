@@ -1,3 +1,17 @@
+> **Infraestructura / AFR2-20261102-04:** continuación de las primitivas/tokens vigentes en la nueva vista de Explorar. Mapa y explorador de etapas Propuestos, tamaños con procedencia explícita; fuente implementada, ejecución No verificada. [Cobertura](coverage-20261102-04.json). Sin tests, compilación, validadores ni navegador.
+
+> **VIS-055/056 / AFR2-20261102-01:** banners de render (Inicio y Modelos), inspección 3D directa con «Ir a simulación», simulador separado y mapa conceptual de pantallas. Primera aplicación revisada en navegador local (5 anchos, claro/oscuro). [Cobertura](coverage-20261102-01.json).
+
+> **VIS-053 aplicada / AFR2-20261101-12:** destinos por tarea en 4 grupos, rutas nuevas con redirecciones, barra inferior y hoja Mas en celular, rail desde 840 y barra expandida desde 1200; breakpoints 16 a 4 y 140 tamanos a --type-*-size. Ejecucion No verificada. [Cobertura](coverage-20261101-12.json).
+
+> **VIS-051 aplicada (cabeceras) / AFR2-20261101-10:** PageHeader con h1 unico por pagina, SectionHeader como h2/h3, Modelos 3D sin vidrio exterior y chips de estado en Control. Tildes no recuperadas por pedido previo (AFR2-20261026-03). Ejecucion No verificada. [Cobertura](coverage-20261101-10.json).
+
+> **VIS-052 aplicada / AFR2-20261101-09:** SegmentedControl unico (ranura y pill por clip-path, 250 ms --ease-in-out, instantaneo con teclado/movimiento reducido) en TaskSections y seis grupos de eleccion; CSS de selectores viejos borrado. Ejecucion No verificada. [Cobertura](coverage-20261101-09.json).
+
+> **VIS-050 aplicada / AFR2-20261101-08:** registro unico de 58 iconos (Lucide ISC + propios del dominio), UiIcon con tamanos 16/20/24 y trazo 1,75; glifos Unicode y SVG sueltos reemplazados, STOP con octagono. Ejecucion No verificada. [Cobertura](coverage-20261101-08.json).
+
+> **VIS-050..VIS-054 / AFR2-20261101-07:** plan visual 01-11, fase 1. Decisiones de iconos (Lucide), escala `--type-*`, espaciado por rol, selector segmentado con `--ease-in-out`, breakpoints 600/840/1200/1600 y barra inferior en celular; `--attention*` y variables sin definir corregidas. Manual 0.1.10 draft autorizado; ejecucion No verificada. [Cobertura](coverage-20261101-07.json).
+
 > **VIS-049 / AFR2-20261101-06:** Protocol Studio es la referencia Confirmada para el acceso y shell del Simulador UI. Tarjeta debajo, ruta propia, cabecera/ayuda/retorno y TaskSections compartidos; composicion Propuesta, ejecucion No verificada. [Cobertura](coverage-20261101-06.json).
 
 > **Aplicacion01-03 / VIS-048:** Modelos 3D adopta cielo/piso de Simulaciones en ambos temas y fichas solidas de componentes. Direccion Confirmada; composicion/tinta Propuestas; ejecucion No verificada. [Cobertura](coverage-20261101-03.json). Sin tests/build/validadores/navegador.

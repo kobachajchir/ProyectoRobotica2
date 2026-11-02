@@ -1,5 +1,7 @@
 # Plan de skill: láminas técnicas de ensambles y piezas
 
+> **02/11/2026 — Ejecucion autorizada por el usuario.** Este texto queda como antecedente de planificacion. Ya existe [skill implementada](../../AutoFinalRobo2-Contracts/.agents/skills/fusion-technical-sheets/SKILL.md) y [primera tanda de13 laminas](../mecanica/brazo-antropomorfo/revision_v17/laminas_20261102/README.md). Composicion final confirmada por referencia: planos izquierda,3D derecha, notas inferiores en bloque propio a la izquierda del rotulo. No significa que todos los planos del brazo esten completos.
+
 Pedido del usuario del 27/10/2026. **Solo planificación:** no generar todavía despieces, láminas de fabricación ni dibujos del brazo. El usuario indicará cuándo empezar y podrá aportar más modelos. Referencia visual recibida: [lámina aportada](../reference/brazo-prototipo/referencia_lamina_tecnica_usuario_20261027.png).
 
 ## Resultado esperado

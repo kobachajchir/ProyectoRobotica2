@@ -113,9 +113,9 @@ export function planMotion(request: MotionRequest): MotionResult {
   const { model, target, from, environment, opening } = request;
   const problems = modelProblems(model);
   if (problems.length) return { ok: false, code: 'model', message: problems.join(' ') };
-  if (!jointsWithin(from, model)) return { ok: false, code: 'limits', message: 'La postura inicial no respeta los limites del modelo.' };
+  if (!jointsWithin(from, model)) return { ok: false, code: 'limits', message: 'La postura inicial no respeta los límites del modelo.' };
   const maxReach = model.joints.reduce((sum, j) => sum + Math.hypot(...j.origin.position), Math.hypot(...model.tcp.position));
-  if (Math.hypot(...target.position) > maxReach + .001) return { ok: false, code: 'range', message: 'Destino fuera de la cota maxima de alcance del modelo.' };
+  if (Math.hypot(...target.position) > maxReach + .001) return { ok: false, code: 'range', message: 'Destino fuera de la cota máxima de alcance del modelo.' };
   const desired = new Quaternion(...target.quaternion).normalize(), weight = .15;
   const seeds = [from, ...(request.taught ? [request.taught] : []), model.initial, model.transport, ...model.seeds];
   let found = false, atLimit = false;
@@ -158,6 +158,6 @@ export function planMotion(request: MotionRequest): MotionResult {
       });
     }
   }
-  return found ? { ok: false, code: 'blocked', message: 'Se encontro postura, pero ningun recorrido admitido por las restricciones aproximadas.' }
-    : { ok: false, code: atLimit ? 'limits' : 'solution', message: atLimit ? 'Busqueda limitada por articulaciones: no se encontro solucion. No demuestra imposibilidad geometrica.' : 'No se encontro solucion numerica para posicion y orientacion. El destino se conserva.' };
+  return found ? { ok: false, code: 'blocked', message: 'Se encontró postura, pero ningún recorrido admitido por las restricciones aproximadas.' }
+    : { ok: false, code: atLimit ? 'limits' : 'solution', message: atLimit ? 'Búsqueda limitada por articulaciones: no se encontró solución. No demuestra imposibilidad geométrica.' : 'No se encontró solución numérica para posición y orientación. El destino se conserva.' };
 }

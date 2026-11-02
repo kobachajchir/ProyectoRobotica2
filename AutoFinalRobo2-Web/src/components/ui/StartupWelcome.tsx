@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type PropsWithChildren } from 'react';
 import { createPortal } from 'react-dom';
 import { AFR2_BRAND_LOGO } from './BrandMark';
+import { UiIcon } from './UiIcon';
 import { useConnection } from '../../features/connection/ConnectionContext';
 
 /** Adapted from ST2026-Radal StartupWelcome (335d3ed): logo readiness,
@@ -42,12 +43,12 @@ export function StartupWelcome({ children }: PropsWithChildren) {
     {visible && createPortal(<dialog ref={dialog} className="afr2-startup" aria-label="Bienvenido a AutoFinalRobo2" data-ready={logoReady}
       onCancel={event => { event.preventDefault(); finish(); }}
       onAnimationEnd={event => { if (event.target === event.currentTarget && event.animationName === 'afr2-startup-veil-out') finish(); }}>
-      {stopAvailable && <div className="afr2-startup__actions"><button type="button" className="afr2-startup__stop" onClick={() => { void triggerEmergencyStop('startup-stop'); finish(); }}>■ STOP</button></div>}
+      {stopAvailable && <div className="afr2-startup__actions"><button type="button" className="afr2-startup__stop" onClick={() => { void triggerEmergencyStop('startup-stop'); finish(); }}><UiIcon name="stop" /> STOP</button></div>}
       <div className="afr2-startup__logo"><img ref={logo} src={AFR2_BRAND_LOGO} alt="" width="1024" height="768" loading="eager" fetchPriority="high" decoding="async"
         onLoad={event => prepareLogo(event.currentTarget)} onError={finish} />
-        <h1 className="afr2-startup__title">Final Robotica 2</h1>
+        <h2 className="afr2-startup__title">Final Robotica 2</h2>
       </div>
-      <button type="button" autoFocus className="afr2-startup__skip" onClick={finish}>Omitir introduccion <span aria-hidden="true">· Esc</span></button>
+      <button type="button" autoFocus className="afr2-startup__skip" onClick={finish}>Omitir introducción <span aria-hidden="true">· Esc</span></button>
     </dialog>, document.body)}
   </>;
 }

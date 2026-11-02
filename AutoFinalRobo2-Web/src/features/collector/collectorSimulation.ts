@@ -11,7 +11,7 @@ export type Phase = 'idle' | 'prepare' | 'scan' | 'approach' | 'remeasure' | 'pr
 export const PHASE_LABELS: Record<Phase, string> = {
   idle: 'En espera', prepare: 'Preparando el robot', scan: 'Explorando', approach: 'Aproximando', remeasure: 'Midiendo de nuevo',
   pregrasp: 'Preparando toma', grasp: 'Agarrando', lift: 'Levantando', deposit: 'Llevando al deposito',
-  release: 'Depositando', stow: 'Recogiendo brazo', complete: 'Recorrido terminado', fault: 'Intervencion necesaria',
+  release: 'Depositando', stow: 'Recogiendo brazo', complete: 'Recorrido terminado', fault: 'Intervención necesaria',
 };
 export const BIN = { center: [.1775, -.13, .13] as Point3, width: .118, length: .118, rim: .19 };
 export const BIN_SLOTS: Point3[] = [[.15, -.1025, .155], [.205, -.1025, .155], [.15, -.1575, .155], [.205, -.1575, .155]];
@@ -56,13 +56,13 @@ export function initialCollector(seed = 42, count = 6): CollectorState {
     wheels: ZERO(), wheelAngles: ZERO(), cubes: generateCubes(seed, count), seed, requestedCount: count,
     sensorAngle: 0, sensorHeight: .045, scanning: false, scanDirection: 1,
     echoes: [], reading: null, clock: 0, sampleDue: 0, scanComplete: false,
-    phase: 'idle', running: false, detail: 'Selecciona el robot o el brazo para empezar.', elapsed: 0,
+    phase: 'idle', running: false, detail: 'Seleccioná el robot o el brazo para empezar.', elapsed: 0,
     target: null, jointTarget: null, jointQueue: [], environment: 'mounted', singleTarget: false,
     stored: 0, selected: 'robot', selectedJoint: 0, references: false, workspace: true, pointRun: null, motionEpoch: 0,
     rigIssue: robotModel().visual.kind === 'gltf' ? 'Cargando y vinculando el rig del brazo.' : null,
   };
 }
-export function halt(s: CollectorState, detail = 'Simulacion detenida. Posiciones conservadas.'): CollectorState {
+export function halt(s: CollectorState, detail = 'Simulación detenida. Posiciones conservadas.'): CollectorState {
   return { ...s, wheels: ZERO(), scanning: false, running: false, jointTarget: null, jointQueue: [], pointRun: null, motionEpoch: s.motionEpoch + 1, phase: 'idle', elapsed: 0, detail };
 }
 function fail(s: CollectorState, detail: string): CollectorState {
@@ -79,7 +79,7 @@ export function startCollection(s: CollectorState): CollectorState {
   if (s.rigIssue || s.jointTarget || s.scanning || Object.values(s.wheels).some(v => v !== 0) || modelProblems(robotModel()).length) return s;
   if (s.cubes.some(c => c.location === 'gripper')) return fail(s, 'Hay un cubo sujeto. Depositalo antes de comenzar.');
   if (s.stored >= BIN_SLOTS.length) return fail(s, 'Deposito lleno. Genera otra escena para vaciarlo.');
-  if (s.cubes.every(c => c.location !== 'floor')) return { ...s, running: false, phase: 'complete', detail: 'Todos los cubos estan guardados.' };
+  if (s.cubes.every(c => c.location !== 'floor')) return { ...s, running: false, phase: 'complete', detail: 'Todos los cubos están guardados.' };
   return scheduleArm({ ...transition(s, 'stow', 'Preparando la postura de transporte.'), running: true,
     singleTarget: false, environment: 'mounted' }, TRANSPORT);
 }
@@ -133,7 +133,7 @@ export function moveBase(s: CollectorState, x: number, y: number, yaw = s.pose.y
 export function setManualWheels(s: CollectorState, wheels: RobotWheelValues): CollectorState {
   if (s.running || s.scanning || s.jointTarget || s.cubes.some(c => c.location === 'gripper')) return s;
   if (s.joints.some((v, i) => Math.abs(v - TRANSPORT[i]) > 3)) return { ...s, detail: 'Recoge el brazo a Transporte antes de mover la base.' };
-  return { ...s, wheels, detail: 'Movimiento local de ruedas. Solta el control para detener.' };
+  return { ...s, wheels, detail: 'Movimiento local de ruedas. Soltá el control para detener.' };
 }
 export function driveVector(vx: number, vy: number, wz: number) {
   return inverseMecanumKinematics(vx * 1000, vy * 1000, wz * 1000, 220);
@@ -144,7 +144,7 @@ export function setJoint(s: CollectorState, index: number, value: number): Colle
   if (!JOINTS[index] || !Number.isFinite(value)) return s;
   const joints = [...s.joints] as ArmAngles;
   joints[index] = clamp(value, JOINTS[index].min, JOINTS[index].max);
-  if (!armPath(s.joints, joints, s.environment)) return { ...s, detail: 'Limite del entorno: ajusta otro eje o recoge el brazo.' };
+  if (!armPath(s.joints, joints, s.environment)) return { ...s, detail: 'Límite del entorno: ajusta otro eje o recoge el brazo.' };
   return syncAttachments({ ...s, joints, selectedJoint: index, detail: 'Postura del brazo actualizada en el simulador.' });
 }
 function alignGripper(q: ArmAngles, yaw: number): ArmAngles {
@@ -155,7 +155,7 @@ function alignGripper(q: ArmAngles, yaw: number): ArmAngles {
 }
 function scheduleArm(s: CollectorState, joints: ArmAngles): CollectorState {
   const route = armRoute(s.joints, joints, s.environment);
-  if (!route) return fail(s, 'Trayectoria del brazo bloqueada por el entorno. Ajusta la posicion del robot.');
+  if (!route) return fail(s, 'Trayectoria del brazo bloqueada por el entorno. Ajusta la posición del robot.');
   return { ...s, jointTarget: route[0], jointQueue: route.slice(1) };
 }
 export function moveArmTo(s: CollectorState, joints: ArmAngles): CollectorState {
@@ -164,7 +164,7 @@ export function moveArmTo(s: CollectorState, joints: ArmAngles): CollectorState 
 }
 function beginArm(s: CollectorState, point: Point3, phase: Phase, detail: string): CollectorState {
   const solution = inverseDownward(point);
-  if (!solution) return fail(s, 'Toma sin solucion en la rama vertical del modelo activo.');
+  if (!solution) return fail(s, 'Toma sin solución en la rama vertical del modelo activo.');
   const joints = alignGripper(solution, s.pose.yaw);
   return scheduleArm(transition(s, phase, detail), joints);
 }
@@ -184,7 +184,7 @@ function beginTarget(s: CollectorState): CollectorState {
 export function collectCube(s: CollectorState, id: number): CollectorState {
   if (s.running || s.scanning || s.jointTarget || ROBOT_WHEEL_KEYS.some(k => s.wheels[k] !== 0)) return s;
   const cube = s.cubes.find(c => c.id === id && c.location === 'floor');
-  if (!cube) return fail(s, 'Selecciona un cubo del suelo.');
+  if (!cube) return fail(s, 'Seleccioná un cubo del suelo.');
   if (s.stored >= BIN_SLOTS.length) return fail(s, 'Deposito lleno.');
   if (s.cubes.some(c => c.location === 'gripper')) return fail(s, 'Primero deposita el cubo sujeto.');
   const next: CollectorState = { ...s, target: [...cube.point], selected: `cube:${id}`, singleTarget: true,
@@ -199,12 +199,12 @@ export function positionCube(s: CollectorState, id: number, point: Point3): Coll
   if (!point.every(Number.isFinite) || Math.abs(point[0]) > 2 || Math.abs(point[1]) > 2) return s;
   const p: Point3 = [point[0], point[1], .025];
   if (s.cubes.some(c => c.id !== id && c.location === 'floor' && Math.abs(c.point[0] - p[0]) < .06 && Math.abs(c.point[1] - p[1]) < .06)) {
-    return { ...s, detail: 'Esa posicion se superpone con otro cubo.' };
+    return { ...s, detail: 'Esa posición se superpone con otro cubo.' };
   }
   if (!cube && s.cubes.length >= 24) return { ...s, detail: 'La escena admite hasta 24 cubos.' };
   const cubes: Cube[] = cube ? s.cubes.map(c => c.id === id ? { ...c, point: p } : c) : [...s.cubes, { id, point: p, location: 'floor' }];
-  if (!baseClear({ ...s, cubes }, s.pose)) return { ...s, detail: 'La posicion del cubo invade el robot.' };
-  return { ...s, cubes, selected: `cube:${id}`, echoes: [], reading: null, detail: 'Posicion del cubo actualizada.' };
+  if (!baseClear({ ...s, cubes }, s.pose)) return { ...s, detail: 'La posición del cubo invade el robot.' };
+  return { ...s, cubes, selected: `cube:${id}`, echoes: [], reading: null, detail: 'Posición del cubo actualizada.' };
 }
 export function manualGrasp(s: CollectorState): CollectorState {
   if (s.running || s.scanning || s.jointTarget || ROBOT_WHEEL_KEYS.some(k => s.wheels[k] !== 0)) return s;
@@ -213,7 +213,7 @@ export function manualGrasp(s: CollectorState): CollectorState {
   // Scene truth is used here only as contact physics, never as mission input.
   const cube = s.cubes.find(c => c.location === 'floor' && Math.hypot(...c.point.map((v, i) => v - tcp[i])) < .025);
   if (!cube) return { ...s, opening: 50, detail: 'Agarre fallido: no hay un cubo centrado entre las mordazas.' };
-  return { ...s, opening: 50, cubes: s.cubes.map(c => c.id === cube.id ? { ...c, location: 'gripper', point: tcp } : c), detail: 'Cubo sujeto en la simulacion.' };
+  return { ...s, opening: 50, cubes: s.cubes.map(c => c.id === cube.id ? { ...c, location: 'gripper', point: tcp } : c), detail: 'Cubo sujeto en la simulación.' };
 }
 export function manualRelease(s: CollectorState): CollectorState {
   if (s.running || s.pointRun) return s;
@@ -250,8 +250,8 @@ export function tickCollector(previous: CollectorState, dt: number): CollectorSt
     s = { ...s, joints, jointTarget: done ? s.jointQueue[0] ?? null : target, jointQueue: done ? s.jointQueue.slice(1) : s.jointQueue };
     if (s.pointRun && !s.jointTarget) {
       const opening = s.pointRun.finishOpening ?? s.opening;
-      if (!clearOpening(s.joints, s.opening, opening, s.pointRun.environment)) return fail(s, 'La apertura final invade una restriccion del modelo.');
-      s = { ...s, opening, pointRun: null, detail: 'Destino alcanzado en el simulador. Postura y orientacion recuperadas.' };
+      if (!clearOpening(s.joints, s.opening, opening, s.pointRun.environment)) return fail(s, 'La apertura final invade una restricción del modelo.');
+      s = { ...s, opening, pointRun: null, detail: 'Destino alcanzado en el simulador. Postura y orientación recuperadas.' };
     }
   }
   if (s.running) {
@@ -261,7 +261,7 @@ export function tickCollector(previous: CollectorState, dt: number): CollectorSt
         if (!s.scanComplete) break;
         const candidates = s.echoes.filter(e => e.point !== null && e.distance !== null).sort((a, b) => a.distance! - b.distance!);
         const echo = candidates[0];
-        if (!echo?.point) return fail(s, 'Objetivo perdido: el barrido no encontro candidatos. Reubica el robot o cambia la escena.');
+        if (!echo?.point) return fail(s, 'Objetivo perdido: el barrido no encontró candidatos. Reubicá el robot o cambia la escena.');
         const theta = s.pose.yaw + rad(echo.angle);
         const target: Point3 = [echo.point[0] + .025 * Math.cos(theta), echo.point[1] + .025 * Math.sin(theta), .025];
         s = beginTarget({ ...s, target, sensorAngle: 0, reading: null });
@@ -301,7 +301,7 @@ export function tickCollector(previous: CollectorState, dt: number): CollectorSt
       case 'grasp':
         if (!s.jointTarget) {
           s = manualGrasp({ ...s, running: false });
-          if (!s.cubes.some(c => c.location === 'gripper')) return fail(s, 'Agarre fallido: la estimacion por eco no centro el cubo.');
+          if (!s.cubes.some(c => c.location === 'gripper')) return fail(s, 'Agarre fallido: la estimación por eco no centro el cubo.');
           const tcp = forwardArm(s.joints).tcp;
           s = beginArm({ ...s, running: true }, [tcp[0], tcp[1], .215], 'lift', 'Levantando el cubo sobre el borde del deposito.');
         }
@@ -311,15 +311,15 @@ export function tickCollector(previous: CollectorState, dt: number): CollectorSt
       case 'release':
         if (s.elapsed >= .4) {
           const released = manualRelease({ ...s, running: false });
-          if (released.stored === s.stored) return fail(s, 'No se pudo depositar: la celda no esta alineada.');
-          s = scheduleArm({ ...transition(released, 'stow', 'Recogiendo el brazo antes del proximo movimiento.'), running: true }, TRANSPORT);
+          if (released.stored === s.stored) return fail(s, 'No se pudo depositar: la celda no está alineada.');
+          s = scheduleArm({ ...transition(released, 'stow', 'Recogiendo el brazo antes del próximo movimiento.'), running: true }, TRANSPORT);
         }
         break;
       case 'stow':
         if (!s.jointTarget) {
-          if (s.singleTarget) return { ...s, running: false, phase: 'complete', detail: 'Cubo guardado. Selecciona el siguiente objetivo.' };
-          if (s.cubes.every(c => c.location !== 'floor')) return { ...s, running: false, phase: 'complete', detail: 'Todos los cubos estan guardados.' };
-          if (s.stored >= BIN_SLOTS.length) return fail(s, 'Deposito lleno. Se detuvo la recoleccion.');
+          if (s.singleTarget) return { ...s, running: false, phase: 'complete', detail: 'Cubo guardado. Seleccioná el siguiente objetivo.' };
+          if (s.cubes.every(c => c.location !== 'floor')) return { ...s, running: false, phase: 'complete', detail: 'Todos los cubos están guardados.' };
+          if (s.stored >= BIN_SLOTS.length) return fail(s, 'Deposito lleno. Se detuvo la recolección.');
           s = startScan(s);
         }
         break;
@@ -331,7 +331,7 @@ export function tickCollector(previous: CollectorState, dt: number): CollectorSt
     const pose = { x: s.pose.x + (Math.cos(yaw) * v.vxMmS - Math.sin(yaw) * v.vyMmS) / 1000 * dt,
       y: s.pose.y + (Math.sin(yaw) * v.vxMmS + Math.cos(yaw) * v.vyMmS) / 1000 * dt,
       yaw: Math.atan2(Math.sin(yaw + v.wzMradS / 1000 * dt), Math.cos(yaw + v.wzMradS / 1000 * dt)) };
-    if (!baseClear(s, pose)) return fail(s, 'Trayectoria bloqueada: cubo o limite del escenario.');
+    if (!baseClear(s, pose)) return fail(s, 'Trayectoria bloqueada: cubo o límite del escenario.');
     s.pose = pose;
     s.wheelAngles = { ...s.wheelAngles };
     for (const key of ROBOT_WHEEL_KEYS) s.wheelAngles[key] += s.wheels[key] / 40 * dt;

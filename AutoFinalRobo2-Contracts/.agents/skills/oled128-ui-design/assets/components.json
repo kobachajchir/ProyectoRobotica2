@@ -1,0 +1,115 @@
+{
+  "schema": "oled128-components-1",
+  "profile": "OLED128-5",
+  "status": "diagrammed-not-integrated-unvalidated",
+  "tokens": {
+    "width": 128, "height": 64, "edge": 2, "iconGap": 4,
+    "headerHeight": 14, "footerY": 50, "footerHeight": 14,
+    "headerIconBox": 14, "footerIconBox": 14, "rowHeight": 16,
+    "bodyFont": [7, 10, 7], "miniFont": [3, 5, 4], "stroke": 1,
+    "progressWidth": 124, "progressHeight": 8, "progressInset": 2,
+    "sensorFrame": [0, 14, 128, 36], "sensorIdY": 16,
+    "sensorBarY": 24, "sensorBarHeight": 16, "sensorValueY": 43,
+    "headerStyle": "inverse-band", "panelChamfer": 2,
+    "metricNumerals": [5, 7, 6, 2],
+    "dashboardBodyY": 17, "dashboardBodyHeight": 32, "dashboardPanelGap": 4,
+    "dashboardHeroWidth": 76, "dashboardSecondaryWidth": 48,
+    "quickCardY": 16, "quickCardHeight": 34, "quickRowHeight": 16,
+    "quickRowIconBox": 12, "quickRowIconX": 6, "quickRowTextX": 22,
+    "quickFocusX": 3, "quickFocusWidth": 122, "quickFocusHeight": 14
+  },
+  "icons": {
+    "input.encoder": "Icon_Encoder_bits", "input.encoder.long": "Icon_EncoderLong_bits", "nav.back": "Icon_Volver_bits",
+    "actuator.servo": "Icon_Servo_bits", "system.core": "Icon_Config_bits",
+    "actuator.motor": "Icon_Motor_bits", "sensor.group": "Icon_Sensors_bits",
+    "sensor.radar": "Icon_Radar_bits", "network.wifi": "Icon_Wifi_bits",
+    "network.ap": "Icon_APWifi_bits", "network.link": "Icon_Link_bits",
+    "status.info": "Icon_Info_bits", "status.warning": "Icon_OperationWarning_bits",
+    "action.refresh": "Icon_Refrescar_bits", "tool.calibration": "Icon_Tool_bits",
+    "device.phone": "Icon_Smartphone_bits", "storage.preferences": "Icon_Prefs_bits"
+  },
+  "iconAliases": { "system.settings": "system.core" },
+  "navigation": {
+    "short": { "visual": ["input.encoder", "OK"], "action": "confirm" },
+    "long": { "visual": ["input.encoder.long", "nav.back"], "action": "parent", "thresholdMs": 800, "symbol": "internal-L" },
+    "releaseAfterLong": "none",
+    "root": { "short": "open-main", "long": "none" },
+    "currentAfr2Firmware": "legacy-long-opens-main-not-migrated"
+  },
+  "components": [
+    { "id": "Icon", "props": ["semanticId", "box", "state"] },
+    { "id": "IconLabel", "props": ["semanticId", "text", "gap", "centerY"] },
+    { "id": "IconPair", "props": ["left", "right", "gap", "centerY"] },
+    { "id": "Header", "props": ["sectionIcon", "title", "pageIndex", "pageCount"] },
+    { "id": "EncoderHint", "props": ["gesture", "action", "available"] },
+    { "id": "NavigationFooter", "props": ["showOK", "showBack"] },
+    { "id": "MenuRow", "props": ["icon", "label", "focused", "available", "scrollOffset"] },
+    { "id": "ScrollMenu", "props": ["items", "selection", "firstVisible", "variant"] },
+    { "id": "PageDeck", "props": ["pages", "pageId", "parentContext"] },
+    { "id": "CardCounter", "props": ["cardIndex", "cardCount"] },
+    { "id": "QuickActionRow", "props": ["actionId", "icon", "label", "focused", "available"] },
+    { "id": "QuickActionCard", "props": ["cardId", "title", "sectionIcon", "actions", "selection", "firstVisible"] },
+    { "id": "QuickActionDeck", "props": ["cards", "cardId", "actionId", "parentContext"] },
+    { "id": "QrBitmap", "props": ["content", "version", "ecc", "modulePixels", "quietModules", "polarity"] },
+    { "id": "QrScreen", "props": ["bitmap", "title", "lines", "parentContext"] },
+    { "id": "Metric", "props": ["icon", "value", "unit", "validity"] },
+    { "id": "MetricPanel", "props": ["value", "unit", "emphasis", "validity"] },
+    { "id": "StatusPanel", "props": ["icon", "state", "label", "emphasis"] },
+    { "id": "Dashboard", "props": ["sectionIcon", "title", "panels", "pageIndex", "pageCount"] },
+    { "id": "ProgressBar", "props": ["mode", "fraction", "phase", "state"] },
+    { "id": "SensorBar", "props": ["channel", "value", "range", "validity"] },
+    { "id": "SensorBarGroup", "props": ["channels", "sharedRange", "sharedUnit", "variant"] },
+    { "id": "Notice", "props": ["icon", "title", "detail", "state"] }
+  ],
+  "sensorGroups": {
+    "maxSimultaneous": 8,
+    "defaultPagination": false,
+    "cellOrder": ["channel-number", "vertical-bar", "numeric-value"],
+    "compactNumericMaxDigits": 4,
+    "miniDigitsSource": "AutoMicro reference OLED_MiniGlyphRow, oled_utils.c",
+    "barWidthRule": "min(12,floor(124/N)-6)"
+  },
+  "quickActions": {
+    "indicator": "numeric-current-over-total",
+    "indicatorPosition": "header-right-above-card",
+    "dots": false,
+    "focus": "inverse-filled-row",
+    "visibleRows": 2,
+    "rotate": "select-action-then-adjacent-card-at-group-boundary",
+    "short": "invoke-focused-action-only",
+    "long": "return-parent-context",
+    "cards": [
+      { "id": "quick.motor", "title": "Motor", "icon": "actuator.motor", "actions": [
+        { "id": "motor.forward", "label": "Adelante", "icon": "actuator.motor" },
+        { "id": "motor.stop", "label": "Detener", "icon": "actuator.motor" }
+      ] },
+      { "id": "quick.servo", "title": "Servo", "icon": "actuator.servo", "actions": [
+        { "id": "servo.center", "label": "Centrar", "icon": "actuator.servo" },
+        { "id": "servo.disable", "label": "Desactivar", "icon": "actuator.servo" }
+      ] },
+      { "id": "quick.wifi", "title": "Wi-Fi", "icon": "network.wifi", "actions": [
+        { "id": "wifi.status", "label": "Actualizar", "icon": "network.wifi" },
+        { "id": "wifi.scan", "label": "Buscar red", "icon": "network.wifi" }
+      ] }
+    ]
+  },
+  "qr": {
+    "symbol": "QR-Code-Model-2", "box": [62, 62], "placement": [1, 1],
+    "quietModulesPerSide": 4, "defaultMinModulePixels": 2,
+    "denseMinModulePixels": 1, "defaultEcc": "M",
+    "eccBoostWithinSameVersion": true, "automaticCapacityDowngrade": false,
+    "textColumn": [67, 0, 60, 64], "maximumSideLabelCharacters": 8,
+    "foreground": "dark-off", "background": "light-on",
+    "header": "side-column-only", "footer": "side-column-only",
+    "formats": ["PNG", "row-LSB-lit-bitmap-C", "vertical-page-LSB-framebuffer-C", "JSON-metadata"],
+    "scanningStatus": "not-tested-on-phone-or-physical-OLED"
+  },
+  "loading": { "unknownPercentageLabel": null, "determinateOnlyShowsPercentage": true },
+  "dashboard": {
+    "maxPanels": 2,
+    "variants": ["paired-status", "hero-metric"],
+    "header": "inverse-band", "frame": "chamfered-1px",
+    "emphasisMeaning": "visual-hierarchy-not-selection-or-enabled-state",
+    "inspiration": "User-supplied server-monitor image; use hierarchy and contrast, not its information density."
+  }
+}

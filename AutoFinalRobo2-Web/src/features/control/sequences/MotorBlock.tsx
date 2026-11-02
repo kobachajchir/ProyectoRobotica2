@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { ChassisSpinGraphic } from '../ChassisSpinGraphic';
+import { UiIcon } from '../../../components/ui/UiIcon';
 import type { MovementBlockKind, WheelBlockKind } from './sequenceTypes';
 
 export interface TimelineVisualBlock {
@@ -10,7 +11,7 @@ export interface TimelineVisualBlock {
   summary: string;
   /** Para bloques de giro ('pivot'): sentido del giro sobre el eje. */
   pivotDirection?: 'ccw' | 'cw';
-  /** Para rampas: proporcion inicial/final (-1..1) para dibujar el trapecio. */
+  /** Para rampas: proporción inicial/final (-1..1) para dibujar el trapecio. */
   rampFromRatio?: number;
   rampToRatio?: number;
   /** Para curva ('curve'): lado izquierdo o derecho. */
@@ -45,9 +46,9 @@ function StopTerminalGlyph() {
 }
 
 /**
- * Bloque visual de linea de tiempo adaptado de `reference/web/src/components/MotorBlock.tsx` (AFR2-20261023-21 / VIS-018).
- * - Superficie solida, acento carmesi/rubi en seleccion y reproduccion, sin dependencias de PIN o balance.
- * - Incluye simbolo `ChassisSpinGraphic` para bloques de giro sobre el eje (`pivot`), trapecio SVG para `ramp`
+ * Bloque visual de línea de tiempo adaptado de `reference/web/src/components/MotorBlock.tsx` (AFR2-20261023-21 / VIS-018).
+ * - Superficie sólida, acento carmesí/rubí en selección y reproducción, sin dependencias de PIN o balance.
+ * - Incluye símbolo `ChassisSpinGraphic` para bloques de giro sobre el eje (`pivot`), trapecio SVG para `ramp`
  *   y glifo terminal para `finish`.
  */
 export function MotorBlock({
@@ -147,7 +148,7 @@ export function MotorBlock({
         </svg>
       )}
 
-      {/* Barra de progreso en reproduccion */}
+      {/* Barra de progreso en reproducción */}
       {active && !isFinish && (
         <div
           className="pointer-events-none absolute inset-y-0 left-0 bg-[var(--action)]/20 transition-none"
@@ -169,12 +170,12 @@ export function MotorBlock({
           {isFinish && <StopTerminalGlyph />}
           {isCurve && (
             <span className="inline-flex h-5 w-5 items-center justify-center rounded-xs bg-[var(--surface-subtle)] text-xs font-mono font-bold text-[var(--action)] shrink-0" aria-hidden="true">
-              {block.arcSide === 'right' ? '↷' : '↶'}
+              <UiIcon name={block.arcSide === 'right' ? 'rotate-cw' : 'rotate-ccw'} size={16} />
             </span>
           )}
           {isWait && (
             <span className="inline-flex h-5 w-5 items-center justify-center rounded-xs bg-[var(--surface-subtle)] text-[11px] font-mono text-[var(--text-muted)] shrink-0" aria-hidden="true">
-              ⏸
+              <UiIcon name="pause" size={16} />
             </span>
           )}
 

@@ -1,3 +1,4 @@
+import { componentHeader,componentPanel,componentMini } from './oledComponents';
 import { gestureHint } from './firmwareHints';
 /* AFR2-20261029-27: quick controls/radar/PWM/WS integration; prior authors retained. */
 /** Literal integer-layout port of afr2_sensor_screens.c; prepared data only. */
@@ -69,12 +70,12 @@ export function renderSensorScreen(o:Afr2OledBuffer,node:number,h:FirmwareSensor
     txt(0,0,'Distancia <2/2');txt(0,14,h?.latest.id && !h.latest.error?`${h.latest.distanceMm} mm`:'Distancia: --');
     if(h){txt(0,27,h.enabled?`Ang ${String(h.angle).padStart(3,'0')} PWM ${h.pulseUs}`:'Ang -- PWM 0');txt(0,39,`Eco ${h.latest.error} Edad ${h.latest.id?(h.nowMs-h.latest.ms)>>>0:0}ms`);}gestureHint(o,0,53,false,'Opciones');return;
   }
-  txt(0,0,node===S.AFR2_N_LINE_VIEW?'IR linea 1/2>':'IR valores <2/2');
+  if(node===S.AFR2_N_LINE_VIEW)componentHeader(o,S.AFR2_ICON_SENSORS,'Sensores IR',1,2);else txt(0,0,'IR valores <2/2');
   if(!ir.valid){txt(0,25,ir.kind?'Esperando IR':'IR deshabilitado');backHint(o);return;}
-  if(node===S.AFR2_N_LINE_VIEW)for(let i=0;i<5;i++){
-    const x=8+24*i;o.drawRect(x,14,14,28);const height=Math.min(24,T(ir.raw[i]*24/(ir.kind===1?1:1023)));o.fillRect(x+2,40-height,10,height);
-    smallText(o,x+7,43,String(ir.raw[i]).slice(0,4));
-  }
+  if(node===S.AFR2_N_LINE_VIEW){componentPanel(o,0,15,128,35);for(let i=0;i<5;i++){
+    const center=15+24*i;componentMini(o,center-1,17,i+1);o.drawRect(center-6,24,12,16);
+    const height=Math.min(12,T(ir.raw[i]*12/(ir.kind===1?1:1023)));o.fillRect(center-4,38-height,8,height);smallText(o,center,43,String(ir.raw[i]).slice(0,4));
+  }}
   else for(let i=0;i<5;i++)txt(i<4?(i%2)*64:43,i<4?14+T(i/2)*12:38,`${i+1}:${String(ir.raw[i]).padStart(4,' ')}`);
   backHint(o);
 }

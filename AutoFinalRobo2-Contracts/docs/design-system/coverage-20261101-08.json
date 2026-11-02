@@ -1,0 +1,23 @@
+{
+  "changeId": "AFR2-20261101-08",
+  "decisionId": "VIS-050",
+  "mode": "APLICAR",
+  "manualVersion": "0.1.10",
+  "authorization": "Pedido explicito: continuar con la fase 2 del plan visual; Lucide como opcion por defecto autorizada en la fase 1.",
+  "canonicalSources": ["docs/design-system/decisions.md#vis-050", "Web/src/components/ui/icons/registry.ts"],
+  "supporting": ["lucide-static@0.460.0 (ISC)", "UiIcon", "Button.icon"],
+  "confirmed": ["Fase 2 del plan", "Familia Lucide", "Revision OLED como fase 7"],
+  "observed": ["Glifos Unicode como icono en STOP, pad, GOTO, editor, toasts, Desarrollador y Wi-Fi", "SVG sueltos en bateria, senal, toasts, refrescar, tactil, chevrons, candado y papelera"],
+  "proposed": ["Iconos propios arm/servo/wheel/antenna/screen/encoder/battery en grilla 24", "Bateria sin lectura con raya", "Senal Wi-Fi por iconos de nivel", "touch para Control tactil"],
+  "targets": ["registry.ts", "UiIcon.tsx", "Chevron.tsx", "FloatingModal.tsx", "StartupWelcome.tsx", "RouteNav.tsx", "notify.tsx", "MecanumDrivePad.tsx", "BatteryStatus.tsx", "NetworkConnection.tsx", "SystemPanel.tsx", "ControlPage.tsx", "GotoCommandList.tsx", "MotorBlock.tsx", "SequenceEditorPanel.tsx", "DeveloperPage.tsx", "modelComponents.ts", "EncoderControl.tsx", "MenuSideControls.tsx", "CaptureInspector.tsx", "WifiPage.tsx", "startup.css"],
+  "exceptions": ["Flechas y signo por en texto corrido", "Graficos no iconicos (estela, mapa, giro, guias 3D)", "EncoderGlyph y bitmaps OLED"],
+  "themes": ["light", "dark"],
+  "sourceImplemented": true,
+  "runtimeVerification": "No verificada",
+  "tests": false,
+  "build": false,
+  "validators": false,
+  "browser": false,
+  "hardware": false,
+  "packagesPromoted": false
+}

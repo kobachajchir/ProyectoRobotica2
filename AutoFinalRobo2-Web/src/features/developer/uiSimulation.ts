@@ -296,7 +296,7 @@ export function reduceUiSimulation(previous:UiSimulation,event:SimulationEvent):
   if(long){goBack(u);return u;}
   if(u.notice){if(click)dismiss(u);return u;}
   if(u.node===S.AFR2_N_HOME){if(click)open(u,S.AFR2_N_MENU);return u;}
-  if(u.node===S.AFR2_N_WIFI_DATA){if(click)goBack(u);return u;}
+  if(u.node===S.AFR2_N_WIFI_DATA || u.node===S.AFR2_N_QR_AP || u.node===S.AFR2_N_QR_WEB){if(click)goBack(u);return u;}
   if([S.AFR2_N_NETWORK,S.AFR2_N_CAPS,S.AFR2_N_WIFI_MODE_SELECT].includes(u.node)){
     if(rotation)u.selection=limit(u.selection+rotation,0,u.node===S.AFR2_N_NETWORK?1:u.node===S.AFR2_N_CAPS?5:2);
     if(click){if(u.node===S.AFR2_N_WIFI_MODE_SELECT){if(invoke(u,actionItem(92),u.selection+1))notify(u,'Esperando ESP',false,'Cambiar modo',1500);}else goBack(u);}return u;
@@ -400,7 +400,7 @@ export function simulationSnapshot(u: UiSimulation): FirmwareSnapshot {
     sequenceIndex: Math.min(2, Math.floor((u.clockMs - u.scrollStartedMs) / 3000)),
     sequenceKind: Math.min(2, Math.floor((u.clockMs - u.scrollStartedMs) / 3000)),
     sequenceDurationMs: 3000, sequenceElapsedMs: (u.clockMs - u.scrollStartedMs) % 3000,
-    networkValid: true, networkSta: u.connected && v[S.AFR2_A_WIFI_MODE] !== 2, networkAp: v[S.AFR2_A_WIFI_MODE] !== 1,
+    networkServer: ready,qrAllowed:u.stopped && !u.radar,networkValid: ready, networkSta: u.connected && v[S.AFR2_A_WIFI_MODE] !== 2, networkAp: v[S.AFR2_A_WIFI_MODE] !== 1,
     networkSsid: u.draftSsid, networkApSsid: 'AFR2-DEMO', networkPassword: 'demo1234', networkIp: '192.0.2.2', networkApIp: '192.0.2.1',
     irRaw: ready ? [180, 320, 850, 300, 160].map(raw => v[S.AFR2_A_LINE_KIND] === 1 ? Number(raw > 512) : raw) : [],
     irKind: v[S.AFR2_A_LINE_KIND], irValid: ready && v[S.AFR2_A_LINE_KIND] !== 0, lineValid: ready && u.lineCalibrated,

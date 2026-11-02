@@ -93,7 +93,7 @@ export function LiveOledViewer({ active = true }: { active?: boolean }) {
         setUnavailable(false);
         setActionFeedback({
           tone: 'loading',
-          message: 'Sincronizando pantalla y seleccion actual desde el ATmega2560…',
+          message: 'Sincronizando pantalla y selección actual desde el ATmega2560…',
         });
       }
       setLoading(true);
@@ -103,7 +103,7 @@ export function LiveOledViewer({ active = true }: { active?: boolean }) {
           const res = await requestCommand<Record<string, unknown>>('robot.screen.get', {}, 2500);
           if (currentSession !== sessionRef.current) return;
           if (res.status !== 'completed') {
-            setErrorMessage('El controlador acepto la consulta sin entregar captura final.');
+            setErrorMessage('El controlador aceptó la consulta sin entregar captura final.');
             if (manual) {
               setActionFeedback({
                 tone: 'error',
@@ -191,21 +191,21 @@ export function LiveOledViewer({ active = true }: { active?: boolean }) {
 
     try {
       const initial = latestSnapshot.current;
-      if (!initial || !observed || initial.revision !== observed.revision || initial.screenCode !== observed.screenCode || initial.selection !== observed.selection || initial.firstVisible !== observed.firstVisible) throw new Error('La captura cambio antes de la entrada. Revisala antes de continuar.');
+      if (!initial || !observed || initial.revision !== observed.revision || initial.screenCode !== observed.screenCode || initial.selection !== observed.selection || initial.firstVisible !== observed.firstVisible) throw new Error('La captura cambió antes de la entrada. Revisala antes de continuar.');
       for (let step = 0; step < Math.min(3, steps); step++) {
         if (currentSession !== sessionRef.current || epoch !== inputEpoch.current || document.visibilityState !== 'visible') return;
         const before = latestSnapshot.current;
         if (!before || before.revision === null || Date.now() - before.receivedAtMs > STALE_SNAPSHOT_MS) throw new Error('Se necesita una captura nueva antes de continuar.');
         const res = await requestCommand<Record<string, unknown>>('robot.ui.action', { action, delta, revision: before.revision }, 2000);
         if (currentSession !== sessionRef.current) return;
-        if (res.status !== 'completed') throw new Error('Accion aceptada sin confirmacion final del controlador.');
+        if (res.status !== 'completed') throw new Error('Acción aceptada sin confirmación final del controlador.');
         await fetchSnapshot(false, true);
         if (currentSession !== sessionRef.current || epoch !== inputEpoch.current) return;
         const after = latestSnapshot.current as RemoteOledSnapshot | null;
-        if (!after) throw new Error('No llego una captura posterior a la accion.');
+        if (!after) throw new Error('No llegó una captura posterior a la acción.');
         if (action === 'rotate' && steps > 1) {
           const count = before.itemCount ?? getScreenMetadata(before.screenCode)?.itemCount;
-          if (after.screenCode !== before.screenCode || !count || after.selection !== (before.selection + delta + count) % count) throw new Error('Cambio la pantalla o la seleccion durante el desplazamiento. Revisa la captura antes de continuar.');
+          if (after.screenCode !== before.screenCode || !count || after.selection !== (before.selection + delta + count) % count) throw new Error('Cambió la pantalla o la selección durante el desplazamiento. Revisá la captura antes de continuar.');
         }
       }
       setActionFeedback({
@@ -222,7 +222,7 @@ export function LiveOledViewer({ active = true }: { active?: boolean }) {
     } finally {
       if (currentSession === sessionRef.current) {
         actionLockRef.current = false; setActionPending(false); setPollRevision(value => value + 1);
-        if (epoch !== inputEpoch.current) setActionFeedback({ tone: 'neutral', message: 'Interaccion interrumpida. Revisa la captura actual antes de continuar.' });
+        if (epoch !== inputEpoch.current) setActionFeedback({ tone: 'neutral', message: 'Interacción interrumpida. Revisá la captura actual antes de continuar.' });
       }
     }
   };
@@ -230,15 +230,15 @@ export function LiveOledViewer({ active = true }: { active?: boolean }) {
   const blockedReason = !linksReady
     ? `Sin enlace completo (Web↔ESP: ${wsState}, ESP↔ATmega: ${megaLinkState}).`
     : !remoteOledImplemented
-      ? oledCap.reason || 'El firmware actual aun no publica capturas remotas (robot.screen.get).'
+      ? oledCap.reason || 'El firmware actual aún no publica capturas remotas (robot.screen.get).'
       : !remoteEncoderImplemented
-        ? encoderCap.reason || 'La capacidad remota del encoder (robot.ui.action) no esta habilitada.'
+        ? encoderCap.reason || 'La capacidad remota del encoder (robot.ui.action) no está habilitada.'
         : !snapshot
-          ? 'Esperando primera captura valida del ATmega2560 para habilitar acciones.'
+          ? 'Esperando primera captura válida del ATmega2560 para habilitar acciones.'
           : !fresh
-            ? `Captura retenida caducada (${formatAgeLabel(ageMs)}) o con error; actualiza la pantalla antes de operar.`
+            ? `Captura retenida caducada (${formatAgeLabel(ageMs)}) o con error; actualizá la pantalla antes de operar.`
             : actionPending
-              ? 'Solicitud de accion remota en curso; esperando respuesta del controlador.'
+              ? 'Solicitud de acción remota en curso; esperando respuesta del controlador.'
               : loading
                 ? 'Actualizando captura desde el controlador…'
                 : null;
@@ -271,13 +271,13 @@ export function LiveOledViewer({ active = true }: { active?: boolean }) {
 
       {!linksReady && (
         <StatusNotice tone="warning" title="Sin enlace completo para OLED en vivo">
-          Se requiere sesion Web↔ESP (`ready`) y enlace UART ESP↔ATmega2560 (`ready`) para consultar `robot.screen.get`. Los controles permanecen visibles y deshabilitados abajo.
+          Se requiere sesión Web↔ESP (`ready`) y enlace UART ESP↔ATmega2560 (`ready`) para consultar `robot.screen.get`. Los controles permanecen visibles y deshabilitados abajo.
         </StatusNotice>
       )}
 
       {linksReady && !remoteOledImplemented && (
         <StatusNotice tone="info" title="Servicio OLED remoto pendiente en firmware" badge="Sin captura remota">
-          {oledCap.reason || 'El ATmega2560 y el ESP8266 aun no exponen robot.screen.get en vivo.'} No se dibuja una pantalla simulada como si proviniera del auto.
+          {oledCap.reason || 'El ATmega2560 y el ESP8266 aún no exponen robot.screen.get en vivo.'} No se dibuja una pantalla simulada como si proviniera del auto.
         </StatusNotice>
       )}
 
@@ -291,7 +291,7 @@ export function LiveOledViewer({ active = true }: { active?: boolean }) {
         <div className="space-y-3">
           {!fresh && (
             <StatusNotice tone="warning" title="Captura retenida caducada o con fallo posterior">
-              Ultima muestra recibida {formatAgeLabel(ageMs)}. Las acciones de encoder quedan bloqueadas hasta recibir una captura fresca.
+              Última muestra recibida {formatAgeLabel(ageMs)}. Las acciones de encoder quedan bloqueadas hasta recibir una captura fresca.
             </StatusNotice>
           )}
           <div className="afr2-oled-with-side"><div className={fresh ? '' : 'afr2-live-oled__stale'}>
@@ -307,17 +307,17 @@ export function LiveOledViewer({ active = true }: { active?: boolean }) {
             count={snapshot.itemCount ?? getScreenMetadata(snapshot.screenCode)?.itemCount ?? null} visibleRows={getScreenMetadata(snapshot.screenCode)?.visibleRows ?? 3}
             disabled={!controlsAvailable || controlsBusy}
             onBack={getScreenMetadata(snapshot.screenCode)?.role === 'menu' ? () => void sendRemoteAction('back', 0, 'Volver') : undefined}
-            onHighlight={index => { const delta = index - snapshot.selection; if (delta) void sendRemoteAction('rotate', delta < 0 ? -1 : 1, `Resaltar opcion ${index + 1}`, Math.abs(delta)); }}
-            onScroll={direction => { const count = snapshot.itemCount ?? getScreenMetadata(snapshot.screenCode)?.itemCount ?? 0; const steps = Math.min(3, direction < 0 ? snapshot.selection : count - snapshot.selection - 1); if (steps > 0) void sendRemoteAction('rotate', direction, direction < 0 ? 'Desplazar seleccion hacia arriba' : 'Desplazar seleccion hacia abajo', steps); }} />
+            onHighlight={index => { const delta = index - snapshot.selection; if (delta) void sendRemoteAction('rotate', delta < 0 ? -1 : 1, `Resaltar opción ${index + 1}`, Math.abs(delta)); }}
+            onScroll={direction => { const count = snapshot.itemCount ?? getScreenMetadata(snapshot.screenCode)?.itemCount ?? 0; const steps = Math.min(3, direction < 0 ? snapshot.selection : count - snapshot.selection - 1); if (steps > 0) void sendRemoteAction('rotate', direction, direction < 0 ? 'Desplazar selección hacia arriba' : 'Desplazar selección hacia abajo', steps); }} />
           </div>
           <p className="afr2-help">
-            {!fresh ? 'Ultima captura caducada · ' : ''}
-            {sourceLabel} · Captura {formatAgeLabel(ageMs)} · Seleccion {snapshot.selection} · Ventana{' '}
+            {!fresh ? 'Última captura caducada · ' : ''}
+            {sourceLabel} · Captura {formatAgeLabel(ageMs)} · Selección {snapshot.selection} · Ventana{' '}
             {snapshot.firstVisible}
           </p>
         </div>
       ) : (
-        <div className="rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface-solid)] p-6 text-center text-sm text-[var(--text-muted)]">
+        <div className="rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--surface-solid)] p-6 text-center text-sm text-[var(--text-muted)]">
           {loading ? 'Consultando captura inicial a robot.screen.get…' : 'Sin captura remota disponible para representar en el visor 128×64.'}
         </div>
       )}

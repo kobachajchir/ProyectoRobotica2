@@ -1,4 +1,5 @@
 import { EncoderGlyph } from './EncoderGlyph';
+import { UiIcon } from '../../components/ui/UiIcon';
 /* AFR2-20261029-27: quick controls/radar/PWM/WS integration; prior authors retained. */
 import { useCallback, useEffect, useRef, useState } from 'react';
 
@@ -12,13 +13,13 @@ export interface EncoderControlProps {
   onRefresh?: () => void;
   /** Disponibilidad de enlace/capacidad/captura fresca. Si pasa a false, cancela de inmediato cualquier gesto activo. */
   available?: boolean;
-  /** Solicitud en vuelo (lectura o accion pendiente). Bloquea iniciar nuevos gestos pero conserva el estado visual largo hasta soltar. */
+  /** Solicitud en vuelo (lectura o acción pendiente). Bloquea iniciar nuevos gestos pero conserva el estado visual largo hasta soltar. */
   busy?: boolean;
   /** Compatibilidad con llamadas que pasen disabled directo. */
   disabled?: boolean;
-  /** Motivo explicito mostrado junto al control cuando esta deshabilitado o ocupado. */
+  /** Motivo explícito mostrado junto al control cuando está deshabilitado o ocupado. */
   disabledReason?: string | null;
-  /** Mensaje de estado o confirmacion mostrado junto a los controles. */
+  /** Mensaje de estado o confirmación mostrado junto a los controles. */
   statusMessage?: string | null;
   statusTone?: 'neutral' | 'loading' | 'success' | 'error';
   refreshDisabled?: boolean;
@@ -29,32 +30,16 @@ export interface EncoderControlProps {
 }
 
 function RefreshSyncIcon({ spinning = false }: { spinning?: boolean }) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={`h-4 w-4 shrink-0 ${spinning ? 'animate-spin' : ''}`}
-      aria-hidden="true"
-    >
-      <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
-      <path d="M3 3v5h5" />
-      <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
-      <path d="M16 16h5v5" />
-    </svg>
-  );
+  // AFR2-20261101-07 / VIS-050: icono del registro comun.
+  return <UiIcon name="refresh" size={16} className={`shrink-0 ${spinning ? 'animate-spin' : ''}`} />;
 }
 
 /**
- * Controles fisicos del encoder unico KY-040 adaptados de `ScreenStreamWorkspace.tsx` (AFR2-20261023-21 / VIS-018).
- * - Muestra siempre Giro izquierdo, SW y Giro derecho mas el boton manual de Actualizar, incluso deshabilitados.
- * - Unico boton SW (sin boton USER, Menu ni Atras).
+ * Controles físicos del encoder único KY-040 adaptados de `ScreenStreamWorkspace.tsx` (AFR2-20261023-21 / VIS-018).
+ * - Muestra siempre Giro izquierdo, SW y Giro derecho más el botón manual de Actualizar, incluso deshabilitados.
+ * - Único botón SW (sin botón USER, Menú ni Atrás).
  * - Umbral configurable (800..3000 ms): corto y largo se emiten solo al soltar; nunca ambos.
- * - Perdida de disponibilidad, cancelacion de puntero, perdida de foco/captura o cierre del modal cancelan el gesto de inmediato.
+ * - Pérdida de disponibilidad, cancelación de puntero, pérdida de foco/captura o cierre del modal cancelan el gesto de inmediato.
  */
 export function EncoderControl({
   onRotate,
@@ -71,7 +56,7 @@ export function EncoderControl({
   refreshLoading = false,
   lastEventLabel,
   compact = false,
-  label = 'Controles fisicos · Encoder unico KY-040',
+  label = 'Controles físicos · Encoder único KY-040',
 }: EncoderControlProps) {
   const threshold=Math.max(800,Math.min(3000,longPressMs));
   const isAvailable = available && !disabled;
@@ -119,7 +104,7 @@ export function EncoderControl({
     setBarScale(0);
   }, [clearTimers]);
 
-  // Si se pierde la disponibilidad (enlace caido, captura caducada, modal cerrado), cancelar inmediatamente.
+  // Si se pierde la disponibilidad (enlace caído, captura caducada, modal cerrado), cancelar inmediatamente.
   useEffect(() => {
     if (!isAvailable) {
       cancelGesture();
@@ -228,22 +213,22 @@ export function EncoderControl({
           : 'idle';
 
   const swStatusCopy = longVisualActive
-    ? `Largo preparado (≥ ${threshold} ms) · solta SW para volver`
+    ? `Largo preparado (≥ ${threshold} ms) · soltá SW para volver`
     : pressing
-      ? `Pulsando SW… solta antes de ${threshold} ms para confirmar o mantene para volver`
-      : 'Inicio: corto abre menu; largo abre pantallas rapidas al soltar. En el resto: corto confirma, largo vuelve.';
+      ? `Pulsando SW… soltá antes de ${threshold} ms para confirmar o mantené para volver`
+      : 'Inicio: corto abre menú; largo abre pantallas rápidas al soltar. En el resto: corto confirma, largo vuelve.';
 
   const reasonToShow =
     disabledReason ??
     (!isAvailable
       ? 'Controles deshabilitados: requiere enlace Web↔ESP y ESP↔ATmega listos, capacidad remota y captura fresca.'
       : busy && !longVisualActive
-        ? 'Accion o consulta en curso; aguardando respuesta del controlador.'
+        ? 'Acción o consulta en curso; aguardando respuesta del controlador.'
         : null);
 
   return (
     <div
-      className={`afr2-oled-controls-card rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface-solid)] ${
+      className={`afr2-oled-controls-card rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--surface-solid)] ${
         compact ? 'p-3.5' : 'p-4'
       } space-y-3.5`}
       aria-label="Controles del encoder OLED"
@@ -254,14 +239,14 @@ export function EncoderControl({
             {label}
           </span>
           <p className="text-xs text-[var(--text-muted)] mt-0.5">
-            Sin boton dedicado: largo al soltar vuelve por contexto, igual que la opcion <code>Volver</code> en pantalla.
+            Sin botón dedicado: largo al soltar vuelve por contexto, igual que la opción <code>Volver</code> en pantalla.
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
           {lastEventLabel && (
-            <span className="text-xs font-mono px-2.5 py-1 rounded-md bg-[var(--surface-subtle)] border border-[var(--border)] text-[var(--text)]">
-              Ultima entrada: {lastEventLabel}
+            <span className="text-xs font-mono px-2.5 py-1 rounded-md bg-[var(--surface-subtle)] border border-[var(--border-default)] text-[var(--text)]">
+              Última entrada: {lastEventLabel}
             </span>
           )}
           {onRefresh && (
@@ -280,7 +265,7 @@ export function EncoderControl({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5" role="group" aria-label="Acciones de giro y pulsacion SW">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5" role="group" aria-label="Acciones de giro y pulsación SW">
         <div className="flex flex-col gap-1">
           <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
             Giro izquierdo
@@ -309,7 +294,7 @@ export function EncoderControl({
             aria-label={
               longVisualActive
                 ? 'Largo preparado; soltar para ejecutar el retorno contextual.'
-                : 'Pulsador SW del encoder: pulsacion corta confirma, mantener y soltar vuelve al contexto anterior'
+                : 'Pulsador SW del encoder: pulsación corta confirma, mantener y soltar vuelve al contexto anterior'
             }
             onPointerDown={(e) => {
               if (e.button !== 0 || controlsDisabled) return;
@@ -379,9 +364,9 @@ export function EncoderControl({
                 scale={2}
                 color={
                   swStateAttr === 'long'
-                    ? '#0f172a'
+                    ? 'var(--attention-ink)'
                     : swStateAttr === 'pressed'
-                      ? 'var(--on-action)'
+                      ? 'var(--text-on-action)'
                       : 'currentColor'
                 }
               />
@@ -430,7 +415,7 @@ export function EncoderControl({
         {reasonToShow && (
           <p
             role="status"
-            className="text-xs rounded-[var(--radius-sm)] border border-[var(--border)] bg-[var(--surface-subtle)] px-3 py-2 text-[var(--text-muted)]"
+            className="text-xs rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--surface-subtle)] px-3 py-2 text-[var(--text-muted)]"
           >
             <strong className="font-semibold text-[var(--text)]">Estado del control: </strong>
             {reasonToShow}

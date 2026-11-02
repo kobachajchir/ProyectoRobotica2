@@ -1,0 +1,23 @@
+{
+  "changeId": "AFR2-20261101-10",
+  "decisionId": "VIS-051",
+  "mode": "APLICAR",
+  "manualVersion": "0.1.10",
+  "authorization": "Pedido explicito: Si, fase 4.",
+  "canonicalSources": ["docs/design-system/decisions.md#vis-051", "Web/src/components/ui/PageHeader.tsx", "Web/src/styles/headers.css"],
+  "supporting": ["skill apple-design (tracking por tamano)", "tokens --type-*"],
+  "confirmed": ["Fase 4 del plan", "Un h1 por pagina igual a la barra lateral"],
+  "observed": ["Solo OLED e Inicio tenian h1", "SectionHeader anidados en Wi-Fi y Sensores", "GlassSurface exterior en Modelos 3D", "Telemetria cruda en parrafo de Control", "Pedido previo de textos sin tildes (AFR2-20261026-03)"],
+  "proposed": ["Chips de estado operativo", "HeaderBadge comun", "Titulo de bienvenida animada como h2"],
+  "targets": ["PageHeader.tsx", "SectionHeader.tsx", "headers.css", "10 paginas", "AssetInspection.tsx", "StartupWelcome.tsx"],
+  "exceptions": ["Tildes no recuperadas por pedido previo", "Tamanos de texto fuera de cabeceras: fase 5", "Titulo en la barra superior: fase 6"],
+  "themes": ["light", "dark"],
+  "sourceImplemented": true,
+  "runtimeVerification": "No verificada",
+  "tests": false,
+  "build": false,
+  "validators": false,
+  "browser": false,
+  "hardware": false,
+  "packagesPromoted": false
+}

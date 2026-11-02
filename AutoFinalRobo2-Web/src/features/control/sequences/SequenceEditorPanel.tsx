@@ -1,6 +1,8 @@
 import { Chevron } from '../../../components/ui/Chevron';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Button } from '../../../components/ui/Button';
+import { UiIcon } from '../../../components/ui/UiIcon';
+import { SegmentedControl } from '../../../components/ui/SegmentedControl';
 import { DismissibleNotice } from '../../../components/ui/DismissibleNotice';
 import { StatusNotice } from '../../../components/ui/StatusNotice';
 import { notify } from '../../../components/notifications/notify';
@@ -61,18 +63,18 @@ type SelectionTarget =
 
 const MOVEMENT_PALETTE: { kind: MovementBlockKind; label: string; hint: string }[] = [
   { kind: 'constant', label: 'Desplazamiento', hint: 'vx / vy constante' },
-  { kind: 'ramp', label: 'Rampa', hint: 'Interpolacion lineal' },
+  { kind: 'ramp', label: 'Rampa', hint: 'Interpolación lineal' },
   { kind: 'pivot', label: 'Giro sobre eje', hint: 'CCW / CW' },
   { kind: 'curve', label: 'Curva', hint: 'Avance + giro' },
   { kind: 'wait', label: 'Espera', hint: 'Consigna 0 mm/s' },
-  { kind: 'finish', label: 'Finalizacion', hint: 'Terminal (0 ms)' },
+  { kind: 'finish', label: 'Finalización', hint: 'Terminal (0 ms)' },
 ];
 
 const WHEEL_PALETTE: { kind: WheelBlockKind; label: string; hint: string }[] = [
   { kind: 'constant', label: 'Velocidad', hint: 'Consigna firmada mm/s' },
   { kind: 'ramp', label: 'Rampa', hint: 'Inicio → fin mm/s' },
   { kind: 'wait', label: 'Espera', hint: 'Consigna 0 mm/s' },
-  { kind: 'finish', label: 'Finalizacion', hint: 'Terminal (0 ms)' },
+  { kind: 'finish', label: 'Finalización', hint: 'Terminal (0 ms)' },
 ];
 
 const PHYSICAL_STATE_LABELS: Record<PhysicalSequenceState, string> = {
@@ -141,7 +143,7 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
     [programs, activeProgramId]
   );
 
-  // Seleccion y propiedades moviles
+  // Selección y propiedades móviles
   const [selection, setSelection] = useState<SelectionTarget>(null);
   const [activeWheelTrackForAdd, setActiveWheelTrackForAdd] = useState<WheelTrackKey>('fl');
   const [selectedTrack, setSelectedTrack] = useState<WheelTrackKey | 'movements' | null>(null);
@@ -152,7 +154,7 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
   const visibleTracks = activeDoc.editorLevel === 'movements' ? [...WHEEL_TRACK_KEYS] : enabledTracks;
   useEffect(() => { if (!enabledTracks.includes(activeWheelTrackForAdd) && enabledTracks.length) setActiveWheelTrackForAdd(enabledTracks[0]); }, [enabledTracks, activeWheelTrackForAdd]);
 
-  // Avisos locales cerrables (importacion/conversion/ejecucion)
+  // Avisos locales cerrables (importación/conversión/ejecución)
   const [localBanner, setLocalBanner] = useState<{
     id: string;
     tone: 'error' | 'warning' | 'info';
@@ -167,7 +169,7 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
   const simStartWallMsRef = useRef<number>(0);
   const simStartCursorMsRef = useRef<number>(0);
 
-  // Estado de ejecucion fisica (ROBO2 perfil 2 / EX01 v4: 0x40-0x45)
+  // Estado de ejecución física (ROBO2 perfil 2 / EX01 v4: 0x40-0x45)
   const [physicalState, setPhysicalState] = useState<PhysicalSequenceState>('idle');
   const [physicalExecId, setPhysicalExecId] = useState<string | null>(null);
   const [physicalStatus, setPhysicalStatus] = useState<PhysicalSequenceStatusPayload | null>(null);
@@ -187,7 +189,7 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
     saveSequenceLibraryToStorage(programs, activeDoc.id);
   }, [programs, activeDoc.id]);
 
-  // Limites anunciados por el controlador o valores iniciales por defecto (32 seg / 120 s)
+  // Límites anunciados por el controlador o valores iniciales por defecto (32 seg / 120 s)
   const controllerSequenceLimits = useMemo(() => {
     const lim = capabilities.sequence_runner?.limits;
     return {
@@ -204,7 +206,7 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
   const totalDurationMs = validation.normalized.totalDurationMs;
   const physicalProgram = useMemo(() => compilePhysicalProgram(activeDoc), [activeDoc]);
 
-  // Evaluacion determinista en el cursor actual
+  // Evaluación determinista en el cursor actual
   const simSnapshot = useMemo(
     () => evaluateSequenceSimulationAtTime(activeDoc, cursorMs),
     [activeDoc, cursorMs]
@@ -267,7 +269,7 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
     setPrograms((list) => list.map((p) => (p.id === activeDoc.id ? next : p)));
   };
 
-  // Reproduccion de simulacion con requestAnimationFrame
+  // Reproducción de simulación con requestAnimationFrame
   useEffect(() => {
     if (!simPlaying) {
       if (simRafRef.current) {
@@ -312,7 +314,7 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
     };
   }, [simPlaying, totalDurationMs]);
 
-  // Cancelacion fisica inmediata ante ocultamiento de pagina, perdida de enlace, STOP o desmontaje
+  // Cancelación física inmediata ante ocultamiento de página, pérdida de enlace, STOP o desmontaje
   const cancelPhysicalExecution = useCallback(
     async (
       reason: 'user-cancel' | 'page-hidden' | 'route-left' | 'disconnect' | 'stop'
@@ -321,7 +323,7 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
       ++preparationGeneration.current;
       physicalActiveRef.current = null;
       setPhysicalState('cancelled');
-      setPhysicalDetail(`Ejecucion fisica cancelada (${reason}). No se reanuda automaticamente.`);
+      setPhysicalDetail(`Ejecución física cancelada (${reason}). No se reanuda automáticamente.`);
 
       try {
         await requestCommand(
@@ -334,14 +336,14 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
           1500
         );
       } catch {
-        // Si falla la cancelacion de secuencia, emitir STOP prioritario de respaldo
+        // Si falla la cancelación de secuencia, emitir STOP prioritario de respaldo
         await triggerEmergencyStop('safety');
       }
     },
     [activeDoc.id, physicalExecId, requestCommand, triggerEmergencyStop]
   );
 
-  // Pausa de simulacion y cancelacion fisica al ocultar la pagina
+  // Pausa de simulación y cancelación física al ocultar la página
   useEffect(() => {
     const onBlur = () => {
       ++preparationGeneration.current;
@@ -365,7 +367,7 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
     };
   }, [cancelPhysicalExecution]);
 
-  // Cancelar ejecucion fisica al desmontar Secuencias / salir de Control
+  // Cancelar ejecución física al desmontar Secuencias / salir de Control
   useEffect(() => {
     mounted.current = true;
     return () => {
@@ -387,7 +389,7 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
     };
   }, [requestCommand, triggerEmergencyStop]);
 
-  // Cancelar si se pierde conexion durante preparacion/ejecucion fisica
+  // Cancelar si se pierde conexión durante preparación/ejecución física
   useEffect(() => {
     if (!physicalActiveRef.current) return;
     if (
@@ -400,7 +402,7 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
     }
   }, [wsState, megaLinkState, cancelPhysicalExecution]);
 
-  // Si se emite una nueva orden STOP global, cancelar cualquier secuencia fisica activa
+  // Si se emite una nueva orden STOP global, cancelar cualquier secuencia física activa
   useEffect(() => {
     if (stopRecord.status === 'sending' && physicalActiveRef.current) {
       physicalActiveRef.current = null;
@@ -409,7 +411,7 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
     }
   }, [stopRecord.noticeId, stopRecord.status]);
 
-  // Consulta de progreso fisico cada 250 ms sin superponer solicitudes
+  // Consulta de progreso físico cada 250 ms sin superponer solicitudes
   useEffect(() => {
     if (physicalState !== 'running' || !physicalActiveRef.current) return;
     let cancelled = false;
@@ -434,14 +436,14 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
             setPhysicalState(st.state);
             setPhysicalDetail(
               st.state === 'completed'
-                ? 'Secuencia fisica completada por el ATmega2560 (salidas en 0).'
-                : `Secuencia fisica finalizada en estado ${st.state}${st.reason ? `: ${st.reason}` : ''}.`
+                ? 'Secuencia física completada por el ATmega2560 (salidas en 0).'
+                : `Secuencia física finalizada en estado ${st.state}${st.reason ? `: ${st.reason}` : ''}.`
             );
             return;
           }
         }
       } catch {
-        // La perdida de enlace lo cancela desde el efecto supervisor
+        // La pérdida de enlace lo cancela desde el efecto supervisor
       } finally {
         statusPollInFlightRef.current = false;
         if (!cancelled && physicalActiveRef.current) {
@@ -457,7 +459,7 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
     };
   }, [physicalState, requestCommand, totalDurationMs]);
 
-  // Disponibilidad y motivo de bloqueo para ejecucion fisica
+  // Disponibilidad y motivo de bloqueo para ejecución física
   const linksReady = wsState === 'ready' && megaLinkState === 'ready';
   const motorsReady =
     capabilities.mecanum_drive.present && capabilities.mecanum_drive.implemented;
@@ -472,19 +474,19 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
   const physicalBlockedReason = !linksReady
     ? 'Sin enlace activo Web↔ESP y ESP↔ATmega2560.'
       : !motorsReady
-        ? capabilities.mecanum_drive.reason || 'Control PWM/direccion de motores y STOP aun no habilitados en firmware.'
+        ? capabilities.mecanum_drive.reason || 'Control PWM/dirección de motores y STOP aún no habilitados en firmware.'
         : !sequencesReady
-          ? capabilities.sequence_runner?.reason || 'Capacidad de secuencias fisicas (ROBO2 perfil 2 / EX01 v4, 0x40–0x45) pendiente en controlador.'
+          ? capabilities.sequence_runner?.reason || 'Capacidad de secuencias físicas (ROBO2 perfil 2 / EX01 v4, 0x40–0x45) pendiente en controlador.'
           : !profileCalibrated
-            ? 'El perfil cinematico figura como ilustrativo no calibrado. Confirma un perfil fisico calibrado antes de ejecutar en hardware.'
+            ? 'El perfil cinemático figura como ilustrativo no calibrado. Confirmá un perfil físico calibrado antes de ejecutar en hardware.'
             : !profileMatchesController || !speedsMatchController
-              ? 'La geometria o las velocidades del programa no coinciden con los limites reales informados por el ATmega.'
+              ? 'La geometría o las velocidades del programa no coinciden con los límites reales informados por el ATmega.'
             : !validation.editorValid
-              ? 'El programa tiene errores de validacion que deben corregirse.'
+              ? 'El programa tiene errores de validación que deben corregirse.'
               : physicalProgram.error || (physicalProgram.mode !== 'timed' && !capabilities.sequence_runner.limits?.distanceBlocks)
-                ? physicalProgram.error || 'La ejecucion por distancia requiere EX01 v6 y Hall/calibracion/memoria aprobados.'
+                ? physicalProgram.error || 'La ejecución por distancia requiere EX01 v6 y Hall/calibración/memoria aprobados.'
               : physicalProgram.mode === 'timed' && !validation.physicalValid
-                ? `El programa excede los limites fisicos del controlador (${controllerSequenceLimits.maxSegments} segmentos / ${(controllerSequenceLimits.maxDurationMs / 1000).toFixed(0)} s). No se trunca automaticamente.`
+                ? `El programa excede los límites físicos del controlador (${controllerSequenceLimits.maxSegments} segmentos / ${(controllerSequenceLimits.maxDurationMs / 1000).toFixed(0)} s). No se trunca automáticamente.`
                 : null;
 
   const canStartPhysical =
@@ -503,7 +505,7 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
     setPhysicalState('preparing');
     setPhysicalStatus(null);
     setPhysicalDetail(
-      `Preparando ${segments.length} instrucciones (${(physicalDurationMs / 1000).toFixed(2)} s${physicalProgram.mode === 'timed' ? '' : ' de limite de seguridad; finalizacion por Hall'})…`
+      `Preparando ${segments.length} instrucciones (${(physicalDurationMs / 1000).toFixed(2)} s${physicalProgram.mode === 'timed' ? '' : ' de límite de seguridad; finalización por Hall'})…`
     );
     const stopAtStart = latestStop.current;
     const generation = ++preparationGeneration.current;
@@ -528,7 +530,7 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
         2500
       );
       if (!beginRes.ok || beginRes.status !== 'completed') {
-        throw new Error('El controlador rechazo robot.sequence.begin.');
+        throw new Error('El controlador rechazó robot.sequence.begin.');
       }
 
       // 2. append (EX01 v4 0x41) — exactamente un segmento por solicitud
@@ -537,7 +539,7 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
           throw new Error('Carga interrumpida antes de completar append.');
         }
         setPhysicalDetail(
-          `Cargando segmento ${seg.index + 1} de ${segments.length} en buffer estatico AVR…`
+          `Cargando segmento ${seg.index + 1} de ${segments.length} en buffer estático AVR…`
         );
         const appendRes = await requestCommand(
           'robot.sequence.append',
@@ -570,30 +572,30 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
         2500
       );
       if (!commitRes.ok || commitRes.status !== 'completed') {
-        throw new Error('El controlador no confirmo la integridad del programa (commit).');
+        throw new Error('El controlador no confirmó la integridad del programa (commit).');
       }
-      if (physicalActiveRef.current?.executionId !== executionId) throw new Error('Ejecucion cancelada antes del inicio.');
+      if (physicalActiveRef.current?.executionId !== executionId) throw new Error('Ejecución cancelada antes del inicio.');
 
-      // 4. start (EX01 v4 0x43) — aceptacion de inicio no equivale a finalizacion
-      setPhysicalDetail(physicalProgram.mode === 'timed' ? 'Iniciando ejecucion temporizada en el ATmega2560…' : 'Iniciando ejecucion por pulsos Hall con timeout de seguridad…');
+      // 4. start (EX01 v4 0x43) — aceptación de inicio no equivale a finalización
+      setPhysicalDetail(physicalProgram.mode === 'timed' ? 'Iniciando ejecución temporizada en el ATmega2560…' : 'Iniciando ejecución por pulsos Hall con timeout de seguridad…');
       const startRes = await requestCommand<PhysicalSequenceStatusPayload>(
         'robot.sequence.start',
         { sequenceId, executionId },
         2500
       );
       if (!startRes.ok || startRes.status !== 'completed' || startRes.payload.state !== 'running') {
-        throw new Error('El controlador rechazo robot.sequence.start.');
+        throw new Error('El controlador rechazó robot.sequence.start.');
       }
 
       if (physicalActiveRef.current?.executionId !== executionId) return;
       setPhysicalState('running');
       setPhysicalDetail(
-        'Ejecutando en ATmega2560 (temporizacion autoritativa en MCU; consultando progreso cada 250 ms).'
+        'Ejecutando en ATmega2560 (temporización autoritativa en MCU; consultando progreso cada 250 ms).'
       );
       notify.info({
         id: 'afr2-seq-physical',
         title: 'Secuencia iniciada en el controlador',
-        description: `${activeDoc.name} (${segments.length} segmentos). La aceptacion de inicio no equivale a finalizacion.`,
+        description: `${activeDoc.name} (${segments.length} segmentos). La aceptación de inicio no equivale a finalización.`,
       });
     } catch (err) {
       // A late load/start failure cannot cancel or overwrite a newer run.
@@ -601,9 +603,9 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
       physicalActiveRef.current = null;
       void triggerEmergencyStop('safety');
       const msg =
-        err instanceof Error ? err.message : 'Fallo durante la carga o inicio fisico de la secuencia.';
+        err instanceof Error ? err.message : 'Fallo durante la carga o inicio físico de la secuencia.';
       setPhysicalState('failed');
-      setPhysicalDetail(`Carga o ejecucion fallida: ${msg}. Una carga incompleta jamas queda ejecutable.`);
+      setPhysicalDetail(`Carga o ejecución fallida: ${msg}. Una carga incompleta jamás queda ejecutable.`);
       setLocalBanner({
         id: `phys-err-${Date.now()}`,
         tone: 'error',
@@ -667,14 +669,14 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
     return validation.normalized.effectiveTracks[track].find((b) => b.id === selection.blockId) ?? null;
   }, [validation.normalized.effectiveTracks, selection]);
 
-  // Acciones de edicion de bloques
+  // Acciones de edición de bloques
   const handleAddMovementBlock = (kind: MovementBlockKind) => {
     if (isLocked || activeDoc.movementBlocks.some(block => block.kind === 'finish')) return;
     if (activeDoc.movementBlocks.length >= EDITOR_MAX_BLOCKS_PER_TRACK) {
       setLocalBanner({
         id: `limit-${Date.now()}`,
         tone: 'warning',
-        title: 'Limite de pista alcanzado',
+        title: 'Límite de pista alcanzado',
         message: `Cada pista admite hasta ${EDITOR_MAX_BLOCKS_PER_TRACK} bloques.`,
       });
       return;
@@ -702,7 +704,7 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
       setLocalBanner({
         id: `limit-${Date.now()}`,
         tone: 'warning',
-        title: 'Limite de pista alcanzado',
+        title: 'Límite de pista alcanzado',
         message: `La pista ${track.toUpperCase()} ya tiene ${EDITOR_MAX_BLOCKS_PER_TRACK} bloques.`,
       });
       return;
@@ -806,7 +808,7 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
       id: `copy-${Date.now()}`,
       tone: 'info',
       title: 'Copia avanzada de 4 ruedas creada',
-      message: `Se creo «${copyDoc.name}» para editar cada rueda (FL/FR/RL/RR) de forma independiente. El programa original «${activeDoc.name}» se conserva intacto en la biblioteca.`,
+      message: `Se creó «${copyDoc.name}» para editar cada rueda (FL/FR/RL/RR) de forma independiente. El programa original «${activeDoc.name}» se conserva intacto en la biblioteca.`,
     });
   };
 
@@ -823,7 +825,7 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
           id: `imp-err-${Date.now()}`,
           tone: 'error',
           title: 'Archivo de secuencia incompatible o dañado',
-          message: `${parsed.error} Se conservo intacto el programa abierto.`,
+          message: `${parsed.error} Se conservó intacto el programa abierto.`,
         });
         return;
       }
@@ -842,7 +844,7 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
         id: `imp-ok-${Date.now()}`,
         tone: 'info',
         title: 'Programa importado correctamente',
-        message: `Se valido y abrio «${imported.name}» (esquema ${imported.schema}).`,
+        message: `Se validó y abrió «${imported.name}» (esquema ${imported.schema}).`,
       });
     } catch {
       setLocalBanner({
@@ -859,10 +861,10 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
       return (
         <div className="text-xs text-[var(--text-muted)] space-y-2">
           <p>
-            Selecciona cualquier bloque de la linea de tiempo para inspeccionar o editar su duracion, consignas, rampa o sentido de giro.
+            Seleccioná cualquier bloque de la línea de tiempo para inspeccionar o editar su duración, consignas, rampa o sentido de giro.
           </p>
           <p className="font-mono text-[11px]">
-            Tip: doble clic sobre el titulo de un bloque para renombrarlo; arrastra o usa <code>Alt+←</code> / <code>Alt+→</code> para reordenarlo.
+            Tip: doble clic sobre el título de un bloque para renombrarlo; arrastrá o usá <code>Alt+←</code> / <code>Alt+→</code> para reordenarlo.
           </p>
         </div>
       );
@@ -887,7 +889,7 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
               Movimiento · {b.kind}
             </span>
             <span className="font-mono text-[var(--text-muted)]">
-              Posicion #{idx + 1} de {activeDoc.movementBlocks.length}
+              Posición #{idx + 1} de {activeDoc.movementBlocks.length}
             </span>
           </div>
 
@@ -1087,26 +1089,16 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
                   />
                 </div>
               </div>
-              <div className="afr2-segmented" role="group" aria-label="Lado de curva">
-                <button
-                  type="button"
-                  disabled={isLocked}
-                  aria-pressed={b.arcSide === 'left'}
-                  onClick={() => updateField({ arcSide: 'left' })}
-                  className="afr2-segmented-btn"
-                >
-                  ↶ Curva izquierda (+wz)
-                </button>
-                <button
-                  type="button"
-                  disabled={isLocked}
-                  aria-pressed={b.arcSide === 'right'}
-                  onClick={() => updateField({ arcSide: 'right' })}
-                  className="afr2-segmented-btn"
-                >
-                  ↷ Curva derecha (-wz)
-                </button>
-              </div>
+              <SegmentedControl
+                ariaLabel="Lado de curva"
+                fill="always"
+                value={b.arcSide}
+                onChange={(arcSide) => updateField({ arcSide })}
+                items={[
+                  { value: 'left', label: 'Curva izquierda (+wz)', icon: 'rotate-ccw', disabled: isLocked },
+                  { value: 'right', label: 'Curva derecha (-wz)', icon: 'rotate-cw', disabled: isLocked },
+                ]}
+              />
             </div>
           )}
 
@@ -1163,7 +1155,7 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
 
           {activeDoc.editorLevel === 'movements' && (
             <StatusNotice tone="info" title="Pista derivada de solo consulta">
-              Usa <strong>«Crear copia avanzada»</strong> para editar las cuatro ruedas de forma independiente sin modificar este programa original.
+              Usá <strong>«Crear copia avanzada»</strong> para editar las cuatro ruedas de forma independiente sin modificar este programa original.
             </StatusNotice>
           )}
 
@@ -1273,15 +1265,15 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
 
       {preview}
 
-      {/* Barra de transporte: Simulacion (principal, offline) y Ejecucion fisica */}
+      {/* Barra de transporte: Simulación (principal, offline) y Ejecución física */}
       <div className="afr2-glass-panel rounded-[var(--radius-md)] p-5 space-y-4">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <span className="text-xs font-mono uppercase tracking-wider text-[var(--text-muted)]">
-              Simulacion y ejecucion
+              Simulación y ejecución
             </span>
             <h3 className="text-base font-semibold text-[var(--text)] mt-0.5">
-              Prepara, simula y envia la secuencia
+              Prepará, simulá y enviá la secuencia
             </h3>
           </div>
 
@@ -1290,7 +1282,7 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
               Cursor: {(cursorMs / 1000).toFixed(2)} s / {(totalDurationMs / 1000).toFixed(2)} s
             </span>
             <span className="px-2.5 py-1 rounded-md border border-[var(--border-default)] bg-[var(--surface-subtle)] text-[var(--text)]">
-              Bloques de ejecucion: {validation.normalized.segments.length}/{controllerSequenceLimits.maxSegments}
+              Bloques de ejecución: {validation.normalized.segments.length}/{controllerSequenceLimits.maxSegments}
             </span>
           </div>
         </div>
@@ -1300,7 +1292,7 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
           <div className="rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--surface-subtle)] p-4 space-y-3">
             <div className="flex items-center justify-between gap-2">
               <strong className="text-xs uppercase tracking-wider text-[var(--text)]">
-                Simulacion local
+                Simulación local
               </strong>
               <span className="text-xs font-mono text-[var(--text-muted)]">
                 {simPlaying ? 'Reproduciendo' : 'Detenido'}
@@ -1314,16 +1306,18 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
                   size="md"
                   disabled={!validation.editorValid || physicalState === 'running'}
                   onClick={() => setSimPlaying(true)}
+                  icon={<UiIcon name="play" />}
                 >
-                  ▶ Reproducir simulacion
+                  Reproducir simulación
                 </Button>
               ) : (
                 <Button
                   variant="secondary"
                   size="md"
                   onClick={() => setSimPlaying(false)}
+                  icon={<UiIcon name="pause" />}
                 >
-                  ⏸ Pausar
+                  Pausar
                 </Button>
               )}
               <Button
@@ -1334,8 +1328,9 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
                   setSimPlaying(false);
                   setCursorMs(0);
                 }}
+                icon={<UiIcon name="square" />}
               >
-                ⏹ Detener / Reiniciar
+                Detener / Reiniciar
               </Button>
             </div>
 
@@ -1370,7 +1365,7 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
             </div>
           </div>
 
-          {/* Controles de ejecucion fisica (solo Iniciar y Cancelar) */}
+          {/* Controles de ejecución física (solo Iniciar y Cancelar) */}
           <div className="rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--surface-subtle)] p-4 space-y-3">
             <div className="flex items-center justify-between gap-2">
               <strong className="text-xs uppercase tracking-wider text-[var(--text)]">
@@ -1395,7 +1390,7 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
 
             {physicalBlockedReason && (
               <p className="text-xs text-[var(--text-muted)] leading-relaxed">
-                <strong className="text-[var(--text)]">Motivo de bloqueo fisico: </strong>
+                <strong className="text-[var(--text)]">Motivo de bloqueo físico: </strong>
                 {physicalBlockedReason}
               </p>
             )}
@@ -1416,7 +1411,7 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
         </div>
       </div>
 
-      {/* Biblioteca de programas, importacion/exportacion JSON y perfil cinematico */}
+      {/* Biblioteca de programas, importación/exportación JSON y perfil cinemático */}
       <div className="afr2-glass-panel rounded-[var(--radius-md)] p-5 space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex flex-wrap items-center gap-2 min-w-0 flex-1">
@@ -1459,16 +1454,18 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
               size="md"
               disabled={isLocked || undoStack.length === 0}
               onClick={handleUndo}
+              icon={<UiIcon name="undo" />}
             >
-              ↶ Deshacer ({undoStack.length})
+              Deshacer ({undoStack.length})
             </Button>
             <Button
               variant="secondary"
               size="md"
               disabled={isLocked || redoStack.length === 0}
               onClick={handleRedo}
+              icon={<UiIcon name="redo" />}
             >
-              ↷ Rehacer ({redoStack.length})
+              Rehacer ({redoStack.length})
             </Button>
             <Button
               variant="secondary"
@@ -1512,13 +1509,13 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
           </div>
         </div>
 
-        {/* Nivel de edicion y procedencia */}
+        {/* Nivel de edición y procedencia */}
         <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-[var(--border-default)]">
           <div className="flex flex-wrap items-center gap-2">
             <span className="text-xs font-medium text-[var(--text-muted)]">
-              Modo de edicion:
+              Modo de edición:
             </span>
-            <span className="afr2-select-wrap"><select className="afr2-glass-field min-h-11 px-3" aria-label="Modo de edicion" disabled={isLocked} value={activeDoc.editorLevel} onChange={event => {
+            <span className="afr2-select-wrap"><select className="afr2-glass-field min-h-11 px-3" aria-label="Modo de edición" disabled={isLocked} value={activeDoc.editorLevel} onChange={event => {
               const editorLevel = event.target.value as 'movements' | 'wheels';
               commitDocUpdate(doc => ({ ...doc, editorLevel, wheelDraftReady: true, wheelTracks: editorLevel === 'wheels' && !doc.wheelDraftReady && doc.editorLevel === 'movements' ? deriveWheelTracksFromMovements(doc.movementBlocks, doc.kinematicProfile) : doc.wheelTracks }));
               setSelection(null); setSelectedTrack(null); setCursorMs(0);
@@ -1552,11 +1549,11 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
           )}
         </div>
 
-        {/* Perfil cinematico configurable (etiquetado explicitamente como no calibrado por defecto) */}
+        {/* Perfil cinemático configurable (etiquetado explícitamente como no calibrado por defecto) */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2 border-t border-[var(--border-default)] text-xs">
           <div>
             <label className="block font-medium text-[var(--text-muted)] mb-1">
-              Geometria `lx + ly` (mm · inicial 300 mm no calibrado)
+              Geometría `lx + ly` (mm · inicial 300 mm no calibrado)
             </label>
             <input
               type="number"
@@ -1579,7 +1576,7 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
           </div>
           <div>
             <label className="block font-medium text-[var(--text-muted)] mb-1">
-              Velocidad max. rueda (mm/s · inicial 800 mm/s no calibrado)
+              Velocidad máx. rueda (mm/s · inicial 800 mm/s no calibrado)
             </label>
             <input
               type="number"
@@ -1617,14 +1614,14 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
                 }
               />
               <span className="text-xs text-[var(--text)]">
-                Perfil fisico verificado/calibrado (requerido para habilitar ejecucion fisica)
+                Perfil físico verificado/calibrado (requerido para habilitar ejecución física)
               </span>
             </label>
           </div>
         </div>
       </div>
 
-      {/* Avisos de validacion sin recorte silencioso */}
+      {/* Avisos de validación sin recorte silencioso */}
       {validation.issues.length > 0 && (
         <div className="space-y-2">
           {validation.issues.map((issue) => (
@@ -1633,8 +1630,8 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
               tone={issue.severity === 'error' ? 'error' : 'warning'}
               title={
                 issue.severity === 'error'
-                  ? 'Error de validacion en secuencia'
-                  : 'Advertencia de limite fisico'
+                  ? 'Error de validación en secuencia'
+                  : 'Advertencia de límite físico'
               }
             >
               {issue.message}
@@ -1643,7 +1640,7 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
         </div>
       )}
 
-      {/* Cuerpo principal: Paleta + Lineas de tiempo + Panel lateral de propiedades (escritorio) */}
+      {/* Cuerpo principal: Paleta + Líneas de tiempo + Panel lateral de propiedades (escritorio) */}
       <div className="afr2-sequence-editor-body">
         <div className="afr2-glass-panel rounded-[var(--radius-md)] p-5 space-y-4">
           {/* Paleta para agregar bloques */}
@@ -1672,19 +1669,15 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
                 <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
                   Añadir bloque a pista de rueda:
                 </span>
-                <div className="afr2-segmented" role="group" aria-label="Pista de rueda destino">
-                  {enabledTracks.map((tk) => (
-                    <button
-                      key={tk}
-                      type="button"
-                      aria-pressed={activeWheelTrackForAdd === tk}
-                      onClick={() => { setActiveWheelTrackForAdd(tk); setSelectedTrack(tk); }}
-                      className="afr2-segmented-btn uppercase font-mono"
-                    >
-                      {tk.toUpperCase()}
-                    </button>
-                  ))}
-                </div>
+                <SegmentedControl
+                  ariaLabel="Pista de rueda destino"
+                  size="sm"
+                  fill="never"
+                  reselect
+                  value={activeWheelTrackForAdd}
+                  onChange={(tk) => { setActiveWheelTrackForAdd(tk); setSelectedTrack(tk); }}
+                  items={enabledTracks.map((tk) => ({ value: tk, label: tk.toUpperCase() }))}
+                />
               </div>
               <div className="flex flex-wrap gap-2">
                 {enabledTracks.includes(activeWheelTrackForAdd) && !activeDoc.wheelTracks[activeWheelTrackForAdd].some(block => block.kind === 'finish') && WHEEL_PALETTE.map((item) => (
@@ -1702,7 +1695,7 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
             </div>
           )}
 
-          {/* Pista de movimientos (cuando el documento esta en Nivel 1) */}
+          {/* Pista de movimientos (cuando el documento está en Nivel 1) */}
           {activeDoc.editorLevel === 'movements' && (
             <TimelineRow
               trackId="movements"
@@ -1761,7 +1754,7 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
                 }
                 trackSelected={selectedTrack === tk}
                 onTrackSelect={() => { setSelectedTrack(tk); setActiveWheelTrackForAdd(tk); }}
-                headerAction={activeDoc.editorLevel === 'wheels' && <button type="button" className="afr2-track-delete" disabled={isLocked} aria-label={`Eliminar pista ${tk.toUpperCase()}`} onClick={event => { event.stopPropagation(); deletedTrack.current = false; setPendingTrackDelete({ program: activeDoc.id, track: tk }); }}><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true"><path d="M4 6h16M9 6V3h6v3M6 6l1 15h10l1-15M10 10v7m4-7v7" /></svg></button>}
+                headerAction={activeDoc.editorLevel === 'wheels' && <button type="button" className="afr2-track-delete" disabled={isLocked} aria-label={`Eliminar pista ${tk.toUpperCase()}`} onClick={event => { event.stopPropagation(); deletedTrack.current = false; setPendingTrackDelete({ program: activeDoc.id, track: tk }); }}><UiIcon name="trash" /></button>}
                 blocks={wheelVisualTracks[tk]}
                 scaleTotalMs={totalDurationMs}
                 cursorMs={cursorMs}
@@ -1807,7 +1800,7 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
 
       </div>
 
-      <FloatingModal open={pendingTrackDelete !== null} title="Eliminar pista" description={`Se eliminaran los bloques de ${pendingTrackDelete?.track.toUpperCase() ?? 'la pista'}. Podes deshacer esta accion.`} onClose={() => { setPendingTrackDelete(null); if (deletedTrack.current) { deletedTrack.current = false; trackCountRef.current?.focus(); } }}>
+      <FloatingModal open={pendingTrackDelete !== null} title="Eliminar pista" description={`Se eliminarán los bloques de ${pendingTrackDelete?.track.toUpperCase() ?? 'la pista'}. Podés deshacer esta acción.`} onClose={() => { setPendingTrackDelete(null); if (deletedTrack.current) { deletedTrack.current = false; trackCountRef.current?.focus(); } }}>
         <div className="afr2-action-row"><Button onClick={() => setPendingTrackDelete(null)}>Conservar pista</Button><Button variant="danger" disabled={isLocked || pendingTrackDelete?.program !== activeDoc.id} onClick={() => {
           if (!pendingTrackDelete || isLocked || pendingTrackDelete.program !== activeDoc.id || activeDoc.editorLevel !== 'wheels' || !enabledTracks.includes(pendingTrackDelete.track)) return;
           const track = pendingTrackDelete.track;

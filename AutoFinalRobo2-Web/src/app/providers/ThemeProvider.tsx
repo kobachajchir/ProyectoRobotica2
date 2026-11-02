@@ -10,8 +10,6 @@ interface ThemeContextValue {
 }
 
 const STORAGE_KEY = 'afr2-theme';
-const LIGHT_THEME_COLOR = '#f3f6fb';
-const DARK_THEME_COLOR = '#0b1220';
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
@@ -61,14 +59,16 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     } else {
       root.classList.remove('dark');
     }
-    const color = resolvedTheme === 'dark' ? DARK_THEME_COLOR : LIGHT_THEME_COLOR;
+    // AFR2-20261101-07: el color de la barra del navegador sale del token --canvas del tema activo.
+    const color = getComputedStyle(root).getPropertyValue('--canvas').trim();
+    if (!color) return;
     const metaTags = document.querySelectorAll('meta[name="theme-color"]');
     metaTags.forEach((tag) => {
       tag.setAttribute('content', color);
     });
   }, [resolvedTheme]);
 
-  // Rastrear modalidad de entrada (teclado = 0ms transiciones segun §9.2)
+  // Rastrear modalidad de entrada (teclado = 0ms transiciones según §9.2)
   useEffect(() => {
     if (typeof document === 'undefined') return;
     const root = document.documentElement;

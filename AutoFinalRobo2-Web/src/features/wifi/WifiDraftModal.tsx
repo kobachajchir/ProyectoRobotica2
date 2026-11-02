@@ -19,14 +19,14 @@ export function WifiDraftModal() {
     try {await requestCommand('wifi.draft.cancel',{jobId:wifiDraft.jobId});}catch(e){setError(e instanceof Error?e.message:'No se pudo cancelar.');}
   };
   const valid=validWifiCredentials(ssid,password);
-  return <FloatingModal open={!!wifiDraft} title="Conexion solicitada desde OLED" description="Prepara los datos. El robot esperara que confirmes Conectar con el pulsador fisico." onClose={()=>void cancel()}>
+  return <FloatingModal open={!!wifiDraft} title="Conexión solicitada desde OLED" description="Prepará los datos. El robot esperará que confirmes Conectar con el pulsador físico." onClose={()=>void cancel()}>
     <form className="space-y-4" onSubmit={async e=>{
       e.preventDefault();if(!wifiDraft || !valid || busy)return;setBusy(true);setError('');
       try {await requestCommand('wifi.draft.submit',{jobId:wifiDraft.jobId,mode:wifiDraft.mode,ssid,password,persist});setPassword('');}
       catch(e){setError(e instanceof Error?e.message:'No se pudo enviar el borrador.');}
       finally{setBusy(false);}
     }}>
-      <p>Modo solicitado: {wifiDraft?.mode}. Las credenciales no se muestran en diagnosticos.</p>
+      <p>Modo solicitado: {wifiDraft?.mode}. Las credenciales no se muestran en diagnósticos.</p>
       <WifiCredentialsFields id="wifi-draft" mode={wifiDraft?.mode ?? 'AP_STA'} ssid={ssid} password={password} persist={persist}
         onSsid={setSsid} onPassword={setPassword} onPersist={setPersist} deferred />
       {error && <p role="alert">{error}</p>}

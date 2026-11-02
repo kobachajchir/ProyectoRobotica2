@@ -45,7 +45,7 @@ export function SavedArmPointsPanel() {
       {!library.points.length && <p className="afr2-collector-hint">Move las articulaciones y guarda tu primera postura. Se conservara en este navegador.</p>}
       {library.points.map(p => <button type="button" key={p.id} aria-pressed={p.id === library.selectedId} onClick={() => library.setSelectedId(p.id)}>
         <strong>{p.name}</strong><span>{p.position.map(v => (v * 1000).toFixed(1)).join(' / ')} mm</span>
-        <small>{p.source.frameSignature === frameSignature() ? 'Destino conservado · calcular alcance' : 'Marco pendiente de revision'}</small>
+        <small>{p.source.frameSignature === frameSignature() ? 'Destino conservado · calcular alcance' : 'Marco pendiente de revisión'}</small>
       </button>)}
     </div>
     {point && <div className="afr2-arm-points__detail">
@@ -54,23 +54,23 @@ export function SavedArmPointsPanel() {
         <Button size="sm" disabled={!library.canTeach || !!issue} onClick={() => setConfirm('update')}>Actualizar con postura actual</Button>
         <Button size="sm" variant="danger" onClick={() => setConfirm('delete')}>Eliminar</Button></div>
       <dl className="afr2-arm-points__facts"><div><dt>Destino XYZ</dt><dd>{point.position.map(v => (v * 1000).toFixed(1)).join(' / ')} mm</dd></div>
-        <div><dt>Orientacion XYZW</dt><dd>{point.quaternion.map(v => v.toFixed(3)).join(' / ')}</dd></div>
+        <div><dt>Orientación XYZW</dt><dd>{point.quaternion.map(v => v.toFixed(3)).join(' / ')}</dd></div>
         <div><dt>Apertura guardada</dt><dd>{point.opening.toFixed(1)} mm</dd></div>
         <div><dt>Modelo de origen</dt><dd>{point.source.modelId} · {point.source.revision}</dd></div></dl>
       <details><summary>Angulos enseñados (referencia)</summary><p>{point.source.angles.map((v, i) => `${point.source.jointIds[i]}: ${v.toFixed(1)}°`).join(' · ')}</p></details>
-      {frameChanged && <div className="afr2-arm-points__notice"><p>Cambio la definicion del montaje o de la herramienta. Revisa que estas coordenadas sigan representando tu destino.</p><Button disabled={busy} onClick={() => setConfirm('frame')}>Revisar y aceptar el marco actual</Button></div>}
+      {frameChanged && <div className="afr2-arm-points__notice"><p>Cambio la definición del montaje o de la herramienta. Revisá que estas coordenadas sigan representando tu destino.</p><Button disabled={busy} onClick={() => setConfirm('frame')}>Revisar y aceptar el marco actual</Button></div>}
       <label className="afr2-arm-points__restore"><input type="checkbox" disabled={busy} checked={library.restoreOpening} onChange={e => library.setRestoreOpening(e.target.checked)} /> Restaurar apertura al llegar</label>
       <div className="afr2-arm-points__actions"><Button disabled={disabled || frameChanged} onClick={() => library.calculate()}>Calcular trayectoria</Button>
         <Button variant="primary" disabled={disabled || frameChanged} onClick={() => library.calculate(true)}>Ir al punto</Button></div>
       {state.cubes.some(c => c.location === 'gripper') && <p className="afr2-collector-hint">Deposita el cubo sujeto antes de recuperar puntos.</p>}
     </div>}
     </div>
-    {confirm && <div className="afr2-arm-points__confirm" role="group" aria-label="Confirmar cambio"><p>{confirm === 'delete' ? '¿Eliminar este punto?' : confirm === 'update' ? '¿Reemplazar este destino por la postura actual?' : confirm === 'frame' ? '¿Interpretar el destino guardado en el marco actual sin cambiar sus coordenadas?' : '¿Reemplazar el contenido local por los puntos que estan en memoria? Resguarda primero el original si lo necesitas.'}</p>
+    {confirm && <div className="afr2-arm-points__confirm" role="group" aria-label="Confirmar cambio"><p>{confirm === 'delete' ? '¿Eliminar este punto?' : confirm === 'update' ? '¿Reemplazar este destino por la postura actual?' : confirm === 'frame' ? '¿Interpretar el destino guardado en el marco actual sin cambiar sus coordenadas?' : '¿Reemplazar el contenido local por los puntos que están en memoria? Resguarda primero el original si lo necesitas.'}</p>
       <Button onClick={confirmAction}>Confirmar</Button><Button onClick={() => setConfirm(null)}>Volver</Button></div>}
     <div className="afr2-arm-points__status" role="status" aria-live="polite"><p>{state.pointRun ? state.detail : library.message}</p>
       {(library.calculating || state.jointTarget) && <Button variant="danger" onClick={library.cancel}>Cancelar recorrido</Button>}
       {!state.pointRun && <small>{state.detail}</small>}
     </div>
-    <p className="afr2-collector-hint">Los destinos siguen al montaje; sus angulos se recalculan para cada modelo. Trayectorias articulares con restricciones aproximadas. Al recargar no se inicia ningun movimiento.</p>
+    <p className="afr2-collector-hint">Los destinos siguen al montaje; sus angulos se recalculan para cada modelo. Trayectorias articulares con restricciones aproximadas. Al recargar no se inicia ningún movimiento.</p>
   </CollapsiblePanel>;
 }

@@ -150,11 +150,11 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
 
       if (prev === 'ready' && next.wsState === 'disconnected') {
         notify.connectionLost(
-          next.lastError ?? 'Se perdio la sesion con el broker ESP8266. Operaciones en vuelo canceladas.'
+          next.lastError ?? 'Se perdió la sesión con el broker ESP8266. Operaciones en vuelo canceladas.'
         );
       } else if (prev !== 'ready' && next.wsState === 'ready') {
         notify.connectionRecovered(
-          `Sesion activa con ${next.endpointUrl} (enlace Mega: ${next.megaLinkState}).`
+          `Sesión activa con ${next.endpointUrl} (enlace Mega: ${next.megaLinkState}).`
         );
       }
     });
@@ -165,7 +165,7 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
         const device = evt.payload.device, id = evt.payload.bootId, observation = String(evt.payload.observation ?? 'identity-snapshot');
         const previous = observedBoots.current[device];observedBoots.current[device] = id;
         setBootReports(prev => [{ device, bootId:id, receivedAtMs:Date.now(), observation }, ...prev.filter(report => report.device !== device)].slice(0,2));
-        if (observation === 'uart-boot-event' || (previous !== undefined && previous !== id)) notify.info({ id:`afr2-boot-${device}`, title:`${device === 'esp' ? 'ESP' : 'ATmega'} inicio`, description:`Arranque ${id}. El movimiento permanece detenido despues del arranque.` });
+        if (observation === 'uart-boot-event' || (previous !== undefined && previous !== id)) notify.info({ id:`afr2-boot-${device}`, title:`${device === 'esp' ? 'ESP' : 'ATmega'} inició`, description:`Arranque ${id}. El movimiento permanece detenido después del arranque.` });
         setBootRevision(v => v + 1);setSystemInfo(null);
       }
       if(evt.event === 'system.status') {
@@ -195,7 +195,7 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
             typeof net.channel === 'number' && typeof net.secure === 'boolean'
         ));
         setWifiScanState(failed ? 'failed' : 'completed');
-        setWifiScanError(failed ? 'La ESP no pudo completar el escaneo. Volve a intentarlo.' : null);
+        setWifiScanError(failed ? 'La ESP no pudo completar el escaneo. Volvé a intentarlo.' : null);
         setWifiScanTruncated(!failed && evt.payload.truncated === true);
       }
     });
@@ -302,7 +302,7 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
         const res = await client.sendPriorityStop(reason);
         // AFR2-20261023-11: acceptance alone never confirms an actuator shutdown.
         if (res.status !== 'completed' || res.payload?.stopped !== true) {
-          throw new Error('STOP aceptado sin confirmacion autoritativa de parada.');
+          throw new Error('STOP aceptado sin confirmación autoritativa de parada.');
         }
         activityRef.current={};setActivities({});
         const confirmedAt = Date.now();
@@ -331,11 +331,11 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
           noticeId: failedNoticeId,
           lastIssuedAtMs: issuedAt,
           status: 'unconfirmed-offline',
-          detail: `Consignas locales anuladas. Sin confirmacion fisica: ${message}`,
+          detail: `Consignas locales anuladas. Sin confirmación física: ${message}`,
         }));
         notify.error({
           id: 'afr2-stop-status',
-          title: 'STOP emitido localmente (sin confirmacion remota)',
+          title: 'STOP emitido localmente (sin confirmación remota)',
           description: message,
         });
         return false;
@@ -350,7 +350,7 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
       {
         if(cmd==='robot.stop'){++requestEpoch.current;return client.sendCommand<TPayload>(cmd,payload,timeoutMs);}
         const epoch=requestEpoch.current;
-        const operation=requestTail.current.then(()=>{if(epoch!==requestEpoch.current)throw new Afr2CommandError('SUPERSEDED','Peticion anterior a STOP o cambio de sesion.',false,'web');return client.sendCommand<TPayload>(cmd,payload,timeoutMs);});
+        const operation=requestTail.current.then(()=>{if(epoch!==requestEpoch.current)throw new Afr2CommandError('SUPERSEDED','Petición anterior a STOP o cambio de sesión.',false,'web');return client.sendCommand<TPayload>(cmd,payload,timeoutMs);});
         requestTail.current=operation.catch(()=>undefined);return operation;
       },
     [client]
@@ -361,13 +361,13 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
     const generation = batteryGeneration.current;
     const current = connectionRef.current;
     if (current.wsState !== 'ready' || current.megaLinkState !== 'ready' || !current.capabilities.battery_voltage?.implemented) {
-      throw new Error('La medicion de bateria requiere el controlador con EX01 v9 conectado.');
+      throw new Error('La medición de batería requiere el controlador con EX01 v9 conectado.');
     }
     const requestedAt = Date.now();
     const response = await requestCommand(measure ? 'system.battery.measure' : 'system.battery.get', {}, 2500);
     if (generation !== batteryGeneration.current) return;
     const reading = response.status === 'completed' ? parseBattery(response.payload) : null;
-    if (!reading) throw new Error('La respuesta de bateria no contiene una medicion reconocida.');
+    if (!reading) throw new Error('La respuesta de batería no contiene una medición reconocida.');
     // Conservative age includes the request round trip and local queue delay.
     setBattery({ ...reading, ageMs: reading.ageMs === null ? null : reading.ageMs + Math.max(0, Date.now() - requestedAt) });
   }, [requestCommand]);
@@ -483,8 +483,8 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
         if (res.status === 'accepted') {
           notify.info({
             id: toastId,
-            title: labels.acceptedTitle ?? 'Peticion aceptada; esperando resultado',
-            description: 'Peticion aceptada por el broker; pendiente de resultado final.',
+            title: labels.acceptedTitle ?? 'Petición aceptada; esperando resultado',
+            description: 'Petición aceptada por el broker; pendiente de resultado final.',
           });
         } else {
           notify.success({
@@ -542,7 +542,7 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
       'robot.sensors',
       {},
       {
-        loadingTitle: 'Solicitando telemetria de sensores...',
+        loadingTitle: 'Solicitando telemetría de sensores...',
         successTitle: 'Lectura de sensores actualizada',
       },
       2000
@@ -586,7 +586,7 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
     wifiScanTimer.current = setTimeout(() => {
       if (generation !== wifiScanGeneration.current || !wifiScanPending.current) return;
       wifiScanPending.current = false; setWifiScanState('failed');
-      setWifiScanError('No llego el resultado del escaneo en 30 segundos.');
+      setWifiScanError('No llegó el resultado del escaneo en 30 segundos.');
     }, 30000);
     try {
       await client.sendCommand('wifi.scan', {}, 10000);

@@ -192,8 +192,8 @@ export function FloatingModal({ open, title, description, kicker = 'AutoFinalRob
               {description && <p id={`${id}-description`}>{description}</p>}
             </div>
             <div className="afr2-action-row">
-              {stopAvailable && <Button variant="emergency" onClick={() => { onBeforeStop?.(); void triggerEmergencyStop('modal-stop'); }}>
-                ■ STOP
+              {stopAvailable && <Button variant="emergency" icon={<UiIcon name="stop" />} onClick={() => { onBeforeStop?.(); void triggerEmergencyStop('modal-stop'); }}>
+                STOP
               </Button>}
               {headerStatus}
               <button

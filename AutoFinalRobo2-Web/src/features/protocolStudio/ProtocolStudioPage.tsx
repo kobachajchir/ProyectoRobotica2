@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { Button } from '../../components/ui/Button';
 import { Field } from '../../components/ui/Field';
 import { FloatingModal } from '../../components/ui/FloatingModal';
-import { SectionHeader } from '../../components/ui/SectionHeader';
+import { PageHeader } from '../../components/ui/PageHeader';
 import { TaskSections } from '../../components/ui/TaskSections';
 import { UiIcon } from '../../components/ui/UiIcon';
 import { COMMANDS, RESULT_NAMES, bodySizeText, commandById } from './catalog';
@@ -61,7 +61,7 @@ export function ProtocolStudioPage() {
     setInput(value); setFormat('hex'); runTranslation(value, 'hex'); setActive('translator');
   }
   return <div className="afr2-route-view afr2-page-stack afr2-protocol-studio">
-    <SectionHeader title="Protocol Studio" description="Construye un paquete o interpreta una captura del protocolo." badge="ROBO2 · EX01v8" actions={<div className="afr2-action-row"><Button variant="subtle" onClick={() => setHelpOpen(true)}>Cómo usar el estudio</Button><Link className="afr2-developer-back" to="/desarrollador"><UiIcon name="back" />Desarrollador</Link></div>} />
+    <PageHeader title="Protocol Studio" description="Construye un paquete o interpreta una captura del protocolo." badge="ROBO2 · EX01v8" actions={<div className="afr2-action-row"><Button variant="subtle" onClick={() => setHelpOpen(true)}>Cómo usar el estudio</Button><Link className="afr2-developer-back" to="/desarrollador"><UiIcon name="back" />Desarrollador</Link></div>} />
     <TaskSections label="Herramientas de protocolo" value={active} onValueChange={setActive} items={[
       { id: 'builder', label: 'Constructor', content: <div className="afr2-protocol-builder">
         <div className="afr2-page-stack">
@@ -85,7 +85,7 @@ export function ProtocolStudioPage() {
           </StudioPanel>
         </div>
         <div className="afr2-page-stack">
-          {built.bytes ? <PacketStructure bytes={built.bytes} /> : <StudioPanel title="Estructura del paquete"><div className="afr2-protocol-empty" role="status"><h3>Prepara el paquete</h3><p>{built.error}</p></div></StudioPanel>}
+          {built.bytes ? <PacketStructure bytes={built.bytes} /> : <StudioPanel title="Estructura del paquete"><div className="afr2-protocol-empty" role="status"><h3>Prepará el paquete</h3><p>{built.error}</p></div></StudioPanel>}
           <StudioPanel title="Salidas listas para copiar" description="El mismo paquete en cuatro formatos, con decimal como salida adicional.">
             {built.bytes ? <><PacketOutputs bytes={built.bytes} /><Button variant="primary" onClick={inspectBuilder}>Abrir en el traductor</Button></> : <p className="afr2-help">Completa los campos para generar las salidas.</p>}
             <p className="afr2-help">El estudio prepara y copia bytes localmente. La trama no se envía al robot.</p>

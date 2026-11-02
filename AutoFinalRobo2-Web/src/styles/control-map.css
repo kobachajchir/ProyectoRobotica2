@@ -1,16 +1,13 @@
 /* VIS-017: one calm map workspace; views change the camera, never issue movement. */
-:root { --map-floor: #f5f7fa; --map-grid: #dbe1e9; --map-grid-strong: #bdc7d5; --map-body: #ffffff; --map-wheel: #354154; --map-wheel-detail: #94a3b8; --map-height: clamp(300px, 44vw, 470px); }
-.dark { --map-floor: #101b2b; --map-grid: #27364b; --map-grid-strong: #41516b; --map-body: #1e3049; --map-wheel: #8b9aaf; --map-wheel-detail: #283345; }
+/* AFR2-20261101-07: la paleta --map-* vive en tokens.css (mismos valores). */
 .afr2-control-map { min-width: 0; background: var(--surface-solid); border: 1px solid var(--border-default); border-radius: var(--radius-lg); overflow: hidden; }
 .afr2-control-map__heading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; padding: 24px 24px 18px; }
 .afr2-control-map__heading h2 { margin: 6px 0 0; color: var(--text-strong); font-size: 22px; line-height: 1.2; letter-spacing: -.025em; font-weight: 600; }
-.afr2-map-status { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-muted); }
+.afr2-map-status { display: inline-flex; align-items: center; gap: 8px; font-size: var(--type-caption-size); color: var(--text-muted); }
 .afr2-map-status::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--text-muted); }
 .afr2-map-status.is-live::before { background: var(--success); }
 .afr2-control-map__toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; padding: 0 24px 20px; }
-.afr2-map-views { display: flex; flex-wrap: wrap; gap: 4px; padding: 4px; background: var(--surface-subtle); border-radius: var(--radius-sm); }
-.afr2-map-views button, .afr2-map-tools button, .afr2-control-map__footer button { min-height: 44px; padding: 8px 12px; color: var(--text-muted); background: transparent; border: 1px solid transparent; border-radius: 10px; font: 500 12px/1.5 var(--font-sans); cursor: pointer; }
-.afr2-map-views button[aria-pressed="true"] { background: var(--surface-solid); color: var(--text-strong); border-color: var(--border-default); box-shadow: var(--glass-chrome-shadow); }
+.afr2-map-tools button, .afr2-control-map__footer button { min-height: 44px; padding: 8px 12px; color: var(--text-muted); background: transparent; border: 1px solid transparent; border-radius: 10px; font: 500 var(--type-caption-size)/1.5 var(--font-sans); cursor: pointer; }
 .afr2-map-tools { display: flex; align-items: center; gap: 4px; }
 .afr2-map-tools button { min-width: 44px; border-color: var(--border-default); }
 .afr2-map-tools > span { min-width: 44px; color: var(--text-muted); text-align: center; font-size: 11px; }
@@ -22,16 +19,16 @@
 .afr2-map-readings { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; padding: 20px 24px; }
 .afr2-map-readings > div { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
 .afr2-map-readings span { color: var(--text-muted); font-size: 11px; }
-.afr2-map-readings strong { color: var(--text-strong); font-size: 14px; font-weight: 600; overflow-wrap: anywhere; }
+.afr2-map-readings strong { color: var(--text-strong); font-size: var(--type-body-size); font-weight: 600; overflow-wrap: anywhere; }
 .afr2-control-map__footer { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 20px; padding: 0 24px 16px; }
-.afr2-control-map__footer p { flex: 1; min-width: min(220px,100%); margin: 0; color: var(--text-muted); font-size: 12px; line-height: 1.65; }
+.afr2-control-map__footer p { flex: 1; min-width: min(220px,100%); margin: 0; color: var(--text-muted); font-size: var(--type-caption-size); line-height: 1.65; }
 .afr2-control-map__footer > div { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
-.afr2-control-map__footer label { display: flex; align-items: center; gap: 8px; min-height: 44px; font-size: 12px; color: var(--text-muted); cursor: pointer; }
+.afr2-control-map__footer label { display: flex; align-items: center; gap: 8px; min-height: 44px; font-size: var(--type-caption-size); color: var(--text-muted); cursor: pointer; }
 .afr2-control-map__footer input { accent-color: var(--action); }
-.afr2-map-command { margin: 0 24px 16px; padding: 12px 14px; border-left: 2px solid var(--action); border-radius: 0 10px 10px 0; background: var(--action-subtle); color: var(--text); font-size: 12px; line-height: 1.6; overflow-wrap: anywhere; }
-.afr2-map-loading, .afr2-map-recovery, .afr2-map-fallback { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; height: 100%; padding: 32px; text-align: center; font-size: 13px; color: var(--text-muted); }
+.afr2-map-command { margin: 0 24px 16px; padding: 12px 14px; border-left: 2px solid var(--action); border-radius: 0 10px 10px 0; background: var(--action-subtle); color: var(--text); font-size: var(--type-caption-size); line-height: 1.6; overflow-wrap: anywhere; }
+.afr2-map-loading, .afr2-map-recovery, .afr2-map-fallback { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; height: 100%; padding: 32px; text-align: center; font-size: var(--type-label-size); color: var(--text-muted); }
 .afr2-map-recovery p { max-width: 36ch; margin: 0; }
 .afr2-map-svg-recovery { position: relative; width: 100%; height: 100%; }
 .afr2-map-recovery-actions { position: absolute; left: 16px; right: 16px; bottom: 12px; display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 8px; padding: 8px 12px; border-radius: var(--radius-sm); background: var(--surface-solid); color: var(--text-muted); font-size: 11px; }
-@media (hover: hover) and (pointer: fine) { .afr2-map-views button:not([aria-pressed="true"]):hover, .afr2-map-tools button:not(:disabled):hover, .afr2-control-map__footer button:not(:disabled):hover { color: var(--text-strong); background: var(--surface-subtle); } }
-@media (max-width: 819px) { .afr2-control-map__heading { padding: 20px 18px 16px; } .afr2-control-map__toolbar { padding: 0 18px 18px; } .afr2-map-readings { grid-template-columns: repeat(2,minmax(0,1fr)); padding: 20px 18px; } .afr2-control-map__footer { padding-inline: 18px; } .afr2-map-command { margin-inline: 18px; } .afr2-map-caption { font-size: 10px; gap: 4px; } }
+@media (hover: hover) and (pointer: fine) { .afr2-map-tools button:not(:disabled):hover, .afr2-control-map__footer button:not(:disabled):hover { color: var(--text-strong); background: var(--surface-subtle); } }
+@media (max-width: 839.98px) { .afr2-control-map__heading { padding: 20px 18px 16px; } .afr2-control-map__toolbar { padding: 0 18px 18px; } .afr2-map-readings { grid-template-columns: repeat(2,minmax(0,1fr)); padding: 20px 18px; } .afr2-control-map__footer { padding-inline: 18px; } .afr2-map-command { margin-inline: 18px; } .afr2-map-caption { font-size: 10px; gap: 4px; } }

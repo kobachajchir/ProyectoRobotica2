@@ -29,3 +29,7 @@ AFR2-20261023-15: TWI AVR por IRQ y composición OLED/encoder/USART1 implementad
 ## AFR2-20261029-19 — OLED táctil y visor bajo demanda
 
 Fuente adaptada con Web/ATmega/ESP: overlay scrim+blur en modales, Volver por ítem del menú, ScreenCode0x030035 con aviso/bitmap/chevrones y suscripción explícita a capturas/metadatos. Contrato en AutoFinalRobo2-Contracts/contracts/TOUCH_OLED_19.md; procedencia por archivo en provenance/touch-oled-20261029-19.json de Contracts. El rumbo es solicitado, no medido, y no agrega giro físico. Sin tests, compilación, validadores, navegador, ejecución del generador OLED, promoción ESP ni flasheo de esta entrega. Memoria/paridad/latencia físicas pendientes.
+
+## AFR2-20261102-05 — Componentes OLED128-5 y QR en runtime
+
+`afr2_ui_components.c` centraliza cabecera, panel, progreso124x8, numerales5x7 y números compactos. `afr2_qr_screen.c` genera en el propio Mega QR AP/Web y acepta contenido RAM elegido. Menú Wi-Fi incorpora030045/030046. Mantiene snapshot puro, encoder y guardas; AP privado, auto/radar detenidos. Contraparte TypeScript y simulador de Ayuda actualizados. Estado y límites en Contracts/contracts/OLED_RUNTIME_QR_20261102.md. Sin compilación, tests, validadores, navegador ni flasheo; memoria total/tiempos/escaneo pendientes.

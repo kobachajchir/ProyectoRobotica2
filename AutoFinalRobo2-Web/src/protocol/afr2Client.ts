@@ -16,7 +16,6 @@ import {
   type WsConnectionState,
 } from './wsEnvelope';
 
-import { withoutAccents } from '../utils/displayText';
 
 export class Afr2CommandError extends Error {
   public readonly code: Afr2ErrorCode;
@@ -29,7 +28,7 @@ export class Afr2CommandError extends Error {
     retryable = false,
     source: 'web' | 'esp' | 'atmega' = 'web'
   ) {
-    super(withoutAccents(message));
+    super(message);
     this.name = 'Afr2CommandError';
     this.code = code;
     this.retryable = retryable;
@@ -138,7 +137,7 @@ export class Afr2Client {
       this.setEndpointUrl(customUrl);
     }
     this.clearReconnectTimer();
-    this.teardownSocket('Reconexion manual solicitada');
+    this.teardownSocket('Reconexión manual solicitada');
 
     const currentGen = ++this.generationId;
     this.updateState({
@@ -153,7 +152,7 @@ export class Afr2Client {
     try {
       ws = new WebSocket(this.state.endpointUrl);
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'URL WebSocket invalida';
+      const msg = err instanceof Error ? err.message : 'URL WebSocket inválida';
       this.updateState({
         wsState: 'disconnected',
         lastError: msg,
@@ -263,7 +262,7 @@ export class Afr2Client {
         this.state.lastTrafficMs !== null &&
         now - this.state.lastTrafficMs > SESSION_EXPIRY_MS
       ) {
-        this.handleSocketClosed(gen, 'Sesion expirada (> 30000 ms sin respuesta del broker).');
+        this.handleSocketClosed(gen, 'Sesión expirada (> 30000 ms sin respuesta del broker).');
         return;
       }
       if(this.heartbeatPending)return;
@@ -387,7 +386,7 @@ export class Afr2Client {
 
     if (parsed.type === 'res' || parsed.type === 'err') {
       const tx = this.pending.get(parsed.requestId);
-      if (!tx) return; // Descartar ACK tardio / cuarentena post-timeout
+      if (!tx) return; // Descartar ACK tardío / cuarentena post-timeout
       if(parsed.cmd !== tx.cmd || (parsed.type === 'res' && (parsed.ok !== true || (parsed.status !== 'accepted' && parsed.status !== 'completed')))) return;
       clearTimeout(tx.timer);
       this.pending.delete(parsed.requestId);
@@ -446,7 +445,7 @@ export class Afr2Client {
 
   /**
    * `robot.stop` es prioritario e idempotente: invalida inmediatamente cualquier consigna de
-   * movimiento en vuelo (`SUPERSEDED`) y se transmite sin operacion previa de habilitacion.
+   * movimiento en vuelo (`SUPERSEDED`) y se transmite sin operación previa de habilitación.
    */
   public async sendPriorityStop(
     reason: 'user-stop' | 'focus-lost' | 'control-reset' | 'safety' | string = 'user-stop'
@@ -479,7 +478,7 @@ export class Afr2Client {
   }
 
   /**
-   * Politica `single-latest-slot`: maximo una peticion `robot.drive` en vuelo.
+   * Política `single-latest-slot`: máximo una petición `robot.drive` en vuelo.
    */
   public async sendDrive(
     vxMmS: number,
@@ -521,7 +520,7 @@ export class Afr2Client {
         reject(
           new Afr2CommandError(
             'CONNECTION_CLOSED',
-            'No hay sesion WebSocket activa con el broker ESP8266.',
+            'No hay sesión WebSocket activa con el broker ESP8266.',
             true,
             'web'
           )
@@ -533,7 +532,7 @@ export class Afr2Client {
         reject(
           new Afr2CommandError(
             'CONNECTION_CLOSED',
-            'El enlace WebSocket aun no completo el handshake system.hello.',
+            'El enlace WebSocket aún no completó el handshake system.hello.',
             true,
             'web'
           )

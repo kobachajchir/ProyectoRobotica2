@@ -1,17 +1,22 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Chevron } from '../../components/ui/Chevron';
+import { Button } from '../../components/ui/Button';
+import { SegmentedControl } from '../../components/ui/SegmentedControl';
 import { UiIcon,type UiIconName } from '../../components/ui/UiIcon';
 import { AFR2_SCREEN_META, type Afr2ScreenCode, type Afr2ScreenMetadata } from './screenCatalog';
 import { FirmwareLibraryPreview } from './FirmwareLibraryPreview';
+import { UiSimulationPreview } from './UiSimulationPreview';
 
 const screens = Object.values(AFR2_SCREEN_META);
 const childrenOf = (code: Afr2ScreenCode) => screens.filter(screen => screen.parent === code);
 const sensorIcons:Partial<Record<Afr2ScreenCode,UiIconName>>={'0x020001':'sensors','0x030015':'wheel','0x030016':'sensors','0x030017':'radar','0x030019':'servo','0x030030':'radar','0x030031':'radar','0x030032':'sensors','0x030033':'servo','0x030034':'radar'};
 
-/** Catalogue hierarchy only; branches never introduce a second firmware navigation. */
-export function ScreenCatalogBrowser({ active = true }: { active?: boolean }) {
-  const [selected, setSelected] = useState<Afr2ScreenCode>('0x010002');
+/** Catalogue hierarchy only; branches never introduce a second firmware navigation.
+ * AFR2-20261102-02: pantalla a la izquierda y lista a la derecha; el árbol conceptual es la vista alternativa. */
+export function ScreenCatalogBrowser({ active = true, initialCode, onShowTree }: { active?: boolean; initialCode?: string | null; onShowTree?: () => void }) {
+  const [selected, setSelected] = useState<Afr2ScreenCode>(() => initialCode && AFR2_SCREEN_META[initialCode as Afr2ScreenCode] ? initialCode as Afr2ScreenCode : '0x010001');
   const [previewSession, setPreviewSession] = useState(0);
+  const [simulate,setSimulate]=useState(true);
   const tree = useRef<HTMLElement>(null);
   const [expanded, setExpanded] = useState<Set<string>>(() => new Set(['0x010001', '0x010002', 'notices']));
   useEffect(() => {
@@ -36,16 +41,23 @@ export function ScreenCatalogBrowser({ active = true }: { active?: boolean }) {
   };
   const current = AFR2_SCREEN_META[selected];
   return <div className="afr2-screen-catalogue">
-    <nav ref={tree} className="afr2-screen-tree" aria-label="Arbol de pantallas OLED"><ul>{screens.filter(screen => !screen.parent && !screen.returnsToContext).map(branch)}
+    <section className="afr2-screen-library" aria-label="Pantalla seleccionada"><header><p className="afr2-kicker">Biblioteca del ATmega · vista local</p><h2>{current.name}</h2><code>{current.code}</code></header>
+      <SegmentedControl ariaLabel="Modo de vista OLED" size="sm" value={simulate?'simulation':'library'}
+        items={[{value:'simulation',label:'Simular flujo'},{value:'library',label:'Biblioteca sin datos'}]}
+        onChange={value=>setSimulate(value==='simulation')}/>
+      {simulate?<UiSimulationPreview key={previewSession} active={active} initialCode={current.code} onNavigate={setSelected}/>:<FirmwareLibraryPreview key={previewSession} active={active} screen={current} onNavigate={setSelected}/>}
+
+      {current.siblings.length>0 && <p className="afr2-help">Vistas hermanas: {current.siblings.map(code=>AFR2_SCREEN_META[code]?.name??code).join(' ↔ ')}. Girá hacia la página indicada; en radar SW corto abre opciones y en IR usa largo para volver.</p>}
+      {current.navigationMode==='live-angle-control' && <p className="afr2-help">En el equipo, giro controla el ángulo y SW corto vuelve. El control Web del actuador está en Sensores → Distancia y servo.</p>}
+      <p className="afr2-help">{current.returnsToContext ? 'El aviso regresa al contexto anterior.' : current.parent ? `Padre: ${AFR2_SCREEN_META[current.parent]?.name ?? current.parent}.` : 'Pantalla inicial.'} Acciones: {current.actions.join(' · ')}.</p>
+      {current.localCredentials && <p className="afr2-help">Los datos reales del AP se muestran solo en la OLED física; su captura remota permanece protegida. La simulación usa credenciales de ejemplo.</p>}
+    </section>
+    <aside className="afr2-screen-list">
+      <header className="afr2-screen-list__heading"><p className="afr2-kicker">Pantallas · {screens.length}</p>{onShowTree && <Button size="sm" icon={<UiIcon name="programs" />} onClick={onShowTree}>Ver árbol de pantallas</Button>}</header>
+    <nav ref={tree} className="afr2-screen-tree" aria-label="Lista de pantallas OLED"><ul>{screens.filter(screen => !screen.parent && !screen.returnsToContext).map(branch)}
       <li><button className="afr2-screen-tree-notices" type="button" aria-expanded={expanded.has('notices')} aria-controls="screen-notices" onClick={() => toggle('notices')}><Chevron open={expanded.has('notices')} /><span>Avisos · vuelven al contexto</span></button>
         {expanded.has('notices') && <ul id="screen-notices">{screens.filter(screen => screen.returnsToContext).map(branch)}</ul>}</li>
     </ul></nav>
-    <section className="afr2-screen-library" aria-label="Pantalla seleccionada"><header><p className="afr2-kicker">Biblioteca del ATmega · vista local</p><h2>{current.name}</h2><code>{current.code}</code></header>
-      <FirmwareLibraryPreview key={previewSession} active={active} screen={current} onNavigate={setSelected} />
-      {current.siblings.length>0 && <p className="afr2-help">Vistas hermanas: {current.siblings.map(code=>AFR2_SCREEN_META[code]?.name??code).join(' ↔ ')}. Gira hacia la pagina indicada; en radar SW corto abre opciones y en IR usa largo para volver.</p>}
-      {current.navigationMode==='live-angle-control' && <p className="afr2-help">En el equipo, giro controla el angulo y SW corto vuelve. El control Web del actuador esta en Sensores → Distancia y servo.</p>}
-      <p className="afr2-help">{current.returnsToContext ? 'El aviso regresa al contexto anterior.' : current.parent ? `Padre: ${AFR2_SCREEN_META[current.parent]?.name ?? current.parent}.` : 'Pantalla inicial.'} Acciones: {current.actions.join(' · ')}.</p>
-      {current.localCredentials && <p className="afr2-help">La clave AP se muestra solo en la OLED fisica; su captura remota permanece protegida.</p>}
-    </section>
+    </aside>
   </div>;
 }

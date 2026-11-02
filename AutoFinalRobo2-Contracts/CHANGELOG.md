@@ -1,3 +1,51 @@
+## AFR2-20261102-07 - 02/11/2026
+
+Reforma visual de Infraestructura con el mismo contenido y orden: portada oscura con mapa de flujo animado por zonas (paquetes que viajan y nodos que abren su etapa), recorrido en línea de metro con ficha animada, barras de peso 3D, compresión y anillo de LittleFS, y glosario en tarjetas. Respeta reducir movimiento. Verificado en navegador local (1440/1000/390 px); sin compilación ni build:esp. [Ficha](changes/2026-11-02-07-infrastructure-visual-redesign.md).
+
+## AFR2-20261102-05 - 02/11/2026
+
+Diseños OLED128-5 vinculados en fuente AVR/Web: dashboard con paneles, cards rápidas con contador, selección invertida, barras IR y progreso común. Ayuda → OLED abre Simular flujo con servicios ficticios. QR AP y Web con datos vigentes dentro del auto, API para contenido propio y protección de captura del AP. Sin tests, compilación, validadores, navegador, promoción ni flasheo. [Ficha](changes/2026-11-02-05-oled-runtime-components-qr.md) · [Contrato](contracts/OLED_RUNTIME_QR_20261102.md).
+
+## AFR2-20261102-04 - 02/11/2026
+
+Explorar → Infraestructura: mapa de React/Fusion/Blender a gzip, imagen LittleFS, flash, HTTP y navegador; recorridos seleccionables con entradas/salidas, pesos GLB y conjunto, tabla de archivos antes/después de gzip y ocupación del filesystem cuando la informa la placa. Consulta HTTP de manifiesto en ESP y middleware Vite que identifica el paquete local preparado. Fuente Web/ESP y documentación; sin tests, compilación, validadores, navegador, promoción ni flasheos. [Ficha](changes/2026-11-02-04-infrastructure-explorer.md) · [Contrato](contracts/WEB_INFRASTRUCTURE.md).
+
+## AFR2-20261102-03 - 02/11/2026
+
+Simuladores (auto, brazo, conjunto) con la escena a la izquierda y los controles a la derecha (panel con la altura de la escena, se apila en pantallas angostas). Zoom flotante de vidrio +/− con porcentaje en el color del tema. Cámara inicial en Perspectiva igual a la de los banners. Banners de Modelos re-renderizados con más calidad, blancos sin recorte y luz más suave, mismas cámaras. Verificado en navegador local; sin compilación ni build:esp. [Ficha](changes/2026-11-02-03-simulator-side-controls-zoom-banners.md).
+
+## AFR2-20261102-02 - 02/11/2026
+
+Simulador UI fuera de Desarrollador (redirige a Ayuda → OLED, vista árbol). En Ayuda → OLED, la pantalla va a la izquierda y la lista a la derecha, con «Ver árbol de pantallas»; el árbol conceptual es la vista alternativa y abre la pantalla elegida en la lista. Leyenda de gestos en fila, con el icono arriba y el texto abajo. Verificado en navegador local; sin build:esp. [Ficha](changes/2026-11-02-02-oled-help-tree-view.md).
+
+## AFR2-20261102-01 - 02/11/2026
+
+Revisión en navegador del plan visual (5 anchos, claro/oscuro, 13 rutas) con correcciones: animación de la pill, pill en oscuro, rail, StatusNotice, pill de red y objetivos táctiles. Modelos con tres banners de renders Blender, inspección directa (/modelos/:modelo) con «Ir a simulación» y visor nuevo del conjunto; simulador separado (/simulacion/:tipo) con selector. Banner de Inicio con render. Árbol de pantallas como mapa conceptual desde el dashboard. Sin build:esp, tests ni hardware. [Ficha](changes/2026-11-02-01-browser-review-models-flow-tree.md).
+
+## AFR2-20261101-12 - 01/11/2026
+
+Plan visual fase 5: navegacion por tareas (Operar, Preparar, Explorar, Sistema) con rutas /conducir, /programas, /puesta-a-punto, /modelos, /conexion y /ayuda y redirecciones desde las anteriores. Barra inferior con Mas en celular, rail desde 840 px, barra expandida desde 1200 px, barra superior en una fila y barra de estado operativo en Conducir y Programas. Preferencias a Puesta a punto, diagnostico a Conexion, catalogo OLED y supervision a Ayuda, Desarrollador desde Configuracion. Breakpoints de 16 a 4 valores (hojas de componentes como complemento max-width) y 140 tamanos a la escala. Solo fuente Web y documentacion; sin tests/build/navegador. [Ficha](changes/2026-11-01-12-visual-plan-phase5-structure.md).
+
+## AFR2-20261101-11 - 01/11/2026
+
+Tildes recuperadas en la Web por decision humana; sustituye AFR2-20261026-03. 334 lineas restauradas desde el original y palabras en texto visible de lineas editadas despues, con revision manual de ambiguas. Excluido el texto dibujado en la replica OLED (fuente sin tildes). Quitado withoutAccents y borrado utils/displayText.ts. Solo fuente Web; sin tests/build/navegador; visualizacion de tildes No verificada. [Ficha](changes/2026-11-01-11-web-accents-restored.md).
+
+## AFR2-20261101-10 - 01/11/2026
+
+Plan visual fase 4: PageHeader con el unico h1 de cada pagina (--type-title) en 10 paginas; SectionHeader reducido a h2/h3 (--type-heading/--type-subheading); niveles aplanados en Wi-Fi, Sensores y fichas 3D; Modelos 3D sin GlassSurface exterior; telemetria de Control en chips Modo/GOTO/Salidas/Fallo. Tildes no recuperadas por el pedido AFR2-20261026-03; tamanos de texto fuera de cabeceras quedan para la fase 5. Solo fuente Web y documentacion; sin tests/build/navegador. [Ficha](changes/2026-11-01-10-visual-plan-phase4-headers.md).
+
+## AFR2-20261101-09 - 01/11/2026
+
+Plan visual fase 3: SegmentedControl unico con pill deslizante (clip-path, 250 ms, --ease-in-out; sin animar con teclado, resize ni movimiento reducido). TaskSections lo usa por dentro sin cambiar API; migrados mapa, alcance y vista del radar, camara del simulador, Apariencia, modo del robot (flechas solo mueven foco) y lado de curva/pista del editor. CSS de los selectores viejos borrado; oled-side queda para la fase 7. Solo fuente Web y documentacion; sin tests/build/navegador/build:esp. [Ficha](changes/2026-11-01-09-visual-plan-phase3-segmented.md).
+
+## AFR2-20261101-08 - 01/11/2026
+
+Plan visual fase 2: registro unico de iconos (Lucide lucide-static@0.460.0, ISC, y propios del dominio), UiIcon con `size` 16/20/24 y trazo 1,75 px. Reemplazados los glifos Unicode con funcion de icono (STOP, pad, GOTO, editor, toasts, Desarrollador, Wi-Fi) y los SVG sueltos de bateria, senal, toasts, refrescar, tactil, chevrons, candado y papelera. PLAN.md suma la fase 7 de pantallas OLED. Solo fuente Web y documentacion; sin tests/build/navegador/build:esp. [Ficha](changes/2026-11-01-08-visual-plan-phase2-icons.md).
+
+## AFR2-20261101-07 - 01/11/2026
+
+Plan visual 01-11, fase 1: VIS-050..VIS-054 registradas (iconos, tipo, espaciado, selector, breakpoints, navegacion en celular, atencion). Tokens `--type-*`, espaciado, `--bp-*`/`@theme`, `--attention*`, paleta `--map-*` en tokens.css y Segoe UI Variable. Corregidas seis variables CSS sin definir. Solo fuente Web y documentacion; AVR/ESP sin cambios, sin tests/build/validadores/navegador/build:esp. [Ficha](changes/2026-11-01-07-visual-plan-phase1-tokens.md).
+
 ## AFR2-20261101-06 - 01/11/2026
 
 Simulador UI sale de Desarrollador y se abre desde su tarjeta debajo de Protocol Studio. Ruta propia, ayuda, retorno y pestanas Simulador/Arbol y catalogo con estado conservado entre ellas. Solo fuente Web; AVR/ESP sin cambios, sin tests/build/navegador. [Ficha](changes/2026-11-01-06-ui-simulator-workspace.md).
@@ -28,6 +76,52 @@ Simulador UI reorganizado: pantalla/encoder, guia contextual, barra de sesion,
 catalogo filtrable y seleccion siempre visible. Integra la base local01 y sus
 documentos. Fuente sin tests, builds, validadores ni navegador; paquetesESP
 previos. [Ficha](changes/2026-10-31-12-ui-simulator-layout.md).
+
+## AFR2-20261101-06 - 01/11/2026
+
+Corrección del símbolo de largo: L interna en encoder, retirado subrayado.
+Variante adaptada del bitmap base según indicación humana; original separado
+conL no localizado. Skill y ejemplos regenerados, firmware/Web sin cambios,
+sin tests o validadores. [Ficha](changes/2026-11-01-06-encoder-long-internal-l.md).
+
+## AFR2-20261101-05 - 01/11/2026
+
+OLED128-5: QR de contenido elegido, generador offline y exportación a PNG/
+bitmaps C. Zona clara4módulos y escala entera, campo62×62 con texto lateral.
+EjemploAFR2:DEMO generado; sin decoder, prueba con teléfono/OLED, tests o
+compilaciones. Firmware/Web sin integrar.
+[Ficha](changes/2026-11-01-05-oled128-qr.md).
+
+## AFR2-20261101-04 - 01/11/2026
+
+OLED128-4: cards de acciones rápidas con título, contador numérico arriba y
+selección por franja invertida. Componentes y muestras Motor/Servo/Wi-Fi
+registrados en skill/atlas. Solo diseño, sin migrar firmware/Web ni ejecutar
+tests o validaciones. [Ficha](changes/2026-11-01-04-oled128-quick-action-cards.md).
+
+## AFR2-20261101-03 - 01/11/2026
+
+OLED128-3: dashboard inspirado en referencia del usuario, con cabecera invertida,
+paneles jerarquizados y numerales de lectura principal. Carga indeterminada sin
+texto sobre la ausencia de porcentaje. Atlas y tres páginas de propuesta
+generados; sin modificar firmware/Web ni ejecutar tests o validadores.
+[Ficha](changes/2026-11-01-03-oled128-dashboard.md).
+
+## AFR2-20261101-02 - 01/11/2026
+
+OLED128-2: componentes iconográficos con padding/centro común, pies del encoder,
+largo=retorno como diseño nuevo, barra única de carga/progreso y cinco/ocho
+sensores simultáneos con ID arriba/valor abajo. Atlas documental generado desde
+recursos y tokens; sin migrar firmware/Web ni ejecutar tests o validadores.
+[Ficha](changes/2026-11-01-02-oled128-components.md).
+
+## AFR2-20261101-01 - 01/11/2026
+
+Skill reutilizable `oled128-ui-design`: iconografía semántica, plantillas
+OLED128×64 y diseño de flujo desde funciones. Copia personal y fuente en
+Contracts, con recursos de referencia. Borrador sin migrar firmware/Web ni
+ejecutar tests, builds o validadores.
+[Ficha](changes/2026-11-01-01-oled128-ui-design-skill.md).
 
 ## AFR2-20261031-01 - 31/10/2026
 

@@ -32,3 +32,7 @@ Estado: lectura/copia o fuente parcial indicada; sin compilación, tests ni prue
 
 
 AFR2-20261023-15: TWI AVR por IRQ y composición OLED/encoder/USART1 implementados en fuente, sin DMA ni Arduino. Ver docs/COMPOSICION.md y Contracts/changes/2026-10-23-15-robo2-atmega-ui.md. Sin builds/tests/validadores/flasheos; hardware y recursos finales pendientes.
+
+## AFR2-20261102-05 — Estado actual
+
+Los componentes OLED128-5 se integran en AVR y Web. QR AP030045 y Web030046 usan datos preparados del ESP; API de contenido propio en `afr2_qr_screen.h`. Corto desde Inicio abre menú; largo al soltar abre rápidas y retorna por contexto en otras vistas, con Sí/No obligatorio para cambios. Ver Contracts/contracts/OLED_RUNTIME_QR_20261102.md. Esta entrega no compila, prueba, valida ni flashea.

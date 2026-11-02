@@ -375,7 +375,7 @@ static const Afr2MenuNode nodes[] PROGMEM={
  { "Calibrar motores", AFR2_N_CALIB, 0, 8, 109, 0x3001cUL },
  { "Geometria nominal", AFR2_N_STATE, 1, 1, 122, 0x3001dUL },
  { "Ajustes encoder", AFR2_N_CALIB, 0, 4, 0x401fu, 0x3001eUL },
- { "Wi-Fi", AFR2_N_MENU, 0, 5, 0x2000u, 0x3001fUL },
+ { "Wi-Fi", AFR2_N_MENU, 0, 7, 0x2000u, 0x3001fUL },
  { "Estado de red", AFR2_N_WIFI, 0, 6, 0x2005u, 0x30020UL },
  { "Redes encontradas", AFR2_N_WIFI_SEARCH, 0, 9, 139, 0x30021UL },
  { "Credenciales", AFR2_N_WIFI_NETWORKS, 0, 3, 0x200bu, 0x30022UL },
@@ -412,6 +412,8 @@ static const Afr2MenuNode nodes[] PROGMEM={
  { "Datos de red", AFR2_N_WIFI_VIEW, 1, 1, 138, 0x30041UL },
  { "Buscar redes", AFR2_N_WIFI, 0, 3, 0x2014u, 0x30042UL },
  { "Cambiar modo", AFR2_N_WIFI, 1, 3, 138, 0x30043UL },
+ { "QR conectar AP", AFR2_N_WIFI, 1, 1, 0x8004u, 0x30045UL },
+ { "QR abrir Web", AFR2_N_WIFI, 1, 1, 0x8004u, 0x30046UL },
 };
 void Afr2Menu_Node(uint8_t index,Afr2MenuNode *out) {
     if(index>=AFR2_N_COUNT)index=AFR2_N_HOME;
@@ -422,6 +424,9 @@ void Afr2Menu_Item(uint8_t node,uint8_t index,Afr2MenuItem *out) {
     Afr2MenuNode n;Afr2Menu_Node(node,&n);
     if(index>=n.count)index=n.count-1;
     if(node==AFR2_N_WIFI_SETUP){if(!index){memset(out,0,sizeof(*out));strcpy(out->label,"Traer credenciales ESP");out->target=255;out->action=AFR2_A_WIFI_READ_CREDENTIALS;return;}--index;}
+    if(node==AFR2_N_WIFI && index>=4){
+        if(index<6){memset(out,0,sizeof(*out));strcpy_P(out->label,index==4?PSTR("QR conectar AP"):PSTR("QR abrir Web"));out->target=index==4?AFR2_N_QR_AP:AFR2_N_QR_WEB;return;}index-=2;
+    }
     if(n.first&0x2000u){memcpy_P(out,&wifiReform[(n.first&0x1fffu)+index],sizeof(*out));return;}
     if(n.first&0x4000u){memcpy_P(out,&reform[(n.first&0x3fffu)+index],sizeof(*out));return;}
     if(node==AFR2_N_QUICK && index==6){memcpy_P(out,&extra[43],sizeof(*out));return;}

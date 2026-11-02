@@ -14,9 +14,9 @@ export interface DismissibleNoticeProps {
 
 /**
  * Aviso compartido cerrable con X para cabecera, modales y bloques de estado (VIS-018).
- * - Area tactil minima de 44×44 px, accesible por teclado y con foco visible.
- * - Cerrar oculta unicamente la representacion del mensaje; conserva el estado real de STOP, enlace y control.
- * - Texto multilinea sin desbordes.
+ * - Área táctil mínima de 44×44 px, accesible por teclado y con foco visible.
+ * - Cerrar oculta únicamente la representación del mensaje; conserva el estado real de STOP, enlace y control.
+ * - Texto multilínea sin desbordes.
  */
 export function DismissibleNotice({
   id,

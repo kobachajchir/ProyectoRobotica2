@@ -1,6 +1,6 @@
 import { frameModel } from '../../components/three/frameModel';
 import { InspectionEnvironment, useInspectionPalette } from '../../components/three/InspectionEnvironment';
-import { useEffect, useMemo, useRef, useState, type RefObject } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactNode, type RefObject } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Link } from 'react-router-dom';
 import { Box3, Vector3 } from 'three';
@@ -11,6 +11,7 @@ import { UiIcon } from '../../components/ui/UiIcon';
 import { getComponentAnchors, MODEL_COMPONENTS } from './modelComponents';
 import '../../styles/model-inspection.css';
 import { AssetInspection } from './AssetInspection';
+import { CombinedInspection } from './CombinedInspection';
 
 interface PointElements {
   button: HTMLButtonElement | null;
@@ -93,7 +94,7 @@ function ProjectedPoints({ anchors, elements }: {
   return null;
 }
 
-function CarInspection({ referencesVisible, onToggleReferences }: { referencesVisible: boolean; onToggleReferences: () => void }) {
+function CarInspection({ referencesVisible, onToggleReferences, action }: { referencesVisible: boolean; onToggleReferences: () => void; action?: ReactNode }) {
   const { scene, size, offset } = useRobotModel();
   const palette = useInspectionPalette();
   const anchors = useMemo(() => getComponentAnchors(scene, offset), [scene, offset]);
@@ -178,7 +179,7 @@ function CarInspection({ referencesVisible, onToggleReferences }: { referencesVi
     </div>
     <div className="afr2-model-inspection__viewport">
       <Canvas frameloop="demand" dpr={[1, 1.5]} camera={{ position: [.5, .4, .5], fov: 45, near: .005, far: 80 }}
-        fallback={<p className="afr2-model-inspection__fallback">WebGL no esta disponible. La vista Superior de Control sigue disponible.</p>}>
+        fallback={<p className="afr2-model-inspection__fallback">WebGL no está disponible. La vista Superior de Control sigue disponible.</p>}>
         <InspectionEnvironment palette={palette} extent={Math.max(size.x, size.y, size.z)} />
         <InspectionScene modelSize={size} anchors={anchors} elements={elements} referencesVisible={referencesVisible} />
       </Canvas>
@@ -217,17 +218,21 @@ function CarInspection({ referencesVisible, onToggleReferences }: { referencesVi
           <p className="afr2-help">{component.destination}</p>
         </footer>
       </aside>}
+      {action && <div className="afr2-model-inspection__cta">{action}</div>}
     </div>
     <p className="afr2-help afr2-model-inspection__help">{referencesVisible
-      ? 'Elegi un punto para conocer la pieza. Podes girar o acercar el modelo con la ficha abierta; cerrala con la X, Escape o un clic fuera.'
-      : 'Referencias ocultas. Podes girar y acercar el modelo; usa Mostrar referencias para explorar sus componentes.'}</p>
+      ? 'Elegí un punto para conocer la pieza. Podés girar o acercar el modelo con la ficha abierta; cerrala con la X, Escape o un clic fuera.'
+      : 'Referencias ocultas. Podés girar y acercar el modelo; usa Mostrar referencias para explorar sus componentes.'}</p>
   </div>;
 }
 
 /** Car keeps its detailed references; arm and cube use their exported assets. */
-export function ModelInspection({ model = 'auto', referencesVisible, onToggleReferences }: {
-  model?: 'auto' | 'brazo' | 'cubo'; referencesVisible: boolean; onToggleReferences: () => void;
+export function ModelInspection({ model = 'auto', referencesVisible, onToggleReferences, action }: {
+  model?: 'auto' | 'brazo' | 'cubo' | 'conjunto'; referencesVisible: boolean; onToggleReferences: () => void;
+  /** AFR2-20261102-01: acción abajo a la derecha del visor (p. ej. «Ir a simulación»). */
+  action?: ReactNode;
 }) {
-  if (model === 'auto') return <CarInspection referencesVisible={referencesVisible} onToggleReferences={onToggleReferences} />;
-  return <AssetInspection model={model} referencesVisible={referencesVisible} onToggleReferences={onToggleReferences} />;
+  if (model === 'auto') return <CarInspection referencesVisible={referencesVisible} onToggleReferences={onToggleReferences} action={action} />;
+  if (model === 'conjunto') return <CombinedInspection referencesVisible={referencesVisible} onToggleReferences={onToggleReferences} action={action} />;
+  return <AssetInspection model={model} referencesVisible={referencesVisible} onToggleReferences={onToggleReferences} action={action} />;
 }

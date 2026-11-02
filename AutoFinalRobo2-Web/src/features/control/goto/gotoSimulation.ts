@@ -15,7 +15,7 @@ export type GotoCommand = { id: string } & (
   | { kind: 'point'; xMm: number; yMm: number }
 );
 export const GOTO_DIRECTIONS: Record<GotoDirection, string> = {
-  forward: 'Adelante', backward: 'Atras', left: 'Izquierda', right: 'Derecha',
+  forward: 'Adelante', backward: 'Atrás', left: 'Izquierda', right: 'Derecha',
 };
 export const GOTO_MAX_COMMANDS = EDITOR_MAX_BLOCKS_PER_TRACK;
 export const GOTO_POINT_STEP_MM = 100;
@@ -50,9 +50,9 @@ export function planGotoCommands(commands: readonly GotoCommand[], maxSpeedMmS: 
     }
     if (!Number.isFinite(end.xMm) || !Number.isFinite(end.yMm) || Math.abs(end.xMm) > GOTO_WORLD_LIMIT_MM || Math.abs(end.yMm) > GOTO_WORLD_LIMIT_MM) return fail('El recorrido debe mantenerse entre −50 y 50 m por eje.');
     const length = Math.hypot(end.xMm - start.xMm, end.yMm - start.yMm);
-    if (length < 1) return fail('Un destino coincide con el punto anterior. Elegi otro punto o quita ese comando.');
+    if (length < 1) return fail('Un destino coincide con el punto anterior. Elegí otro punto o quitá ese comando.');
     const duration = Math.max(10, Math.ceil(length / maxSpeedMmS * 100) * 10);
-    if (time + duration > EDITOR_MAX_DURATION_MS) return fail('La simulacion completa admite hasta 10 minutos.');
+    if (time + duration > EDITOR_MAX_DURATION_MS) return fail('La simulación completa admite hasta 10 minutos.');
     segments.push({ id: command.id, start, end, startMs: time, endMs: time + duration, distanceMm: length });
     start = end; time += duration; distance += length;
   }

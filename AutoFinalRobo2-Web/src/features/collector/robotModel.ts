@@ -50,7 +50,7 @@ export const PVC32_V03: RobotModelDefinition = {
     joint('j2', 'J2 · Hombro', .113, [0, 1, 0], -10, 125, 'j1', .016),
     joint('j3', 'J3 · Codo', .130, [0, 1, 0], -90, 90, 'j2', .016),
     joint('j4', 'J4 · Giro de muñeca', .120, [0, 0, 1], -90, 90, 'j3', .012),
-    joint('j5', 'J5 · Inclinacion', .055, [0, 1, 0], -90, 90, 'j4', .012),
+    joint('j5', 'J5 · Inclinación', .055, [0, 1, 0], -90, 90, 'j4', .012),
     joint('j6', 'J6 · Herramienta', .065, [0, 0, 1], -90, 90, 'j5', .012)],
   tcp: identity([0, 0, .0785]),
   gripper: { min: 4.00708355144542, max: 79.40530723760045, open: 60.011,
@@ -69,7 +69,7 @@ export const PVC32_V03: RobotModelDefinition = {
   initial: [0, 15, -40, 0, 25, 0], transport: [0, 15, -40, 0, 25, 0],
   seeds: [[0, 45, -60, 0, 90, 0], [0, 80, 30, 0, 60, 0], [60, 20, -60, 0, 40, 0], [-60, 20, -60, 0, 40, 0]],
   speedDegS: 35, downward: 'zyyzyz',
-  source: 'AutoFinalRobo2-CAD/mecanica/brazo-antropomorfo/parametros_prototipo_v03.csv; revision_v03/modelo_v03.json; tcp_offset. Proxies Web aproximados.',
+  source: 'AutoFinalRobo2-CAD/mecánica/brazo-antropomorfo/parametros_prototipo_v03.csv; revision_v03/modelo_v03.json; tcp_offset. Proxies Web aproximados.',
 };
 /** Register future descriptors here. Loading a GLB is not rig inference. */
 export const PVC25_V17 = pvc25V17 as RobotModelDefinition;
@@ -88,7 +88,7 @@ export function modelProblems(m: RobotModelDefinition): string[] {
   const transform = (t: RigidTransform) => t && vector(t.position, 3) && vector(t.quaternion, 4) && Math.abs(Math.hypot(...t.quaternion) - 1) < .0001;
   if (m.units !== 'm' || !m.id || !m.revision || !m.mountFrame || !m.tcpFrame) errors.push('Faltan unidades, identidad o marcos.');
   if (!m.joints.length || !transform(m.tcp) || !transform(m.mounts.mounted) || !transform(m.mounts.standalone)) errors.push('Cadena, TCP o montaje incompletos.');
-  if (!vector(m.renderBasis, 4) || Math.abs(Math.hypot(...m.renderBasis) - 1) > .0001 || !transform(m.cadToRobot)) errors.push('Conversion de coordenadas incompleta.');
+  if (!vector(m.renderBasis, 4) || Math.abs(Math.hypot(...m.renderBasis) - 1) > .0001 || !transform(m.cadToRobot)) errors.push('Conversión de coordenadas incompleta.');
   m.joints.forEach((j, i) => {
     if (!j.id || m.joints.findIndex(k => k.id === j.id) !== i || j.parent !== (i ? m.joints[i - 1].id : null)
       || !vector(j.axis, 3) || Math.abs(Math.hypot(...j.axis) - 1) > .0001 || !transform(j.origin)
@@ -97,12 +97,12 @@ export function modelProblems(m: RobotModelDefinition): string[] {
   if (![m.gripper.min, m.gripper.max, m.gripper.open, m.speedDegS].every(Number.isFinite) || m.gripper.min > m.gripper.max || m.speedDegS <= 0) errors.push('Gripper o velocidad invalidos.');
   if (m.gripper.open < m.gripper.min || m.gripper.open > m.gripper.max || !vector(m.gripper.travelAxis, 3) || Math.abs(Math.hypot(...m.gripper.travelAxis) - 1) > .0001
     || !Number.isFinite(m.gripper.metersPerOpeningMm) || m.gripper.metersPerOpeningMm <= 0) errors.push('Movimiento de mordazas incompleto.');
-  if (m.collision.boxes.some(box => !vector(box.center, 3) || !vector(box.size, 3) || box.size.some(v => v <= 0))) errors.push('Geometria de exclusion invalida.');
+  if (m.collision.boxes.some(box => !vector(box.center, 3) || !vector(box.size, 3) || box.size.some(v => v <= 0))) errors.push('Geometría de exclusión invalida.');
   if (m.visual.kind === 'gltf' && (!m.visual.url || !m.visual.restToMount || !transform(m.visual.restToMount) || m.joints.some(j => !j.visualNode) || !m.gripper.visualNodes.every(Boolean)
-    || !m.visual.restAngles || m.visual.restAngles.length !== m.joints.length || !m.visual.restAngles.every(Number.isFinite) || !Number.isFinite(m.visual.restOpening))) errors.push('Archivo, transformacion, postura de exportacion o nodos del rig GLB incompletos.');
+    || !m.visual.restAngles || m.visual.restAngles.length !== m.joints.length || !m.visual.restAngles.every(Number.isFinite) || !Number.isFinite(m.visual.restOpening))) errors.push('Archivo, transformación, postura de exportación o nodos del rig GLB incompletos.');
   if (m.visual.followers?.some(f => !f.visualNode || !Number.isInteger(f.parentIndex) || !Number.isInteger(f.driverIndex)
     || !m.joints[f.parentIndex] || !m.joints[f.driverIndex] || !transform(f.origin) || !vector(f.axis, 3) || Math.abs(Math.hypot(...f.axis) - 1) > .0001
-    || !Number.isFinite(f.ratio) || (f.gripperRadiansPerMm !== undefined && !Number.isFinite(f.gripperRadiansPerMm)))) errors.push('Transmision visual incompleta.');
-  if (![m.initial, m.transport, ...m.seeds].every(q => q.length === m.joints.length && q.every((a, i) => Number.isFinite(a) && a >= m.joints[i].min && a <= m.joints[i].max))) errors.push('Posturas fuera de limites.');
+    || !Number.isFinite(f.ratio) || (f.gripperRadiansPerMm !== undefined && !Number.isFinite(f.gripperRadiansPerMm)))) errors.push('Transmisión visual incompleta.');
+  if (![m.initial, m.transport, ...m.seeds].every(q => q.length === m.joints.length && q.every((a, i) => Number.isFinite(a) && a >= m.joints[i].min && a <= m.joints[i].max))) errors.push('Posturas fuera de límites.');
   return errors;
 }
