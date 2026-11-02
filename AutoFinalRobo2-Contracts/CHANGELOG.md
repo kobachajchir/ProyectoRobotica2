@@ -1,3 +1,7 @@
+## AFR2-20261102-21 - 02/11/2026
+
+Radar de la Web como instrumento: etiquetas HTML nítidas, plato con brillo radial, anillos y marcas con jerarquía, sector y haz con caída suave, ecos con halo, pulso y contorno, escala uniforme entre 25 cm y 2 m, chip y leyenda unificados y visor compacto en celular. Verificado en navegador local con ecos de muestra temporales; sin robot ni compilación. [Ficha](changes/2026-11-02-21-radar-instrument-redesign.md).
+
 ## AFR2-20261102-18 - 02/11/2026
 
 Radar: alcances confirmados 25 cm / 50 cm / 1 m / 2 m en Web, menú ATmega y copia OLED vinculada. Reforma visual con manual 0.1.11, vista superior inicial, haz por capas y pulso breve por eco válido. Solo fuente; sin tests, build, validaciones, navegador ni flasheos. [Ficha](changes/2026-11-02-18-radar-visual-and-ranges.md) · [Contrato](contracts/RADAR_SCALES_20261102.md).

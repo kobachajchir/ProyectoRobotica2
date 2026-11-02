@@ -1,3 +1,5 @@
+> **AFR2-20261102-21:** radar de la Web rediseñado como instrumento, revisado en las cuatro escalas. [Ficha](changes/2026-11-02-21-radar-instrument-redesign.md).
+
 > **AFR2-20261102-14:** dashboard con tarjeta de estados por inactividad y familia OLED alineada AVR/Web. [Contrato](contracts/OLED_DASHBOARD_STATUS_20261102.md). Fuentes y recursos copiados, sin pruebas/build/validaciones/navegador/flasheo.
 
 > **AFR2-20261102-14:** [Manual visual 0.1.11](docs/design-system/index.md) ampliado de forma aditiva con toda la identidad de Infraestructura: reglas por contexto, atlas completo, componentes, tokens y dos láminas explicativas. Contenido anterior conservado. Solo documentación, sin tests, compilación, validaciones ni navegador. [Ficha](changes/2026-11-02-14-visual-manual-infrastructure-integration.md).

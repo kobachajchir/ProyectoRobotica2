@@ -9,6 +9,11 @@ import { RobotModel } from '../../components/three/RobotModel';
 import { advanceServo } from '../../components/three/servoMotion';
 import type { RangeSample } from '../../protocol/sensorHead';
 
+/* AFR2-20261102-21 — Radar como instrumento: plato semicircular con degradado, anillos con
+   jerarquía, marcas angulares, sector de escaneo, haz con estela suave, ecos con halo y contorno.
+   Las etiquetas son HTML (tokens del manual, nítidas en cualquier escala) proyectadas desde la
+   escena una vez por cambio de cámara; no hay bucle de dibujo continuo. */
+
 const SENSOR_Z = -.1028;
 type Point = [number, number, number];
 const point = (angle: number, radius: number, height = .018): Point => [
@@ -18,17 +23,24 @@ function arc(radius: number, height: number, from = 0, to = 180): Point[] {
   const count = Math.max(3, Math.ceil((to - from) / 2.5) + 1);
   return Array.from({ length: count }, (_, i) => point(from + (to - from) * i / (count - 1), radius, height));
 }
-function sector(radius: number, from: number, to: number) {
+function sector(radius: number, from: number, to: number, inner = 0) {
   const shape = new Shape();
-  shape.moveTo(0, 0);
-  shape.lineTo(Math.cos(from * Math.PI / 180) * radius, Math.sin(from * Math.PI / 180) * radius);
-  shape.absarc(0, 0, radius, from * Math.PI / 180, to * Math.PI / 180, false);
-  shape.lineTo(0, 0);
+  const a = from * Math.PI / 180, b = to * Math.PI / 180;
+  shape.moveTo(Math.cos(a) * inner, Math.sin(a) * inner);
+  shape.lineTo(Math.cos(a) * radius, Math.sin(a) * radius);
+  shape.absarc(0, 0, radius, a, b, false);
+  if (inner > 0) shape.absarc(0, 0, inner, b, a, true); else shape.lineTo(0, 0);
   return shape;
 }
 
-/** Volumetric strokes with a restrained halo; no postprocessing or decorative render loop. */
-function NeonLine({ points, color, radius, opacity = 1, glow = false }: {
+/** Distancia legible por escala: centímetros por debajo de 1 m, metros desde 1 m. */
+export function formatRadarDistance(meters: number) {
+  return meters < 1
+    ? `${(meters * 100).toLocaleString('es-AR', { maximumFractionDigits: 2 })} cm`
+    : `${meters.toLocaleString('es-AR', { maximumFractionDigits: 2 })} m`;
+}
+
+function Stroke({ points, color, radius, opacity = 1, glow = false }: {
   points: Point[]; color: string; radius: number; opacity?: number; glow?: boolean;
 }) {
   const geometry = useMemo(() => {
@@ -43,31 +55,35 @@ function NeonLine({ points, color, radius, opacity = 1, glow = false }: {
       <meshBasicMaterial color={color} transparent opacity={opacity} toneMapped={false} depthWrite={false} />
     </mesh>
     {glow && <mesh>
-      <tubeGeometry args={[geometry.parameters.path, geometry.parameters.tubularSegments, radius * 3.5, 6, false]} />
-      <meshBasicMaterial color={color} transparent opacity={opacity * .12} blending={AdditiveBlending}
-        toneMapped={false} depthWrite={false} />
+      <tubeGeometry args={[geometry.parameters.path, geometry.parameters.tubularSegments, radius * 3.2, 6, false]} />
+      <meshBasicMaterial color={color} transparent opacity={opacity * .14} blending={AdditiveBlending} toneMapped={false} depthWrite={false} />
     </mesh>}
   </group>;
 }
 
 export type RadarView = 'perspective' | 'top';
-function Camera({ range, view }: { range: number; view: RadarView }) {
+export interface RadarLabel { key: string; text: string; anchor: Point; kind: 'ring' | 'angle' | 'front'; minor?: boolean }
+interface ScreenLabel extends Omit<RadarLabel, 'anchor'> { x: number; y: number }
+
+function Camera({ range, view, labels, onLabels }: { range: number; view: RadarView; labels: RadarLabel[]; onLabels: (labels: ScreenLabel[]) => void }) {
   const { camera, size, invalidate } = useThree();
   useEffect(() => {
-    const center = SENSOR_Z - range * .38;
+    const center = SENSOR_Z - range * .42;
     if (view === 'top') {
       camera.position.set(0, 8, center); camera.up.set(0, 0, -1);
     } else {
-      camera.position.set(range * .15, 6, center + 5.2); camera.up.set(0, 1, 0);
+      camera.position.set(range * .12, 6, center + 5.6); camera.up.set(0, 1, 0);
     }
     camera.lookAt(0, 0, center); camera.updateMatrixWorld(true);
-    // Fit the projected field and the real car, rather than a largely empty rectangle.
-    const bounds: Point[] = [...arc(range * 1.2, .03), [-.23, 0, .3], [.23, .23, .3], [-.23, .23, SENSOR_Z]];
+    // Encuadre: el plato con lugar para las etiquetas angulares y el auto real detrás del sensor.
+    // El auto entra completo desde 1 m; en alcances cortos solo su frente, para que el plato mande.
+    const car = Math.min(.3, range * .32);
+    const bounds: Point[] = [...arc(range * 1.16, .03), point(0, range * 1.25), point(180, range * 1.25), [-Math.min(.2, range * .5), 0, SENSOR_Z + car], [Math.min(.2, range * .5), .05, SENSOR_Z + car]];
     const projected = bounds.map(p => new Vector3(...p).applyMatrix4(camera.matrixWorldInverse));
     const xs = projected.map(p => p.x), ys = projected.map(p => p.y);
     const left = Math.min(...xs), right = Math.max(...xs), bottom = Math.min(...ys), top = Math.max(...ys);
     camera.translateX((left + right) / 2); camera.translateY((bottom + top) / 2);
-    const margin = range * .08 + .06;
+    const margin = range * .03 + .02;
     const aspect = Math.max(size.width, 1) / Math.max(size.height, 1);
     const height = Math.max(top - bottom + margin * 2, (right - left + margin * 2) / aspect);
     if (camera instanceof OrthographicCamera) {
@@ -75,7 +91,11 @@ function Camera({ range, view }: { range: number; view: RadarView }) {
       camera.top = height / 2; camera.bottom = -camera.top;
     }
     camera.updateProjectionMatrix(); camera.updateMatrixWorld(true); invalidate();
-  }, [camera, size.width, size.height, range, view, invalidate]);
+    onLabels(labels.map(({ anchor, ...label }) => {
+      const ndc = new Vector3(...anchor).project(camera);
+      return { ...label, x: (ndc.x + 1) / 2 * size.width, y: (1 - ndc.y) / 2 * size.height };
+    }));
+  }, [camera, size.width, size.height, range, view, invalidate, labels, onLabels]);
   return null;
 }
 
@@ -86,41 +106,75 @@ interface Props {
 }
 function readPalette() {
   const css = getComputedStyle(document.documentElement);
-  return {
-    floor: css.getPropertyValue('--radar-floor').trim(),
-    grid: css.getPropertyValue('--map-grid-strong').trim(),
-    text: css.getPropertyValue('--text-muted').trim(),
-    accent: css.getPropertyValue('--action').trim(),
-  };
+  const get = (name: string) => css.getPropertyValue(name).trim();
+  return { floor: get('--radar-floor'), grid: get('--map-grid-strong'), text: get('--text-muted'), accent: get('--action'), surface: get('--surface-solid') };
 }
 type Palette = ReturnType<typeof readPalette>;
 
-function PlotLabel({ text, position, color, scale }: { text: string; position: Point; color: string; scale: number }) {
-  const texture = useMemo(() => {
-    const canvas = document.createElement('canvas'); canvas.width = 256; canvas.height = 80;
-    const ctx = canvas.getContext('2d')!;
-    ctx.font = '500 36px ui-monospace, monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillStyle = color; ctx.fillText(text, 128, 40);
-    return new CanvasTexture(canvas);
-  }, [text, color]);
-  useEffect(() => () => texture.dispose(), [texture]);
-  return <sprite position={position} scale={[scale * 3.2, scale, 1]}>
-    <spriteMaterial map={texture} transparent depthTest={false} depthWrite={false} toneMapped={false} />
-  </sprite>;
-}
-
-function Needle({ angle, range, color, muted }: { angle: number; range: number; color: string; muted: boolean }) {
-  const group = useRef<Group>(null), velocity = useRef(0), { invalidate } = useThree();
-  const initialized = useRef(false);
-  const [reduce, setReduce] = useState(() => matchMedia('(prefers-reduced-motion: reduce)').matches);
-  const target = (angle - 90) * Math.PI / 180;
-  const points = useMemo<Point[]>(() => [[0, .095, 0], [0, .095, -range]], [range]);
-  const fan = useMemo(() => sector(range, 82.5, 97.5), [range]);
-  const bands = useMemo(() => [0, 1, 2, 3].map(i => sector(range, 82.5 + i * 1.5, 97.5 - i * 1.5)), [range]);
+const reducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+function useReducedMotion() {
+  const [reduce, setReduce] = useState(reducedMotion);
   useEffect(() => {
     const q = matchMedia('(prefers-reduced-motion: reduce)'), change = () => setReduce(q.matches);
     q.addEventListener('change', change); return () => q.removeEventListener('change', change);
   }, []);
+  return reduce;
+}
+
+/** Plato del radar: degradado radial dentro del semicírculo y grilla de puntos que se apaga afuera. */
+function Dish({ range, palette, dark }: { range: number; palette: Palette; dark: boolean }) {
+  const uniforms = useMemo(() => ({
+    uGrid: { value: new Color(palette.grid) }, uAccent: { value: new Color(palette.accent) },
+    uRange: { value: range }, uStep: { value: range / 8 }, uDark: { value: dark ? 1 : 0 },
+  }), [range, palette.grid, palette.accent, dark]);
+  return <mesh position={[0, -.008, SENSOR_Z]} rotation={[-Math.PI / 2, 0, 0]}>
+    <planeGeometry args={[range * 2.9 + .6, range * 2.9 + .6]} />
+    <shaderMaterial uniforms={uniforms} transparent depthWrite={false}
+      vertexShader={`varying vec2 vPoint;
+        void main(){vPoint=position.xy;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`}
+      fragmentShader={`varying vec2 vPoint;
+        uniform vec3 uGrid;uniform vec3 uAccent;uniform float uRange;uniform float uStep;uniform float uDark;
+        void main(){
+          float r=length(vPoint)/uRange;
+          float inside=step(0.0,vPoint.y)*(1.0-smoothstep(.995,1.005,r));
+          vec2 cell=abs(fract(vPoint/uStep)-.5)*uStep;
+          float dot=1.0-smoothstep(0.0,1.6*length(fwidth(vPoint)),length(cell));
+          float fade=1.0-smoothstep(.85,1.45,r);
+          float core=exp(-r*r*7.0);
+          float dish=inside*(mix(.13,.05,r)+core*.12)*mix(.8,1.0,uDark);
+          float rim=inside*smoothstep(.9,1.0,r)*.06;
+          float alpha=dot*.24*fade*(1.0-inside*.6)+dish+rim;
+          vec3 color=mix(uGrid,uAccent,inside*core*.9);
+          gl_FragColor=vec4(color,alpha);
+          #include <tonemapping_fragment>
+          #include <colorspace_fragment>
+        }`} />
+  </mesh>;
+}
+
+/** Marcas angulares: menores cada 5°, medias cada 10° y mayores cada 30°. */
+function Ticks({ range, color }: { range: number; color: string }) {
+  const geometry = useMemo(() => new BufferGeometry().setFromPoints(
+    Array.from({ length: 37 }, (_, i) => {
+      const a = i * 5, major = a % 30 === 0, mid = a % 10 === 0;
+      return [point(a, range * 1.008, .016), point(a, range * (major ? 1.06 : mid ? 1.035 : 1.02), .016)];
+    }).flat().map(p => new Vector3(...p)),
+  ), [range]);
+  useEffect(() => () => geometry.dispose(), [geometry]);
+  return <lineSegments>
+    <primitive object={geometry} attach="geometry" dispose={null} />
+    <lineBasicMaterial color={color} transparent opacity={.7} depthWrite={false} />
+  </lineSegments>;
+}
+
+/** Haz del sensor: cono de ±9° con caída angular y radial, línea central y punta luminosa. */
+function Beam({ angle, range, color, muted }: { angle: number; range: number; color: string; muted: boolean }) {
+  const group = useRef<Group>(null), velocity = useRef(0), initialized = useRef(false), { invalidate } = useThree();
+  const reduce = useReducedMotion();
+  const target = (angle - 90) * Math.PI / 180;
+  const line = useMemo<Point[]>(() => [[0, .02, 0], [0, .02, -range]], [range]);
+  const cone = useMemo(() => sector(range, 81, 99), [range]);
+  const uniforms = useMemo(() => ({ uColor: { value: new Color(color) }, uRange: { value: range }, uStrength: { value: muted ? .25 : 1 } }), [color, range, muted]);
   useEffect(() => {
     if ((!initialized.current || reduce) && group.current) { group.current.rotation.y = target; velocity.current = 0; initialized.current = true; }
     invalidate();
@@ -133,139 +187,132 @@ function Needle({ angle, range, color, muted }: { angle: number; range: number; 
     const [value, v] = advanceServo(group.current.rotation.y, velocity.current, target, Math.min(delta, .05));
     group.current.rotation.y = reduce ? target : value; velocity.current = reduce ? 0 : v; invalidate();
   });
+  const tip = range * .011;
   return <group ref={group} position={[0, 0, SENSOR_Z]}>
-    <mesh position={[0, .014, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-      <shapeGeometry args={[fan, 48]} />
-      <meshBasicMaterial color={color} transparent opacity={muted ? .02 : .065} depthWrite={false} side={DoubleSide} />
+    <mesh position={[0, .015, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+      <shapeGeometry args={[cone, 48]} />
+      <shaderMaterial uniforms={uniforms} transparent depthWrite={false} side={DoubleSide}
+        vertexShader={`varying vec2 vPoint;void main(){vPoint=position.xy;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`}
+        fragmentShader={`varying vec2 vPoint;uniform vec3 uColor;uniform float uRange;uniform float uStrength;
+          void main(){
+            float r=length(vPoint)/uRange;
+            float off=abs(atan(vPoint.x,vPoint.y))/radians(9.0);
+            float alpha=pow(max(0.0,1.0-off),1.8)*mix(.34,.08,r)*uStrength;
+            gl_FragColor=vec4(uColor,alpha);
+            #include <colorspace_fragment>
+          }`} />
     </mesh>
-    {bands.map((shape, i) => <mesh key={i} position={[0, .016 + i * .001, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-      <shapeGeometry args={[shape, 48]} />
-      <meshBasicMaterial color={color} transparent opacity={muted ? .005 : .018 + i * .008} depthWrite={false} side={DoubleSide} />
-    </mesh>)}
-    <NeonLine points={points} color={color} radius={Math.max(.0015, range * .0018)} opacity={muted ? .4 : 1} glow />
+    <Stroke points={line} color={color} radius={range * .0021} opacity={muted ? .45 : 1} glow={!muted} />
+    <mesh position={[0, .022, -range]}>
+      <sphereGeometry args={[tip, 16, 10]} />
+      <meshBasicMaterial color={color} transparent opacity={muted ? .45 : 1} toneMapped={false} />
+    </mesh>
+    <mesh position={[0, .021, -range]} rotation={[-Math.PI / 2, 0, 0]}>
+      <circleGeometry args={[tip * 2.6, 24]} />
+      <meshBasicMaterial color={color} transparent opacity={muted ? .06 : .18} toneMapped={false} depthWrite={false} />
+    </mesh>
   </group>;
 }
 
-/** A finite arrival signal for a real, fresh echo; never a simulated scan. */
+/** Señal breve de llegada para un eco real y reciente; nunca un barrido simulado. */
 function EchoPulse({ position, radius, color }: { position: Point; radius: number; color: string }) {
   const mesh = useRef<Mesh>(null), material = useRef<MeshBasicMaterial>(null), elapsed = useRef(0);
   const { invalidate } = useThree();
-  const [reduce, setReduce] = useState(() => matchMedia('(prefers-reduced-motion: reduce)').matches);
-  useEffect(() => {
-    const query = matchMedia('(prefers-reduced-motion: reduce)'), update = () => { setReduce(query.matches); invalidate(); };
-    query.addEventListener('change', update); invalidate();
-    return () => query.removeEventListener('change', update);
-  }, [invalidate]);
+  const reduce = useReducedMotion();
+  useEffect(() => { invalidate(); }, [invalidate]);
   useFrame((_, delta) => {
     if (!mesh.current || !material.current) return;
-    if (reduce || elapsed.current >= .3) { mesh.current.visible = false; return; }
-    elapsed.current = Math.min(.3, elapsed.current + Math.min(delta, .05));
-    const t = elapsed.current / .3, eased = 1 - Math.pow(1 - t, 3);
-    mesh.current.scale.setScalar(1 + eased * 2);
-    material.current.opacity = .6 * (1 - t);
+    if (reduce || elapsed.current >= .45) { mesh.current.visible = false; return; }
+    elapsed.current = Math.min(.45, elapsed.current + Math.min(delta, .05));
+    const t = elapsed.current / .45, eased = 1 - Math.pow(1 - t, 3);
+    mesh.current.scale.setScalar(1 + eased * 2.6);
+    material.current.opacity = .7 * (1 - t);
     invalidate();
   });
   return <mesh ref={mesh} position={position} rotation={[-Math.PI / 2, 0, 0]} visible={!reduce}>
-    <ringGeometry args={[radius * 1.6, radius * 1.9, 40]} />
+    <ringGeometry args={[radius * 1.5, radius * 1.85, 40]} />
     <meshBasicMaterial ref={material} color={color} transparent opacity={0} side={DoubleSide} depthWrite={false} toneMapped={false} />
   </mesh>;
 }
 
-// A single transparent grid plane replaces the disconnected solid pedestals.
-// The radial fade keeps the scene part of the workspace, including when there are no echoes.
-function FloorGrid({ range, palette }: { range: number; palette: Palette }) {
-  const uniforms = useMemo(() => ({
-    uGrid: { value: new Color(palette.grid) }, uAccent: { value: new Color(palette.accent) },
-    uRange: { value: range }, uStep: { value: range / 4 },
-  }), [range, palette.grid, palette.accent]);
-  return <mesh position={[0, -.008, SENSOR_Z]} rotation={[-Math.PI / 2, 0, 0]}>
-    <planeGeometry args={[range * 2.7 + .6, range * 2.7 + .6]} />
-    <shaderMaterial uniforms={uniforms} transparent depthWrite={false}
-      vertexShader={`varying vec2 vPoint;
-        void main(){vPoint=position.xy;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`}
-      fragmentShader={`varying vec2 vPoint;
-        uniform vec3 uGrid;uniform vec3 uAccent;uniform float uRange;uniform float uStep;
-        void main(){
-          vec2 distanceToLine=abs(fract(vPoint/uStep-.5)-.5)*uStep;
-          vec2 pixels=distanceToLine/max(fwidth(vPoint),vec2(.00001));
-          float line=1.0-min(min(pixels.x,pixels.y),1.0);
-          float radius=length(vPoint)/uRange;
-          float fade=1.0-smoothstep(.72,1.28,radius);
-          float halo=exp(-radius*radius*5.0)*.045;
-          float alpha=(line*.18+halo)*fade;
-          gl_FragColor=vec4(mix(uGrid,uAccent,halo*5.0),alpha);
-          #include <tonemapping_fragment>
-          #include <colorspace_fragment>
-        }`} />
-  </mesh>;
-}
-
-function Marks({ range, color }: { range: number; color: string }) {
-  const geometry = useMemo(() => new BufferGeometry().setFromPoints(
-    Array.from({ length: 37 }, (_, i) => [point(i * 5, range * 1.015), point(i * 5, range * (i % 3 ? 1.028 : 1.05))])
-      .flat().map(p => new Vector3(...p)),
-  ), [range]);
-  useEffect(() => () => geometry.dispose(), [geometry]);
-  return <lineSegments>
-    <primitive object={geometry} attach="geometry" dispose={null} />
-    <lineBasicMaterial color={color} transparent opacity={.55} depthWrite={false} />
-  </lineSegments>;
-}
-
-function CarShadow({ color }: { color: string }) {
+function CarShadow({ dark }: { dark: boolean }) {
   const texture = useMemo(() => {
     const canvas = document.createElement('canvas'); canvas.width = canvas.height = 64;
     const ctx = canvas.getContext('2d')!, gradient = ctx.createRadialGradient(32, 32, 3, 32, 32, 32);
-    gradient.addColorStop(0, 'rgba(0,0,0,.26)'); gradient.addColorStop(1, 'rgba(0,0,0,0)');
+    gradient.addColorStop(0, 'rgba(0,0,0,.32)'); gradient.addColorStop(1, 'rgba(0,0,0,0)');
     ctx.fillStyle = gradient; ctx.fillRect(0, 0, 64, 64);
     return new CanvasTexture(canvas);
   }, []);
   useEffect(() => () => texture.dispose(), [texture]);
   return <mesh position={[0, -.003, .035]} rotation={[-Math.PI / 2, 0, 0]}>
-    <planeGeometry args={[.46, .56]} />
-    <meshBasicMaterial map={texture} color={color} transparent opacity={.65} depthWrite={false} />
+    <planeGeometry args={[.5, .6]} />
+    <meshBasicMaterial map={texture} transparent opacity={dark ? .8 : .4} depthWrite={false} />
   </mesh>;
 }
 
-function Plot({ range, angle, enabled, points, currentId, historical, scanMin, scanMax, preview, view, dark, palette }: Props & { palette: Palette }) {
-  const { grid, accent, text } = palette;
-  const radius = Math.max(.0009, range * .0009);
-  const arcs = useMemo(() => [1, 2, 3, 4].map(n => arc(range * n / 4, .014)), [range]);
-  const selected = useMemo(() => [1, 2, 3, 4].map(n => arc(range * n / 4, .017, scanMin, scanMax)), [range, scanMin, scanMax]);
-  const rays = useMemo(() => [30, 60, 90, 120, 150].map(a => [point(a, 0, .01), point(a, range, .01)]), [range]);
+function Plot({ range, angle, enabled, points, currentId, historical, scanMin, scanMax, preview, view, dark, palette, onLabels }: Props & { palette: Palette; onLabels: (labels: ScreenLabel[]) => void }) {
+  const { grid, accent } = palette;
+  const line = range * .0011;
+  const rings = useMemo(() => [1, 2, 3, 4].map(n => arc(range * n / 4, .013)), [range]);
+  const halfRings = useMemo(() => [1, 3, 5, 7].map(n => arc(range * n / 8, .012)), [range]);
+  const rays = useMemo(() => [30, 60, 90, 120, 150].map(a => [point(a, range * .06, .011), point(a, range, .011)]), [range]);
+  const baseline = useMemo<Point[]>(() => [point(180, range, .012), point(0, range, .012)], [range]);
   const bounds = useMemo(() => [scanMin, scanMax].map(a => [point(a, 0, .019), point(a, range, .019)]), [range, scanMin, scanMax]);
+  const zoneEdge = useMemo(() => arc(range, .02, scanMin, scanMax), [range, scanMin, scanMax]);
   const zone = useMemo(() => sector(range, scanMin, scanMax), [range, scanMin, scanMax]);
-  const bright = useMemo(() => `#${new Color(accent).lerp(new Color('#ffffff'), dark ? .28 : .03).getHexString()}`, [accent, dark]);
-  const latest = !historical && currentId ? points.find(p => p.sampleId === currentId && p.valid && p.distanceMm !== null && p.distanceMm <= range * 1000) : undefined;
+  const bright = useMemo(() => `#${new Color(accent).lerp(new Color('#ffffff'), dark ? .22 : 0).getHexString()}`, [accent, dark]);
+  const visible = useMemo(() => points.filter(p => p.valid && p.distanceMm !== null && p.distanceMm <= range * 1000)
+    .slice().sort((a, b) => a.angleDeg - b.angleDeg), [points, range]);
+  // Contorno: une ecos vecinos (≤ 10°) para leer la silueta de lo detectado.
+  const contours = useMemo(() => {
+    const runs: Point[][] = []; let run: Point[] = [];
+    visible.forEach((p, i) => {
+      const at = point(p.angleDeg, p.distanceMm! / 1000, .021);
+      if (i && p.angleDeg - visible[i - 1].angleDeg > 10) { if (run.length > 1) runs.push(run); run = []; }
+      run.push(at);
+    });
+    if (run.length > 1) runs.push(run);
+    return runs;
+  }, [visible]);
+  const labels = useMemo<RadarLabel[]>(() => [
+    ...[1, 2, 3, 4].map(n => ({ key: `r${n}`, kind: 'ring' as const, minor: n % 2 === 1, text: formatRadarDistance(range * n / 4), anchor: point(0, range * n / 4, .02) })),
+    ...[0, 30, 60, 120, 150, 180].map(a => ({ key: `a${a}`, kind: 'angle' as const, text: `${a}°`, anchor: point(a, range * 1.12, .02) })),
+    { key: 'front', kind: 'front' as const, text: '90° · frente', anchor: point(90, range * 1.12, .02) },
+  ], [range]);
+  const latest = !historical && currentId ? visible.find(p => p.sampleId === currentId) : undefined;
+  const dot = range * .0105;
   return <>
-    <Camera range={range} view={view} />
-    <FloorGrid range={range} palette={palette} />
-    {arcs.map((p, i) => <NeonLine key={i} points={p} color={grid} radius={radius * .7} opacity={.4} />)}
-    {rays.map((p, i) => <NeonLine key={i} points={p} color={grid} radius={radius * .45} opacity={.19} />)}
-    <Marks range={range} color={grid} />
+    <Camera range={range} view={view} labels={labels} onLabels={onLabels} />
+    <Dish range={range} palette={palette} dark={dark} />
+    {halfRings.map((p, i) => <Stroke key={`h${i}`} points={p} color={grid} radius={line * .45} opacity={dark ? .4 : .3} />)}
+    {rings.map((p, i) => <Stroke key={i} points={p} color={grid} radius={line * (i === 3 ? 1.3 : .85)} opacity={i === 3 ? 1 : dark ? .85 : .7} />)}
+    {rays.map((p, i) => <Stroke key={i} points={p} color={grid} radius={line * .45} opacity={.28} />)}
+    <Stroke points={baseline} color={grid} radius={line * .75} opacity={.6} />
+    <Ticks range={range} color={grid} />
     <mesh position={[0, .006, SENSOR_Z]} rotation={[-Math.PI / 2, 0, 0]}>
       <shapeGeometry args={[zone, 72]} />
-      <meshBasicMaterial color={accent} transparent opacity={dark ? .065 : .045} side={DoubleSide} depthWrite={false} />
+      <meshBasicMaterial color={accent} transparent opacity={preview ? .045 : dark ? .075 : .06} side={DoubleSide} depthWrite={false} />
     </mesh>
-    {selected.map((p, i) => <NeonLine key={i} points={p} color={i === 3 ? bright : accent}
-      radius={radius * (i === 3 ? 1.6 : .9)} opacity={i === 3 ? preview ? .6 : .9 : .28} glow={i === 3 && dark} />)}
-    {bounds.map((p, i) => <NeonLine key={i} points={p} color={accent} radius={radius} opacity={.45} />)}
-    {[1, 2, 3, 4].map(n => <PlotLabel key={n} text={`${(range * n / 4).toLocaleString('es-AR', { maximumFractionDigits: 3 })} m`} position={point(158, range * n / 4, .035)} color={text} scale={range * .075 + .008} />)}
-    {[0, 30, 60, 90, 120, 150, 180].map(a => <PlotLabel key={a} text={`${a}°`} position={point(a, range * 1.105, .025)} color={text} scale={range * .08 + .012} />)}
-    <CarShadow color={grid} />
-    {angle !== null && enabled && <Needle angle={angle} range={range} color={bright} muted={historical} />}
-    {latest && <EchoPulse key={latest.sampleId} position={point(latest.angleDeg, latest.distanceMm! / 1000, .028)} radius={Math.max(.004, range * .006)} color={bright} />}
-    {points.filter(p => p.valid && p.distanceMm !== null && p.distanceMm <= range * 1000).map(p => {
+    <Stroke points={zoneEdge} color={accent} radius={line * 1.9} opacity={preview ? .5 : .95} glow={dark && !preview} />
+    {bounds.map((p, i) => <Stroke key={i} points={p} color={accent} radius={line * .9} opacity={preview ? .35 : .6} />)}
+    <CarShadow dark={dark} />
+    {angle !== null && enabled && <Beam angle={angle} range={range} color={bright} muted={historical} />}
+    {contours.map((run, i) => <Stroke key={`c${i}`} points={run} color={bright} radius={line * 1.4} opacity={historical ? .35 : .7} />)}
+    {latest && <EchoPulse key={latest.sampleId} position={point(latest.angleDeg, latest.distanceMm! / 1000, .03)} radius={dot} color={bright} />}
+    {visible.map(p => {
       const current = p.sampleId === currentId;
-      const size = Math.max(.004, range * .006);
-      return <group key={p.angleDeg} position={point(p.angleDeg, p.distanceMm! / 1000, .025)}>
+      return <group key={p.angleDeg} position={point(p.angleDeg, p.distanceMm! / 1000, .026)}>
         <mesh rotation={[-Math.PI / 2, 0, 0]}>
-          <circleGeometry args={[size * 2.8, 24]} />
-          <meshBasicMaterial color={bright} transparent opacity={current ? .18 : .07} side={DoubleSide} depthWrite={false} toneMapped={false} />
+          <circleGeometry args={[dot * (current ? 3.2 : 2.4), 28]} />
+          <meshBasicMaterial color={bright} transparent opacity={current ? .22 : historical ? .06 : .1} side={DoubleSide} depthWrite={false} toneMapped={false} />
         </mesh>
-        <mesh position={[0, size, 0]}>
-          <sphereGeometry args={[size * (current ? 1.35 : 1), 12, 8]} />
-          <meshBasicMaterial color={current ? bright : accent} transparent opacity={current ? 1 : historical ? .45 : .85} toneMapped={false} />
+        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, .001, 0]}>
+          <ringGeometry args={[dot * 1.05, dot * 1.45, 28]} />
+          <meshBasicMaterial color={palette.surface} transparent opacity={.9} side={DoubleSide} depthWrite={false} toneMapped={false} />
+        </mesh>
+        <mesh position={[0, dot * .5, 0]}>
+          <sphereGeometry args={[dot * (current ? 1.3 : 1), 16, 10]} />
+          <meshBasicMaterial color={current ? bright : accent} transparent opacity={current ? 1 : historical ? .5 : .9} toneMapped={false} />
         </mesh>
       </group>;
     })}
@@ -278,10 +325,18 @@ function Plot({ range, angle, enabled, points, currentId, historical, scanMin, s
 
 export function RadarScene(props: Props) {
   const [palette, setPalette] = useState(readPalette);
+  const [labels, setLabels] = useState<ScreenLabel[]>([]);
   useEffect(() => { const frame = requestAnimationFrame(() => setPalette(readPalette())); return () => cancelAnimationFrame(frame); }, [props.dark]);
-  return <div style={{ position: 'relative', width: '100%', height: '100%' }}><div className="afr2-model-asset-overlay"><ModelAssetProgress label="Modelo del auto" hideWhenReady /></div><Canvas orthographic frameloop="demand" dpr={[1, 1.5]} camera={{ near: .01, far: 30 }}
-    fallback={<p>WebGL no disponible. Las mediciones siguen disponibles a la derecha.</p>}>
-    <color attach="background" args={[palette.floor]} />
-    <Plot {...props} palette={palette} />
-  </Canvas></div>;
+  return <div className="afr2-radar-stage">
+    <div className="afr2-model-asset-overlay"><ModelAssetProgress label="Modelo del auto" hideWhenReady /></div>
+    <Canvas orthographic frameloop="demand" dpr={[1, 2]} camera={{ near: .01, far: 30 }}
+      fallback={<p>WebGL no disponible. Las mediciones siguen disponibles a la derecha.</p>}>
+      <color attach="background" args={[palette.floor]} />
+      <Plot {...props} palette={palette} onLabels={setLabels} />
+    </Canvas>
+    <div className="afr2-radar-labels" aria-hidden="true">
+      {labels.map(label => <span key={label.key} className="afr2-radar-label" data-kind={label.kind} data-minor={label.minor ? 'true' : undefined}
+        style={{ transform: `translate3d(${label.x.toFixed(1)}px, ${label.y.toFixed(1)}px, 0)` }}><b>{label.text}</b></span>)}
+    </div>
+  </div>;
 }

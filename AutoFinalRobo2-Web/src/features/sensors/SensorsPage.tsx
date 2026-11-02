@@ -13,7 +13,7 @@ import { useConnection } from '../connection/ConnectionContext';
 import { SENSOR_ERRORS,type IrReading,type RadarConfig,type RadarReply,type RangeSample } from '../../protocol/sensorHead';
 import type { Afr2CommandName } from '../../protocol/wsEnvelope';
 import { useSensorPoll } from './useSensorPoll';
-import { RadarScene, type RadarView } from './RadarScene';
+import { RadarScene, formatRadarDistance, type RadarView } from './RadarScene';
 import { ScanAngleRange, ScanRangeField } from './ScanControls';
 
 type StoredPoint=RangeSample & {receivedAtMs:number};
@@ -90,10 +90,9 @@ function DistanceWorkspace(){
         <RadarScene range={range} angle={head?.angleDeg??null} enabled={enabled} points={plotPoints} currentId={sampleFresh?sample!.sampleId:0}
           dark={resolvedTheme==='dark'} historical={!fresh || !running} scanMin={draft.minAngleDeg} scanMax={draft.maxAngleDeg} preview={preview} view={view}/>
       </RenderBoundary></div>
-      <div className="afr2-radar-zone-label"><span>{preview?'Vista previa · sin aplicar':'Sector de escaneo'}</span><strong>{draft.minAngleDeg}° <span aria-hidden="true">—</span> {draft.maxAngleDeg}°</strong></div>
-      <div className="afr2-radar-bearing" aria-hidden="true"><UiIcon name="arrow"/><span>Frente<small>90°</small></span></div>
+      <div className="afr2-radar-zone-label" data-preview={preview}><i aria-hidden="true"/><span>{preview?'Sector en vista previa':'Sector de escaneo'}</span><strong>{draft.minAngleDeg}°<span aria-hidden="true">–</span>{draft.maxAngleDeg}°</strong>{preview && <em>Sin aplicar</em>}</div>
       {!fresh && !echoCount && <div className="afr2-radar-empty"><UiIcon name="sensors"/><div><strong>Esperando al robot</strong><span>Los ecos apareceran al recibir mediciones.</span></div></div>}
-      <div className="afr2-map-caption"><span className="afr2-radar-legend"><i/> Eco medido</span><span>Anillos de {(range/4).toLocaleString('es-AR', {maximumFractionDigits:3})} m</span></div>
+      <div className="afr2-map-caption afr2-radar-caption"><span className="afr2-radar-legend" data-kind="echo"><i/> Eco medido</span><span className="afr2-radar-legend" data-kind="current"><i/> Último eco</span><span className="afr2-radar-legend" data-kind="zone"><i/> Sector</span><span className="afr2-radar-legend" data-kind="rings"><i/> Anillos cada {formatRadarDistance(range/4)}</span></div>
     </div>
     <aside className="afr2-map-sidebar afr2-radar-sidebar" aria-label="Mediciones y control del servo">
       <div className="afr2-radar-overview">
