@@ -1,3 +1,13 @@
+> **AFR2-20261102-14:** dashboard con tarjeta de estados por inactividad y familia OLED alineada AVR/Web. [Contrato](contracts/OLED_DASHBOARD_STATUS_20261102.md). Fuentes y recursos copiados, sin pruebas/build/validaciones/navegador/flasheo.
+
+> **AFR2-20261102-14:** [Manual visual 0.1.11](docs/design-system/index.md) ampliado de forma aditiva con toda la identidad de Infraestructura: reglas por contexto, atlas completo, componentes, tokens y dos láminas explicativas. Contenido anterior conservado. Solo documentación, sin tests, compilación, validaciones ni navegador. [Ficha](changes/2026-11-02-14-visual-manual-infrastructure-integration.md).
+
+> **AFR2-20261102-11:** dashboard original con cabecera invertida, OLED blanca y filas de submenú con flecha grande + Volver. [Ficha](changes/2026-11-02-11-oled-original-dashboard-white-back.md). Solo fuente AVR/Web, sin pruebas/build/validaciones/flasheo.
+
+> **AFR2-20261102-11:** [Identidad visual extraída de Infraestructura](docs/design-system/infraestructura/index.md): DOM, paletas, capas del banner, layout, tipografía, espaciado, selectores, estados y movimiento. Solo documentación desde fuente, sin tests, compilación, validaciones ni navegador. [Ficha](changes/2026-11-02-11-infrastructure-visual-identity-extraction.md).
+
+> **AFR2-20261102-10:** Infraestructura con cubo en el peso 3D, LittleFS desde la placa (system.info) y paso de Blender ampliado. [Ficha](changes/2026-11-02-10-infrastructure-cube-board-fs-blender.md).
+
 > **AFR2-20261102-07:** reforma visual de Infraestructura (mapa de flujo animado, línea de metro, barras y glosario en tarjetas). [Ficha](changes/2026-11-02-07-infrastructure-visual-redesign.md).
 
 > **AFR2-20261102-05:** componentes OLED128-5 activos en fuentes AVR/Web; Ayuda → OLED con simulación local; QR de conexión AP y acceso Web generados dentro del auto. [Ficha](changes/2026-11-02-05-oled-runtime-components-qr.md). Sin compilar/probar/validar/flashear.
@@ -393,3 +403,7 @@ AutoFinalRobo2-Contracts/changes/2026-10-24-01-firmware-web-integration.md.
 ## AFR2-20261029-19 — OLED táctil y visor bajo demanda
 
 Fuente adaptada con Web/ATmega/ESP: overlay scrim+blur en modales, Volver por ítem del menú, ScreenCode0x030035 con aviso/bitmap/chevrones y suscripción explícita a capturas/metadatos. Contrato en AutoFinalRobo2-Contracts/contracts/TOUCH_OLED_19.md; procedencia por archivo en provenance/touch-oled-20261029-19.json de Contracts. El rumbo es solicitado, no medido, y no agrega giro físico. Sin tests, compilación, validadores, navegador, ejecución del generador OLED, promoción ESP ni flasheo de esta entrega. Memoria/paridad/latencia físicas pendientes.
+
+## Aplicación visual global — AFR2-20261102-15
+
+Manual 0.1.11 autorizado para presentación de toda la Web. Cabeceras, tarjetas, controles, campos, navegación y paneles con lenguaje de Infraestructura; comportamiento conservado. Solo fuente, ejecución No verificada; sin tests/build/validadores/navegador ni promoción. [Ficha](changes/2026-11-02-15-web-infrastructure-visual-language.md).

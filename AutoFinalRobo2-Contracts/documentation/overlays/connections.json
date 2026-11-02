@@ -486,6 +486,30 @@
       "state": "source-implemented-uncompiled-unvalidated",
       "note": "Local AP WIFI QR and actual local-IP Web QR; stale state and moving auto/radar show unavailable; AP QR private. Web simulation uses fictional fixtures and the paired QR encoder. Existing wire unchanged.",
       "changeId": "AFR2-20261102-05"
+    },
+    {
+      "id": "shared:flow/oled-original-dashboard-white",
+      "path": [
+        "atmega:original-dashboard-and-menu-rows",
+        "web:paired-firmware-renderer",
+        "web:white-oled-canvas"
+      ],
+      "state": "source-implemented-uncompiled-unvalidated",
+      "note": "Original network/battery dashboard with inverted header; BACK16px + Volver in menu rows only; shared white OLED canvas. Existing navigation and non-menu hints retained.",
+      "changeId": "AFR2-20261102-11"
+    },
+    {
+      "id": "shared:flow/dashboard-idle-status",
+      "path": [
+        "atmega:product-and-head-state",
+        "atmega:prepared-dashboard-snapshot",
+        "atmega:encoder-activity-and-clock",
+        "atmega:retained-dashboard-regions",
+        "atmega:oled-differing-chunks"
+      ],
+      "state": "source-implemented-uncompiled-unvalidated",
+      "note": "3s idle/4s cycling, actual fault priority, held encoder pauses; paired Web renderer and explicit simulation fixtures. No new wire/EEPROM or ESP package.",
+      "changeId": "AFR2-20261102-14"
     }
   ],
   "updated_by": "AFR2-20261030-19",

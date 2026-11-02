@@ -22,10 +22,16 @@ export function WifiPage(){
   const [ssid,setSsid]=useState(''),[password,setPassword]=useState(''),[persist,setPersist]=useState(true);
   const [targetMode,setTargetMode]=useState<'STA'|'AP'|'AP_STA'>('AP_STA');
   const [message,setMessage]=useState(''),[failed,setFailed]=useState(false),[busy,setBusy]=useState(false),[goal,setGoal]=useState<Goal|null>(null);
-  const mounted=useRef(true),epoch=useRef(0),scanRequested=useRef(false),modeSeeded=useRef(false);
+  const mounted=useRef(true),epoch=useRef(0),scanRequested=useRef(false),modeSeeded=useRef(false),modeEdited=useRef(false);
   const connected=wifiStatus.staConnected,scanning=wifiScanState==='scanning',online=wsState==='ready';
   const fresh=online && typeof wifiStatus.receivedAtMs==='number' && Date.now()-wifiStatus.receivedAtMs<5000;
-  useEffect(()=>{if(!modeSeeded.current && ['STA','AP','AP_STA'].includes(wifiStatus.mode)){modeSeeded.current=true;setTargetMode(wifiStatus.mode as 'STA'|'AP'|'AP_STA');}},[wifiStatus.mode]);
+  const modeKnown=online && typeof wifiStatus.receivedAtMs==='number' && ['STA','AP','AP_STA'].includes(wifiStatus.mode);
+  useEffect(()=>{
+    if(!online){modeSeeded.current=false;modeEdited.current=false;return;}
+    if(!modeKnown)return;
+    if(wifiStatus.mode===targetMode)modeEdited.current=false;
+    if(!modeEdited.current){modeSeeded.current=true;setTargetMode(wifiStatus.mode as 'STA'|'AP'|'AP_STA');}
+  },[online,modeKnown,wifiStatus.mode,targetMode]);
   useEffect(()=>{mounted.current=true;return()=>{mounted.current=false;++epoch.current;};},[]);
   useEffect(()=>{if(scanRequested.current && wifiScanState==='completed'){scanRequested.current=false;setView('redes');setMessage('Redes listas.');setFailed(false);}},[wifiScanState]);
   useEffect(()=>{
@@ -70,6 +76,14 @@ export function WifiPage(){
   </GlassSurface>;
   return <div className="afr2-route-view afr2-page-stack">
     <PageHeader title="Conexión" description="Wi-Fi, punto de acceso y enlace entre el ESP y el ATmega."/>
+    <div className="afr2-wifi-mode-card afr2-glass-panel">
+      <SectionHeader title="Cambiar modo" description={modeKnown?`Modo actual: ${modeLabel(wifiStatus.mode)}`:'Esperando el modo actual del ESP.'}/>
+      <div className="afr2-action-row">
+        <label className="afr2-wifi-mode-choice">Opciones de modos <select className="afr2-glass-field" value={modeKnown?targetMode:''} disabled={!modeKnown || busy || !!goal} onChange={e=>{modeEdited.current=true;setTargetMode(e.target.value as typeof targetMode);}}><option value="" disabled>Sin dato actual</option><option value="STA">STA</option><option value="AP">AP</option><option value="AP_STA">AP-STA</option></select></label>
+        <Button disabled={!modeKnown || busy || !!goal} onClick={()=>void operate('wifi.mode',{mode:targetMode})}>Aplicar modo</Button>
+        <Button disabled={!modeKnown || busy || !!goal} onClick={()=>{setSsid(wifiStatus.staSsid??'');setConfiguring(true);}}>Configurar</Button>
+      </div>
+    </div>
     {message && <StatusNotice tone={failed?'warning':goal?'info':'neutral'} title={message}/>}
     {configuring?config:<TaskSections label="Secciones de Conexión" value={view} onValueChange={setView} items={[
       {id:'estado',label:'Estado de red',content:<GlassSurface variant="panel" className="p-5 sm:p-6">
@@ -88,9 +102,7 @@ export function WifiPage(){
             <div><dt>Seguridad STA</dt><dd>{fresh && wifiStatus.secure===true && <Lock/>}{fresh?security(wifiStatus.security):'—'}</dd></div>
             <div><dt>Nombre AP</dt><dd>{fresh?wifiStatus.apSsid||'—':'—'}</dd></div><div><dt>Seguridad AP</dt><dd>{fresh && wifiStatus.apSecurity && !['open','unknown'].includes(wifiStatus.apSecurity) && <Lock/>}{fresh?security(wifiStatus.apSecurity):'—'}</dd></div>
           </dl></section>
-          <section><h3 className="afr2-subheading">Cambiar modo</h3><label>Opciones de modos <select value={targetMode} disabled={busy || !!goal} onChange={e=>setTargetMode(e.target.value as typeof targetMode)}><option value="STA">STA</option><option value="AP">AP</option><option value="AP_STA">AP-STA</option></select></label><Button disabled={!online || busy || !!goal} onClick={()=>void operate('wifi.mode',{mode:targetMode})}>Aplicar modo</Button></section>
           <div className="afr2-action-row">
-            <Button disabled={!online || busy || !!goal} onClick={()=>{setSsid(wifiStatus.staSsid??'');setConfiguring(true);}}>Configurar</Button>
             {fresh && connected?<Button disabled={busy || !!goal} onClick={()=>void operate('wifi.disconnect',{},'disconnect')}>Desconectar</Button>:fresh && <><Button disabled={busy || !!goal} onClick={()=>{setSsid(wifiStatus.staSsid??'');setConfiguring(true);}}>Conectar</Button><Button disabled={busy || !!goal || wifiStatus.mode==='AP'} onClick={()=>void operate('wifi.retry',{},'connect')}>Reintentar</Button></>}
           </div>
         </div>

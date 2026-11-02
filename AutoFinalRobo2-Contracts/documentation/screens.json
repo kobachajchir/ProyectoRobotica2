@@ -1,6 +1,6 @@
 {
   "schema": "afr2-screens-2",
-  "updated_by": "AFR2-20261102-05",
+  "updated_by": "AFR2-20261102-14",
   "navigation_source_review": "UI_SCREEN_FLOW.md",
   "screens": [
     {
@@ -8,15 +8,16 @@
       "local_code": "0x010001",
       "name": "AutoFinalRobo2",
       "role": "view",
-      "renderer": "atmega:src/ui/afr2_screens.c:Afr2Ui_Render",
+      "renderer": "atmega:src/ui/afr2_dashboard.c:Afr2Dashboard_Render",
       "fields": [
-        "revision",
-        "snapshot.network_valid/sta/ap",
+        "snapshot.network_valid/boot/revision/sta/ap",
         "snapshot.network_ssid/ap_ssid/ip/ap_ip",
         "snapshot.battery_valid/mv",
-        "snapshot.lines[0]: current mode",
+        "snapshot.dashboard_valid/mode/moving/fault",
+        "snapshot.quick_flags",
         "clock_ms",
-        "scroll_started_ms"
+        "scroll_started_ms",
+        "dashboard.input_ms/held/selected"
       ],
       "actions": [
         "select-open-full-menu",
@@ -25,23 +26,26 @@
       "parent": null,
       "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261102-05",
+      "change_id": "AFR2-20261102-14",
       "item_count": 1,
       "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
-      "variant": "Inverted14px header; chamfered76+4+48 panels for real battery voltage, current mode and AP/STA status; Menu/Rapidas footer.",
-      "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
+      "variant": "Original white26px network header, mode at left below it, rounded64x20 status card on right, Menu/Rapidas footer.",
+      "web_renderer": "web:src/features/oled/dashboardRenderer.ts:renderDashboard",
       "web_fidelity": "copied-AVR-layout-library; live-1024-byte-framebuffer; physical-parity-unverified",
       "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
       "previous_delivery_status": {
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
-      "build_evidence": "Not built or tested for AFR2-20261102-05",
+      "build_evidence": "No tests/build/validators/browser/flash for AFR2-20261102-14",
       "resources": "AVR PROGMEM XBM Wi-Fi/AP/encoder from kobac AutoMicro; disconnected Wi-Fi copied; original AFR2 long-press and battery empty/1/2/3/4/unknown; same bytes Web",
-      "validity": "Unknown battery shows -- V; network uses -- unless a fresh active AP/STA snapshot is available. IP and SSID remain in network details/QR.",
-      "header_layout": "AutoFinal header at y0..13; body panels y17..48; voltage5x7 at scale2; contextual hints y50..63.",
-      "header_scroll": "Current mode clipped to40px with the common800ms dwell/40ms marquee; full dashboard redraw keeps paired layout deterministic.",
-      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
+      "validity": "Unknown/stale network: Red: -- / IP: --; battery unknown and --V without fresh ADC. Voltage bands are not charge percentage.",
+      "header_layout": "SSID at(21,2), IP at(21,14), independent70px lanes; battery16px at(110,0), voltage y15. White26px band, black glyphs.",
+      "header_scroll": "SSID/IP independent70px ping-pong lanes, only for overflow;800ms dwell at both ends,1px/40ms. Partial clear/invert bands at y2 and y14 preserve margins and fixed icons.",
+      "visual_profile": "OLED128-5 / AFR2 status dashboard14",
+      "dashboard_status": "3s encoder inactivity before first advance, then4s per applicable state; hold SW pauses; fault stays fixed; one/no candidate does not rotate. State removal remains immediate.",
+      "dashboard_body": "MODO at(2,28), compact value at(2,40); rounded status frame at(62,29)64x20 with icon14+gap4+label7x10.",
+      "partial_redraw": "Retained frame: status rotation touches card interior only; mode/SSID/IP/header update independently; cached render does not clear root frame."
     },
     {
       "id": "shared:screen/010002",
@@ -75,7 +79,9 @@
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
       "build_evidence": "Not built or tested for AFR2-20261102-05",
-      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
+      "visual_profile": "Shared inverse14px header and semantic section icon; three16px rows; filled selection; BACK16px + Volver with4px gap.",
+      "menu_return_visual": "AFR2-20261102-11: original BACK arrow16px + Volver text,4px gap, vertically centered; gesture hints on non-menu pages unchanged.",
+      "current_visual_change": "AFR2-20261102-14"
     },
     {
       "id": "shared:screen/020001",
@@ -109,7 +115,9 @@
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
       "build_evidence": "Not built or tested for AFR2-20261102-05",
-      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
+      "visual_profile": "Shared inverse14px header and semantic section icon; three16px rows; filled selection; BACK16px + Volver with4px gap.",
+      "menu_return_visual": "AFR2-20261102-11: original BACK arrow16px + Volver text,4px gap, vertically centered; gesture hints on non-menu pages unchanged.",
+      "current_visual_change": "AFR2-20261102-14"
     },
     {
       "id": "shared:screen/020002",
@@ -176,7 +184,9 @@
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
       "build_evidence": "Not built or tested for AFR2-20261102-05",
-      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
+      "visual_profile": "Shared inverse14px header and semantic section icon; three16px rows; filled selection; BACK16px + Volver with4px gap.",
+      "menu_return_visual": "AFR2-20261102-11: original BACK arrow16px + Volver text,4px gap, vertically centered; gesture hints on non-menu pages unchanged.",
+      "current_visual_change": "AFR2-20261102-14"
     },
     {
       "id": "shared:screen/030005",
@@ -309,7 +319,9 @@
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
       "build_evidence": "Not built or tested for AFR2-20261102-05",
-      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
+      "visual_profile": "Shared inverse14px header and semantic section icon; three16px rows; filled selection; BACK16px + Volver with4px gap.",
+      "menu_return_visual": "AFR2-20261102-11: original BACK arrow16px + Volver text,4px gap, vertically centered; gesture hints on non-menu pages unchanged.",
+      "current_visual_change": "AFR2-20261102-14"
     },
     {
       "id": "shared:screen/030009",
@@ -349,7 +361,9 @@
       },
       "motion_reference": "contracts/MOTION_REFERENCE_13.md",
       "build_evidence_applies_to": "historical source only",
-      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
+      "visual_profile": "Shared inverse14px header and semantic section icon; three16px rows; filled selection; BACK16px + Volver with4px gap.",
+      "menu_return_visual": "AFR2-20261102-11: original BACK arrow16px + Volver text,4px gap, vertically centered; gesture hints on non-menu pages unchanged.",
+      "current_visual_change": "AFR2-20261102-14"
     },
     {
       "id": "shared:screen/03000A",
@@ -383,7 +397,9 @@
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
       "build_evidence": "Not built or tested for AFR2-20261102-05",
-      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
+      "visual_profile": "Shared inverse14px header and semantic section icon; three16px rows; filled selection; BACK16px + Volver with4px gap.",
+      "menu_return_visual": "AFR2-20261102-11: original BACK arrow16px + Volver text,4px gap, vertically centered; gesture hints on non-menu pages unchanged.",
+      "current_visual_change": "AFR2-20261102-14"
     },
     {
       "id": "shared:screen/03000B",
@@ -417,7 +433,9 @@
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
       "build_evidence": "Not built or tested for AFR2-20261102-05",
-      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
+      "visual_profile": "Shared inverse14px header and semantic section icon; three16px rows; filled selection; BACK16px + Volver with4px gap.",
+      "menu_return_visual": "AFR2-20261102-11: original BACK arrow16px + Volver text,4px gap, vertically centered; gesture hints on non-menu pages unchanged.",
+      "current_visual_change": "AFR2-20261102-14"
     },
     {
       "id": "shared:screen/03000C",
@@ -484,7 +502,9 @@
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
       "build_evidence": "Not built or tested for AFR2-20261102-05",
-      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
+      "visual_profile": "Shared inverse14px header and semantic section icon; three16px rows; filled selection; BACK16px + Volver with4px gap.",
+      "menu_return_visual": "AFR2-20261102-11: original BACK arrow16px + Volver text,4px gap, vertically centered; gesture hints on non-menu pages unchanged.",
+      "current_visual_change": "AFR2-20261102-14"
     },
     {
       "id": "shared:screen/03000E",
@@ -617,7 +637,9 @@
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
       "build_evidence": "Not built or tested for AFR2-20261102-05",
-      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
+      "visual_profile": "Shared inverse14px header and semantic section icon; three16px rows; filled selection; BACK16px + Volver with4px gap.",
+      "menu_return_visual": "AFR2-20261102-11: original BACK arrow16px + Volver text,4px gap, vertically centered; gesture hints on non-menu pages unchanged.",
+      "current_visual_change": "AFR2-20261102-14"
     },
     {
       "id": "shared:screen/030012",
@@ -651,7 +673,9 @@
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
       "build_evidence": "Not built or tested for AFR2-20261102-05",
-      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
+      "visual_profile": "Shared inverse14px header and semantic section icon; three16px rows; filled selection; BACK16px + Volver with4px gap.",
+      "menu_return_visual": "AFR2-20261102-11: original BACK arrow16px + Volver text,4px gap, vertically centered; gesture hints on non-menu pages unchanged.",
+      "current_visual_change": "AFR2-20261102-14"
     },
     {
       "id": "shared:screen/030013",
@@ -718,7 +742,9 @@
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
       "build_evidence": "Not built or tested for AFR2-20261102-05",
-      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
+      "visual_profile": "Shared inverse14px header and semantic section icon; three16px rows; filled selection; BACK16px + Volver with4px gap.",
+      "menu_return_visual": "AFR2-20261102-11: original BACK arrow16px + Volver text,4px gap, vertically centered; gesture hints on non-menu pages unchanged.",
+      "current_visual_change": "AFR2-20261102-14"
     },
     {
       "id": "shared:screen/030015",
@@ -792,7 +818,8 @@
       ],
       "navigation_mode": "sibling-bounded",
       "build_evidence": "Not built or tested for AFR2-20261102-05",
-      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
+      "visual_profile": "Shared OLED128-5 header, data spacing, counter and/or gestures; original screen actions retained; physical parity unverified.",
+      "current_visual_change": "AFR2-20261102-14"
     },
     {
       "id": "shared:screen/030017",
@@ -831,7 +858,9 @@
         "0x030017"
       ],
       "navigation_mode": "sibling-bounded",
-      "build_evidence": "builds/2026-10-25-14/README.md"
+      "build_evidence": "builds/2026-10-25-14/README.md",
+      "current_visual_change": "AFR2-20261102-14",
+      "visual_profile": "Shared OLED128-5 header, data spacing, counter and/or gestures; original screen actions retained; physical parity unverified."
     },
     {
       "id": "shared:screen/030018",
@@ -864,7 +893,9 @@
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
-      "build_evidence": "builds/2026-10-25-14/README.md"
+      "build_evidence": "builds/2026-10-25-14/README.md",
+      "current_visual_change": "AFR2-20261102-14",
+      "visual_profile": "Shared OLED128-5 header, data spacing, counter and/or gestures; original screen actions retained; physical parity unverified."
     },
     {
       "id": "shared:screen/030019",
@@ -898,7 +929,9 @@
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
       "build_evidence": "Not built or tested for AFR2-20261102-05",
-      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
+      "visual_profile": "Shared inverse14px header and semantic section icon; three16px rows; filled selection; BACK16px + Volver with4px gap.",
+      "menu_return_visual": "AFR2-20261102-11: original BACK arrow16px + Volver text,4px gap, vertically centered; gesture hints on non-menu pages unchanged.",
+      "current_visual_change": "AFR2-20261102-14"
     },
     {
       "id": "shared:screen/03001A",
@@ -932,7 +965,9 @@
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
       "build_evidence": "Not built or tested for AFR2-20261102-05",
-      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
+      "visual_profile": "Shared inverse14px header and semantic section icon; three16px rows; filled selection; BACK16px + Volver with4px gap.",
+      "menu_return_visual": "AFR2-20261102-11: original BACK arrow16px + Volver text,4px gap, vertically centered; gesture hints on non-menu pages unchanged.",
+      "current_visual_change": "AFR2-20261102-14"
     },
     {
       "id": "shared:screen/03001B",
@@ -966,7 +1001,9 @@
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
       "build_evidence": "Not built or tested for AFR2-20261102-05",
-      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
+      "visual_profile": "Shared inverse14px header and semantic section icon; three16px rows; filled selection; BACK16px + Volver with4px gap.",
+      "menu_return_visual": "AFR2-20261102-11: original BACK arrow16px + Volver text,4px gap, vertically centered; gesture hints on non-menu pages unchanged.",
+      "current_visual_change": "AFR2-20261102-14"
     },
     {
       "id": "shared:screen/03001C",
@@ -1000,7 +1037,9 @@
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
       "build_evidence": "Not built or tested for AFR2-20261102-05",
-      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
+      "visual_profile": "Shared inverse14px header and semantic section icon; three16px rows; filled selection; BACK16px + Volver with4px gap.",
+      "menu_return_visual": "AFR2-20261102-11: original BACK arrow16px + Volver text,4px gap, vertically centered; gesture hints on non-menu pages unchanged.",
+      "current_visual_change": "AFR2-20261102-14"
     },
     {
       "id": "shared:screen/03001D",
@@ -1067,7 +1106,9 @@
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
       "build_evidence": "Not built or tested for AFR2-20261102-05",
-      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
+      "visual_profile": "Shared inverse14px header and semantic section icon; three16px rows; filled selection; BACK16px + Volver with4px gap.",
+      "menu_return_visual": "AFR2-20261102-11: original BACK arrow16px + Volver text,4px gap, vertically centered; gesture hints on non-menu pages unchanged.",
+      "current_visual_change": "AFR2-20261102-14"
     },
     {
       "id": "shared:screen/03001F",
@@ -1102,7 +1143,9 @@
       },
       "build_evidence": "Not built or tested for AFR2-20261102-05",
       "build_evidence_applies_to": "previous delivery only; no evidence for change09",
-      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
+      "visual_profile": "Shared inverse14px header and semantic section icon; three16px rows; filled selection; BACK16px + Volver with4px gap.",
+      "menu_return_visual": "AFR2-20261102-11: original BACK arrow16px + Volver text,4px gap, vertically centered; gesture hints on non-menu pages unchanged.",
+      "current_visual_change": "AFR2-20261102-14"
     },
     {
       "id": "shared:screen/030020",
@@ -1138,7 +1181,9 @@
       "build_evidence": "Not built or tested for AFR2-20261102-05",
       "build_evidence_applies_to": "previous delivery only; no evidence for change09",
       "item_count_rule": "4 unknown / 5 connected / 6 disconnected",
-      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
+      "visual_profile": "Shared inverse14px header and semantic section icon; three16px rows; filled selection; BACK16px + Volver with4px gap.",
+      "menu_return_visual": "AFR2-20261102-11: original BACK arrow16px + Volver text,4px gap, vertically centered; gesture hints on non-menu pages unchanged.",
+      "current_visual_change": "AFR2-20261102-14"
     },
     {
       "id": "shared:screen/030021",
@@ -1176,7 +1221,9 @@
       "build_evidence": "Not built or tested for AFR2-20261102-05",
       "build_evidence_applies_to": "previous delivery only; no evidence for change09",
       "item_count_rule": "networkCount + 1 (Volver), 0..8 networks",
-      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
+      "visual_profile": "Shared inverse14px header and semantic section icon; three16px rows; filled selection; BACK16px + Volver with4px gap.",
+      "menu_return_visual": "AFR2-20261102-11: original BACK arrow16px + Volver text,4px gap, vertically centered; gesture hints on non-menu pages unchanged.",
+      "current_visual_change": "AFR2-20261102-14"
     },
     {
       "id": "shared:screen/030022",
@@ -1211,7 +1258,9 @@
       },
       "build_evidence": "Not built or tested for AFR2-20261102-05",
       "build_evidence_applies_to": "previous delivery only; no evidence for change09",
-      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
+      "visual_profile": "Shared inverse14px header and semantic section icon; three16px rows; filled selection; BACK16px + Volver with4px gap.",
+      "menu_return_visual": "AFR2-20261102-11: original BACK arrow16px + Volver text,4px gap, vertically centered; gesture hints on non-menu pages unchanged.",
+      "current_visual_change": "AFR2-20261102-14"
     },
     {
       "id": "shared:screen/030023",
@@ -1248,7 +1297,9 @@
       "build_evidence_applies_to": "previous delivery only; no evidence for change09",
       "legacy_identity_note": "030023 retained; replaces Revisar conexion with Configurar",
       "item_count_rule": "2 unknown / 3 known",
-      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
+      "visual_profile": "Shared inverse14px header and semantic section icon; three16px rows; filled selection; BACK16px + Volver with4px gap.",
+      "menu_return_visual": "AFR2-20261102-11: original BACK arrow16px + Volver text,4px gap, vertically centered; gesture hints on non-menu pages unchanged.",
+      "current_visual_change": "AFR2-20261102-14"
     },
     {
       "id": "shared:screen/030024",
@@ -1283,7 +1334,9 @@
       },
       "build_evidence": "Not built or tested for AFR2-20261102-05",
       "build_evidence_applies_to": "previous delivery only; no evidence for change09",
-      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
+      "visual_profile": "Shared inverse14px header and semantic section icon; three16px rows; filled selection; BACK16px + Volver with4px gap.",
+      "menu_return_visual": "AFR2-20261102-11: original BACK arrow16px + Volver text,4px gap, vertically centered; gesture hints on non-menu pages unchanged.",
+      "current_visual_change": "AFR2-20261102-14"
     },
     {
       "id": "shared:screen/030025",
@@ -1317,7 +1370,9 @@
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
       "build_evidence": "Not built or tested for AFR2-20261102-05",
-      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
+      "visual_profile": "Shared inverse14px header and semantic section icon; three16px rows; filled selection; BACK16px + Volver with4px gap.",
+      "menu_return_visual": "AFR2-20261102-11: original BACK arrow16px + Volver text,4px gap, vertically centered; gesture hints on non-menu pages unchanged.",
+      "current_visual_change": "AFR2-20261102-14"
     },
     {
       "id": "shared:screen/030026",
@@ -1351,7 +1406,9 @@
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
       "build_evidence": "Not built or tested for AFR2-20261102-05",
-      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
+      "visual_profile": "Shared inverse14px header and semantic section icon; three16px rows; filled selection; BACK16px + Volver with4px gap.",
+      "menu_return_visual": "AFR2-20261102-11: original BACK arrow16px + Volver text,4px gap, vertically centered; gesture hints on non-menu pages unchanged.",
+      "current_visual_change": "AFR2-20261102-14"
     },
     {
       "id": "shared:screen/030027",
@@ -1418,7 +1475,9 @@
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
       "build_evidence": "builds/2026-10-25-14/README.md",
-      "page_count": 6
+      "page_count": 6,
+      "current_visual_change": "AFR2-20261102-14",
+      "visual_profile": "Shared OLED128-5 header, data spacing, counter and/or gestures; original screen actions retained; physical parity unverified."
     },
     {
       "id": "shared:screen/030029",
@@ -1452,7 +1511,9 @@
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
       "build_evidence": "Not built or tested for AFR2-20261102-05",
-      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
+      "visual_profile": "Shared inverse14px header and semantic section icon; three16px rows; filled selection; BACK16px + Volver with4px gap.",
+      "menu_return_visual": "AFR2-20261102-11: original BACK arrow16px + Volver text,4px gap, vertically centered; gesture hints on non-menu pages unchanged.",
+      "current_visual_change": "AFR2-20261102-14"
     },
     {
       "id": "shared:screen/03002A",
@@ -1519,7 +1580,9 @@
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
       "build_evidence": "Not built or tested for AFR2-20261102-05",
-      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
+      "visual_profile": "Shared inverse14px header and semantic section icon; three16px rows; filled selection; BACK16px + Volver with4px gap.",
+      "menu_return_visual": "AFR2-20261102-11: original BACK arrow16px + Volver text,4px gap, vertically centered; gesture hints on non-menu pages unchanged.",
+      "current_visual_change": "AFR2-20261102-14"
     },
     {
       "id": "shared:screen/03002c",
@@ -1594,7 +1657,9 @@
       "item_count": 1,
       "variant": "bounded two pages; 1/2> and <2/2; short/long contextual return",
       "build_evidence_applies_to": "previous delivery only; no evidence for change09",
-      "page_count": 2
+      "page_count": 2,
+      "current_visual_change": "AFR2-20261102-14",
+      "visual_profile": "Shared OLED128-5 header, data spacing, counter and/or gestures; original screen actions retained; physical parity unverified."
     },
     {
       "name": "Datos de red AP",
@@ -1626,7 +1691,9 @@
       },
       "build_evidence": "builds/2026-10-25-14/README.md",
       "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
-      "item_count": 1
+      "item_count": 1,
+      "current_visual_change": "AFR2-20261102-14",
+      "visual_profile": "Shared OLED128-5 header, data spacing, counter and/or gestures; original screen actions retained; physical parity unverified."
     },
     {
       "name": "Reinicio",
@@ -1661,7 +1728,9 @@
       "build_evidence": "Not built or tested for AFR2-20261102-05",
       "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
       "item_count": 3,
-      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
+      "visual_profile": "Shared inverse14px header and semantic section icon; three16px rows; filled selection; BACK16px + Volver with4px gap.",
+      "menu_return_visual": "AFR2-20261102-11: original BACK arrow16px + Volver text,4px gap, vertically centered; gesture hints on non-menu pages unchanged.",
+      "current_visual_change": "AFR2-20261102-14"
     },
     {
       "id": "shared:screen/040001",
@@ -2010,7 +2079,9 @@
       "web_fidelity": "copied-AVR-layout-library; live-1024-byte-framebuffer; physical-parity-unverified",
       "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
       "build_evidence": "Not built or tested for AFR2-20261102-05",
-      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
+      "visual_profile": "Shared inverse14px header and semantic section icon; three16px rows; filled selection; BACK16px + Volver with4px gap.",
+      "menu_return_visual": "AFR2-20261102-11: original BACK arrow16px + Volver text,4px gap, vertically centered; gesture hints on non-menu pages unchanged.",
+      "current_visual_change": "AFR2-20261102-14"
     },
     {
       "id": "shared:screen/030031",
@@ -2040,7 +2111,7 @@
       "change_id": "AFR2-20261030-07",
       "item_count": 1,
       "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
-      "variant": "scaled radar; applied-PWM cone; optional historical points; shared compact editor at030033",
+      "variant": "scaled radar 2m/1m/50cm/25cm (AFR2-20261102-18); applied-PWM cone; optional historical points; shared compact editor at030033",
       "presentation_change_id": "AFR2-20261029-16",
       "presentation_state": "AVR-compiled-not-flashed-per-user; Web-source-linked-not-built; runtime-unverified",
       "web_renderer": "web:src/features/oled/firmwareSensorRenderer.ts:renderSensorScreen",
@@ -2091,7 +2162,9 @@
         "0x030032"
       ],
       "navigation_mode": "sibling-bounded",
-      "build_evidence": "builds/2026-10-25-14/README.md"
+      "build_evidence": "builds/2026-10-25-14/README.md",
+      "current_visual_change": "AFR2-20261102-14",
+      "visual_profile": "Shared OLED128-5 header, data spacing, counter and/or gestures; original screen actions retained; physical parity unverified."
     },
     {
       "id": "shared:screen/030033",
@@ -2121,7 +2194,7 @@
       "change_id": "AFR2-20261030-07",
       "item_count": 1,
       "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
-      "variant": "scaled radar; applied-PWM cone; optional historical points; shared compact editor at030033",
+      "variant": "scaled radar 2m/1m/50cm/25cm (AFR2-20261102-18); applied-PWM cone; optional historical points; shared compact editor at030033",
       "web_renderer": "web:src/features/oled/firmwareSensorRenderer.ts:renderSensorScreen",
       "web_fidelity": "copied-AVR-layout-library; live-1024-byte-framebuffer; physical-parity-unverified",
       "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
@@ -2156,7 +2229,9 @@
       "web_fidelity": "copied-AVR-layout-library; live-1024-byte-framebuffer; physical-parity-unverified",
       "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
       "build_evidence": "Not built or tested for AFR2-20261102-05",
-      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
+      "visual_profile": "Shared inverse14px header and semantic section icon; three16px rows; filled selection; BACK16px + Volver with4px gap.",
+      "menu_return_visual": "AFR2-20261102-11: original BACK arrow16px + Volver text,4px gap, vertically centered; gesture hints on non-menu pages unchanged.",
+      "current_visual_change": "AFR2-20261102-14"
     },
     {
       "id": "shared:screen/030035",
@@ -2185,7 +2260,9 @@
       "web_fidelity": "same-XBM-Q8-inverse-rotation-clipping; no-differential-test",
       "wire_status": "EX01v9 source only; no deployment",
       "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
-      "build_evidence": "builds/2026-10-29-19/README.md"
+      "build_evidence": "builds/2026-10-29-19/README.md",
+      "current_visual_change": "AFR2-20261102-14",
+      "visual_profile": "Shared OLED128-5 header, data spacing, counter and/or gestures; original screen actions retained; physical parity unverified."
     },
     {
       "id": "shared:screen/030036",
@@ -2211,7 +2288,9 @@
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
       "web_fidelity": "linked-in-source; no new build or physical parity evidence",
       "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
-      "back_semantics": "long release cancels current attempt, preserves earlier drafts and returns with notice"
+      "back_semantics": "long release cancels current attempt, preserves earlier drafts and returns with notice",
+      "current_visual_change": "AFR2-20261102-14",
+      "visual_profile": "Shared OLED128-5 header, data spacing, counter and/or gestures; original screen actions retained; physical parity unverified."
     },
     {
       "id": "shared:screen/030037",
@@ -2236,7 +2315,9 @@
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
       "web_fidelity": "linked-in-source; no new build or physical parity evidence",
       "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
-      "back_semantics": "long release cancels current attempt, preserves earlier drafts and returns with notice"
+      "back_semantics": "long release cancels current attempt, preserves earlier drafts and returns with notice",
+      "current_visual_change": "AFR2-20261102-14",
+      "visual_profile": "Shared OLED128-5 header, data spacing, counter and/or gestures; original screen actions retained; physical parity unverified."
     },
     {
       "id": "shared:screen/030038",
@@ -2264,7 +2345,9 @@
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
       "web_fidelity": "linked-in-source; no new build or physical parity evidence",
       "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
-      "back_semantics": "mandatory save/discard; long ignored; exit only after choice and save commit"
+      "back_semantics": "mandatory save/discard; long ignored; exit only after choice and save commit",
+      "current_visual_change": "AFR2-20261102-14",
+      "visual_profile": "Shared OLED128-5 header, data spacing, counter and/or gestures; original screen actions retained; physical parity unverified."
     },
     {
       "id": "shared:screen/030039",
@@ -2296,7 +2379,9 @@
       "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
       "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
       "build_evidence": "Not built or tested for AFR2-20261102-05",
-      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
+      "visual_profile": "Shared inverse14px header and semantic section icon; three16px rows; filled selection; BACK16px + Volver with4px gap.",
+      "menu_return_visual": "AFR2-20261102-11: original BACK arrow16px + Volver text,4px gap, vertically centered; gesture hints on non-menu pages unchanged.",
+      "current_visual_change": "AFR2-20261102-14"
     },
     {
       "id": "shared:screen/03003a",
@@ -2388,7 +2473,9 @@
       "navigation_mode": "menu",
       "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
       "build_evidence": "Not built or tested for AFR2-20261102-05",
-      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
+      "visual_profile": "Shared inverse14px header and semantic section icon; three16px rows; filled selection; BACK16px + Volver with4px gap.",
+      "menu_return_visual": "AFR2-20261102-11: original BACK arrow16px + Volver text,4px gap, vertically centered; gesture hints on non-menu pages unchanged.",
+      "current_visual_change": "AFR2-20261102-14"
     },
     {
       "id": "shared:screen/03003c",
@@ -2419,7 +2506,9 @@
       "navigation_mode": "menu",
       "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
       "build_evidence": "Not built or tested for AFR2-20261102-05",
-      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
+      "visual_profile": "Shared inverse14px header and semantic section icon; three16px rows; filled selection; BACK16px + Volver with4px gap.",
+      "menu_return_visual": "AFR2-20261102-11: original BACK arrow16px + Volver text,4px gap, vertically centered; gesture hints on non-menu pages unchanged.",
+      "current_visual_change": "AFR2-20261102-14"
     },
     {
       "id": "shared:screen/03003d",
@@ -2448,7 +2537,9 @@
       "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
       "back_semantics": "context history; long release or Volver",
       "build_evidence": "Not built or tested for AFR2-20261102-05",
-      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
+      "visual_profile": "Shared inverse14px header and semantic section icon; three16px rows; filled selection; BACK16px + Volver with4px gap.",
+      "menu_return_visual": "AFR2-20261102-11: original BACK arrow16px + Volver text,4px gap, vertically centered; gesture hints on non-menu pages unchanged.",
+      "current_visual_change": "AFR2-20261102-14"
     },
     {
       "id": "shared:screen/03003e",
@@ -2500,7 +2591,9 @@
       "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
       "variant": "correlated ESP diagnostic; start, timeout, return; asynchronous result notice",
       "build_evidence": "Not built or tested for AFR2-20261102-05",
-      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
+      "visual_profile": "Shared inverse14px header and semantic section icon; three16px rows; filled selection; BACK16px + Volver with4px gap.",
+      "menu_return_visual": "AFR2-20261102-11: original BACK arrow16px + Volver text,4px gap, vertically centered; gesture hints on non-menu pages unchanged.",
+      "current_visual_change": "AFR2-20261102-14"
     },
     {
       "id": "shared:screen/030040",
@@ -2527,7 +2620,8 @@
       "wire_status": "EX01v10 source only; EEPROMv8 where relevant; no deployment",
       "variant": "shared percent representation 0..255 and progress; controller units unchanged",
       "build_evidence": "Not built or tested for AFR2-20261102-05",
-      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
+      "visual_profile": "Shared OLED128-5 header, data spacing, counter and/or gestures; original screen actions retained; physical parity unverified.",
+      "current_visual_change": "AFR2-20261102-14"
     },
     {
       "id": "shared:screen/030041",
@@ -2556,7 +2650,9 @@
       "wire_status": "EX01v11 source only; EEPROMv8 unchanged; no generation/build/deployment",
       "back_semantics": "release-long and explicit Volver restore context; notices complete deferred destination only when closed",
       "variant": "scrolling SSID; current STA or active AP; no fictitious AP RSSI; lock only protected",
-      "credential_variant": "AFR2-20261030-15: pedido local explicito; SSID y clave guardados ESP, labels[0..2], privado, borrado al salir/30s."
+      "credential_variant": "AFR2-20261030-15: pedido local explicito; SSID y clave guardados ESP, labels[0..2], privado, borrado al salir/30s.",
+      "current_visual_change": "AFR2-20261102-14",
+      "visual_profile": "Shared OLED128-5 header, data spacing, counter and/or gestures; original screen actions retained; physical parity unverified."
     },
     {
       "id": "shared:screen/030042",
@@ -2584,7 +2680,9 @@
       "back_semantics": "release-long and explicit Volver restore context; notices complete deferred destination only when closed",
       "variant": "three16px-rows; dynamic selection/count; physical actions",
       "build_evidence": "Not built or tested for AFR2-20261102-05",
-      "visual_profile": "OLED128-5 runtime components; physical/browser parity unverified"
+      "visual_profile": "Shared inverse14px header and semantic section icon; three16px rows; filled selection; BACK16px + Volver with4px gap.",
+      "menu_return_visual": "AFR2-20261102-11: original BACK arrow16px + Volver text,4px gap, vertically centered; gesture hints on non-menu pages unchanged.",
+      "current_visual_change": "AFR2-20261102-14"
     },
     {
       "id": "shared:screen/030043",
@@ -2611,7 +2709,9 @@
       "wire_status": "EX01v11 source only; EEPROMv8 unchanged; no generation/build/deployment",
       "back_semantics": "release-long and explicit Volver restore context; notices complete deferred destination only when closed",
       "variant": "STA / AP / AP-STA; bounded rotation and underline; physical short requests, long returns",
-      "remote_action_permission": "denied; local library navigation only"
+      "remote_action_permission": "denied; local library navigation only",
+      "current_visual_change": "AFR2-20261102-14",
+      "visual_profile": "Shared OLED128-5 header, data spacing, counter and/or gestures; original screen actions retained; physical parity unverified."
     },
     {
       "id": "shared:screen/030044",
@@ -2636,7 +2736,9 @@
       "item_count": 4,
       "navigation_mode": "motor-selector",
       "web_renderer": "web:src/features/oled/motorSelector.ts:renderMotorSelector",
-      "back_semantics": "Long release cancels draft and returns to caller; Hall cancels only current attempt. Mandatory dirty-change guards on caller remain."
+      "back_semantics": "Long release cancels draft and returns to caller; Hall cancels only current attempt. Mandatory dirty-change guards on caller remain.",
+      "current_visual_change": "AFR2-20261102-14",
+      "visual_profile": "Shared OLED128-5 header, data spacing, counter and/or gestures; original screen actions retained; physical parity unverified."
     },
     {
       "id": "shared:screen/030045",

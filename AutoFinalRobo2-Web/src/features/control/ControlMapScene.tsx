@@ -1,10 +1,11 @@
+import { SimulationViewport } from '../../components/three/SimulationViewport';
+import { SimulationOrbit, SimulationRobot } from '../collector/SimulationModel';
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { Canvas, useThree, type ThreeEvent } from '@react-three/fiber';
+import { useThree, type ThreeEvent } from '@react-three/fiber';
 import { OrthographicCamera } from 'three';
 import { Line2 } from 'three/addons/lines/Line2.js';
 import { LineGeometry } from 'three/addons/lines/LineGeometry.js';
 import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
-import { RobotModel } from '../../components/three/RobotModel';
 import type { MapSceneProps, TrailPoint } from './controlMapTypes';
 
 const world = (xMm: number, yMm: number): [number, number, number] => [-yMm / 1000, 0, -xMm / 1000];
@@ -36,9 +37,9 @@ function CameraRig({ view, pose, center, zoom }: MapSceneProps) {
       const halfWidth = halfHeight * size.width / size.height;
       camera.left = -halfWidth; camera.right = halfWidth;
       camera.top = halfHeight; camera.bottom = -halfHeight;
-      camera.position.set(target[0], 5, target[2]);
-      camera.up.set(0, 0, -1);
-      camera.lookAt(target[0], 0, target[2]);
+    }
+    if (view === 'top') {
+      camera.position.set(target[0], 5, target[2]); camera.up.set(0, 0, -1); camera.lookAt(target[0], 0, target[2]);
     } else if (view === 'follow' && pose) {
       const theta = pose.thetaMrad / 1000;
       camera.position.set(target[0] + Math.sin(theta) * distance, distance * .65, target[2] + Math.cos(theta) * distance);
@@ -111,14 +112,13 @@ export function ControlMapScene({ fallback, ...props }: MapSceneProps & { fallba
   const floorCenter = world(Math.round(props.center.xMm / 500) * 500, Math.round(props.center.yMm / 500) * 500);
   const position = props.pose ? world(props.pose.xMm, props.pose.yMm) : [0, 0, 0] as [number, number, number];
   const floorSize = Math.max(16, Math.ceil(8 / props.zoom));
-  return <Canvas orthographic={props.view === 'top'} frameloop="demand" dpr={[1, 1.5]} camera={{ position: [1, 1, 1], fov: 45, near: .01, far: 400 }}
+  return <SimulationViewport floorSize={floorSize} floorCenter={floorCenter} camera={{ position: [1, 1, 1], near: .001, far: 400 }}
     fallback={fallback ?? <div className="afr2-map-fallback">WebGL no está disponible.</div>}>
-    <color attach="background" args={[color.floor]} /><ambientLight intensity={1.6} /><directionalLight position={[3, 5, 2]} intensity={1.8} />
     <CameraRig {...props} />
-    <gridHelper position={floorCenter} args={[floorSize, floorSize * 2, color.grid, color.grid]} />
+    <SimulationOrbit enabled={!props.onSelectPoint && props.view !== 'follow'} focus={[floorCenter[0], .08, floorCenter[2]]} />
     {props.onSelectPoint && <DestinationPlane {...props} />}
     <Destinations waypoints={props.waypoints} accent={color.accent} muted={color.muted} />
     <Trajectory trail={props.trail} color={color.accent} />
-    <group position={position} rotation={[0, props.pose ? props.pose.thetaMrad / 1000 : 0, 0]}><RobotModel wheelAngles={props.wheelAngles} /></group>
-  </Canvas>;
+    <group position={position} rotation={[0, props.pose ? props.pose.thetaMrad / 1000 : 0, 0]}><SimulationRobot wheelAngles={props.wheelAngles ?? { fl: 0, fr: 0, rl: 0, rr: 0 }} angle={0} /></group>
+  </SimulationViewport>;
 }

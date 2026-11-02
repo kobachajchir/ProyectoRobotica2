@@ -7,6 +7,18 @@
  */
 
 :root {
+  /* AFR2-20261102-15 / VIS-062: shared infrastructure visual language. */
+  --visual-card-padding: clamp(20px, 3vw, 36px);
+  --visual-section-gap: clamp(28px, 4vw, 48px);
+  --visual-card-shadow: 0 18px 44px rgba(15, 23, 42, .06);
+  --visual-card-hover-shadow: 0 18px 44px rgba(15, 23, 42, .12);
+  --visual-hero-shadow: 0 24px 60px rgba(2, 6, 23, .24);
+  --visual-grid-ink: rgba(148, 163, 184, .06);
+  --visual-halo-cool: rgba(56, 189, 248, .16);
+  --visual-halo-warm: rgba(255, 107, 125, .18);
+  --visual-hero-icon-bg: rgba(255, 107, 125, .14);
+  --visual-hero-icon-border: rgba(255, 107, 125, .30);
+  --visual-hero-highlight: rgba(255, 255, 255, .06);
   color-scheme: light;
 
   /* 1. Lienzo y superficies base (Light) */
@@ -18,6 +30,7 @@
   --canvas: #f3f6fb;
   --canvas-elevated: #e8eef7;
   --canvas-gradient: none;
+  --radar-floor: var(--map-floor);
   --surface-solid: #ffffff;
   --surface-subtle: #eaf0f8;
 
@@ -479,12 +492,63 @@
   --banner-chip-bg: rgba(11, 20, 36, 0.62);
   --banner-chip-border: rgba(226, 232, 240, 0.18);
   --banner-scrim: rgba(11, 20, 36, 0.92);
-  /* AFR2-20261102-07: zonas del mapa de Infraestructura sobre la portada oscura (iguales en ambos temas). */
-  --banner-zone-pc: #7dd3fc;
-  --banner-zone-esp: #fcd34d;
-  --banner-zone-link: #ff8a9a;
-  --banner-zone-client: #86efac;
   --banner-scrim-mid: rgba(11, 20, 36, 0.72);
+}
+
+/* AFR2-20261102-10 — Portada de Infraestructura. Oscuro: igual que AFR2-20261102-07 (noche azul,
+   halos celeste y rubí). Claro: misma composición sobre papel frío, tinta oscura y zonas profundas
+   (contraste AA sobre el fondo y sobre los nodos). */
+:root {
+  --infra-hero-bg: #f3f6fb;
+  --infra-hero-grid: rgba(15, 23, 42, 0.055);
+  --infra-hero-tint-a: rgba(14, 165, 233, 0.16);
+  --infra-hero-tint-b: rgba(225, 29, 72, 0.13);
+  --infra-hero-glow: rgba(225, 29, 72, 0.14);
+  --infra-hero-ink: #0f172a;
+  --infra-hero-muted: #3f4b5e;
+  --infra-hero-accent: #b81d33;
+  --infra-hero-accent-subtle: rgba(184, 29, 51, 0.10);
+  --infra-hero-accent-border: rgba(184, 29, 51, 0.34);
+  --infra-hero-border: rgba(15, 23, 42, 0.10);
+  --infra-hero-chip-bg: rgba(255, 255, 255, 0.78);
+  --infra-hero-chip-border: rgba(15, 23, 42, 0.12);
+  --infra-hero-surface: rgba(255, 255, 255, 0.86);
+  --infra-hero-surface-highlight: rgba(255, 255, 255, 0.9);
+  --infra-hero-panel: rgba(255, 255, 255, 0.62);
+  --infra-hero-shadow: 0 24px 60px rgba(15, 23, 42, 0.10);
+  --infra-hero-node-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+  --infra-hero-node-shadow-hover: 0 16px 32px rgba(15, 23, 42, 0.14);
+  --infra-hero-wire: rgba(15, 23, 42, 0.28);
+  --infra-hero-zone-pc: #0369a1;
+  --infra-hero-zone-esp: #a16207;
+  --infra-hero-zone-link: #b81d33;
+  --infra-hero-zone-client: #15803d;
+}
+.dark {
+  --infra-hero-bg: #0b1424;
+  --infra-hero-grid: rgba(148, 163, 184, 0.06);
+  --infra-hero-tint-a: rgba(56, 189, 248, 0.16);
+  --infra-hero-tint-b: rgba(255, 107, 125, 0.18);
+  --infra-hero-glow: rgba(255, 107, 125, 0.22);
+  --infra-hero-ink: #f8fafc;
+  --infra-hero-muted: rgba(226, 232, 240, 0.82);
+  --infra-hero-accent: #ff6b7d;
+  --infra-hero-accent-subtle: rgba(255, 107, 125, 0.22);
+  --infra-hero-accent-border: rgba(255, 107, 125, 0.55);
+  --infra-hero-border: rgba(148, 163, 184, 0.18);
+  --infra-hero-chip-bg: rgba(11, 20, 36, 0.62);
+  --infra-hero-chip-border: rgba(226, 232, 240, 0.18);
+  --infra-hero-surface: rgba(15, 23, 42, 0.55);
+  --infra-hero-surface-highlight: rgba(255, 255, 255, 0.06);
+  --infra-hero-panel: rgba(255, 255, 255, 0.04);
+  --infra-hero-shadow: 0 24px 60px rgba(2, 6, 23, 0.28);
+  --infra-hero-node-shadow: 0 10px 24px rgba(2, 6, 23, 0.25);
+  --infra-hero-node-shadow-hover: 0 16px 32px rgba(2, 6, 23, 0.35);
+  --infra-hero-wire: rgba(248, 250, 252, 0.32);
+  --infra-hero-zone-pc: #7dd3fc;
+  --infra-hero-zone-esp: #fcd34d;
+  --infra-hero-zone-link: #ff8a9a;
+  --infra-hero-zone-client: #86efac;
 }
 
 /* VIS-017/VIS-054 — Paleta del mapa de Control y radar, trasladada desde control-map.css

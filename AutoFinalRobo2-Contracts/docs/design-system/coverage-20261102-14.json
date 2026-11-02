@@ -1,0 +1,100 @@
+{
+  "changeId": "AFR2-20261102-14",
+  "manualVersion": "0.1.11",
+  "date": "2026-11-02",
+  "kind": "documentary-coverage-not-validation",
+  "status": "draft",
+  "direction": {
+    "confidence": "Confirmada",
+    "approval": "Aprobada",
+    "scope": "Integración aditiva al manual, no implementación ni aprobación estética en ejecución"
+  },
+  "verification": "No verificada",
+  "sourceManifest": "sources.md S01–S23",
+  "documents": [
+    "index.md",
+    "manual.md",
+    "components.md",
+    "tokens.json",
+    "sources.md",
+    "decisions.md",
+    "adoption.md",
+    "audit.config.json"
+  ],
+  "coverage": [
+    {
+      "area": "DOM, layout, tipografía, padding, margen, separadores y responsive",
+      "confidence": "Observada",
+      "coverage": "Cubierta",
+      "verification": "No verificada",
+      "approval": "Pendiente",
+      "decisionId": "VIS-057"
+    },
+    {
+      "area": "Colores por tema/zona, banner, grilla, halos, materiales y overlays decorativos",
+      "confidence": "Observada",
+      "coverage": "Cubierta",
+      "verification": "No verificada",
+      "approval": "Pendiente",
+      "decisionId": "VIS-058"
+    },
+    {
+      "area": "Selector con iconos, nodos, cables, estaciones, ficha y acciones",
+      "confidence": "Observada",
+      "coverage": "Cubierta",
+      "verification": "No verificada",
+      "approval": "Pendiente",
+      "decisionId": "VIS-059"
+    },
+    {
+      "area": "Tiempos, curvas, disparadores, delays y límites de movimiento",
+      "confidence": "Observada",
+      "coverage": "Cubierta",
+      "verification": "No verificada",
+      "approval": "Pendiente",
+      "decisionId": "VIS-060"
+    },
+    {
+      "area": "Barras, anillo, tabla, magnitudes, estados y procedencia",
+      "confidence": "Observada",
+      "coverage": "Cubierta",
+      "verification": "No verificada",
+      "approval": "Pendiente",
+      "decisionId": "VIS-061"
+    }
+  ],
+  "illustrations": {
+    "confidence": "Propuesta",
+    "verification": "No verificada",
+    "files": [
+      "assets/infraestructura-gramatica.svg",
+      "assets/infraestructura-capas.svg"
+    ],
+    "notScreenshots": true
+  },
+  "preserved": [
+    "Marca y temas",
+    "Primitivas y formularios",
+    "FloatingModal y overlays",
+    "Notificaciones",
+    "Navegación y escenarios",
+    "Semántica OLED",
+    "Historia de decisiones y validaciones"
+  ],
+  "notExecuted": [
+    "tests",
+    "compilación",
+    "validadores",
+    "scanner",
+    "navegador",
+    "render SVG",
+    "consultas a placa",
+    "flasheos"
+  ],
+  "limitations": [
+    "Fuente estática con cambios locales previos",
+    "No aplicación a interfaz",
+    "Reducción de movimiento parcial en la referencia",
+    "Particularidades de iconos/hover/errores documentadas como deuda"
+  ]
+}

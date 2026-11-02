@@ -4,6 +4,7 @@
 #ifndef AFR2_SCREENS_H
 #define AFR2_SCREENS_H
 #include "afr2_oled.h"
+#include "afr2_dashboard.h"
 #include "afr2_encoder_ui.h"
 #include "afr2_menu_catalog.h"
 #include "afr2_network_wire.h"
@@ -28,6 +29,7 @@ typedef struct {uint8_t node,selection,first;} Afr2UiPosition;
 typedef struct {char title[18],text[18];uint16_t ms;uint8_t kind;} Afr2Notification;
 typedef struct {
     uint32_t screen,revision,generation,navigation_revision,clock_ms,notice_started_ms,scroll_started_ms,scroll_render_ms;
+    Afr2DashboardState dashboard;
     uint32_t touch_ms,touch_started_ms;
     uint8_t touch_active,touch_cancelled,touch_direction,touch_heading,touch_full;
     uint8_t node,selection,firstVisible,depth,edit,keyboard,keyboard_field,key,length;
@@ -58,6 +60,7 @@ typedef struct {
     /* AFR2-20261030-01: voltage validity, never a charge percentage. */
     uint16_t battery_mv;
     uint8_t battery_valid;
+    uint8_t dashboard_valid,dashboard_mode,dashboard_moving,dashboard_fault;
     bool line_valid,ultrasonic_valid;
     uint8_t line_bits;
     uint16_t ultrasonic_mm;
@@ -95,6 +98,8 @@ void Afr2Ui_Touch(Afr2Ui *ui,uint8_t active,uint8_t direction,uint8_t heading);
 void Afr2Ui_Init(Afr2Ui *ui);
 void Afr2Ui_Attach(Afr2Ui *ui,const Afr2UiOps *ops);
 void Afr2Ui_Apply(Afr2Ui *ui,Afr2UiInput input);
+void Afr2Ui_InputHeld(Afr2Ui *ui,uint8_t held,uint32_t now);
+uint8_t Afr2Dashboard_Render(Afr2Ui *,Afr2Oled *,const Afr2UiSnapshot *);
 void Afr2Ui_Tick(Afr2Ui *ui,uint32_t now);
 void Afr2Ui_Notify(Afr2Ui *ui,uint8_t kind,const char *title,const char *text,uint16_t ms);
 void Afr2Ui_Render(Afr2Ui *ui,Afr2Oled *oled,const Afr2UiSnapshot *snapshot);

@@ -1263,10 +1263,11 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
         />
       )}
 
-      {preview}
+      <div className="afr2-sequence-preview-layout">
+      <div className="afr2-sequence-preview-layout__scene">{preview}</div>
 
       {/* Barra de transporte: Simulación (principal, offline) y Ejecución física */}
-      <div className="afr2-glass-panel rounded-[var(--radius-md)] p-5 space-y-4">
+      <div className="afr2-sequence-transport p-5 space-y-4">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <span className="text-xs font-mono uppercase tracking-wider text-[var(--text-muted)]">
@@ -1412,6 +1413,7 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
       </div>
 
       {/* Biblioteca de programas, importación/exportación JSON y perfil cinemático */}
+      </div>
       <div className="afr2-glass-panel rounded-[var(--radius-md)] p-5 space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex flex-wrap items-center gap-2 min-w-0 flex-1">

@@ -35,6 +35,8 @@ La lámina de referencia define composición, no autoría, normas, ajustes, masa
 
 **Conjunto:** vista armada 3D y plano general; BOM vinculada a códigos. Separar BOM larga en hojas. Identificar comerciales por modelo/norma conocida; agrupar una ocurrencia comercial formada por varios sólidos como una sola pieza.
 
+**Ficha visual de conjuntos:** cuando se pida, reemplazar la zona de planos por renders de los subconjuntos con códigos/títulos, manteniendo el conjunto completo grande al otro lado. Dividir en varias fichas cuando haya demasiados grupos; distinguir los conjuntos del brazo de los conjuntos del vehículo. Esta ficha no reemplaza los planos de piezas pendientes.
+
 **Pieza:** una hoja por definición fabricada única, con cantidad y conjuntos donde aparece. Alzado/planta/perfil con proyección declarada, isométrica sombreada y cotas funcionales desde datums. Si solo hay cotas envolventes, declarar “preliminar, acotado funcional pendiente”; no presentarla como plano completo para fabricar.
 
 **Explosión:** derivado independiente del maestro, preferentemente isométrico, grande y legible. Para desmontaje real, desplazamientos sobre ejes de montaje y líneas de recorrido. Un catálogo alineado solo se utiliza cuando el usuario lo pide; si reubica piezas laterales, rotular “despiece lineal de inventario, no secuencia de desmontaje”. Dividir los conjuntos densos en tramos/detalles; no ocultar tornillería ni confundir cantidad con sólidos internos. Globos y BOM deben compartir identificadores.

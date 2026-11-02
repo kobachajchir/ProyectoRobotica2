@@ -1,3 +1,65 @@
+# Alcance vigente 0.1.11 — Infraestructura integrada
+
+02/11/2026 · AFR2-20261102-14. Pedido explícito de ampliar el manual actual con toda la extracción anterior, manteniendo reglas/componentes existentes. Canónica de esta ampliación: Infraestructura y sus dependencias visuales. Objetivo: manual/index/components/tokens/sources/decisions/adoption, configuración y cobertura documentales, más dos láminas SVG. No se encarga implementación Web.
+
+La fuente de valores es la lectura estática S01–S23 de AFR2-20261102-11, incorporada abajo; no se afirma una nueva captura visual. En esta continuación se leyeron los documentos generales, el dossier y los puntos relevantes de CSS para resolver integración y precedencia. La base Git registrada en el dossier identifica su captura histórica, no un nuevo snapshot del trabajo concurrente. Las decisiones generales ya existentes conservan sus fuentes, aprobaciones y excepciones; las fuentes nuevas solo aportan las recetas explicitadas en VIS-057–061.
+
+Los archivos `assets/infraestructura-gramatica.svg` y `assets/infraestructura-capas.svg` son diagramas documentales Propuestos con valores Observados, no capturas ni renders del producto. Sin red, recursos externos, nuevos modelos 3D ni modificación de activos de marca.
+
+## Manifiesto S01–S23 incorporado al manual general
+
+Todas las rutas de la tabla son relativas a `D:/ProyectoRobotica2/`. `direct` define la muestra; `dependency` explica componentes usados por ella; `supporting` aporta contexto global sin convertir otras páginas en canónicas.
+
+| ID | Archivo | Clase | Incorporado por / aporte |
+| --- | --- | --- | --- |
+| S01 | AutoFinalRobo2-Web/src/features/infrastructure/InfrastructurePage.tsx | direct | DOM completo, estado local, navegación, magnitudes y estados de datos. |
+| S02 | AutoFinalRobo2-Web/src/styles/infrastructure.css | direct | Todos los selectores propios de la sección, media queries y keyframes. |
+| S03 | AutoFinalRobo2-Web/src/features/infrastructure/infrastructureFlow.ts | dependency | S01: títulos, iconos, ocho pasos por recorrido y asignación de zona por `place`. |
+| S04 | AutoFinalRobo2-Web/src/features/infrastructure/useInfrastructurePackage.ts | dependency | S01: carga inicial, actualización, error, origen y timeout que alteran la presentación. |
+| S05 | AutoFinalRobo2-Web/src/components/ui/SegmentedControl.tsx | dependency | S01: copia activa, medición, recorte, activación y teclado. |
+| S06 | AutoFinalRobo2-Web/src/styles/segmented.css | dependency | S05: ranura, pill, sombras, estados y responsive. |
+| S07 | AutoFinalRobo2-Web/src/components/ui/Button.tsx | dependency | S01: variantes, dimensiones, disabled y spinner. |
+| S08 | AutoFinalRobo2-Web/src/components/ui/UiIcon.tsx | dependency | S01/S05: SVG, trazo, tamaño, accesibilidad. |
+| S09 | AutoFinalRobo2-Web/src/components/ui/icons/registry.ts | dependency | S08: procedencia Lucide/propia y correspondencia de símbolos. |
+| S10 | AutoFinalRobo2-Web/src/components/three/modelAssets.ts | dependency | S01: etiquetas de modelos y rutas, sin recorrer escenas 3D. |
+| S11 | AutoFinalRobo2-Web/src/components/three/modelAssetSizes.json | dependency | S01: tamaños declarados de auto, brazo y cubo. No se midieron GLB. |
+| S12 | AutoFinalRobo2-Web/src/styles/tokens.css | supporting | S02/S06/S07: claro/oscuro, banner, tipo, radios, tiempos y material del selector. |
+| S13 | AutoFinalRobo2-Web/src/styles/index.css | supporting | main.tsx: imports, reset, root, foco, pulsación, animación de ruta y prioridad de teclado. |
+| S14 | AutoFinalRobo2-Web/src/styles/workspace.css | supporting | S13: contenedor principal, page-stack, kicker, help y shell responsive. |
+| S15 | AutoFinalRobo2-Web/src/styles/headers.css | supporting | S13: contexto de cabeceras compartidas; las cabeceras propias de Infraestructura no usan PageHeader. |
+| S16 | AutoFinalRobo2-Web/src/app/providers/ThemeProvider.tsx | supporting | App: clase `.dark`, preferencia system y `data-input` teclado/puntero. |
+| S17 | AutoFinalRobo2-Web/src/main.tsx | supporting | Entrada, import de index.css y React.StrictMode. |
+| S18 | AutoFinalRobo2-Web/src/app/App.tsx | supporting | Registro de ruta, HashRouter, ThemeProvider y shell. |
+| S19 | AutoFinalRobo2-Web/src/app/navigation.ts | supporting | Destino Infraestructura en grupo Explorar, icono board. |
+| S20 | AutoFinalRobo2-Web/src/components/navigation/RouteNav.tsx | supporting | Solo shell, elección inicial de sidebar y main que contienen la muestra. |
+| S21 | AutoFinalRobo2-Web/src/features/connection/ConnectionContext.tsx | dependency parcial | S01: contrato visual de systemInfo, timestamp, estado ready y refreshSystemInfo; leídos sus puntos relevantes, sin recorrer el protocolo. |
+| S22 | AutoFinalRobo2-Contracts/changes/2026-11-02-07-infrastructure-visual-redesign.md | supporting histórica | Intención y evidencia anterior declarada; las fuentes actuales prevalecen. |
+| S23 | AutoFinalRobo2-Contracts/changes/2026-11-02-10-infrastructure-cube-board-fs-blender.md | supporting histórica | Cambios posteriores de contenido, cubo y consulta de placa; no sustituye verificación actual. |
+
+También se leyeron las instrucciones raíz/Web/Contracts, el informe maestro raíz y README de Contracts para resolver alcance y política de trabajo; no definen la estética observada.
+
+## Localizadores principales
+
+| Tema | Fuente / localizador al extraer |
+| --- | --- |
+| Portada, mapa y chips | S01:148–193; S02:20–84 |
+| Recorrido, estaciones y ficha | S01:195–230; S02:86–142 |
+| Peso, compresión, LittleFS y tabla | S01:233–314; S02:144–220 |
+| Glosario, reveal y anchos | S01:53–70 y 316–322; S02:222–292 |
+| Estado, cambio y scroll | S01:97–146 |
+| Selector | S05 completo; S06:7–109 |
+| Paleta y temas | S12:66–102, 230–263, 455–493 |
+| Tipografía y espacios globales | S12:118–147, 384–435; S14:177 |
+| Reducción de movimiento | S02:284–292; S12:301–318; S13 reglas globales |
+| Error de consulta absorbido | S21:440–447 |
+
+
+## Límites de esta ampliación
+
+Solo lectura/edición documental. Sin tests, compilación, validación de JSON o enlaces, escáner de deriva, navegador, render de SVG, consulta de placa ni flasheo. La serialización de tokens se realiza para autoría del documento; no se ejecuta un validador ni se reporta un resultado de conformidad. Cobertura de fuente descrita en coverage-20261102-14.json; cobertura en ejecución No verificada.
+
+## Fuentes anteriores conservadas
+
 ## Alcance01-03 - Modelos 3D
 
 Canonica Confirmada por el usuario: CollectorScene.tsx y paleta cielo/piso/grilla de collector.css; se comparten sus mismos valores desde tokens.css. Supporting: identidad0.1.9 autorizada, tokens, ThemeProvider, Button. Objetivos: ModelInspection, AssetInspection, InspectionEnvironment y model-inspection.css. Fichas solidas y tinta de referencias Propuestas. Revision de fuente 01/11/2026; ejecucion No verificada. [Cobertura](coverage-20261101-03.json).
@@ -210,3 +272,7 @@ Procedencia/hashes en provenance/web-protocol-studio-essence-20261028.json;
 organización de referencia Observada en código, composición Propuesta,
 verificación de ejecución No verificada. No se ejecutaron herramientas de deriva,
 tests, compilaciones ni navegador. La referencia se leyó sin ejecutar scripts.
+
+## Aplicación global — VIS-062 / AFR2-20261102-15
+
+Fuente canónica: Infraestructura y manual ampliado 0.1.11 de esta conversación. Objetivo autorizado: presentación de toda la Web. Se leen PageHeader, Button, Field, GlassSurface, AppShell y estilos de cabeceras, tarjetas, collector, modelos, sensores, calibración, estudio y notificaciones. Supporting: tokens y selector compartido. Se añade visual-language.css y tokens --visual-*. No se convierten los objetivos en nuevas fuentes de identidad. Propiedades de presentación, atributos de estilo y decoración; APIs de interacción conservadas. Fuentes locales con cambios concurrentes preservados. La aplicación registra dirección Confirmada, composición Propuesta, ejecución No verificada. Sin pruebas/compilación/validadores/navegador ni medición de contraste.

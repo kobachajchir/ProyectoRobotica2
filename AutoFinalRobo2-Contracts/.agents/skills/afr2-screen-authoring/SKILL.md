@@ -14,9 +14,12 @@ Para diseñar la composición y el flujo, usar también
 consistentes entre proyectos. Es un borrador de diseño; no implica migrar
 pantallas existentes ni ejecutar validaciones. Esta skill sigue siendo la
 autoridad de integración específica ATmega/Web de AutoFinalRobo2.
-La revisión2 diseña largo=volver por pedido posterior del usuario; el contrato
-activo de firmware aún usa largo=principal. No confundir diseño y migración ni
-cambiar firmware/renderer activo al editar documentación.
+La navegación vigente es la de AGENTS.md y documentation/UI_SCREEN_FLOW.md:
+corto desde Inicio abre menú y largo al soltar abre rápidas; el resto retorna
+por contexto con Sí/No obligatorio. Las frases históricas no cambian ese flujo.
+AFR2-20261102-14 autoriza rotación automática solo en la tarjeta informativa del
+dashboard tras3s de inactividad, cada4s, con pausa de encoder y fallo prioritario.
+Leer contracts/OLED_DASHBOARD_STATUS_20261102.md; no extenderla a otros menús.
 
 Leer [arquitectura y navegación](references/architecture.md), `documentation/SCREEN_SYSTEM.md`, `documentation/NAVIGATION.md` y `documentation/screens.json` desde la raíz de Contracts. Localizar el renderer original y sus wrappers/contexto hasta conocer datos, variante y acciones; no deducir comportamiento solo del nombre o ID. Para reportes Web consultar el contrato propio, no asumir payloads históricos.
 

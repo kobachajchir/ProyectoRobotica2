@@ -1,3 +1,36 @@
+---
+product: AutoFinalRobo2
+manualVersion: 0.1.11
+status: draft
+updatedAt: 2026-11-02
+changeId: AFR2-20261102-14
+---
+
+# Manual visual vigente — 0.1.11
+
+> **Aplicación global VIS-062 / AFR2-20261102-15:** autorizado expresamente este borrador para aplicar solo presentación a toda la Web. Capa común de cabeceras, materiales, tarjetas, controles, campos y estados, con adaptaciones para todas las áreas. Fuente implementada; resultado No verificado en ejecución. [Cobertura de fuente](coverage-20261102-15.json). Sin tests, compilación, validadores ni navegador.
+
+Ampliación **aditiva** autorizada por el usuario: el lenguaje de Infraestructura se incorpora dentro del manual actual manteniendo sus reglas, componentes y evolución. Las portadas por capas, el color zonal, los selectores, flujos, estaciones y gráficos amplían las recetas del sistema; las superficies operativas, marca, formularios, overlays, accesibilidad y OLED continúan.
+
+![Gramática de la ampliación visual](assets/infraestructura-gramatica.svg)
+
+*Esquema didáctico Propuesto, no captura de la aplicación. Valores Observados en fuente; incorporación documental autorizada; ejecución No verificada.*
+
+| Documento vigente | Contenido integrado |
+| --- | --- |
+| [Manual operativo](manual.md#vigencia-0111) | Reglas por contexto y [atlas completo](manual.md#atlas-infraestructura) con DOM, paletas, capas, dimensiones y estados. |
+| [Componentes](components.md#infraestructura-integrada) | Contratos y cobertura nuevos dentro del catálogo existente. |
+| [Tokens](tokens.json) | Capas previas conservadas y namespaces infrastructure incorporados. |
+| [Fuentes](sources.md) / [Decisiones](decisions.md) | Manifiesto S01–S23, VIS-057–061, precedencia y límites. |
+| [Adopción](adoption.md) | Situación actual, continuidad y forma de reutilizar las recetas. |
+| [Dossier de origen](infraestructura/index.md) | Evidencia de extracción conservada, no guía paralela del sistema. |
+
+Cinco reglas vigentes: conservar contratos existentes; separar operación y exploración; color y material según contexto; primitivas/teclado/foco compartidos; magnitudes con unidades/procedencia y movimiento accesible. La reducción parcial observada en la fuente y otras particularidades se registran como deuda, no como normas nuevas. No se ejecutaron tests, builds, validadores, escáneres, navegador ni render de comprobación. [Cobertura documental](coverage-20261102-14.json) · [Ficha](../../changes/2026-11-02-14-visual-manual-infrastructure-integration.md).
+
+## Evolución anterior conservada
+
+Los apartados siguientes retienen sus fechas y versiones. Sus títulos «vigente» y resultados históricos se interpretan en el contexto de cada entrega; para decisiones actuales, leer primero la síntesis 0.1.11 y las precedencias de VIS-057–061.
+
 > **Infraestructura / AFR2-20261102-04:** continuación de las primitivas/tokens vigentes en la nueva vista de Explorar. Mapa y explorador de etapas Propuestos, tamaños con procedencia explícita; fuente implementada, ejecución No verificada. [Cobertura](coverage-20261102-04.json). Sin tests, compilación, validadores ni navegador.
 
 > **VIS-055/056 / AFR2-20261102-01:** banners de render (Inicio y Modelos), inspección 3D directa con «Ir a simulación», simulador separado y mapa conceptual de pantallas. Primera aplicación revisada en navegador local (5 anchos, claro/oscuro). [Cobertura](coverage-20261102-01.json).
@@ -56,12 +89,7 @@
 
 > **Aplicacion27-06/VIS-043:** ayuda de calibracion contextual a la derecha, matematica mas amplia/centrada y mismo formulario en las tres simulaciones. Pad de movimiento, boton mantenido y campo numero/barra compartidos con Control. Identidad0.1.9 conservada; direccion Confirmada, composicion Propuesta y aspecto No verificado. [Cobertura](coverage-20261027-06.json). Sin tests/build/validaciones/navegador.
 
----
-product: AutoFinalRobo2
-manualVersion: 0.1.9
-status: draft
-updatedAt: 2026-10-24
----
+> Metadatos históricos conservados: product AutoFinalRobo2 · manualVersion 0.1.9 · status draft · updatedAt 2026-10-24. La versión vigente está al inicio de este documento.
 # Identidad visual AutoFinalRobo2
 
 > **Aplicacion27-11/VIS-044:** puntos guardados compartidos en Brazo/Conjunto,

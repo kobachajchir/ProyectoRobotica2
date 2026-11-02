@@ -1,0 +1,16 @@
+/* AFR2-20261102-18. Shared presentation, independent simulation state adapters. */
+.afr2-simulation-viewport { position: relative; width: 100%; height: 100%; min-width: 0; overflow: hidden; background: var(--sim-scene-sky); touch-action: none; }
+.afr2-simulation-overlays { position: absolute; z-index: 2; right: 16px; bottom: 16px; left: 16px; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 8px; pointer-events: none; }
+.afr2-simulation-info, .afr2-simulation-zoom { display: flex; align-items: center; gap: 4px; padding: 4px; border: 1px solid var(--border-default); border-radius: var(--radius-pill); background: var(--surface-solid); box-shadow: var(--visual-card-shadow); }
+.afr2-simulation-info { min-height: 52px; padding: 12px 16px; color: var(--text-muted); font: var(--type-caption); }
+.afr2-simulation-zoom { margin-left: auto; pointer-events: auto; }
+.afr2-simulation-zoom input { width: 72px; min-height: 44px; padding: 8px; border: 1px solid var(--focus); border-radius: var(--radius-pill); background: var(--surface-subtle); color: var(--text-strong); font: inherit; text-align: center; }
+.afr2-simulation-zoom button { display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; padding: 8px; border: 0; border-radius: var(--radius-pill); background: transparent; color: var(--text-strong); font: var(--type-label); font-variant-numeric: tabular-nums; cursor: pointer; }
+.afr2-simulation-zoom button:disabled { color: var(--text-disabled); cursor: default; }
+@media (hover: hover) and (pointer: fine) { .afr2-simulation-zoom button:hover:not(:disabled) { background: var(--action-subtle); color: var(--action); } }
+.afr2-collector-viewport > .afr2-simulation-viewport { height: 100%; }
+:root .afr2-control-map__viewport { height: clamp(380px, 58svh, 720px); background: var(--sim-scene-sky); }
+:root .afr2-control-map { border-radius: var(--radius-xl); }
+:root .afr2-control-map__heading { padding: 24px; border-bottom: 1px solid var(--border-subtle); }
+:root .afr2-control-map__heading h2 { font: var(--type-heading); }
+:root .afr2-control-map__toolbar { padding: 14px 20px; border-bottom: 1px solid var(--border-subtle); }

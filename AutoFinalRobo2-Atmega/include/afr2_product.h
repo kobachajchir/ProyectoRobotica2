@@ -22,7 +22,7 @@ typedef struct {
     uint8_t pwm_limit, ramp_step;
     uint16_t long_press_ms;
     uint8_t servo_inverted;
-    uint8_t radar_range,radar_trace; /* v5: 0..3=4/2/1/0.5m; trace 0/1 */
+    uint8_t radar_range,radar_trace; /* 0..3=2m/1m/50cm/25cm; trace 0/1, AFR2-20261102-18 */
     uint16_t line_threshold[5], wheel_mm, radius_sum_mm, speed_limit, test_ms;
     uint16_t kp, ki, kd; /* Q8 fixed point, common defaults; independent accumulators */
     uint16_t line_kp, line_speed;

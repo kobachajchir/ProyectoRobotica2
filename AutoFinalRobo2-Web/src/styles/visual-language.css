@@ -1,0 +1,210 @@
+/* AFR2-20261102-15 / VIS-062. Manual 0.1.11 explicitly authorized for all Web.
+   Presentation only: no hidden controls, reordering, event handlers or scene changes.
+   :root specificity also covers feature styles loaded later with lazy routes. */
+:root .afr2-main {
+  --page-zone: var(--action);
+  --page-zone-subtle: var(--action-subtle);
+  --page-zone-border: var(--action-border);
+}
+:root .afr2-main[data-visual-area="sensores"],
+:root .afr2-main[data-visual-area="conexion"] {
+  --page-zone: var(--info); --page-zone-subtle: var(--info-subtle); --page-zone-border: var(--info-border);
+}
+:root .afr2-main[data-visual-area="modelos"],
+:root .afr2-main[data-visual-area="simulacion"] {
+  --page-zone: var(--success); --page-zone-subtle: var(--success-subtle); --page-zone-border: var(--success-border);
+}
+:root .afr2-main[data-visual-area="puesta-a-punto"] {
+  --page-zone: var(--warning); --page-zone-subtle: var(--warning-subtle); --page-zone-border: var(--warning-border);
+}
+:root .afr2-route-view.afr2-page-stack { gap: var(--visual-section-gap); }
+
+/* Every shared page heading uses the same layered material as Infrastructure. */
+:root .afr2-nav-caption[data-nav-group="operar"] { color: var(--action); }
+:root .afr2-nav-caption[data-nav-group="preparar"] { color: var(--warning); }
+:root .afr2-nav-caption[data-nav-group="explorar"] { color: var(--info); }
+:root .afr2-nav-caption[data-nav-group="sistema"] { color: var(--success); }
+:root .afr2-wifi-mode-card { padding: var(--visual-card-padding); }
+:root .afr2-wifi-mode-choice { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; font: var(--type-label); color: var(--text-muted); }
+:root .afr2-wifi-mode-choice select { min-height: 44px; padding: 8px 16px; background: var(--surface-subtle); color: var(--text-strong); }
+:root .afr2-sequence-preview-layout {
+  display: grid; grid-template-columns: minmax(0, 1fr); gap: 0; align-items: stretch;
+  border: 1px solid var(--border-default); border-radius: var(--radius-xl);
+  background: var(--surface-solid); box-shadow: var(--visual-card-shadow); overflow: hidden;
+}
+:root .afr2-sequence-preview-layout__scene, :root .afr2-sequence-transport { min-width: 0; }
+:root .afr2-sequence-preview-layout__scene { display: flex; flex-direction: column; }
+:root .afr2-sequence-preview-layout__scene > .afr2-control-map {
+  display: flex; flex-direction: column; flex: 1; border: 0; border-radius: 0; box-shadow: none;
+}
+:root .afr2-sequence-preview-layout__scene .afr2-control-map__viewport {
+  flex: 1; min-height: clamp(380px, 58svh, 720px);
+}
+:root .afr2-sequence-transport {
+  border: 0; border-top: 1px solid var(--border-subtle); border-radius: 0;
+  background: var(--surface-subtle); box-shadow: none;
+}
+@media (min-width: 1200px) {
+  :root .afr2-sequence-preview-layout { grid-template-columns: minmax(0, 1fr) minmax(300px, 380px); }
+  :root .afr2-sequence-transport { border-top: 0; border-left: 1px solid var(--border-subtle); }
+  :root .afr2-sequence-transport > .grid { grid-template-columns: minmax(0, 1fr); }
+}
+:root .afr2-page-header {
+  position: relative; isolation: isolate; overflow: hidden;
+  gap: 16px; padding: clamp(24px, 4vw, 48px);
+  border: 1px solid var(--banner-border); border-radius: var(--radius-xl);
+  color: var(--banner-ink); box-shadow: var(--visual-hero-shadow);
+  background:
+    linear-gradient(var(--visual-grid-ink) 1px, transparent 1px) 0 0 / 32px 32px,
+    linear-gradient(90deg, var(--visual-grid-ink) 1px, transparent 1px) 0 0 / 32px 32px,
+    radial-gradient(120% 90% at 100% 0%, var(--visual-halo-cool), transparent 55%),
+    radial-gradient(90% 80% at 0% 100%, var(--visual-halo-warm), transparent 60%), var(--banner-bg);
+}
+:root .afr2-page-header__glow {
+  position: absolute; z-index: -1; pointer-events: none;
+  inset: auto -10% -50% 30%; height: 90%; border-radius: 50%;
+  background: radial-gradient(closest-side, var(--visual-halo-warm), transparent);
+  filter: blur(20px);
+}
+:root .afr2-page-header__row { align-items: center; gap: 20px 24px; }
+:root .afr2-page-header__titles { flex: 1; min-width: 0; }
+:root .afr2-page-header__title-line { gap: 16px; }
+:root .afr2-page-header__title {
+  flex: 1; min-width: 0; color: var(--banner-ink);
+  font: 750 clamp(1.75rem, 3.6vw, 2.75rem) / 1.1 var(--font-display);
+  letter-spacing: -.035em;
+}
+:root .afr2-page-header__icon {
+  display: grid; place-items: center; flex: none; width: 52px; height: 52px; border-radius: 16px;
+  color: var(--banner-zone-link); background: var(--visual-hero-icon-bg);
+  border: 1px solid var(--visual-hero-icon-border); box-shadow: 0 10px 24px var(--visual-hero-icon-bg);
+}
+:root .afr2-page-header__titles > .afr2-kicker {
+  width: fit-content; margin: 0 0 14px; padding: 5px 12px; border-radius: var(--radius-pill);
+  border: 1px solid var(--banner-accent-border); color: var(--banner-ink);
+  background: var(--banner-accent-subtle); font: var(--type-caption); letter-spacing: .04em;
+}
+:root .afr2-page-header__description { margin: 0; max-width: 68ch; color: var(--banner-muted); font-size: 1rem; line-height: 1.65; }
+:root .afr2-page-header__extra { margin-top: 4px; min-width: 0; }
+:root .afr2-page-header__actions .afr2-developer-back {
+  color: var(--banner-ink); background: var(--banner-chip-bg); border-color: var(--banner-chip-border);
+}
+/* A local dark theme for the selector on the fixed dark heading, even in light mode. */
+:root .afr2-page-header .afr2-seg {
+  --surface-subtle: var(--banner-chip-bg); --text-muted: var(--banner-muted);
+  --text: var(--banner-ink); --text-strong: var(--banner-ink); --focus: var(--banner-accent);
+  --seg-pill-bg: var(--visual-hero-icon-bg);
+  --seg-track-inset: inset 0 0 0 1px var(--banner-chip-border);
+  --seg-pill-shadow: drop-shadow(0 1px 2px var(--banner-bg));
+}
+
+/* Solid cards: same geometry, restrained depth and zonal lighting as the reference. */
+:root :is(.afr2-section-card, .afr2-protocol-card, .afr2-developer-profile,
+  .afr2-sensor-panel, .afr2-collector-card, .afr2-collapsible-panel) {
+  border-radius: var(--radius-xl); border-color: var(--border-default);
+  box-shadow: var(--visual-card-shadow);
+}
+:root :is(.afr2-section-card, .afr2-protocol-card, .afr2-developer-profile) {
+  padding: var(--visual-card-padding);
+  background: radial-gradient(110% 80% at 0 0, var(--page-zone-subtle, var(--action-subtle)), transparent 60%), var(--surface-solid);
+}
+:root .afr2-glass-panel {
+  border-radius: var(--radius-xl); border-color: var(--border-default);
+  box-shadow: var(--visual-card-shadow);
+}
+:root .afr2-page-stack > .afr2-glass-panel { padding: var(--visual-card-padding); }
+:root .afr2-control-card .afr2-glass-panel { box-shadow: none; border: 0; background: transparent; }
+:root .afr2-surface-cell { border-radius: var(--radius-lg); }
+:root .afr2-section-header { align-items: flex-end; gap: 16px; margin-bottom: 24px; }
+:root .afr2-section-header__title { font: var(--type-heading); letter-spacing: var(--type-heading-tracking); }
+:root .afr2-section-header__description { line-height: 1.65; }
+:root .afr2-section-symbol {
+  display: grid; place-items: center; width: 48px; height: 48px; border-radius: 14px;
+  color: var(--page-zone, var(--action)); background: var(--page-zone-subtle, var(--action-subtle));
+  border: 1px solid var(--page-zone-border, var(--action-border));
+}
+:root .afr2-section-entry { gap: 8px; font-weight: 650; }
+:root .afr2-section-entry > svg { transition: transform 140ms var(--ease-out); }
+:root :is(.afr2-section-card, a.afr2-protocol-card, .afr2-model-banner) {
+  transition: transform 240ms var(--ease-out), border-color 140ms var(--ease-standard), box-shadow 240ms var(--ease-out);
+}
+:root .afr2-collapsible-panel__heading { padding: 20px 24px; }
+:root .afr2-collapsible-panel__body { padding: 0 24px 24px; }
+:root .afr2-disclosure { border-color: var(--border-subtle); }
+:root .afr2-disclosure summary { gap: 16px; padding-block: 16px; }
+:root .afr2-calibration-explanation { border-radius: var(--radius-xl); border-color: var(--border-subtle); }
+
+/* Forms and controls retain native semantics, sizes and command activation. */
+:root .afr2-field { gap: 8px; }
+:root .afr2-field > p { line-height: 1.6; margin-block: 0; }
+:root :is(.afr2-glass-field, .afr2-protocol-studio input, .afr2-protocol-studio select, .afr2-protocol-studio textarea) {
+  border-radius: var(--radius-md); border-color: var(--border-default);
+  transition: border-color 140ms var(--ease-standard), box-shadow 140ms var(--ease-standard), background-color 140ms var(--ease-standard);
+}
+:root .afr2-glass-field:focus-visible,
+:root .afr2-protocol-studio :is(input,select,textarea):focus-visible {
+  border-color: var(--focus); box-shadow: 0 0 0 4px var(--action-subtle);
+}
+:root .afr2-pressable { border-radius: var(--radius-md); }
+:root .afr2-pressable:disabled { cursor: not-allowed; }
+:root .afr2-pressable[data-variant="secondary"]:disabled { color: var(--text-disabled) !important; }
+:root .afr2-seg { box-shadow: var(--seg-track-inset); }
+:root .afr2-header-badge { padding: 5px 12px; gap: 6px; }
+
+/* Shell shares rounded geometry, while semantic network/error colours stay intact. */
+:root .afr2-sidebar { border-radius: var(--radius-xl); }
+:root .afr2-route-link { border-radius: var(--radius-md); }
+:root .afr2-route-link.is-active { box-shadow: inset 3px 0 0 var(--action); }
+:root .afr2-floating-modal__header { border-bottom: 1px solid var(--border-subtle); }
+:root .afr2-floating-modal__body { padding-top: 24px; }
+:root .afr2-toast { border-radius: var(--radius-lg); }
+:root .afr2-toast__title { font-weight: 650; }
+
+/* Existing renders, model geometry, pixel OLED and scene backgrounds are preserved. */
+:root .afr2-hero { box-shadow: var(--visual-hero-shadow); }
+:root .afr2-hero__copy { padding: clamp(24px, 4vw, 48px); }
+:root .afr2-hero h1 {
+  font: 750 clamp(2rem, 4.8vw, 3.6rem) / 1.04 var(--font-display); letter-spacing: -.035em;
+  background: linear-gradient(92deg, var(--banner-zone-pc), var(--banner-zone-link) 55%, var(--banner-zone-esp));
+  background-clip: text; -webkit-background-clip: text; color: transparent;
+}
+:root .afr2-model-banner { border-radius: var(--radius-xl); box-shadow: var(--visual-card-shadow); }
+:root .afr2-model-banner__copy { padding: 24px; }
+:root .afr2-sim-workspace-heading { padding: 24px; gap: 16px; }
+:root .afr2-collector-toolbar, :root .afr2-collector-scene-footer { border-color: var(--border-subtle); }
+:root .afr2-collector-readouts strong { font-family: var(--font-display); font-weight: 700; font-variant-numeric: tabular-nums; }
+:root .afr2-protocol-subpanel { border-radius: var(--radius-lg); }
+:root .afr2-protocol-empty { border-radius: var(--radius-lg); border: 1px dashed var(--border-strong); }
+
+@media (hover: hover) and (pointer: fine) {
+  :root :is(.afr2-section-card, a.afr2-protocol-card, .afr2-model-banner):hover {
+    border-color: var(--page-zone-border, var(--action-border));
+    box-shadow: var(--visual-card-hover-shadow); transform: translateY(-3px);
+  }
+  :root .afr2-section-card:hover .afr2-section-entry > svg { transform: translateX(3px); }
+  :root .afr2-pressable[data-variant="primary"]:hover:not(:disabled) { background-color: var(--action-hover) !important; }
+  :root .afr2-pressable[data-variant="secondary"]:hover:not(:disabled) { border-color: var(--action-border) !important; box-shadow: 0 4px 12px var(--action-subtle); }
+}
+:root .afr2-pressable[data-variant="primary"]:active:not(:disabled) { background-color: var(--action-active) !important; }
+
+@media (max-width: 599.98px) {
+  :root .afr2-page-header { padding: 24px 20px; }
+  :root .afr2-page-header__icon { width: 44px; height: 44px; border-radius: 14px; }
+  :root .afr2-page-header__title-line { gap: 12px; }
+  :root .afr2-page-header__actions { width: 100%; }
+  :root .afr2-collapsible-panel__heading { padding: 16px; }
+  :root .afr2-collapsible-panel__body { padding: 0 16px 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  :root :is(.afr2-section-card, .afr2-model-banner, a.afr2-protocol-card):hover { transform: none; }
+  :root .afr2-section-entry > svg { transition: none; }
+  :root .afr2-section-card:hover .afr2-section-entry > svg { transform: none; }
+}
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  :root .afr2-page-header { background: var(--banner-bg); }
+  :root .afr2-page-header__glow { display: none; }
+}
+@media (prefers-contrast: more) {
+  :root .afr2-hero h1 { background: none; color: var(--banner-ink); }
+  :root .afr2-page-header { border-color: var(--banner-ink); }
+}

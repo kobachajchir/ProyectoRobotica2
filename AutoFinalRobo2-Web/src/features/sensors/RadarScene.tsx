@@ -3,7 +3,7 @@ import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import {
   AdditiveBlending, BufferGeometry, CanvasTexture, CatmullRomCurve3, Color, DoubleSide, Group,
-  LineCurve3, OrthographicCamera, Shape, TubeGeometry, Vector3,
+  LineCurve3, Mesh, MeshBasicMaterial, OrthographicCamera, Shape, TubeGeometry, Vector3,
 } from 'three';
 import { RobotModel } from '../../components/three/RobotModel';
 import { advanceServo } from '../../components/three/servoMotion';
@@ -87,7 +87,7 @@ interface Props {
 function readPalette() {
   const css = getComputedStyle(document.documentElement);
   return {
-    floor: css.getPropertyValue('--map-floor').trim(),
+    floor: css.getPropertyValue('--radar-floor').trim(),
     grid: css.getPropertyValue('--map-grid-strong').trim(),
     text: css.getPropertyValue('--text-muted').trim(),
     accent: css.getPropertyValue('--action').trim(),
@@ -111,16 +111,18 @@ function PlotLabel({ text, position, color, scale }: { text: string; position: P
 
 function Needle({ angle, range, color, muted }: { angle: number; range: number; color: string; muted: boolean }) {
   const group = useRef<Group>(null), velocity = useRef(0), { invalidate } = useThree();
+  const initialized = useRef(false);
   const [reduce, setReduce] = useState(() => matchMedia('(prefers-reduced-motion: reduce)').matches);
   const target = (angle - 90) * Math.PI / 180;
   const points = useMemo<Point[]>(() => [[0, .095, 0], [0, .095, -range]], [range]);
-  const fan = useMemo(() => sector(range, 86, 94), [range]);
+  const fan = useMemo(() => sector(range, 82.5, 97.5), [range]);
+  const bands = useMemo(() => [0, 1, 2, 3].map(i => sector(range, 82.5 + i * 1.5, 97.5 - i * 1.5)), [range]);
   useEffect(() => {
     const q = matchMedia('(prefers-reduced-motion: reduce)'), change = () => setReduce(q.matches);
     q.addEventListener('change', change); return () => q.removeEventListener('change', change);
   }, []);
   useEffect(() => {
-    if (reduce && group.current) { group.current.rotation.y = target; velocity.current = 0; }
+    if ((!initialized.current || reduce) && group.current) { group.current.rotation.y = target; velocity.current = 0; initialized.current = true; }
     invalidate();
   }, [target, reduce, invalidate]);
   useFrame((_, delta) => {
@@ -128,7 +130,7 @@ function Needle({ angle, range, color, muted }: { angle: number; range: number; 
     if (Math.abs(group.current.rotation.y - target) < .0001 && Math.abs(velocity.current) < .001) {
       group.current.rotation.y = target; velocity.current = 0; return;
     }
-    const [value, v] = advanceServo(group.current.rotation.y, velocity.current, target, delta);
+    const [value, v] = advanceServo(group.current.rotation.y, velocity.current, target, Math.min(delta, .05));
     group.current.rotation.y = reduce ? target : value; velocity.current = reduce ? 0 : v; invalidate();
   });
   return <group ref={group} position={[0, 0, SENSOR_Z]}>
@@ -136,8 +138,37 @@ function Needle({ angle, range, color, muted }: { angle: number; range: number; 
       <shapeGeometry args={[fan, 48]} />
       <meshBasicMaterial color={color} transparent opacity={muted ? .02 : .065} depthWrite={false} side={DoubleSide} />
     </mesh>
+    {bands.map((shape, i) => <mesh key={i} position={[0, .016 + i * .001, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+      <shapeGeometry args={[shape, 48]} />
+      <meshBasicMaterial color={color} transparent opacity={muted ? .005 : .018 + i * .008} depthWrite={false} side={DoubleSide} />
+    </mesh>)}
     <NeonLine points={points} color={color} radius={Math.max(.0015, range * .0018)} opacity={muted ? .4 : 1} glow />
   </group>;
+}
+
+/** A finite arrival signal for a real, fresh echo; never a simulated scan. */
+function EchoPulse({ position, radius, color }: { position: Point; radius: number; color: string }) {
+  const mesh = useRef<Mesh>(null), material = useRef<MeshBasicMaterial>(null), elapsed = useRef(0);
+  const { invalidate } = useThree();
+  const [reduce, setReduce] = useState(() => matchMedia('(prefers-reduced-motion: reduce)').matches);
+  useEffect(() => {
+    const query = matchMedia('(prefers-reduced-motion: reduce)'), update = () => { setReduce(query.matches); invalidate(); };
+    query.addEventListener('change', update); invalidate();
+    return () => query.removeEventListener('change', update);
+  }, [invalidate]);
+  useFrame((_, delta) => {
+    if (!mesh.current || !material.current) return;
+    if (reduce || elapsed.current >= .3) { mesh.current.visible = false; return; }
+    elapsed.current = Math.min(.3, elapsed.current + Math.min(delta, .05));
+    const t = elapsed.current / .3, eased = 1 - Math.pow(1 - t, 3);
+    mesh.current.scale.setScalar(1 + eased * 2);
+    material.current.opacity = .6 * (1 - t);
+    invalidate();
+  });
+  return <mesh ref={mesh} position={position} rotation={[-Math.PI / 2, 0, 0]} visible={!reduce}>
+    <ringGeometry args={[radius * 1.6, radius * 1.9, 40]} />
+    <meshBasicMaterial ref={material} color={color} transparent opacity={0} side={DoubleSide} depthWrite={false} toneMapped={false} />
+  </mesh>;
 }
 
 // A single transparent grid plane replaces the disconnected solid pedestals.
@@ -205,6 +236,7 @@ function Plot({ range, angle, enabled, points, currentId, historical, scanMin, s
   const bounds = useMemo(() => [scanMin, scanMax].map(a => [point(a, 0, .019), point(a, range, .019)]), [range, scanMin, scanMax]);
   const zone = useMemo(() => sector(range, scanMin, scanMax), [range, scanMin, scanMax]);
   const bright = useMemo(() => `#${new Color(accent).lerp(new Color('#ffffff'), dark ? .28 : .03).getHexString()}`, [accent, dark]);
+  const latest = !historical && currentId ? points.find(p => p.sampleId === currentId && p.valid && p.distanceMm !== null && p.distanceMm <= range * 1000) : undefined;
   return <>
     <Camera range={range} view={view} />
     <FloorGrid range={range} palette={palette} />
@@ -218,10 +250,11 @@ function Plot({ range, angle, enabled, points, currentId, historical, scanMin, s
     {selected.map((p, i) => <NeonLine key={i} points={p} color={i === 3 ? bright : accent}
       radius={radius * (i === 3 ? 1.6 : .9)} opacity={i === 3 ? preview ? .6 : .9 : .28} glow={i === 3 && dark} />)}
     {bounds.map((p, i) => <NeonLine key={i} points={p} color={accent} radius={radius} opacity={.45} />)}
-    {[1, 2, 3, 4].map(n => <PlotLabel key={n} text={`${range * n / 4} m`} position={point(158, range * n / 4, .035)} color={text} scale={range * .1 + .012} />)}
+    {[1, 2, 3, 4].map(n => <PlotLabel key={n} text={`${(range * n / 4).toLocaleString('es-AR', { maximumFractionDigits: 3 })} m`} position={point(158, range * n / 4, .035)} color={text} scale={range * .075 + .008} />)}
     {[0, 30, 60, 90, 120, 150, 180].map(a => <PlotLabel key={a} text={`${a}°`} position={point(a, range * 1.105, .025)} color={text} scale={range * .08 + .012} />)}
     <CarShadow color={grid} />
     {angle !== null && enabled && <Needle angle={angle} range={range} color={bright} muted={historical} />}
+    {latest && <EchoPulse key={latest.sampleId} position={point(latest.angleDeg, latest.distanceMm! / 1000, .028)} radius={Math.max(.004, range * .006)} color={bright} />}
     {points.filter(p => p.valid && p.distanceMm !== null && p.distanceMm <= range * 1000).map(p => {
       const current = p.sampleId === currentId;
       const size = Math.max(.004, range * .006);

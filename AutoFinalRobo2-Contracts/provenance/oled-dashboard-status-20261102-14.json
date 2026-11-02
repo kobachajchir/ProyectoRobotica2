@@ -1,0 +1,100 @@
+{
+  "change_id": "AFR2-20261102-14",
+  "state": "source-only-uncompiled-unvalidated",
+  "design": "User-approved mode plus rounded side card; original header and existing icon/font resources; prior authors retained",
+  "atmega": "Source integration, no new framebuffer; declared28-byte UI state and4-byte snapshot addition, effective memory/timing unmeasured",
+  "web": "Paired pure layouts and fixture-backed simulation; no actual client commands",
+  "esp": "No change in this delivery; transport retained, no package promotion",
+  "files": [
+    {
+      "path": "AutoFinalRobo2-Atmega/include/afr2_dashboard.h",
+      "sha256_normalized_lf": "bcd91e3186a673ec63fe9f4469bad8ab41b2b45714611b97a6e04186b958e66e"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/ui/afr2_dashboard.c",
+      "sha256_normalized_lf": "65e53e64932b46c8696587b895f13792a4493805a9b70d413babc49d194ed711"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/include/afr2_screens.h",
+      "sha256_normalized_lf": "1b15f9f6809b9bc32a6674b0ac20f2ddb336f38329f96ecf01de64e7908ab402"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/ui/afr2_screens.c",
+      "sha256_normalized_lf": "816c79a9f30bfe27b182cc388fe61b9a72f4e41d9a0140ac561876ee7a26110a"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/include/afr2_ui_components.h",
+      "sha256_normalized_lf": "3aaddaa7931504dd591218d32da2ab57764156108fc940dc4cf86faf3cbfd0c1"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/ui/afr2_ui_components.c",
+      "sha256_normalized_lf": "64feadaff275223913921a542f11b15be0dfaa3a223ac9ef9cf949723ba9a233"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/ui/afr2_icons.c",
+      "sha256_normalized_lf": "e1dce5551a78c236c50c73c189a96a9c2e2f8e9a4ab8021687689a926538bc2e"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/ui/afr2_network_screen.c",
+      "sha256_normalized_lf": "5920f45031e80f62e572d81d9943e91daad3f50e59923c4692a40744a89e147b"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/ui/afr2_sensor_screens.c",
+      "sha256_normalized_lf": "6251ddfc69980462a0464aff5a9a793f65f65c329f36ec2bc694a00e622f924e"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/services/afr2_app.c",
+      "sha256_normalized_lf": "0f2fa80131259d5eb806878acb1057a6ee6b8f18ab0e607169a64f5f67ec1c8d"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/main.c",
+      "sha256_normalized_lf": "e344236dfa8cf8f626dd16f220a01ab8935f1baee2636ef87fe5d37e804144f3"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/Makefile",
+      "sha256_normalized_lf": "c7d4ec73287c53af91b244295c124eaf0a083af982d9fc9decc204cdee8816d8"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/oled/dashboardRenderer.ts",
+      "sha256_normalized_lf": "b52a41eebd88291663f69b2c1630a28c45d731e092a5aec3e98e663b4cd15f2c"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/oled/firmwareRenderer.ts",
+      "sha256_normalized_lf": "f64716f13adcbbc964941a3d7af4703a3ed99f5f1c899841beb0b7048b197808"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/oled/firmwareSensorRenderer.ts",
+      "sha256_normalized_lf": "0c778ecca2d9799f589e9144e1ef6fb80da0d0e595ba130cad8e4f189a6a241d"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/oled/oledComponents.ts",
+      "sha256_normalized_lf": "582c25536127f7940ef6605e71f7e711a4c57ddeadbf388db9d437e971eca077"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/oled/motorSelector.ts",
+      "sha256_normalized_lf": "9ba1c92e1f3056d069ec547b1f5da3d33adf8610bad06c3828f6e93fcccc6705"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/oled/EncoderControl.tsx",
+      "sha256_normalized_lf": "09e657766aa2f279e3b76a9b5b361b8ebd0ad9cb994912ac8a8157f16c799965"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/oled/UiSimulationPreview.tsx",
+      "sha256_normalized_lf": "c6ce2811992132cc9cbee72abeeb7d7ef90f8d463e59bc91a37fe833b2139163"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/developer/uiSimulation.ts",
+      "sha256_normalized_lf": "02b6a6b26d64794430cd445308aba4bb4008964d1738abda5b1daf1540d1bb4f"
+    }
+  ],
+  "resources": "sync-oled-library.mjs --copy-only; checks disabled",
+  "execution": {
+    "tests": false,
+    "build": false,
+    "validators": false,
+    "browser": false,
+    "flash": false,
+    "commit": false,
+    "push": false
+  }
+}

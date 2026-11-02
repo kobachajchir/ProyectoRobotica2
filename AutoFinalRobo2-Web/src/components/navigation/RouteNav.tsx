@@ -143,7 +143,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <nav id="afr2-route-nav" aria-label="Navegación principal" className="afr2-route-nav">
             {link(HOME.to)}
             {NAV_GROUPS.map(group => <div key={group.id} className="afr2-nav-group" role="group" aria-labelledby={`afr2-nav-${group.id}`}>
-              <p id={`afr2-nav-${group.id}`} className="afr2-nav-caption">{group.label}</p>
+              <p id={`afr2-nav-${group.id}`} className="afr2-nav-caption" data-nav-group={group.id}>{group.label}</p>
               {DESTINATIONS.filter(item => item.group === group.id).map(item => link(item.to))}
             </div>)}
           </nav>
@@ -197,7 +197,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               />
             </div>
           )}
-          <main id="afr2-main" tabIndex={-1} className="afr2-main">
+          <main id="afr2-main" tabIndex={-1} className="afr2-main" data-visual-area={location.pathname.split('/')[1] || 'inicio'}>
             {children}
           </main>
         </div>

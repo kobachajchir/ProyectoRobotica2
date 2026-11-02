@@ -15,7 +15,7 @@ export function Field({ id, label, unit, hint, error, children, className = '' }
   const errorId = error ? `${id}-error` : undefined;
 
   return (
-    <div className={`flex flex-col gap-1.5 ${className}`.trim()}>
+    <div className={`afr2-field flex flex-col gap-1.5 ${className}`.trim()}>
       <div className="flex items-center justify-between gap-2">
         <label htmlFor={id} className="text-xs font-semibold" style={{ color: 'var(--text-strong)' }}>
           {label}

@@ -1,3 +1,47 @@
+## AFR2-20261102-18 - 02/11/2026
+
+Radar: alcances confirmados 25 cm / 50 cm / 1 m / 2 m en Web, menú ATmega y copia OLED vinculada. Reforma visual con manual 0.1.11, vista superior inicial, haz por capas y pulso breve por eco válido. Solo fuente; sin tests, build, validaciones, navegador ni flasheos. [Ficha](changes/2026-11-02-18-radar-visual-and-ranges.md) · [Contrato](contracts/RADAR_SCALES_20261102.md).
+
+## AFR2-20261102-17 - 02/11/2026
+
+Modelos: botones inferiores centrados, flechas derechas y hover breve al acento con texto del tema en contraste; teclado/movimiento reducido inmediatos. Solo fuente Web; sin tests, build ni validaciones. [Ficha](changes/2026-11-02-17-model-centered-actions-hover.md).
+
+## AFR2-20261102-16 - 02/11/2026
+
+Modelos: accesos del pie como botones secundarios compartidos, con iconos y títulos «Simulador» y «Explorar infraestructura». Misma navegación. Solo fuente Web; sin tests, build ni validaciones. [Ficha](changes/2026-11-02-16-model-footer-buttons.md).
+
+## AFR2-20261102-15 - 02/11/2026
+
+Modelos: render cubriendo toda la tarjeta, texto superpuesto con degradado/sombra suave y tres columnas conservadas. Retirados «También» y el enlace al cubo auxiliar del pie. Solo fuente Web; sin tests, build, validaciones ni navegador. [Ficha](changes/2026-11-02-15-model-full-image-cards.md).
+
+## AFR2-20261102-14 - 02/11/2026
+
+Dashboard OLED: modo y tarjeta redondeada con estados reales; rotación tras3s sin encoder y permanencia4s, SW mantenido pausa, fallo fijo y redibujo por regiones. Cabeceras/iconos/contadores/selectores/editores/retorno y Sí/No alineados en AVR/Web. Simulación vinculada con fixtures explícitos; transporte ESP sin cambios. Sin tests, builds, validadores, navegador ni flasheo. [Ficha](changes/2026-11-02-14-oled-dashboard-idle-status-family.md) · [Contrato](contracts/OLED_DASHBOARD_STATUS_20261102.md).
+
+## AFR2-20261102-14 - 02/11/2026
+
+Manual visual ampliado a 0.1.11 draft con integración aditiva de Infraestructura: reglas de composición/material/movimiento, atlas íntegro, contratos, tokens por capa, fuentes y decisiones VIS-057–061, dos esquemas SVG y precedencia sobre antecedentes. Se mantienen marca, componentes, formularios, overlays, navegación y OLED. Solo documentación; sin aplicación de interfaz, tests, builds, validadores, navegador ni render de comprobación. [Manual](docs/design-system/index.md) · [Ficha](changes/2026-11-02-14-visual-manual-infrastructure-integration.md).
+
+## AFR2-20261102-13 - 02/11/2026
+
+Modelos: tres tarjetas compactas en una fila desde 840 px, dos en ancho intermedio y una en celular. Render completo de alto acotado encima del texto, usando imágenes existentes 640; acciones al pie. Solo fuente Web, sin tests, build, validaciones ni navegador. [Ficha](changes/2026-11-02-13-compact-model-cards.md).
+
+## AFR2-20261102-12 - 02/11/2026
+
+Dashboard OLED: margen superior2px para SSID, IP en y14 y cabecera26px. Scroll independiente conservado para ambos textos largos, incluidas las bandas de redibujo parcial. AVR/Web en fuente, sin tests/build/validaciones/flasheo. [Ficha](changes/2026-11-02-12-dashboard-network-padding-scroll.md).
+
+## AFR2-20261102-11 - 02/11/2026
+
+Dashboard anterior recuperado con SSID/IP, batería y modo centrado; cabecera invertida. Visor OLED blanco/negro. En submenús, flecha anterior de16px + texto Volver; demás páginas conservan sus gestos. Fuentes AVR/Web vinculadas, sin tests, build, validaciones, navegador ni flasheo. [Ficha](changes/2026-11-02-11-oled-original-dashboard-white-back.md).
+
+## AFR2-20261102-11 - 02/11/2026
+
+Extracción detallada de la identidad de Infraestructura: árbol DOM, paletas por tema/zona, capas del banner, tipografía, layout y espaciado, selector con copia recortada, estaciones/progreso, estados, barras/anillo, movimiento y responsive. Dossier independiente con tokens documentales, componentes, fuentes, decisiones y límites de reutilización. Solo documentación; sin cambios nuevos en interfaz/firmware, tests, compilación, validaciones ni navegador. [Dossier](docs/design-system/infraestructura/index.md) · [Ficha](changes/2026-11-02-11-infrastructure-visual-identity-extraction.md).
+
+## AFR2-20261102-10 - 02/11/2026
+
+Infraestructura: el peso de la simulación conjunta suma auto, brazo y cubo; la ocupación de LittleFS se toma también de la respuesta de la placa a system.info (botón «Consultar a la placa»); sin «Fuente en el proyecto» en las etapas; el paso de Blender explica cómo se aligera el modelo. Verificado en navegador local sin robot. [Ficha](changes/2026-11-02-10-infrastructure-cube-board-fs-blender.md).
+
 ## AFR2-20261102-07 - 02/11/2026
 
 Reforma visual de Infraestructura con el mismo contenido y orden: portada oscura con mapa de flujo animado por zonas (paquetes que viajan y nodos que abren su etapa), recorrido en línea de metro con ficha animada, barras de peso 3D, compresión y anillo de LittleFS, y glosario en tarjetas. Respeta reducir movimiento. Verificado en navegador local (1440/1000/390 px); sin compilación ni build:esp. [Ficha](changes/2026-11-02-07-infrastructure-visual-redesign.md).
@@ -672,3 +716,23 @@ Se conservan las fichas de firmware/Web locales y las fichas CAD recibidas de or
 
 
 
+
+## AFR2-20261102-15 - 02/11/2026
+
+Aplicación visual del manual 0.1.11 a toda la Web: cabeceras con capas de Infraestructura, iconos, tarjetas, espaciado, superficies, estados de controles, campos, navegación y overlays. Adaptaciones para modelos, simulación, sensores, calibración y Protocol Studio. Conserva flujos, lógica, datos, escenas y raster OLED. Fuente modificada; sin tests, builds, validadores, navegador ni promoción ESP. [Ficha](changes/2026-11-02-15-web-infrastructure-visual-language.md).
+
+## AFR2-20261102-17 - 02/11/2026
+
+Conexión: bloque Cambiar modo/Configurar arriba de las pestañas y selección inicial desde el modo reportado por el ESP. Grupos de sidebar en color. Simulación y ejecución a la derecha del visor desde 1200 px. Retirado PVC32 v03 del catálogo; queda V17 final. Fuente sin tests/build/validaciones/navegador. [Ficha](changes/2026-11-02-17-wifi-mode-sequence-sidebar-final-model.md).
+
+## AFR2-20261102-18 - 02/11/2026
+
+Vista mecánica de simulación compartida: SimulationViewport/SimulationZoom para Auto, Brazo, Conjunto, secuencias y GOTO. Entorno, luces, suelo, cuadrícula y controles flotantes comunes; Programas usa también SimulationRobot/SimulationOrbit del simulador del auto. Adaptadores de estado, destinos y ejecución conservados. Fuente sin tests/build/validaciones/navegador. [Ficha](changes/2026-11-02-18-shared-simulation-viewport.md).
+
+## AFR2-20261102-19 - 02/11/2026
+
+Visor compartido: unidad/cuadrícula en cápsula informativa y porcentaje editable con confirmación por Enter/blur. Rango 0–100, restauración del valor anterior ante entrada inválida y Escape para cancelar. Zoom absoluto conectado a los adaptadores de simulación. Sin tests/build/validadores/navegador. [Ficha](changes/2026-11-02-19-simulation-zoom-editable.md).
+
+## AFR2-20261102-20 - 02/11/2026
+
+Secuencias: visor y Simulación y ejecución integrados en una única tarjeta, columnas contiguas estiradas y separador interno; apilado móvil dentro del mismo borde. Solo presentación, sin tests/build/validaciones/navegador. [Ficha](changes/2026-11-02-20-sequence-single-simulation-card.md).

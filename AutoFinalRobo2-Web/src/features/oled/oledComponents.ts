@@ -20,6 +20,10 @@ export function componentPanel(o:Afr2OledBuffer,x:number,y:number,w:number,h:num
     if(!r || r===h-1)o.fillRect(x+inset,y+r,w-2*inset,1);
     else {o.setPixel(x+inset,y+r);o.setPixel(x+w-inset-1,y+r);}}
 }
+export function componentRoundedPanel(o:Afr2OledBuffer,x:number,y:number,w:number,h:number){
+  for(let row=0;row<h;row++){const edge=Math.min(row,h-row-1),inset=edge===0?3:edge===1?1:0;
+    if(!edge)o.fillRect(x+inset,y+row,w-2*inset,1);else {o.setPixel(x+inset,y+row);o.setPixel(x+w-inset-1,y+row);}}
+}
 export function componentProgress(o:Afr2OledBuffer,y:number,known:boolean,percent:number,clock:number){
   o.fillRect(2,y,124,8,'black');o.drawRect(2,y,124,8);
   o.fillRect(known?4:4+Math.trunc(clock/40)%91,y+2,known?Math.trunc(Math.min(100,Math.max(0,percent))*120/100):30,4);

@@ -119,6 +119,16 @@ void Afr2Icon_Draw(Afr2Oled *o,uint8_t id,int16_t x,int16_t y,uint8_t size) {
 uint8_t Afr2Menu_Icon(uint8_t node,uint8_t target,uint8_t action,const char *label) {
     if(action==AFR2_A_WIFI_SCAN)return AFR2_ICON_REFRESH;
     if(!strncmp(label,"Volver",6))return AFR2_ICON_BACK;
+    if(target==AFR2_N_QR_AP || target==AFR2_N_WIFI_AP)return AFR2_ICON_AP;
+    if(target==AFR2_N_QR_WEB)return AFR2_ICON_LINK;
+    if(target==AFR2_N_BATTERY || target==AFR2_N_BATTERY_VIEW || action==AFR2_A_BATTERY_MEASURE)return AFR2_ICON_BATTERY_UNKNOWN;
+    if(target==AFR2_N_MENU)return AFR2_ICON_CONFIG;
+    if(target==AFR2_N_ENCODER_TEST)return AFR2_ICON_ENCODER;
+    if(target==AFR2_N_IR_VALUES || action==AFR2_A_LINE_TOGGLE)return AFR2_ICON_SENSORS;
+    if(target==AFR2_N_WIFI_VIEW || target==AFR2_N_WIFI_NETWORKS || target==AFR2_N_WIFI_SETUP || target==AFR2_N_WIFI_REVIEW || target==AFR2_N_WIFI_SEARCH || target==AFR2_N_WIFI_MODE_SELECT || target==AFR2_N_WIFI_DATA)return AFR2_ICON_WIFI;
+    if(target==AFR2_N_RADAR_OPTIONS || target==AFR2_N_RADAR_RANGE || action==AFR2_A_RADAR_TOGGLE || action==AFR2_A_RADAR_TRACE || action==AFR2_A_RADAR_RANGE)return AFR2_ICON_RADAR;
+    if(action==AFR2_A_SERVO_TOGGLE || action==AFR2_A_SERVO_ANGLE || action==AFR2_A_SERVO_US || action==AFR2_A_SERVO_APPLY || action==AFR2_A_SERVO_EDIT_BEGIN || action==AFR2_A_SERVO_EDIT_END)return AFR2_ICON_SERVO;
+    if(action==AFR2_A_MOTOR_TOGGLE || action==AFR2_A_WHEEL_TOGGLE || action==AFR2_A_GOTO_TOGGLE || action==AFR2_A_POWER)return AFR2_ICON_MOTOR;
     if(action==AFR2_A_REBOOT_MEGA || action==AFR2_A_REBOOT_ESP || target==AFR2_N_REBOOT)return AFR2_ICON_REFRESH;
     if(target==AFR2_N_DISTANCE_SERVO || target==AFR2_N_RADAR_VIEW || target==AFR2_N_RADAR_CONFIG || (action>=AFR2_A_RADAR_START && action<=AFR2_A_US_INTERVAL))return AFR2_ICON_RADAR;
     if(target==AFR2_N_SERVO || target==AFR2_N_SERVO_ANGLE || action==AFR2_A_SERVO_CENTER || action==AFR2_A_SERVO_OFF)return AFR2_ICON_SERVO;

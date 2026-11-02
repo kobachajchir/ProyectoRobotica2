@@ -1,3 +1,4 @@
+import { SimulationZoom } from '../../components/three/SimulationViewport';
 import { ModelAssetProgress } from '../../components/three/ModelAssetProgress';
 import { Suspense, lazy, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { Disclosure } from '../../components/ui/Disclosure';
@@ -47,7 +48,6 @@ export function ControlMap({ requestedMotion, onViewChange, simulationFeed = nul
   const scene: MapSceneProps = { pose, wheelAngles: simulationFeed?.wheelAngles, trail: showTrail ? simulationFeed?.trail ?? [] : [], view, zoom, center, fresh: !!pose, dark: resolvedTheme === 'dark', waypoints, onSelectPoint, pickingDisabled };
   const fallback = <div className="afr2-map-svg-recovery"><TopMap {...scene} /><div className="afr2-map-recovery-actions"><span>3D no disponible · esquema de simulación</span><Button size="sm" onClick={() => { onViewChange(); clearRobotModelCache(); setViewerKey(v => v + 1); }}>Reintentar modelo 3D</Button></div></div>;
   const minZoom = waypoints ? .02 : .5;
-  const changeZoom = (factor: number) => { onViewChange(); setZoom(z => Math.max(minZoom, Math.min(2.5, z * factor))); };
   const fitRoute = () => {
     if (routeFrame) { setCenter(routeFrame.center); setZoom(routeFrame.zoom); } onViewChange();
   };
@@ -56,9 +56,9 @@ export function ControlMap({ requestedMotion, onViewChange, simulationFeed = nul
   return <section className="afr2-control-map" data-compact={compact} aria-label="Simulación del movimiento">
     <header className="afr2-control-map__heading"><div><p className="afr2-kicker">Vista previa · Sin telemetría física</p><h2>{title}</h2></div><span className="afr2-map-status">{simulationFeed?.isPlaying ? 'Reproduciendo simulación' : 'Simulación local'}</span></header>
     <div className="afr2-control-map__toolbar"><SegmentedControl size="sm" ariaLabel="Vista del mapa" items={VIEWS} value={view} onChange={next => { onViewChange(); setView(next); }} />
-      <div className="afr2-map-tools"><button type="button" aria-label="Alejar mapa" disabled={zoom <= minZoom} onClick={() => changeZoom(.8)}>−</button><span>{Math.round(zoom * 100)}%</span><button type="button" aria-label="Acercar mapa" disabled={zoom >= 2.5} onClick={() => changeZoom(1.25)}>+</button><button type="button" disabled={!pose} onClick={() => { onViewChange(); if (pose) setCenter({ xMm: pose.xMm, yMm: pose.yMm }); }}>Centrar</button>{waypoints && <button type="button" disabled={!waypoints.length} onClick={fitRoute}>Ver ruta</button>}</div>
+      <div className="afr2-map-tools"><button type="button" disabled={!pose} onClick={() => { onViewChange(); if (pose) setCenter({ xMm: pose.xMm, yMm: pose.yMm }); }}>Centrar</button>{waypoints && <button type="button" disabled={!waypoints.length} onClick={fitRoute}>Ver ruta</button>}</div>
     </div>
-    <div className="afr2-control-map__viewport" data-picking={!!onSelectPoint && !pickingDisabled}><RenderBoundary key={`${view}-${viewerKey}`} fallback={fallback}><Suspense fallback={<div className="afr2-map-loading" role="status">Cargando modelo…</div>}><Scene {...scene} fallback={fallback} /></Suspense></RenderBoundary><div className="afr2-map-caption"><span>1 unidad = 1 m · Cuadrícula de 0,5 m</span></div></div>
+    <div className="afr2-control-map__viewport" data-picking={!!onSelectPoint && !pickingDisabled}><RenderBoundary key={`${view}-${viewerKey}`} fallback={fallback}><Suspense fallback={<div className="afr2-map-loading" role="status">Cargando modelo…</div>}><Scene {...scene} fallback={fallback} /></Suspense></RenderBoundary><SimulationZoom percent={Math.round((zoom - minZoom) / (1 - minZoom) * 100)} onChange={value => { onViewChange(); setZoom(minZoom + (1 - minZoom) * value / 100); }} /></div>
     <ModelAssetProgress label="Modelo del auto" />
     {routePanel && <div className="afr2-map-route">{routePanel}</div>}
     {onSelectPoint && !compact && <p className="afr2-map-command">{pickingDisabled ? 'Pausá la simulación para agregar destinos.' : 'Tocá el suelo para agregar un destino a la lista · Ajuste de 0,1 m. También podés ingresar coordenadas con el teclado.'}</p>}

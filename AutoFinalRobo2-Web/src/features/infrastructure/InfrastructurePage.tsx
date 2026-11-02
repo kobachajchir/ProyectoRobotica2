@@ -7,6 +7,7 @@ import { MODEL_ASSETS } from '../../components/three/modelAssets';
 import modelSizes from '../../components/three/modelAssetSizes.json';
 import { JOURNEYS, type Journey } from './infrastructureFlow';
 import { useInfrastructurePackage } from './useInfrastructurePackage';
+import { useConnection } from '../connection/ConnectionContext';
 
 /* AFR2-20261102-07: reforma visual de AFR2-20261102-04. Mismo contenido y orden; portada con mapa
    de flujo animado, recorrido en «línea de metro», barras de peso y anillo de ocupación. */
@@ -28,6 +29,20 @@ const formatBytes = (value: number | undefined) => value === undefined ? 'Sin da
   : `${(value / (value < 1048576 ? 1024 : 1048576)).toLocaleString('es-AR', { maximumFractionDigits: 2 })} ${value < 1048576 ? 'KiB' : 'MiB'}`;
 const exactBytes = (value: number | undefined) => value === undefined ? 'Sin dato' : `${value.toLocaleString('es-AR')} bytes`;
 const date = (value: string) => Number.isFinite(Date.parse(value)) ? new Date(value).toLocaleString('es-AR') : 'Fecha no informada';
+/** Ocupación que informa el ESP en system.info / system.hello (Storage::health). */
+interface BoardFilesystem { usedBytes?: number; totalBytes?: number; mounted?: boolean; webReady?: boolean; fault?: string }
+const safeBytes = (value: unknown): value is number => typeof value === 'number' && Number.isSafeInteger(value) && value >= 0;
+function readBoardFilesystem(value: unknown): BoardFilesystem | null {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+  const fs = value as Record<string, unknown>;
+  return {
+    ...(safeBytes(fs.usedBytes) ? { usedBytes: fs.usedBytes } : {}),
+    ...(safeBytes(fs.totalBytes) ? { totalBytes: fs.totalBytes } : {}),
+    ...(typeof fs.mounted === 'boolean' ? { mounted: fs.mounted } : {}),
+    ...(typeof fs.webReady === 'boolean' ? { webReady: fs.webReady } : {}),
+    ...(typeof fs.fault === 'string' ? { fault: fs.fault } : {}),
+  };
+}
 const sizeFor = (id: keyof typeof MODEL_ASSETS) => (modelSizes as Record<string, number>)[MODEL_ASSETS[id].url];
 function changeLabel(raw: number, gzip: number) {
   if (!raw) return 'Sin comparación';
@@ -85,15 +100,26 @@ export function InfrastructurePage() {
   const journeyRef = useRef<HTMLElement>(null);
   const stationRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const { report, loading, error, refresh } = useInfrastructurePackage();
+  const { wsState, systemInfo, systemInfoUpdatedAtMs, refreshSystemInfo } = useConnection();
+  const [boardQuery, setBoardQuery] = useState<'idle' | 'busy' | 'failed'>('idle');
+  const boardReady = wsState === 'ready';
+  const boardFs = readBoardFilesystem(systemInfo?.filesystem);
+  const askBoard = async () => {
+    setBoardQuery('busy');
+    try { await refreshSystemInfo(); setBoardQuery('idle'); } catch { setBoardQuery('failed'); }
+  };
   const steps = JOURNEYS[journey];
   const step = steps[selected];
   const zone = zoneOf(step.place);
   const auto = sizeFor('auto'), arm = sizeFor('brazo'), cube = sizeFor('cubo');
-  const assembly = typeof auto === 'number' && typeof arm === 'number' ? auto + arm : undefined;
+  // La simulación conjunta usa auto, brazo y el cubo auxiliar (un solo GLB reutilizado por cada cubo).
   const catalogTotal = [auto, arm, cube].every(v => typeof v === 'number') ? (auto ?? 0) + (arm ?? 0) + (cube ?? 0) : undefined;
-  const weightMax = Math.max(1, assembly ?? 0, auto ?? 0, arm ?? 0, cube ?? 0);
+  const weightMax = Math.max(1, catalogTotal ?? 0, auto ?? 0, arm ?? 0, cube ?? 0);
   const manifest = report?.manifest;
-  const fs = report?.filesystem;
+  // Primero lo que devuelve /api/health cuando la Web se sirve desde el ESP; si no, la respuesta de la placa por WebSocket.
+  const httpFs = report?.filesystem && (report.filesystem.usedBytes !== undefined || report.filesystem.mounted !== undefined) ? report.filesystem : null;
+  const fs = httpFs ?? boardFs;
+  const fsOrigin = httpFs ? 'http' : boardFs ? 'board' : null;
   const localPackage = report?.source === 'local-prepared';
   const used = fs?.usedBytes, capacity = fs?.totalBytes;
   const occupancy = used !== undefined && capacity !== undefined && capacity > 0 ? Math.min(100, used / capacity * 100) : null;
@@ -192,7 +218,6 @@ export function InfrastructurePage() {
             <Wire delay={0} />
             <div><span>Sale</span><strong>{step.output}</strong></div>
           </div>
-          <p className="afr2-infra-source"><UiIcon name="book" size={14} /><span>Fuente en el proyecto: <code>{step.source}</code></span></p>
         </div>
         <div className="afr2-infra-stage__side">
           <h4>Lo que conviene saber</h4>
@@ -214,15 +239,16 @@ export function InfrastructurePage() {
           <strong title={exactBytes(sizeFor(id))}>{formatBytes(sizeFor(id))}</strong>
         </li>)}
         <li data-kind="sum" style={{ '--i': 3 } as CSSProperties}>
-          <span className="afr2-infra-bars__name">Conjunto: auto + brazo<small>Dos GLB compartidos; no otro archivo</small></span>
+          <span className="afr2-infra-bars__name">Simulación conjunta: auto + brazo + cubo<small>Tres GLB compartidos; el cubo se reutiliza para cada pieza</small></span>
           <span className="afr2-infra-bars__track" aria-hidden="true">
             <span className="afr2-infra-bars__fill" data-model="auto" style={{ '--w': (auto ?? 0) / weightMax } as CSSProperties} />
             <span className="afr2-infra-bars__fill" data-model="brazo" style={{ '--w': (arm ?? 0) / weightMax, '--x': (auto ?? 0) / weightMax } as CSSProperties} />
+            <span className="afr2-infra-bars__fill" data-model="cubo" style={{ '--w': (cube ?? 0) / weightMax, '--x': ((auto ?? 0) + (arm ?? 0)) / weightMax } as CSSProperties} />
           </span>
-          <strong title={exactBytes(assembly)}>{formatBytes(assembly)}</strong>
+          <strong title={exactBytes(catalogTotal)}>{formatBytes(catalogTotal)}</strong>
         </li>
       </ul>
-      <p className="afr2-help">Tamaños GLB del catálogo de esta versión, con la geometría ya comprimida con Draco y antes de gzip. No representan RAM ni memoria gráfica. El conjunto no incluye el cubo auxiliar.</p>
+      <p className="afr2-help">Tamaños GLB del catálogo de esta versión, con la geometría ya comprimida con Draco y antes de gzip. No representan RAM ni memoria gráfica. La simulación conjunta suma los tres archivos: auto, brazo y cubo auxiliar.</p>
     </Reveal>
 
     <Reveal className="afr2-infra-card afr2-infra-package" aria-labelledby="infra-package-title" aria-busy={loading}>
@@ -236,25 +262,40 @@ export function InfrastructurePage() {
           {manifest.modelAssetsUpdatedAt && <p className="afr2-help">Modelos actualizados por separado: {date(manifest.modelAssetsUpdatedAt)}. {manifest.modelAssetsOnlyUpdate}</p>}
           {localPackage && <p className="afr2-help">Referencia de ESP/data/dist. Puede corresponder a una versión anterior a las fuentes que estás viendo; no mide los archivos instalados en una placa.</p>}
         </div>
-        <div className="afr2-infra-package-grid">
-          <div className="afr2-infra-compress">
-            <span className="afr2-infra-stat__label">Compresión gzip del paquete</span>
-            <div className="afr2-infra-compress__bar" data-kind="raw"><span style={{ '--w': 1 } as CSSProperties} /><em>Antes · {formatBytes(manifest.totalRawBytes)}</em></div>
-            <div className="afr2-infra-compress__bar" data-kind="gzip"><span style={{ '--w': gzipRatio ?? 0 } as CSSProperties} /><em>Guardado · {formatBytes(manifest.totalGzipBytes)}</em></div>
-            <strong className="afr2-infra-compress__delta">{changeLabel(manifest.totalRawBytes, manifest.totalGzipBytes)}</strong>
-            <small>{manifest.files.length} archivos · suma declarada de recursos Web</small>
-          </div>
-          {occupancy !== null && <div className="afr2-infra-storage">
-            <div className="afr2-infra-ring" style={{ '--p': occupancy } as CSSProperties} aria-hidden="true"><span>{occupancy.toLocaleString('es-AR', { maximumFractionDigits: 1 })}%</span></div>
-            <div><strong>Flash dedicada a LittleFS</strong><span>{formatBytes(used)} de {formatBytes(capacity)}</span>
+      </>}
+      <div className="afr2-infra-package-grid">
+        {manifest && <>
+            <div className="afr2-infra-compress">
+              <span className="afr2-infra-stat__label">Compresión gzip del paquete</span>
+              <div className="afr2-infra-compress__bar" data-kind="raw"><span style={{ '--w': 1 } as CSSProperties} /><em>Antes · {formatBytes(manifest.totalRawBytes)}</em></div>
+              <div className="afr2-infra-compress__bar" data-kind="gzip"><span style={{ '--w': gzipRatio ?? 0 } as CSSProperties} /><em>Guardado · {formatBytes(manifest.totalGzipBytes)}</em></div>
+              <strong className="afr2-infra-compress__delta">{changeLabel(manifest.totalRawBytes, manifest.totalGzipBytes)}</strong>
+              <small>{manifest.files.length} archivos · suma declarada de recursos Web</small>
+            </div>
+        </>}
+        <div className="afr2-infra-storage" data-state={occupancy !== null ? 'ready' : 'empty'}>
+          {occupancy !== null
+            ? <div className="afr2-infra-ring" style={{ '--p': occupancy } as CSSProperties} aria-hidden="true"><span>{occupancy.toLocaleString('es-AR', { maximumFractionDigits: 1 })}%</span></div>
+            : <div className="afr2-infra-ring" data-empty="true" style={{ '--p': 0 } as CSSProperties} aria-hidden="true"><UiIcon name="board" size={28} /></div>}
+          <div>
+            <strong>Flash dedicada a LittleFS</strong>
+            {occupancy !== null ? <>
+              <span>{formatBytes(used)} de {formatBytes(capacity)}</span>
               <progress className="sr-only" value={used} max={capacity} aria-label="Ocupación de LittleFS reportada por el ESP" />
-              <p className="afr2-help">Incluye la estructura del filesystem y otros archivos guardados, además de los recursos Web.</p></div>
-          </div>}
+              <p className="afr2-help">{fsOrigin === 'http' ? 'Leída del ESP al servir esta Web.' : `Respuesta de la placa a system.info${systemInfoUpdatedAtMs ? ` · ${new Date(systemInfoUpdatedAtMs).toLocaleTimeString('es-AR')}` : ''}.`} Incluye la estructura del filesystem y otros archivos guardados, además de los recursos Web.</p>
+            </> : <p className="afr2-help">{boardReady
+              ? 'La placa está conectada: pedile la ocupación con el comando system.info.'
+              : <>Conectá la Web al robot y la ocupación se le pide a la placa con el comando system.info. <Link to="/conexion">Ir a Conexión</Link></>}</p>}
+            {boardQuery === 'failed' && <p className="afr2-help" role="status">La placa no respondió. Probá de nuevo.</p>}
+            {boardReady && fsOrigin !== 'http' && <Button size="sm" loading={boardQuery === 'busy'} icon={<UiIcon name="refresh" />} onClick={() => { void askBoard(); }}>{occupancy !== null ? 'Volver a consultar' : 'Consultar a la placa'}</Button>}
+          </div>
         </div>
+      </div>
+      {manifest && report && <>
         <div className="afr2-infra-stats">
           <Stat icon="programs" label="Antes de gzip" value={formatBytes(manifest.totalRawBytes)} bytes={manifest.totalRawBytes} detail="Suma declarada de recursos Web" />
           <Stat icon="check" label="Archivos gzip" value={formatBytes(manifest.totalGzipBytes)} bytes={manifest.totalGzipBytes} detail={`${changeLabel(manifest.totalRawBytes, manifest.totalGzipBytes)} · ${manifest.files.length} archivos`} />
-          <Stat icon="board" label="Ocupación LittleFS" value={formatBytes(used)} bytes={used} detail={capacity === undefined ? localPackage ? 'Se consulta en la placa' : 'Sin reporte de ocupación' : `Capacidad reportada: ${formatBytes(capacity)}`} />
+          <Stat icon="board" label="Ocupación LittleFS" value={formatBytes(used)} bytes={used} detail={capacity === undefined ? boardReady ? 'Pedila a la placa con system.info' : 'Conectá la placa para consultarla' : `Capacidad reportada: ${formatBytes(capacity)}`} />
           <Stat icon="cube" label="Estimación del paquete en FS" value={formatBytes(manifest.estimatedFilesystemBytes)} bytes={manifest.estimatedFilesystemBytes} detail="Bloques y reserva; no tamaño del .bin" />
         </div>
         {fs && <p className="afr2-help">LittleFS: {fs.mounted === undefined ? 'sin estado' : fs.mounted ? 'montado' : 'no montado'} · paquete: {fs.webReady === undefined ? 'sin estado' : fs.webReady ? 'disponible' : 'no disponible'}{fs.fault && fs.fault !== 'none' ? ` · diagnóstico: ${fs.fault}` : ''}.</p>}

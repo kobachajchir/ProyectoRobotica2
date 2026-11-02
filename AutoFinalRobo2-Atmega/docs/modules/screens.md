@@ -36,3 +36,7 @@ AFR2-20261023-15: TWI AVR por IRQ y composición OLED/encoder/USART1 implementad
 ## AFR2-20261102-05 — Estado actual
 
 Los componentes OLED128-5 se integran en AVR y Web. QR AP030045 y Web030046 usan datos preparados del ESP; API de contenido propio en `afr2_qr_screen.h`. Corto desde Inicio abre menú; largo al soltar abre rápidas y retorna por contexto en otras vistas, con Sí/No obligatorio para cambios. Ver Contracts/contracts/OLED_RUNTIME_QR_20261102.md. Esta entrega no compila, prueba, valida ni flashea.
+
+## AFR2-20261102-14 — Composición y estado
+
+Dashboard010001 usa `afr2_dashboard.c` y estado cooperativo3s/4s con pausa por encoder mantenido, fallo prioritario y actualización por regiones. `Afr2UiSnapshot` prepara campos reales; renderer sin hardware/delays. Se alinean cabeceras, selectores, datos y confirmaciones con Web. Navegación/privacidad QR sin cambios. Ver Contracts/contracts/OLED_DASHBOARD_STATUS_20261102.md. Fuente sin compilar/probar/flashear.

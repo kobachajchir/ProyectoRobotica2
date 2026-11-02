@@ -35,45 +35,9 @@ export interface RobotModelDefinition {
   source: string;
 }
 export const identity = (position: Point3 = [0, 0, 0]): RigidTransform => ({ position, quaternion: [0, 0, 0, 1] });
-const joint = (id: string, label: string, z: number, axis: Point3, min: number, max: number, parent: string | null, radius: number): JointDefinition =>
-  ({ id, label, parent, origin: identity([0, 0, z]), axis, sign: 1, zero: 0, min, max, radius, visualNode: id });
-/** v03: base_top112 + tower113 = shoulder225 mm above deck.
- * The CAD deck is94.64 mm above ground; native +Y maps to robot +X,
- * native +X to robot -Y (right-handed). Mount is32 mm behind CAD origin.
- * v04 is deliberately not silently substituted for the approved v03 baseline. */
-export const PVC32_V03: RobotModelDefinition = {
-  id: 'pvc32-v03', revision: '20261027-v03.1', label: 'PVC32 AGV v03', units: 'm',
-  mountFrame: 'afr2-arm-mount-v1', tcpFrame: 'afr2-grasp-center-v1',
-  renderBasis: [-.5, .5, .5, .5], cadToRobot: { position: [-.032, 0, .09464], quaternion: [0, 0, -Math.SQRT1_2, Math.SQRT1_2] },
-  mounts: { standalone: identity(), mounted: identity([-.032, 0, .09464]) },
-  joints: [joint('j1', 'J1 · Base', .112, [0, 0, 1], -90, 90, null, .018),
-    joint('j2', 'J2 · Hombro', .113, [0, 1, 0], -10, 125, 'j1', .016),
-    joint('j3', 'J3 · Codo', .130, [0, 1, 0], -90, 90, 'j2', .016),
-    joint('j4', 'J4 · Giro de muñeca', .120, [0, 0, 1], -90, 90, 'j3', .012),
-    joint('j5', 'J5 · Inclinación', .055, [0, 1, 0], -90, 90, 'j4', .012),
-    joint('j6', 'J6 · Herramienta', .065, [0, 0, 1], -90, 90, 'j5', .012)],
-  tcp: identity([0, 0, .0785]),
-  gripper: { min: 4.00708355144542, max: 79.40530723760045, open: 60.011,
-    palmSize: [.118, .06, .016], palmZ: .025, fingerSize: [.012, .03, .05], fingerZ: .056,
-    padSize: [.003, .032, .024], padZ: .068, travelAxis: [1, 0, 0],
-    visualNodes: ['jaw-left', 'jaw-right'], metersPerOpeningMm: .0005 },
-  visual: { kind: 'procedural', baseSize: [.172, .063, .028], baseZ: .014 },
-  collision: { towerRadius: .035, boxes: [
-    { id: 'chassis', center: [0, 0, .052], size: [.278, .232, .08] },
-    { id: 'bin-floor', center: [.1775, -.13, .125], size: [.118, .118, .01] },
-    { id: 'bin-left', center: [.1775, -.191, .16], size: [.126, .006, .07] },
-    { id: 'bin-right', center: [.1775, -.069, .16], size: [.126, .006, .07] },
-    { id: 'bin-front', center: [.2395, -.13, .16], size: [.006, .118, .07] },
-    { id: 'bin-back', center: [.1155, -.13, .16], size: [.006, .118, .07] }],
-    allowedPairs: [['j4', 'j6'], ['j5', 'tcp']] },
-  initial: [0, 15, -40, 0, 25, 0], transport: [0, 15, -40, 0, 25, 0],
-  seeds: [[0, 45, -60, 0, 90, 0], [0, 80, 30, 0, 60, 0], [60, 20, -60, 0, 40, 0], [-60, 20, -60, 0, 40, 0]],
-  speedDegS: 35, downward: 'zyyzyz',
-  source: 'AutoFinalRobo2-CAD/mecánica/brazo-antropomorfo/parametros_prototipo_v03.csv; revision_v03/modelo_v03.json; tcp_offset. Proxies Web aproximados.',
-};
 /** Register future descriptors here. Loading a GLB is not rig inference. */
 export const PVC25_V17 = pvc25V17 as RobotModelDefinition;
-export const ROBOT_MODELS: RobotModelDefinition[] = [PVC25_V17, PVC32_V03];
+export const ROBOT_MODELS: RobotModelDefinition[] = [PVC25_V17];
 let active = PVC25_V17;
 export function robotModel() { return active; }
 export function activateRobotModel(id: string) {

@@ -1,0 +1,17 @@
+{
+  "changeId": "AFR2-20261102-15",
+  "manualVersion": "0.1.11",
+  "decisionId": "VIS-062",
+  "mode": "APLICAR",
+  "authorization": "Pedido explícito de aplicar la parte visual del manual ampliado a toda la Web",
+  "direction": "Confirmada",
+  "composition": "Propuesta",
+  "verification": "No verificada",
+  "coverageKind": "Alcance de fuente, no resultado de validación",
+  "shared": ["PageHeader", "Button", "Field", "AppShell/main", "tarjetas", "SegmentedControl", "modales", "notificaciones"],
+  "areas": ["Inicio", "Conducir", "Programas", "Puesta a punto", "Sensores", "Modelos e inspección", "Simulaciones", "Conexión", "Ayuda/OLED", "Desarrollador/Protocol Studio"],
+  "source": "Web/src/styles/visual-language.css y tokens.css",
+  "preserved": ["Flujos", "Rutas", "Comandos", "Permisos", "Datos", "Gestos", "Raster OLED", "Escenas 3D"],
+  "notExecuted": ["tests", "compilación", "validadores", "scanner", "navegador", "render", "hardware", "promoción ESP", "flasheo"],
+  "limitations": "Composición, contraste, desbordes y estados no comprobados en ejecución"
+}

@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="760" viewBox="0 0 1440 760" role="img" aria-labelledby="title desc">
+  <title id="title">Capas de la portada de Infraestructura</title>
+  <desc id="desc">Desglose esquemático del fondo CSS y los elementos de portada. Explica base azul noche, halos rubí y celeste, grilla, glow independiente y contenido. No representa el orden DOM como una pila de imágenes.</desc>
+  <defs>
+    <radialGradient id="red"><stop stop-color="#ff6b7d" stop-opacity=".4"/><stop offset="1" stop-color="#ff6b7d" stop-opacity="0"/></radialGradient>
+    <radialGradient id="blue"><stop stop-color="#38bdf8" stop-opacity=".4"/><stop offset="1" stop-color="#38bdf8" stop-opacity="0"/></radialGradient>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M32 0H0V32" stroke="#94a3b8" stroke-opacity=".25" fill="none"/></pattern>
+  </defs>
+  <rect width="1440" height="760" fill="#f3f6fb"/>
+  <g font-family="Segoe UI, system-ui, sans-serif">
+    <text x="48" y="54" fill="#0f172a" font-size="30" font-weight="700">Anatomía de la portada</text><text x="48" y="87" fill="#475569" font-size="16">Dos mecanismos distintos: fondos múltiples del hero y elementos superpuestos dentro de su caja.</text>
+    <g>
+      <rect x="48" y="122" width="650" height="554" rx="24" fill="#fff" stroke="#0f172a" stroke-opacity=".16"/>
+      <text x="76" y="164" fill="#0f172a" font-size="22" font-weight="700">Fondos CSS · de atrás hacia delante</text>
+      <rect x="76" y="192" width="110" height="66" rx="12" fill="#0b1424"/><text x="210" y="217" fill="#0f172a" font-size="17" font-weight="650">1. Base azul noche</text><text x="210" y="242" fill="#475569" font-size="14">#0B1424 · igual en ambos temas</text>
+      <rect x="76" y="276" width="110" height="66" rx="12" fill="#0b1424"/><ellipse cx="99" cy="329" rx="85" ry="58" fill="url(#red)"/><text x="210" y="301" fill="#0f172a" font-size="17" font-weight="650">2. Halo rubí inferior izquierdo</text><text x="210" y="326" fill="#475569" font-size="14">Elipse 90% × 80% · se disuelve al 60%</text>
+      <rect x="76" y="360" width="110" height="66" rx="12" fill="#0b1424"/><ellipse cx="163" cy="370" rx="85" ry="58" fill="url(#blue)"/><text x="210" y="385" fill="#0f172a" font-size="17" font-weight="650">3. Halo celeste superior derecho</text><text x="210" y="410" fill="#475569" font-size="14">Elipse 120% × 90% · se disuelve al 55%</text>
+      <rect x="76" y="444" width="110" height="66" rx="12" fill="#0b1424"/><rect x="76" y="444" width="110" height="66" rx="12" fill="url(#grid)"/><text x="210" y="469" fill="#0f172a" font-size="17" font-weight="650">4–5. Cuadrícula tenue</text><text x="210" y="494" fill="#475569" font-size="14">Dos gradientes · paso 32 px · líneas de 1 px</text>
+      <text x="76" y="564" fill="#475569" font-size="15">La primera capa declarada en background se pinta delante.</text><text x="76" y="593" fill="#475569" font-size="15">Estos cinco fondos no animan su posición ni su color.</text><text x="76" y="641" fill="#64748b" font-size="13">Las miniaturas intensifican los halos para explicar cada capa.</text>
+    </g>
+    <g>
+      <rect x="722" y="122" width="670" height="554" rx="24" fill="#0b1424"/>
+      <text x="750" y="164" fill="#f8fafc" font-size="22" font-weight="700">Elementos internos · profundidad local</text>
+      <text x="750" y="212" fill="#7dd3fc" font-size="17" font-weight="650">Caja hero</text><text x="750" y="240" fill="#e2e8f0" font-size="15">relative + isolation:isolate + overflow:hidden</text>
+      <path d="M750 265H1364" stroke="#94a3b8" stroke-opacity=".18"/>
+      <text x="750" y="305" fill="#ff8a9a" font-size="17" font-weight="650">Div glow independiente</text><text x="750" y="334" fill="#e2e8f0" font-size="15">Absoluto · z-index −1 · radial rubí · filter blur 20 px</text><text x="750" y="363" fill="#e2e8f0" font-size="15">Respira: 9 s por tramo · escala 1 → 1,12 · opacidad 0,8 → 1</text>
+      <path d="M750 388H1364" stroke="#94a3b8" stroke-opacity=".18"/>
+      <text x="750" y="429" fill="#fcd34d" font-size="17" font-weight="650">Copy, mapa y cierre</text><text x="750" y="458" fill="#e2e8f0" font-size="15">Texto nítido · título con background-clip:text</text><text x="750" y="487" fill="#e2e8f0" font-size="15">Chips con backdrop-filter blur 8 px · nodos translúcidos</text>
+      <path d="M750 512H1364" stroke="#94a3b8" stroke-opacity=".18"/>
+      <text x="750" y="552" fill="#86efac" font-size="17" font-weight="650">Dos blur con funciones diferentes</text><text x="750" y="581" fill="#e2e8f0" font-size="15">filter desenfoca el propio halo.</text><text x="750" y="610" fill="#e2e8f0" font-size="15">backdrop-filter desenfoca lo que queda detrás del chip.</text>
+    </g>
+    <text x="48" y="722" fill="#64748b" font-size="14">Lámina didáctica propuesta a partir del código · no captura, render de navegador ni validación de apilamiento.</text>
+  </g>
+</svg>

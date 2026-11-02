@@ -1,3 +1,5 @@
+> **AFR2-20261102-14:** [dashboard y familia OLED](../contracts/OLED_DASHBOARD_STATUS_20261102.md): tarjeta informativa en reposo, dibujo por regiones, modo real, iconos y cabeceras compartidos AVR/Web. Fuente sin compilar ni probar.
+
 > **AFR2-20261101-02:** [Arbol y gestos del C vigente](UI_SCREEN_FLOW.md), cotejados con el Simulador UI. Esta revision distingue el flujo actual del diseno e hitos historicos inferiores; corto en IR/servo no retorna, largo vuelve por contexto. Solo fuente, sin ejecucion.
 
 > AFR2-20261030-18: selector común030044 para motores FL/FR/RL/RR, giro circular, corto confirma y largo retorna; misma raster Web. Dashboard010001: modo y accesos corto Menú/largo Rápidas. Solo fuente.

@@ -25,7 +25,7 @@ static void line(Afr2Oled *o,int16_t x,int16_t y,int16_t ex,int16_t ey){
 static int16_t sn_half(uint16_t a){uint8_t i=a/10u,f=a%10u;int16_t v=sn(i);return i<36?v+(sn(i+1)-v)*f/10:v;}
 static int16_t cs_half(uint16_t a){return a<=180u?sn_half(180u-a):-sn_half(a-180u);}
 /* AFR2-20261029-27: same viewport/range for scan and shared angle editor. */
-static uint16_t range_mm(const Afr2UiSnapshot *s){return 4000u>>(s->radar_range<=3?s->radar_range:0);}
+static uint16_t range_mm(const Afr2UiSnapshot *s){return 2000u>>(s->radar_range<=3?s->radar_range:0);}
 static void hit(Afr2Oled *o,uint8_t angle,uint16_t mm,uint16_t range,uint8_t radius,uint8_t cy){
     if(angle>180 || mm<20 || mm>range)return;
     int16_t r=(uint32_t)mm*radius/range;
@@ -38,7 +38,7 @@ static void txt(Afr2Oled *o,uint8_t x,uint8_t y,const char *t){Afr2Oled_Text(o,x
 static void small_text(Afr2Oled *o,uint8_t cx,uint8_t y,const char *text);
 static void radar(Afr2Oled *o,const Afr2UiSnapshot *s,uint8_t compact){
     const Afr2SensorHead *h=s->head;char text[19],scale[5];
-    static const char scales[][5] PROGMEM={"4m","2m","1m","0.5m"};
+    static const char scales[][5] PROGMEM={"2m","1m","50cm","25cm"};
     uint16_t range=range_mm(s);uint8_t radius=compact?26:38,cy=compact?38:49;
     uint8_t active=h && h->enabled && h->pulse_us>=1000 && h->pulse_us<=2000 && h->angle<=180;
     memcpy_P(scale,scales[s->radar_range<=3?s->radar_range:0],sizeof(scale));
@@ -99,12 +99,12 @@ void Afr2SensorScreen_Render(Afr2Oled *o,uint8_t node,const Afr2UiSnapshot *s){
         }else {TXT(0,53,"Sin datos");}return;
     }
     if(node==AFR2_N_US_VIEW){
-        TXT(0,0,"Distancia <2/2");
-        if(h && h->latest.id && h->latest.error==AFR2_ECHO_OK)snprintf_P(text,sizeof(text),PSTR("%u mm"),h->latest.distance_mm);else snprintf_P(text,sizeof(text),PSTR("Distancia: --"));txt(o,0,14,text);
-        if(h){if(h->enabled)snprintf_P(text,sizeof(text),PSTR("Ang %03u PWM %u"),h->angle,h->pulse_us);else snprintf_P(text,sizeof(text),PSTR("Ang -- PWM 0"));txt(o,0,27,text);snprintf_P(text,sizeof(text),PSTR("Eco %u Edad %lums"),h->latest.error,(unsigned long)(h->latest.id?(s->sensor_now_ms-h->latest.ms):0));txt(o,0,39,text);}
+        Afr2Component_HeaderFlash(o,AFR2_ICON_RADAR,PSTR("Distancia"),2,2);
+        if(h && h->latest.id && h->latest.error==AFR2_ECHO_OK)snprintf_P(text,sizeof(text),PSTR("%u mm"),h->latest.distance_mm);else snprintf_P(text,sizeof(text),PSTR("Distancia: --"));txt(o,0,16,text);
+        if(h){if(h->enabled)snprintf_P(text,sizeof(text),PSTR("Ang %03u PWM %u"),h->angle,h->pulse_us);else snprintf_P(text,sizeof(text),PSTR("Ang -- PWM 0"));txt(o,0,28,text);snprintf_P(text,sizeof(text),PSTR("Eco %u Edad %lums"),h->latest.error,(unsigned long)(h->latest.id?(s->sensor_now_ms-h->latest.ms):0));txt(o,0,40,text);}
         Afr2Ui_GestureHint(o,0,53,0,PSTR("Opciones"));return;
     }
-    if(node==AFR2_N_LINE_VIEW){strcpy_P(text,PSTR("Sensores IR"));Afr2Component_Header(o,AFR2_ICON_SENSORS,text,1,2);}else {TXT(0,0,"IR valores <2/2");}
+    Afr2Component_HeaderFlash(o,AFR2_ICON_SENSORS,PSTR("Sensores IR"),node==AFR2_N_LINE_VIEW?1:2,2);
     if(!s->ir_valid){if(s->ir_kind){TXT(0,25,"Esperando IR");}else {TXT(0,25,"IR deshabilitado");}Afr2Ui_GestureHint(o,0,53,1,PSTR("Volver"));return;}
     if(node==AFR2_N_LINE_VIEW){
         Afr2Component_Panel(o,0,15,128,35);
@@ -116,8 +116,8 @@ void Afr2SensorScreen_Render(Afr2Oled *o,uint8_t node,const Afr2UiSnapshot *s){
         }
     }else for(uint8_t i=0;i<5;i++){
         snprintf_P(text,sizeof(text),PSTR("%u:%4u"),i+1,s->ir_raw[i]);
-        if(i<4)txt(o,(i%2u)*64u,14+(i/2u)*12u,text);
-        else txt(o,(128u-6u*7u)/2u,38,text);
+        if(i<4)txt(o,(i%2u)*64u,16+(i/2u)*12u,text);
+        else txt(o,(128u-6u*7u)/2u,40,text);
     }
     Afr2Ui_GestureHint(o,0,53,1,PSTR("Volver"));
 }

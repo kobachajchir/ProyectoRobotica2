@@ -38,34 +38,58 @@
 }
 
 /* ---------- Portada de Modelos y simulación ---------- */
-.afr2-model-banners { display: grid; gap: 16px; }
+.afr2-model-banners { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
 .afr2-model-banner {
-  position: relative; isolation: isolate; display: flex; flex-direction: column; overflow: hidden;
+  position: relative; isolation: isolate; display: flex; flex-direction: column; min-width: 0; min-height: 320px; aspect-ratio: 1 / 1; overflow: hidden;
   border: 1px solid var(--banner-border); border-radius: var(--radius-xl); background: var(--banner-bg);
   color: var(--banner-ink); text-decoration: none; box-shadow: var(--workspace-card-shadow);
   transition: transform var(--duration-normal) var(--ease-out), box-shadow var(--duration-normal) var(--ease-out), border-color var(--duration-normal) var(--ease-out);
 }
-.afr2-model-banner__media { order: 2; display: block; margin-top: -24px; -webkit-mask-image: linear-gradient(to bottom, transparent 0, var(--banner-bg) 30%); mask-image: linear-gradient(to bottom, transparent 0, var(--banner-bg) 30%); }
-.afr2-model-banner__media img { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; }
-.afr2-model-banner__copy { position: relative; z-index: 1; padding: 20px 20px 0; }
-.afr2-model-banner .afr2-section-symbol { display: inline-flex; margin-bottom: 14px; color: var(--banner-accent); }
+/* AFR2-20261102-15: render a sangre y texto superpuesto sobre sombra gradual. */
+.afr2-model-banner__media { position: absolute; inset: 0; z-index: 0; display: block; }
+.afr2-model-banner__media img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center; }
+.afr2-model-banner::before { content: ''; position: absolute; inset: 0; z-index: 1; background: linear-gradient(to bottom, transparent 15%, var(--banner-scrim-mid) 45%, var(--banner-scrim) 100%); pointer-events: none; }
+.afr2-model-banner__copy { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: flex-start; margin-top: auto; padding: 64px 20px 20px; text-shadow: 0 2px 10px var(--banner-bg); }
+.afr2-model-banner .afr2-section-symbol { display: inline-flex; margin-bottom: 8px; color: var(--banner-accent); }
 .afr2-model-banner__kicker { margin: 0 0 4px; color: var(--banner-muted); font: var(--type-label); letter-spacing: var(--type-label-tracking); }
 .afr2-model-banner h2 { margin: 0 0 6px; font: var(--type-title); letter-spacing: var(--type-title-tracking); color: var(--banner-ink); }
 .afr2-model-banner__copy > p:not(.afr2-model-banner__kicker) { max-width: 40ch; margin: 0; font: var(--type-body); color: var(--banner-muted); }
 .afr2-model-banner .afr2-section-entry { margin-top: 16px; color: var(--banner-accent); }
+.afr2-model-banner__tag { top: 10px; right: 10px; bottom: auto; z-index: 3; }
 .afr2-model-banner:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
 .afr2-model-banner:active { transform: scale(.98); }
 .afr2-model-banners__more { margin: 0; }
+/* AFR2-20261102-17: accesos centrados y feedback cromático con tokens del tema. */
+.afr2-model-actions { justify-content: center; }
+.afr2-model-actions > button {
+  --model-action-bg: var(--surface-subtle);
+  --model-action-ink: var(--text-strong);
+  --model-action-border: var(--border-default);
+  transition: background-color var(--duration-fast) ease, color var(--duration-fast) ease, border-color var(--duration-fast) ease, transform var(--duration-fast) var(--ease-out);
+}
+.afr2-model-actions > button:focus-visible {
+  --model-action-bg: var(--action);
+  --model-action-ink: var(--text-on-action);
+  --model-action-border: var(--action-border);
+}
+@media (hover: hover) and (pointer: fine) {
+  .afr2-model-actions > button:hover:not(:disabled) {
+    --model-action-bg: var(--action);
+    --model-action-ink: var(--text-on-action);
+    --model-action-border: var(--action-border);
+  }
+}
+@media (prefers-reduced-motion: reduce) { .afr2-model-actions > button { transition: none; } }
+html[data-input="keyboard"] .afr2-model-actions > button { transition: none; }
 @media (hover: hover) and (pointer: fine) {
   .afr2-model-banner:hover { transform: translateY(-2px); border-color: var(--banner-accent-border); box-shadow: var(--workspace-floating-shadow); }
   .afr2-model-banner:active { transform: translateY(-2px) scale(.99); }
 }
 @media (min-width: 600px) {
-  .afr2-model-banner { display: block; aspect-ratio: 2.4 / 1; min-height: 220px; }
-  .afr2-model-banner__media { position: absolute; inset: 0; z-index: -1; margin: 0; -webkit-mask-image: none; mask-image: none; }
-  .afr2-model-banner__media img { width: 100%; height: 100%; aspect-ratio: auto; object-position: right center; }
-  .afr2-model-banner::before { content: ''; position: absolute; inset: 0; z-index: 0; background: linear-gradient(90deg, var(--banner-scrim) 0%, var(--banner-scrim-mid) 36%, transparent 60%); pointer-events: none; }
-  .afr2-model-banner__copy { max-width: 52%; padding: clamp(20px, 3vw, 36px); }
+  .afr2-model-banners { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (min-width: 840px) {
+  .afr2-model-banners { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 @media (prefers-reduced-motion: reduce) {
   .afr2-model-banner { transition: border-color var(--duration-fast) var(--ease-out); }

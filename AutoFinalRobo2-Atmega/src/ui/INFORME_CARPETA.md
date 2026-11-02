@@ -33,3 +33,11 @@ Fuente adaptada con Web/ATmega/ESP: overlay scrim+blur en modales, Volver por í
 ## AFR2-20261102-05 — Componentes OLED128-5 y QR en runtime
 
 `afr2_ui_components.c` centraliza cabecera, panel, progreso124x8, numerales5x7 y números compactos. `afr2_qr_screen.c` genera en el propio Mega QR AP/Web y acepta contenido RAM elegido. Menú Wi-Fi incorpora030045/030046. Mantiene snapshot puro, encoder y guardas; AP privado, auto/radar detenidos. Contraparte TypeScript y simulador de Ayuda actualizados. Estado y límites en Contracts/contracts/OLED_RUNTIME_QR_20261102.md. Sin compilación, tests, validadores, navegador ni flasheo; memoria total/tiempos/escaneo pendientes.
+
+## AFR2-20261102-11 — Dashboard original y retorno de submenús
+
+Se recuperan render_dashboard/dashboard_offset de ca9a2ae con cabecera24px invertida y scroll parcial en las dos bandas. Las filas Volver de listas usan recurso BACK16px + texto, con padding4px; el resto de las páginas conserva sus gestos. Contraparte Web adaptada y visor OLED blanco. Solo fuente; sin tests, build, validadores ni flasheo. Ficha en Contracts/changes/2026-11-02-11-oled-original-dashboard-white-back.md.
+
+## AFR2-20261102-14 — Dashboard y familia
+
+`afr2_dashboard.c` dibuja cabecera/mode/tarjeta/gestos por regiones y conserva28bytes de estado declarado en Afr2Ui, sin framebuffer nuevo. Snapshot agrega4bytes para modo/movimiento/fallo/validez. main informa SW mantenido;3s de inactividad/4s por opción, fallo fijo. Cabeceras y ayudas del resto se vinculan a Web. QR y composiciones compactas se conservan. Estado/presupuesto/pendientes en Contracts/contracts/OLED_DASHBOARD_STATUS_20261102.md. Sin tests, compilación, validadores, navegador ni carga.

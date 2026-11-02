@@ -89,6 +89,15 @@ def bom(c,rows,x=15,y=258,w=182):
    while c.stringWidth(label+'...','Helvetica',7.2)>space*mm:label=label[:-1]
    label+='...'
   text(c,x+33,y,label,7.2);text(c,x+w-6,y,row.get('qty',1),7.2);rule(c,x,y-2,x+w,y-2,.08,'#cccccc');y-=5.2
+def cards(c,sheet):
+ text(c,13,267,sheet.get('cards_title','SUBCONJUNTOS'),8.5,True,ACCENT)
+ for i,card in enumerate(sheet['render_cards']):
+  if i>=6:raise ValueError('Ficha con mas de seis renders: dividir hojas')
+  x=12+(i%2)*98;y=80+(2-i//2)*60;w=94;h=57
+  c.setLineWidth(.12*mm);c.setStrokeColorRGB(.8,.8,.8);c.rect(x*mm,y*mm,w*mm,h*mm)
+  text(c,x+3,y+h-5,card['code'],8,True,ACCENT)
+  wrapped(c,card['title'],x+3,y+h-9,88,7.1,3.1,maxlines=2)
+  imagebox(c,card['render'],x+3,y+2,88,38)
 def compose(book,out):
  c=canvas.Canvas(str(out),pagesize=(420*mm,297*mm),pageCompression=1);c.setTitle(book['project']+' - laminas preliminares');c.setAuthor(book.get('author','AutoFinalRobo2'))
  for n,s in enumerate(book['sheets'],1):
@@ -96,7 +105,8 @@ def compose(book,out):
   text(c,11,284,s['code']+'  /  '+s['title'].upper(),11,True,ACCENT)
   text(c,11,277,book.get('source','CAD nativo')+'  |  Cotas de geometria; no de imagen.',7.1,color='#555555')
   scale='--'
-  if s.get('views'):
+  if s.get('render_cards'):cards(c,s)
+  elif s.get('views'):
    boxes=[(24,156,74,99),(119,156,74,99),(24,80,74,62)]
    limit=min(min((b[2]-16)/max(v['bounds'][2]-v['bounds'][0],1),(b[3]-20)/max(v['bounds'][3]-v['bounds'][1],1)) for v,b in zip(s['views'],boxes))
    candidates=[4,2,1,.5,.25,.2,.1,.05];factor=next((a for a in candidates if a<=limit),.025)
@@ -106,12 +116,19 @@ def compose(book,out):
   elif s.get('general_rows'):
    bom(c,s['general_rows']);text(c,15,82,'Referencia de conjuntos; ver inventario completo adjunto.',8)
   exploded=s['kind']=='exploded'
-  text(c,132 if exploded else 222,263,'VISTA 3D / '+('EXPLOSION ISOMETRICA' if exploded else 'CONJUNTO' if s['kind']!='part' else 'ISOMETRICA'),8,True,ACCENT)
-  image_rect=imagebox(c,s['render'],132,89,272,163) if exploded else imagebox(c,s['render'],211,105,195,149)
+  text(c,132 if exploded else 222,263,'VISTA 3D / '+s.get('main_label',('EXPLOSION ISOMETRICA' if exploded else 'CONJUNTO' if s['kind']!='part' else 'ISOMETRICA')),8,True,ACCENT)
+  image_rect=imagebox(c,s['render'],132,89,272,163) if exploded else imagebox(c,s['render'],211,80,195,175) if s.get('render_cards') else imagebox(c,s['render'],211,105,195,149)
   if s.get('balloons'):
    ix,iy,iw,ih=image_rect
+   local=s.get('local_balloons')
    # Dos rieles para globos; no colocar texto sobre el render.
    for i,(label,p) in enumerate(s['balloons'].items()):
+    if local and label in local:
+     placement=local[label];tx,ty=placement['anchor_mm'];bx,by=placement['badge_mm'];radius=2.7
+     length=math.hypot(bx-tx,by-ty);ux=(bx-tx)/length;uy=(by-ty)/length
+     rule(c,bx-ux*radius,by-uy*radius,tx,ty,.12,'#444444')
+     c.setFillColorRGB(.2,.2,.2);arrow=c.beginPath();arrow.moveTo(tx*mm,ty*mm);arrow.lineTo((tx+ux*.9-uy*.35)*mm,(ty+uy*.9+ux*.35)*mm);arrow.lineTo((tx+ux*.9+uy*.35)*mm,(ty+uy*.9-ux*.35)*mm);arrow.close();c.drawPath(arrow,fill=1,stroke=0)
+     c.setFillColorRGB(1,1,1);c.setStrokeColorRGB(.2,.2,.2);c.circle(bx*mm,by*mm,radius*mm,stroke=1,fill=1);c.setFillColorRGB(0,0,0);c.setFont('Helvetica',7.6);c.drawCentredString(bx*mm,(by-.8)*mm,label.zfill(2));continue
     tx=ix+p[0]*iw;ty=iy+p[1]*ih;bx=(142+i*35) if exploded else (220+i*23);by=253 if i%2==0 else 80
     rule(c,bx,by,tx,ty,.12,'#555555');c.setFillColorRGB(1,1,1);c.setStrokeColorRGB(0,0,0);c.circle(bx*mm,by*mm,3*mm,stroke=1,fill=1);c.setFillColorRGB(0,0,0);c.setFont('Helvetica',7.5);c.drawCentredString(bx*mm,(by-.8)*mm,label)
   y=95

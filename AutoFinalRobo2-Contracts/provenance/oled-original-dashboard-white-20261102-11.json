@@ -1,0 +1,25 @@
+{
+  "change_id": "AFR2-20261102-11",
+  "state": "source-only-uncompiled-unvalidated",
+  "original_dashboard_revision": "ca9a2ae",
+  "attribution": "Original AFR2/kobac dashboard and BACK icon retained; no new bitmap resources",
+  "adaptation": "Recover dashboard functions only; invert24px header and partial bands; menu BACK16px+Volver; white Web OLED.",
+  "files": [
+    {
+      "path": "AutoFinalRobo2-Atmega/src/ui/afr2_screens.c",
+      "sha256_normalized_lf": "bc861f6a82df1e3ad9b58ca6a26bce6bc7720edfc18ccd8ad512e83627b05c2f"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/oled/firmwareRenderer.ts",
+      "sha256_normalized_lf": "84b8300511f6ba17d91f64540b28007637c4a49b6d965bc245ddf7e7ed167e93"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/oled/OledCanvas128x64.tsx",
+      "sha256_normalized_lf": "673921f3a2e999faf4f2ce317564e1e3e0f49004f7126ed7b01b95600d09567e"
+    }
+  ],
+  "atmega": "source-adapted-not-built-or-flashed",
+  "web": "source-adapted-not-browser-checked-or-built",
+  "esp": "unchanged-no-promotion",
+  "resource_generation": "copy-only; no validation checks"
+}

@@ -1,3 +1,76 @@
+
+## VIS-062 — Lenguaje de Infraestructura en la interfaz completa (02/11/2026)
+
+Dirección Confirmada y autorización explícita de aplicación del manual 0.1.11 draft a toda la Web. Composición extendida Propuesta; ejecución No verificada. Ficha AFR2-20261102-15, cobertura de fuente coverage-20261102-15.json.
+
+Se aplica desde primitivas y una capa CSS común: PageHeader con grilla/halos estáticos y caja de icono, tarjetas sólidas con profundidad, espaciado fluido, formas y estados compartidos, acentos por área y selectores existentes. Inicio conserva render y recibe título degradado. Las superficies particulares de sensores, simulación, calibración, modelos, documentación y estudio reciben las mismas familias de radios/bordes/material. Se conservan tamaños de escenas y lectura de píxeles OLED.
+
+Las acciones primarias conservan action y los estados físicos su semántica. El acento info/success/warning del área es contexto, no dato recibido ni alarma. No se crean nuevas navegaciones ni etapas artificiales donde no hay un flujo secuencial. Se elige adaptación estática del banner en operación; no se trasladan los loops de Infraestructura ni se demora interacción.
+
+Alternativa descartada: copiar el DOM del recorrido de Infraestructura en todas las páginas, porque alteraría organización y significado. Consecuencia: composición contextual con datos, controles, callbacks, condiciones y flujos conservados. Los tokens --visual-* viven en tokens.css y son consumidos por visual-language.css; no se modifica el inventario histórico de colores del manual. Las verificaciones sugeridas por la skill no se ejecutan por prohibición expresa del usuario: sin tests/build/validadores/navegador. Las observaciones y limitaciones de fuente siguen documentadas; no se afirma cierre visual.
+
+## VIS-057 — Integración aditiva de Infraestructura (02/11/2026)
+
+**Dirección Confirmada y Aprobada para incorporación documental:** el usuario pide integrar todo el desglose dentro del manual actual, reformando donde corresponda y conservando lo ya incorporado. Valores de receta Observados; generalizaciones Inferidas/Propuestas según alcance. Verificación No verificada. Ficha AFR2-20261102-14; versión 0.1.11 draft.
+
+Se integran el atlas completo en manual.md, contratos en components.md y tokens bajo las capas normales con namespace infrastructure. El dossier de origen se conserva como evidencia, pero deja de ser una guía paralela requerida para conocer los patrones. Se añaden láminas SVG didácticas Propuestas, sin atribuirles captura/render de ejecución.
+
+**Regla y razón:** dos regímenes de composición: operación con estado/acción/datos inmediatos y exploración con relato/mapa/etapas/magnitudes. Tipografía, espacio fluido, radios y longitudes de lectura se amplían con variantes narrativas; no se reemplazan globalmente PageHeader, SectionHeader o la escala VIS-051. Fuente: pedido actual, S01/S02/S12–S14 y extracción11.
+
+**Alternativa no adoptada:** dejar solo enlaces al dossier o rehacer desde cero el manual. **Consecuencia:** todo el detalle queda integrado y se conserva la evolución anterior. Ámbito: documentación del sistema; sin implementar pantallas ni iniciar tests/validaciones.
+
+## VIS-058 — Portadas por capas y color por ubicación
+
+02/11/2026. Evidencia Observada; incorporación autorizada por VIS-057; valores y ejecución no equivalen a aprobación estética comprobada. Fuente S01/S02/S12.
+
+Se amplía VIS-055: portada oscura fija, grilla de 32 px, halos radiales, glow independiente, texto degradado, chips translúcidos y carriles tintados. Se suma la familia pc/info, esp/warning, link/action, client/success con variantes de contenido claro/oscuro y banner fijo. Las seis densidades glass y el trabajo sólido VIS-015 continúan; la receta no tiñe todos los paneles ni redefine STOP.
+
+**Precisión de precedencia:** la exclusión general de glow continuo de VIS-004/014/015 se limita a regiones operativas. Una portada explicativa puede usar la receta expresiva de la fuente; no hereda autorización para ocupar el fondo entero de una consola. La banda de 4 px de la ficha indica zona, no reintroduce la barra decorativa de marca de 5 px.
+
+**Alternativa:** sustituir toda superficie por una portada dark/glass. No adoptada porque borraría los contratos instrumentales existentes. **Consecuencia:** material y acento se eligen por región/tarea, con el atlas como receta implementable y valores en sections.infrastructure.
+
+## VIS-059 — Selección, flujo y detalle coordinados
+
+02/11/2026. Evidencia Observada; dirección de incorporación Confirmada; ejecución No verificada. Fuente S01/S02/S05–S08 y S13.
+
+Se desarrolla VIS-052 con la anatomía completa de dos filas, copia activa con clip-path, sombra en wrapper y comportamiento de resize/teclado. Se añaden nodos-button por zona, cables decorativos, línea de estaciones y ficha main/lateral con Entra/Sale y hechos numerados. La línea escala un degradado fijo 520 ms; done significa índice previo al seleccionado, no ejecución física ni historial de visitas.
+
+**Límites:** conservar formularios, menús, overlays y OLED existentes; la muestra no es su sustituto. Los tamaños UiIcon fuera del tipo, hover done que puede ocultar un check y precedencia hover/active se registran como particularidades de fuente; no se adoptan como contrato deseable. Una tarjeta editorial con hover no se convierte por ello en botón.
+
+**Alternativa:** copiar DOM/CSS local por cada página. No adoptada como norma; primero usar primitivas compartidas. **Consecuencia:** contratos nuevos en components.md, sin crear una librería ni modificar la Web en esta entrega.
+
+## VIS-060 — Movimiento narrativo con límites de operación y accesibilidad
+
+02/11/2026. Tiempos/mecanismos Observados en S02/S05/S06/S13; uso narrativo Inferido del patrón; incorporación autorizada por VIS-057. Ejecución No verificada.
+
+Se amplía VIS-005/012: las entradas editoriales 600/900/1000 ms y loops de flujo/halo son una receta para Explorar, sin retener interacción. Se conserva la prohibición de retrasar operación o STOP; los tiempos de modales, tooltip, menú, foco y teclado no se reemplazan. El inventario registra disparador, propiedad, duración, curva, delay, repetición e interrupción; las fichas remontan por key y no esperan una animación exit.
+
+**Norma preservada para futuras aplicaciones:** reduced motion sin loops ni transformaciones decorativas, magnitudes inmediatas y solo fade breve permitido; teclado inmediato. **Diferencia observada:** Infraestructura tiene reducción parcial (barras con tiempos literales, transformaciones de hover y delays restantes). Se documenta como deuda, sin rebajar el contrato accesible ni declarar que fue corregida.
+
+**Alternativa:** trasladar loops a páginas operativas o considerar su presencia como actividad real. No adoptada. **Consecuencia:** motion.infrastructure distingue inventario de fuente y política de uso; sin corrección de implementación ni medición de rendimiento.
+
+## VIS-061 — Magnitudes, procedencia y gobierno del manual ampliado
+
+02/11/2026. Evidencia Observada en S01/S02/S04/S10/S11/S21; dirección de integración Confirmada; ejecución No verificada.
+
+Se añaden barras por modelo, suma apilada, comparación raw/gzip, estadísticas, mini barras por archivo, tabla y anillo conic de almacenamiento. El anillo no tiene crecimiento temporal declarado. Conservar unidades, origen local/ESP, dato ausente explícito y progress accesible. Tamaños GLB, bytes de filesystem, tráfico y RAM no son intercambiables; los mínimos de píxeles son excepciones de visibilidad, no mediciones proporcionales exactas.
+
+**Gobierno:** manual.md/components.md/tokens.json son la guía integrada; infraestructura/ conserva snapshot y decisiones de origen. Nuevos namespaces se suman sin sobrescribir tokens anteriores. La clasificación Propuesta/no cubierta de formularios, modales y menús se limita a esa referencia; los contratos generales existentes siguen vigentes. Validaciones históricas mantienen fecha/alcance y no certifican 0.1.11; audit.config conserva scanPaths vacío.
+
+**Alternativa:** convertir ilustraciones/datos declarados en aprobación física, o copiar estados de error cuyo flujo no se acredita. No adoptada. **Consecuencia:** matrices documentales separan evidencia, cobertura, aprobación y verificación; sin nuevos comandos, API ni publicación.
+
+### Correspondencia con la extracción de origen
+
+| Origen conservado | Decisión del manual general |
+| --- | --- |
+| INF-VIS-001/004/005 | VIS-057, composición/tipo/espacio |
+| INF-VIS-002/003 | VIS-058, zonas/material/portada |
+| INF-VIS-006/007/008/010/011 | VIS-059, selector/flujo/ficha/acciones |
+| INF-VIS-009 | VIS-060, movimiento y preferencias |
+| INF-VIS-012/013/014 | VIS-061, datos/procedencia/gobernanza |
+
+Particularidades INF-D01–D08 se conservan en el atlas y el dossier como deuda; esta correspondencia no las transforma en reglas aprobadas. Los componentes ausentes de Infraestructura se resuelven primero con los contratos ya presentes del manual general.
+
 ## VIS-055..VIS-056 — Modelos por banners y mapa de pantallas (02/11/2026)
 
 Confirmada: pedidos humanos de separar simuladores y modelos 3D, entrar directo a la inspección por tres banners horizontales con renders, «Ir a simulación» abajo a la derecha, banner de Inicio y árbol de pantallas como mapa conceptual desde el dashboard. Manual 0.1.10 draft; ficha AFR2-20261102-01, [cobertura](coverage-20261102-01.json).

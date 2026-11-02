@@ -41,14 +41,14 @@ export function OledCanvas128x64({
     const widthPx = AFR2_OLED_WIDTH * scale;
     const heightPx = AFR2_OLED_HEIGHT * scale;
 
-    ctx.fillStyle = '#050811';
+    ctx.fillStyle = '#000000';
     ctx.fillRect(0, 0, widthPx, heightPx);
 
     for (let y = 0; y < AFR2_OLED_HEIGHT; y++) {
       for (let x = 0; x < AFR2_OLED_WIDTH; x++) {
         const on = oledBuffer.getPixel(x, y);
         if (on) {
-          ctx.fillStyle = '#67e8f9';
+          ctx.fillStyle = '#ffffff';
           ctx.fillRect(
             x * scale,
             y * scale,
@@ -56,7 +56,7 @@ export function OledCanvas128x64({
             showGrid && scale >= 3 ? scale - 0.5 : scale
           );
         } else if (showGrid && scale >= 4) {
-          ctx.fillStyle = 'rgba(103, 232, 249, 0.05)';
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
           ctx.fillRect(x * scale, y * scale, 1, 1);
         }
       }
@@ -77,9 +77,9 @@ export function OledCanvas128x64({
           <span
             className="afr2-tabular rounded px-2 py-0.5 font-semibold"
             style={{
-              backgroundColor: 'rgba(103, 232, 249, 0.14)',
-              color: '#67e8f9',
-              border: '1px solid rgba(103, 232, 249, 0.32)',
+              backgroundColor: 'rgba(255, 255, 255, 0.14)',
+              color: '#ffffff',
+              border: '1px solid rgba(255, 255, 255, 0.32)',
             }}
           >
             {compact ? meta.name : `${meta.code} · ${meta.name}`}
@@ -112,7 +112,7 @@ export function OledCanvas128x64({
           aria-label={`Pantalla OLED 128 por 64 píxeles mostrando ${meta.name} (${meta.code})`}
           className="max-w-full rounded-lg border"
           style={{
-            borderColor: 'rgba(103, 232, 249, 0.24)',
+            borderColor: 'rgba(255, 255, 255, 0.24)',
             imageRendering: 'pixelated',
           }}
         />

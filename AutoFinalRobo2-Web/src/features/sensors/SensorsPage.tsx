@@ -18,13 +18,13 @@ import { ScanAngleRange, ScanRangeField } from './ScanControls';
 
 type StoredPoint=RangeSample & {receivedAtMs:number};
 // AFR2-20261101-09 / VIS-052: alcance y vista del radar en el selector segmentado comun.
-const RADAR_RANGES:readonly SegmentedItem[]=[.5,1,2,4].map(v=>({value:String(v),label:`${v} m`}));
+const RADAR_RANGES:readonly SegmentedItem[]=[{value:'0.25',label:'25 cm'},{value:'0.5',label:'50 cm'},{value:'1',label:'1 m'},{value:'2',label:'2 m'}];
 const RADAR_VIEWS:readonly SegmentedItem<RadarView>[]=[{value:'perspective',label:'Perspectiva',icon:'cube'},{value:'top',label:'Superior',icon:'radar'}];
 const DEFAULT_CONFIG:RadarConfig={minAngleDeg:0,maxAngleDeg:180,speedDegS:10,settleMs:100,intervalMs:70,inverted:false};
 function DistanceWorkspace(){
   const {headReading:head,wsState,megaLinkState,requestCommand,stopRecord}=useConnection();const {resolvedTheme}=useTheme();
   const [points,setPoints]=useState<Record<number,StoredPoint>>({}),[range,setRange]=useState(1),[now,setNow]=useState(Date.now());
-  const [view,setView]=useState<RadarView>('perspective');
+  const [view,setView]=useState<RadarView>('top');
   const [config,setConfig]=useState<RadarConfig|null>(null),[draft,setDraft]=useState(DEFAULT_CONFIG),[angle,setAngle]=useState(90);
   const [busy,setBusy]=useState(false),[feedback,setFeedback]=useState<string|null>(null),[lost,setLost]=useState(0),[mapReady,setMapReady]=useState(false);
   const cursor=useRef({boot:0,scan:0,snapshot:0,sequence:0}),manual=useRef({sending:false,target:null as number|null,epoch:0});
@@ -78,8 +78,8 @@ function DistanceWorkspace(){
   const readingStatus=!online?'Sin conexión':!fresh?'Esperando telemetría':sampleFresh?'Eco valido':sample?.valid?'Medición sin actualizar':sample?SENSOR_ERRORS[sample.error]:'Esperando medición';
   return <section className="afr2-control-map afr2-radar-map" aria-label="Distancia y servo">
     <header className="afr2-control-map__heading">
-      <div><p className="afr2-kicker"><UiIcon name="radar"/> Distancia y servo</p><h2>Radar frontal</h2><p className="afr2-radar-intro">Explorá el espacio delante del auto.</p></div>
-      <span className={`afr2-map-status${fresh && running?' is-live':''}`}>{!fresh?echoCount?'Mapa historico':online?'Esperando datos':'Sin conexión':running?'Barrido en curso':'Lectura fija'}</span>
+      <div><p className="afr2-kicker"><UiIcon name="radar"/> Percepción del entorno</p><h2>Radar frontal</h2><p className="afr2-radar-intro">Un mapa de ecos reales, desde el punto de vista del robot.</p></div>
+      <div className="afr2-radar-health"><span className={`afr2-map-status${fresh && running?' is-live':''}`}>{!fresh?echoCount?'Mapa histórico':online?'Esperando datos':'Sin conexión':running?'Barrido en curso':'Lectura fija'}</span><span className="afr2-radar-scale-badge">Escala visual · {RADAR_RANGES.find(item=>item.value===String(range))?.label}</span></div>
     </header>
     <div className="afr2-control-map__toolbar">
       <div className="afr2-radar-toolgroup"><span>Alcance</span><SegmentedControl size="sm" ariaLabel="Alcance del radar" items={RADAR_RANGES} value={String(range)} onChange={v=>setRange(Number(v))}/></div>
@@ -93,11 +93,11 @@ function DistanceWorkspace(){
       <div className="afr2-radar-zone-label"><span>{preview?'Vista previa · sin aplicar':'Sector de escaneo'}</span><strong>{draft.minAngleDeg}° <span aria-hidden="true">—</span> {draft.maxAngleDeg}°</strong></div>
       <div className="afr2-radar-bearing" aria-hidden="true"><UiIcon name="arrow"/><span>Frente<small>90°</small></span></div>
       {!fresh && !echoCount && <div className="afr2-radar-empty"><UiIcon name="sensors"/><div><strong>Esperando al robot</strong><span>Los ecos apareceran al recibir mediciones.</span></div></div>}
-      <div className="afr2-map-caption"><span className="afr2-radar-legend"><i/> Eco medido</span><span>Anillos de {range/4} m</span></div>
+      <div className="afr2-map-caption"><span className="afr2-radar-legend"><i/> Eco medido</span><span>Anillos de {(range/4).toLocaleString('es-AR', {maximumFractionDigits:3})} m</span></div>
     </div>
     <aside className="afr2-map-sidebar afr2-radar-sidebar" aria-label="Mediciones y control del servo">
       <div className="afr2-radar-overview">
-        <span className="afr2-radar-eyebrow">Distancia medida</span>
+        <span className="afr2-radar-eyebrow"><UiIcon name="sensors" size={16}/> Última distancia válida</span>
         <div className="afr2-radar-distance"><strong>{sampleFresh?sample!.distanceMm:'—'}</strong><span>mm</span></div>
         <p className="afr2-radar-reading-state" data-valid={sampleFresh || undefined}><i/>{readingStatus}</p>
         <div className="afr2-radar-secondary">

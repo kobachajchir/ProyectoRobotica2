@@ -1,7 +1,8 @@
+import { SimulationViewport, SimulationZoom } from '../../components/three/SimulationViewport';
 import { BANNER_VIEW_DIRECTION, frameModel } from '../../components/three/frameModel';
 import { ModelAssetProgress } from '../../components/three/ModelAssetProgress';
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState, type RefObject } from 'react';
-import { Canvas, useFrame, useThree, type ThreeEvent } from '@react-three/fiber';
+import { useFrame, useThree, type ThreeEvent } from '@react-three/fiber';
 import { Box3, BufferGeometry, CanvasTexture, Group, Matrix4, OrthographicCamera, Plane, Quaternion, Vector3 } from 'three';
 import { useRobotModel } from '../../components/three/RobotModel';
 import { SimulationRobot, SimulationOrbit } from './SimulationModel';
@@ -25,8 +26,9 @@ export type SceneView = 'perspective' | 'top' | 'side';
 export type SceneTool = 'orbit' | 'move' | 'place';
 interface SceneProps { view: SceneView; tool: SceneTool; focus: Point3; revision: number; armPanel: boolean; carOnly?: boolean }
 /** AFR2-20261102-03: zoom de la cámara ortográfica relativo al encuadre inicial (100 %). */
-interface ZoomLink { base: number; target: number | null; step: (factor: number) => void; reset: () => void }
-const ZOOM_MIN = .25, ZOOM_MAX = 8;
+interface ZoomLink { base: number; target: number | null; step: (factor: number) => void; reset: () => void; setPercent: (percent: number) => void }
+// UI 0 = safe widest framing; UI 100 = original framing. Camera zoom must stay positive.
+const ZOOM_MIN = .25, ZOOM_MAX = 1;
 
 function readPalette() {
   const css = getComputedStyle(document.documentElement);
@@ -75,6 +77,7 @@ function ZoomBridge({ zoom, onZoom }: { zoom: RefObject<ZoomLink>; onZoom: (perc
     const clamp = (value: number) => Math.min(link.base * ZOOM_MAX, Math.max(link.base * ZOOM_MIN, value));
     link.step = factor => { link.target = clamp((link.target ?? camera.zoom) * factor); invalidate(); };
     link.reset = () => { link.target = link.base; invalidate(); };
+    link.setPercent = percent => { link.target = link.base * (ZOOM_MIN + (ZOOM_MAX - ZOOM_MIN) * percent / 100); invalidate(); };
   }, [camera, invalidate, zoom]);
   useFrame((_, delta) => {
     const link = zoom.current; if (!link || !(camera instanceof OrthographicCamera)) return;
@@ -85,7 +88,9 @@ function ZoomBridge({ zoom, onZoom }: { zoom: RefObject<ZoomLink>; onZoom: (perc
       camera.updateProjectionMatrix();
       if (camera.zoom === link.target) link.target = null; else invalidate();
     }
-    const percent = Math.round(camera.zoom / (link.base || camera.zoom) * 100);
+    const bounded = Math.min(link.base * ZOOM_MAX, Math.max(link.base * ZOOM_MIN, camera.zoom));
+    if (bounded !== camera.zoom) { camera.zoom = bounded; camera.updateProjectionMatrix(); invalidate(); }
+    const percent = Math.round((camera.zoom / (link.base || camera.zoom) - ZOOM_MIN) / (ZOOM_MAX - ZOOM_MIN) * 100);
     if (percent !== last.current) { last.current = percent; onZoom(percent); }
   });
   return null;
@@ -238,13 +243,6 @@ function SceneContents({ view, tool, focus, armPanel, carOnly = false, zoom, onZ
   const heldOrientation = new Quaternion().setFromRotationMatrix(new Matrix4().makeRotationY(state.pose.yaw)
     .multiply(CAD_TO_THREE).multiply(forwardArm(state.joints).tool));
   return <>
-    <color attach="background" args={[palette.sky || palette.surface]} />
-    <ambientLight intensity={1.4} /><directionalLight position={[3, 5, 2]} intensity={2} />
-    <directionalLight position={[-3, 2, -2]} intensity={.7} />
-    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -.003, 0]}>
-      <planeGeometry args={[4, 4]} /><meshBasicMaterial color={palette.floor} toneMapped={false} />
-    </mesh>
-    <gridHelper args={[4, 40, palette.grid, palette.grid]} />
     {!armPanel && !carOnly && <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -.002, 0]} onClick={event => {
       if (tool !== 'place' || state.running || state.scanning || state.jointTarget || event.delta > 5) return;
       const p = event.ray.intersectPlane(plane, new Vector3()); if (!p) return;
@@ -314,7 +312,7 @@ function SceneFailure({ retry }: { retry: () => void }) {
 }
 export function CollectorScene(props: SceneProps) {
   const [attempt, setAttempt] = useState(0);
-  const zoom = useRef<ZoomLink>({ base: 1, target: null, step: () => {}, reset: () => {} });
+  const zoom = useRef<ZoomLink>({ base: 1, target: null, step: () => {}, reset: () => {}, setPercent: () => {} });
   const [zoomPercent, setZoomPercent] = useState(100);
   return <RenderBoundary key={attempt} fallback={<SceneFailure retry={() => {
     // Cache reset is shared with the existing model viewer.
@@ -322,15 +320,10 @@ export function CollectorScene(props: SceneProps) {
   }} />}>
     <div className="afr2-collector-viewport" data-tool={props.tool}>
       <div className="afr2-model-asset-overlay"><ModelAssetProgress label="Modelo del auto" hideWhenReady /></div>
-      <Canvas orthographic frameloop="demand" dpr={[1, 1.5]} camera={{ near: .001, far: 30, zoom: 300 }} onContextMenu={event => event.preventDefault()}
-        fallback={<p>WebGL no está disponible en este dispositivo.</p>}>
+      <SimulationViewport overlay={<SimulationZoom percent={zoomPercent} onChange={value => zoom.current.setPercent(value)} />}>
         <Suspense fallback={null}><SceneContents key={props.revision} {...props} zoom={zoom} onZoom={setZoomPercent} /></Suspense>
-      </Canvas>
-      <div className="afr2-sim-zoom" role="group" aria-label="Zoom de la escena">
-        <button type="button" className="afr2-sim-zoom__button" aria-label="Alejar" disabled={zoomPercent <= ZOOM_MIN * 100} onClick={() => zoom.current.step(.8)}><UiIcon name="minus" size={18} /></button>
-        <button type="button" className="afr2-sim-zoom__value" aria-label={`Zoom ${zoomPercent} %. Volver a 100 %`} title="Volver a 100 %" onClick={() => zoom.current.reset()}><span aria-hidden="true">{zoomPercent}%</span></button>
-        <button type="button" className="afr2-sim-zoom__button" aria-label="Acercar" disabled={zoomPercent >= ZOOM_MAX * 100} onClick={() => zoom.current.step(1.25)}><UiIcon name="plus" size={18} /></button>
-      </div>
+      </SimulationViewport>
+
     </div>
   </RenderBoundary>;
 }

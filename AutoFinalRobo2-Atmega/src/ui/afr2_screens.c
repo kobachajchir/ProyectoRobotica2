@@ -51,7 +51,7 @@ uint8_t Afr2MotorSelector_Step(uint8_t selected,int8_t delta){
 }
 void Afr2MotorSelector_Render(Afr2Oled *o,uint8_t selected){
     static const char names[][3] PROGMEM={"FL","FR","RL","RR"};
-    TXT(o,15,0,"Elegir un motor");
+    Afr2Component_HeaderFlash(o,AFR2_ICON_MOTOR,PSTR("Elegir un motor"),0,0);
     for(uint8_t i=0;i<4;i++)Afr2Oled_TextFlash(o,9+32u*i,22,names[i],AFR2_WHITE);
     Afr2Oled_FillRect(o,9+32u*(selected&3u),34,14,1,AFR2_WHITE);
     Afr2Ui_GestureHint(o,0,40,2,PSTR("Elegir"));
@@ -143,14 +143,14 @@ void Afr2Ui_Touch(Afr2Ui *u,uint8_t active,uint8_t direction,uint8_t heading) {
 static void render_touch(Afr2Ui *u,Afr2Oled *o) {
     if(u->power_known && (uint32_t)(u->clock_ms-u->power_changed_ms)<1200u){Afr2Power_Render(o,u->power_percent);u->power_visible=1;u->touch_full=1;return;}
     if(u->touch_full) {
-        Afr2Oled_Clear(o);TXT(o,18,0,"Control tactil");
+        Afr2Oled_Clear(o);Afr2Component_HeaderFlash(o,AFR2_ICON_MOTOR,PSTR("Control tactil"),0,0);
         if((uint32_t)(u->clock_ms-u->touch_started_ms)<1000u) {
             TXT(o,36,26,"Activado");TXT(o,8,53,"Desde la Web");
         }
         u->touch_full=0;
     }
     if((uint32_t)(u->clock_ms-u->touch_started_ms)<1000u)return;
-    Afr2Oled_FillRect(o,32,12,64,40,AFR2_BLACK);
+    Afr2Oled_FillRect(o,32,14,64,38,AFR2_BLACK);
     uint8_t h=u->touch_heading;
     /* AFR2-20261030-12: numeric Web heading accompanies the rotated bitmap. */
     char angle[19];snprintf_P(angle,sizeof(angle),PSTR("Angulo: %u grados"),(unsigned int)h*15u);
@@ -173,7 +173,7 @@ static void render_touch(Afr2Ui *u,Afr2Oled *o) {
             int16_t along=14+j*3-(k<0?-k:k);
             int16_t x=64+((int32_t)along*dx-(int32_t)k*dy)/256;
             int16_t y=32+((int32_t)along*dy+(int32_t)k*dx)/256;
-            if(x>=32 && x<96 && y>=12 && y<52)Afr2Oled_Pixel(o,x,y,AFR2_WHITE);
+            if(x>=32 && x<96 && y>=14 && y<52)Afr2Oled_Pixel(o,x,y,AFR2_WHITE);
         }
     }
 }
@@ -283,7 +283,12 @@ static void keyboard(Afr2Ui *u,Afr2UiInput in) {
     }
     u->redraw=true;
 }
+void Afr2Ui_InputHeld(Afr2Ui *u,uint8_t held,uint32_t now){
+    if(held || u->dashboard.held!=held){u->dashboard.input_ms=now;u->dashboard.armed=0;}
+    u->dashboard.held=held;
+}
 void Afr2Ui_Apply(Afr2Ui *u,Afr2UiInput in) {
+    if(in.rotation || in.click || in.menu){u->dashboard.input_ms=u->clock_ms;u->dashboard.armed=0;}
     if(u->touch_active){if(in.menu){u->touch_cancelled=1;invoke(u,AFR2_A_STOP,0,0);Afr2Ui_Touch(u,0,8,0);}return;}
     if(u->node==AFR2_N_ENCODER_TEST){
         if(in.rotation){u->test_back=1;u->redraw=true;}
@@ -428,14 +433,14 @@ void Afr2Ui_Apply(Afr2Ui *u,Afr2UiInput in) {
     }
 }
 static void render_keyboard(Afr2Ui *u,Afr2Oled *o) {
-    if(u->keyboard_field)TXT(o,0,0,"Clave Wi-Fi");else TXT(o,0,0,"SSID Wi-Fi");
+    Afr2Component_HeaderFlash(o,AFR2_ICON_WIFI,u->keyboard_field?PSTR("Clave Wi-Fi"):PSTR("SSID Wi-Fi"),0,0);
     char text[18];uint8_t length=u->length<17?u->length:17;
     if(u->keyboard_field){memset(text,'*',length);text[length]=0;}
     else {memcpy(text,u->credentials.ssid+u->length-length,length);text[length]=0;}
-    Afr2Oled_Text(o,0,13,text,AFR2_WHITE);
+    Afr2Oled_Text(o,0,16,text,AFR2_WHITE);
     uint8_t first=(u->key/10u)/2u*20u;
     for(uint8_t j=0;j<20 && first+j<97;j++) {
-        uint8_t k=first+j,x=(j%10u)*12u,y=29u+(j/10u)*12u;
+        uint8_t k=first+j,x=(j%10u)*12u,y=28u+(j/10u)*12u;
         char ch[2]={(char)(32u+k),0};
         if(k<95)Afr2Oled_Text(o,x,y,ch,AFR2_WHITE);
         else if(k==95)TXT(o,x,y,"<");else TXT(o,x,y,"OK");
@@ -452,9 +457,9 @@ static void render_hall(Afr2Ui *u,Afr2Oled *o,const Afr2UiSnapshot *s){
     if(u->node==AFR2_N_HALL_PICK){
         Afr2MotorSelector_Render(o,u->selection);
     }else if(u->node==AFR2_N_HALL_COUNT){
-        TXT(o,0,0,"Gire una vuelta");
-        Afr2Oled_Text(o,0,13,s->lines[0],AFR2_WHITE);
-        Afr2Oled_Text(o,0,26,s->lines[1],AFR2_WHITE);
+        Afr2Component_HeaderFlash(o,AFR2_ICON_MOTOR,PSTR("Gire una vuelta"),0,0);
+        Afr2Oled_Text(o,0,16,s->lines[0],AFR2_WHITE);
+        Afr2Oled_Text(o,0,28,s->lines[1],AFR2_WHITE);
         Afr2Ui_GestureHint(o,0,40,0,PSTR("Finalizar"));Afr2Ui_GestureHint(o,0,53,1,PSTR("Cancelar"));
     }else {
         TXT(o,0,0,"Pulsos / vuelta");
@@ -464,15 +469,15 @@ static void render_hall(Afr2Ui *u,Afr2Oled *o,const Afr2UiSnapshot *s){
             else snprintf_P(text,sizeof(text),PSTR("%u %s:--"),i+1u,name);
             Afr2Oled_Text(o,0,12+i*10,text,AFR2_WHITE);
         }
-        TXT(o,0,54,"*Nuevo");Afr2Icon_Draw(o,AFR2_ICON_BACK,58,51,12);TXT(o,72,53,"Volver");
+        TXT(o,0,54,"*Nuevo");Afr2Ui_GestureHint(o,94,52,1,PSTR("Volver"));
     }
 }
 static void render_save_confirm(Afr2Ui *u,Afr2Oled *o){
-    TXT(o,0,0,"Cambios pendientes");
+    Afr2Component_HeaderFlash(o,AFR2_ICON_PREFS,PSTR("Guardar cambios"),0,0);
     if(u->confirm_wait){TXT(o,0,26,"Guardando...");return;}
-    TXT(o,0,15,"Desea guardarlos?");
+    TXT(o,0,16,"Desea guardarlos?");
     TXT(o,14,34,"Si");TXT(o,14,49,"No");
-    Afr2Oled_Rect(o,0,u->selection?47:32,128,14,AFR2_WHITE);
+    Afr2Oled_FillRect(o,0,u->selection?47:32,128,14,AFR2_INVERT);
 }
 static void centered(Afr2Oled *o,uint8_t y,const char *text){
     uint16_t width=strlen_P(text)*7u;Afr2Oled_TextFlash(o,width<128?(128-width)/2:0,y,text,AFR2_WHITE);
@@ -492,37 +497,22 @@ static void render_quick(Afr2Ui *u,Afr2Oled *o,const Afr2UiSnapshot *s){
     Afr2Icon_Draw(o,AFR2_ICON_ENCODER_TURN,2,50,13);Afr2Ui_GestureHint(o,94,52,1,PSTR("Volver"));
 }
 static void render_caps(Afr2Ui *u,Afr2Oled *o,const Afr2UiSnapshot *s){
-    char page[12];Afr2Oled_Clear(o);TXT(o,0,0,"Capacidades");
-    snprintf_P(page,sizeof(page),PSTR("%s%u/6%s"),u->selection?"<":"",u->selection+1u,u->selection<5?">":"");Afr2Oled_Text(o,87,54,page,AFR2_WHITE);Afr2Icon_Draw(o,AFR2_ICON_ENCODER_TURN,0,48,16);
-    for(uint8_t i=0;i<3;i++)Afr2Oled_Text(o,0,14+i*12,s->lines[i],AFR2_WHITE);
+    Afr2Oled_Clear(o);Afr2Component_HeaderFlash(o,AFR2_ICON_INFO,PSTR("Capacidades"),u->selection+1,6);
+    for(uint8_t i=0;i<3;i++)Afr2Oled_Text(o,0,16+i*12,s->lines[i],AFR2_WHITE);
+    Afr2Ui_GestureHint(o,0,52,0,PSTR("OK"));Afr2Ui_GestureHint(o,94,52,1,PSTR("Volver"));
 }
 void Afr2Power_Render(Afr2Oled *o,uint8_t percent){
     char text[19];if(percent>100)percent=100;Afr2Oled_Clear(o);
-    TXT(o,0,0,"Velocidad modific.");snprintf_P(text,sizeof(text),PSTR("Valor: %u /255"),((uint16_t)percent*255u+50u)/100u);Afr2Oled_Text(o,0,15,text,AFR2_WHITE);
+    Afr2Component_HeaderFlash(o,AFR2_ICON_MOTOR,PSTR("Potencia"),0,0);snprintf_P(text,sizeof(text),PSTR("Valor: %u /255"),((uint16_t)percent*255u+50u)/100u);Afr2Oled_Text(o,0,15,text,AFR2_WHITE);
     Afr2Component_Progress(o,30,1,percent,0);
     snprintf_P(text,sizeof(text),PSTR("%u%%"),percent);Afr2Oled_Text(o,52,43,text,AFR2_WHITE);Afr2Icon_Draw(o,AFR2_ICON_ENCODER_TURN,0,47,16);
 }
-/* AFR2-20261030-01: AutoMicro dashboard adapted to Mega data and one encoder.
- * Pure layout; original reference author kobac, new AVR layout/resources AFR2.
- * Voltage bands match the Web battery pill, not chemistry/charge estimates. */
-/* AFR2-20261102-05: OLED128-5 panels and clipped current-mode marquee.
- * SSID/IP remain available in network details and the two runtime QR views. */
-static void render_dashboard(Afr2Ui *u,Afr2Oled *o,const Afr2UiSnapshot *s,uint8_t partial) {
-    (void)partial;char title[18],voltage[8];Afr2Oled_Clear(o);strcpy_P(title,PSTR("AutoFinal"));
-    Afr2Component_Header(o,AFR2_ICON_CONFIG,title,0,0);
-    Afr2Component_Panel(o,0,17,76,32);Afr2Component_Panel(o,80,17,48,32);
-    uint16_t mv=s->battery_mv;uint8_t battery=s->battery_valid?AFR2_ICON_BATTERY_EMPTY+(mv==0?0:mv<6000?1:mv<7000?2:mv<8000?3:4):AFR2_ICON_BATTERY_UNKNOWN;
-    Afr2Icon_Draw(o,battery,5,19,12);TXT(o,21,20,"Bateria");
-    if(s->battery_valid)snprintf_P(voltage,sizeof(voltage),PSTR("%u.%u"),s->battery_mv/1000u,(s->battery_mv%1000u)/100u);else strcpy_P(voltage,PSTR("--"));
-    Afr2Component_Metric(o,7,32,voltage);TXT(o,61,35,"V");
-    const char *mode=s->lines[0][0]?s->lines[0]:"--";if(!strncmp(mode,"Modo: ",6))mode+=6;
-    Afr2Oled_TextWindow(o,84,124,21,mode,Afr2Ui_TextOffset(mode,40,u->clock_ms-u->scroll_started_ms),AFR2_WHITE);
-    uint8_t connected=s->network_valid && (s->network_sta || s->network_ap);
-    Afr2Icon_Draw(o,!connected?AFR2_ICON_WIFI_OFF:s->network_sta?AFR2_ICON_WIFI:AFR2_ICON_AP,84,34,12);
-    if(connected){if(s->network_sta){TXT(o,100,36,"STA");}else {TXT(o,100,36,"AP");}}else {TXT(o,100,36,"--");}
-    Afr2Ui_GestureHint(o,0,52,0,PSTR("Menu"));Afr2Ui_GestureHint(o,62,52,1,PSTR("Rapidas"));
-}
 void Afr2Ui_Render(Afr2Ui *u,Afr2Oled *o,const Afr2UiSnapshot *s) {
+    if(u->node==AFR2_N_HOME && !u->notices && !u->touch_active){
+        if(Afr2Dashboard_Render(u,o,s)){++u->revision;if(!u->revision)++u->revision;}
+        u->redraw=false;u->scroll_redraw=false;return;
+    }
+    u->dashboard.valid=0;
     if(u->touch_active) {
         render_touch(u,o);++u->revision;if(!u->revision)++u->revision;
         u->redraw=false;u->scroll_redraw=false;return;
@@ -544,8 +534,6 @@ void Afr2Ui_Render(Afr2Ui *u,Afr2Oled *o,const Afr2UiSnapshot *s) {
             Afr2Oled_Text(o,0,25,a->title,AFR2_WHITE);Afr2Oled_Text(o,0,39,a->text,AFR2_WHITE);
             Afr2Ui_GestureHint(o,0,53,0,PSTR("Cerrar"));Afr2Ui_GestureHint(o,66,53,1,PSTR("Cerrar"));
         }
-    } else if(u->node==AFR2_N_HOME){
-        render_dashboard(u,o,s,partial);
     } else if(u->node==AFR2_N_QUICK)render_quick(u,o,s);
     else if(u->node==AFR2_N_ENCODER_TEST){
         TXT(o,0,0,"Prueba encoder");Afr2Ui_GestureHint(o,0,14,2,PSTR("Elegir Volver"));
@@ -555,18 +543,18 @@ void Afr2Ui_Render(Afr2Ui *u,Afr2Oled *o,const Afr2UiSnapshot *s) {
     }
     else if(u->node==AFR2_N_POWER){if(u->power_known)Afr2Power_Render(o,u->power_percent);else {TXT(o,0,0,"Potencia manual");TXT(o,0,25,"Sin valor vigente");}}
     else if(u->node==AFR2_N_WIFI_MODE_SELECT){
-        TXT(o,0,0,"Cambiar modo");TXT(o,0,14,"Opciones de modos");TXT(o,3,28,"STA");TXT(o,45,28,"AP");TXT(o,80,28,"AP-STA");
+        Afr2Component_HeaderFlash(o,AFR2_ICON_WIFI,PSTR("Cambiar modo"),0,0);TXT(o,0,16,"Opciones de modos");TXT(o,3,28,"STA");TXT(o,45,28,"AP");TXT(o,80,28,"AP-STA");
         Afr2Oled_FillRect(o,u->selection==0?0:u->selection==1?40:78,40,u->selection==2?49:31,2,AFR2_WHITE);
         Afr2Ui_GestureHint(o,0,53,0,PSTR("Elegir"));Afr2Ui_GestureHint(o,66,53,1,PSTR("Volver"));
     }
     else if(u->node==AFR2_N_WIFI_DATA){
-        TXT(o,0,0,"Datos de red");if(s->labels[0][0])Afr2Oled_TextWindow(o,0,128,14,s->labels[0],Afr2Ui_TextOffset(s->labels[0],128,u->clock_ms-u->scroll_started_ms),AFR2_WHITE);else {TXT(o,0,14,"Sin datos actuales");}
+        Afr2Component_HeaderFlash(o,AFR2_ICON_WIFI,PSTR("Datos de red"),0,0);if(s->labels[0][0])Afr2Oled_TextWindow(o,0,128,16,s->labels[0],Afr2Ui_TextOffset(s->labels[0],128,u->clock_ms-u->scroll_started_ms),AFR2_WHITE);else {TXT(o,0,16,"Sin datos actuales");}
         if(s->labels[1][0]){Afr2Oled_TextWindow(o,0,128,28,s->labels[1],Afr2Ui_TextOffset(s->labels[1],128,u->clock_ms-u->scroll_started_ms),AFR2_WHITE);Afr2Oled_TextWindow(o,0,128,40,s->labels[2],Afr2Ui_TextOffset(s->labels[2],128,u->clock_ms-u->scroll_started_ms),AFR2_WHITE);}else Afr2Oled_Text(o,0,28,s->lines[1],AFR2_WHITE);if(s->row_security[0]>=2)Afr2Icon_Draw(o,AFR2_ICON_LOCK,0,39,12);Afr2Oled_Text(o,s->row_security[0]>=2?14:0,40,s->lines[2],AFR2_WHITE);
         Afr2Ui_GestureHint(o,0,53,0,PSTR("Volver"));Afr2Ui_GestureHint(o,66,53,1,PSTR("Volver"));
     }
     else if(u->node==AFR2_N_ENCODER_VIEW){
-        TXT(o,0,0,"Estado encoder");
-        for(uint8_t i=0;i<3;i++){Afr2Icon_Draw(o,i==0?AFR2_ICON_ENCODER_TURN:i==1?AFR2_ICON_ENCODER:AFR2_ICON_ENCODER_LONG,0,11+13*i,13);Afr2Oled_Text(o,16,14+13*i,s->lines[i],AFR2_WHITE);}
+        Afr2Component_HeaderFlash(o,AFR2_ICON_ENCODER,PSTR("Estado encoder"),0,0);
+        for(uint8_t i=0;i<3;i++){Afr2Icon_Draw(o,i==0?AFR2_ICON_ENCODER_TURN:i==1?AFR2_ICON_ENCODER:AFR2_ICON_ENCODER_LONG,0,16+12*i,10);Afr2Oled_Text(o,14,16+12*i,s->lines[i],AFR2_WHITE);}
         Afr2Ui_GestureHint(o,0,53,1,PSTR("Volver"));
     }
     else if(u->node==AFR2_N_CAPS)render_caps(u,o,s);
@@ -579,35 +567,31 @@ void Afr2Ui_Render(Afr2Ui *u,Afr2Oled *o,const Afr2UiSnapshot *s) {
     else if(u->edit && u->editing.action==AFR2_A_WHEEL)Afr2MotorSelector_Render(o,(uint8_t)u->draft);
     else if(u->edit && u->editing.action==AFR2_A_POWER)Afr2Power_Render(o,(uint8_t)u->draft);
     else if(u->edit) {
-        char value[18];Afr2Oled_Text(o,0,0,u->editing.label,AFR2_WHITE);
-        snprintf(value,sizeof(value),"%ld",(long)u->draft);Afr2Oled_Text(o,0,13,value,AFR2_WHITE);Afr2Ui_GestureHint(o,0,26,2,PSTR("Ajustar"));
+        char value[18];Afr2Component_Header(o,AFR2_ICON_CONFIG,u->editing.label,0,0);
+        snprintf(value,sizeof(value),"%ld",(long)u->draft);Afr2Oled_Text(o,0,16,value,AFR2_WHITE);Afr2Ui_GestureHint(o,0,28,2,PSTR("Ajustar"));
         Afr2Ui_GestureHint(o,0,40,0,PSTR("Aplicar"));Afr2Ui_GestureHint(o,0,53,1,PSTR("Descartar"));
     } else {
         if(!partial) {
-            if(!n.view)Afr2Component_Header(o,AFR2_ICON_CONFIG,u->node==AFR2_N_WIFI_VIEW && s->lines[0][0]?s->lines[0]:n.title,0,0);
-            else Afr2Oled_Text(o,0,0,n.title,AFR2_WHITE);
-            if(n.view){for(uint8_t j=0;j<3;j++)Afr2Oled_Text(o,0,13+j*12,s->lines[j],AFR2_WHITE);}
+            Afr2Component_Header(o,Afr2Menu_Icon(u->node,u->node,0,n.title),u->node==AFR2_N_WIFI_VIEW && s->lines[0][0]?s->lines[0]:n.title,0,0);
+            if(n.view){for(uint8_t j=0;j<3;j++)Afr2Oled_Text(o,0,16+j*12,s->lines[j],AFR2_WHITE);}
         }
         uint8_t count=n.view?1:3;
         for(uint8_t row=0;row<count && u->firstVisible+row<n.count;row++) {
             Afr2MenuItem item;Afr2Ui_MenuItem(u,u->firstVisible+row,&item);
             uint8_t selected=u->firstVisible+row==u->selection;
             if(partial && !selected)continue;
+            if(n.view && !strncmp(item.label,"Volver",6)){if(!partial)Afr2Ui_GestureHint(o,94,52,1,PSTR("Volver"));continue;}
             uint8_t y=n.view?52:(16+16*row),left=n.view?16:23,top=n.view?y:y+3;
             if(!partial) {
-                Afr2Icon_Draw(o,!strncmp(item.label,"Volver",6)?AFR2_ICON_ENCODER_LONG:Afr2Menu_Icon(u->node,item.target,item.action,item.label),n.view?0:3,n.view?51:y,n.view?12:16);
+                Afr2Icon_Draw(o,Afr2Menu_Icon(u->node,item.target,item.action,item.label),n.view?0:3,n.view?51:y,n.view?12:16);
                 
                 if(!(u->node==AFR2_N_WIFI_NETWORKS && s->row_security[row]>=2))Afr2Oled_Text(o,120,top,selected?(s->disabled[row]?"!":(!strncmp(item.label,"Volver",6)?" ":">")):(s->disabled[row]?"!":" "),AFR2_WHITE);
             }
             uint8_t right=(u->node==AFR2_N_WIFI_NETWORKS && s->row_security[row]>=2)?108:118;
             if(right==108)Afr2Icon_Draw(o,AFR2_ICON_LOCK,111,top,10);
             const char *label=s->labels[row][0]?s->labels[row]:item.label;
-            if(!strncmp(item.label,"Volver",6)){
-                if(!partial)Afr2Icon_Draw(o,AFR2_ICON_BACK,left,top-1,13);
-            }else {
-                Afr2Oled_FillRect(o,left,top,right-left,10,partial && selected && !n.view?AFR2_WHITE:AFR2_BLACK);
-                Afr2Oled_TextWindow(o,left,right,top,label,selected?Afr2Ui_TextOffset(label,right-left,u->clock_ms-u->scroll_started_ms):0,partial && selected && !n.view?AFR2_BLACK:AFR2_WHITE);
-            }
+            Afr2Oled_FillRect(o,left,top,right-left,10,partial && selected && !n.view?AFR2_WHITE:AFR2_BLACK);
+            Afr2Oled_TextWindow(o,left,right,top,label,selected?Afr2Ui_TextOffset(label,right-left,u->clock_ms-u->scroll_started_ms):0,partial && selected && !n.view?AFR2_BLACK:AFR2_WHITE);
             if(!partial && selected && !n.view)Afr2Oled_FillRect(o,0,y,128,16,AFR2_INVERT);
         }
     }

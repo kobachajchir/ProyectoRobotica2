@@ -1,0 +1,173 @@
+{
+  "project": "AutoFinalRobo2 - Robotica II",
+  "author": "Koba Chajchir",
+  "date": "02/11/2026",
+  "source": "Brazo v17 / captura nativa 02-11-2026",
+  "layout": "ortogonales izquierda / render adaptable / notas inferiores izquierda / rotulo inferior derecha",
+  "sheets": [
+    {
+      "code": "AFR2-A000",
+      "title": "Brazo completo y sus subconjuntos",
+      "kind": "general",
+      "render": "D:\\ProyectoRobotica2\\AutoFinalRobo2-CAD\\mecanica\\brazo-antropomorfo\\revision_v17\\laminas_20261102\\renders\\AFR2-A000.png",
+      "render_cards": [
+        {
+          "code": "AFR2-A100",
+          "title": "Montura y control fijo",
+          "render": "D:\\ProyectoRobotica2\\AutoFinalRobo2-CAD\\mecanica\\brazo-antropomorfo\\revision_v17\\laminas_20261102\\renders\\AFR2-A100-FICHA.png",
+          "roots": [
+            "00_Base_control"
+          ],
+          "solid_instances": 75
+        },
+        {
+          "code": "AFR2-A200",
+          "title": "Giro J1, torre y entrada J2",
+          "render": "D:\\ProyectoRobotica2\\AutoFinalRobo2-CAD\\mecanica\\brazo-antropomorfo\\revision_v17\\laminas_20261102\\renders\\AFR2-A200-FICHA.png",
+          "roots": [
+            "01_Giro_base",
+            "09_Pinion_hombro"
+          ],
+          "solid_instances": 102
+        },
+        {
+          "code": "AFR2-A300",
+          "title": "Eslabon y accionamiento remoto J3",
+          "render": "D:\\ProyectoRobotica2\\AutoFinalRobo2-CAD\\mecanica\\brazo-antropomorfo\\revision_v17\\laminas_20261102\\renders\\AFR2-A300-FICHA.png",
+          "roots": [
+            "02_Brazo_PVC",
+            "12_Polea_entrada_J3"
+          ],
+          "solid_instances": 96
+        },
+        {
+          "code": "AFR2-A400",
+          "title": "Antebrazo y giro de muneca J4",
+          "render": "D:\\ProyectoRobotica2\\AutoFinalRobo2-CAD\\mecanica\\brazo-antropomorfo\\revision_v17\\laminas_20261102\\renders\\AFR2-A400-FICHA.png",
+          "roots": [
+            "03_Antebrazo_PVC",
+            "04_Giro_muneca",
+            "11_Pinion_J4"
+          ],
+          "solid_instances": 91
+        },
+        {
+          "code": "AFR2-A500",
+          "title": "Inclinacion J5 y soporte J6",
+          "render": "D:\\ProyectoRobotica2\\AutoFinalRobo2-CAD\\mecanica\\brazo-antropomorfo\\revision_v17\\laminas_20261102\\renders\\AFR2-A500-FICHA.png",
+          "roots": [
+            "05_Inclinacion_muneca"
+          ],
+          "solid_instances": 33
+        },
+        {
+          "code": "AFR2-A600",
+          "title": "Herramienta y pinza V7",
+          "render": "D:\\ProyectoRobotica2\\AutoFinalRobo2-CAD\\mecanica\\brazo-antropomorfo\\revision_v17\\laminas_20261102\\renders\\AFR2-A600-FICHA.png",
+          "roots": [
+            "06_Herramienta",
+            "07_Mandibula_izquierda",
+            "08_Mandibula_derecha",
+            "10_Pinion_pinza"
+          ],
+          "solid_instances": 28
+        }
+      ],
+      "cards_title": "SUBCONJUNTOS DEL BRAZO",
+      "main_label": "BRAZO COMPLETO",
+      "revision": "C",
+      "material": "Conjunto mixto",
+      "notes": [
+        "Ficha visual del brazo con sus seis subconjuntos funcionales.",
+        "Los grupos incluyen todas las425 instancias de solidos de la captura; no son piezas comerciales contadas.",
+        "Esta ficha no sustituye los planos individuales; solo seis piezas tienen hoja preliminar en esta tanda."
+      ]
+    },
+    {
+      "code": "AFR2-R000",
+      "title": "Robot integrado y conjuntos del auto",
+      "kind": "general",
+      "render": "D:\\ProyectoRobotica2\\AutoFinalRobo2-CAD\\mecanica\\brazo-antropomorfo\\revision_v17\\laminas_20261102\\renders\\AFR2-R000-ROBOT-COMPLETO.png",
+      "render_cards": [
+        {
+          "code": "AFR2-C100",
+          "title": "Chasis, separadores y fijaciones",
+          "render": "D:\\ProyectoRobotica2\\AutoFinalRobo2-CAD\\mecanica\\brazo-antropomorfo\\revision_v17\\laminas_20261102\\renders\\AFR2-C100-FICHA.png",
+          "source_objects": [
+            "FICHA_FINAL_RAW_Separadores_Montaje:1",
+            "FICHA_FINAL_RAW_Fijaciones_Placas:1",
+            "FICHA_FINAL_RAW_CapaInferior",
+            "FICHA_FINAL_RAW_CapaSuperior"
+          ]
+        },
+        {
+          "code": "AFR2-C200",
+          "title": "Traccion: motores, ruedas y soportes",
+          "render": "D:\\ProyectoRobotica2\\AutoFinalRobo2-CAD\\mecanica\\brazo-antropomorfo\\revision_v17\\laminas_20261102\\renders\\AFR2-C200-FICHA.png",
+          "source_objects": [
+            "FICHA_FINAL_RAW_GM25_370:1",
+            "FICHA_FINAL_RAW_Soportes_Motores_Referencia:1",
+            "FICHA_FINAL_RAW_Rueda80_ManoA:1",
+            "FICHA_FINAL_RAW_Rueda80_ManoB:1",
+            "FICHA_FINAL_RAW_Prisioneros_Ruedas:1",
+            "FICHA_FINAL_RAW_Casquillos_Ruedas_6a4_Referencia:1",
+            "FICHA_FINAL_RAW_GM25_370:2",
+            "FICHA_FINAL_RAW_GM25_370:3",
+            "FICHA_FINAL_RAW_GM25_370:4",
+            "FICHA_FINAL_RAW_Rueda80_ManoA:2",
+            "FICHA_FINAL_RAW_Rueda80_ManoB:2"
+          ]
+        },
+        {
+          "code": "AFR2-C300",
+          "title": "Control: Mega, Wi-Fi y Model Y",
+          "render": "D:\\ProyectoRobotica2\\AutoFinalRobo2-CAD\\mecanica\\brazo-antropomorfo\\revision_v17\\laminas_20261102\\renders\\AFR2-C300-FICHA.png",
+          "source_objects": [
+            "FICHA_FINAL_RAW_OSOYOOWifiShield:1",
+            "FICHA_FINAL_RAW_Mega2560_CAD:1",
+            "FICHA_FINAL_RAW_OSOYOOMotorDriver_ModelY_V2:1"
+          ]
+        },
+        {
+          "code": "AFR2-C400",
+          "title": "Alimentacion y voltimetro",
+          "render": "D:\\ProyectoRobotica2\\AutoFinalRobo2-CAD\\mecanica\\brazo-antropomorfo\\revision_v17\\laminas_20261102\\renders\\AFR2-C400-FICHA.png",
+          "source_objects": [
+            "FICHA_FINAL_RAW_Celda_18650:1",
+            "FICHA_FINAL_RAW_Portabaterias_SinCableExterior:1",
+            "FICHA_FINAL_RAW_Voltimetro_Referencia:1",
+            "FICHA_FINAL_RAW_Celda_18650:2"
+          ]
+        },
+        {
+          "code": "AFR2-C500",
+          "title": "Sensores, servo y soporte frontal",
+          "render": "D:\\ProyectoRobotica2\\AutoFinalRobo2-CAD\\mecanica\\brazo-antropomorfo\\revision_v17\\laminas_20261102\\renders\\AFR2-C500-FICHA.png",
+          "source_objects": [
+            "FICHA_FINAL_RAW_SG90:1",
+            "FICHA_FINAL_RAW_SensorLinea_5IR:1",
+            "FICHA_FINAL_RAW_HC_SR04:1",
+            "FICHA_FINAL_RAW_Soporte_HCSR04_Referencia:1"
+          ]
+        },
+        {
+          "code": "AFR2-C600",
+          "title": "Panel OLED y mando local",
+          "render": "D:\\ProyectoRobotica2\\AutoFinalRobo2-CAD\\mecanica\\brazo-antropomorfo\\revision_v17\\laminas_20261102\\renders\\AFR2-C600-FICHA.png",
+          "source_objects": [
+            "FICHA_FINAL_RAW_AFR2_UI_B2_Fondo_OLED15_Auto5:1"
+          ]
+        }
+      ],
+      "cards_title": "SUBCONJUNTOS DEL AUTO",
+      "main_label": "AUTO CON BRAZO",
+      "revision": "C",
+      "material": "Conjunto mixto",
+      "notes": [
+        "Auto base desde el modelo editable20261025 y brazo desde la captura20261102.",
+        "Renders agrupados por funcion; no se modifico el CAD ni se realizo una nueva comprobacion de montaje.",
+        "Los subconjuntos mostrados no implican que sus planos de fabricacion esten terminados."
+      ]
+    }
+  ]
+}

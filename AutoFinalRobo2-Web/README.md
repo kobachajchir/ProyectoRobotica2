@@ -295,3 +295,15 @@ Fuente adaptada con Web/ATmega/ESP: overlay scrim+blur en modales, Volver por í
 ## AFR2-20261102-05 — Ayuda OLED
 
 Ayuda → OLED abre Simular flujo con datos ficticios y mantiene Biblioteca sin datos como alternativa. Reutiliza el reductor UI y el dibujo AVR portado; navegar conserva contexto y ajustes locales. Nuevos QR030045/030046 están en Wi-Fi. En el auto usan SSID/clave/IP reales; los ejemplos Web son ficticios. Detalles en Contracts/contracts/OLED_RUNTIME_QR_20261102.md. Sin tests/build/validadores/navegador/promoción ESP de esta entrega.
+
+## AFR2-20261102-11 — OLED blanca y dashboard original
+
+La copia AVR/Web vuelve a SSID/IP y batería en cabecera invertida, modo centrado y accesos inferiores. Submenús: flecha anterior16px + Volver, sin icono del encoder en la fila. El canvas compartido usa blanco sobre negro; el resto de ayudas y QR se conserva. Solo fuentes y copia de metadatos, sin tests/build/validadores/navegador/promoción.
+
+## AFR2-20261102-14 — Dashboard OLED de estados
+
+`dashboardRenderer.ts` replica la tarjeta informativa del Mega, con inactividad3s, permanencia4s y fallo fijo. El simulador transmite también SW mantenido; conserva el frame del dashboard cuando no hay cambios. Cabeceras/iconos/contadores/editor/retorno/confirmaciones se alinean con AVR. Visor remoto conserva bytes reales; no se promueve paquete ESP. Contrato en Contracts/contracts/OLED_DASHBOARD_STATUS_20261102.md. Sin tests/build/validadores/navegador/cargas.
+
+## Lenguaje visual compartido — AFR2-20261102-15
+
+Toda la interfaz recibe la presentación de Infraestructura desde styles/visual-language.css, tokens --visual-* y las primitivas PageHeader/Button/Field. Incluye cabeceras por capas, tarjetas sólidas, acentos de contexto, radios, espacios y feedback visual. Lógica, navegación, controles, datos, escenas 3D y píxeles OLED conservados. Fuente sin compilar ni comprobar en navegador; sin tests, validadores o promoción ESP. [Ficha](../AutoFinalRobo2-Contracts/changes/2026-11-02-15-web-infrastructure-visual-language.md).

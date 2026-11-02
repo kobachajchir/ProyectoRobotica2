@@ -75,6 +75,7 @@ int main(void) {
         if(rotary_drained && now!=sampled) {
             sampled=now;levels=Afr2Board_EncoderLevels();
             Afr2UiInput input=Afr2EncoderUi_Button(&encoder,(levels&4)!=0,now);
+            Afr2Ui_InputHeld(&ui,encoder.raw_pressed || encoder.stable_pressed,now);
             if(input.rotation || input.click || input.menu)app.snapshot_active=0; /* Local input wins over remote capture. */
             Afr2Ui_Apply(&ui,input);
         }

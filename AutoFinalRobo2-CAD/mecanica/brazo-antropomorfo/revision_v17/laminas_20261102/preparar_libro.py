@@ -32,7 +32,15 @@ for p in d['parts']:
   if v['title']=='PERFIL IZQUIERDO':v['bounds']=[-bb[a+3],bb[b],-bb[a],bb[b+3]]
  diameters=sorted(set(round(x['diameter_mm'],3) for x in p['cylinders']))
  sheets.append({'code':p['code'],'title':p['title'],'kind':'part','component':p['component'],'render':str(H/'renders'/p['render']),'views':p['views'],'diameters':diameters,'mass_note':'Masa CAD estimada: %.2f g; densidad %.2f g/cm3. Cantidad en el brazo: %s.'%(p['volume_cm3']*rho,rho,info['occurrences']), 'material':'PLA blanco PrintALot / FDM' if printed else 'Acero / proceso pendiente','notes':['Cotas en mm desde BRep; contornos visibles y ocultos derivados de geometria nativa.','Acotado envolvente preliminar. Faltan datums, posiciones de agujeros, cortes y ajustes funcionales.','Los diametros listados son superficies cilindricas; no indican cantidad de perforaciones.']})
-for sheet in sheets:sheet['revision']='B'
+if (H/'fichas_conjuntos.json').exists():
+ fichas=json.loads((H/'fichas_conjuntos.json').read_text(encoding='utf-8'))
+ sheets[0]={'code':'AFR2-A000','title':'Brazo completo y sus subconjuntos','kind':'general','render':fichas['arm_render'],'render_cards':fichas['arm_cards'],'cards_title':'SUBCONJUNTOS DEL BRAZO','main_label':'BRAZO COMPLETO','revision':'C','material':'Conjunto mixto','notes':['Ficha visual del brazo con sus seis subconjuntos funcionales.','Los grupos incluyen todas las425 instancias de solidos de la captura; no son piezas comerciales contadas.','Esta ficha no sustituye los planos individuales; solo seis piezas tienen hoja preliminar en esta tanda.']}
+ sheets.insert(1,{'code':'AFR2-R000','title':'Robot integrado y conjuntos del auto','kind':'general','render':fichas['robot_render'],'render_cards':fichas['car_cards'],'cards_title':'SUBCONJUNTOS DEL AUTO','main_label':'AUTO CON BRAZO','revision':'C','material':'Conjunto mixto','notes':['Auto base desde el modelo editable20261025 y brazo desde la captura20261102.','Renders agrupados por funcion; no se modifico el CAD ni se realizo una nueva comprobacion de montaje.','Los subconjuntos mostrados no implican que sus planos de fabricacion esten terminados.']})
+for sheet in sheets:sheet.setdefault('revision','B')
+if (H/'llamadas_cortas.json').exists():
+ locales=json.loads((H/'llamadas_cortas.json').read_text(encoding='utf-8'))
+ for sheet in sheets:
+  if sheet['kind']=='exploded' and sheet['code'] in locales:sheet['local_balloons']=locales[sheet['code']]
 book={'project':'AutoFinalRobo2 - Robotica II','author':'Koba Chajchir','date':'02/11/2026','source':'Brazo v17 / captura nativa 02-11-2026','layout':'ortogonales izquierda / render adaptable / notas inferiores izquierda / rotulo inferior derecha','sheets':sheets}
 (H/'libro.json').write_text(json.dumps(book,indent=2),encoding='utf-8')
 with (H/'BOM_A500.csv').open('w',encoding='utf-8-sig',newline='') as fp:

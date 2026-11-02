@@ -16,7 +16,7 @@ Excepciones: el diálogo `0x030038` exige Sí o No y no admite largo. Hall selec
 
 ## Radar y servo
 
-`0x03003b`: opciones Alcance del gráfico / Ángulo del servo. `0x03003c`:4/2/1/0.5m. Los índices0/1/2/3 corresponden a4000/2000/1000/500mm, valor inicial0. El selector modifica RAM al confirmar con corto. Largo sin confirmar conserva el valor anterior. Cambiar escala nunca altera timeout, validez o rango nominal del HC-SR04.
+`0x03003b`: opciones Alcance del gráfico / Ángulo del servo. **Vigente AFR2-20261102-18:** `0x03003c` ofrece 2 m / 1 m / 50 cm / 25 cm; índices0/1/2/3 = 2000/1000/500/250 mm, valor inicial0. Sustituye escalas anteriores4/2/1/0.5m. [Contrato actual](RADAR_SCALES_20261102.md). El selector modifica RAM al confirmar con corto. Largo sin confirmar conserva el valor anterior. Cambiar escala nunca altera timeout, validez o rango nominal del HC-SR04.
 
 Proyección proporcional por distancia/rango, marcadores rellenos de radio2px para legibilidad; no se infiere tamaño físico de un objeto a partir del eco. Fuera de escala no se dibuja un punto en el borde: el radar conserva distancia numérica e indica `>esc`. Referencias en cm, con decimales exactos si corresponden, en los mismos glifos compactos existentes. El cono nominal existente de15grados totales es una representación aproximada; no es una calibración del haz ni se calcula desde el ancho del auto.
 

@@ -76,6 +76,8 @@ export function Button({
     <button
       type="button"
       disabled={isDisabled}
+      data-variant={variant}
+      data-size={size}
       className={`afr2-pressable inline-flex items-center justify-center border font-semibold select-none ${sizeClass} ${
         isDisabled ? 'cursor-not-allowed' : 'cursor-pointer'
       } ${className}`.trim()}

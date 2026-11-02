@@ -10,10 +10,18 @@ void Afr2Component_Header(Afr2Oled *o,uint8_t icon,const char *title,uint8_t pag
     if(count){snprintf_P(counter,sizeof(counter),PSTR("%u/%u"),page,count);right=126-strlen(counter)*7;Afr2Oled_Text(o,right,2,counter,AFR2_WHITE);right-=4;}
     Afr2Oled_TextWindow(o,20,right,2,title,0,AFR2_WHITE);Afr2Oled_FillRect(o,0,0,128,14,AFR2_INVERT);
 }
+void Afr2Component_HeaderFlash(Afr2Oled *o,uint8_t icon,const char *title,uint8_t page,uint8_t count){
+    char text[18];strncpy_P(text,title,sizeof(text)-1);text[sizeof(text)-1]=0;Afr2Component_Header(o,icon,text,page,count);
+}
 void Afr2Component_Panel(Afr2Oled *o,uint8_t x,uint8_t y,uint8_t w,uint8_t h){
     for(uint8_t r=0;r<h;r++){uint8_t edge=r<h-1-r?r:h-1-r,inset=edge<2?2-edge:0;
         if(!r || r==h-1)Afr2Oled_FillRect(o,x+inset,y+r,w-2*inset,1,AFR2_WHITE);
         else {Afr2Oled_Pixel(o,x+inset,y+r,AFR2_WHITE);Afr2Oled_Pixel(o,x+w-inset-1,y+r,AFR2_WHITE);}}
+}
+void Afr2Component_RoundedPanel(Afr2Oled *o,uint8_t x,uint8_t y,uint8_t w,uint8_t h){
+    for(uint8_t row=0;row<h;row++){uint8_t edge=row<h-row-1?row:h-row-1,inset=edge==0?3:edge==1?1:0;
+        if(!edge)Afr2Oled_FillRect(o,x+inset,y+row,w-2*inset,1,AFR2_WHITE);
+        else {Afr2Oled_Pixel(o,x+inset,y+row,AFR2_WHITE);Afr2Oled_Pixel(o,x+w-inset-1,y+row,AFR2_WHITE);}}
 }
 void Afr2Component_Progress(Afr2Oled *o,uint8_t y,uint8_t known,uint8_t percent,uint32_t clock){
     Afr2Oled_FillRect(o,2,y,124,8,AFR2_BLACK);Afr2Oled_Rect(o,2,y,124,8,AFR2_WHITE);

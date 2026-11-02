@@ -133,3 +133,49 @@
   .afr2-radar-zone-label,.afr2-radar-empty {background:var(--surface-solid);border-color:var(--border-strong)}
 }
 
+/* AFR2-20261102-18: manual 0.1.11, instrumento sólido con jerarquía de datos y zonas. */
+.afr2-radar-map { border-radius: var(--radius-xl); background: var(--surface-solid); border: 1px solid var(--border-default); }
+.afr2-radar-map .afr2-control-map__heading { padding: 24px; gap: 20px; }
+.afr2-radar-map .afr2-control-map__heading h2 { font: var(--type-title); letter-spacing: var(--type-title-tracking); }
+.afr2-radar-map .afr2-kicker { color: var(--action); font: var(--type-label); }
+.afr2-radar-map .afr2-kicker svg { width: 24px; height: 24px; }
+.afr2-radar-health { display: grid; justify-items: end; gap: 8px; }
+.afr2-radar-scale-badge { font: var(--type-caption); color: var(--text-muted); font-variant-numeric: tabular-nums; }
+.afr2-radar-map .afr2-control-map__toolbar { padding: 16px 24px; background: var(--surface-subtle); border-top: 1px solid var(--border-subtle); }
+.afr2-radar-toolgroup > span { font: var(--type-label); color: var(--text-muted); }
+.afr2-radar-viewport { border-top: 1px solid var(--border-subtle); min-height: 34rem; }
+.afr2-radar-zone-label { border-radius: var(--radius-lg); background: var(--surface-solid); padding: 10px 14px; box-shadow: var(--workspace-card-shadow); }
+.afr2-radar-zone-label > span, .afr2-radar-bearing > span, .afr2-radar-empty strong { font: var(--type-label); }
+.afr2-radar-zone-label strong { font: var(--type-subheading); }
+.afr2-radar-empty { background: var(--surface-solid); border-radius: var(--radius-lg); padding: 16px; }
+.afr2-radar-empty span, .afr2-radar-bearing small { font: var(--type-caption); }
+.afr2-radar-viewport .afr2-map-caption { font: var(--type-caption); padding: 10px 14px; background: var(--surface-solid); border: 1px solid var(--border-subtle); border-radius: var(--radius-pill); }
+.afr2-radar-sidebar { padding: 24px; gap: 24px; background: var(--surface-solid); }
+.afr2-radar-overview { padding: 20px; border: 1px solid var(--border-default); border-radius: var(--radius-xl); background: var(--surface-subtle); }
+.afr2-radar-eyebrow { display: flex; align-items: center; gap: 8px; font: var(--type-label); }
+.afr2-radar-eyebrow svg { color: var(--action); }
+.afr2-radar-distance { margin-top: 16px; }
+.afr2-radar-distance > strong { font-size: clamp(2.75rem, 4vw, 3.5rem); letter-spacing: var(--type-data-tracking); }
+.afr2-radar-reading-state { font: var(--type-caption); margin: 12px 0 20px; }
+.afr2-radar-secondary > div > span { font: var(--type-caption); }
+.afr2-radar-secondary strong { font: var(--type-data); }
+.afr2-radar-switch { padding: 20px; border: 1px solid var(--border-default); border-radius: var(--radius-lg); }
+.afr2-radar-switch strong { font: var(--type-subheading); }
+.afr2-radar-switch .afr2-help, .afr2-radar-diagnostics dl > div, .afr2-radar-footer { font: var(--type-caption); }
+.afr2-radar-diagnostics .afr2-disclosure > summary { font: var(--type-label); }
+.afr2-radar-footer { padding: 16px 24px; background: var(--surface-subtle); }
+@media (max-width: 1199.98px) {
+  .afr2-radar-viewport { min-height: 26rem; height: clamp(26rem, 55vw, 34rem); }
+}
+@media (max-width: 599.98px) {
+  .afr2-radar-map .afr2-control-map__heading { padding: 20px 16px; align-items: flex-start; }
+  .afr2-radar-health { justify-items: start; }
+  .afr2-radar-map .afr2-control-map__toolbar { padding: 16px; }
+  .afr2-radar-toolgroup { flex-wrap: wrap; gap: 8px; }
+  .afr2-radar-viewport { min-height: 24rem; height: 24rem; }
+  .afr2-radar-sidebar { padding: 16px; gap: 20px; }
+  .afr2-radar-zone-label { gap: 8px; left: 12px; top: 12px; }
+  .afr2-radar-bearing { right: 12px; }
+  .afr2-radar-viewport .afr2-map-caption { left: 12px; right: 12px; font: var(--type-caption); }
+}
+

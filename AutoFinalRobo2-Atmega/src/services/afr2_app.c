@@ -432,6 +432,8 @@ void Afr2App_UiSnapshot(Afr2App *a,Afr2UiSnapshot *s) {
     Afr2Product *p=a->product;Afr2Ui *u=a->ui;memset(s,0,sizeof(*s));
     s->sensor_now_ms=p->now;s->head=Afr2Head_State();s->ir_kind=p->config.line_kind;s->ir_valid=s->head->ir_valid;memcpy(s->ir_raw,p->sensors.line_raw,sizeof(s->ir_raw));
     s->radar_range=p->config.radar_range;s->radar_trace=p->config.radar_trace;
+    s->dashboard_valid=1;s->dashboard_mode=p->mode;s->dashboard_moving=!p->stopped;
+    s->dashboard_fault=p->fault || p->mode==AFR2_FAULT;
     s->quick_flags=(s->head->running?1u:0u)|(s->head->enabled?2u:0u)|(p->config.motor_ready?4u:0u)|((p->mode==AFR2_LINE && !p->stopped)?8u:0u)|(p->config.radar_trace?16u:0u);
     s->line_valid=p->sensors.line_valid;s->line_bits=p->sensors.line_bits;
     s->ultrasonic_valid=p->sensors.ultrasonic_valid;s->ultrasonic_mm=p->sensors.distance_mm;

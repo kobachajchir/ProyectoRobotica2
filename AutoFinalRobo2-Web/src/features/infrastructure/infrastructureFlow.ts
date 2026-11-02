@@ -83,11 +83,16 @@ export const JOURNEYS: Record<Journey, FlowStep[]> = {
       source: 'CAD/docs/MODELO_FINAL_WEB_20261025.md · CAD/mecanica/auto-completo/fusion_exportar_final.py',
     },
     {
-      title: 'Preparar en Blender', short: 'Escena y copia visual', place: 'En la computadora', icon: 'cube',
-      input: 'Mallas e instancias de Fusion', output: 'Escena .blend lista para exportar',
-      description: 'Blender reconstruye la escena a partir de la exportación. Allí se preparan materiales, nombres y jerarquías, y se aligera una copia para la Web.',
-      details: ['Los nombres y grupos de ruedas, motores y articulaciones permiten mover las piezas desde la aplicación.', 'La copia visual simplificada se mantiene separada de los maestros de diseño.', 'Las cámaras, luces y el suelo de los renders de estudio no forman parte del GLB del vehículo. La Web crea su propia escena.'],
-      source: 'CAD/docs/MODELO_FINAL_WEB_20261025.md · CAD/mecanica/auto-completo/blender_final_20261025.py',
+      title: 'Preparar y aligerar en Blender', short: 'Optimizar el modelo', place: 'En la computadora', icon: 'cube',
+      input: 'Mallas e instancias de Fusion', output: 'Copia visual liviana lista para exportar',
+      description: 'Blender reconstruye la escena a partir de la exportación y prepara una copia pensada para la Web. Así como Vite minimiza el código, acá se «minimiza» el modelo: se quita lo que no se ve y se reduce la geometría hasta entrar en el presupuesto de tamaño.',
+      details: [
+        'Se dejan afuera las mallas internas y ocultas que no se ven desde afuera, las referencias de diseño y los cables. Solo viajan las piezas visibles.',
+        'Se sueldan vértices duplicados, se disuelven las caras coplanares que deja la teselación del CAD y Decimate reduce los polígonos de cada pieza; la electrónica se simplifica más que las ruedas.',
+        'Los materiales repetidos se unifican y las piezas se agrupan por eslabón o se comparten como instancias, para que el navegador haga menos llamadas de dibujo.',
+        'Los nombres y grupos de ruedas, motores y articulaciones se conservan para mover las piezas desde la aplicación. Los maestros CAD no se modifican.',
+      ],
+      source: 'CAD/mecanica/auto-completo/blender_final_20261025.py · CAD/mecanica/brazo-antropomorfo/revision_v17/web_blanco/blender_preparar.py',
     },
     {
       title: 'Exportar GLB con Draco', short: 'Geometría comprimida', place: 'En la computadora', icon: 'cube',

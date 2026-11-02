@@ -7,48 +7,167 @@
   "sheets": [
     {
       "code": "AFR2-A000",
-      "title": "Brazo antropomorfo - conjunto general",
+      "title": "Brazo completo y sus subconjuntos",
       "kind": "general",
       "render": "D:\\ProyectoRobotica2\\AutoFinalRobo2-CAD\\mecanica\\brazo-antropomorfo\\revision_v17\\laminas_20261102\\renders\\AFR2-A000.png",
-      "general_rows": [
+      "render_cards": [
         {
-          "id": "AFR2-A100",
-          "label": "Montura y control fijo",
-          "qty": 1
+          "code": "AFR2-A100",
+          "title": "Montura y control fijo",
+          "render": "D:\\ProyectoRobotica2\\AutoFinalRobo2-CAD\\mecanica\\brazo-antropomorfo\\revision_v17\\laminas_20261102\\renders\\AFR2-A100-FICHA.png",
+          "roots": [
+            "00_Base_control"
+          ],
+          "solid_instances": 75
         },
         {
-          "id": "AFR2-A200",
-          "label": "Giro de base J1 y torre",
-          "qty": 1
+          "code": "AFR2-A200",
+          "title": "Giro J1, torre y entrada J2",
+          "render": "D:\\ProyectoRobotica2\\AutoFinalRobo2-CAD\\mecanica\\brazo-antropomorfo\\revision_v17\\laminas_20261102\\renders\\AFR2-A200-FICHA.png",
+          "roots": [
+            "01_Giro_base",
+            "09_Pinion_hombro"
+          ],
+          "solid_instances": 102
         },
         {
-          "id": "AFR2-A300",
-          "label": "Primer eslabon y motor remoto J3",
-          "qty": 1
+          "code": "AFR2-A300",
+          "title": "Eslabon y accionamiento remoto J3",
+          "render": "D:\\ProyectoRobotica2\\AutoFinalRobo2-CAD\\mecanica\\brazo-antropomorfo\\revision_v17\\laminas_20261102\\renders\\AFR2-A300-FICHA.png",
+          "roots": [
+            "02_Brazo_PVC",
+            "12_Polea_entrada_J3"
+          ],
+          "solid_instances": 96
         },
         {
-          "id": "AFR2-A400",
-          "label": "Antebrazo y giro J4",
-          "qty": 1
+          "code": "AFR2-A400",
+          "title": "Antebrazo y giro de muneca J4",
+          "render": "D:\\ProyectoRobotica2\\AutoFinalRobo2-CAD\\mecanica\\brazo-antropomorfo\\revision_v17\\laminas_20261102\\renders\\AFR2-A400-FICHA.png",
+          "roots": [
+            "03_Antebrazo_PVC",
+            "04_Giro_muneca",
+            "11_Pinion_J4"
+          ],
+          "solid_instances": 91
         },
         {
-          "id": "AFR2-A500",
-          "label": "Inclinacion J5 y soporte J6",
-          "qty": 1
+          "code": "AFR2-A500",
+          "title": "Inclinacion J5 y soporte J6",
+          "render": "D:\\ProyectoRobotica2\\AutoFinalRobo2-CAD\\mecanica\\brazo-antropomorfo\\revision_v17\\laminas_20261102\\renders\\AFR2-A500-FICHA.png",
+          "roots": [
+            "05_Inclinacion_muneca"
+          ],
+          "solid_instances": 33
         },
         {
-          "id": "AFR2-A600",
-          "label": "Herramienta y pinza V7",
-          "qty": 1
+          "code": "AFR2-A600",
+          "title": "Herramienta y pinza V7",
+          "render": "D:\\ProyectoRobotica2\\AutoFinalRobo2-CAD\\mecanica\\brazo-antropomorfo\\revision_v17\\laminas_20261102\\renders\\AFR2-A600-FICHA.png",
+          "roots": [
+            "06_Herramienta",
+            "07_Mandibula_izquierda",
+            "08_Mandibula_derecha",
+            "10_Pinion_pinza"
+          ],
+          "solid_instances": 28
         }
       ],
-      "notes": [
-        "Modelo actual capturado del maestro Fusion; auto y cubo excluidos.",
-        "Los codigos A100-A600 organizan la serie; solo A500 se desarrolla en esta primera tanda.",
-        "Vista de identificacion, no plano de implantacion ni comprobacion de movilidad."
-      ],
+      "cards_title": "SUBCONJUNTOS DEL BRAZO",
+      "main_label": "BRAZO COMPLETO",
+      "revision": "C",
       "material": "Conjunto mixto",
-      "revision": "B"
+      "notes": [
+        "Ficha visual del brazo con sus seis subconjuntos funcionales.",
+        "Los grupos incluyen todas las425 instancias de solidos de la captura; no son piezas comerciales contadas.",
+        "Esta ficha no sustituye los planos individuales; solo seis piezas tienen hoja preliminar en esta tanda."
+      ]
+    },
+    {
+      "code": "AFR2-R000",
+      "title": "Robot integrado y conjuntos del auto",
+      "kind": "general",
+      "render": "D:\\ProyectoRobotica2\\AutoFinalRobo2-CAD\\mecanica\\brazo-antropomorfo\\revision_v17\\laminas_20261102\\renders\\AFR2-R000-ROBOT-COMPLETO.png",
+      "render_cards": [
+        {
+          "code": "AFR2-C100",
+          "title": "Chasis, separadores y fijaciones",
+          "render": "D:\\ProyectoRobotica2\\AutoFinalRobo2-CAD\\mecanica\\brazo-antropomorfo\\revision_v17\\laminas_20261102\\renders\\AFR2-C100-FICHA.png",
+          "source_objects": [
+            "FICHA_FINAL_RAW_Separadores_Montaje:1",
+            "FICHA_FINAL_RAW_Fijaciones_Placas:1",
+            "FICHA_FINAL_RAW_CapaInferior",
+            "FICHA_FINAL_RAW_CapaSuperior"
+          ]
+        },
+        {
+          "code": "AFR2-C200",
+          "title": "Traccion: motores, ruedas y soportes",
+          "render": "D:\\ProyectoRobotica2\\AutoFinalRobo2-CAD\\mecanica\\brazo-antropomorfo\\revision_v17\\laminas_20261102\\renders\\AFR2-C200-FICHA.png",
+          "source_objects": [
+            "FICHA_FINAL_RAW_GM25_370:1",
+            "FICHA_FINAL_RAW_Soportes_Motores_Referencia:1",
+            "FICHA_FINAL_RAW_Rueda80_ManoA:1",
+            "FICHA_FINAL_RAW_Rueda80_ManoB:1",
+            "FICHA_FINAL_RAW_Prisioneros_Ruedas:1",
+            "FICHA_FINAL_RAW_Casquillos_Ruedas_6a4_Referencia:1",
+            "FICHA_FINAL_RAW_GM25_370:2",
+            "FICHA_FINAL_RAW_GM25_370:3",
+            "FICHA_FINAL_RAW_GM25_370:4",
+            "FICHA_FINAL_RAW_Rueda80_ManoA:2",
+            "FICHA_FINAL_RAW_Rueda80_ManoB:2"
+          ]
+        },
+        {
+          "code": "AFR2-C300",
+          "title": "Control: Mega, Wi-Fi y Model Y",
+          "render": "D:\\ProyectoRobotica2\\AutoFinalRobo2-CAD\\mecanica\\brazo-antropomorfo\\revision_v17\\laminas_20261102\\renders\\AFR2-C300-FICHA.png",
+          "source_objects": [
+            "FICHA_FINAL_RAW_OSOYOOWifiShield:1",
+            "FICHA_FINAL_RAW_Mega2560_CAD:1",
+            "FICHA_FINAL_RAW_OSOYOOMotorDriver_ModelY_V2:1"
+          ]
+        },
+        {
+          "code": "AFR2-C400",
+          "title": "Alimentacion y voltimetro",
+          "render": "D:\\ProyectoRobotica2\\AutoFinalRobo2-CAD\\mecanica\\brazo-antropomorfo\\revision_v17\\laminas_20261102\\renders\\AFR2-C400-FICHA.png",
+          "source_objects": [
+            "FICHA_FINAL_RAW_Celda_18650:1",
+            "FICHA_FINAL_RAW_Portabaterias_SinCableExterior:1",
+            "FICHA_FINAL_RAW_Voltimetro_Referencia:1",
+            "FICHA_FINAL_RAW_Celda_18650:2"
+          ]
+        },
+        {
+          "code": "AFR2-C500",
+          "title": "Sensores, servo y soporte frontal",
+          "render": "D:\\ProyectoRobotica2\\AutoFinalRobo2-CAD\\mecanica\\brazo-antropomorfo\\revision_v17\\laminas_20261102\\renders\\AFR2-C500-FICHA.png",
+          "source_objects": [
+            "FICHA_FINAL_RAW_SG90:1",
+            "FICHA_FINAL_RAW_SensorLinea_5IR:1",
+            "FICHA_FINAL_RAW_HC_SR04:1",
+            "FICHA_FINAL_RAW_Soporte_HCSR04_Referencia:1"
+          ]
+        },
+        {
+          "code": "AFR2-C600",
+          "title": "Panel OLED y mando local",
+          "render": "D:\\ProyectoRobotica2\\AutoFinalRobo2-CAD\\mecanica\\brazo-antropomorfo\\revision_v17\\laminas_20261102\\renders\\AFR2-C600-FICHA.png",
+          "source_objects": [
+            "FICHA_FINAL_RAW_AFR2_UI_B2_Fondo_OLED15_Auto5:1"
+          ]
+        }
+      ],
+      "cards_title": "SUBCONJUNTOS DEL AUTO",
+      "main_label": "AUTO CON BRAZO",
+      "revision": "C",
+      "material": "Conjunto mixto",
+      "notes": [
+        "Auto base desde el modelo editable20261025 y brazo desde la captura20261102.",
+        "Renders agrupados por funcion; no se modifico el CAD ni se realizo una nueva comprobacion de montaje.",
+        "Los subconjuntos mostrados no implican que sus planos de fabricacion esten terminados."
+      ]
     },
     {
       "code": "AFR2-A500",
@@ -219509,7 +219628,89 @@
         "Separaciones de visualizacion; no constituyen una secuencia de desmontaje validada.",
         "Globos vinculados a A500-LP. Se conservan todas las ocurrencias de la tornilleria."
       ],
-      "material": "Conjunto mixto"
+      "material": "Conjunto mixto",
+      "local_balloons": {
+        "1": {
+          "anchor_mm": [
+            169.3537936257596,
+            103.286168795165
+          ],
+          "badge_mm": [
+            172.1037936257596,
+            98.52302907435057
+          ]
+        },
+        "2": {
+          "anchor_mm": [
+            227.9938278972271,
+            165.56800739454758
+          ],
+          "badge_mm": [
+            230.31822833680096,
+            170.55270022324916
+          ]
+        },
+        "3": {
+          "anchor_mm": [
+            338.9239022774763,
+            217.82049443705424
+          ],
+          "badge_mm": [
+            344.0922116917988,
+            219.70160522534542
+          ]
+        },
+        "4": {
+          "anchor_mm": [
+            300.4402474537666,
+            207.50362649558048
+          ],
+          "badge_mm": [
+            297.6902474537666,
+            212.2667662163949
+          ]
+        },
+        "5": {
+          "anchor_mm": [
+            367.84474099842384,
+            239.71782113494137
+          ],
+          "badge_mm": [
+            365.9636302101327,
+            244.88613054926387
+          ]
+        },
+        "6": {
+          "anchor_mm": [
+            237.02721712645416,
+            150.72284948272574
+          ],
+          "badge_mm": [
+            242.33980917104404,
+            149.29934473466187
+          ]
+        },
+        "7": {
+          "anchor_mm": [
+            303.80937695933187,
+            187.9713637483662
+          ],
+          "badge_mm": [
+            306.55937695933187,
+            183.20822402755178
+          ]
+        },
+        "8": {
+          "anchor_mm": [
+            167.8897270777061,
+            124.27373906298519
+          ],
+          "badge_mm": [
+            166.00861628941493,
+            129.44204847730768
+          ]
+        }
+      }
     },
     {
       "code": "AFR2-A500-E2",
@@ -219598,7 +219799,89 @@
         "Separaciones de visualizacion; no constituyen una secuencia de desmontaje validada.",
         "Globos vinculados a A500-LP. Se conservan todas las ocurrencias de la tornilleria."
       ],
-      "material": "Conjunto mixto"
+      "material": "Conjunto mixto",
+      "local_balloons": {
+        "9": {
+          "anchor_mm": [
+            202.4812087103673,
+            99.9082743981363
+          ],
+          "badge_mm": [
+            206.3702960068933,
+            96.01918710161029
+          ]
+        },
+        "10": {
+          "anchor_mm": [
+            184.54526698557163,
+            112.47428523679567
+          ],
+          "badge_mm": [
+            182.22086654599778,
+            117.45897806549723
+          ]
+        },
+        "11": {
+          "anchor_mm": [
+            194.81242453318632,
+            113.1910075099048
+          ],
+          "badge_mm": [
+            198.70151182971233,
+            109.30192021337878
+          ]
+        },
+        "12": {
+          "anchor_mm": [
+            301.14488846114546,
+            199.10548317195187
+          ],
+          "badge_mm": [
+            302.09995343831355,
+            204.52192581351903
+          ]
+        },
+        "13": {
+          "anchor_mm": [
+            320.02799410357835,
+            209.38536849847324
+          ],
+          "badge_mm": [
+            322.3523945431522,
+            214.37006132717482
+          ]
+        },
+        "14": {
+          "anchor_mm": [
+            336.3515594665213,
+            178.96158215664232
+          ],
+          "badge_mm": [
+            338.6759599060951,
+            183.9462749853439
+          ]
+        },
+        "15": {
+          "anchor_mm": [
+            353.84042686644,
+            189.6810658497015
+          ],
+          "badge_mm": [
+            354.7954918436081,
+            195.09750849126863
+          ]
+        },
+        "16": {
+          "anchor_mm": [
+            308.7570930323469,
+            181.64213332524986
+          ],
+          "badge_mm": [
+            314.2570930323469,
+            181.64213332524986
+          ]
+        }
+      }
     },
     {
       "code": "AFR2-A500-E3",
@@ -219687,7 +219970,89 @@
         "Separaciones de visualizacion; no constituyen una secuencia de desmontaje validada.",
         "Globos vinculados a A500-LP. Se conservan todas las ocurrencias de la tornilleria."
       ],
-      "material": "Conjunto mixto"
+      "material": "Conjunto mixto",
+      "local_balloons": {
+        "17": {
+          "anchor_mm": [
+            228.2482112467189,
+            126.59839098601435
+          ],
+          "badge_mm": [
+            233.66465388828607,
+            127.55345596318247
+          ]
+        },
+        "18": {
+          "anchor_mm": [
+            241.40814435427657,
+            134.19628352728643
+          ],
+          "badge_mm": [
+            246.82458699584373,
+            135.15134850445455
+          ]
+        },
+        "19": {
+          "anchor_mm": [
+            253.2203668014631,
+            112.18071070430705
+          ],
+          "badge_mm": [
+            258.63680944303024,
+            113.13577568147517
+          ]
+        },
+        "20": {
+          "anchor_mm": [
+            270.35999616805736,
+            113.62112600270083
+          ],
+          "badge_mm": [
+            273.89532802133334,
+            109.40788156554646
+          ]
+        },
+        "21": {
+          "anchor_mm": [
+            273.8238616327041,
+            147.70895840288762
+          ],
+          "badge_mm": [
+            276.5738616327041,
+            152.47209812370204
+          ]
+        },
+        "22": {
+          "anchor_mm": [
+            289.9545624066688,
+            223.20223311403706
+          ],
+          "badge_mm": [
+            292.2789628462426,
+            228.18692594273864
+          ]
+        },
+        "23": {
+          "anchor_mm": [
+            300.66103687002703,
+            198.66705999060827
+          ],
+          "badge_mm": [
+            299.70597189285894,
+            193.25061734904114
+          ]
+        },
+        "24": {
+          "anchor_mm": [
+            301.9720826997013,
+            231.75705273268613
+          ],
+          "badge_mm": [
+            301.9720826997013,
+            226.25705273268613
+          ]
+        }
+      }
     },
     {
       "code": "AFR2-A500-E4",
@@ -219749,7 +220114,59 @@
         "Separaciones de visualizacion; no constituyen una secuencia de desmontaje validada.",
         "Globos vinculados a A500-LP. Se conservan todas las ocurrencias de la tornilleria."
       ],
-      "material": "Conjunto mixto"
+      "material": "Conjunto mixto",
+      "local_balloons": {
+        "25": {
+          "anchor_mm": [
+            258.3501695869187,
+            113.52926288763788
+          ],
+          "badge_mm": [
+            263.7666122284858,
+            114.484327864806
+          ]
+        },
+        "26": {
+          "anchor_mm": [
+            283.6919520523607,
+            98.65442868590097
+          ],
+          "badge_mm": [
+            289.1710228918653,
+            99.13378527101308
+          ]
+        },
+        "27": {
+          "anchor_mm": [
+            257.1191607289445,
+            237.65212292598272
+          ],
+          "badge_mm": [
+            262.53560337051164,
+            238.60718790315084
+          ]
+        },
+        "28": {
+          "anchor_mm": [
+            282.42621134531174,
+            223.04108731758532
+          ],
+          "badge_mm": [
+            287.8426539868789,
+            223.99615229475344
+          ]
+        },
+        "29": {
+          "anchor_mm": [
+            266.6883377800729,
+            182.75091926782295
+          ],
+          "badge_mm": [
+            266.2089811949608,
+            177.27184842831835
+          ]
+        }
+      }
     },
     {
       "code": "AFR2-P501",

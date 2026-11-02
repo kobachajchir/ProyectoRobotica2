@@ -1,5 +1,13 @@
 import type { ReactNode } from 'react';
 import { HeaderBadge, type HeaderBadgeTone } from './SectionHeader';
+import { UiIcon, type UiIconName } from './UiIcon';
+
+const HEADER_ICONS: Record<string, UiIconName> = {
+  'Conducir': 'control', 'Control': 'control', 'Programas': 'programs',
+  'Puesta a punto': 'settings', 'Sensores': 'sensors', 'Conexión': 'wifi',
+  'Conexion': 'wifi', 'Ayuda': 'book', 'Desarrollador': 'settings',
+  'Protocol Studio': 'programs', 'Simulador': 'cube', 'Modelos y simulación': 'cube',
+};
 
 export interface PageHeaderProps {
   /** Repite el nombre de la página en la barra lateral. Es el único `<h1>` de la página. */
@@ -23,10 +31,12 @@ export interface PageHeaderProps {
 export function PageHeader({ title, description, eyebrow, badge, badgeTone, actions, children }: PageHeaderProps) {
   return (
     <header className="afr2-page-header">
+      <span className="afr2-page-header__glow" aria-hidden="true" />
       <div className="afr2-page-header__row">
         <div className="afr2-page-header__titles">
           {eyebrow && <p className="afr2-kicker">{eyebrow}</p>}
           <div className="afr2-page-header__title-line">
+            <span className="afr2-page-header__icon" aria-hidden="true"><UiIcon name={HEADER_ICONS[title] ?? 'cube'} size={24} /></span>
             <h1 className="afr2-page-header__title">{title}</h1>
             {badge && <HeaderBadge text={badge} tone={badgeTone} />}
           </div>

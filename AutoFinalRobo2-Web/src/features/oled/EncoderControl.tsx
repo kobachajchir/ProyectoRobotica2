@@ -7,6 +7,7 @@ export const AFR2_LONG_PRESS_MS = 800;
 export const AFR2_ENCODER_LONG_MS = 800;
 
 export interface EncoderControlProps {
+  onPressingChange?: (pressed:boolean)=>void;
   longPressMs?: number;
   onRotate: (delta: -1 | 1) => void;
   onPress: (kind: 'short' | 'long') => void;
@@ -45,6 +46,7 @@ export function EncoderControl({
   onRotate,
   longPressMs=800,
   onPress,
+  onPressingChange,
   onRefresh,
   available = true,
   busy = false,
@@ -64,6 +66,7 @@ export function EncoderControl({
 
   const [pressing, setPressing] = useState(false);
   const [longVisualActive, setLongVisualActive] = useState(false);
+  useEffect(()=>{onPressingChange?.(pressing);},[pressing,onPressingChange]);
   const [pressedRotate, setPressedRotate] = useState<'left' | 'right' | null>(null);
 
   const gestureThreshold=useRef(threshold);

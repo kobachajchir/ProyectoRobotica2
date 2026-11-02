@@ -1,0 +1,19 @@
+{
+  "changeId": "AFR2-20261102-18",
+  "mode": "APLICAR",
+  "manualVersion": "0.1.11 draft",
+  "authorization": "Pedido explícito de aplicar el nuevo manual al radar y mejorar su animación.",
+  "canonicalSources": ["manual.md#vigencia-0111", "components.md", "tokens.json", "decisions.md"],
+  "targets": ["/sensores?seccion=distancia"],
+  "supporting": ["PageHeader", "SegmentedControl", "Button", "Disclosure", "UiIcon", "tokens.css", "RadarScene.tsx"],
+  "confirmed": ["Reforma visual del radar", "Animación más cuidada", "Alcances coordinados ATmega y Web"],
+  "observed": ["Lecturas con validez y antigüedad", "Ángulo recibido derivado de PWM", "Render bajo demanda", "Estado histórico y desconexión"],
+  "proposed": ["Vista superior inicial", "Jerarquía de medición principal", "Paneles sólidos agrupados", "Haz por capas", "Pulso de 300 ms por eco nuevo"],
+  "verification": "No verificada; no autorizada por el usuario",
+  "tests": false,
+  "build": false,
+  "browser": false,
+  "hardware": false,
+  "radarScales": ["25 cm", "50 cm", "1 m", "2 m"],
+  "limitations": ["Ángulo recibido no es feedback mecánico del servo", "Sin barrido ficticio offline", "Pulso desactivado con movimiento reducido", "Fuente actualizada sin carga a placa ni promoción de paquete"]
+}

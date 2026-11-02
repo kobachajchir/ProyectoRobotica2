@@ -192,7 +192,7 @@ export function SimulationWorkspace() {
           </div>
         </div>
         <CollectorScene view={view} tool={busy || armPanel ? 'orbit' : tool} focus={focus} revision={revision} armPanel={armPanel} carOnly={carOnly} />
-        <div className="afr2-collector-scene-footer"><p>{!armPanel && tool === 'place' ? 'Clic en el suelo para agregar un cubo.' : !armPanel && tool === 'move' ? 'Arrastrá el auto. Desactivá Mover auto para orbitar.' : armPanel ? 'Arrastrá una articulación con clic izquierdo o derecho para girarla. Arrastrá el fondo para orbitar.' : 'Arrastrá el fondo para orbitar; selecciona un cubo o una articulación para operarlo.'}</p><span>Cuadrícula · 100 mm</span></div>
+        <div className="afr2-collector-scene-footer"><p>{!armPanel && tool === 'place' ? 'Clic en el suelo para agregar un cubo.' : !armPanel && tool === 'move' ? 'Arrastrá el auto. Desactivá Mover auto para orbitar.' : armPanel ? 'Arrastrá una articulación con clic izquierdo o derecho para girarla. Arrastrá el fondo para orbitar.' : 'Arrastrá el fondo para orbitar; selecciona un cubo o una articulación para operarlo.'}</p></div>
       </section>
       {!armPanel && !carOnly && <div className="afr2-collector-legend"><span className="afr2-collector-legend__reach">Zona de toma</span><span className="afr2-collector-legend__cube">Cubos de 50 mm</span><span>Seleccioná una pieza para operarla</span></div>}
       <div className="afr2-collector-readouts">

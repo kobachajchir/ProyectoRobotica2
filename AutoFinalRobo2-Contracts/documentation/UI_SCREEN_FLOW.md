@@ -275,3 +275,7 @@ reloj, nunca con giro del encoder. No se altera el visor conectado ni se envían
 ## AFR2-20261102-05 — Ayuda y QR
 
 Ayuda → OLED abre ahora la simulación interactiva con el reductor existente y los diseños OLED128-5; Biblioteca sin datos permanece como alternativa. Wi-Fi incorpora030045 QR conectar AP y030046 QR abrir Web. Ambas vistas: giro sin acción; corto y largo al soltar vuelven al contexto anterior. Credenciales reales solo en OLED, QR AP protegido de captura/entrada remota. Generación integrada exige auto/radar detenidos. Ver ../contracts/OLED_RUNTIME_QR_20261102.md. Fuentes y copia de recursos, sin tests, build, validadores, navegador ni flasheo.
+
+## AFR2-20261102-14 — Tarjeta de estados en Inicio
+
+010001 agrega modo compacto y tarjeta informativa redondeada. Tras3s sin encoder alterna estados aplicables cada4s; mantener SW pausa y un fallo permanece fijo. Un estado retirado se actualiza inmediatamente. No es una opción de navegación: corto sigue abriendo010002 y largo al soltar010003. Snapshot local real y réplica Web con fixtures. Las guardas Sí/No no cambian. Detalles en ../contracts/OLED_DASHBOARD_STATUS_20261102.md. Sin ejecución de pruebas, build, validadores ni hardware.

@@ -1,3 +1,7 @@
+> **AFR2-20261102-14:** dashboard OLED con modo y tarjeta de estados reales, espera3s/ciclo4s, pausa al mantener encoder y fallo prioritario; familia de pantallas vinculada AVR/Web. [Contrato](AutoFinalRobo2-Contracts/contracts/OLED_DASHBOARD_STATUS_20261102.md). Solo fuente, sin tests, build, validaciones, navegador ni carga.
+
+> **AFR2-20261102-11:** dashboard OLED original, cabecera invertida, visor blanco y flecha grande + Volver en submenús. [Ficha](AutoFinalRobo2-Contracts/changes/2026-11-02-11-oled-original-dashboard-white-back.md). Fuente AVR/Web; sin tests, compilaciones, validaciones, navegador ni cargas.
+
 > **AFR2-20261102-05:** UI OLED128-5 en fuentes ATmega/Web y simulación en Ayuda; QR 030045/030046 del AP/Web con estado vigente del ESP. [Alcance y presupuesto](AutoFinalRobo2-Contracts/contracts/OLED_RUNTIME_QR_20261102.md). Fuente y recursos copiados; sin tests, build, validación, navegador ni carga al equipo.
 
 > **AFR2-20261029-03, entrega 3D:** [brazo V7 con codo remoto v17](AutoFinalRobo2-CAD/mecanica/brazo-antropomorfo/revision_v17/README.md). Montajes J1/J4/J5 integrados, PVC25/20, ejes70/60, tensor y pinzaV7 conservados. Ensambles nativos y limites registrados; eje auxiliar J3 sin tope adicional al codo. Por pedido del usuario, nuevos calculos, comprobaciones globales y aligerado diferidos. No aprobacion de resistencia ni fabricacion. atmega/esp/web/Loader sin cambios.

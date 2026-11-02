@@ -22,7 +22,7 @@ export interface UiSimulation extends FirmwareUiState {
   pending: Pending | null; noticeTarget: number | null; quickUntil: number;
   credentialsUntil: number; batteryMeasured: boolean; diagState: number; webClient: boolean;
 }
-export type SimulationEvent = { type: 'web-client'; connected: boolean } | { type: 'rotate'; delta: -1 | 1 } | { type: 'press'; kind: 'short' | 'long' } | { type: 'tick'; ms: number } | { type: 'inspect'; code: string };
+export type SimulationEvent = {type:'input-held';held:boolean} | { type: 'web-client'; connected: boolean } | { type: 'rotate'; delta: -1 | 1 } | { type: 'press'; kind: 'short' | 'long' } | { type: 'tick'; ms: number } | { type: 'inspect'; code: string };
 const sampleNetworks = Array.from({ length: 8 }, (_, i) => `Red demo ${i + 1}`);
 const wrap = (n: number, count: number) => ((n % count) + count) % count;
 const limit = (n: number, min: number, max: number) => Math.max(min, Math.min(max, n));
@@ -64,6 +64,7 @@ export function createUiSimulation(scenario: SimulationScenario = 'ready'): UiSi
     36:Number(ready), 37:80, 38:150, 39:Number(ready), 40:1, 41:4, 42:0, 44:3, 53:200, 54:0,
     59:90, 63:0, 64:180, 65:15, 66:100, 67:150, 68:0, 70:2, 71:1, 81:800, 83:100, 85:2000 };
   return {
+    dashboardInputMs:0,dashboardHeld:false,
     node:S.AFR2_N_HOME, selection:0, firstVisible:0, clockMs:0, noticeStartedMs:0, scrollStartedMs:0,
     redraw:true, scrollRedraw:false, keyboard:false, keyboardField:false, key:0, length:0, ssid:'',
     edit:false, editingLabel:'', draft:0, notice:null, editing:null, scenario, history:[], values, saved:{...values},
@@ -220,7 +221,7 @@ function invoke(u:UiSimulation,item:FirmwareMenuItem,value:number):boolean{
 }
 const actionItem=(action:number,label='Operacion'):FirmwareMenuItem=>({action,label,target:255,arg:0,min:0,max:0,step:0});
 function tick(u:UiSimulation,ms:number){
-  u.clockMs+=ms;
+  u.clockMs+=ms;if(u.dashboardHeld)u.dashboardInputMs=u.clockMs;
   if(u.hallMeasuring)u.hallCount=Math.min(1000000,u.hallCount+Math.floor(u.clockMs/40)-Math.floor((u.clockMs-ms)/40));
   if(u.motionUntil && u.clockMs>=u.motionUntil)stop(u);
   if(u.quickPending && u.clockMs>=u.quickUntil)u.quickPending=false;
@@ -246,6 +247,8 @@ function tick(u:UiSimulation,ms:number){
 }
 export function reduceUiSimulation(previous:UiSimulation,event:SimulationEvent):UiSimulation{
   const u:UiSimulation={...previous,history:[...previous.history],values:{...previous.values},hallCpr:[...previous.hallCpr],hallDraft:[...previous.hallDraft]};
+  if(event.type==='input-held'){u.dashboardHeld=event.held;u.dashboardInputMs=u.clockMs;return u;}
+  if(event.type==='rotate' || event.type==='press')u.dashboardInputMs=u.clockMs;
   if(event.type==='web-client'){u.webClient=event.connected;return u;}
   if(event.type==='inspect'){
     const code=Number(event.code);
@@ -394,6 +397,7 @@ export function simulationSnapshot(u: UiSimulation): FirmwareSnapshot {
     hallCpr: u.hallCpr.map((value,i)=>u.hallPending&(1<<i)?u.hallDraft[i]:value), hallPending:u.hallPending,
     quickFlags:[74,75,76,77,71].reduce((bits,action,i)=>bits|(Number(actionState(u,action))<<i),0),
     radarRange:v[70],radarTrace:!!v[71],powerKnown:true,powerPercent:v[83],
+    dashboardValid:true,dashboardMode:u.mode,dashboardMoving:!u.stopped,dashboardFault:u.mode===MODE.fault,
     batteryValid:u.batteryMeasured && ready,batteryMv:u.batteryMeasured && ready?7400:undefined,
     disabled: items.map(item => Number(!!simulationUnavailable(u, item))),
     sequenceState: u.clockMs - u.scrollStartedMs >= 9000 ? 4 : 3, sequenceCount: 3,

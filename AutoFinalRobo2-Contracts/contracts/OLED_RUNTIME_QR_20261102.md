@@ -1,3 +1,7 @@
+> **AFR2-20261102-14:** el dashboard incorpora ahora el panel rotativo y se alinea la familia de pantallas. [Contrato vigente](OLED_DASHBOARD_STATUS_20261102.md). QR, privacidad y límites físicos se conservan.
+
+> **Actualización AFR2-20261102-11:** por pedido del usuario, el dashboard vuelve a su disposición original con cabecera invertida. Las filas Volver de submenús usan flecha16px y texto; las demás páginas conservan sus ayudas. La OLED Web es blanca. QR y resto del flujo se conservan. [Ficha](../changes/2026-11-02-11-oled-original-dashboard-white-back.md).
+
 # OLED128-5 y QRScreen en el auto
 
 AFR2-20261102-05 · 02/11/2026. Integración en fuente; sin compilación,

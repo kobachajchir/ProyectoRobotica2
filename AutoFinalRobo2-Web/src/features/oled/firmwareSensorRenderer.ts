@@ -36,13 +36,13 @@ function smallText(o:Afr2OledBuffer,cx:number,y:number,value:string){
 /** AFR2-20261029-27: literal viewport/range/trace and compact glyph port. */
 export function renderSensorScreen(o:Afr2OledBuffer,node:number,h:FirmwareSensorSnapshot|undefined,ir:{raw:readonly number[];kind:number;valid:boolean;lineValid:boolean},view:{rangeIndex:number;trace:boolean}={rangeIndex:0,trace:true}){
   const txt=(x:number,y:number,text:string)=>o.drawText(x,y,text.slice(0,18));
-  const rangeIndex=view.rangeIndex>=0 && view.rangeIndex<=3?view.rangeIndex:0,range=4000>>rangeIndex;
+  const rangeIndex=view.rangeIndex>=0 && view.rangeIndex<=3?view.rangeIndex:0,range=2000>>rangeIndex;
   const compact=node===S.AFR2_N_SERVO_ANGLE;
   if(node===S.AFR2_N_RADAR_VIEW || compact){
     const radius=compact?26:38,cy=compact?38:49;
     const active=!!h && h.enabled && h.pulseUs>=1000 && h.pulseUs<=2000 && h.angle>=0 && h.angle<=180;
     const center=active?h!.angle*2:0,low=Math.max(0,center-15),high=Math.min(360,center+15);
-    txt(0,0,`${compact?'Servo':'1/2> R'} ${['4m','2m','1m','0.5m'][rangeIndex]}`);
+    txt(0,0,`${compact?'Servo':'1/2> R'} ${['2m','1m','50cm','25cm'][rangeIndex]}`);
     txt(80,0,h?.running?'AUTO':active?'FIJO':'OFF');if(!compact)txt(114,0,'cm');
     for(let ring=1;ring<=4;ring++){
       const r=T(radius*ring/4),step=T(344/r);
@@ -67,15 +67,15 @@ export function renderSensorScreen(o:Afr2OledBuffer,node:number,h:FirmwareSensor
     else txt(0,53,'Sin datos');return;
   }
   if(node===S.AFR2_N_US_VIEW){
-    txt(0,0,'Distancia <2/2');txt(0,14,h?.latest.id && !h.latest.error?`${h.latest.distanceMm} mm`:'Distancia: --');
-    if(h){txt(0,27,h.enabled?`Ang ${String(h.angle).padStart(3,'0')} PWM ${h.pulseUs}`:'Ang -- PWM 0');txt(0,39,`Eco ${h.latest.error} Edad ${h.latest.id?(h.nowMs-h.latest.ms)>>>0:0}ms`);}gestureHint(o,0,53,false,'Opciones');return;
+    componentHeader(o,S.AFR2_ICON_RADAR,'Distancia',2,2);txt(0,16,h?.latest.id && !h.latest.error?`${h.latest.distanceMm} mm`:'Distancia: --');
+    if(h){txt(0,28,h.enabled?`Ang ${String(h.angle).padStart(3,'0')} PWM ${h.pulseUs}`:'Ang -- PWM 0');txt(0,40,`Eco ${h.latest.error} Edad ${h.latest.id?(h.nowMs-h.latest.ms)>>>0:0}ms`);}gestureHint(o,0,53,false,'Opciones');return;
   }
-  if(node===S.AFR2_N_LINE_VIEW)componentHeader(o,S.AFR2_ICON_SENSORS,'Sensores IR',1,2);else txt(0,0,'IR valores <2/2');
+  componentHeader(o,S.AFR2_ICON_SENSORS,'Sensores IR',node===S.AFR2_N_LINE_VIEW?1:2,2);
   if(!ir.valid){txt(0,25,ir.kind?'Esperando IR':'IR deshabilitado');backHint(o);return;}
   if(node===S.AFR2_N_LINE_VIEW){componentPanel(o,0,15,128,35);for(let i=0;i<5;i++){
     const center=15+24*i;componentMini(o,center-1,17,i+1);o.drawRect(center-6,24,12,16);
     const height=Math.min(12,T(ir.raw[i]*12/(ir.kind===1?1:1023)));o.fillRect(center-4,38-height,8,height);smallText(o,center,43,String(ir.raw[i]).slice(0,4));
   }}
-  else for(let i=0;i<5;i++)txt(i<4?(i%2)*64:43,i<4?14+T(i/2)*12:38,`${i+1}:${String(ir.raw[i]).padStart(4,' ')}`);
+  else for(let i=0;i<5;i++)txt(i<4?(i%2)*64:43,i<4?16+T(i/2)*12:40,`${i+1}:${String(ir.raw[i]).padStart(4,' ')}`);
   backHint(o);
 }

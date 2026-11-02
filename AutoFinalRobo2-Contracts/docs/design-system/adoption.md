@@ -1,5 +1,30 @@
 # Adopción
 
+## Aplicación visual global — AFR2-20261102-15
+
+El usuario autoriza aplicar manual 0.1.11 draft a toda la interfaz, solo visual. Fuente Web implementada desde PageHeader/Button/Field/AppShell y visual-language.css, con tokens --visual-* compartidos. Cabeceras, tarjetas, paneles específicos, formularios, navegación y overlays reciben el lenguaje de Infraestructura; flujos y lógica conservados. La composición extendida es Propuesta y la ejecución No verificada. Sin tests, compilación, validadores, navegador ni promoción ESP. Detalle en decisions.md VIS-062 y cobertura15.
+
+## Situación vigente 0.1.11 — ampliación incorporada
+
+02/11/2026 · VIS-057–061 · AFR2-20261102-14. El manual general integra el atlas completo, catálogo de componentes, paletas, valores, movimiento y estados procedentes de Infraestructura. La documentación ya no requiere tratar el dossier como guía separada: queda como evidencia de origen.
+
+**Conservado:** logo vigente, carmesí/rubí y emergencia bermellón, superficies de trabajo, chrome/overlays, campos, primitivas, Sonner, escenarios, navegación, accesibilidad y gestos OLED. **Añadido:** portadas por capas, jerarquía narrativa, zonas cromáticas, flujo visual, estaciones, detalle, magnitudes y esquemas documentales. Sin reforma de código ni cambios en contratos físicos.
+
+| Uso posterior | Acción recomendada | Límite |
+| --- | --- | --- |
+| Consultar identidad | Empezar por vigencia 0.1.11 en manual.md y catálogo integrado. | Las entradas antiguas son historia con precedencia explícita. |
+| Elegir una composición | Distinguir operación inmediata y exploración narrativa. | No usar loops/entradas largas para operación o STOP. |
+| Usar selector/botones | Reutilizar SegmentedControl y Button existentes. | No duplicar implementaciones por copiar la portada. |
+| Consumir valores | Leer namespaces infrastructure junto a tokens generales. | No son imports nuevos de la Web ni un reemplazo global de CSS. |
+| Extender a formularios/overlays | Conservar contratos actuales y especificar solo variantes necesarias. | Ausencia en la muestra no elimina el componente general. |
+| Resolver particularidades | Separar tamaños de iconos, hover/active, reduced motion y fallos absorbidos. | Documentadas como deuda; sin correcciones de código en esta entrega. |
+
+La integración documental está autorizada y completada. Aprobar estéticamente una aplicación futura o escoger qué pantallas reformar son decisiones distintas, sin bloquear este entregable. No se añade una obligación de pruebas/validaciones por defecto; solo se realizarán ante pedido expreso.
+
+Las secciones siguientes conservan el historial de adopción, incluido el cierre inicial 0.1.3; sus frases «interfaz aún sin aplicar» o «esqueleto JS» describen aquel momento y no el estado vigente. Las evidencias históricas no cubren 0.1.11.
+
+## Historial de adopción conservado
+
 Estado: plan visual cerrado documentalmente en versión `0.1.3` (`status: draft` hasta verificación en ejecución); interfaz aún sin aplicar. Web actual conserva esqueleto JS. Sin `npm install`, servidor, build o tests en esta entrega.
 
 1. Manual `0.1.3` validado documentalmente, cotejado al 100% con `D:/ProyectoRobotica2/informe-portabilidad-glassmorphism.md` (§§1–18) e integrado con el activo oficial `D:/ProyectoRobotica2/assets/Logo.png` y la paleta de acento carmesí/rubí (`VIS-001`..`VIS-013` aprobadas como línea base).
