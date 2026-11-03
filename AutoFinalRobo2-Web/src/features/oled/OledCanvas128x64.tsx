@@ -13,6 +13,10 @@ export interface OledCanvas128x64Props {
   showGrid?: boolean;
   compact?: boolean;
   scale?: number;
+  /** Replaces the source badge (e.g. a placeholder while waiting for the first capture). */
+  badge?: string;
+  /** Replaces the screen name when there is no catalogued screen. */
+  title?: string;
 }
 
 /**
@@ -26,10 +30,12 @@ export function OledCanvas128x64({
   showGrid = true,
   compact = false,
   scale = 4,
+  badge,
+  title,
 }: OledCanvas128x64Props) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const meta = getScreenMetadata(screenCode) ?? {
-    code: screenCode, name: 'Pantalla del controlador', renderer: 'Framebuffer del controlador', actions: [],
+    code: screenCode, name: title ?? 'Pantalla del controlador', renderer: 'Framebuffer del controlador', actions: [],
   };
 
   useEffect(() => {
@@ -91,16 +97,16 @@ export function OledCanvas128x64({
         <span
           className="afr2-tabular rounded px-2 py-0.5 text-[11px] font-semibold"
           style={{
-            backgroundColor:
+            backgroundColor: badge ? 'rgba(255, 255, 255, 0.12)' :
               sourceMode === 'remote-snapshot'
                 ? 'rgba(74, 222, 128, 0.16)'
                 : 'rgba(251, 191, 36, 0.16)',
-            color: sourceMode === 'remote-snapshot' ? '#4ade80' : '#fbbf24',
+            color: badge ? '#cbd5e1' : sourceMode === 'remote-snapshot' ? '#4ade80' : '#fbbf24',
           }}
         >
-          {sourceMode === 'remote-snapshot'
+          {badge ?? (sourceMode === 'remote-snapshot'
             ? compact ? 'Captura recibida' : 'SNAPSHOT REMOTO (wire)'
-            : sourceMode === 'local-ui-simulation' ? 'SIMULACION UI · DATOS FICTICIOS' : 'VISTA LOCAL · BIBLIOTECA ATmega'}
+            : sourceMode === 'local-ui-simulation' ? 'SIMULACION UI · DATOS FICTICIOS' : 'VISTA LOCAL · BIBLIOTECA ATmega')}
         </span>
       </div>
 

@@ -1,3 +1,15 @@
+## AFR2-20261102-24 - 02/11/2026
+
+Ayuda: cada módulo abre con una tarjeta técnica (rol, nombre, descripción y cuatro especificaciones) en la familia clara/oscura de las cabeceras. Explorar suma Loader (/loader): portada con mapa, recorridos de carga del ATmega y del ESP, cifras, motivos y herramientas, con el estilo de Infraestructura. Verificado en navegador local; sin compilación. [Ficha](changes/2026-11-02-24-help-descriptors-loader-page.md).
+
+## AFR2-20261102-23 - 02/11/2026
+
+Ayuda técnica: pestañas en orden ATmega, ESP, Web, OLED (ATmega por defecto); cada módulo con grupos, temas desplegables, tabla de datos (pines, timers, tramas, límites, versiones) y fuente en el repo. Verificado en navegador local; sin compilación. [Ficha](changes/2026-11-02-23-web-help-technical.md).
+
+## AFR2-20261102-22 - 02/11/2026
+
+Revisión del manual en todas las rutas: título de Inicio visible otra vez, cabeceras de página en la familia clara/oscura de Infraestructura con ícono por zona, carga de rutas como tarjeta. Pantalla en vivo: selector Periódica / Al cambiar, lienzo que no desaparece al adquirir, barra superior con «Última entrada» y «Actualizar pantalla», encoder al lado en PC y debajo en celular, leyenda corta del SW con íconos. Verificado en navegador local sin robot ni compilación. [Ficha](changes/2026-11-02-22-web-manual-review-live-screen.md).
+
 ## AFR2-20261102-21 - 02/11/2026
 
 Radar de la Web como instrumento: etiquetas HTML nítidas, plato con brillo radial, anillos y marcas con jerarquía, sector y haz con caída suave, ecos con halo, pulso y contorno, escala uniforme entre 25 cm y 2 m, chip y leyenda unificados y visor compacto en celular. Verificado en navegador local con ecos de muestra temporales; sin robot ni compilación. [Ficha](changes/2026-11-02-21-radar-instrument-redesign.md).

@@ -2,6 +2,7 @@
    Presentation only: no hidden controls, reordering, event handlers or scene changes.
    :root specificity also covers feature styles loaded later with lazy routes. */
 :root .afr2-main {
+  --page-zone-hero: var(--infra-hero-zone-link);
   --page-zone: var(--action);
   --page-zone-subtle: var(--action-subtle);
   --page-zone-border: var(--action-border);
@@ -9,13 +10,16 @@
 :root .afr2-main[data-visual-area="sensores"],
 :root .afr2-main[data-visual-area="conexion"] {
   --page-zone: var(--info); --page-zone-subtle: var(--info-subtle); --page-zone-border: var(--info-border);
+  --page-zone-hero: var(--infra-hero-zone-pc);
 }
 :root .afr2-main[data-visual-area="modelos"],
 :root .afr2-main[data-visual-area="simulacion"] {
   --page-zone: var(--success); --page-zone-subtle: var(--success-subtle); --page-zone-border: var(--success-border);
+  --page-zone-hero: var(--infra-hero-zone-client);
 }
 :root .afr2-main[data-visual-area="puesta-a-punto"] {
   --page-zone: var(--warning); --page-zone-subtle: var(--warning-subtle); --page-zone-border: var(--warning-border);
+  --page-zone-hero: var(--infra-hero-zone-esp);
 }
 :root .afr2-route-view.afr2-page-stack { gap: var(--visual-section-gap); }
 
@@ -52,50 +56,50 @@
 :root .afr2-page-header {
   position: relative; isolation: isolate; overflow: hidden;
   gap: 16px; padding: clamp(24px, 4vw, 48px);
-  border: 1px solid var(--banner-border); border-radius: var(--radius-xl);
-  color: var(--banner-ink); box-shadow: var(--visual-hero-shadow);
+  border: 1px solid var(--infra-hero-border); border-radius: var(--radius-xl);
+  color: var(--infra-hero-ink); box-shadow: var(--infra-hero-shadow);
   background:
-    linear-gradient(var(--visual-grid-ink) 1px, transparent 1px) 0 0 / 32px 32px,
-    linear-gradient(90deg, var(--visual-grid-ink) 1px, transparent 1px) 0 0 / 32px 32px,
-    radial-gradient(120% 90% at 100% 0%, var(--visual-halo-cool), transparent 55%),
-    radial-gradient(90% 80% at 0% 100%, var(--visual-halo-warm), transparent 60%), var(--banner-bg);
+    linear-gradient(var(--infra-hero-grid) 1px, transparent 1px) 0 0 / 32px 32px,
+    linear-gradient(90deg, var(--infra-hero-grid) 1px, transparent 1px) 0 0 / 32px 32px,
+    radial-gradient(120% 90% at 100% 0%, var(--infra-hero-tint-a), transparent 55%),
+    radial-gradient(90% 80% at 0% 100%, var(--infra-hero-tint-b), transparent 60%), var(--infra-hero-bg);
 }
 :root .afr2-page-header__glow {
   position: absolute; z-index: -1; pointer-events: none;
   inset: auto -10% -50% 30%; height: 90%; border-radius: 50%;
-  background: radial-gradient(closest-side, var(--visual-halo-warm), transparent);
+  background: radial-gradient(closest-side, var(--infra-hero-glow), transparent);
   filter: blur(20px);
 }
 :root .afr2-page-header__row { align-items: center; gap: 20px 24px; }
 :root .afr2-page-header__titles { flex: 1; min-width: 0; }
 :root .afr2-page-header__title-line { gap: 16px; }
 :root .afr2-page-header__title {
-  flex: 1; min-width: 0; color: var(--banner-ink);
+  flex: 1; min-width: 0; color: var(--infra-hero-ink);
   font: 750 clamp(1.75rem, 3.6vw, 2.75rem) / 1.1 var(--font-display);
   letter-spacing: -.035em;
 }
 :root .afr2-page-header__icon {
   display: grid; place-items: center; flex: none; width: 52px; height: 52px; border-radius: 16px;
-  color: var(--banner-zone-link); background: var(--visual-hero-icon-bg);
-  border: 1px solid var(--visual-hero-icon-border); box-shadow: 0 10px 24px var(--visual-hero-icon-bg);
+  color: var(--page-zone-hero, var(--infra-hero-zone-link));
+  background: color-mix(in srgb, var(--page-zone-hero, var(--infra-hero-zone-link)) 12%, var(--infra-hero-surface));
+  border: 1px solid color-mix(in srgb, var(--page-zone-hero, var(--infra-hero-zone-link)) 32%, transparent);
+  box-shadow: inset 0 1px 0 var(--infra-hero-surface-highlight), var(--infra-hero-node-shadow);
 }
 :root .afr2-page-header__titles > .afr2-kicker {
   width: fit-content; margin: 0 0 14px; padding: 5px 12px; border-radius: var(--radius-pill);
-  border: 1px solid var(--banner-accent-border); color: var(--banner-ink);
-  background: var(--banner-accent-subtle); font: var(--type-caption); letter-spacing: .04em;
+  border: 1px solid var(--infra-hero-accent-border); color: var(--infra-hero-ink);
+  background: var(--infra-hero-accent-subtle); font: var(--type-caption); letter-spacing: .04em;
 }
-:root .afr2-page-header__description { margin: 0; max-width: 68ch; color: var(--banner-muted); font-size: 1rem; line-height: 1.65; }
+:root .afr2-page-header__description { margin: 0; max-width: 68ch; color: var(--infra-hero-muted); font-size: 1rem; line-height: 1.65; }
 :root .afr2-page-header__extra { margin-top: 4px; min-width: 0; }
 :root .afr2-page-header__actions .afr2-developer-back {
-  color: var(--banner-ink); background: var(--banner-chip-bg); border-color: var(--banner-chip-border);
+  color: var(--infra-hero-ink); background: var(--infra-hero-chip-bg); border-color: var(--infra-hero-chip-border);
 }
-/* A local dark theme for the selector on the fixed dark heading, even in light mode. */
+/* The selector over the heading reads the hero family, so it follows light and dark. */
 :root .afr2-page-header .afr2-seg {
-  --surface-subtle: var(--banner-chip-bg); --text-muted: var(--banner-muted);
-  --text: var(--banner-ink); --text-strong: var(--banner-ink); --focus: var(--banner-accent);
-  --seg-pill-bg: var(--visual-hero-icon-bg);
-  --seg-track-inset: inset 0 0 0 1px var(--banner-chip-border);
-  --seg-pill-shadow: drop-shadow(0 1px 2px var(--banner-bg));
+  --surface-subtle: color-mix(in srgb, var(--infra-hero-ink) 7%, var(--infra-hero-chip-bg)); --text-muted: var(--infra-hero-muted);
+  --text: var(--infra-hero-ink); --text-strong: var(--infra-hero-ink); --focus: var(--infra-hero-accent);
+  --seg-track-inset: inset 0 0 0 1px var(--infra-hero-chip-border);
 }
 
 /* Solid cards: same geometry, restrained depth and zonal lighting as the reference. */
@@ -201,10 +205,25 @@
   :root .afr2-section-card:hover .afr2-section-entry > svg { transform: none; }
 }
 @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
-  :root .afr2-page-header { background: var(--banner-bg); }
+  :root .afr2-page-header { background: var(--infra-hero-bg); }
   :root .afr2-page-header__glow { display: none; }
 }
 @media (prefers-contrast: more) {
   :root .afr2-hero h1 { background: none; color: var(--banner-ink); }
-  :root .afr2-page-header { border-color: var(--banner-ink); }
+  :root .afr2-page-header { border-color: var(--infra-hero-ink); }
 }
+
+/* AFR2-20261102-22: lazy route fallback as a quiet status card, not loose text. */
+:root .afr2-route-loading {
+  display: flex; align-items: center; gap: 12px; width: fit-content; margin: 0;
+  padding: 14px 20px; border-radius: var(--radius-lg); border: 1px solid var(--border-default);
+  background: var(--surface-solid); box-shadow: var(--visual-card-shadow);
+  color: var(--text-muted); font: var(--type-label);
+}
+:root .afr2-route-loading::before {
+  content: ''; width: 16px; height: 16px; flex: none; border-radius: 50%;
+  border: 2px solid var(--action-subtle); border-top-color: var(--action);
+  animation: afr2-route-spin 800ms linear infinite;
+}
+@keyframes afr2-route-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { :root .afr2-route-loading::before { animation: none; } }

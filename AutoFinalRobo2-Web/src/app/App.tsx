@@ -14,6 +14,7 @@ import { DocsPage } from '../features/docs/DocsPage';
 import { DeveloperPage } from '../features/developer/DeveloperPage';
 
 const ModelsPage = lazy(() => import('../features/models/ModelsPage').then(m => ({ default: m.ModelsPage })));
+const LoaderPage = lazy(() => import('../features/loader/LoaderPage').then(m => ({ default: m.LoaderPage })));
 const InfrastructurePage = lazy(() => import('../features/infrastructure/InfrastructurePage').then(m => ({ default: m.InfrastructurePage })));
 const Model3DPage = lazy(() => import('../features/model3d/Model3DPage').then(m => ({ default: m.Model3DPage })));
 const SimulatorPage = lazy(() => import('../features/collector/SimulatorPage').then(m => ({ default: m.SimulatorPage })));
@@ -61,11 +62,12 @@ export function App() {
                 <Route path="/programas" element={<ControlPage area="programs" />} />
                 <Route path="/puesta-a-punto" element={<ControlPage area="setup" />} />
                 <Route path="/sensores" element={<SensorsPage />} />
-                <Route path="/modelos" element={<Suspense fallback={<p role="status">Cargando modelos…</p>}><ModelsPage /></Suspense>} />
-                <Route path="/infraestructura" element={<Suspense fallback={<p role="status">Cargando infraestructura…</p>}><InfrastructurePage /></Suspense>} />
+                <Route path="/modelos" element={<Suspense fallback={<p role="status" className="afr2-route-loading">Cargando modelos…</p>}><ModelsPage /></Suspense>} />
+                <Route path="/infraestructura" element={<Suspense fallback={<p role="status" className="afr2-route-loading">Cargando infraestructura…</p>}><InfrastructurePage /></Suspense>} />
+                <Route path="/loader" element={<Suspense fallback={<p role="status" className="afr2-route-loading">Cargando Loader…</p>}><LoaderPage /></Suspense>} />
                 {/* AFR2-20261102-01: inspección 3D y simulador separados. */}
-                <Route path="/modelos/:modelo" element={<Suspense fallback={<p role="status">Cargando módulo 3D bajo demanda…</p>}><Model3DPage /></Suspense>} />
-                <Route path="/simulacion/:tipo" element={<Suspense fallback={<p role="status">Cargando simulador…</p>}><SimulatorPage /></Suspense>} />
+                <Route path="/modelos/:modelo" element={<Suspense fallback={<p role="status" className="afr2-route-loading">Cargando módulo 3D bajo demanda…</p>}><Model3DPage /></Suspense>} />
+                <Route path="/simulacion/:tipo" element={<Suspense fallback={<p role="status" className="afr2-route-loading">Cargando simulador…</p>}><SimulatorPage /></Suspense>} />
                 <Route path="/conexion" element={<WifiPage />} />
                 <Route path="/ayuda" element={<DocsPage />} />
                 {/* Rutas anteriores. */}
@@ -78,7 +80,7 @@ export function App() {
                 <Route path="/oled" element={<Redirect to="/ayuda" add={{ seccion: 'oled' }} />} />
                 <Route path="/documentacion" element={<Redirect to="/ayuda" />} />
                 <Route path="/desarrollador" element={<DeveloperPage />} />
-                <Route path="/desarrollador/protocol-studio" element={<Suspense fallback={<p role="status">Cargando Protocol Studio...</p>}><ProtocolStudioPage /></Suspense>} />
+                <Route path="/desarrollador/protocol-studio" element={<Suspense fallback={<p role="status" className="afr2-route-loading">Cargando Protocol Studio...</p>}><ProtocolStudioPage /></Suspense>} />
                 {/* AFR2-20261102-02: el Simulador UI pasó a Ayuda → OLED (vista previa y árbol). */}
                 <Route path="/desarrollador/ui-simulator" element={<Navigate to="/ayuda?seccion=oled&vista=arbol" replace />} />
                 <Route path="*" element={<Navigate to="/" replace />} />

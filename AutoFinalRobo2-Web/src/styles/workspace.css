@@ -122,6 +122,29 @@ html[data-input="keyboard"] .afr2-chevron { transition: none; }
 .afr2-oled-empty h3 { color: var(--text-strong); font-size: var(--type-heading-size); font-weight: 600; margin: 0; }
 .afr2-oled-empty p, .afr2-oled-empty > span { color: var(--text-muted); font-size: var(--type-label-size); margin: 0; max-width: 35ch; }
 .afr2-live-oled__stale { border: 2px solid var(--warning); border-radius: var(--radius-lg); }
+/* AFR2-20261102-22: the drawn capture never leaves while the next one is requested.
+   Stale is marked with an outline (no layout change); a placeholder keeps the same bezel size. */
+.afr2-live-oled__screen { position: relative; min-width: 0; border-radius: 1rem; }
+.afr2-live-oled__screen[data-stale] { outline: 2px solid var(--warning); outline-offset: 2px; }
+.afr2-live-oled__screen[data-stale] canvas { opacity: .72; }
+.afr2-live-oled__placeholder-text {
+  position: absolute; left: 50%; top: 58%; transform: translate(-50%, -50%); margin: 0;
+  padding: 6px 12px; border-radius: var(--radius-pill); background: rgba(255,255,255,.1);
+  color: #e2e8f0; font: var(--type-label); white-space: nowrap; pointer-events: none;
+}
+.afr2-live-oled__refresh { margin-left: auto; }
+.afr2-sw-legend { display: grid; gap: 4px; margin: 6px 0 0; }
+.afr2-sw-legend > div {
+  display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 8px;
+  padding: 4px 8px; border-radius: var(--radius-sm); color: var(--text-muted);
+  transition: background-color 150ms var(--ease-out), color 150ms var(--ease-out);
+}
+.afr2-sw-legend dt { display: inline-flex; align-items: center; gap: 6px; font: var(--type-caption); font-weight: 700; color: var(--text); }
+.afr2-sw-legend dd { margin: 0; font: var(--type-caption); min-width: 0; }
+.afr2-sw-legend > div:first-child[data-active] { background: var(--action-subtle); color: var(--action); }
+.afr2-sw-legend > div:last-child[data-active] { background: var(--attention); color: var(--attention-ink); }
+.afr2-sw-legend > div[data-active] dt { color: inherit; }
+@media (prefers-reduced-motion: reduce) { .afr2-sw-legend > div { transition: none; } }
 .afr2-live-oled__error { padding: 12px; border-left: 2px solid var(--warning); font-size: var(--type-label-size); color: var(--text-muted); overflow-wrap: anywhere; }
 .afr2-live-oled > .afr2-surface-cell { margin-top: 24px; }
 .afr2-encoder { margin-top: 24px; }
@@ -511,3 +534,112 @@ html[data-input="keyboard"] .afr2-route-link, html[data-input="keyboard"] .afr2-
   opacity: 0.4;
   cursor: not-allowed;
 }
+
+/* AFR2-20261102-22: live screen layout. Top bar always on top (last input pill + refresh at the
+   top-right edge); screen and encoder side by side from 840 px, stacked below that. */
+.afr2-floating-modal[data-size="lg"] { --floating-dialog-width: 1120px; }
+.afr2-live-oled-layout { display: grid; gap: 16px; min-width: 0; }
+.afr2-live-oled__topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: nowrap; min-width: 0; }
+.afr2-live-oled__topbar > .afr2-live-oled__last { flex: 0 1 auto; min-width: 0; display: block; line-height: 22px; }
+.afr2-live-oled__topbar > .afr2-live-oled__sync { flex: none; }
+@media (max-width: 599.98px) { .afr2-live-oled__sync-long { display: none; } .afr2-live-oled__sync { padding-inline: 12px; } }
+.afr2-live-oled__last {
+  display: inline-flex; align-items: center; gap: 4px; min-height: 32px; padding: 4px 14px;
+  border-radius: var(--radius-pill); border: 1px solid var(--border-default); background: var(--surface-subtle);
+  color: var(--text-muted); font: var(--type-caption); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.afr2-live-oled__last strong { color: var(--text-strong); font-weight: 650; }
+.afr2-live-oled__sync {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 44px; margin-left: auto; padding: 8px 16px;
+  border-radius: var(--radius-md); border: 1px solid var(--action-border); background: var(--surface-solid);
+  color: var(--action); font: var(--type-label); font-weight: 650; cursor: pointer;
+  transition: background-color 150ms var(--ease-out), color 150ms var(--ease-out), border-color 150ms var(--ease-out);
+}
+.afr2-live-oled__sync:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.afr2-live-oled__sync:disabled { cursor: not-allowed; color: var(--text-muted); border-color: var(--border-default); background: var(--surface-subtle); }
+@media (hover: hover) and (pointer: fine) {
+  .afr2-live-oled__sync:hover:not(:disabled) { background: var(--action); border-color: var(--action); color: var(--text-on-action); }
+}
+.afr2-live-oled__sync:active:not(:disabled) { background: var(--action-active, var(--action)); color: var(--text-on-action); }
+.afr2-live-oled__statusbar { display: flex; align-items: center; justify-content: space-between; gap: 8px 12px; flex-wrap: wrap; }
+.afr2-live-oled__notices { display: grid; gap: 12px; }
+.afr2-live-oled__body { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; align-items: start; }
+.afr2-live-oled__display, .afr2-live-oled__controls { min-width: 0; }
+.afr2-live-oled__controls { container-type: inline-size; }
+@media (min-width: 840px) {
+  .afr2-live-oled__body { grid-template-columns: minmax(0, 1.25fr) minmax(300px, 1fr); }
+}
+/* In a narrow controls column: two turn buttons in a row, SW (with its legend) full width below. */
+@container (max-width: 520px) {
+  :root .afr2-encoder-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  :root .afr2-encoder-grid > :nth-child(2) { grid-column: 1 / -1; order: 3; }
+}
+
+/* AFR2-20261102-23: technical help. Groups per module, chapters as disclosures with a
+   facts table and a source line. */
+.afr2-help-group { display: grid; gap: 12px; min-width: 0; }
+.afr2-help-group__title {
+  display: flex; align-items: center; gap: 10px; margin: 0;
+  font: var(--type-subheading); letter-spacing: var(--type-subheading-tracking); color: var(--text-strong);
+}
+.afr2-help-group__title::before {
+  content: ''; width: 4px; height: 1.1em; border-radius: 2px; background: var(--page-zone, var(--action));
+}
+.afr2-help-group__list { display: grid; gap: 0; min-width: 0; }
+.afr2-help-chapter { display: grid; gap: 16px; min-width: 0; }
+.afr2-help-chapter__text { display: grid; gap: 10px; margin: 0; padding-left: 1.1rem; line-height: 1.65; max-width: 80ch; }
+.afr2-help-facts {
+  display: grid; margin: 0; border: 1px solid var(--border-default); border-radius: var(--radius-md);
+  overflow: hidden; background: var(--surface-subtle);
+}
+.afr2-help-facts > div { display: grid; grid-template-columns: minmax(0, 1fr); gap: 2px 16px; padding: 10px 14px; }
+.afr2-help-facts > div + div { border-top: 1px solid var(--border-subtle); }
+.afr2-help-facts dt { font: var(--type-caption); font-weight: 700; color: var(--text-muted); }
+.afr2-help-facts dd { margin: 0; min-width: 0; font: var(--type-label); font-variant-numeric: tabular-nums; color: var(--text-strong); overflow-wrap: anywhere; }
+@media (min-width: 600px) { .afr2-help-facts > div { grid-template-columns: minmax(140px, 220px) minmax(0, 1fr); align-items: baseline; } }
+.afr2-help-source { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin: 0; color: var(--text-muted); font: var(--type-caption); }
+.afr2-help-source code { font-size: inherit; overflow-wrap: anywhere; }
+
+/* AFR2-20261102-24: module descriptor in Ayuda, same light/dark hero family as page headers. */
+.afr2-help-hero {
+  position: relative; isolation: isolate; overflow: hidden; display: grid; gap: 20px;
+  grid-template-columns: auto minmax(0, 1fr); align-items: start;
+  padding: clamp(20px, 3vw, 32px); border-radius: var(--radius-xl);
+  border: 1px solid var(--infra-hero-border); color: var(--infra-hero-ink); box-shadow: var(--infra-hero-shadow);
+  background:
+    linear-gradient(var(--infra-hero-grid) 1px, transparent 1px) 0 0 / 24px 24px,
+    linear-gradient(90deg, var(--infra-hero-grid) 1px, transparent 1px) 0 0 / 24px 24px,
+    radial-gradient(90% 120% at 100% 0%, var(--infra-hero-tint-a), transparent 60%),
+    radial-gradient(70% 100% at 0% 100%, var(--infra-hero-tint-b), transparent 65%), var(--infra-hero-bg);
+}
+.afr2-help-hero__icon {
+  display: grid; place-items: center; width: 56px; height: 56px; border-radius: 16px;
+  color: var(--page-zone-hero, var(--infra-hero-zone-link));
+  background: color-mix(in srgb, var(--page-zone-hero, var(--infra-hero-zone-link)) 12%, var(--infra-hero-surface));
+  border: 1px solid color-mix(in srgb, var(--page-zone-hero, var(--infra-hero-zone-link)) 32%, transparent);
+  box-shadow: inset 0 1px 0 var(--infra-hero-surface-highlight), var(--infra-hero-node-shadow);
+}
+.afr2-help-hero__copy { display: grid; gap: 6px; min-width: 0; }
+.afr2-help-hero__role { margin: 0; color: var(--infra-hero-muted); font: var(--type-caption); font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+.afr2-help-hero__name { margin: 0; color: var(--infra-hero-ink); font: 750 clamp(1.4rem, 2.6vw, 1.9rem) / 1.15 var(--font-display); letter-spacing: -.03em; }
+.afr2-help-hero__intro { margin: 4px 0 0; max-width: 76ch; color: var(--infra-hero-muted); font: var(--type-body); line-height: 1.7; }
+.afr2-help-hero__specs { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 8px; margin: 0; }
+.afr2-help-hero__specs > div {
+  display: grid; gap: 2px; min-width: 0; padding: 10px 14px; border-radius: var(--radius-md);
+  border: 1px solid var(--infra-hero-chip-border); background: var(--infra-hero-chip-bg);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+}
+.afr2-help-hero__specs dt { color: var(--infra-hero-muted); font: var(--type-caption); }
+.afr2-help-hero__specs dd { margin: 0; color: var(--infra-hero-ink); font: var(--type-label); font-weight: 650; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+@media (max-width: 599.98px) {
+  .afr2-help-hero { grid-template-columns: minmax(0, 1fr); }
+  .afr2-help-hero__icon { width: 48px; height: 48px; border-radius: 14px; }
+  .afr2-help-hero__specs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  .afr2-help-hero { background: var(--infra-hero-bg); }
+  .afr2-help-hero__specs > div { backdrop-filter: none; -webkit-backdrop-filter: none; }
+}
+/* Loader page: source line in the stage card. */
+.afr2-loader-source { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin: 0; }
+.afr2-loader-source code { font-size: inherit; overflow-wrap: anywhere; }

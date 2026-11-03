@@ -206,6 +206,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           origin={origin}
           onClose={() => setModal((value) => (value === 'oled' ? null : value))}
           title="Pantalla en vivo"
+          size="lg"
           description="Consultá la OLED sin salir de lo que estás haciendo."
         >
           <LiveOledViewer active={modal === 'oled'} />

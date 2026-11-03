@@ -215,12 +215,6 @@ export function EncoderControl({
           ? 'disabled'
           : 'idle';
 
-  const swStatusCopy = longVisualActive
-    ? `Largo preparado (≥ ${threshold} ms) · soltá SW para volver`
-    : pressing
-      ? `Pulsando SW… soltá antes de ${threshold} ms para confirmar o mantené para volver`
-      : 'Inicio: corto abre menú; largo abre pantallas rápidas al soltar. En el resto: corto confirma, largo vuelve.';
-
   const reasonToShow =
     disabledReason ??
     (!isAvailable
@@ -268,7 +262,7 @@ export function EncoderControl({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5" role="group" aria-label="Acciones de giro y pulsación SW">
+      <div className="afr2-encoder-grid grid grid-cols-1 sm:grid-cols-3 gap-2.5" role="group" aria-label="Acciones de giro y pulsación SW">
         <div className="flex flex-col gap-1">
           <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
             Giro izquierdo
@@ -382,6 +376,17 @@ export function EncoderControl({
               </span>
             </span>
           </button>
+          {/* AFR2-20261102-22: short legend under SW; the row being pressed lights up. */}
+          <dl className="afr2-sw-legend" aria-label="Qué hace el pulsador SW">
+            <div data-active={pressing && !longVisualActive || undefined}>
+              <dt><EncoderGlyph kind="short" scale={1} /><span>Corto</span></dt>
+              <dd>Inicio: menú · resto: confirma</dd>
+            </div>
+            <div data-active={longVisualActive || undefined}>
+              <dt><EncoderGlyph kind="long" scale={1} /><span>Largo</span></dt>
+              <dd>Inicio: rápidas · resto: vuelve</dd>
+            </div>
+          </dl>
         </div>
 
         <div className="flex flex-col gap-1">
@@ -402,19 +407,7 @@ export function EncoderControl({
         </div>
       </div>
 
-      <div className="flex flex-col gap-1.5 pt-0.5">
-        <p
-          className={`text-xs font-medium ${
-            longVisualActive
-              ? 'text-[var(--warning)] font-semibold'
-              : pressing
-                ? 'text-[var(--action)]'
-                : 'text-[var(--text-muted)]'
-          }`}
-        >
-          <span className="inline-flex items-center gap-2"><EncoderGlyph kind={longVisualActive?'long':'short'} scale={1}/>{swStatusCopy}</span>
-        </p>
-
+      <div className="flex flex-col gap-1.5 pt-0.5 empty:hidden">
         {reasonToShow && (
           <p
             role="status"

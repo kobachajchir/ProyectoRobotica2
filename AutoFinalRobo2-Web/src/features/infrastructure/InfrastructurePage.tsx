@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type CSSProperties, type KeyboardEvent, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type CSSProperties, type KeyboardEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { UiIcon, type UiIconName } from '../../components/ui/UiIcon';
 import { Button } from '../../components/ui/Button';
@@ -8,6 +8,7 @@ import modelSizes from '../../components/three/modelAssetSizes.json';
 import { JOURNEYS, type Journey } from './infrastructureFlow';
 import { useInfrastructurePackage } from './useInfrastructurePackage';
 import { useConnection } from '../connection/ConnectionContext';
+import { FlowNode, Reveal, Stat, Wire } from './infraPrimitives';
 
 /* AFR2-20261102-07: reforma visual de AFR2-20261102-04. Mismo contenido y orden; portada con mapa
    de flujo animado, recorrido en «línea de metro», barras de peso y anillo de ocupación. */
@@ -48,42 +49,6 @@ function changeLabel(raw: number, gzip: number) {
   if (!raw) return 'Sin comparación';
   const percent = Math.abs((1 - gzip / raw) * 100).toLocaleString('es-AR', { maximumFractionDigits: 1 });
   return `${percent}% ${gzip <= raw ? 'menos' : 'más'}`;
-}
-
-/** Marca la sección como visible la primera vez que entra en pantalla (para animar su entrada una sola vez). */
-function useReveal<T extends HTMLElement>() {
-  const ref = useRef<T>(null);
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    const node = ref.current;
-    if (!node || typeof IntersectionObserver === 'undefined') { setVisible(true); return; }
-    const observer = new IntersectionObserver(entries => {
-      if (entries.some(entry => entry.isIntersecting)) { setVisible(true); observer.disconnect(); }
-    }, { rootMargin: '0px 0px -10% 0px' });
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, []);
-  return [ref, visible] as const;
-}
-function Reveal({ as: Tag = 'section', className = '', children, ...rest }: { as?: 'section' | 'div'; className?: string; children: ReactNode } & React.HTMLAttributes<HTMLElement>) {
-  const [ref, visible] = useReveal<HTMLElement>();
-  return <Tag ref={ref as never} className={`afr2-infra-reveal ${className}`} data-visible={visible} {...rest}>{children}</Tag>;
-}
-
-function Wire({ delay = 0, label }: { delay?: number; label?: string }) {
-  return <span className="afr2-infra-wire" aria-hidden="true" style={{ '--wire-delay': `${delay}s` } as CSSProperties}>
-    <i /><i />{label && <em>{label}</em>}
-  </span>;
-}
-function FlowNode({ icon, title, detail, zone, onPick }: { icon: UiIconName; title: string; detail: string; zone: Zone; onPick: () => void }) {
-  return <button type="button" className="afr2-infra-node" data-zone={zone} onClick={onPick} aria-label={`${title}: ${detail}. Ver esta etapa en el recorrido`}>
-    <span className="afr2-infra-node__icon"><UiIcon name={icon} size={22} /></span>
-    <strong>{title}</strong><span>{detail}</span>
-  </button>;
-}
-function Stat({ icon, label, value, detail, bytes }: { icon: UiIconName; label: string; value: string; detail: string; bytes?: number }) {
-  return <div className="afr2-infra-stat"><span className="afr2-infra-stat__icon"><UiIcon name={icon} size={18} /></span>
-    <span className="afr2-infra-stat__label">{label}</span><strong title={exactBytes(bytes)}>{value}</strong><small>{detail}</small></div>;
 }
 
 const CONCEPTS: readonly { icon: UiIconName; title: string; text: string }[] = [

@@ -1,3 +1,6 @@
+> **AFR2-20261102-24:** tarjetas técnicas por módulo en Ayuda y página del Loader en Explorar. [Ficha](changes/2026-11-02-24-help-descriptors-loader-page.md).
+> **AFR2-20261102-23:** Ayuda técnica por módulo en orden ATmega, ESP, Web y OLED, con datos tomados del código. [Ficha](changes/2026-11-02-23-web-help-technical.md).
+> **AFR2-20261102-22:** manual revisado en todas las rutas y pantalla en vivo con actualización periódica o al cambiar. [Ficha](changes/2026-11-02-22-web-manual-review-live-screen.md).
 > **AFR2-20261102-21:** radar de la Web rediseñado como instrumento, revisado en las cuatro escalas. [Ficha](changes/2026-11-02-21-radar-instrument-redesign.md).
 
 > **AFR2-20261102-14:** dashboard con tarjeta de estados por inactividad y familia OLED alineada AVR/Web. [Contrato](contracts/OLED_DASHBOARD_STATUS_20261102.md). Fuentes y recursos copiados, sin pruebas/build/validaciones/navegador/flasheo.
