@@ -52,7 +52,6 @@ export function ControlPage({ area = 'drive' }: { area?: ControlArea }) {
     megaLinkState,
     hasWebOperation,
     capabilities,
-    robotState,
     triggerEmergencyStop,
     sendPwmCommand,
     executeCommandWithToast,

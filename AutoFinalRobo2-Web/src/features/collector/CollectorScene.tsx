@@ -8,7 +8,6 @@ import { useRobotModel } from '../../components/three/RobotModel';
 import { SimulationRobot, SimulationOrbit } from './SimulationModel';
 import { RenderBoundary } from '../../components/ui/RenderBoundary';
 import { Button } from '../../components/ui/Button';
-import { UiIcon } from '../../components/ui/UiIcon';
 import { useTheme } from '../../app/providers/ThemeProvider';
 import { getComponentAnchors } from '../model3d/modelComponents';
 import { ARM_MOUNT, STANDALONE_MOUNT, CAD_TO_THREE, forwardArm, groundWorkspacePoints, localToWorld, rad, toThree, workspacePoints, type Point3 } from './armKinematics';

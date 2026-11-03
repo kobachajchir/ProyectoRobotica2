@@ -1,3 +1,7 @@
+## AFR2-20261103-31 - 03/11/2026
+
+La Web compila (`tsc -b` y `vite build --mode esp` sin errores) tras corregir tamaños de ícono, el espacio de nombres del QR vendido y dos variables sin uso. Peso medido: 17 archivos, 4,44 MiB → 2,36 MiB con gzip (91,4 % del presupuesto LittleFS). El paquete ESP no se genera porque el firmware admite 16 archivos y hay 17; Infraestructura sigue leyendo el manifiesto anterior. [Ficha](changes/2026-11-03-31-web-build-weight.md).
+
 ## AFR2-20261103-30 - 03/11/2026
 
 Banco OLED único (`OledWorkbench`) compartido por Pantalla en vivo y Ayuda → OLED, lista de pantallas a la altura del banco, sin leyendas grandes de gestos y modal de Configuración con márgenes y bordes parejos. Verificado en navegador local sin robot; sin compilación. [Ficha](changes/2026-11-03-30-oled-workbench.md).

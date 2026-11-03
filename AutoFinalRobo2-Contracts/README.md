@@ -1,3 +1,4 @@
+> **AFR2-20261103-31:** la Web compila; peso medido y bloqueo de 17 archivos frente al límite de 16 del ESP. [Ficha](changes/2026-11-03-31-web-build-weight.md).
 > **AFR2-20261103-30:** banco OLED único para Pantalla en vivo y Ayuda; modal de Configuración ordenado. [Ficha](changes/2026-11-03-30-oled-workbench.md).
 > **AFR2-20261103-29:** banner de Inicio sin recortes en anchos chicos. [Ficha](changes/2026-11-03-29-home-hero-narrow.md).
 > **AFR2-20261103-28:** Estado de red con «Sin datos» en todo el panel. [Ficha](changes/2026-11-03-28-wifi-no-data.md).

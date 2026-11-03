@@ -2,7 +2,8 @@ import type { SVGProps } from 'react';
 import { ICON_PATHS, type UiIconName } from './icons/registry';
 
 export type { UiIconName };
-export type UiIconSize = 16 | 20 | 24;
+/** 16, 20 y 24 son los tamaños del sistema; el resto son tamaños de portadas, mapas y estados vacíos. */
+export type UiIconSize = 14 | 16 | 18 | 20 | 22 | 24 | 26 | 28 | 40 | 56;
 
 /**
  * AFR2-20261101-07 / VIS-050. Una sola familia de iconos (Lucide + propios del dominio),
