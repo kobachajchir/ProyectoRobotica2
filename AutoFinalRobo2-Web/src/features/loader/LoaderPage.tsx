@@ -4,7 +4,8 @@ import { UiIcon, type UiIconName } from '../../components/ui/UiIcon';
 import { Button } from '../../components/ui/Button';
 import { SegmentedControl, type SegmentedItem } from '../../components/ui/SegmentedControl';
 import { FlowNode, Reveal, Stat, Wire } from '../infrastructure/infraPrimitives';
-import { LOADER_JOURNEYS, LOADER_REASONS, LOADER_TOOLS, LOADER_VERSION, type LoaderJourney, type LoaderZone } from './loaderFlow';
+import { Disclosure } from '../../components/ui/Disclosure';
+import { LOADER_JOURNEYS, LOADER_OPERATIONS, LOADER_REASONS, LOADER_TOOLS, LOADER_VERSION, type LoaderJourney, type LoaderZone } from './loaderFlow';
 
 /* AFR2-20261102-24: página del AFR2 Loader en Explorar, con el mismo lenguaje visual que
    Infraestructura (portada con carriles, línea de estaciones, ficha de etapa, cifras y tarjetas). */
@@ -54,7 +55,7 @@ export function LoaderPage() {
       <div className="afr2-infra-hero__copy">
         <p className="afr2-infra-hero__eyebrow"><span>Explorar</span> AFR2 Loader</p>
         <h1 id="loader-title">De la fuente a la placa,<br /><span>con cada byte verificado.</span></h1>
-        <p className="afr2-infra-hero__lede">AFR2 Loader es la aplicación de escritorio para Windows que compila el firmware del ATmega2560, el del ESP8266 y la Web, y los carga por el puerto serie. Encadena avrdude, esptool y los scripts del proyecto con comprobaciones antes y después de escribir, para que ninguna carga deje una placa en un estado desconocido.</p>
+        <p className="afr2-infra-hero__lede">Aplicación de Windows que compila el ATmega2560, el ESP8266 y la Web, y los carga por serie con avrdude y esptool. Comprueba antes y después de escribir.</p>
         <ul className="afr2-infra-hero__chips" aria-label="En pocas palabras">
           <li><UiIcon name="programs" size={16} />C# · WinForms · .NET Framework 4</li>
           <li><UiIcon name="board" size={16} />avrdude + esptool</li>
@@ -90,7 +91,7 @@ export function LoaderPage() {
         </div>
       </div>
 
-      <p className="afr2-infra-hero__takeaway"><UiIcon name="check" size={18} /><span><strong>Una carga solo cuenta cuando se verifica.</strong> Sin la comprobación de hash o la lectura posterior, el Loader no la da por hecha; si algo falla lo informa con la salida completa y no reintenta a ciegas.</span></p>
+      <p className="afr2-infra-hero__takeaway"><UiIcon name="check" size={18} /><span><strong>Una carga solo cuenta cuando se verifica.</strong> Hash por imagen o lectura posterior; si falla, informa y no reintenta a ciegas.</span></p>
     </section>
 
     <Reveal className="afr2-infra-journey" aria-labelledby="loader-flow-title">
@@ -113,7 +114,7 @@ export function LoaderPage() {
         <div className="afr2-infra-stage__main">
           <div className="afr2-infra-stage__top"><span className="afr2-infra-zone-tag"><UiIcon name={ZONES[step.zone].icon} size={14} />{step.place}</span><span className="afr2-infra-counter">{String(selected + 1).padStart(2, '0')} / {String(steps.length).padStart(2, '0')}</span></div>
           <div className="afr2-infra-stage__title"><span className="afr2-infra-stage__icon"><UiIcon name={step.icon} size={28} /></span><h3 id="loader-step-title">{step.title}</h3></div>
-          <p className="afr2-infra-stage__description">{step.description}</p>
+          <ul className="afr2-loader-points">{step.points.map(point => <li key={point}>{point}</li>)}</ul>
           <div className="afr2-infra-transform">
             <div><span>Entra</span><strong>{step.input}</strong></div>
             <Wire delay={0} />
@@ -123,7 +124,6 @@ export function LoaderPage() {
         <div className="afr2-infra-stage__side">
           <h4>Lo que conviene saber</h4>
           <ol className="afr2-infra-facts">{step.details.map((detail, index) => <li key={detail} style={{ '--i': index } as CSSProperties}>{detail}</li>)}</ol>
-          <p className="afr2-help afr2-loader-source"><UiIcon name="book" size={14} />Fuente: <code>{step.source}</code></p>
           <div className="afr2-infra-stage__nav">
             <Button size="sm" disabled={selected === 0} icon={<UiIcon name="back" />} onClick={() => setSelected(value => value - 1)}>Anterior</Button>
             <Button size="sm" variant={selected === steps.length - 1 ? 'secondary' : 'primary'} disabled={selected === steps.length - 1} onClick={() => setSelected(value => value + 1)}>Siguiente<UiIcon name="arrow" /></Button>
@@ -141,7 +141,20 @@ export function LoaderPage() {
         <Stat icon="programs" label="Herramientas MCP" value="10" detail="Estado, perfil, puertos, serie y operaciones" />
         <Stat icon="board" label="Operaciones" value="14" detail="Compilar, preparar, flashear, backup y verificar" />
       </div>
-      <p className="afr2-help">Operaciones del Loader: build_mega, build_esp, build_web_fs, build_all, flash_mega, flash_esp, flash_fs, flash_esp_fs, flash_id, verify_flash, install_mega_flasher, verify_mega_flasher, flash_mega_backup y restore_mega_product. Por MCP se piden con loader_request_operation y se siguen con loader_job.</p>
+      <Disclosure title="Operaciones" meta={`${LOADER_OPERATIONS.length}`}>
+        <dl className="afr2-loader-ops">{LOADER_OPERATIONS.map(op => <div key={op.name}><dt><code>{op.name}</code></dt><dd>{op.text}</dd></div>)}</dl>
+        <p className="afr2-help">Por MCP: <code>loader_request_operation</code> las pide y <code>loader_job</code> las sigue.</p>
+      </Disclosure>
+    </Reveal>
+
+    <Reveal className="afr2-loader-ai" aria-labelledby="loader-ai-title">
+      <span className="afr2-loader-ai__icon"><UiIcon name="programs" size={28} /></span>
+      <div>
+        <p className="afr2-kicker">Servidor MCP</p>
+        <h2 id="loader-ai-title">Totalmente automatizable con IA</h2>
+        <p>Una IA lee el estado, elige el perfil y pide cada operación; vos ves la solicitud y confirmás lo físico.</p>
+      </div>
+      <ul className="afr2-loader-ai__chips" aria-label="Datos del servidor MCP"><li>stdio · sin puerto TCP</li><li>10 herramientas</li><li>14 operaciones</li></ul>
     </Reveal>
 
     <Reveal className="afr2-infra-concepts" aria-labelledby="loader-why-title">
@@ -158,7 +171,7 @@ export function LoaderPage() {
         <span className="afr2-infra-concept__icon"><UiIcon name={item.icon} size={22} /></span>
         <h3>{item.title}</h3><p>{item.text}</p>
       </article>)}</div>
-      <p className="afr2-help">El Loader vive en AutoFinalRobo2-Loader, en el mismo repositorio que el resto del proyecto. Su configuración y sus registros se guardan fuera del repositorio. Esta página describe su fuente; no abre puertos ni realiza cargas.</p>
+      <p className="afr2-help">Vive en AutoFinalRobo2-Loader. Configuración y registros quedan fuera del repositorio. Esta página no abre puertos ni carga nada.</p>
     </Reveal>
   </div>;
 }

@@ -92,8 +92,15 @@
 }
 :root .afr2-page-header__description { margin: 0; max-width: 68ch; color: var(--infra-hero-muted); font-size: 1rem; line-height: 1.65; }
 :root .afr2-page-header__extra { margin-top: 4px; min-width: 0; }
+/* Enlaces de retorno en la cabecera: misma forma que el botón «subtle» vecino (borde, radio, relleno y peso). */
 :root .afr2-page-header__actions .afr2-developer-back {
-  color: var(--infra-hero-ink); background: var(--infra-hero-chip-bg); border-color: var(--infra-hero-chip-border);
+  justify-self: auto; justify-content: center; gap: 8px; padding: 8px 16px; border: 1px solid var(--infra-hero-chip-border);
+  border-radius: 14px; font-weight: 600; font-size: .875rem;
+  color: var(--infra-hero-ink); background: var(--infra-hero-chip-bg);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+}
+@media (hover: hover) and (pointer: fine) {
+  :root .afr2-page-header__actions .afr2-developer-back:hover { background: var(--action); color: var(--text-on-action); border-color: var(--action-border); }
 }
 /* The selector over the heading reads the hero family, so it follows light and dark. */
 :root .afr2-page-header .afr2-seg {
@@ -158,7 +165,6 @@
 /* Shell shares rounded geometry, while semantic network/error colours stay intact. */
 :root .afr2-sidebar { border-radius: var(--radius-xl); }
 :root .afr2-route-link { border-radius: var(--radius-md); }
-:root .afr2-route-link.is-active { box-shadow: inset 3px 0 0 var(--action); }
 :root .afr2-floating-modal__header { border-bottom: 1px solid var(--border-subtle); }
 :root .afr2-floating-modal__body { padding-top: 24px; }
 :root .afr2-toast { border-radius: var(--radius-lg); }
@@ -172,6 +178,8 @@
   background: linear-gradient(92deg, var(--banner-zone-pc), var(--banner-zone-link) 55%, var(--banner-zone-esp));
   background-clip: text; -webkit-background-clip: text; color: transparent;
 }
+/* AFR2-20261103-29: con la barra lateral, el ancho útil del banner es ~(100vw − 360px): el título escala con él y no se corta. */
+@media (min-width: 840px) { :root .afr2-hero h1 { font-size: clamp(1.75rem, calc((100vw - 360px) / 17), 3.6rem); } }
 :root .afr2-model-banner { border-radius: var(--radius-xl); box-shadow: var(--visual-card-shadow); }
 :root .afr2-model-banner__copy { padding: 24px; }
 :root .afr2-sim-workspace-heading { padding: 24px; gap: 16px; }

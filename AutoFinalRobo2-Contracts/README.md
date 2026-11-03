@@ -1,3 +1,9 @@
+> **AFR2-20261103-30:** banco OLED único para Pantalla en vivo y Ayuda; modal de Configuración ordenado. [Ficha](changes/2026-11-03-30-oled-workbench.md).
+> **AFR2-20261103-29:** banner de Inicio sin recortes en anchos chicos. [Ficha](changes/2026-11-03-29-home-hero-narrow.md).
+> **AFR2-20261103-28:** Estado de red con «Sin datos» en todo el panel. [Ficha](changes/2026-11-03-28-wifi-no-data.md).
+> **AFR2-20261103-27:** teclado en Pantalla en vivo (← → Espacio, Escape). [Ficha](changes/2026-11-03-27-live-screen-keyboard.md).
+> **AFR2-20261103-26:** Ayuda reescrita, código resaltado y pinout por módulo. [Ficha](changes/2026-11-03-26-help-rewrite-pinout.md).
+> **AFR2-20261103-25:** Loader más directo, banner de IA y sin carteles de fuente. [Ficha](changes/2026-11-03-25-loader-direct-no-source.md).
 > **AFR2-20261102-24:** tarjetas técnicas por módulo en Ayuda y página del Loader en Explorar. [Ficha](changes/2026-11-02-24-help-descriptors-loader-page.md).
 > **AFR2-20261102-23:** Ayuda técnica por módulo en orden ATmega, ESP, Web y OLED, con datos tomados del código. [Ficha](changes/2026-11-02-23-web-help-technical.md).
 > **AFR2-20261102-22:** manual revisado en todas las rutas y pantalla en vivo con actualización periódica o al cambiar. [Ficha](changes/2026-11-02-22-web-manual-review-live-screen.md).

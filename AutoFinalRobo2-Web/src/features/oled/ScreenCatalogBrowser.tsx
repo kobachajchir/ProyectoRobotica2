@@ -41,10 +41,13 @@ export function ScreenCatalogBrowser({ active = true, initialCode, onShowTree }:
   };
   const current = AFR2_SCREEN_META[selected];
   return <div className="afr2-screen-catalogue">
-    <section className="afr2-screen-library" aria-label="Pantalla seleccionada"><header><p className="afr2-kicker">Biblioteca del ATmega · vista local</p><h2>{current.name}</h2><code>{current.code}</code></header>
-      <SegmentedControl ariaLabel="Modo de vista OLED" size="sm" value={simulate?'simulation':'library'}
-        items={[{value:'simulation',label:'Simular flujo'},{value:'library',label:'Biblioteca sin datos'}]}
-        onChange={value=>setSimulate(value==='simulation')}/>
+    <section className="afr2-screen-library" aria-label="Pantalla seleccionada">
+      <header className="afr2-screen-library__head">
+        <div className="afr2-screen-library__title"><p className="afr2-kicker">Biblioteca del ATmega · vista local</p><h2>{current.name}</h2><code>{current.code}</code></div>
+        <SegmentedControl ariaLabel="Modo de vista OLED" size="sm" fill="never" value={simulate?'simulation':'library'}
+          items={[{value:'simulation',label:'Simular flujo'},{value:'library',label:'Biblioteca sin datos'}]}
+          onChange={value=>setSimulate(value==='simulation')}/>
+      </header>
       {simulate?<UiSimulationPreview key={previewSession} active={active} initialCode={current.code} onNavigate={setSelected}/>:<FirmwareLibraryPreview key={previewSession} active={active} screen={current} onNavigate={setSelected}/>}
 
       {current.siblings.length>0 && <p className="afr2-help">Vistas hermanas: {current.siblings.map(code=>AFR2_SCREEN_META[code]?.name??code).join(' ↔ ')}. Girá hacia la página indicada; en radar SW corto abre opciones y en IR usa largo para volver.</p>}
@@ -54,10 +57,10 @@ export function ScreenCatalogBrowser({ active = true, initialCode, onShowTree }:
     </section>
     <aside className="afr2-screen-list">
       <header className="afr2-screen-list__heading"><p className="afr2-kicker">Pantallas · {screens.length}</p>{onShowTree && <Button size="sm" icon={<UiIcon name="programs" />} onClick={onShowTree}>Ver árbol de pantallas</Button>}</header>
-    <nav ref={tree} className="afr2-screen-tree" aria-label="Lista de pantallas OLED"><ul>{screens.filter(screen => !screen.parent && !screen.returnsToContext).map(branch)}
+    <div className="afr2-screen-tree-frame"><nav ref={tree} className="afr2-screen-tree" aria-label="Lista de pantallas OLED"><ul>{screens.filter(screen => !screen.parent && !screen.returnsToContext).map(branch)}
       <li><button className="afr2-screen-tree-notices" type="button" aria-expanded={expanded.has('notices')} aria-controls="screen-notices" onClick={() => toggle('notices')}><Chevron open={expanded.has('notices')} /><span>Avisos · vuelven al contexto</span></button>
         {expanded.has('notices') && <ul id="screen-notices">{screens.filter(screen => screen.returnsToContext).map(branch)}</ul>}</li>
-    </ul></nav>
+    </ul></nav></div>
     </aside>
   </div>;
 }

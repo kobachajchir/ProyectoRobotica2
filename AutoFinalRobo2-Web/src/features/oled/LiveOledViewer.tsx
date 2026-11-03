@@ -4,11 +4,10 @@ import { Afr2CommandError } from '../../protocol/afr2Client';
 import { formatAgeLabel } from '../../protocol/wsEnvelope';
 import { StatusNotice } from '../../components/ui/StatusNotice';
 import { useConnection } from '../connection/ConnectionContext';
-import { EncoderControl } from './EncoderControl';
+import { OledWorkbench } from './OledWorkbench';
 import { OledCanvas128x64 } from './OledCanvas128x64';
 import { getScreenMetadata } from './screenCatalog';
 import { parseRemoteOled, type RemoteOledSnapshot } from './remoteSnapshot';
-import { MenuSideControls } from './MenuSideControls';
 import { Afr2OledBuffer } from './oledRasterizer';
 import { SegmentedControl } from '../../components/ui/SegmentedControl';
 import { UiIcon } from '../../components/ui/UiIcon';
@@ -296,19 +295,29 @@ export function LiveOledViewer({ active = true }: { active?: boolean }) {
 
   const sourceLabel = snapshot ? (refreshMode === 'change' ? 'Captura vigente' : 'Framebuffer recibido') : '';
 
+  const screenMeta = snapshot ? getScreenMetadata(snapshot.screenCode) : undefined;
+  const sideProps = snapshot ? {
+    selection: snapshot.selection, firstVisible: snapshot.firstVisible,
+    count: snapshot.itemCount ?? screenMeta?.itemCount ?? null, visibleRows: screenMeta?.visibleRows ?? 3,
+    disabled: !controlsAvailable || controlsBusy,
+    onBack: screenMeta?.role === 'menu' ? () => void sendRemoteAction('back', 0, 'Volver') : undefined,
+    onHighlight: (index: number) => { const delta = index - snapshot.selection; if (delta) void sendRemoteAction('rotate', delta < 0 ? -1 : 1, `Resaltar opción ${index + 1}`, Math.abs(delta)); },
+    onScroll: (direction: -1 | 1) => { const count = snapshot.itemCount ?? screenMeta?.itemCount ?? 0; const steps = Math.min(3, direction < 0 ? snapshot.selection : count - snapshot.selection - 1); if (steps > 0) void sendRemoteAction('rotate', direction, direction < 0 ? 'Desplazar selección hacia arriba' : 'Desplazar selección hacia abajo', steps); },
+  } : null;
+
+  // AFR2-20261103-30: el mismo banco que usa Ayuda → OLED; aquí con la captura real del ATmega.
   return (
-    <div className="afr2-live-oled-layout">
-      <div className="afr2-live-oled__topbar">
-        <span className="afr2-live-oled__last afr2-tabular">Última entrada: <strong>{lastActionLabel}</strong></span>
-        <button type="button" className="afr2-live-oled__sync" onClick={() => void fetchSnapshot(true)}
-          disabled={!linksReady || !remoteOledImplemented || loading || actionPending}
-          title="Sincronizar pantalla manualmente con el controlador">
-          <UiIcon name="refresh" size={16} className={loading ? 'animate-spin' : undefined} />
-          <span>{loading ? 'Sincronizando…' : <>Actualizar<span className="afr2-live-oled__sync-long"> pantalla</span></>}</span>
-        </button>
-      </div>
-      <div className="afr2-live-oled__statusbar">
-        <div className="flex flex-wrap items-center gap-2 text-xs font-mono afr2-live-oled__links">
+    <OledWorkbench
+      lockFocus
+      lastInput={lastActionLabel}
+      headerAction={<button type="button" className="afr2-oled-bench__sync" onClick={() => void fetchSnapshot(true)}
+        disabled={!linksReady || !remoteOledImplemented || loading || actionPending}
+        title="Sincronizar pantalla manualmente con el controlador">
+        <UiIcon name="refresh" size={16} className={loading ? 'animate-spin' : undefined} />
+        <span>{loading ? 'Sincronizando…' : <>Actualizar<span className="afr2-oled-bench__sync-long"> pantalla</span></>}</span>
+      </button>}
+      statusBar={<>
+        <div className="flex flex-wrap items-center gap-2 text-xs font-mono afr2-oled-bench__links">
           <span className="afr2-status-pill" data-state={wsState}>
             <span className="afr2-status-dot" aria-hidden="true" />
             ESP: {wsState}
@@ -325,91 +334,59 @@ export function LiveOledViewer({ active = true }: { active?: boolean }) {
           )}
         </div>
         <SegmentedControl items={REFRESH_ITEMS} value={refreshMode} onChange={setRefreshMode}
-          ariaLabel="Actualización de la pantalla en vivo" size="sm" fill="never" className="afr2-live-oled__refresh" />
-      </div>
-      <div className="afr2-live-oled__notices empty:hidden">
-
-      {!linksReady && (
-        <StatusNotice tone="warning" title="Sin enlace completo para OLED en vivo">
-          Se requiere sesión Web↔ESP (`ready`) y enlace UART ESP↔ATmega2560 (`ready`) para consultar `robot.screen.get`. Los controles permanecen visibles y deshabilitados abajo.
-        </StatusNotice>
-      )}
-
-      {linksReady && !remoteOledImplemented && (
-        <StatusNotice tone="info" title="Servicio OLED remoto pendiente en firmware" badge="Sin captura remota">
-          {oledCap.reason || 'El ATmega2560 y el ESP8266 aún no exponen robot.screen.get en vivo.'} No se dibuja una pantalla simulada como si proviniera del auto.
-        </StatusNotice>
-      )}
-
-      {errorMessage && (
-        <StatusNotice tone="error" title="No se pudo actualizar u operar la OLED remota">
-          {errorMessage}
-        </StatusNotice>
-      )}
-
-      </div>
-      <div className="afr2-live-oled__body">
-      <div className="afr2-live-oled__display">
-      {snapshot ? (
-        <div className="space-y-3">
-          {staleView && (
-            <StatusNotice tone="warning" title="Captura retenida caducada o con fallo posterior">
-              Última muestra recibida {formatAgeLabel(ageMs)}. Las acciones de encoder quedan bloqueadas hasta recibir una captura fresca.
-            </StatusNotice>
-          )}
-          <div className="afr2-oled-with-side"><div className="afr2-live-oled__screen" data-stale={staleView || undefined} aria-busy={loading || statusChanged}>
-            <OledCanvas128x64
-              compact
-              oledBuffer={snapshot.buffer}
-              screenCode={snapshot.screenCode}
-              sourceMode="remote-snapshot"
-              showGrid={false}
-              scale={4}
-            />
-          </div><MenuSideControls selection={snapshot.selection} firstVisible={snapshot.firstVisible}
-            count={snapshot.itemCount ?? getScreenMetadata(snapshot.screenCode)?.itemCount ?? null} visibleRows={getScreenMetadata(snapshot.screenCode)?.visibleRows ?? 3}
-            disabled={!controlsAvailable || controlsBusy}
-            onBack={getScreenMetadata(snapshot.screenCode)?.role === 'menu' ? () => void sendRemoteAction('back', 0, 'Volver') : undefined}
-            onHighlight={index => { const delta = index - snapshot.selection; if (delta) void sendRemoteAction('rotate', delta < 0 ? -1 : 1, `Resaltar opción ${index + 1}`, Math.abs(delta)); }}
-            onScroll={direction => { const count = snapshot.itemCount ?? getScreenMetadata(snapshot.screenCode)?.itemCount ?? 0; const steps = Math.min(3, direction < 0 ? snapshot.selection : count - snapshot.selection - 1); if (steps > 0) void sendRemoteAction('rotate', direction, direction < 0 ? 'Desplazar selección hacia arriba' : 'Desplazar selección hacia abajo', steps); }} />
-          </div>
-          <p className="afr2-help">
-            {staleView ? 'Última captura caducada · ' : ''}
-            {sourceLabel} · Captura {formatAgeLabel(ageMs)} · Selección {snapshot.selection} · Ventana{' '}
-            {snapshot.firstVisible}
-          </p>
-        </div>
-      ) : (
-        // Same bezel and size as a real capture, so the first frame does not move the layout.
-        <div className="afr2-live-oled__screen afr2-live-oled__placeholder" aria-busy={loading}>
-          <OledCanvas128x64 compact oledBuffer={BLANK_OLED} screenCode="" sourceMode="remote-snapshot"
-            showGrid={false} scale={4} badge={loading ? 'Consultando…' : 'Sin captura'} title="Pantalla del auto" />
-          <p className="afr2-live-oled__placeholder-text" role="status">
-            {loading ? 'Consultando la primera captura…' : 'Sin captura remota disponible.'}
-          </p>
-        </div>
-      )}
-      </div>
-      <div className="afr2-live-oled__controls">
-      <EncoderControl longPressMs={robotState?.longPressMs??800}
-        available={controlsAvailable}
-        busy={controlsBusy}
-        disabledReason={blockedReason}
-        statusMessage={actionFeedback?.message ?? null}
-        statusTone={actionFeedback?.tone ?? 'neutral'}
-        onRotate={(delta) =>
-          void sendRemoteAction('rotate', delta, delta < 0 ? 'Giro izquierdo (-1)' : 'Giro derecho (+1)')
-        }
-        onPress={(kind) =>
-          void sendRemoteAction(
-            kind === 'long' ? 'menu' : 'select',
-            0,
-            kind === 'long' ? 'SW largo (≥ 800 ms · Retorno al soltar)' : 'SW corto (< 800 ms · Confirmar)'
-          )
-        }
-      />
-      </div>
-      </div>
-    </div>
+          ariaLabel="Actualización de la pantalla en vivo" size="sm" fill="never" className="afr2-oled-bench__refresh" />
+      </>}
+      notices={<>
+        {!linksReady && (
+          <StatusNotice tone="warning" title="Sin enlace completo para OLED en vivo">
+            Se requiere sesión Web↔ESP (`ready`) y enlace UART ESP↔ATmega2560 (`ready`) para consultar `robot.screen.get`. Los controles permanecen visibles y deshabilitados abajo.
+          </StatusNotice>
+        )}
+        {linksReady && !remoteOledImplemented && (
+          <StatusNotice tone="info" title="Servicio OLED remoto pendiente en firmware" badge="Sin captura remota">
+            {oledCap.reason || 'El ATmega2560 y el ESP8266 aún no exponen robot.screen.get en vivo.'} No se dibuja una pantalla simulada como si proviniera del auto.
+          </StatusNotice>
+        )}
+        {errorMessage && (
+          <StatusNotice tone="error" title="No se pudo actualizar u operar la OLED remota">
+            {errorMessage}
+          </StatusNotice>
+        )}
+        {snapshot && staleView && (
+          <StatusNotice tone="warning" title="Captura retenida caducada o con fallo posterior">
+            Última muestra recibida {formatAgeLabel(ageMs)}. Las acciones de encoder quedan bloqueadas hasta recibir una captura fresca.
+          </StatusNotice>
+        )}
+      </>}
+      screen={snapshot
+        ? <OledCanvas128x64 compact oledBuffer={snapshot.buffer} screenCode={snapshot.screenCode} sourceMode="remote-snapshot" showGrid={false} scale={4} />
+        // Mismo marco y tamaño que una captura real, para que el primer cuadro no mueva la interfaz.
+        : <OledCanvas128x64 compact oledBuffer={BLANK_OLED} screenCode="" sourceMode="remote-snapshot" showGrid={false} scale={4}
+            badge={loading ? 'Consultando…' : 'Sin captura'} title="Pantalla del auto" />}
+      stale={staleView}
+      busy={loading || statusChanged}
+      placeholderText={snapshot ? undefined : loading ? 'Consultando la primera captura…' : 'Sin captura remota disponible.'}
+      side={sideProps}
+      caption={snapshot && <p className="afr2-help">
+        {staleView ? 'Última captura caducada · ' : ''}
+        {sourceLabel} · Captura {formatAgeLabel(ageMs)} · Selección {snapshot.selection} · Ventana{' '}
+        {snapshot.firstVisible}
+      </p>}
+      encoder={{
+        keyboardCapture: active,
+        longPressMs: robotState?.longPressMs ?? 800,
+        available: controlsAvailable,
+        busy: controlsBusy,
+        disabledReason: blockedReason,
+        statusMessage: actionFeedback?.message ?? null,
+        statusTone: actionFeedback?.tone ?? 'neutral',
+        onRotate: (delta) => void sendRemoteAction('rotate', delta, delta < 0 ? 'Giro izquierdo (-1)' : 'Giro derecho (+1)'),
+        onPress: (kind) => void sendRemoteAction(
+          kind === 'long' ? 'menu' : 'select',
+          0,
+          kind === 'long' ? 'SW largo (≥ 800 ms · Retorno al soltar)' : 'SW corto (< 800 ms · Confirmar)'
+        ),
+      }}
+    />
   );
 }

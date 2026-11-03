@@ -28,6 +28,9 @@ export interface EncoderControlProps {
   lastEventLabel?: string;
   compact?: boolean;
   label?: string;
+  /** AFR2-20261103-27. Captura todo el teclado mientras el diálogo que contiene el control está abierto:
+   * ← y → giran al soltar, Espacio es SW (mantenido, corto o largo al soltar), Enter no hace nada y Escape queda para cerrar. */
+  keyboardCapture?: boolean;
 }
 
 function RefreshSyncIcon({ spinning = false }: { spinning?: boolean }) {
@@ -59,6 +62,7 @@ export function EncoderControl({
   lastEventLabel,
   compact = false,
   label = 'Controles físicos · Encoder único KY-040',
+  keyboardCapture = false,
 }: EncoderControlProps) {
   const threshold=Math.max(800,Math.min(3000,longPressMs));
   const isAvailable = available && !disabled;
@@ -203,6 +207,34 @@ export function EncoderControl({
     }
   };
 
+  // AFR2-20261103-27: el captor de teclado vive en un efecto estable y lee siempre la última versión de los gestos; todo evento se emite al soltar la tecla.
+  const rootRef = useRef<HTMLDivElement | null>(null);
+  const armedArrow = useRef<string | null>(null);
+  const keysRef = useRef({ rotate: handleRotateClick, begin: beginPress, finish: finishPress, cancel: cancelGesture });
+  keysRef.current = { rotate: handleRotateClick, begin: beginPress, finish: finishPress, cancel: cancelGesture };
+  useEffect(() => {
+    if (!keyboardCapture) return;
+    const onKey = (event: KeyboardEvent) => {
+      const dialog = rootRef.current?.closest('dialog');
+      if (!dialog?.open || dialog.dataset.phase !== 'open' || rootRef.current?.closest('[inert]')) return;
+      // Atajos del navegador (Ctrl/Alt/Meta) y teclas de función quedan fuera; Escape cierra el diálogo.
+      if (event.ctrlKey || event.altKey || event.metaKey || event.key === 'Escape' || /^F\d+$/.test(event.key)) return;
+      event.preventDefault(); event.stopPropagation();
+      document.documentElement.dataset.input = 'keyboard';
+      const down = event.type === 'keydown';
+      if (event.key === ' ' || event.code === 'Space') {
+        if (down) { if (!event.repeat) keysRef.current.begin('keyboard', ' '); }
+        else if (activeKeyRef.current === ' ') keysRef.current.finish();
+      } else if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+        // Los giros se emiten al soltar la tecla, igual que el SW; solo si se vio su pulsación.
+        if (down) armedArrow.current = event.key;
+        else if (armedArrow.current === event.key) { armedArrow.current = null; keysRef.current.rotate(event.key === 'ArrowLeft' ? 'left' : 'right'); }
+      }
+    };
+    window.addEventListener('keydown', onKey, true); window.addEventListener('keyup', onKey, true);
+    return () => { window.removeEventListener('keydown', onKey, true); window.removeEventListener('keyup', onKey, true); };
+  }, [keyboardCapture]);
+
   const swButtonDisabled = !isAvailable || (busy && !pressing && !longVisualActive);
 
   const swStateAttr = !isAvailable
@@ -225,6 +257,7 @@ export function EncoderControl({
 
   return (
     <div
+      ref={rootRef}
       className={`afr2-oled-controls-card rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--surface-solid)] ${
         compact ? 'p-3.5' : 'p-4'
       } space-y-3.5`}
@@ -277,6 +310,7 @@ export function EncoderControl({
           >
             <EncoderGlyph kind="turn" scale={1} mirror />
             <span>Giro izquierdo</span>
+            {keyboardCapture && <kbd className="afr2-key-hint" aria-hidden="true">←</kbd>}
           </button>
         </div>
 
@@ -374,6 +408,7 @@ export function EncoderControl({
                     ? 'SW · Manteniendo…'
                     : 'SW (Corto / Largo)'}
               </span>
+              {keyboardCapture && <kbd className="afr2-key-hint" aria-hidden="true">Espacio</kbd>}
             </span>
           </button>
           {/* AFR2-20261102-22: short legend under SW; the row being pressed lights up. */}
@@ -403,6 +438,7 @@ export function EncoderControl({
           >
             <EncoderGlyph kind="turn" scale={1} />
             <span>Giro derecho</span>
+            {keyboardCapture && <kbd className="afr2-key-hint" aria-hidden="true">→</kbd>}
           </button>
         </div>
       </div>

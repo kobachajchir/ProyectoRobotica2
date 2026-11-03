@@ -158,8 +158,9 @@ export function FloatingModal({ open, title, description, kicker = 'AutoFinalRob
       data-motion={instant ? 'instant' : 'animated'}
       data-size={size}
       onCancel={(event) => {
+        // AFR2-20261103-29: Escape cierra con la misma animación que el botón de cierre.
         event.preventDefault();
-        close(true);
+        close(false);
       }}
       onClose={() => {
         if (phaseRef.current !== 'closed') finishClose();

@@ -1,4 +1,3 @@
-import { EncoderGlyph } from './EncoderGlyph';
 import { MOTOR_IDS, stepMotor } from '../../domain/motorSelection';
 /* AFR2-20261029-27: quick controls/radar/PWM/WS integration; prior authors retained. */
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -6,8 +5,7 @@ import { FIRMWARE_LIBRARY as library } from './generated/firmwareLibrary';
 import { firmwareMenuItem, firmwareNodeCount, firmwareNode, renderFirmwareScreen, type FirmwareSnapshot } from './firmwareRenderer';
 import { Afr2OledBuffer } from './oledRasterizer';
 import { OledCanvas128x64 } from './OledCanvas128x64';
-import { EncoderControl } from './EncoderControl';
-import { MenuSideControls } from './MenuSideControls';
+import { OledWorkbench } from './OledWorkbench';
 import { normalizeScreenCode, type Afr2ScreenCode, type Afr2ScreenMetadata } from './screenCatalog';
 
 // AFR2-20261024-14 extends09: same pure AVR layout, static navigation only.
@@ -127,24 +125,23 @@ export function FirmwareLibraryPreview({ screen, onNavigate, active = true }: { 
       navigate({ node: item.target, selection: 0, firstVisible: 0 });
     }
   };
-  return <div className="afr2-page-stack afr2-library-preview">
-    <p className="afr2-help">Vista local del diseño. Botones 1–3: resaltar fila. Acciones y datos del equipo requieren el visor conectado.</p>
-    {/* AFR2-20261102-02: cada gesto con su icono arriba y el texto abajo, los tres en fila. */}
-    <ul className="afr2-gesture-legend" aria-label="Gestos del encoder">
-      <li><EncoderGlyph kind="short" scale={2}/><span>Confirmar</span></li>
-      <li><EncoderGlyph kind="long" scale={2}/><span>Volver al soltar</span></li>
-      <li><EncoderGlyph kind="turn" scale={2}/><span>Desplazar selección</span></li>
-    </ul>
-    <div className="afr2-oled-with-side">
-      {drawable ? <OledCanvas128x64 compact oledBuffer={buffer} screenCode={screen.code} sourceMode="local-firmware-preview" showGrid={false} />
-        : <div className="afr2-oled-data-required"><strong>{screen.name}</strong><p>Esta vista necesita un snapshot del equipo. Consultala en el visor conectado.</p></div>}
-      <MenuSideControls selection={state.selection} firstVisible={state.firstVisible} count={motorPick || hallPick || sensorView || quick || home || caps || node===62 || node===45 || node===67?0:count} visibleRows={visible} disabled={!active}
-        onBack={screen.role === 'menu' && count > 0 ? () => {
-          if (!active) return;
-          for (let i = 0; i < count; i++) { const item = firmwareMenuItem(node, i); if (!item.action && item.label.startsWith('Volver')) { navigate(history.current.pop() ?? { node: item.target, selection: 0, firstVisible: 0 }); break; } }
-        } : undefined}
-        onHighlight={index => move(index - state.selection)} onScroll={direction => move(direction * Math.min(3, direction < 0 ? state.selection : count - state.selection - 1))} />
-    </div>
-    <EncoderControl label="Encoder · biblioteca local" available={node >= 0 && active} onRotate={move} onPress={press} statusMessage={feedback} compact />
-  </div>;
+  const [lastInput, setLastInput] = useState('ninguna');
+  const backProp = screen.role === 'menu' && count > 0 ? () => {
+    if (!active) return;
+    for (let i = 0; i < count; i++) { const item = firmwareMenuItem(node, i); if (!item.action && item.label.startsWith('Volver')) { navigate(history.current.pop() ?? { node: item.target, selection: 0, firstVisible: 0 }); break; } }
+  } : undefined;
+  return <OledWorkbench
+    lastInput={lastInput}
+    statusBar={<span className="afr2-status-pill" data-state="ready"><span className="afr2-status-dot" aria-hidden="true" />Vista local del diseño · sin datos del equipo</span>}
+    screen={drawable
+      ? <OledCanvas128x64 compact oledBuffer={buffer} screenCode={screen.code} sourceMode="local-firmware-preview" showGrid={false} />
+      : <div className="afr2-oled-data-required"><strong>{screen.name}</strong><p>Esta vista necesita un snapshot del equipo. Consultala en el visor conectado.</p></div>}
+    side={{ selection: state.selection, firstVisible: state.firstVisible, count: motorPick || hallPick || sensorView || quick || home || caps || node === 62 || node === 45 || node === 67 ? 0 : count, visibleRows: visible, disabled: !active,
+      onBack: backProp,
+      onHighlight: index => { setLastInput(`Resaltar opción ${index + 1}`); move(index - state.selection); },
+      onScroll: direction => move(direction * Math.min(3, direction < 0 ? state.selection : count - state.selection - 1)) }}
+    encoder={{ available: node >= 0 && active, statusMessage: feedback,
+      onRotate: delta => { setLastInput(delta < 0 ? 'Giro izquierdo (-1)' : 'Giro derecho (+1)'); move(delta); },
+      onPress: kind => { setLastInput(kind === 'long' ? 'SW largo (Volver al soltar)' : 'SW corto (Confirmar)'); press(kind); } }}
+  />;
 }

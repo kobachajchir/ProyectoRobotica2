@@ -30,11 +30,13 @@
   background: var(--banner-chip-bg); color: var(--banner-muted); font: var(--type-caption); letter-spacing: var(--type-caption-tracking);
 }
 @media (min-width: 840px) {
-  .afr2-hero { display: block; aspect-ratio: 2.4 / 1; min-height: 300px; }
+  /* AFR2-20261103-29: el alto sigue al contenido (antes una proporción fija recortaba el texto en anchos chicos);
+     el mínimo sigue la proporción aproximada 2,4:1 del ancho útil y el texto se centra en vertical con el mismo relleno en todos los lados. */
+  .afr2-hero { display: flex; flex-direction: row; align-items: center; min-height: clamp(300px, calc((100vw - 360px) / 2.4), 460px); }
   .afr2-hero__media { position: absolute; inset: 0; z-index: -1; margin: 0; -webkit-mask-image: none; mask-image: none; }
   .afr2-hero__media img { width: 100%; height: 100%; aspect-ratio: auto; object-position: right center; }
   .afr2-hero::before { content: ''; position: absolute; inset: 0; z-index: 0; background: linear-gradient(90deg, var(--banner-scrim) 0%, var(--banner-scrim-mid) 34%, transparent 58%); pointer-events: none; }
-  .afr2-hero__copy { max-width: 52%; padding: clamp(28px, 4vw, 48px); }
+  .afr2-hero__copy { max-width: 52%; }
 }
 
 /* ---------- Portada de Modelos y simulación ---------- */

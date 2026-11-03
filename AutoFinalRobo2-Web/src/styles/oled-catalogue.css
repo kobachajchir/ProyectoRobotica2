@@ -5,12 +5,13 @@
 .afr2-developer-copy h2 { line-height:1.2; }
 .afr2-developer-back { display:inline-flex; justify-self:start; align-items:center; gap:10px; min-height:44px; padding:8px 0; color:var(--action); text-decoration:none; }
 /* AFR2-20261102-02: la pantalla primero (izquierda) y la lista a la derecha. */
-.afr2-screen-catalogue { display:grid; grid-template-columns:minmax(0,1.4fr) minmax(260px,.8fr); gap:24px; align-items:start; }
-.afr2-screen-list { display:grid; gap:12px; min-width:0; }
+.afr2-screen-catalogue { display:grid; grid-template-columns:minmax(0,1.4fr) minmax(260px,.8fr); gap:24px; align-items:stretch; }
+/* AFR2-20261103-30: la lista llega a la misma altura que el banco (pantalla + controles) y se desplaza por dentro. */
+.afr2-screen-list { display:grid; grid-template-rows:auto minmax(0,1fr); gap:12px; min-width:0; }
+.afr2-screen-tree-frame { position:relative; min-height:320px; }
+.afr2-screen-tree-frame > .afr2-screen-tree { position:absolute; inset:0; max-height:none; }
 .afr2-screen-list__heading { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px 12px; }
 .afr2-screen-list__heading .afr2-kicker { margin:0; }
-.afr2-gesture-legend { display:flex; flex-wrap:wrap; gap:8px 24px; margin:0; padding:0; list-style:none; }
-.afr2-gesture-legend li { display:flex; flex-direction:column; align-items:center; gap:6px; min-width:88px; color:var(--text); text-align:center; font:var(--type-caption); letter-spacing:var(--type-caption-tracking); }
 .afr2-screen-tree { max-height:75dvh; overflow:auto; overscroll-behavior:contain; border:1px solid var(--border-default); border-radius:var(--radius-sm); padding:8px; }
 .afr2-screen-tree ul { list-style:none; padding:0; margin:0; }
 .afr2-screen-tree li > ul { margin-left:12px; padding-left:8px; border-left:1px solid var(--border-subtle); }
@@ -26,10 +27,11 @@
 .afr2-screen-tree-notices { display:flex; align-items:center; gap:8px; min-height:44px; padding:8px; margin-top:8px; text-align:left; font-size:var(--type-label-size); }
 .afr2-screen-tree-notices .afr2-chevron[data-open="true"] { transform:rotate(180deg); }
 .afr2-screen-library { min-width:0; display:grid; gap:16px; }
-.afr2-screen-library header { display:grid; gap:8px; }
-.afr2-screen-library header p, .afr2-screen-library h2 { margin:0; }
+.afr2-screen-library__head { display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:12px 16px; }
+.afr2-screen-library__title { display:grid; gap:6px; min-width:0; }
+.afr2-screen-library__title p, .afr2-screen-library h2 { margin:0; }
 .afr2-screen-library h2 { font-size:20px; font-weight:600; }
-.afr2-screen-library header code { color:var(--text-muted); font-size:var(--type-caption-size); }
+.afr2-screen-library__title code { color:var(--text-muted); font-size:var(--type-caption-size); }
 .afr2-oled-with-side { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:12px; align-items:center; }
 .afr2-oled-with-side > :only-child { grid-column:1/-1; }
 .afr2-oled-side { display:grid; grid-template-columns:repeat(2,44px); align-items:stretch; gap:8px; }
@@ -42,7 +44,7 @@
 .afr2-oled-page-controls small { display:block; }
 .afr2-oled-data-required { display:grid; place-content:center; gap:12px; min-height:180px; padding:24px; text-align:center; border:1px solid var(--border-default); border-radius:var(--radius-sm); background:var(--surface-subtle); }
 .afr2-oled-data-required p { margin:0; color:var(--text-muted); font-size:var(--type-label-size); }
-@media (max-width: 1199.98px) { .afr2-screen-catalogue { grid-template-columns:minmax(0,1fr); } .afr2-screen-tree { max-height:340px; } }
+@media (max-width: 1199.98px) { .afr2-screen-catalogue { grid-template-columns:minmax(0,1fr); } .afr2-screen-tree-frame { min-height:0; } .afr2-screen-tree-frame > .afr2-screen-tree { position:static; max-height:340px; } }
 @media (prefers-reduced-motion:reduce) { .afr2-screen-tree-toggle .afr2-chevron { transition:none; } }
 
 /* AFR2-20261029-19: explicit return below row/scroll controls. */

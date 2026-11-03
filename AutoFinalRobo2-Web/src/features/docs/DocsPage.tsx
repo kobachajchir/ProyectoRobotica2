@@ -9,6 +9,7 @@ import { PageHeader } from '../../components/ui/PageHeader';
 import { TaskSections } from '../../components/ui/TaskSections';
 import { Disclosure } from '../../components/ui/Disclosure';
 import type { ReactNode } from 'react';
+import { HelpRich } from './HelpRich';
 import { HELP, type HelpChapter, type HelpModuleId } from './helpContent';
 
 type HelpSection = HelpModuleId;
@@ -18,10 +19,9 @@ const SECTION_LABELS: Record<HelpSection, string> = { atmega: 'ATmega', esp: 'ES
 
 function ChapterBody({ chapter }: { chapter: HelpChapter }) {
   return <div className="afr2-help-chapter">
-    <ul className="afr2-help-chapter__text">{chapter.text.map(text => <li key={text}>{text}</li>)}</ul>
+    <ul className="afr2-help-chapter__text">{chapter.text.map(text => <li key={text}><HelpRich text={text} /></li>)}</ul>
     {chapter.facts && <dl className="afr2-help-facts">{chapter.facts.map(([term, value]) =>
-      <div key={term}><dt>{term}</dt><dd>{value}</dd></div>)}</dl>}
-    {chapter.source && <p className="afr2-help-source"><UiIcon name="book" size={14} />Fuente: <code>{chapter.source}</code></p>}
+      <div key={term}><dt><HelpRich text={term} /></dt><dd><HelpRich text={value} /></dd></div>)}</dl>}
   </div>;
 }
 
@@ -29,13 +29,24 @@ function ModuleGuide({ id, children }: { id: HelpSection; children?: ReactNode }
   const module = HELP[id];
   return <div className="afr2-page-stack">
     <section className="afr2-help-hero" aria-label={`${module.name}: ${module.role}`}>
-      <span className="afr2-help-hero__icon" aria-hidden="true"><UiIcon name={module.icon} size={26} /></span>
-      <div className="afr2-help-hero__copy">
-        <p className="afr2-help-hero__role">{module.role}</p>
-        <h2 className="afr2-help-hero__name">{module.name}</h2>
-        <p className="afr2-help-hero__intro">{module.intro}</p>
+      <div className="afr2-help-hero__layout">
+        <div className="afr2-help-hero__main">
+          <span className="afr2-help-hero__icon" aria-hidden="true"><UiIcon name={module.icon} size={26} /></span>
+          <div className="afr2-help-hero__copy">
+            <p className="afr2-help-hero__role">{module.role}</p>
+            <h2 className="afr2-help-hero__name">{module.name}</h2>
+            <p className="afr2-help-hero__intro">{module.intro}</p>
+          </div>
+          <dl className="afr2-help-hero__specs">{module.specs.map(([term, value]) => <div key={term}><dt>{term}</dt><dd><HelpRich text={value} /></dd></div>)}</dl>
+        </div>
+        <aside className="afr2-help-pinout" aria-label={module.pinout.title}>
+          <h3 className="afr2-help-pinout__title">{module.pinout.title}</h3>
+          {module.pinout.groups.map(group => <div key={group.label} className="afr2-help-pinout__group">
+            <p className="afr2-help-pinout__label">{group.label}</p>
+            <dl>{group.rows.map(([term, value]) => <div key={term}><dt>{term}</dt><dd><HelpRich text={value} /></dd></div>)}</dl>
+          </div>)}
+        </aside>
       </div>
-      <dl className="afr2-help-hero__specs">{module.specs.map(([term, value]) => <div key={term}><dt>{term}</dt><dd>{value}</dd></div>)}</dl>
     </section>
     {module.groups.map(group => <section key={group.title} className="afr2-help-group" aria-label={group.title}>
       <h2 className="afr2-help-group__title">{group.title}</h2>

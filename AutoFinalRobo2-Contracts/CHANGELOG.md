@@ -1,3 +1,27 @@
+## AFR2-20261103-30 - 03/11/2026
+
+Banco OLED único (`OledWorkbench`) compartido por Pantalla en vivo y Ayuda → OLED, lista de pantallas a la altura del banco, sin leyendas grandes de gestos y modal de Configuración con márgenes y bordes parejos. Verificado en navegador local sin robot; sin compilación. [Ficha](changes/2026-11-03-30-oled-workbench.md).
+
+## AFR2-20261103-29 - 03/11/2026
+
+Banner de Inicio: en anchos chicos de escritorio (840–1100 px) el texto ya no se recorta ni queda corrido; la altura sigue al contenido y el título escala con el ancho útil. Verificado en navegador local; sin compilación. [Ficha](changes/2026-11-03-29-home-hero-narrow.md).
+
+## AFR2-20261103-28 - 03/11/2026
+
+Conexión → Estado de red muestra «Sin datos» con un ícono en todo el panel cuando no hay lectura vigente. Verificado en navegador local sin robot; sin compilación. [Ficha](changes/2026-11-03-28-wifi-no-data.md).
+
+## AFR2-20261103-27 - 03/11/2026
+
+Pantalla en vivo con captor de teclado: ← y → giran, Espacio es el SW (largo al mantener), Escape cierra, Enter no hace nada y nada del visor es seleccionable; con pistas de tecla en cada acción. Verificado con eventos sintéticos en navegador local; sin robot ni compilación. [Ficha](changes/2026-11-03-27-live-screen-keyboard.md).
+
+## AFR2-20261103-26 - 03/11/2026
+
+Ayuda reescrita con una idea por viñeta, código resaltado en celeste y tarjeta de módulo con cuarto de pinout (ATmega, ESP, Web y OLED). Verificado en navegador local; sin compilación. [Ficha](changes/2026-11-03-26-help-rewrite-pinout.md).
+
+## AFR2-20261103-25 - 03/11/2026
+
+Loader más directo: etapas en viñetas, operaciones en desplegable, banner de automatización con IA y nodos de la portada separados. Se quitan los carteles «Fuente» de Explorar y Ayuda. Verificado en navegador local; sin compilación. [Ficha](changes/2026-11-03-25-loader-direct-no-source.md).
+
 ## AFR2-20261102-24 - 02/11/2026
 
 Ayuda: cada módulo abre con una tarjeta técnica (rol, nombre, descripción y cuatro especificaciones) en la familia clara/oscura de las cabeceras. Explorar suma Loader (/loader): portada con mapa, recorridos de carga del ATmega y del ESP, cifras, motivos y herramientas, con el estilo de Infraestructura. Verificado en navegador local; sin compilación. [Ficha](changes/2026-11-02-24-help-descriptors-loader-page.md).

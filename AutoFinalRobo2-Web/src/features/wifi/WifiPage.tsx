@@ -87,7 +87,12 @@ export function WifiPage(){
     {message && <StatusNotice tone={failed?'warning':goal?'info':'neutral'} title={message}/>}
     {configuring?config:<TaskSections label="Secciones de Conexión" value={view} onValueChange={setView} items={[
       {id:'estado',label:'Estado de red',content:<GlassSurface variant="panel" className="p-5 sm:p-6">
-        <SectionHeader title={!fresh?'Sin datos actuales':connected?'Conectado':'Desconectado'} description="Estado de la conexión STA; el punto de acceso AP se informa por separado." actions={<Button disabled={!online} onClick={()=>void refreshWifiStatus()}>Actualizar estado</Button>}/>
+        {!fresh?<div className="afr2-wifi-empty" role="status">
+          <span className="afr2-wifi-empty__icon" aria-hidden="true"><UiIcon name="wifi" size={56}/></span>
+          <p className="afr2-wifi-empty__title">Sin datos</p>
+          <Button disabled={!online} onClick={()=>void refreshWifiStatus()}>Actualizar estado</Button>
+        </div>:<>
+        <SectionHeader title={connected?'Conectado':'Desconectado'} description="Estado de la conexión STA; el punto de acceso AP se informa por separado." actions={<Button disabled={!online} onClick={()=>void refreshWifiStatus()}>Actualizar estado</Button>}/>
         {wifiStatus.fallbackActive && <StatusNotice tone="info" title="AP / fallback activo"/>}
         {wifiStatus.configError && <StatusNotice tone="warning" title={wifiStatus.configError}/>}
         <div className="afr2-page-stack">
@@ -106,6 +111,7 @@ export function WifiPage(){
             {fresh && connected?<Button disabled={busy || !!goal} onClick={()=>void operate('wifi.disconnect',{},'disconnect')}>Desconectar</Button>:fresh && <><Button disabled={busy || !!goal} onClick={()=>{setSsid(wifiStatus.staSsid??'');setConfiguring(true);}}>Conectar</Button><Button disabled={busy || !!goal || wifiStatus.mode==='AP'} onClick={()=>void operate('wifi.retry',{},'connect')}>Reintentar</Button></>}
           </div>
         </div>
+        </>}
       </GlassSurface>},
       {id:'redes',label:'Buscar redes',content:<GlassSurface variant="panel" className="p-5 sm:p-6">
         <SectionHeader title="Redes encontradas" actions={<Button disabled={!online || busy || !!goal || scanning || wifiStatus.scanRunning===true} onClick={scan} icon={<UiIcon name="refresh" />}>Refrescar</Button>}/>
