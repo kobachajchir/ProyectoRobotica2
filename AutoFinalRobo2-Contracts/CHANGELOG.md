@@ -1,3 +1,7 @@
+## AFR2-20261104-32 - 04/11/2026
+
+El firmware del ESP admite 24 activos Web y un manifiesto de hasta 12 KiB (antes 16 y 8 KiB); se actualizan el empaquetador de la Web y `PROTOCOL.md`. Sin compilar ni flashear; el costo de RAM (unos 400 B fijos) es una estimación y falta medirlo en la placa. [Ficha](changes/2026-11-04-32-esp-24-assets.md).
+
 ## AFR2-20261103-31 - 03/11/2026
 
 La Web compila (`tsc -b` y `vite build --mode esp` sin errores) tras corregir tamaños de ícono, el espacio de nombres del QR vendido y dos variables sin uso. Peso medido: 17 archivos, 4,44 MiB → 2,36 MiB con gzip (91,4 % del presupuesto LittleFS). El paquete ESP no se genera porque el firmware admite 16 archivos y hay 17; Infraestructura sigue leyendo el manifiesto anterior. [Ficha](changes/2026-11-03-31-web-build-weight.md).

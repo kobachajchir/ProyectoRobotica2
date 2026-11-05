@@ -33,7 +33,7 @@ de acciones físicas ni expone claves. Giro/corto/largo/Volver no cambian.
 
 ## HTTP/LittleFS
 
-Whitelist por manifest afr2-littlefs-manifest-1, hasta16activos/8192bytes de
+Whitelist por manifest afr2-littlefs-manifest-1, hasta 24 activos/12288 bytes de
 manifiesto. Esquema/rutas/MIME/gzip/presencia/tamaño comprobados; no SHA recalculado
 en placa. Sin autoformat/upload/editor, /config privado. / sirve index.html.gz,
 Accept-Encoding gzip requerido,406 si se excluye. MIME/encoding/Vary explícitos,

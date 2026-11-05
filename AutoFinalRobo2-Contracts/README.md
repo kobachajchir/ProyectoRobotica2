@@ -1,3 +1,5 @@
+> **AFR2-20261104-32:** el ESP admite 24 activos Web y manifiesto de 12 KiB; sin compilar ni medir RAM. [Ficha](changes/2026-11-04-32-esp-24-assets.md).
+>
 > **AFR2-20261103-31:** la Web compila; peso medido y bloqueo de 17 archivos frente al límite de 16 del ESP. [Ficha](changes/2026-11-03-31-web-build-weight.md).
 > **AFR2-20261103-30:** banco OLED único para Pantalla en vivo y Ayuda; modal de Configuración ordenado. [Ficha](changes/2026-11-03-30-oled-workbench.md).
 > **AFR2-20261103-29:** banner de Inicio sin recortes en anchos chicos. [Ficha](changes/2026-11-03-29-home-hero-narrow.md).

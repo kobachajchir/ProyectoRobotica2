@@ -19,7 +19,8 @@ public:
 private:
     bool mounted_=false, webReady_=false;
     const char *fault_="not-initialized";
-    WebAsset assets_[16];
+    static constexpr uint8_t kMaxAssets=24;
+    WebAsset assets_[kMaxAssets];
     uint8_t count_=0;
     // Manifest identity only; this is not a runtime checksum of the asset bytes.
     uint32_t gzipBytes_=0;

@@ -30,14 +30,14 @@ void Storage::begin() {
     if (!mounted_) { fault_="mount-failed"; return; }
     fault_="manifest-missing";
     File f=LittleFS.open("/dist/manifest.json","r");
-    if (!f || !f.size() || f.size()>8192) return;
+    if (!f || !f.size() || f.size()>12288) return;
     JsonDocument doc;
     auto error=deserializeJson(doc,f,DeserializationOption::NestingLimit(5)); f.close();
     fault_="manifest-invalid";
     if (error || doc["schema"]!="afr2-littlefs-manifest-1" || doc["project"]!="AutoFinalRobo2" ||
         doc["rootIndexServedPath"]!="/index.html.gz" || !doc["files"].is<JsonArray>()) return;
     JsonArray list=doc["files"].as<JsonArray>();
-    if (!list.size() || list.size()>16) return;
+    if (!list.size() || list.size()>kMaxAssets) return;
     size_t total=0; bool index=false;
     for (JsonObject entry:list) {
         String route=entry["route"] | "";

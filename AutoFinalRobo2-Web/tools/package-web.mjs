@@ -130,7 +130,7 @@ const estimatedFilesystemBytes = estimateFilesystemBytes(files);
 if (buildProfile === 'esp' && estimatedFilesystemBytes > filesystemBudgetBytes) {
   throw new Error(`Paquete ESP demasiado grande: estimación ${estimatedFilesystemBytes}, presupuesto ${filesystemBudgetBytes} bytes.`);
 }
-if (files.length > 16) throw new Error('Storage del ESP admite hasta 16 activos Web.');
+if (files.length > 24) throw new Error('Storage del ESP admite hasta 24 activos Web.');
 
 const manifest = {
   schema: 'afr2-littlefs-manifest-1',
@@ -148,11 +148,9 @@ const manifest = {
   files,
 };
 
-await writeFile(
-  path.join(stagingDir, 'manifest.json'),
-  `${JSON.stringify(manifest, null, 2)}\n`,
-  'utf8'
-);
+const manifestText = `${JSON.stringify(manifest, null, 2)}\n`;
+if (Buffer.byteLength(manifestText) > 12288) throw new Error('El manifiesto supera los 12288 bytes que lee el ESP.');
+await writeFile(path.join(stagingDir, 'manifest.json'), manifestText, 'utf8');
 
 await guardDirectory(targetDir);
 await rm(targetDir, { recursive: true, force: true, maxRetries: 3, retryDelay: 100 });
