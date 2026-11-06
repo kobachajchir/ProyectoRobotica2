@@ -1,3 +1,7 @@
+## AFR2-20261105-33 - 05/11/2026
+
+El OLED se repara solo ante ruido I2C: la configuración del panel se reenvía cada segundo con la orientación y el contraste actuales, y la RAM se reescribe por bloques (pantalla completa cada ~2,6 s). La recuperación ya no invierte la imagen con `rotation=1`. Sin compilar ni flashear; se recomiendan pull-ups externos de 4,7 kΩ. [Ficha](changes/2026-11-05-33-oled-self-healing.md).
+
 ## AFR2-20261104-32 - 04/11/2026
 
 El firmware del ESP admite 24 activos Web y un manifiesto de hasta 12 KiB (antes 16 y 8 KiB); se actualizan el empaquetador de la Web y `PROTOCOL.md`. Sin compilar ni flashear; el costo de RAM (unos 400 B fijos) es una estimación y falta medirlo en la placa. [Ficha](changes/2026-11-04-32-esp-24-assets.md).

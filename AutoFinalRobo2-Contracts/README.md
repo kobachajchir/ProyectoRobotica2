@@ -1,3 +1,5 @@
+> **AFR2-20261105-33:** OLED autorreparable ante ruido I2C (refresco de configuración y RAM); sin compilar. [Ficha](changes/2026-11-05-33-oled-self-healing.md).
+>
 > **AFR2-20261104-32:** el ESP admite 24 activos Web y manifiesto de 12 KiB; sin compilar ni medir RAM. [Ficha](changes/2026-11-04-32-esp-24-assets.md).
 >
 > **AFR2-20261103-31:** la Web compila; peso medido y bloqueo de 17 archivos frente al límite de 16 del ESP. [Ficha](changes/2026-11-03-31-web-build-weight.md).

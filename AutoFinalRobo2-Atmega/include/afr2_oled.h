@@ -23,6 +23,11 @@ typedef struct {
     bool paused;
     uint8_t last_error,last_failed_phase,consecutive_failures; /* AFR2-20261029-14 */
     bool configured_once;
+    /* AFR2-20261105-33: self-healing against I2C noise. Config is resent
+     * every second and one 16-column chunk is rewritten every few ms, so a
+     * corrupted command or pixel is repaired without a full re-init. */
+    uint32_t refresh_ms,scrub_ms;
+    uint8_t scrub;
 } Afr2Oled;
 void Afr2Oled_Init(Afr2Oled *o,Afr2I2cManager *manager,uint8_t address7,uint32_t now);
 void Afr2Oled_Task(Afr2Oled *o,uint32_t now);
