@@ -42,6 +42,7 @@ namespace AFR2Loader
         public MainForm(string appDir, string requestedProfile = null, string requestedEspMode = null)
         {
             this.appDir = Path.GetFullPath(appDir);
+            Profile.SetApplicationDirectory(this.appDir);
             Directory.CreateDirectory(Profile.UserRoot);
             if (!String.IsNullOrEmpty(requestedProfile))
             {
@@ -61,7 +62,7 @@ namespace AFR2Loader
             Rectangle screen = Screen.FromPoint(Cursor.Position).WorkingArea;
             MinimumSize = new Size(Math.Min(1000, screen.Width), Math.Min(650, screen.Height));
             Size = new Size(Math.Min(1220, screen.Width), Math.Min(880, screen.Height));
-            AutoScaleMode = AutoScaleMode.Dpi; Font = new Font("Segoe UI", 9.5F); BackColor = Color.FromArgb(245, 247, 250);
+            AutoScaleMode = AutoScaleMode.Dpi; Font = new Font("Segoe UI", 10F); BackColor = Color.FromArgb(245, 247, 250);
             var menu = new MenuStrip();
             configMenu.DropDownItems.Add("Importar perfil...", null, (s, e) => ImportProfile());
             configMenu.DropDownItems.Add("Exportar perfil...", null, (s, e) => ExportProfile());
@@ -85,7 +86,7 @@ namespace AFR2Loader
             layout.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
             layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 42));
             operations.Controls.Add(layout);
-            layout.Controls.Add(new Label { Dock = DockStyle.Fill, Text = "Preparar y cargar", Font = new Font(Font.FontFamily, 17, FontStyle.Bold), ForeColor = Color.FromArgb(23, 39, 51), TextAlign = ContentAlignment.MiddleLeft }, 0, 0);
+            layout.Controls.Add(new Label { AutoSize = true, Anchor = AnchorStyles.Left, Text = "Preparar y cargar", Font = new Font(Font.FontFamily, 17, FontStyle.Bold), ForeColor = Color.FromArgb(23, 39, 51), Margin = new Padding(0, 0, 0, UiGap) }, 0, 0);
             operationTab = operations;
             target.Items.AddRange(new object[] { "ATmega", "Firmware ESP", "FileSystem", "Firmware ESP + FileSystem" });
             target.SelectedIndex = 0;
@@ -105,12 +106,12 @@ namespace AFR2Loader
             stateBox.Controls.Add(status); stateBox.Controls.Add(lastResult); stateBox.Controls.Add(commandProgress); layout.Controls.Add(stateBox, 0, 3);
             console.Dock = DockStyle.Fill; console.ReadOnly = true; console.WordWrap = false;
             console.BackColor = Color.FromArgb(19, 29, 39); console.ForeColor = Color.FromArgb(222, 232, 241);
-            console.Font = new Font("Consolas", 9); console.DetectUrls = false;
+            console.Font = new Font("Consolas", 10); console.DetectUrls = false;
             console.BindFollow(followLog); layout.Controls.Add(CreateWorkflowPanel(console), 0, 4);
             var footer = new FlowLayoutPanel { Dock = DockStyle.Fill, WrapContents = false, AutoSize = true };
-            var copy = new ActionButton { Text = "Copiar registro", Width = 150 };
+            var copy = new ActionButton { Text = "Copiar registro", Width = 150, Role = ButtonRole.Secondary };
             copy.Click += (s, e) => CopyText(console.Text, copy); footer.Controls.Add(copy);
-            var clear = new ActionButton { Text = "Limpiar ventana", Width = 150 };
+            var clear = new ActionButton { Text = "Limpiar ventana", Width = 150, Role = ButtonRole.Secondary };
             clear.Click += (s, e) => ClearOperationView(); footer.Controls.Add(clear);
             EnableTextCopyFeedback(console);
             var compileMenu = new ToolStrip { GripStyle = ToolStripGripStyle.Hidden, Dock = DockStyle.None, AutoSize = true, Padding = new Padding(0), Margin = new Padding(0, 4, 8, 4), RenderMode = ToolStripRenderMode.System };
@@ -119,18 +120,23 @@ namespace AFR2Loader
             compileTarget.DropDownItems.Add("Compilar destino seleccionado", null, (s, e) => Build(false));
             compileTarget.DropDownItems.Add("Compilar todo", null, (s, e) => Build(true));
             compileMenu.Items.Add(compileTarget); idleControls.Add(compileMenu); footer.Controls.Add(compileMenu);
-            cancel = new ActionButton { Text = "Cancelar operación", Width = 180, Enabled = false };
+            cancel = new ActionButton { Text = "Cancelar operación", Width = 180, Enabled = false, Role = ButtonRole.Danger };
             cancel.Click += (s, e) => Cancel(); footer.Controls.Add(cancel);
             var flashMenu = CreateFirmwareFlashMenu(true);
-            var footerLayout = new TableLayoutPanel { Dock = DockStyle.Top, AutoSize = true, ColumnCount = 2, RowCount = 1, Padding = new Padding(0, 12, 0, 0) };
+            // AFR2-20261106-06: the next missing requirement is written beside the actions, not hidden in a tooltip.
+            nextStep.Dock = DockStyle.Fill; nextStep.AutoSize = true; nextStep.Margin = new Padding(0, 4, 0, 0);
+            var footerLayout = new TableLayoutPanel { Dock = DockStyle.Fill, AutoSize = true, ColumnCount = 2, RowCount = 2, Padding = new Padding(0, UiGap, 0, 0) };
             footerLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100)); footerLayout.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
+            footerLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize)); footerLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+            footer.Dock = DockStyle.Fill; footer.WrapContents = true; footer.AutoSize = true;
             footerLayout.Controls.Add(footer, 0, 0); footerLayout.Controls.Add(flashMenu, 1, 0);
-            layout.RowStyles[5].Height = 104; footer.WrapContents = true; footer.AutoSize = false; footerLayout.AutoSize = false; footerLayout.Dock = DockStyle.Fill;
+            footerLayout.Controls.Add(nextStep, 0, 1); footerLayout.SetColumnSpan(nextStep, 2);
+            footerLayout.SizeChanged += (s, e) => nextStep.MaximumSize = new Size(Math.Max(200, footerLayout.ClientSize.Width), 0);
             layout.Controls.Add(footerLayout, 0, 5);
             UpdateDestinationVisibility();
             var configLayout = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 3 };
             configLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 58)); configLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100)); configLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 42));
-            configLayout.Controls.Add(new Label { Text = "Configurá rutas para esta computadora. {Repo}, {Env} y %USERPROFILE% se resuelven al ejecutar.\r\nNo se instalan herramientas ni se descargan dependencias al abrir la aplicación. Un build puede usar la red mediante npm/PlatformIO.", Dock = DockStyle.Fill }, 0, 0);
+            configLayout.Controls.Add(new Label { Text = "Configurá las rutas de tu equipo. {App}, {Repo}, {AtmegaDir}, {EspDir}, {WebDir}, {Env} y variables de entorno se resuelven al ejecutar.\r\nLas rutas relativas parten de la carpeta del Loader. No se instalan herramientas al abrir; compilaciones externas pueden usar la red.", Dock = DockStyle.Fill }, 0, 0);
             settings.Dock = DockStyle.Fill; settings.AllowUserToAddRows = false; settings.AllowUserToDeleteRows = false;
             settings.RowHeadersVisible = false; settings.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
             settings.BackgroundColor = Color.White; settings.AutoGenerateColumns = false; settings.SelectionMode = DataGridViewSelectionMode.CellSelect;
@@ -144,7 +150,12 @@ namespace AFR2Loader
             AddButton(configButtons, "Detectar rutas vacías", () => { ReadSettings(); profile.Discover(); FillSettings(); Log("Detección de rutas terminada; revisar valores antes de guardar."); }, 175);
             AddButton(configButtons, "Importar...", ImportProfile, 110); AddButton(configButtons, "Exportar...", ExportProfile, 110);
             configLayout.Controls.Add(configButtons, 0, 2); configuration.Controls.Add(configLayout);
-            Controls.Add(tabs); Controls.Add(menu); InitializeActivityBar();
+            // AFR2-20261106-06: the activity bar owns a row of its own below the tabs, so it never overlaps tab content.
+            var root = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 2, Margin = new Padding(0), Padding = new Padding(0) };
+            root.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+            root.RowStyles.Add(new RowStyle(SizeType.Percent, 100)); root.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+            tabs.Margin = new Padding(0); root.Controls.Add(tabs, 0, 0);
+            Controls.Add(root); Controls.Add(menu); InitializeActivityBar(root);
             timer.Interval = 100; timer.Tick += (s, e) => { DrainLog(); DrainCommandFeedback(); }; timer.Start();
             FillSettings(); RefreshPorts();
             FormClosing += WindowClosing;
@@ -152,18 +163,12 @@ namespace AFR2Loader
             InitializeSerial(tabs);
             InitializePreferences(tabs);
             InitializeConverter(tabs);
-            var megaPage = new TabPage("ATmega") { Padding = new Padding(UiInset) };
-            var megaActions = new FlowLayoutPanel { Dock = DockStyle.Fill, AutoScroll = true };
-            var megaOpen = new ActionButton { Text = "Preparar / cargar ATmega", Width = 260 };
-            megaOpen.Click += (sender, args) => { SelectOperationTarget(0); ShowOperation(); };
-            var megaRead = new ActionButton { Text = "Leer ATmega", Width = 175 };
-            megaRead.Click += (sender, args) => OpenManualSection("leer-atmega");
-            megaActions.Controls.Add(megaOpen); megaActions.Controls.Add(megaRead); megaPage.Controls.Add(megaActions); tabs.TabPages.Add(megaPage);
             bridgeTab.Text = "Flasher";
-            string[] tabOrder = { "Operación", "Flasher", "ATmega", "Monitor serie", "Historial de sesión", "Eventos y errores", "Conversor HEX / ASCII", "Servidor MCP", "Configuración" };
+            string[] tabOrder = { "Operación", "Flasher", "Monitor serie", "Historial de sesión", "Eventos y errores", "Conversor HEX / ASCII", "Servidor MCP", "Configuración" };
             var orderedPages = tabs.TabPages.Cast<TabPage>().OrderBy(page => { int index = Array.IndexOf(tabOrder, page.Text); return index < 0 ? 8 : index; }).ToArray();
             tabs.TabPages.Clear(); tabs.TabPages.AddRange(orderedPages);
             StyleControls(this);
+            InitializeAppearance();
             ArrangeOperationWorkspace(layout);
             InitializeBrand();
             timer.Tick += (sender, args) => { if (++preparationTick % 30 == 0 && !busy) UpdatePreparationControls(); };
@@ -172,9 +177,9 @@ namespace AFR2Loader
             Log("Perfiles y registros: " + Profile.UserRoot);
         }
 
-        Button AddButton(Control parent, string text, Action action, int width)
+        Button AddButton(Control parent, string text, Action action, int width, ButtonRole role = ButtonRole.Auto)
         {
-            var b = new ActionButton { Text = text, Width = width, Height = 33, Margin = new Padding(0, 4, 8, 4) };
+            var b = new ActionButton { Text = text, Width = width, Height = 33, Margin = new Padding(0, 4, 8, 4), Role = role };
             b.Click += (s, e) => { try { action(); } catch (Exception error) { MessageBox.Show(this, error.Message, "AFR2 Loader", MessageBoxButtons.OK, MessageBoxIcon.Error); } };
             parent.Controls.Add(b); idleControls.Add(b); ButtonStyle(b); return b;
         }
@@ -365,7 +370,7 @@ namespace AFR2Loader
                     Log(ops.FlashedMegaBackup ? "Backup de aplicación ATmega flasheado y contrastado. Revisar qué programa contiene antes de operar; no se supone que sea el firmware del auto."
                         : ops.InstalledMegaFlasher || (Operations.UsesMegaBridge(snapshot) && !ops.MegaFirmwareFlashed)
                         ? "Servicio temporal: RESET Mega LIBRE, D18→E_RX / E_TX→D19. El Mega aún ejecuta el flasher; restaurar el firmware del auto antes de operar."
-                        : "Recordatorio de funcionamiento: Mega D18/TX1 → E_RX (RX central); E_TX (TX central) → Mega D19/RX1. Con alimentación desconectada, retirar adaptador USB–TTL o servicio D0/D1 y RESET Mega→GND, si se usaron.");
+                        : "Recordatorio de funcionamiento: Mega D18/TX1 → E_RX (RX central); E_TX (TX central) → Mega D19/RX1. Con alimentación desconectada, retirar el adaptador USB–TTL, si se usó.");
                 if (!ops.Verified) QueueNotice(new LoaderNotice { Origin = "cargador " + port, Code = "completed", Message = lastResult.Text });
             }
             catch (OperationCanceledException error)
@@ -384,7 +389,11 @@ namespace AFR2Loader
             }
             finally
             {
-                if (ops.EspSessionStarted)
+                if (ops.EspSessionStarted && ops.KeyRstAutomatic)
+                {
+                    Log("Operación ESP finalizada en modo KEY/RST automático. El registro del puente indica qué acciones y limpieza fueron confirmadas; finalizar no acredita por sí solo un reinicio ni respuesta ROM.");
+                }
+                else if (ops.EspSessionStarted)
                 {
                     lastResult.Text += " Ya podés soltar KEY.";
                     Log("Operación ESP finalizada: ya podés soltar KEY. El Loader no reinicia automáticamente el ESP.");
@@ -446,10 +455,7 @@ namespace AFR2Loader
             { confirmedFlashCapacity = null;
                 await ops.PrepareEspSession(p, port, false, shouldListen, token);
                 long bytes = await ops.Probe(p, port, token);
-                if (bytes % 1048576L != 0 || bytes < 1048576L || bytes > 16777216L) throw new InvalidOperationException("Capacidad detectada no compatible con los layouts del Loader.");
-                SetProfileValue("FlashMB", (bytes / 1048576L).ToString(System.Globalization.CultureInfo.InvariantCulture));
-                confirmedFlashCapacity = profile.Get("FlashMB");
-                SyncEspOptions(); UpdateDestinationVisibility();
+                ApplyDetectedFlashCapacity(bytes);
             }, true);
         }
         void DetectSelected()

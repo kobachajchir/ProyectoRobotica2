@@ -1,3 +1,23 @@
+> **AFR2-20261106-15:** [informe completo de pinout](hardware/INFORME_PINOUT_ROBOT_20261106.md) y [PDF](hardware/output/pdf/INFORME_PINOUT_ROBOT_20261106.pdf). Agregados propios marcados, incluidos D32 AutoKEY y D33 AutoRESET. Solo documentación; ATmega/ESP/Web sin cambios ni nuevas pruebas.
+
+> **AFR2-20261106-14:** incorporado el PDF de encoders BioLog y [cotejado con el código](hardware/COTEJO_ENCODERS_BIOLOG_20261106.md). Pines coincidentes; x4/CPR1500/signos del PDF no se trasladan a AFR2 x1/calibración individual. ATmega/ESP/Web sin cambios; solo documentación, sin tests, compilaciones, validadores ni pruebas físicas.
+
+> **AFR2-20261106-13:** retirado HC-SR04 como requisito y causa de parada de movimiento en todos los modos físicos vigentes. Sensores/radar y simulación conservados; aproximación física al brazo pendiente. ATmega y simulador UI Web solo fuente, ESP sin cambios; sin tests, compilaciones, validadores ni cargas.
+
+> **AFR2-20261106-12:** Hall por motor con Confirmar/Descartar y EEPROMv10; CW exterior positivo. PWM manual con slot reciente ESP sin esperar ACK AVR por consigna; ALIVE/STOP conservados. Solo fuente, sin compilación, tests, validadores, generadores, carga ni prueba física. Restituir permisos del bypass manual queda pendiente. Ver [contrato](contracts/HALL_MANUAL_STREAM_20261106.md).
+
+> **AFR2-20261106-04:** RAM AVR optimizada: 2022 bytes estáticos recuperados, margen2578; QR finish29. Ambos buffers OLED conservados. Builds y paridad2104/2104 PASS; sin carga ni aceptación física. [Ficha](changes/2026-11-06-04-avr-ram-qr.md).
+
+> **AFR2-20261106-03 / Loader 1.2.0:** nueva distribución compartible compilada (GUI/MCP), rutas {App}/módulos y datos de cada usuario configurables; pestaña ATmega redundante retirada, soporte conservado en Flasher/Operación. ZIP y auditoría: [ficha](changes/2026-11-06-03-loader-portable-120.md). Sin COM, firmware compilado ni flasheos por esta entrega.
+
+> **AFR2-20261106-02:** regenerado y compilado; paridad 1680/1680 C/TS. **Despliegue bloqueado por SRAM/pila AVR**. Sin cargas ni pruebas físicas. [Comprobaciones](documentation/builds/2026-11-06-02/README.md).
+
+> **AFR2-20261106-01:** EX01v13 / EEPROMv9: IR digital, Wi-Fi persistente y paginado, presion WS y pantallas vinculadas. [Estado y limites](changes/2026-11-06-01-coordinated-corrections.md). Solo fuente; sin generar, compilar, probar ni cargar.
+
+> **Revisión del auto, 06/11/2026:** síntomas comunicados, cotejo estático ATmega/ESP/Web y plan priorizado de IR, HC-SR04, PWM, Wi-Fi/AP/WS y pantallas. [Informe y mapa de archivos](docs/REVISION_AUTO_Y_PLAN_20261106.md). Diagnóstico y plan; sin nuevas correcciones de firmware, pruebas ni cargas.
+>
+> **AFR2-20261105-01:** comprobaciones del Loader en columna a la derecha de la terminal, con log más alto. Solo fuente, sin compilar ni ejecutar la interfaz modificada. [Ficha](changes/2026-11-05-01-loader-checks-sidebar.md).
+>
 > **AFR2-20261104-32:** el ESP admite 24 activos Web y manifiesto de 12 KiB; sin compilar ni medir RAM. [Ficha](changes/2026-11-04-32-esp-24-assets.md).
 >
 > **AFR2-20261103-31:** la Web compila; peso medido y bloqueo de 17 archivos frente al límite de 16 del ESP. [Ficha](changes/2026-11-03-31-web-build-weight.md).

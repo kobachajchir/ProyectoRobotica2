@@ -48,6 +48,13 @@ bool MegaLink::requestProduct(uint8_t command,const uint8_t *body,uint8_t size,u
     if(!ready_ || command<0x10 || command>AFR2_EXT_MOTION_HALT || (priority && command!=AFR2_EXT_SEQ_CANCEL && command!=AFR2_EXT_MOTION_HALT))return false;
     return start(command,now,true,priority,body,size);
 }
+// AFR2-20261106-12: PWM only. AVR replies are drained/ignored; ALIVE remains correlated.
+bool MegaLink::streamPwm(const uint8_t *body,uint32_t now) {
+    if(!ready_ || busy())return false;
+    uint32_t previousAttempt=lastAttempt_;
+    if(!start(AFR2_EXT_DRIVE_PWM,now,false,false,body,12))return false;
+    active_=false;lastAttempt_=previousAttempt;return true;
+}
 bool MegaLink::take(MegaResult &r) {
     if (!result_.available) return false;
     r=result_; result_.available=false; return true;
@@ -92,7 +99,7 @@ static bool productReply(uint8_t cmd,const uint8_t *p,uint8_t n,const uint8_t *q
     case AFR2_EXT_LINE_CAL:return n==10 && p[9]<=1;
     case AFR2_EXT_HALL_CAL:return n==15 && p[9]<=1 && p[10]<=1;
     case AFR2_EXT_WIFI_UPDATE:return n==9;
-    case AFR2_EXT_WIFI_POLL:return qn==1 && n>=23 && p[9]<=1 && p[14]<=11 && p[15]<=96 && p[16]==q[0] && p[17]<=40 && n==23+p[17] && (uint16_t)p[16]+p[17]<=p[15] && p[18]>=1 && p[18]<=3;
+    case AFR2_EXT_WIFI_POLL:return qn==1 && n>=23 && p[9]<=1 && p[14]<=12 && p[15]<=96 && p[16]==q[0] && p[17]<=40 && n==23+p[17] && (uint16_t)p[16]+p[17]<=p[15] && p[18]>=1 && p[18]<=3;
     case AFR2_EXT_WEB_PULSE:return qn==2 && n==11 && afr2_get_u16(p+9)==afr2_get_u16(q);
     case AFR2_EXT_DRIVE_PWM:case AFR2_EXT_DRIVE:case AFR2_EXT_WHEEL:case AFR2_EXT_MODE:case AFR2_EXT_GOTO:return n==9;
     case AFR2_EXT_CANCEL:return n==10 && p[9]<=4;

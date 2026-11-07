@@ -1,3 +1,9 @@
+> **Loader 2.0.0 / AFR2-20261106-33:** versión mayor por acumulación (MCP, monitor serie y envío manual, Web/AT, flasher ATmega con KEY/RST automático, backups, tarjeta lateral Preparación·FileSystem, reintento de SYNC por el puente). Sin funciones nuevas fuera de lo ya registrado; el flasheo real con hardware sigue sin comprobarse. Compilar con `Compilar-Loader-2.cmd`.
+
+> **Loader 1.2.0 / AFR2-20261106-03:** distribución compartible actualizada, referencias {App}/módulos, rutas relativas a la aplicación, herramientas configurables y datos propios de cada usuario. Retirada la pestaña ATmega redundante; Flasher conserva el acceso al firmware Mega. [Portabilidad y requisitos](PORTABILIDAD.md).
+
+> **AFR2-20261106-02:** regeneración y builds AVR/ESP/Web/Loader comprobados; paridad host OLED 1680/1680. **Carga bloqueada por presupuesto SRAM/pila AVR**; sin COM, flasheo ni prueba física. [Evidencia](../AutoFinalRobo2-Contracts/documentation/builds/2026-11-06-02/README.md).
+
 > **AFR2-20261029-22:** solución a «running scripts is disabled» al preparar FileSystem: [ajustar argumentos PowerShell del perfil](FILESYSTEM_SCRIPTS.md). Predeterminado corregido solo en fuente; sin compilar ni ejecutar. [Ficha](../AutoFinalRobo2-Contracts/changes/2026-10-29-22-loader-powershell-filesystem.md).
 
 > **Loader 1.1.2 / AFR2-20261029-13:** intervención KEY/RST del ESP obligatoria y al frente, aun minimizado o con omisión de confirmaciones. ATmega sin ese requisito. [Ayuda](MANUAL.html#esp-intervencion) · [Ficha](../AutoFinalRobo2-Contracts/changes/2026-10-29-13-loader-esp-physical-required.md).
@@ -113,10 +119,10 @@ Al finalizar la operación se avisa que ya puede soltarse, también ante un fall
 o cancelación; esto no acredita una carga válida si no se verificó el contenido.
 
 En Configuración, **Conexión serie ESP** (`EspTransport`) acepta `usb-ttl`
-para el adaptador externo de lógica3,3V, `mega_reset` para el puente físico del
-Mega o `mega_bridge` para el flasher de software D18/D19.
-El asistente muestra el cableado correspondiente. `mega-usb` de perfiles
-anteriores se acepta como alias de `mega_reset`, sin cambiar de montaje.
+para el adaptador externo de lógica3,3V o `mega_bridge` para el flasher de software D18/D19.
+El asistente muestra el cableado correspondiente. El método D0/D1 con RESET-GND
+(`mega_reset`, `mega-usb`) fue **retirado** (AFR2-20261106-11): un perfil antiguo
+que lo tenga pasa a `mega_bridge` al abrirse; revisá el cableado antes de operar.
 Elegir `usb-ttl` para reproducir la conexión externa; nunca se exige RESET-GND
 del Mega en ese modo.
 El COM se elige en la ventana: no se fija COM5 ni se modifica un perfil guardado
@@ -140,8 +146,7 @@ ejecutar ni probar**. La carga manual aportada no valida el programa corregido.
 ## Abrir
 
 En **Operación → Método ESP** se elige entre **Flasher en ATmega — D18/D19,
-RESET libre**, **Puente serial del Mega — D0/D1, RESET a GND** y
-**Adaptador USB–TTL externo — lógica3,3V**. Al elegir se
+RESET libre** y **Adaptador USB–TTL externo — lógica3,3V**. Al elegir se
 cierra la lectura serie, se muestra el cableado de ese método y se habilita
 Continuar solo al marcar todas las casillas. Cancelar conserva el método
 anterior y deja el monitor cerrado. Elegir no instala ni carga firmware. La
@@ -197,7 +202,7 @@ flash/hfuse no habilita backup; no se omite silenciosamente el fallo. AVRDUDE6.3
 recorta colas FF: se normaliza el exportado y se contrasta después de escribir;
 si quedan bytes de otro programa se informa fallo, sin borrado automático.
 
-`mega_reset` mantiene el método físico D0/D1 y RESET-GND. No se cambia de montaje
+El método físico D0/D1 y RESET-GND fue retirado. No se cambia de montaje
 ni se carga firmware al cerrar la app. El [plan A/B](../AutoFinalRobo2-Contracts/hardware/PLAN_PRUEBA_FLASHER_MEGA.md)
 detalla preparación y recuperación. Código nuevo en `src/Operations.MegaBackup.cs`,
 `src/MainForm.Preferences.cs` y `src/LoaderPreferences.cs`; transporte en

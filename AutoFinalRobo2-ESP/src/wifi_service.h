@@ -24,6 +24,9 @@ public:
     bool retry();
     bool disconnectStation();
     bool changeMode(uint8_t mode);
+    bool savedConfig(uint8_t mode, WifiConfig &out);
+    bool restartDue(uint32_t now) const { return applyPending_ && (uint32_t)(now-stagedAt_)>=1000u; }
+    bool restartPending() const { return applyPending_; }
     bool takeScan(JsonObject out);
     void status(JsonObject out) const;
     void displayInfo(WifiDisplayInfo &out) const;

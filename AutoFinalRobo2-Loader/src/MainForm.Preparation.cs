@@ -14,6 +14,15 @@ namespace AFR2Loader
         readonly Label capacityState = new Label { AutoSize = true, Margin = new Padding(12, 12, 0, 0) };
         bool CapacityConfirmed { get { return confirmedFlashCapacity == profile.Get("FlashMB"); } }
         int preparationTick;
+        // AFR2-20261106-18: GUI and MCP share the same confirmed physical capacity.
+        void ApplyDetectedFlashCapacity(long bytes)
+        {
+            if (bytes % 1048576L != 0 || bytes < 1048576L || bytes > 16777216L)
+                throw new InvalidOperationException("Capacidad detectada no compatible con los layouts del Loader.");
+            SetProfileValue("FlashMB", (bytes / 1048576L).ToString(System.Globalization.CultureInfo.InvariantCulture));
+            confirmedFlashCapacity = profile.Get("FlashMB");
+            SyncEspOptions(); UpdateDestinationVisibility();
+        }
         bool ConfirmFlashCapacity()
         {
             if (CapacityConfirmed) return true;
@@ -38,6 +47,19 @@ namespace AFR2Loader
             bool ready = false; try { ready = SelectedSectionPrepared(); } catch (Exception) { }
             flashTarget.Enabled = !busy && pendingJob == null && profileDialogs == 0 && !syncingEspOptions && ready;
             flashTarget.ToolTipText = ready ? "Cargar las imágenes preparadas para esta sección." : "Primero confirmá el tamaño ESP y compilá esta sección (AT: revisar paquete). Cambiar fuentes, perfil o imágenes requiere prepararla otra vez.";
+            nextStep.Text = NextStepText(ready); FitOperationRows();
+        }
+        // AFR2-20261106-06. Derived from the same state that enables the flash button; it never enables anything.
+        string NextStepText(bool ready)
+        {
+            string name = TargetName(target.SelectedIndex);
+            if (busy) return "Operación en curso. Los botones de preparación vuelven al terminar o cancelar.";
+            if (pendingJob != null) return "Hay una solicitud MCP pendiente: aprobala o rechazala antes de continuar.";
+            if (profileDialogs > 0 || syncingEspOptions) return "Terminá el diálogo o cambio de configuración abierto para continuar.";
+            if (ready) return "Listo para cargar: " + name + " está preparado. Usá «Flashear» cuando el cableado esté confirmado.";
+            if (target.SelectedIndex != 0 && !CapacityConfirmed) return "Siguiente paso: confirmar el tamaño de la flash ESP con «Detectar ESP / ROM».";
+            if (target.SelectedIndex != 0 && EspFlashRules.IsAt(profile)) return "Siguiente paso: revisar el paquete AT con «Revisar paquete AT». Después se habilita «Flashear».";
+            return "Siguiente paso: compilar «" + name + "». Si cambiás fuentes, perfil o imágenes hay que prepararlo otra vez.";
         }
         void ShowKeyReleaseNotice()
         {
@@ -45,7 +67,7 @@ namespace AFR2Loader
             var text = new Label { Text = "La herramienta informó el primer porcentaje de escritura ESP.\r\n\r\nYa podés soltar KEY. No pulses RST ni desconectes la alimentación: la escritura y su verificación siguen en curso.", Dock = DockStyle.Fill, Padding = new Padding(20) };
             var close = new ActionButton { Text = "Entendido", Dock = DockStyle.Bottom, Height = 44 };
             close.Click += (s, e) => dialog.Close(); dialog.Controls.Add(text); dialog.Controls.Add(close);
-            dialog.FormClosed += (s, e) => dialog.Dispose(); StyleControls(dialog); dialog.Show(this);
+            dialog.FormClosed += (s, e) => dialog.Dispose(); StyleControls(dialog); ApplyAppearance(dialog); dialog.Show(this);
         }
     }
 }

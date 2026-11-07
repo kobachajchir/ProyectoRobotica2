@@ -1,3 +1,5 @@
+> **AFR2-20261106-12:** Hall por motor con Confirmar/Descartar y EEPROMv10; CW exterior positivo. PWM manual con slot reciente ESP sin esperar ACK AVR por consigna; ALIVE/STOP conservados. Solo fuente, sin compilación, tests, validadores, generadores, carga ni prueba física. Restituir permisos del bypass manual queda pendiente. Ver [contrato](../contracts/HALL_MANUAL_STREAM_20261106.md).
+
 > **AFR2-20261101-02:** [Arbol y gestos del C vigente](UI_SCREEN_FLOW.md), cotejados con el Simulador UI. Esta revision distingue el flujo actual del diseno e hitos historicos inferiores; corto en IR/servo no retorna, largo vuelve por contexto. Solo fuente, sin ejecucion.
 
 > **Árbol fuente07:** Sistema y Estado/Pruebas reorganizados; ajustes de encoder/servo en Preferencias y geometría nominal fija. [Matriz vigente](../changes/2026-10-30-07-ui-integral.md). Árboles inferiores son históricos.

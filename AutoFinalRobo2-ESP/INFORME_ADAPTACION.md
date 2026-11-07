@@ -1,3 +1,7 @@
+> **AFR2-20261106-02:** regeneración y builds AVR/ESP/Web/Loader comprobados; paridad host OLED 1680/1680. **Carga bloqueada por presupuesto SRAM/pila AVR**; sin COM, flasheo ni prueba física. [Evidencia](../AutoFinalRobo2-Contracts/documentation/builds/2026-11-06-02/README.md).
+
+> **AFR2-20261106-01 / fuente:** correcciones coordinadas EX01v13, IR digital/EEPROMv9 y Wi-Fi persistente/paginado. [Ficha y estado por modulo](../AutoFinalRobo2-Contracts/changes/2026-11-06-01-coordinated-corrections.md). Sin nuevas compilaciones, generadores, pruebas ni cargas; no acredita el firmware instalado.
+
 > **AFR2-20261030-09:** Wi-Fi coordinado EX01v11, EEPROMv8 sin cambios; [ficha de fuente y límites](../AutoFinalRobo2-Contracts/changes/2026-10-30-09-wifi-state-flows.md). Sin generación, compilación, validadores, pruebas, navegador, promoción ni cargas; evidencia anterior corresponde a fuentes históricas.
 
 > **AFR2-20261030-07:** fuente coordinada EX01v10/EEPROMv8; [detalle](../AutoFinalRobo2-Contracts/changes/2026-10-30-07-ui-integral.md). Sin compilar, ejecutar, validar, probar, generar, promover ni cargar. Conserva evidencia previa solo para sus fuentes históricas.
@@ -108,3 +112,8 @@ AutoFinalRobo2-Contracts/changes/2026-10-24-01-firmware-web-integration.md.
 ## AFR2-20261029-19 — OLED táctil y visor bajo demanda
 
 Fuente adaptada con Web/ATmega/ESP: overlay scrim+blur en modales, Volver por ítem del menú, ScreenCode0x030035 con aviso/bitmap/chevrones y suscripción explícita a capturas/metadatos. Contrato en AutoFinalRobo2-Contracts/contracts/TOUCH_OLED_19.md; procedencia por archivo en provenance/touch-oled-20261029-19.json de Contracts. El rumbo es solicitado, no medido, y no agrega giro físico. Sin tests, compilación, validadores, navegador, ejecución del generador OLED, promoción ESP ni flasheo de esta entrega. Memoria/paridad/latencia físicas pendientes.
+
+
+## AFR2-20261106-12 — Hall y PWM manual
+
+Adaptación de fuente coordinada; véase Contracts/contracts/HALL_MANUAL_STREAM_20261106.md y Contracts/provenance/hall-motion-20261106-12.json. EEPROM AVR v10; Hall por motor y raster Web vinculados; ESP PWM reciente sin esperar ACK AVR por consigna. Sin tests, compilaciones, validadores, generadores, promoción ni carga. Fluidez, SRAM/pila y funcionamiento físico pendientes. Bypass manual conservado; restitución de permisos pendiente.

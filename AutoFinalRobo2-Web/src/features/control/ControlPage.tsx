@@ -11,6 +11,7 @@ import { Disclosure } from '../../components/ui/Disclosure';
 import { StatusNotice } from '../../components/ui/StatusNotice';
 import { TaskSections } from '../../components/ui/TaskSections';
 import type { RobotPose } from '../../protocol/robotState';
+import { Afr2CommandError } from '../../protocol/afr2Client';
 import { useConnection } from '../connection/ConnectionContext';
 import { MecanumDrivePad } from '../../components/robot/MecanumDrivePad';
 import { RangeNumberField } from '../../components/ui/RangeNumberField';
@@ -147,7 +148,7 @@ export function ControlPage({ area = 'drive' }: { area?: ControlArea }) {
       setActivePadId(null);
       setRequestedMotion(null);
       if (emitZero && hadHold) {
-        void sendPwmCommand(0, 0, 0).catch(() => { void triggerEmergencyStop('safety'); });
+        void sendPwmCommand(0, 0, 0).catch(e => { if (!(e instanceof Afr2CommandError && (e.code === 'BUSY_IN_FLIGHT' || e.code === 'TIMEOUT'))) void triggerEmergencyStop('safety'); });
       }
     },
     [sendPwmCommand, setOperationActivity, triggerEmergencyStop]
@@ -215,11 +216,15 @@ export function ControlPage({ area = 'drive' }: { area?: ControlArea }) {
     setActivePadId(holdVector.current.id);
     setDriveError(null);
     setRequestedMotion(null);
+    // AFR2-20261106-10: a busy UART slot or one late reply is transient; the 180 ms heartbeat
+    // retries and the ATmega TTL (400 ms) still stops the car if commands really stop arriving.
+    // AFR2-20261106-12: transient pressure is handled by latest-slot PWM and TTL, without emergency STOP.
     const send = () => {
       if (generation !== holdGeneration.current || !holdVector.current) return;
       const target = holdVector.current;
-      void sendPwmCommand(target.forwardPct, target.strafePct, target.turnPct).catch(e => {
+      void sendPwmCommand(target.forwardPct, target.strafePct, target.turnPct).then(() => undefined, e => {
         if (generation !== holdGeneration.current) return;
+        if (e instanceof Afr2CommandError && (e.code === 'BUSY_IN_FLIGHT' || e.code === 'TIMEOUT')) return;
         stopActiveHold(false); setDriveError(e instanceof Error ? e.message : 'Consigna rechazada.');
         void triggerEmergencyStop('safety');
       });
@@ -282,6 +287,21 @@ export function ControlPage({ area = 'drive' }: { area?: ControlArea }) {
         loadingTitle: 'Enviando objetivo relativo GOTO...',
         successTitle: 'Misión GOTO completada',
         acceptedTitle: 'Misión GOTO aceptada (en progreso)',
+      }
+    );
+  };
+
+  // AFR2-20261106-08: touch twist with Hall -> in-place GOTO (x=y=0), closed by wheel odometry.
+  const handleTurnTo = async (thetaMrad: number) => {
+    if (!prepareAction()) return;
+    const degrees = Math.round(thetaMrad * 180 / Math.PI / 1000);
+    await executeCommandWithToast(
+      'robot.goto.start',
+      { xMm: 0, yMm: 0, thetaMrad, maxSpeedMmS: Math.min(linearSpeedMmS, maxSpeed) },
+      {
+        loadingTitle: `Girando ${degrees > 0 ? '+' : ''}${degrees}° con odometría Hall...`,
+        successTitle: 'Giro completado',
+        acceptedTitle: `Giro de ${degrees}° aceptado (en progreso)`,
       }
     );
   };
@@ -651,7 +671,10 @@ export function ControlPage({ area = 'drive' }: { area?: ControlArea }) {
       <ManualDriveOverlay open={manualOverlayOpen} origin={manualOrigin} onClose={() => setManualOverlayOpen(false)}
         onRelease={() => stopActiveHold(true)} canDrive={canDrive} blockedReason={driveBlockedReason} speed={manualPowerPct} maxSpeed={100}
         onSpeedChange={setManualPowerPct} stopSignal={stopRecord.lastIssuedAtMs} error={driveError}
-        onDirectionChange={(direction: ManualDirection) => { const speed = Math.floor(manualPowerPct / (Math.abs(direction.vx) + Math.abs(direction.vy))); void startHoldVector(`touch-${direction.id}`, direction.label, direction.vx * speed, direction.vy * speed, 0); }} />
+        onDirectionChange={(direction: ManualDirection) => { const speed = Math.floor(manualPowerPct / (Math.abs(direction.vx) + Math.abs(direction.vy))); void startHoldVector(`touch-${direction.id}`, direction.label, direction.vx * speed, direction.vy * speed, 0); }}
+        hallTurnAvailable={gotoAvailable}
+        onTurnTo={(thetaMrad: number) => { void handleTurnTo(thetaMrad); }}
+        onTurn={(side: number) => { void startHoldVector(side > 0 ? 'touch-ccw' : 'touch-cw', side > 0 ? 'girar a la izquierda' : 'girar a la derecha', 0, 0, Math.sign(side) * turnPowerPct); }} />
     </div>
   );
 }

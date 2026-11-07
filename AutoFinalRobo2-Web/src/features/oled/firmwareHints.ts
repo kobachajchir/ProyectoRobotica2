@@ -5,7 +5,7 @@ import { ENCODER_LONG } from './encoderLongIcon';
 import { componentIcon } from './oledComponents';
 import type { Afr2OledBuffer } from './oledRasterizer';
 export function gestureHint(o:Afr2OledBuffer,x:number,y:number,kind:boolean|'turn',text:string){
-  y=Math.min(52,y);
+  y=Math.min(52,y);if(kind===true && x>=66)x=66;
   const turn=kind==='turn',im=turn?ENCODER_TURN:kind?ENCODER_LONG:L.icons[L.symbols.AFR2_ICON_ENCODER];
   const size=turn?21:13,largest=Math.max(im.width,im.height),stride=Math.ceil(im.width/8);
   const width=Math.trunc(im.width*size/largest),height=Math.trunc(im.height*size/largest);

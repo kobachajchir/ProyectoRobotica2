@@ -1,0 +1,178 @@
+{
+  "change": "AFR2-20261106-03",
+  "date": "2026-11-06",
+  "loaderVersion": "1.2.0",
+  "authorization": "Pedido humano de nueva distribución compartible, auditoría de rutas/configuración y retiro de pestaña ATmega; compilación/empaquetado del Loader autorizados. Apariencia clara/oscura y foco KEY/RST incorporados al pedido.",
+  "status": {
+    "loader": "GUI/MCP compilados; ZIP auditado y GUI revisada con capturas en claro/oscuro. Sin COM ni herramientas de firmware.",
+    "atmega": "Sin cambios por esta tarea; trabajo concurrente conservado.",
+    "esp": "Sin cambios por esta tarea.",
+    "web": "Sin cambios por esta tarea.",
+    "cad": "Sin cambios por esta tarea."
+  },
+  "package": {
+    "path": "AFR2-Loader-dist-1.2.0.zip",
+    "bytes": 1395047,
+    "sha256": "4f2494cb360881ee4bf97879e7d9693f331742a0f48e3bb3234c92c15302ac54",
+    "manifest": "AFR2-Loader-dist-1.2.0/distribucion.json",
+    "userDataIncluded": false,
+    "externalToolsBundled": false
+  },
+  "audit": {
+    "manifestMismatches": 0,
+    "authorPathMatches": 0,
+    "unsafeArchiveEntries": 0,
+    "missingManualFileLinks": 0,
+    "secondComputerTested": false
+  },
+  "files": [
+    {
+      "path": "AutoFinalRobo2-Loader/Compilar.ps1",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Fallback al compilador .NET de Windows y salida sin debug/PDB.",
+      "sha256": "38c0efb6f402da84410a299ea8d29b345385672f13ac294b1728c4104bd5f263"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/Preparar-Distribucion.ps1",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Versión desde fuente, destino configurable, lista explícita sin datos privados, manifiesto y hash de ZIP.",
+      "sha256": "f2b29a3ee87f133a6517459a8aeffc41e76f92d263df92976903c5518676c42f"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/PORTABILIDAD.md",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Requisitos, configuración por destinatario, traslado, variables y límites.",
+      "sha256": "96accb38cd395e2c3da7ce8becbe877bb54ae452e334d20c1e1c11a8500609c7"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/MCP.md",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Ejemplos sin ruta del desarrollador.",
+      "sha256": "114849d873d544705e720138a51cb20a204ee7a28f83c4af72135a065aff1b41"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/MANUAL.html",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Introducción portable 1.2.0 y navegación sin pestaña ATmega.",
+      "sha256": "2da94e9a80ce61b003af4240323e8679580b890e75f1b0afcb8290af95617cb3"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/README.md",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Índice de entrega portable.",
+      "sha256": "e01c3b69d4ef7b6faa930bb72f5b336e9186b9963070cef49d01d4cd81c81ec1"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/perfil-ejemplo.json",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Plantilla sin ubicaciones/herramientas personales; rutas de aplicación y módulos.",
+      "sha256": "4f38ca2d391da4cc35f7479099ce01e60abc6054e245944013fe5e4aa38533e8"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/launcher/Launcher.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Metadatos del lanzador fuente alineados con1.2.0.",
+      "sha256": "1eb12fe15b20190f5673bdb7f6be062a8eb6a22468f31dcf079c96098978dc73"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/AssemblyInfo.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Metadatos GUI/MCP derivados de LoaderVersion.",
+      "sha256": "37c465a975d208b9a51a3fa32d47699ed8612d3c3892557ed6202ca742bfc91e"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/Profile.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Resolución {App}/módulos, rutas relativas, datos configurables y descubrimiento del receptor.",
+      "sha256": "715f80c578424942387ee38388695567d3972d5a18ac2137eadcd4032ef6339d"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/Program.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Inicializa el directorio del paquete antes de GUI/MCP.",
+      "sha256": "6756ceb97f46cb0c559dfc7e9f727703d766c64ac3b48bbd0268f44eef48696e"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/JobState.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Versión1.2.0.",
+      "sha256": "dfe6e0f1cc07bf7dc46baf8a94c3d74754abf1e959225986e30e1a4b8a68eff7"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/MainForm.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Retira pestaña ATmega redundante; explica resolución de rutas.",
+      "sha256": "972628ebc3cc701ee32aa9a7dac907ef5507047cf57523a9a92fc2103923d76d"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/MainForm.MegaBridge.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Acceso a preparar/cargar firmware Mega desde Flasher.",
+      "sha256": "72021d3251e1ce9fe019f6d6834e062f1ed01006e3adab08c9b2492a4783328f"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/MainForm.McpConnection.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Prompt local incluye destino de datos vigente para GUI/MCP.",
+      "sha256": "05baaf47026fc23f8c13dedc976e32a5c39c957e0850f416c2473878cfffdf63"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/MainForm.Design.cs",
+      "adaptation": "Se conserva organización previa y se adaptan botones/celdas/diálogos al tema.",
+      "sha256": "a4c621774deae78dccb717799c75288284014ce7a19a07c09d3ab42418ebea62"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/MainForm.Workflow.cs",
+      "adaptation": "Se conserva columna lateral previa y se elimina su scroll: las filas comparten el alto disponible.",
+      "sha256": "012ea9887166d7253993b43262d463b47aed74a8802c7194db2c064e79615382"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/MainForm.Appearance.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Apariencia clara/oscura, foco accesible y documentación.",
+      "sha256": "bc22abf6791c0c38732ba7af81c12896c1bf6d3ccdfda331ba22c9537283791d"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/ActionButton.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Apariencia clara/oscura, foco accesible y documentación.",
+      "sha256": "143376329764efa80af5b82a36daee7c8e282f85dfb5a3914a95023db9b26972"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/LoaderPreferences.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Apariencia clara/oscura, foco accesible y documentación.",
+      "sha256": "df28b64abd84f393ba3d0a7eccdbeae2e39655f45e82d52f5116d1e96fc87b5f"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/MainForm.EspIntervention.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Apariencia clara/oscura, foco accesible y documentación.",
+      "sha256": "4365270039b25f767b0f81d872bd8ff56c25527ecdfe4a50f72304d9048d45db"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/MainForm.Preparation.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Apariencia clara/oscura, foco accesible y documentación.",
+      "sha256": "981acdd754be0d12107711c03a295927a7ac67f940d73d9a60401e426c50a0c1"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/MainForm.Preferences.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Apariencia clara/oscura, foco accesible y documentación.",
+      "sha256": "e8217f97e33c4e0b02fd94755a813e2d6dedb79e53bf6919904552c6126fcc11"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/MainForm.Options.cs",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Apariencia clara/oscura, foco accesible y documentación.",
+      "sha256": "50b923f03f9f51efc377371483445f7a41aa53893d465719ee88c0b6d77c891e"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/design-system/loader-120.md",
+      "author": "Koba Chajchir / AFR2; adaptación mediante Codex",
+      "adaptation": "Apariencia clara/oscura, foco accesible y documentación.",
+      "sha256": "a0ad75fcabb70c43d6d787d2ca1616f105b016fdccdddbcdc14d14479f7c7047"
+    }
+  ]
+}

@@ -17,6 +17,7 @@ export function UiSimulationPreview({initialCode,onNavigate,active=true}:{initia
   const held=useCallback((pressed:boolean)=>dispatch({type:'input-held',held:pressed}),[dispatch]);
   const raster=useRef(new Afr2OledBuffer());
   const lastFrame=useRef(new Afr2OledBuffer());
+  const quickFrameKey=useRef('');
   const code=simulationScreenCode(u) as Afr2ScreenCode;
   const lastCode=useRef(initialCode);
   useEffect(()=>{if(code!==lastCode.current && AFR2_SCREEN_META[code]){lastCode.current=code;onNavigate(code);}},[code,onNavigate]);
@@ -26,7 +27,9 @@ export function UiSimulationPreview({initialCode,onNavigate,active=true}:{initia
     return ()=>window.clearInterval(timer);
   },[active,dispatch]);
   const snapshot=useMemo(()=>simulationSnapshot(u),[u]);
-  const buffer=useMemo(()=>{const changed=renderFirmwareScreen({...u,redraw:true,scrollRedraw:false},raster.current,snapshot);if(changed===false)return lastFrame.current;const frame=new Afr2OledBuffer();frame.buffer.set(raster.current.buffer);lastFrame.current=frame;return frame;},[u,snapshot]);
+  const buffer=useMemo(()=>{const key=u.node===L.symbols.AFR2_N_QUICK && !u.notice?JSON.stringify([u.selection,snapshot.quickFlags,u.quickPending,u.quickExpected,u.holdProgress]):'';
+    if(key && quickFrameKey.current===key)return lastFrame.current;quickFrameKey.current=key;
+    const changed=renderFirmwareScreen({...u,redraw:true,scrollRedraw:false},raster.current,snapshot);if(changed===false)return lastFrame.current;const frame=new Afr2OledBuffer();frame.buffer.set(raster.current.buffer);lastFrame.current=frame;return frame;},[u,snapshot]);
   const items=simulationItems(u),gestures=simulationGestures(u);
   const node=firmwareNode(u.node),menu=!Number(node[2]) && !u.edit && !u.keyboard && !u.notice;
   const visible=u.node===L.symbols.AFR2_N_SAVE_CONFIRM?2:menu?3:1;
@@ -37,6 +40,9 @@ export function UiSimulationPreview({initialCode,onNavigate,active=true}:{initia
   return <OledWorkbench
     lastInput={lastInput}
     statusBar={<>
+      <label className="afr2-help">Escaneo de prueba <select aria-label="Resultado del escaneo simulado" className="afr2-glass-field" value={u.scanFixture} disabled={!active || u.pending?.kind==='scan'} onChange={e=>dispatch({type:'scan-fixture',outcome:e.target.value as 'networks'|'empty'|'failed'})}>
+        <option value="networks">16 redes / dos páginas</option><option value="empty">Sin redes</option><option value="failed">Fallo de búsqueda</option>
+      </select></label>
       <span className="afr2-status-pill" data-state="ready"><span className="afr2-status-dot" aria-hidden="true"/>Simulación local · datos ficticios</span>
       <SegmentedControl ariaLabel="Escenario de la simulación" size="sm" fill="never" value={u.scenario}
         items={[{value:'ready',label:'Con datos'},{value:'missing',label:'Sin datos'}]} onChange={scenario=>{if(active)changeScenario(scenario as SimulationScenario);}}/>

@@ -9,13 +9,13 @@
 #include "afr2_sensor_head.h"
 #include "afr2_battery_wire.h"
 #include "afr2_geometry.h"
-#define AFR2_CONFIG_VERSION 8u /* AFR2-20261030-07: v8 adds long press and servo preference to v7 payload. */
+#define AFR2_CONFIG_VERSION 10u /* AFR2-20261106-12: EEPROM v10, 64-byte payload, per-wheel CW convention. */
 #define AFR2_NOTICE_MS 3000u
 enum { AFR2_IDLE, AFR2_MANUAL, AFR2_LINE, AFR2_WHEEL_TEST, AFR2_GOTO, AFR2_FAULT, AFR2_SEQUENCE, AFR2_PWM_MANUAL };
 enum { AFR2_SOURCE_NONE, AFR2_SOURCE_LOCAL, AFR2_SOURCE_WEB };
 enum { AFR2_OK, AFR2_BAD, AFR2_UNAVAILABLE, AFR2_DENIED, AFR2_BUSY, AFR2_FAILED };
 enum { AFR2_WIFI_STATUS=1, AFR2_WIFI_SCAN, AFR2_WIFI_WEB_DRAFT,
-       AFR2_WIFI_LOCAL_DRAFT, AFR2_WIFI_CONNECT, AFR2_WIFI_CANCEL, AFR2_WIFI_RETRY, AFR2_WIFI_REBOOT_ESP, AFR2_WIFI_DISCONNECT, AFR2_WIFI_CHANGE_MODE, AFR2_WIFI_READ_CREDENTIALS };
+       AFR2_WIFI_LOCAL_DRAFT, AFR2_WIFI_CONNECT, AFR2_WIFI_CANCEL, AFR2_WIFI_RETRY, AFR2_WIFI_REBOOT_ESP, AFR2_WIFI_DISCONNECT, AFR2_WIFI_CHANGE_MODE, AFR2_WIFI_READ_CREDENTIALS, AFR2_WIFI_PAGE };
 typedef struct {
     uint8_t line_kind, line_invert, line_calibrated, motor_signs, motor_ready;
     uint8_t hall_wired, hall_signs, geometry_ready, encoder_steps, encoder_invert, contrast, rotation;
@@ -27,6 +27,7 @@ typedef struct {
     uint16_t kp, ki, kd; /* Q8 fixed point, common defaults; independent accumulators */
     uint16_t line_kp, line_speed;
     uint32_t counts_per_rev[4];
+    uint8_t hall_cw_mask; /* AFR2-20261106-12: calibrated CW from wheel exterior; per-wheel migration. */
 } Afr2Config;
 typedef struct {
     uint16_t line_raw[5], distance_mm;
@@ -42,6 +43,8 @@ typedef struct {
     uint32_t id, draft_id, changed_ms,status_ms,job_ms,draft_ms;
     uint8_t op, pending, claimed, available, mode, sta_connected, draft_ready, state;
     uint8_t network_count, selected_network,requested_mode;
+    uint32_t scan_id;
+    uint8_t scan_page,scan_total,scan_truncated,scan_expected,scan_received,mode_draft;
     int16_t rssi;
     uint8_t network_security[8],security,ap_security,ws_clients,details_valid;
     uint32_t details_ms;

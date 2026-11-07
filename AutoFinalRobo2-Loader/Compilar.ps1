@@ -1,4 +1,4 @@
-﻿[CmdletBinding()]
+[CmdletBinding()]
 param([switch]$Mcp, [string]$OutputDirectory)
 $ErrorActionPreference = 'Stop'
 # Solo devuelve la ruta del EXE por stdout; mensajes de compilación por stderr.
@@ -12,6 +12,8 @@ $sources = @(Get-ChildItem -LiteralPath $sourceRoot -Filter '*.cs' | Sort-Object
 if ($sources.Count -eq 0) { throw 'No se encontraron los fuentes src/*.cs.' }
 $stamp = Join-Path $outputRoot ($name + '.sha256')
 $compiler = Join-Path ([System.Runtime.InteropServices.RuntimeEnvironment]::GetRuntimeDirectory()) 'csc.exe'
+if (-not (Test-Path -LiteralPath $compiler)) { $compiler = Join-Path $env:WINDIR 'Microsoft.NET/Framework64/v4.0.30319/csc.exe' }
+if (-not (Test-Path -LiteralPath $compiler)) { $compiler = Join-Path $env:WINDIR 'Microsoft.NET/Framework/v4.0.30319/csc.exe' }
 $targetKind = if ($Mcp) { 'exe' } else { 'winexe' }
 $sourceIdentity = 'afr2-launcher-v2-' + $targetKind + "`n" + (@($sources | ForEach-Object { $_.Name + ':' + (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash }) -join "`n")
 $iconPath = Join-Path $PSScriptRoot 'assets/brand/afr2-loader.ico'
@@ -25,7 +27,7 @@ if ($rebuild) {
     try {
         $compilerArgs = @('/nologo', ('/target:' + $targetKind), '/optimize+', '/codepage:65001',
             '/reference:System.dll', '/reference:System.Core.dll', '/reference:System.Drawing.dll',
-            '/reference:System.Windows.Forms.dll', '/reference:System.Web.Extensions.dll',
+            '/reference:System.Windows.Forms.dll', '/reference:System.Web.Extensions.dll', '/debug-',
             ('/out:' + $temporary)) + @($sources | ForEach-Object { $_.FullName })
         if (Test-Path -LiteralPath $iconPath) { $compilerArgs += ('/win32icon:' + $iconPath) }
         $compilerOutput = @(& $compiler @compilerArgs 2>&1)
@@ -38,5 +40,11 @@ if ($rebuild) {
     } finally {
         if (Test-Path -LiteralPath $temporary) { Remove-Item -LiteralPath $temporary -Force }
     }
+}
+# AFR2-20261106-16: local-only runtime resource hint; never shipped in the allowlisted ZIP.
+$resourceHint = Join-Path $outputRoot ($name + '.appdir')
+$resourceDirectory = [IO.Path]::GetFullPath($PSScriptRoot)
+if (-not (Test-Path -LiteralPath $resourceHint) -or [IO.File]::ReadAllText($resourceHint) -ne $resourceDirectory) {
+    [IO.File]::WriteAllText($resourceHint, $resourceDirectory, (New-Object Text.UTF8Encoding($false)))
 }
 Write-Output $program

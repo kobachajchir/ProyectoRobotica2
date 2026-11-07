@@ -29,14 +29,14 @@ bool Broker::dispatchWifiDraft(const BrokerRequest &q,uint32_t now) {
     JsonDocument f;f["payload"]["draftReady"]=submit;f["payload"]["applied"]=false;answer(q,f);publishStatus();return true;
 }
 void Broker::scanForOled(JsonObjectConst result) {
-    if(!wifiScanOled_)return;
-    wifiScanOled_=false;wifiNetworkCount_=wifiNetworkIndex_=0;
-    if(result["status"]!="completed"){wifiResult_=4;return;}
+    bool forOled=wifiScanOled_;wifiScanOled_=false;wifiNetworkCount_=wifiNetworkIndex_=0;
+    ++wifiScanId_;if(!wifiScanId_)++wifiScanId_;wifiScanPage_=0;wifiScanTruncated_=result["truncated"]|false;
+    if(result["status"]!="completed"){if(forOled)wifiResult_=4;return;}
     for(JsonObjectConst entry:result["networks"].as<JsonArrayConst>()) {
         JsonString name=entry["ssid"].as<JsonString>();const char *s=name.c_str();
-        if(s && name.size()<=32 && name.size()==strlen(s) && wifiNetworkCount_<8){wifiSecurity_[wifiNetworkCount_]=entry["securityCode"]|0;wifiNetworks_[wifiNetworkCount_++]=s;}
+        if(s && name.size()<=32 && name.size()==strlen(s) && wifiNetworkCount_<16){wifiSecurity_[wifiNetworkCount_]=entry["securityCode"]|0;wifiNetworks_[wifiNetworkCount_++]=s;}
     }
-    wifiPhase_=5;wifiResult_=3;
+    if(forOled){wifiPhase_=9;wifiResult_=3;}
 }
 bool Broker::finishWifi(const BrokerRequest &req,const MegaResult &r) {
     if(r.command!=AFR2_EXT_WIFI_POLL && r.command!=AFR2_EXT_WIFI_UPDATE)return false;
@@ -49,6 +49,7 @@ bool Broker::finishWifi(const BrokerRequest &req,const MegaResult &r) {
         wifiJob_=0;wifiResult_=0;wifiPhase_=0;wifiAwaitWeb_=false;wifiDraftReady_=false;eraseConfig(oledDraft_);return true;
     }
     if(r.command==AFR2_EXT_WIFI_UPDATE) {
+        if(!strcmp(req.command,"_wifi_result") && wifiPhase_==5)wifiPhase_=0;
         if(!strcmp(req.command,"_wifi_status"))wifiDetailsPending_=true;
         if(!strcmp(req.command,"_wifi_result") && wifiResetPending_) {
             wifiResetPending_=false;
@@ -70,11 +71,14 @@ bool Broker::finishWifi(const BrokerRequest &req,const MegaResult &r) {
     if(count)memcpy(wifiCredentials_+offset,p+23,count);
     wifiOffset_+=count;if(wifiOffset_<total)return true;
     wifiOffset_=0;wifiPhase_=0;
-    if(op==11){
-        JsonDocument saved;
-        if(!storage_.loadWifi(saved) || !saved["ssid"].is<const char *>() || !saved["password"].is<const char *>() || strlen(saved["ssid"])>32 || strlen(saved["password"])>63){wifiResult_=4;return true;}
+    if(op==12){
+        if(total!=5 || afr2_get_u32((uint8_t *)wifiCredentials_)!=wifiScanId_ || (uint8_t)wifiCredentials_[4]>1){wifiResult_=4;return true;}
+        wifiScanPage_=(uint8_t)wifiCredentials_[4];wifiNetworkIndex_=wifiScanPage_*8u;wifiPhase_=9;wifiResult_=3;
+    } else if(op==11){
+        WifiConfig saved;
+        if(!wifi_.savedConfig(wifiRequestedMode_,saved)){wifiResult_=4;return true;}
         memset(wifiCredentials_,0,sizeof(wifiCredentials_));
-        strlcpy(wifiCredentials_,saved["ssid"],33);strlcpy(wifiCredentials_+33,saved["password"],64);
+        strlcpy(wifiCredentials_,saved.ssid,33);strlcpy(wifiCredentials_+33,saved.password,64);eraseConfig(saved);
         wifiNetworkIndex_=0;wifiPhase_=8;
     } else if(op==1){wifiStatusAt_=0;wifiResult_=3;}
     else if(op==2){if(wifi_.scan()){wifiScanOled_=true;wifiPhase_=4;}else wifiResult_=4;}
@@ -96,11 +100,11 @@ bool Broker::finishWifi(const BrokerRequest &req,const MegaResult &r) {
         volatile char *wipe=wifiCredentials_;for(size_t i=0;i<sizeof(wifiCredentials_);i++)wipe[i]=0;
     } else if(op==5) {
         if(!wifiDraftReady_ || afr2_get_u32(p+19)!=wifiDraftToken_ || !wifi_.stage(oledDraft_,millis()))wifiResult_=4;
-        else{wifiResult_=2;wifiPhase_=6;wifiDraftReady_=false;eraseConfig(oledDraft_);}
+        else{wifiResult_=2;wifiPhase_=0;wifiDraftReady_=false;eraseConfig(oledDraft_);}
     } else if(op==9){
         if(wifi_.disconnectStation()){wifiResult_=2;wifiPhase_=7;}else wifiResult_=4;
     } else if(op==10){
-        wifiResult_=wifi_.changeMode(wifiRequestedMode_)?3:4;wifiStatusAt_=0;publishStatus();
+        wifiResult_=wifi_.changeMode(wifiRequestedMode_)?2:4;wifiStatusAt_=0;publishStatus();
     } else if(op==6){eraseConfig(oledDraft_);wifiDraftReady_=false;wifiDraftToken_=0;wifiResult_=5;publishStatus();}
     else if(op==7){if(wifi_.retry()){wifiRequestedMode_=1;wifiResult_=2;wifiPhase_=6;}else wifiResult_=4;}
     else if(op==8) {
@@ -146,8 +150,14 @@ void Broker::tickWifi(uint32_t now) {
         for(uint8_t i=0;i<4;i++){wifiDetails_[6+i]=ip[i];wifiDetails_[10+i]=mask[i];wifiDetails_[14+i]=gateway[i];}
         if(productRequest(AFR2_EXT_WIFI_UPDATE,b,14+b[5])){pending_=BrokerRequest{};strlcpy(pending_.command,"_wifi_status",33);waiting_=true;wifiStatusAt_=now;}return;
     }
-    if(wifiPhase_==5 && wifiNetworkIndex_<wifiNetworkCount_) {
-        const String &name=wifiNetworks_[wifiNetworkIndex_];uint8_t b[41]={1,wifiNetworkIndex_,(uint8_t)name.length(),wifiSecurity_[wifiNetworkIndex_],wifiNetworkCount_};afr2_put_u32(b+5,wifiJob_);memcpy(b+9,name.c_str(),name.length());
+    uint8_t pageEnd=wifiNetworkCount_<wifiScanPage_*8u+8u?wifiNetworkCount_:wifiScanPage_*8u+8u;
+    uint8_t pageCount=pageEnd>=wifiScanPage_*8u?pageEnd-wifiScanPage_*8u:0;
+    if(wifiPhase_==9){
+        uint8_t b[13]={6};afr2_put_u32(b+1,wifiJob_);afr2_put_u32(b+5,wifiScanId_);b[9]=wifiScanPage_;b[10]=wifiNetworkCount_;b[11]=wifiScanTruncated_;b[12]=pageCount;
+        if(productRequest(AFR2_EXT_WIFI_UPDATE,b,sizeof(b))){pending_=BrokerRequest{};strlcpy(pending_.command,"_wifi_network",33);waiting_=true;wifiPhase_=5;}return;
+    }
+    if(wifiPhase_==5 && wifiNetworkIndex_<pageEnd) {
+        const String &name=wifiNetworks_[wifiNetworkIndex_];uint8_t b[41]={1,(uint8_t)(wifiNetworkIndex_%8u),(uint8_t)name.length(),wifiSecurity_[wifiNetworkIndex_],pageCount};afr2_put_u32(b+5,wifiJob_);memcpy(b+9,name.c_str(),name.length());
         if(productRequest(AFR2_EXT_WIFI_UPDATE,b,9+b[2])){pending_=BrokerRequest{};strlcpy(pending_.command,"_wifi_network",33);waiting_=true;wifiNetworkIndex_++;}return;
     }
     if(wifiResult_) {

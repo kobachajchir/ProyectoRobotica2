@@ -1,3 +1,7 @@
+> **AFR2-20261106-12:** Hall por motor con Confirmar/Descartar y EEPROMv10; CW exterior positivo. PWM manual con slot reciente ESP sin esperar ACK AVR por consigna; ALIVE/STOP conservados. Solo fuente, sin compilación, tests, validadores, generadores, carga ni prueba física. Restituir permisos del bypass manual queda pendiente. Ver [contrato](../contracts/HALL_MANUAL_STREAM_20261106.md).
+
+> **AFR2-20261106-01:** Wi-Fi buscando/vacio/fallo y paginas de ocho, retorno al principal por nuevo boot con Si/No, Hall contextual e indicador de largo al soltar. [Contrato y cambios](../contracts/COORDINATED_CORRECTIONS_13.md). Fuentes AVR/Web vinculadas, recursos generados pendientes de autorizacion; sin paridad fisica acreditada.
+
 > **AFR2-20261101-02:** [Arbol y gestos del C vigente](UI_SCREEN_FLOW.md), cotejados con el Simulador UI. Esta revision distingue el flujo actual del diseno e hitos historicos inferiores; corto en IR/servo no retorna, largo vuelve por contexto. Solo fuente, sin ejecucion.
 
 > AFR2-20261030-18: selector común030044 para motores FL/FR/RL/RR, giro circular, corto confirma y largo retorna; misma raster Web. Dashboard010001: modo y accesos corto Menú/largo Rápidas. Solo fuente.

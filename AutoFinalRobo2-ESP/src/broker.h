@@ -42,6 +42,18 @@ private:
     uint8_t head_=0, tail_=0, count_=0;
     bool stopQueued_=false, waiting_=false;
     uint32_t statusAt_=0;
+    // AFR2-20261106-12: no FIFO or stale replay for manual PWM.
+    uint8_t pwmStream_[12]={};bool pwmStreamPending_=false;
+    uint32_t pwmStreamAt_=0,pwmStreamClient_=0,pwmStreamGeneration_=0;
+    String deferredReply_,scanEvent_;
+    bool delayedErrorPending_=false;
+    uint32_t delayedErrorClient_=0;
+    char delayedErrorId_[65]={},delayedErrorCommand_[33]={},delayedErrorCode_[33]={},delayedErrorMessage_[129]={},delayedErrorSource_[8]={};
+    bool delayedErrorRetryable_=false;
+    uint32_t scanEventClient_=0;
+    uint32_t deferredClient_=0,deferredAt_=0,wsBackpressure_=0;
+    uint8_t helloNotices_=0;
+    bool optionalOutput(AsyncWebSocketClient *client) const { return !deferredClient_ && client->queueLen()<2; }
     Session *session(uint32_t id);
     void event(AsyncWebSocketClient *client, AwsEventType type, void *arg, uint8_t *data, size_t len);
     void ingest(Session &session);
@@ -107,11 +119,13 @@ private:
     bool wifiResetPending_=false;
     uint32_t wifiResetGeneration_=0,wifiResetAt_=0;
     char wifiCredentials_[97]={};
-    String wifiNetworks_[8];
+    String wifiNetworks_[16];
+    uint32_t wifiScanId_=0;
+    uint8_t wifiScanPage_=0;bool wifiScanTruncated_=false;
     uint8_t wifiNetworkCount_=0,wifiNetworkIndex_=0;
     char webVersion_[16]={};
     uint8_t wifiVersions_=0;
-    uint8_t wifiSecurity_[8]={},wifiDetails_[18]={};
+    uint8_t wifiSecurity_[16]={},wifiDetails_[18]={};
     bool wifiDetailsPending_=false;
     uint8_t readyWifiClients();
     uint32_t diagPollAt_=0,diagJob_=0,diagPattern_=0;

@@ -1,0 +1,184 @@
+{
+  "scope": "Static analysis of existing build; no new compilation or physical measurement",
+  "mapSha256": "a12450bf169bd18ccc3040a13213ef4db8263d0cf448b40bd645bffbbe5fcf7e",
+  "bssLargest": [
+    {
+      "name": ".bss.oled",
+      "address": "0x00800a52",
+      "bytes": 2140,
+      "object": "src/main.o"
+    },
+    {
+      "name": ".bss.product",
+      "address": "0x00801418",
+      "bytes": 1721,
+      "object": "src/main.o"
+    },
+    {
+      "name": ".bss.head",
+      "address": "0x00801c34",
+      "bytes": 722,
+      "object": "src/platform/afr2_sensors.o"
+    },
+    {
+      "name": ".bss.ui",
+      "address": "0x00800872",
+      "bytes": 463,
+      "object": "src/main.o"
+    },
+    {
+      "name": ".bss.link",
+      "address": "0x00801351",
+      "bytes": 199,
+      "object": "src/main.o"
+    },
+    {
+      "name": ".bss.app",
+      "address": "0x008012c2",
+      "bytes": 143,
+      "object": "src/main.o"
+    },
+    {
+      "name": ".bss.tx",
+      "address": "0x00801ad6",
+      "bytes": 128,
+      "object": "src/platform/afr2_uart1.o"
+    },
+    {
+      "name": ".bss.rx",
+      "address": "0x00801b56",
+      "bytes": 128,
+      "object": "src/platform/afr2_uart1.o"
+    },
+    {
+      "name": ".bss.image",
+      "address": "0x00801f3d",
+      "bytes": 128,
+      "object": "src/platform/afr2_preferences.o"
+    },
+    {
+      "name": ".bss.encoder_queue",
+      "address": "0x00801bff",
+      "bytes": 32,
+      "object": "src/platform/afr2_board.o"
+    },
+    {
+      "name": ".bss.manager",
+      "address": "0x008012ae",
+      "bytes": 20,
+      "object": "src/main.o"
+    },
+    {
+      "name": ".bss.encoder",
+      "address": "0x00800a41",
+      "bytes": 17,
+      "object": "src/main.o"
+    },
+    {
+      "name": ".bss.hall_counts",
+      "address": "0x00801beb",
+      "bytes": 16,
+      "object": "src/platform/afr2_board.o"
+    },
+    {
+      "name": ".bss.raw",
+      "address": "0x00801f18",
+      "bytes": 10,
+      "object": "src/platform/afr2_sensors.o"
+    }
+  ],
+  "stackLargest": [
+    {
+      "function": "afr2_qr_screen.c:25:39:finish",
+      "bytes": 380,
+      "kind": "static",
+      "source": "src/ui/afr2_qr_screen.su"
+    },
+    {
+      "function": "main.c:31:5:main",
+      "bytes": 305,
+      "kind": "static",
+      "source": "src/main.su"
+    },
+    {
+      "function": "afr2_app.c:105:16:invoke",
+      "bytes": 157,
+      "kind": "static",
+      "source": "src/services/afr2_app.su"
+    },
+    {
+      "function": "afr2_screens.c:649:6:Afr2Ui_Render",
+      "bytes": 155,
+      "kind": "dynamic,bounded",
+      "source": "src/ui/afr2_screens.su"
+    },
+    {
+      "function": "afr2_link.c:111:6:Afr2Link_Push",
+      "bytes": 141,
+      "kind": "static",
+      "source": "src/services/afr2_link.su"
+    },
+    {
+      "function": "afr2_app.c:446:6:Afr2App_UiSnapshot",
+      "bytes": 139,
+      "kind": "dynamic,bounded",
+      "source": "src/services/afr2_app.su"
+    },
+    {
+      "function": "afr2_app_wire.c:43:9:Afr2App_Command",
+      "bytes": 123,
+      "kind": "dynamic,bounded",
+      "source": "src/services/afr2_app_wire.su"
+    },
+    {
+      "function": "afr2_screens.c:230:6:Afr2Ui_Tick",
+      "bytes": 97,
+      "kind": "static",
+      "source": "src/ui/afr2_screens.su"
+    },
+    {
+      "function": "afr2_screens.c:328:6:Afr2Ui_Apply",
+      "bytes": 90,
+      "kind": "static",
+      "source": "src/ui/afr2_screens.su"
+    },
+    {
+      "function": "afr2_preferences.c:76:6:Afr2Prefs_Load",
+      "bytes": 86,
+      "kind": "static",
+      "source": "src/platform/afr2_preferences.su"
+    },
+    {
+      "function": "qrcodegen.c:216:6:qrcodegen_encodeSegmentsAdvanced",
+      "bytes": 86,
+      "kind": "static",
+      "source": "src/third_party/qrcodegen.su"
+    },
+    {
+      "function": "afr2_sensor_screens.c:87:6:Afr2SensorScreen_Render",
+      "bytes": 85,
+      "kind": "dynamic,bounded",
+      "source": "src/ui/afr2_sensor_screens.su"
+    },
+    {
+      "function": "afr2_sequence_screen.c:23:6:Afr2SequenceScreen_Render",
+      "bytes": 79,
+      "kind": "dynamic,bounded",
+      "source": "src/ui/afr2_sequence_screen.su"
+    },
+    {
+      "function": "afr2_network.c:17:9:Afr2App_NetworkCommand",
+      "bytes": 74,
+      "kind": "dynamic,bounded",
+      "source": "src/services/afr2_network.su"
+    },
+    {
+      "function": "afr2_product.c:205:6:Afr2Product_Task",
+      "bytes": 71,
+      "kind": "static",
+      "source": "src/services/afr2_product.su"
+    }
+  ],
+  "knownStaticSramBytes": 7636,
+  "freeBeforeStackBytes": 556
+}

@@ -10,7 +10,7 @@
 #include <avr/pgmspace.h>
 static void wipe(void *data,uint16_t n){volatile uint8_t *p=data;while(n--)*p++=0;}
 static uint8_t config_dirty(const Afr2Config *a,const Afr2Config *b){
-    if(a->line_kind!=b->line_kind || a->line_invert!=b->line_invert || a->line_calibrated!=b->line_calibrated || a->motor_signs!=b->motor_signs || a->motor_ready!=b->motor_ready || a->hall_wired!=b->hall_wired || a->hall_signs!=b->hall_signs || a->geometry_ready!=b->geometry_ready || a->encoder_steps!=b->encoder_steps || a->encoder_invert!=b->encoder_invert || a->contrast!=b->contrast || a->rotation!=b->rotation || a->pwm_limit!=b->pwm_limit || a->ramp_step!=b->ramp_step || a->radar_range!=b->radar_range || a->radar_trace!=b->radar_trace || a->long_press_ms!=b->long_press_ms || a->servo_inverted!=b->servo_inverted || a->wheel_mm!=b->wheel_mm || a->radius_sum_mm!=b->radius_sum_mm || a->speed_limit!=b->speed_limit || a->test_ms!=b->test_ms || a->kp!=b->kp || a->ki!=b->ki || a->kd!=b->kd || a->line_kp!=b->line_kp || a->line_speed!=b->line_speed)return 1;
+    if(a->line_kind!=b->line_kind || a->line_invert!=b->line_invert || a->line_calibrated!=b->line_calibrated || a->motor_signs!=b->motor_signs || a->motor_ready!=b->motor_ready || a->hall_wired!=b->hall_wired || a->hall_signs!=b->hall_signs || a->hall_cw_mask!=b->hall_cw_mask || a->geometry_ready!=b->geometry_ready || a->encoder_steps!=b->encoder_steps || a->encoder_invert!=b->encoder_invert || a->contrast!=b->contrast || a->rotation!=b->rotation || a->pwm_limit!=b->pwm_limit || a->ramp_step!=b->ramp_step || a->radar_range!=b->radar_range || a->radar_trace!=b->radar_trace || a->long_press_ms!=b->long_press_ms || a->servo_inverted!=b->servo_inverted || a->wheel_mm!=b->wheel_mm || a->radius_sum_mm!=b->radius_sum_mm || a->speed_limit!=b->speed_limit || a->test_ms!=b->test_ms || a->kp!=b->kp || a->ki!=b->ki || a->kd!=b->kd || a->line_kp!=b->line_kp || a->line_speed!=b->line_speed)return 1;
     for(uint8_t i=0;i<5;i++)if(a->line_threshold[i]!=b->line_threshold[i])return 1;
     for(uint8_t i=0;i<4;i++)if(a->counts_per_rev[i]!=b->counts_per_rev[i])return 1;
     return 0;
@@ -19,8 +19,13 @@ static int32_t value(void *ctx,uint8_t action) {
     Afr2App *a=ctx;Afr2Product *p=a->product;Afr2Config *c=&p->config;
     const Afr2SensorHead *h=Afr2Head_State();
     switch(action) {
+    case AFR2_A_WIFI_CONNECT:return p->wifi.draft_ready;
     case AFR2_A_WIFI_CONNECTED:return p->wifi.available?(p->wifi.sta_connected?1:0):2;
-    case AFR2_A_WIFI_COUNT:return p->wifi.network_count;
+    case AFR2_A_WIFI_COUNT:return p->wifi.pending?0:p->wifi.network_count;
+    case AFR2_A_WIFI_PAGE_INDEX:return p->wifi.scan_page;
+    case AFR2_A_WIFI_TOTAL:return p->wifi.scan_total;
+    case AFR2_A_WIFI_BUSY:return p->wifi.pending;
+    case AFR2_A_WIFI_SCAN_STATE:return (p->wifi.op==AFR2_WIFI_SCAN || p->wifi.op==AFR2_WIFI_PAGE) && p->wifi.pending?1:(p->wifi.op==AFR2_WIFI_SCAN || p->wifi.op==AFR2_WIFI_PAGE) && p->wifi.state>=4?3:p->wifi.scan_id?2:0;
     case AFR2_A_WIFI_ROW_AUTH:return p->wifi.network_security[p->wifi.selected_network];
     case AFR2_A_DIRTY:return config_dirty(c,&a->saved_config);
     case AFR2_A_LONG_MS:return c->long_press_ms;
@@ -196,7 +201,15 @@ static uint8_t invoke(void *ctx,uint8_t action,int32_t v,const void *data) {
     case AFR2_A_TEST_PWM:if(v<-255 || v>255 || !p->stopped)return AFR2_BAD;a->test_pwm=v;return AFR2_OK;
     case AFR2_A_TEST_MS:c->test_ms=v;break;
     case AFR2_A_WHEEL_START:{uint8_t r=local_command(p);if(r)return r;return Afr2Product_Wheel(p,p->selected_wheel,a->test_pwm,c->test_ms);}
-    case AFR2_A_HALL_BEGIN:if(Afr2Head_State()->running || p->prefs_state==1 || a->hall_saving)return AFR2_BUSY;Afr2Product_HallBegin(p);return p->hall_measuring?AFR2_OK:AFR2_UNAVAILABLE;
+    case AFR2_A_HALL_BEGIN:
+        if(Afr2Head_State()->running || p->prefs_state==1 || a->hall_saving)return AFR2_BUSY;
+        Afr2Product_HallBegin(p);if(!p->hall_measuring)return AFR2_UNAVAILABLE;
+        /* Invalidate only this wheel, durably. Other wheels retain CPR/sign. */
+        c->counts_per_rev[p->selected_wheel]=0;
+        if(!Afr2Prefs_Save(c)){*c=old;p->hall_measuring=0;return AFR2_FAILED;}
+        p->prefs_state=1;p->pose_valid=p->odom_ready=0;
+        a->hall_draft_mask&=(uint8_t)~(1u<<p->selected_wheel);
+        a->hall_draft_negative&=(uint8_t)~(1u<<p->selected_wheel);return AFR2_OK;
     case AFR2_A_HALL_END: {
         uint8_t r=Afr2Product_HallEnd(p);if(r)return r;
         uint8_t bit=(uint8_t)(1u<<p->selected_wheel);
@@ -209,7 +222,7 @@ static uint8_t invoke(void *ctx,uint8_t action,int32_t v,const void *data) {
         if(p->prefs_state==1 || a->hall_saving || !p->stopped)return AFR2_BUSY;
         if(p->hall_measuring || !a->hall_draft_mask)return AFR2_BAD;
         for(uint8_t i=0;i<4;i++)if(a->hall_draft_mask&(1u<<i)) {
-            c->counts_per_rev[i]=a->hall_draft[i];
+            c->counts_per_rev[i]=a->hall_draft[i];c->hall_cw_mask|=(1u<<i);
             if(a->hall_draft_negative&(1u<<i))c->hall_signs^=(1u<<i);
         }
         if(!Afr2Prefs_Save(c)){*c=old;return AFR2_FAILED;}
@@ -219,7 +232,8 @@ static uint8_t invoke(void *ctx,uint8_t action,int32_t v,const void *data) {
         if(a->hall_saving)return AFR2_BUSY;
         if(!a->remote_ui && p->origin==AFR2_SOURCE_LOCAL && !p->stopped)Afr2Product_Stop(p);
         /* v=1 cancels only the current attempt; completed wheel drafts survive. */
-        if(v!=1){a->hall_draft_mask=0;a->hall_draft_negative=0;}
+        if(v==2){a->hall_draft_mask&=(uint8_t)~(1u<<p->selected_wheel);a->hall_draft_negative&=(uint8_t)~(1u<<p->selected_wheel);}
+        else if(v!=1){a->hall_draft_mask=0;a->hall_draft_negative=0;}
         p->hall_measuring=0;p->hall_delta=0;p->hall_bad=0;return AFR2_OK;
     case AFR2_A_SERVO_US:if(v<1000 || v>2000)return AFR2_BAD;a->servo_us=v;return AFR2_OK;
     case AFR2_A_SERVO_APPLY:if(h->running || !p->stopped)return AFR2_BUSY;Afr2Servo_Set(a->servo_us);return AFR2_OK;
@@ -228,11 +242,18 @@ static uint8_t invoke(void *ctx,uint8_t action,int32_t v,const void *data) {
     case AFR2_A_DISCARD:if(!p->stopped || p->prefs_state==1 || p->hall_measuring)return AFR2_BUSY;
         if(c->servo_inverted!=a->saved_config.servo_inverted){uint8_t rc=Afr2Head_Configure(h->min_angle,h->max_angle,h->speed,h->settle_ms,h->interval_ms,a->saved_config.servo_inverted);if(rc)return rc;}
         *c=a->saved_config;p->odom_ready=0;p->pose_valid=0;return AFR2_OK;
-    case AFR2_A_LINE_KIND:c->line_kind=v;c->line_calibrated=0;break;
-    case AFR2_A_LINE_INVERT:c->line_invert=v;c->line_calibrated=0;break;
-    case AFR2_A_LINE_CHANNEL:if(v<0 || v>4)return AFR2_BAD;a->line_channel=v;return AFR2_OK;
-    case AFR2_A_LINE_THRESHOLD:c->line_threshold[a->line_channel]=v;c->line_calibrated=0;break;
-    case AFR2_A_LINE_CONFIRM:if(!c->line_kind)return AFR2_UNAVAILABLE;c->line_calibrated=1;break;
+    case AFR2_A_LINE_KIND:if(v<0 || v>1)return AFR2_BAD;c->line_kind=v;c->line_calibrated=0;a->line_samples=0;break;
+    case AFR2_A_LINE_INVERT:c->line_invert=v;c->line_calibrated=0;a->line_samples=0;break;
+    case AFR2_A_LINE_CHANNEL:case AFR2_A_LINE_THRESHOLD: {
+        if(!c->line_kind || !Afr2Head_State()->ir_valid)return AFR2_UNAVAILABLE;
+        uint8_t bits=0;for(uint8_t i=0;i<5;i++)if(p->sensors.line_raw[i])bits|=(1u<<i);
+        if(action==AFR2_A_LINE_CHANNEL){a->line_background=bits;a->line_samples=1;}
+        else {if(!(a->line_samples&1u))return AFR2_UNAVAILABLE;a->line_foreground=bits;a->line_samples|=2;}
+        c->line_calibrated=0;return AFR2_OK;
+    }
+    case AFR2_A_LINE_CONFIRM:
+        if(!c->line_kind || a->line_samples!=3 || (a->line_background^a->line_foreground)!=31)return AFR2_UNAVAILABLE;
+        c->line_invert=a->line_background;c->line_calibrated=1;break;
     case AFR2_A_MOTOR_SIGNS:c->motor_signs=v;break;case AFR2_A_PWM_LIMIT:c->pwm_limit=v;break;
     case AFR2_A_RAMP:c->ramp_step=v;break;case AFR2_A_KP:c->kp=v;break;case AFR2_A_KI:c->ki=v;break;case AFR2_A_KD:c->kd=v;break;
     case AFR2_A_MOTOR_READY:if(!v)Afr2Product_HaltMotion(p);c->motor_ready=v;break;case AFR2_A_WHEEL_MM:return AFR2_DENIED;
@@ -242,16 +263,19 @@ static uint8_t invoke(void *ctx,uint8_t action,int32_t v,const void *data) {
     case AFR2_A_WIFI_READ_CREDENTIALS:
         p->wifi.credentials_visible=0;p->wifi.credential_length=0;wipe(p->wifi.password,sizeof(p->wifi.password));return wifi_request(p,AFR2_WIFI_READ_CREDENTIALS);
     case AFR2_A_WIFI_STATUS:return wifi_request(p,AFR2_WIFI_STATUS);
-    case AFR2_A_WIFI_SCAN:return wifi_request(p,AFR2_WIFI_SCAN);
+    case AFR2_A_WIFI_SCAN:if(!p->wifi.mode_draft){p->wifi.requested_mode=p->wifi.mode?p->wifi.mode:1;p->wifi.mode_draft=1;}p->wifi.scan_page=0;p->wifi.scan_total=0;p->wifi.scan_received=0;p->wifi.scan_id=0;return wifi_request(p,AFR2_WIFI_SCAN);
+    case AFR2_A_WIFI_PAGE:
+        if(v<0 || v>1 || !p->wifi.scan_id || p->wifi.pending)return AFR2_UNAVAILABLE;
+        p->wifi.scan_page=v;p->wifi.network_count=0;p->wifi.scan_received=0;return wifi_request(p,AFR2_WIFI_PAGE);
     case AFR2_A_WIFI_WEB:return wifi_request(p,AFR2_WIFI_WEB_DRAFT);
     case AFR2_A_WIFI_RETRY:if(!p->stopped || p->wifi.sta_connected)return AFR2_BUSY;return wifi_request(p,AFR2_WIFI_RETRY);
     case AFR2_A_WIFI_DISCONNECT:if(!p->stopped)return AFR2_BUSY;return wifi_request(p,AFR2_WIFI_DISCONNECT);
     case AFR2_A_WIFI_CHANGE_MODE:case AFR2_A_WIFI_SET_MODE:
         if(v<1 || v>3 || p->wifi.pending || !p->stopped)return AFR2_BAD;
-        p->wifi.requested_mode=v;p->wifi.draft_ready=0;return wifi_request(p,AFR2_WIFI_CHANGE_MODE);
+        p->wifi.requested_mode=v;p->wifi.mode_draft=1;p->wifi.draft_ready=0;return wifi_request(p,AFR2_WIFI_CHANGE_MODE);
     case AFR2_A_WIFI_NETWORK:
         if(v<0 || v>=p->wifi.network_count)return AFR2_UNAVAILABLE;
-        p->wifi.requested_mode=p->wifi.mode==2?3:p->wifi.mode?p->wifi.mode:1;
+        p->wifi.requested_mode=p->wifi.requested_mode==3?3:1;p->wifi.mode_draft=1;
         p->wifi.selected_network=v;strcpy(p->wifi.draft_ssid,p->wifi.networks[v]);p->wifi.draft_ready=0;return AFR2_OK;
     case AFR2_A_KEYBOARD: {
         if(!data)return AFR2_BAD;
@@ -266,7 +290,7 @@ static uint8_t invoke(void *ctx,uint8_t action,int32_t v,const void *data) {
         if(!p->wifi.draft_ready || (uint32_t)(p->now-p->wifi.draft_ms)>120000u)return AFR2_UNAVAILABLE;
         return wifi_request(p,AFR2_WIFI_CONNECT);
     case AFR2_A_WIFI_CANCEL:
-        wipe(p->wifi.password,sizeof(p->wifi.password));p->wifi.credential_length=0;p->wifi.draft_ready=0;
+        p->wifi.mode_draft=0;wipe(p->wifi.password,sizeof(p->wifi.password));p->wifi.credential_length=0;p->wifi.draft_ready=0;
         /* Keep only a cancellation request, superseding a waiting modal/draft. */
         p->wifi.pending=0;return wifi_request(p,AFR2_WIFI_CANCEL);
     case AFR2_A_CONTRAST:c->contrast=v;break;case AFR2_A_ROTATION:c->rotation=v;break;
@@ -322,41 +346,39 @@ static uint8_t available(void *ctx,uint8_t action,int32_t arg) {
 }
 static const char *reason(void *ctx,uint8_t action) {
     Afr2App *a=ctx;Afr2Product *p=a->product;
-    if(action==AFR2_A_WIFI_RETRY && p->wifi.mode==2)return "Cambiar modo STA";
-    if(action==AFR2_A_WIFI_DISCONNECT || action==AFR2_A_WIFI_CHANGE_MODE || action==AFR2_A_WIFI_SET_MODE)return "Detener / ver red";
-    if(action==AFR2_A_ESP_TEST)return "Enlace / ocupado";
-    if(action==AFR2_A_QUICK_MODE)return "Detener / ver fallo";
-    if(action==AFR2_A_SERVO_INVERT)return "Desactivar servo";
-    if(action==AFR2_A_REBOOT_MEGA || action==AFR2_A_REBOOT_ESP)return "Detener / ver ESP";
-    if(p->prefs_state==1)return "Guardando EEPROM";
-    if(p->fault)return "Fallo: ver estado";
+    if(action==AFR2_A_WIFI_RETRY && p->wifi.mode==2)return PSTR("Cambiar modo STA");
+    if(action==AFR2_A_WIFI_DISCONNECT || action==AFR2_A_WIFI_CHANGE_MODE || action==AFR2_A_WIFI_SET_MODE)return PSTR("Detener / ver red");
+    if(action==AFR2_A_ESP_TEST)return PSTR("Enlace / ocupado");
+    if(action==AFR2_A_QUICK_MODE)return PSTR("Detener / ver fallo");
+    if(action==AFR2_A_SERVO_INVERT)return PSTR("Desactivar servo");
+    if(action==AFR2_A_REBOOT_MEGA || action==AFR2_A_REBOOT_ESP)return PSTR("Detener / ver ESP");
+    if(p->prefs_state==1)return PSTR("Guardando EEPROM");
+    if(p->fault)return PSTR("Fallo: ver estado");
     if(action==AFR2_A_MOVE || action==AFR2_A_WHEEL_START || action==AFR2_A_LINE_START || action==AFR2_A_LINE_TOGGLE || action==AFR2_A_GOTO_START){
-        if(!p->config.motor_ready)return "Habilitar motores";
-        if(Afr2Head_State()->running)return "Detener radar";
-        if(action==AFR2_A_MOVE || action==AFR2_A_WHEEL_START)return "Ver PWM / estado";
+        if(!p->config.motor_ready)return PSTR("Habilitar motores");
+        if(Afr2Head_State()->running)return PSTR("Detener radar");
+        if(action==AFR2_A_MOVE || action==AFR2_A_WHEEL_START)return PSTR("Ver PWM / estado");
     }
-    if(action==AFR2_A_RADAR_TOGGLE || action==AFR2_A_SERVO_TOGGLE || action==AFR2_A_SERVO_ANGLE || action==AFR2_A_SERVO_EDIT_BEGIN)return "Detener / ver Hall";
-    if(action==AFR2_A_RADAR_TRACE || action==AFR2_A_RADAR_RANGE)return "Detener motores";
+    if(action==AFR2_A_RADAR_TOGGLE || action==AFR2_A_SERVO_TOGGLE || action==AFR2_A_SERVO_ANGLE || action==AFR2_A_SERVO_EDIT_BEGIN)return PSTR("Detener / ver Hall");
+    if(action==AFR2_A_RADAR_TRACE || action==AFR2_A_RADAR_RANGE)return PSTR("Detener motores");
     if(action>=AFR2_A_WIFI_STATUS && action<=AFR2_A_WIFI_SET_MODE) {
-        if(!p->extension_ready)return "ESP sin extension";
-        if(!p->wifi.available)return "ESP sin estado";
-        if(action==AFR2_A_WIFI_CONNECT && !p->wifi.draft_ready)return "Falta borrador";
-        return "Ver estado Wi-Fi";
+        if(!p->extension_ready)return PSTR("ESP sin extension");
+        if(!p->wifi.available)return PSTR("ESP sin estado");
+        if(action==AFR2_A_WIFI_CONNECT && !p->wifi.draft_ready)return PSTR("Falta borrador");
+        return PSTR("Ver estado Wi-Fi");
     }
     if(action==AFR2_A_HALL_BEGIN || action==AFR2_A_HALL_END || action==AFR2_A_HALL_SAVE ||
        action==AFR2_A_MOVE || action==AFR2_A_LINE_START || action==AFR2_A_LINE_TOGGLE || action==AFR2_A_GOTO_START) {
-        if(!p->sensors.hall_available)return "Habilitar Hall";
-        if(action==AFR2_A_HALL_END && !p->hall_measuring)return "Iniciar medicion";
-        if(action==AFR2_A_HALL_SAVE && !a->hall_draft_mask)return "Completar vuelta";
-        if(action==AFR2_A_HALL_SAVE && a->hall_saving)return "Guardando EEPROM";
-        for(uint8_t i=0;i<4;i++)if(!p->config.counts_per_rev[i])return "Calibrar vuelta";
-        if(!p->config.geometry_ready)return "Config. geometria";
-        if(!p->config.motor_ready)return "Habilitar motores";
-        if((action==AFR2_A_LINE_START || action==AFR2_A_LINE_TOGGLE) && !p->sensors.line_valid)return "Calibrar linea";
-        if(!p->sensors.ultrasonic_valid)return "Centrar / ver HC";
-        if(p->sensors.distance_mm<150)return "Obstaculo frontal";
+        if(!p->sensors.hall_available)return PSTR("Habilitar Hall");
+        if(action==AFR2_A_HALL_END && !p->hall_measuring)return PSTR("Iniciar medicion");
+        if(action==AFR2_A_HALL_SAVE && !a->hall_draft_mask)return PSTR("Completar vuelta");
+        if(action==AFR2_A_HALL_SAVE && a->hall_saving)return PSTR("Guardando EEPROM");
+        for(uint8_t i=0;i<4;i++)if(!p->config.counts_per_rev[i])return PSTR("Calibrar vuelta");
+        if(!p->config.geometry_ready)return PSTR("Config. geometria");
+        if(!p->config.motor_ready)return PSTR("Habilitar motores");
+        if((action==AFR2_A_LINE_START || action==AFR2_A_LINE_TOGGLE) && !p->sensors.line_valid)return PSTR("Calibrar linea");
     }
-    return "Ver requisitos";
+    return PSTR("Ver requisitos");
 }
 void Afr2App_Init(Afr2App *a,Afr2Product *p,Afr2Ui *u,Afr2Oled *o,Afr2Link *l) {
     memset(a,0,sizeof(*a));a->product=p;a->ui=u;a->oled=o;a->link=l;a->saved_config=p->config;
@@ -380,20 +402,21 @@ void Afr2App_Revoke(void *ctx) {
 void Afr2App_Task(Afr2App *a,uint32_t now) {
     Afr2Product *p=a->product;if(a->reboot_pending){p->now=now;Afr2Product_Stop(p);return;}
     if(a->diag_state==1 && (!p->extension_ready || (uint32_t)(now-a->diag_started)>=a->diag_timeout)){
-        a->diag_state=p->extension_ready?4:5;Afr2Ui_Notify(a->ui,1,"Prueba ESP",p->extension_ready?"Tiempo agotado":"Enlace perdido",2500);
+        a->diag_state=p->extension_ready?4:5;Afr2Ui_NotifyFlash(a->ui,1,PSTR("Prueba ESP"),p->extension_ready?PSTR("Tiempo agotado"):PSTR("Enlace perdido"),2500);
     }
     uint8_t before=p->prefs_state;Afr2Product_Task(p,now);
     if(before==1 && p->prefs_state==2){
         a->saved_config=p->config;p->prefs_loaded=1;
+        if(p->hall_measuring)p->notice=0; /* Invalidation commit must not interrupt pulse counting. */
         if(a->hall_saving){
             a->hall_draft_mask&=(uint8_t)~a->hall_saving;
             a->hall_draft_negative&=(uint8_t)~a->hall_saving;
             a->hall_saving=0;p->hall_delta=0;p->notice=0;
-            if(!a->ui->confirm_wait)Afr2Ui_Notify(a->ui,0,"Mediciones","Guardadas",2500);
+            if(!a->ui->confirm_wait)Afr2Ui_NotifyFlash(a->ui,0,PSTR("Mediciones"),PSTR("Guardadas"),2500);
         }
         if(a->ui->confirm_wait){p->notice=0;Afr2Ui_SaveCompleted(a->ui);}
     }
-    if(before==1 && p->prefs_state==3){a->hall_saving=0;a->ui->confirm_wait=0;Afr2Ui_Notify(a->ui,1,"EEPROM","No guardado",3000);}
+    if(before==1 && p->prefs_state==3){a->hall_saving=0;a->ui->confirm_wait=0;Afr2Ui_NotifyFlash(a->ui,1,PSTR("EEPROM"),PSTR("No guardado"),3000);}
     if(a->snapshot_active && (uint32_t)(now-a->snapshot_ms)>600u)a->snapshot_active=0;
     if(p->wifi.available && (uint32_t)(now-p->wifi.status_ms)>5000u) {
         p->wifi.available=0;p->wifi.display_ready=0;wipe(p->wifi.ap_password,sizeof(p->wifi.ap_password));
@@ -404,8 +427,8 @@ void Afr2App_Task(Afr2App *a,uint32_t now) {
         a->snapshot_active=0;a->ui->redraw=true;
     }
     if(p->wifi.pending && (uint32_t)(now-p->wifi.job_ms)>(p->wifi.op==AFR2_WIFI_WEB_DRAFT?120000u:30000u)) {
-        p->wifi.pending=0;p->wifi.draft_ready=0;wipe(p->wifi.password,sizeof(p->wifi.password));p->wifi.credential_length=0;
-        Afr2Ui_Notify(a->ui,1,"Wi-Fi","Tiempo agotado",3000);
+        p->wifi.pending=0;p->wifi.state=4;p->wifi.draft_ready=0;wipe(p->wifi.password,sizeof(p->wifi.password));p->wifi.credential_length=0;
+        Afr2Ui_NotifyFlash(a->ui,1,PSTR("Wi-Fi"),PSTR("Tiempo agotado"),3000);
     }
     if(p->wifi.credentials_visible && (a->ui->node!=AFR2_N_WIFI_DATA || (uint32_t)(now-p->wifi.draft_ms)>30000u)){p->wifi.credentials_visible=0;wipe(p->wifi.password,sizeof(p->wifi.password));a->ui->redraw=true;}
     if(p->wifi.draft_ready && (uint32_t)(now-p->wifi.draft_ms)>120000u){p->wifi.draft_ready=0;p->wifi.draft_id=0;}
@@ -415,12 +438,16 @@ void Afr2App_Task(Afr2App *a,uint32_t now) {
         Afr2Ui_Open(a->ui,AFR2_N_SEQUENCE);
     }
     if(a->ui->node==AFR2_N_SEQUENCE && p->notice==1)p->notice=0;
-    if(p->notice){Afr2Ui_Notify(a->ui,p->notice==2?1:0,"Sistema",p->notice==1?"Operacion lista":p->notice==3?"Guardando EEPROM":"Ver requisitos",3000);p->notice=0;}
+    if(p->notice){Afr2Ui_NotifyFlash(a->ui,p->notice==2?1:0,PSTR("Sistema"),p->notice==1?PSTR("Operacion lista"):p->notice==3?PSTR("Guardando EEPROM"):PSTR("Ver requisitos"),3000);p->notice=0;}
     if(a->ui->touch_active && (uint32_t)(now-a->ui->touch_ms)>2500u)Afr2Ui_Touch(a->ui,0,8,0);
+    /* AFR2-20261106-07: Prueba Hall zero taken on each entry, outside the renderer. */
+    if(a->ui->node==AFR2_N_HALL_LIVE){
+        if(!a->hall_live_active){memcpy(a->hall_live_base,p->sensors.counts,sizeof(a->hall_live_base));a->hall_live_active=1;}
+    }else a->hall_live_active=0;
     Afr2Ui_Tick(a->ui,now);
     /* Text scroll updates only its clipped band. Do not schedule a full OLED
      * redraw every40ms; notices/network views have their own100ms redraw. */
-    if(!a->ui->touch_active && !a->ui->notices && a->ui->node!=AFR2_N_NETWORK && a->ui->node!=AFR2_N_AP_INFO && (uint32_t)(now-a->render_ms)>=(a->ui->node==AFR2_N_RADAR_VIEW || a->ui->node==AFR2_N_US_VIEW || a->ui->node==AFR2_N_LINE_VIEW || a->ui->node==AFR2_N_IR_VALUES || a->ui->node==AFR2_N_SERVO_ANGLE?100u:250u)) {
+    if(!a->ui->touch_active && !a->ui->notices && a->ui->node!=AFR2_N_NETWORK && a->ui->node!=AFR2_N_AP_INFO && a->ui->node!=AFR2_N_QUICK && (uint32_t)(now-a->render_ms)>=(a->ui->node==AFR2_N_RADAR_VIEW || a->ui->node==AFR2_N_US_VIEW || a->ui->node==AFR2_N_LINE_VIEW || a->ui->node==AFR2_N_IR_VALUES || a->ui->node==AFR2_N_SERVO_ANGLE || a->ui->node==AFR2_N_HALL_LIVE?100u:250u)) {
         Afr2MenuNode node;Afr2Menu_Node(a->ui->node,&node);
         if(node.view || a->ui->edit || a->ui->keyboard || (uint32_t)(now-a->render_ms)>=1000u) {
             a->render_ms=now;a->ui->redraw=true;
@@ -442,6 +469,7 @@ void Afr2App_UiSnapshot(Afr2App *a,Afr2UiSnapshot *s) {
     for(uint8_t i=0;i<4;i++)s->hall_cpr[i]=(a->hall_draft_mask&(1u<<i))?a->hall_draft[i]:p->config.counts_per_rev[i];
     s->battery_valid=Afr2Battery_Status(&p->sensors,p->now)==AFR2_BATTERY_VALID;
     s->battery_mv=s->battery_valid?Afr2Battery_Millivolts(&p->sensors):0;
+    s->network_mode=p->wifi.mode;s->network_busy=p->wifi.pending;s->network_page=p->wifi.scan_page;s->network_total=p->wifi.scan_total;s->network_truncated=p->wifi.scan_truncated;s->network_scan_state=(uint8_t)value(a,AFR2_A_WIFI_SCAN_STATE);
     s->network_valid=p->wifi.available && p->wifi.display_ready;
     s->network_boot=p->wifi.display_boot;s->network_revision=p->wifi.display_revision;
     s->qr_allowed=p->stopped && !s->head->running;
@@ -453,6 +481,7 @@ void Afr2App_UiSnapshot(Afr2App *a,Afr2UiSnapshot *s) {
     s->sequence_state=p->sequence.state;s->sequence_count=p->sequence.count;
     s->sequence_index=p->sequence.index;
     if(p->sequence.state==4)s->sequence_duration_ms=p->sequence.total;
+    #if AFR2_SEQUENCE_MEMORY_APPROVED
     if(p->sequence.mode) {
         s->sequence_kind=6;s->sequence_duration_ms=p->sequence.total;s->sequence_elapsed_ms=p->sequence.elapsed;
     } else if(p->sequence.index<p->sequence.count) {
@@ -462,6 +491,7 @@ void Afr2App_UiSnapshot(Afr2App *a,Afr2UiSnapshot *s) {
         s->sequence_elapsed_ms=p->sequence.elapsed>=offset?p->sequence.elapsed-offset:0;
         if(s->sequence_elapsed_ms>s->sequence_duration_ms)s->sequence_elapsed_ms=s->sequence_duration_ms;
     }
+    #endif
     switch(u->node) {
     case AFR2_N_BATTERY_VIEW:{
         uint8_t state=Afr2Battery_Status(&p->sensors,p->now);
@@ -475,6 +505,11 @@ void Afr2App_UiSnapshot(Afr2App *a,Afr2UiSnapshot *s) {
         else {LINE(1,"Edad:%lu ms",(unsigned long)(p->now-p->sensors.battery_ms));LINE(2,"Sin calibrar");}
         break;
     }
+    case AFR2_N_SAVE_CONFIRM:
+        if(a->ui->confirm_save==AFR2_A_HALL_SAVE){
+            static const char names[][3] PROGMEM={"FL","FR","RL","RR"};char name[3];memcpy_P(name,names[p->selected_wheel],3);
+            LINE(0,"Sensor Hall %s",name);LINE(1,"Pulsos:%lu",(unsigned long)a->hall_draft[p->selected_wheel]);
+        }break;
     case AFR2_N_HALL_COUNT:
         LINE(0,"Rueda %u",p->selected_wheel+1u);
         LINE(1,"Pulsos:%ld",(long)p->hall_delta);break;
@@ -507,14 +542,22 @@ void Afr2App_UiSnapshot(Afr2App *a,Afr2UiSnapshot *s) {
     case AFR2_N_US_VIEW:
         if(p->sensors.ultrasonic_valid)LINE(0,"Dist:%u mm",p->sensors.distance_mm);else LINE(0,"Distancia: --");
         LINE(1,"Eco error:%u",p->sensors.echo_error);LINE(2,"Edad:%lu ms",(unsigned long)(p->now-p->sensors.ultrasonic_ms));break;
+    case AFR2_N_HALL_LIVE:{
+        /* AFR2-20261106-07: hand-turn test; counts relative to entry, + one way, - the other. */
+        const int32_t *c=p->sensors.counts,*b=a->hall_live_base;
+        LINE(0,"FL%6ld FR%6ld",(long)(c[0]-b[0]),(long)(c[1]-b[1]));
+        LINE(1,"RL%6ld RR%6ld",(long)(c[2]-b[2]),(long)(c[3]-b[3]));
+        if(p->sensors.hall_available)LINE(2,"Gire a mano");else LINE(2,"Hall deshabilitado");
+        break;
+    }
     case AFR2_N_HALL_VIEW:
         if(!p->sensors.hall_available){LINE(0,"Hall deshabilitado");LINE(1,"Revisar ajustes");LINE(2,"Captura bloqueada");}
         else {LINE(0,"Rueda:%u C:%ld",p->selected_wheel,(long)p->sensors.counts[p->selected_wheel]);
         LINE(1,"Vuelta:%ld E:%u",(long)p->hall_delta,p->hall_bad);LINE(2,"CPR:%lu",(unsigned long)p->config.counts_per_rev[p->selected_wheel]);}break;
     case AFR2_N_WHEEL_VIEW:
-        LINE(0,"FL:%d FR:%d",p->pwm[0],p->pwm[1]);LINE(1,"RL:%d RR:%d",p->pwm[2],p->pwm[3]);LINE(2,"OFF:%u",p->stopped);break;
+        LINE(0,"FL:%d FR:%d",p->pwm[0],p->pwm[1]);LINE(1,"RL:%d RR:%d",p->pwm[2],p->pwm[3]);LINE(2,"Inv:%02X OFF:%u",p->config.motor_signs,p->stopped);break;
     case AFR2_N_DISPLAY:
-        LINE(0,"OLED listo:%u",s->oled_ready);LINE(1,"Errores:%lu",(unsigned long)s->oled_errors);LINE(2,"TWI IRQ 100kHz");break;
+        LINE(0,"OLED listo:%u",s->oled_ready);LINE(1,"Errores:%lu",(unsigned long)s->oled_errors);LINE(2,"R%ums TX%ums",a->raster_ms,a->oled->last_transfer_ms);break;
     case AFR2_N_ENCODER_VIEW:
         LINE(0,"Giros:%ld",(long)u->encoder_turns);LINE(1,"Clics:%u",u->encoder_clicks);LINE(2,"Largos:%u",u->encoder_holds);break;
     case AFR2_N_LINE_REQ:
@@ -549,7 +592,7 @@ void Afr2App_UiSnapshot(Afr2App *a,Afr2UiSnapshot *s) {
     case AFR2_N_WIFI_REVIEW:
         LINE(0,"%.17s",p->wifi.draft_ssid);LINE(1,"Modo:%u Listo:%u",p->wifi.requested_mode,p->wifi.draft_ready);LINE(2,"Opciones");break;
     case AFR2_N_WIFI_NETWORKS:
-        for(uint8_t row=0;row<3;row++){uint8_t i=u->firstVisible+row;if(i<8 && i<p->wifi.network_count){strncpy(s->labels[row],p->wifi.networks[i][0]?p->wifi.networks[i]:"Red oculta",32);s->row_security[row]=p->wifi.network_security[i];}}break;
+        for(uint8_t row=0;row<3;row++){uint8_t i=u->firstVisible+row;if(!p->wifi.pending && i<8 && i<p->wifi.network_count){strncpy(s->labels[row],p->wifi.networks[i][0]?p->wifi.networks[i]:"Red oculta",32);s->row_security[row]=p->wifi.network_security[i];}}break;
     case AFR2_N_VERSIONS:LINE(0,"Mega " AFR2_FIRMWARE_VERSION);LINE(1,"ESP:%.13s",p->wifi.esp_version[0]?p->wifi.esp_version:"--");
         LINE(2,"Web:%.13s",p->wifi.web_version[0]?p->wifi.web_version:"--");break;
     case AFR2_N_CAPS:

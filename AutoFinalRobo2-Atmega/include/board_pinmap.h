@@ -112,6 +112,15 @@
 #define AFR2_ESP_RX_PORT PORTD
 #define AFR2_ESP_RX_PIN PIND
 #define AFR2_ESP_RX_BIT 2u
+/* AFR2-20261106-11. RESERVADOS para KEY/RST automáticos del ESP (solo flasher
+ * de servicio). Cada pin maneja la base de un NPN (1 kOhm serie + 10 kOhm a GND
+ * del lado del transistor) en paralelo con el pulsador del shield. El firmware
+ * de producto NO configura estos pines: quedan como entrada (alta impedancia) tras
+ * el reset y no aprietan nada. No usarlos para otra función con el circuito
+ * conectado. Ver hardware/PLAN_KEY_RST_AUTOMATICO.md. Sin compilar ni probar.
+ * ESP_KEY: D32/PC5 -> GPIO0 ; ESP_RST: D33/PC4 -> reset del ESP. */
+#define AFR2_ESP_KEY_BIT 5u
+#define AFR2_ESP_RST_BIT 4u
 /* OLED_SDA: D20/PD1, proposed-new */
 #define AFR2_OLED_SDA_DDR DDRD
 #define AFR2_OLED_SDA_PORT PORTD

@@ -17,8 +17,10 @@ namespace AFR2Loader
         {
             string evidence = message + "\n" + detail;
             string hint = "Revisá el comando, su salida y la etapa en que se detuvo. No se reintenta automáticamente.";
-            if (Regex.IsMatch(evidence, "No serial data received|Failed to connect|Timed out waiting for packet|No hubo respuesta", RegexOptions.IgnoreCase))
-                hint = "Posible falta de sincronización PC↔ESP. Flasher ATmega: D18/D19, RESET LIBRE y baud fijo; puente físico Mega: D0/D1 y RESET-GND; USB–TTL: lógica 3,3 V, TX/RX cruzados y GND, sin otro emisor paralelo. Mantené KEY, pulsá y soltá solo RST del ESP y conservá KEY hasta el aviso del primer porcentaje de escritura o el fin de la consulta. Un log de arranque no confirma PC→ESP.";
+            if (evidence.Contains("AFR2-AUTO: boot_mode=1") && Regex.IsMatch(evidence, "No serial data received|Failed to connect|Timed out waiting for packet|No hubo respuesta", RegexOptions.IgnoreCase))
+                hint = "Boot UART de programación confirmado en la sesión automática actual, pero falta respuesta ROM. Revisá PC→ESP: D18/TX1→E_RX, baud fijo y emisores paralelos; el boot confirma la recepción ESP→PC, no el sentido inverso.";
+            else if (Regex.IsMatch(evidence, "No serial data received|Failed to connect|Timed out waiting for packet|No hubo respuesta", RegexOptions.IgnoreCase))
+                hint = "Posible falta de sincronización PC↔ESP. Flasher ATmega: D18/D19, RESET LIBRE y baud fijo; USB–TTL: lógica 3,3 V, TX/RX cruzados y GND, sin otro emisor paralelo. Mantené KEY, pulsá y soltá solo RST del ESP y conservá KEY hasta el aviso del primer porcentaje de escritura o el fin de la consulta. Un log de arranque no confirma PC→ESP.";
             else if (Regex.IsMatch(evidence, "Access is denied|PermissionError|UnauthorizedAccess|acceso.*denegado|cannot open port", RegexOptions.IgnoreCase))
                 hint = "Acceso denegado o recurso ocupado. Revisá el COM/ruta mencionado: cerrá monitores externos y comprobá permisos. No se eleva la aplicación automáticamente.";
             else if (Regex.IsMatch(evidence, "hfuse|BOOTRST|lecturas flash|backup.*incompatible|backup.*inválido", RegexOptions.IgnoreCase))

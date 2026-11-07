@@ -30,31 +30,36 @@ namespace AFR2Loader
             deviceTarget.SelectionChangeCommitted += (s, e) => SelectOperationTarget(deviceTarget.SelectedIndex == 0 ? 0 : espSection.SelectedIndex + 1);
             selectors.Controls.Add(portGroup); selectors.Controls.Add(targetGroup); return selectors;
         }
+        Label preparationHeading;
+        Label SectionLabel(string text)
+        { return new Label { Text = text, AutoSize = true, Font = new Font("Segoe UI", 10.5F, FontStyle.Bold), ForeColor = Color.FromArgb(22, 79, 99), Margin = new Padding(0, UiGap, 0, UiGap) }; }
         Control CreateEspOptions(Control selectors)
         {
-            var panel = new TableLayoutPanel { Dock = DockStyle.Top, AutoSize = true, ColumnCount = 1, RowCount = 6, Margin = new Padding(0) };
-            for (int i = 0; i < 6; i++) panel.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-            panel.Controls.Add(selectors, 0, 0);
+            // AFR2-20261106-06: destination and connection first, then preparation; execution follows below.
+            var panel = new TableLayoutPanel { Dock = DockStyle.Top, AutoSize = true, ColumnCount = 1, RowCount = 8, Margin = new Padding(0) };
+            for (int i = 0; i < 8; i++) panel.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+            panel.Controls.Add(SectionLabel("1 · Destino y conexión"), 0, 0);
+            panel.Controls.Add(selectors, 0, 1);
             var mega = UiRow();
             megaVariant.Items.AddRange(new object[] { "Firmware completo del auto", "Solo comunicación" }); megaVariant.SelectedIndex = 0;
             mega.Controls.Add(UiField("Variante ATmega", megaVariant)); idleControls.Add(megaVariant); megaOptionsRow = mega;
-            megaVariant.SelectionChangeCommitted += (s, e) => UpdateTargetActions(); panel.Controls.Add(mega, 0, 1);
+            megaVariant.SelectionChangeCommitted += (s, e) => UpdateTargetActions(); panel.Controls.Add(mega, 0, 2);
             var options = UiRow();
             espMode.Width = 195; espMode.Items.AddRange(new object[] { "Firmware propio", "Paquete AT" });
             options.Controls.Add(UiField("Variante de firmware ESP", espMode)); idleControls.Add(espMode);
             espSection.Items.AddRange(new object[] { "Firmware ESP", "FileSystem", "Firmware ESP + FileSystem" }); espSection.SelectedIndex = 0;
             espSectionField = UiField("Sección del paquete", espSection); options.Controls.Add(espSectionField); idleControls.Add(espSection);
             atPackageButton = AddButton(options, "Paquete AT / BIN...", SelectAtPackage, 185); atPackageButton.Visible = false;
-            espOptionsRow = options; panel.Controls.Add(options, 0, 2);
-            var capacity = UiRow(); AddButton(capacity, "Consultar tamaño de flash…", () => ConfirmFlashCapacity(), 280); capacity.Controls.Add(capacityState); capacityRow = capacity; panel.Controls.Add(capacity, 0, 3);
-            var memory = UiRow(); memory.Controls.Add(UiField("Tamaño del FileSystem", filesystemLayout)); idleControls.Add(filesystemLayout);
-            memorySummary.AutoSize = true; memorySummary.MaximumSize = new Size(650, 0); memorySummary.MinimumSize = new Size(0, 48); memorySummary.Width = 650; memorySummary.Dock = DockStyle.None; memory.Controls.Add(memorySummary);
-            espMemoryRow = memory; panel.Controls.Add(memory, 0, 4);
+            espOptionsRow = options; panel.Controls.Add(options, 0, 3);
+            preparationHeading = SectionLabel("2 · Preparación"); panel.Controls.Add(preparationHeading, 0, 5);
+            var capacity = UiRow(); AddButton(capacity, "Consultar tamaño de flash…", () => ConfirmFlashCapacity(), 280); capacity.Controls.Add(capacityState); capacityRow = capacity; panel.Controls.Add(capacity, 0, 6);
+            espMemoryRow = CreateFilesystemCard(); idleControls.Add(filesystemLayout);
+            panel.Controls.Add(espMemoryRow, 0, 7);
             espMethodRow = CreateEspMethodSelector();
             listen.Text = "Escuchar arranque ESP (74880)"; listen.AutoSize = true; listen.Checked = true;
             workflowTips.SetToolTip(listen, "Activar escucha del arranque en USB–TTL/puente USB. Desmarcar no omite la intervención física KEY/RST obligatoria. El flasher Mega usa su baud fijo.");
             ((FlowLayoutPanel)espMethodRow).Controls.Add(listen); ((FlowLayoutPanel)espMethodRow).WrapContents = true; idleControls.Add(listen);
-            panel.Controls.Add(espMethodRow, 0, 5);
+            panel.Controls.Add(espMethodRow, 0, 4);
             espMode.SelectionChangeCommitted += (s, e) => {
                 try { ReadSettings(); SetProfileValue("EspFirmwareMode", espMode.SelectedIndex == 1 ? "at" : "web");
                     if (espMode.SelectedIndex == 1) { SetProfileValue("AtUseFilesystem", "false"); SelectOperationTarget(1); } else ApplySectionFilesystem();
@@ -166,7 +171,7 @@ namespace AFR2Loader
                 }
             }
             catch (Exception error) { memorySummary.Text = error.Message; memorySummary.ForeColor = Color.Firebrick; }
-            finally { filesystemLayout.EndUpdate(); syncingEspOptions = false; UpdateEspTargetLabels(); }
+            finally { filesystemLayout.EndUpdate(); syncingEspOptions = false; UpdateEspTargetLabels(); UpdateFilesystemPresentation(); FitOperationRows(); }
         }
         void SelectAtPackage()
         {

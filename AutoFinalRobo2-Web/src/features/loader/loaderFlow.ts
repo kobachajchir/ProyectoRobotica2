@@ -11,7 +11,7 @@ export interface LoaderStep {
   input: string; output: string; points: string[]; details: string[];
 }
 
-export const LOADER_VERSION = '1.1.4';
+export const LOADER_VERSION = '2.0.0';
 
 export const LOADER_JOURNEYS: Record<LoaderJourney, LoaderStep[]> = {
   mega: [

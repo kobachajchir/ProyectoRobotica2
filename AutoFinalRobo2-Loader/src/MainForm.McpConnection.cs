@@ -31,7 +31,7 @@ namespace AFR2Loader
         {
             var panel = new TableLayoutPanel { Dock = DockStyle.Top, AutoSize = true, ColumnCount = 1, RowCount = 6, Padding = new Padding(UiInset), Margin = new Padding(0, 0, 0, 16), BackColor = Color.White };
             panel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100)); for (int i = 0; i < 6; i++) panel.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-            panel.Controls.Add(new Label { Text = "Estado de MCP", AutoSize = true, Font = new Font(Font, FontStyle.Bold), Margin = new Padding(0, 0, 0, 8) }, 0, 0);
+            panel.Controls.Add(SectionLabel("2 · Comprobar conexión"), 0, 0);
             panel.Controls.Add(mcpConnectorState, 0, 1); panel.Controls.Add(mcpServerState, 0, 2);
             panel.Controls.Add(new Label { Text = "Transporte: stdio · Canal local de Windows: " + LocalBridge.PipeName, AutoSize = true, MaximumSize = new Size(990, 0), Margin = new Padding(0, 8, 0, 8) }, 0, 3);
             var actions = UiRow(); var test = new ActionButton { Text = "Ejecutar prueba", Width = 185 }; test.Click += (s, e) => StartMcpConnectionTest(); actions.Controls.Add(test);
@@ -46,20 +46,23 @@ namespace AFR2Loader
         }
         Control CreateMcpRegistrationPanel()
         {
-            var root = new TableLayoutPanel { Dock = DockStyle.Top, AutoSize = true, ColumnCount = 1, RowCount = 2, Margin = new Padding(0, 0, 0, 16) };
-            root.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100)); root.RowStyles.Add(new RowStyle(SizeType.AutoSize)); root.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+            // AFR2-20261106-06: MCP page order = configure client, check connection, requests.
+            var root = new TableLayoutPanel { Dock = DockStyle.Top, AutoSize = true, ColumnCount = 1, RowCount = 3, Margin = new Padding(0, 0, 0, 16) };
+            root.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100)); root.RowStyles.Add(new RowStyle(SizeType.AutoSize)); root.RowStyles.Add(new RowStyle(SizeType.AutoSize)); root.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+            root.Controls.Add(SectionLabel("1 · Configurar cliente"), 0, 0);
             var toggle = new ActionButton { Text = "Mostrar prompt agregar MCP", Width = 340 };
             var panel = new TableLayoutPanel { Dock = DockStyle.Top, AutoSize = true, ColumnCount = 1, RowCount = 4, Visible = false, Padding = new Padding(UiInset), BackColor = Color.White };
             panel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100)); for (int i = 0; i < 4; i++) panel.RowStyles.Add(new RowStyle(SizeType.AutoSize));
             panel.Controls.Add(new Label { Text = "Prompt para añadir el servidor MCP en cualquier IA", AutoSize = true, Font = new Font(Font, FontStyle.Bold) }, 0, 0);
-            string configuration = new JavaScriptSerializer().Serialize(new { mcpServers = new Dictionary<string, object> { { "afr2-loader", new { command = "powershell.exe", args = new[] { "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-File", Path.Combine(appDir, "Mcp.ps1") } } } } });
+            string configuration = new JavaScriptSerializer().Serialize(new { mcpServers = new Dictionary<string, object> { { "afr2-loader", new { command = "powershell.exe", args = new[] { "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-File", Path.Combine(appDir, "Mcp.ps1") }, env = new Dictionary<string, string> { { "AFR2_LOADER_DATA_DIR", Profile.UserRoot } } } } } });
             string command = "Configurá en tu cliente de IA este servidor MCP local de Windows. Nombre: afr2-loader. Transporte: stdio (sin URL HTTP ni credenciales). Usá el siguiente comando y argumentos, adaptando solo el formato de configuración a tu cliente:\r\n\r\n" + configuration + "\r\n\r\nLa ventana AFR2 Loader debe estar abierta en la misma PC y usuario. El servidor comparte esa ventana mediante un canal local. Registrarlo no demuestra conexión: reconectá el cliente y pedime el prompt generado por Ejecutar prueba. No abras COM, no compiles firmware, no flashees ni actives autoaceptación para configurar o comprobar la conexión. Si tu cliente no admite servidores stdio locales, explicá esa limitación y no inventes una URL.";
             var text = new TextBox { Dock = DockStyle.Top, Text = command, ForeColor = Color.Firebrick, ReadOnly = true, Multiline = true, BackColor = Color.FromArgb(255, 240, 241), Height = 210, ScrollBars = ScrollBars.Vertical, TabStop = false };
             panel.Controls.Add(text, 0, 1); EnableTextCopyFeedback(text);
             var copy = new ActionButton { Text = "Copiar prompt", Width = 185 }; copy.Click += (s, e) => CopyText(command, copy); panel.Controls.Add(copy, 0, 2);
             panel.Controls.Add(new Label { Text = "Pegá este prompt en la IA que quieras configurar. Después reconectá el servidor y usá Ejecutar prueba para generar un prompt de conexión de esta sesión.", AutoSize = true, MaximumSize = new Size(950, 0) }, 0, 3);
             toggle.Click += (s, e) => { panel.Visible = !panel.Visible; toggle.Text = panel.Visible ? "Ocultar prompt agregar MCP" : "Mostrar prompt agregar MCP"; };
-            root.Controls.Add(toggle, 0, 0); root.Controls.Add(panel, 0, 1); return root;
+            toggle.Role = ButtonRole.Secondary;
+            root.Controls.Add(toggle, 0, 1); root.Controls.Add(panel, 0, 2); return root;
         }
         void StartMcpConnectionTest()
         {

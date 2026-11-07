@@ -54,6 +54,7 @@ static void completed(void *ctx,Afr2I2cResult result) {
     else if (o->phase==WAIT_COMMAND) o->phase=SEND_DATA;
     else {
         if(o->phase==WAIT_DATA) {
+            o->last_transfer_ms=(uint16_t)(o->clock_ms-o->submitted_ms);
             /* Commit only bytes actually ACKed, never the current mutable
              * render buffer. Redraws during TX remain detectable next time. */
             memcpy(&o->acknowledged[(uint16_t)o->page*128u+o->column],&o->tx[1],o->count);
@@ -76,7 +77,7 @@ static bool send(Afr2Oled *o,const uint8_t *data,uint16_t size,uint8_t next,uint
      * classified just like deferred failures. BUSY restores the saved phase. */
     uint8_t previous=o->phase;o->phase=next;
     Afr2I2cResult r=Afr2I2c_Submit(o->manager,o->address7,data,size,now,40,completed,o);
-    if (r==AFR2_I2C_OK)return true;
+    if (r==AFR2_I2C_OK){o->submitted_ms=now;return true;}
     if (r==AFR2_I2C_BUSY)o->phase=previous;
     else completed(o,r);
     return false;
@@ -100,6 +101,10 @@ void Afr2Oled_Task(Afr2Oled *o,uint32_t now) {
         uint8_t skip=o->configured_once?1u:0u;
         uint8_t length=sizeof(init_commands)-skip;o->tx[0]=0;
         for(uint8_t i=1;i<length;i++)o->tx[i]=READ_BYTE(&init_commands[i+skip]);
+        /* AFR2-20261106-34: la secuencia de arranque usa la orientacion y el contraste configurados
+         * (0xA1/0xC8 por defecto en init_commands[13..14], 0xCF en [18]); asi una recuperacion del bus
+         * no muestra un cuadro girado antes de reaplicar los ajustes. */
+        if(13u>=skip && 18u-skip<length){o->tx[13u-skip]=o->rotation?0xa0:0xa1;o->tx[14u-skip]=o->rotation?0xc0:0xc8;o->tx[18u-skip]=o->contrast;}
         (void)send(o,o->tx,length,WAIT_INIT,now); return;
     }
     if(o->settings_dirty) {
@@ -135,6 +140,19 @@ void Afr2Oled_Task(Afr2Oled *o,uint32_t now) {
         o->dirty&=(uint8_t)~(1u<<page);o->next_page=(page+1u)&7u;
         return;
     }
+}
+/* AFR2-20261106-04: synchronous main-loop scratch loan from ACK shadow.
+ * All intersected chunks are invalidated BEFORE the pointer is returned.
+ * Consume/wipe before yielding to I2c_Tick/Oled_Task or another renderer.
+ * Does not touch live framebuffer, in-flight tx/command, or add a buffer. */
+uint8_t *Afr2Oled_BorrowScratch(Afr2Oled *o,uint16_t bytes) {
+    if(!o || !bytes || bytes>AFR2_OLED_BYTES)return NULL;
+    uint8_t chunks=(bytes+AFR2_OLED_CHUNK-1u)/AFR2_OLED_CHUNK;
+    for(uint8_t i=0;i<chunks;i++) {
+        o->valid[i/8u]&=(uint8_t)~(1u<<(i%8u));
+        o->dirty|=(uint8_t)(1u<<(i/8u));
+    }
+    return o->acknowledged;
 }
 void Afr2Oled_Clear(Afr2Oled *o) {
     if (!o) return;
@@ -175,6 +193,20 @@ void Afr2Oled_TextWindow(Afr2Oled *o,uint8_t left,uint8_t right,int16_t y,const 
     int16_t x=(int16_t)left-(int16_t)offset;
     while(*s && x<right) {
         char ch=*s++;
+        if(x+7>left)for(uint8_t row=0;row<10;row++) {
+            uint8_t bits=Afr2Font7x10_Row((uint8_t)ch,row);
+            for(uint8_t col=0;col<7;col++)if(x+col>=left && x+col<right && (bits&(0x80u>>col)))
+                Afr2Oled_Pixel(o,x+col,y+row,color);
+        }
+        x+=7;
+    }
+}
+/* AFR2-20261106-04: identical clipping, direct PROGMEM read. */
+void Afr2Oled_TextWindowFlash(Afr2Oled *o,uint8_t left,uint8_t right,int16_t y,const char *s,uint16_t offset,Afr2Color color) {
+    if(!s || left>=right || right>128)return;
+    int16_t x=(int16_t)left-(int16_t)offset;
+    uint8_t ch;
+    while(x<right && (ch=READ_BYTE(s++))!=0) {
         if(x+7>left)for(uint8_t row=0;row<10;row++) {
             uint8_t bits=Afr2Font7x10_Row((uint8_t)ch,row);
             for(uint8_t col=0;col<7;col++)if(x+col>=left && x+col<right && (bits&(0x80u>>col)))

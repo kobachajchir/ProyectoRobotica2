@@ -71,6 +71,10 @@ void Broker::tickSystem(uint32_t now) {
         ++generation_;infoReady_=false;infoPage_=0;
         publishBoot("atmega",mega_.bootId(),mega_.bootCause(),"uart-boot-event");
     }
+    if(wifi_.restartDue(now) && !waiting_ && !deferredClient_){
+        bool drained=true;for(auto &s:sessions_)if(s.used)if(auto *p=ws_.client(s.id))if(p->queueLen())drained=false;
+        if(drained && !rebootAt_){stopWebOperations();rebootAt_=now+100u;}
+    }
     if(rebootAt_ && (int32_t)(now-rebootAt_)>=0){ws_.closeAll(1012,"ESP restarting");ESP.restart();return;}
     if(!mega_.ready()){infoReady_=false;infoPage_=0;return;}
     if(rebootAt_ || waiting_ || mega_.busy() || stopQueued_ || !productReady_ || extensionVersion_<4 || infoReady_)return;

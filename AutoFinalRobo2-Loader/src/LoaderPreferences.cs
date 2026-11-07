@@ -8,6 +8,7 @@ namespace AFR2Loader
     public sealed class LoaderPreferences
     {
         public int Schema = 1;
+        public string Theme = "system";
         public bool BackupMegaBeforeFlasher = true;
         public bool ShowNoMegaBackupWarning = true;
         public bool RequireChecklist = true;

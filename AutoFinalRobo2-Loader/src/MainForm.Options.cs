@@ -60,7 +60,7 @@ namespace AFR2Loader
                 reset.Click += (s, e) => { defaultMegaBackup.Checked = showNoBackupWarning.Checked = true; checklistMode.SelectedIndex = 0; };
                 var save = new ActionButton { Text = "Guardar preferencias", AutoSize = true, Anchor = AnchorStyles.Right };
                 save.Click += (s, e) => {
-                    var next = new LoaderPreferences { BackupMegaBeforeFlasher = defaultMegaBackup.Checked, ShowNoMegaBackupWarning = showNoBackupWarning.Checked,
+                    var next = new LoaderPreferences { Theme = preferences.Theme, BackupMegaBeforeFlasher = defaultMegaBackup.Checked, ShowNoMegaBackupWarning = showNoBackupWarning.Checked,
                         RequireChecklist = checklistMode.SelectedIndex != 2, ChecklistsInitiallyChecked = checklistMode.SelectedIndex == 1 };
                     try { next.Save(); preferences = next; backupBeforeFlasher.Checked = next.BackupMegaBeforeFlasher; ClipboardToast.Display(dialog, "Preferencias guardadas"); }
                     catch (Exception error) { MessageBox.Show(dialog, error.Message, "Preferencias"); }

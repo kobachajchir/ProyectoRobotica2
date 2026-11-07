@@ -38,6 +38,7 @@ export class Afr2OledBuffer {
   public drawText(x: number, y: number, text: string, color: Afr2Color = 'white'): void {
     for (const ch of text) { if (x >= 128 || ch === '\0') break; this.drawChar(x, y, ch, color); x += 7; }
   }
+  /** AFR2-20261106-04: also the AVR TextWindowFlash port; JS strings share one address space. */
   public textWindow(left: number, right: number, y: number, text: string, offset: number, color: Afr2Color = 'white'): void {
     if (left >= right || right > 128) return;
     let x = left - offset;

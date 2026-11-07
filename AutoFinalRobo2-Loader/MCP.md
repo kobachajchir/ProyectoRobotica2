@@ -15,8 +15,8 @@
 El servidor pertenece al mismo módulo y comparte la sesión del Loader gráfico.
 
 Desde0.8, `EspTransport` selecciona `mega_bridge` (flasher temporal, D18/D19,
-RESET libre), `mega_reset` (puente físico D0/D1, RESET-GND) o `usb-ttl`
-(adaptador externo3,3V). `mega-usb` es alias anterior de `mega_reset`. Se consulta en
+RESET libre) o `usb-ttl` (adaptador externo3,3V). El método D0/D1 con RESET-GND
+(`mega_reset`/`mega-usb`) fue retirado; los perfiles antiguos pasan a `mega_bridge`. Se consulta en
 loader_status/perfil. Las operaciones ESP existentes usan esa selección y sus
 asistentes: no saltan al otro modo ante un error. `listenBoot` solo gobierna la
 escucha74880 en Mega físico o USB–TTL; en el software se guía KEY/RST manualmente y
@@ -41,26 +41,26 @@ Las herramientas de firmware siguen siendo externas y configurables.
 
 ## Iniciar y registrar
 
-Primero abrir la ventana; este comando compila la herramienta si hace falta:
+Primero abrir la ventana. La distribución 2.0.0 usa ejecutables precompilados; la copia de desarrollo puede preparar la herramienta si hace falta:
 
 ```powershell
-cd "D:\ProyectoRobotica2\AutoFinalRobo2-Loader"
+# Abrí PowerShell en la carpeta extraída del Loader
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\Iniciar.ps1"
 ```
 
 Registrar una vez por computadora, con Codex CLI disponible en PATH:
 
 ```powershell
-cd "D:\ProyectoRobotica2\AutoFinalRobo2-Loader"
+# Abrí PowerShell en la carpeta extraída del Loader
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\RegistrarMcp.ps1"
 ```
 
-En otra computadora, cambiar el `cd` por su copia. Si el CLI no está en PATH,
+Ejecutá los ejemplos desde la carpeta extraída en esa computadora. Si el CLI no está en PATH,
 usar `-Codex "C:\ruta\codex.exe"` con el registrador. También se puede copiar
-el comando ya resuelto de la pestaña **Codex / MCP**. El registro usa:
+el comando ya resuelto de la pestaña **Servidor MCP**. El registro usa:
 
 ```powershell
-codex mcp add afr2-loader -- powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File "D:\ProyectoRobotica2\AutoFinalRobo2-Loader\Mcp.ps1"
+codex mcp add afr2-loader -- powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File (Join-Path (Get-Location) 'Mcp.ps1')
 ```
 
 Cerrar/reabrir o reconectar el cliente MCP de Codex para que descubra el servidor.
@@ -223,8 +223,7 @@ continúa con la verificación, sin reenviar la escritura. Cancelar conserva
 `writingStarted:true` y `contentVerified:false`. La autoaceptación MCP no
 omite este asistente físico; no se agrega una herramienta MCP nueva.
 
-El perfil incluye `EspTransport`: `mega_reset` (`mega-usb` aceptado como alias para perfiles
-anteriores) o `usb-ttl` para un adaptador externo con lógica3,3V. Cambia las
+El perfil incluye `EspTransport`: `mega_bridge` (flasher) o `usb-ttl` para un adaptador externo con lógica3,3V. Cambia las
 instrucciones de conexión; no fija el COM ni configura sus niveles eléctricos.
 La GUI y las acciones MCP usan el mismo generador de argumentos: Python `-u`,
 `no_reset` antes/después, baudios y SPI del perfil y stub normal al escribir.

@@ -135,7 +135,7 @@ uint8_t Afr2Menu_Icon(uint8_t node,uint8_t target,uint8_t action,const char *lab
     if(target==AFR2_N_AP_INFO || node==AFR2_N_WIFI_AP)return AFR2_ICON_AP;
     if(target==AFR2_N_WIFI || target==AFR2_N_NETWORK || node==AFR2_N_WIFI || (action>=AFR2_A_WIFI_STATUS && action<=AFR2_A_WIFI_SET_MODE))return AFR2_ICON_WIFI;
     if(target==AFR2_N_ENCODER_VIEW || target==AFR2_N_ENCODER_CONFIG)return AFR2_ICON_ENCODER;
-    if(target==AFR2_N_SENSORS || target==AFR2_N_LINE_VIEW || target==AFR2_N_US_VIEW || target==AFR2_N_HALL_VIEW)return AFR2_ICON_SENSORS;
+    if(target==AFR2_N_SENSORS || target==AFR2_N_LINE_VIEW || target==AFR2_N_US_VIEW || target==AFR2_N_HALL_VIEW || target==AFR2_N_HALL_LIVE)return AFR2_ICON_SENSORS;
     if(target==AFR2_N_PREFS || target==AFR2_N_PREFS_VIEW || action==AFR2_A_SAVE || action==AFR2_A_DISCARD)return AFR2_ICON_PREFS;
     if(target==AFR2_N_LINK_VIEW)return AFR2_ICON_LINK;
     if(target==AFR2_N_CONTROL || target==AFR2_N_MOVE || target==AFR2_N_WHEEL || node==AFR2_N_MOVE || node==AFR2_N_WHEEL)return AFR2_ICON_MOTOR;

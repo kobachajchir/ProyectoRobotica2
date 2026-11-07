@@ -54,6 +54,9 @@
 .afr2-manual-direction { margin:0; min-height:1.4em; font-size:clamp(18px,4.5vw,24px); line-height:1.3; font-weight:600; letter-spacing:-.02em; color:var(--text-strong); }
 .afr2-manual-footer .afr2-help { margin:0; font-size:var(--type-caption-size); }
 .afr2-manual-footer .afr2-help span { display:block; }
+/* AFR2-20261106-08: Hall angle-turn switch. */
+.afr2-manual-hall-toggle { display:flex; align-items:center; justify-content:center; gap:8px; margin-top:8px; font-size:.875rem; text-align:left; }
+.afr2-manual-hall-toggle input { flex:none; width:18px; height:18px; }
 .afr2-manual-speed { display:grid; grid-template-columns:1fr auto; align-items:center; gap:4px 16px; margin-top:12px; text-align:left; }
 .afr2-manual-speed label { font-size:var(--type-body-size); }
 .afr2-manual-speed output { font-variant-numeric:tabular-nums; font-size:16px; font-weight:600; }
@@ -69,3 +72,14 @@ html[data-input="keyboard"] .afr2-manual-stream[data-active="true"] .afr2-manual
 .afr2-power-notice { display: grid; gap: .4rem; padding: .65rem; border: 1px solid currentColor; border-radius: .65rem; }
 .afr2-power-notice progress { width: 100%; height: .65rem; }
 .afr2-power-notice output { display: block; text-align: center; font-variant-numeric: tabular-nums; }
+
+/* AFR2-20261106-33: paneles colapsables y giro animado sobre el eje (modelo fijo). */
+.afr2-manual-panel { text-align:left; }
+.afr2-manual-panel .afr2-collapsible-panel__body { padding-top:4px; }
+.afr2-manual-spin { position:absolute; left:50%; top:12px; transform:translateX(-50%); display:flex; align-items:center; gap:8px; padding:6px 12px; border-radius:999px; background:var(--surface,rgba(0,0,0,.5)); color:var(--text); font-size:var(--type-caption-size); pointer-events:none; z-index:2; }
+.afr2-manual-spin .afr2-chassis-spin-graphic { animation:afr2-manual-spin-turn 1.6s linear infinite; transform-origin:50% 50%; }
+.afr2-manual-spin .afr2-chassis-spin-graphic[data-direction="cw"] { animation-direction:normal; }
+.afr2-manual-spin .afr2-chassis-spin-graphic[data-direction="ccw"] { animation-direction:reverse; }
+@keyframes afr2-manual-spin-turn { to { transform:rotate(360deg); } }
+@media (prefers-reduced-motion:reduce) { .afr2-manual-spin .afr2-chassis-spin-graphic { animation:none; } }
+.afr2-manual-heading-kind { font-size:var(--type-caption-size); color:var(--text-muted); font-weight:400; }

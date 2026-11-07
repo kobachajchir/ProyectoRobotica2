@@ -1,3 +1,9 @@
+> **AFR2-20261106-04:** SRAM AVR 5614 bytes, libres antes de pila 2578; QR finish 29 bytes. Se conservan ambos buffers OLED. Builds y paridad C/Web 2104/2104 PASS; sin carga ni prueba física. [Evidencia](AutoFinalRobo2-Contracts/documentation/builds/2026-11-06-04/README.md).
+
+> **AFR2-20261106-02:** regeneración y builds AVR/ESP/Web/Loader comprobados; paridad host OLED 1680/1680. **Carga bloqueada por presupuesto SRAM/pila AVR**; sin COM, flasheo ni prueba física. [Evidencia](AutoFinalRobo2-Contracts/documentation/builds/2026-11-06-02/README.md).
+
+> **AFR2-20261106-01:** [correccion coordinada en fuente](AutoFinalRobo2-Contracts/changes/2026-11-06-01-coordinated-corrections.md), EX01v13/EEPROMv9/Wi-Fi v2. ATmega/ESP/Web modificados; Loader visual previo conservado y CAD sin cambios. Sin compilar, generar, probar ni cargar esta entrega.
+
 > **AFR2-20261102-14:** dashboard OLED con modo y tarjeta de estados reales, espera3s/ciclo4s, pausa al mantener encoder y fallo prioritario; familia de pantallas vinculada AVR/Web. [Contrato](AutoFinalRobo2-Contracts/contracts/OLED_DASHBOARD_STATUS_20261102.md). Solo fuente, sin tests, build, validaciones, navegador ni carga.
 
 > **AFR2-20261102-11:** dashboard OLED original, cabecera invertida, visor blanco y flecha grande + Volver en submenús. [Ficha](AutoFinalRobo2-Contracts/changes/2026-11-02-11-oled-original-dashboard-white-back.md). Fuente AVR/Web; sin tests, compilaciones, validaciones, navegador ni cargas.

@@ -13,6 +13,7 @@ public:
     bool request(uint8_t command, uint32_t now, bool priority=false);
     bool requestProduct(uint8_t command,const uint8_t *body,uint8_t length,uint32_t now,bool priority=false);
     bool take(MegaResult &result);
+    bool streamPwm(const uint8_t *body,uint32_t now);
     bool takeBoot(){bool value=bootPending_;bootPending_=false;return value;}
     uint32_t bootId() const { return peerBoot_; }
     uint8_t bootCause() const { return peerCause_; }

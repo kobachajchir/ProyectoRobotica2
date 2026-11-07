@@ -61,14 +61,14 @@ namespace AFR2Loader
                 "El paquete y sus offsets corresponden al ESP8266 y a la revisión que quiero instalar.",
                 firmware ? "Revisé todas las imágenes de firmware/sistema; cambiar a AT reemplaza el firmware Web de las regiones elegidas." : "El firmware AT ya instalado usa exactamente este layout y filesystem.",
                 "Revisé las regiones de datos seleccionadas y conservé sus preferencias antes de reemplazarlas.",
-                "Mantengo KEY hasta el aviso del primer porcentaje de escritura; solo RST queda suelto."
+                AutoKeyRst(p) ? "KEY/RST automáticos en cada sesión: el flasher ejecuta la entrada a programación y confirma su estado; no toco los botones." : "Mantengo KEY hasta el aviso del primer porcentaje de escritura; solo RST queda suelto."
             })) throw new OperationCanceledException("Carga AT no confirmada.");
             EnsureUnchanged(manifest, manifestHash); token.ThrowIfCancellationRequested();
             for (int i = 0; i < files.Length; i++) EnsureUnchanged(files[i], hashes[i]);
             Profile transfer = p.Copy(); transfer.Values["FlashMode"] = package.FlashMode; transfer.Values["FlashFreq"] = package.FlashFreq;
             var write = EspArgs(transfer, port, false); write.Add(Spell(transfer, "write_flash")); AddFlashOptions(transfer, write);
             for (int i = 0; i < regions.Length; i++) write.AddRange(new[] { regions[i].Offset, files[i] });
-            Stage("writing", "Escribiendo paquete AT según su mapa de regiones. Mantené KEY apretado..."); MarkWriting();
+            Stage("writing", AutoKeyRst(p) ? "Escribiendo paquete AT con entrada KEY/RST automática; sin intervención manual." : "Escribiendo paquete AT según su mapa de regiones. Mantené KEY apretado..."); MarkWriting();
             var written = await Command(transfer, "Python", write, Path.GetDirectoryName(transfer.Resolve("Esptool")), token);
             EnsureUnchanged(manifest, manifestHash);
             for (int i = 0; i < files.Length; i++) EnsureUnchanged(files[i], hashes[i]);

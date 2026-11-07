@@ -103,6 +103,32 @@ interface Props {
   range: number; angle: number | null; enabled: boolean; points: readonly RangeSample[];
   currentId?: number; dark: boolean; historical: boolean;
   scanMin: number; scanMax: number; preview: boolean; view: RadarView;
+  /** AFR2-20261106-35: barrido automático en curso con telemetría fresca; dibuja la estela tras el ángulo real. */
+  sweeping?: boolean;
+  /** Reloj de la página (ms) para desvanecer ecos según su antigüedad de recepción. */
+  nowMs?: number;
+}
+type TimedSample = RangeSample & { receivedAtMs?: number };
+const ECHO_FADE_MS = 8000;
+function echoFade(p: TimedSample, nowMs: number | undefined) {
+  if (nowMs === undefined || p.receivedAtMs === undefined) return 1;
+  return Math.max(.3, 1 - Math.max(0, nowMs - p.receivedAtMs) / ECHO_FADE_MS);
+}
+/** Estela del barrido: sectores detrás del haz, en el sentido de avance observado del servo real.
+ * Solo existe con barrido automático y ángulo reportado; sin datos no hay barrido. */
+function SweepTrail({ angle, range, color, reduce }: { angle: number; range: number; color: string; reduce: boolean }) {
+  const previous = useRef(angle), direction = useRef(1);
+  if (angle !== previous.current) { direction.current = angle > previous.current ? 1 : -1; previous.current = angle; }
+  const dir = direction.current;
+  const slices = useMemo(() => [[0, 8, .16], [8, 16, .09], [16, 26, .04]].map(([a, b, alpha]) => {
+    const from = Math.max(0, Math.min(180, angle - dir * b)), to = Math.max(0, Math.min(180, angle - dir * a));
+    return { shape: sector(range, Math.min(from, to), Math.max(from, to)), alpha };
+  }), [angle, dir, range]);
+  if (reduce) return null;
+  return <>{slices.map((slice, i) => <mesh key={i} position={[0, .008 + i * .0005, SENSOR_Z]} rotation={[-Math.PI / 2, 0, 0]}>
+    <shapeGeometry args={[slice.shape, 24]} />
+    <meshBasicMaterial color={color} transparent opacity={slice.alpha} side={DoubleSide} depthWrite={false} toneMapped={false} />
+  </mesh>)}</>;
 }
 function readPalette() {
   const css = getComputedStyle(document.documentElement);
@@ -250,7 +276,7 @@ function CarShadow({ dark }: { dark: boolean }) {
   </mesh>;
 }
 
-function Plot({ range, angle, enabled, points, currentId, historical, scanMin, scanMax, preview, view, dark, palette, onLabels }: Props & { palette: Palette; onLabels: (labels: ScreenLabel[]) => void }) {
+function Plot({ range, angle, enabled, points, currentId, historical, scanMin, scanMax, preview, view, dark, palette, onLabels, sweeping = false, nowMs }: Props & { palette: Palette; onLabels: (labels: ScreenLabel[]) => void }) {
   const { grid, accent } = palette;
   const line = range * .0011;
   const rings = useMemo(() => [1, 2, 3, 4].map(n => arc(range * n / 4, .013)), [range]);
@@ -281,6 +307,7 @@ function Plot({ range, angle, enabled, points, currentId, historical, scanMin, s
   ], [range]);
   const latest = !historical && currentId ? visible.find(p => p.sampleId === currentId) : undefined;
   const dot = range * .0105;
+  const reduceMotion = useReducedMotion();
   return <>
     <Camera range={range} view={view} labels={labels} onLabels={onLabels} />
     <Dish range={range} palette={palette} dark={dark} />
@@ -296,15 +323,16 @@ function Plot({ range, angle, enabled, points, currentId, historical, scanMin, s
     <Stroke points={zoneEdge} color={accent} radius={line * 1.9} opacity={preview ? .5 : .95} glow={dark && !preview} />
     {bounds.map((p, i) => <Stroke key={i} points={p} color={accent} radius={line * .9} opacity={preview ? .35 : .6} />)}
     <CarShadow dark={dark} />
+    {angle !== null && enabled && sweeping && !historical && <SweepTrail angle={angle} range={range} color={bright} reduce={reduceMotion} />}
     {angle !== null && enabled && <Beam angle={angle} range={range} color={bright} muted={historical} />}
     {contours.map((run, i) => <Stroke key={`c${i}`} points={run} color={bright} radius={line * 1.4} opacity={historical ? .35 : .7} />)}
     {latest && <EchoPulse key={latest.sampleId} position={point(latest.angleDeg, latest.distanceMm! / 1000, .03)} radius={dot} color={bright} />}
     {visible.map(p => {
-      const current = p.sampleId === currentId;
+      const current = p.sampleId === currentId, fade = current ? 1 : echoFade(p as TimedSample, nowMs);
       return <group key={p.angleDeg} position={point(p.angleDeg, p.distanceMm! / 1000, .026)}>
         <mesh rotation={[-Math.PI / 2, 0, 0]}>
           <circleGeometry args={[dot * (current ? 3.2 : 2.4), 28]} />
-          <meshBasicMaterial color={bright} transparent opacity={current ? .22 : historical ? .06 : .1} side={DoubleSide} depthWrite={false} toneMapped={false} />
+          <meshBasicMaterial color={bright} transparent opacity={(current ? .22 : historical ? .06 : .1) * fade} side={DoubleSide} depthWrite={false} toneMapped={false} />
         </mesh>
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, .001, 0]}>
           <ringGeometry args={[dot * 1.05, dot * 1.45, 28]} />
@@ -312,7 +340,7 @@ function Plot({ range, angle, enabled, points, currentId, historical, scanMin, s
         </mesh>
         <mesh position={[0, dot * .5, 0]}>
           <sphereGeometry args={[dot * (current ? 1.3 : 1), 16, 10]} />
-          <meshBasicMaterial color={current ? bright : accent} transparent opacity={current ? 1 : historical ? .5 : .9} toneMapped={false} />
+          <meshBasicMaterial color={current ? bright : accent} transparent opacity={(current ? 1 : historical ? .5 : .9) * fade} toneMapped={false} />
         </mesh>
       </group>;
     })}

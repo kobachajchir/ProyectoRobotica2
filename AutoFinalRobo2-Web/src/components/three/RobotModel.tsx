@@ -67,7 +67,8 @@ export function RobotModel({ wheelAngles, wheelSpeedsMmS, wheelAngleOffsets, ani
   wheelAngles?: RobotWheelValues; wheelSpeedsMmS?: RobotWheelValues; wheelAngleOffsets?: RobotWheelValues; animateServo?: boolean;
 }) {
   const { scene, offset } = useRobotModel();
-  const { headReading }=useConnection();
+  const { headReading, registerHeadViewer }=useConnection();
+  useEffect(() => animateServo ? registerHeadViewer() : undefined, [animateServo, registerHeadViewer]);
   const servoTarget=useRef(0),servoVelocity=useRef(0);
   const { model, pivots, servoPivot } = useMemo(() => {
     const instance = scene.clone(true);

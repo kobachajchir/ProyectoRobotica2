@@ -182,11 +182,11 @@
       "id": 25,
       "symbol": "AFR2_A_LINE_KIND",
       "config_access": true,
-      "label": "Tipo 0/1dig/2adc",
+      "label": "IR digital ON/OFF",
       "min": 0,
-      "max": 2,
+      "max": 1,
       "editor_step": 1,
-      "unit": "enum0unknown1digital2ADC"
+      "unit": "enum0disabled1digital"
     },
     {
       "id": 26,
@@ -201,22 +201,22 @@
     {
       "id": 27,
       "symbol": "AFR2_A_LINE_CHANNEL",
-      "config_access": true,
-      "label": "Canal IR 1..5",
+      "config_access": false,
+      "label": "Tomar fondo",
       "min": 0,
-      "max": 4,
-      "editor_step": 1,
-      "unit": "index0..4"
+      "max": 0,
+      "editor_step": 0,
+      "unit": "digital calibration sample"
     },
     {
       "id": 28,
       "symbol": "AFR2_A_LINE_THRESHOLD",
-      "config_access": true,
-      "label": "Umbral ADC",
+      "config_access": false,
+      "label": "Tomar linea",
       "min": 0,
-      "max": 1023,
-      "editor_step": 8,
-      "unit": "ADC10-bit threshold"
+      "max": 0,
+      "editor_step": 0,
+      "unit": "digital calibration sample"
     },
     {
       "id": 29,

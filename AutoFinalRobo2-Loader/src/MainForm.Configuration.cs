@@ -14,7 +14,7 @@ namespace AFR2Loader
             if (new[] { "FsScript", "FsSourceDir", "FsScriptHost", "FsScriptArguments" }.Contains(key)) return "ESP/Preparación FileSystem";
             if (new[] { "AtmegaDir", "Hex", "MegaBaud", "Mcu", "Programmer", "Signature" }.Contains(key)) return "ATmega/Firmware y conexión";
             if (new[] { "Make", "Gcc", "Ar", "Objcopy", "Avrdude", "AvrdudeConfig" }.Contains(key)) return "ATmega/Herramientas";
-            if (new[] { "BridgeBaud", "BridgeStartupSeconds" }.Contains(key)) return "ATmega/Flasher ESP";
+            if (new[] { "BridgeBaud", "BridgeStartupSeconds", "EspKeyRst" }.Contains(key)) return "ATmega/Flasher ESP";
             if (new[] { "EspTransport", "EspBaud", "BootWaitSeconds" }.Contains(key)) return "ESP/Conexión";
             if (new[] { "Python", "Esptool", "EsptoolMajor", "Pio" }.Contains(key)) return "ESP/Herramientas";
             if (new[] { "EspFirmwareMode", "EspDir", "EspBin", "PioEnv", "FirmwareOffset", "FirmwareMax" }.Contains(key)) return "ESP/Firmware propio";
@@ -42,8 +42,9 @@ namespace AFR2Loader
             var help = new DataGridViewLinkColumn { Name = "Help", HeaderText = "Ayuda", Text = "Ver explicación", UseColumnTextForLinkValue = true, Width = 125 };
             settings.Columns.Add(help); settings.Columns[2].HeaderText = "Acción"; settings.Columns[2].Width = 125;
             settings.CellContentClick += (s, e) => { if (e.RowIndex >= 0 && e.ColumnIndex == 3) ShowFieldHelp((Field)settings.Rows[e.RowIndex].Tag); };
-            settings.CellFormatting += (s, e) => { if (e.RowIndex < 0 || e.ColumnIndex != 2) return; var field = settings.Rows[e.RowIndex].Tag as Field; if (field == null) return; e.Value = field.Kind == "text" ? "Explicar" : "Examinar…"; e.FormattingApplied = true; };
-            StyleActionColumn(settings, 2, index => { var field = settings.Rows[index].Tag as Field; return field == null || field.Kind == "text" ? "Explicar" : "Examinar…"; }, false);
+            settings.CellFormatting += (s, e) => { if (e.RowIndex < 0 || e.ColumnIndex != 2) return; var field = settings.Rows[e.RowIndex].Tag as Field; if (field == null) return; e.Value = field.Kind == "text" ? "" : "Examinar…"; e.FormattingApplied = true; };
+            // AFR2-20261106-06: one help entry per field ("Ver explicación"); "Examinar…" only for paths.
+            StyleActionColumn(settings, 2, index => { var field = settings.Rows[index].Tag as Field; return field == null || field.Kind == "text" ? null : "Examinar…"; }, false);
             body.Controls.Add(navigation, 0, 0); body.Controls.Add(settings, 1, 0); layout.Controls.Add(body, 0, 1); ApplyConfigurationFilter();
         }
         void ApplyConfigurationFilter()

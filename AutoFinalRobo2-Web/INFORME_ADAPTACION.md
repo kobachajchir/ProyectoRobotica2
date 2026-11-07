@@ -1,3 +1,9 @@
+> **AFR2-20261106-04:** SRAM AVR 5614 bytes, libres antes de pila 2578; QR finish 29 bytes. Se conservan ambos buffers OLED. Builds y paridad C/Web 2104/2104 PASS; sin carga ni prueba física. [Evidencia](../AutoFinalRobo2-Contracts/documentation/builds/2026-11-06-04/README.md).
+
+> **AFR2-20261106-02:** regeneración y builds AVR/ESP/Web/Loader comprobados; paridad host OLED 1680/1680. **Carga bloqueada por presupuesto SRAM/pila AVR**; sin COM, flasheo ni prueba física. [Evidencia](../AutoFinalRobo2-Contracts/documentation/builds/2026-11-06-02/README.md).
+
+> **AFR2-20261106-01 / fuente:** correcciones coordinadas EX01v13, IR digital/EEPROMv9 y Wi-Fi persistente/paginado. [Ficha y estado por modulo](../AutoFinalRobo2-Contracts/changes/2026-11-06-01-coordinated-corrections.md). Sin nuevas compilaciones, generadores, pruebas ni cargas; no acredita el firmware instalado.
+
 > **AFR2-20261101-06 / VIS-049:** Simulador UI en /desarrollador/ui-simulator, tarjeta debajo de Protocol Studio, ayuda y pestanas con el mismo lenguaje visual. [Ficha](../AutoFinalRobo2-Contracts/changes/2026-11-01-06-ui-simulator-workspace.md). Fuente sin tests/build/navegador ni promocion.
 
 > **AFR2-20261101-04:** encuadre cercano y centrado por geometria en simuladores y Modelos 3D; conserva orbita/zoom manuales. [Ficha](../AutoFinalRobo2-Contracts/changes/2026-11-01-04-close-model-framing.md). Fuente sin tests, builds, validadores ni navegador.
@@ -259,3 +265,13 @@ Web/docs/model-asset-20261024.json. Los párrafos de hitos anteriores son histor
 ## AFR2-20261029-19 — OLED táctil y visor bajo demanda
 
 Fuente adaptada con Web/ATmega/ESP: overlay scrim+blur en modales, Volver por ítem del menú, ScreenCode0x030035 con aviso/bitmap/chevrones y suscripción explícita a capturas/metadatos. Contrato en AutoFinalRobo2-Contracts/contracts/TOUCH_OLED_19.md; procedencia por archivo en provenance/touch-oled-20261029-19.json de Contracts. El rumbo es solicitado, no medido, y no agrega giro físico. Sin tests, compilación, validadores, navegador, ejecución del generador OLED, promoción ESP ni flasheo de esta entrega. Memoria/paridad/latencia físicas pendientes.
+
+
+## AFR2-20261106-12 — Hall y PWM manual
+
+Adaptación de fuente coordinada; véase Contracts/contracts/HALL_MANUAL_STREAM_20261106.md y Contracts/provenance/hall-motion-20261106-12.json. EEPROM AVR v10; Hall por motor y raster Web vinculados; ESP PWM reciente sin esperar ACK AVR por consigna. Sin tests, compilaciones, validadores, generadores, promoción ni carga. Fluidez, SRAM/pila y funcionamiento físico pendientes. Bypass manual conservado; restitución de permisos pendiente.
+
+
+## AFR2-20261106-13 — Movimiento sin requisito HC-SR04
+
+Se retiran los bloqueos de inicio y parada por lectura HC-SR04 inválida o distancia frontal<150mm en los modos físicos vigentes. Se conservan adquisición, telemetría, radar y simulación de aproximación. El simulador de UI refleja los requisitos del firmware. Sin tests, compilaciones, validadores, generadores ni cargas. Véase Contracts/changes/2026-11-06-13-motion-without-hcsr-gate.md.

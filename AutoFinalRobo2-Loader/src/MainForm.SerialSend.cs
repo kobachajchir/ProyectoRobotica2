@@ -27,7 +27,15 @@ namespace AFR2Loader
             panel.RowStyles.Add(new RowStyle(SizeType.Absolute, 54)); panel.RowStyles.Add(new RowStyle(SizeType.Percent, 100)); panel.RowStyles.Add(new RowStyle(SizeType.Absolute, 38));
             var options = UiRow(); serialSendFormat.Items.AddRange(new object[] { "ASCII literal", "HEX", "Números (0..255)" }); serialSendFormat.SelectedIndex = 0;
             options.Controls.Add(UiField("Enviar como", serialSendFormat)); options.Controls.Add(sendCr); options.Controls.Add(sendLf);
-            options.Controls.Add(UiField("Repetir", sendRepeats)); options.Controls.Add(UiField("Pausa (ms)", sendInterval)); panel.Controls.Add(options, 0, 0);
+            // AFR2-20261106-06: repeat and pause are advanced; folding them keeps their values and the typed text.
+            var repeatField = UiField("Repetir", sendRepeats); var pauseField = UiField("Pausa (ms)", sendInterval);
+            repeatField.Visible = pauseField.Visible = false;
+            var advanced = new ActionButton { Text = "Avanzado: repetir ▸", Width = 230, Role = ButtonRole.Secondary };
+            Action refreshAdvanced = () => advanced.Text = (repeatField.Visible ? "Avanzado: repetir ▾" : "Avanzado: repetir ▸") + (!repeatField.Visible && (sendRepeats.Value != 1 || sendInterval.Value != 100) ? " (" + sendRepeats.Value + "×)" : "");
+            advanced.Click += (s, e) => { repeatField.Visible = pauseField.Visible = !repeatField.Visible; refreshAdvanced(); };
+            sendRepeats.ValueChanged += (s, e) => refreshAdvanced(); sendInterval.ValueChanged += (s, e) => refreshAdvanced();
+            options.Controls.Add(advanced); options.Controls.Add(repeatField); options.Controls.Add(pauseField);
+            panel.RowStyles[0] = new RowStyle(SizeType.AutoSize); panel.Controls.Add(options, 0, 0);
             var data = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2, RowCount = 1 };
             data.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100)); data.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
             serialSendInput.Font = new Font("Consolas", 10); EnableTextCopyFeedback(serialSendInput); data.Controls.Add(serialSendInput, 0, 0);

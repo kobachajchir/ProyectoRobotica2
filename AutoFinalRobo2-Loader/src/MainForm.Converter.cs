@@ -13,6 +13,7 @@ namespace AFR2Loader
         readonly ComboBox converterDirection = new ComboBox(), converterView = new ComboBox();
         readonly Label converterInputLabel = new Label(), converterOutputLabel = new Label(), converterState = new Label(), converterHint = new Label();
         Button converterCopy, converterCopyHex;
+        readonly Label converterInputError = new Label();
         HexAsciiData converterData;
 
         void InitializeConverter(TabControl tabs)
@@ -20,7 +21,7 @@ namespace AFR2Loader
             converterTab = new TabPage("Conversor HEX / ASCII") { Padding = new Padding(UiInset) };
             var layout = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 5 };
             foreach (int height in new[] { 48, 56 }) layout.RowStyles.Add(new RowStyle(SizeType.Absolute, height));
-            layout.RowStyles.Add(new RowStyle(SizeType.Percent, 100)); layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 62)); layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 60));
+            layout.RowStyles.Add(new RowStyle(SizeType.Percent, 100)); layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 92)); layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 60));
             layout.Controls.Add(new Label { Text = "Conversor universal de bytes y texto", Font = new Font(Font.FontFamily, 16, FontStyle.Bold), Dock = DockStyle.Fill }, 0, 0);
             var options = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2 };
             options.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100)); options.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
@@ -39,6 +40,12 @@ namespace AFR2Loader
             ConverterButton(inputActions, "Limpiar", () => { converterInput.Clear(); ClearConverterResult(); converterInput.Focus(); }, 115);
             converterCopyHex = ConverterButton(inputActions, "Copiar HEX normalizado", () => { if (converterData != null) CopyText(HexAsciiConverter.FormatHex(converterData.Bytes), converterCopyHex); }, 240);
             inputActions.Controls.SetChildIndex(converterCopyHex, 1);
+            // AFR2-20261106-06: short example and the error next to the input that caused it.
+            var example = ConverterButton(inputActions, "Insertar ejemplo", () => { converterInput.Text = converterDirection.SelectedIndex == 0 ? "48 65 6C 6C 6F" : "AT+GMR"; converterInput.Focus(); }, 200);
+            ((ActionButton)example).Role = ButtonRole.Secondary; ButtonStyle(example);
+            inputActions.SetFlowBreak(example, true);
+            converterInputError.AutoSize = true; converterInputError.MaximumSize = new Size(520, 0); converterInputError.ForeColor = Color.Firebrick; converterInputError.Margin = new Padding(0, 2, 0, 0);
+            inputActions.Controls.Add(converterInputError);
             var outputActions = UiRow(); outputActions.Margin = new Padding(8, 8, 0, 0); converterCopy = ConverterButton(outputActions, "Copiar resultado", () => CopyText(converterOutput.Text, converterCopy), 200);
             editors.Controls.Add(inputActions, 0, 2); editors.Controls.Add(outputActions, 1, 2); layout.Controls.Add(editors, 0, 2);
             converterHint.Dock = DockStyle.Fill; converterHint.Padding = new Padding(12); converterHint.BackColor = Color.FromArgb(232, 241, 246); layout.Controls.Add(converterHint, 0, 3);
@@ -61,11 +68,11 @@ namespace AFR2Loader
             converterOutputLabel.Text = hex ? "Resultado ASCII" : "Resultado HEX · 16 bytes por fila";
             converterInput.AccessibleName = converterInputLabel.Text; converterOutput.AccessibleName = converterOutputLabel.Text;
             converterView.Enabled = hex;
-            converterHint.Text = hex ? "Nota: los controles distintos de CR/LF/tab y los bytes 80..FF se muestran como \\xHH. Cabeceras --- ... --- del monitor se omiten." : "Nota: ASCII literal: \\r, \\n y \\xHH escritos son caracteres literales, no escapes a interpretar. No se reemplazan caracteres fuera de ASCII.";
+            converterHint.Text = (hex ? "Ejemplo: 48 65 6C 6C 6F → Hello.\r\n" : "Ejemplo: AT+GMR → 41 54 2B 47 4D 52.\r\n") + (hex ? "Nota: los controles distintos de CR/LF/tab y los bytes 80..FF se muestran como \\xHH. Cabeceras --- ... --- del monitor se omiten." : "Nota: ASCII literal: \\r, \\n y \\xHH escritos son caracteres literales, no escapes a interpretar. No se reemplazan caracteres fuera de ASCII.");
         }
         void ClearConverterResult()
         {
-            converterData = null; converterOutput.Clear();
+            converterData = null; converterOutput.Clear(); converterInputError.Text = "";
             if (converterCopy != null) converterCopy.Enabled = converterCopyHex.Enabled = false;
             converterState.Text = "Sin conversión. Hasta 64 KiB de bytes / 262144 caracteres. Ctrl+Enter convierte.";
             converterState.ForeColor = Color.FromArgb(71, 85, 105);
@@ -82,7 +89,8 @@ namespace AFR2Loader
             }
             catch (ArgumentException error)
             {
-                ClearConverterResult(); converterState.Text = error.Message; converterState.ForeColor = Color.Firebrick;
+                ClearConverterResult(); converterInputError.Text = error.Message;
+                converterState.Text = "No se pudo convertir: revisá el mensaje debajo de la entrada."; converterState.ForeColor = Color.Firebrick;
             }
         }
         void RenderConverterResult()

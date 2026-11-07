@@ -75,13 +75,17 @@ int main(void) {
         if(rotary_drained && now!=sampled) {
             sampled=now;levels=Afr2Board_EncoderLevels();
             Afr2UiInput input=Afr2EncoderUi_Button(&encoder,(levels&4)!=0,now);
-            Afr2Ui_InputHeld(&ui,encoder.raw_pressed || encoder.stable_pressed,now);
+            Afr2Ui_InputHeld(&ui,encoder.raw_pressed,now);
             if(input.rotation || input.click || input.menu)app.snapshot_active=0; /* Local input wins over remote capture. */
             Afr2Ui_Apply(&ui,input);
         }
         Afr2Twi_Task(now);Afr2I2c_Tick(&manager,now);
-        if((ui.redraw || ui.scroll_redraw) && !app.snapshot_active) {
-            Afr2UiSnapshot view;Afr2App_UiSnapshot(&app,&view);Afr2Ui_Render(&ui,&oled,&view);
+        /* AFR2-20261106-34: tope de refresco (>=40 ms entre cuadros) para que avisos del ESP o lecturas del
+         * ultrasonico no fuerzan redibujos continuos; la bandera redraw se conserva hasta el siguiente cuadro. */
+        static uint32_t last_render_ms;
+        if((ui.redraw || ui.scroll_redraw) && !app.snapshot_active && (uint32_t)(now-last_render_ms)>=40u) {
+            last_render_ms=now;
+            uint32_t started=Afr2Board_Millis();Afr2UiSnapshot view;Afr2App_UiSnapshot(&app,&view);Afr2Ui_Render(&ui,&oled,&view);app.raster_ms=(uint16_t)(Afr2Board_Millis()-started);
         }
         Afr2Oled_Settings(&oled,product.config.contrast,product.config.rotation);
         /* AFR2-20261029-11: low-priority bounded sender runs AFTER services,
