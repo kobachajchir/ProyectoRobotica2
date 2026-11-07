@@ -5,10 +5,14 @@ using System.Windows.Forms;
 
 namespace AFR2Loader
 {
+    // AFR2-20261106-06. Explicit visual role; Auto keeps the legacy label-based guess.
+    public enum ButtonRole { Auto, Primary, Secondary, Info, Danger }
+
     // Explicit painting keeps the icon gap and contrast independent of Windows themes.
     public sealed class ActionButton : Button
     {
         bool hovering, pressed;
+        public ButtonRole Role { get; set; }
         public ActionButton() { SetStyle(ControlStyles.UserPaint | ControlStyles.OptimizedDoubleBuffer | ControlStyles.ResizeRedraw, true); }
         protected override void OnMouseEnter(EventArgs e) { hovering = true; Invalidate(); base.OnMouseEnter(e); }
         protected override void OnMouseLeave(EventArgs e) { hovering = pressed = false; Invalidate(); base.OnMouseLeave(e); }
@@ -19,8 +23,8 @@ namespace AFR2Loader
         { return new Size(TextRenderer.MeasureText(Text, Font).Width + (Image == null ? 32 : 60), Math.Max(38, Font.Height + 20)); }
         protected override void OnPaint(PaintEventArgs e)
         {
-            Color background = !Enabled ? Color.FromArgb(227, 232, 237) : pressed ? ControlPaint.Dark(BackColor, .12F) : hovering ? ControlPaint.Light(BackColor, .10F) : BackColor;
-            Color foreground = Enabled ? ForeColor : Color.FromArgb(92, 105, 117);
+            Color background = !Enabled ? LoaderAppearance.Subtle : pressed ? ControlPaint.Dark(BackColor, .12F) : hovering ? ControlPaint.Light(BackColor, .10F) : BackColor;
+            Color foreground = Enabled ? ForeColor : LoaderAppearance.Muted;
             using (var fill = new SolidBrush(background)) e.Graphics.FillRectangle(fill, ClientRectangle);
             using (var border = new Pen(Enabled ? FlatAppearance.BorderColor : Color.FromArgb(198, 207, 216))) e.Graphics.DrawRectangle(border, 0, 0, Width - 1, Height - 1);
             int iconWidth = Image == null ? 0 : 28;
@@ -44,11 +48,18 @@ namespace AFR2Loader
 
     public sealed class ActionStripRenderer : ToolStripProfessionalRenderer
     {
-        static Color Ink(ToolStripItem item) { return item.Enabled ? Color.White : Color.FromArgb(92, 105, 117); }
+        static bool HC { get { return SystemInformation.HighContrast; } }
+        protected override void OnRenderToolStripBackground(ToolStripRenderEventArgs e)
+        { using (var brush = new SolidBrush(HC ? SystemColors.Window : LoaderAppearance.Surface)) e.Graphics.FillRectangle(brush, e.AffectedBounds); }
+        protected override void OnRenderImageMargin(ToolStripRenderEventArgs e)
+        { using (var brush = new SolidBrush(HC ? SystemColors.Window : LoaderAppearance.Surface)) e.Graphics.FillRectangle(brush, e.AffectedBounds); }
+        protected override void OnRenderMenuItemBackground(ToolStripItemRenderEventArgs e)
+        { using (var brush = new SolidBrush(HC ? (e.Item.Selected ? SystemColors.Highlight : SystemColors.Window) : e.Item.Selected ? LoaderAppearance.Subtle : LoaderAppearance.Surface)) e.Graphics.FillRectangle(brush, new Rectangle(Point.Empty, e.Item.Size)); }
+        static Color Ink(ToolStripItem item) { if (HC) return item.Enabled ? SystemColors.ControlText : SystemColors.GrayText; return item.Enabled ? Color.White : Color.FromArgb(92, 105, 117); }
         protected override void OnRenderSplitButtonBackground(ToolStripItemRenderEventArgs e)
         {
             var item = (ToolStripSplitButton)e.Item;
-            Color color = !item.Enabled ? Color.FromArgb(227, 232, 237) : item.Pressed || item.ButtonPressed ? Color.FromArgb(15, 84, 51) : item.Selected ? Color.FromArgb(28, 125, 78) : Color.FromArgb(22, 105, 65);
+            Color color = HC ? SystemColors.ButtonFace : !item.Enabled ? Color.FromArgb(227, 232, 237) : item.Pressed || item.ButtonPressed ? Color.FromArgb(15, 84, 51) : item.Selected ? Color.FromArgb(28, 125, 78) : Color.FromArgb(22, 105, 65);
             using (var fill = new SolidBrush(color)) e.Graphics.FillRectangle(fill, new Rectangle(Point.Empty, item.Size));
             using (var pen = new Pen(item.Enabled ? Color.FromArgb(16, 85, 51) : Color.FromArgb(198, 207, 216))) e.Graphics.DrawRectangle(pen, 0, 0, item.Width - 1, item.Height - 1);
             using (var pen = new Pen(item.Enabled ? Color.FromArgb(107, 168, 135) : Color.FromArgb(198, 207, 216))) e.Graphics.DrawLine(pen, item.DropDownButtonBounds.Left, 8, item.DropDownButtonBounds.Left, item.Height - 8);
@@ -56,7 +67,16 @@ namespace AFR2Loader
             using (var brush = new SolidBrush(Ink(item))) e.Graphics.FillPolygon(brush, new[] { new Point(x - 4, y - 2), new Point(x + 4, y - 2), new Point(x, y + 3) });
         }
         protected override void OnRenderItemText(ToolStripItemTextRenderEventArgs e)
-        { if (e.Item is ToolStripSplitButton) e.TextColor = Ink(e.Item); base.OnRenderItemText(e); }
+        {
+            e.TextColor = e.Item is ToolStripSplitButton ? Ink(e.Item) : HC ? SystemColors.WindowText : LoaderAppearance.Text;
+            if (e.Item is ToolStripSplitButton) e.TextRectangle = new Rectangle(48, 0, Math.Max(0, e.Item.Width - 48 - 40), e.Item.Height);
+            base.OnRenderItemText(e);
+        }
+        protected override void OnRenderItemImage(ToolStripItemImageRenderEventArgs e)
+        {
+            if (e.Item is ToolStripSplitButton && e.Image != null) { e.Graphics.DrawImageUnscaled(e.Image, 16, (e.Item.Height - e.Image.Height) / 2); return; }
+            base.OnRenderItemImage(e);
+        }
         protected override void OnRenderArrow(ToolStripArrowRenderEventArgs e)
         { if (e.Item is ToolStripSplitButton) e.ArrowColor = Ink(e.Item); base.OnRenderArrow(e); }
         protected override void OnRenderToolStripBorder(ToolStripRenderEventArgs e)

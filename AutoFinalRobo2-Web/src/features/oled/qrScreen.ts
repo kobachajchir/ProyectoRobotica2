@@ -1,4 +1,6 @@
-/** Runtime counterpart of afr2_qr_screen.c. No network or robot calls. */
+/** AFR2-20261106-04: AVR QR borrows invalidated ACK scratch; payload, mask,
+ * ECC boost, scale, origin and pixels below remain identical.
+ * Runtime counterpart of afr2_qr_screen.c. No network or robot calls. */
 import { qrcodegen } from './vendor/qrcodegen';
 import type { FirmwareSnapshot } from './firmwareRenderer';
 import type { Afr2OledBuffer } from './oledRasterizer';

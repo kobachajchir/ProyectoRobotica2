@@ -94,6 +94,8 @@ void Broker::ingest(Session &s) {
     JsonObject payload=doc["payload"];
     req.generation=generation_;
     if(!encodeProduct(req,payload))return;
+    if(req.wireCommand==AFR2_EXT_DRIVE || req.wireCommand==AFR2_EXT_WHEEL || req.wireCommand==AFR2_EXT_MODE ||
+       req.wireCommand==AFR2_EXT_GOTO || req.wireCommand==AFR2_EXT_SEQ_START)pwmStreamPending_=false;
     if(req.wireCommand==AFR2_EXT_DRIVE || req.wireCommand==AFR2_EXT_DRIVE_PWM || req.wireCommand==AFR2_EXT_WHEEL || req.wireCommand==AFR2_EXT_MODE ||
        req.wireCommand==AFR2_EXT_GOTO || req.wireCommand==AFR2_EXT_PREFS || req.wireCommand==AFR2_EXT_LINE_CAL ||
        (req.wireCommand==AFR2_EXT_CONFIG && req.body[4]) ||
@@ -127,6 +129,7 @@ void Broker::ingest(Session &s) {
         strlcpy(req.wifi.ssid,payload["ssid"],sizeof(req.wifi.ssid));
         strlcpy(req.wifi.password,payload["password"],sizeof(req.wifi.password));
         req.wifi.persist=payload["persist"] | true;
+        if(!req.wifi.persist){error(req,"BAD_REQUEST","La configuracion Wi-Fi requiere persistencia.");return;}
         if (!WifiService::valid(req.wifi)) { error(req,"BAD_REQUEST","SSID o frase WPA fuera de rango."); return; }
     }
     /* Validated local session control never waits behind UART reads or captures.
@@ -138,7 +141,15 @@ void Broker::ingest(Session &s) {
         if(s.controlKind==1)strlcpy(s.controlVersion,(const char *)req.body,sizeof(s.controlVersion));
         s.lastSeen=now;strlcpy(s.recent[s.nextRecent],req.id,65);s.nextRecent=(s.nextRecent+1)%4;return;
     }
-    if (!strcmp(command,"robot.stop") || !strcmp(command,"robot.sequence.cancel")) {
+    if(req.wireCommand==AFR2_EXT_DRIVE_PWM){
+        if(!mega_.ready() || !productReady_ || !(productFeatures_&AFR2_EXT_F_MANUAL_PWM)){
+            error(req,"MEGA_LINK_DOWN","PWM no disponible.",true);return;
+        }
+        memcpy(pwmStream_,req.body,12);pwmStreamPending_=true;pwmStreamAt_=now;
+        pwmStreamClient_=s.id;pwmStreamGeneration_=generation_;
+        JsonDocument reply;reply["status"]="accepted";reply["payload"]["queued"]=true;
+        reply["payload"]["confirmed"]=false;answer(req,reply);
+    } else if (!strcmp(command,"robot.stop") || !strcmp(command,"robot.sequence.cancel")) {
         if (stopQueued_ || (waiting_ && !strcmp(pending_.command,"robot.stop"))) {
             error(req,"BUSY_IN_FLIGHT","STOP ya en vuelo.",true); return;
         }
@@ -159,11 +170,27 @@ void Broker::answer(const BrokerRequest &req, JsonDocument &frame) {
         if (frame["status"].isNull()) frame["status"]="completed";
     }
     if (auto *client=ws_.client(req.client)) {
-        if (client->queueIsFull()) { closeWs(client,1013,"Slow consumer"); return; }
-        String text; serializeJson(frame,text); client->text(text);
+        String text; serializeJson(frame,text);
+        if(text.length()>8192){closeWs(client,1009,"Reply too large");return;}
+        if (client->queueIsFull()) {
+            ++wsBackpressure_;
+            if(!deferredClient_){deferredReply_=text;deferredClient_=req.client;deferredAt_=millis();}
+            else { closeWs(client,1008,"Too many pending replies"); }
+            return;
+        }
+        client->text(text);
     }
 }
 void Broker::error(const BrokerRequest &req,const char *code,const char *message,bool retryable,const char *source) {
+    if(deferredClient_==req.client && req.client){
+        auto *peer=ws_.client(req.client);
+        if(peer && peer->queueIsFull()){
+            if(delayedErrorPending_ && strcmp(delayedErrorId_,req.id)){closeWs(peer,1008,"Concurrent request limit");return;}
+            delayedErrorPending_=true;delayedErrorClient_=req.client;delayedErrorRetryable_=retryable;
+            strlcpy(delayedErrorId_,req.id,sizeof(delayedErrorId_));strlcpy(delayedErrorCommand_,req.command,sizeof(delayedErrorCommand_));
+            strlcpy(delayedErrorCode_,code,sizeof(delayedErrorCode_));strlcpy(delayedErrorMessage_,message,sizeof(delayedErrorMessage_));strlcpy(delayedErrorSource_,source,sizeof(delayedErrorSource_));return;
+        }
+    }
     JsonDocument frame; frame["type"]="err"; frame["ok"]=false;
     JsonObject e=frame["error"].to<JsonObject>();
     e["code"]=code; e["message"]=message; e["retryable"]=retryable; e["source"]=source;
@@ -197,8 +224,10 @@ void Broker::capabilities(JsonObject out) {
     }
 }
 void Broker::status(JsonObject out,uint32_t now,uint32_t client) {
+    out["outputBackpressure"]=wsBackpressure_;out["replyDeferred"]=deferredClient_!=0;
     JsonObject diagnostics=out["connectionDiagnostics"].to<JsonObject>();
     diagnostics["staConnected"]=WiFi.status()==WL_CONNECTED;diagnostics["wifiStatus"]=(int)WiFi.status();
+    diagnostics["outputBackpressure"]=wsBackpressure_;diagnostics["replyDeferred"]=deferredClient_!=0;
     diagnostics["wsOpened"]=wsOpened_;diagnostics["wsClosed"]=wsClosed_;
     diagnostics["lastServerCloseCode"]=wsCloseCode_;diagnostics["lastServerCloseReason"]=wsCloseReason_;
     diagnostics["bootId"]=mega_.ownBootId();
@@ -228,12 +257,11 @@ void Broker::dispatch(const BrokerRequest &req,uint32_t now) {
         s->ready=true;strlcpy(webVersion_,(const char *)req.body,16);wifiVersions_=0;
         payload["product"]="AutoFinalRobo2"; payload["brokerVersion"]=AFR2_FIRMWARE_VERSION;
         status(payload,now,req.client); storage_.health(payload["filesystem"].to<JsonObject>()); answer(req,frame);
-        publishBoot("esp",mega_.ownBootId(),ESP.getResetInfoPtr()?ESP.getResetInfoPtr()->reason:255,"session-snapshot");
-        if(infoReady_)publishBoot("atmega",infoBoot_,infoReset_,"identity-snapshot");
+        helloNotices_=1;
         return;
     }
     if((rebootAt_ || wifiResetPending_) && strcmp(req.command,"system.info") && strcmp(req.command,"system.alive") && strcmp(req.command,"robot.stop")){error(req,"BUSY_IN_FLIGHT","ESP reiniciando.",true);return;}
-    if(!strcmp(req.command,"system.reboot") && req.generation!=generation_){error(req,"SUPERSEDED","Reinicio anterior a STOP/revocacion.");return;}
+    if(req.generation!=generation_ && strcmp(req.command,"system.alive") && strcmp(req.command,"robot.stop") && strcmp(req.command,"robot.sequence.cancel")){error(req,"SUPERSEDED","Peticion anterior a STOP/revocacion.");return;}
     if(dispatchSystem(req,now))return;
     if (!strcmp(req.command,"system.alive")) { status(payload,now,req.client); answer(req,frame); return; }
     if(!strcmp(req.command,"wifi.info")){
@@ -253,23 +281,26 @@ void Broker::dispatch(const BrokerRequest &req,uint32_t now) {
         wifi_.status(payload);bool observed=payload["staConnected"]|false;frame["status"]=observed?"completed":"accepted";payload["confirmed"]=observed;answer(req,frame);return;
     }
     if(!strcmp(req.command,"wifi.mode")){
-        uint8_t mode=req.body[0];if(!wifi_.changeMode(mode)){error(req,"BUSY_IN_FLIGHT","El modo no fue confirmado.",true);return;}
-        wifi_.status(payload);payload["confirmed"]=true;answer(req,frame);return;
+        if(mega_.ready() && (!productReady_ || !productStopped_ || (uint32_t)(now-productStateAt_)>1500u)){error(req,"BUSY_IN_FLIGHT","Detener el auto antes de cambiar modo.",true);return;}
+        uint8_t mode=req.body[0];if(!wifi_.changeMode(mode)){error(req,"BAD_REQUEST","Configurar primero las credenciales del modo elegido.");return;}
+        wifi_.status(payload);payload["confirmed"]=false;payload["restartScheduled"]=true;payload["persisted"]=true;frame["status"]="accepted";answer(req,frame);return;
     }
     if (!strcmp(req.command,"wifi.status")) { wifi_.status(payload); answer(req,frame); return; }
     if(dispatchWifiDraft(req,now))return;
     if (!strcmp(req.command,"wifi.scan")) {
+        if(scanEventClient_ || wifiPhase_!=0){error(req,"BUSY_IN_FLIGHT","Hay resultados Wi-Fi pendientes.",true);return;}
         if(wifiPhase_==6 || wifiPhase_==7 || wifiAwaitWeb_ || wifiDraftReady_){error(req,"BUSY_IN_FLIGHT","Hay una operacion Wi-Fi pendiente.",true);return;}
         if (!wifi_.scan()) { error(req,"BUSY_IN_FLIGHT","Servicio Wi-Fi ocupado.",true); return; }
-        frame["status"]="accepted"; payload["status"]="started"; answer(req,frame); return;
+        frame["status"]="accepted"; payload["status"]="started";payload["scanId"]=wifiScanId_==UINT32_MAX?1:wifiScanId_+1; answer(req,frame); return;
     }
     if (!strcmp(req.command,"wifi.configure")) {
         if (wifi_.busy() || wifiAwaitWeb_ || wifiDraftReady_ || wifiPhase_==6 || wifiPhase_==7) { error(req,"BUSY_IN_FLIGHT","Servicio Wi-Fi ocupado.",true); return; }
+        if(mega_.ready() && (!productReady_ || !productStopped_ || (uint32_t)(now-productStateAt_)>1500u)){error(req,"BUSY_IN_FLIGHT","Detener el auto antes de configurar Wi-Fi.",true);return;}
         if (!wifi_.stage(req.wifi,now)) {
             error(req,"INTERNAL_ERROR","No se pudo guardar la configuracion; no fue aplicada."); return;
         }
         frame["status"]="accepted"; payload["status"]="accepted"; payload["reconnectExpected"]=true;
-        payload["persisted"]=req.wifi.persist; answer(req,frame); return;
+        payload["persisted"]=true;payload["restartScheduled"]=true; answer(req,frame); return;
     }
     if(req.generation!=generation_ && strcmp(req.command,"robot.stop")){error(req,"SUPERSEDED","Peticion anterior a STOP/revocacion.");return;}
     if(dispatchProduct(req,now))return;
@@ -373,14 +404,39 @@ void Broker::broadcast(const char *name,JsonDocument &payload) {
     JsonDocument frame; frame["schema"]="afr2-ws-1"; frame["type"]="evt"; frame["event"]=name;
     frame["payload"]=payload.as<JsonObject>(); frame["ts"]=millis();
     String text; serializeJson(frame,text);
+    if(!strcmp(name,"wifi.scan.result")){
+        for(auto &s:sessions_)if(s.used && s.ready){scanEvent_=text;scanEventClient_=s.id;return;}
+        return;
+    }
     for (auto &s:sessions_) if (s.used && s.ready) if (auto *client=ws_.client(s.id)) {
-        if (!client->queueIsFull()) client->text(text); // Periodic snapshots are disposable under backpressure; keep the session.
+        if (optionalOutput(client)) client->text(text); // Periodic snapshots are disposable under backpressure; keep the session.
 
     }
 }
 void Broker::tick(uint32_t now) {
+    if(deferredClient_){
+        auto *peer=ws_.client(deferredClient_);
+        if(!peer || peer->status()!=WS_CONNECTED){deferredClient_=0;deferredReply_=String();}
+        else if(!peer->queueIsFull()){peer->text(deferredReply_);deferredClient_=0;deferredReply_=String();}
+        else if((uint32_t)(now-deferredAt_)>=2000u){closeWs(peer,1013,"Slow consumer timeout");deferredClient_=0;deferredReply_=String();}
+    }
+    if(!deferredClient_ && delayedErrorPending_){
+        BrokerRequest req;req.client=delayedErrorClient_;strlcpy(req.id,delayedErrorId_,sizeof(req.id));strlcpy(req.command,delayedErrorCommand_,sizeof(req.command));
+        delayedErrorPending_=false;error(req,delayedErrorCode_,delayedErrorMessage_,delayedErrorRetryable_,delayedErrorSource_);
+    }
+    if(scanEventClient_){
+        auto *peer=ws_.client(scanEventClient_);
+        if(!peer || peer->status()!=WS_CONNECTED){scanEventClient_=0;scanEvent_=String();}
+        else if(optionalOutput(peer)){peer->text(scanEvent_);scanEventClient_=0;scanEvent_=String();}
+    }
+    if(helloNotices_ && !deferredClient_){
+        for(auto &s:sessions_)if(s.used && s.ready)if(auto *peer=ws_.client(s.id))if(optionalOutput(peer)){
+            if(helloNotices_==1){publishBoot("esp",mega_.ownBootId(),ESP.getResetInfoPtr()?ESP.getResetInfoPtr()->reason:255,"session-snapshot");helloNotices_=infoReady_?2:0;}
+            else{publishBoot("atmega",infoBoot_,infoReset_,"identity-snapshot");helloNotices_=0;}
+        }
+    }
     if(stopQueued_){BrokerRequest req=stop_;stopQueued_=false;dispatch(req,now);}
-    for(auto &s:sessions_)if(s.used && s.controlKind){
+    for(auto &s:sessions_)if(s.used && s.controlKind && !deferredClient_){
         BrokerRequest req;req.client=s.id;req.generation=generation_;
         strlcpy(req.id,s.controlId,sizeof(req.id));strlcpy(req.command,s.controlKind==1?"system.hello":"system.alive",sizeof(req.command));
         if(s.controlKind==1)strlcpy((char *)req.body,s.controlVersion,16);
@@ -388,22 +444,35 @@ void Broker::tick(uint32_t now) {
     }
 
     if(!mega_.ready() || !productReady_){networkLinked_=false;networkPending_=true;networkPage_=0;wifiResetPending_=false;}
+    /* AFR2-20261106-10: collect the finished UART reply and serve the Web queue BEFORE background
+     * polls. Previously tickProduct took every free slot first (pulse/state/Wi-Fi/network/head/info),
+     * so robot.drive.pwm waited until the Web 600 ms timeout fired STOP. Safety halt still preempts. */
+    MegaResult result;
+    if (!deferredClient_ && mega_.take(result)) finish(result);
+    if (stopQueued_) { BrokerRequest req=stop_; stopQueued_=false; dispatch(req,now); }
+    // Session pulses/halt retain priority; manual PWM never awaits AVR feedback.
+    if(pwmStreamPending_ && (uint32_t)(now-webPulseAt_)>=500u)tickProduct(now);
+    if(pwmStreamPending_){
+        auto *owner=session(pwmStreamClient_);
+        if(!owner || !owner->ready || pwmStreamGeneration_!=generation_ || safetyRequested_ || stopQueued_ ||
+           !mega_.ready() || (uint32_t)(now-pwmStreamAt_)>=200u)pwmStreamPending_=false;
+        else if(!waiting_ && (uint32_t)(now-webPulseAt_)<500u && mega_.streamPwm(pwmStream_,now))pwmStreamPending_=false;
+    }
+    bool localFront=count_ && (!strncmp(queue_[tail_].command,"wifi.",5) || !strncmp(queue_[tail_].command,"system.",7));
+    if (!deferredClient_ && count_ && (localFront || (!waiting_ && !mega_.busy()))) {
+        BrokerRequest req=queue_[tail_]; queue_[tail_]=BrokerRequest{};
+        tail_=(tail_+1)%4; --count_; dispatch(req,now); req.wifi=WifiConfig{};
+    }
     tickProduct(now);tickSystem(now);
     for (auto &s:sessions_) if (s.used && (int32_t)(now-s.lastSeen)>30000) {
         if (auto *client=ws_.client(s.id)) closeWs(client,1001,"Heartbeat expired");
     }
     // Dedicated STOP slot bypasses the ordinary queue, including an in-flight read.
     if (stopQueued_) { BrokerRequest req=stop_; stopQueued_=false; dispatch(req,now); }
-    MegaResult result;
-    if (mega_.take(result)) finish(result);
-    bool localFront=count_ && (!strncmp(queue_[tail_].command,"wifi.",5) || !strncmp(queue_[tail_].command,"system.",7));
-    if (count_ && (localFront || (!waiting_ && !mega_.busy()))) {
-        BrokerRequest req=queue_[tail_]; queue_[tail_]=BrokerRequest{};
-        tail_=(tail_+1)%4; --count_; dispatch(req,now); req.wifi=WifiConfig{};
-    }
+    if (!deferredClient_ && mega_.take(result)) finish(result);
     if ((uint32_t)(now-statusAt_)>=1000u) {
         statusAt_=now;publishStatus();
     }
     JsonDocument scan;
-    if (wifi_.takeScan(scan.to<JsonObject>())) {scanForOled(scan.as<JsonObjectConst>());broadcast("wifi.scan.result",scan);}
+    if (wifi_.takeScan(scan.to<JsonObject>())) {scanForOled(scan.as<JsonObjectConst>());scan["scanId"]=wifiScanId_;broadcast("wifi.scan.result",scan);}
 }

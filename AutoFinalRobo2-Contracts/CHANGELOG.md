@@ -1,3 +1,108 @@
+## AFR2-20261107-40 - 07/11/2026
+
+ATmega: secuencias de 32 pasos habilitadas (`AFR2_SEQUENCE_MEMORY_APPROVED=1`, +656 B de SRAM; 6315 B estáticos, 1877 B libres para pila). ESP y Web ya las soportaban; se anuncian solo con Hall calibrado. Ficha changes/2026-11-07-40-sequences-enabled.md.
+Estado: atmega=compilado, sin cargar; esp/web=sin cambios.
+
+## AFR2-20261107-39 - 07/11/2026
+
+Hall para go-to: concordancia PWM/Hall por rueda con fallo 4 en lazo cerrado si el sentido está cruzado (diagnóstico `HP:` en la pantalla Motores y texto del fallo en la Web) y velocidad mínima de 40 mm/s en el go-to fuera de tolerancia. Ficha changes/2026-11-07-39-hall-goto-readiness.md.
+Estado: atmega=compilado, sin cargar; web=compilada; esp=sin cambios.
+
+## AFR2-20261107-38 - 07/11/2026
+
+ESP: red STA por defecto desde `src/wifi_defaults.local.h` (ignorado por Git; plantilla `wifi_defaults.example.h`). Se usa sin configuración guardada y como respaldo cuando no hay red anterior. Credenciales fuera del repositorio. Ficha 2026-11-07-37.
+Estado: esp=compilado, sin cargar.
+
+## AFR2-20261107-37 - 07/11/2026
+
+ESP: si la red STA configurada no conecta en 15 s, prueba la última red que funcionó (`staPrevious`) antes de abrir el AP; los reintentos alternan entre ambas. Estado expuesto como `staNetwork`/`previousAvailable` y aviso en la página Wi-Fi. Ficha changes/2026-11-07-37-esp-wifi-red-anterior.md.
+Estado: esp=compilado, sin cargar; web=compilada; atmega=sin cambios.
+
+## AFR2-20261106-36 - 06/11/2026
+
+Control táctil: gracia de 250 ms ante pointercancel espurio del dedo de arrastre (un toque nuevo continúa el mismo vector) y el dedo que queda tras un giro de dos sigue arrastrando. Verificado con eventos sintéticos; sin prueba en teléfono. Ficha 2026-11-06-33.
+Estado: web=compilada; atmega/esp=sin cambios.
+
+## AFR2-20261106-35 - 06/11/2026
+
+Cierre del lote: sentido del servo con el encoder invertido (ATmega + simulación Web), estados Enviada/Recibida/Aplicada/Error del servo en la Web, rumbo estimado por Hall en el control táctil, estela de barrido sincronizada con el ángulo real y ecos con desvanecimiento, y panel de muestreo HC-SR04 (fijo/cantidad/variable sobre `robot.ultrasonic.configure`). Ficha 2026-11-06-33.
+Estado: atmega=compilado, sin cargar; esp=sin cambios; web=compilada, sin empaquetar; sin prueba física.
+
+## AFR2-20261106-34 - 06/11/2026
+
+ATmega: pulsos por vuelta ya no se abortan por detenciones de enlace con el auto detenido; OLED re-inicializa con la orientación configurada y limita el refresco a 40 ms. Fuente editada, sin compilar ni cargar; causas sin confirmar en hardware. Ver ficha 2026-11-06-33.
+Estado: atmega=fuente editada; esp/web=sin cambios en esta tanda.
+
+## AFR2-20261106-33 - 06/11/2026
+
+Loader 2.0.0 (compilado) y control táctil Web con paneles Información/Parámetros colapsables y modelo fijo con giro animado. Lote de 15 cambios solo parcial: firmware, rumbo Hall, ACK de servo, OLED y muestreo siguen pendientes; ver ficha changes/2026-11-06-33-loader-2-web-touch-panels.md.
+Estado: atmega/esp=sin cambios; web=fuente editada sin compilar; loader=compilado.
+
+## AFR2-20261106-32 - 06/11/2026
+
+Loader: (1) el paso de escritura ESP fallaba tras un flash_id correcto con `UnsupportedCommandError: Invalid (unsupported) command 0x8` (logs 20261106-205638/205658): por el puente Mega la ROM respondió "comando inválido" a un SYNC suelto tras el log de arranque y esptool solo reintenta `FatalError`, de modo que un único eco abortaba los `--connect-attempts 30`. `tools/esp_bridge_esptool.py` convierte ese error en un SYNC fallido reintentable; no cambia baud, KEY/RST ni offsets. (2) Pestaña Operación: Preparación (consulta de capacidad) y FileSystem (reserva y distribución de memoria) pasan a una tarjeta compacta de la barra lateral, sobre «Ejecución y resultado», visible solo si la sección incluye FileSystem; en los demás casos la consulta de capacidad queda a la izquierda y «Ejecución y resultado» ocupa todo el alto.
+Estado: atmega/esp/web=sin cambios; Loader=fuente editada, sin compilar ni probar con hardware.
+
+## AFR2-20261106-11 - 06/11/2026
+
+KEY/RST del ESP automáticos y opcionales por transistores (D32=KEY, D33=RST) accionados por el flasher de servicio del ATmega, con opción manual/auto en el Loader y D0/D1 marcado como retirado. Ficha: [2026-11-06-11](changes/2026-11-06-11-esp-key-rst-automatico.md). Estado: atmega/Loader=fuente editada, sin compilar ni probar; esp/web=sin cambios; hardware sin armar ni medir.
+
+## AFR2-20261106-10 - 06/11/2026
+
+Fluidez de Conducción táctil. Síntoma: mueve una vez y no más, se detiene en marcha, el giro se ve en Web/OLED sin mover ruedas. Causas en fuente (no reproducidas físicamente):
+- Web `ManualDriveOverlay`: cancelaba el gesto en cada cambio de `robotState.mode`; la primera consigna PWM pasa idle→manual y una lectura fallida da undefined, así que cortaba el dedo y frenaba. Ahora cancela solo si toma el auto otro dueño (línea, secuencia, prueba de rueda, fallo).
+- ESP `Broker::tick`: las tareas de fondo (pulso, estado, Wi-Fi, red, cabezal, info) tomaban la UART antes que la cola Web; `robot.drive.pwm` esperaba hasta el timeout de 600 ms y la Web enviaba STOP. Ahora se toma la respuesta y se despacha la cola Web primero; el halt de seguridad sigue con prioridad.
+- ESP pulso Web: usaba solo la primera sesión; un segundo dispositivo inactivo informaba 1500 ms y el ATmega detenía. Ahora usa la actividad más reciente de todas las sesiones.
+- Web `ControlPage`: BUSY/TIMEOUT aislados no disparan STOP (latido 180 ms reintenta; TTL 400 ms del ATmega sigue protegiendo); STOP tras ~1 s de fallos seguidos o rechazo no reintentable. `afr2Client`: tras timeout se envía la última consigna en cola.
+- ATmega: la reactivación de la vista táctil no detiene el PWM Web en curso.
+Estado: atmega/esp/web=fuente editada y compilada; sin cargar ni probar físicamente.
+
+Compilación a pedido (incluye AFR2-20261106-07..10): ATmega `make -B firmware` (avr-gcc 7.3.0) PASS sin advertencias, flash 125054 B (47,7 %), SRAM estática 5631 B (68,7 %, +17 B Prueba Hall). ESP `pio run -e esp12s_candidate` SUCCESS, RAM 50676/81920 B, flash 452655 B. Web `npm run build:esp` PASS (generador con guardia, tsc, Vite), 17 activos, 2488776 B gzip, FS estimado 2637824 B, copiado a ESP/data/dist; imagen LittleFS no generada. Sin COM, carga ni prueba física.
+
+## AFR2-20261106-09 - 06/11/2026
+
+Salida de QR (0x030045/0x030046). Síntoma informado: en el QR, corto y largo no salen y queda en un ciclo. Causa probable, no reproducida: al escanear, el teléfono se une al AP y el ESP envía avisos «Conectividad» (cliente, AP listo de 20 s); en el QR cada pulsación primero descartaba el aviso en cola y, si llegaban nuevos, nunca navegaba. Ahora en QR corto o largo siempre vuelven al contexto anterior y descartan avisos informativos en cola. ATmega `Afr2Ui_Apply` y simulación Web `uiSimulation.ts`; hash revisado de `afr2_screens.c` actualizado y biblioteca regenerada. Estado: atmega=fuente editada, esp=sin cambios, web=fuente editada; sin compilar, cargar ni probar físicamente.
+
+## AFR2-20261106-08 - 06/11/2026
+
+Giro táctil a ángulo con odometría Hall, desactivable. Web: casilla «Giro por ángulo con sensores Hall» en Control táctil (predeterminada activa, recordada por navegador). Activa y con odometría calibrada (`gotoAvailable`), el giro con dos dedos marca el objetivo en pasos de 15° y al soltar envía `robot.goto.start` con x=y=0 y `thetaMrad`; desactivada o sin calibración, conserva el giro PWM en lazo abierto de AFR2-20261106-07. ATmega: GOTO de giro puro no exige HC-SR04 (no avanza), nunca traslada y termina solo por error de yaw ≤25 mrad; `Afr2Product_Drive` exige HC-SR04 solo con vx/vy; GOTO admitido con la vista táctil activa. Requiere CPR medido en las cuatro ruedas, geometría y pose válida. Estado: atmega=fuente editada, esp=sin cambios, web=fuente editada; sin compilar, cargar ni probar físicamente. Nota: IDs propios renumerados (antes -06/-07) por colisión con la entrega Loader AFR2-20261106-06.
+
+## AFR2-20261106-06 - 06/11/2026
+
+Loader: auditoría UX y primera reorganización (barra inferior en fila propia, encabezados medidos, etapas compactas, requisito de carga visible, roles de botón, ayuda única por campo, Eventos con estado vacío). Solo fuente; atmega/esp/web sin cambios; sin compilar, abrir la interfaz ni flashear. [Ficha](changes/2026-11-06-06-loader-ux-audit.md).
+
+## AFR2-20261106-07 - 06/11/2026
+
+- Control táctil: la sincronización OLED (`robot.touch.ui`) y `robot.drive.pwm` compiten por el único slot UART del ESP; el `BUSY_IN_FLIGHT` resultante disparaba STOP en la Web. Ahora se tolera y el latido de 180 ms reintenta. El giro con dos dedos, con el auto conectado, gira sobre el eje en lazo abierto (`turnPct` = potencia de giro) mientras se gira; Q/E del teclado siguen locales.
+- Animación táctil: las ruedas muestran avance físico (sin signos de cableado `MOTION_REFERENCE`), así adelante/atrás/lateral/giro coinciden con el desplazamiento.
+- Hall: pull-ups internos en A8..A15 (salidas colector abierto flotaban). Pinout cotejado con el usuario: A=FR A8, FL A9, RR A10, RL A11; B=FR A12, FL A13, RR A14, RL A15; coincide con `board_pinmap.h`.
+- Nueva vista `Prueba Hall` (0x030047, `AFR2_N_HALL_LIVE`=70), tercera en Pruebas: cuatro ruedas a la vez, cero al entrar, refresco 100 ms. Web: nodo virtual local del selector de motor movido de 70 a 72; biblioteca regenerada con `--copy-only` y hashes revisados solo de screens/menu_catalog/icons.
+- Pulsación larga: sin marco; disco de radio 9+2 px limpio, ícono y anillo solo mientras se presiona; al soltar se redibuja lo de abajo salvo tras largo completo (la página destino repinta). ATmega y Web.
+- Sensores de línea: sin causa encontrada en firmware (lectura digital PF4..PF0, migración a tipo 1); pendiente diagnóstico físico.
+- Estado: atmega=fuente editada, esp=sin cambios, web=fuente editada; sin compilar, cargar ni probar físicamente. RAM AVR +17 B.
+
+## AFR2-20261106-05 - 06/11/2026
+
+Conducir (`robot.drive.pwm`) omite en el ATmega los chequeos de permiso: origen local, cabeza/radar, secuencia, calibración Hall, fallo latcheado, motores deshabilitados y preferencias pendientes. Anula lo que estorbe (Stop), limpia el fallo y habilita motores; mantiene validación de rango/TTL, STOP y vencimiento de TTL; el watchdog de Hall no corta en PWM manual. `AFR2_EXT_F_MANUAL_PWM` siempre anunciado. Estado: atmega=fuente editada, esp=sin cambios, web=sin cambios; sin compilar, cargar ni probar físicamente.
+
+## AFR2-20261106-04 - 06/11/2026
+
+RAM AVR7636→5614; textos PROGMEM y almacenamiento condicional de secuencias. QR finish380→29, conservando ambos buffers OLED. Builds y paridad2104/2104 PASS; sin carga ni prueba física. [Ficha](changes/2026-11-06-04-avr-ram-qr.md).
+
+> **AFR2-20261106-03 / Loader 1.2.0:** nueva distribución compartible compilada (GUI/MCP), rutas {App}/módulos y datos de cada usuario configurables; pestaña ATmega redundante retirada, soporte conservado en Flasher/Operación. ZIP y auditoría: [ficha](changes/2026-11-06-03-loader-portable-120.md). Sin COM, firmware compilado ni flasheos por esta entrega.
+
+## AFR2-20261106-02 - 06/11/2026
+
+Regeneración y builds AVR/ESP/Web/Loader PASS, paridad 1680/1680 y LittleFS candidato. Presupuesto SRAM/pila AVR FAIL; sin despliegue ni prueba física. [Ficha](changes/2026-11-06-02-regeneration-checks.md).
+
+## AFR2-20261106-01 - 06/11/2026
+
+Correcciones coordinadas ATmega/ESP/Web: conexion WS, diagnostico HTTP, IR digital, Wi-Fi persistente/paginado y pantallas. Fuente sin generacion/build/tests/validadores ni cargas. Loader previo conservado; CAD sin cambios. [Ficha](changes/2026-11-06-01-coordinated-corrections.md).
+
+## AFR2-20261105-01 - 05/11/2026
+
+Loader: etapas verticales a la derecha del log, con scroll independiente y terminal más alta. Solo fuente; sin compilación, ejecución de la interfaz modificada, pruebas ni operaciones sobre placas. [Ficha](changes/2026-11-05-01-loader-checks-sidebar.md).
+
 ## AFR2-20261105-33 - 05/11/2026
 
 El OLED se repara solo ante ruido I2C: la configuración del panel se reenvía cada segundo con la orientación y el contraste actuales, y la RAM se reescribe por bloques (pantalla completa cada ~2,6 s). La recuperación ya no invierte la imagen con `rotation=1`. Sin compilar ni flashear; se recomiendan pull-ups externos de 4,7 kΩ. [Ficha](changes/2026-11-05-33-oled-self-healing.md).

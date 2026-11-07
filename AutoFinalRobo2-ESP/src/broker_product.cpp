@@ -59,6 +59,8 @@ bool Broker::encodeProduct(BrokerRequest &q,JsonObjectConst p) {
         afr2_put_u16(q.body+12,(int16_t)p["thetaMrad"].as<int32_t>());afr2_put_u16(q.body+14,p["maxSpeedMmS"].as<uint16_t>());
     } else if(!strcmp(c,"robot.calibrate") || !strcmp(c,"robot.config.get")) {
         if(!number(p["action"],0,87) || (!strcmp(c,"robot.calibrate") && !p["value"].is<int32_t>()))return fail();
+        if(!strcmp(c,"robot.calibrate") && p["action"]==25 && (!number(p["value"],0,1)))return fail();
+        if(!strcmp(c,"robot.calibrate") && (p["action"]==27 || p["action"]==28))return fail();
         q.wireCommand=AFR2_EXT_CONFIG;q.bodyLength=10;q.body[4]=!strcmp(c,"robot.calibrate");q.body[5]=p["action"].as<uint8_t>();
         afr2_put_u32(q.body+6,p["value"]|0);
     } else if(!strcmp(c,"robot.preferences")) {
@@ -67,6 +69,7 @@ bool Broker::encodeProduct(BrokerRequest &q,JsonObjectConst p) {
     } else if(!strcmp(c,"robot.line.calibrate")) {
         if(!p["confirm"].is<bool>())return fail();
         q.wireCommand=AFR2_EXT_LINE_CAL;q.bodyLength=5;q.body[4]=p["confirm"].as<bool>()?0:1;
+        const char *sample=p["sample"]|"";if(*sample){if(!strcmp(sample,"background"))q.body[4]=2;else if(!strcmp(sample,"line"))q.body[4]=3;else return fail();}
     } else if(!strcmp(c,"robot.goto.cancel")) {q.wireCommand=AFR2_EXT_CANCEL;q.bodyLength=0;
     } else if(!strcmp(c,"robot.state")) {q.wireCommand=AFR2_EXT_STATE;
     } else if(!strcmp(c,"robot.screen.get")) {q.wireCommand=AFR2_EXT_UI_META;
@@ -120,7 +123,7 @@ bool Broker::productRequest(uint8_t cmd,const uint8_t *body,uint8_t size) {retur
 void Broker::stopWebOperations() {++generation_;safetyRequested_=true;sequenceClient_=sequenceToken_=executionToken_=0;sequenceId_[0]=executionId_[0]=0;}
 void Broker::publishStatus() {
     for(auto &s:sessions_)if(s.used && s.ready){JsonDocument f;f["schema"]="afr2-ws-1";f["type"]="evt";f["event"]="system.status";f["ts"]=millis();status(f["payload"].to<JsonObject>(),millis(),s.id);
-        if(auto *client=ws_.client(s.id)){String data;serializeJson(f,data);if(!client->queueIsFull())client->text(data);}}
+        if(auto *client=ws_.client(s.id)){String data;serializeJson(f,data);if(optionalOutput(client))client->text(data);}}
 }
 bool Broker::dispatchProduct(BrokerRequest q,uint32_t now) {
     if(!strcmp(q.command,"robot.screen.subscribe")) {
@@ -259,9 +262,11 @@ void Broker::tickProduct(uint32_t now) {
     }
     if(waiting_ || mega_.busy() || stopQueued_ || !mega_.ready())return;
     if(productReady_ && extensionVersion_==AFR2_EXT_VERSION && (uint32_t)(now-webPulseAt_)>=500u) {
-        for(const auto &client:sessions_)if(client.used && client.ready) {
-            uint32_t age=now-client.inputSeen;uint8_t body[2];
-            afr2_put_u16(body,age>1500u?1500u:(uint16_t)age);
+        /* AFR2-20261106-10: freshest activity across ready sessions. Using only the first one made an
+         * idle second device (e.g. PC beside the phone) report 1500 ms and stop the touch drive. */
+        bool any=false;uint32_t age=1500u;
+        for(const auto &client:sessions_)if(client.used && client.ready){any=true;uint32_t a=now-client.inputSeen;if(a<age)age=a;}
+        if(any){uint8_t body[2];afr2_put_u16(body,(uint16_t)age);
             if(productRequest(AFR2_EXT_WEB_PULSE,body,2)) {pending_=BrokerRequest{};strlcpy(pending_.command,"_web_pulse",33);waiting_=true;webPulseAt_=now;}
             return;
         }

@@ -23,7 +23,7 @@ typedef struct {
     int32_t (*value)(void *,uint8_t action);
     void (*keyboard_seed)(void *,Afr2UiCredentials *);
     uint8_t (*available)(void *,uint8_t action,int32_t arg);
-    const char *(*reason)(void *,uint8_t action);
+    const char *(*reason_flash)(void *,uint8_t action); /* PROGMEM on AVR */
 } Afr2UiOps;
 typedef struct {uint8_t node,selection,first;} Afr2UiPosition;
 typedef struct {char title[18],text[18];uint16_t ms;uint8_t kind;} Afr2Notification;
@@ -40,7 +40,8 @@ typedef struct {
     uint8_t radar_selection,radar_first,test_short,test_long,test_back,notice_target;
     uint8_t power_percent,power_known,power_visible,menu_signature,wifi_signature;
     uint32_t power_changed_ms;
-    uint32_t quick_started_ms;
+    uint32_t quick_started_ms,hold_started_ms;
+    uint8_t hold_progress,quick_signature;
     bool redraw,scroll_redraw;
     Afr2UiPosition history[8];
     Afr2MenuItem editing;
@@ -74,6 +75,7 @@ typedef struct {
     uint8_t sequence_state,sequence_count,sequence_index,sequence_kind;
     uint32_t sequence_duration_ms,sequence_elapsed_ms;
     uint8_t network_valid,network_sta,network_ap,network_clients,network_server;
+    uint8_t network_mode,network_busy,network_page,network_total,network_truncated,network_scan_state;
     int16_t network_rssi;
     uint8_t network_rssi_valid;
     uint32_t network_boot;
@@ -86,6 +88,10 @@ typedef struct {
 } Afr2UiSnapshot;
 void Afr2Ui_MenuNode(Afr2Ui *u,Afr2MenuNode *n);
 void Afr2Ui_MenuItem(Afr2Ui *u,uint8_t index,Afr2MenuItem *item);
+void Afr2Ui_NetworkRestart(Afr2Ui *u);
+/* title/text are PROGMEM; FlashTitle keeps text in RAM. */
+void Afr2Ui_NotifyFlash(Afr2Ui *,uint8_t,const char *,const char *,uint16_t);
+void Afr2Ui_NotifyFlashTitle(Afr2Ui *,uint8_t,const char *,const char *,uint16_t);
 void Afr2Ui_AfterNotice(Afr2Ui *u,uint8_t node);
 void Afr2Ui_GestureHint(Afr2Oled *o,uint8_t x,uint8_t y,uint8_t is_long,const char *text);
 uint8_t Afr2MotorSelector_Step(uint8_t selected,int8_t delta);
@@ -107,6 +113,7 @@ void Afr2Ui_Open(Afr2Ui *ui,uint8_t node);
 void Afr2Ui_ConfirmSave(Afr2Ui *ui,uint8_t save_action,uint8_t discard_action,uint8_t target);
 void Afr2Ui_SaveCompleted(Afr2Ui *ui);
 uint32_t Afr2Ui_ReportedScreen(const Afr2Ui *ui);
+uint16_t Afr2Ui_TextOffsetFlash(const char *,uint8_t,uint32_t);
 uint16_t Afr2Ui_TextOffset(const char *text,uint8_t width,uint32_t elapsed);
 void Afr2NetworkScreen_Render(Afr2Oled *o,const Afr2Ui *ui,const Afr2UiSnapshot *s);
 void Afr2NetworkNotice_Render(Afr2Oled *o,const Afr2Ui *ui,const Afr2UiSnapshot *s);

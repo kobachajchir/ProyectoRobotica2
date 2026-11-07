@@ -1,16 +1,36 @@
 using System;
 using System.Threading;
+using System.IO;
 using System.Windows.Forms;
 
 namespace AFR2Loader
 {
     static class Program
     {
+        // AFR2-20261106-16: local build resources survive opening the cached EXE directly.
+        internal static string ResolveApplicationDirectory(string requested)
+        {
+            if (!String.IsNullOrWhiteSpace(requested)) return Path.GetFullPath(requested);
+            string executableDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            // A portable distribution owns its adjacent resources; ignore local build hints.
+            if (File.Exists(Path.Combine(executableDirectory, "tools", "esp_bridge_esptool.py")))
+                return executableDirectory;
+            string executableName = Path.GetFileNameWithoutExtension(System.Reflection.Assembly.GetExecutingAssembly().Location);
+            string hint = Path.Combine(executableDirectory, executableName + ".appdir");
+            if (File.Exists(hint)) {
+                string resourceDirectory = File.ReadAllText(hint).Trim();
+                if (!Path.IsPathRooted(resourceDirectory))
+                    throw new ArgumentException("La referencia local de recursos debe ser absoluta. Abrí Iniciar.ps1 desde la carpeta del Loader.");
+                return Path.GetFullPath(resourceDirectory);
+            }
+            return executableDirectory;
+        }
         [STAThread]
         static void Main(string[] args)
         {
             bool mcp = args.Length > 0 && args[0] == "--mcp";
-            string appDir = args.Length > (mcp ? 1 : 0) ? args[mcp ? 1 : 0] : AppDomain.CurrentDomain.BaseDirectory;
+            string appDir = ResolveApplicationDirectory(args.Length > (mcp ? 1 : 0) ? args[mcp ? 1 : 0] : null);
+            Profile.SetApplicationDirectory(appDir);
             if (mcp)
             {
                 try { McpServer.Run(appDir); }

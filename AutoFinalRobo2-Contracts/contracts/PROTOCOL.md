@@ -1,3 +1,5 @@
+> **Fuente vigente AFR2-20261106-01:** [EX01v13 y cambios de Wi-Fi/IR](COORDINATED_CORRECTIONS_13.md). EEPROMv9 y persistencia Wi-Fi v2; sin despliegue de esta revision. Los estados inferiores son historicos.
+
 # Protocolo AutoFinalRobo2 — control directo
 
 Vigente25/10/2026, AFR2-20261025-01. ROBO2/perfil2 + EX01v7,

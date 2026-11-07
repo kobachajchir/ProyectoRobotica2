@@ -1,3 +1,13 @@
+> **AFR2-20261106-15:** [informe completo de pinout](hardware/INFORME_PINOUT_ROBOT_20261106.md), PDF y fuente de generación. Agregados propios identificados: OLED, encoder, batería A5, AutoKEY D32 y AutoRESET D33 por NPN. Solo documentación y revisión visual del PDF; ATmega/ESP/Web sin cambios, sin tests, compilaciones, validadores ni pruebas físicas.
+
+> **AFR2-20261106-14:** [referencia BioLog y cotejo de encoders](hardware/COTEJO_ENCODERS_BIOLOG_20261106.md). PDF original preservado con autorías; pines coincidentes, diferencias de decodificación, CPR, orden, signos y diámetro documentadas. ATmega/ESP/Web sin cambios; solo documentación, sin tests, compilaciones, validadores ni pruebas físicas.
+
+> **AFR2-20261106-13:** retirado HC-SR04 como requisito y causa de parada de movimiento en todos los modos físicos vigentes. Sensores/radar y simulación conservados; aproximación física al brazo pendiente. ATmega y simulador UI Web solo fuente, ESP sin cambios; sin tests, compilaciones, validadores ni cargas.
+
+> **AFR2-20261106-12:** Hall por motor con Confirmar/Descartar y EEPROMv10; CW exterior positivo. PWM manual con slot reciente ESP sin esperar ACK AVR por consigna; ALIVE/STOP conservados. Solo fuente, sin compilación, tests, validadores, generadores, carga ni prueba física. Restituir permisos del bypass manual queda pendiente. Ver [contrato](contracts/HALL_MANUAL_STREAM_20261106.md).
+
+> **AFR2-20261106-03 / Loader 1.2.0:** nueva distribución compartible compilada (GUI/MCP), rutas {App}/módulos y datos de cada usuario configurables; pestaña ATmega redundante retirada, soporte conservado en Flasher/Operación. ZIP y auditoría: [ficha](changes/2026-11-06-03-loader-portable-120.md). Sin COM, firmware compilado ni flasheos por esta entrega.
+
 > **AFR2-20261101-02:** Simulador UI actualizado por cotejo de Afr2Ui_Apply: corto/largo contextual, Hall, Si/No, rapidas y Wi-Fi. Arbol completo y limites en [UI_SCREEN_FLOW](documentation/UI_SCREEN_FLOW.md). Solo fuente; sin tests, builds, generadores ni hardware.
 
 > **AFR2-20261030-07:** contratos y UI vinculada actualizados; [procedencia, estado y pendientes](changes/2026-10-30-07-ui-integral.md). Solo fuente, sin ejecución de generadores, pruebas/builds/validadores ni cargas.

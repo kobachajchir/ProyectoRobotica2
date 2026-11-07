@@ -2,6 +2,10 @@
 
 > **Build AFR2-20261027-10:** captura Hall habilitada por pedido humano y compilada. Preferencia Hall conectado/EEPROM conservada; activarla en menú si estaba0. Aún sin flasheo. [Evidencia](../documentation/builds/2026-10-27-10/README.md), [guía de carga](CARGA_USB_COM16.md). La nota de Hall deshabilitado en la hoja PDF07 describe esa entrega anterior.
 
+> **AFR2-20261106-14:** incorporado el [PDF de encoders BioLog](supplied/Pinout_encoders_AGV_BioLog.pdf). El cableado coincide; su descripción x4, CPR1500, signos y orden lógico pertenecen a otra implementación. Nuestro firmware conserva x1 y calibración por rueda. Ver [cotejo con fuentes](COTEJO_ENCODERS_BIOLOG_20261106.md). Solo documentación, sin pruebas físicas.
+
+> **AFR2-20261106-15:** [informe completo actualizado](INFORME_PINOUT_ROBOT_20261106.md) y [PDF para compartir](output/pdf/INFORME_PINOUT_ROBOT_20261106.pdf), con agregados propios identificados: OLED, encoder de menú, batería A5, D32 AutoKEY y D33 AutoRESET mediante NPN. IR digitales según fuente actual. El PDF07 enlazado abajo es histórico.
+
 # Pinout del auto
 
 AutoFinalRobo2 | OSOYOO Mecanum 4WD | Arduino Mega 2560
@@ -66,6 +70,7 @@ Ruta de potencia del manual; VOUT no se considera una salida regulada de 5 V. VT
 | HC-SR04 | TRIG / ECHO | D30 / D31 |
 | HC-SR04 | VCC / GND | +5 V / GND |
 | Servo radar | S / VCC / GND | D13 / +5 V / GND |
+| KEY/RST ESP (opcional, AFR2-20261106-11) | KEY / RST → base de NPN por 1 kΩ | D32 / D33 (PC5 / PC4); solo flasher de servicio, entrada en alta impedancia el resto del tiempo. [Circuito](PLAN_KEY_RST_AUTOMATICO.md) |
 
 S del servo es señal. Su +5 V es de alimentación, no un GPIO. A4 está ocupado por IR1; no usar A4/A5 como I2C del Mega.
 

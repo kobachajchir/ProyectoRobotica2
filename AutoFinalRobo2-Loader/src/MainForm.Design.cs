@@ -46,35 +46,47 @@ namespace AFR2Loader
             espOptionsRow.Visible = espMethodRow.Visible = esp;
             bool at = EspFlashRules.IsAt(profile);
             if (espSectionField != null) espSectionField.Visible = esp && !at;
-            if (capacityRow != null) capacityRow.Visible = esp;
-            espMemoryRow.Visible = esp && !at && target.SelectedIndex >= 2 && CapacityConfirmed;
-            megaOptionsRow.Visible = !esp;
+            bool fsSection = esp && !at && target.SelectedIndex >= 2;
+            if (capacityRow != null) { capacityRow.Visible = esp; PlaceCapacityRow(fsSection); }
+            if (prepCard != null) prepCard.Visible = fsSection;
+            espMemoryRow.Visible = fsSection && CapacityConfirmed;
+            megaOptionsRow.Visible = !esp; if (preparationHeading != null) preparationHeading.Visible = esp && !fsSection; if (resultHeading != null) resultHeading.Text = esp ? "3 · Ejecución y resultado" : "2 · Ejecución y resultado";
             if (filesystemLayout != null) filesystemLayout.Visible = esp && !at && target.SelectedIndex >= 2 && CapacityConfirmed;
             if (compileTarget != null) UpdateTargetActions();
         }
+        // La consulta de capacidad vive en la tarjeta lateral cuando hay FileSystem y en la columna izquierda en los demás casos.
+        void PlaceCapacityRow(bool inCard)
+        {
+            var home = espPanel as TableLayoutPanel; if (capacityRow == null || prepCardContent == null || home == null) return;
+            Control want = inCard ? (Control)prepCardContent : home; if (capacityRow.Parent == want) return;
+            if (inCard) { capacityState.Margin = new Padding(0, 0, 0, 4); prepCardContent.Controls.Add(capacityRow, 0, 0); }
+            else { capacityState.Margin = new Padding(12, 12, 0, 0); capacityState.MaximumSize = Size.Empty; home.Controls.Add(capacityRow, 0, 6); }
+        }
         void ShowOperation() { if (mainTabs != null && operationTab != null) mainTabs.SelectedTab = operationTab; }
 
-        void ArrangeOperationWorkspace(TableLayoutPanel layout)
+        // AFR2-20261106-19. Setup/log left, result/stages right.
+        void ArrangeOperationWorkspace(TableLayoutPanel layout) { ArrangeOperationColumns(layout); }
+        Label resultHeading;
+        float DisplayScale() { using (var g = Graphics.FromHwnd(IntPtr.Zero)) return g.DpiY / 96F; }
+        int MeasureOperationActions(int width, float scale)
         {
-            // Only the setup/details area may scroll on a small window. Stages and
-            // the action bar keep their own visible space at every supported size.
-            var heading = layout.GetControlFromPosition(0, 0);
-            var selectors = layout.GetControlFromPosition(0, 1);
-            var summary = layout.GetControlFromPosition(0, 3);
-            var workspace = layout.GetControlFromPosition(0, 4);
-            var actions = layout.GetControlFromPosition(0, 5);
-            layout.SuspendLayout(); layout.Controls.Clear(); layout.RowStyles.Clear(); layout.RowCount = 3;
-            layout.RowStyles.Add(new RowStyle(SizeType.Percent, 58));
-            layout.RowStyles.Add(new RowStyle(SizeType.Percent, 42));
-            layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 104));
-            var scroll = new Panel { Dock = DockStyle.Fill, AutoScroll = true, Margin = new Padding(0, 0, 0, 12) };
-            var content = new TableLayoutPanel { Dock = DockStyle.Top, AutoSize = true, ColumnCount = 1, RowCount = 3, Margin = new Padding(0) };
-            content.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
-            content.RowStyles.Add(new RowStyle(SizeType.Absolute, 44)); content.RowStyles.Add(new RowStyle(SizeType.AutoSize)); content.RowStyles.Add(new RowStyle(SizeType.Absolute, 172));
-            content.Controls.Add(heading, 0, 0); content.Controls.Add(selectors, 0, 1); content.Controls.Add(summary, 0, 2);
-            scroll.Controls.Add(content); layout.Controls.Add(scroll, 0, 0); layout.Controls.Add(workspace, 0, 1); layout.Controls.Add(actions, 0, 2);
-            layout.ResumeLayout(true);
+            var box = operationActions;
+            if (box == null) return (int)(100 * scale);
+            var buttons = box.GetControlFromPosition(0, 0) as FlowLayoutPanel; var flash = box.GetControlFromPosition(1, 0);
+            int available = Math.Max(200, width - (flash == null ? 0 : flash.Width + flash.Margin.Horizontal));
+            int used = 0, lines = 1;
+            if (buttons != null) foreach (Control c in buttons.Controls)
+            {
+                if (!c.Visible) continue;
+                int item = c.Width + c.Margin.Horizontal;
+                if (used > 0 && used + item > available) { lines++; used = 0; }
+                used += item;
+            }
+            int row = Math.Max(lines * (int)((UiButtonHeight + 6) * scale) + (buttons == null ? 0 : buttons.Margin.Vertical), flash == null ? 0 : flash.Height + flash.Margin.Vertical + (int)(8 * scale)) + (int)(4 * scale);
+            int note = nextStep.GetPreferredSize(new Size(width, 0)).Height + (int)(4 * scale);
+            return row + note + box.Padding.Vertical;
         }
+        void FitOperationRows() { FitOperationColumns(); }
 
         Image ActionImage(string kind, Color color)
         {
@@ -102,11 +114,27 @@ namespace AFR2Loader
                 button.Margin = new Padding(0, 3, UiGap, 3); return;
             }
             string text = button.Text.ToLowerInvariant();
-            bool stop = new[] { "cancel", "cerrar", "rechazar", "detener", "borrar registros", "limpiar carpeta" }.Any(text.Contains);
-            bool run = new[] { "flashear", "cargar", "abrir puerto", "convertir", "continuar", "aceptar", "compilar", "enviar", "ejecutar" }.Any(text.Contains);
-            bool info = new[] { "actualizar", "detectar", "inform", "ayuda", "prueba", "comprobar", "ver detalles" }.Any(text.Contains);
-            Color background = stop ? Color.FromArgb(166, 40, 48) : run ? Color.FromArgb(24, 112, 69) : info ? Color.FromArgb(30, 89, 153) : Color.White;
+            var actionButton = button as ActionButton;
+            ButtonRole role = actionButton == null ? ButtonRole.Auto : actionButton.Role;
+            bool stop = role == ButtonRole.Danger, run = role == ButtonRole.Primary, info = role == ButtonRole.Info;
+            if (role == ButtonRole.Auto)
+            {
+                stop = new[] { "cancel", "cerrar", "rechazar", "detener", "borrar registros", "limpiar carpeta" }.Any(text.Contains);
+                run = new[] { "flashear", "cargar", "abrir puerto", "convertir", "continuar", "aceptar", "compilar", "enviar", "ejecutar" }.Any(text.Contains);
+                info = new[] { "actualizar", "detectar", "inform", "ayuda", "prueba", "comprobar", "ver detalles" }.Any(text.Contains);
+            }
+            Color background = stop ? LoaderAppearance.DangerFill : run ? LoaderAppearance.ActionFill : info ? LoaderAppearance.InfoFill : Color.White;
             button.BackColor = background; button.ForeColor = background == Color.White ? Color.FromArgb(35, 51, 65) : Color.White;
+            if (SystemInformation.HighContrast)
+            {
+                // Windows high contrast: keep the role through the border, use system colors for fill and text.
+                button.BackColor = SystemColors.ButtonFace; button.ForeColor = SystemColors.ControlText;
+                button.UseVisualStyleBackColor = false; button.FlatStyle = FlatStyle.Flat; button.FlatAppearance.BorderColor = SystemColors.WindowText;
+                button.Height = UiButtonHeight; button.MinimumSize = new Size(0, UiButtonHeight); button.Margin = new Padding(0, 3, UiGap, 3);
+                button.Image = null; button.Padding = new Padding(12, 0, 12, 0);
+                button.Width = Math.Max(button.Width, TextRenderer.MeasureText(button.Text, button.Font).Width + 40);
+                return;
+            }
             button.UseVisualStyleBackColor = false; button.FlatStyle = FlatStyle.Flat; button.FlatAppearance.BorderColor = background == Color.White ? Color.FromArgb(177, 190, 201) : background;
             button.Height = UiButtonHeight; button.MinimumSize = new Size(0, UiButtonHeight); button.Margin = new Padding(0, 3, UiGap, 3);
             string kind = stop ? "stop" : text.Contains("copiar") ? "copy" : text.Contains("guardar") ? "save" : text.Contains("actualizar") ? "refresh" : info ? "info" : run ? "run" : "section";
@@ -151,16 +179,18 @@ namespace AFR2Loader
             var dropdown = item as ToolStripDropDownItem;
             if (dropdown != null) foreach (ToolStripItem child in dropdown.DropDownItems) StyleMenuItem(child);
         }
-        DialogResult ShowStyledDialog(Form dialog) { StyleControls(dialog); return dialog.ShowDialog(this); }
+        DialogResult ShowStyledDialog(Form dialog) { StyleControls(dialog); ApplyAppearance(dialog); return dialog.ShowDialog(this); }
         DialogResult ShowStyledDialog(CommonDialog dialog) { return dialog.ShowDialog(this); }
         void StyleActionColumn(DataGridView grid, int column, Func<int, string> caption, bool information)
         {
             grid.CellPainting += (s, e) => {
                 if (e.RowIndex < 0 || e.ColumnIndex != column) return;
+                if (caption(e.RowIndex) == null) { e.PaintBackground(e.ClipBounds, true); e.Handled = true; return; }
                 e.PaintBackground(e.ClipBounds, true);
                 Rectangle bounds = e.CellBounds; bounds.Inflate(information ? -1 : -4, information ? -1 : -4);
-                Color background = information ? Color.FromArgb(30, 89, 153) : Color.White;
-                Color foreground = information ? Color.White : Color.FromArgb(35, 51, 65);
+                Color background = information ? Color.FromArgb(30, 89, 153) : LoaderAppearance.Surface;
+                Color foreground = information ? Color.White : LoaderAppearance.Text;
+                if (SystemInformation.HighContrast) { background = SystemColors.ButtonFace; foreground = SystemColors.ControlText; }
                 using (var brush = new SolidBrush(background)) e.Graphics.FillRectangle(brush, bounds);
                 using (var pen = new Pen(Color.FromArgb(177, 190, 201))) e.Graphics.DrawRectangle(pen, bounds);
                 e.Graphics.DrawImage(ActionImage(information ? "info" : "section", foreground), bounds.Left + 6, bounds.Top + Math.Max(0, (bounds.Height - 18) / 2));
@@ -169,6 +199,9 @@ namespace AFR2Loader
                 e.Handled = true;
             };
         }
+        // Technical ISO stamps stay in the detail/log; lists show a readable local time.
+        static string ReadableTime(string iso)
+        { DateTimeOffset parsed; return DateTimeOffset.TryParse(iso, out parsed) ? parsed.ToLocalTime().ToString("dd/MM HH:mm:ss") : iso; }
         void OpenManualSection(string anchor)
         {
             string file = Path.Combine(appDir, "MANUAL.html");

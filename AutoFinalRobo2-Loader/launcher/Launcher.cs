@@ -11,8 +11,8 @@ using System.Windows.Forms;
 [assembly: AssemblyProduct("AFR2 Loader")]
 [assembly: AssemblyCompany("Koba Chajchir / AFR2")]
 [assembly: AssemblyDescription("Inicia AFR2 Loader desde su carpeta de distribución")]
-[assembly: AssemblyVersion("1.1.2.0")]
-[assembly: AssemblyFileVersion("1.1.2.0")]
+[assembly: AssemblyVersion("2.0.0.0")]
+[assembly: AssemblyFileVersion("2.0.0.0")]
 
 static class Launcher
 {

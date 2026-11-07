@@ -11,7 +11,8 @@ static uint8_t last_ap,last_status,cache_valid;
 static uint8_t append(uint8_t *data,size_t *len,const char *text,uint8_t escape){
     while(*text){uint8_t c=(uint8_t)*text++;
         if(escape && (c=='\\' || c==';' || c==',' || c==':' || c=='"')){if(*len>=QR_BYTES-1)return 0;data[(*len)++]='\\';}
-        if(*len>=QR_BYTES-1)return 0;data[(*len)++]=c;
+        if(*len>=QR_BYTES-1)return 0;
+        data[(*len)++]=c;
     }return 1;
 }
 static void labels(Afr2Oled *o,uint8_t ap){
@@ -20,14 +21,17 @@ static void labels(Afr2Oled *o,uint8_t ap){
     Afr2Oled_TextFlash(o,67,31,ap?PSTR("al AP"):PSTR("Web"),AFR2_WHITE);
     Afr2Ui_GestureHint(o,67,52,1,PSTR("Volver"));
 }
-/* Separate stack phase: matrix is allocated only after encodeBinary returns. */
+/* AFR2-20261106-04: same matrix/raster, borrow ACK scratch after encoding.
+ * No main-loop yield here: callbacks cannot modify scratch during this loan. */
 static void __attribute__((noinline)) finish(Afr2Oled *o,const uint8_t *encoded){
-    uint8_t matrix[QR_BYTES];memcpy(matrix,encoded,sizeof(matrix));Afr2Oled_Clear(o);
+    uint8_t *matrix=Afr2Oled_BorrowScratch(o,QR_BYTES);
+    if(!matrix)return;
+    memcpy(matrix,encoded,QR_BYTES);Afr2Oled_Clear(o);
     int size=qrcodegen_getSize(matrix),scale=62/(size+8),side=(size+8)*scale;
     int origin=1+(62-side)/2;Afr2Oled_FillRect(o,1,1,62,62,AFR2_WHITE);
     for(int y=0;y<size;y++)for(int x=0;x<size;x++)if(qrcodegen_getModule(matrix,x,y))
         Afr2Oled_FillRect(o,origin+(x+4)*scale,origin+(y+4)*scale,scale,scale,AFR2_BLACK);
-    memset(matrix,0,sizeof(matrix));
+    volatile uint8_t *private_bytes=matrix;for(uint16_t i=0;i<QR_BYTES;i++)private_bytes[i]=0;
 }
 uint8_t Afr2Qr_DrawPayload(Afr2Oled *o,const uint8_t *payload,uint16_t length){
     cache_valid=0;

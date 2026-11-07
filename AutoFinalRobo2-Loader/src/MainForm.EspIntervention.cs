@@ -31,8 +31,9 @@ namespace AFR2Loader
                 layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 60)); layout.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
                 layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 62)); layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 52));
                 layout.Controls.Add(new Label { Text = "Es necesario que intervengas en el ESP.\r\nUsá KEY y RST del shield, no RESET del ATmega.", Dock = DockStyle.Fill, Font = new Font(Font, FontStyle.Bold), ForeColor = Color.FromArgb(18, 79, 100) }, 0, 0);
-                layout.Controls.Add(new TextBox { Text = text, Dock = DockStyle.Fill, ReadOnly = true, Multiline = true, ScrollBars = ScrollBars.Vertical, BackColor = Color.White }, 0, 1);
-                var done = new CheckBox { Text = "Realicé la secuencia KEY/RST y sigo manteniendo KEY.", Dock = DockStyle.Fill, AutoSize = true };
+                var instructions = new TextBox { Text = text, Dock = DockStyle.Fill, ReadOnly = true, TabStop = false, Multiline = true, ScrollBars = ScrollBars.Vertical, BackColor = Color.White };
+                layout.Controls.Add(instructions, 0, 1);
+                var done = new CheckBox { Text = "Realicé la secuencia KEY/RST y sigo manteniendo KEY.", Dock = DockStyle.Fill, AutoSize = true, Checked = false, TabIndex = 0 };
                 layout.Controls.Add(done, 0, 2);
                 var buttons = new FlowLayoutPanel { Dock = DockStyle.Fill, FlowDirection = FlowDirection.RightToLeft };
                 var next = new ActionButton { Text = "Confirmar y continuar", Width = 240, Enabled = false, DialogResult = DialogResult.OK };
@@ -41,6 +42,7 @@ namespace AFR2Loader
                 buttons.Controls.Add(next); buttons.Controls.Add(cancelPhysical); layout.Controls.Add(buttons, 0, 3);
                 dialog.Controls.Add(layout); dialog.CancelButton = cancelPhysical;
                 PrepareEspInterventionWindow(dialog);
+                FocusDialogAction(dialog, done, instructions);
                 bool accepted = ShowStyledDialog(dialog) == DialogResult.OK && done.Checked;
                 token.ThrowIfCancellationRequested();
                 Log(accepted ? "Intervención física KEY/RST confirmada localmente; falta respuesta ROM." : "Intervención física ESP cancelada; no se continúa.");

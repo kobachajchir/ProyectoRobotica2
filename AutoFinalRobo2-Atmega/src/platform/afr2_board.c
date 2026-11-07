@@ -119,7 +119,9 @@ uint8_t Afr2Board_EncoderRead(uint8_t *ab) {
 void Afr2Board_HallInit(void) {
 #if AFR2_HALL_CONNECTED
     PCICR&=(uint8_t)~_BV(PCIE2);hall_enabled=0;
-    AFR2_HALL_DDR=0;AFR2_HALL_PORT=0; /* External levels/pull-ups must be verified. */
+    /* AFR2-20261106-07: internal pull-ups on A8..A15. Open-collector Hall outputs float without them
+     * (no edges counted); push-pull outputs are unaffected. */
+    AFR2_HALL_DDR=0;AFR2_HALL_PORT=0xFF;
     PCMSK2=AFR2_HALL_A_MASK;PCIFR=_BV(PCIF2);
     hall_previous=AFR2_HALL_PIN;
     for(uint8_t i=0;i<4;i++)hall_counts[i]=0;

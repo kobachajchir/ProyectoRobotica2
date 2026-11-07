@@ -1,3 +1,5 @@
+> **AFR2-20261106-01:** Wi-Fi buscando/vacio/fallo y paginas de ocho, retorno al principal por nuevo boot con Si/No, Hall contextual e indicador de largo al soltar. [Contrato y cambios](../contracts/COORDINATED_CORRECTIONS_13.md). Fuentes AVR/Web vinculadas, recursos generados pendientes de autorizacion; sin paridad fisica acreditada.
+
 > **AFR2-20261102-14:** [dashboard y familia OLED](../contracts/OLED_DASHBOARD_STATUS_20261102.md): tarjeta informativa en reposo, dibujo por regiones, modo real, iconos y cabeceras compartidos AVR/Web. Fuente sin compilar ni probar.
 
 > **AFR2-20261101-02:** [Arbol y gestos del C vigente](UI_SCREEN_FLOW.md), cotejados con el Simulador UI. Esta revision distingue el flujo actual del diseno e hitos historicos inferiores; corto en IR/servo no retorna, largo vuelve por contexto. Solo fuente, sin ejecucion.

@@ -49,7 +49,7 @@ static void staticRequest(AsyncWebServerRequest *request) {
             request->send(503,"text/html; charset=utf-8",
                 "<!doctype html><meta charset='utf-8'><title>AutoFinalRobo2</title>"
                 "<h1>AutoFinalRobo2 ESP</h1><p>Paquete Web no disponible en LittleFS.</p>"
-                "<p>Diagnostico: <a href='/api/health'>estado del servicio</a>.</p>");
+                "<p>Diagnostico: <a href='/diagnostico'>estado del servicio</a>.</p>");
         } else request->send(404,"text/plain","Not found");
         return;
     }
@@ -72,10 +72,19 @@ static void staticRequest(AsyncWebServerRequest *request) {
 }
 void setup() {
     mega.begin(); storage.begin(); wifi.begin(); broker.begin(); server.addHandler(&ws);
+    server.on("/diagnostico",HTTP_GET,[](AsyncWebServerRequest *request){
+        JsonDocument doc;storage.health(doc["filesystem"].to<JsonObject>());wifi.status(doc["wifi"].to<JsonObject>());
+        doc["brokerVersion"]=AFR2_FIRMWARE_VERSION;doc["bootId"]=mega.ownBootId();
+        doc["resetReason"]=ESP.getResetInfoPtr()?ESP.getResetInfoPtr()->reason:255;
+        String json;serializeJson(doc,json);json.replace("&","&amp;");json.replace("<","&lt;");json.replace(">","&gt;");
+        auto *response=request->beginResponse(200,"text/html; charset=utf-8",String("<!doctype html><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><style>:root{color-scheme:light dark}body{font:16px system-ui;max-width:52rem;margin:24px auto;padding:0 16px}pre{white-space:pre-wrap;overflow-wrap:anywhere}</style><title>Diagnostico AFR2</title><h1>AutoFinalRobo2</h1><p>Servidor HTTP accesible. Estado de red y paquete:</p><pre>")+json+"</pre><a href='/'>Abrir interfaz</a>");
+        response->addHeader("Cache-Control","no-store");request->send(response);
+    });
     server.on("/api/health",HTTP_GET,[](AsyncWebServerRequest *request) {
         JsonDocument doc; doc["product"]="AutoFinalRobo2"; doc["brokerVersion"]=AFR2_FIRMWARE_VERSION;
         doc["megaLink"]=mega.state(); doc["uptimeMs"]=millis();
-        storage.health(doc["filesystem"].to<JsonObject>());
+        storage.health(doc["filesystem"].to<JsonObject>());wifi.status(doc["wifi"].to<JsonObject>());
+        doc["bootId"]=mega.ownBootId();doc["resetReason"]=ESP.getResetInfoPtr()?ESP.getResetInfoPtr()->reason:255;
         String body; serializeJson(doc,body);
         auto *response=request->beginResponse(200,"application/json; charset=utf-8",body);
         response->addHeader("Cache-Control","no-store"); request->send(response);

@@ -15,7 +15,7 @@ namespace AFR2Loader
         readonly Label bridgeServiceState = new Label { Dock = DockStyle.Fill, AutoEllipsis = true };
         TabPage bridgeTab;
         bool syncingBridge;
-        static readonly object[] TransportLabels = { "Puente serial del Mega — D0/D1, RESET a GND", "Flasher en ATmega — D18/D19, RESET libre", "Adaptador USB–TTL externo" };
+        static readonly object[] TransportLabels = { "Flasher en ATmega — D18/D19, RESET libre", "Adaptador USB–TTL externo" };
         Control CreateEspMethodSelector()
         {
             var row = UiRow(); row.WrapContents = true;
@@ -30,14 +30,13 @@ namespace AFR2Loader
             profileDialogs++;
             try
             {
-                ReadSettings(); string next = selected == 1 ? "mega_bridge" : selected == 2 ? "usb-ttl" : "mega_reset";
+                ReadSettings(); if (selected < 0 || selected > 1) return; string next = selected == 0 ? "mega_bridge" : "usb-ttl";
                 await StopSerialMonitor("Cambio manual de método ESP; liberar COM antes de recablear");
-                string detail = selected == 1
+                string detail = selected == 0
                     ? "MÉTODO: flasher ejecutándose en ATmega.\r\n\r\nQUITAR RESET Mega→GND: RESET queda LIBRE.\r\nD18/TX1→E_RX central (RX ESP).\r\nE_TX central (TX ESP)→D19/RX1.\r\nRetirar cables D0/D1 al ESP y jumpers paralelos.\r\n\r\nEl flasher temporal debe estar cargado al baud elegido. Si falta, usar Cargar flasher en ATmega. Luego KEY/RST del ESP y consulta ROM; no escuchar 74880 por este puente fijo."
-                    : selected == 2 ? "MÉTODO: adaptador USB–TTL externo.\r\n\r\nElegí el COM del adaptador; el USB del Mega solo alimenta el shield. VCC del adaptador sin conectar.\r\nTX del adaptador→RX ESP, TX ESP→RX del adaptador y GND común, por la ruta identificada.\r\nAislá D18/D19, D0/D1 y cualquier otro emisor paralelo al ESP. No unir RESET Mega a GND por este método.\r\nEl asistente KEY/RST puede escuchar el arranque a 74880."
-                    : "MÉTODO: usar el conversor USB-serie del Mega con el ATmega detenido.\r\n\r\nUnir RESET del Mega a GND (NO RST del ESP).\r\nRetirar el enlace D18/D19.\r\nD0/RX0, salida del conversor USB→RX ESP por ruta adaptada.\r\nTX ESP→D1/TX0, entrada del conversor USB.\r\nSin jumpers/emisores paralelos.\r\n\r\nEste sentido corresponde al conversor USB, no al TX/RX del micro detenido. El asistente de KEY/RST y escucha 74880 se aplica a este método.";
+                    : "MÉTODO: adaptador USB–TTL externo.\r\n\r\nElegí el COM del adaptador; el USB del Mega solo alimenta el shield. VCC del adaptador sin conectar.\r\nTX del adaptador→RX ESP, TX ESP→RX del adaptador y GND común, por la ruta identificada.\r\nAislá D18/D19, D0/D1 y cualquier otro emisor paralelo al ESP. No unir RESET Mega a GND por este método.\r\nEl asistente KEY/RST puede escuchar el arranque a 74880.";
                 var checks = new[] { "Desconecté alimentación para recablear y mantengo potencia de actuadores desconectada.",
-                    selected == 1 ? "RESET Mega LIBRE; D18→E_RX y E_TX→D19; D0/D1 al ESP retirados." : selected == 2 ? "USB–TTL externo, VCC sin conectar, TX/RX cruzados y GND; enlace serie Mega aislado." : "RESET Mega a GND; D18/D19 retirados; D0→RX ESP y TX ESP→D1 por ruta adaptada.",
+                    selected == 0 ? "RESET Mega LIBRE; D18→E_RX y E_TX→D19; D0/D1 al ESP retirados." : "USB–TTL externo, VCC sin conectar, TX/RX cruzados y GND; enlace serie Mega aislado.",
                     "Masa común y alimentación lógica identificadas.",
                     "Retiré jumpers/emisores paralelos. Entiendo que elegir el método no mueve cables ni flashea por sí solo." };
                 if (Confirm("Confirmar método de flasheo ESP", detail, checks))
@@ -55,23 +54,32 @@ namespace AFR2Loader
             layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 118)); layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 52));
             var heading = UiRow(); heading.Controls.Add(new Label { Text = "Flasher temporal del Mega", AutoSize = true, Font = new Font(Font.FontFamily, 17, FontStyle.Bold), Margin = new Padding(0, 5, 24, 0) });
             AddButton(heading, "Información del flasher", () => OpenManualSection("mega-flasher"), 240); layout.Controls.Add(heading, 0, 0);
-            var settingsPanel = new TableLayoutPanel { Dock = DockStyle.Top, AutoSize = true, Padding = new Padding(UiInset), BackColor = Color.White, ColumnCount = 1, RowCount = 3 };
-            for (int i = 0; i < 3; i++) settingsPanel.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+            var settingsPanel = new TableLayoutPanel { Dock = DockStyle.Top, AutoSize = true, Padding = new Padding(UiInset), BackColor = Color.White, ColumnCount = 1, RowCount = 4 };
+            for (int i = 0; i < 4; i++) settingsPanel.RowStyles.Add(new RowStyle(SizeType.AutoSize));
             bridgeTransport.Items.AddRange(TransportLabels); idleControls.Add(bridgeTransport);
             settingsPanel.Controls.Add(UiField("Método de programación", bridgeTransport), 0, 0);
             bridgeSpeed.Items.AddRange(new object[] { "115200", "57600", "38400", "9600" }); idleControls.Add(bridgeSpeed);
             var baudRow = UiRow(); baudRow.Controls.Add(UiField("Baudios del flasher", bridgeSpeed));
             baudRow.Controls.Add(new Label { Text = "NOTA IMPORTANTE: cambiar la velocidad requiere volver a cargar el flasher.", ForeColor = Color.Firebrick, Font = new Font(Font, FontStyle.Bold), AutoSize = true, MaximumSize = new Size(610, 0), Margin = new Padding(8, 9, 0, 0) });
             settingsPanel.Controls.Add(baudRow, 0, 1); backupBeforeFlasher.Margin = new Padding(0, 16, 0, 8); settingsPanel.Controls.Add(backupBeforeFlasher, 0, 2); idleControls.Add(backupBeforeFlasher);
+            keyRstMode.Items.AddRange(KeyRstLabels); idleControls.Add(keyRstMode);
+            var keyRstRow = UiRow(); keyRstRow.Controls.Add(UiField("KEY/RST del ESP", keyRstMode));
+            keyRstRow.Controls.Add(new Label { Text = "Automático requiere los transistores en D32/D33 y el flasher actual. El flasher arranca siempre en manual: el Loader le envía la configuración en cada operación y la lee de vuelta.", AutoSize = true, MaximumSize = new Size(610, 0), ForeColor = Color.FromArgb(71, 85, 105), Margin = new Padding(8, 9, 0, 0) });
+            settingsPanel.Controls.Add(keyRstRow, 0, 3);
+            keyRstMode.SelectionChangeCommitted += (s, e) => { if (syncingBridge) return; ReadSettings(); SetProfileValue("EspKeyRst", keyRstMode.SelectedIndex == 1 ? "auto" : "manual"); SyncBridgeOptions(); };
             layout.Controls.Add(settingsPanel, 0, 1);
             var actions = UiRow();
+            AddButton(actions, "Probar KEY/RST y boot...", ShowKeyRstTestWindow, 270);
             AddButton(actions, "Verificar flasher", VerifyFlasher, 200);
+            AddButton(actions, "Aplicar y consultar KEY/RST", ApplyFlasherKeyRst, 270);
+            AddButton(actions, "Solo consultar KEY/RST", () => RunFlasherKeyRst("query"), 245);
             AddButton(actions, "Detectar ESP sin escribir", () => { SelectOperationTarget(1); ShowOperation(); DetectEsp(); }, 255);
+            AddButton(actions, "Preparar firmware del Mega", () => { SelectOperationTarget(0); ShowOperation(); }, 270);
             layout.Controls.Add(actions, 0, 2);
             layout.Controls.Add(new Label { Text = "1. Elegí método y baudios.\r\n2. Cargá el flasher temporal o verificá el que ya está instalado.\r\n3. Detectá el ESP y continuá desde Operación.\r\n4. Al terminar, restaurá el backup o el firmware del auto desde Operación.", Dock = DockStyle.Top, AutoSize = true, Padding = new Padding(0, 16, 0, 0), ForeColor = Color.FromArgb(71, 85, 105) }, 0, 3);
             layout.Controls.Add(bridgeServiceState, 0, 4);
             var footer = UiRow(); footer.FlowDirection = FlowDirection.RightToLeft; footer.Dock = DockStyle.Fill;
-            AddButton(footer, "Cargar flasher en ATmega...", InstallFlasher, 285); AddButton(footer, "Flashear último backup", () => { ShowOperation(); FlashMegaBackup(); }, 245); layout.Controls.Add(footer, 0, 5);
+            AddButton(footer, "Cargar flasher en ATmega...", InstallFlasher, 285); AddButton(footer, "Flashear último backup", () => { ShowOperation(); FlashMegaBackup(); }, 245, ButtonRole.Secondary); layout.Controls.Add(footer, 0, 5);
             bridgeTab.Controls.Add(layout); tabs.TabPages.Add(bridgeTab);
             bridgeTransport.SelectionChangeCommitted += (s, e) => ChooseEspTransport(bridgeTransport.SelectedIndex);
             bridgeSpeed.SelectionChangeCommitted += (s, e) => { if (syncingBridge) return; ReadSettings(); SetProfileValue("BridgeBaud", Convert.ToString(bridgeSpeed.SelectedItem)); SetProfileValue("EspBaud", Convert.ToString(bridgeSpeed.SelectedItem)); SyncBridgeOptions(); };
@@ -85,9 +93,10 @@ namespace AFR2Loader
             syncingBridge = true;
             try
             {
-                operationTransport.SelectedIndex = Operations.UsesMegaBridge(profile) ? 1 : profile.Get("EspTransport") == "usb-ttl" ? 2 : 0;
+                operationTransport.SelectedIndex = Operations.UsesMegaBridge(profile) ? 0 : 1;
                 if (bridgeTransport.Items.Count > 0) bridgeTransport.SelectedIndex = operationTransport.SelectedIndex;
                 bridgeSpeed.SelectedItem = profile.Get("BridgeBaud");
+                keyRstMode.SelectedIndex = profile.Get("EspKeyRst") == "auto" ? 1 : 0;
                 UpdateTargetActions(); UpdateConnectionEvidence(""); UpdateBridgeServiceState();
             }
             finally { syncingBridge = false; }
@@ -107,6 +116,14 @@ namespace AFR2Loader
             }
             catch (Exception error) { summary += "No se pudo leer el registro de servicio: " + error.Message; }
             bridgeServiceState.Text = summary;
+        }
+        readonly ComboBox keyRstMode = new ComboBox { Width = 330, DropDownStyle = ComboBoxStyle.DropDownList };
+        static readonly object[] KeyRstLabels = { "Manual — yo aprieto KEY y RST", "Automático — transistores D32=KEY, D33=RST" };
+        void ApplyFlasherKeyRst() { ReadSettings(); RunFlasherKeyRst(profile.Get("EspKeyRst") == "auto" ? "on" : "off"); }
+        void RunFlasherKeyRst(string mode)
+        {
+            ShowOperation();
+            Execute("KEY/RST del flasher (" + mode + ")", (ops, p, port, token) => ops.FlasherKeyRst(p, port, mode, token), true);
         }
         void VerifyFlasher()
         {

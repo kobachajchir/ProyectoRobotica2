@@ -40,6 +40,7 @@ interface ConnectionContextValue extends Afr2ClientStateSnapshot {
   headReading: HeadReading | null;
   screenStatus: ScreenStatus | null;
   registerScreenViewer: () => () => void;
+  registerHeadViewer: () => () => void;
   screenSubscribed: boolean;
   wifiStatus: WifiStatusSnapshot;
   wifiNetworks: WifiNetworkCandidate[];
@@ -102,6 +103,11 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
   const batteryGeneration = useRef(0);
   const [screenStatus,setScreenStatus]=useState<ScreenStatus|null>(null);
   const [screenViewers, setScreenViewers] = useState(0);
+  const [headViewers, setHeadViewers] = useState(0);
+  const registerHeadViewer = useCallback(() => {
+    setHeadViewers(n => n + 1); let released = false;
+    return () => { if(!released){released=true;setHeadViewers(n=>Math.max(0,n-1));} };
+  }, []);
   const [screenSubscribed, setScreenSubscribed] = useState(false);
   const registerScreenViewer = useCallback(() => {
     setScreenViewers(n => n + 1); let released = false;
@@ -130,6 +136,7 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
   const [wifiScanError, setWifiScanError] = useState<string | null>(null);
   const [wifiScanTruncated, setWifiScanTruncated] = useState(false);
   const wifiScanPending = useRef(false);
+  const expectedScanId = useRef<number | null>(null);
   const wifiScanTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const wifiScanGeneration = useRef(0);
   const prevWsStateRef = useRef(snapshot.wsState);
@@ -140,6 +147,7 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
       prevWsStateRef.current = next.wsState;
       setSnapshot(next);
       if (prev === 'ready' && next.wsState !== 'ready') {
+        ++requestEpoch.current; expectedScanId.current=null;
         setWifiDraft(null);setSensors(EMPTY_SENSORS_SNAPSHOT);
         wifiScanGeneration.current++;
         wifiScanPending.current = false;
@@ -166,7 +174,9 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
         const previous = observedBoots.current[device];observedBoots.current[device] = id;
         setBootReports(prev => [{ device, bootId:id, receivedAtMs:Date.now(), observation }, ...prev.filter(report => report.device !== device)].slice(0,2));
         if (observation === 'uart-boot-event' || (previous !== undefined && previous !== id)) notify.info({ id:`afr2-boot-${device}`, title:`${device === 'esp' ? 'ESP' : 'ATmega'} inició`, description:`Arranque ${id}. El movimiento permanece detenido después del arranque.` });
-        setBootRevision(v => v + 1);setSystemInfo(null);
+        if (previous !== id) { setBootRevision(v => v + 1);setSystemInfo(null);
+          if(device === 'esp'){ setWifiDraft(null);setWifiNetworks([]);setWifiScanState('idle'); }
+        }
       }
       if(evt.event === 'system.status') {
         const h=evt.payload?.sensorHead as {known?:boolean;running?:boolean;enabled?:boolean}|undefined;
@@ -187,6 +197,7 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
       } else if (evt.event === 'wifi.scan.result' &&
         (evt.payload?.status === 'completed' || evt.payload?.status === 'failed') &&
         Array.isArray(evt.payload.networks)) {
+        if(!wifiScanPending.current || (expectedScanId.current!==null && evt.payload.scanId!==expectedScanId.current))return;
         if (wifiScanTimer.current) clearTimeout(wifiScanTimer.current);
         wifiScanPending.current = false;
         const failed = evt.payload.status === 'failed';
@@ -392,7 +403,7 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
     let cancelled = false, busy = false;
     setScreenSubscribed(false); setScreenStatus(null);
     if (snapshot.wsState !== 'ready') return;
-    if (!screenViewers) { void requestCommand('robot.screen.subscribe', { enabled: false }, 2000).catch(() => undefined); return; }
+    if (!screenViewers) return;
     const update = async () => {
       if (busy || cancelled) return;
       busy = true;
@@ -419,8 +430,7 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
 
   // One shared head reader feeds every animated robot instance. Each response owns its age.
   useEffect(()=>{
-    ++requestEpoch.current;
-    if(snapshot.wsState!=='ready' || snapshot.megaLinkState!=='ready' || !snapshot.capabilities.sensor_head?.implemented){setHeadReading(null);return;}
+    if(!headViewers || snapshot.wsState!=='ready' || snapshot.megaLinkState!=='ready' || !snapshot.capabilities.sensor_head?.implemented){setHeadReading(null);return;}
     let cancelled=false,headPending=false;
     const head=async()=>{
       if(cancelled || headPending || document.visibilityState!=='visible')return;headPending=true;
@@ -433,7 +443,7 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
     void head();const a=window.setInterval(()=>void head(),100);
     const visible=()=>{void head();};document.addEventListener('visibilitychange',visible);
     return()=>{cancelled=true;clearInterval(a);document.removeEventListener('visibilitychange',visible);};
-  },[snapshot.wsState,snapshot.megaLinkState,snapshot.endpointUrl,snapshot.capabilities.sensor_head?.implemented,bootRevision,requestCommand,setOperationActivity]);
+  },[headViewers,snapshot.wsState,snapshot.megaLinkState,snapshot.endpointUrl,snapshot.capabilities.sensor_head?.implemented,bootRevision,requestCommand,setOperationActivity]);
 
   useEffect(()=>{const fence=()=>{++requestEpoch.current;};const visibility=()=>{if(document.visibilityState!=='visible')fence();};window.addEventListener('blur',fence);document.addEventListener('visibilitychange',visibility);return()=>{window.removeEventListener('blur',fence);document.removeEventListener('visibilitychange',visibility);};},[]);
 
@@ -580,7 +590,7 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
     if (wifiScanPending.current) return;
     wifiScanPending.current = true;
     const generation = ++wifiScanGeneration.current;
-    setWifiScanState('scanning'); setWifiScanError(null);
+    expectedScanId.current=null;setWifiScanState('scanning'); setWifiScanError(null);
     setWifiNetworks([]); setWifiScanTruncated(false);
     // accepted only starts the scan. The event is its terminal outcome.
     wifiScanTimer.current = setTimeout(() => {
@@ -589,7 +599,8 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
       setWifiScanError('No llegó el resultado del escaneo en 30 segundos.');
     }, 30000);
     try {
-      await client.sendCommand('wifi.scan', {}, 10000);
+      const result=await client.sendCommand<{scanId?:number}>('wifi.scan', {}, 10000);
+      if(generation===wifiScanGeneration.current)expectedScanId.current=result.payload.scanId??null;
     } catch (error) {
       if (generation !== wifiScanGeneration.current || !wifiScanPending.current) return;
       if (wifiScanTimer.current) clearTimeout(wifiScanTimer.current);
@@ -605,7 +616,7 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
       systemInfo, systemInfoUpdatedAtMs, bootReports, refreshSystemInfo, stopAvailable, webOperationActive, hasWebOperation, setOperationActivity,
       wifiDraft,
       robotState,
-      sensors, headReading, screenStatus, registerScreenViewer, screenSubscribed,
+      sensors, headReading, screenStatus, registerScreenViewer, registerHeadViewer, screenSubscribed,
       wifiStatus,
       wifiNetworks,
       wifiScanState, wifiScanError, wifiScanTruncated,
@@ -628,7 +639,7 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
       snapshot, battery, refreshBattery, systemInfo, systemInfoUpdatedAtMs, bootReports, refreshSystemInfo, stopAvailable, webOperationActive, hasWebOperation, setOperationActivity,
       wifiDraft,
       robotState,
-      sensors, headReading, screenStatus, registerScreenViewer, screenSubscribed,
+      sensors, headReading, screenStatus, registerScreenViewer, registerHeadViewer, screenSubscribed,
       wifiStatus,
       wifiNetworks,
       wifiScanState, wifiScanError, wifiScanTruncated,

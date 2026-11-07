@@ -37,7 +37,7 @@ namespace AFR2Loader
                 if (ShowStyledDialog(dialog) != DialogResult.OK) return false;
                 if (noMore.Checked)
                 {
-                    var next = new LoaderPreferences { BackupMegaBeforeFlasher = preferences.BackupMegaBeforeFlasher, ShowNoMegaBackupWarning = false, RequireChecklist = preferences.RequireChecklist, ChecklistsInitiallyChecked = preferences.ChecklistsInitiallyChecked };
+                    var next = new LoaderPreferences { Theme = preferences.Theme, BackupMegaBeforeFlasher = preferences.BackupMegaBeforeFlasher, ShowNoMegaBackupWarning = false, RequireChecklist = preferences.RequireChecklist, ChecklistsInitiallyChecked = preferences.ChecklistsInitiallyChecked };
                     next.Save(); preferences = next; showNoBackupWarning.Checked = false;
                     Log("Aviso sin backup desactivado; se puede reactivar en Preferencias.");
                 }

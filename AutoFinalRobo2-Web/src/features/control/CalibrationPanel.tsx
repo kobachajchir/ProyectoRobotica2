@@ -84,6 +84,8 @@ export function CalibrationPanel({preferences=false}:{preferences?:boolean}={}) 
     <p role="status" className="afr2-help">{feedback}</p>
     <p className="afr2-help" role="status">EEPROM: {robotState?.preferencesState === 1 ? 'guardando' : robotState?.preferencesState === 2 ? 'guardado confirmado por AVR' : robotState?.preferencesState === 3 ? 'fallo de guardado' : 'sin guardado confirmado en esta sesión'}.</p>
     <div className="afr2-action-row">
+      {!preferences && <Button disabled={!writable || busy} onClick={() => void write('robot.line.calibrate',{confirm:false,sample:'background'},{loadingTitle:'Tomando fondo…',successTitle:'Fondo registrado'})}>Tomar fondo</Button>}
+      {!preferences && <Button disabled={!writable || busy} onClick={() => void write('robot.line.calibrate',{confirm:false,sample:'line'},{loadingTitle:'Tomando línea…',successTitle:'Línea registrada'})}>Tomar línea</Button>}
       {!preferences && <Button disabled={!writable || busy} onClick={() => void write('robot.line.calibrate',{confirm:true},{loadingTitle:'Confirmando línea…',successTitle:'Calibración de línea confirmada'})}>Confirmar línea</Button>}
       {!preferences && <Button disabled={!writable || busy} onClick={() => void write('robot.line.calibrate',{confirm:false},{loadingTitle:'Invalidando línea…',successTitle:'Calibración de línea invalidada'})}>Invalidar línea</Button>}
       {preferences && <Button disabled={!writable || busy} onClick={() => void write('robot.preferences',{action:'save'},{loadingTitle:'Solicitando guardado…',successTitle:'Preferencias guardadas',acceptedTitle:'Guardado EEPROM en curso'})}>Guardar EEPROM</Button>}

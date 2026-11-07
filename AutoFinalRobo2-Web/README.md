@@ -1,3 +1,9 @@
+> **AFR2-20261106-04:** SRAM AVR 5614 bytes, libres antes de pila 2578; QR finish 29 bytes. Se conservan ambos buffers OLED. Builds y paridad C/Web 2104/2104 PASS; sin carga ni prueba física. [Evidencia](../AutoFinalRobo2-Contracts/documentation/builds/2026-11-06-04/README.md).
+
+> **AFR2-20261106-02:** regeneración y builds AVR/ESP/Web/Loader comprobados; paridad host OLED 1680/1680. **Carga bloqueada por presupuesto SRAM/pila AVR**; sin COM, flasheo ni prueba física. [Evidencia](../AutoFinalRobo2-Contracts/documentation/builds/2026-11-06-02/README.md).
+
+> **AFR2-20261106-01 / fuente:** correcciones coordinadas EX01v13, IR digital/EEPROMv9 y Wi-Fi persistente/paginado. [Ficha y estado por modulo](../AutoFinalRobo2-Contracts/changes/2026-11-06-01-coordinated-corrections.md). Sin nuevas compilaciones, generadores, pruebas ni cargas; no acredita el firmware instalado.
+
 > **AFR2-20261102-04:** `#/infraestructura` en Explorar, Inicio y Más; recorridos visuales de Web y modelos 3D, pesos GLB, tabla gzip y LittleFS. Vite dev/preview lee el paquete local preparado y lo distingue del reporte del ESP. [Ficha](../AutoFinalRobo2-Contracts/changes/2026-11-02-04-infrastructure-explorer.md). Solo fuente; sin tests, compilación, validaciones, navegador ni promoción.
 
 > **AFR2-20261102-03:** simulador con escena y controles lado a lado, zoom +/− flotante con porcentaje, cámara inicial igual a los banners de Modelos y banners re-renderizados (`tools/banner-renders`).

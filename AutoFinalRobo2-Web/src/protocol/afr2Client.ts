@@ -76,6 +76,10 @@ export function getDefaultWsEndpoint(): string {
 
 export class Afr2Client {
   private socket: WebSocket | null = null;
+  private ordinaryTail: Promise<unknown> = Promise.resolve();
+  private ordinaryReads = new Map<string, Promise<unknown>>();
+  private commandEpoch = 0;
+  private stableSince = 0;
   private generationId = 0;
   private closedGeneration = -1;
   private heartbeatPending = false;
@@ -237,7 +241,6 @@ export class Afr2Client {
         wsState: 'ready',
         megaLinkState: megaLink,
         brokerVersion,
-        reconnectAttempt: 0,
         lastError: null,
         capabilities: {
           ...DEFAULT_DESIGN_CAPABILITIES,
@@ -245,6 +248,7 @@ export class Afr2Client {
         },
       });
 
+      this.stableSince = Date.now();
       this.startHeartbeat(gen);
     } catch (err) {
       if (gen !== this.generationId || this.closedGeneration === gen) return;
@@ -258,6 +262,7 @@ export class Afr2Client {
     this.aliveTimer = setInterval(() => {
       if (gen !== this.generationId || this.state.wsState !== 'ready') return;
       const now = Date.now();
+      if (this.stableSince && now - this.stableSince >= 10000 && this.state.lastTrafficMs !== null && now-this.state.lastTrafficMs<1500 && this.state.reconnectAttempt) this.updateState({ reconnectAttempt: 0 });
       if (
         this.state.lastTrafficMs !== null &&
         now - this.state.lastTrafficMs > SESSION_EXPIRY_MS
@@ -324,6 +329,8 @@ export class Afr2Client {
 
   private teardownSocket(reason: string): void {
     this.stopHeartbeat();
+    this.stableSince = 0; ++this.commandEpoch; this.ordinaryReads.clear();
+    this.ordinaryTail = Promise.resolve();
     this.queuedDrivePayload = null;
     this.driveInFlightId = null;
 
@@ -440,7 +447,21 @@ export class Afr2Client {
         Afr2WsResponse<TPayload>
       >;
     }
-    return this.sendRawRequest<TPayload>(cmd, payload, timeoutMs, false);
+    const epoch = this.commandEpoch, generation = this.generationId;
+    const read = /(?:\.get|\.info|\.state|\.status)$/.test(cmd);
+    const key = `${cmd}:${JSON.stringify(payload)}`;
+    const existing = read ? this.ordinaryReads.get(key) : undefined;
+    if (existing) return existing as Promise<Afr2WsResponse<TPayload>>;
+    const operation = this.ordinaryTail.then(() => {
+      if (epoch !== this.commandEpoch || generation !== this.generationId) throw new Afr2CommandError('SUPERSEDED', 'Peticion anterior a STOP o cambio de sesion.');
+      return this.sendRawRequest<TPayload>(cmd, payload, timeoutMs, false);
+    });
+    this.ordinaryTail = operation.catch(() => undefined);
+    if (read) {
+      this.ordinaryReads.set(key, operation);
+      void operation.finally(() => { if (this.ordinaryReads.get(key) === operation) this.ordinaryReads.delete(key); }).catch(() => undefined);
+    }
+    return operation;
   }
 
   /**
@@ -450,6 +471,7 @@ export class Afr2Client {
   public async sendPriorityStop(
     reason: 'user-stop' | 'focus-lost' | 'control-reset' | 'safety' | string = 'user-stop'
   ): Promise<Afr2WsResponse> {
+    ++this.commandEpoch; this.ordinaryReads.clear();
     this.queuedDrivePayload = null;
     for (const [reqId, tx] of this.pending.entries()) {
       if (
@@ -558,6 +580,8 @@ export class Afr2Client {
         this.pending.delete(requestId);
         if (this.driveInFlightId === requestId) {
           this.driveInFlightId = null;
+          // AFR2-20261106-10: a late reply must not strand the latest queued drive target.
+          queueMicrotask(() => this.flushQueuedDrive());
         }
         reject(
           new Afr2CommandError(

@@ -65,8 +65,8 @@ namespace AFR2Loader
         }
         void Reposition(object sender, EventArgs e)
         {
-            var bar = owner.Controls.OfType<StatusStrip>().FirstOrDefault();
-            int bottom = bar == null ? owner.ClientSize.Height : bar.Top;
+            var bar = owner.Controls.Find("ActivityBar", true).FirstOrDefault();
+            int bottom = bar == null ? owner.ClientSize.Height : owner.PointToClient(bar.Parent.PointToScreen(bar.Location)).Y;
             Location = new Point(Math.Max(12, (owner.ClientSize.Width - Width) / 2), Math.Max(12, bottom - Height - 12));
         }
         protected override void Dispose(bool disposing)

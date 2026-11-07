@@ -13,6 +13,22 @@ namespace AFR2Loader
         static readonly string profilesDirectory = Path.Combine(Profile.UserRoot, "profiles");
         static readonly string activeProfileFile = Path.Combine(Profile.UserRoot, "active-profile.txt");
         string savedProfileJson;
+        // AFR2-20261106-06: save confirmation and pending-change marker beside the Save button.
+        readonly Label saveState = new Label { AutoSize = true, Margin = new Padding(8, 12, 0, 0) };
+        DateTime? savedStamp;
+        void UpdateSaveState()
+        {
+            bool dirty = false;
+            try
+            {
+                Profile copy = profile.Copy();
+                foreach (DataGridViewRow row in settings.Rows) { var field = row.Tag as Field; if (field != null) copy.Values[field.Key] = Convert.ToString(row.Cells[1].Value).Trim(); }
+                dirty = copy.ToJson() != savedProfileJson;
+            }
+            catch (Exception) { return; }
+            saveState.Text = dirty ? "● Cambios sin guardar" : savedStamp.HasValue ? "✓ Guardado a las " + savedStamp.Value.ToString("HH:mm:ss") : "Sin cambios pendientes";
+            saveState.ForeColor = dirty ? LoaderAppearance.WarningInk : LoaderAppearance.SuccessInk;
+        }
         bool refreshingProfiles;
         int profileDialogs;
 
@@ -96,7 +112,7 @@ namespace AFR2Loader
         {
             ReadSettings();
             if (String.IsNullOrEmpty(profilePath)) return SaveProfileAs();
-            profile.Save(profilePath); savedProfileJson = profile.ToJson();
+            profile.Save(profilePath); savedProfileJson = profile.ToJson(); savedStamp = DateTime.Now; UpdateSaveState();
             RememberActiveProfile(); RefreshSavedProfiles(); Log("Perfil guardado: " + profilePath);
             return true;
         }
@@ -133,7 +149,7 @@ namespace AFR2Loader
                 if (!name.EndsWith(".json", StringComparison.OrdinalIgnoreCase)) name += ".json";
                 string path = Path.Combine(profilesDirectory, name);
                 if (File.Exists(path) && MessageBox.Show(this, "Ya existe " + name + " en la biblioteca. ¿Reemplazarlo?", "Guardar perfil", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes) return false;
-                profile.Save(path); profilePath = path; savedProfileJson = profile.ToJson();
+                profile.Save(path); profilePath = path; savedProfileJson = profile.ToJson(); savedStamp = DateTime.Now;
                 RememberActiveProfile(); RefreshSavedProfiles(); Log("Perfil guardado: " + path); return true;
             }
         }

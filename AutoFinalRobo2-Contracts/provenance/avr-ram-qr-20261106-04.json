@@ -1,0 +1,205 @@
+{
+  "id": "AFR2-20261106-04",
+  "origin": "Adaptacion propia sobre fuente existente; autorias anteriores conservadas; no editar reference ni D:/AutoProyecto.",
+  "authorization": "Implementalo, no saques el buffer OLED, luego implementa lo del QR; comprobaciones expresamente autorizadas anteriormente.",
+  "state": {
+    "atmega": "compiled-default-and-isolated-enabled-profile; host-checked; unflashed",
+    "web": "reviewed-regenerated-compiled-packaged; host-pixel-parity",
+    "esp": "source-unchanged; local-web-package-copied; no-new-firmware-build",
+    "loader": "unchanged-by-this-delivery",
+    "cad": "unchanged"
+  },
+  "evidence": "documentation/builds/2026-11-06-04/README.md",
+  "files": [
+    {
+      "path": "AutoFinalRobo2-Atmega/include/afr2_sequence.h",
+      "sha256_raw": "3c13e0f12345f5ce87497fafc96666922303c077ac4f1c6197f437af52356792",
+      "adaptation": "Condicionar exclusivamente almacenamiento de pasos/kinds; metadatos y perfil default0 conservados."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/services/afr2_sequence.c",
+      "sha256_raw": "f7204ba89143e29f6fbec7aab1bf1daeb7216b5e3c50e7288a9e655b4ad2d630",
+      "adaptation": "Guardar accesos al buffer bajo el mismo perfil; preservar envelope, estado y ejecucion del perfil habilitado."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/include/afr2_screens.h",
+      "sha256_raw": "dc906c8b75441c7deb225a26aea3d60a44ad16fa8f188d3cf4e804f281e6c4e1",
+      "adaptation": "APIs flash de texto/avisos y callback reason_flash explicito."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/ui/afr2_screens.c",
+      "sha256_raw": "459730a25443b141c2b633471587f96aa07527e1860e6395debdedea37d4bf41",
+      "adaptation": "Avisos sin buffer temporal, copia/deduplicacion RAM o flash; scroll flash equivalente."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/services/afr2_app.c",
+      "sha256_raw": "1eb80e4e41d807138ea9742425e8203309946d7a10529d0fcb0a6b6a5e2f7632",
+      "adaptation": "Motivos/avisos PROGMEM y snapshot sin acceso a almacenamiento ausente."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/services/afr2_app_wire.c",
+      "sha256_raw": "ff3653787d3d93c270e8b156a326c34aca3aaa475ce6e61d6a3befcfb1016630",
+      "adaptation": "Mensajes y formatos constantes flash, mismas respuestas/comandos."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/services/afr2_network.c",
+      "sha256_raw": "14ff1414f6dbc8dd31f8bba1a9104f8aa20035a2df38d72d4e9254a8d94dd77b",
+      "adaptation": "Titulo flash y detalle RAM; formatos flash sin credenciales incorporadas."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/include/afr2_oled.h",
+      "sha256_raw": "5b4e4ca61013d0931f55ff5687126a3a6672c3178eab543cef6024b276337e6e",
+      "adaptation": "Prestamo sincrono de sombra ACK y ventana flash; ambos buffers conservados."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/display/afr2_oled.c",
+      "sha256_raw": "a9d123a2ad7af46a73ca5d1336fcd9eebbb0933d92414d01b299192c614040ce",
+      "adaptation": "Invalidacion por chunks antes del prestamo; ventana flash con clipping identico; tx/command intactos."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/ui/afr2_network_screen.c",
+      "sha256_raw": "dec70cc3530e4609b294aeb7bd42f2cd775303897cc05027a38f56281974f47d",
+      "adaptation": "Lectura flash para lineas constantes, mismo raster."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/ui/afr2_qr_screen.c",
+      "sha256_raw": "af37d935141724228e98f8d50349a9c06943a6dfb7400f5fffa9c72475eed252",
+      "adaptation": "Eliminar matriz local353; scratch ACK invalidado y limpiado sin yield, mismo QR."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/oled/firmwareRenderer.ts",
+      "sha256_raw": "d9c2671ab33c592927fb53c7ffb914dcef310955873a7d364f87230a6cc2044a",
+      "adaptation": "Cotejo de semantica flash/avisos; contenido, coordenadas y tiempos conservados."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/oled/oledRasterizer.ts",
+      "sha256_raw": "d683fdfd1b9e06a0b630a88389b9a2f5e15086fac841719b5932b5eaf28cf23a",
+      "adaptation": "Documentar equivalencia de ventana RAM/flash en el espacio unico JS."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/oled/qrScreen.ts",
+      "sha256_raw": "d2fcd2b70d87c65c0946eaecf8f40a52f3f73bc6c266f00b3944c5bce59fd23d",
+      "adaptation": "Contraparte QR cotejada: payload, ECC, mascara, escala y origen conservados."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/oled/firmwareRenderer.sources.json",
+      "sha256_raw": "d2bc5d1939b1eb87c1352832fdb7170274ec098643829ba4e7b37493e24c9dd2",
+      "adaptation": "Hashes actualizados tras cotejo C/TS y regresion raster."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/oled/generated/firmwareLibrary.ts",
+      "sha256_raw": "693c7dab9923c2ccc5c5c136dec400584fcca8d1a393b8ccd97a275fb8a872cd",
+      "adaptation": "Recursos regenerados con guardia activa."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/tools/sync-oled-library.mjs",
+      "sha256_raw": "80bb2973c7a85c2cd8e0f94672528b8e580ead3e829795cfe1b5ba445f39977d",
+      "adaptation": "Incluir header API OLED en origen revisado, conservar guardia sin copy-only."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/README.md",
+      "sha256_raw": "2d1c3c58d0b5e820d268f07968007465a0326072e3ed68ea206610ef605c9c41",
+      "adaptation": "Estado medido y limites de compilacion/carga/fisico, sin borrar historicos."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/README.md",
+      "sha256_raw": "71bb67be02a65a6333df16171e86a4f4c12fe0cd64e594b04e8942613cf7c67d",
+      "adaptation": "Estado medido y limites de compilacion/carga/fisico, sin borrar historicos."
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/INFORME_ADAPTACION.md",
+      "sha256_raw": "9ab7ed44f310c922e432295f11b5b2c0aa6cf2181c14d2372ac0a95b7833b295",
+      "adaptation": "Estado medido y limites de compilacion/carga/fisico, sin borrar historicos."
+    },
+    {
+      "path": "AutoFinalRobo2-Web/INFORME_ADAPTACION.md",
+      "sha256_raw": "cbd752f4f659fb598a7cbedd1cf0fd9930e7c42680cc30fd8dfdc90efc986f24",
+      "adaptation": "Estado medido y limites de compilacion/carga/fisico, sin borrar historicos."
+    },
+    {
+      "path": "INFORME_MAESTRO.md",
+      "sha256_raw": "2e05d6eb67f2a3dc8b9e02122e4ed510b4fdf6963284793b9b0f1d5eabd77312",
+      "adaptation": "Resultado coordinado de RAM y QR, sin afirmar aceptacion fisica."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/README.md",
+      "sha256_raw": "201003090a6c64962ed9dccdab085b36b333d7a934ee8ca0549dcab2f1a54019",
+      "adaptation": "Registro AFR2-20261106-04; historial y wire existentes conservados."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/CHANGELOG.md",
+      "sha256_raw": "e56b20f9ad2474c2739da82e5ab99622a97355287d8bf0b2192ecc1d9697073b",
+      "adaptation": "Registro AFR2-20261106-04; historial y wire existentes conservados."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/screens.json",
+      "sha256_raw": "def4672a0281bc6b000e4e99296daf7250bc87447e747f5d6ac90b7cfb9f3725",
+      "adaptation": "Registro AFR2-20261106-04; historial y wire existentes conservados."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/docs/AVR_RAM_AUDIT_20261106.md",
+      "sha256_raw": "223bd400507ea405946887935edb2167e2fef5df65d8d4f431171a4c9eaa7b83",
+      "adaptation": "Registro AFR2-20261106-04; historial y wire existentes conservados."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/acceptance/2026-11-06-01.md",
+      "sha256_raw": "3646eb6f7d06b015febfd796f69a4fc615bd3a62ac06e43bb06cd0982a52f566",
+      "adaptation": "Registro AFR2-20261106-04; historial y wire existentes conservados."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/AVR_RAM_STORAGE_20261106.md",
+      "sha256_raw": "d9b033f316f782bcdd064d96c26ed945cec34cf99c11ed3a8629e96ecc692304",
+      "adaptation": "Registro AFR2-20261106-04; historial y wire existentes conservados."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/changes/2026-11-06-04-avr-ram-qr.md",
+      "sha256_raw": "0450b948883515dd258f85d11c9062872d48280cf59c47a05d34b2154b710ec1",
+      "adaptation": "Registro AFR2-20261106-04; historial y wire existentes conservados."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/tools/verification/oled-parity/bundle.mjs",
+      "sha256_raw": "a940ce922864e78bc9c9cda0ae452344288abcf17f932a9b15f9ff390761b004",
+      "adaptation": "Harness host y fixtures propios, sin hardware ni credenciales reales."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/tools/verification/oled-parity/check.ts",
+      "sha256_raw": "6c43131b95c218197bdcf0b8432aeec3ba54660238b9e34a69dd1ecfa392e669",
+      "adaptation": "Harness host y fixtures propios, sin hardware ni credenciales reales."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/tools/verification/oled-parity/frames.c",
+      "sha256_raw": "b188d4e1468ffdd956d0e91909245c865681c869b234fee829bae3afd22e65ec",
+      "adaptation": "Harness host y fixtures propios, sin hardware ni credenciales reales."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/tools/verification/oled-parity/README.md",
+      "sha256_raw": "30d4018b72d72bfcb194ecae1e1a5f7ad5f44095f73d5f4dc432dc9711d2b8f9",
+      "adaptation": "Harness host y fixtures propios, sin hardware ni credenciales reales."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/tools/verification/oled-parity/run.ps1",
+      "sha256_raw": "3384260e5e0b04acdba8103669508753cd1ffc890998eecceab0118f631a9f1b",
+      "adaptation": "Harness host y fixtures propios, sin hardware ni credenciales reales."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/tools/verification/oled-parity/avr/pgmspace.h",
+      "sha256_raw": "71f7726bcf09daf0b8bc2681f2abf813107e392191d4850f8181b80269132d79",
+      "adaptation": "Harness host y fixtures propios, sin hardware ni credenciales reales."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/tools/verification/avr-ram/checks.c",
+      "sha256_raw": "fb407158cf18f0b5bdfabb9b579c1e6ef0befca8f2461c42214ee1d1480bc626",
+      "adaptation": "Harness host y fixtures propios, sin hardware ni credenciales reales."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/tools/verification/avr-ram/README.md",
+      "sha256_raw": "055d57439702fd5e11b68aa3c243f28efeba6de2255a56c3b9935d7e8acccce5",
+      "adaptation": "Harness host y fixtures propios, sin hardware ni credenciales reales."
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/tools/verification/avr-ram/run.ps1",
+      "sha256_raw": "1c8bdf0ba1e4eaf6027cae08937107b883aa56844e3c774ef0b84fc0156aa700",
+      "adaptation": "Harness host y fixtures propios, sin hardware ni credenciales reales."
+    }
+  ]
+}

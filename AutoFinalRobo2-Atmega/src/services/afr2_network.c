@@ -4,6 +4,7 @@
 #include "afr2_product_wire.h"
 #include <stdio.h>
 #include <string.h>
+#include <avr/pgmspace.h>
 
 static void clear_ap(Afr2Wifi *w) {
     volatile char *p=w->ap_password;for(uint8_t i=0;i<sizeof(w->ap_password);i++)p[i]=0;
@@ -26,13 +27,13 @@ uint8_t Afr2App_NetworkCommand(Afr2App *a,uint8_t cmd,const uint8_t *d,uint8_t n
             if(boot!=w->display_boot || revision!=w->display_revision) {
                 w->display_ready=0;clear_ap(w);
                 a->snapshot_active=0;a->ui->redraw=true;
-                if(boot!=w->display_boot)w->display_event=0;
+                if(boot!=w->display_boot){if(w->display_boot){w->pending=w->draft_ready=w->network_count=w->scan_total=w->mode_draft=0;w->scan_id=0;memset(w->password,0,sizeof(w->password));w->credentials_visible=0;Afr2Ui_NetworkRestart(a->ui);}w->display_event=0;}
             }
             w->display_boot=boot;w->display_revision=revision;w->display_page=0;
             w->mode=text[0];w->sta_connected=text[1];w->ap_active=text[2];w->ap_clients=text[3];w->web_ready=text[4];
             w->rssi=(int16_t)afr2_get_u16(text+5);
-            snprintf(w->ip,sizeof(w->ip),"%u.%u.%u.%u",text[7],text[8],text[9],text[10]);
-            snprintf(w->ap_ip,sizeof(w->ap_ip),"%u.%u.%u.%u",text[11],text[12],text[13],text[14]);
+            snprintf_P(w->ip,sizeof(w->ip),PSTR("%u.%u.%u.%u"),text[7],text[8],text[9],text[10]);
+            snprintf_P(w->ap_ip,sizeof(w->ap_ip),PSTR("%u.%u.%u.%u"),text[11],text[12],text[13],text[14]);
         } else {
             if(boot!=w->display_boot || revision!=w->display_revision || page!=w->display_page)return AFR2_RESULT_UNAVAILABLE;
             if(memchr(text,0,size))return AFR2_RESULT_BAD_REQUEST;
@@ -67,13 +68,16 @@ uint8_t Afr2App_NetworkCommand(Afr2App *a,uint8_t cmd,const uint8_t *d,uint8_t n
             if(kind==AFR2_NET_GOT_IP)strncpy(detail,w->ip,sizeof(detail)-1);
             else if(kind==AFR2_NET_AP_READY)strncpy(detail,w->ap_ip,sizeof(detail)-1);
             else if(kind==AFR2_NET_CLIENT_JOIN || kind==AFR2_NET_CLIENT_LEAVE) {
-                if(d[9])snprintf(detail,sizeof(detail),"Cliente %u",d[9]);else strcpy(detail,"Cliente Wi-Fi");
+                if(d[9])snprintf_P(detail,sizeof(detail),PSTR("Cliente %u"),d[9]);else strcpy_P(detail,PSTR("Cliente Wi-Fi"));
             }
             detail[17]=0;
-            Afr2Ui_Notify(a->ui,AFR2_NOTICE_NETWORK+kind,"Conectividad",detail,kind==AFR2_NET_AP_READY?20000:4000);
+            Afr2Ui_NotifyFlashTitle(a->ui,AFR2_NOTICE_NETWORK+kind,PSTR("Conectividad"),detail,kind==AFR2_NET_AP_READY?20000:4000);
             a->snapshot_active=0;
         }
-        if(kind==AFR2_NET_BOOT)a->esp_boot_notified=w->display_boot;
+        if(kind==AFR2_NET_BOOT){
+            if(!duplicate_boot){w->pending=w->draft_ready=w->network_count=w->scan_total=w->mode_draft=0;w->scan_id=0;memset(w->password,0,sizeof(w->password));w->credentials_visible=0;Afr2Ui_NetworkRestart(a->ui);}
+            a->esp_boot_notified=w->display_boot;
+        }
         w->display_event=seq;
     }
     afr2_put_u32(out,seq);*length=4;return AFR2_RESULT_OK;

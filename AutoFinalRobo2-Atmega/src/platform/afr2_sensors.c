@@ -13,7 +13,7 @@
  * before UI edge capture too. No change to x1 calibration units or wheel order. */
 static volatile uint8_t echo_state, echo_error, echo_done;
 static volatile uint16_t echo_ticks, echo_rise, echo_width, servo_width;
-static uint8_t adc_channel, adc_running,line_kind,scans,history[5];
+static uint8_t adc_running,line_kind,scans,history[5];
 static uint16_t raw[5];
 /* AFR2-20261029-26: one ADC owner for IR and opt-in battery acquisition. */
 static uint8_t battery_enabled,battery_count,adc_discard,battery_range;
@@ -114,10 +114,8 @@ void Afr2Sensors_Init(void) {
      * Init runs before sei(); two consecutive volatile writes meet JTD sequence. */
     uint8_t jtag=MCUCR|_BV(JTD);MCUCR=jtag;MCUCR=jtag;
     DDRF&=(uint8_t)~0x1f; PORTF&=(uint8_t)~0x1f;
-    /* AFR2-20261030-03: default IR profile samples ADC4..ADC0, not PINF.
-     * Disable digital buffers for ADC inputs; Task enables them only for an
-     * explicitly selected digital profile. Calibration never gates raw. */
-    DIDR0|=0x1f;PRR0&=(uint8_t)~_BV(PRADC);
+    /* AFR2-20261106-01: digital buffers for IR; ADC owner is battery only. */
+    DIDR0&=(uint8_t)~0x1f;PRR0&=(uint8_t)~_BV(PRADC);
     DDRF&=(uint8_t)~_BV(PF5);PORTF&=(uint8_t)~_BV(PF5);DIDR0|=_BV(ADC5D);
     DDRC|=_BV(PC7); PORTC&=(uint8_t)~_BV(PC7); DDRC&=(uint8_t)~_BV(PC6);
     PORTC&=(uint8_t)~_BV(PC6);
@@ -166,22 +164,14 @@ void Afr2Sensors_Task(Afr2Sensors *s,const Afr2Config *c,uint32_t now) {
     if(revision!=head.servo_sequence){head.servo_sequence=revision;head.servo_ms=now;head.pulse_us=applied;head.enabled=applied!=0;
         if(applied){uint8_t angle=((uint32_t)(applied-1000u)*180u+500u)/1000u;head.angle=head.inverted?180u-angle:angle;}}
     uint8_t updated=0;
-    if(c->line_kind!=line_kind){line_kind=c->line_kind;scans=0;adc_running=0;memset(history,0,sizeof(history));
-        ADCSRA&=(uint8_t)~_BV(ADEN);
+    if(c->line_kind!=line_kind){line_kind=c->line_kind;scans=0;memset(history,0,sizeof(history));
         DDRF&=(uint8_t)~0x1f;PORTF&=(uint8_t)~0x1f;
         if(line_kind==1)DIDR0&=(uint8_t)~0x1f;else DIDR0|=0x1f;
-        ADCSRA|=_BV(ADEN);}
+        }
     /* Finish the current conversion before selecting any other channel. */
     if(adc_running && !(ADCSRA&_BV(ADSC))){
         uint16_t sample=ADC;
-        if(adc_running==1){
-            if(adc_discard){adc_discard=0;ADCSRA|=_BV(ADSC);}
-            else {
-                raw[adc_channel]=sample;
-                if(++adc_channel==5){adc_running=0;line_ms=now;s->line_ms=now;updated=1;}
-                else {ADMUX=_BV(REFS0)|(4u-adc_channel);adc_discard=1;ADCSRA|=_BV(ADSC);}
-            }
-        }else if(adc_discard){adc_discard=0;ADCSRA|=_BV(ADSC);}
+        if(adc_discard){adc_discard=0;ADCSRA|=_BV(ADSC);}
         else {
             adc_running=0;battery_step_ms=now;battery_sum+=sample;if(sample==1023)battery_range=1;
             if(++battery_count==8){
@@ -196,8 +186,6 @@ void Afr2Sensors_Task(Afr2Sensors *s,const Afr2Config *c,uint32_t now) {
         if(c->line_kind==1) { /* Digital: IR1 PF4 .. IR5 PF0 */
             uint8_t pins=PINF; for(uint8_t i=0;i<5;i++)raw[i]=(pins&(1u<<(4u-i)))?1:0;
             line_ms=now; s->line_ms=now;updated=1;
-        } else if(c->line_kind==2) {
-            if(!adc_running){adc_channel=0;ADCSRB&=(uint8_t)~_BV(MUX5);ADMUX=_BV(REFS0)|4;adc_discard=1;ADCSRA|=_BV(ADSC);adc_running=1;}
         }
     }
     /* Battery only takes idle slots between full IR scans, even with IR off. */

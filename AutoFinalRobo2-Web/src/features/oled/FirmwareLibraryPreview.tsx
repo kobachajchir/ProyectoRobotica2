@@ -2,7 +2,7 @@ import { MOTOR_IDS, stepMotor } from '../../domain/motorSelection';
 /* AFR2-20261029-27: quick controls/radar/PWM/WS integration; prior authors retained. */
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { FIRMWARE_LIBRARY as library } from './generated/firmwareLibrary';
-import { firmwareMenuItem, firmwareNodeCount, firmwareNode, renderFirmwareScreen, type FirmwareSnapshot } from './firmwareRenderer';
+import { firmwareMenuItem, firmwareNodeCount, firmwareNode, renderFirmwareScreen, MOTOR_SELECTOR_NODE, type FirmwareSnapshot } from './firmwareRenderer';
 import { Afr2OledBuffer } from './oledRasterizer';
 import { OledCanvas128x64 } from './OledCanvas128x64';
 import { OledWorkbench } from './OledWorkbench';
@@ -19,7 +19,7 @@ interface Position { node: number; selection: number; firstVisible: number }
 const clock = () => Math.floor(performance.now()) >>> 0;
 export function FirmwareLibraryPreview({ screen, onNavigate, active = true }: { screen: Afr2ScreenMetadata; onNavigate: (code: Afr2ScreenCode) => void; active?: boolean }) {
   const foundNode = library.nodes.findIndex(item => Number(item[5]) === Number.parseInt(screen.code.slice(2), 16));
-  const node = foundNode<0 && ['0x03003d','0x03003e','0x03003f','0x030040','0x030041','0x030042','0x030043','0x030044'].includes(screen.code) ? screen.code==='0x030044'?70:61+['0x03003d','0x03003e','0x03003f','0x030040','0x030041','0x030042','0x030043','0x030044'].indexOf(screen.code) : foundNode;
+  const node = foundNode<0 && ['0x03003d','0x03003e','0x03003f','0x030040','0x030041','0x030042','0x030043','0x030044'].includes(screen.code) ? screen.code==='0x030044'?MOTOR_SELECTOR_NODE:61+['0x03003d','0x03003e','0x03003f','0x030040','0x030041','0x030042','0x030043','0x030044'].indexOf(screen.code) : foundNode;
   const [position, setPosition] = useState<Position>({ node, selection: 0, firstVisible: 0 });
   const [clockMs, setClockMs] = useState(clock);
   const [feedback, setFeedback] = useState<string | null>(null);
@@ -112,7 +112,7 @@ export function FirmwareLibraryPreview({ screen, onNavigate, active = true }: { 
     }
     if (!count) { setFeedback('Esta pantalla necesita datos preparados por el controlador.'); return; }
     const item = firmwareMenuItem(node, state.selection);
-    if(item.action===library.symbols.AFR2_A_WHEEL){history.current.push({...state});navigate({node:70,selection:0,firstVisible:0});return;}
+    if(item.action===library.symbols.AFR2_A_WHEEL){history.current.push({...state});navigate({node:MOTOR_SELECTOR_NODE,selection:0,firstVisible:0});return;}
     if(item.action===library.symbols.AFR2_A_HALL_BEGIN){
       const target=library.nodes.findIndex(n=>Number(n[5])===0x030036);
       if(target>=0){history.current.push({...state});navigate({node:target,selection:0,firstVisible:0});}return;

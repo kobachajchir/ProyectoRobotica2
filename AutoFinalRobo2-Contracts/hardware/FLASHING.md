@@ -11,6 +11,8 @@
 
 # Carga con el USB del Mega y shield OSOYOO UART
 
+> **AFR2-20261106-11:** el método D0/D1 con RESET del Mega a GND queda **RETIRADO**; solo se usa el flasher en software (D18/D19, RESET libre). KEY/RST pueden accionarse a mano o por transistores en D32/D33: [PLAN y circuito](PLAN_KEY_RST_AUTOMATICO.md). Las secciones de abajo sobre D0/D1 se conservan como antecedente histórico.
+
 > **Integración AFR2-20261028-03:** [plan A/B](PLAN_PRUEBA_FLASHER_MEGA.md), instalar/restaurar flasher en Loader0.8, baud fijo115200 candidato. RESET Mega **libre**, D18/D19. Fuente sin compilar/cargar/probar. El puente físico RESET-GND inferior es otro transporte; no hay cambio automático de montaje ni restauración al cerrar.
 
 > **Diagnóstico AFR2-20261027-25:** consultas externas por USB–TTL en COM5

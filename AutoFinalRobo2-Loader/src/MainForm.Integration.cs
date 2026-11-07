@@ -39,7 +39,7 @@ namespace AFR2Loader
             layout.RowStyles[3].Height = 172;
             var box = (TableLayoutPanel)layout.GetControlFromPosition(0, 3);
             box.RowCount = 4; box.RowStyles.Clear();
-            foreach (int height in new[] { 26, 32, 42, 72 }) box.RowStyles.Add(new RowStyle(SizeType.Absolute, height));
+            foreach (int height in new[] { 24, 28, 36, 64 }) box.RowStyles.Add(new RowStyle(SizeType.Absolute, height));
             lastResult.AutoEllipsis = false; status.AutoEllipsis = false;
             box.Controls.Add(evidence, 0, 3);
             target.SelectedIndexChanged += (s, e) => UpdateConnectionEvidence("");
@@ -57,7 +57,7 @@ namespace AFR2Loader
             var mcpHelp = new FlowLayoutPanel { Dock = DockStyle.Top, AutoSize = true, WrapContents = true };
             var viewMcpActions = new ActionButton { Text = "Ver acciones MCP", Width = 210 };
             viewMcpActions.Click += (s, e) => OpenManualSection("mcp-acciones");
-            mcpHelp.Controls.Add(viewMcpActions); mcpLayout.Controls.Add(mcpHelp, 0, 2);
+            viewMcpActions.Role = ButtonRole.Secondary; mcpHelp.Controls.Add(SectionLabel("3 · Solicitudes")); mcpHelp.Controls.Add(viewMcpActions); mcpLayout.Controls.Add(mcpHelp, 0, 2);
             // Separate autosized rows reserve room for both checkboxes before any click,
             // including when Windows scales fonts. Disabled never means hidden.
             var requestOptions = new TableLayoutPanel { Dock = DockStyle.Top, AutoSize = true, ColumnCount = 1, RowCount = 2, Margin = new Padding(0, 6, 0, 6) };
@@ -119,10 +119,16 @@ namespace AFR2Loader
             historyLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100)); historyLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
             historyLayout.Controls.Add(history, 0, 0);
             var historyActions = UiRow();
-            var copyHistory = new ActionButton { Text = "Copiar seleccionados", Width = 185, Height = 32 };
+            var copyHistory = new ActionButton { Text = "Copiar seleccionados", Width = 185, Height = 32, Role = ButtonRole.Secondary };
             copyHistory.Click += (s, e) => CopyHistorySelection(); historyActions.Controls.Add(copyHistory);
             foreach (string shortcut in new[] { "Doble clic: detalles", "Ctrl + clic: filas", "Shift + clic: rango", "Ctrl + C: copiar" }) historyActions.Controls.Add(new Label { Text = shortcut, AutoSize = true, ForeColor = Color.Firebrick, BackColor = Color.FromArgb(255, 237, 237), Padding = new Padding(8, 8, 8, 8), Margin = new Padding(8, 3, 0, 0) });
             historyLayout.Controls.Add(historyActions, 0, 1); historyTab.Controls.Add(historyLayout); tabs.TabPages.Add(historyTab);
+            // AFR2-20261106-06: explain the empty history and keep copy tied to a selection.
+            var historyEmpty = new Label { Text = "Todavía no hay trabajos en esta sesión.\r\nCompilá, detectá o cargá desde Operación y aparecerán acá con su estado y resultado.", AutoSize = false, TextAlign = ContentAlignment.TopCenter, Padding = new Padding(16, 40, 16, 0) };
+            history.Controls.Add(historyEmpty);
+            EventHandler placeEmpty = (s, e) => historyEmpty.SetBounds(0, history.ColumnHeadersHeight, history.ClientSize.Width, Math.Max(0, history.ClientSize.Height - history.ColumnHeadersHeight));
+            history.SizeChanged += placeEmpty; history.Layout += (s, e) => placeEmpty(s, EventArgs.Empty);
+            timer.Tick += (s, e) => { historyEmpty.Visible = history.Rows.Count == 0; copyHistory.Enabled = history.SelectedRows.Count > 0; };
             timer.Tick += (s, e) => { if (++historyTick % 10 == 0 && tabs.SelectedTab == historyTab) RefreshHistory(); };
             tabs.SelectedIndexChanged += (s, e) => { if (tabs.SelectedTab == historyTab) RefreshHistory(); };
 
@@ -146,6 +152,8 @@ namespace AFR2Loader
             var save = new ToolStripSplitButton("Guardar perfil") { AutoSize = false, Size = new Size(285, UiButtonHeight), DropDownButtonWidth = UiSplitWidth };
             save.ButtonClick += (s, e) => SaveProfile(); save.DropDownItems.Add("Guardar", null, (s, e) => SaveProfile()); save.DropDownItems.Add("Guardar como...", null, (s, e) => SaveProfileAs());
             saveStrip.Items.Add(save); idleControls.Add(saveStrip); configLayout.RowStyles[2].Height = 104; configButtons.WrapContents = true; configButtons.AutoSize = false; configButtons.Dock = DockStyle.Fill; footerLayout.AutoSize = false; footerLayout.Dock = DockStyle.Fill;
+            configButtons.Controls.Add(saveState); UpdateSaveState(); int saveTick = 0;
+            timer.Tick += (s, e) => { if (++saveTick % 5 == 0 && !settings.IsCurrentCellInEditMode) UpdateSaveState(); };
             footerLayout.Controls.Add(configButtons, 0, 0); footerLayout.Controls.Add(saveStrip, 1, 0); configLayout.Controls.Add(footerLayout, 0, 2);
             bridge = new LocalBridge(DispatchBridge, Log); bridge.Start();
             Log("MCP local disponible para este usuario; falta registrar/conectar el cliente. Canal: " + LocalBridge.PipeName);
@@ -187,8 +195,8 @@ namespace AFR2Loader
             foreach (JobState job in jobs.Values.OrderByDescending(j => j.Created))
             {
                 DataGridViewRow row = history.Rows.Cast<DataGridViewRow>().FirstOrDefault(r => ((JobState)r.Tag).Id == job.Id);
-                if (row == null) { history.Rows.Insert(index, job.Created, job.Action, job.Origin, job.Port, job.Status, job.Result); row = history.Rows[index]; row.Tag = job; }
-                object[] values = { job.Created, job.Action, job.Origin, job.Port, job.Status, job.Result };
+                if (row == null) { history.Rows.Insert(index, ReadableTime(job.Created), job.Action, job.Origin, job.Port, job.Status, job.Result); row = history.Rows[index]; row.Tag = job; }
+                object[] values = { ReadableTime(job.Created), job.Action, job.Origin, job.Port, job.Status, job.Result };
                 for (int column = 0; column < values.Length; column++)
                     if (!Object.Equals(row.Cells[column].Value, values[column])) row.Cells[column].Value = values[column];
                 index++;
@@ -427,7 +435,7 @@ namespace AFR2Loader
                     case "build_esp": await ops.BuildEsp(p, token); break;
                     case "build_web_fs": await ops.BuildWebFs(p, token); break;
                     case "build_all": await ops.BuildAll(p, token); break;
-                    case "probe_esp": await ops.PrepareEspSession(p, port, false, shouldListen, token); await ops.Probe(p, port, token); break;
+                    case "probe_esp": { confirmedFlashCapacity = null; await ops.PrepareEspSession(p, port, false, shouldListen, token); long detectedCapacity = await ops.Probe(p, port, token); ApplyDetectedFlashCapacity(detectedCapacity); break; }
                     case "flash_mega": await ops.FlashMega(p, port, token); break;
                     case "verify_mega_flasher": await ops.VerifyMegaFlasher(p, port, token); break;
                     case "install_mega_flasher": await InstallFlasherCore(ops, p, port, token); break;

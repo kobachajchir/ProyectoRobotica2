@@ -37,6 +37,8 @@ namespace AFR2Loader
         public string CompletionMessage;
         public bool InstalledMegaFlasher, MegaFirmwareFlashed;
         public static bool UsesMegaBridge(Profile p) { return p.Get("EspTransport") == "mega_bridge"; }
+        // AFR2-20261106-11: opt-in; solo con el flasher ATmega y el circuito de transistores armado.
+        public static bool AutoKeyRst(Profile p) { return UsesMegaBridge(p) && p.Get("EspKeyRst") == "auto"; }
         static string BridgeHex(Profile p) { return Path.Combine(p.Resolve("AtmegaDir"), "build", "afr2-esp-bridge-" + p.Get("BridgeBaud") + ".hex"); }
         static void CheckBridge(Profile p)
         {
@@ -130,6 +132,11 @@ namespace AFR2Loader
         void GuideMegaBridgeBoot(Profile p, bool forVerification, CancellationToken token)
         {
             token.ThrowIfCancellationRequested(); CheckBridge(p); EspSessionStarted = true;
+            if (AutoKeyRst(p)) {
+                KeyRstAutomatic = true;
+                Stage("boot_entry_requested", "KEY/RST automáticos: el flasher AFR2 acciona D32/D33 al abrir el puerto de esptool. No se afirma modo observado por UART hasta la respuesta ROM.");
+                return;
+            }
             RequirePhysicalEsp("Intervención física necesaria · ESP por flasher ATmega", "Mega ejecutando flasher a " + p.Get("BridgeBaud") + ". RESET del Mega LIBRE.\r\n\r\n1. Apretá y mantené KEY del ESP.\r\n2. Pulsá y soltá SOLO RST del ESP.\r\n3. Seguí manteniendo KEY y confirmá abajo.\r\n\r\nConservá KEY hasta el aviso del Loader o el fin de la operación. No pulses RESET del ATmega.\r\nNo se escucha 74880: el puente tiene baud fijo. La consulta comprobará comunicación bidireccional.\r\nEl wrapper esperará al Mega DESPUÉS de abrir el mismo COM para esptool." + (forVerification ? "\r\nNo se repetirá la escritura, solo consulta y verificación." : ""), token);
             Stage("boot_entry_requested", "Secuencia KEY/RST confirmada manualmente; falta respuesta ROM. No se afirma modo observado por UART.");
             token.ThrowIfCancellationRequested();
@@ -144,9 +151,10 @@ namespace AFR2Loader
         }
         string EspRestoration(Profile p)
         {
+            if (AutoKeyRst(p)) return "KEY/RST automáticos en cada sesión física: consultá el registro para confirmar boot, liberación de pines y reinicio final. RESET Mega sigue libre. Al terminar usá Flashear Firmware ATmega o el menú Flashear último backup; no habilitar motores con el flasher temporal instalado.";
             return UsesMegaBridge(p) ? "RESET Mega sigue libre. Al terminar usá Flashear Firmware ATmega o el menú Flashear último backup; no habilitar motores con el flasher temporal instalado. KEY libre y resetear ESP para arrancar desde flash."
                 : p.Get("EspTransport") == "usb-ttl" ? "Para operar: al terminar soltar KEY, apagar y retirar el adaptador USB–TTL; restaurar D18→E_RX y E_TX→D19 con RESET Mega libre. KEY libre; resetear ESP."
-                : "Para operar: al terminar soltar KEY, apagar, quitar RESET Mega→GND, retirar D0/D1, restaurar D18→E_RX y E_TX→D19. KEY libre; resetear ESP.";
+                : "KEY libre; resetear ESP.";
         }
     }
 }

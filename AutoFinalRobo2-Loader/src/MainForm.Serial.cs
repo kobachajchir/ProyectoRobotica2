@@ -74,6 +74,12 @@ namespace AFR2Loader
             transferTitle.Text = "Estado de la sesión"; transferTitle.Font = new Font(Font.FontFamily, 13, FontStyle.Bold); transferSummary.Text = "Sin carga en curso.";
             transferCard.BackColor = transferSummary.BackColor = Color.FromArgb(232, 241, 246); transferTitle.ForeColor = transferSummary.ForeColor = Color.FromArgb(22, 79, 99);
             transferCard.Controls.Add(transferIcon, 0, 0); transferCard.SetRowSpan(transferIcon, 2); transferCard.Controls.Add(transferTitle, 1, 0); transferCard.Controls.Add(transferSummary, 1, 1); EnableTextCopyFeedback(transferSummary); layout.Controls.Add(transferCard, 0, 3);
+            // AFR2-20261106-06: reception first. With no transfer the card shrinks to its title line.
+            Action fitTransfer = () => {
+                bool idle = transferSummary.Text == "Sin carga en curso." || transferSummary.Text.Length == 0;
+                transferSummary.Visible = !idle; layout.RowStyles[3].Height = (int)((idle ? 56 : 90) * DisplayScale());
+            };
+            transferSummary.TextChanged += (s, e) => fitTransfer(); fitTransfer();
             var viewBar = UiRow(); viewBar.FlowDirection = FlowDirection.RightToLeft;
             serialFormat.Width = 195; serialFormat.DropDownStyle = ComboBoxStyle.DropDownList; serialFormat.Items.AddRange(new object[] { "ASCII", "HEX con espacios", "Texto decodificado" }); serialFormat.SelectedIndex = 0;
             viewBar.Controls.Add(UiField("Vista", serialFormat)); layout.Controls.Add(viewBar, 0, 4);
@@ -120,16 +126,22 @@ namespace AFR2Loader
             foreach (DataGridViewColumn column in notices.Columns) column.SortMode = DataGridViewColumnSortMode.NotSortable;
             notices.CellContentClick += (s, e) => { if (e.RowIndex >= 0 && e.ColumnIndex == 4) ShowNoticeDetails(notices.Rows[e.RowIndex]); };
             layout.Controls.Add(notices, 0, 0); layout.Controls.Add(noticeDetail, 0, 1); EnableTextCopyFeedback(noticeDetail);
-            var actions = UiRow(); var copy = new ActionButton { Text = "Copiar detalle", Width = 170 }; copy.Click += (s, e) => CopyText(noticeDetail.Text, copy); actions.Controls.Add(copy);
+            // AFR2-20261106-06: explain the empty state; copying needs a selected detail.
+            noticeDetail.Text = "Todavía no hay detalle seleccionado. Los eventos aparecen arriba al compilar, cargar o recibir datos del puerto. Elegí una fila y pulsá «Ver detalles» para leerlo completo aquí.";
+            var actions = UiRow(); var copy = new ActionButton { Text = "Copiar detalle", Width = 170, Role = ButtonRole.Secondary, Enabled = false }; noticeCopy = copy; copy.Click += (s, e) => CopyText(noticeDetail.Text, copy); actions.Controls.Add(copy);
             layout.Controls.Add(actions, 0, 2); serialEventsPage.Controls.Add(layout); tabs.TabPages.Add(serialEventsPage);
         }
+        ActionButton noticeCopy;
         void ShowNoticeDetails(DataGridViewRow selected)
         {
             var notice = selected.Tag as LoaderNotice; if (notice == null) return; detailedNotice = notice;
+            if (noticeCopy != null) noticeCopy.Enabled = true;
+            // Theme-aware row colors (a fixed white broke dark mode; high contrast keeps system colors).
+            bool contrast = SystemInformation.HighContrast;
             foreach (DataGridViewRow row in notices.Rows) {
-                row.DefaultCellStyle.BackColor = Color.White;
-                row.DefaultCellStyle.SelectionBackColor = SystemColors.Highlight;
-                row.DefaultCellStyle.SelectionForeColor = SystemColors.HighlightText;
+                row.DefaultCellStyle.BackColor = contrast ? SystemColors.Window : LoaderAppearance.Surface;
+                row.DefaultCellStyle.SelectionBackColor = LoaderAppearance.Selection;
+                row.DefaultCellStyle.SelectionForeColor = LoaderAppearance.SelectionText;
             }
             noticeDetail.Text = notice.At + " | " + notice.Origin + " | " + notice.Code + "\r\n" + notice.Message + "\r\n\r\n" + notice.Detail;
         }
@@ -262,7 +274,7 @@ namespace AFR2Loader
             while (budget-- > 0 && noticeQueue.TryDequeue(out notice))
             {
                 UpdateWorkflowNotice(notice);
-                int row = notices.Rows.Add(notice.At, notice.Origin, notice.Code, notice.Message); notices.Rows[row].Tag = notice;
+                int row = notices.Rows.Add(ReadableTime(notice.At), notice.Origin, notice.Code, notice.Message); notices.Rows[row].Tag = notice;
                 if (notice.Code == "failed")
                 {
                     notices.Rows[row].DefaultCellStyle.ForeColor = Color.Firebrick; RecordFailure(notice);

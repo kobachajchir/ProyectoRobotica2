@@ -80,7 +80,7 @@ const touchCar = bytes(body(touchSource, 'afr2_touch_car'));
 const touchWidth = number(touchSource.match(/#define AFR2_TOUCH_CAR_WIDTH\s+(\d+)/)?.[1] ?? 'missing-touch-width');
 const touchHeight = number(touchSource.match(/#define AFR2_TOUCH_CAR_HEIGHT\s+(\d+)/)?.[1] ?? 'missing-touch-height');
 const touchSine = body(touchSource, 'afr2_touch_sin').split(',').map(number);
-for (const path of ['include/afr2_screens.h','include/afr2_dashboard.h','include/afr2_ui_components.h','src/ui/afr2_dashboard.c', 'src/display/afr2_oled.c', 'src/ui/afr2_screens.c', 'src/ui/afr2_network_screen.c','src/ui/afr2_ui_components.c','src/ui/afr2_qr_screen.c','src/third_party/qrcodegen.c','include/qrcodegen.h']) await source(avr, path);
+for (const path of ['include/afr2_oled.h','include/afr2_screens.h','include/afr2_dashboard.h','include/afr2_ui_components.h','src/ui/afr2_dashboard.c', 'src/display/afr2_oled.c', 'src/ui/afr2_screens.c', 'src/ui/afr2_network_screen.c','src/ui/afr2_ui_components.c','src/ui/afr2_qr_screen.c','src/third_party/qrcodegen.c','include/qrcodegen.h']) await source(avr, path);
 
 const reviewed = JSON.parse(await readFile(new URL('src/features/oled/firmwareRenderer.sources.json', root), 'utf8'));
 for (const [path, hash] of Object.entries(reviewed)) {

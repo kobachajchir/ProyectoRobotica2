@@ -1,0 +1,283 @@
+{
+  "id": "AFR2-20261106-01",
+  "origin": "Adaptaciones propias del plan autorizado; autorias previas conservadas. Base integrada origin/main 39df23f.",
+  "state": {
+    "atmega": "source-only",
+    "esp": "source-only",
+    "web": "source-only-generation-pending",
+    "loader": "prior-source-layout-preserved",
+    "cad": "unchanged"
+  },
+  "execution": "No tests, validators, generators, compilers, browser, COM, flash or physical checks. Source/diff reading only.",
+  "reviewed_renderer_sources": [
+    "src/display/afr2_oled.c",
+    "src/ui/afr2_screens.c",
+    "src/ui/afr2_network_screen.c",
+    "include/afr2_screens.h",
+    "src/ui/afr2_menu_catalog.c",
+    "src/ui/afr2_sensor_screens.c",
+    "src/ui/afr2_dashboard.c"
+  ],
+  "preserved_generated_file": {
+    "path": "AutoFinalRobo2-Web/src/features/oled/generated/firmwareLibrary.ts",
+    "sha256_raw": "19928ce5db15d5f3909c4891bd9912aca8b5ebafcc0d77e60017618f38a1d2fa",
+    "written_by_this_change": false
+  },
+  "files": [
+    {
+      "path": "AutoFinalRobo2-Atmega/include/afr2_app.h",
+      "sha256_lf": "aa876cc71efb5cb048aceaf02b4dbca9e88bf5bd6e84d4b939535efe3d4be8e4",
+      "adaptation": "IR/calibracion, flujo OLED/Wi-Fi y diagnostico cooperativo"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/include/afr2_menu_catalog.h",
+      "sha256_lf": "dc2aaca23a071bfaa70ad2ad09ebc1f755de141d69ccb51e4f4fb21154b05e76",
+      "adaptation": "IR/calibracion, flujo OLED/Wi-Fi y diagnostico cooperativo"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/include/afr2_oled.h",
+      "sha256_lf": "27b49860f9db68d71dde1b0a6af5434d118e8e2502951fe96b37b92229757c3a",
+      "adaptation": "IR/calibracion, flujo OLED/Wi-Fi y diagnostico cooperativo"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/include/afr2_product.h",
+      "sha256_lf": "606b944afcc19da462e91b339ea7897d7b45e4afef7cd5f4b97a62297fede281",
+      "adaptation": "IR/calibracion, flujo OLED/Wi-Fi y diagnostico cooperativo"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/include/afr2_screens.h",
+      "sha256_lf": "695ee948e5459722557fd9b42d6637334c488c68c4592412dfbebb13569b8fe9",
+      "adaptation": "IR/calibracion, flujo OLED/Wi-Fi y diagnostico cooperativo"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/display/afr2_oled.c",
+      "sha256_lf": "bb51c226e54078dfab1b89cb230d348d8b32e9fe8870c99741d9224e2713ac79",
+      "adaptation": "IR/calibracion, flujo OLED/Wi-Fi y diagnostico cooperativo"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/main.c",
+      "sha256_lf": "989da19f9443ddac585ddf1695902791eed967233ed3093280c93b5cd69a925e",
+      "adaptation": "IR/calibracion, flujo OLED/Wi-Fi y diagnostico cooperativo"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/platform/afr2_preferences.c",
+      "sha256_lf": "06c3b5280b270f9ba1d8971389f8226216064eeaa220ab7dbfc0c74f02c8a2d6",
+      "adaptation": "IR/calibracion, flujo OLED/Wi-Fi y diagnostico cooperativo"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/platform/afr2_sensors.c",
+      "sha256_lf": "244f3f3dc184c43670d5ce6a74b87803bad2d1a203494b2d29d23416f19952da",
+      "adaptation": "IR/calibracion, flujo OLED/Wi-Fi y diagnostico cooperativo"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/services/afr2_app.c",
+      "sha256_lf": "0229af538c947ca3449aac612070dc6563d03b8a35e6054ad84ffda267f28e3c",
+      "adaptation": "IR/calibracion, flujo OLED/Wi-Fi y diagnostico cooperativo"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/services/afr2_app_wire.c",
+      "sha256_lf": "317f3c4cde674c986330ad86fe85d3a0c85884d8ee65e51c0e9f574e0ad444de",
+      "adaptation": "IR/calibracion, flujo OLED/Wi-Fi y diagnostico cooperativo"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/services/afr2_network.c",
+      "sha256_lf": "550a9012eefb71471f8a366da4df81787652baad0245ec78963330eb6edcefbe",
+      "adaptation": "IR/calibracion, flujo OLED/Wi-Fi y diagnostico cooperativo"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/services/afr2_product.c",
+      "sha256_lf": "e095d0a89959da049cd1dbff16db0349a5dd593ae14f3e760a911a46a0f4b213",
+      "adaptation": "IR/calibracion, flujo OLED/Wi-Fi y diagnostico cooperativo"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/ui/afr2_dashboard.c",
+      "sha256_lf": "c6a18ac6b3de0bf43218f6c44cffbfdc548a2e1e43908d523b8b94e2fccadde3",
+      "adaptation": "IR/calibracion, flujo OLED/Wi-Fi y diagnostico cooperativo"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/ui/afr2_menu_catalog.c",
+      "sha256_lf": "06ade35a19a9781de7d3a33cf6ed7cd6d22613f3b0516236a1b588b7a0c8af6c",
+      "adaptation": "IR/calibracion, flujo OLED/Wi-Fi y diagnostico cooperativo"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/ui/afr2_network_screen.c",
+      "sha256_lf": "e35f8a8a01fdf565806ad1423f5e9b88437a020c9f59c57a2be0445021082439",
+      "adaptation": "IR/calibracion, flujo OLED/Wi-Fi y diagnostico cooperativo"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/ui/afr2_screens.c",
+      "sha256_lf": "a276c6485ea07846f11acf95ed9a72ee1c61fd0a49b3eabfed25d79abb95e7ff",
+      "adaptation": "IR/calibracion, flujo OLED/Wi-Fi y diagnostico cooperativo"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/ui/afr2_sensor_screens.c",
+      "sha256_lf": "de1f37e617768fa0fdd71a8f3861cf757f33751c6d816d981baaf41ca2f6ae1e",
+      "adaptation": "IR/calibracion, flujo OLED/Wi-Fi y diagnostico cooperativo"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/ATMEGA_CONFIG_ACTIONS.json",
+      "sha256_lf": "3555b949d7f70d2d4052b69ca831faf8b05bb0a744b98f26d981fd7e323a9a86",
+      "adaptation": "Contrato compartido"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/PROTOCOL.md",
+      "sha256_lf": "dfdcabbc812c7b257a97388a0d4b28f56a573d53ee5768daccd9b092b638320d",
+      "adaptation": "Contrato compartido"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/afr2_product_wire.h",
+      "sha256_lf": "d0b24fcd31fc8f0060117ed909d0f3a69cab9761094a92afa4f8686246a9e66a",
+      "adaptation": "Contrato compartido"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/broker.cpp",
+      "sha256_lf": "d00150854e54b4153fb5dde4a1fb281fec59592f1a2bf2c82db2b1fdc7400d44",
+      "adaptation": "WS/HTTP, persistencia Wi-Fi y EX01v13"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/broker.h",
+      "sha256_lf": "9d3df3780881fb0fa476786262b0693198c7e57470320d6ffeb5eb720de343ae",
+      "adaptation": "WS/HTTP, persistencia Wi-Fi y EX01v13"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/broker_product.cpp",
+      "sha256_lf": "6cfdab6ae9ed9785bb54357c41cfce7b3b5194d6bd62e9de13f438e8a2a66f56",
+      "adaptation": "WS/HTTP, persistencia Wi-Fi y EX01v13"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/broker_system.cpp",
+      "sha256_lf": "e86a0cc9b713a75569aabf595ca41aee0cc95b49810dae84caf1e3f7c3161a25",
+      "adaptation": "WS/HTTP, persistencia Wi-Fi y EX01v13"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/broker_wifi.cpp",
+      "sha256_lf": "e2d8d58866a995976ac8e5c6d6704dd0b5dd504b26084e34c92ac5693a4f8c02",
+      "adaptation": "WS/HTTP, persistencia Wi-Fi y EX01v13"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/main.cpp",
+      "sha256_lf": "f54cfbe0d921274574ba9f5f2177dfa31254fc8948d5768aec82c840228a19ef",
+      "adaptation": "WS/HTTP, persistencia Wi-Fi y EX01v13"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/mega_link.cpp",
+      "sha256_lf": "0b15057830404c19a78688b65b5735e4b4e2d274e7a16e141688e3172ddb6c78",
+      "adaptation": "WS/HTTP, persistencia Wi-Fi y EX01v13"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/storage.cpp",
+      "sha256_lf": "ad8d55aa2c0d9aaaa6448df5318e8320d2f7cd475bae9d65062be5fab8e03380",
+      "adaptation": "WS/HTTP, persistencia Wi-Fi y EX01v13"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/wifi_service.cpp",
+      "sha256_lf": "f8e7d6172cbe8a1c4f835336f2262d58437d943446dbf059e337754d2d0a1b23",
+      "adaptation": "WS/HTTP, persistencia Wi-Fi y EX01v13"
+    },
+    {
+      "path": "AutoFinalRobo2-ESP/src/wifi_service.h",
+      "sha256_lf": "5be003b522e6b79018c1d23274f01659824b587f9ab1c696abbf94ef273ff2ec",
+      "adaptation": "WS/HTTP, persistencia Wi-Fi y EX01v13"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/MainForm.Design.cs",
+      "sha256_lf": "2a36ddddba07bc4b883d57b647bcaef5765248385406d439f206b2db0df4fe0b",
+      "adaptation": "Layout visual previo conservado, AFR2-20261105-01"
+    },
+    {
+      "path": "AutoFinalRobo2-Loader/src/MainForm.Workflow.cs",
+      "sha256_lf": "49cb8827f1a6cec2a12af0bb6c7362f9a32456e66ede54cd112caf542ccab49e",
+      "adaptation": "Layout visual previo conservado, AFR2-20261105-01"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/components/three/RobotModel.tsx",
+      "sha256_lf": "118a265839b80b94fe107919bfcf3a1348ff6ab8804af0e7972d0ab9886b85fc",
+      "adaptation": "Consultas/suscripciones, formularios y copia raster/simulacion"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/connection/ConnectionContext.tsx",
+      "sha256_lf": "e0c20663f0f59688a02b0fd9df62d0fa6661ea73325685ba96267198c9b6a2cc",
+      "adaptation": "Consultas/suscripciones, formularios y copia raster/simulacion"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/connection/SystemPanel.tsx",
+      "sha256_lf": "065ebe7ad0b1eed86b91bcce893fbf192aa140a509ab0e3692d8393d7bcce408",
+      "adaptation": "Consultas/suscripciones, formularios y copia raster/simulacion"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/CalibrationPanel.tsx",
+      "sha256_lf": "8f989144c2a825034b2663e576545a5a8811074f8a638ac35d8decd9260f7973",
+      "adaptation": "Consultas/suscripciones, formularios y copia raster/simulacion"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/calibrationGuide.ts",
+      "sha256_lf": "3241a46d542752eedf9338be161e90e8047d8723ea69a5fd67bf363dd61315ee",
+      "adaptation": "Consultas/suscripciones, formularios y copia raster/simulacion"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/control/manual/ManualDriveOverlay.tsx",
+      "sha256_lf": "c97ebcc6c251d66383da65774e3ff406cf93a1b82ac2f343b8cc93bb0250cc56",
+      "adaptation": "Consultas/suscripciones, formularios y copia raster/simulacion"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/developer/uiSimulation.ts",
+      "sha256_lf": "a2a181681367a231ff0e0aff961b70982ea45dbb76349eaba08905506f845044",
+      "adaptation": "Consultas/suscripciones, formularios y copia raster/simulacion"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/oled/UiSimulationPreview.tsx",
+      "sha256_lf": "b3fdbc0de320587ea7eb550a27a9b8b6e9c88c517525e54f11be571bf2ae5c68",
+      "adaptation": "Consultas/suscripciones, formularios y copia raster/simulacion"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/oled/dashboardRenderer.ts",
+      "sha256_lf": "bed02c1e42b7e2737ee7f4875668d3b45671011ed9a521ef253ab8f23d14f99f",
+      "adaptation": "Consultas/suscripciones, formularios y copia raster/simulacion"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/oled/firmwareHints.ts",
+      "sha256_lf": "59594763696d47f7b574d89afb05496ed5eef6f7f84d84088a6ccd66e297d2df",
+      "adaptation": "Consultas/suscripciones, formularios y copia raster/simulacion"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/oled/firmwareRenderer.sources.json",
+      "sha256_lf": "64b8d4b33e244dd39a9f10c2b2ecf8c4f17562bb0511944aa0477ed94158d5de",
+      "adaptation": "Consultas/suscripciones, formularios y copia raster/simulacion"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/oled/firmwareRenderer.ts",
+      "sha256_lf": "b7d3adef5aa3089a7f9092c6ecf34bff2c400edd8afb924934cac3ae6e77b866",
+      "adaptation": "Consultas/suscripciones, formularios y copia raster/simulacion"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/oled/firmwareSensorRenderer.ts",
+      "sha256_lf": "ca682d98d42a6d676326465066ddb9472aa8653c6724fb1c66ccb1b7fcaa2494",
+      "adaptation": "Consultas/suscripciones, formularios y copia raster/simulacion"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/sensors/SensorsPage.tsx",
+      "sha256_lf": "d15d15105f112d9f9b2e16cc6babd93031b58aad988f47830b30f982f5fb87e6",
+      "adaptation": "Consultas/suscripciones, formularios y copia raster/simulacion"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/wifi/WifiCredentialsFields.tsx",
+      "sha256_lf": "f6a90cb7d33799974371bc38d8032b677841497b95be8cf10ebf3ff6cf9f6c61",
+      "adaptation": "Consultas/suscripciones, formularios y copia raster/simulacion"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/wifi/WifiDraftModal.tsx",
+      "sha256_lf": "ffc9a61cba2592bec0ddc68ba2330a30cccae17fe1d3ef58fdf048aa3425554d",
+      "adaptation": "Consultas/suscripciones, formularios y copia raster/simulacion"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/wifi/WifiPage.tsx",
+      "sha256_lf": "398fa69f26b94b6f79333b6fbf26ba8eabce6b62b90587f7013b1dbe56652886",
+      "adaptation": "Consultas/suscripciones, formularios y copia raster/simulacion"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/protocol/afr2Client.ts",
+      "sha256_lf": "3a32c2f9574373cfa27049619f8be0350fcb630f884ba6c4770d59f7ed0f768a",
+      "adaptation": "Consultas/suscripciones, formularios y copia raster/simulacion"
+    }
+  ]
+}

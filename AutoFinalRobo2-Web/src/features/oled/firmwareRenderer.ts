@@ -9,6 +9,7 @@ import { ENCODER_LONG } from './encoderLongIcon';
  * Ported from afr2_{screens,network_screen,sequence_screen,icons}.c.
  * C layout source hashes are pinned in firmwareRenderer.sources.json; build
  * refuses a changed layout until this port is reviewed. Resources are copied.
+ * AFR2-20261106-04: AVR flash text/notifications preserve these strings and timings.
  * Requires the same PREPARED snapshot, UI state, clock and previous framebuffer
  * as AVR. Does not fabricate telemetry or predict remote navigation/actions.
  */
@@ -26,8 +27,8 @@ const trunc = Math.trunc;
 const elapsed = (now: number, then: number) => (now - then) >>> 0;
 export interface FirmwareMenuItem { label: string; target: number; action: number; arg: number; min: number; max: number; step: number }
 export interface FirmwareUiState {
-  dashboardInputMs?:number;dashboardHeld?:boolean;
-  confirmWait?: boolean;
+  dashboardInputMs?:number;dashboardHeld?:boolean;holdStartedMs?:number;holdProgress?:number;
+  confirmWait?: boolean; confirmSave?:number;
   editingAction?:number; testShort?:boolean; testLong?:boolean; testBack?:boolean;
   quickPending?:boolean;quickExpected?:boolean;
   touch?: { direction: number; heading: number; startedMs: number; full: boolean };
@@ -43,12 +44,13 @@ export interface FirmwareSnapshot {
   batteryValid?:boolean; batteryMv?:number;
   dashboardValid?:boolean;dashboardMode?:number;dashboardMoving?:boolean;dashboardFault?:boolean;
   networkServer?:boolean;qrAllowed?:boolean;
+  networkPage?:number;networkTotal?:number;networkBusy?:boolean;networkMode?:number;networkTruncated?:boolean;networkScanState?:number;wifiDraftReady?:boolean;
   networkCount?:number; wifiConnected?:boolean|null; rowSecurity?:readonly number[];
   networkRssi?:number; networkRssiValid?:boolean;
   configDirty?:boolean; actionStates?:Record<number,boolean>; powerPercent?:number; powerChangedMs?:number; powerKnown?:boolean;
   hallCpr?: readonly number[]; hallPending?: number;
   radarRange?:number;radarTrace?:boolean;quickFlags?:number;
-  sensor?: FirmwareSensorSnapshot; irRaw?: readonly number[]; irKind?:number; irValid?:boolean; lineValid?:boolean;
+  sensor?: FirmwareSensorSnapshot; irRaw?: readonly number[]; irKind?:number; irValid?:boolean; lineValid?:boolean;lineBits?:number;
   lines: readonly string[]; labels: readonly string[]; disabled: readonly number[];
   sequenceState: number; sequenceCount: number; sequenceIndex: number; sequenceKind: number;
   sequenceDurationMs: number; sequenceElapsedMs: number;
@@ -56,8 +58,10 @@ export interface FirmwareSnapshot {
   networkSsid: string; networkApSsid: string; networkPassword: string; networkIp: string; networkApIp: string;
 }
 export const QUICK_MODES_NODE = 61;
+/** Web-only preview node; moved from 70 because AVR AFR2_N_HALL_LIVE now uses 70 (AFR2-20261106-07). */
+export const MOTOR_SELECTOR_NODE = 72;
 export function firmwareNode(node:number):readonly (string|number)[] {
-  const virtual:Record<number,readonly (string|number)[]>={61:['Elegir modo',S.AFR2_N_QUICK,0,3,0x802c,0x3003d],62:['Prueba encoder',S.AFR2_N_TESTS,1,1,89,0x3003e],63:['Prueba ESP',S.AFR2_N_TESTS,0,3,0,0x3003f],64:['Potencia manual',S.AFR2_N_CONTROL,1,1,26,0x30040],65:['Datos de red',32,1,1,138,0x30041],66:['Buscar redes',31,0,3,0,0x30042],67:['Cambiar modo',31,1,3,138,0x30043],70:['Elegir un motor',S.AFR2_N_TESTS,1,4,0,0x30044]};
+  const virtual:Record<number,readonly (string|number)[]>={61:['Elegir modo',S.AFR2_N_QUICK,0,3,0x802c,0x3003d],62:['Prueba encoder',S.AFR2_N_TESTS,1,1,89,0x3003e],63:['Prueba ESP',S.AFR2_N_TESTS,0,3,0,0x3003f],64:['Potencia manual',S.AFR2_N_CONTROL,1,1,26,0x30040],65:['Datos de red',32,1,1,138,0x30041],66:['Buscar redes',31,0,3,0,0x30042],67:['Cambiar modo',31,1,3,138,0x30043],72:['Elegir un motor',S.AFR2_N_TESTS,1,4,0,0x30044]};
   let n:readonly (string|number)[]=L.nodes[node]??virtual[node]??L.nodes[0];
   if(WIFI_MENUS[node]){const [first,count]=WIFI_MENUS[node];const title=node===32?'Estado de red':node===34?'Credenciales':node===35?'Configurar':n[0];return [title,node===34?33:node===35?32:n[1],0,node===31?count+2:count,0x2000+first,n[5]];}
   if(node===33)n=['Redes encontradas',66,n[2],n[3],n[4],n[5]];
@@ -68,9 +72,12 @@ export function firmwareNode(node:number):readonly (string|number)[] {
   return n;
 }
 export function firmwareNodeCount(node:number,dirty=false,snapshot?:FirmwareSnapshot):number {
-  if(node===70 || node===S.AFR2_N_HALL_PICK)return 4;
+  if(node===MOTOR_SELECTOR_NODE || node===S.AFR2_N_HALL_PICK)return 4;
+  if(node===S.AFR2_N_TESTS)return 9; // AFR2-20261106-07: Prueba Hall inserted third.
+  if(node===S.AFR2_N_HALL_TEST)return 3;
+  if(node===66)return snapshot?.networkScanState===1?1:snapshot?.networkTotal?3:2;
   if(node===34)return 4;
-  if(node===33)return (snapshot?.networkCount??0)+1;
+  if(node===33)return (snapshot?.networkCount??0)+2+Number((snapshot?.networkPage??0)>0)+Number((snapshot?.networkTotal??0)>((snapshot?.networkPage??0)+1)*8);
   if(node===32)return snapshot?.wifiConnected===false?6:snapshot?.wifiConnected===true?5:4;
   if(node===35 && typeof snapshot?.wifiConnected!=="boolean")return 2;
   const count=node===S.AFR2_N_MENU?7:node===S.AFR2_N_DIAG?3:node===S.AFR2_N_QUICK?7:Number(firmwareNode(node)[3]);
@@ -79,7 +86,26 @@ export function firmwareNodeCount(node:number,dirty=false,snapshot?:FirmwareSnap
 export function firmwareMenuItem(node: number, index: number,snapshot?:FirmwareSnapshot): FirmwareMenuItem {
   const n = firmwareNode(node);
   index = Math.min(index, firmwareNodeCount(node,snapshot?.configDirty,snapshot) - 1);
-  if(node===33 && index>=(snapshot?.networkCount??0))return {label:'Volver',target:66,action:0,arg:0,min:0,max:0,step:0};
+  if(node===66){
+    const row=(label:string,action=0,target=255):FirmwareMenuItem=>({label,action,target,arg:0,min:0,max:0,step:0});
+    if(snapshot?.networkScanState===1)return row('Buscando redes');
+    if(snapshot?.networkTotal){if(!index)return row('Ver redes',0,33);index--;}
+    return !index?row('Refrescar',45):row('Volver',0,31);
+  }
+  if(node===33 && index>=(snapshot?.networkCount??0)){
+    let extra=index-(snapshot?.networkCount??0);const page=snapshot?.networkPage??0;
+    const row=(label:string,action:number,arg=0,target=255):FirmwareMenuItem=>({label,action,arg,target,min:0,max:0,step:0});
+    if(page){if(!extra)return row('Pagina anterior',94,page-1);extra--;}
+    if((snapshot?.networkTotal??0)>(page+1)*8){if(!extra)return row('Pagina siguiente',94,page+1);extra--;}
+    return !extra?row('Refrescar',45):row('Volver',0,0,66);
+  }
+  if(node===S.AFR2_N_LINE_CALIB){
+    if(index===0)return {label:'IR digital ON/OFF',action:25,arg:0,target:255,min:0,max:1,step:1};
+    if(index===2 || index===3)return {label:index===2?'Tomar fondo':'Tomar linea',action:index===2?27:28,arg:0,target:255,min:0,max:0,step:0};
+  }
+  if(node===S.AFR2_N_HALL_TEST)return {
+    label:['Estado','Calibrar motor','Volver'][index],target:index===0?S.AFR2_N_HALL_VIEW:index===2?S.AFR2_N_TESTS:255,
+    action:index===1?S.AFR2_A_HALL_BEGIN:0,arg:0,min:0,max:0,step:0};
   if(node===34){if(index===0)return {label:"Traer credenciales ESP",target:255,action:93,arg:0,min:0,max:0,step:0};index--;}
   if(node===31 && index>=4){if(index<6)return {label:index===4?'QR conectar AP':'QR abrir Web',target:index===4?68:69,action:0,arg:0,min:0,max:0,step:0};index-=2;}
   if(WIFI_MENUS[node]){
@@ -87,7 +113,12 @@ export function firmwareMenuItem(node: number, index: number,snapshot?:FirmwareS
     if(node===35 && typeof snapshot?.wifiConnected!=="boolean" && index>=1)index++;
     const row=WIFI_ROWS[WIFI_MENUS[node][0]+index];let action=Number(row[2]),label=String(row[0]);
     if(action===47 && snapshot?.wifiConnected===true){action=91;label='Desconectar';}
+    else if(action===47 && !snapshot?.wifiDraftReady)return {label:'Configurar red',target:34,action:0,arg:0,min:0,max:0,step:0};
     return {label,target:Number(row[1]),action,arg:Number(row[3]),min:Number(row[4]),max:Number(row[5]),step:Number(row[6])};
+  }
+  if(node===S.AFR2_N_TESTS && index>=2){
+    if(index===2)return {label:'Prueba Hall',target:S.AFR2_N_HALL_LIVE,action:0,arg:0,min:0,max:0,step:0};
+    index--;
   }
   if(REFORM_MENUS[node]){
     if(!snapshot?.configDirty && ((node===S.AFR2_N_PREFS && index>=3) || (node===S.AFR2_N_CALIB && index>=4)))index++;
@@ -156,7 +187,7 @@ function menuIcon(node: number, target: number, action: number, label: string): 
   if (target === S.AFR2_N_AP_INFO || node === S.AFR2_N_WIFI_AP) return S.AFR2_ICON_AP;
   if (target === S.AFR2_N_WIFI || target === S.AFR2_N_NETWORK || node === S.AFR2_N_WIFI || (action >= S.AFR2_A_WIFI_STATUS && action <= S.AFR2_A_WIFI_SET_MODE)) return S.AFR2_ICON_WIFI;
   if (target === S.AFR2_N_ENCODER_VIEW || target === S.AFR2_N_ENCODER_CONFIG) return S.AFR2_ICON_ENCODER;
-  if (([S.AFR2_N_SENSORS, S.AFR2_N_LINE_VIEW, S.AFR2_N_US_VIEW, S.AFR2_N_HALL_VIEW] as number[]).includes(target)) return S.AFR2_ICON_SENSORS;
+  if (([S.AFR2_N_SENSORS, S.AFR2_N_LINE_VIEW, S.AFR2_N_US_VIEW, S.AFR2_N_HALL_VIEW, S.AFR2_N_HALL_LIVE] as number[]).includes(target)) return S.AFR2_ICON_SENSORS;
   if (target === S.AFR2_N_PREFS || target === S.AFR2_N_PREFS_VIEW || action === S.AFR2_A_SAVE || action === S.AFR2_A_DISCARD) return S.AFR2_ICON_PREFS;
   if (target === S.AFR2_N_LINK_VIEW) return S.AFR2_ICON_LINK;
   if (([S.AFR2_N_CONTROL, S.AFR2_N_MOVE, S.AFR2_N_WHEEL] as number[]).includes(target) || node === S.AFR2_N_MOVE || node === S.AFR2_N_WHEEL) return S.AFR2_ICON_MOTOR;
@@ -166,13 +197,13 @@ function menuIcon(node: number, target: number, action: number, label: string): 
   return S.AFR2_ICON_INFO;
 }
 function line(o: Afr2OledBuffer, y: number, text: string, time: number) {
-  o.fillRect(0, y, 128, 10, 'black'); o.textWindow(0, 128, y, text, firmwareTextOffset(text, 128, time));
+  const right=y>=40?104:128;o.fillRect(0,y,128,10,'black');o.textWindow(0,right,y,text,firmwareTextOffset(text,right,time));
 }
 function labeled(o: Afr2OledBuffer, y: number, label: string, left: number, text: string, time: number) {
-  o.fillRect(0, y, 128, 10, 'black'); o.drawText(0, y, label); o.textWindow(left, 128, y, text, firmwareTextOffset(text, 128 - left, time));
+  const right=y>=40?104:128;o.fillRect(0,y,128,10,'black');o.drawText(0,y,label);o.textWindow(left,right,y,text,firmwareTextOffset(text,right-left,time));
 }
 function network(o: Afr2OledBuffer, u: FirmwareUiState, s: FirmwareSnapshot) {
-  if(u.node===S.AFR2_N_NETWORK){o.clear();componentHeader(o,S.AFR2_ICON_WIFI,'Conexion',u.selection+1,2);for(let i=0;i<3;i++)o.drawText(0,16+i*12,s.lines[i]??'');gestureHint(o,0,53,false,'Volver');gestureHint(o,66,53,true,'Volver');return;}
+  if(u.node===S.AFR2_N_NETWORK){o.clear();componentHeader(o,S.AFR2_ICON_WIFI,'Conexion',u.selection+1,2);for(let i=0;i<3;i++)line(o,16+i*12,s.lines[i]??'',elapsed(u.clockMs,u.scrollStartedMs));gestureHint(o,0,53,false,'Volver');gestureHint(o,66,53,true,'Volver');return;}
   const ap = u.node === S.AFR2_N_AP_INFO, time = elapsed(u.clockMs, u.scrollStartedMs);
   componentHeader(o,ap?S.AFR2_ICON_AP:S.AFR2_ICON_WIFI,ap?'Datos de red AP':'IP de conexion');
   if (!s.networkValid) { line(o, 17, 'Sin datos actuales', time); line(o, 32, 'Actualizar Wi-Fi', time); }
@@ -227,9 +258,9 @@ function keyboard(o: Afr2OledBuffer, u: FirmwareUiState) {
   o.drawText(0, 16, u.keyboardField ? '*'.repeat(length) : u.ssid.slice(u.length - length, u.length));
   const first = trunc(trunc(u.key / 10) / 2) * 20;
   for (let j = 0; j < 20 && first + j < 97; j++) {
-    const k = first + j, x = (j % 10) * 12, y = 28 + trunc(j / 10) * 12;
+    const k = first + j, x = (j % 10) * 10, y = 28 + trunc(j / 10) * 12;
     o.drawText(x, y, k < 95 ? String.fromCharCode(32 + k) : k === 95 ? '<' : 'OK');
-    if (k === u.key) o.drawRect(x - 1, y - 1, 12, 12, 'invert');
+    if (k === u.key) o.drawRect(x - 1, y - 1, 10, 12, 'invert');
   }
   gestureHint(o,0,53,true,'Cancelar');
 }
@@ -239,18 +270,25 @@ function hall(o:Afr2OledBuffer,u:FirmwareUiState,s:FirmwareSnapshot){
   if(u.node===S.AFR2_N_HALL_PICK){
     renderMotorSelector(o,u.selection);
   }else if(u.node===S.AFR2_N_HALL_COUNT){
-    componentHeader(o,S.AFR2_ICON_MOTOR,'Gire una vuelta');o.drawText(0,16,s.lines[0]??'');o.drawText(0,28,s.lines[1]??'');
+    componentHeader(o,S.AFR2_ICON_MOTOR,'Gire CW 1 vuelta');o.drawText(0,16,s.lines[0]??'');o.drawText(0,28,s.lines[1]??'');
     gestureHint(o,0,40,false,'Finalizar');gestureHint(o,0,53,true,'Cancelar');
   }else{
-    o.drawText(0,0,'Pulsos / vuelta');
+    o.drawText(0,0,'Estado Hall');
     for(let i=0;i<4;i++){
       const cpr=s.hallCpr?.[i];
-      o.drawText(0,12+i*10,`${i+1} ${['FL','FR','RL','RR'][i]}:${cpr?`${cpr}${((s.hallPending??0)&(1<<i))?'*':''}`:'--'}`);
+      o.drawText(0,12+i*10,`${['FL','FR','RL','RR'][i]}:${cpr?`${cpr} ${((s.hallPending??0)&(1<<i))?'*':'OK'}`:'Sin calibrar'}`);
     }
     o.drawText(0,54,'*Nuevo');gestureHint(o,94,52,true,'Volver');
   }
 }
-function saveConfirm(o:Afr2OledBuffer,u:FirmwareUiState){
+function saveConfirm(o:Afr2OledBuffer,u:FirmwareUiState,s:FirmwareSnapshot){
+  if(u.confirmSave===S.AFR2_A_HALL_SAVE){
+    componentHeader(o,S.AFR2_ICON_MOTOR,s.lines[0]??'Sensor Hall');o.drawText(0,16,s.lines[1]??'');
+    if(u.confirmWait){o.drawText(0,34,'Guardando...');return;}
+    icon(o,S.AFR2_ICON_PREFS,0,33,12);o.drawText(16,34,'Confirmar');
+    icon(o,S.AFR2_ICON_BACK,0,48,12);o.drawText(16,49,'Descartar');
+    o.fillRect(0,u.selection?47:32,128,14,'invert');return;
+  }
   componentHeader(o,S.AFR2_ICON_PREFS,'Guardar cambios');
   if(u.confirmWait){o.drawText(0,26,'Guardando...');return;}
   o.drawText(0,16,'Desea guardarlos?');o.drawText(14,34,'Si');o.drawText(14,49,'No');o.fillRect(0,u.selection?47:32,128,14,'invert');
@@ -295,13 +333,13 @@ function quick(o:Afr2OledBuffer,u:FirmwareUiState,s:FirmwareSnapshot){
 }
 function capabilities(o:Afr2OledBuffer,u:FirmwareUiState,s:FirmwareSnapshot){
   o.clear();componentHeader(o,S.AFR2_ICON_INFO,'Capacidades',u.selection+1,6);
-  for(let i=0;i<3;i++)o.drawText(0,16+i*12,s.lines[i]??'');gestureHint(o,0,52,false,'OK');gestureHint(o,94,52,true,'Volver');
+  for(let i=0;i<3;i++)line(o,16+i*12,s.lines[i]??'',elapsed(u.clockMs,u.scrollStartedMs));gestureHint(o,0,52,false,'OK');gestureHint(o,94,52,true,'Volver');
 }
 export function renderPower(o:Afr2OledBuffer,percent:number){
   percent=Math.max(0,Math.min(100,percent));o.clear();componentHeader(o,S.AFR2_ICON_MOTOR,'Potencia');o.drawText(0,15,`Valor: ${Math.floor((percent*255+50)/100)} /255`);
   componentProgress(o,30,true,percent,0);o.drawText(52,43,`${percent}%`);icon(o,24,0,47,16);
 }
-export function renderFirmwareScreen(u: FirmwareUiState, o: Afr2OledBuffer, s: FirmwareSnapshot): boolean | void {
+function renderFirmwareContent(u: FirmwareUiState, o: Afr2OledBuffer, s: FirmwareSnapshot): boolean | void {
   if(u.node!==S.AFR2_N_HOME || u.notice || u.touch)clearDashboard(o);
   if(u.notice || (u.node!==68 && u.node!==69))clearQrScreenCache(o);
   if(u.touch && s.powerKnown && s.powerPercent!==undefined && s.powerChangedMs!==undefined && elapsed(u.clockMs,s.powerChangedMs)<1200){renderPower(o,s.powerPercent);return;}
@@ -319,7 +357,7 @@ export function renderFirmwareScreen(u: FirmwareUiState, o: Afr2OledBuffer, s: F
   else if(u.node===62){
     o.drawText(0,0,'Prueba encoder');gestureHint(o,0,14,'turn','Elegir Volver');gestureHint(o,0,27,false,u.testShort?'Detectado':'Pendiente');gestureHint(o,0,40,true,u.testLong?'Salir':'Pendiente');gestureHint(o,0,53,false,'Volver');if(u.testBack)o.drawRect(0,50,128,14);
   }
-  else if(u.node===70)renderMotorSelector(o,u.selection);
+  else if(u.node===MOTOR_SELECTOR_NODE)renderMotorSelector(o,u.selection);
   else if(u.node===64){if(s.powerKnown && s.powerPercent!==undefined)renderPower(o,s.powerPercent);else {o.drawText(0,0,'Potencia manual');o.drawText(0,25,'Sin valor vigente');}}
   else if(u.node===67){
     componentHeader(o,S.AFR2_ICON_WIFI,'Cambiar modo');o.drawText(0,16,'Opciones de modos');o.drawText(3,28,'STA');o.drawText(45,28,'AP');o.drawText(80,28,'AP-STA');o.fillRect(u.selection===0?0:u.selection===1?40:78,40,u.selection===2?49:31,2);gestureHint(o,0,53,false,'Elegir');gestureHint(o,66,53,true,'Volver');
@@ -329,28 +367,42 @@ export function renderFirmwareScreen(u: FirmwareUiState, o: Afr2OledBuffer, s: F
   }
   else if(u.node===S.AFR2_N_ENCODER_VIEW){componentHeader(o,S.AFR2_ICON_ENCODER,'Estado encoder');for(let i=0;i<3;i++){icon(o,i===0?24:i===1?7:17,0,16+12*i,10);o.drawText(14,16+12*i,s.lines[i]??'');}gestureHint(o,0,53,true,'Volver');}
   else if(u.node===S.AFR2_N_CAPS)capabilities(o,u,s);
-  else if(u.node===S.AFR2_N_SAVE_CONFIRM)saveConfirm(o,u);
+  else if(u.node===S.AFR2_N_SAVE_CONFIRM)saveConfirm(o,u,s);
   else if(u.node===S.AFR2_N_HALL_PICK || u.node===S.AFR2_N_HALL_COUNT || u.node===S.AFR2_N_HALL_VIEW)hall(o,u,s);
   else if (u.keyboard) keyboard(o, u);
   else if (u.node === S.AFR2_N_SEQUENCE) sequence(o, s,u.clockMs);
   else if (u.node === S.AFR2_N_NETWORK || u.node === S.AFR2_N_AP_INFO) network(o, u, s);
-  else if (([S.AFR2_N_RADAR_VIEW,S.AFR2_N_US_VIEW,S.AFR2_N_LINE_VIEW,S.AFR2_N_IR_VALUES,S.AFR2_N_SERVO_ANGLE] as number[]).includes(u.node))renderSensorScreen(o,u.node,s.sensor,{raw:s.irRaw??[],kind:s.irKind??0,valid:s.irValid??false,lineValid:s.lineValid??false},{rangeIndex:s.radarRange??0,trace:s.radarTrace??true});
+  else if (([S.AFR2_N_RADAR_VIEW,S.AFR2_N_US_VIEW,S.AFR2_N_LINE_VIEW,S.AFR2_N_IR_VALUES,S.AFR2_N_SERVO_ANGLE] as number[]).includes(u.node))renderSensorScreen(o,u.node,s.sensor,{raw:s.irRaw??[],kind:s.irKind??0,valid:s.irValid??false,lineValid:s.lineValid??false,bits:s.lineBits??0},{rangeIndex:s.radarRange??0,trace:s.radarTrace??true});
   else if(u.edit && u.editingAction===12)renderMotorSelector(o,u.draft);
   else if(u.edit && u.editingAction===83)renderPower(o,u.draft);
   else if (u.edit) { componentHeader(o,S.AFR2_ICON_CONFIG,u.editingLabel); o.drawText(0,16,String(u.draft).slice(0,17));gestureHint(o,0,28,'turn','Ajustar'); gestureHint(o,0,40,false,'Aplicar');gestureHint(o,0,53,true,'Descartar'); }
   else {
     const view = u.node!==S.AFR2_N_DIAG && Number(n[2]) !== 0, count = view ? 1 : 3;
-    if (!partial) { componentHeader(o,menuIcon(u.node,u.node,0,String(n[0])),u.node===32?(s.lines[0]||'Estado de red'):String(n[0])); if (view) for (let j = 0; j < 3; j++) o.drawText(0, 16 + j * 12, s.lines[j]); }
+    if (!partial) { const title=u.node===31?`Wi-Fi ${s.networkMode===1?'STA':s.networkMode===2?'AP':s.networkMode===3?'AP-STA':'--'}`:u.node===66?(s.networkScanState===1?'Buscando redes':s.networkScanState===3?'Busqueda fallo':!s.networkScanState?'Buscar redes':s.networkTotal?'Redes listas':'Sin redes'):u.node===33?`Redes ${(s.networkPage??0)+1}/${(s.networkTotal??0)>8?2:1}${s.networkTruncated?'+':''}`:u.node===32?(s.lines[0]||'Estado de red'):String(n[0]);componentHeader(o,menuIcon(u.node,u.node,0,title),title); if (view) for (let j = 0; j < 3; j++) o.textWindow(0,j===2?104:128,16+j*12,s.lines[j],j===2?firmwareTextOffset(s.lines[j],104,elapsed(u.clockMs,u.scrollStartedMs)):0); }
     for (let row = 0; row < count && u.firstVisible + row < firmwareNodeCount(u.node,s.configDirty,s); row++) {
       const item = firmwareMenuItem(u.node, u.firstVisible + row,s), selected = u.firstVisible + row === u.selection;
       if (partial && !selected) continue;
       if(view && item.label.startsWith('Volver')){if(!partial)gestureHint(o,94,52,true,'Volver');continue;}
       const y = view ? 52 : 16 + 16 * row, left = view ? 16 : 23, top = view ? y : y + 3;
-      if (!partial) { icon(o, menuIcon(u.node, item.target, item.action, item.label), view ? 0 : 3, view ? 51 : y, view ? 12 : 16);  if(!(u.node===33 && (s.rowSecurity?.[row]??0)>=2))o.drawText(120, top, selected ? s.disabled[row] ? '!' : item.label.startsWith('Volver') ? ' ' : '>' : s.disabled[row] ? '!' : ' '); }
-      const right=u.node===33 && (s.rowSecurity?.[row]??0)>=2?108:118;if(right===108)icon(o,25,111,top,10);
+      if (!partial) { icon(o, menuIcon(u.node, item.target, item.action, item.label), view ? 0 : 3, view ? 51 : y, view ? 12 : 16);  if(row!==2 && !(u.node===33 && (s.rowSecurity?.[row]??0)>=2))o.drawText(120, top, selected ? s.disabled[row] ? '!' : item.label.startsWith('Volver') ? ' ' : '>' : s.disabled[row] ? '!' : ' '); }
+      let right=u.node===33 && (s.rowSecurity?.[row]??0)>=2?108:118;if(row===2)right=Math.min(right,104);
+      if(u.node===33 && (s.rowSecurity?.[row]??0)>=2){const lockx=row===2?92:111;if(row===2)right=89;o.fillRect(lockx,top,10,10,'black');icon(o,25,lockx,top,10);if(partial && selected && !view)o.fillRect(lockx,top,10,10,'invert');}
       const label = s.labels[row] || item.label;
       o.fillRect(left,top,right-left,10,partial && selected && !view?'white':'black');o.textWindow(left,right,top,label,selected?firmwareTextOffset(label,right-left,elapsed(u.clockMs,u.scrollStartedMs)):0,partial && selected && !view?'black':'white');
       if(!partial && selected && !view)o.fillRect(0,y,128,16,'invert');
     }
   }
+}
+
+/** Same prepared hold progress and coordinates as the AVR wrapper. */
+export function renderFirmwareScreen(u:FirmwareUiState,o:Afr2OledBuffer,s:FirmwareSnapshot):boolean|void{
+  const result=renderFirmwareContent(u,o,s);
+  if(u.node===68 || u.node===69)return result;
+  // AFR2-20261106-07: only while pressed, no frame; disc of ring radius + 2 px cleared first.
+  if(!u.dashboardHeld)return result;
+  for(let dy=-11;dy<=11;dy++){let dx=0;while((dx+1)*(dx+1)+dy*dy<=121)dx++;o.fillRect(117-dx,54+dy,2*dx+1,1,'black');}
+  icon(o,S.AFR2_ICON_ENCODER_LONG,112,49,11);
+  const ring=[[0,-9],[3,-8],[6,-6],[8,-3],[9,0],[8,3],[6,6],[3,8],[0,9],[-3,8],[-6,6],[-8,3],[-9,0],[-8,-3],[-6,-6],[-3,-8]];
+  ring.forEach(([x,y],i)=>{o.setPixel(117+x,54+y);if(i<(u.holdProgress??0))o.fillRect(116+x,53+y,2,2);});
+  return result;
 }

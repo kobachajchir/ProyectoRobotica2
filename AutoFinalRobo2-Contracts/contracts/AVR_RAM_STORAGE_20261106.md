@@ -1,0 +1,9 @@
+# Almacenamiento AVR — AFR2-20261106-04
+
+Wire EX01v13, framing ROBO2, comandos, IDs de pantalla y EEPROMv9/payload63 no cambian. Las estructuras internas no son imágenes serializadas. Las funciones motor y permisos de control quedan intactos.
+
+- Afr2Oled conserva buffer[1024], acknowledged[1024], tx[33] y command[6]. BorrowScratch solo presta un prefijo de acknowledged desde main; invalida previamente todos los chunks tocados y marca páginas dirty. El puntero deja de ser utilizable antes de I2c_Tick, Oled_Task, otro raster o cualquier cesión. El llamador no modifica tx/command y limpia datos privados. QR es el único consumidor de producción; préstamo353, sin callbacks ni I/O dentro del raster. Tras ACK de una transferencia anterior solo se confirma su tx real; el comparador detecta divergencias pendientes.
+- Flash y RAM tienen interfaces explícitas. Notify sigue aceptando RAM; NotifyFlash acepta ambos textos PROGMEM; NotifyFlashTitle acepta título PROGMEM y detalle RAM. Afr2UiOps.reason_flash devuelve PROGMEM en AVR. TextWindowFlash y TextOffsetFlash preservan coordenadas, clipping y tiempos de sus versiones RAM. TS conserva el mismo contenido/layout: tiene un único espacio de strings.
+- AFR2_SEQUENCE_MEMORY_APPROVED predeterminado0 no reserva unión de 32 pasos ni kinds. Metadatos107 conservados. No cambia capacidad anunciada ni habilita movimientos. Macro1 restaura almacenamiento y ejecución de32 pasos; exige presupuesto propio antes de despliegue. Se conserva el decoder/encoder existente, no se reduce a16 ni se cambia EEPROM.
+
+Estado: implementado, producto/biblioteca y perfil alternativo compilados; paridad host y ciclo ACK simulado comprobados. Sin carga ni prueba física. [Mediciones](../documentation/builds/2026-11-06-04/README.md). El margen estático no sustituye medir pila real.

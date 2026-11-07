@@ -14,8 +14,11 @@ namespace AFR2Loader
         readonly Dictionary<string, CheckBox> workflowChecks = new Dictionary<string, CheckBox>();
         readonly Dictionary<string, string> workflowNames = new Dictionary<string, string>();
         readonly ToolTip workflowTips = new ToolTip();
-        readonly ToolStripStatusLabel activity = new ToolStripStatusLabel { Spring = true, TextAlign = ContentAlignment.MiddleLeft, AutoToolTip = true };
-        readonly ToolStripStatusLabel concurrentActivity = new ToolStripStatusLabel { BorderSides = ToolStripStatusLabelBorderSides.Left };
+        readonly Label activity = new Label();
+        readonly Label concurrentActivity = new Label();
+        readonly Label nextStep = new Label { ForeColor = Color.FromArgb(22, 79, 99), Font = new Font("Segoe UI", 10F, FontStyle.Bold) };
+        Control activityBar;
+        string activityTip = "";
         string activeStep;
         Label bootGuideStatus;
 
@@ -43,43 +46,64 @@ namespace AFR2Loader
             ButtonStyle(detectTarget); UpdatePreparationControls();
             listen.Visible = target.SelectedIndex != 0 && !Operations.UsesMegaBridge(profile);
         }
-        readonly TableLayoutPanel workflowList = new TableLayoutPanel { Dock = DockStyle.Top, AutoSize = true, ColumnCount = 4, Margin = new Padding(0), Padding = new Padding(0) };
-        readonly Label workflowEmpty = new Label { Text = "Las etapas aparecerán al iniciar una operación.", AutoSize = true, ForeColor = Color.FromArgb(85, 102, 119), Margin = new Padding(0, 6, 0, 6) };
+        // AFR2-20261106-06: rows are as tall as their text, grouped at the top with an 8 px gap; spare height stays below.
+        readonly TableLayoutPanel workflowList = new TableLayoutPanel { Dock = DockStyle.Top, AutoSize = true, AutoSizeMode = AutoSizeMode.GrowAndShrink, ColumnCount = 1, Margin = new Padding(0), Padding = new Padding(0) };
+        GroupBox workflowGroup;
+        int WorkflowRequiredHeight()
+        {
+            if (workflowGroup == null) return 0;
+            int width = Math.Max(120, workflowGroup.ClientSize.Width - workflowGroup.Padding.Horizontal);
+            return workflowList.GetPreferredSize(new Size(width, 0)).Height + workflowGroup.Padding.Vertical + UiGap;
+        }
+        readonly Label workflowEmpty = new Label { Text = "Las etapas aparecerán al iniciar una operación.", AutoSize = true, MaximumSize = new Size(240, 0), ForeColor = Color.FromArgb(85, 102, 119), Margin = new Padding(0, 6, 0, 6) };
         readonly HashSet<string> shownWorkflow = new HashSet<string>();
         Control CreateWorkflowPanel(Control log)
         {
-            var panel = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 2, Margin = new Padding(0) };
-            panel.RowStyles.Add(new RowStyle(SizeType.AutoSize)); panel.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
-            var group = new GroupBox { Text = "Etapas de la operación", Dock = DockStyle.Top, AutoSize = true, Padding = new Padding(12, 20, 12, 10), Margin = new Padding(0, 0, 0, 12), BackColor = Color.White };
-            for (int i = 0; i < 4; i++) workflowList.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25));
+            // AFR2-20261105-01: keep the log full-height beside a vertical checklist.
+            var panel = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2, RowCount = 1, Margin = new Padding(0) };
+            panel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+            panel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 300));
+            panel.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+            var group = new GroupBox { Text = "Etapas de la operación", Dock = DockStyle.Fill, Padding = new Padding(12, 20, 12, 10), Margin = new Padding(12, 0, 0, 0), BackColor = Color.White };
+            // AFR2-20261106-03: all stages of the current operation stay visible.
+            var scroll = new Panel { Dock = DockStyle.Fill, AutoScroll = false }; workflowGroup = group;
+            workflowList.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
             string[] keys = { "wiring", "reset", "bootloader", "connected", "esp_detected", "build_mega", "build_esp", "build_web_fs", "backup", "package", "writing", "verifying", "verified", "flasher_check" };
             string[] names = { "Cableado confirmado", "Reinicio ESP", "Modo programación", "Conexión confirmada", "ESP Detectado", "Compilación ATmega", "Compilación ESP", "FileSystem", "Backup flash ATmega", "Paquete AT revisado", "Escritura", "Verificación", "Carga verificada", "Flasher comprobado sin escritura" };
             for (int i = 0; i < keys.Length; i++) {
-                var check = new CheckBox { Text = names[i], AutoCheck = false, ThreeState = true, TabStop = false, Dock = DockStyle.Fill, Height = 30, Margin = new Padding(0, 2, 8, 2), Visible = false };
+                var check = new CheckBox { Text = names[i], AutoCheck = false, ThreeState = true, TabStop = false, Dock = DockStyle.Top, AutoSize = true, MaximumSize = new Size(240, 0), MinimumSize = new Size(0, 30), Margin = new Padding(0, 2, 0, 2), Visible = false };
                 workflowChecks.Add(keys[i], check); workflowNames.Add(keys[i], names[i]);
             }
-            ReflowWorkflow(); group.Controls.Add(workflowList); panel.Controls.Add(group, 0, 0); panel.Controls.Add(log, 0, 1); return panel;
+            ReflowWorkflow(); scroll.Controls.Add(workflowList); group.Controls.Add(scroll); panel.Controls.Add(log, 0, 0); panel.Controls.Add(group, 1, 0); return panel;
         }
         void ReflowWorkflow()
         {
             workflowList.SuspendLayout(); workflowList.Controls.Clear(); workflowList.RowStyles.Clear();
             var checks = workflowChecks.Where(p => shownWorkflow.Contains(p.Key)).Select(p => p.Value).ToArray();
-            workflowList.RowCount = Math.Max(1, (checks.Length + 3) / 4);
-            if (checks.Length == 0) { workflowList.RowStyles.Add(new RowStyle(SizeType.AutoSize)); workflowList.Controls.Add(workflowEmpty, 0, 0); workflowList.SetColumnSpan(workflowEmpty, 4); }
+            workflowList.RowCount = Math.Max(1, checks.Length);
+            if (checks.Length == 0) { workflowList.RowStyles.Add(new RowStyle(SizeType.AutoSize)); workflowList.Controls.Add(workflowEmpty, 0, 0); workflowList.SetColumnSpan(workflowEmpty, 1); }
             else {
-                for (int i = 0; i < workflowList.RowCount; i++) workflowList.RowStyles.Add(new RowStyle(SizeType.Absolute, 34));
-                for (int i = 0; i < checks.Length; i++) { workflowList.Controls.Add(checks[i], i % 4, i / 4); checks[i].Visible = true; }
+                for (int i = 0; i < workflowList.RowCount; i++) workflowList.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+                for (int i = 0; i < checks.Length; i++) { checks[i].Dock = DockStyle.Top; checks[i].AutoSize = true; checks[i].MinimumSize = new Size(0, 30); checks[i].MaximumSize = new Size(240, 0); checks[i].Margin = new Padding(0, 0, 0, i == checks.Length - 1 ? 0 : UiGap); workflowList.Controls.Add(checks[i], 0, i); checks[i].Visible = true; }
             }
             workflowList.ResumeLayout(true);
+            FitOperationRows();
         }
-        void InitializeActivityBar()
+        // AFR2-20261106-06. Own row below the tabs, full width, 16 px side margins, two groups:
+        // operation (status + progress) above, log following + connection states below.
+        void InitializeActivityBar(TableLayoutPanel host)
         {
-            var strip = new StatusStrip { SizingGrip = false, ShowItemToolTips = true };
-            strip.Items.Add(activity);
-            strip.Items.Add(new ToolStripControlHost(followLog) { AutoSize = false, Width = 132 });
-            progress.Width = 170; progress.Height = 18;
-            strip.Items.Add(new ToolStripControlHost(progress) { AutoSize = false, Width = 180 });
-            strip.Items.Add(concurrentActivity); Controls.Add(strip);
+            // One line: status | progress | follow log | connections. Long texts are cut with an ellipsis; the full text is in the tooltip.
+            var bar = new TableLayoutPanel { Name = "ActivityBar", Dock = DockStyle.Fill, Height = 40, ColumnCount = 4, RowCount = 1, Margin = new Padding(0), Padding = new Padding(UiInset, 4, UiInset, 4) };
+            bar.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 45)); bar.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 150));
+            bar.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); bar.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 55));
+            bar.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+            foreach (Label label in new[] { activity, concurrentActivity }) { label.AutoSize = false; label.AutoEllipsis = true; label.Dock = DockStyle.Fill; label.TextAlign = ContentAlignment.MiddleLeft; label.Margin = new Padding(0, 0, UiInset, 0); }
+            progress.Height = 16; progress.Dock = DockStyle.None; progress.Anchor = AnchorStyles.Left | AnchorStyles.Right; progress.Margin = new Padding(0, 0, UiInset, 0);
+            followLog.AutoSize = true; followLog.Anchor = AnchorStyles.Left; followLog.Margin = new Padding(0, 0, UiInset, 0);
+            bar.Controls.Add(activity, 0, 0); bar.Controls.Add(progress, 1, 0); bar.Controls.Add(followLog, 2, 0); bar.Controls.Add(concurrentActivity, 3, 0);
+            bar.Paint += (s, e) => { using (var pen = new Pen(LoaderAppearance.Border)) e.Graphics.DrawLine(pen, 0, 0, bar.Width, 0); };
+            activityBar = bar; host.Controls.Add(bar, 0, 1);
             timer.Tick += (s, e) => UpdateActivityBar();
             FormClosed += (s, e) => workflowTips.Dispose();
             UpdateActivityBar();
@@ -87,10 +111,13 @@ namespace AFR2Loader
         void UpdateActivityBar()
         {
             activity.Text = busy && commandActivity.Length > 0 ? commandActivity : (busy ? "En curso: " : "") + status.Text;
-            activity.ToolTipText = (currentJob == null ? "" : "Trabajo: " + currentJob.Action + "\r\n") + status.Text + (busy ? "\r\n" + commandProgress.Text : "");
+            string tip = (currentJob == null ? "" : "Trabajo: " + currentJob.Action + "\r\n") + status.Text + (busy ? "\r\n" + commandProgress.Text : "");
+            if (tip != activityTip) { activityTip = tip; workflowTips.SetToolTip(activity, tip); }
+            if (busy) nextStep.Text = "Operación en curso. Los botones de preparación vuelven al terminar o cancelar.";
             string com = serialCapture != null && serialCapture.Active ? serialCapture.Port + " abierto · " + serialCapture.Baud : (serialPorts.Text.Length > 0 ? serialPorts.Text : ports.Text) + " cerrado · " + serialBaud.Text;
             bool mcpOpen = mcpPeers.Values.Any(p => (DateTime.UtcNow - p.SeenUtc).TotalSeconds <= 30);
             concurrentActivity.Text = "Monitor " + (serialCapture != null && serialCapture.Active ? "abierto" : "cerrado") + " | " + com + " | MCP " + (mcpOpen ? "abierto" : "cerrado") + " · " + (pendingJob == null ? "sin pendientes" : "pendiente");
+            if (workflowTips.GetToolTip(concurrentActivity) != concurrentActivity.Text) workflowTips.SetToolTip(concurrentActivity, concurrentActivity.Text);
         }
         void ResetWorkflow(string title)
         {
@@ -106,7 +133,7 @@ namespace AFR2Loader
                 pair.Value.CheckState = CheckState.Unchecked; pair.Value.ForeColor = SystemColors.ControlText; pair.Value.Text = workflowNames[pair.Key]; pair.Value.Visible = false;
                 workflowTips.SetToolTip(pair.Value, "Pendiente de esta operación.");
             }
-            if (build) {
+            if (title == "Prueba KEY/RST y boot ESP") { shownWorkflow.Add("wiring"); shownWorkflow.Add("bootloader"); } else if (build) {
                 int selected = title == "build_mega" ? 0 : title == "build_esp" ? 1 : title == "build_web_fs" ? 2 : target.SelectedIndex;
                 if (all || selected == 0) shownWorkflow.Add("build_mega");
                 if (all || selected != 0) {
@@ -255,12 +282,12 @@ namespace AFR2Loader
             }
             if (installedFlasher)
             {
-                MessageBox.Show(this, "Flasher temporal del Mega escrito y verificado.\r\n\r\nDurante la carga, D18/D19 deben permanecer desconectados. Ahora, con la alimentación desconectada, conectá D18→E_RX / E_TX→D19 para usar el flasher. Mantené RESET Mega LIBRE. Potencia de actuadores desconectada.\r\nAhora elegí Detectar ESP / ROM; el asistente indicará KEY/RST del ESP.\r\n\r\nAl terminar usá Flashear Firmware ATmega o su menú Flashear último backup, revisando qué programa contiene.", "Flasher ATmega listo; falta consultar ESP", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(this, "Flasher temporal del Mega escrito y verificado.\r\n\r\nDurante la carga, D18/D19 deben permanecer desconectados. Ahora, con la alimentación desconectada, conectá D18→E_RX / E_TX→D19 para usar el flasher. Mantené RESET Mega LIBRE. Potencia de actuadores desconectada.\r\nAhora elegí Detectar ESP / ROM; " + (Operations.AutoKeyRst(loadedProfile) ? "KEY/RST se accionan solos (modo automático)." : "el asistente indicará KEY/RST del ESP.") + "\r\n\r\nAl terminar usá Flashear Firmware ATmega o su menú Flashear último backup, revisando qué programa contiene.", "Flasher ATmega listo; falta consultar ESP", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
             if (Operations.UsesMegaBridge(loadedProfile) && !megaFirmwareWritten)
             {
-                MessageBox.Show(this, "Contenido ESP escrito y verificado.\r\nRESET Mega sigue LIBRE; no cambies a RESET-GND.\r\n\r\nEl Mega sigue ejecutando el flasher temporal: usá Flashear Firmware ATmega o el menú Flashear último backup antes de habilitar actuadores. Revisá que el backup contenga el programa del auto. Después KEY libre y RST del ESP para arrancar desde flash.", "ESP verificado; firmware Mega pendiente", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(this, "Contenido ESP escrito y verificado.\r\nRESET Mega sigue LIBRE; no cambies a RESET-GND.\r\n\r\nEl Mega sigue ejecutando el flasher temporal: usá Flashear Firmware ATmega o el menú Flashear último backup antes de habilitar actuadores. Revisá que el backup contenga el programa del auto." + (Operations.AutoKeyRst(loadedProfile) ? " Revisá el registro de limpieza automática para confirmar pines sueltos y reinicio final." : " Después KEY libre y RST del ESP para arrancar desde flash."), "ESP verificado; firmware Mega pendiente", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
             MessageBox.Show(this,
@@ -268,7 +295,7 @@ namespace AFR2Loader
                 "Mega D18 / TX1  →  E_RX / RX central del shield\r\n" +
                 "E_TX / TX central del shield  →  Mega D19 / RX1\r\n\r\n" +
                 "Son los pines centrales del selector ESP URAT.\r\n\r\n" +
-                "Ya podés soltar KEY. Desconectá la alimentación antes de mover cables. Retirá el adaptador USB–TTL o los cables de servicio D0/D1 y el puente RESET del ATmega a GND, según la conexión usada. Dejá KEY libre para el arranque normal." +
+                (Operations.AutoKeyRst(loadedProfile) ? "Desconectá la alimentación antes de mover cables. Revisá en el registro si la liberación de KEY/RST quedó confirmada." : "Ya podés soltar KEY. Desconectá la alimentación antes de mover cables. Retirá el adaptador USB–TTL si lo usaste. Dejá KEY libre para el arranque normal.") +
                 (EspFlashRules.IsAt(loadedProfile) ? "\r\n\r\nEste perfil usa AT: el programa del microcontrolador debe implementar AT. El firmware de producto AutoFinalRobo2 usa su protocolo propio y no se convierte a AT al cargar el ESP." : ""),
                 "Carga verificada · recordar cableado de funcionamiento", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }

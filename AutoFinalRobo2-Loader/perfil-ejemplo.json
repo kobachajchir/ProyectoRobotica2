@@ -1,8 +1,8 @@
 {
   "Schema": 1,
   "Values": {
-    "Name": "Plantilla para compañeros - completar rutas",
-    "EspTransport": "mega_reset",
+    "Name": "Plantilla portable - configurar en este equipo",
+    "EspTransport": "mega_bridge",
     "BridgeBaud": "115200",
     "BridgeStartupSeconds": "3",
     "EspFirmwareMode": "web",
@@ -24,14 +24,14 @@
     "Pio": "",
     "Node": "",
     "Npm": "",
-    "Python": "%USERPROFILE%\\.platformio\\penv\\Scripts\\python.exe",
-    "Esptool": "%USERPROFILE%\\.platformio\\packages\\tool-esptoolpy\\esptool.py",
+    "Python": "",
+    "Esptool": "",
     "EsptoolMajor": "4",
     "PioEnv": "esp12s_candidate",
-    "Hex": "{Repo}\\AutoFinalRobo2-Atmega\\build\\afr2.hex",
-    "EspBin": "{Repo}\\AutoFinalRobo2-ESP\\.pio\\build\\{Env}\\firmware.bin",
-    "FsBin": "{Repo}\\AutoFinalRobo2-ESP\\.pio\\build\\{Env}\\littlefs.bin",
-    "Linker": "%USERPROFILE%\\.platformio\\packages\\framework-arduinoespressif8266\\tools\\sdk\\ld\\eagle.flash.4m3m.ld",
+    "Hex": "{AtmegaDir}\\build\\afr2.hex",
+    "EspBin": "{EspDir}\\.pio\\build\\{Env}\\firmware.bin",
+    "FsBin": "{EspDir}\\.pio\\build\\{Env}\\littlefs.bin",
+    "Linker": "",
     "FirmwareOffset": "0x0",
     "FsOffset": "0x100000",
     "FsBytes": "3121152",
@@ -45,6 +45,10 @@
     "Programmer": "wiring",
     "Signature": "0x1e9801",
     "TimeoutSeconds": "900",
-    "BootWaitSeconds": "90"
+    "BootWaitSeconds": "90",
+    "FsScript": "{App}\\scripts\\Prepare-Web.ps1",
+    "FsSourceDir": "{WebDir}",
+    "FsScriptHost": "%SystemRoot%\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+    "FsScriptArguments": "[\"-NoProfile\",\"-ExecutionPolicy\",\"Bypass\",\"-File\",\"{Script}\"]"
   }
 }

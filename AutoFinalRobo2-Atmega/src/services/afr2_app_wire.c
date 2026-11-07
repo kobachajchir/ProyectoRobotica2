@@ -20,7 +20,8 @@ static uint8_t web_command(Afr2Product *p,const uint8_t *d) {
 static uint32_t features(const Afr2Product *p) {
     uint32_t f=AFR2_EXT_F_TOUCH_UI|AFR2_EXT_F_UI|AFR2_EXT_F_STOP|AFR2_EXT_F_WIFI|AFR2_EXT_F_PREFS|AFR2_EXT_F_CONFIG|AFR2_EXT_F_SYSTEM|AFR2_EXT_F_NETWORK_UI|AFR2_EXT_F_SENSOR_HEAD|AFR2_EXT_F_RADAR;
     f|=AFR2_EXT_F_BATTERY;
-    if(p->config.motor_ready && !p->fault && !p->hall_measuring)f|=AFR2_EXT_F_MANUAL_PWM|AFR2_EXT_F_WHEEL;
+    f|=AFR2_EXT_F_MANUAL_PWM; /* AFR2-20261106: Conducir manual siempre disponible. */
+    if(p->config.motor_ready && !p->fault && !p->hall_measuring)f|=AFR2_EXT_F_WHEEL;
     if(p->sensors.line_valid)f|=AFR2_EXT_F_LINE;
     if(p->sensors.hall_available)f|=AFR2_EXT_F_HALL;
     if(p->config.motor_ready && p->pose_valid && !p->fault)f|=AFR2_EXT_F_MOTION|AFR2_EXT_F_GOTO;
@@ -56,10 +57,11 @@ uint8_t Afr2App_Command(void *ctx,uint8_t cmd,const uint8_t *d,uint8_t n,uint8_t
         return Afr2Sequence_Command(p,cmd,d,n,out,length);
     }
     if(p->sequence.state>=1 && p->sequence.state<=3 &&
-       (cmd==AFR2_EXT_DRIVE || cmd==AFR2_EXT_DRIVE_PWM || cmd==AFR2_EXT_WHEEL || cmd==AFR2_EXT_MODE || cmd==AFR2_EXT_GOTO ||
+       (cmd==AFR2_EXT_DRIVE || cmd==AFR2_EXT_WHEEL || cmd==AFR2_EXT_MODE || cmd==AFR2_EXT_GOTO ||
         cmd==AFR2_EXT_CONFIG || cmd==AFR2_EXT_PREFS || cmd==AFR2_EXT_HALL_CAL || cmd==AFR2_EXT_LINE_CAL))return AFR2_RESULT_UNAVAILABLE;
-    if(a->ui->node==AFR2_N_SERVO_ANGLE && (cmd==AFR2_EXT_DRIVE_PWM || cmd==AFR2_EXT_DRIVE || cmd==AFR2_EXT_WHEEL || cmd==AFR2_EXT_MODE || cmd==AFR2_EXT_GOTO))return AFR2_RESULT_UNAVAILABLE;
-    if(a->ui->touch_active && (cmd==AFR2_EXT_GOTO || cmd==AFR2_EXT_WHEEL || cmd==AFR2_EXT_MODE))return AFR2_RESULT_UNAVAILABLE;
+    if(a->ui->node==AFR2_N_SERVO_ANGLE && (cmd==AFR2_EXT_DRIVE || cmd==AFR2_EXT_WHEEL || cmd==AFR2_EXT_MODE || cmd==AFR2_EXT_GOTO))return AFR2_RESULT_UNAVAILABLE;
+    /* AFR2-20261106-08: touch view may request a GOTO in-place turn (Hall-closed angle). */
+    if(a->ui->touch_active && (cmd==AFR2_EXT_WHEEL || cmd==AFR2_EXT_MODE))return AFR2_RESULT_UNAVAILABLE;
     switch(cmd) {
     case AFR2_EXT_BATTERY:{
         if(n!=1 || d[0]>1)return AFR2_RESULT_BAD_REQUEST;
@@ -92,10 +94,12 @@ uint8_t Afr2App_Command(void *ctx,uint8_t cmd,const uint8_t *d,uint8_t n,uint8_t
         if(n!=2 || afr2_get_u16(d)>1500u)return AFR2_RESULT_BAD_REQUEST;
         Afr2Product_WebPulse(p,afr2_get_u16(d));afr2_put_u16(out,afr2_get_u16(d));*length=2;break;
     case AFR2_EXT_DRIVE_PWM:
-        if(n!=12)return AFR2_RESULT_BAD_REQUEST;
-        if(!web_command(p,d))return AFR2_RESULT_UNAVAILABLE;
-        return wire_result(Afr2Product_DrivePwm(p,(int16_t)afr2_get_u16(d+4),(int16_t)afr2_get_u16(d+6),
-            (int16_t)afr2_get_u16(d+8),afr2_get_u16(d+10)));
+        if(n!=12 || afr2_get_u32(d)!=0)return AFR2_RESULT_BAD_REQUEST;
+        /* AFR2-20261106: sin web_command; el mando Web puede tomar el control aunque el origen sea local. */
+        {uint8_t r=Afr2Product_DrivePwm(p,(int16_t)afr2_get_u16(d+4),(int16_t)afr2_get_u16(d+6),
+            (int16_t)afr2_get_u16(d+8),afr2_get_u16(d+10));
+         if(r==AFR2_OK){Afr2Product_WebPulse(p,0);p->origin=AFR2_SOURCE_WEB;}
+         return wire_result(r);}
     case AFR2_EXT_DRIVE:
         if(n!=12)return AFR2_RESULT_BAD_REQUEST;
         if(!web_command(p,d))return AFR2_RESULT_UNAVAILABLE;
@@ -143,9 +147,10 @@ uint8_t Afr2App_Command(void *ctx,uint8_t cmd,const uint8_t *d,uint8_t n,uint8_t
         if(!web_command(p,d) || !p->stopped)return AFR2_RESULT_UNAVAILABLE;
         return wire_result(a->ui->ops.invoke(a,d[4]?AFR2_A_DISCARD:AFR2_A_SAVE,0,0));
     case AFR2_EXT_LINE_CAL: {
-        if(n!=5 || d[4]>1)return AFR2_RESULT_BAD_REQUEST;
+        if(n!=5 || d[4]>3)return AFR2_RESULT_BAD_REQUEST;
         if(!web_command(p,d) || !p->stopped)return AFR2_RESULT_UNAVAILABLE;
-        uint8_t r=a->ui->ops.invoke(a,d[4]?AFR2_A_LINE_KIND:AFR2_A_LINE_CONFIRM,p->config.line_kind,0);
+        uint8_t action=d[4]==2?AFR2_A_LINE_CHANNEL:d[4]==3?AFR2_A_LINE_THRESHOLD:d[4]?AFR2_A_LINE_KIND:AFR2_A_LINE_CONFIRM;
+        uint8_t r=a->ui->ops.invoke(a,action,p->config.line_kind,0);
         if(r)return wire_result(r);
         out[0]=p->config.line_calibrated;*length=1;break;
     }
@@ -155,7 +160,9 @@ uint8_t Afr2App_Command(void *ctx,uint8_t cmd,const uint8_t *d,uint8_t n,uint8_t
         if(d[0] && a->ui->touch_cancelled)return AFR2_RESULT_UNAVAILABLE;
         if(d[0] && !a->ui->touch_active) {
             if(a->ui->keyboard || a->ui->edit || p->hall_measuring || a->ui->node==AFR2_N_HALL_PICK || a->ui->node==AFR2_N_SAVE_CONFIRM )return AFR2_RESULT_UNAVAILABLE;
-            Afr2Product_Stop(p); /* Explicit manual takeover cancels missions and radar. */
+            /* Explicit manual takeover cancels missions and radar. AFR2-20261106-10: not the Web PWM
+             * drive that this same touch view is sending (a re-activation after a gap stopped it). */
+            if(!(p->mode==AFR2_PWM_MANUAL && p->origin==AFR2_SOURCE_WEB))Afr2Product_Stop(p);
         }
         if(a->ui->touch_active!=d[0] || a->ui->touch_direction!=d[1] || a->ui->touch_heading!=d[2])a->snapshot_active=0;
         if(d[0] && (!a->ui->power_known || a->ui->power_percent!=d[3])){
@@ -216,11 +223,12 @@ uint8_t Afr2App_Command(void *ctx,uint8_t cmd,const uint8_t *d,uint8_t n,uint8_t
         if(n!=8)return AFR2_RESULT_BAD_REQUEST;
         if(a->diag_state!=1 || afr2_get_u32(d)!=a->diag_job || (uint32_t)(p->now-a->diag_started)>=a->diag_timeout)return AFR2_RESULT_UNAVAILABLE;
         a->diag_state=afr2_get_u32(d+4)==(a->diag_job^0xaf203307UL)?2:3;
-        Afr2Ui_Notify(a->ui,a->diag_state==2?0:1,"Prueba ESP",a->diag_state==2?"Exitosa":"Respuesta invalida",2500);break;
+        Afr2Ui_NotifyFlash(a->ui,a->diag_state==2?0:1,PSTR("Prueba ESP"),a->diag_state==2?PSTR("Exitosa"):PSTR("Respuesta invalida"),2500);break;
     case AFR2_EXT_WIFI_POLL: {
         if(n!=1)return AFR2_RESULT_BAD_REQUEST;
         Afr2Wifi *w=&p->wifi;uint8_t offset=d[0],total=0;
-        if(w->pending && w->op==AFR2_WIFI_LOCAL_DRAFT)total=w->credential_length;
+        if(w->pending && w->op==AFR2_WIFI_PAGE)total=5;
+        else if(w->pending && w->op==AFR2_WIFI_LOCAL_DRAFT)total=w->credential_length;
         else if(w->pending && w->op==AFR2_WIFI_WEB_DRAFT)total=(uint8_t)strlen(w->draft_ssid);
         if(offset>total)return AFR2_RESULT_BAD_REQUEST;
         out[0]=w->pending;afr2_put_u32(out+1,w->id);out[5]=w->op;out[6]=total;out[7]=offset;
@@ -230,6 +238,7 @@ uint8_t Afr2App_Command(void *ctx,uint8_t cmd,const uint8_t *d,uint8_t n,uint8_t
         for(uint8_t i=0;i<count;i++) {
             uint8_t pos=offset+i;out[14+i]=(w->op==AFR2_WIFI_WEB_DRAFT || pos<ssid_n)?w->draft_ssid[pos]:pos==ssid_n?0:w->password[pos-ssid_n-1];
         }
+        if(w->op==AFR2_WIFI_PAGE && count){uint8_t page[5];afr2_put_u32(page,w->scan_id);page[4]=w->scan_page;memcpy(out+14,page+offset,count);}
         w->claimed=w->pending;*length=14+count;break;
     }
     case AFR2_EXT_WIFI_UPDATE: {
@@ -238,44 +247,53 @@ uint8_t Afr2App_Command(void *ctx,uint8_t cmd,const uint8_t *d,uint8_t n,uint8_t
         if(d[0]==0) { /* status: subtype,mode,connected,rssiLE,ssidLen,ssid,ip4,apip4 */
             if(n<14 || d[1]>3 || d[2]>1 || d[5]>32 || n!=14+d[5] || memchr(d+6,0,d[5]))return AFR2_RESULT_BAD_REQUEST;
             if(w->mode!=d[1] || w->sta_connected!=d[2] || strlen(w->ssid)!=d[5] || memcmp(w->ssid,d+6,d[5]))w->details_valid=0;
-            if(!w->pending && !w->draft_ready)w->requested_mode=d[1]?d[1]:1;
+            if(!w->pending && !w->draft_ready && !w->mode_draft)w->requested_mode=d[1]?d[1]:1;
             w->mode=d[1];w->sta_connected=d[2];w->rssi=(int16_t)afr2_get_u16(d+3);
             memcpy(w->ssid,d+6,d[5]);w->ssid[d[5]]=0;
-            const uint8_t *ip=d+6+d[5];snprintf(w->ip,sizeof(w->ip),"%u.%u.%u.%u",ip[0],ip[1],ip[2],ip[3]);
-            snprintf(w->ap_ip,sizeof(w->ap_ip),"%u.%u.%u.%u",ip[4],ip[5],ip[6],ip[7]);w->available=1;w->status_ms=p->now;
+            const uint8_t *ip=d+6+d[5];snprintf_P(w->ip,sizeof(w->ip),PSTR("%u.%u.%u.%u"),ip[0],ip[1],ip[2],ip[3]);
+            snprintf_P(w->ap_ip,sizeof(w->ap_ip),PSTR("%u.%u.%u.%u"),ip[4],ip[5],ip[6],ip[7]);w->available=1;w->status_ms=p->now;
         } else if(d[0]==1) {
             if(n<9 || d[1]>7 || d[2]>32 || d[3]>6 || d[4]>8 || d[1]>=d[4] || n!=9+d[2] || memchr(d+9,0,d[2]))return AFR2_RESULT_BAD_REQUEST;
-            if(!w->pending || w->op!=AFR2_WIFI_SCAN || afr2_get_u32(d+5)!=w->id)return AFR2_RESULT_UNAVAILABLE;
+            if(!w->pending || (w->op!=AFR2_WIFI_SCAN && w->op!=AFR2_WIFI_PAGE) || afr2_get_u32(d+5)!=w->id)return AFR2_RESULT_UNAVAILABLE;
+            if(!w->scan_id || d[4]!=w->scan_expected || d[1]>=w->scan_expected)return AFR2_RESULT_UNAVAILABLE;
             if(d[1]==0)w->network_count=0;
             memcpy(w->networks[d[1]],d+9,d[2]);w->networks[d[1]][d[2]]=0;w->network_security[d[1]]=d[3];
+            w->scan_received|=(1u<<d[1]);
             if(w->network_count<=d[1])w->network_count=d[1]+1;
+        } else if(d[0]==6) {
+            if(n!=13 || !w->pending || (w->op!=AFR2_WIFI_SCAN && w->op!=AFR2_WIFI_PAGE) || afr2_get_u32(d+1)!=w->id || d[9]>1 || d[10]>16 || d[11]>1 || d[12]>8 || !afr2_get_u32(d+5) || (d[9] && d[10]<=8) || d[12]!=(d[10]>d[9]*8u+8u?8u:d[10]-d[9]*8u))return AFR2_RESULT_BAD_REQUEST;
+            if(w->op==AFR2_WIFI_PAGE && (w->scan_id!=afr2_get_u32(d+5) || w->scan_page!=d[9]))return AFR2_RESULT_UNAVAILABLE;
+            w->scan_id=afr2_get_u32(d+5);w->scan_page=d[9];w->scan_total=d[10];w->scan_truncated=d[11];w->scan_expected=d[12];w->scan_received=0;w->network_count=0;
         } else if(d[0]==2) {
             if(n<11 || d[5]>6 || d[10]>32 || n!=11+d[10] || memchr(d+11,0,d[10]))return AFR2_RESULT_BAD_REQUEST;
             if(!w->pending || afr2_get_u32(d+1)!=w->id || !w->claimed)return AFR2_RESULT_UNAVAILABLE;
             if(d[5]==1 && ((w->op!=AFR2_WIFI_WEB_DRAFT && w->op!=AFR2_WIFI_LOCAL_DRAFT) ||
                !afr2_get_u32(d+6) || !d[10]))return AFR2_RESULT_BAD_REQUEST;
-            if(d[5]==2 && w->op!=AFR2_WIFI_CONNECT && w->op!=AFR2_WIFI_RETRY && w->op!=AFR2_WIFI_REBOOT_ESP && w->op!=AFR2_WIFI_DISCONNECT)return AFR2_RESULT_BAD_REQUEST;
+            if(d[5]==2 && w->op!=AFR2_WIFI_CONNECT && w->op!=AFR2_WIFI_RETRY && w->op!=AFR2_WIFI_REBOOT_ESP && w->op!=AFR2_WIFI_CHANGE_MODE && w->op!=AFR2_WIFI_DISCONNECT)return AFR2_RESULT_BAD_REQUEST;
             if(d[5]==3 && (w->op==AFR2_WIFI_WEB_DRAFT || w->op==AFR2_WIFI_LOCAL_DRAFT || w->op==AFR2_WIFI_CANCEL))return AFR2_RESULT_BAD_REQUEST;
             if(d[5]==6 && w->op!=AFR2_WIFI_WEB_DRAFT)return AFR2_RESULT_BAD_REQUEST;
+            if(d[5]==3 && (w->op==AFR2_WIFI_SCAN || w->op==AFR2_WIFI_PAGE) && (!w->scan_id || w->scan_received!=(uint8_t)((1u<<w->scan_expected)-1u)))return AFR2_RESULT_UNAVAILABLE;
             w->state=d[5];
             if(w->state==1){w->draft_id=afr2_get_u32(d+6);if(!w->draft_id)return AFR2_RESULT_BAD_REQUEST;
                 w->draft_ready=1;w->draft_ms=p->now;memcpy(w->draft_ssid,d+11,d[10]);w->draft_ssid[d[10]]=0;
                 if(a->ui->node!=AFR2_N_WIFI_REVIEW)Afr2Ui_Open(a->ui,AFR2_N_WIFI_REVIEW);}
             if(w->state==2) {
-                if(w->op==AFR2_WIFI_REBOOT_ESP){w->pending=0;Afr2Ui_Notify(a->ui,0,"Reinicio ESP","Solicitado",2000);}
-                else Afr2Ui_Notify(a->ui,0,"Wi-Fi",w->op==AFR2_WIFI_DISCONNECT?"Desconectando...":"Conectando...",2000);
+                if(w->op==AFR2_WIFI_REBOOT_ESP){w->pending=0;Afr2Ui_NotifyFlash(a->ui,0,PSTR("Reinicio ESP"),PSTR("Solicitado"),2000);}
+                else Afr2Ui_NotifyFlash(a->ui,0,PSTR("Wi-Fi"),w->op==AFR2_WIFI_DISCONNECT?PSTR("Desconectando..."):(w->op==AFR2_WIFI_CONNECT || w->op==AFR2_WIFI_CHANGE_MODE)?PSTR("Reiniciando ESP"):PSTR("Conectando..."),2000);
             }
+            if(w->state==4 && w->op==AFR2_WIFI_CHANGE_MODE)Afr2Ui_Open(a->ui,AFR2_N_WIFI_SETUP);
             if(w->state>=1 && w->state!=2) {
                 w->pending=0;
                 volatile char *s=w->password;for(uint8_t i=0;i<64;i++)s[i]=0;w->credential_length=0;
                 if(w->state>=3)w->draft_ready=0;
-                if(w->op==AFR2_WIFI_SCAN && w->state>=4)w->network_count=0;
+                if((w->op==AFR2_WIFI_SCAN || w->op==AFR2_WIFI_PAGE) && w->state>=4)w->network_count=0;
                 if(w->state==6){
-                    Afr2Ui_Notify(a->ui,1,"No hay clientes","Conectados",3000);Afr2Ui_AfterNotice(a->ui,AFR2_N_WIFI_NETWORKS);
+                    Afr2Ui_NotifyFlash(a->ui,1,PSTR("No hay clientes"),PSTR("Conectados"),3000);Afr2Ui_AfterNotice(a->ui,AFR2_N_WIFI_NETWORKS);
                 }else {
-                    const char *message=w->state==1?"Datos listos":w->state==3?(w->op==AFR2_WIFI_STATUS?"Estado recibido":w->op==AFR2_WIFI_SCAN?"Redes listas":w->op==AFR2_WIFI_DISCONNECT?"Red desconectada":w->op==AFR2_WIFI_CHANGE_MODE?"Modo actualizado":"Conectado"):w->state==4?"Operacion fallida":"Cancelado";
-                    Afr2Ui_Notify(a->ui,w->state>=4?1:0,w->state==3?"Operacion exitosa":"Wi-Fi",message,2500);
-                    if(w->state==3 && w->op==AFR2_WIFI_SCAN)Afr2Ui_AfterNotice(a->ui,AFR2_N_WIFI_NETWORKS);
+                    const char *message=w->state==1?PSTR("Datos listos"):w->state==3?(w->op==AFR2_WIFI_STATUS?PSTR("Estado recibido"):(w->op==AFR2_WIFI_SCAN || w->op==AFR2_WIFI_PAGE)?(w->scan_total?PSTR("Redes listas"):PSTR("Sin redes")):w->op==AFR2_WIFI_DISCONNECT?PSTR("Red desconectada"):w->op==AFR2_WIFI_CHANGE_MODE?PSTR("Modo actualizado"):PSTR("Conectado")):w->state==4?PSTR("Operacion fallida"):PSTR("Cancelado");
+                    Afr2Ui_NotifyFlash(a->ui,w->state>=4?1:0,w->state==3?PSTR("Operacion exitosa"):PSTR("Wi-Fi"),message,2500);
+                    if(w->state==3 && (w->op==AFR2_WIFI_SCAN || w->op==AFR2_WIFI_PAGE) && w->scan_truncated)Afr2Ui_NotifyFlash(a->ui,1,PSTR("Lista limitada"),PSTR("16 redes maximo"),2500);
+                    if(w->state==3 && (w->op==AFR2_WIFI_SCAN || w->op==AFR2_WIFI_PAGE))Afr2Ui_AfterNotice(a->ui,AFR2_N_WIFI_NETWORKS);
                 }
             }
         } else if(d[0]==5) { /* Explicit local request only: idLE, offset, total, bytes. */
@@ -287,7 +305,7 @@ uint8_t Afr2App_Command(void *ctx,uint8_t cmd,const uint8_t *d,uint8_t n,uint8_t
             if(w->credential_length==d[6]){w->draft_ssid[32]=0;w->password[d[6]-33]=0;w->pending=0;w->credentials_visible=1;w->draft_ms=p->now;Afr2Ui_Open(a->ui,AFR2_N_WIFI_DATA);}
         } else if(d[0]==4) {
             if(n!=18 || d[1]>3 || d[2]>1 || d[3]>6 || d[4]>6)return AFR2_RESULT_BAD_REQUEST;
-            char ip[16];snprintf(ip,sizeof(ip),"%u.%u.%u.%u",d[6],d[7],d[8],d[9]);
+            char ip[16];snprintf_P(ip,sizeof(ip),PSTR("%u.%u.%u.%u"),d[6],d[7],d[8],d[9]);
             if(w->mode!=d[1] || w->sta_connected!=d[2] || (d[2] && strcmp(ip,w->ip)))return AFR2_RESULT_UNAVAILABLE;
             w->security=d[3];w->ap_security=d[4];w->ws_clients=d[5];memcpy(w->mask,d+10,4);memcpy(w->gateway,d+14,4);w->details_valid=1;w->details_ms=p->now;
         } else if(d[0]==3) {

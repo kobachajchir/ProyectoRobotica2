@@ -1,0 +1,87 @@
+{
+  "id": "AFR2-20261106-02",
+  "atmega": {
+    "text": 121936,
+    "data": 1650,
+    "bss": 5977,
+    "noinit": 9,
+    "flashBytes": 123586,
+    "staticSramBytes": 7636,
+    "capacity": 8192,
+    "freeBeforeStackBytes": 556,
+    "qrStackChainEstimateBytes": 877,
+    "deploymentGate": "FAIL"
+  },
+  "esp": {
+    "staticRamBytes": 50676,
+    "ramBudgetBytes": 81920,
+    "flashBytes": 452575,
+    "flashBudgetBytes": 1044464,
+    "runtimeHeapMeasured": false,
+    "physicalLayoutVerified": false
+  },
+  "web": {
+    "assets": 17,
+    "manifestBytes": 5953,
+    "gzipBytes": 2487493,
+    "estimatedFilesystemBytes": 2629632,
+    "budgetBytes": 2867200,
+    "littlefsImageBytes": 3121152,
+    "imageContent": "/dist only; no /config"
+  },
+  "oled": {
+    "nodes": 70,
+    "frames": 1680,
+    "equal": 1680
+  },
+  "flashed": false,
+  "physicalChecks": false,
+  "artifacts": [
+    {
+      "path": "AutoFinalRobo2-Contracts/.tmp/verification-20261106/artifacts/avr.elf",
+      "bytes": 168164,
+      "sha256": "f6d9e7e6f721ea1c6f3bc9107a720d88c58062d1897f7f7a1c20d9de60f95ceb"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/.tmp/verification-20261106/artifacts/avr.hex",
+      "bytes": 347627,
+      "sha256": "f04b0848e6510ed8c9dcb227c6606a43be20f2ea8ace182f189382f3e3c1e85b"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/.tmp/verification-20261106/artifacts/avr-communication.hex",
+      "bytes": 13321,
+      "sha256": "72630befb7094f9cded5277b1ca6dd6e340f6e6b6832254735fd8261764b7993"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/.tmp/verification-20261106/artifacts/esp-firmware.bin",
+      "bytes": 456720,
+      "sha256": "4cd60ee9e5253b0f53ba9493207501cad63d223f2efb0331d2de6b31b4d46677"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/.tmp/verification-20261106/artifacts/littlefs-web-only.bin",
+      "bytes": 3121152,
+      "sha256": "fcd2d2b37b3fe582a70e4709c9bed48075b88b77be4505388afddc3b04b0fd06"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/.tmp/verification-20261106/artifacts/web-dist/manifest.json",
+      "bytes": 5953,
+      "sha256": "7d249da5b3569467958a61f7ebdc86d8beccd7e38fc467f862d44e3880d3309f"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/.tmp/verification-20261106/artifacts/firmwareLibrary.ts",
+      "bytes": 25806,
+      "sha256": "db240bc22d97fb111f81c5f5c6d1b62b452bccfd6388b2956c39318b495cf008"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/.tmp/verification-20261106/artifacts/touchBitmap.ts",
+      "bytes": 544,
+      "sha256": "0e6b6fca00db097e46297d08d64cab9938ae57243d6572d16b83ca4bd35b47fa"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/.tmp/verification-20261106/artifacts/AFR2Loader.exe",
+      "bytes": 491008,
+      "sha256": "668eb455003080a7153bed4bd7713af87297e4fb1b07ff38340d06aff00aada6"
+    }
+  ],
+  "artifactScope": "Isolated captures; shared .pio/data/dist outputs may be overwritten by other builds."
+}

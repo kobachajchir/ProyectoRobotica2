@@ -10,9 +10,9 @@
         "web:linked-firmware-renderer",
         "web:oled-canvas"
       ],
-      "state": "source-implemented-uncompiled-unvalidated",
-      "note": "Help OLED opens interactive UI simulation with explicit fictional service snapshots; static no-data library remains selectable. Shared current AVR layouts and QR screens. No real commands or ESP promotion.",
-      "changeId": "AFR2-20261102-05",
+      "state": "source-integrated-uncompiled-runtime-unverified",
+      "note": "EX01v13 / digital IR and EEPROMv9; Wi-Fi v2 and eight-entry pages; C/TS source linked. No generator, tests, compiler, COM or deployment. See coordinated corrections contract.",
+      "changeId": "AFR2-20261106-01",
       "navigation_review": "documentation/UI_SCREEN_FLOW.md"
     },
     {
@@ -24,9 +24,9 @@
         "atmega:robo2-core",
         "atmega:handlers"
       ],
-      "state": "source-integrated-compiled-runtime-unverified",
-      "note": "ROBO2/profile2 EX01v6 compiled source, backward timed and OLED compatibility. Distance path gated by negotiated feature, memory/Hall/calibration. No electrical/runtime/physical evidence; CAD unchanged.",
-      "changeId": "AFR2-20261024-02"
+      "state": "source-integrated-uncompiled-runtime-unverified",
+      "note": "EX01v13 / digital IR and EEPROMv9; Wi-Fi v2 and eight-entry pages; C/TS source linked. No generator, tests, compiler, COM or deployment. See coordinated corrections contract.",
+      "changeId": "AFR2-20261106-01"
     },
     {
       "id": "shared:flow/local-ui",
@@ -39,8 +39,8 @@
         "atmega:twi-backend"
       ],
       "state": "source-integrated-uncompiled-runtime-unverified",
-      "note": "Fuente11: encoder INT4/5 D2/D3, FIFO/main; Hall PCINT2 A8Ã¢â‚¬â€œA15 x1 macro0, preferencia de captura software. Sin nueva compilaciÃƒÂ³n ni hardware; CAD pendiente.",
-      "changeId": "AFR2-20261024-11"
+      "note": "EX01v13 / digital IR and EEPROMv9; Wi-Fi v2 and eight-entry pages; C/TS source linked. No generator, tests, compiler, COM or deployment. See coordinated corrections contract.",
+      "changeId": "AFR2-20261106-01"
     },
     {
       "id": "shared:flow/sensors-control",
@@ -510,6 +510,19 @@
       "state": "source-implemented-uncompiled-unvalidated",
       "note": "3s idle/4s cycling, actual fault priority, held encoder pauses; paired Web renderer and explicit simulation fixtures. No new wire/EEPROM or ESP package.",
       "changeId": "AFR2-20261102-14"
+    },
+    {
+      "id": "shared:flow/hall-manual-stream-20261106",
+      "path": [
+        "web:manual-PWM",
+        "esp:latest-PWM-slot",
+        "atmega:manual-PWM",
+        "atmega:Hall-per-wheel-EEPROMv10",
+        "web:linked-Hall-renderer"
+      ],
+      "state": "source-integrated-uncompiled-runtime-unverified",
+      "changeId": "AFR2-20261106-12",
+      "note": "PWM WS accepted/queued is not AVR confirmation; ALIVE/STOP retained. Hall confirm/discard per motor, exterior CW positive. No tests/build/generator/deploy."
     }
   ],
   "updated_by": "AFR2-20261030-19",

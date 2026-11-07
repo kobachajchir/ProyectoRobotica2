@@ -59,7 +59,7 @@ export function renderDashboard(o:Afr2OledBuffer,u:FirmwareUiState,s:FirmwareSna
   const mode=s.dashboardValid && s.dashboardMode!==undefined && s.dashboardMode<8?s.dashboardMode:255;
   if(full || mode!==d.mode){o.fillRect(0,27,60,23,'black');o.drawText(2,28,'MODO');o.drawText(2,40,modes[mode]??'--');changed=true;}
   const selected=status(d,u,s,full);
-  if(full){componentRoundedPanel(o,62,29,64,20);gestureHint(o,0,52,false,'Menu');gestureHint(o,62,52,true,'Rapidas');}
-  if(full || d.drawn!==selected){const label=labels[selected],left=63+Math.trunc((62-(14+4+label.length*7))/2);o.fillRect(64,30,60,18,'black');o.fillRect(63,31,62,16,'black');icon(o,icons[selected],left,32,14);o.drawText(left+18,34,label);changed=true;}
+  if(full){componentRoundedPanel(o,62,27,64,16);gestureHint(o,0,52,false,'Menu');o.drawText(54,52,'Rapidas');}
+  if(full || d.drawn!==selected){const label=labels[selected],left=63+Math.trunc((62-(14+4+label.length*7))/2);o.fillRect(64,28,60,14,'black');o.fillRect(63,29,62,12,'black');icon(o,icons[selected],left,28,14);o.drawText(left+18,30,label);changed=true;}
   d.header=key;d.ssidOffset=ss;d.ipOffset=is;d.mode=mode;d.drawn=selected;return changed;
 }

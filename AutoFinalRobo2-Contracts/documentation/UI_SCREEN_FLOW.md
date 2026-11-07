@@ -1,3 +1,7 @@
+> **AFR2-20261106-12:** Hall por motor con Confirmar/Descartar y EEPROMv10; CW exterior positivo. PWM manual con slot reciente ESP sin esperar ACK AVR por consigna; ALIVE/STOP conservados. Solo fuente, sin compilación, tests, validadores, generadores, carga ni prueba física. Restituir permisos del bypass manual queda pendiente. Ver [contrato](../contracts/HALL_MANUAL_STREAM_20261106.md).
+
+> **AFR2-20261106-01:** Wi-Fi buscando/vacio/fallo y paginas de ocho, retorno al principal por nuevo boot con Si/No, Hall contextual e indicador de largo al soltar. [Contrato y cambios](../contracts/COORDINATED_CORRECTIONS_13.md). Fuentes AVR/Web vinculadas, recursos generados pendientes de autorizacion; sin paridad fisica acreditada.
+
 # Flujo real de pantallas AVR y Simulador UI
 
 AFR2-20261101-02 · 01/11/2026. Revisión de fuente, sin ejecutar firmware,

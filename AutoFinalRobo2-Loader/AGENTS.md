@@ -22,8 +22,9 @@ Comparte el único Git global: no inicializar un repositorio ni submódulo aquí
   Registrar TX por separado de RX y cancelar pendientes antes de ceder el COM.
 - Un mensaje UART no acredita carga verificada. Mantener eventos tipados de
   escritura/verificación y el error original/código/salida en los informes.
-- Loader0.9: separar mega_bridge (D18/D19, RESET libre, baud fijo) de mega_reset
-  (D0/D1, RESET-GND). No pedir74880 en el puente fijo ni cambiar de montaje
+- Loader0.9: mega_bridge (D18/D19, RESET libre, baud fijo). El método mega_reset
+  (D0/D1, RESET-GND) fue retirado por AFR2-20261106-11; perfiles antiguos migran a
+  mega_bridge. KEY/RST manual o automático (D32/D33). No pedir74880 en el puente fijo ni cambiar de montaje
   silenciosamente. El wrapper espera después de abrir el mismo COM para esptool.
 - Backup opcional antes de instalar el flasher: dos lecturas flash/hfuse,
   comparación y hashes antes de publicar el último respaldo. Un fallo bloquea

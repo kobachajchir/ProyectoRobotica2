@@ -13,6 +13,8 @@ export function ConnectionDiagnostics() {
   return <section className="afr2-settings-system afr2-page-stack">
     <div><Disclosure title="Detalles de la conexión"><dl className="afr2-status-list"><div><dt>Web y ESP</dt><dd>{wsState}</dd></div><div><dt>ESP y controlador</dt><dd>{megaLinkState}</dd></div></dl></Disclosure></div>
     <div><Disclosure title="Diagnóstico WebSocket"><dl className="afr2-status-list">
+      <div><dt>Respuestas con presión de salida</dt><dd>{typeof connectionDiagnostics?.outputBackpressure==='number'?connectionDiagnostics.outputBackpressure:'Sin información'}</dd></div>
+      <div><dt>Respuesta esperando envío</dt><dd>{typeof connectionDiagnostics?.replyDeferred==='boolean'?connectionDiagnostics.replyDeferred?'Sí':'No':'Sin información'}</dd></div>
       <div><dt>Último cierre del cliente</dt><dd>{lastSocketClose ? `${lastSocketClose.code}: ${lastSocketClose.reason}` : 'Sin cierres observados'}</dd></div>
       <div><dt>Wi-Fi STA en último reporte</dt><dd>{typeof connectionDiagnostics?.staConnected==='boolean' ? connectionDiagnostics.staConnected ? 'Conectado' : 'Desconectado' : 'Sin información'}</dd></div>
       <div><dt>Sesiones abiertas / cerradas</dt><dd>{typeof connectionDiagnostics?.wsOpened==='number' && typeof connectionDiagnostics?.wsClosed==='number' ? `${connectionDiagnostics.wsOpened} / ${connectionDiagnostics.wsClosed}` : 'Sin información'}</dd></div>

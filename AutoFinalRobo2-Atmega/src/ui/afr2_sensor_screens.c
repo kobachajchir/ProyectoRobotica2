@@ -58,7 +58,7 @@ static void radar(Afr2Oled *o,const Afr2UiSnapshot *s,uint8_t compact){
             uint16_t mm=(uint32_t)range*ring/4u;
             if(mm%10u)snprintf_P(text,sizeof(text),PSTR("%u.%u"),mm/10u,mm%10u);
             else snprintf_P(text,sizeof(text),PSTR("%u"),mm/10u);
-            small_text(o,115,50-ring*10,text);
+            small_text(o,115,(ring==4?10:45-ring*9),text);
         }
     }
     for(uint8_t i=0;i<=36;i+=6){
@@ -100,19 +100,19 @@ void Afr2SensorScreen_Render(Afr2Oled *o,uint8_t node,const Afr2UiSnapshot *s){
     }
     if(node==AFR2_N_US_VIEW){
         Afr2Component_HeaderFlash(o,AFR2_ICON_RADAR,PSTR("Distancia"),2,2);
-        if(h && h->latest.id && h->latest.error==AFR2_ECHO_OK)snprintf_P(text,sizeof(text),PSTR("%u mm"),h->latest.distance_mm);else snprintf_P(text,sizeof(text),PSTR("Distancia: --"));txt(o,0,16,text);
-        if(h){if(h->enabled)snprintf_P(text,sizeof(text),PSTR("Ang %03u PWM %u"),h->angle,h->pulse_us);else snprintf_P(text,sizeof(text),PSTR("Ang -- PWM 0"));txt(o,0,28,text);snprintf_P(text,sizeof(text),PSTR("Eco %u Edad %lums"),h->latest.error,(unsigned long)(h->latest.id?(s->sensor_now_ms-h->latest.ms):0));txt(o,0,40,text);}
+        if(h && h->latest.id && (uint32_t)(s->sensor_now_ms-h->latest.ms)<=500u && h->latest.error==AFR2_ECHO_OK)snprintf_P(text,sizeof(text),PSTR("%u mm"),h->latest.distance_mm);else snprintf_P(text,sizeof(text),PSTR("Distancia: --"));txt(o,0,16,text);
+        if(h){static const char errors[8][18] PROGMEM={"Eco valido","Sin eco (timeout)","ECHO no termina","ECHO ocupado","Fuera de rango","Servo moviendose","Lectura vencida","Sin medicion"};snprintf_P(text,sizeof(text),errors[!h->latest.id?7:(uint32_t)(s->sensor_now_ms-h->latest.ms)>500u?6:h->latest.error<8?h->latest.error:7]);txt(o,0,28,text);if(h->latest.id)snprintf_P(text,sizeof(text),PSTR("E%u Edad %lums"),h->latest.error,(unsigned long)(s->sensor_now_ms-h->latest.ms));else snprintf_P(text,sizeof(text),PSTR("Edad: --"));txt(o,0,40,text);}
         Afr2Ui_GestureHint(o,0,53,0,PSTR("Opciones"));return;
     }
     Afr2Component_HeaderFlash(o,AFR2_ICON_SENSORS,PSTR("Sensores IR"),node==AFR2_N_LINE_VIEW?1:2,2);
     if(!s->ir_valid){if(s->ir_kind){TXT(0,25,"Esperando IR");}else {TXT(0,25,"IR deshabilitado");}Afr2Ui_GestureHint(o,0,53,1,PSTR("Volver"));return;}
     if(node==AFR2_N_LINE_VIEW){
-        Afr2Component_Panel(o,0,15,128,35);
+        Afr2Component_Panel(o,0,15,128,29);
         for(uint8_t i=0;i<5;i++){
             uint8_t center=15+24*i;Afr2Component_Mini(o,center-1,17,i+1);
-            Afr2Oled_Rect(o,center-6,24,12,16,AFR2_WHITE);
-            uint16_t max=s->ir_kind==1?1:1023;uint8_t height=(uint32_t)s->ir_raw[i]*12u/max;if(height>12)height=12;
-            Afr2Oled_FillRect(o,center-4,38-height,8,height,AFR2_WHITE);small_number(o,center,43,s->ir_raw[i]);
+            Afr2Oled_Rect(o,center-6,23,12,12,AFR2_WHITE);
+            uint8_t height=(s->line_bits&(1u<<i))?8:0;
+            Afr2Oled_FillRect(o,center-4,33-height,8,height,AFR2_WHITE);small_number(o,center,36,s->ir_raw[i]);
         }
     }else for(uint8_t i=0;i<5;i++){
         snprintf_P(text,sizeof(text),PSTR("%u:%4u"),i+1,s->ir_raw[i]);

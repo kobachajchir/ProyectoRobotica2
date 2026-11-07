@@ -230,3 +230,16 @@
 @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
   .afr2-radar-label > b, .afr2-radar-viewport .afr2-radar-zone-label, .afr2-radar-viewport .afr2-radar-caption { background: var(--surface-solid); backdrop-filter: none; -webkit-backdrop-filter: none; }
 }
+
+/* AFR2-20261106-35: estado de la orden de servo y panel de muestreo HC-SR04. */
+.afr2-servo-phase { display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 8px; margin:8px 0 0; font-size:var(--type-caption-size); }
+.afr2-servo-phase span { color:var(--text-muted); }
+.afr2-servo-phase[data-phase="applied"] strong { color:var(--success, var(--action)); }
+.afr2-servo-phase[data-phase="error"] strong { color:var(--danger, #c0392b); }
+.afr2-servo-phase em { flex-basis:100%; font-style:normal; color:var(--text-muted); }
+.afr2-sampling__body { display:grid; gap:12px; }
+.afr2-sampling__table { max-height:260px; overflow:auto; border:1px solid var(--border); border-radius:8px; }
+.afr2-sampling__table table { width:100%; border-collapse:collapse; font-size:var(--type-caption-size); font-variant-numeric:tabular-nums; }
+.afr2-sampling__table th, .afr2-sampling__table td { padding:4px 8px; text-align:left; border-bottom:1px solid var(--border); white-space:nowrap; }
+.afr2-sampling__table thead th { position:sticky; top:0; background:var(--surface-solid, var(--surface)); }
+.afr2-sampling__table tr:not([data-valid]) td { color:var(--text-muted); }

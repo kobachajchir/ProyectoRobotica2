@@ -77,7 +77,7 @@ bool Storage::loadWifi(JsonDocument &doc) {
     if (!mounted_) return false;
     File f=LittleFS.open("/config/wifi.json","r");
     if (!f || !f.size() || f.size()>512) return false;
-    return !deserializeJson(doc,f,DeserializationOption::NestingLimit(3)) && doc["schema"]=="afr2-wifi-1";
+    return !deserializeJson(doc,f,DeserializationOption::NestingLimit(3)) && (doc["schema"]=="afr2-wifi-1" || doc["schema"]=="afr2-wifi-2");
 }
 bool Storage::saveWifi(const JsonDocument &doc) {
     if (!mounted_ || !LittleFS.mkdir("/config")) {
