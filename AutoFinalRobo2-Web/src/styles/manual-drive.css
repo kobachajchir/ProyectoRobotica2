@@ -25,9 +25,10 @@
 .afr2-manual-input { position:absolute; inset:0; z-index:5; touch-action:none; user-select:none; -webkit-user-select:none; outline-offset:-6px; }
 .afr2-manual-input[aria-disabled="true"] { cursor:default; }
 .afr2-manual-drive[data-pressed="true"] .afr2-manual-stage { cursor:grabbing; }
-.afr2-manual-model { position:absolute; z-index:2; inset:48px 0 0; pointer-events:none; transition:transform var(--duration-fast) var(--ease-out); }
+.afr2-manual-model { position:absolute; z-index:2; inset:48px 0 0; pointer-events:none; transform:translate(calc(var(--lean-x,0) * 14px), calc(var(--lean-y,0) * 14px)); transition:transform var(--duration-slow) cubic-bezier(.34,1.4,.64,1); }
 .afr2-manual-model-message { position:absolute; inset:0; display:grid; place-content:center; padding:24px; text-align:center; color:var(--text-muted); font-size:var(--type-body-size); }
-.afr2-manual-shadow { position:absolute; z-index:0; width:48%; height:56%; left:26%; top:22%; border-radius:50%; background:radial-gradient(ellipse,var(--border-default),transparent 70%); pointer-events:none; }
+.afr2-manual-shadow { position:absolute; z-index:0; width:48%; height:56%; left:26%; top:22%; border-radius:50%; background:radial-gradient(ellipse,var(--border-default),transparent 70%); pointer-events:none; transform:translate(calc(var(--lean-x,0) * -6px), calc(var(--lean-y,0) * -6px)); transition:transform var(--duration-slow) var(--ease-out),opacity var(--duration-normal) var(--ease-out); }
+.afr2-manual-drive[data-moving="true"] .afr2-manual-shadow { transform:translate(calc(var(--lean-x,0) * -6px), calc(var(--lean-y,0) * -6px)) scale(.94); opacity:.8; }
 /* Connection moved to the modal header; retain centered local mode/heading. */
 .afr2-manual-status-bar { position:absolute; z-index:4; top:8px; left:max(16px,env(safe-area-inset-left,0px)); right:max(16px,env(safe-area-inset-right,0px)); display:flex; justify-content:center; gap:8px 12px; pointer-events:none; }
 .afr2-manual-mode { display:flex; flex-wrap:wrap; align-items:center; justify-content:center; justify-self:start; gap:8px; min-width:0; max-width:100%; padding:6px 12px; border:1px solid var(--border-default); border-radius:var(--radius-sm); background:var(--surface-solid); color:var(--text-muted); font-size:var(--type-caption-size); }
@@ -43,12 +44,12 @@
 .afr2-manual-stream { position:absolute; display:block; left:50%; top:50%; width:min(49vw,480px); height:min(50vw,280px); color:var(--action); opacity:0; transform:translateY(-50%) scale(.96); transform-origin:left center; transition:opacity var(--duration-normal) var(--ease-out),transform var(--duration-normal) var(--ease-out); }
 .afr2-manual-stream[data-active="true"] { opacity:1; transform:translateY(-50%) scale(1); }
 .afr2-manual-stream__bearing { display:block; width:100%; height:100%; overflow:visible; transform-origin:left center; opacity:.58; }
-.afr2-manual-stream__trace { opacity:1; animation:afr2-manual-trail-flow calc(var(--duration-spinner) * 1.5) linear infinite; animation-play-state:paused; }
+.afr2-manual-stream__trace { opacity:1; animation:afr2-manual-trail-flow calc(var(--duration-spinner) * (1.9 - var(--drive-intensity,.5) * .9)) cubic-bezier(.45,0,.55,1) infinite; animation-play-state:paused; }
 .afr2-manual-stream[data-active="true"] .afr2-manual-stream__trace { animation-play-state:running; }
 .afr2-manual-stream__trace:nth-of-type(2) { animation-delay:calc(var(--duration-spinner) * -1); }
 .afr2-manual-stream__trace:nth-of-type(3) { animation-delay:calc(var(--duration-spinner) / -2); }
 .afr2-manual-gesture-hint { position:absolute; z-index:4; bottom:8px; left:24px; right:24px; text-align:center; font-size:var(--type-caption-size); color:var(--text-muted); pointer-events:none; }
-@keyframes afr2-manual-trail-flow { 0% { opacity:0; transform:translateX(-12px); } 45% { opacity:1; } 100% { opacity:0; transform:translateX(12px); } }
+@keyframes afr2-manual-trail-flow { 0% { opacity:0; transform:translateX(-18px); } 40% { opacity:1; } 70% { opacity:.9; } 100% { opacity:0; transform:translateX(18px); } }
 @supports (width:1cqw) { .afr2-manual-stream { width:min(49cqw,49cqh,480px); height:min(50cqw,50cqh,280px); } }
 .afr2-manual-footer { width:min(100%,640px); justify-self:center; display:grid; gap:8px; padding:12px max(24px,env(safe-area-inset-right)) calc(20px + env(safe-area-inset-bottom,0px)) max(24px,env(safe-area-inset-left)); text-align:center; }
 .afr2-manual-direction { margin:0; min-height:1.4em; font-size:clamp(18px,4.5vw,24px); line-height:1.3; font-weight:600; letter-spacing:-.02em; color:var(--text-strong); }
@@ -62,8 +63,8 @@
 .afr2-manual-speed output { font-variant-numeric:tabular-nums; font-size:16px; font-weight:600; }
 .afr2-manual-speed output span { font-size:var(--type-caption-size); color:var(--text-muted); font-weight:400; }
 .afr2-manual-speed input { grid-column:1/-1; width:100%; min-height:44px; accent-color:var(--action); touch-action:pan-y; }
-@media (max-height:500px) and (min-width:600px) { .afr2-manual-footer { width:min(100%,900px); grid-template-columns:minmax(0,1fr) minmax(160px,280px); padding-block:8px calc(12px + env(safe-area-inset-bottom)); column-gap:24px; text-align:left; } .afr2-manual-direction, .afr2-manual-footer .afr2-help { grid-column:1; } .afr2-manual-speed { grid-column:2; grid-row:1/span 2; margin:0; } }
-html[data-input="keyboard"] .afr2-manual-stream,html[data-input="keyboard"] .afr2-manual-model { transition:none; }
+@media (max-height:500px) and (min-width:600px) { .afr2-manual-footer { width:min(100%,960px); grid-template-columns:minmax(0,1fr) minmax(0,1.6fr); align-items:start; padding-block:8px calc(12px + env(safe-area-inset-bottom)); column-gap:24px; text-align:left; } .afr2-manual-footer > * { grid-column:1; } .afr2-manual-footer > .afr2-manual-panels { grid-column:2; grid-row:1/span 4; } .afr2-manual-footer .afr2-manual-panels { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+html[data-input="keyboard"] .afr2-manual-stream { transition:none; }
 html[data-input="keyboard"] .afr2-manual-stream[data-active="true"] .afr2-manual-stream__trace { animation:none; }
 @media (prefers-reduced-motion:reduce) { .afr2-manual-stream,.afr2-manual-model { transition:none; } .afr2-manual-model { transform:none!important; } .afr2-manual-stream[data-active="true"] .afr2-manual-stream__trace { animation:none; } }
 @media (pointer:coarse) { .afr2-manual-keyboard-help { display:none!important; } }
@@ -76,10 +77,48 @@ html[data-input="keyboard"] .afr2-manual-stream[data-active="true"] .afr2-manual
 /* AFR2-20261106-33: paneles colapsables y giro animado sobre el eje (modelo fijo). */
 .afr2-manual-panel { text-align:left; }
 .afr2-manual-panel .afr2-collapsible-panel__body { padding-top:4px; }
-.afr2-manual-spin { position:absolute; left:50%; top:12px; transform:translateX(-50%); display:flex; align-items:center; gap:8px; padding:6px 12px; border-radius:999px; background:var(--surface,rgba(0,0,0,.5)); color:var(--text); font-size:var(--type-caption-size); pointer-events:none; z-index:2; }
+.afr2-manual-spin { position:absolute; left:50%; top:56px; transform:translateX(-50%); display:flex; align-items:center; gap:8px; padding:6px 12px; border-radius:999px; background:var(--surface,rgba(0,0,0,.5)); color:var(--text); font-size:var(--type-caption-size); pointer-events:none; z-index:2; }
 .afr2-manual-spin .afr2-chassis-spin-graphic { animation:afr2-manual-spin-turn 1.6s linear infinite; transform-origin:50% 50%; }
 .afr2-manual-spin .afr2-chassis-spin-graphic[data-direction="cw"] { animation-direction:normal; }
 .afr2-manual-spin .afr2-chassis-spin-graphic[data-direction="ccw"] { animation-direction:reverse; }
 @keyframes afr2-manual-spin-turn { to { transform:rotate(360deg); } }
 @media (prefers-reduced-motion:reduce) { .afr2-manual-spin .afr2-chassis-spin-graphic { animation:none; } }
 .afr2-manual-heading-kind { font-size:var(--type-caption-size); color:var(--text-muted); font-weight:400; }
+
+/* AFR2-20261107-42: interfaz y animaciones del control táctil.
+ * Joystick que sigue al dedo, estela bajo el auto según potencia, texto de dirección animado
+ * y paneles compactos, cerrados al abrir. Todo respeta prefers-reduced-motion. */
+.afr2-manual-stage { container-type:size; }
+.afr2-manual-puck { position:absolute; z-index:4; left:var(--puck-x,50%); top:var(--puck-y,50%); width:0; height:0; pointer-events:none; opacity:0; transition:opacity var(--duration-normal) var(--ease-out); }
+.afr2-manual-puck[data-visible="true"] { opacity:1; }
+.afr2-manual-puck__ring { position:absolute; left:-64px; top:-64px; width:128px; height:128px; border-radius:50%; border:1.5px solid color-mix(in srgb,var(--action) calc(30% + var(--puck-strength,0) * 50%),transparent); background:radial-gradient(circle,color-mix(in srgb,var(--action) 10%,transparent),transparent 70%); transform:scale(.85); transition:transform var(--duration-normal) var(--ease-out); }
+.afr2-manual-puck[data-visible="true"] .afr2-manual-puck__ring { transform:scale(1); }
+.afr2-manual-puck__knob { position:absolute; left:-22px; top:-22px; width:44px; height:44px; border-radius:50%; background:var(--action); box-shadow:0 0 0 6px color-mix(in srgb,var(--action) 22%,transparent),0 6px 18px color-mix(in srgb,var(--action) 35%,transparent); transform:translate(var(--knob-x,0),var(--knob-y,0)) scale(calc(.85 + var(--puck-strength,0) * .15)); transition:transform 60ms linear; }
+.afr2-manual-wake { position:absolute; z-index:1; inset:48px 0 0; display:grid; place-items:center; pointer-events:none; }
+.afr2-manual-wake span { grid-area:1/1; width:min(42cqw,42cqh,320px); aspect-ratio:1; border-radius:50%; border:2px solid var(--action); opacity:0; transform:scale(.6); }
+.afr2-manual-wake[data-active="true"] span { animation:afr2-manual-wake calc(1.9s - var(--drive-intensity,.5) * .9s) var(--ease-out) infinite; }
+.afr2-manual-wake[data-active="true"] span:nth-child(2) { animation-delay:calc((1.9s - var(--drive-intensity,.5) * .9s) / -3); }
+.afr2-manual-wake[data-active="true"] span:nth-child(3) { animation-delay:calc((1.9s - var(--drive-intensity,.5) * .9s) / -1.5); }
+.afr2-manual-wake[data-turn] span { border-style:dashed; }
+@keyframes afr2-manual-wake { 0% { opacity:0; transform:scale(.6); } 25% { opacity:.35; } 100% { opacity:0; transform:scale(1.25); } }
+.afr2-manual-direction { display:flex; align-items:center; justify-content:center; gap:10px; }
+.afr2-manual-direction::before { content:""; flex:none; width:8px; height:8px; border-radius:50%; background:var(--text-subtle,var(--text-muted)); transition:background var(--duration-normal) var(--ease-out),box-shadow var(--duration-normal) var(--ease-out); }
+.afr2-manual-direction[data-moving="true"]::before { background:var(--action); box-shadow:0 0 0 4px color-mix(in srgb,var(--action) 25%,transparent); animation:afr2-manual-dot 1.2s ease-in-out infinite; }
+.afr2-manual-direction__text { display:inline-block; animation:afr2-manual-label-in var(--duration-normal) var(--ease-out); }
+@keyframes afr2-manual-label-in { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:none; } }
+@keyframes afr2-manual-dot { 50% { box-shadow:0 0 0 7px color-mix(in srgb,var(--action) 8%,transparent); } }
+.afr2-manual-panels { display:grid; gap:8px; align-items:start; }
+@media (min-width:720px) { .afr2-manual-panels { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+.afr2-manual-footer .afr2-manual-panel > .afr2-collapsible-panel__heading { padding:10px 14px; min-height:44px; }
+.afr2-manual-footer .afr2-manual-panel > .afr2-collapsible-panel__body { padding:0 14px 14px; }
+.afr2-manual-footer .afr2-manual-panel { transition:border-color var(--duration-normal) var(--ease-out); }
+.afr2-manual-footer .afr2-manual-panel[data-open="true"] { border-color:var(--border-strong); }
+.afr2-manual-footer .afr2-manual-panel[data-open="true"] > .afr2-collapsible-panel__body { animation:afr2-manual-panel-in var(--duration-normal) var(--ease-out); }
+@keyframes afr2-manual-panel-in { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:none; } }
+.afr2-manual-spin { animation:afr2-manual-label-in var(--duration-normal) var(--ease-out); }
+html[data-input="keyboard"] .afr2-manual-puck { display:none; }
+@media (prefers-reduced-motion:reduce) {
+  .afr2-manual-model, .afr2-manual-shadow, .afr2-manual-puck__knob, .afr2-manual-puck__ring { transition:none; }
+  .afr2-manual-wake span, .afr2-manual-direction__text, .afr2-manual-direction::before, .afr2-manual-spin,
+  .afr2-manual-footer .afr2-manual-panel[data-open="true"] > .afr2-collapsible-panel__body { animation:none!important; }
+}

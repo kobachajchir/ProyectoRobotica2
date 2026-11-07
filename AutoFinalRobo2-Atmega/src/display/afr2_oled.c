@@ -14,18 +14,27 @@
 enum { IDLE, WAIT_INIT, WAIT_COMMAND, SEND_DATA, WAIT_DATA, WAIT_SETTINGS, WAIT_REFRESH };
 /* AFR2-20261029-10: promote the user-confirmed diagnostic's settle time.
  * Page addressing is deliberately retained with this driver's page writes. */
+/* AFR2-20261107-47: 500 -> 1200 ms. The display is the last thing started:
+ * the first configuration no longer coincides with the panel's own power-on
+ * reset, the ESP boot/RF calibration or the rest of the system starting. */
 #ifndef AFR2_OLED_STARTUP_MS
-#define AFR2_OLED_STARTUP_MS 500u
+#define AFR2_OLED_STARTUP_MS 1200u
+#endif
+/* Delay of the confirming full configuration after the first cold init. */
+#ifndef AFR2_OLED_CONFIRM_MS
+#define AFR2_OLED_CONFIRM_MS 300u
 #endif
 /* AFR2-20261105-33: motor noise can corrupt a command byte (orientation,
  * start line, contrast) or a pixel while the panel still ACKs. Resend the
- * configuration periodically and rewrite one chunk per period: 64 chunks
- * x 40 ms = full panel RAM repaired every ~2.6 s, ~0.5 kB/s of bus. */
+ * configuration periodically and rewrite one chunk per period.
+ * AFR2-20261107-46: scrub slowed from 40 to 250 ms (64 chunks = full panel
+ * RAM repaired every ~16 s). At 40 ms the bus never rested (~50 transfers/s),
+ * which multiplied failures and panel re-inits with weak pull-ups and noise. */
 #ifndef AFR2_OLED_REFRESH_MS
 #define AFR2_OLED_REFRESH_MS 1000u
 #endif
 #ifndef AFR2_OLED_SCRUB_MS
-#define AFR2_OLED_SCRUB_MS 40u
+#define AFR2_OLED_SCRUB_MS 250u
 #endif
 static const uint8_t init_commands[] FLASH={
   0x00,0xae,0xd5,0x80,0xa8,0x3f,0xd3,0x00,0x40,0x8d,0x14,
@@ -42,6 +51,23 @@ static uint8_t load_config(Afr2Oled *o,uint8_t skip) {
     o->tx[INIT_SEGMENT-skip]=o->rotation?0xa0:0xa1;
     o->tx[INIT_COM-skip]=o->rotation?0xc0:0xc8;
     o->tx[INIT_CONTRAST-skip]=o->contrast;
+    return length;
+}
+/* AFR2-20261107-46: the periodic refresh no longer resends the oscillator
+ * (0xD5), precharge (0xD9) or VCOMH (0xDB); rewriting them on a running panel
+ * can cause a visible blink every period. It keeps what noise or a panel power
+ * glitch can lose: multiplex, offset, start line, addressing, orientation,
+ * COM pins, contrast, normal display, charge pump and DISPLAY ON. */
+static const uint8_t refresh_commands[] FLASH={
+  0x00,0xa8,0x3f,0xd3,0x00,0x40,0x20,0x02,0xa1,0xc8,0xda,0x12,0x81,0xcf,0xa4,0xa6,0x8d,0x14,0xaf
+};
+enum { REFRESH_SEGMENT=8, REFRESH_COM=9, REFRESH_CONTRAST=13 };
+static uint8_t load_refresh(Afr2Oled *o) {
+    uint8_t length=sizeof(refresh_commands);
+    for(uint8_t i=0;i<length;i++)o->tx[i]=READ_BYTE(&refresh_commands[i]);
+    o->tx[REFRESH_SEGMENT]=o->rotation?0xa0:0xa1;
+    o->tx[REFRESH_COM]=o->rotation?0xc0:0xc8;
+    o->tx[REFRESH_CONTRAST]=o->contrast;
     return length;
 }
 static void completed(void *ctx,Afr2I2cResult result) {
@@ -72,6 +98,7 @@ static void completed(void *ctx,Afr2I2cResult result) {
         o->phase=IDLE;o->retry_ms=o->clock_ms+50u;return;
     }
     if (o->phase==WAIT_INIT) {
+        if(!o->configured_once){o->full_refresh=1;o->refresh_ms=o->clock_ms+AFR2_OLED_CONFIRM_MS;}
         o->initialized=true;o->configured_once=true;o->consecutive_failures=0;
         o->dirty=0xff; o->settings_dirty=1;
         memset(o->valid,0,sizeof(o->valid)); o->phase=IDLE;
@@ -87,6 +114,7 @@ static void completed(void *ctx,Afr2I2cResult result) {
             o->consecutive_failures=0;
         }
         if(o->phase==WAIT_SETTINGS || o->phase==WAIT_REFRESH)o->consecutive_failures=0;
+        if(o->phase==WAIT_REFRESH)o->full_refresh=0; /* confirmed by ACK, not by submission */
         o->phase=IDLE;
     }
     /* AFR2-20261029-16: callback records progress only. Main executes services
@@ -139,7 +167,8 @@ void Afr2Oled_Task(Afr2Oled *o,uint32_t now) {
     /* AFR2-20261105-33: periodic config refresh, never 0xAE (no blanking).
      * Runs only between page writes, so the page/column pointer is free. */
     if((int32_t)(now-o->refresh_ms)>=0) {
-        uint8_t length=load_config(o,1u);
+        /* The first refresh after a cold init repeats the full configuration. */
+        uint8_t length=o->full_refresh?load_config(o,1u):load_refresh(o);
         if(send(o,o->tx,length,WAIT_REFRESH,now))o->refresh_ms=now+AFR2_OLED_REFRESH_MS;
         return;
     }

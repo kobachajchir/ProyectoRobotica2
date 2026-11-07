@@ -62,6 +62,7 @@ void Afr2Ui_MenuItem(Afr2Ui *u,uint8_t index,Afr2MenuItem *item){
     }
 }
 static void dismiss(Afr2Ui *u);
+static void dismiss_input(Afr2Ui *u);
 void Afr2Ui_GestureHint(Afr2Oled *o,uint8_t x,uint8_t y,uint8_t is_long,const char *text){
     if(is_long==1 && x>=66)x=66;
     uint8_t size=is_long==2?21:13;if(y>52)y=52;
@@ -135,7 +136,7 @@ static uint8_t hall_dirty(Afr2Ui *u){return u->ops.value && u->ops.value(u->ops.
  * selection first or replaying synthetic rotations. Physical input unchanged. */
 /* AFR2-20261029-27: one contextual return path for physical release and Web Back. */
 static void go_back(Afr2Ui *u){
-    if(u->notices){dismiss(u);return;}
+    if(u->notices){dismiss_input(u);return;}
     if(u->edit){u->edit=0;u->redraw=true;return;}
     if(u->node==AFR2_N_HOME){Afr2Ui_Open(u,AFR2_N_QUICK);return;}
     Afr2MenuNode n;Afr2Ui_MenuNode(u,&n);
@@ -229,15 +230,39 @@ void Afr2Ui_Notify(Afr2Ui *u,uint8_t k,const char *title,const char *text,uint16
 void Afr2Ui_NotifyFlash(Afr2Ui *u,uint8_t k,const char *title,const char *text,uint16_t ms){notify_text(u,k,title,text,ms,3);}
 void Afr2Ui_NotifyFlashTitle(Afr2Ui *u,uint8_t k,const char *title,const char *text,uint16_t ms){notify_text(u,k,title,text,ms,1);}
 void Afr2Ui_AfterNotice(Afr2Ui *u,uint8_t node){u->notice_target=node+1u;}
-static void dismiss(Afr2Ui *u){
-    if(!u->notices)return;
-    u->tail=(u->tail+1u)%4;--u->notices;++u->generation;u->notice_started_ms=u->clock_ms;u->redraw=true;
+static void after_notices(Afr2Ui *u){
     if(!u->notices && u->notice_target){
         uint8_t node=u->notice_target-1u;u->notice_target=0;
         for(uint8_t i=u->depth;i>0;--i)if(u->history[i-1].node==node){Afr2UiPosition p=u->history[i-1];u->depth=i-1;u->node=p.node;u->selection=p.selection;u->firstVisible=p.first;sync_code(u);return;}
         Afr2Ui_Open(u,node);
     }
 }
+static void dismiss(Afr2Ui *u){
+    if(!u->notices)return;
+    u->tail=(u->tail+1u)%4;--u->notices;++u->generation;u->notice_started_ms=u->clock_ms;u->redraw=true;
+    after_notices(u);
+}
+/* AFR2-20261107-48: with the Web open the ESP queues network events back to back
+ * (WebSocket, clients, Web served). A click closed only one and the next replaced it at
+ * once, so the screen looked frozen. A click or long press on a NETWORK notice now drops
+ * every queued network notice (others keep their order) and opens a quiet window. */
+#define AFR2_NETWORK_QUIET_MS 5000u
+static void dismiss_input(Afr2Ui *u){
+    if(!u->notices)return;
+    if(u->notification[u->tail].kind<=AFR2_NOTICE_NETWORK){dismiss(u);return;}
+    uint8_t kept=0;
+    for(uint8_t i=0;i<u->notices;i++){
+        uint8_t from=(u->tail+i)%4u;
+        if(u->notification[from].kind<=AFR2_NOTICE_NETWORK){
+            uint8_t to=(u->tail+kept)%4u;if(to!=from)u->notification[to]=u->notification[from];++kept;
+        }
+    }
+    u->notices=kept;u->head=(u->tail+kept)%4u;
+    u->network_quiet_until_ms=u->clock_ms+AFR2_NETWORK_QUIET_MS;
+    ++u->generation;u->notice_started_ms=u->clock_ms;u->redraw=true;
+    after_notices(u);
+}
+uint8_t Afr2Ui_NetworkQuiet(const Afr2Ui *u){return (int32_t)(u->clock_ms-u->network_quiet_until_ms)<0;}
 void Afr2Ui_Tick(Afr2Ui *u,uint32_t now) {
     u->clock_ms=now;
     if(u->ops.value){
@@ -362,7 +387,7 @@ void Afr2Ui_Apply(Afr2Ui *u,Afr2UiInput in) {
     if(in.click && u->encoder_clicks!=UINT16_MAX)++u->encoder_clicks;
     if(in.menu && u->encoder_holds!=UINT16_MAX)++u->encoder_holds;
     if(u->node==AFR2_N_SAVE_CONFIRM){
-        if(u->notices){if(in.click)dismiss(u);return;}
+        if(u->notices){if(in.click)dismiss_input(u);return;}
         if(u->confirm_wait)return;
         if(in.rotation%2){u->selection^=1u;u->redraw=true;}
         /* Long cannot bypass a required Yes/No decision. */
@@ -379,7 +404,7 @@ void Afr2Ui_Apply(Afr2Ui *u,Afr2UiInput in) {
             u->notices=u->head=u->tail=0;back(u,AFR2_N_HALL_TEST);
             Afr2Ui_NotifyFlash(u,0,PSTR("Operacion"),PSTR("Cancelada"),2500);return;
         }
-        if(u->notices){if(in.click)dismiss(u);return;}
+        if(u->notices){if(in.click)dismiss_input(u);return;}
         if(u->node==AFR2_N_HALL_PICK){
             if(in.rotation){u->selection=Afr2MotorSelector_Step(u->selection,in.rotation);u->redraw=true;}
             if(in.click){
@@ -395,7 +420,7 @@ void Afr2Ui_Apply(Afr2Ui *u,Afr2UiInput in) {
         }return;
     }
     if(u->keyboard){
-        if(u->notices && !in.menu){if(in.click)dismiss(u);return;}
+        if(u->notices && !in.menu){if(in.click)dismiss_input(u);return;}
         keyboard(u,in);return;
     }
     /* AFR2-20261106-09: on QR, network notices (e.g. the scanning phone joining the AP) kept every
@@ -404,7 +429,7 @@ void Afr2Ui_Apply(Afr2Ui *u,Afr2UiInput in) {
         u->notices=u->head=u->tail=u->notice_target=0;go_back(u);return;
     }
     if(in.menu){go_back(u);return;}
-    if(u->notices){if(in.click)dismiss(u);return;}
+    if(u->notices){if(in.click)dismiss_input(u);return;}
     /* AFR2-20261029-29: short opens full menu; long-release opens quick cards. */
     if(u->node==AFR2_N_HOME){if(in.click)Afr2Ui_Open(u,AFR2_N_MENU);return;}
     if(u->node==AFR2_N_WIFI_DATA || u->node==AFR2_N_QR_AP || u->node==AFR2_N_QR_WEB){if(in.click)go_back(u);return;}

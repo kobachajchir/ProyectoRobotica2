@@ -39,9 +39,10 @@ export const HELP: Record<HelpModuleId, HelpModule> = {
     pinout: { title: 'Pinout', groups: [
       { label: 'Motores · IN1 / IN2 / PWM', rows: [['Del. der. (FR)', 'D22 D24 D9'], ['Del. izq. (FL)', 'D26 D28 D10'], ['Tras. der. (RR)', 'D5 D6 D11'], ['Tras. izq. (RL)', 'D7 D8 D12']] },
       { label: 'Hall de ruedas', rows: [['Canal A', 'A8–A11'], ['Canal B', 'A12–A15']] },
-      { label: 'Sensores', rows: [['Línea IR1–IR5', 'A4–A0'], ['Batería', 'A5'], ['HC-SR04 TRIG / ECHO', 'D30 D31'], ['Servo radar', 'D13']] },
+      { label: 'Sensores', rows: [['Línea IR1 (izq.)–IR5 (der.)', 'A4–A0'], ['Batería (divisor)', 'A5'], ['HC-SR04 TRIG / ECHO', 'D30 D31'], ['Servo radar', 'D13']] },
       { label: 'Panel', rows: [['OLED SDA / SCL', 'D20 D21'], ['Encoder CLK / DT', 'D2 D3'], ['Encoder SW', 'D42']] },
       { label: 'Enlace con el ESP', rows: [['TX1 → E_RX', 'D18'], ['E_TX → RX1', 'D19']] },
+      { label: 'Servicio ESP (agregado)', rows: [['AutoKEY → GPIO0', 'D32 · PC5'], ['AutoRESET → RST', 'D33 · PC4']] },
     ] },
     groups: [
       { title: 'Arquitectura y compilación', chapters: [
@@ -112,13 +113,14 @@ export const HELP: Record<HelpModuleId, HelpModule> = {
             'HC-SR04: `TRIG` en `D30` y `ECHO` en `D31`. Se mide sin bloquear con `Timer3` a 25 µs por tick.',
             'Si el eco no sube o no baja en 32 ms se informa `no-rise` o `no-fall`. El rango válido es de 2 cm a 4 m.',
             'Servo del radar en `D13`: `Timer5` a 0,5 µs alterna el pin por comparación, con período de 20 ms y pulso de 1000–2000 µs. Sin pulso, el servo queda libre.',
-            'Línea `IR1`–`IR5` en `A4`–`A0` con ADC de 10 bits (0–1023) y buffers digitales deshabilitados.',
-            'Batería en `A5`, tomada después de la llave a través de un divisor de 10 kΩ/10 kΩ con 100 nF a GND. La referencia es AVcc (5 V nominal, sin calibrar).',
+            'Línea `IR1`–`IR5` en `A4`–`A0` (`PF4`–`PF0`), entradas digitales leídas cada 5 ms con mayoría de 3 lecturas. La barra OSOYOO da LOW sobre negro y HIGH sobre blanco. `IR1` está a la izquierda e `IR5` a la derecha. La calibración es opcional y solo pide una muestra sobre blanco.',
+            'Batería en `A5`, tomada después de la llave a través de un divisor de 10 kΩ/10 kΩ con 100 nF a GND: `A5` recibe la mitad de la tensión. La referencia es AVcc (5 V nominal, sin calibrar). Por ejemplo, 7,4 V dan unos 3,7 V en el pin (raw 758), y el ADC satura cerca de 10 V.',
           ],
           facts: [
             ['HC-SR04', '`D30` / `D31` · `Timer3` 25 µs · tope 32 ms'],
             ['Servo', '`D13` (`PB7`) · `Timer5` · 1000–2000 µs cada 20 ms'],
-            ['ADC', 'AVcc · prescaler 128 (125 kHz) · IR `A4`–`A0` · batería `A5`'],
+            ['Línea', '`A4`–`A0` digitales · LOW = negro · `IR1` a la izquierda'],
+            ['ADC', 'AVcc · prescaler 128 (125 kHz) · solo batería `A5`'],
           ] },
         { title: 'Panel OLED y encoder',
           text: [
@@ -191,7 +193,7 @@ export const HELP: Record<HelpModuleId, HelpModule> = {
     pinout: { title: 'Pinout', groups: [
       { label: 'UART de operación (UART0)', rows: [['TX', 'GPIO1'], ['RX', 'GPIO3'], ['Velocidad', '115200 8N1']] },
       { label: 'Hacia el Mega', rows: [['D18 (TX1)', '→ E_RX'], ['E_TX', '→ D19 (RX1)'], ['Masa', 'GND común']] },
-      { label: 'Mantenimiento físico', rows: [['KEY', 'GPIO0 · modo carga'], ['RST', 'Reinicio del ESP']] },
+      { label: 'KEY y RST', rows: [['KEY', 'GPIO0 · pulsador o AutoKEY D32'], ['RST', 'Pulsador o AutoRESET D33 · cable naranja']] },
       { label: 'Alimentación', rows: [['Lógica del ESP', '3,3 V'], ['Selector', 'E_RX / E_TX']] },
     ] },
     groups: [
@@ -268,8 +270,8 @@ export const HELP: Record<HelpModuleId, HelpModule> = {
           text: [
             'En operación con el Mega, `D18` (TX1) va a `E_RX` y `E_TX` va a `D19` (RX1).',
             'El mapa de referencia del UNO que trae el fabricante no aplica al Mega, y el selector `E_RX`/`E_TX` no es la cabecera UART directa de 3,3 V del ESP.',
-            'Programar el ESP por el puente USB del Mega exige el servicio puente y un cableado temporal distinto (cruce `D0`/`D1` y niveles adecuados).',
-            'Ese modo no se cambia desde la Web: `KEY` y `RST` son mantenimiento físico.',
+            'El ESP se programa por el USB del Mega con el puente por software `USART0`↔`USART1` (`D18`/`D19`), con el RESET del Mega libre. El método de cruce `D0`/`D1` con RESET a GND está retirado.',
+            '`KEY` y `RST` se accionan con el pulsador del shield o, si está armado el circuito, con AutoKEY (`D32`) y AutoRESET (`D33`): un NPN por línea, en paralelo con el pulsador. Solo los usa el Loader en modo automático; la Web no los maneja.',
           ] },
       ] },
       { title: 'Red, sistema y batería', chapters: [
@@ -403,9 +405,11 @@ export const HELP: Record<HelpModuleId, HelpModule> = {
             'El framebuffer son 1024 B repartidos en 8 páginas de 128 B. Cada página tiene un bit «sucia» y solo se envían los tramos que cambiaron, de hasta 16 columnas, como trabajo cooperativo de baja prioridad.',
             'Dibujar no lee sensores ni dispara transferencias: el snapshot de datos, la navegación y el renderer están separados.',
             'Ante un error aislado se reintenta conservando las páginas ya confirmadas; ante fallos persistentes se reconfigura el controlador.',
+            'Para resistir el ruido, cada 1 s se reenvía la configuración que el ruido puede borrar (orientación, contraste, bomba de carga y encendido), sin tocar el oscilador. Además, cada 250 ms se reescribe un tramo, así que la pantalla completa se repara en unos 16 s.',
           ],
           facts: [
             ['Bus', 'TWI 100 kHz (`TWBR` = 72, prescaler 1)'],
+            ['Autorreparación', 'configuración cada 1 s · un tramo cada 250 ms'],
             ['Framebuffer', '1024 B · 8 páginas · tramos de hasta 16 columnas'],
             ['Contraste inicial', '`0xCF`'],
           ] },

@@ -1,4 +1,4 @@
-# AFR2 Loader 1.2.0 — Distribución compartible
+# AFR2 Loader 2.0.0 — Distribución compartible
 
 Hecho por Koba Chajchir / AFR2. Incluye el Loader y el servidor MCP precompilados,
 recursos de marca, manual y scripts. Extraé toda la carpeta antes de abrir
@@ -104,6 +104,19 @@ el Loader. No hay una URL HTTP ni credenciales de otro usuario.
 El archivo `.zip.sha256` acompaña el ZIP. No incluyen rutas del equipo de build.
 El empaquetador usa una lista explícita y no copia datos de LOCALAPPDATA,
 directorios de proyectos, cachés, dependencias ni firmware.
+
+Antes de comprimir, `Preparar-Distribucion.ps1` revisa cada archivo, incluidos
+los EXE, y cancela el ZIP si encuentra la carpeta del proyecto, el perfil o
+LOCALAPPDATA de quien lo arma, su usuario, el nombre del equipo o una ruta con
+letra de unidad. Las rutas del equipo de build se calculan al ejecutar;
+el script no tiene ninguna fija y puede correrse desde cualquier carpeta clonada.
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\Preparar-Distribucion.ps1"
+```
+
+Genera `AFR2-Loader-dist-<versión>` y su `.zip` junto a la carpeta del Loader
+(o en `-Destination`). No sobrescribe una entrega existente.
 
 ## Apariencia local
 Opciones → Apariencia permite Claro, Oscuro o Seguir al sistema. Se guarda

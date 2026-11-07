@@ -8,7 +8,10 @@ interface Options {
   onRelease: () => void;
   onTwistStart: () => void;
   onTwist: (radians: number) => void;
+  /** AFR2-20261107-42: visual joystick (stage coordinates); null hides it. Called without React state. */
+  onDragVisual?: (drag: DragVisual | null) => void;
 }
+export interface DragVisual { x: number; y: number; dx: number; dy: number }
 
 /** AFR2-20261025-11. One pointer translates; two touch contacts twist locally.
  * AFR2-20261106-36: (a) a touch pointercancel on the single drag contact opens a short grace
@@ -18,6 +21,10 @@ interface Options {
  * Each contact is tracked by pointerId. Order renewal is ControlPage's 180 ms heartbeat.
  */
 const CANCEL_GRACE_MS = 250;
+function visual(point: Contact): DragVisual {
+  const rect = point.element.getBoundingClientRect();
+  return { x: point.startX - rect.left, y: point.startY - rect.top, dx: point.x - point.startX, dy: point.y - point.startY };
+}
 export function useManualDrivePointers(options: Options) {
   const latest = useRef(options); latest.current = options;
   const contacts = useRef(new Map<number, Contact>());
@@ -33,7 +40,7 @@ export function useManualDrivePointers(options: Options) {
     for (const point of captured) if (point.id !== endedId) draining.current.set(point.id, point.type);
     if (extra && extra.id !== endedId) draining.current.set(extra.id, extra.type);
     if (endedId !== undefined) draining.current.delete(endedId);
-    setPressed(false); setTwisting(false); latest.current.onRelease();
+    setPressed(false); setTwisting(false); latest.current.onDragVisual?.(null); latest.current.onRelease();
     for (const point of captured) {
       try { if (point.element.hasPointerCapture(point.id)) point.element.releasePointerCapture(point.id); }
       catch { /* Capture can already have ended; contacts/output are cleared. */ }
@@ -51,7 +58,7 @@ export function useManualDrivePointers(options: Options) {
       contacts.current.delete(event.pointerId); twist.current = null; setTwisting(false);
       try { if (ended.element.hasPointerCapture(ended.id)) ended.element.releasePointerCapture(ended.id); } catch { /* already released */ }
       const rest = contacts.current.values().next().value as Contact | undefined;
-      if (rest) { rest.startX = rest.x; rest.startY = rest.y; }
+      if (rest) { rest.startX = rest.x; rest.startY = rest.y; latest.current.onDragVisual?.(visual(rest)); }
       latest.current.onRelease();
       return;
     }
@@ -99,7 +106,9 @@ export function useManualDrivePointers(options: Options) {
     const point: Contact = { id: event.pointerId, type: event.pointerType, x: event.clientX, y: event.clientY,
       startX: event.clientX - (resume?.dx ?? 0), startY: event.clientY - (resume?.dy ?? 0), element: event.currentTarget };
     contacts.current.set(point.id, point); setPressed(true);
+    if (!first) latest.current.onDragVisual?.(visual(point));
     if (first) {
+      latest.current.onDragVisual?.(null);
       latest.current.onTwistStart();
       const distance = Math.hypot(point.x - first.x, point.y - first.y);
       twist.current = { angle: distance >= 40 ? Math.atan2(point.y - first.y, point.x - first.x) : null, pending: 0, active: false };
@@ -114,7 +123,7 @@ export function useManualDrivePointers(options: Options) {
     if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) { stop(); return; }
     point.x = event.clientX; point.y = event.clientY;
     const turn = twist.current;
-    if (!turn) { latest.current.onTranslate(point.x - point.startX, point.y - point.startY); return; }
+    if (!turn) { latest.current.onDragVisual?.(visual(point)); latest.current.onTranslate(point.x - point.startX, point.y - point.startY); return; }
     const [a, b] = [...contacts.current.values()];
     if (!a || !b) return;
     if (Math.hypot(b.x - a.x, b.y - a.y) < 40) { turn.angle = null; turn.pending = 0; return; }

@@ -42,6 +42,9 @@ typedef struct {
     uint32_t power_changed_ms;
     uint32_t quick_started_ms,hold_started_ms;
     uint8_t hold_progress,quick_signature;
+    /* AFR2-20261107-48: after the user closes a network notice, chatty network
+     * events (WebSocket, clients, Web served) are accepted but not shown until then. */
+    uint32_t network_quiet_until_ms;
     bool redraw,scroll_redraw;
     Afr2UiPosition history[8];
     Afr2MenuItem editing;
@@ -93,6 +96,8 @@ void Afr2Ui_NetworkRestart(Afr2Ui *u);
 void Afr2Ui_NotifyFlash(Afr2Ui *,uint8_t,const char *,const char *,uint16_t);
 void Afr2Ui_NotifyFlashTitle(Afr2Ui *,uint8_t,const char *,const char *,uint16_t);
 void Afr2Ui_AfterNotice(Afr2Ui *u,uint8_t node);
+/* AFR2-20261107-48: true while chatty network notices stay silent. */
+uint8_t Afr2Ui_NetworkQuiet(const Afr2Ui *u);
 void Afr2Ui_GestureHint(Afr2Oled *o,uint8_t x,uint8_t y,uint8_t is_long,const char *text);
 uint8_t Afr2MotorSelector_Step(uint8_t selected,int8_t delta);
 void Afr2MotorSelector_Render(Afr2Oled *o,uint8_t selected);

@@ -30,6 +30,10 @@ typedef struct {
      * corrupted command or pixel is repaired without a full re-init. */
     uint32_t refresh_ms,scrub_ms;
     uint8_t scrub;
+    /* AFR2-20261107-47: after the first cold init, one more FULL configuration
+     * (oscillator, precharge, VCOMH included) shortly after, for a panel that
+     * ACKed the first one while still leaving its own power-on reset. */
+    uint8_t full_refresh;
 } Afr2Oled;
 void Afr2Oled_Init(Afr2Oled *o,Afr2I2cManager *manager,uint8_t address7,uint32_t now);
 void Afr2Oled_Task(Afr2Oled *o,uint32_t now);

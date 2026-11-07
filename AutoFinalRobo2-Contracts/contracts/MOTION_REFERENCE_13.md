@@ -49,3 +49,7 @@ No se modifican motor_signs, hall_signs, CPR, EEPROMv8, dimensiones nominales, n
 ## Pendientes autorizables
 
 Sin ejecutar en esta entrega: compilación coordinada AVR/Web y regeneración de catálogo; revisar flash/SRAM/pila; comprobar con salidas y montaje adecuados adelante/atrás, CW/CCW vistos desde arriba, laterales y cuatro diagonales; comprobar combinaciones avance/giro, saturación y STOP; signo de pose X/yaw respecto de Hall; GOTO con traslación/rumbo; seguimiento con orden real IR; secuencias de movimientos temporizadas/por distancia y pistas individuales conservadas; fidelidad de etiquetas OLED/Web. Estas comprobaciones no se sustituyen por inspección matemática de las fórmulas.
+
+## Actualización AFR2-20261107-41: lateral invertido
+
+El usuario informó izquierda/derecha cruzadas al conducir. Se agrega `AFR2_LATERAL_WHEEL_SIGN` = -1 (y `lateralWheelSign` = -1 en el JSON). Con s = -vy (PWM: s = -strafePct) la mezcla queda FL = f - s - r, FR = f + s + r, RL = f + s - r, RR = f - s + r, y la odometría usa dy = -(-dFL + dFR + dRL - dRR)/4. Avance y yaw conservan -1. Los ejes lógicos no cambian (Y positivo = izquierda). La frase «lateral conservado» de las secciones anteriores queda reemplazada por esta. Ficha: [2026-11-07-41](../changes/2026-11-07-41-lateral-wheel-sign.md). Sin compilar ni prueba física.

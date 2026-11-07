@@ -31,14 +31,19 @@ static uint16_t capabilities(void *ctx) {
 int main(void) {
     Afr2I2cHardware hardware;uint32_t sampled=0,oled_slot_ms=0;
     Afr2Board_Init();Afr2Product_Init(&product,Afr2Boot_Cause());Afr2Uart1_Init();
-    Afr2Twi_Init(&hardware);(void)Afr2I2c_Init(&manager,&hardware);
-    Afr2Oled_Init(&oled,&manager,AFR2_OLED_ADDRESS7,0);Afr2Ui_Init(&ui);
+    Afr2Ui_Init(&ui);
+    /* App only stores the display pointer; the display itself starts last. */
     Afr2App_Init(&app,&product,&ui,&oled,&link);
     Afr2LinkOps ops={0};ops.ctx=&app;ops.snapshot=snapshot;ops.stop=stopped;
     ops.current_capabilities=capabilities;ops.command=Afr2App_Command;ops.revoke=Afr2App_Revoke;ops.halt_motion=halt_motion;
     Afr2Link_Init(&link,&ops);Afr2Board_EncoderInit();
     uint8_t levels=Afr2Board_EncoderLevels();
     Afr2EncoderUi_Init(&encoder,(levels&2)!=0,(levels&1)!=0,(levels&4)!=0,0);
+    /* AFR2-20261107-47: display last. TWI, I2C Manager and OLED start after
+     * motors, sensors, preferences, UART, app, link and encoder. Millis does
+     * not run until sei(), so the OLED startup delay counts from the loop. */
+    Afr2Twi_Init(&hardware);(void)Afr2I2c_Init(&manager,&hardware);
+    Afr2Oled_Init(&oled,&manager,AFR2_OLED_ADDRESS7,0);
     uint8_t boot_pending=1;
     (void)Afr2Boot_Id();Afr2Watchdog_Enable();sei();
     for(;;) {

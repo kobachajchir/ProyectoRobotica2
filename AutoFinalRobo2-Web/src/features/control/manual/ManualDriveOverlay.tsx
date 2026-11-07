@@ -1,7 +1,7 @@
 import { ModelAssetProgress } from '../../../components/three/ModelAssetProgress';
 import { getModelAssetState, ROBOT_MODEL_URL, subscribeModelAssets } from '../../../components/three/modelAssetLoading';
 /* AFR2-20261029-27: quick controls/radar/PWM/WS integration; prior authors retained. */
-import { lazy, Suspense, useCallback, useEffect, useId, useMemo, useRef, useState, useSyncExternalStore } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useId, useMemo, useRef, useState, useSyncExternalStore, type CSSProperties } from 'react';
 import { FloatingModal, type ModalOrigin } from '../../../components/ui/FloatingModal';
 import { RenderBoundary } from '../../../components/ui/RenderBoundary';
 import { Button } from '../../../components/ui/Button';
@@ -12,7 +12,7 @@ import { clearRobotModelCache } from '../../../components/three/RobotModel';
 import { useConnection } from '../../connection/ConnectionContext';
 import { Afr2CommandError } from '../../../protocol/afr2Client';
 import { DEFAULT_KINEMATIC_PROFILE } from '../sequences/sequenceTypes';
-import { useManualDrivePointers } from './useManualDrivePointers';
+import { useManualDrivePointers, type DragVisual } from './useManualDrivePointers';
 
 const Model = lazy(() => import('./ManualDriveModel').then(module => ({ default: module.ManualDriveModel })));
 export interface ManualDirection { id: string; label: string; vx: number; vy: number; angle: number }
@@ -114,15 +114,21 @@ export function ManualDriveOverlay({ open, origin, onClose, onRelease, onDirecti
   const twistStart = useRef(0);
   // Per-viewer convenience only; storage may be unavailable.
   const [useHallSensors, setUseHallSensors] = useState(() => { try { return localStorage.getItem('afr2.touch.hallTurn') === '1'; } catch { return false; } });
-  // AFR2-20261106-33: «Información» y «Parámetros» colapsables; estado recordado por visitante.
-  const [panels, setPanels] = useState<{ info: boolean; params: boolean }>(() => {
-    try { const raw = JSON.parse(localStorage.getItem('afr2.touch.panels') || '{}'); return { info: raw.info !== false, params: raw.params !== false }; } catch { return { info: true, params: true }; }
-  });
-  const togglePanel = (key: 'info' | 'params') => setPanels(previous => {
-    const next = { ...previous, [key]: !previous[key] };
-    try { localStorage.setItem('afr2.touch.panels', JSON.stringify(next)); } catch { /* ignore */ }
-    return next;
-  });
+  // AFR2-20261107-42: «Información» y «Parámetros» empiezan cerrados en cada apertura;
+  // el visor ocupa el área y el usuario abre solo lo que necesita.
+  const [panels, setPanels] = useState<{ info: boolean; params: boolean }>({ info: false, params: false });
+  const togglePanel = (key: 'info' | 'params') => setPanels(previous => ({ ...previous, [key]: !previous[key] }));
+  // Joystick visual: se mueve por variables CSS, sin re-renderizar el overlay en cada pointermove.
+  const puck = useRef<HTMLDivElement>(null);
+  const showPuck = useCallback((drag: DragVisual | null) => {
+    const element = puck.current; if (!element) return;
+    if (!drag) { element.dataset.visible = 'false'; return; }
+    const radius = 56, length = Math.hypot(drag.dx, drag.dy), scale = length > radius ? radius / length : 1;
+    element.style.setProperty('--puck-x', `${Math.round(drag.x)}px`); element.style.setProperty('--puck-y', `${Math.round(drag.y)}px`);
+    element.style.setProperty('--knob-x', `${Math.round(drag.dx * scale)}px`); element.style.setProperty('--knob-y', `${Math.round(drag.dy * scale)}px`);
+    element.style.setProperty('--puck-strength', Math.min(1, length / radius).toFixed(2));
+    element.dataset.visible = 'true';
+  }, []);
   const changeHallSensors = (value: boolean) => { setUseHallSensors(value); try { localStorage.setItem('afr2.touch.hallTurn', value ? '1' : '0'); } catch { /* ignore */ } };
   // AFR2-20261030-19: share download state with the progress component, then
   // wait for this viewer to report readiness (including its WebGL context).
@@ -179,7 +185,7 @@ export function ManualDriveOverlay({ open, origin, onClose, onRelease, onDirecti
     if (delta >= 30) choose(DIRECTIONS[Math.round(angle / 45) % 8]);
   }, [choose]);
   const { pressed: pointerPressed, twisting, hasPointers, cancel, reset: resetPointers, down, move, end, cancelPointer, lost, externalDown } = useManualDrivePointers({
-    enabled, keyboardActive: () => keys.current.size > 0, onTranslate: translate, onRelease: clearTranslation,
+    enabled, keyboardActive: () => keys.current.size > 0, onTranslate: translate, onRelease: clearTranslation, onDragVisual: showPuck,
     onTwistStart: () => { startLocalRotation(true); orientation.current.side = 0; orientation.current.anchor = orientation.current.angle; setTurnSide(0); }, onTwist: rotateBy,
   });
   const pressed = pointerPressed || keyboardPressed;
@@ -206,7 +212,7 @@ export function ManualDriveOverlay({ open, origin, onClose, onRelease, onDirecti
   useEffect(() => {
     if (!open) { wasOpen.current = false; cancel(); return; }
     if (!wasOpen.current) {
-      wasOpen.current = true; resetPointers(); resetHeading();
+      wasOpen.current = true; resetPointers(); resetHeading(); setPanels({ info: false, params: false });
       cancel();
       wasConnected.current = connected;
       modeRef.current = connected ? 'robot' : 'preview'; setMode(modeRef.current);
@@ -311,6 +317,12 @@ export function ManualDriveOverlay({ open, origin, onClose, onRelease, onDirecti
     const fx = vx * perAxis, fy = vy * perAxis;
     return { fl: Math.round(fx - fy), fr: Math.round(fx + fy), rl: Math.round(fx + fy), rr: Math.round(fx - fy) };
   }, [direction, displayedSpeed, enabled]);
+  // AFR2-20261107-42: inclinación del modelo hacia la dirección (diagonales normalizadas) e
+  // intensidad de las animaciones según la potencia elegida.
+  const leanLength = direction ? Math.hypot(direction.vx, direction.vy) : 1;
+  const lean = direction ? { x: -direction.vy / leanLength, y: -direction.vx / leanLength } : { x: 0, y: 0 };
+  const driveIntensity = Math.max(0, Math.min(1, displayedSpeed / Math.max(1, displayedMaxSpeed)));
+  const moving = !!direction || (twisting && turnSide !== 0);
   const headingDegrees = connected ? headingIndex * 15 : ((Math.round(headingRad * 1800 / Math.PI) % 3600) + 3600) % 3600 / 10;
   // AFR2-20261106-35: con el auto conectado el rumbo mostrado es el estimado por el ATmega desde Hall
   // (pose de robot.state), nunca la copia del giro táctil. Sin pose válida: «no disponible».
@@ -336,16 +348,18 @@ export function ManualDriveOverlay({ open, origin, onClose, onRelease, onDirecti
       <span className="afr2-manual-connection-dot" aria-hidden="true" />{connected ? 'Conectado' : 'Desconectado'}
     </span>}
     initialFocusRef={input} onBeforeClose={cancel} onBeforeStop={cancel} onClose={onClose}>
-    <div className="afr2-manual-drive" data-pressed={pressed} data-mode={mode}>
+    <div className="afr2-manual-drive" data-pressed={pressed} data-mode={mode} data-moving={moving}
+      style={{ '--drive-intensity': driveIntensity.toFixed(2), '--lean-x': lean.x.toFixed(3), '--lean-y': lean.y.toFixed(3) } as CSSProperties}>
       <div className="afr2-manual-stage">
         <div className="afr2-manual-shadow" aria-hidden="true" />
+        <div className="afr2-manual-wake" data-active={moving} data-turn={twisting && turnSide !== 0 ? turnSide > 0 ? 'ccw' : 'cw' : undefined} aria-hidden="true"><span /><span /><span /></div>
         <div className="afr2-manual-status-bar">
           <div className="afr2-manual-mode" data-connected={connected}>{!connected && <span className="afr2-manual-mode-label" role="status"><UiIcon name="cube" />Simulado</span>}
             <span id={`${uid}-heading`} className="afr2-manual-heading-angle" aria-live="off">{connected
               ? hallHeadingDeg !== null ? <><span className="afr2-manual-heading-kind">Rumbo estimado (Hall)</span> {hallHeadingDeg.toFixed(1)}°</> : <span className="afr2-manual-heading-kind">Rumbo no disponible · sin odometría Hall</span>
               : <><span className="sr-only">Rumbo simulado: </span>{headingDegrees.toFixed(1)}°</>}</span></div>
         </div>
-        <div className="afr2-manual-model" aria-hidden="true" style={{ transform: `translate(${-8 * (direction?.vy ?? 0)}px, ${-8 * (direction?.vx ?? 0)}px)` }}><RenderBoundary key={viewerKey} fallback={<Unavailable onFailure={failed} />}>
+        <div className="afr2-manual-model" aria-hidden="true"><RenderBoundary key={viewerKey} fallback={<Unavailable onFailure={failed} />}>
           <Suspense fallback={<p className="afr2-manual-model-message">Cargando modelo 3D…</p>}><Model onReady={ready} wheelSpeeds={wheelSpeeds} headingRad={viewHeadingRad} /></Suspense>
         </RenderBoundary></div>
         {twisting && turnSide !== 0 && <div className="afr2-manual-spin" aria-hidden="true"><ChassisSpinGraphic direction={turnSide > 0 ? 'ccw' : 'cw'} active size="md" /><span>{connected && mode === 'robot' ? 'Giro ordenado' : 'Giro simulado'} · orden enviada, no medida</span></div>}
@@ -383,19 +397,21 @@ export function ManualDriveOverlay({ open, origin, onClose, onRelease, onDirecti
           aria-describedby={`${uid}-help ${uid}-heading`} aria-keyshortcuts="ArrowUp ArrowDown ArrowLeft ArrowRight Q E 0" aria-disabled={!enabled} onPointerDown={down} onPointerMove={move}
           onPointerUp={end} onPointerCancel={cancelPointer} onLostPointerCapture={lost}
           onBlur={cancel} onContextMenu={event => { event.preventDefault(); cancel(); }} />
+        <div ref={puck} className="afr2-manual-puck" data-visible="false" aria-hidden="true"><span className="afr2-manual-puck__ring" /><span className="afr2-manual-puck__knob" /></div>
         <span className="afr2-manual-gesture-hint" aria-hidden="true">{twisting ? 'Girá los dos dedos · Levantá ambos para volver al arrastre' : pressed && !direction ? 'Arrastrá para elegir una dirección' : ''}</span>
       </div>
       <footer className="afr2-manual-footer">
         <ModelAssetProgress label="Modelo del auto" />
-        <p className="afr2-manual-direction" role="status" aria-live="polite">{directionLabel}</p>
-        <CollapsiblePanel title="Información" expanded={panels.info} onToggle={() => togglePanel('info')} className="afr2-manual-panel">
+        <p className="afr2-manual-direction" role="status" aria-live="polite" data-moving={moving}><span key={directionLabel} className="afr2-manual-direction__text">{directionLabel}</span></p>
+        {mode==='robot' && powerNotice!==null && <div role="status" className="afr2-power-notice"><strong>Velocidad modificada: {Math.round(powerNotice*255/100)} /255</strong><progress max={100} value={powerNotice} aria-label="Potencia representada"/><output>{powerNotice}%</output></div>}
+        {oledError && <p className="afr2-help" role="status">OLED: {oledError}</p>}
+        {modelUnavailable && <Button onClick={() => { ready(false); clearRobotModelCache(); setModelFailed(false); setViewerKey(value => value + 1); }}>Reintentar modelo 3D</Button>}
+        <div className="afr2-manual-panels">
+        <CollapsiblePanel title="Información" subtitle="Gestos y estado" expanded={panels.info} onToggle={() => togglePanel('info')} className="afr2-manual-panel">
         <p id={`${uid}-help`} className="afr2-help">Un dedo desplaza en pantalla · Dos dedos giran el auto sobre su eje (con Hall: al soltar gira al ángulo marcado; sin Hall: gira mientras girás) · Soltá para detener.
           <span className="afr2-manual-keyboard-help">Flechas: mover · Q/E: girar 15° · 0: centrar rumbo.</span>
           <span>{modelBlockedReason ? modelBlockedReason : !connected ? 'Auto desconectado. Simulación local sin movimientos físicos.' : !canDrive ? `Control bloqueado: ${blockedReason || 'PWM manual no disponible.'}` : error ? `Última orden sin confirmar: ${error}. Soltá y volvé a deslizar para reintentar.` : mode === 'preview' ? 'Vista local sin movimientos. Cerrá y volvé a abrir para controlar el auto.' : 'Vista superior · Dirección y ruedas solicitadas, sin feedback físico.'}</span></p>
         </CollapsiblePanel>
-        {mode==='robot' && powerNotice!==null && <div role="status" className="afr2-power-notice"><strong>Velocidad modificada: {Math.round(powerNotice*255/100)} /255</strong><progress max={100} value={powerNotice} aria-label="Potencia representada"/><output>{powerNotice}%</output></div>}
-        {oledError && <p className="afr2-help" role="status">OLED: {oledError}</p>}
-        {modelUnavailable && <Button onClick={() => { ready(false); clearRobotModelCache(); setModelFailed(false); setViewerKey(value => value + 1); }}>Reintentar modelo 3D</Button>}
         <CollapsiblePanel title="Parámetros" subtitle="Hall y velocidad" expanded={panels.params} onToggle={() => togglePanel('params')} className="afr2-manual-panel">
         {onTurnTo && <label className="afr2-manual-hall-toggle">
           <input type="checkbox" checked={useHallSensors} onChange={event => changeHallSensors(event.target.checked)} />
@@ -405,6 +421,7 @@ export function ManualDriveOverlay({ open, origin, onClose, onRelease, onDirecti
           <input id={`${uid}-speed`} type="range" min={mode==='preview'?10:0} max={displayedMaxSpeed} step={10} value={displayedSpeed}
             onChange={event => { const value = Math.min(displayedMaxSpeed, Number(event.target.value)); if (modeRef.current === 'preview') setPreviewSpeed(value); else onSpeedChange(value); }} /></div>
         </CollapsiblePanel>
+        </div>
       </footer>
     </div>
   </FloatingModal>;
