@@ -98,7 +98,7 @@ void Afr2Ui_Open(Afr2Ui *u,uint8_t node) {
     u->node=node;u->selection=node==AFR2_N_QUICK?u->quick_selection:0;u->firstVisible=0;u->edit=0;
     if(node==AFR2_N_RADAR_CONFIG){u->selection=u->radar_selection;u->firstVisible=u->radar_first;}
     if(node==AFR2_N_WIFI_MODE_SELECT)u->selection=u->ops.value?(uint8_t)u->ops.value(u->ops.ctx,AFR2_A_WIFI_MODE)-1u:0;
-    if(node==AFR2_N_ENCODER_TEST)u->test_short=u->test_long=u->test_back=0;
+    if(node==AFR2_N_ENCODER_TEST){u->test_long=0;u->test_clicks=0;u->test_turns=0;}
     sync_code(u);
 }
 static void back(Afr2Ui *u,uint8_t fallback) {
@@ -377,8 +377,10 @@ void Afr2Ui_Apply(Afr2Ui *u,Afr2UiInput in) {
     if(in.rotation || in.click || in.menu){u->dashboard.input_ms=u->clock_ms;u->dashboard.armed=0;}
     if(u->touch_active){if(in.menu){u->touch_cancelled=1;invoke(u,AFR2_A_STOP,0,0);Afr2Ui_Touch(u,0,8,0);}return;}
     if(u->node==AFR2_N_ENCODER_TEST){
-        if(in.rotation){u->test_back=1;u->redraw=true;}
-        if(in.click){if(u->test_back){go_back(u);return;}u->test_short=1;u->redraw=true;}
+        /* AFR2-20261107-52: rotation counts up/down from 0, short counts clicks; the first long
+         * shows Correcto and a second long leaves. */
+        if(in.rotation){int16_t t=(int16_t)(u->test_turns+in.rotation);if(t>-10000 && t<10000)u->test_turns=t;u->redraw=true;}
+        if(in.click){if(u->test_clicks<9999u)++u->test_clicks;u->redraw=true;}
         if(in.menu){if(u->test_long){go_back(u);return;}u->test_long=1;u->redraw=true;}
         return;
     }
@@ -636,10 +638,11 @@ static void render_screen(Afr2Ui *u,Afr2Oled *o,const Afr2UiSnapshot *s) {
         }
     } else if(u->node==AFR2_N_QUICK)render_quick(u,o,s);
     else if(u->node==AFR2_N_ENCODER_TEST){
-        TXT(o,0,0,"Prueba encoder");Afr2Ui_GestureHint(o,0,14,2,PSTR("Elegir Volver"));
-        Afr2Ui_GestureHint(o,0,27,0,u->test_short?PSTR("Detectado"):PSTR("Pendiente"));
-        Afr2Ui_GestureHint(o,0,40,1,u->test_long?PSTR("Salir"):PSTR("Pendiente"));
-        Afr2Ui_GestureHint(o,0,53,0,PSTR("Volver"));if(u->test_back)Afr2Oled_Rect(o,0,50,128,14,AFR2_WHITE);
+        char text[16];TXT(o,0,0,"Prueba encoder");
+        snprintf_P(text,sizeof(text),PSTR("Clicks: %u"),u->test_clicks);Afr2Oled_Text(o,0,13,text,AFR2_WHITE);
+        snprintf_P(text,sizeof(text),PSTR("Giro: %d"),u->test_turns);Afr2Oled_Text(o,0,26,text,AFR2_WHITE);
+        Afr2Ui_GestureHint(o,0,39,1,u->test_long?PSTR("Correcto"):PSTR("Pulse"));
+        if(u->test_long)Afr2Ui_GestureHint(o,0,52,1,PSTR("Salir"));
     }
     else if(u->node==AFR2_N_POWER){if(u->power_known)Afr2Power_Render(o,u->power_percent);else {TXT(o,0,0,"Potencia manual");TXT(o,0,25,"Sin valor vigente");}}
     else if(u->node==AFR2_N_WIFI_MODE_SELECT){

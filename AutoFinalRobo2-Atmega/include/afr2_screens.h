@@ -37,7 +37,8 @@ typedef struct {
     /* AFR2-20261029-20: reusable save/discard choice, action-based service. */
     uint8_t confirm_save,confirm_discard,confirm_target,confirm_wait;
     uint8_t quick_selection,quick_pending,quick_expected;
-    uint8_t radar_selection,radar_first,test_short,test_long,test_back,notice_target;
+    uint8_t radar_selection,radar_first,test_long,notice_target;
+    uint16_t test_clicks; int16_t test_turns; /* AFR2-20261107-52: encoder test counters */
     uint8_t power_percent,power_known,power_visible,menu_signature,wifi_signature;
     uint32_t power_changed_ms;
     uint32_t quick_started_ms,hold_started_ms;

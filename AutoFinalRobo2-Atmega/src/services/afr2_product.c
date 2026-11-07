@@ -148,7 +148,7 @@ uint8_t Afr2Product_StartGotoFull(Afr2Product *p,int32_t x,int32_t y,int16_t the
 }
 void Afr2Product_HallBegin(Afr2Product *p) {
     Afr2Product_Stop(p);
-    p->hall_bad=0;p->hall_delta=0;
+    p->hall_bad=0;p->hall_delta=0;p->hall_peak=0;
     if(!p->sensors.hall_available){p->notice=2;return;}
     p->hall_start=p->sensors.counts[p->selected_wheel];p->hall_measuring=1;
 }
@@ -235,9 +235,13 @@ void Afr2Product_Task(Afr2Product *p,uint32_t now) {
     uint8_t ps=Afr2Prefs_Task();if(p->prefs_state==1 && ps==2){p->prefs_state=2;p->notice=1;}else if(p->prefs_state==1 && ps==3){p->prefs_state=3;p->notice=2;}
     if(p->hall_measuring) {
         int32_t d=(int32_t)((uint32_t)p->sensors.counts[p->selected_wheel]-(uint32_t)p->hall_start);
-        if(p->hall_delta && d && ((d<0)!=(p->hall_delta<0)))p->hall_bad=1;
-        /* Detect direction reversal even before net count crosses zero. */
-        if((p->hall_delta>0 && d<p->hall_delta)||(p->hall_delta<0 && d>p->hall_delta))p->hall_bad=1;
+        /* AFR2-20261107-52: the wheel is turned by hand and the gearbox backlash moves the motor
+         * shaft back a little on every re-grip. Only a retreat from the peak larger than
+         * max(8 pulses, peak/32) marks a reversed or erratic turn; small backlash is accepted. */
+        if(abs32(d)>abs32(p->hall_peak))p->hall_peak=d;
+        int32_t retreat=p->hall_peak>=0?p->hall_peak-d:d-p->hall_peak,tolerance=abs32(p->hall_peak)/32;
+        if(tolerance<8)tolerance=8;
+        if(retreat>tolerance)p->hall_bad=1;
         p->hall_delta=d;
     }
     if(p->origin==AFR2_SOURCE_LOCAL && !p->stopped && (uint32_t)(now-p->local_started_ms)>p->local_timeout_ms)Afr2Product_Stop(p);

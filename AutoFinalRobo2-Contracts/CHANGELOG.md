@@ -1,3 +1,8 @@
+## AFR2-20261107-52 - 07/11/2026
+
+Hall de una vuelta: tolera la holgura y solo invalida si la cuenta retrocede respecto del máximo más de max(8, máximo/32) pulsos; antes bastaba un pulso. Prueba de encoder con «Clicks: N», «Giro: N» desde 0 y largo «Pulse» → «Correcto» → salir. Ícono de pulsación larga centrado. Web: zoom en el árbol de pantallas y páginas por giro bajo el mismo padre; márgenes de Infraestructura y tarjeta del paquete; foto de los modelos fuera del texto en pantallas chicas; captura del Loader en WebP en su banner. Ficha changes/2026-11-07-52-hall-tolerance-ui-polish.md.
+Estado: atmega=fuente editada, sin compilar ni cargar; web=fuente editada, revisada en Vite, sin build; esp=sin cambios.
+
 ## AFR2-20261107-51 - 07/11/2026
 
 La prueba OLED/I2C no encontró dispositivos en el bus (`found=0 nack=112`, SDA/SCL en alto). La causa era un conector flojo: el usuario lo ajustó y la OLED volvió a funcionar. Se volvió a cargar el firmware del auto con el Loader 2.0.0 por MCP (`flash_mega`, COM16), con aprobación manual: firma, escritura y verificación correctas. El HEX cargado tiene SHA-256 16826727…7ca0a4, y ese es el hash válido en lugar del anotado en AFR2-20261107-49. Red STA por defecto «Koba» en `wifi_defaults.local.h`, archivo ignorado por Git y sin la clave en Contracts. Ficha changes/2026-11-07-51-mega-restore-loader-wifi.md.

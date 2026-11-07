@@ -88,7 +88,7 @@ function open(u: UiSimulation, node: number) {
   u.node=node; u.selection=node===S.AFR2_N_QUICK?u.quickSelection:0; u.firstVisible=0; u.edit=false; u.editing=null;
   if (node===S.AFR2_N_RADAR_CONFIG) Object.assign(u,u.radarPosition);
   if (node===S.AFR2_N_WIFI_MODE_SELECT) u.selection=u.values[44]-1;
-  if (node===S.AFR2_N_ENCODER_TEST) u.testShort=u.testLong=u.testBack=false;
+  if (node===S.AFR2_N_ENCODER_TEST) {u.testLong=false;u.testClicks=0;u.testTurns=0;}
   sync(u);
   if(node===S.AFR2_N_WIFI_SEARCH && !u.pending){u.wifiPage=0;schedule(u,'scan');}
 }
@@ -272,7 +272,8 @@ export function reduceUiSimulation(previous:UiSimulation,event:SimulationEvent):
   const rotation=event.type==='rotate'?event.delta*(u.values[42]?-1:1):0,long=event.type==='press' && event.kind==='long',click=event.type==='press' && event.kind==='short';
   if(u.touch){if(long){stop(u);u.touch=undefined;}return u;}
   // Apply gives the physical encoder test precedence, even over notices.
-  if(u.node===S.AFR2_N_ENCODER_TEST){if(rotation)u.testBack=true;if(click){if(u.testBack)goBack(u);else u.testShort=true;}if(long){if(u.testLong)goBack(u);else u.testLong=true;}return u;}
+  // AFR2-20261107-52: giro cuenta desde 0, corto suma clicks, primer largo = Correcto, segundo largo sale.
+  if(u.node===S.AFR2_N_ENCODER_TEST){if(rotation){const t=(u.testTurns??0)+rotation;if(t>-10000 && t<10000)u.testTurns=t;}if(click)u.testClicks=Math.min(9999,(u.testClicks??0)+1);if(long){if(u.testLong)goBack(u);else u.testLong=true;}return u;}
   u.turns+=rotation;u.clicks=Math.min(65535,u.clicks+Number(click));u.holds=Math.min(65535,u.holds+Number(long));
   if(u.node===S.AFR2_N_SAVE_CONFIRM){
     if(u.notice){if(click)dismiss(u);return u;}if(u.confirmWait)return u;

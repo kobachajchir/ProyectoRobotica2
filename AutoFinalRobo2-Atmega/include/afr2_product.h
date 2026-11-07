@@ -70,7 +70,7 @@ typedef struct Afr2Product {
     uint32_t now, control_ms, command_ms, local_started_ms, session, web_ms;
     uint32_t test_started_ms, mission_started_ms;
     int16_t pwm[4], target[4], speed[4], last_error[4];
-    int32_t integral[4], previous_counts[4], hall_start, hall_delta;
+    int32_t integral[4], previous_counts[4], hall_start, hall_delta, hall_peak;
     uint32_t hall_change_ms[4];
     int32_t x_mm, y_mm, yaw_mrad, target_x, target_y;
     int32_t mission_x, mission_y, mission_yaw;
