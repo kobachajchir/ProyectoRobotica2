@@ -294,7 +294,7 @@ static uint8_t invoke(void *ctx,uint8_t action,int32_t v,const void *data) {
         /* Keep only a cancellation request, superseding a waiting modal/draft. */
         p->wifi.pending=0;return wifi_request(p,AFR2_WIFI_CANCEL);
     case AFR2_A_CONTRAST:c->contrast=v;break;case AFR2_A_ROTATION:c->rotation=v;break;
-    case AFR2_A_CLEAR_FAULT:if(!p->stopped)return AFR2_DENIED;p->fault=0;p->mode=AFR2_IDLE;return AFR2_OK;
+    case AFR2_A_CLEAR_FAULT:if(!p->stopped)return AFR2_DENIED;p->fault=0;memset(p->hp_score,0,sizeof(p->hp_score));p->mode=AFR2_IDLE;return AFR2_OK;
     case AFR2_A_REBOOT_MEGA:
         if(!p->stopped || p->prefs_state==1 || a->reboot_pending)return AFR2_BUSY;
         Afr2Product_Stop(p);a->reboot_pending=1;a->reboot_ms=p->now;return AFR2_OK;
@@ -555,7 +555,9 @@ void Afr2App_UiSnapshot(Afr2App *a,Afr2UiSnapshot *s) {
         else {LINE(0,"Rueda:%u C:%ld",p->selected_wheel,(long)p->sensors.counts[p->selected_wheel]);
         LINE(1,"Vuelta:%ld E:%u",(long)p->hall_delta,p->hall_bad);LINE(2,"CPR:%lu",(unsigned long)p->config.counts_per_rev[p->selected_wheel]);}break;
     case AFR2_N_WHEEL_VIEW:
-        LINE(0,"FL:%d FR:%d",p->pwm[0],p->pwm[1]);LINE(1,"RL:%d RR:%d",p->pwm[2],p->pwm[3]);LINE(2,"Inv:%02X OFF:%u",p->config.motor_signs,p->stopped);break;
+        LINE(0,"FL:%d FR:%d",p->pwm[0],p->pwm[1]);LINE(1,"RL:%d RR:%d",p->pwm[2],p->pwm[3]);{static const char marks[3] PROGMEM={'?','+','!'};char hp[5];for(uint8_t i=0;i<4;i++)hp[i]=pgm_read_byte(&marks[Afr2Product_HallPwmState(p,i)]);hp[4]=0;
+        /* AFR2-20261107-39: HP = PWM/Hall por rueda FL FR RL RR: + coincide, ! cruzado, ? sin datos. */
+        LINE(2,"Inv:%02X HP:%s",p->config.motor_signs,hp);}break;
     case AFR2_N_DISPLAY:
         LINE(0,"OLED listo:%u",s->oled_ready);LINE(1,"Errores:%lu",(unsigned long)s->oled_errors);LINE(2,"R%ums TX%ums",a->raster_ms,a->oled->last_transfer_ms);break;
     case AFR2_N_ENCODER_VIEW:

@@ -79,7 +79,15 @@ typedef struct Afr2Product {
     uint8_t odom_ready;
     float odom_x,odom_y,odom_yaw;
     uint32_t pose_frame,pose_sequence;
+    /* AFR2-20261107-39: concordancia PWM/Hall por rueda (+ = el Hall avanza en el sentido del PWM).
+     * Puntaje acotado a +-20; <=-10 indica motor o Hall con signo cruzado. */
+    int8_t hp_score[4], hp_last_sign[4];
+    uint16_t hp_sign_ms[4]; /* instante (ms truncado) del ultimo cambio de signo del PWM */
+    uint16_t hp_signature;
 } Afr2Product;
+#define AFR2_FAULT_SIGN_MISMATCH 4u
+/* 0 sin datos, 1 coincide, 2 cruzado. */
+uint8_t Afr2Product_HallPwmState(const Afr2Product *p,uint8_t wheel);
 void Afr2Product_Init(Afr2Product *p,uint8_t reset_cause);
 void Afr2Product_Task(Afr2Product *p,uint32_t now);
 uint8_t Afr2Product_Stop(void *ctx);

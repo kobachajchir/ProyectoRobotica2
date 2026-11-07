@@ -2,8 +2,10 @@
 #ifndef AFR2_SEQUENCE_H
 #define AFR2_SEQUENCE_H
 #include <stdint.h>
+/* AFR2-20261107-40: habilitado por pedido del usuario (32 pasos, 656 B de SRAM). Compilar con
+ * -DAFR2_SEQUENCE_MEMORY_APPROVED=0 recupera el perfil sin almacenamiento de pasos. */
 #ifndef AFR2_SEQUENCE_MEMORY_APPROVED
-#define AFR2_SEQUENCE_MEMORY_APPROVED 0
+#define AFR2_SEQUENCE_MEMORY_APPROVED 1
 #endif
 #define AFR2_SEQUENCE_MAX 32u
 #define AFR2_SEQUENCE_TIME_MAX 120000UL

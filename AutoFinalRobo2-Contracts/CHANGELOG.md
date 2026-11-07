@@ -1,3 +1,18 @@
+## AFR2-20261107-40 - 07/11/2026
+
+ATmega: secuencias de 32 pasos habilitadas (`AFR2_SEQUENCE_MEMORY_APPROVED=1`, +656 B de SRAM; 6315 B estáticos, 1877 B libres para pila). ESP y Web ya las soportaban; se anuncian solo con Hall calibrado. Ficha changes/2026-11-07-40-sequences-enabled.md.
+Estado: atmega=compilado, sin cargar; esp/web=sin cambios.
+
+## AFR2-20261107-39 - 07/11/2026
+
+Hall para go-to: concordancia PWM/Hall por rueda con fallo 4 en lazo cerrado si el sentido está cruzado (diagnóstico `HP:` en la pantalla Motores y texto del fallo en la Web) y velocidad mínima de 40 mm/s en el go-to fuera de tolerancia. Ficha changes/2026-11-07-39-hall-goto-readiness.md.
+Estado: atmega=compilado, sin cargar; web=compilada; esp=sin cambios.
+
+## AFR2-20261107-38 - 07/11/2026
+
+ESP: red STA por defecto desde `src/wifi_defaults.local.h` (ignorado por Git; plantilla `wifi_defaults.example.h`). Se usa sin configuración guardada y como respaldo cuando no hay red anterior. Credenciales fuera del repositorio. Ficha 2026-11-07-37.
+Estado: esp=compilado, sin cargar.
+
 ## AFR2-20261107-37 - 07/11/2026
 
 ESP: si la red STA configurada no conecta en 15 s, prueba la última red que funcionó (`staPrevious`) antes de abrir el AP; los reintentos alternan entre ambas. Estado expuesto como `staNetwork`/`previousAvailable` y aviso en la página Wi-Fi. Ficha changes/2026-11-07-37-esp-wifi-red-anterior.md.

@@ -1,6 +1,7 @@
 /* AFR2-20261029-27: quick controls/radar/PWM/WS integration; prior authors retained. */
 // AFR2-20261023-11. Adaptation of ESP01 Wi-Fi states and async scan, new config schema.
 #include "wifi_service.h"
+#include "wifi_defaults.h"
 #include <ESP8266WiFi.h>
 #include <string.h>
 extern "C" {
@@ -17,6 +18,11 @@ static void migrateWifi(JsonDocument &doc) {
     String mode=doc["mode"]|"STA",ssid=doc["ssid"]|"",password=doc["password"]|"";
     doc.clear();doc["schema"]="afr2-wifi-2";doc["mode"]=mode;
     JsonObject part=doc[mode=="AP"?"ap":"sta"].to<JsonObject>();part["ssid"]=ssid;part["password"]=password;
+}
+/* AFR2-20261107-38: red STA por defecto (wifi_defaults.local.h). Vacía = sin red por defecto. */
+static bool defaultStation(WifiConfig &c){
+    strlcpy(c.mode,"STA",sizeof(c.mode));strlcpy(c.ssid,AFR2_DEFAULT_STA_SSID,sizeof(c.ssid));strlcpy(c.password,AFR2_DEFAULT_STA_PASSWORD,sizeof(c.password));
+    return WifiService::valid(c);
 }
 static bool readPart(JsonDocument &doc,const char *part,WifiConfig &c){
     JsonObject p=doc[part].as<JsonObject>();
@@ -48,9 +54,12 @@ void WifiService::begin() {
         WifiConfig ap;if(readPart(doc,"ap",ap)){apSsid_=ap.ssid;strlcpy(apPassword_,ap.password,sizeof(apPassword_));}
         WifiConfig previous;strlcpy(previous.mode,"STA",sizeof(previous.mode));
         hasPrevious_=readPart(doc,"staPrevious",previous) && valid(previous) && strcmp(previous.ssid,doc["sta"]["ssid"]|"");
+        WifiConfig fallback;if(!hasPrevious_ && strcmp(mode,"AP") && defaultStation(fallback) && strcmp(fallback.ssid,doc["sta"]["ssid"]|""))hasPrevious_=true; // la red por defecto actúa de respaldo
         currentGood_=doc["staGood"]|false;
         if(readPart(doc,!strcmp(mode,"AP")?"ap":"sta",config) && valid(config)){persisted_=1;apply(config);return;}
     }
+    // Sin configuración guardada: usar la red por defecto (en RAM) y, si no conecta, el AP de provisión.
+    WifiConfig fallback;if(defaultStation(fallback)){persisted_=0;hasPrevious_=false;apply(fallback);return;}
     startFallback();
 }
 void WifiService::startFallback() {
@@ -135,9 +144,11 @@ void WifiService::tick(uint32_t now) {
     }
 }
 bool WifiService::beginStation(bool previous){
-    JsonDocument doc;if(!storage_.loadWifi(doc))return false;migrateWifi(doc);
+    JsonDocument doc;bool stored=storage_.loadWifi(doc);if(stored)migrateWifi(doc);
     WifiConfig c;strlcpy(c.mode,"STA",sizeof(c.mode));
-    if(!readPart(doc,previous?"staPrevious":"sta",c) || !valid(c))return false;
+    bool ok=stored && readPart(doc,previous?"staPrevious":"sta",c) && valid(c);
+    if(!ok)ok=defaultStation(c); // sin anterior guardada (o sin archivo): red por defecto
+    if(!ok)return false;
     if(WiFi.begin(c.ssid,c.password)==WL_CONNECT_FAILED)return false;
     usingPrevious_=previous;return true;
 }

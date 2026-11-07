@@ -10,3 +10,11 @@ Pedido del usuario: si no encuentra la red configurada, buscar la anterior que e
 
 Compilación a pedido: ESP `esp12s_candidate` PASS, RAM 50808 B (62,0 %), flash 454939 B (43,6 %); Web `tsc -b` PASS. Sin flashear ni probar con redes reales.
 Estado: esp=fuente editada y compilada, sin cargar; web=fuente editada y compilada; atmega=sin cambios.
+
+## AFR2-20261107-38 - Red STA por defecto en el firmware
+Pedido del usuario: dejar su red como predeterminada en el código.
+- `src/wifi_defaults.h` incluye `wifi_defaults.local.h` si existe (`__has_include`) y define `AFR2_DEFAULT_STA_SSID/PASSWORD` (vacíos por defecto). El archivo local está ignorado por Git (`*.local.*`), así las credenciales quedan en el firmware compilado de esta PC pero no en el repositorio. Plantilla versionada: `src/wifi_defaults.example.h`.
+- Sin configuración guardada en LittleFS: el ESP arranca en STA con la red por defecto (en RAM, `configPersisted=false`); si no conecta en 15 s abre el AP de provisión.
+- Con configuración guardada y sin `staPrevious`: la red por defecto actúa de respaldo (se prueba cuando la configurada no conecta y entra en la alternancia de reintentos).
+- Otro equipo que compile sin `wifi_defaults.local.h` obtiene el comportamiento anterior.
+Compilación: ESP PASS, RAM 50824 B (62,0 %), flash 455227 B (43,6 %); la red por defecto figura en `firmware.bin`. Sin flashear.
