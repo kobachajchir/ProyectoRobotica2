@@ -46,6 +46,9 @@ void WifiService::begin() {
         migrateWifi(doc);const char *mode=doc["mode"]|"";
         strlcpy(config.mode,mode,sizeof(config.mode));
         WifiConfig ap;if(readPart(doc,"ap",ap)){apSsid_=ap.ssid;strlcpy(apPassword_,ap.password,sizeof(apPassword_));}
+        WifiConfig previous;strlcpy(previous.mode,"STA",sizeof(previous.mode));
+        hasPrevious_=readPart(doc,"staPrevious",previous) && valid(previous) && strcmp(previous.ssid,doc["sta"]["ssid"]|"");
+        currentGood_=doc["staGood"]|false;
         if(readPart(doc,!strcmp(mode,"AP")?"ap":"sta",config) && valid(config)){persisted_=1;apply(config);return;}
     }
     startFallback();
@@ -78,13 +81,22 @@ void WifiService::apply(const WifiConfig &c) {
         if (WiFi.begin(c.ssid,c.password)==WL_CONNECT_FAILED) configError_="STA_START_FAILED";
     }
     if (wantAp && !apOn_) { configError_="AP_START_FAILED"; startFallback(); }
-    staStarted_=lastRetry_=millis();
+    usingPrevious_=false;staStarted_=lastRetry_=millis();
 }
 bool WifiService::stage(const WifiConfig &c, uint32_t now) {
     if (busy() || !valid(c)) return false;
     if(!c.persist)return false;
     JsonDocument doc;storage_.loadWifi(doc);migrateWifi(doc);
     doc["schema"]="afr2-wifi-2";doc["mode"]=c.mode;
+    if(strcmp(c.mode,"AP")){
+        // AFR2-20261106-37: al cambiar de red STA, la anterior pasa a respaldo solo si alguna vez conecto.
+        const char *oldSsid=doc["sta"]["ssid"]|"";
+        if(oldSsid[0] && strcmp(oldSsid,c.ssid) && (doc["staGood"]|false)){
+            String ssid=oldSsid,password=doc["sta"]["password"]|"";
+            JsonObject previous=doc["staPrevious"].to<JsonObject>();previous["ssid"]=ssid;previous["password"]=password;
+        }
+        if(strcmp(oldSsid,c.ssid))doc["staGood"]=false;
+    }
     JsonObject part=doc[!strcmp(c.mode,"AP")?"ap":"sta"].to<JsonObject>();part["ssid"]=c.ssid;part["password"]=c.password;
     if(!storage_.saveWifi(doc))return false;
     persisted_=1;
@@ -93,11 +105,23 @@ bool WifiService::stage(const WifiConfig &c, uint32_t now) {
 void WifiService::tick(uint32_t now) {
     // Broker waits for acknowledgement/drain, then restarts; never apply in place.
     if (staWanted_ && !disconnectedByUser_ && WiFi.status()!=WL_CONNECTED) {
+        if ((uint32_t)(now-staStarted_)>=15000u && hasPrevious_ && !usingPrevious_ && !scanPending_ && !applyPending_ && (uint32_t)(now-lastRetry_)>=15000u) {
+            // AFR2-20261106-37: la red configurada no aparece o no conecta; probar la ultima que funciono.
+            if(beginStation(true)){lastRetry_=now;staStarted_=now;} // nueva gracia de 15 s para la anterior
+        }
         if (!apOn_ && (uint32_t)(now-staStarted_)>=15000u) startFallback();
         if ((uint32_t)(now-lastRetry_)>=30000u && !scanPending_ && !applyPending_) {
-            lastRetry_=now; WiFi.reconnect();
+            lastRetry_=now;
+            if(hasPrevious_)(void)beginStation(!usingPrevious_); // alternar configurada / anterior
+            else WiFi.reconnect();
         }
-    } else if (staWanted_) staStarted_=now; // grace period starts again on a later disconnection
+    } else if (staWanted_) {
+        staStarted_=now; // grace period starts again on a later disconnection
+        if(!usingPrevious_ && !currentGood_ && WiFi.status()==WL_CONNECTED){
+            // Primera conexion exitosa de la red configurada: queda apta para ser «anterior» en el futuro.
+            JsonDocument doc;if(storage_.loadWifi(doc)){migrateWifi(doc);doc["staGood"]=true;if(storage_.saveWifi(doc))currentGood_=true;}
+        }
+    }
     if (scanPending_) {
         int n=WiFi.scanComplete();
         if (n!=WIFI_SCAN_RUNNING) {
@@ -109,6 +133,13 @@ void WifiService::tick(uint32_t now) {
             scanTimedOut_=true; scanReady_=true;
         }
     }
+}
+bool WifiService::beginStation(bool previous){
+    JsonDocument doc;if(!storage_.loadWifi(doc))return false;migrateWifi(doc);
+    WifiConfig c;strlcpy(c.mode,"STA",sizeof(c.mode));
+    if(!readPart(doc,previous?"staPrevious":"sta",c) || !valid(c))return false;
+    if(WiFi.begin(c.ssid,c.password)==WL_CONNECT_FAILED)return false;
+    usingPrevious_=previous;return true;
 }
 bool WifiService::scan() {
     if (busy() || scanReady_) return false;
@@ -188,6 +219,7 @@ void WifiService::status(JsonObject out) const {
     struct ip_info info={};bool apInfo=apOn_ && wifi_get_ip_info(SOFTAP_IF,&info);
     out["apMask"]=apInfo?IPAddress(info.netmask.addr).toString():String();out["apGateway"]=apInfo?IPAddress(info.gw.addr).toString():String();
     out["disconnectedByUser"]=disconnectedByUser_;
+    out["staNetwork"]=!staWanted_?"none":usingPrevious_?"previous":"configured";out["previousAvailable"]=hasPrevious_;
     out["ageMs"]=0; out["applying"]=applyPending_;out["restartScheduled"]=applyPending_;
     out["configuredMode"]=applyPending_?pending_.mode:"";
     out["fallbackActive"]=fallbackActive_ && apOn_;

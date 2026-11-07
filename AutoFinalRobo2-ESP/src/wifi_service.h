@@ -40,6 +40,10 @@ private:
     bool applyPending_=false, scanPending_=false, scanReady_=false, scanTimedOut_=false, staWanted_=false, apOn_=false;
     bool fallbackActive_=false,scanRestoreAp_=false;
     bool disconnectedByUser_=false;
+    /* AFR2-20261106-37: ultima red STA que conecto antes de la actual ("staPrevious" en wifi.json).
+     * Si la configurada no conecta en 15 s se prueba la anterior; los reintentos alternan entre ambas. */
+    bool usingPrevious_=false, currentGood_=false, hasPrevious_=false;
+    bool beginStation(bool previous);
     uint8_t scanBssid_[16][6]={},scanAuth_[16]={},authCount_=0;
     uint32_t authScanAt_=0;
     int8_t persisted_=-1; // -1 unknown, 0 RAM, 1 saved

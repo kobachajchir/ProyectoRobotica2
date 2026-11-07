@@ -1,3 +1,8 @@
+## AFR2-20261107-37 - 07/11/2026
+
+ESP: si la red STA configurada no conecta en 15 s, prueba la última red que funcionó (`staPrevious`) antes de abrir el AP; los reintentos alternan entre ambas. Estado expuesto como `staNetwork`/`previousAvailable` y aviso en la página Wi-Fi. Ficha changes/2026-11-07-37-esp-wifi-red-anterior.md.
+Estado: esp=compilado, sin cargar; web=compilada; atmega=sin cambios.
+
 ## AFR2-20261106-36 - 06/11/2026
 
 Control táctil: gracia de 250 ms ante pointercancel espurio del dedo de arrastre (un toque nuevo continúa el mismo vector) y el dedo que queda tras un giro de dos sigue arrastrando. Verificado con eventos sintéticos; sin prueba en teléfono. Ficha 2026-11-06-33.

@@ -95,6 +95,7 @@ export function WifiPage(){
         </div>:<>
         <SectionHeader title={connected?'Conectado':'Desconectado'} description="Estado de la conexión STA; el punto de acceso AP se informa por separado." actions={<Button disabled={!online} onClick={()=>void refreshWifiStatus()}>Actualizar estado</Button>}/>
         {wifiStatus.fallbackActive && <StatusNotice tone="info" title="AP / fallback activo"/>}
+        {wifiStatus.staNetwork === 'previous' && <StatusNotice tone="info" title={wifiStatus.staConnected ? 'Conectado a la red anterior' : 'Probando la red anterior'}/>}
         {wifiStatus.configError && <StatusNotice tone="warning" title={wifiStatus.configError}/>}
         <div className="afr2-page-stack">
           <section><h3 className="afr2-subheading">Estado de conexión</h3><dl className="afr2-status-list">
