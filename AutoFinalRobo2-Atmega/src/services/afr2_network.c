@@ -64,7 +64,11 @@ uint8_t Afr2App_NetworkCommand(Afr2App *a,uint8_t cmd,const uint8_t *d,uint8_t n
     uint32_t seq=afr2_get_u32(d+4);uint8_t kind=d[8];
     if(seq>w->display_event) {
         uint8_t duplicate_boot=kind==AFR2_NET_BOOT && a->esp_boot_notified==w->display_boot;
-        if(!duplicate_boot) {
+        /* AFR2-20261107-48: during the quiet window after the user closed network notices,
+         * chatty events are accepted (no ESP retry) but not shown. */
+        uint8_t chatty=kind==AFR2_NET_WS_OPEN || kind==AFR2_NET_WS_CLOSE || kind==AFR2_NET_WEB_SERVED || kind==AFR2_NET_CLIENT_JOIN || kind==AFR2_NET_CLIENT_LEAVE;
+        uint8_t silent=duplicate_boot || (chatty && Afr2Ui_NetworkQuiet(a->ui));
+        if(!silent) {
             if(a->ui->notices>=3)return AFR2_RESULT_UNAVAILABLE;
             char detail[18];detail[0]=0;
             if(kind==AFR2_NET_GOT_IP)strncpy(detail,w->ip,sizeof(detail)-1);

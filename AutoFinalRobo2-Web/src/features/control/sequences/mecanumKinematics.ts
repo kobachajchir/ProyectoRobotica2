@@ -38,9 +38,9 @@ export function snapDurationMs(value: number, isFinish = false): number {
 /**
  * Cinemática inversa Mecanum sin recortes silenciosos de velocidad:
  * Convierte consignas del chasis (vxMmS, vyMmS, wzMradS) a las 4 ruedas (mm/s).
- * f = forwardWheelSign * vx; r = yawWheelSign * wz * (lx + ly)
- * v_FL = f - vy - r; v_FR = f + vy + r
- * v_RL = f + vy - r; v_RR = f - vy + r
+ * f = forwardWheelSign * vx; s = lateralWheelSign * vy; r = yawWheelSign * wz * (lx + ly)
+ * v_FL = f - s - r; v_FR = f + s + r
+ * v_RL = f + s - r; v_RR = f - s + r
  * Fixed reference matches AVR; wheel tracks keep their own signed basis.
  * Donde wz(rad/s) = wzMradS / 1000.
  */
@@ -52,18 +52,20 @@ export function inverseMecanumKinematics(
 ): WheelSpeedVectorMmS {
   const forwardWheelMmS = vxMmS * MOTION_REFERENCE.forwardWheelSign;
   const rotTangentialMmS = (wzMradS * lxPlusLyMm) / 1000 * MOTION_REFERENCE.yawWheelSign;
+  // AFR2-20261107-41: lateral también corregido, igual que en el AVR.
+  const lateralWheelMmS = vyMmS * MOTION_REFERENCE.lateralWheelSign;
   return {
-    fl: Math.round(forwardWheelMmS - vyMmS - rotTangentialMmS),
-    fr: Math.round(forwardWheelMmS + vyMmS + rotTangentialMmS),
-    rl: Math.round(forwardWheelMmS + vyMmS - rotTangentialMmS),
-    rr: Math.round(forwardWheelMmS - vyMmS + rotTangentialMmS),
+    fl: Math.round(forwardWheelMmS - lateralWheelMmS - rotTangentialMmS),
+    fr: Math.round(forwardWheelMmS + lateralWheelMmS + rotTangentialMmS),
+    rl: Math.round(forwardWheelMmS + lateralWheelMmS - rotTangentialMmS),
+    rr: Math.round(forwardWheelMmS - lateralWheelMmS + rotTangentialMmS),
   };
 }
 
 /**
  * Cinemática directa Mecanum determinista desde las 4 ruedas (mm/s) hacia el chasis:
  * vx = forwardWheelSign * (v_FL + v_FR + v_RL + v_RR) / 4
- * vy = (-v_FL + v_FR + v_RL - v_RR) / 4
+ * vy = lateralWheelSign * (-v_FL + v_FR + v_RL - v_RR) / 4
  * wz(mrad/s) = yawWheelSign * ((-v_FL + v_FR - v_RL + v_RR) / (4 * (lx + ly))) * 1000
  */
 export function forwardMecanumKinematics(
@@ -72,7 +74,7 @@ export function forwardMecanumKinematics(
 ): { vxMmS: number; vyMmS: number; wzMradS: number } {
   const safeL = Math.max(50, lxPlusLyMm);
   const vxMmS = MOTION_REFERENCE.forwardWheelSign * (wheels.fl + wheels.fr + wheels.rl + wheels.rr) / 4;
-  const vyMmS = (-wheels.fl + wheels.fr + wheels.rl - wheels.rr) / 4;
+  const vyMmS = MOTION_REFERENCE.lateralWheelSign * (-wheels.fl + wheels.fr + wheels.rl - wheels.rr) / 4;
   const wzMradS = MOTION_REFERENCE.yawWheelSign * ((-wheels.fl + wheels.fr - wheels.rl + wheels.rr) * 1000) / (4 * safeL);
   return { vxMmS, vyMmS, wzMradS };
 }

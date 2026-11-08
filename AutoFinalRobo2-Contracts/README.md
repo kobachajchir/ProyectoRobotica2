@@ -1,3 +1,29 @@
+> **AFR2-20261107-53:** El ESP se reiniciaba al bajar el modelo 3D: el loop abría LittleFS sin parar cuando usaba la red por defecto y chocaba con el servidor HTTP. Corregido; ESP sin compilar. [Ficha](changes/2026-11-07-53-esp-littlefs-loop-reset.md).
+
+> **AFR2-20261107-52:** Hall tolerante a la holgura (unos 370 pulsos por vuelta ya se aceptan), nueva prueba de encoder, ícono de largo centrado, árbol de pantallas con zoom, ajustes de márgenes y captura del Loader en la Web. ATmega sin compilar; Web sin build. [Ficha](changes/2026-11-07-52-hall-tolerance-ui-polish.md).
+
+> **AFR2-20261107-51:** OLED: la falla era un conector flojo, ya corregido. Firmware del auto recargado con el Loader en COM16 y verificado (SHA-256 16826727…7ca0a4). Red STA por defecto «Koba» guardada localmente, con el ESP sin compilar. [Ficha](changes/2026-11-07-51-mega-restore-loader-wifi.md).
+
+> **AFR2-20261107-50:** prueba de servicio OLED/I2C compilada para descartar hardware o cableado (`build/afr2-i2c-diagnostic.hex`, flash 5,6 %, SRAM 39,0 %). Cargada en COM16 y verificada: el Mega queda con la prueba hasta volver a cargar `afr2.hex`. [Ficha](changes/2026-11-07-50-oled-i2c-diagnostic-build.md).
+
+> **AFR2-20261107-49:** firmware ATmega compilado con los cambios del 07/11 (OLED, notificaciones, IR, lateral): sin errores, flash 50,4 %, SRAM 77,3 %. Sin cargar. [Ficha](changes/2026-11-07-49-atmega-build.md).
+
+> **AFR2-20261107-48:** el clic sobre una notificación de red ya no deja la OLED trabada en una cadena de avisos. ATmega solo fuente, sin compilar. [Ficha](changes/2026-11-07-48-network-notice-click.md).
+
+> **AFR2-20261107-47:** pantalla inicializada al final, con espera de 1,2 s y una configuración completa de confirmación. ATmega solo fuente, sin compilar. [Ficha](changes/2026-11-07-47-oled-init-last.md).
+
+> **AFR2-20261107-46:** OLED con refresco periódico liviano y menos tráfico I2C; causas eléctricas a medir. ATmega solo fuente, sin compilar. [Ficha](changes/2026-11-07-46-oled-refresh-scrub.md).
+
+> **AFR2-20261107-45:** Loader 2.0.0 portable: distribución sin rutas ni datos de esta PC (escaneo de texto y EXE antes de comprimir) y ZIP con separadores `/`; compilado y empaquetado, sin abrir en otra PC. [Ficha](changes/2026-11-07-45-loader-portable.md).
+
+> **AFR2-20261107-44:** [informe de pinout actualizado](hardware/INFORME_PINOUT_ROBOT_20261107.html) con sensor de batería (A5) y AutoKEY/AutoRESET (D32/D33). Solo documentación. [Ficha](changes/2026-11-07-44-pinout-report-update.md).
+
+> **AFR2-20261107-43:** sensores de línea OSOYOO digitales válidos sin calibración obligatoria; la calibración pide solo la muestra sobre blanco. ATmega solo fuente, sin compilar ni prueba física. [Ficha](changes/2026-11-07-43-ir-osoyoo-digital.md).
+
+> **AFR2-20261107-42:** control táctil con paneles cerrados al abrir, joystick y animaciones de movimiento; Web solo fuente, sin compilar. [Ficha](changes/2026-11-07-42-touch-drive-ui.md).
+
+> **AFR2-20261107-41:** izquierda/derecha corregidas al conducir (signo lateral -1 en ATmega y Web); solo fuente, sin compilar ni prueba física. [Ficha](changes/2026-11-07-41-lateral-wheel-sign.md).
+
 > **AFR2-20261106-15:** [informe completo de pinout](hardware/INFORME_PINOUT_ROBOT_20261106.md) y [PDF](hardware/output/pdf/INFORME_PINOUT_ROBOT_20261106.pdf). Agregados propios marcados, incluidos D32 AutoKEY y D33 AutoRESET. Solo documentación; ATmega/ESP/Web sin cambios ni nuevas pruebas.
 
 > **AFR2-20261106-14:** incorporado el PDF de encoders BioLog y [cotejado con el código](hardware/COTEJO_ENCODERS_BIOLOG_20261106.md). Pines coincidentes; x4/CPR1500/signos del PDF no se trasladan a AFR2 x1/calibración individual. ATmega/ESP/Web sin cambios; solo documentación, sin tests, compilaciones, validadores ni pruebas físicas.
@@ -17,6 +43,8 @@
 > **Revisión del auto, 06/11/2026:** síntomas comunicados, cotejo estático ATmega/ESP/Web y plan priorizado de IR, HC-SR04, PWM, Wi-Fi/AP/WS y pantallas. [Informe y mapa de archivos](docs/REVISION_AUTO_Y_PLAN_20261106.md). Diagnóstico y plan; sin nuevas correcciones de firmware, pruebas ni cargas.
 >
 > **AFR2-20261105-01:** comprobaciones del Loader en columna a la derecha de la terminal, con log más alto. Solo fuente, sin compilar ni ejecutar la interfaz modificada. [Ficha](changes/2026-11-05-01-loader-checks-sidebar.md).
+>
+> **AFR2-20261105-33:** OLED autorreparable ante ruido I2C (refresco de configuración y RAM); sin compilar. [Ficha](changes/2026-11-05-33-oled-self-healing.md).
 >
 > **AFR2-20261104-32:** el ESP admite 24 activos Web y manifiesto de 12 KiB; sin compilar ni medir RAM. [Ficha](changes/2026-11-04-32-esp-24-assets.md).
 >

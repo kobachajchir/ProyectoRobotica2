@@ -204,7 +204,9 @@ void Afr2Sensors_Task(Afr2Sensors *s,const Afr2Config *c,uint32_t now) {
             if(votes>=2)s->line_bits|=(1u<<i);
         }
     }
-    s->line_valid=c->line_kind && scans>=3 && c->line_calibrated && (uint32_t)(now-s->line_ms)<=100u;
+    /* AFR2-20261107-43: OSOYOO 5 canales es digital con polaridad fija (LOW = negro, hoja del
+     * fabricante); line_invert=31 por defecto ya la aplica. La calibracion es opcional y no bloquea. */
+    s->line_valid=c->line_kind && scans>=3 && (uint32_t)(now-s->line_ms)<=100u;
     head.ir_valid=c->line_kind && scans && (uint32_t)(now-s->line_ms)<=100u;
     if(echo_done) {
         uint16_t width; uint8_t err;

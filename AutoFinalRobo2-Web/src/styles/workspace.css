@@ -602,6 +602,10 @@ html[data-input="keyboard"] .afr2-route-link, html[data-input="keyboard"] .afr2-
 
 /* AFR2-20261102-24: module descriptor in Ayuda, same light/dark hero family as page headers. */
 /* Loader page: source line in the stage card. */
+/* AFR2-20261107-52: captura del Loader bajo las píldoras del banner, título debajo. */
+.afr2-loader-shot { margin: 8px 0 12px; padding: 0; overflow: hidden; border-radius: var(--radius-lg); border: 1px solid var(--infra-hero-border);
+  background: var(--infra-hero-panel); box-shadow: 0 18px 48px rgba(0, 0, 0, .35); }
+.afr2-loader-shot img { display: block; width: 100%; height: auto; }
 .afr2-loader-source { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin: 0; }
 .afr2-loader-source code { font-size: inherit; overflow-wrap: anywhere; }
 

@@ -44,11 +44,11 @@
 
 /* Mapa de flujo: carriles por zona unidos por cables con paquetes. Celular: vertical. */
 .afr2-infra-flow { display: flex; flex-direction: column; align-items: stretch; min-width: 0; }
-.afr2-infra-lane { position: relative; display: grid; gap: 12px; min-width: 0; padding: 30px 12px 12px; border-radius: var(--radius-lg);
+.afr2-infra-lane { position: relative; display: grid; gap: 16px; min-width: 0; padding: 38px 16px 16px; border-radius: var(--radius-lg);
   border: 1px dashed color-mix(in srgb, var(--zone-hero) 45%, transparent); background: color-mix(in srgb, var(--zone-hero) 6%, transparent); }
-.afr2-infra-lane__label { position: absolute; top: 9px; left: 14px; display: inline-flex; align-items: center; gap: 6px; color: var(--zone-hero); font: 650 11px / 1 var(--font-sans); letter-spacing: .06em; text-transform: uppercase; }
+.afr2-infra-lane__label { position: absolute; top: 14px; left: 16px; display: inline-flex; align-items: center; gap: 6px; color: var(--zone-hero); font: 650 11px / 1 var(--font-sans); letter-spacing: .06em; text-transform: uppercase; }
 .afr2-infra-lane__body { display: flex; flex-direction: column; align-items: stretch; min-width: 0; }
-.afr2-infra-flow__origins { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.afr2-infra-flow__origins { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 .afr2-infra-node { --lift: 0px; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; min-width: 0; min-height: 112px; padding: 16px 12px;
   border-radius: var(--radius-lg); border: 1px solid color-mix(in srgb, var(--zone-hero) 28%, transparent); background: var(--infra-hero-surface); color: var(--infra-hero-ink);
   text-align: center; font: inherit; cursor: pointer; transform: translateY(var(--lift));
@@ -89,7 +89,7 @@
 .afr2-infra-anchor { position: absolute; top: -96px; }
 .afr2-infra-metro { position: relative; min-width: 0; overflow-x: auto; scrollbar-width: none; padding: 6px 2px 4px; }
 .afr2-infra-metro::-webkit-scrollbar { display: none; }
-.afr2-infra-metro ol { --gap: 4px; position: relative; display: grid; grid-template-columns: repeat(var(--stations), minmax(44px, 1fr)); gap: var(--gap); margin: 0; padding: 0; list-style: none; min-width: max-content; }
+.afr2-infra-metro ol { --gap: 8px; position: relative; display: grid; grid-template-columns: repeat(var(--stations), minmax(44px, 1fr)); gap: var(--gap); margin: 0; padding: 0; list-style: none; min-width: max-content; }
 .afr2-infra-metro ol::before, .afr2-infra-metro ol::after { content: ''; position: absolute; top: 21px; height: 4px; border-radius: var(--radius-pill);
   left: calc(100% / var(--stations) / 2); right: calc(100% / var(--stations) / 2); }
 .afr2-infra-metro ol::before { background: var(--border-default); }
@@ -124,7 +124,7 @@
   box-shadow: 0 10px 24px var(--zone-subtle); animation: afr2-infra-icon-in 460ms var(--ease-out) both; }
 .afr2-infra-stage h3 { margin: 0; color: var(--text-strong); font: var(--type-title); letter-spacing: var(--type-title-tracking); }
 .afr2-infra-stage__description { margin: 0; max-width: 68ch; color: var(--text-muted); font: var(--type-body); font-size: 1.0625rem; line-height: 1.65; }
-.afr2-infra-transform { --wire: color-mix(in srgb, var(--zone) 45%, transparent); display: grid; grid-template-columns: minmax(0, 1fr); align-items: center; justify-items: stretch; gap: 0; padding: 16px; border-radius: var(--radius-lg); border: 1px solid var(--border-subtle); background: var(--surface-subtle); }
+.afr2-infra-transform { --wire: color-mix(in srgb, var(--zone) 45%, transparent); display: grid; grid-template-columns: minmax(0, 1fr); align-items: center; justify-items: stretch; gap: 8px; padding: 16px; border-radius: var(--radius-lg); border: 1px solid var(--border-subtle); background: var(--surface-subtle); }
 .afr2-infra-transform > div { display: grid; gap: 6px; padding: 14px 16px; border-radius: 12px; background: var(--surface-solid); border: 1px solid var(--border-subtle); }
 .afr2-infra-transform > div:last-child { border-color: var(--zone-border); box-shadow: inset 3px 0 0 var(--zone); }
 .afr2-infra-transform span { color: var(--text-subtle); font: 650 11px / 1 var(--font-sans); letter-spacing: .06em; text-transform: uppercase; }
@@ -132,18 +132,18 @@
 .afr2-infra-transform .afr2-infra-wire { --wire: color-mix(in srgb, var(--zone) 45%, transparent); --packet: var(--zone); }
 .afr2-infra-stage__side { display: grid; align-content: start; gap: 16px; padding: clamp(20px, 3vw, 32px); border-top: 1px solid var(--border-subtle); background: var(--surface-subtle); }
 .afr2-infra-stage__side h4 { margin: 0; color: var(--text-strong); font: 650 var(--type-label-size) / 1.3 var(--font-sans); letter-spacing: .01em; }
-.afr2-infra-facts { counter-reset: fact; display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.afr2-infra-facts { counter-reset: fact; display: grid; gap: 12px; margin: 0; padding: 0; list-style: none; }
 .afr2-infra-facts li { counter-increment: fact; position: relative; padding: 14px 14px 14px 48px; border-radius: 14px; border: 1px solid var(--border-subtle); background: var(--surface-solid); color: var(--text-muted); line-height: 1.55;
   animation: afr2-infra-rise 380ms var(--ease-out) both; animation-delay: calc(80ms + var(--i, 0) * 60ms); }
 .afr2-infra-facts li::before { content: counter(fact); position: absolute; left: 14px; top: 13px; display: grid; place-items: center; width: 24px; height: 24px; border-radius: 8px; background: var(--zone-subtle); color: var(--zone); font: 700 12px / 1 var(--font-sans); }
-.afr2-infra-stage__nav { display: flex; justify-content: space-between; gap: 8px; padding-top: 4px; }
+.afr2-infra-stage__nav { display: flex; justify-content: space-between; gap: 12px; padding-top: 8px; }
 @keyframes afr2-infra-stage-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 @keyframes afr2-infra-icon-in { from { opacity: 0; transform: scale(.7) rotate(-8deg); } to { opacity: 1; transform: none; } }
 @keyframes afr2-infra-rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 
 /* ── Tarjetas de datos ───────────────────────────────────────────────────── */
 .afr2-infra-card { min-width: 0; padding: clamp(20px, 3vw, 36px); border-radius: var(--radius-xl); border: 1px solid var(--border-default); background: var(--surface-solid); box-shadow: 0 18px 44px rgba(15, 23, 42, .06); }
-.afr2-infra-card > .afr2-help { margin: 16px 0 0; }
+.afr2-infra-card > .afr2-help { margin: 20px 0 0; }
 
 .afr2-infra-bars { display: grid; gap: 18px; margin: 0; padding: 0; list-style: none; }
 .afr2-infra-bars li { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "name value" "track track"; align-items: end; gap: 8px 16px; }
@@ -162,9 +162,13 @@
 .afr2-infra-bars li[data-kind="sum"] .afr2-infra-bars__fill[data-model="brazo"] { border-radius: 0 var(--radius-pill) var(--radius-pill) 0; transform-origin: left center; }
 .afr2-infra-reveal[data-visible="true"] .afr2-infra-bars__fill { transform: scaleX(1); }
 
+/* AFR2-20261107-52: la tarjeta del paquete separa sus bloques con gap. Los avisos que aparecen al
+ * consultar (cargando, sin reporte, LittleFS leído del ESP) ya no quedan pegados al bloque siguiente. */
+.afr2-infra-package { display: grid; gap: 20px; }
+.afr2-infra-package > :is(.afr2-infra-heading, .afr2-infra-package-origin, .afr2-infra-package-grid, .afr2-infra-stats, .afr2-infra-file-table, .afr2-help, .afr2-infra-empty) { margin: 0; }
 .afr2-infra-package-origin { display: grid; gap: 8px; margin-bottom: 20px; }
 .afr2-infra-package-origin p { margin: 0; }
-.afr2-infra-package-grid { display: grid; gap: 16px; margin-bottom: 16px; }
+.afr2-infra-package-grid { display: grid; gap: 16px; margin-bottom: 20px; }
 .afr2-infra-compress { display: grid; gap: 10px; padding: 20px; border-radius: var(--radius-lg); border: 1px solid var(--border-subtle); background: var(--surface-subtle); }
 .afr2-infra-compress__bar { position: relative; height: 34px; border-radius: 10px; background: var(--surface-solid); box-shadow: inset 0 0 0 1px var(--border-subtle); overflow: hidden; }
 .afr2-infra-compress__bar > span { position: absolute; inset: 0 auto 0 0; width: calc(var(--w) * 100%); transform-origin: left center; transform: scaleX(0); transition: transform 1000ms var(--ease-out);
@@ -179,7 +183,7 @@
 
 .afr2-infra-storage { display: flex; align-items: center; gap: 20px; padding: 20px; border-radius: var(--radius-lg); border: 1px solid var(--border-subtle); background: var(--surface-subtle); }
 .afr2-infra-storage { flex-wrap: wrap; }
-.afr2-infra-storage > div:last-child { display: grid; gap: 6px; min-width: 0; flex: 1 1 220px; }
+.afr2-infra-storage > div:last-child { display: grid; gap: 8px; min-width: 0; flex: 1 1 220px; }
 .afr2-infra-storage strong { color: var(--text-strong); font: 650 var(--type-label-size) / 1.3 var(--font-sans); }
 .afr2-infra-storage span { color: var(--text-muted); font: var(--type-caption); font-variant-numeric: tabular-nums; }
 .afr2-infra-storage .afr2-help { margin: 0; }
@@ -192,7 +196,7 @@
 .afr2-infra-storage a { color: var(--action); font-weight: 650; }
 .afr2-infra-ring > span { position: relative; color: var(--text-strong); font: 750 1.25rem / 1 var(--font-display); font-variant-numeric: tabular-nums; }
 
-.afr2-infra-stats { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; margin: 0 0 16px; }
+.afr2-infra-stats { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; margin: 0 0 20px; }
 .afr2-infra-stat { display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-areas: "icon label" "value value" "detail detail"; align-items: center; gap: 8px 10px; min-width: 0; padding: 18px; border-radius: var(--radius-lg); border: 1px solid var(--border-subtle); background: var(--surface-subtle); }
 .afr2-infra-stat__icon { grid-area: icon; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 10px; background: var(--action-subtle); color: var(--action); }
 .afr2-infra-stat > .afr2-infra-stat__label { grid-area: label; }
@@ -221,7 +225,7 @@
 
 /* ── Glosario ────────────────────────────────────────────────────────────── */
 .afr2-infra-concepts .afr2-infra-heading { margin-bottom: 20px; }
-.afr2-infra-glossary { display: grid; gap: 14px; }
+.afr2-infra-glossary { display: grid; gap: 16px; }
 .afr2-infra-concept { position: relative; overflow: hidden; display: grid; gap: 10px; align-content: start; padding: 24px; border-radius: var(--radius-xl); border: 1px solid var(--border-default); background: var(--surface-solid);
   transition: transform 240ms var(--ease-out), border-color var(--duration-fast) var(--ease-standard), box-shadow 240ms var(--ease-out); }
 .afr2-infra-concept::after { content: ''; position: absolute; inset: auto -30% -60% auto; width: 70%; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(closest-side, var(--action-subtle), transparent); pointer-events: none; }

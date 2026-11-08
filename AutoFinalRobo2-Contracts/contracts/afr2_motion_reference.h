@@ -5,4 +5,6 @@
 #define AFR2_MOTION_REFERENCE_H
 #define AFR2_FORWARD_WHEEL_SIGN (-1)
 #define AFR2_YAW_WHEEL_SIGN (-1)
+/* AFR2-20261107-41: izquierda/derecha informadas cruzadas; lateral invertido. */
+#define AFR2_LATERAL_WHEEL_SIGN (-1)
 #endif

@@ -54,6 +54,14 @@ export function LoaderPage() {
       <div className="afr2-infra-hero__glow" aria-hidden="true" />
       <div className="afr2-infra-hero__copy">
         <p className="afr2-infra-hero__eyebrow"><span>Explorar</span> AFR2 Loader</p>
+        {/* AFR2-20261107-52: captura de la pantalla inicial del Loader 2.0.0, recién abierto. */}
+        <figure className="afr2-loader-shot">
+          <picture>
+            <source media="(min-width: 760px)" srcSet="/brand/loader-inicio-1206.webp" />
+            <img src="/brand/loader-inicio-720.webp" width={1206} height={873} decoding="async"
+              alt="Pantalla inicial del AFR2 Loader 2.0.0: pestaña Operación con puerto, destino ATmega, registro de operación y el panel Ejecución y resultado." />
+          </picture>
+        </figure>
         <h1 id="loader-title">De la fuente a la placa,<br /><span>con cada byte verificado.</span></h1>
         <p className="afr2-infra-hero__lede">Aplicación de Windows que compila el ATmega2560, el ESP8266 y la Web, y los carga por serie con avrdude y esptool. Comprueba antes y después de escribir.</p>
         <ul className="afr2-infra-hero__chips" aria-label="En pocas palabras">

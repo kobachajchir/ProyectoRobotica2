@@ -11,16 +11,65 @@
 #define FLASH
 #define READ_BYTE(p) (*(const uint8_t *)(p))
 #endif
-enum { IDLE, WAIT_INIT, WAIT_COMMAND, SEND_DATA, WAIT_DATA, WAIT_SETTINGS };
+enum { IDLE, WAIT_INIT, WAIT_COMMAND, SEND_DATA, WAIT_DATA, WAIT_SETTINGS, WAIT_REFRESH };
 /* AFR2-20261029-10: promote the user-confirmed diagnostic's settle time.
  * Page addressing is deliberately retained with this driver's page writes. */
+/* AFR2-20261107-47: 500 -> 1200 ms. The display is the last thing started:
+ * the first configuration no longer coincides with the panel's own power-on
+ * reset, the ESP boot/RF calibration or the rest of the system starting. */
 #ifndef AFR2_OLED_STARTUP_MS
-#define AFR2_OLED_STARTUP_MS 500u
+#define AFR2_OLED_STARTUP_MS 1200u
+#endif
+/* Delay of the confirming full configuration after the first cold init. */
+#ifndef AFR2_OLED_CONFIRM_MS
+#define AFR2_OLED_CONFIRM_MS 300u
+#endif
+/* AFR2-20261105-33: motor noise can corrupt a command byte (orientation,
+ * start line, contrast) or a pixel while the panel still ACKs. Resend the
+ * configuration periodically and rewrite one chunk per period.
+ * AFR2-20261107-46: scrub slowed from 40 to 250 ms (64 chunks = full panel
+ * RAM repaired every ~16 s). At 40 ms the bus never rested (~50 transfers/s),
+ * which multiplied failures and panel re-inits with weak pull-ups and noise. */
+#ifndef AFR2_OLED_REFRESH_MS
+#define AFR2_OLED_REFRESH_MS 1000u
+#endif
+#ifndef AFR2_OLED_SCRUB_MS
+#define AFR2_OLED_SCRUB_MS 250u
 #endif
 static const uint8_t init_commands[] FLASH={
   0x00,0xae,0xd5,0x80,0xa8,0x3f,0xd3,0x00,0x40,0x8d,0x14,
   0x20,0x02,0xa1,0xc8,0xda,0x12,0x81,0xcf,0xd9,0xf1,0xdb,0x40,0xa4,0xa6,0x2e,0xaf
 };
+/* Positions in init_commands patched with the current settings. */
+enum { INIT_SEGMENT=13, INIT_COM=14, INIT_CONTRAST=18 };
+/* AFR2-20261105-33: init/recovery/refresh use the CURRENT rotation and
+ * contrast. A fixed 0xA1/0xC8 flipped the image on every recovery while
+ * rotation=1 until the separate settings command arrived. */
+static uint8_t load_config(Afr2Oled *o,uint8_t skip) {
+    uint8_t length=sizeof(init_commands)-skip;o->tx[0]=0;
+    for(uint8_t i=1;i<length;i++)o->tx[i]=READ_BYTE(&init_commands[i+skip]);
+    o->tx[INIT_SEGMENT-skip]=o->rotation?0xa0:0xa1;
+    o->tx[INIT_COM-skip]=o->rotation?0xc0:0xc8;
+    o->tx[INIT_CONTRAST-skip]=o->contrast;
+    return length;
+}
+/* AFR2-20261107-46: the periodic refresh no longer resends the oscillator
+ * (0xD5), precharge (0xD9) or VCOMH (0xDB); rewriting them on a running panel
+ * can cause a visible blink every period. It keeps what noise or a panel power
+ * glitch can lose: multiplex, offset, start line, addressing, orientation,
+ * COM pins, contrast, normal display, charge pump and DISPLAY ON. */
+static const uint8_t refresh_commands[] FLASH={
+  0x00,0xa8,0x3f,0xd3,0x00,0x40,0x20,0x02,0xa1,0xc8,0xda,0x12,0x81,0xcf,0xa4,0xa6,0x8d,0x14,0xaf
+};
+enum { REFRESH_SEGMENT=8, REFRESH_COM=9, REFRESH_CONTRAST=13 };
+static uint8_t load_refresh(Afr2Oled *o) {
+    uint8_t length=sizeof(refresh_commands);
+    for(uint8_t i=0;i<length;i++)o->tx[i]=READ_BYTE(&refresh_commands[i]);
+    o->tx[REFRESH_SEGMENT]=o->rotation?0xa0:0xa1;
+    o->tx[REFRESH_COM]=o->rotation?0xc0:0xc8;
+    o->tx[REFRESH_CONTRAST]=o->contrast;
+    return length;
+}
 static void completed(void *ctx,Afr2I2cResult result) {
     Afr2Oled *o=ctx;
     if (result!=AFR2_I2C_OK) {
@@ -34,6 +83,8 @@ static void completed(void *ctx,Afr2I2cResult result) {
             memset(o->valid,0,sizeof(o->valid));
         } else if(o->phase==WAIT_SETTINGS) {
             o->settings_dirty=1;
+        } else if(o->phase==WAIT_REFRESH) {
+            o->refresh_ms=o->clock_ms; /* retry after the common 50 ms gap */
         } else if(o->phase==WAIT_COMMAND || o->phase==WAIT_DATA) {
             o->valid[o->page]&=(uint8_t)~(1u<<o->chunk);
             o->dirty|=(uint8_t)(1u<<o->page);
@@ -47,6 +98,7 @@ static void completed(void *ctx,Afr2I2cResult result) {
         o->phase=IDLE;o->retry_ms=o->clock_ms+50u;return;
     }
     if (o->phase==WAIT_INIT) {
+        if(!o->configured_once){o->full_refresh=1;o->refresh_ms=o->clock_ms+AFR2_OLED_CONFIRM_MS;}
         o->initialized=true;o->configured_once=true;o->consecutive_failures=0;
         o->dirty=0xff; o->settings_dirty=1;
         memset(o->valid,0,sizeof(o->valid)); o->phase=IDLE;
@@ -61,7 +113,8 @@ static void completed(void *ctx,Afr2I2cResult result) {
             o->valid[o->page]|=(uint8_t)(1u<<o->chunk);
             o->consecutive_failures=0;
         }
-        if(o->phase==WAIT_SETTINGS)o->consecutive_failures=0;
+        if(o->phase==WAIT_SETTINGS || o->phase==WAIT_REFRESH)o->consecutive_failures=0;
+        if(o->phase==WAIT_REFRESH)o->full_refresh=0; /* confirmed by ACK, not by submission */
         o->phase=IDLE;
     }
     /* AFR2-20261029-16: callback records progress only. Main executes services
@@ -71,6 +124,7 @@ void Afr2Oled_Init(Afr2Oled *o,Afr2I2cManager *m,uint8_t address7,uint32_t now) 
     if (!o) return;
     memset(o,0,sizeof(*o)); o->manager=m; o->address7=address7;
     o->dirty=0xff; o->retry_ms=now+AFR2_OLED_STARTUP_MS; o->clock_ms=now;o->contrast=0xcf;o->settings_dirty=1;
+    o->refresh_ms=o->retry_ms+AFR2_OLED_REFRESH_MS;o->scrub_ms=o->retry_ms;
 }
 static bool send(Afr2Oled *o,const uint8_t *data,uint16_t size,uint8_t next,uint32_t now) {
     /* Publish attempted stage BEFORE Submit so immediate start failures are
@@ -85,6 +139,9 @@ static bool send(Afr2Oled *o,const uint8_t *data,uint16_t size,uint8_t next,uint
 void Afr2Oled_Settings(Afr2Oled *o,uint8_t contrast,uint8_t rotation) {
     rotation=rotation!=0;
     if(o->contrast!=contrast || o->rotation!=rotation){
+        /* Segment remap only affects later writes: after a rotation change
+         * the whole RAM must be rewritten or old columns stay mirrored. */
+        if(o->rotation!=rotation){memset(o->valid,0,sizeof(o->valid));o->dirty=0xff;}
         o->contrast=contrast;o->rotation=rotation;o->settings_dirty=1;
     }
 }
@@ -98,13 +155,7 @@ void Afr2Oled_Task(Afr2Oled *o,uint32_t now) {
     if (!o->initialized) {
         /* Only cold startup sends0xAE. A recovery reapplies configuration
          * and0xAF without deliberately blanking an already running panel. */
-        uint8_t skip=o->configured_once?1u:0u;
-        uint8_t length=sizeof(init_commands)-skip;o->tx[0]=0;
-        for(uint8_t i=1;i<length;i++)o->tx[i]=READ_BYTE(&init_commands[i+skip]);
-        /* AFR2-20261106-34: la secuencia de arranque usa la orientacion y el contraste configurados
-         * (0xA1/0xC8 por defecto en init_commands[13..14], 0xCF en [18]); asi una recuperacion del bus
-         * no muestra un cuadro girado antes de reaplicar los ajustes. */
-        if(13u>=skip && 18u-skip<length){o->tx[13u-skip]=o->rotation?0xa0:0xa1;o->tx[14u-skip]=o->rotation?0xc0:0xc8;o->tx[18u-skip]=o->contrast;}
+        uint8_t length=load_config(o,o->configured_once?1u:0u);
         (void)send(o,o->tx,length,WAIT_INIT,now); return;
     }
     if(o->settings_dirty) {
@@ -112,6 +163,20 @@ void Afr2Oled_Task(Afr2Oled *o,uint32_t now) {
         o->command[3]=o->rotation?0xa0:0xa1;o->command[4]=o->rotation?0xc0:0xc8;
         if(send(o,o->command,5,WAIT_SETTINGS,now))o->settings_dirty=0;
         return;
+    }
+    /* AFR2-20261105-33: periodic config refresh, never 0xAE (no blanking).
+     * Runs only between page writes, so the page/column pointer is free. */
+    if((int32_t)(now-o->refresh_ms)>=0) {
+        /* The first refresh after a cold init repeats the full configuration. */
+        uint8_t length=o->full_refresh?load_config(o,1u):load_refresh(o);
+        if(send(o,o->tx,length,WAIT_REFRESH,now))o->refresh_ms=now+AFR2_OLED_REFRESH_MS;
+        return;
+    }
+    /* Scrub: forget one ACKed chunk so it is resent even if unchanged. */
+    if((uint32_t)(now-o->scrub_ms)>=AFR2_OLED_SCRUB_MS) {
+        uint8_t page=o->scrub>>3;
+        o->scrub_ms=now;o->valid[page]&=(uint8_t)~(1u<<(o->scrub&7u));
+        o->dirty|=(uint8_t)(1u<<page);o->scrub=(uint8_t)((o->scrub+1u)&63u);
     }
     /* At most one page comparison and one submission per main-loop call.
      * Round-robin pages AND chunks avoid starving the bottom of the screen. */

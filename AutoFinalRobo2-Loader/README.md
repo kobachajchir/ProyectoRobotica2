@@ -354,7 +354,7 @@ herramientas en [MCP.md](MCP.md). La app permanece abierta: el servidor comparte
 su trabajo/registro y no flashea fuera de esa sesión.
 
 ```powershell
-cd "D:\ProyectoRobotica2\AutoFinalRobo2-Loader"
+cd "<carpeta donde está AutoFinalRobo2-Loader>"
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\Iniciar.ps1"
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\RegistrarMcp.ps1"
 ```

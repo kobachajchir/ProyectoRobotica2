@@ -29,7 +29,7 @@ export interface FirmwareMenuItem { label: string; target: number; action: numbe
 export interface FirmwareUiState {
   dashboardInputMs?:number;dashboardHeld?:boolean;holdStartedMs?:number;holdProgress?:number;
   confirmWait?: boolean; confirmSave?:number;
-  editingAction?:number; testShort?:boolean; testLong?:boolean; testBack?:boolean;
+  editingAction?:number; testLong?:boolean; testClicks?:number; testTurns?:number;
   quickPending?:boolean;quickExpected?:boolean;
   touch?: { direction: number; heading: number; startedMs: number; full: boolean };
   node: number; selection: number; firstVisible: number;
@@ -355,7 +355,7 @@ function renderFirmwareContent(u: FirmwareUiState, o: Afr2OledBuffer, s: Firmwar
     else if (!partial) { icon(o, a.kind ? S.AFR2_ICON_WARNING : S.AFR2_ICON_INFO, 56, 6, 16); o.drawText(0, 25, a.title); o.drawText(0, 39, a.text); gestureHint(o,0,53,false,'Cerrar');gestureHint(o,66,53,true,'Cerrar'); }
   } else if(u.node===S.AFR2_N_QUICK)quick(o,u,s);
   else if(u.node===62){
-    o.drawText(0,0,'Prueba encoder');gestureHint(o,0,14,'turn','Elegir Volver');gestureHint(o,0,27,false,u.testShort?'Detectado':'Pendiente');gestureHint(o,0,40,true,u.testLong?'Salir':'Pendiente');gestureHint(o,0,53,false,'Volver');if(u.testBack)o.drawRect(0,50,128,14);
+    o.drawText(0,0,'Prueba encoder');o.drawText(0,13,`Clicks: ${u.testClicks??0}`);o.drawText(0,26,`Giro: ${u.testTurns??0}`);gestureHint(o,0,39,true,u.testLong?'Correcto':'Pulse');if(u.testLong)gestureHint(o,0,52,true,'Salir');
   }
   else if(u.node===MOTOR_SELECTOR_NODE)renderMotorSelector(o,u.selection);
   else if(u.node===64){if(s.powerKnown && s.powerPercent!==undefined)renderPower(o,s.powerPercent);else {o.drawText(0,0,'Potencia manual');o.drawText(0,25,'Sin valor vigente');}}

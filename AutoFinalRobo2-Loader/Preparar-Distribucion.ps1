@@ -1,4 +1,4 @@
-﻿# AFR2-20261106-03. Koba Chajchir / AFR2; lista explícita sin datos personales.
+﻿# AFR2-20261106-03 / AFR2-20261107-45. Koba Chajchir / AFR2; lista explícita sin datos personales ni rutas de este equipo.
 [CmdletBinding()]
 param([string]$Destination)
 $ErrorActionPreference = 'Stop'
@@ -85,17 +85,51 @@ Los perfiles anteriores se conservan; revisá sus rutas personalizadas.
 
 Abrir no abre COM ni flashea. Preparar esta entrega no compila firmware.
 "@ | Set-Content -LiteralPath (Join-Path $destination 'LEEME.txt') -Encoding UTF8
-foreach ($name in @('MCP.md','MANUAL.html','FILESYSTEM_SCRIPTS.md','referencias/WIFI_SHIELD.md','referencias/LOADER_FLASH_MODES.md')) {
+# AFR2-20261107-45: las rutas de ESTE equipo se calculan, no se fijan en el script.
+$loaderRoot = [IO.Path]::GetFullPath($PSScriptRoot).TrimEnd('\')
+$projectRoot = [IO.Path]::GetFullPath((Split-Path $loaderRoot -Parent)).TrimEnd('\')
+foreach ($name in @('MCP.md','MANUAL.html','FILESYSTEM_SCRIPTS.md','PORTABILIDAD.md','referencias/WIFI_SHIELD.md','referencias/LOADER_FLASH_MODES.md')) {
     $path = Join-Path $destination $name
     $document = [IO.File]::ReadAllText($path)
-    $document = $document.Replace('D:\ProyectoRobotica2\AutoFinalRobo2-Loader', '.').Replace('D:/ProyectoRobotica2/AutoFinalRobo2-Loader', '.')
-    $document = $document.Replace('D:\ProyectoRobotica2', 'CARPETA_DEL_PROYECTO').Replace('D:/ProyectoRobotica2', 'CARPETA_DEL_PROYECTO')
+    $document = $document.Replace($loaderRoot, '.').Replace($loaderRoot.Replace('\','/'), '.')
+    $document = $document.Replace($projectRoot, 'CARPETA_DEL_PROYECTO').Replace($projectRoot.Replace('\','/'), 'CARPETA_DEL_PROYECTO')
     foreach ($source in $references.Keys) { $document = $document.Replace($source, 'referencias/' + $references[$source]) }
     [IO.File]::WriteAllText($path, $document, (New-Object Text.UTF8Encoding($false)))
 }
+Remove-Item -LiteralPath $buildDirectory -Recurse -Force
+# AFR2-20261107-45: ningún archivo (texto o binario) puede llevar rutas o identidad de esta PC.
+$needles = New-Object Collections.Generic.List[string]
+foreach ($value in @($loaderRoot, $projectRoot, $env:USERPROFILE, $env:LOCALAPPDATA, $env:APPDATA, $env:TEMP, $env:PLATFORMIO_CORE_DIR)) {
+    if ($value -and $value.Length -gt 3) { $needles.Add($value.TrimEnd('\')); $needles.Add($value.TrimEnd('\').Replace('\','/')) }
+}
+$identity = @($env:USERNAME, $env:COMPUTERNAME) | Where-Object { $_ -and $_.Length -ge 3 } | ForEach-Object { [regex]::Escape($_) }
+$identityPattern = if ($identity) { '(?i)\b(' + ($identity -join '|') + ')\b' } else { $null }
+$drivePattern = '(?i)(?<![A-Za-z0-9])[A-Za-z]:[\\/](?!ruta[\\/])'
+$findings = New-Object Collections.Generic.List[string]
+foreach ($file in Get-ChildItem -LiteralPath $destination -Recurse -File) {
+    $bytes = [IO.File]::ReadAllBytes($file.FullName)
+    $relative = $file.FullName.Substring($destination.Length + 1)
+    $views = @([Text.Encoding]::GetEncoding(28591).GetString($bytes), [Text.Encoding]::Unicode.GetString($bytes))
+    if ($bytes.Length -gt 1) { $views += [Text.Encoding]::Unicode.GetString($bytes, 1, $bytes.Length - 1) }
+    foreach ($view in $views) {
+        foreach ($needle in $needles) { if ($view.IndexOf($needle, [StringComparison]::OrdinalIgnoreCase) -ge 0) { $findings.Add($relative + ': ruta local ' + $needle) } }
+        if ($identityPattern -and [regex]::IsMatch($view, $identityPattern)) { $findings.Add($relative + ': usuario o nombre del equipo') }
+        if ($file.Extension -notin @('.exe','.png','.ico') -and [regex]::IsMatch($view, $drivePattern)) { $findings.Add($relative + ': ruta absoluta con unidad: ' + [regex]::Match($view, $drivePattern + '.{0,40}').Value) }
+    }
+}
+if ($findings.Count -gt 0) { throw ('La distribución contiene datos de este equipo; no se genera el ZIP:' + [Environment]::NewLine + (($findings | Sort-Object -Unique) -join [Environment]::NewLine)) }
 $manifestFiles = @(Get-ChildItem -LiteralPath $destination -Recurse -File | Sort-Object FullName | ForEach-Object { [ordered]@{ path = $_.FullName.Substring($destination.Length + 1).Replace('\','/'); bytes = $_.Length; sha256 = (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant() } })
 [ordered]@{ application = 'AFR2 Loader'; version = $version; schema = 1; containsUserData = $false; externalToolsBundled = $false; files = $manifestFiles } | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath (Join-Path $destination 'distribucion.json') -Encoding UTF8
-Compress-Archive -LiteralPath $destination -DestinationPath $archive -CompressionLevel Optimal
+# AFR2-20261107-45: entradas con '/' (Compress-Archive de PowerShell 5.1 usa '\' y otros extractores fallan).
+Add-Type -AssemblyName System.IO.Compression, System.IO.Compression.FileSystem
+$rootName = [IO.Path]::GetFileName($destination)
+$zip = [IO.Compression.ZipFile]::Open($archive, [IO.Compression.ZipArchiveMode]::Create)
+try {
+    foreach ($file in Get-ChildItem -LiteralPath $destination -Recurse -File | Sort-Object FullName) {
+        $entryName = $rootName + '/' + $file.FullName.Substring($destination.Length + 1).Replace('\','/')
+        [void][IO.Compression.ZipFileExtensions]::CreateEntryFromFile($zip, $file.FullName, $entryName, [IO.Compression.CompressionLevel]::Optimal)
+    }
+} finally { $zip.Dispose() }
 (Get-FileHash -LiteralPath $archive -Algorithm SHA256).Hash.ToLowerInvariant() + '  ' + [IO.Path]::GetFileName($archive) | Set-Content -LiteralPath ($archive + '.sha256') -Encoding ASCII
 Write-Output $destination
 Write-Output $archive

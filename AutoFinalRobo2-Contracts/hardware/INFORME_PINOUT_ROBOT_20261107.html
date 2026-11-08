@@ -1,0 +1,460 @@
+<title>Pinout AutoFinalRobo2</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: hoja técnica de una columna; mapa de cabeceras del Mega arriba, luego un bloque por subsistema y el índice completo al final. */
+:root {
+  --paper: #f6f8f8;
+  --sheet: #ffffff;
+  --ink: #14232a;
+  --ink-soft: #4c5d64;
+  --rule: #d5dfe1;
+  --pin-idle: #e7eded;
+  --base: #00808a;        /* componentes del kit */
+  --base-bg: #dff1f2;
+  --own: #b8620a;         /* agregados propios */
+  --own-bg: #fbecd9;
+  --svc: #6a4fb3;         /* servicio / programación */
+  --svc-bg: #ece6f8;
+  --warn: #a3321f;
+  --font-display: "Barlow Condensed", "Arial Narrow", "Roboto Condensed", sans-serif;
+  --font-body: "IBM Plex Sans", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: "JetBrains Mono", Consolas, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0f171a; --sheet: #152125; --ink: #e3ecee; --ink-soft: #9db0b6; --rule: #2a3a3f; --pin-idle: #213035;
+    --base: #3fc1c9; --base-bg: #123a3e; --own: #f0a24a; --own-bg: #3d2a12; --svc: #ab95f0; --svc-bg: #2a2244; --warn: #ef7d68;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0f171a; --sheet: #152125; --ink: #e3ecee; --ink-soft: #9db0b6; --rule: #2a3a3f; --pin-idle: #213035;
+  --base: #3fc1c9; --base-bg: #123a3e; --own: #f0a24a; --own-bg: #3d2a12; --svc: #ab95f0; --svc-bg: #2a2244; --warn: #ef7d68;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--paper); color: var(--ink); font: 15px/1.6 var(--font-body); }
+.wrap { max-width: 1040px; margin: 0 auto; padding-block: 32px 64px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 40px; }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; line-height: 1.1; margin: 0; }
+h1 { font-size: clamp(34px, 6vw, 52px); font-weight: 700; letter-spacing: .01em; }
+h2 { font-size: 28px; font-weight: 600; letter-spacing: .02em; }
+h3 { font-size: 19px; font-weight: 600; letter-spacing: .03em; text-transform: uppercase; color: var(--ink-soft); }
+p { margin: 0; max-width: 68ch; }
+code, .mono { font-family: var(--font-mono); font-size: .88em; }
+header.title { display: grid; gap: 14px; border-bottom: 2px solid var(--ink); padding-bottom: 20px; }
+.meta { display: flex; flex-wrap: wrap; gap: 6px 18px; font-family: var(--font-mono); font-size: 12.5px; color: var(--ink-soft); }
+.legend { display: flex; flex-wrap: wrap; gap: 8px; }
+.tag { display: inline-flex; align-items: center; gap: 6px; padding: 2px 9px; border-radius: 3px; font-size: 12px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; white-space: nowrap; }
+.tag::before { content: ""; width: 8px; height: 8px; border-radius: 1px; background: currentColor; }
+.t-base { color: var(--base); background: var(--base-bg); }
+.t-own { color: var(--own); background: var(--own-bg); }
+.t-svc { color: var(--svc); background: var(--svc-bg); }
+section { display: grid; gap: 16px; }
+section > .head { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 8px; border-bottom: 1px solid var(--rule); padding-bottom: 8px; }
+.grid2 { display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); }
+.grid2 > * { min-width: 0; }
+.panel { background: var(--sheet); border: 1px solid var(--rule); border-radius: 6px; padding: 18px; display: grid; gap: 12px; align-content: start; }
+.scroll { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font-family: var(--font-display); font-weight: 600; font-size: 14px; letter-spacing: .05em; text-transform: uppercase; color: var(--ink-soft); }
+td.pin { font-family: var(--font-mono); font-weight: 600; white-space: nowrap; }
+td.num { font-variant-numeric: tabular-nums; font-family: var(--font-mono); white-space: nowrap; }
+.note { font-size: 13.5px; color: var(--ink-soft); }
+.callout { border-left: 3px solid var(--own); background: var(--own-bg); padding: 10px 14px; border-radius: 0 4px 4px 0; font-size: 14px; }
+.callout.svc { border-color: var(--svc); background: var(--svc-bg); }
+.callout.warn { border-color: var(--warn); background: transparent; }
+.new { font-family: var(--font-mono); font-size: 11px; font-weight: 600; color: var(--own); border: 1px solid currentColor; border-radius: 3px; padding: 0 5px; margin-left: 6px; vertical-align: 1px; }
+
+/* Mapa de cabeceras */
+.board { background: var(--sheet); border: 1px solid var(--rule); border-radius: 6px; padding: 18px; display: grid; gap: 18px; }
+.header-row { display: grid; gap: 6px; }
+.header-row h3 { font-size: 14px; }
+.pins { display: grid; grid-template-columns: repeat(auto-fill, minmax(54px, 1fr)); gap: 4px; }
+.pinchip { position: relative; border-radius: 3px; padding: 5px 4px 4px; background: var(--pin-idle); color: var(--ink-soft); font-family: var(--font-mono); font-size: 11.5px; line-height: 1.2; text-align: center; min-height: 40px; display: grid; align-content: center; border: 1px solid transparent; cursor: default; }
+.pinchip b { display: block; font-weight: 600; }
+.pinchip small { display: block; font-size: 9.5px; opacity: .9; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pinchip[data-o="base"] { background: var(--base-bg); color: var(--base); border-color: color-mix(in srgb, var(--base) 35%, transparent); }
+.pinchip[data-o="own"] { background: var(--own-bg); color: var(--own); border-color: color-mix(in srgb, var(--own) 40%, transparent); }
+.pinchip[data-o="svc"] { background: var(--svc-bg); color: var(--svc); border-color: color-mix(in srgb, var(--svc) 40%, transparent); }
+.pinchip[data-o]:focus-visible, .pinchip[data-o]:hover { outline: 2px solid currentColor; outline-offset: 1px; }
+.pinchip[data-idle] { opacity: .55; }
+.pin-detail { min-height: 1.6em; font-size: 14px; color: var(--ink-soft); }
+.pin-detail strong { color: var(--ink); font-family: var(--font-mono); }
+
+/* Esquemas */
+svg.schem { width: 100%; height: auto; max-width: 520px; display: block; }
+svg.schem text { font-family: var(--font-mono); font-size: 12px; fill: var(--ink); }
+svg.schem .lbl-soft { fill: var(--ink-soft); font-size: 11px; }
+svg.schem .wire { stroke: var(--ink); stroke-width: 1.6; fill: none; }
+svg.schem .own { stroke: var(--own); }
+svg.schem .svc { stroke: var(--svc); }
+svg.schem .dot { fill: var(--ink); }
+svg.schem .box { fill: var(--sheet); stroke: var(--ink); stroke-width: 1.6; }
+svg.schem .pinlbl { fill: var(--own); font-weight: 600; }
+svg.schem .pinlbl.svc { fill: var(--svc); }
+svg.schem .gnd { stroke: var(--ink); stroke-width: 1.6; }
+
+.irbar { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; max-width: 460px; }
+.irbar div { border: 1px solid var(--rule); border-radius: 4px; padding: 8px 4px; text-align: center; background: var(--base-bg); color: var(--base); font-family: var(--font-mono); font-size: 12px; }
+.irbar div b { display: block; font-size: 14px; }
+.irside { display: flex; justify-content: space-between; max-width: 460px; font-size: 12px; color: var(--ink-soft); font-family: var(--font-mono); }
+footer { border-top: 1px solid var(--rule); padding-top: 16px; display: grid; gap: 8px; font-size: 13px; color: var(--ink-soft); }
+footer ul { margin: 0; padding-left: 18px; display: grid; gap: 2px; }
+@media (max-width: 520px) { .panel, .board { padding: 14px; } th, td { padding: 6px 7px; } }
+</style>
+
+<main class="wrap">
+  <header class="title">
+    <h1>Pinout AutoFinalRobo2</h1>
+    <p>OSOYOO Mecanum 4WD con Arduino Mega 2560 y shield Wi-Fi ESP-12S. Conexiones del kit, agregados del proyecto (sensor de batería, AutoKEY y AutoRESET) y conexiones de servicio, cotejados con <code>board_pinmap.h</code> y las fuentes vigentes.</p>
+    <div class="meta"><span>07/11/2026</span><span>AFR2-20261107-44</span><span>Actualiza AFR2-20261106-15</span><span>Lado y sentido: mirando el auto desde atrás, en el sentido de avance</span></div>
+    <div class="legend" aria-label="Referencias de color">
+      <span class="tag t-base">Base · kit OSOYOO</span>
+      <span class="tag t-own">Agregado propio</span>
+      <span class="tag t-svc">Servicio · carga y diagnóstico</span>
+    </div>
+  </header>
+
+  <section aria-labelledby="mapa">
+    <div class="head"><h2 id="mapa">Cabeceras del Mega</h2><span class="note">Tocá o pasá sobre un pin para ver su función</span></div>
+    <div class="board" id="board"></div>
+    <p class="pin-detail" id="pin-detail" role="status" aria-live="polite">Pines en gris: sin uso identificado en este mapa. Eso no certifica que estén libres bajo el shield.</p>
+  </section>
+
+  <section aria-labelledby="bat">
+    <div class="head"><h2 id="bat">Sensor de batería</h2><span class="tag t-own">Agregado propio · A5</span></div>
+    <div class="grid2">
+      <div class="panel">
+        <h3>Divisor 10 k / 10 k con filtro</h3>
+        <svg class="schem" viewBox="0 0 460 230" role="img" aria-label="Batería positiva después de la llave, resistencia de 10 kilohms al nodo A5; del nodo A5 a masa una resistencia de 10 kilohms y un capacitor de 100 nanofaradios en paralelo">
+          <text x="10" y="44">BAT+</text>
+          <text x="10" y="60" class="lbl-soft">tras la llave</text>
+          <path class="wire" d="M58 40 H110" />
+          <path class="wire own" d="M110 40 l6 -8 l10 16 l10 -16 l10 16 l10 -16 l10 16 l6 -8" />
+          <text x="122" y="24">R1 10 kΩ</text>
+          <path class="wire" d="M172 40 H260" />
+          <circle class="dot" cx="230" cy="40" r="3.5" />
+          <path class="wire" d="M260 40 H330" />
+          <rect class="box" x="330" y="22" width="110" height="38" rx="3" />
+          <text x="344" y="46" class="pinlbl">A5 · PF5</text>
+          <text x="334" y="78" class="lbl-soft">ADC5, sin pull-up</text>
+          <path class="wire" d="M230 40 V70 H180 V90" />
+          <path class="wire" d="M230 70 H280 V90" />
+          <path class="wire own" d="M180 90 l-8 6 l16 10 l-16 10 l16 10 l-16 10 l16 10 l-8 6" />
+          <text x="110" y="132">R2 10 kΩ</text>
+          <path class="wire" d="M180 152 V176" />
+          <path class="wire own" d="M266 120 H294 M266 128 H294" />
+          <path class="wire" d="M280 90 V120 M280 128 V176" />
+          <text x="300" y="128">C 100 nF</text>
+          <text x="300" y="144" class="lbl-soft">cerámico «104»</text>
+          <path class="wire" d="M180 176 H280" />
+          <path class="wire" d="M230 176 V188" />
+          <path class="gnd" d="M214 188 H246 M220 195 H240 M226 202 H234" />
+          <text x="252" y="200" class="lbl-soft">GND común</text>
+        </svg>
+        <p class="note">A5 recibe la mitad de la tensión de batería. El capacitor va del nodo A5 a masa, en paralelo con R2, nunca en serie. La batería no se conecta directo a A5.</p>
+      </div>
+      <div class="panel">
+        <h3>Lecturas esperadas</h3>
+        <div class="scroll"><table>
+          <thead><tr><th>Batería</th><th>En A5</th><th>Raw ADC</th></tr></thead>
+          <tbody>
+            <tr><td class="num">6,0 V</td><td class="num">3,00 V</td><td class="num">614</td></tr>
+            <tr><td class="num">7,4 V</td><td class="num">3,70 V</td><td class="num">758</td></tr>
+            <tr><td class="num">8,0 V</td><td class="num">4,00 V</td><td class="num">819</td></tr>
+            <tr><td class="num">8,4 V</td><td class="num">4,20 V</td><td class="num">860</td></tr>
+            <tr><td class="num">≈ 10 V</td><td class="num">5,00 V</td><td class="num">1023 · fuera de rango</td></tr>
+          </tbody>
+        </table></div>
+        <p class="note">Firmware: <code>mV = (raw × 10000 + 512) / 1024</code>, referencia AVCC nominal de 5 V y promedio de 8 muestras. La medición se activa a pedido y no está calibrada. Consumo del divisor: unos 0,4 mA a 8 V.</p>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="auto">
+    <div class="head"><h2 id="auto">AutoKEY y AutoRESET del ESP</h2><span class="tag t-svc">Agregado propio · servicio · D32 / D33</span></div>
+    <div class="grid2">
+      <div class="panel">
+        <h3>Una etapa NPN por línea</h3>
+        <svg class="schem" viewBox="0 0 460 250" role="img" aria-label="D32 a través de 1 kilohm a la base de un transistor NPN; resistencia de 10 kilohms de base a masa; colector a la línea KEY del ESP en paralelo con el pulsador; emisor a masa. D33 igual hacia RESET.">
+          <rect class="box" x="10" y="78" width="96" height="38" rx="3" />
+          <text x="22" y="102" class="pinlbl svc">D32 · PC5</text>
+          <text x="10" y="138" class="lbl-soft">D33 · PC4 para RST</text>
+          <path class="wire" d="M106 97 H130" />
+          <path class="wire svc" d="M130 97 l6 -8 l10 16 l10 -16 l10 16 l10 -16 l6 8" />
+          <text x="132" y="78">1 kΩ</text>
+          <path class="wire" d="M182 97 H236" />
+          <circle class="dot" cx="214" cy="97" r="3.5" />
+          <path class="wire" d="M214 97 V128" />
+          <path class="wire svc" d="M214 128 l-7 5 l14 9 l-14 9 l14 9 l-14 9 l7 5" />
+          <text x="226" y="160">10 kΩ</text>
+          <path class="wire" d="M214 174 V200" />
+          <circle class="box" cx="262" cy="97" r="26" />
+          <path class="wire" d="M244 80 V114" />
+          <path class="wire" d="M236 97 H244" />
+          <path class="wire" d="M244 88 L268 72 V40" />
+          <path class="wire" d="M244 106 L268 122 V200" />
+          <path class="wire" d="M262 117 L268 122 L259 123" />
+          <text x="296" y="104">NPN</text>
+          <text x="296" y="120" class="lbl-soft">2N3904 / BC547</text>
+          <path class="wire" d="M268 40 H400" />
+          <text x="300" y="32">KEY · GPIO0</text>
+          <path class="wire" d="M370 40 V60 M362 60 H378 M370 60 l12 -10 M382 76 V90 M362 76 H382" />
+          <text x="388" y="70" class="lbl-soft">pulsador</text>
+          <path class="wire" d="M370 76 V200" />
+          <path class="wire" d="M214 200 H370" />
+          <path class="gnd" d="M276 200 V212 M260 212 H292 M266 219 H286 M272 226 H280" />
+          <text x="298" y="224" class="lbl-soft">GND común</text>
+        </svg>
+        <p class="note">El 10 kΩ va de base a masa del lado del transistor: si se sacan los cables de D32/D33 o el Mega no tiene firmware, el transistor queda apagado. El pulsador del shield se conserva y sigue andando a mano.</p>
+      </div>
+      <div class="panel">
+        <h3>Funcionamiento</h3>
+        <div class="scroll"><table>
+          <thead><tr><th>Función</th><th>Pin Mega</th><th>Cable</th><th>Destino</th></tr></thead>
+          <tbody>
+            <tr><td>AutoKEY</td><td class="pin">D32 · PC5</td><td>sin anotar</td><td>Colector a KEY / GPIO0 del ESP</td></tr>
+            <tr><td>AutoRESET</td><td class="pin">D33 · PC4</td><td><strong>naranja</strong></td><td>Colector a RST del ESP</td></tr>
+          </tbody>
+        </table></div>
+        <ul class="note" style="margin:0;padding-left:18px;display:grid;gap:4px">
+          <li>D32 o D33 en alto hacen conducir el NPN, como si se apretara el pulsador.</li>
+          <li>En reposo el flasher deja ambos pines como entradas sin pull-up. El firmware de producto nunca los acciona.</li>
+          <li>Solo se usan en una carga del ESP en modo automático, que el Loader activa por perfil. El modo manual es el predeterminado.</li>
+          <li>Abrir el puerto o reiniciar el Mega no reinicia el ESP.</li>
+        </ul>
+        <p class="callout svc">Con el circuito armado, no reutilizar D32 ni D33. Para usarlos en otra cosa, desconectar los dos cables de control.</p>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="sens">
+    <div class="head"><h2 id="sens">Sensores del kit</h2><span class="tag t-base">Base</span></div>
+    <div class="grid2">
+      <div class="panel">
+        <h3>Barra de línea IR, 5 canales <span class="new">ACTUALIZADO</span></h3>
+        <div class="irside"><span>← izquierda</span><span>derecha →</span></div>
+        <div class="irbar" aria-label="Orden físico de los sensores de izquierda a derecha">
+          <div><b>IR1</b>A4</div><div><b>IR2</b>A3</div><div><b>IR3</b>A2</div><div><b>IR4</b>A1</div><div><b>IR5</b>A0</div>
+        </div>
+        <p class="note">Salidas digitales TTL del OSOYOO (inversor Schmitt 74HC14): <strong>LOW sobre negro</strong>, HIGH sobre blanco. Se lee PF4…PF0 cada 5 ms, sin pull-ups. Alimentación de 3,3 a 5 V. Alcance de 0 a 3 cm, que se ajusta con el potenciómetro.</p>
+        <p class="callout">IR1 (A4) queda a la izquierda, confirmado por el usuario. Desde AFR2-20261107-43 la línea es válida sin calibrar, y el seguimiento gira hacia el lado del sensor activo.</p>
+      </div>
+      <div class="panel">
+        <h3>Ultrasonido y servo de radar</h3>
+        <div class="scroll"><table>
+          <thead><tr><th>Señal</th><th>Pin</th><th>Uso</th></tr></thead>
+          <tbody>
+            <tr><td>HC-SR04 TRIG</td><td class="pin">D30 · PC7</td><td>Salida</td></tr>
+            <tr><td>HC-SR04 ECHO</td><td class="pin">D31 · PC6</td><td>Entrada, medida con Timer3</td></tr>
+            <tr><td>Servo S</td><td class="pin">D13 · PB7</td><td>Pulsos de 1000 a 2000 µs por Timer5</td></tr>
+          </tbody>
+        </table></div>
+        <p class="note">D13 está ocupado por el servo: no usarlo como LED. El HC-SR04 se conserva para el radar, pero no detiene el movimiento (AFR2-20261106-13).</p>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="trac">
+    <div class="head"><h2 id="trac">Tracción y encoders Hall</h2><span class="tag t-base">Base</span></div>
+    <div class="grid2">
+      <div class="panel">
+        <h3>Motores · dos drivers Model Y</h3>
+        <div class="scroll"><table>
+          <thead><tr><th>Rueda</th><th>IN1</th><th>IN2</th><th>PWM</th></tr></thead>
+          <tbody>
+            <tr><td>FR delantera der.</td><td class="pin">D22 · PA0</td><td class="pin">D24 · PA2</td><td class="pin">D9 · PH6</td></tr>
+            <tr><td>FL delantera izq.</td><td class="pin">D26 · PA4</td><td class="pin">D28 · PA6</td><td class="pin">D10 · PB4</td></tr>
+            <tr><td>RR trasera der.</td><td class="pin">D5 · PE3</td><td class="pin">D6 · PH3</td><td class="pin">D11 · PB5</td></tr>
+            <tr><td>RL trasera izq.</td><td class="pin">D7 · PH4</td><td class="pin">D8 · PH5</td><td class="pin">D12 · PB6</td></tr>
+          </tbody>
+        </table></div>
+        <p class="note">FR y FL van a M_B (BK1…BK4); RR y RL a M_A (AK1…AK4). M+ y M− son potencia: no van a GPIO ni son masa lógica. El sentido del chasis se corrige en la mezcla (signos de avance, giro y lateral −1), no en el cableado.</p>
+      </div>
+      <div class="panel">
+        <h3>Hall por rueda · puerto K</h3>
+        <div class="scroll"><table>
+          <thead><tr><th>Rueda</th><th>A · S1 naranja</th><th>B · S2 verde</th></tr></thead>
+          <tbody>
+            <tr><td>FR</td><td class="pin">A8 · PK0</td><td class="pin">A12 · PK4</td></tr>
+            <tr><td>FL</td><td class="pin">A9 · PK1</td><td class="pin">A13 · PK5</td></tr>
+            <tr><td>RR</td><td class="pin">A10 · PK2</td><td class="pin">A14 · PK6</td></tr>
+            <tr><td>RL</td><td class="pin">A11 · PK3</td><td class="pin">A15 · PK7</td></tr>
+          </tbody>
+        </table></div>
+        <p class="note">Pull-ups internos y captura por PCINT2: cuenta x1, flanco de subida de A y sentido leído en B. El CPR se calibra por rueda y se guarda en EEPROM. VCC del Hall a +5 V regulados, nunca directo de la batería.</p>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="panel">
+    <div class="head"><h2 id="panel">Panel OLED y encoder de menú</h2><span class="tag t-own">Agregado propio</span></div>
+    <div class="grid2">
+      <div class="panel">
+        <h3>Conector J1 · señales 1×5</h3>
+        <div class="scroll"><table>
+          <thead><tr><th>Pin J1</th><th>Señal</th><th>Mega</th></tr></thead>
+          <tbody>
+            <tr><td class="num">1</td><td>Encoder CLK</td><td class="pin">D2 · PE4 · INT4</td></tr>
+            <tr><td class="num">2</td><td>Encoder DT</td><td class="pin">D3 · PE5 · INT5</td></tr>
+            <tr><td class="num">3</td><td>Encoder SW</td><td class="pin">D42 · PL7</td></tr>
+            <tr><td class="num">4</td><td>OLED SDA</td><td class="pin">D20 · PD1</td></tr>
+            <tr><td class="num">5</td><td>OLED SCL</td><td class="pin">D21 · PD0</td></tr>
+          </tbody>
+        </table></div>
+        <p class="note">J2 alimentación 1×2: VCC (5 V comunicados) y GND común. Identificar el pin 1 en la placa antes de cablear.</p>
+      </div>
+      <div class="panel">
+        <h3>Detalles</h3>
+        <p class="note">OLED de 0,96" por I2C, único dispositivo del bus y manejado por I2C Manager. SDA y SCL se toman de la cabecera del shield. El encoder KY-040 sin breakout usa pull-ups internos y lleva los comunes a GND. SW es activo bajo.</p>
+        <p class="note">Navegación: pulsación corta desde el dashboard abre el menú completo. La larga (desde 800 ms, al soltar) abre los controles rápidos; en el resto de las pantallas vuelve atrás.</p>
+        <p class="callout warn">El CAD del panel conserva la red +3V3 y el informe anterior menciona un JST de 2,00 mm para J2. Confirmar en la placa real antes de usar el CAD como plano de cableado.</p>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="wifi">
+    <div class="head"><h2 id="wifi">Wi-Fi y alimentación</h2><span class="tag t-base">Base · enlace adaptado</span></div>
+    <div class="grid2">
+      <div class="panel">
+        <h3>UART del shield ESP-12S</h3>
+        <div class="scroll"><table>
+          <thead><tr><th>Conexión</th><th>Pin</th></tr></thead>
+          <tbody>
+            <tr><td>Mega transmite → E_RX del selector</td><td class="pin">D18 · PD3 · TX1</td></tr>
+            <tr><td>E_TX del selector → Mega recibe</td><td class="pin">D19 · PD2 · RX1</td></tr>
+            <tr><td>USB del Mega · servicio y puente de carga del ESP</td><td class="pin">D0 / D1 · USART0</td></tr>
+          </tbody>
+        </table></div>
+        <p class="note">La carga del ESP usa el puente por software USART0↔USART1 con el RESET del Mega libre. El método D0/D1 con RESET a GND está retirado. La cabecera ESP UART del shield es de lógica 3,3 V y es otra conexión.</p>
+      </div>
+      <div class="panel">
+        <h3>Alimentación</h3>
+        <div class="scroll"><table>
+          <thead><tr><th>Origen</th><th>Destino</th></tr></thead>
+          <tbody>
+            <tr><td>Portabaterías + / −</td><td>VIN+ / VIN− de Model Y (con llave)</td></tr>
+            <tr><td>VOUT+ / VOUT− de Model Y</td><td>POWER del shield</td></tr>
+            <tr><td>Voltímetro VCC / VT / GND</td><td>Cabecera homónima del Model Y</td></tr>
+            <tr><td>BAT+ tras la llave</td><td>Divisor de batería → A5 <span class="tag t-own" style="margin-left:4px">propio</span></td></tr>
+            <tr><td>+5 V regulados / GND</td><td>Hall, IR, HC-SR04, servo y panel</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="idx">
+    <div class="head"><h2 id="idx">Índice por pin</h2><span class="note">A0–A15 y D54–D69 son el mismo pin</span></div>
+    <div class="panel"><div class="scroll"><table id="index">
+      <thead><tr><th>Pin</th><th>Puerto</th><th>Función</th><th>Origen</th></tr></thead>
+      <tbody></tbody>
+    </table></div></div>
+  </section>
+
+  <footer>
+    <p><strong>Estado.</strong> Cotejo documental y de fuentes. No identifica el firmware instalado ni comprueba continuidad, niveles ni funcionamiento físico. AutoKEY/AutoRESET y el divisor de batería están implementados en fuente, con montaje y medición pendientes. No hay MPU ni balance de dos ruedas en el producto, y no se asignan pines al brazo futuro.</p>
+    <p>Fuentes:</p>
+    <ul>
+      <li><code>AutoFinalRobo2-Atmega/include/board_pinmap.h</code>: motores, Hall, IR, panel, UART y reserva D32/D33.</li>
+      <li><code>src/platform/afr2_sensors.c</code>: IR digitales, ADC5 de batería, HC-SR04 y servo.</li>
+      <li><code>service/esp_uart_bridge.c</code>: control de AutoKEY (PC5) y AutoRESET (PC4).</li>
+      <li><code>Contracts/hardware/INFORME_PINOUT_ROBOT_20261106.md</code>, <code>MEDICION_BATERIA.md</code>, <code>PLAN_KEY_RST_AUTOMATICO.md</code> y <code>contracts/BATTERY_MEASUREMENT_9.md</code>.</li>
+      <li>Hoja OSOYOO 5-Channel IR Tracker Sensor: polaridad y alimentación de la barra de línea.</li>
+    </ul>
+    <p>Proyecto de Koba Chajchir. Las atribuciones del manual OSOYOO y de la referencia BioLog se conservan en sus documentos.</p>
+  </footer>
+</main>
+
+<script>
+(() => {
+  const P = [
+    ['D0','PE0','USB RX0 · puente de carga del ESP','svc'],
+    ['D1','PE1','USB TX0 · puente de carga del ESP','svc'],
+    ['D2','PE4','Encoder de menú CLK (INT4)','own'],
+    ['D3','PE5','Encoder de menú DT (INT5)','own'],
+    ['D5','PE3','Motor RR IN1','base'],
+    ['D6','PH3','Motor RR IN2','base'],
+    ['D7','PH4','Motor RL IN1','base'],
+    ['D8','PH5','Motor RL IN2','base'],
+    ['D9','PH6','PWM FR (OC2B)','base'],
+    ['D10','PB4','PWM FL (OC2A)','base'],
+    ['D11','PB5','PWM RR (OC1A)','base'],
+    ['D12','PB6','PWM RL (OC1B)','base'],
+    ['D13','PB7','Servo del radar, señal S','base'],
+    ['D18','PD3','TX1 → ESP (E_RX)','base'],
+    ['D19','PD2','RX1 ← ESP (E_TX)','base'],
+    ['D20','PD1','OLED SDA','own'],
+    ['D21','PD0','OLED SCL','own'],
+    ['D22','PA0','Motor FR IN1','base'],
+    ['D24','PA2','Motor FR IN2','base'],
+    ['D26','PA4','Motor FL IN1','base'],
+    ['D28','PA6','Motor FL IN2','base'],
+    ['D30','PC7','HC-SR04 TRIG','base'],
+    ['D31','PC6','HC-SR04 ECHO','base'],
+    ['D32','PC5','AutoKEY del ESP (NPN → GPIO0)','svc'],
+    ['D33','PC4','AutoRESET del ESP (NPN → RST) · cable naranja','svc'],
+    ['D42','PL7','Encoder de menú SW, activo bajo','own'],
+    ['A0','PF0','IR5 · extremo derecho','base'],
+    ['A1','PF1','IR4','base'],
+    ['A2','PF2','IR3 · centro','base'],
+    ['A3','PF3','IR2','base'],
+    ['A4','PF4','IR1 · extremo izquierdo','base'],
+    ['A5','PF5','Sensor de batería (divisor 10 k/10 k + 100 nF)','own'],
+    ['A8','PK0','Hall FR A','base'],
+    ['A9','PK1','Hall FL A','base'],
+    ['A10','PK2','Hall RR A','base'],
+    ['A11','PK3','Hall RL A','base'],
+    ['A12','PK4','Hall FR B','base'],
+    ['A13','PK5','Hall FL B','base'],
+    ['A14','PK6','Hall RR B','base'],
+    ['A15','PK7','Hall RL B','base']
+  ];
+  const ORIGIN = { base: 'Base', own: 'Agregado propio', svc: 'Servicio' };
+  // D32/D33 son agregados propios usados solo en servicio.
+  const originLabel = (pin, o) => (pin === 'D32' || pin === 'D33') ? 'Agregado propio · servicio' : ORIGIN[o];
+  const byPin = new Map(P.map(p => [p[0], p]));
+  const rows = [
+    ['PWM y digitales · D0–D13', Array.from({ length: 14 }, (_, i) => 'D' + i)],
+    ['Comunicación · D14–D21', Array.from({ length: 8 }, (_, i) => 'D' + (14 + i))],
+    ['Cabecera doble · D22–D53', Array.from({ length: 32 }, (_, i) => 'D' + (22 + i))],
+    ['Analógicos · A0–A15', Array.from({ length: 16 }, (_, i) => 'A' + i)]
+  ];
+  const board = document.getElementById('board');
+  const detail = document.getElementById('pin-detail');
+  const short = t => t.replace(/ \(.*\)/, '').replace(/^Motor /, '').replace(/, señal S$/, '');
+  for (const [title, pins] of rows) {
+    const row = document.createElement('div'); row.className = 'header-row';
+    const h = document.createElement('h3'); h.textContent = title; row.appendChild(h);
+    const grid = document.createElement('div'); grid.className = 'pins';
+    for (const pin of pins) {
+      const chip = document.createElement('div'); chip.className = 'pinchip';
+      const info = byPin.get(pin);
+      chip.innerHTML = '<b></b><small></small>';
+      chip.firstChild.textContent = pin;
+      if (info) {
+        chip.dataset.o = info[3]; chip.tabIndex = 0;
+        chip.lastChild.textContent = short(info[2]);
+        chip.setAttribute('aria-label', `${pin}, ${info[1]}: ${info[2]}. ${originLabel(pin, info[3])}`);
+        const show = () => { detail.innerHTML = ''; const s = document.createElement('strong'); s.textContent = `${pin} · ${info[1]}`; detail.append(s, ` — ${info[2]}. ${originLabel(pin, info[3])}.`); };
+        chip.addEventListener('mouseenter', show); chip.addEventListener('focus', show); chip.addEventListener('click', show);
+      } else { chip.dataset.idle = ''; chip.lastChild.textContent = '—'; chip.setAttribute('aria-hidden', 'true'); }
+      grid.appendChild(chip);
+    }
+    row.appendChild(grid); board.appendChild(row);
+  }
+  const body = document.querySelector('#index tbody');
+  for (const [pin, port, fn, o] of P) {
+    const tr = document.createElement('tr');
+    const alias = pin.startsWith('A') ? ` / D${54 + Number(pin.slice(1))}` : '';
+    tr.innerHTML = '<td class="pin"></td><td class="pin"></td><td></td><td></td>';
+    tr.children[0].textContent = pin + alias; tr.children[1].textContent = port; tr.children[2].textContent = fn;
+    const tag = document.createElement('span'); tag.className = 'tag t-' + o; tag.textContent = originLabel(pin, o);
+    tr.children[3].appendChild(tag);
+    body.appendChild(tr);
+  }
+})();
+</script>

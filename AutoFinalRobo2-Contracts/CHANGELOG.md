@@ -3,6 +3,73 @@
 Librería `afr2_usart` (AVR USART0..3: handles, eventos diferidos, inicializador, ISR enlazada por puerto) y log de depuración del ATmega por USART0/D1 a 115200: arranque AVR/ESP con causa de reinicio, volcado de excepción del ESP capturado del enlace, sesión/pérdida/fallas/rechazos del enlace, eventos de red, captura OLED, encoder, loop lento y pila mínima. Enlace ESP en USART1 sin cambios de protocolo. Ficha changes/2026-11-08-01-usart-library-debug-log.md.
 Estado: atmega=fuente editada, sin compilar ni cargar; esp/web=sin cambios.
 
+## AFR2-20261107-53 - 07/11/2026
+
+ESP: se reiniciaba al descargar el modelo 3D. Con la red por defecto en RAM (sin `wifi.json`) o si fallaba la escritura, `WifiService::tick` abría LittleFS en cada vuelta del loop para marcar `staGood`. Eso chocaba con las lecturas del servidor HTTP asincrónico. Ahora se intenta una sola vez por arranque y solo con la configuración guardada. Ficha changes/2026-11-07-53-esp-littlefs-loop-reset.md.
+Estado: esp=fuente corregida, sin compilar ni cargar; atmega/web=sin cambios.
+
+## AFR2-20261107-52 - 07/11/2026
+
+Hall de una vuelta: tolera la holgura y solo invalida si la cuenta retrocede respecto del máximo más de max(8, máximo/32) pulsos; antes bastaba un pulso. Prueba de encoder con «Clicks: N», «Giro: N» desde 0 y largo «Pulse» → «Correcto» → salir. Ícono de pulsación larga centrado. Web: zoom en el árbol de pantallas y páginas por giro bajo el mismo padre; márgenes de Infraestructura y tarjeta del paquete; foto de los modelos fuera del texto en pantallas chicas; captura del Loader en WebP en su banner. Ficha changes/2026-11-07-52-hall-tolerance-ui-polish.md.
+Estado: atmega=fuente editada, sin compilar ni cargar; web=fuente editada, revisada en Vite, sin build; esp=sin cambios.
+
+## AFR2-20261107-51 - 07/11/2026
+
+La prueba OLED/I2C no encontró dispositivos en el bus (`found=0 nack=112`, SDA/SCL en alto). La causa era un conector flojo: el usuario lo ajustó y la OLED volvió a funcionar. Se volvió a cargar el firmware del auto con el Loader 2.0.0 por MCP (`flash_mega`, COM16), con aprobación manual: firma, escritura y verificación correctas. El HEX cargado tiene SHA-256 16826727…7ca0a4, y ese es el hash válido en lugar del anotado en AFR2-20261107-49. Red STA por defecto «Koba» en `wifi_defaults.local.h`, archivo ignorado por Git y sin la clave en Contracts. Ficha changes/2026-11-07-51-mega-restore-loader-wifi.md.
+Estado: atmega=cargado y verificado, sin prueba física completa; esp=red local configurada, sin compilar ni cargar; web=sin cambios.
+
+## AFR2-20261107-50 - 07/11/2026
+
+Compilación de la prueba de servicio OLED/I2C (`service/i2c_uart0_diagnostic.c`, versión AFR2-20261029-18) para descartar hardware o cableado: búsqueda I2C, OLED 0x3C, encoder, IR y servo, con salida serie a 115200. Sin errores ni avisos. Flash 14 554 B (5,6 %), SRAM 3 198 B (39,0 %). HEX build/afr2-i2c-diagnostic.hex, SHA-256 a4c1d5cc…143a69. Ficha changes/2026-11-07-50-oled-i2c-diagnostic-build.md.
+Cargada luego en COM16 con avrdude (14 554 B escritos y verificados, fusibles sin cambios); el Mega queda con la prueba en lugar del auto.
+Estado: atmega=imagen de servicio compilada y cargada, sin resultados físicos; esp/web=sin cambios.
+
+## AFR2-20261107-49 - 07/11/2026
+
+Compilación del firmware ATmega con avr-gcc 7.3.0, incluyendo AFR2-20261107-41, -43, -46, -47 y -48: sin errores y con un aviso de estilo preexistente. Flash 132 054 B (50,4 %), SRAM estática 6 329 B (77,3 %), 1 863 B libres para la pila. HEX SHA-256 167cc564…eaa346. Ficha changes/2026-11-07-49-atmega-build.md.
+Estado: atmega=compilado, sin cargar; esp/web=sin cambios.
+
+## AFR2-20261107-48 - 07/11/2026
+
+OLED: un clic o una pulsación larga sobre una notificación de red cierra todas las notificaciones de red en cola y silencia 5 s los eventos frecuentes del ESP (WebSocket, clientes, Web servida). Antes cada clic cerraba una sola y la siguiente aparecía al instante, así que la pantalla parecía trabada. Hashes del renderer Web actualizados. Ficha changes/2026-11-07-48-network-notice-click.md.
+Estado: atmega=fuente editada, sin compilar ni cargar; web=manifiesto actualizado, sin compilar; esp=sin cambios.
+
+## AFR2-20261107-47 - 07/11/2026
+
+ATmega: la pantalla se inicializa al final (TWI, I2C Manager y OLED después del resto), espera 1200 ms en lugar de 500 ms y, tras la primera inicialización en frío, repite una configuración completa a los 300 ms, que se da por hecha solo con ACK. Apunta a que el panel no confirme comandos mientras sale de su reset. Hashes del renderer Web actualizados. Ficha changes/2026-11-07-47-oled-init-last.md.
+Estado: atmega=fuente editada, sin compilar ni cargar; web=manifiesto actualizado, sin compilar; esp=sin cambios.
+
+## AFR2-20261107-46 - 07/11/2026
+
+OLED: el refresco periódico ya no reenvía oscilador, precarga ni VCOMH (posible parpadeo cada segundo), y el repaso de RAM pasa de 40 a 250 ms para que el bus I2C descanse. Revisados TWI, I2C Manager y watchdog: sin bloqueos. Causas eléctricas probables (SDA/SCL del shield unidos a A4/A5, pull-ups débiles, caídas de 5 V) pendientes de medir. Se actualizaron los hashes de `afr2_oled.c` y `afr2_oled.h` en el manifiesto del renderer Web, que frenaban `build:esp`; el dibujo no cambia. Ficha changes/2026-11-07-46-oled-refresh-scrub.md.
+Estado: atmega=fuente editada, sin compilar ni cargar; web=manifiesto del renderer actualizado, sin compilar; esp=sin cambios.
+
+## AFR2-20261107-45 - 07/11/2026
+
+Loader 2.0.0 portable: `Preparar-Distribucion.ps1` ya no fija `D:\ProyectoRobotica2` (calcula las rutas desde su carpeta), borra el build temporal, revisa texto y EXE del paquete y cancela el ZIP si encuentra rutas, usuario o equipo de quien lo arma, y genera el ZIP con separadores `/`. Corregidos `Compilar-Loader-2.cmd` (carácter de control), el ejemplo con `D:\` de README.md y la versión de PORTABILIDAD.md. Fuentes C# y perfiles de ejemplo ya eran portables. ZIP `AFR2-Loader-dist-2.0.0.zip`, SHA-256 02244b74…8b6e. Ficha changes/2026-11-07-45-loader-portable.md.
+Estado: loader=compilado y ZIP verificado sin datos del equipo, sin abrir en otra PC; atmega/esp/web=sin cambios; sin COM ni flasheo.
+
+## AFR2-20261107-44 - 07/11/2026
+
+Informe de pinout actualizado en `hardware/INFORME_PINOUT_ROBOT_20261107.html`. Incluye mapa de cabeceras por origen, sensor de batería en A5 (esquema y lecturas esperadas), AutoKEY D32/PC5 y AutoRESET D33/PC4 (etapa NPN), y la barra IR con polaridad e IR1 a la izquierda. Ficha changes/2026-11-07-44-pinout-report-update.md.
+También se actualizó el pinout de la Ayuda de la Web (`helpContent.ts`): AutoKEY/AutoRESET, IR digitales con IR1 a la izquierda, batería y retiro del método D0/D1.
+Estado: documentación; web=helpContent.ts editado, sin compilar; atmega/esp=sin cambios.
+
+## AFR2-20261107-43 - 07/11/2026
+
+Sensores de línea OSOYOO de 5 canales (digitales, LOW sobre negro según la hoja): la línea pasa a ser válida sin calibración obligatoria. La confirmación de calibración ya no exige que los cinco canales cambien entre fondo y línea; alcanza con la muestra sobre blanco. Causa: con una línea angosta la calibración nunca se aceptaba y el seguimiento quedaba en «Calibrar línea». Además, el sentido de corrección del seguimiento estaba invertido: IR1 (A4) está a la izquierda y ahora la línea a la izquierda produce giro antihorario. Ficha changes/2026-11-07-43-ir-osoyoo-digital.md.
+Estado: atmega=fuente editada, sin compilar ni cargar; esp/web=sin cambios; sin prueba física.
+
+## AFR2-20261107-42 - 07/11/2026
+
+Control táctil Web: paneles Información/Parámetros cerrados al abrir, joystick que sigue al dedo, estela bajo el auto según potencia, modelo que se inclina hacia la dirección y textos/paneles animados (respeta movimiento reducido). Ficha changes/2026-11-07-42-touch-drive-ui.md.
+Estado: web=fuente editada, sin compilar; atmega/esp=sin cambios.
+
+## AFR2-20261107-41 - 07/11/2026
+
+Izquierda/derecha cruzadas al conducir: nuevo `AFR2_LATERAL_WHEEL_SIGN` -1 en la mezcla del ATmega (Drive, DrivePwm y odometría Y) y `lateralWheelSign` -1 en `motion_reference.json`, consumido por la cinemática Web. Avance y giro sin cambios. Ficha changes/2026-11-07-41-lateral-wheel-sign.md.
+Estado: atmega=fuente editada, sin compilar ni cargar; web=fuente editada, sin compilar; esp=sin cambios.
+
 ## AFR2-20261107-40 - 07/11/2026
 
 ATmega: secuencias de 32 pasos habilitadas (`AFR2_SEQUENCE_MEMORY_APPROVED=1`, +656 B de SRAM; 6315 B estáticos, 1877 B libres para pila). ESP y Web ya las soportaban; se anuncian solo con Hall calibrado. Ficha changes/2026-11-07-40-sequences-enabled.md.
@@ -107,6 +174,10 @@ Correcciones coordinadas ATmega/ESP/Web: conexion WS, diagnostico HTTP, IR digit
 ## AFR2-20261105-01 - 05/11/2026
 
 Loader: etapas verticales a la derecha del log, con scroll independiente y terminal más alta. Solo fuente; sin compilación, ejecución de la interfaz modificada, pruebas ni operaciones sobre placas. [Ficha](changes/2026-11-05-01-loader-checks-sidebar.md).
+
+## AFR2-20261105-33 - 05/11/2026
+
+El OLED se repara solo ante ruido I2C: la configuración del panel se reenvía cada segundo con la orientación y el contraste actuales, y la RAM se reescribe por bloques (pantalla completa cada ~2,6 s). La recuperación ya no invierte la imagen con `rotation=1`. Sin compilar ni flashear; se recomiendan pull-ups externos de 4,7 kΩ. [Ficha](changes/2026-11-05-33-oled-self-healing.md).
 
 ## AFR2-20261104-32 - 04/11/2026
 

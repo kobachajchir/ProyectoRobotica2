@@ -7,11 +7,18 @@
 .afr2-tree-map__toolbar .afr2-help { margin: 0; max-width: 60ch; }
 .afr2-tree-map__layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; min-width: 0; }
 .afr2-tree-map__canvas {
-  position: relative; min-width: 0; height: min(62dvh, 560px); overflow: auto; overscroll-behavior: contain;
+  position: relative; min-width: 0; height: min(62dvh, 560px); overflow: auto; overscroll-behavior: contain; touch-action: pan-x pan-y;
   border: 1px solid var(--border-default); border-radius: var(--radius-lg); background: var(--surface-subtle);
   background-image: radial-gradient(var(--border-subtle) 1px, transparent 1px); background-size: 20px 20px;
 }
-.afr2-tree-map__plane { position: relative; }
+.afr2-tree-map__sizer { position: relative; }
+.afr2-tree-map__plane { position: absolute; top: 0; left: 0; transform-origin: 0 0; }
+.afr2-tree-map__zoom { display: inline-flex; align-items: center; gap: 4px; }
+.afr2-tree-map__zoom-value {
+  min-width: 4.5ch; padding: 4px 6px; border: 0; border-radius: var(--radius-sm); background: none;
+  color: var(--text); font: var(--type-label); font-variant-numeric: tabular-nums; cursor: pointer;
+}
+.afr2-tree-map__zoom-value:hover { background: var(--surface-subtle); }
 .afr2-tree-map__edges { position: absolute; inset: 0; overflow: visible; pointer-events: none; }
 .afr2-tree-map__edges path { fill: none; stroke: var(--border-strong); stroke-width: 1.5; }
 .afr2-tree-map__edges path[data-reference="true"] { stroke-dasharray: 4 4; }

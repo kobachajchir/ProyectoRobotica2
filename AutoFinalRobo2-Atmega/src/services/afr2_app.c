@@ -253,7 +253,10 @@ static uint8_t invoke(void *ctx,uint8_t action,int32_t v,const void *data) {
         c->line_calibrated=0;return AFR2_OK;
     }
     case AFR2_A_LINE_CONFIRM:
-        if(!c->line_kind || a->line_samples!=3 || (a->line_background^a->line_foreground)!=31)return AFR2_UNAVAILABLE;
+        /* AFR2-20261107-43: antes exigia que los 5 canales cambiaran entre fondo y linea, imposible
+         * con una linea angosta bajo 1-2 sensores. Basta la muestra de fondo (blanco); si hay muestra
+         * de linea, al menos un canal debe cambiar. Un canal trabado sobre blanco queda inactivo. */
+        if(!c->line_kind || !(a->line_samples&1u) || ((a->line_samples&2u) && !(a->line_background^a->line_foreground)))return AFR2_UNAVAILABLE;
         c->line_invert=a->line_background;c->line_calibrated=1;break;
     case AFR2_A_MOTOR_SIGNS:c->motor_signs=v;break;case AFR2_A_PWM_LIMIT:c->pwm_limit=v;break;
     case AFR2_A_RAMP:c->ramp_step=v;break;case AFR2_A_KP:c->kp=v;break;case AFR2_A_KI:c->ki=v;break;case AFR2_A_KD:c->kd=v;break;

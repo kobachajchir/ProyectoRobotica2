@@ -81,7 +81,7 @@ uint8_t Afr2Product_Drive(Afr2Product *p,int16_t vx,int16_t vy,int16_t wz,uint16
     /* AFR2-20261106-13: current motion modes do not require HC-SR04. */
     if(ttl<200 || ttl>1000 || abs32(vx)>p->config.speed_limit || abs32(vy)>p->config.speed_limit || abs32(wz)>3140)return AFR2_BAD;
     /* AFR2-20261030-13: logical chassis axes -> existing wheel/Hall basis. */
-    vx*=AFR2_FORWARD_WHEEL_SIGN;
+    vx*=AFR2_FORWARD_WHEEL_SIGN;vy*=AFR2_LATERAL_WHEEL_SIGN;
     int32_t turn=(int32_t)wz*p->config.radius_sum_mm/1000*AFR2_YAW_WHEEL_SIGN;
     int32_t v[4]={vx-vy-turn,vx+vy+turn,vx+vy-turn,vx-vy+turn},peak=1;
     for(uint8_t i=0;i<4;i++)if(abs32(v[i])>peak)peak=abs32(v[i]);
@@ -97,7 +97,7 @@ uint8_t Afr2Product_DrivePwm(Afr2Product *p,int16_t forward,int16_t strafe,int16
     if(Afr2Head_State()->running || p->fault || p->hall_measuring || (p->sequence.state>=1 && p->sequence.state<=3))Afr2Product_Stop(p);
     p->fault=0;p->config.motor_ready=1;
     /* Same reference as closed-loop drive; never invert again in Web/ESP. */
-    forward*=AFR2_FORWARD_WHEEL_SIGN;turn*=AFR2_YAW_WHEEL_SIGN;
+    forward*=AFR2_FORWARD_WHEEL_SIGN;strafe*=AFR2_LATERAL_WHEEL_SIGN;turn*=AFR2_YAW_WHEEL_SIGN;
     int16_t v[4]={forward-strafe-turn,forward+strafe+turn,forward+strafe-turn,forward-strafe+turn},peak=100;
     for(uint8_t i=0;i<4;i++)if(abs32(v[i])>peak)peak=abs32(v[i]);
     if(p->stopped || p->mode!=AFR2_PWM_MANUAL){
@@ -148,7 +148,7 @@ uint8_t Afr2Product_StartGotoFull(Afr2Product *p,int32_t x,int32_t y,int16_t the
 }
 void Afr2Product_HallBegin(Afr2Product *p) {
     Afr2Product_Stop(p);
-    p->hall_bad=0;p->hall_delta=0;
+    p->hall_bad=0;p->hall_delta=0;p->hall_peak=0;
     if(!p->sensors.hall_available){p->notice=2;return;}
     p->hall_start=p->sensors.counts[p->selected_wheel];p->hall_measuring=1;
 }
@@ -221,7 +221,7 @@ static void odometry(Afr2Product *p,uint32_t dt) {
         p->speed[i]=clamp((int32_t)(d[i]*1000.0f/(float)dt),2000);
     }
     float dx=(d[0]+d[1]+d[2]+d[3])*0.25f*AFR2_FORWARD_WHEEL_SIGN;
-    float dy=(-d[0]+d[1]+d[2]-d[3])*0.25f;
+    float dy=(-d[0]+d[1]+d[2]-d[3])*0.25f*AFR2_LATERAL_WHEEL_SIGN;
     float angle=(-d[0]+d[1]-d[2]+d[3])*0.25f/(float)p->config.radius_sum_mm*AFR2_YAW_WHEEL_SIGN;
     float heading=p->odom_yaw+angle*0.5f;
     p->odom_x+=dx*cosf(heading)-dy*sinf(heading);p->odom_y+=dx*sinf(heading)+dy*cosf(heading);p->odom_yaw+=angle;
@@ -235,9 +235,13 @@ void Afr2Product_Task(Afr2Product *p,uint32_t now) {
     uint8_t ps=Afr2Prefs_Task();if(p->prefs_state==1 && ps==2){p->prefs_state=2;p->notice=1;}else if(p->prefs_state==1 && ps==3){p->prefs_state=3;p->notice=2;}
     if(p->hall_measuring) {
         int32_t d=(int32_t)((uint32_t)p->sensors.counts[p->selected_wheel]-(uint32_t)p->hall_start);
-        if(p->hall_delta && d && ((d<0)!=(p->hall_delta<0)))p->hall_bad=1;
-        /* Detect direction reversal even before net count crosses zero. */
-        if((p->hall_delta>0 && d<p->hall_delta)||(p->hall_delta<0 && d>p->hall_delta))p->hall_bad=1;
+        /* AFR2-20261107-52: the wheel is turned by hand and the gearbox backlash moves the motor
+         * shaft back a little on every re-grip. Only a retreat from the peak larger than
+         * max(8 pulses, peak/32) marks a reversed or erratic turn; small backlash is accepted. */
+        if(abs32(d)>abs32(p->hall_peak))p->hall_peak=d;
+        int32_t retreat=p->hall_peak>=0?p->hall_peak-d:d-p->hall_peak,tolerance=abs32(p->hall_peak)/32;
+        if(tolerance<8)tolerance=8;
+        if(retreat>tolerance)p->hall_bad=1;
         p->hall_delta=d;
     }
     if(p->origin==AFR2_SOURCE_LOCAL && !p->stopped && (uint32_t)(now-p->local_started_ms)>p->local_timeout_ms)Afr2Product_Stop(p);
@@ -254,7 +258,9 @@ void Afr2Product_Task(Afr2Product *p,uint32_t now) {
     if(!p->stopped && p->mode!=AFR2_WHEEL_TEST && p->mode!=AFR2_PWM_MANUAL && !calibrated(p)){p->fault=2;Afr2Product_Stop(p);return;}
     if(p->mode==AFR2_LINE) {
         if(!p->sensors.line_valid || !p->sensors.line_bits){Afr2Product_Stop(p);p->notice=2;return;}
-        int16_t error=0,n=0;for(uint8_t i=0;i<5;i++)if(p->sensors.line_bits&(1u<<i)){error+=(int16_t)i-2;n++;}
+        /* AFR2-20261107-43: IR1 (bit0, A4) esta a la izquierda (confirmado por el usuario). Linea a la
+         * izquierda => error positivo => wz positivo = giro antihorario (hacia la linea). */
+        int16_t error=0,n=0;for(uint8_t i=0;i<5;i++)if(p->sensors.line_bits&(1u<<i)){error+=2-(int16_t)i;n++;}
         uint8_t mode=p->mode;uint32_t local_timeout_ms=p->local_started_ms;
         if(Afr2Product_Drive(p,p->config.line_speed,0,(int16_t)((int32_t)error*p->config.line_kp/n),500)!=AFR2_OK)Afr2Product_Stop(p);
         else p->mode=mode;
