@@ -58,7 +58,9 @@ bool Broker::encodeProduct(BrokerRequest &q,JsonObjectConst p) {
         q.wireCommand=AFR2_EXT_GOTO;q.bodyLength=16;afr2_put_u32(q.body+4,p["xMm"].as<int32_t>());afr2_put_u32(q.body+8,p["yMm"].as<int32_t>());
         afr2_put_u16(q.body+12,(int16_t)p["thetaMrad"].as<int32_t>());afr2_put_u16(q.body+14,p["maxSpeedMmS"].as<uint16_t>());
     } else if(!strcmp(c,"robot.calibrate") || !strcmp(c,"robot.config.get")) {
-        if(!number(p["action"],0,87) || (!strcmp(c,"robot.calibrate") && !p["value"].is<int32_t>()))return fail();
+        /* AFR2-20261108-04: 102 propone la prueba de odometria y 103 consulta su estado; el ATmega valida cada accion. */
+        /* AFR2-20261108-06: 106 = Preferencias > Reintento Wi-Fi s (105 queda solo local; lo rechaza el ATmega). */
+        if(!number(p["action"],0,106) || (!strcmp(c,"robot.calibrate") && !p["value"].is<int32_t>()))return fail();
         if(!strcmp(c,"robot.calibrate") && p["action"]==25 && (!number(p["value"],0,1)))return fail();
         if(!strcmp(c,"robot.calibrate") && (p["action"]==27 || p["action"]==28))return fail();
         q.wireCommand=AFR2_EXT_CONFIG;q.bodyLength=10;q.body[4]=!strcmp(c,"robot.calibrate");q.body[5]=p["action"].as<uint8_t>();

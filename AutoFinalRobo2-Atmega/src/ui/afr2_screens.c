@@ -4,6 +4,8 @@
  * concepts. F4 original authors remain in reference/. Renderer is hardware-free.
  */
 #include "afr2_screens.h"
+#include "afr2_build_info.h"
+#include "afr2_debug.h"
 #include "afr2_icons.h"
 #include "afr2_ui_components.h"
 #include "afr2_qr_screen.h"
@@ -19,6 +21,9 @@ void Afr2Ui_MenuNode(Afr2Ui *u,Afr2MenuNode *n){
     if(u->node==AFR2_N_WIFI_SEARCH && u->ops.value)n->count=u->ops.value(u->ops.ctx,AFR2_A_WIFI_SCAN_STATE)==1?1:u->ops.value(u->ops.ctx,AFR2_A_WIFI_TOTAL)?3:2;
     if(u->node==AFR2_N_HALL_PICK)n->count=4;
     if(u->node==AFR2_N_HALL_TEST)n->count=3;
+    /* AFR2-20261108-02: el dialogo Si/No tiene 2 filas; su nodo de catalogo cuenta 1 y render_screen
+     * reajustaba selection a 0 en cada cuadro, por eso el giro del encoder "no hacia nada". */
+    if(u->node==AFR2_N_SAVE_CONFIRM)n->count=2;
     if(u->node==AFR2_N_WIFI_NETWORKS && u->ops.value)n->count=(uint8_t)u->ops.value(u->ops.ctx,AFR2_A_WIFI_COUNT)+2u+(u->ops.value(u->ops.ctx,AFR2_A_WIFI_PAGE_INDEX)>0)+(u->ops.value(u->ops.ctx,AFR2_A_WIFI_TOTAL)>(u->ops.value(u->ops.ctx,AFR2_A_WIFI_PAGE_INDEX)+1)*8);
     uint8_t connection=u->ops.value?(uint8_t)u->ops.value(u->ops.ctx,AFR2_A_WIFI_CONNECTED):2;
     if(u->node==AFR2_N_WIFI_VIEW)n->count-=connection==2?2:connection==1?1:0;
@@ -45,18 +50,19 @@ void Afr2Ui_MenuItem(Afr2Ui *u,uint8_t index,Afr2MenuItem *item){
         memset(item,0,sizeof(*item));item->target=255;
         if(!index){strcpy_P(item->label,PSTR("Estado"));item->target=AFR2_N_HALL_VIEW;}
         else if(index==1){strcpy_P(item->label,PSTR("Calibrar motor"));item->action=AFR2_A_HALL_BEGIN;}
-        else {strcpy_P(item->label,PSTR("Volver"));item->target=AFR2_N_TESTS;}return;
+        else {strcpy_P(item->label,PSTR("Volver"));item->target=AFR2_N_CALIB;}return;
     }
     uint8_t connection=u->ops.value?(uint8_t)u->ops.value(u->ops.ctx,AFR2_A_WIFI_CONNECTED):2;
     if(u->node==AFR2_N_WIFI_VIEW){if(connection==2 && index>=3)index+=2;else if(connection==1 && index>=4)++index;}
     if(u->node==AFR2_N_WIFI_REVIEW && connection==2 && index>=1)++index;
-    if(clean(u) && ((u->node==AFR2_N_PREFS && index>=3) || (u->node==AFR2_N_CALIB && index>=4)))++index;
+    /* AFR2-20261108-06: en Preferencias "Descartar cambios" paso a la fila 4 (fila 2 = Reintento Wi-Fi s). */
+    if(clean(u) && ((u->node==AFR2_N_PREFS && index>=4) || (u->node==AFR2_N_CALIB && index>=4)))++index;
     Afr2Menu_Item(u->node,index,item);
     if(item->action==AFR2_A_WIFI_CONNECT && u->ops.value && u->ops.value(u->ops.ctx,AFR2_A_WIFI_CONNECTED)==1){item->action=AFR2_A_WIFI_DISCONNECT;strcpy_P(item->label,PSTR("Desconectar"));}
     if(item->action==AFR2_A_WIFI_CONNECT && u->ops.value && !u->ops.value(u->ops.ctx,AFR2_A_WIFI_CONNECT)){
         item->action=0;item->target=AFR2_N_WIFI_SETUP;strcpy_P(item->label,PSTR("Configurar red"));
     }
-    if(item->action==AFR2_A_RADAR_TOGGLE || item->action==AFR2_A_LINE_TOGGLE || item->action==AFR2_A_WHEEL_TOGGLE || item->action==AFR2_A_GOTO_TOGGLE){
+    if(item->action==AFR2_A_RADAR_TOGGLE || item->action==AFR2_A_LINE_TOGGLE || item->action==AFR2_A_WHEEL_TOGGLE || item->action==AFR2_A_GOTO_TOGGLE || item->action==AFR2_A_ODOM_TOGGLE){
         uint8_t on=u->ops.value && u->ops.value(u->ops.ctx,item->action);
         strcpy_P(item->label,on?PSTR("Detener"):PSTR("Iniciar"));
     }
@@ -84,11 +90,14 @@ void Afr2MotorSelector_Render(Afr2Oled *o,uint8_t selected){
 }
 static void wipe(void *data,uint16_t n){volatile uint8_t *p=data;while(n--)*p++=0;}
 static void sync_code(Afr2Ui *u){Afr2MenuNode n;Afr2Ui_MenuNode(u,&n);u->screen=n.code;++u->generation;++u->navigation_revision;u->redraw=true;u->scroll_started_ms=u->clock_ms;u->scroll_redraw=false;}
-void Afr2Ui_Init(Afr2Ui *u){memset(u,0,sizeof(*u));u->node=AFR2_N_HOME;sync_code(u);}
+void Afr2Ui_Init(Afr2Ui *u){memset(u,0,sizeof(*u));u->node=AFR2_N_HOME;u->splash=1;sync_code(u);} /* AFR2-20261108-07 */
+/* AFR2-20261108-07: fin de la pantalla de inicio. Los avisos que llegaron durante ella arrancan su tiempo ahora. */
+static void splash_end(Afr2Ui *u){u->splash=0;u->notice_started_ms=u->clock_ms;sync_code(u);}
 void Afr2Ui_Attach(Afr2Ui *u,const Afr2UiOps *ops){u->ops=*ops;}
 static uint8_t invoke(Afr2Ui *u,uint8_t action,int32_t value,const void *data) {
     return u->ops.invoke?u->ops.invoke(u->ops.ctx,action,value,data):2;
 }
+void Afr2Ui_Leave(Afr2Ui *u,uint8_t fallback);
 void Afr2Ui_Open(Afr2Ui *u,uint8_t node) {
     if(node>=AFR2_N_COUNT)return;
     if(u->node==AFR2_N_RADAR_CONFIG){u->radar_selection=u->selection;u->radar_first=u->firstVisible;}
@@ -99,12 +108,20 @@ void Afr2Ui_Open(Afr2Ui *u,uint8_t node) {
     if(node==AFR2_N_RADAR_CONFIG){u->selection=u->radar_selection;u->firstVisible=u->radar_first;}
     if(node==AFR2_N_WIFI_MODE_SELECT)u->selection=u->ops.value?(uint8_t)u->ops.value(u->ops.ctx,AFR2_A_WIFI_MODE)-1u:0;
     if(node==AFR2_N_ENCODER_TEST){u->test_long=0;u->test_clicks=0;u->test_turns=0;}
+    if(node==AFR2_N_WIFI_ASK){u->wifi_ask_timer=1;u->wifi_ask_answered=0;u->wifi_ask_ms=u->clock_ms;} /* AFR2-20261108-06: Iniciar AP preseleccionado */
+    if(node==AFR2_N_QR_AP || node==AFR2_N_QR_WEB)Afr2Qr_Invalidate();
     sync_code(u);
 }
 static void back(Afr2Ui *u,uint8_t fallback) {
     if(u->node==AFR2_N_RADAR_CONFIG){u->radar_selection=u->selection;u->radar_first=u->firstVisible;}
     if(u->depth){Afr2UiPosition p=u->history[--u->depth];u->node=p.node;u->selection=p.selection;u->firstVisible=p.first;sync_code(u);}
     else Afr2Ui_Open(u,fallback);
+}
+/* AFR2-20261108-03: la app saca la pantalla de una prueba terminada, con el mismo retorno que el boton Volver. */
+void Afr2Ui_Leave(Afr2Ui *u,uint8_t fallback){u->edit=0;back(u,fallback);}
+void Afr2Ui_OdomDirName(char *out,uint8_t dir){
+    static const char names[8][14] PROGMEM={"Adelante","Atras","Izquierda","Derecha","Diagonal AD-I","Diagonal AD-D","Diagonal AT-I","Diagonal AT-D"};
+    strcpy_P(out,names[dir&7u]);
 }
 /* AFR2-20261029-20: generic mandatory save/discard dialog. No third option.
  * Caller supplies service actions; persistence completion is asynchronous. */
@@ -123,7 +140,7 @@ void Afr2Ui_SaveCompleted(Afr2Ui *u){
     leave_confirm(u);Afr2Ui_NotifyFlash(u,0,PSTR("Cambios"),PSTR("Guardados"),2500);
 }
 void Afr2Ui_NetworkRestart(Afr2Ui *u){
-    uint8_t wifi=(u->node>=AFR2_N_WIFI && u->node<=AFR2_N_WIFI_AP) || u->node==AFR2_N_AP_INFO || u->node==AFR2_N_NETWORK || u->node==AFR2_N_WIFI_DATA || u->node==AFR2_N_WIFI_SEARCH || u->node==AFR2_N_WIFI_MODE_SELECT || u->node==AFR2_N_QR_AP || u->node==AFR2_N_QR_WEB;
+    uint8_t wifi=(u->node>=AFR2_N_WIFI && u->node<=AFR2_N_WIFI_AP) || u->node==AFR2_N_AP_INFO || u->node==AFR2_N_NETWORK || u->node==AFR2_N_WIFI_DATA || u->node==AFR2_N_WIFI_SEARCH || u->node==AFR2_N_WIFI_MODE_SELECT || u->node==AFR2_N_QR_AP || u->node==AFR2_N_QR_WEB || u->node==AFR2_N_WIFI_ASK;
     if(!wifi)return;
     wipe(&u->credentials,sizeof(u->credentials));u->keyboard=u->edit=0;u->notices=u->head=u->tail=u->notice_target=0;
     u->depth=0;
@@ -135,8 +152,21 @@ static uint8_t hall_dirty(Afr2Ui *u){return u->ops.value && u->ops.value(u->ops.
 /* AFR2-20261029-19. Invoke the actual explicit return item, without changing
  * selection first or replaying synthetic rotations. Physical input unchanged. */
 /* AFR2-20261029-27: one contextual return path for physical release and Web Back. */
+static void action_result(Afr2Ui *u,uint8_t code,uint8_t action);
+/* AFR2-20261108-06: respuesta del selector sin Wi-Fi. Si el ESP no puede recibirla queda la pantalla, sin cuenta. */
+static void wifi_ask_choose(Afr2Ui *u,uint8_t start_ap){
+    uint8_t r=invoke(u,AFR2_A_WIFI_ASK,start_ap?1:2,0);
+    u->wifi_ask_timer=0;u->redraw=true;
+    if(r){action_result(u,r,AFR2_A_WIFI_ASK);return;}
+    u->wifi_ask_answered=1;Afr2Ui_Leave(u,AFR2_N_WIFI);
+    if(!start_ap){ /* Iniciar AP no avisa aca: lo hace "Red AP creada" del ESP, igual que antes */
+        char text[18];snprintf_P(text,sizeof(text),PSTR("Reintento: %u s"),(unsigned)(u->ops.value?u->ops.value(u->ops.ctx,AFR2_A_WIFI_RETRY_S):30));
+        Afr2Ui_NotifyFlashTitle(u,0,PSTR("Seguir esperando"),text,2500);
+    }
+}
 static void go_back(Afr2Ui *u){
     if(u->notices){dismiss_input(u);return;}
+    if(u->node==AFR2_N_WIFI_ASK){wifi_ask_choose(u,0);return;} /* largo al soltar = Seguir esperando */
     if(u->edit){u->edit=0;u->redraw=true;return;}
     if(u->node==AFR2_N_HOME){Afr2Ui_Open(u,AFR2_N_QUICK);return;}
     Afr2MenuNode n;Afr2Ui_MenuNode(u,&n);
@@ -154,6 +184,10 @@ static void go_back(Afr2Ui *u){
     }
     if(u->node==AFR2_N_SERVO_ANGLE)(void)invoke(u,AFR2_A_SERVO_EDIT_END,0,0);
     if(u->node==AFR2_N_WHEEL || u->node==AFR2_N_MOVE)(void)invoke(u,AFR2_A_HALL_CANCEL,1,0);
+    if(u->node==AFR2_N_ODOM_RUN)(void)invoke(u,AFR2_A_STOP,0,0); /* AFR2-20261108-03: salir detiene la prueba */
+    if(u->node==AFR2_N_ODOM_ASK){ /* AFR2-20261108-04: largo al soltar = descartar la propuesta */
+        (void)invoke(u,AFR2_A_ODOM_ANSWER,0,0);Afr2Ui_NotifyFlash(u,0,PSTR("Odometria"),PSTR("Prueba descartada"),2500);
+    }
     back(u,target);
 }
 uint8_t Afr2Ui_BackItem(Afr2Ui *u){
@@ -264,13 +298,26 @@ static void dismiss_input(Afr2Ui *u){
 }
 uint8_t Afr2Ui_NetworkQuiet(const Afr2Ui *u){return (int32_t)(u->clock_ms-u->network_quiet_until_ms)<0;}
 void Afr2Ui_Tick(Afr2Ui *u,uint32_t now) {
-    u->clock_ms=now;
+    uint32_t dt=now-u->clock_ms;u->clock_ms=now;
+    /* AFR2-20261108-07: 3 s de pantalla de inicio; la barra superior se repinta cada 100 ms y nada mas corre. */
+    if(u->splash){
+        if(u->splash==1){u->splash=2;u->splash_ms=now;u->scroll_render_ms=now;u->redraw=true;return;}
+        if((uint32_t)(now-u->splash_ms)>=AFR2_SPLASH_MS){splash_end(u);return;}
+        if((uint32_t)(now-u->scroll_render_ms)>=100u){u->scroll_render_ms=now;u->redraw=true;}
+        return;
+    }
+    /* AFR2-20261108-06: 5 s sin interaccion = Iniciar AP. Mientras un aviso o el tactil tapan la pantalla la cuenta no corre. */
+    if(u->node==AFR2_N_WIFI_ASK && u->wifi_ask_timer){
+        if(u->notices || u->touch_active)u->wifi_ask_ms+=dt;
+        else if((uint32_t)(now-u->wifi_ask_ms)>=AFR2_WIFI_ASK_MS)wifi_ask_choose(u,1);
+    }
     if(u->ops.value){
         uint8_t signature=!!u->ops.value(u->ops.ctx,AFR2_A_DIRTY);
         signature|=!!u->ops.value(u->ops.ctx,AFR2_A_RADAR_TOGGLE)<<1;
         signature|=!!u->ops.value(u->ops.ctx,AFR2_A_LINE_TOGGLE)<<2;
         signature|=!!u->ops.value(u->ops.ctx,AFR2_A_WHEEL_TOGGLE)<<3;
         signature|=!!u->ops.value(u->ops.ctx,AFR2_A_GOTO_TOGGLE)<<4;
+        signature|=!!u->ops.value(u->ops.ctx,AFR2_A_ODOM_TOGGLE)<<6;
         signature|=(u->ops.value(u->ops.ctx,AFR2_A_WIFI_CONNECTED)==1)<<5;
         uint8_t wifi_signature=(uint8_t)u->ops.value(u->ops.ctx,AFR2_A_WIFI_COUNT)*3u+(uint8_t)u->ops.value(u->ops.ctx,AFR2_A_WIFI_CONNECTED);
         if(wifi_signature!=u->wifi_signature){u->wifi_signature=wifi_signature;sync_code(u);}
@@ -293,6 +340,10 @@ void Afr2Ui_Tick(Afr2Ui *u,uint32_t now) {
             u->touch_full=1;u->scroll_redraw=true;
         }
         u->scroll_render_ms=now;return;
+    }
+    /* AFR2-20261108-05: si el guardado nunca confirma, el dialogo no puede quedar bloqueado en "Guardando...". */
+    if(u->node==AFR2_N_SAVE_CONFIRM && u->confirm_wait && (uint32_t)(now-u->confirm_wait_ms)>5000u){
+        u->confirm_wait=0;u->redraw=true;Afr2Ui_NotifyFlash(u,1,PSTR("EEPROM"),PSTR("No guardado"),3000);
     }
     if(u->notices && (uint32_t)(now-u->notice_started_ms)>=u->notification[u->tail].ms)dismiss(u);
     uint8_t network=u->node==AFR2_N_QR_AP || u->node==AFR2_N_QR_WEB || u->node==AFR2_N_WIFI_DATA || u->node==AFR2_N_HOME || u->node==AFR2_N_NETWORK || u->node==AFR2_N_AP_INFO;
@@ -326,6 +377,7 @@ uint32_t Afr2Ui_ReportedScreen(const Afr2Ui *u) {
     if((u->edit && u->editing.action==AFR2_A_WHEEL) || u->node==AFR2_N_HALL_PICK)return AFR2_SCREEN_MOTOR_SELECTOR;
     if(u->edit && u->editing.action==AFR2_A_POWER)return 0x030040UL;
     if(u->touch_active)return AFR2_SCREEN_TOUCH;
+    if(u->splash)return AFR2_SCREEN_SPLASH; /* AFR2-20261108-07 */
     if(u->notices){uint8_t kind=u->notification[u->tail].kind;
         if(kind>AFR2_NOTICE_NETWORK && kind<=AFR2_NOTICE_NETWORK+AFR2_NET_EVENT_MAX)return 0x040000UL+kind-AFR2_NOTICE_NETWORK;}
     return u->screen;
@@ -362,6 +414,7 @@ static void keyboard(Afr2Ui *u,Afr2UiInput in) {
 }
 void Afr2Ui_InputHeld(Afr2Ui *u,uint8_t held,uint32_t now){
     if(held && !u->dashboard.held)u->hold_started_ms=now;
+    if(held && u->node==AFR2_N_WIFI_ASK && u->wifi_ask_timer){u->wifi_ask_timer=0;u->redraw=true;} /* AFR2-20261108-06: apretar ya es interactuar */
     uint16_t threshold=u->ops.value?(uint16_t)u->ops.value(u->ops.ctx,AFR2_A_LONG_MS):800;if(threshold<800)threshold=800;
     uint32_t amount=held?(uint32_t)(now-u->hold_started_ms)*16u/threshold:0;
     uint8_t progress=amount>16?16:amount;
@@ -375,6 +428,7 @@ void Afr2Ui_InputHeld(Afr2Ui *u,uint8_t held,uint32_t now){
 }
 void Afr2Ui_Apply(Afr2Ui *u,Afr2UiInput in) {
     if(in.rotation || in.click || in.menu){u->dashboard.input_ms=u->clock_ms;u->dashboard.armed=0;}
+    if(u->splash){if(in.click || in.menu)splash_end(u);return;} /* AFR2-20261108-07: corto o largo la saltean; el giro no hace nada */
     if(u->touch_active){if(in.menu){u->touch_cancelled=1;invoke(u,AFR2_A_STOP,0,0);Afr2Ui_Touch(u,0,8,0);}return;}
     if(u->node==AFR2_N_ENCODER_TEST){
         /* AFR2-20261107-52: rotation counts up/down from 0, short counts clicks; the first long
@@ -389,14 +443,17 @@ void Afr2Ui_Apply(Afr2Ui *u,Afr2UiInput in) {
     if(in.click && u->encoder_clicks!=UINT16_MAX)++u->encoder_clicks;
     if(in.menu && u->encoder_holds!=UINT16_MAX)++u->encoder_holds;
     if(u->node==AFR2_N_SAVE_CONFIRM){
-        if(u->notices){if(in.click)dismiss_input(u);return;}
+        /* AFR2-20261108-05: un aviso encolado ya no traga el giro (antes solo el clic lo cerraba) y todo queda en el log. */
+        AFR2_DBG("CONFIRM in rot=%d click=%u sel=%u notices=%u wait=%u",(int)in.rotation,(unsigned)in.click,(unsigned)u->selection,(unsigned)u->notices,(unsigned)u->confirm_wait);
+        if(u->notices){if(in.click || in.rotation)dismiss_input(u);return;}
         if(u->confirm_wait)return;
         if(in.rotation%2){u->selection^=1u;u->redraw=true;}
         /* Long cannot bypass a required Yes/No decision. */
         if(in.click){
             uint8_t r=invoke(u,u->selection?u->confirm_discard:u->confirm_save,(u->selection && u->confirm_save==AFR2_A_HALL_SAVE)?2:0,0);
+            AFR2_DBG("CONFIRM %s result=%u",u->selection?"discard":"save",(unsigned)r);
             if(r){Afr2Ui_NotifyFlash(u,1,PSTR("No completado"),PSTR("Reintentar"),2500);return;}
-            if(!u->selection){u->confirm_wait=1;u->redraw=true;}
+            if(!u->selection){u->confirm_wait=1;u->confirm_wait_ms=u->clock_ms;u->redraw=true;}
             else {leave_confirm(u);Afr2Ui_NotifyFlash(u,0,PSTR("Cambios"),PSTR("Descartados"),2500);}
         }return;
     }
@@ -428,13 +485,31 @@ void Afr2Ui_Apply(Afr2Ui *u,Afr2UiInput in) {
     /* AFR2-20261106-09: on QR, network notices (e.g. the scanning phone joining the AP) kept every
      * press busy dismissing them. Short or long always leaves; queued informative notices are dropped. */
     if((u->node==AFR2_N_QR_AP || u->node==AFR2_N_QR_WEB) && (in.click || in.menu)){
-        u->notices=u->head=u->tail=u->notice_target=0;go_back(u);return;
+        /* AFR2-20261108-02: salida determinista (antes dependia solo del historial) y repintado completo. */
+        u->notices=u->head=u->tail=u->notice_target=0;u->edit=0;u->hold_progress=0;
+        back(u,AFR2_N_WIFI);u->redraw=true;u->scroll_redraw=false;Afr2Qr_Invalidate();return;
     }
     if(in.menu){go_back(u);return;}
     if(u->notices){if(in.click)dismiss_input(u);return;}
     /* AFR2-20261029-29: short opens full menu; long-release opens quick cards. */
+    /* AFR2-20261108-06: selector sin Wi-Fi. Giro cambia la opcion y detiene la cuenta; corto ejecuta la elegida;
+     * el largo ya respondio Seguir esperando arriba (go_back). */
+    if(u->node==AFR2_N_WIFI_ASK){
+        if(in.rotation){u->wifi_ask_timer=0;if(in.rotation%2)u->selection^=1u;u->redraw=true;}
+        if(in.click)wifi_ask_choose(u,u->selection==0);
+        return;
+    }
+    /* AFR2-20261108-04: propuesta de la Web. Corto = iniciar; el largo ya descarto arriba (go_back). */
+    if(u->node==AFR2_N_ODOM_ASK){
+        if(in.click){
+            uint8_t r=invoke(u,AFR2_A_ODOM_ANSWER,1,0);
+            Afr2Ui_Leave(u,AFR2_N_CALIB);
+            if(r)action_result(u,r,AFR2_A_ODOM_TOGGLE);else Afr2Ui_Open(u,AFR2_N_ODOM_RUN);
+        }
+        return;
+    }
     if(u->node==AFR2_N_HOME){if(in.click)Afr2Ui_Open(u,AFR2_N_MENU);return;}
-    if(u->node==AFR2_N_WIFI_DATA || u->node==AFR2_N_QR_AP || u->node==AFR2_N_QR_WEB){if(in.click)go_back(u);return;}
+    if(u->node==AFR2_N_WIFI_DATA || u->node==AFR2_N_QR_AP || u->node==AFR2_N_QR_WEB || u->node==AFR2_N_ODOM_RUN){if(in.click)go_back(u);return;}
     if(u->node==AFR2_N_NETWORK){
         if(in.rotation){int16_t page=u->selection+in.rotation;u->selection=page<0?0:page>1?1:page;u->redraw=true;}
         if(in.click){go_back(u);}return;
@@ -512,6 +587,11 @@ void Afr2Ui_Apply(Afr2Ui *u,Afr2UiInput in) {
             else Afr2Ui_NotifyFlash(u,0,PSTR("Modo seleccionado"),i.arg?PSTR("Manual"):PSTR("Reposo"),2500);
         } else if(i.action==AFR2_A_RADAR_RANGE){
             uint8_t r=invoke(u,i.action,i.arg,0);if(r)result(u,r);else back(u,AFR2_N_RADAR_OPTIONS);
+        } else if(i.action==AFR2_A_ODOM_TOGGLE){
+            /* AFR2-20261108-03: al iniciar abre la vista en marcha; si era Detener solo repinta. */
+            uint8_t was=u->ops.value && u->ops.value(u->ops.ctx,AFR2_A_ODOM_TOGGLE);
+            uint8_t r=invoke(u,i.action,0,0);u->redraw=true;
+            if(r)action_result(u,r,i.action);else if(!was)Afr2Ui_Open(u,AFR2_N_ODOM_RUN);
         } else if(i.action==AFR2_A_HALL_BEGIN){
             Afr2Ui_Open(u,AFR2_N_HALL_PICK);
             u->selection=u->ops.value?(uint8_t)u->ops.value(u->ops.ctx,AFR2_A_WHEEL):0;
@@ -581,6 +661,20 @@ static void render_save_confirm(Afr2Ui *u,Afr2Oled *o,const Afr2UiSnapshot *s){
     TXT(o,14,34,"Si");TXT(o,14,49,"No");
     Afr2Oled_FillRect(o,0,u->selection?47:32,128,14,AFR2_INVERT);
 }
+/* AFR2-20261108-06: fila 0 Iniciar AP (defecto), fila 1 Seguir esperando; barra de 5 s que desaparece al interactuar. */
+static void render_wifi_ask(Afr2Ui *u,Afr2Oled *o){
+    Afr2Component_HeaderFlash(o,AFR2_ICON_WIFI_OFF,PSTR("Sin red Wi-Fi"),0,0);
+    if(u->wifi_ask_timer){
+        uint32_t spent=u->clock_ms-u->wifi_ask_ms;if(spent>AFR2_WIFI_ASK_MS)spent=AFR2_WIFI_ASK_MS;
+        uint32_t left=AFR2_WIFI_ASK_MS-spent;char text[18];
+        snprintf_P(text,sizeof(text),PSTR("Inicia AP en %u s"),(unsigned)((left+999u)/1000u));
+        Afr2Oled_Text(o,0,16,text,AFR2_WHITE);
+        Afr2Oled_FillRect(o,0,28,(uint8_t)((left*128u)/AFR2_WIFI_ASK_MS),2,AFR2_WHITE);
+    } else TXT(o,0,16,"Elija una opcion");
+    Afr2Icon_Draw(o,AFR2_ICON_AP,0,33,12);TXT(o,16,34,"Iniciar AP");
+    Afr2Icon_Draw(o,AFR2_ICON_REFRESH,0,48,12);TXT(o,16,49,"Seguir esperando");
+    Afr2Oled_FillRect(o,0,u->selection?47:32,128,14,AFR2_INVERT);
+}
 static void centered(Afr2Oled *o,uint8_t y,const char *text){
     uint16_t width=strlen_P(text)*7u;Afr2Oled_TextFlash(o,width<128?(128-width)/2:0,y,text,AFR2_WHITE);
 }
@@ -609,7 +703,28 @@ void Afr2Power_Render(Afr2Oled *o,uint8_t percent){
     Afr2Component_Progress(o,30,1,percent,0);
     snprintf_P(text,sizeof(text),PSTR("%u%%"),percent);Afr2Oled_Text(o,52,43,text,AFR2_WHITE);Afr2Icon_Draw(o,AFR2_ICON_ENCODER_TURN,0,47,16);
 }
+/* AFR2-20261108-07: pantalla de inicio. Barra superior como la de los avisos (se llena en 3 s), "AFR2" al doble
+ * de tamano que aparece letra por letra cada 200 ms, "ATmega" y la version del firmware compilado. */
+static void big_text_flash(Afr2Oled *o,int16_t x,int16_t y,const char *text,uint8_t count){
+    for(uint8_t i=0;i<count;i++){
+        char ch=(char)pgm_read_byte(text+i);if(!ch)return;
+        for(uint8_t row=0;row<10;row++){
+            uint8_t bits=Afr2Font7x10_Row((uint8_t)ch,row);
+            for(uint8_t col=0;col<7;col++)if(bits&(0x80u>>col))Afr2Oled_FillRect(o,x+i*14+col*2,y+row*2,2,2,AFR2_WHITE);
+        }
+    }
+}
+static void render_splash(Afr2Ui *u,Afr2Oled *o){
+    uint32_t spent=u->splash==2?u->clock_ms-u->splash_ms:0;if(spent>AFR2_SPLASH_MS)spent=AFR2_SPLASH_MS;
+    Afr2Oled_Clear(o);
+    Afr2Oled_FillRect(o,0,0,(uint8_t)((spent*128u)/AFR2_SPLASH_MS),2,AFR2_WHITE);
+    uint8_t letters=(uint8_t)(1u+spent/200u);if(letters>4)letters=4;
+    big_text_flash(o,36,8,PSTR("AFR2"),letters);
+    centered(o,32,PSTR("ATmega"));
+    centered(o,47,PSTR("Firmware " AFR2_FIRMWARE_VERSION));
+}
 static void render_screen(Afr2Ui *u,Afr2Oled *o,const Afr2UiSnapshot *s) {
+    if(u->splash){render_splash(u,o);++u->revision;if(!u->revision)++u->revision;u->redraw=false;u->scroll_redraw=false;return;}
     if(u->node==AFR2_N_HOME && !u->notices && !u->touch_active){
         if(Afr2Dashboard_Render(u,o,s)){++u->revision;if(!u->revision)++u->revision;}
         u->redraw=false;u->scroll_redraw=false;return;
@@ -644,6 +759,13 @@ static void render_screen(Afr2Ui *u,Afr2Oled *o,const Afr2UiSnapshot *s) {
         Afr2Ui_GestureHint(o,0,39,1,u->test_long?PSTR("Correcto"):PSTR("Pulse"));
         if(u->test_long)Afr2Ui_GestureHint(o,0,52,1,PSTR("Salir"));
     }
+    else if(u->node==AFR2_N_ODOM_ASK){
+        /* AFR2-20261108-04: lines[0] direccion, lines[1] distancia (preparadas por la app). */
+        Afr2Component_HeaderFlash(o,AFR2_ICON_TOOLS,PSTR("Prueba odometria"),0,0);
+        Afr2Oled_Text(o,0,16,s->lines[0],AFR2_WHITE);Afr2Oled_Text(o,0,28,s->lines[1],AFR2_WHITE);
+        Afr2Ui_GestureHint(o,0,40,0,PSTR("Iniciar"));Afr2Ui_GestureHint(o,0,53,1,PSTR("Descartar"));
+    }
+    else if(u->node==AFR2_N_WIFI_ASK)render_wifi_ask(u,o);
     else if(u->node==AFR2_N_POWER){if(u->power_known)Afr2Power_Render(o,u->power_percent);else {TXT(o,0,0,"Potencia manual");TXT(o,0,25,"Sin valor vigente");}}
     else if(u->node==AFR2_N_WIFI_MODE_SELECT){
         Afr2Component_HeaderFlash(o,AFR2_ICON_WIFI,PSTR("Cambiar modo"),0,0);TXT(o,0,16,"Opciones de modos");TXT(o,3,28,"STA");TXT(o,45,28,"AP");TXT(o,80,28,"AP-STA");
@@ -671,8 +793,12 @@ static void render_screen(Afr2Ui *u,Afr2Oled *o,const Afr2UiSnapshot *s) {
     else if(u->edit && u->editing.action==AFR2_A_POWER)Afr2Power_Render(o,(uint8_t)u->draft);
     else if(u->edit) {
         char value[18];Afr2Component_Header(o,AFR2_ICON_CONFIG,u->editing.label,0,0);
-        snprintf_P(value,sizeof(value),PSTR("%ld"),(long)u->draft);Afr2Oled_Text(o,0,16,value,AFR2_WHITE);Afr2Ui_GestureHint(o,0,28,2,PSTR("Ajustar"));
-        Afr2Ui_GestureHint(o,0,40,0,PSTR("Aplicar"));Afr2Ui_GestureHint(o,0,53,1,PSTR("Descartar"));
+        /* AFR2-20261108-02: la direccion de la prueba de odometria se muestra con su nombre. */
+        if(u->editing.action==AFR2_A_ODOM_DIR)Afr2Ui_OdomDirName(value,(uint8_t)u->draft);
+        else if(u->editing.action==AFR2_A_ODOM_CM)snprintf_P(value,sizeof(value),PSTR("%ld cm"),(long)u->draft);
+        else snprintf_P(value,sizeof(value),PSTR("%ld"),(long)u->draft);
+        Afr2Oled_Text(o,0,16,value,AFR2_WHITE);Afr2Ui_GestureHint(o,0,28,2,PSTR("Ajustar"));
+        Afr2Ui_GestureHint(o,0,40,0,(u->editing.action==AFR2_A_ODOM_DIR || u->editing.action==AFR2_A_ODOM_CM)?PSTR("Guardar"):PSTR("Aplicar"));Afr2Ui_GestureHint(o,0,53,1,PSTR("Descartar"));
     } else {
         if(!partial) {
             char title[18];strncpy(title,n.title,17);title[17]=0;

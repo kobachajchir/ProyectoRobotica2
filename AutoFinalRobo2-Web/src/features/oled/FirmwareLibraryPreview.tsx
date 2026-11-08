@@ -2,7 +2,7 @@ import { MOTOR_IDS, stepMotor } from '../../domain/motorSelection';
 /* AFR2-20261029-27: quick controls/radar/PWM/WS integration; prior authors retained. */
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { FIRMWARE_LIBRARY as library } from './generated/firmwareLibrary';
-import { firmwareMenuItem, firmwareNodeCount, firmwareNode, renderFirmwareScreen, MOTOR_SELECTOR_NODE, type FirmwareSnapshot } from './firmwareRenderer';
+import { firmwareMenuItem, firmwareNodeCount, firmwareNode, renderFirmwareScreen, MOTOR_SELECTOR_NODE, SPLASH_MS, type FirmwareSnapshot } from './firmwareRenderer';
 import { Afr2OledBuffer } from './oledRasterizer';
 import { OledCanvas128x64 } from './OledCanvas128x64';
 import { OledWorkbench } from './OledWorkbench';
@@ -32,29 +32,32 @@ export function FirmwareLibraryPreview({ screen, onNavigate, active = true }: { 
   const dynamic = node === library.symbols.AFR2_N_WIFI_NETWORKS;
   const motorPick=screen.code==='0x030044';
   const hallPick=screen.code==='0x030036',hallCount=screen.code==='0x030037',saveChoice=screen.code==='0x030038';
+  // AFR2-20261108-06/07: "Sin red Wi-Fi" (two choices, no countdown in the library) and the boot splash (no node).
+  const wifiAsk=screen.code==='0x03004b',splash=screen.code==='0x010004';
   const hallStatus=node===library.symbols.AFR2_N_HALL_VIEW;
   const caps=node===library.symbols.AFR2_N_CAPS;
   const batteryView=screen.code==='0x03003a';
-  const count = home?0:node===45?2:node===67?3:caps?6:motorPick || hallPick?4:saveChoice?2:current && !dynamic ? firmwareNodeCount(node) : 0;
-  const visible = saveChoice?2:current?.[2] && node!==library.symbols.AFR2_N_DIAG ? 1 : 3;
+  const count = home?0:node===45?2:node===67?3:caps?6:motorPick || hallPick?4:saveChoice || wifiAsk?2:current && !dynamic ? firmwareNodeCount(node) : 0;
+  const visible = saveChoice || wifiAsk?2:current?.[2] && node!==library.symbols.AFR2_N_DIAG ? 1 : 3;
   const siblingViews=[library.symbols.AFR2_N_RADAR_VIEW,library.symbols.AFR2_N_US_VIEW,library.symbols.AFR2_N_LINE_VIEW,library.symbols.AFR2_N_IR_VALUES] as number[];
   const sensorView=siblingViews.includes(node) || node===library.symbols.AFR2_N_SERVO_ANGLE;
-  const drawable = !!current && (quick || home || caps || node===62 || node===64 || node===65 || node===67 || node===68 || node===69 || node===45 || !current[2] || node===library.symbols.AFR2_N_DIAG || sensorView || motorPick || hallPick || hallCount || saveChoice || hallStatus || batteryView) && !dynamic;
+  const drawable = splash || (!!current && (quick || home || caps || node===62 || node===64 || node===65 || node===67 || node===68 || node===69 || node===45 || !current[2] || node===library.symbols.AFR2_N_DIAG || sensorView || motorPick || hallPick || hallCount || saveChoice || hallStatus || batteryView || wifiAsk) && !dynamic);
   useEffect(() => {
     if (position.node !== node) { history.current = []; setPosition({ node, selection: 0, firstVisible: 0 }); }
     scrollStarted.current = clock(); setClockMs(clock()); setFeedback(null);
   }, [node, position.node]);
   const longText = drawable && count>0 && !motorPick && !hallPick && !hallCount && !saveChoice && firmwareMenuItem(node, state.selection).label.length * 7 > 93;
   useEffect(() => {
-    if (!longText || !active) return;
+    if ((!longText && !splash) || !active) return;
     const timer = window.setInterval(() => { if (document.visibilityState === 'visible') setClockMs(clock()); }, 40);
     return () => window.clearInterval(timer);
-  }, [longText, active]);
+  }, [longText, splash, active]);
   const buffer = useMemo(() => {
     const result = new Afr2OledBuffer();
     if (drawable) renderFirmwareScreen({ ...state, clockMs, scrollStartedMs: scrollStarted.current,
       noticeStartedMs: 0, redraw: true, scrollRedraw: false, keyboard: false, keyboardField: false,
       key: 0, length: 0, ssid: '', edit: false, editingLabel: '', draft: 0, notice: null,
+      splashMs: splash ? (clockMs - ((clockMs - scrollStarted.current) >>> 0) % SPLASH_MS) >>> 0 : undefined,
     }, result, caps ? {...layout,lines:[['UI: encoder/OLED','Dibujo por TWI','Estado: sin datos'],['UART: puente ESP','Wi-Fi/HTTP/WS','Estado: sin datos'],['Sensores: IR/HC','Linea / Hall','Estado: sin datos'],['PWM: sin odometria','STOP corta salidas','Estado: sin datos'],['GOTO requiere pose','CPR y CAD nominal','Estado: sin datos'],['Secuencias: pasos','Guardar explicito','Estado: sin datos']][state.selection]} : batteryView ? { ...layout, lines: ['Bateria: -- V', 'Realizar medicion', 'Desde Bateria'] } : layout);
     return result;
   }, [drawable, state.node, state.selection, state.firstVisible, clockMs, batteryView]);
@@ -64,7 +67,7 @@ export function FirmwareLibraryPreview({ screen, onNavigate, active = true }: { 
     if(motorPick){setPosition({...state,selection:stepMotor(state.selection,delta)});setFeedback(null);return;}
     if(node===45 || node===67){setPosition({...state,selection:Math.max(0,Math.min(node===45?1:2,state.selection+delta))});return;}
     if(caps || quick){const selection=Math.max(0,Math.min(caps?5:6,state.selection+delta));if(quick)quickSelection.current=selection;setPosition({...state,selection});scrollStarted.current=clock();setClockMs(clock());return;}
-    if(hallPick || saveChoice){setPosition({...state,selection:(state.selection+delta%count+count)%count});setFeedback(null);return;}
+    if(hallPick || saveChoice || wifiAsk){setPosition({...state,selection:(state.selection+delta%count+count)%count});setFeedback(null);return;}
     if(sensorView){
       if(node===library.symbols.AFR2_N_SERVO_ANGLE){setFeedback('El control físico del servo requiere el equipo. Usá Distancia y servo para enviar una orden.');return;}
       if((delta>0 && (node===library.symbols.AFR2_N_RADAR_VIEW || node===library.symbols.AFR2_N_LINE_VIEW)) || (delta<0 && (node===library.symbols.AFR2_N_US_VIEW || node===library.symbols.AFR2_N_IR_VALUES))){const target=node===library.symbols.AFR2_N_RADAR_VIEW?library.symbols.AFR2_N_US_VIEW:node===library.symbols.AFR2_N_US_VIEW?library.symbols.AFR2_N_RADAR_VIEW:node===library.symbols.AFR2_N_LINE_VIEW?library.symbols.AFR2_N_IR_VALUES:library.symbols.AFR2_N_LINE_VIEW;navigate({node:target,selection:0,firstVisible:0});}return;
@@ -87,11 +90,13 @@ export function FirmwareLibraryPreview({ screen, onNavigate, active = true }: { 
     onNavigate(normalizeScreenCode('0x' + Number(firmwareNode(next.node)[5]).toString(16))!);
   };
   const press = (kind: 'short' | 'long') => {
+    if(active && splash){setFeedback('La pantalla de inicio dura 3 s al encender; corto o largo la saltean.');return;}
     if (!active || !current) return;
     if(motorPick){if(kind==='long')navigate(history.current.pop()??{node:library.symbols.AFR2_N_TESTS,selection:0,firstVisible:0});else {const chosen=MOTOR_IDS[state.selection&3];navigate(history.current.pop()??{node:library.symbols.AFR2_N_TESTS,selection:0,firstVisible:0});setFeedback(`Motor ${chosen} confirmado en la vista local; sin modificar el equipo.`);}return;}
     if(node===45 || node===65 || node===68 || node===69){if(kind==='long' || kind==='short')navigate(history.current.pop()??{node:node===68 || node===69?31:32,selection:0,firstVisible:0});return;}
     if(node===67 && kind==='short'){setFeedback('Cambiar el modo requiere confirmación del ESP; la biblioteca no modifica la radio.');return;}
     if(node===62){if(kind==='long')navigate(history.current.pop()??{node:library.symbols.AFR2_N_TESTS,selection:0,firstVisible:0});else setFeedback('La detección de pulsaciones requiere el encoder físico.');return;}
+    if(wifiAsk){setFeedback('Iniciar AP o Seguir esperando lo decide el auto con el ESP; la biblioteca no cambia la red.');return;}
     if(saveChoice){setFeedback('La elección Sí/No requiere cambios reales del controlador; la biblioteca no guarda ni descarta mediciones.');return;}
     if(hallPick || hallCount){
       if(kind==='long'){navigate(history.current.pop()??{node:library.symbols.AFR2_N_HALL_TEST,selection:0,firstVisible:0});setFeedback('Vista previa cerrada; no había un conteo físico activo.');}

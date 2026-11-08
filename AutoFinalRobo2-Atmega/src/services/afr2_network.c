@@ -76,10 +76,14 @@ uint8_t Afr2App_NetworkCommand(Afr2App *a,uint8_t cmd,const uint8_t *d,uint8_t n
             else if(kind==AFR2_NET_CLIENT_JOIN || kind==AFR2_NET_CLIENT_LEAVE) {
                 if(d[9])snprintf_P(detail,sizeof(detail),PSTR("Cliente %u"),d[9]);else strcpy_P(detail,PSTR("Cliente Wi-Fi"));
             }
+            /* AFR2-20261108-06: motivo informado por el ESP (subject 1..3). */
+            else if(kind==AFR2_NET_STA_NOT_FOUND)strcpy_P(detail,d[9]==2?PSTR("Clave incorrecta"):d[9]==3?PSTR("No se pudo unir"):PSTR("Red no visible"));
             detail[17]=0;
-            Afr2Ui_NotifyFlashTitle(a->ui,AFR2_NOTICE_NETWORK+kind,PSTR("Conectividad"),detail,kind==AFR2_NET_AP_READY?20000:4000);
+            Afr2Ui_NotifyFlashTitle(a->ui,AFR2_NOTICE_NETWORK+kind,PSTR("Conectividad"),detail,kind==AFR2_NET_AP_READY?20000:kind==AFR2_NET_STA_NOT_FOUND?3000:4000);
             a->snapshot_active=0;
         }
+        /* AFR2-20261108-06: despues del aviso "Wi-Fi no encontrado" la app abre el selector Iniciar AP / Seguir esperando. */
+        if(kind==AFR2_NET_STA_NOT_FOUND && !w->sta_connected && !w->ap_active && !a->wifi_ask)a->wifi_ask=1;
         if(kind==AFR2_NET_BOOT){
             if(!duplicate_boot){w->pending=w->draft_ready=w->network_count=w->scan_total=w->mode_draft=0;w->scan_id=0;memset(w->password,0,sizeof(w->password));w->credentials_visible=0;Afr2Ui_NetworkRestart(a->ui);}
             a->esp_boot_notified=w->display_boot;

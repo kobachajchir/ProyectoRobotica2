@@ -24,6 +24,12 @@ typedef struct {
     uint32_t diag_job,diag_started;
     int32_t hall_live_base[4]; /* AFR2-20261106-07: Prueba Hall zero captured on entry (17 B RAM) */
     uint8_t hall_live_active;
+    uint8_t odom_dir;     /* AFR2-20261108-02: prueba de distancia, direccion 0..7 */
+    uint8_t odom_cm;      /* 5..100 cm */
+    uint8_t odom_state;   /* AFR2-20261108-04: 0 ninguna,1 esperando,2 lanzada,3 descartada,4 no se pudo lanzar,5 vencida */
+    uint16_t odom_token;  /* identifica la propuesta de la Web (1..32767) */
+    uint32_t odom_ask_ms;
+    uint8_t wifi_ask;     /* AFR2-20261108-06: 0 nada, 1 aviso recibido (abrir selector cuando la UI quede libre), 2 selector abierto */
 } Afr2App;
 void Afr2App_Init(Afr2App *a,Afr2Product *p,Afr2Ui *ui,Afr2Oled *oled,Afr2Link *link);
 void Afr2App_Task(Afr2App *a,uint32_t now);

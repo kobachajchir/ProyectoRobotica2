@@ -8,6 +8,8 @@ export interface ParameterGuide {
 const entry = (title: string, group: string, unit: string, meaning: string, effect: string, example: string, detail: string): ParameterGuide =>
   ({ title, group, unit, meaning, effect, example, detail });
 export const CALIBRATION_GUIDE: Record<number, ParameterGuide> = {
+  // AFR2-20261108-06
+  106: entry('Reintento Wi-Fi','Sistema / Wi-Fi','s','Cuando la red Wi-Fi elegida no conecta, el auto pregunta en la OLED «Iniciar AP» o «Seguir esperando». Con «Seguir esperando» el ESP sigue intentando la red durante este tiempo y después vuelve a preguntar.','No cambia la red ni el modo; solo el tiempo de espera de esa pregunta.','30 s (defecto). Rango 10–300 s, pasos de 10 s.','Guardar desde Preferencias para conservarlo al reiniciar (EEPROM v11).'),
   81: entry('Tiempo de pulsación larga','Sistema / Encoder','ms','Umbral que distingue corto y largo al soltar SW.','Se aplica con SW liberado; no cambia el debounce ni introduce tiempo de corto.','800 ms = 0,8 s. Rango 800–3000 ms, pasos de 100 ms.','Guardar desde Preferencias para conservarlo al reiniciar.'),
   68: entry('Invertir servo','Sistema / Servo','0/1','Invierte la correspondencia entre ángulo solicitado y pulso del único servo.','Requiere salidas detenidas y servo/radar desactivados.','0: normal; 1: invertido.','Se aplica en RAM y se conserva mediante Guardar EEPROM.'),
   4: entry('Límite general de velocidad', 'Movimiento', 'mm/s',
@@ -140,6 +142,7 @@ export function explainEditorValue(id: number, value: number) {
   if (id === 44) return ({ 1: 'STA · red existente', 2: 'AP · punto de acceso', 3: 'AP + STA' } as Record<number, string>)[value] ?? 'Modo fuera de rango.';
   if ([36, 39, 40, 42].includes(id)) return value === 1 ? 'Opción declarada activa (1).' : value === 0 ? 'Opción declarada inactiva (0).' : 'Solo se admiten 0 o 1.';
   if(id===81)return `${value} ms = ${(value/1000).toFixed(1)} s; largo se ejecuta al soltar.`;
+  if(id===106)return `Tras «Seguir esperando», vuelve a preguntar a los ${value} s si la red sigue sin conectar.`;
   if (id === 54) return value === 1 ? 'Orientación solicitada 180°.' : value === 0 ? 'Orientación normal.' : 'Solo se admiten 0 o 1.';
   if (id === 37) return `Una vuelta equivale nominalmente a ${(Math.PI * value).toFixed(1)} mm para este diámetro.`;
   if (id === 31) return `Límite equivalente a ${(value / 255 * 100).toFixed(1)}% de la escala PWM.`;

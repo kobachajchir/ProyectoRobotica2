@@ -29,6 +29,7 @@ static void encode(const Afr2Config *c,uint8_t *b) {
     W(wheel_mm);W(radius_sum_mm);W(speed_limit);W(test_ms);W(kp);W(ki);W(kd);W(line_kp);W(line_speed);
     for(uint8_t i=0;i<4;i++){afr2_put_u32(b+n,c->counts_per_rev[i]);n+=4;}
     B(radar_range);B(radar_trace);W(long_press_ms);B(servo_inverted);B(hall_cw_mask);
+    W(wifi_retry_s); /* AFR2-20261108-06: v11 */
 #undef B
 #undef W
 }
@@ -46,6 +47,7 @@ static void decode(Afr2Config *c,const uint8_t *b,uint8_t version) {
     c->long_press_ms=800;c->servo_inverted=0;
     if(version>=8u){W(long_press_ms);B(servo_inverted);}
     c->hall_cw_mask=0;if(version>=10u){B(hall_cw_mask);}
+    c->wifi_retry_s=AFR2_WIFI_RETRY_DEFAULT_S;if(version>=11u){W(wifi_retry_s);} /* AFR2-20261108-06 */
     c->wheel_mm=AFR2_FIXED_WHEEL_MM;c->radius_sum_mm=AFR2_FIXED_RADIUS_SUM_MM;c->geometry_ready=1;c->hall_wired=1;
 #undef B
 #undef W
@@ -53,10 +55,16 @@ static void decode(Afr2Config *c,const uint8_t *b,uint8_t version) {
 static uint8_t load_slot(uint8_t slot,Afr2Config *c,uint32_t *seq) {
     eeprom_read_block(image,(const void *)(uintptr_t)((uint16_t)slot*128u),128);
     if(memcmp(image,"AFR2",4) || image[4]<1u || image[4]>AFR2_CONFIG_VERSION ||
-        afr2_get_u16(image+6)!=(image[4]>=10u?64u:image[4]>=8u?63u:image[4]>=5u?60u:58u) || image[127]!=0xa5 || crc(image)!=afr2_get_u16(image+14))return 0;
+        afr2_get_u16(image+6)!=(image[4]>=11u?66u:image[4]>=10u?64u:image[4]>=8u?63u:image[4]>=5u?60u:58u) || image[127]!=0xa5 || crc(image)!=afr2_get_u16(image+14))return 0;
     decode(c,image+16,image[4]);
     /* v9 product is digital only; migrate before validating the old enum. */
     if(image[4]<9u && c->line_kind==2u){c->line_kind=1;c->line_calibrated=0;}
+    /* AFR2-20261108-02/05: una rueda sin calibrar (CPR 0 y sin convencion CW) arranca con los valores de fabrica:
+     * AFR2_DEFAULT_CPR y la referencia medida (signo Hall invertido + convencion CW). Una rueda ya calibrada no se toca.
+     * Solo en RAM, sin autoguardar. */
+    for(uint8_t i=0;i<4;i++)if(!c->counts_per_rev[i] && !(c->hall_cw_mask&(1u<<i))){
+        c->counts_per_rev[i]=AFR2_DEFAULT_CPR;c->hall_signs|=(uint8_t)(1u<<i);c->hall_cw_mask|=(uint8_t)(1u<<i);
+    }
     if(!Afr2Product_ConfigValid(c))return 0;
     /* AFR2-20261029-10: same58-byte payload, migrate valid v1 UI fields only.
      * Do not discard wheel/Hall/motor/line calibration or auto-write EEPROM.
@@ -85,7 +93,7 @@ void Afr2Prefs_Load(Afr2Config *c,uint8_t *loaded) {
 uint8_t Afr2Prefs_Save(const Afr2Config *c) {
     if(writing || !Afr2Product_ConfigValid(c))return 0;
     memset(image,0,sizeof(image));memcpy(image,"AFR2",4);image[4]=AFR2_CONFIG_VERSION;
-    afr2_put_u16(image+6,64);afr2_put_u32(image+8,sequence+1u);encode(c,image+16);
+    afr2_put_u16(image+6,66);afr2_put_u32(image+8,sequence+1u);encode(c,image+16);
     afr2_put_u16(image+14,crc(image));image[127]=0xa5;
     cursor=0;writing=1;state=1;return 1;
 }

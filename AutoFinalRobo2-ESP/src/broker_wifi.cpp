@@ -107,6 +107,9 @@ bool Broker::finishWifi(const BrokerRequest &req,const MegaResult &r) {
         wifiResult_=wifi_.changeMode(wifiRequestedMode_)?2:4;wifiStatusAt_=0;publishStatus();
     } else if(op==6){eraseConfig(oledDraft_);wifiDraftReady_=false;wifiDraftToken_=0;wifiResult_=5;publishStatus();}
     else if(op==7){if(wifi_.retry()){wifiRequestedMode_=1;wifiResult_=2;wifiPhase_=6;}else wifiResult_=4;}
+    // AFR2-20261108-06: respuesta del selector sin Wi-Fi. 13 Iniciar AP; 14 Seguir esperando (2 bytes: segundos u16LE).
+    else if(op==13){wifiResult_=wifi_.answerAsk(true,0,millis())?3:4;wifiStatusAt_=0;}
+    else if(op==14){wifiResult_=total==2 && wifi_.answerAsk(false,afr2_get_u16((const uint8_t *)wifiCredentials_),millis())?3:4;}
     else if(op==8) {
         uint32_t now=millis();
         if(extensionVersion_<5 || !productStopped_ || (uint32_t)(now-productStateAt_)>1500u || safetyRequested_ || rebootAt_)wifiResult_=4;

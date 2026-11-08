@@ -20,12 +20,21 @@ void Afr2Product_Defaults(Afr2Config *c) {
     c->line_kind=1;c->line_invert=31;c->radar_trace=1;
     c->wheel_mm=AFR2_FIXED_WHEEL_MM;c->radius_sum_mm=AFR2_FIXED_RADIUS_SUM_MM;c->geometry_ready=1;
     c->long_press_ms=800;c->servo_inverted=0; /* nominal dimensions, CPR still required */
+    c->wifi_retry_s=AFR2_WIFI_RETRY_DEFAULT_S; /* AFR2-20261108-06 */
     c->speed_limit=150;c->test_ms=500;c->kp=128;c->ki=8;c->kd=0;c->line_kp=100;c->line_speed=80;
     for(uint8_t i=0;i<5;i++)c->line_threshold[i]=512;
-    /* No assumed 11*gearbox conversion. Cpr filled only by measured calibration. */
+    /* AFR2-20261108-02: el usuario midio ~370 pulsos por vuelta en cada rueda; ese es el valor inicial
+     * (sigue siendo editable con Calibracion > Hall). No hay conversion 11*reductora supuesta. */
+    for(uint8_t i=0;i<4;i++)c->counts_per_rev[i]=AFR2_DEFAULT_CPR;
+    /* AFR2-20261108-05: referencia medida por el usuario. En crudo, al girar hacia adelante las derechas cuentan
+     * negativo y las izquierdas positivo; una vuelta CW exterior da -370 en las cuatro. Es lo que dejaria la
+     * calibracion Hall completa en cada rueda: signo invertido (CW positivo) y mascara CW, de modo que la
+     * odometria reciba avance negativo en las cuatro ruedas. Antes quedaban sin signo y el lazo cerrado daba fallo 4. */
+    c->hall_signs=AFR2_FACTORY_HALL_MASK;c->hall_cw_mask=AFR2_FACTORY_HALL_MASK;
 }
 uint8_t Afr2Product_ConfigValid(const Afr2Config *c) {
     if(c->long_press_ms<800 || c->long_press_ms>3000 || c->long_press_ms%100 || c->servo_inverted>1)return 0;
+    if(c->wifi_retry_s<10 || c->wifi_retry_s>300 || c->wifi_retry_s%10)return 0; /* AFR2-20261108-06 */
     if(c->radar_range>3 || c->radar_trace>1 || c->line_kind>1 || c->line_invert>31 || c->line_calibrated>1 || c->motor_signs>15 ||
        c->hall_cw_mask>15 || c->motor_ready>1 || c->hall_wired>1 || c->hall_signs>15 || c->geometry_ready>1 ||
        (c->encoder_steps!=2 && c->encoder_steps!=4) || c->encoder_invert>1 || c->rotation>1 ||

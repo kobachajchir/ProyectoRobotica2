@@ -65,7 +65,7 @@ void WifiService::begin() {
 void WifiService::startFallback() {
     memset(apPassword_,0,sizeof(apPassword_));
     apSsid_="AutoFinalRobo2-"+String(ESP.getChipId(),HEX);
-    fallbackActive_=true;
+    fallbackActive_=true;askState_=0;askEvent_=false;
     bool modeOk=WiFi.mode(staWanted_?WIFI_AP_STA:WIFI_AP);
     apOn_=modeOk && WiFi.softAP(apSsid_.c_str());
     if (!apOn_) configError_="AP_START_FAILED"; // Explicit open provisioning AP, no embedded credential.
@@ -76,7 +76,7 @@ void WifiService::apply(const WifiConfig &c) {
     staWanted_=strcmp(c.mode,"AP")!=0;
     bool wantAp=strcmp(c.mode,"STA")!=0;
     fallbackActive_=false; configError_=nullptr;
-    apOn_=false;
+    apOn_=false;askState_=0;askEvent_=false;
     if (!WiFi.mode(staWanted_?(wantAp?WIFI_AP_STA:WIFI_STA):WIFI_AP)) {
         configError_="MODE_FAILED"; startFallback(); return;
     }
@@ -118,7 +118,16 @@ void WifiService::tick(uint32_t now) {
             // AFR2-20261106-37: la red configurada no aparece o no conecta; probar la ultima que funciono.
             if(beginStation(true)){lastRetry_=now;staStarted_=now;} // nueva gracia de 15 s para la anterior
         }
-        if (!apOn_ && (uint32_t)(now-staStarted_)>=15000u) startFallback();
+        if (!apOn_ && (uint32_t)(now-staStarted_)>=15000u) {
+            // AFR2-20261108-06: preguntar al OLED en vez de levantar el AP; "Seguir esperando" vuelve a
+            // preguntar al vencer askUntil_. Sin OLED (nunca enlazado o 10 s sin enlace): AP automatico.
+            if(askMode_){
+                if(askState_==0 || (askState_==2 && (int32_t)(now-askUntil_)>=0)){
+                    const auto sta=WiFi.status();
+                    askReason_=sta==WL_NO_SSID_AVAIL?1:sta==WL_WRONG_PASSWORD?2:3;askState_=1;askEvent_=true;
+                }
+            } else if(!askLinkAt_ || (uint32_t)(now-askLinkAt_)>=10000u) startFallback();
+        }
         if ((uint32_t)(now-lastRetry_)>=30000u && !scanPending_ && !applyPending_) {
             lastRetry_=now;
             if(hasPrevious_)(void)beginStation(!usingPrevious_); // alternar configurada / anterior
@@ -126,6 +135,7 @@ void WifiService::tick(uint32_t now) {
         }
     } else if (staWanted_) {
         staStarted_=now; // grace period starts again on a later disconnection
+        if(WiFi.status()==WL_CONNECTED){askState_=0;askEvent_=false;} // AFR2-20261108-06
         if(!usingPrevious_ && !currentGood_ && WiFi.status()==WL_CONNECTED){
             // Primera conexion exitosa de la red configurada: queda apta para ser «anterior» en el futuro.
             // AFR2-20261107-53: un solo intento por arranque y solo con wifi.json guardado. Antes, sin archivo
@@ -167,9 +177,26 @@ bool WifiService::scan() {
     scanReady_=!scanPending_;
     return true; // Accepted asynchronous operation; a failed scan has its own terminal event.
 }
+void WifiService::askUnsupported(){
+    askUnsupported_=true;askMode_=false;askEvent_=false;
+    if(askState_ && !apOn_)startFallback();
+    askState_=0;
+}
+bool WifiService::answerAsk(bool startAp,uint16_t seconds,uint32_t now){
+    askEvent_=false;
+    if(startAp){askState_=0;if(!apOn_)startFallback();return apOn_;}
+    if(seconds<10 || seconds>300)return false;
+    askState_=2;askUntil_=now+(uint32_t)seconds*1000u;
+    // Un intento inmediato; los siguientes siguen la cadencia de 30 s y al vencer se vuelve a preguntar.
+    if(staWanted_ && !disconnectedByUser_ && WiFi.status()!=WL_CONNECTED && !scanPending_ && !applyPending_){
+        lastRetry_=now;
+        if(hasPrevious_)(void)beginStation(!usingPrevious_);else WiFi.reconnect();
+    }
+    return true;
+}
 bool WifiService::retry() {
     if(busy() || !staWanted_)return false;
-    disconnectedByUser_=false;
+    disconnectedByUser_=false;askState_=0;askEvent_=false;
     if(WiFi.status()==WL_CONNECTED)return true;
     staStarted_=lastRetry_=millis();return WiFi.reconnect();
 }
@@ -238,6 +265,8 @@ void WifiService::status(JsonObject out) const {
     out["ageMs"]=0; out["applying"]=applyPending_;out["restartScheduled"]=applyPending_;
     out["configuredMode"]=applyPending_?pending_.mode:"";
     out["fallbackActive"]=fallbackActive_ && apOn_;
+    out["apDecision"]=askState_==1?"asking":askState_==2?"waiting":"none"; // AFR2-20261108-06
+    if(askState_==2)out["apDecisionInMs"]=(int32_t)(askUntil_-millis())>0?(uint32_t)(askUntil_-millis()):0u;
     out["scanRunning"]=scanPending_;
     if (persisted_<0) out["configPersisted"]=nullptr; else out["configPersisted"]=persisted_==1;
     out["configError"]=configError_;

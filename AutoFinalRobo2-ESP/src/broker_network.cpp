@@ -24,6 +24,12 @@ bool Broker::finishNetwork(const BrokerRequest &req,const MegaResult &r) {
     if(r.command!=AFR2_EXT_NETWORK_STATE && r.command!=AFR2_EXT_NETWORK_EVENT)return false;
     if(r.timeout || r.transportFault || r.length<9 || r.payload[8]!=AFR2_RESULT_OK) {
         if(r.command==AFR2_EXT_NETWORK_STATE){networkPage_=0;networkPending_=true;}
+        // AFR2-20261108-06: un ATmega anterior no conoce AFR2_NET_STA_NOT_FOUND (BAD_REQUEST). Se descarta el
+        // evento para no trabar la cola y se vuelve al AP automatico.
+        else if(!r.timeout && !r.transportFault && r.length>=9 && r.payload[8]==AFR2_RESULT_BAD_REQUEST && networkCount_ &&
+                networkEvents_[networkTail_].kind==AFR2_NET_STA_NOT_FOUND && networkEvents_[networkTail_].sequence==afr2_get_u32(req.body+4)) {
+            networkTail_=(networkTail_+1)%12;--networkCount_;wifi_.askUnsupported();
+        }
         networkTxAt_=millis();return true;
     }
     if(r.command==AFR2_EXT_NETWORK_STATE) {
@@ -40,6 +46,8 @@ void Broker::tickNetwork(uint32_t now) {
         networkLinked_=true;networkPending_=true;networkPage_=0;
         networkEvent(AFR2_NET_BOOT); // Retained startup identity, deduplicated by AVR bootId.
     }
+    uint8_t askReason; // AFR2-20261108-06: la STA elegida no conecto; el OLED decide Iniciar AP / Seguir esperando
+    if(wifi_.takeAskEvent(askReason))networkEvent(AFR2_NET_STA_NOT_FOUND,askReason);
     // Freeze a started five-page snapshot until its ACKs complete. RSSI and
     // AP client-count jitter must not continually restart that transfer.
     if((!networkPending_ || networkPage_==0) && (!networkObserveAt_ || (uint32_t)(now-networkObserveAt_)>=750u)) {

@@ -45,6 +45,7 @@ void Afr2NetworkNotice_Render(Afr2Oled *o,const Afr2Ui *u,const Afr2UiSnapshot *
     const Afr2Notification *n=&u->notification[u->tail];uint8_t kind=n->kind-AFR2_NOTICE_NETWORK;
     uint32_t elapsed=u->clock_ms-u->notice_started_ms;uint8_t icon=AFR2_ICON_INFO;
     if(kind==AFR2_NET_GOT_IP || kind==AFR2_NET_STA_LOST)icon=AFR2_ICON_WIFI;
+    else if(kind==AFR2_NET_STA_NOT_FOUND)icon=AFR2_ICON_WIFI_OFF;
     else if(kind==AFR2_NET_AP_READY || kind==AFR2_NET_AP_STOPPED)icon=AFR2_ICON_AP;
     else if(kind==AFR2_NET_CLIENT_JOIN || kind==AFR2_NET_CLIENT_LEAVE || kind==AFR2_NET_WS_OPEN || kind==AFR2_NET_WS_CLOSE)icon=AFR2_ICON_LINK;
     Afr2Icon_Draw(o,icon,0,6,16);
@@ -64,6 +65,8 @@ void Afr2NetworkNotice_Render(Afr2Oled *o,const Afr2Ui *u,const Afr2UiSnapshot *
     case AFR2_NET_WEB_SERVED:TXT(o,24,9,"Web servida");line_flash(o,32,PSTR("HTTP 200 iniciado"),elapsed);break;
     case AFR2_NET_STA_LOST:TXT(o,24,9,"Wi-Fi sin red");line_flash(o,32,PSTR("STA desconectada"),elapsed);break;
     case AFR2_NET_AP_STOPPED:TXT(o,24,9,"Red AP apagada");line_flash(o,32,PSTR("Sin acceso por AP"),elapsed);break;
+    /* AFR2-20261108-06: n->text = motivo (Red no visible / Clave incorrecta / No se pudo unir). */
+    case AFR2_NET_STA_NOT_FOUND:TXT(o,24,4,"Wi-Fi no");TXT(o,24,15,"encontrado");line(o,32,n->text,elapsed);break;
     }
     if(kind!=AFR2_NET_AP_READY){Afr2Ui_GestureHint(o,0,53,0,PSTR("Cerrar"));Afr2Ui_GestureHint(o,66,53,1,PSTR("Cerrar"));}
 }

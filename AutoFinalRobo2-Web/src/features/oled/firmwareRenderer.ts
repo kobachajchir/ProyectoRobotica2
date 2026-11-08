@@ -21,8 +21,15 @@ import { ENCODER_TURN, WIFI_LOCK } from './reformResources';
 import { TOUCH_CAR, TOUCH_SIN, TOUCH_CAR_WIDTH, TOUCH_CAR_HEIGHT } from './touchBitmap';
 import { Afr2OledBuffer } from './oledRasterizer';
 import { FIRMWARE_LIBRARY as L } from './generated/firmwareLibrary';
+import { afr2Font7x10Row } from './font7x10';
+import { FIRMWARE_VERSION } from './firmwareVersion';
 // New symbols are emitted by sync-oled-library with the appended AVR nodes.
-const S = L.symbols as typeof L.symbols & { AFR2_N_HALL_PICK:number; AFR2_N_HALL_COUNT:number; AFR2_N_SAVE_CONFIRM:number; AFR2_N_BATTERY:number; AFR2_N_BATTERY_VIEW:number; AFR2_A_BATTERY_MEASURE:number };
+const S = L.symbols as typeof L.symbols & { AFR2_N_ODOM_MENU:number; AFR2_N_ODOM_RUN:number; AFR2_N_ODOM_ASK:number; AFR2_N_HALL_PICK:number; AFR2_N_HALL_COUNT:number; AFR2_N_SAVE_CONFIRM:number; AFR2_N_BATTERY:number; AFR2_N_BATTERY_VIEW:number; AFR2_A_BATTERY_MEASURE:number; AFR2_N_WIFI_ASK:number; AFR2_NET_STA_NOT_FOUND:number };
+/** AFR2-20261108-06: same 5 s as AFR2_WIFI_ASK_MS (afr2_screens.h). */
+export const WIFI_ASK_MS = 5000;
+/** AFR2-20261108-07: AFR2_SPLASH_MS and AFR2_SCREEN_SPLASH. */
+export const SPLASH_MS = 3000;
+export const SPLASH_SCREEN_CODE = 0x010004;
 const trunc = Math.trunc;
 const elapsed = (now: number, then: number) => (now - then) >>> 0;
 export interface FirmwareMenuItem { label: string; target: number; action: number; arg: number; min: number; max: number; step: number }
@@ -31,6 +38,10 @@ export interface FirmwareUiState {
   confirmWait?: boolean; confirmSave?:number;
   editingAction?:number; testLong?:boolean; testClicks?:number; testTurns?:number;
   quickPending?:boolean;quickExpected?:boolean;
+  /** AFR2-20261108-06: wifi_ask_timer / wifi_ask_ms of the "Sin red Wi-Fi" selector. */
+  wifiAskTimer?:boolean;wifiAskMs?:number;
+  /** AFR2-20261108-07: splash visible since this clock (Afr2Ui splash==2 / splash_ms). */
+  splashMs?:number;
   touch?: { direction: number; heading: number; startedMs: number; full: boolean };
   node: number; selection: number; firstVisible: number;
   clockMs: number; noticeStartedMs: number; scrollStartedMs: number;
@@ -59,9 +70,9 @@ export interface FirmwareSnapshot {
 }
 export const QUICK_MODES_NODE = 61;
 /** Web-only preview node; moved from 70 because AVR AFR2_N_HALL_LIVE now uses 70 (AFR2-20261106-07). */
-export const MOTOR_SELECTOR_NODE = 72;
+export const MOTOR_SELECTOR_NODE = 75; // AFR2-20261108-06: 72 = ODOM_RUN, 73 = ODOM_ASK, 74 = WIFI_ASK
 export function firmwareNode(node:number):readonly (string|number)[] {
-  const virtual:Record<number,readonly (string|number)[]>={61:['Elegir modo',S.AFR2_N_QUICK,0,3,0x802c,0x3003d],62:['Prueba encoder',S.AFR2_N_TESTS,1,1,89,0x3003e],63:['Prueba ESP',S.AFR2_N_TESTS,0,3,0,0x3003f],64:['Potencia manual',S.AFR2_N_CONTROL,1,1,26,0x30040],65:['Datos de red',32,1,1,138,0x30041],66:['Buscar redes',31,0,3,0,0x30042],67:['Cambiar modo',31,1,3,138,0x30043],72:['Elegir un motor',S.AFR2_N_TESTS,1,4,0,0x30044]};
+  const virtual:Record<number,readonly (string|number)[]>={61:['Elegir modo',S.AFR2_N_QUICK,0,3,0x802c,0x3003d],62:['Prueba encoder',S.AFR2_N_TESTS,1,1,89,0x3003e],63:['Prueba ESP',S.AFR2_N_TESTS,0,3,0,0x3003f],64:['Potencia manual',S.AFR2_N_CONTROL,1,1,26,0x30040],65:['Datos de red',32,1,1,138,0x30041],66:['Buscar redes',31,0,3,0,0x30042],67:['Cambiar modo',31,1,3,138,0x30043],75:['Elegir un motor',S.AFR2_N_TESTS,1,4,0,0x30044]};
   let n:readonly (string|number)[]=L.nodes[node]??virtual[node]??L.nodes[0];
   if(WIFI_MENUS[node]){const [first,count]=WIFI_MENUS[node];const title=node===32?'Estado de red':node===34?'Credenciales':node===35?'Configurar':n[0];return [title,node===34?33:node===35?32:n[1],0,node===31?count+2:count,0x2000+first,n[5]];}
   if(node===33)n=['Redes encontradas',66,n[2],n[3],n[4],n[5]];
@@ -73,8 +84,11 @@ export function firmwareNode(node:number):readonly (string|number)[] {
 }
 export function firmwareNodeCount(node:number,dirty=false,snapshot?:FirmwareSnapshot):number {
   if(node===MOTOR_SELECTOR_NODE || node===S.AFR2_N_HALL_PICK)return 4;
-  if(node===S.AFR2_N_TESTS)return 9; // AFR2-20261106-07: Prueba Hall inserted third.
+  if(node===S.AFR2_N_TESTS)return 8; // AFR2-20261108-02: sin Hall una vuelta; Prueba Hall segunda.
   if(node===S.AFR2_N_HALL_TEST)return 3;
+  if(node===S.AFR2_N_SAVE_CONFIRM)return 2; // Si/No
+  if(node===S.AFR2_N_ODOM_MENU)return 5; // AFR2-20261108-02
+  if(node===S.AFR2_N_PREFS)return 7-(dirty?0:1); // AFR2-20261108-06: +Reintento Wi-Fi s
   if(node===66)return snapshot?.networkScanState===1?1:snapshot?.networkTotal?3:2;
   if(node===34)return 4;
   if(node===33)return (snapshot?.networkCount??0)+2+Number((snapshot?.networkPage??0)>0)+Number((snapshot?.networkTotal??0)>((snapshot?.networkPage??0)+1)*8);
@@ -104,7 +118,7 @@ export function firmwareMenuItem(node: number, index: number,snapshot?:FirmwareS
     if(index===2 || index===3)return {label:index===2?'Tomar fondo':'Tomar linea',action:index===2?27:28,arg:0,target:255,min:0,max:0,step:0};
   }
   if(node===S.AFR2_N_HALL_TEST)return {
-    label:['Estado','Calibrar motor','Volver'][index],target:index===0?S.AFR2_N_HALL_VIEW:index===2?S.AFR2_N_TESTS:255,
+    label:['Estado','Calibrar motor','Volver'][index],target:index===0?S.AFR2_N_HALL_VIEW:index===2?S.AFR2_N_CALIB:255,
     action:index===1?S.AFR2_A_HALL_BEGIN:0,arg:0,min:0,max:0,step:0};
   if(node===34){if(index===0)return {label:"Traer credenciales ESP",target:255,action:93,arg:0,min:0,max:0,step:0};index--;}
   if(node===31 && index>=4){if(index<6)return {label:index===4?'QR conectar AP':'QR abrir Web',target:index===4?68:69,action:0,arg:0,min:0,max:0,step:0};index-=2;}
@@ -116,10 +130,19 @@ export function firmwareMenuItem(node: number, index: number,snapshot?:FirmwareS
     else if(action===47 && !snapshot?.wifiDraftReady)return {label:'Configurar red',target:34,action:0,arg:0,min:0,max:0,step:0};
     return {label,target:Number(row[1]),action,arg:Number(row[3]),min:Number(row[4]),max:Number(row[5]),step:Number(row[6])};
   }
-  if(node===S.AFR2_N_TESTS && index>=2){
-    if(index===2)return {label:'Prueba Hall',target:S.AFR2_N_HALL_LIVE,action:0,arg:0,min:0,max:0,step:0};
-    index--;
+  if(node===S.AFR2_N_ODOM_MENU){ // AFR2-20261108-02: lista de la prueba de distancia (mismas filas que odom[] del AVR)
+    const row=(label:string,target:number,action:number,min=0,max=0,step=0):FirmwareMenuItem=>({label,target,action,arg:0,min,max,step});
+    return [row('Estado',S.AFR2_N_POSE,0),row('Direccion',255,99,0,7,1),row('Distancia cm',255,100,5,100,5),
+      row(snapshot?.actionStates?.[101]?'Detener':'Iniciar',255,101),row('Volver',S.AFR2_N_CALIB,0)][index];
   }
+  if(node===S.AFR2_N_PREFS){ // AFR2-20261108-06: port of Afr2Ui_MenuItem + Afr2Menu_Item (row 2 = extra[47])
+    if(!snapshot?.configDirty && index>=4)index++;
+    if(index===2)return {label:'Reintento Wi-Fi s',target:255,action:106,arg:0,min:10,max:300,step:10};
+    if(index>2)index--;
+    const row=REFORM_ROWS[REFORM_MENUS[node][0]+index];
+    return {label:String(row[0]),target:Number(row[1]),action:Number(row[2]),arg:Number(row[3]),min:Number(row[4]),max:Number(row[5]),step:Number(row[6])};
+  }
+  if(node===S.AFR2_N_TESTS && index===1)return {label:'Prueba Hall',target:S.AFR2_N_HALL_LIVE,action:0,arg:0,min:0,max:0,step:0};
   if(REFORM_MENUS[node]){
     if(!snapshot?.configDirty && ((node===S.AFR2_N_PREFS && index>=3) || (node===S.AFR2_N_CALIB && index>=4)))index++;
     const row=REFORM_ROWS[REFORM_MENUS[node][0]+index];
@@ -221,6 +244,7 @@ function networkNotice(o: Afr2OledBuffer, u: FirmwareUiState, s: FirmwareSnapsho
   const n = u.notice!, kind = n.kind - 16, time = elapsed(u.clockMs, u.noticeStartedMs);
   let image: number = S.AFR2_ICON_INFO;
   if (kind === S.AFR2_NET_GOT_IP || kind === S.AFR2_NET_STA_LOST) image = S.AFR2_ICON_WIFI;
+  else if (kind === S.AFR2_NET_STA_NOT_FOUND) image = S.AFR2_ICON_WIFI_OFF;
   else if (kind === S.AFR2_NET_AP_READY || kind === S.AFR2_NET_AP_STOPPED) image = S.AFR2_ICON_AP;
   else if (([S.AFR2_NET_CLIENT_JOIN, S.AFR2_NET_CLIENT_LEAVE, S.AFR2_NET_WS_OPEN, S.AFR2_NET_WS_CLOSE] as number[]).includes(kind)) image = S.AFR2_ICON_LINK;
   icon(o, image, 0, 6, 16);
@@ -240,6 +264,7 @@ function networkNotice(o: Afr2OledBuffer, u: FirmwareUiState, s: FirmwareSnapsho
     case S.AFR2_NET_WEB_SERVED: o.drawText(24, 9, 'Web servida'); line(o, 32, 'HTTP 200 iniciado', time); break;
     case S.AFR2_NET_STA_LOST: o.drawText(24, 9, 'Wi-Fi sin red'); line(o, 32, 'STA desconectada', time); break;
     case S.AFR2_NET_AP_STOPPED: o.drawText(24, 9, 'Red AP apagada'); line(o, 32, 'Sin acceso por AP', time); break;
+    case S.AFR2_NET_STA_NOT_FOUND: o.drawText(24, 4, 'Wi-Fi no'); o.drawText(24, 15, 'encontrado'); line(o, 32, n.text, time); break; // AFR2-20261108-06
   }
   if (kind !== S.AFR2_NET_AP_READY){gestureHint(o,0,53,false,'Cerrar');gestureHint(o,66,53,true,'Cerrar');}
 }
@@ -339,7 +364,20 @@ export function renderPower(o:Afr2OledBuffer,percent:number){
   percent=Math.max(0,Math.min(100,percent));o.clear();componentHeader(o,S.AFR2_ICON_MOTOR,'Potencia');o.drawText(0,15,`Valor: ${Math.floor((percent*255+50)/100)} /255`);
   componentProgress(o,30,true,percent,0);o.drawText(52,43,`${percent}%`);icon(o,24,0,47,16);
 }
+/** AFR2-20261108-07: port of big_text_flash/render_splash (afr2_screens.c). */
+function renderSplash(o:Afr2OledBuffer,u:FirmwareUiState){
+  const spent=Math.min(SPLASH_MS,elapsed(u.clockMs,u.splashMs??u.clockMs));
+  o.clear();o.fillRect(0,0,trunc(spent*128/SPLASH_MS),2);
+  const letters=Math.min(4,1+trunc(spent/200));
+  for(let i=0;i<letters;i++)for(let row=0;row<10;row++){
+    const bits=afr2Font7x10Row('AFR2'.charCodeAt(i),row);
+    for(let col=0;col<7;col++)if(bits&(0x80>>col))o.fillRect(36+i*14+col*2,8+row*2,2,2);
+  }
+  const center=(y:number,text:string)=>o.drawText(text.length*7<128?trunc((128-text.length*7)/2):0,y,text);
+  center(32,'ATmega');center(47,`Firmware ${FIRMWARE_VERSION}`);
+}
 function renderFirmwareContent(u: FirmwareUiState, o: Afr2OledBuffer, s: FirmwareSnapshot): boolean | void {
+  if(u.splashMs!==undefined){clearDashboard(o);clearQrScreenCache(o);renderSplash(o,u);return;}
   if(u.node!==S.AFR2_N_HOME || u.notice || u.touch)clearDashboard(o);
   if(u.notice || (u.node!==68 && u.node!==69))clearQrScreenCache(o);
   if(u.touch && s.powerKnown && s.powerPercent!==undefined && s.powerChangedMs!==undefined && elapsed(u.clockMs,s.powerChangedMs)<1200){renderPower(o,s.powerPercent);return;}
@@ -358,6 +396,20 @@ function renderFirmwareContent(u: FirmwareUiState, o: Afr2OledBuffer, s: Firmwar
     o.drawText(0,0,'Prueba encoder');o.drawText(0,13,`Clicks: ${u.testClicks??0}`);o.drawText(0,26,`Giro: ${u.testTurns??0}`);gestureHint(o,0,39,true,u.testLong?'Correcto':'Pulse');if(u.testLong)gestureHint(o,0,52,true,'Salir');
   }
   else if(u.node===MOTOR_SELECTOR_NODE)renderMotorSelector(o,u.selection);
+  else if(u.node===S.AFR2_N_ODOM_ASK){ // AFR2-20261108-04: port of the ODOM_ASK branch of render_screen
+    componentHeader(o,S.AFR2_ICON_TOOLS,'Prueba odometria');o.drawText(0,16,s.lines[0]??'');o.drawText(0,28,s.lines[1]??'');
+    gestureHint(o,0,40,false,'Iniciar');gestureHint(o,0,53,true,'Descartar');
+  }
+  else if(u.node===S.AFR2_N_WIFI_ASK){ // AFR2-20261108-06: port of render_wifi_ask
+    componentHeader(o,S.AFR2_ICON_WIFI_OFF,'Sin red Wi-Fi');
+    if(u.wifiAskTimer){
+      const spent=Math.min(WIFI_ASK_MS,elapsed(u.clockMs,u.wifiAskMs??u.clockMs)),left=WIFI_ASK_MS-spent;
+      o.drawText(0,16,`Inicia AP en ${trunc((left+999)/1000)} s`);o.fillRect(0,28,trunc(left*128/WIFI_ASK_MS),2);
+    } else o.drawText(0,16,'Elija una opcion');
+    icon(o,S.AFR2_ICON_AP,0,33,12);o.drawText(16,34,'Iniciar AP');
+    icon(o,S.AFR2_ICON_REFRESH,0,48,12);o.drawText(16,49,'Seguir esperando');
+    o.fillRect(0,u.selection?47:32,128,14,'invert');
+  }
   else if(u.node===64){if(s.powerKnown && s.powerPercent!==undefined)renderPower(o,s.powerPercent);else {o.drawText(0,0,'Potencia manual');o.drawText(0,25,'Sin valor vigente');}}
   else if(u.node===67){
     componentHeader(o,S.AFR2_ICON_WIFI,'Cambiar modo');o.drawText(0,16,'Opciones de modos');o.drawText(3,28,'STA');o.drawText(45,28,'AP');o.drawText(80,28,'AP-STA');o.fillRect(u.selection===0?0:u.selection===1?40:78,40,u.selection===2?49:31,2);gestureHint(o,0,53,false,'Elegir');gestureHint(o,66,53,true,'Volver');
@@ -375,7 +427,7 @@ function renderFirmwareContent(u: FirmwareUiState, o: Afr2OledBuffer, s: Firmwar
   else if (([S.AFR2_N_RADAR_VIEW,S.AFR2_N_US_VIEW,S.AFR2_N_LINE_VIEW,S.AFR2_N_IR_VALUES,S.AFR2_N_SERVO_ANGLE] as number[]).includes(u.node))renderSensorScreen(o,u.node,s.sensor,{raw:s.irRaw??[],kind:s.irKind??0,valid:s.irValid??false,lineValid:s.lineValid??false,bits:s.lineBits??0},{rangeIndex:s.radarRange??0,trace:s.radarTrace??true});
   else if(u.edit && u.editingAction===12)renderMotorSelector(o,u.draft);
   else if(u.edit && u.editingAction===83)renderPower(o,u.draft);
-  else if (u.edit) { componentHeader(o,S.AFR2_ICON_CONFIG,u.editingLabel); o.drawText(0,16,String(u.draft).slice(0,17));gestureHint(o,0,28,'turn','Ajustar'); gestureHint(o,0,40,false,'Aplicar');gestureHint(o,0,53,true,'Descartar'); }
+  else if (u.edit) { componentHeader(o,S.AFR2_ICON_CONFIG,u.editingLabel); o.drawText(0,16,(u.editingAction===99?['Adelante','Atras','Izquierda','Derecha','Diagonal AD-I','Diagonal AD-D','Diagonal AT-I','Diagonal AT-D'][u.draft&7]:u.editingAction===100?`${u.draft} cm`:String(u.draft)).slice(0,17));gestureHint(o,0,28,'turn','Ajustar'); gestureHint(o,0,40,false,u.editingAction===99||u.editingAction===100?'Guardar':'Aplicar');gestureHint(o,0,53,true,'Descartar'); }
   else {
     const view = u.node!==S.AFR2_N_DIAG && Number(n[2]) !== 0, count = view ? 1 : 3;
     if (!partial) { const title=u.node===31?`Wi-Fi ${s.networkMode===1?'STA':s.networkMode===2?'AP':s.networkMode===3?'AP-STA':'--'}`:u.node===66?(s.networkScanState===1?'Buscando redes':s.networkScanState===3?'Busqueda fallo':!s.networkScanState?'Buscar redes':s.networkTotal?'Redes listas':'Sin redes'):u.node===33?`Redes ${(s.networkPage??0)+1}/${(s.networkTotal??0)>8?2:1}${s.networkTruncated?'+':''}`:u.node===32?(s.lines[0]||'Estado de red'):String(n[0]);componentHeader(o,menuIcon(u.node,u.node,0,title),title); if (view) for (let j = 0; j < 3; j++) o.textWindow(0,j===2?104:128,16+j*12,s.lines[j],j===2?firmwareTextOffset(s.lines[j],104,elapsed(u.clockMs,u.scrollStartedMs)):0); }

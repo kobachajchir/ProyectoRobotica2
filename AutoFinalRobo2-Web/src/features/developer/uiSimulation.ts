@@ -63,7 +63,7 @@ export function createUiSimulation(scenario: SimulationScenario = 'ready'): UiSi
   const values: Record<number, number> = { 4:150, 6:80, 7:100, 9:0, 10:0, 12:0, 13:40, 14:500, 20:1500,
     25:1, 26:31, 27:0, 28:0, 29:Number(ready), 30:0, 31:255, 32:4, 33:128, 34:8, 35:0,
     36:Number(ready), 37:80, 38:150, 39:Number(ready), 40:1, 41:4, 42:0, 44:3, 53:200, 54:0,
-    59:90, 63:0, 64:180, 65:15, 66:100, 67:150, 68:0, 70:2, 71:1, 81:800, 83:100, 85:2000 };
+    59:90, 63:0, 64:180, 65:15, 66:100, 67:150, 68:0, 70:2, 71:1, 81:800, 83:100, 85:2000, 106:30 }; // AFR2-20261108-06: Reintento Wi-Fi s
   return {
     dashboardInputMs:0,dashboardHeld:false,
     node:S.AFR2_N_HOME, selection:0, firstVisible:0, clockMs:0, noticeStartedMs:0, scrollStartedMs:0,
@@ -384,7 +384,7 @@ export function simulationSnapshot(u: UiSimulation): FirmwareSnapshot {
     [S.AFR2_N_WIFI_REVIEW]: [u.draftSsid, `Modo:${v[S.AFR2_A_WIFI_MODE]} Listo:${Number(u.wifiDraftReady)}`, 'Giro: opciones'],
     [S.AFR2_N_VERSIONS]: ['Mega demo UI', 'ESP:demo', 'Web:demo'],
     [S.AFR2_N_CAPS]: ['UI/TWI/UART/STOP', `Linea:${Number(u.lineCalibrated)} Hall:${Number(hall)}`, `GOTO req:${Number(pose)}`],
-    [S.AFR2_N_PREFS_VIEW]: [`EEPROM valida:${Number(u.prefsLoaded)}`, `Guardado estado:${u.prefsLoaded ? 2 : 0}`, 'CRC/version 10'],
+    [S.AFR2_N_PREFS_VIEW]: [`EEPROM valida:${Number(u.prefsLoaded)}`, `Guardado estado:${u.prefsLoaded ? 2 : 0}`, 'CRC/version 11'],
   };
   const items = simulationItems(u).slice(u.firstVisible, u.firstVisible + 3);
   if(u.node===S.AFR2_N_SAVE_CONFIRM && u.confirmSave===18)lines[u.node]=[`Sensor Hall ${['FL','FR','RL','RR'][v[12]]}`,`Pulsos:${u.hallDraft[v[12]]}`,''];

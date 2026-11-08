@@ -1,3 +1,35 @@
+## AFR2-20261108-07 - 08/11/2026
+
+Pantalla de inicio de 3 s (0x010004): barra superior de tiempo como la de los avisos, «AFR2» grande que aparece letra por letra, «ATmega» y «Firmware 1.2.0» debajo; corto o largo la saltean. Política de versiones en docs/VERSIONADO.md: una versión de producto única para ATmega, ESP y Web; versión (MAYOR) si rompe compatibilidad, subversión (MENOR) por función nueva, subversión mínima (PARCHE) por corrección; documentación, CAD y Loader no la suben. Ficha changes/2026-11-08-07-pantalla-inicio-versionado.md.
+Versión: 1.2.0 (subversión).
+Estado: atmega=fuente editada, sin compilar ni cargar; esp=solo versión, sin compilar; web=fuente editada, sin build ni navegador.
+
+## AFR2-20261108-06 - 08/11/2026
+
+Si la red Wi-Fi elegida no conecta, el ESP ya no levanta el AP solo: el auto muestra «Wi-Fi no encontrado» (aviso 0x04000C, con el motivo) y luego «Sin red Wi-Fi» (0x03004B, en Wi-Fi > AP / fallback) con «Iniciar AP» (defecto, a los 5 s sin tocar) y «Seguir esperando». Girar o apretar detiene la cuenta y quita la barra; el largo responde Seguir esperando. Iniciar AP muestra el aviso «Red AP creada» de siempre; Seguir esperando vuelve a preguntar tras Preferencias > «Reintento Wi-Fi s» (10–300 s, defecto 30, EEPROM v11). Sin OLED o con un ATmega anterior, AP automático como antes. Ficha changes/2026-11-08-06-wifi-sin-red-selector.md.
+Versión: 1.1.0 (subversión).
+Estado: atmega=fuente editada, sin compilar ni cargar; esp=fuente editada, sin compilar ni flashear; web=fuente editada, sin build ni biblioteca regenerada.
+
+## AFR2-20261108-08 - 08/11/2026
+
+Plan (sin implementar) del Loader como depurador USB: catálogo JSON de comandos ROBO2 (`contracts/wire_catalog.json`), intérprete de tramas con listado y comparación, selector de fuente por software dentro del ATmega (log / RX ATmega / RX ESP / enlace / crudo, con registros TAP1 y redacción de datos sensibles) y detección de resets del ESP con su causa (BT02 propuesta con exccause/epc1/uptime/heap/etapa). Regla de skill para toda alta/baja/modificación de un CMD. Documento docs/PLAN_LOADER_INTERPRETE_Y_TAP.md.
+Estado: atmega=sin cambios; esp=sin cambios; web=sin cambios; loader=sin cambios.
+
+## AFR2-20261108-04 - 08/11/2026
+
+La Web propone la prueba de odometría (dirección y distancia, desde Control > Calibración) y el auto abre una pantalla de confirmación: clic del encoder inicia y abre «Prueba en curso», pulsación larga descarta. La Web consulta el resultado (lanzada, descartada, no se pudo lanzar, vencida a los 60 s). Sin trama nueva: usa `robot.calibrate` acción 102 y `robot.config.get` acción 103 sobre EX01 CONFIG; el ESP solo amplía el rango de acciones a 103. Ficha changes/2026-11-08-04-web-odometria-propuesta.md.
+Estado: atmega=fuente editada, sin compilar ni cargar; esp=fuente editada (rango de acciones), sin compilar ni flashear; web=fuente editada, sin build ni navegador.
+
+## AFR2-20261108-03 - 08/11/2026
+
+Nueva pantalla «Prueba en curso» (0x030049): al tocar Iniciar en Calibración > Odometría muestra la odometría actual, el objetivo y la distancia que falta; al llegar sale sola, vuelve a Odometría y avisa «Llegó al objetivo» con la pose final (o «No llegó» / «Interrumpido» si falla). Clic o largo detienen la prueba y vuelven. Ficha changes/2026-11-08-03-odometria-en-curso.md.
+Estado: atmega=fuente editada, sin compilar ni cargar; web=fuente editada, sin build ni navegador; esp=sin cambios.
+
+## AFR2-20261108-02 - 08/11/2026
+
+Tras probar el 08/11: Sí/No que ahora gira (el nodo contaba 1 fila y el render reajustaba la selección), radar que grafica con el servo apagado, ícono de pulsación larga con su L restaurada y salida del QR reforzada (sin reproducir). Pruebas sin «Hall una vuelta» (solo en Calibración); Calibración > Odometría pasa a ser una lista con Dirección (8), Distancia (5-100 cm) e Iniciar, que ejecuta un GOTO relativo. Pulsos por vuelta de fábrica 370 en las 4 ruedas. Versión 1.0.0 en ATmega, ESP y Web. Listado de trabajo de GoTo en docs/PLAN_GOTO_ARCOS_Y_ENVIO.md. Ficha changes/2026-11-08-02-menus-odometria-v1.md.
+Estado: atmega=fuente editada, sin compilar ni cargar; esp=solo versión, sin compilar; web=fuente editada, sin build ni navegador.
+
 ## AFR2-20261108-01 - 08/11/2026
 
 Librería `afr2_usart` (AVR USART0..3: handles, eventos diferidos, inicializador, ISR enlazada por puerto) y log de depuración del ATmega por USART0/D1 a 115200: arranque AVR/ESP con causa de reinicio, volcado de excepción del ESP capturado del enlace, sesión/pérdida/fallas/rechazos del enlace, eventos de red, captura OLED, encoder, loop lento y pila mínima. Enlace ESP en USART1 sin cambios de protocolo. Ficha changes/2026-11-08-01-usart-library-debug-log.md.

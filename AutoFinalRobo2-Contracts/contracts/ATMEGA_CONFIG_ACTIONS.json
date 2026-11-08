@@ -452,6 +452,76 @@
       "unit": "ms",
       "section": "preferences",
       "step": 100
+    },
+    {
+      "id": 99,
+      "symbol": "AFR2_A_ODOM_DIR",
+      "config_access": false,
+      "label": "Direccion de la prueba de odometria",
+      "min": 0,
+      "max": 7,
+      "unit": "codigo AFR2_A_MOVE",
+      "section": "odometry-test",
+      "step": 1,
+      "note": "AFR2-20261108-03/04. Se edita en la OLED o junto con la propuesta (accion 102); no aparece en el editor generico."
+    },
+    {
+      "id": 100,
+      "symbol": "AFR2_A_ODOM_CM",
+      "config_access": false,
+      "label": "Distancia de la prueba de odometria",
+      "min": 5,
+      "max": 100,
+      "unit": "cm",
+      "section": "odometry-test",
+      "step": 5,
+      "note": "AFR2-20261108-03/04. Igual que la accion 99."
+    },
+    {
+      "id": 102,
+      "symbol": "AFR2_A_ODOM_PROPOSE",
+      "config_access": false,
+      "label": "Proponer prueba de odometria",
+      "min": 65541,
+      "max": 2147420004,
+      "unit": "(token<<16)|(dir<<8)|cm",
+      "section": "odometry-test",
+      "special": "write-only via robot.calibrate; token 1..32767",
+      "note": "AFR2-20261108-04. Abre en el auto la pantalla de confirmacion. Requiere salidas apagadas, motores habilitados y pose valida; el reply devuelve (token<<8)|estado."
+    },
+    {
+      "id": 103,
+      "symbol": "AFR2_A_ODOM_STATE",
+      "config_access": false,
+      "label": "Estado de la propuesta de odometria",
+      "unit": "(token<<8)|estado",
+      "section": "odometry-test",
+      "special": "read via robot.config.get",
+      "note": "AFR2-20261108-04. Estado: 0 ninguna, 1 esperando, 2 lanzada, 3 descartada, 4 no se pudo lanzar, 5 vencida (60 s)."
+    },
+    {
+      "id": 105,
+      "symbol": "AFR2_A_WIFI_ASK",
+      "config_access": false,
+      "label": "Respuesta del selector sin Wi-Fi",
+      "min": 1,
+      "max": 2,
+      "unit": "1 Iniciar AP / 2 Seguir esperando",
+      "section": "wifi",
+      "note": "AFR2-20261108-06. Solo la pantalla 0x03004B; genera el trabajo Wi-Fi op 13 (AP) u op 14 (esperar, 2 bytes: segundos de la accion 106)."
+    },
+    {
+      "id": 106,
+      "symbol": "AFR2_A_WIFI_RETRY_S",
+      "config_access": true,
+      "label": "Reintento Wi-Fi",
+      "min": 10,
+      "max": 300,
+      "editor_step": 1,
+      "unit": "s",
+      "section": "preferences",
+      "step": 10,
+      "note": "AFR2-20261108-06. EEPROM v11, defecto 30. Tiempo que el ESP sigue intentando la red STA tras 'Seguir esperando' antes de volver a preguntar."
     }
   ],
   "retired_action_ids": [

@@ -33,6 +33,7 @@ static void __attribute__((noinline)) finish(Afr2Oled *o,const uint8_t *encoded)
         Afr2Oled_FillRect(o,origin+(x+4)*scale,origin+(y+4)*scale,scale,scale,AFR2_BLACK);
     volatile uint8_t *private_bytes=matrix;for(uint16_t i=0;i<QR_BYTES;i++)private_bytes[i]=0;
 }
+void Afr2Qr_Invalidate(void){cache_valid=0;}
 uint8_t Afr2Qr_DrawPayload(Afr2Oled *o,const uint8_t *payload,uint16_t length){
     cache_valid=0;
     if(!payload || !length || length>=QR_BYTES){Afr2Oled_Clear(o);return 0;}

@@ -131,6 +131,7 @@ static PGM_P net_name(uint8_t kind) {
     case AFR2_NET_WEB_SERVED: return PSTR("index-served");
     case AFR2_NET_STA_LOST: return PSTR("sta-lost");
     case AFR2_NET_AP_STOPPED: return PSTR("ap-stopped");
+    case AFR2_NET_STA_NOT_FOUND: return PSTR("sta-not-found"); /* AFR2-20261108-06 */
     default: return PSTR("?");
     }
 }

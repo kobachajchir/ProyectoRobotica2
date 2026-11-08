@@ -58,7 +58,11 @@ export function renderSensorScreen(o:Afr2OledBuffer,node:number,h:FirmwareSensor
       if(active){line(o,64,cy,64+T(radius*csHalf(low)/1000),cy-T(radius*snHalf(low)/1000));line(o,64,cy,64+T(radius*csHalf(high)/1000),cy-T(radius*snHalf(high)/1000));}
       if(view.trace)h.bins.forEach((b,i)=>{if(i<37 && b.id && b.error===0)hit(o,i*5,b.distanceMm,range,radius,cy);});
       const sample=h.latest;
-      if(!view.trace && sample.id && sample.error===0 && sample.angle!==undefined && sample.pulseUs!==undefined && sample.pulseUs>=1000 && sample.pulseUs<=2000)hit(o,sample.angle,sample.distanceMm,range,radius,cy);
+      // AFR2-20261108-02: port of afr2_sensor_screens.c. Servo apagado -> eco de frente (90); eco de <=1 s.
+      if(sample.id && sample.error===0 && (!view.trace || !h.running) && ((h.nowMs-sample.ms)>>>0)<=1000){
+        const aimed=sample.pulseUs!==undefined && sample.pulseUs>=1000 && sample.pulseUs<=2000 && sample.angle!==undefined;
+        hit(o,aimed?sample.angle!:90,sample.distanceMm,range,radius,cy);
+      }
     }
     if(compact){
       o.drawRect(3,44,122,6);

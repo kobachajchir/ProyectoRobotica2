@@ -120,6 +120,9 @@ Inicio 010001
 │  │  ├─ AP / fallback 030024
 │  │  │  ├─ Modo AP [acción]
 │  │  │  ├─ Modo AP-STA [acción]
+│  │  │  ├─ (Sin red Wi-Fi 03004b) [AFR2-20261108-06: la abre el aviso 04000c, no es fila]
+│  │  │  │  ├─ Iniciar AP [defecto; a los 5 s sin interacción]
+│  │  │  │  └─ Seguir esperando [también el largo; Preferencias > Reintento Wi-Fi s]
 │  │  │  └─ Volver
 │  │  └─ Volver
 │  ├─ Sensores 020001
@@ -200,6 +203,7 @@ Inicio 010001
 │  │  │  │  ├─ Pulsación larga ms [editar 800..3000, paso 100]
 │  │  │  │  └─ Volver
 │  │  │  ├─ Invertir servo [editar 0/1; requiere servo desactivado]
+│  │  │  ├─ Reintento Wi-Fi s [editar 10..300, paso 10; AFR2-20261108-06]
 │  │  │  ├─ Guardar EEPROM [asíncrono]
 │  │  │  ├─ Descartar cambios [solo si hay cambios]
 │  │  │  ├─ Estado 03002a → Volver
@@ -239,7 +243,13 @@ Pantallas conservadas fuera del árbol normal: Geometría nominal 03001d
 (solo lectura), Datos de red AP 03002e, Potencia manual 030040 (variante de
 editor y nodo de inspección). Secuencia 03002c se abre por inicio de ejecución
 externa; Táctil 030035 es presentación externa. Guardar cambios 030038 se abre
-por guarda; los avisos de red 040001..04000b son eventos, no menús adicionales.
+por guarda; los avisos de red 040001..04000c son eventos, no menús adicionales.
+Sin red Wi-Fi 03004b (AFR2-20261108-06) se abre después del aviso 04000c «Wi-Fi no
+encontrado» cuando la red STA elegida no conecta y no hay AP: Iniciar AP (fila 0,
+defecto) o Seguir esperando, con barra de 5 s que se quita al girar o apretar; sin
+interacción inicia el AP y aparece el aviso «Red AP creada» 040004 de siempre. El
+largo responde Seguir esperando y vuelve al contexto anterior. Espera a que la UI
+quede libre (no tapa Sí/No, edición, teclado, táctil ni pruebas).
 El selector 030044 es variante de Hall/editor de motor, no un nodo 69 inventado.
 
 ## Cambios pendientes y respuestas

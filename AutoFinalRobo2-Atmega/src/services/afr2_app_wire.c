@@ -32,6 +32,7 @@ static uint32_t features(const Afr2Product *p) {
 }
 static uint8_t calibration_action(uint8_t action) {
     if(action==AFR2_A_RADAR_RANGE || action==AFR2_A_RADAR_TRACE)return 1;
+    if(action==AFR2_A_ODOM_PROPOSE || action==AFR2_A_ODOM_STATE)return 1; /* AFR2-20261108-04 */
     /* Only numeric editors are writable through CONFIG, no generic arbitrary invoke. */
     Afr2MenuNode node;Afr2MenuItem item;
     for(uint8_t n=0;n<AFR2_N_COUNT;n++) {
@@ -206,7 +207,7 @@ uint8_t Afr2App_Command(void *ctx,uint8_t cmd,const uint8_t *d,uint8_t n,uint8_t
     case AFR2_EXT_UI_ACTION: {
         /* Hall wizard and mandatory save choice are local actions. A remote
          * synthetic click must not invoke callbacks hidden behind a view. */
-        if(a->ui->node==AFR2_N_ENCODER_TEST || a->ui->node==AFR2_N_HALL_PICK || a->ui->node==AFR2_N_HALL_COUNT || a->ui->node==AFR2_N_SERVO_ANGLE ||
+        if(a->ui->node==AFR2_N_ENCODER_TEST || a->ui->node==AFR2_N_ODOM_ASK || a->ui->node==AFR2_N_HALL_PICK || a->ui->node==AFR2_N_HALL_COUNT || a->ui->node==AFR2_N_SERVO_ANGLE ||
            (a->ui->node==AFR2_N_SAVE_CONFIRM && !(a->ui->confirm_save==AFR2_A_SAVE && a->ui->confirm_discard==AFR2_A_RADAR_DISCARD)))return AFR2_RESULT_UNAVAILABLE;
         if(n!=6 || d[4]>3 || (d[4]==0 && (int8_t)d[5]!=1 && (int8_t)d[5]!=-1) ||
            (d[4]!=0 && d[5]!=0))return AFR2_RESULT_BAD_REQUEST;
@@ -243,6 +244,7 @@ uint8_t Afr2App_Command(void *ctx,uint8_t cmd,const uint8_t *d,uint8_t n,uint8_t
         if(w->pending && w->op==AFR2_WIFI_PAGE)total=5;
         else if(w->pending && w->op==AFR2_WIFI_LOCAL_DRAFT)total=w->credential_length;
         else if(w->pending && w->op==AFR2_WIFI_WEB_DRAFT)total=(uint8_t)strlen(w->draft_ssid);
+        else if(w->pending && w->op==AFR2_WIFI_WAIT)total=2; /* AFR2-20261108-06: segundos u16LE */
         if(offset>total)return AFR2_RESULT_BAD_REQUEST;
         out[0]=w->pending;afr2_put_u32(out+1,w->id);out[5]=w->op;out[6]=total;out[7]=offset;
         uint8_t count=total-offset;if(count>40)count=40;out[8]=count;out[9]=w->requested_mode;
@@ -252,6 +254,7 @@ uint8_t Afr2App_Command(void *ctx,uint8_t cmd,const uint8_t *d,uint8_t n,uint8_t
             uint8_t pos=offset+i;out[14+i]=(w->op==AFR2_WIFI_WEB_DRAFT || pos<ssid_n)?w->draft_ssid[pos]:pos==ssid_n?0:w->password[pos-ssid_n-1];
         }
         if(w->op==AFR2_WIFI_PAGE && count){uint8_t page[5];afr2_put_u32(page,w->scan_id);page[4]=w->scan_page;memcpy(out+14,page+offset,count);}
+        if(w->op==AFR2_WIFI_WAIT && count){uint8_t wait[2];afr2_put_u16(wait,p->config.wifi_retry_s);memcpy(out+14,wait+offset,count);}
         w->claimed=w->pending;*length=14+count;break;
     }
     case AFR2_EXT_WIFI_UPDATE: {
@@ -300,7 +303,10 @@ uint8_t Afr2App_Command(void *ctx,uint8_t cmd,const uint8_t *d,uint8_t n,uint8_t
                 volatile char *s=w->password;for(uint8_t i=0;i<64;i++)s[i]=0;w->credential_length=0;
                 if(w->state>=3)w->draft_ready=0;
                 if((w->op==AFR2_WIFI_SCAN || w->op==AFR2_WIFI_PAGE) && w->state>=4)w->network_count=0;
-                if(w->state==6){
+                /* AFR2-20261108-06: la respuesta al selector sin Wi-Fi no agrega aviso propio si salio bien: Iniciar AP
+                 * muestra el aviso "Red AP creada" del ESP y Seguir esperando ya aviso al elegir. */
+                if((w->op==AFR2_WIFI_AP_START || w->op==AFR2_WIFI_WAIT) && w->state==3){}
+                else if(w->state==6){
                     Afr2Ui_NotifyFlash(a->ui,1,PSTR("No hay clientes"),PSTR("Conectados"),3000);Afr2Ui_AfterNotice(a->ui,AFR2_N_WIFI_NETWORKS);
                 }else {
                     const char *message=w->state==1?PSTR("Datos listos"):w->state==3?(w->op==AFR2_WIFI_STATUS?PSTR("Estado recibido"):(w->op==AFR2_WIFI_SCAN || w->op==AFR2_WIFI_PAGE)?(w->scan_total?PSTR("Redes listas"):PSTR("Sin redes")):w->op==AFR2_WIFI_DISCONNECT?PSTR("Red desconectada"):w->op==AFR2_WIFI_CHANGE_MODE?PSTR("Modo actualizado"):PSTR("Conectado")):w->state==4?PSTR("Operacion fallida"):PSTR("Cancelado");

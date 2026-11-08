@@ -9,13 +9,18 @@
 #include "afr2_sensor_head.h"
 #include "afr2_battery_wire.h"
 #include "afr2_geometry.h"
-#define AFR2_CONFIG_VERSION 10u /* AFR2-20261106-12: EEPROM v10, 64-byte payload, per-wheel CW convention. */
+#define AFR2_CONFIG_VERSION 11u /* AFR2-20261108-06: EEPROM v11, 66-byte payload, +wifi_retry_s (v10: 64 bytes, per-wheel CW convention). */
+#define AFR2_WIFI_RETRY_DEFAULT_S 30u /* AFR2-20261108-06: "Seguir esperando" vuelve a preguntar tras este tiempo */
 #define AFR2_NOTICE_MS 3000u
+#define AFR2_FACTORY_HALL_MASK 0x0Fu /* AFR2-20261108-05: signos y convencion CW de fabrica en las 4 ruedas */
+#define AFR2_DEFAULT_CPR 370u /* AFR2-20261108-02: pulsos Hall por vuelta medidos por el usuario, iguales en las 4 ruedas */
 enum { AFR2_IDLE, AFR2_MANUAL, AFR2_LINE, AFR2_WHEEL_TEST, AFR2_GOTO, AFR2_FAULT, AFR2_SEQUENCE, AFR2_PWM_MANUAL };
 enum { AFR2_SOURCE_NONE, AFR2_SOURCE_LOCAL, AFR2_SOURCE_WEB };
 enum { AFR2_OK, AFR2_BAD, AFR2_UNAVAILABLE, AFR2_DENIED, AFR2_BUSY, AFR2_FAILED };
 enum { AFR2_WIFI_STATUS=1, AFR2_WIFI_SCAN, AFR2_WIFI_WEB_DRAFT,
-       AFR2_WIFI_LOCAL_DRAFT, AFR2_WIFI_CONNECT, AFR2_WIFI_CANCEL, AFR2_WIFI_RETRY, AFR2_WIFI_REBOOT_ESP, AFR2_WIFI_DISCONNECT, AFR2_WIFI_CHANGE_MODE, AFR2_WIFI_READ_CREDENTIALS, AFR2_WIFI_PAGE };
+       AFR2_WIFI_LOCAL_DRAFT, AFR2_WIFI_CONNECT, AFR2_WIFI_CANCEL, AFR2_WIFI_RETRY, AFR2_WIFI_REBOOT_ESP, AFR2_WIFI_DISCONNECT, AFR2_WIFI_CHANGE_MODE, AFR2_WIFI_READ_CREDENTIALS, AFR2_WIFI_PAGE,
+       /* AFR2-20261108-06: respuesta al selector sin Wi-Fi. WAIT lleva 2 bytes: segundos u16LE. */
+       AFR2_WIFI_AP_START, AFR2_WIFI_WAIT };
 typedef struct {
     uint8_t line_kind, line_invert, line_calibrated, motor_signs, motor_ready;
     uint8_t hall_wired, hall_signs, geometry_ready, encoder_steps, encoder_invert, contrast, rotation;
@@ -28,6 +33,7 @@ typedef struct {
     uint16_t line_kp, line_speed;
     uint32_t counts_per_rev[4];
     uint8_t hall_cw_mask; /* AFR2-20261106-12: calibrated CW from wheel exterior; per-wheel migration. */
+    uint16_t wifi_retry_s; /* AFR2-20261108-06: 10..300 s, paso 10; espera de "Seguir esperando" */
 } Afr2Config;
 typedef struct {
     uint16_t line_raw[5], distance_mm;

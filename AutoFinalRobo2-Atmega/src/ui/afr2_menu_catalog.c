@@ -241,7 +241,8 @@ static const Afr2MenuItem extra[] PROGMEM={
  { "Reposo", 255, AFR2_A_QUICK_MODE, 0, 0,0,0 },
  { "Manual", 255, AFR2_A_QUICK_MODE, 1, 0,0,0 },
  { "Volver", AFR2_N_QUICK, 0, 0,0,0,0 },
-
+ /* AFR2-20261108-06: extra[47], Preferencias fila 2. */
+ { "Reintento Wi-Fi s", 255, AFR2_A_WIFI_RETRY_S, 0, 10, 300, 10 },
 };
 /* AFR2-20261030-07: explicit reorganized menus; old resource offsets retained. */
 static const Afr2MenuItem reform[] PROGMEM={
@@ -264,7 +265,7 @@ static const Afr2MenuItem reform[] PROGMEM={
  { "Linea", AFR2_N_LINE_CALIB, 0, 0, 0, 0, 0 },
  { "Motores", AFR2_N_MOTOR_CALIB, 0, 0, 0, 0, 0 },
  { "Hall", AFR2_N_HALL_TEST, 0, 0, 0, 0, 0 },
- { "Ver odometria", AFR2_N_POSE, 0, 0, 0, 0, 0 },
+ { "Odometria", AFR2_N_ODOM_MENU, 0, 0, 0, 0, 0 }, /* AFR2-20261108-02: antes "Ver odometria" (vista vacia) */
  { "Descartar cambios", 255, AFR2_A_DISCARD, 0, 0, 0, 0 },
  { "Volver", AFR2_N_MENU, 0, 0, 0, 0, 0 },
  { "Contraste", 255, AFR2_A_CONTRAST, 0, 0, 255, 8 },
@@ -343,6 +344,14 @@ static const Afr2MenuItem wifiReform[] PROGMEM={
  { "Refrescar", 255, 45, 0, 0, 0, 0 },
  { "Volver", 31, 0, 0, 0, 0, 0 },
 };
+/* AFR2-20261108-02: lista de la prueba de distancia (Calibracion > Odometria). */
+static const Afr2MenuItem odom[] PROGMEM={
+ { "Estado", AFR2_N_POSE, 0, 0, 0, 0, 0 },
+ { "Direccion", 255, AFR2_A_ODOM_DIR, 0, 0, 7, 1 },
+ { "Distancia cm", 255, AFR2_A_ODOM_CM, 0, 5, 100, 5 },
+ { "Iniciar", 255, AFR2_A_ODOM_TOGGLE, 0, 0, 0, 0 },
+ { "Volver", AFR2_N_CALIB, 0, 0, 0, 0, 0 },
+};
 static const Afr2MenuNode nodes[] PROGMEM={
  { "AutoFinalRobo2", AFR2_N_HOME, 1, 1, 0, 0x10001UL },
  { "Menu principal", AFR2_N_HOME, 0, 7, 1, 0x10002UL },
@@ -361,10 +370,10 @@ static const Afr2MenuNode nodes[] PROGMEM={
  { "Revisar objetivo", AFR2_N_GOTO_MENU, 1, 1, 59, 0x3000eUL },
  { "Resultado GOTO", AFR2_N_GOTO_MENU, 1, 1, 60, 0x3000fUL },
  { "Odometria", AFR2_N_GOTO_MENU, 1, 1, 61, 0x30010UL },
- { "Pruebas", AFR2_N_MENU, 0, 9, 0x4008u, 0x30011UL },
+ { "Pruebas", AFR2_N_MENU, 0, 8, 0x4008u, 0x30011UL }, /* AFR2-20261108-02: sin "Hall una vuelta" (es calibracion) */
  { "Motor individual", AFR2_N_TESTS, 0, 6, 0x4031u, 0x30012UL },
  { "Estado motores", AFR2_N_WHEEL, 1, 1, 78, 0x30013UL },
- { "Hall una vuelta", AFR2_N_TESTS, 0, 6, 79, 0x30014UL },
+ { "Hall una vuelta", AFR2_N_CALIB, 0, 6, 79, 0x30014UL }, /* AFR2-20261108-02: ahora solo desde Calibracion > Hall */
  { "Hall / velocidad", AFR2_N_SENSORS, 1, 1, 86, 0x30015UL },
  { "Linea IR1..IR5", AFR2_N_SENSORS, 1, 1, 87, 0x30016UL },
  { "Distancia numerica", AFR2_N_DISTANCE_SERVO, 1, 1, 88, 0x30017UL },
@@ -385,7 +394,7 @@ static const Afr2MenuNode nodes[] PROGMEM={
  { "Sistema", AFR2_N_MENU, 0, 8, 166, 0x30026UL },
  { "Versiones", AFR2_N_SYSTEM, 1, 1, 172, 0x30027UL },
  { "Capacidades", AFR2_N_SYSTEM, 1, 1, 173, 0x30028UL },
- { "Preferencias", AFR2_N_SYSTEM, 0, 6, 0x4019u, 0x30029UL },
+ { "Preferencias", AFR2_N_SYSTEM, 0, 7, 0x4019u, 0x30029UL }, /* AFR2-20261108-06: +Reintento Wi-Fi s (fila 2, extra[47]) */
  { "Estado EEPROM", AFR2_N_PREFS, 1, 1, 178, 0x3002aUL },
  { "Diagnostico", AFR2_N_SYSTEM, 0, 3, 179, 0x3002bUL },
  { "Secuencia", AFR2_N_CONTROL, 1, 1, sizeof(items)/sizeof(items[0])-1, 0x3002cUL },
@@ -416,6 +425,14 @@ static const Afr2MenuNode nodes[] PROGMEM={
  { "QR abrir Web", AFR2_N_WIFI, 1, 1, 0x8004u, 0x30046UL },
  /* AFR2-20261106-07: live 4-wheel Hall counts, zeroed on entry; returns to Pruebas. */
  { "Prueba Hall", AFR2_N_TESTS, 1, 1, 85, 0x30047UL },
+ /* AFR2-20261108-02: lista de la prueba de distancia, hija de Calibracion. */
+ { "Odometria", AFR2_N_CALIB, 0, 5, 0, 0x30048UL },
+ /* AFR2-20261108-03: vista de la prueba de distancia en marcha (odometria actual y objetivo). */
+ { "Prueba en curso", AFR2_N_ODOM_MENU, 1, 1, 85, 0x30049UL },
+ /* AFR2-20261108-04: la Web propuso una prueba; el encoder del auto la inicia (corto) o la descarta (largo). */
+ { "Prueba odometria", AFR2_N_CALIB, 1, 1, 85, 0x3004aUL },
+ /* AFR2-20261108-06: aparece sola cuando la red STA elegida no conecta (tras el aviso 0x04000c). */
+ { "Sin red Wi-Fi", AFR2_N_WIFI_AP, 1, 2, 85, 0x3004bUL },
 };
 void Afr2Menu_Node(uint8_t index,Afr2MenuNode *out) {
     if(index>=AFR2_N_COUNT)index=AFR2_N_HOME;
@@ -429,11 +446,12 @@ void Afr2Menu_Item(uint8_t node,uint8_t index,Afr2MenuItem *out) {
     if(node==AFR2_N_WIFI && index>=4){
         if(index<6){memset(out,0,sizeof(*out));strcpy_P(out->label,index==4?PSTR("QR conectar AP"):PSTR("QR abrir Web"));out->target=index==4?AFR2_N_QR_AP:AFR2_N_QR_WEB;return;}index-=2;
     }
-    /* AFR2-20261106-07: "Prueba Hall" inserted third in Pruebas without moving flash offsets. */
-    if(node==AFR2_N_TESTS && index>=2){
-        if(index==2){memset(out,0,sizeof(*out));strcpy_P(out->label,PSTR("Prueba Hall"));out->target=AFR2_N_HALL_LIVE;return;}
-        --index;
-    }
+    /* AFR2-20261108-02: "Hall una vuelta" sale de Pruebas (es calibracion); "Prueba Hall" queda segunda y
+     * el resto conserva su desplazamiento en reform[] (Linea cinco = reform[10]). */
+    if(node==AFR2_N_ODOM_MENU){memcpy_P(out,&odom[index],sizeof(*out));return;}
+    /* AFR2-20261108-06: Preferencias inserta "Reintento Wi-Fi s" en la fila 2 sin mover reform[]. */
+    if(node==AFR2_N_PREFS){if(index==2){memcpy_P(out,&extra[47],sizeof(*out));return;}if(index>2)--index;}
+    if(node==AFR2_N_TESTS && index==1){memset(out,0,sizeof(*out));strcpy_P(out->label,PSTR("Prueba Hall"));out->target=AFR2_N_HALL_LIVE;return;}
     if(n.first&0x2000u){memcpy_P(out,&wifiReform[(n.first&0x1fffu)+index],sizeof(*out));return;}
     if(n.first&0x4000u){memcpy_P(out,&reform[(n.first&0x3fffu)+index],sizeof(*out));return;}
     if(node==AFR2_N_QUICK && index==6){memcpy_P(out,&extra[43],sizeof(*out));return;}

@@ -68,7 +68,14 @@ static void radar(Afr2Oled *o,const Afr2UiSnapshot *s,uint8_t compact){
     if(h){
         if(active){line(o,64,cy,64+project(radius,cs_half(low)),cy-project(radius,sn_half(low)));line(o,64,cy,64+project(radius,cs_half(high)),cy-project(radius,sn_half(high)));}
         if(s->radar_trace)for(uint8_t i=0;i<37;i++)if(h->bins[i].id && h->bins[i].error==AFR2_ECHO_OK)hit(o,i*5u,h->bins[i].distance_mm,range,radius,cy);
-        if(!s->radar_trace && h->latest.id && h->latest.error==AFR2_ECHO_OK && h->latest.pulse_us>=1000 && h->latest.pulse_us<=2000)hit(o,h->latest.angle,h->latest.distance_mm,range,radius,cy);
+        /* AFR2-20261108-02: en Pruebas el servo suele estar apagado (pulse_us 0) y el HC-SR04 igual mide;
+         * antes ese eco se descartaba y el radar no graficaba. Se dibuja el ultimo eco valido y reciente
+         * (<=1 s) con su angulo si el servo estaba activo, o de frente (90) si no. En modo rastro los
+         * ecos del barrido siguen acumulandose en bins[]; este punto cubre el uso sin barrido. */
+        if(h->latest.id && h->latest.error==AFR2_ECHO_OK && (!s->radar_trace || !h->running) && (uint32_t)(s->sensor_now_ms-h->latest.ms)<=1000u){
+            uint8_t angle=(h->latest.pulse_us>=1000 && h->latest.pulse_us<=2000)?h->latest.angle:90u;
+            hit(o,angle,h->latest.distance_mm,range,radius,cy);
+        }
     }
 }
 /* Reuse the existing glyph bytes, dropping empty digit side columns/rows.

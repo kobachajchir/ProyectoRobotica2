@@ -444,6 +444,8 @@ void Broker::tick(uint32_t now) {
     }
 
     if(!mega_.ready() || !productReady_){networkLinked_=false;networkPending_=true;networkPage_=0;wifiResetPending_=false;}
+    // AFR2-20261108-06: hay un OLED que puede contestar la pregunta "sin Wi-Fi".
+    wifi_.setAskMode(mega_.ready() && productReady_ && extensionVersion_>=5 && (productFeatures_&AFR2_EXT_F_NETWORK_UI),now);
     /* AFR2-20261106-10: collect the finished UART reply and serve the Web queue BEFORE background
      * polls. Previously tickProduct took every free slot first (pulse/state/Wi-Fi/network/head/info),
      * so robot.drive.pwm waited until the Web 600 ms timeout fired STOP. Safety halt still preempts. */

@@ -31,6 +31,13 @@ public:
     void status(JsonObject out) const;
     void displayInfo(WifiDisplayInfo &out) const;
     static bool valid(const WifiConfig &config);
+    /* AFR2-20261108-06: con un OLED que puede responder, la STA que no conecta ya no levanta el AP sola:
+     * se avisa (AFR2_NET_STA_NOT_FOUND) y se espera Iniciar AP / Seguir esperando. Sin OLED durante 10 s,
+     * o con un ATmega que rechaza el evento, vuelve el AP automatico de siempre. */
+    void setAskMode(bool on,uint32_t now){askMode_=on && !askUnsupported_;if(askMode_)askLinkAt_=now;}
+    bool takeAskEvent(uint8_t &reason){if(!askEvent_)return false;askEvent_=false;reason=askReason_;return true;}
+    void askUnsupported();
+    bool answerAsk(bool startAp,uint16_t seconds,uint32_t now);
 private:
     Storage &storage_;
     WifiConfig pending_;
@@ -40,6 +47,9 @@ private:
     bool applyPending_=false, scanPending_=false, scanReady_=false, scanTimedOut_=false, staWanted_=false, apOn_=false;
     bool fallbackActive_=false,scanRestoreAp_=false;
     bool disconnectedByUser_=false;
+    bool askMode_=false,askUnsupported_=false,askEvent_=false;
+    uint8_t askState_=0,askReason_=0; // 0 sin pregunta, 1 esperando decision del OLED, 2 "Seguir esperando" hasta askUntil_
+    uint32_t askLinkAt_=0,askUntil_=0;
     /* AFR2-20261106-37: ultima red STA que conecto antes de la actual ("staPrevious" en wifi.json).
      * Si la configurada no conecta en 15 s se prueba la anterior; los reintentos alternan entre ambas. */
     bool usingPrevious_=false, currentGood_=false, hasPrevious_=false;

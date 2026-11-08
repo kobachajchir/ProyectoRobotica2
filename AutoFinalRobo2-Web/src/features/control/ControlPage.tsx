@@ -25,6 +25,7 @@ import type { RobotWheelValues } from '../../components/three/robotWheelMotion';
 import type { SimulationSnapshotAtCursor } from './sequences/mecanumKinematics';
 import { SequenceEditorPanel } from './sequences/SequenceEditorPanel';
 import { CalibrationPanel } from './CalibrationPanel';
+import { OdometryTestPanel } from './OdometryTestPanel';
 import { GotoSimulatorPanel } from './goto/GotoSimulatorPanel';
 import type { GotoCommand } from './goto/gotoSimulation';
 import { ManualDriveOverlay, type ManualDirection } from './manual/ManualDriveOverlay';
@@ -621,7 +622,10 @@ export function ControlPage({ area = 'drive' }: { area?: ControlArea }) {
             id: 'calibrate',
             label: 'Calibración',
             content: (
-              <CalibrationPanel />
+              <>
+                <CalibrationPanel />
+                <OdometryTestPanel />
+              </>
             ),
           },
           {

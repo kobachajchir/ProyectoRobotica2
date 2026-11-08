@@ -660,8 +660,8 @@
       "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
       "change_id": "AFR2-20261106-07",
-      "item_count": 9,
-      "items_change": "AFR2-20261106-07: third row Prueba Hall (0x030047) inserted by code; flash offsets unchanged",
+      "item_count": 8,
+      "items_change": "AFR2-20261108-02: Hall una vuelta (0x030014) removed from Pruebas (calibration only); Prueba Hall (0x030047) is now the second row; flash offsets unchanged",
       "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
       "variant": "three16px-rows; flash-icons; selected-text800ms-dwell-40ms-scroll; explicit-Volver",
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
@@ -757,7 +757,7 @@
       "name": "Hall una vuelta",
       "role": "menu",
       "renderer": "atmega:src/ui/afr2_screens.c:Afr2Ui_Render",
-      "parent": "shared:screen/030011",
+      "parent": "shared:screen/03001A",
       "fields": [
         "selection",
         "firstVisible",
@@ -1584,7 +1584,8 @@
       "state": "source-integrated-compiled-runtime-unverified",
       "physical_evidence": false,
       "change_id": "AFR2-20261106-01",
-      "item_count": 6,
+      "item_count": 7,
+      "items_change": "AFR2-20261108-06: fila 2 Reintento Wi-Fi s (accion 106, 10..300 s, paso 10, EEPROM v11); Descartar cambios oculto sin cambios pasa a la fila 4",
       "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
       "variant": "three16px-rows; flash-icons; selected-text800ms-dwell-40ms-scroll; explicit-Volver",
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
@@ -2168,6 +2169,30 @@
       "build_evidence": "AFR2-20261106-04: builds/2026-11-06-04/README.md",
       "implementation_review": "changes/2026-11-06-01-coordinated-corrections.md",
       "gesture_overlay": "L glyph and sixteen-step hold progress; reserved lower-right slot; QR excluded; action only on release"
+    },
+    {
+      "id": "shared:screen/04000C",
+      "local_code": "0x04000C",
+      "name": "Wi-Fi no encontrado",
+      "role": "notification",
+      "parent": "return-to-current-context",
+      "fields": [
+        "eventSequence",
+        "kind",
+        "subject 1 red no visible / 2 clave incorrecta / 3 no se pudo unir",
+        "confirmedNetworkState"
+      ],
+      "actions": [
+        "dismiss",
+        "menu"
+      ],
+      "variant": "aviso de red AFR2_NET_STA_NOT_FOUND=12 (3 s): icono WIFI_OFF, 'Wi-Fi no' / 'encontrado' y motivo; al cerrarse la app abre el selector 0x03004B",
+      "state": "source-integrated-uncompiled-runtime-unverified",
+      "physical_evidence": false,
+      "renderer": "atmega:src/ui/afr2_network_screen.c:Afr2NetworkNotice_Render",
+      "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
+      "build_evidence": "No build, test, validator or flash for this change",
+      "change_id": "AFR2-20261108-06"
     },
     {
       "id": "shared:screen/030030",
@@ -3003,6 +3028,133 @@
       "physical_evidence": false,
       "build_evidence": "No build, test, validator or flash for this change",
       "change_id": "AFR2-20261106-07"
+    },
+    {
+      "id": "shared:screen/030048",
+      "local_code": "0x030048",
+      "name": "Odometria",
+      "role": "menu",
+      "parent": "shared:screen/03001A",
+      "renderer": "atmega:src/ui/afr2_screens.c:Afr2Ui_Render",
+      "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
+      "fields": [
+        "selection",
+        "firstVisible",
+        "snapshot.lines (via Estado 0x030010)",
+        "AFR2_A_ODOM_DIR 0..7",
+        "AFR2_A_ODOM_CM 5..100 step 5"
+      ],
+      "actions": [
+        "rotate",
+        "select",
+        "edit-Direccion",
+        "edit-Distancia",
+        "toggle-Iniciar-Detener",
+        "long-release-back"
+      ],
+      "item_count": 5,
+      "items": "Estado (0x030010) / Direccion / Distancia cm / Iniciar|Detener / Volver",
+      "variant": "AVR node AFR2_N_ODOM_MENU=71; Direccion uses AFR2_A_MOVE codes 0..7 and shows the name in the editor; Iniciar runs a relative GOTO of Distancia cm (X forward, Y left, diagonals 0.7071 per axis); requires motors enabled and valid pose; remote UI cannot start it",
+      "state": "source-integrated-uncompiled-runtime-unverified",
+      "physical_evidence": false,
+      "build_evidence": "No build, test, validator or flash for this change",
+      "change_id": "AFR2-20261108-02"
+    },
+    {
+      "id": "shared:screen/030049",
+      "local_code": "0x030049",
+      "name": "Prueba en curso",
+      "role": "view",
+      "parent": "shared:screen/030048",
+      "renderer": "atmega:src/ui/afr2_screens.c:Afr2Ui_Render",
+      "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
+      "fields": [
+        "snapshot.lines[0] Act X/Y (pose estimada, mm)",
+        "snapshot.lines[1] Obj X/Y (objetivo absoluto de la mision, mm)",
+        "snapshot.lines[2] Falta N mm"
+      ],
+      "actions": [
+        "short-stop-and-back",
+        "long-release-stop-and-back"
+      ],
+      "item_count": 1,
+      "variant": "view; AVR node AFR2_N_ODOM_RUN=72 (el nodo virtual Web del selector de motor pasa a 73); se abre al iniciar la prueba de distancia; 100 ms; al llegar sale sola, vuelve a Odometria y avisa Llego al objetivo con la pose final; si falla o se interrumpe avisa Odometria: No llego (60 s) o Interrumpido",
+      "state": "source-integrated-uncompiled-runtime-unverified",
+      "physical_evidence": false,
+      "build_evidence": "No build, test, validator or flash for this change",
+      "change_id": "AFR2-20261108-03"
+    },
+    {
+      "id": "shared:screen/03004A",
+      "local_code": "0x03004A",
+      "name": "Prueba odometria",
+      "role": "view",
+      "parent": "shared:screen/03001A",
+      "renderer": "atmega:src/ui/afr2_screens.c:Afr2Ui_Render",
+      "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
+      "fields": [
+        "snapshot.lines[0] direccion propuesta",
+        "snapshot.lines[1] distancia propuesta (cm)"
+      ],
+      "actions": [
+        "short-start-test",
+        "long-release-discard"
+      ],
+      "item_count": 1,
+      "variant": "view; AVR node AFR2_N_ODOM_ASK=73 (selector de motor virtual de la Web = 74); la abre la propuesta de la Web (robot.calibrate accion 102) y solo el encoder del auto responde: corto inicia y abre 0x030049, largo descarta; vence a los 60 s; UI_ACTION remoto bloqueado",
+      "state": "source-integrated-uncompiled-runtime-unverified",
+      "physical_evidence": false,
+      "build_evidence": "No build, test, validator or flash for this change",
+      "change_id": "AFR2-20261108-04"
+    },
+    {
+      "id": "shared:screen/03004B",
+      "local_code": "0x03004B",
+      "name": "Sin red Wi-Fi",
+      "role": "view",
+      "parent": "shared:screen/030024",
+      "renderer": "atmega:src/ui/afr2_screens.c:Afr2Ui_Render",
+      "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
+      "fields": [
+        "selection 0 Iniciar AP (defecto) / 1 Seguir esperando",
+        "wifi_ask_timer / wifi_ask_ms: cuenta de 5 s (AFR2_WIFI_ASK_MS)",
+        "Preferencias > Reintento Wi-Fi s (accion 106) para Seguir esperando"
+      ],
+      "actions": [
+        "rotate-select-and-stop-countdown",
+        "short-run-selected",
+        "long-release-keep-waiting",
+        "timeout-5s-start-ap"
+      ],
+      "item_count": 2,
+      "variant": "view; AVR node AFR2_N_WIFI_ASK=74 (selector de motor virtual de la Web pasa a 75); hijo de Wi-Fi > AP / fallback. La abre la app despues del aviso 0x04000C, solo si la UI esta libre (sin Si/No, edicion, teclado, tactil, Hall, prueba encoder, odometria ni secuencia). Barra de 5 s bajo 'Inicia AP en N s'; un giro o apretar el encoder la quitan y queda 'Elija una opcion' sin vencimiento. Iniciar AP: el aviso 'Red AP creada' (0x040004) de siempre. Seguir esperando: el ESP reintenta y vuelve a preguntar tras el tiempo de la preferencia. Vuelve a la pantalla anterior; se cierra sola si la STA conecta o hay AP. Un aviso encima pausa la cuenta.",
+      "state": "source-integrated-uncompiled-runtime-unverified",
+      "physical_evidence": false,
+      "build_evidence": "No build, test, validator or flash for this change",
+      "change_id": "AFR2-20261108-06"
+    },
+    {
+      "id": "shared:screen/010004",
+      "local_code": "0x010004",
+      "name": "Inicio AFR2",
+      "role": "view",
+      "parent": "return-to-current-context",
+      "renderer": "atmega:src/ui/afr2_screens.c:Afr2Ui_Render",
+      "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
+      "fields": [
+        "splash_ms: inicio de los 3 s (AFR2_SPLASH_MS)",
+        "AFR2_FIRMWARE_VERSION de contracts/afr2_build_info.h (compilada)"
+      ],
+      "actions": [
+        "short-or-long-skip",
+        "timeout-3s-dashboard"
+      ],
+      "item_count": 0,
+      "variant": "estado de Afr2Ui sin nodo de catalogo (como Tactil 0x030035). Barra superior de 2 px como la de los avisos, llena en 3 s; 'AFR2' al doble (14x20 por letra) que aparece letra por letra cada 200 ms; 'ATmega' y 'Firmware X.Y.Z' centrados. Luego Inicio 0x010001. Los avisos que llegan durante ella esperan y arrancan su tiempo al terminar; el giro no hace nada.",
+      "state": "source-integrated-uncompiled-runtime-unverified",
+      "physical_evidence": false,
+      "build_evidence": "No build, test, validator or flash for this change",
+      "change_id": "AFR2-20261108-07"
     }
   ],
   "battery_screens_change": "AFR2-20261029-26; appended nodes 0x030039 and 0x03003a; source only",

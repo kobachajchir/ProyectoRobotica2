@@ -13,6 +13,9 @@
 #define AFR2_SCREEN_TOUCH 0x030035UL
 #define AFR2_SCREEN_SEQUENCE 0x03002cUL
 #define AFR2_SCREEN_HOME 0x010001UL
+#define AFR2_WIFI_ASK_MS 5000u /* AFR2-20261108-06: sin interaccion, Iniciar AP */
+#define AFR2_SCREEN_SPLASH 0x010004UL /* AFR2-20261108-07: pantalla de inicio con la version */
+#define AFR2_SPLASH_MS 3000u
 #define AFR2_SCREEN_MENU 0x010002UL
 #define AFR2_SCREEN_SENSORS 0x020001UL
 #define AFR2_SCREEN_DISPLAY 0x020002UL
@@ -36,6 +39,7 @@ typedef struct {
     uint8_t notices,head,tail;
     /* AFR2-20261029-20: reusable save/discard choice, action-based service. */
     uint8_t confirm_save,confirm_discard,confirm_target,confirm_wait;
+    uint32_t confirm_wait_ms; /* AFR2-20261108-05: vencimiento de "Guardando..." */
     uint8_t quick_selection,quick_pending,quick_expected;
     uint8_t radar_selection,radar_first,test_long,notice_target;
     uint16_t test_clicks; int16_t test_turns; /* AFR2-20261107-52: encoder test counters */
@@ -46,6 +50,13 @@ typedef struct {
     /* AFR2-20261107-48: after the user closes a network notice, chatty network
      * events (WebSocket, clients, Web served) are accepted but not shown until then. */
     uint32_t network_quiet_until_ms;
+    /* AFR2-20261108-06: selector sin Wi-Fi. timer=1 mientras corre la cuenta de 5 s (cualquier giro o
+     * pulsacion la detiene); ms = inicio (se corre mientras un aviso lo tapa); answered = respuesta aceptada. */
+    uint8_t wifi_ask_timer,wifi_ask_answered;
+    uint32_t wifi_ask_ms;
+    /* AFR2-20261108-07: pantalla de inicio. splash 1 = falta el primer Tick, 2 = visible desde splash_ms. */
+    uint8_t splash;
+    uint32_t splash_ms;
     bool redraw,scroll_redraw;
     Afr2UiPosition history[8];
     Afr2MenuItem editing;
@@ -97,6 +108,8 @@ void Afr2Ui_NetworkRestart(Afr2Ui *u);
 void Afr2Ui_NotifyFlash(Afr2Ui *,uint8_t,const char *,const char *,uint16_t);
 void Afr2Ui_NotifyFlashTitle(Afr2Ui *,uint8_t,const char *,const char *,uint16_t);
 void Afr2Ui_AfterNotice(Afr2Ui *u,uint8_t node);
+void Afr2Ui_Leave(Afr2Ui *u,uint8_t fallback); /* AFR2-20261108-03 */
+void Afr2Ui_OdomDirName(char *out,uint8_t dir); /* AFR2-20261108-04: out >= 14 bytes */
 /* AFR2-20261107-48: true while chatty network notices stay silent. */
 uint8_t Afr2Ui_NetworkQuiet(const Afr2Ui *u);
 void Afr2Ui_GestureHint(Afr2Oled *o,uint8_t x,uint8_t y,uint8_t is_long,const char *text);
