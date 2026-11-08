@@ -1,3 +1,5 @@
+> **AFR2-20261107-53:** El ESP se reiniciaba al bajar el modelo 3D: el loop abría LittleFS sin parar cuando usaba la red por defecto y chocaba con el servidor HTTP. Corregido; ESP sin compilar. [Ficha](changes/2026-11-07-53-esp-littlefs-loop-reset.md).
+
 > **AFR2-20261107-52:** Hall tolerante a la holgura (unos 370 pulsos por vuelta ya se aceptan), nueva prueba de encoder, ícono de largo centrado, árbol de pantallas con zoom, ajustes de márgenes y captura del Loader en la Web. ATmega sin compilar; Web sin build. [Ficha](changes/2026-11-07-52-hall-tolerance-ui-polish.md).
 
 > **AFR2-20261107-51:** OLED: la falla era un conector flojo, ya corregido. Firmware del auto recargado con el Loader en COM16 y verificado (SHA-256 16826727…7ca0a4). Red STA por defecto «Koba» guardada localmente, con el ESP sin compilar. [Ficha](changes/2026-11-07-51-mega-restore-loader-wifi.md).

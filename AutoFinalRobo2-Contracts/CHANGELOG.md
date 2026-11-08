@@ -1,3 +1,8 @@
+## AFR2-20261107-53 - 07/11/2026
+
+ESP: se reiniciaba al descargar el modelo 3D. Con la red por defecto en RAM (sin `wifi.json`) o si fallaba la escritura, `WifiService::tick` abría LittleFS en cada vuelta del loop para marcar `staGood`. Eso chocaba con las lecturas del servidor HTTP asincrónico. Ahora se intenta una sola vez por arranque y solo con la configuración guardada. Ficha changes/2026-11-07-53-esp-littlefs-loop-reset.md.
+Estado: esp=fuente corregida, sin compilar ni cargar; atmega/web=sin cambios.
+
 ## AFR2-20261107-52 - 07/11/2026
 
 Hall de una vuelta: tolera la holgura y solo invalida si la cuenta retrocede respecto del máximo más de max(8, máximo/32) pulsos; antes bastaba un pulso. Prueba de encoder con «Clicks: N», «Giro: N» desde 0 y largo «Pulse» → «Correcto» → salir. Ícono de pulsación larga centrado. Web: zoom en el árbol de pantallas y páginas por giro bajo el mismo padre; márgenes de Infraestructura y tarjeta del paquete; foto de los modelos fuera del texto en pantallas chicas; captura del Loader en WebP en su banner. Ficha changes/2026-11-07-52-hall-tolerance-ui-polish.md.

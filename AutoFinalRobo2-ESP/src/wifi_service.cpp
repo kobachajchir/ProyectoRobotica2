@@ -128,7 +128,11 @@ void WifiService::tick(uint32_t now) {
         staStarted_=now; // grace period starts again on a later disconnection
         if(!usingPrevious_ && !currentGood_ && WiFi.status()==WL_CONNECTED){
             // Primera conexion exitosa de la red configurada: queda apta para ser «anterior» en el futuro.
-            JsonDocument doc;if(storage_.loadWifi(doc)){migrateWifi(doc);doc["staGood"]=true;if(storage_.saveWifi(doc))currentGood_=true;}
+            // AFR2-20261107-53: un solo intento por arranque y solo con wifi.json guardado. Antes, sin archivo
+            // (red por defecto en RAM) o si fallaba la escritura, abria LittleFS en cada vuelta del loop y
+            // chocaba con las lecturas del servidor HTTP asincronico (descarga del .glb) y reiniciaba el ESP.
+            currentGood_=true;
+            if(persisted_==1){JsonDocument doc;if(storage_.loadWifi(doc)){migrateWifi(doc);doc["staGood"]=true;(void)storage_.saveWifi(doc);}}
         }
     }
     if (scanPending_) {
