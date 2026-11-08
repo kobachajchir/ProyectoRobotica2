@@ -11,6 +11,20 @@ typedef struct {
     uint32_t state_age_ms, line_age_ms, ultrasonic_age_ms, encoders_age_ms;
     int32_t counts[4];            /* FL FR RL RR */
 } Afr2LinkSnapshot;
+/* AFR2-20261108-01. Diagnostic notifications, main context only. They never
+ * change link behaviour; the optional hook may log them (afr2_debug). */
+enum {
+    AFR2_LINK_EVT_PEER_BOOT = 1, /* ESP boot frame; data = 14-byte BT01 body */
+    AFR2_LINK_EVT_SESSION,       /* HELLO opened a new session; value = session id */
+    AFR2_LINK_EVT_SUPERVISION,   /* negotiated session expired; value = ms without request */
+    AFR2_LINK_EVT_RX_FAULT,      /* UART framing/overrun/ring fault reported by transport */
+    AFR2_LINK_EVT_REJECT         /* reply with result != OK; command, result */
+};
+typedef struct {
+    uint8_t kind, command, result, length;
+    const uint8_t *data;
+    uint32_t value;
+} Afr2LinkEvent;
 typedef struct {
     void *ctx;
     void (*snapshot)(void *ctx, uint32_t now_ms, Afr2LinkSnapshot *out);
@@ -21,11 +35,13 @@ typedef struct {
                        uint8_t *out,uint8_t *out_length); /* out capacity 55 bytes */
     void (*revoke)(void *ctx); /* transport/session authority revoked, main only */
     uint8_t (*halt_motion)(void *ctx); /* optional: supervision leaves autonomous sensing alive */
+    void (*event)(void *ctx, const Afr2LinkEvent *event); /* optional diagnostics hook */
 } Afr2LinkOps;
 typedef struct {
     Afr2WireParser parser;
     Afr2LinkOps ops;
     uint32_t session, last_transaction, last_rx_ms, last_request_ms;
+    uint16_t requests, rejects, faults; /* free-running diagnostic counters */
     uint8_t negotiated, supervised;
     uint8_t reply[AFR2_WIRE_FRAME_MAX], reply_length;
 } Afr2Link;

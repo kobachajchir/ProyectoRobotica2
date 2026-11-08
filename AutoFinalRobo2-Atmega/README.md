@@ -1,3 +1,5 @@
+> **AFR2-20261108-01:** librería [`lib/afr2_usart`](lib/afr2_usart/README.md) (USART0..3 por handle, eventos diferidos) y log de depuración por USART0/D1 a 115200 hacia el USB del Mega (`make AFR2_DEBUG_LOG=0|1|2`, por defecto 1). Registra arranques del AVR y del ESP con causa, el volcado de excepción del ESP, el enlace, la red, la captura OLED, el encoder y la pila mínima. Enlace ESP en USART1 sin cambios. [Ficha](../AutoFinalRobo2-Contracts/changes/2026-11-08-01-usart-library-debug-log.md). Fuente sin compilar ni cargar.
+
 > **AFR2-20261106-04:** SRAM AVR 5614 bytes, libres antes de pila 2578; QR finish 29 bytes. Se conservan ambos buffers OLED. Builds y paridad C/Web 2104/2104 PASS; sin carga ni prueba física. [Evidencia](../AutoFinalRobo2-Contracts/documentation/builds/2026-11-06-04/README.md).
 
 > **AFR2-20261106-02:** regeneración y builds AVR/ESP/Web/Loader comprobados; paridad host OLED 1680/1680. **Carga bloqueada por presupuesto SRAM/pila AVR**; sin COM, flasheo ni prueba física. [Evidencia](../AutoFinalRobo2-Contracts/documentation/builds/2026-11-06-02/README.md).

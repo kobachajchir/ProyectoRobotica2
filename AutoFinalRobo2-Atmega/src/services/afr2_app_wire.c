@@ -5,6 +5,7 @@
  * ESP integration documented in Contracts; no ESP source edited here.
  */
 #include "afr2_app.h"
+#include "afr2_debug.h"
 #include "afr2_product_wire.h"
 #include <stdio.h>
 #include <string.h>
@@ -171,7 +172,11 @@ uint8_t Afr2App_Command(void *ctx,uint8_t cmd,const uint8_t *d,uint8_t n,uint8_t
         Afr2Ui_Touch(a->ui,d[0],d[1],d[2]);out[0]=d[3];*length=1;break;
     case AFR2_EXT_UI_META:{
         if(n)return AFR2_RESULT_BAD_REQUEST;
-        if(a->snapshot_active || Afr2App_UiPrivate(a) || a->ui->edit || a->ui->redraw)return AFR2_RESULT_UNAVAILABLE;
+        if(a->snapshot_active || Afr2App_UiPrivate(a) || a->ui->edit || a->ui->redraw){
+            AFR2_DBG("CAP refused: active=%u private=%u edit=%u redraw=%u",a->snapshot_active,Afr2App_UiPrivate(a),a->ui->edit,a->ui->redraw);
+            return AFR2_RESULT_UNAVAILABLE;
+        }
+        AFR2_DBG_V("CAP start rev=%lu",(unsigned long)a->ui->revision);
         a->snapshot_revision=a->ui->revision;a->snapshot_ms=p->now;a->snapshot_active=1;
         a->snapshot_generation=a->ui->generation;
         afr2_put_u32(out,a->snapshot_revision);afr2_put_u32(out+4,Afr2Ui_ReportedScreen(a->ui));
@@ -180,9 +185,12 @@ uint8_t Afr2App_Command(void *ctx,uint8_t cmd,const uint8_t *d,uint8_t n,uint8_t
     }
     case AFR2_EXT_UI_PAGE: {
         if(n!=7)return AFR2_RESULT_BAD_REQUEST;
-        if(Afr2App_UiPrivate(a)){a->snapshot_active=0;return AFR2_RESULT_UNAVAILABLE;}
+        if(Afr2App_UiPrivate(a)){AFR2_DBG("CAP page refused: private screen");a->snapshot_active=0;return AFR2_RESULT_UNAVAILABLE;}
         uint16_t offset=afr2_get_u16(d+4);uint8_t count=d[6];
-        if(!a->snapshot_active || afr2_get_u32(d)!=a->snapshot_revision)return AFR2_RESULT_UNAVAILABLE;
+        if(!a->snapshot_active || afr2_get_u32(d)!=a->snapshot_revision){
+            AFR2_DBG("CAP page %u refused: capture %S",offset,a->snapshot_active?PSTR("revision changed"):PSTR("no longer active"));
+            return AFR2_RESULT_UNAVAILABLE;
+        }
         if(!count || count>40 || offset>1024u-count)return AFR2_RESULT_BAD_REQUEST;
         afr2_put_u32(out,a->snapshot_revision);afr2_put_u16(out+4,offset);out[6]=count;
         memcpy(out+7,a->oled->buffer+offset,count);*length=7+count;break;
@@ -190,6 +198,10 @@ uint8_t Afr2App_Command(void *ctx,uint8_t cmd,const uint8_t *d,uint8_t n,uint8_t
     case AFR2_EXT_UI_RELEASE:
         if(n!=4)return AFR2_RESULT_BAD_REQUEST;
         if(!a->snapshot_active || afr2_get_u32(d)!=a->snapshot_revision)return AFR2_RESULT_UNAVAILABLE;
+        {   /* A slow capture freezes the local render (main.c skips it while active). */
+            uint32_t took=p->now-a->snapshot_ms;(void)took;
+            if(AFR2_DEBUG_LOG>=2 || took>=300u)AFR2_DBG("CAP done in %lu ms",(unsigned long)took);
+        }
         a->snapshot_active=0;break;
     case AFR2_EXT_UI_ACTION: {
         /* Hall wizard and mandatory save choice are local actions. A remote
@@ -212,6 +224,7 @@ uint8_t Afr2App_Command(void *ctx,uint8_t cmd,const uint8_t *d,uint8_t n,uint8_t
             if(!returned)return AFR2_RESULT_UNAVAILABLE;
             afr2_put_u32(out,Afr2Ui_ReportedScreen(a->ui));out[4]=a->ui->selection;*length=5;break;
         }
+        AFR2_DBG_V("UI remote action=%u delta=%d",d[4],(int)(int8_t)d[5]);
         a->remote_ui=1;
         Afr2UiInput input={(d[4]==0)?(int8_t)d[5]:0,d[4]==1,d[4]==2};Afr2Ui_Apply(a->ui,input);
         a->remote_ui=0;afr2_put_u32(out,Afr2Ui_ReportedScreen(a->ui));out[4]=a->ui->selection;*length=5;break;

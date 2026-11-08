@@ -1,3 +1,8 @@
+## AFR2-20261108-01 - 08/11/2026
+
+Librería `afr2_usart` (AVR USART0..3: handles, eventos diferidos, inicializador, ISR enlazada por puerto) y log de depuración del ATmega por USART0/D1 a 115200: arranque AVR/ESP con causa de reinicio, volcado de excepción del ESP capturado del enlace, sesión/pérdida/fallas/rechazos del enlace, eventos de red, captura OLED, encoder, loop lento y pila mínima. Enlace ESP en USART1 sin cambios de protocolo. Ficha changes/2026-11-08-01-usart-library-debug-log.md.
+Estado: atmega=fuente editada, sin compilar ni cargar; esp/web=sin cambios.
+
 ## AFR2-20261107-40 - 07/11/2026
 
 ATmega: secuencias de 32 pasos habilitadas (`AFR2_SEQUENCE_MEMORY_APPROVED=1`, +656 B de SRAM; 6315 B estáticos, 1877 B libres para pila). ESP y Web ya las soportaban; se anuncian solo con Hall calibrado. Ficha changes/2026-11-07-40-sequences-enabled.md.

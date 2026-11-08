@@ -1,6 +1,7 @@
 /* AFR2-20261024-08. Own bounded EX01v5 presentation receiver. F4 notification
  * semantics adapted without System globals, HAL, DMA or station-key display. */
 #include "afr2_app.h"
+#include "afr2_debug.h"
 #include "afr2_product_wire.h"
 #include <stdio.h>
 #include <string.h>
@@ -32,6 +33,7 @@ uint8_t Afr2App_NetworkCommand(Afr2App *a,uint8_t cmd,const uint8_t *d,uint8_t n
             w->display_boot=boot;w->display_revision=revision;w->display_page=0;
             w->mode=text[0];w->sta_connected=text[1];w->ap_active=text[2];w->ap_clients=text[3];w->web_ready=text[4];
             w->rssi=(int16_t)afr2_get_u16(text+5);
+            Afr2Debug_NetState(text[0],text[1],text[2],text[3],text[4],boot); /* logs only changes */
             snprintf_P(w->ip,sizeof(w->ip),PSTR("%u.%u.%u.%u"),text[7],text[8],text[9],text[10]);
             snprintf_P(w->ap_ip,sizeof(w->ap_ip),PSTR("%u.%u.%u.%u"),text[11],text[12],text[13],text[14]);
         } else {
@@ -78,6 +80,7 @@ uint8_t Afr2App_NetworkCommand(Afr2App *a,uint8_t cmd,const uint8_t *d,uint8_t n
             if(!duplicate_boot){w->pending=w->draft_ready=w->network_count=w->scan_total=w->mode_draft=0;w->scan_id=0;memset(w->password,0,sizeof(w->password));w->credentials_visible=0;Afr2Ui_NetworkRestart(a->ui);}
             a->esp_boot_notified=w->display_boot;
         }
+        Afr2Debug_NetEvent(kind,d[9],seq); /* after the notice gate: retries are not logged twice */
         w->display_event=seq;
     }
     afr2_put_u32(out,seq);*length=4;return AFR2_RESULT_OK;

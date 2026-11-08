@@ -5,6 +5,7 @@
  * Only this wrapper prepares presentation snapshots; renderer stays pure.
  */
 #include "afr2_app.h"
+#include "afr2_debug.h"
 #include <stdio.h>
 #include <string.h>
 #include <avr/pgmspace.h>
@@ -417,7 +418,10 @@ void Afr2App_Task(Afr2App *a,uint32_t now) {
         if(a->ui->confirm_wait){p->notice=0;Afr2Ui_SaveCompleted(a->ui);}
     }
     if(before==1 && p->prefs_state==3){a->hall_saving=0;a->ui->confirm_wait=0;Afr2Ui_NotifyFlash(a->ui,1,PSTR("EEPROM"),PSTR("No guardado"),3000);}
-    if(a->snapshot_active && (uint32_t)(now-a->snapshot_ms)>600u)a->snapshot_active=0;
+    if(a->snapshot_active && (uint32_t)(now-a->snapshot_ms)>600u){
+        AFR2_DBG("CAP expired after %lu ms (ESP did not finish the 26 pages)",(unsigned long)(now-a->snapshot_ms));
+        a->snapshot_active=0;
+    }
     if(p->wifi.available && (uint32_t)(now-p->wifi.status_ms)>5000u) {
         p->wifi.available=0;p->wifi.display_ready=0;wipe(p->wifi.ap_password,sizeof(p->wifi.ap_password));
         a->snapshot_active=0;a->ui->redraw=true;

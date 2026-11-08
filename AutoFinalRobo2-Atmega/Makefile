@@ -2,10 +2,14 @@
 CC = avr-gcc
 AR = avr-ar
 OBJCOPY = avr-objcopy
-CPPFLAGS = -DF_CPU=16000000UL -Iinclude -I../AutoFinalRobo2-Contracts/contracts
+# AFR2-20261108-01: debug log on USART0/D1 (afr2_usart). 0 off, 1 events, 2 verbose.
+# Changing it requires a clean rebuild (objects do not track flags).
+AFR2_DEBUG_LOG ?= 1
+CPPFLAGS = -DF_CPU=16000000UL -Iinclude -Ilib/afr2_usart -I../AutoFinalRobo2-Contracts/contracts -DAFR2_DEBUG_LOG=$(AFR2_DEBUG_LOG)
 CFLAGS = -mmcu=atmega2560 -std=gnu11 -MMD -MP -Os -Wall -Wextra -fstack-usage -ffunction-sections -fdata-sections
 SOURCES = src/services/afr2_i2c_manager.c src/display/afr2_oled.c src/display/font7x10.c src/input/afr2_encoder_ui.c src/ui/afr2_screens.c src/ui/afr2_sequence_screen.c src/ui/afr2_network_screen.c src/ui/afr2_icons.c src/services/afr2_network.c src/services/afr2_link.c src/platform/afr2_uart1.c src/platform/afr2_twi.c src/platform/afr2_board.c src/platform/afr2_motor.c src/platform/afr2_sensors.c src/platform/afr2_preferences.c src/platform/afr2_watchdog.c src/services/afr2_product.c src/services/afr2_sequence.c src/services/afr2_app.c src/services/afr2_app_wire.c src/ui/afr2_menu_catalog.c
 SOURCES += src/services/afr2_sensor_commands.c src/ui/afr2_sensor_screens.c src/ui/afr2_ui_components.c src/ui/afr2_dashboard.c src/ui/afr2_qr_screen.c src/third_party/qrcodegen.c
+SOURCES += lib/afr2_usart/afr2_usart_avr.c src/services/afr2_debug.c
 OBJECTS = $(SOURCES:.c=.o)
 # The naked reset initializer runs before main; GCC cannot emit .su for it.
 src/platform/afr2_watchdog.o: CFLAGS := $(filter-out -fstack-usage,$(CFLAGS))
