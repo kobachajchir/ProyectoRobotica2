@@ -67,6 +67,8 @@ export type Afr2CommandName =
   | 'wifi.disconnect'
   | 'wifi.retry'
   | 'wifi.mode'
+  | 'wifi.ap.fallback'
+  | 'wifi.ap.stop'
   | 'wifi.status'
   | 'wifi.scan'
   | 'wifi.configure'
@@ -343,6 +345,8 @@ export interface WifiStatusSnapshot {
   rssiSource?: 'esp-sta';
   applying?: boolean;
   fallbackActive?: boolean;
+  askFallback?: boolean;
+  apReady?: boolean;
   /** AFR2-20261106-37: red STA en uso (la configurada o la última que funcionó) y si hay respaldo guardado. */
   staNetwork?: 'none' | 'configured' | 'previous';
   previousAvailable?: boolean;

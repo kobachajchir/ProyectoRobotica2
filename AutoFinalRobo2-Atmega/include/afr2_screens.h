@@ -90,6 +90,7 @@ typedef struct {
     uint8_t sequence_state,sequence_count,sequence_index,sequence_kind;
     uint32_t sequence_duration_ms,sequence_elapsed_ms;
     uint8_t network_valid,network_sta,network_ap,network_clients,network_server;
+    uint8_t network_ask_fallback,network_policy_valid;
     uint8_t network_mode,network_busy,network_page,network_total,network_truncated,network_scan_state;
     int16_t network_rssi;
     uint8_t network_rssi_valid;

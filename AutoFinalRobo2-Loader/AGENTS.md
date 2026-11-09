@@ -20,6 +20,11 @@ Comparte el único Git global: no inicializar un repositorio ni submódulo aquí
   explícito por su mismo worker, con formatos ASCII/HEX/números, CR/LF y repetición
   cancelable. No enviar al abrir, reabrir o desde MCP; DTR/RTS siguen inactivos.
   Registrar TX por separado de RX y cancelar pendientes antes de ceder el COM.
+  AFR2-20261108-09 / Loader2.2.0: el selector Fuente USB es otro envío explícito: una
+  línea "#AFR2 TAP n" solo cuando el usuario elige una opción, nunca al abrir/reabrir,
+  al reiniciarse el ATmega ni desde MCP; se registra como TX y se espera "TAP mode=n".
+  El intérprete solo lee: arranca desactivado, requiere un wire_catalog.json válido
+  (perfil WireCatalog) y no reconstruye datos redactados por el ATmega.
 - Un mensaje UART no acredita carga verificada. Mantener eventos tipados de
   escritura/verificación y el error original/código/salida en los informes.
 - Loader0.9: mega_bridge (D18/D19, RESET libre, baud fijo). El método mega_reset

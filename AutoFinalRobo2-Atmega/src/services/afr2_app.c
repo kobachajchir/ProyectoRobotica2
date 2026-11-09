@@ -34,6 +34,8 @@ static int32_t value(void *ctx,uint8_t action) {
     Afr2App *a=ctx;Afr2Product *p=a->product;Afr2Config *c=&p->config;
     const Afr2SensorHead *h=Afr2Head_State();
     switch(action) {
+    case AFR2_A_WIFI_FALLBACK:return p->wifi.policy_valid?p->wifi.ask_fallback:2;
+    case AFR2_A_WIFI_AP_TOGGLE:return p->wifi.ap_active;
     case AFR2_A_WIFI_CONNECT:return p->wifi.draft_ready;
     case AFR2_A_WIFI_CONNECTED:return p->wifi.available?(p->wifi.sta_connected?1:0):2;
     case AFR2_A_WIFI_COUNT:return p->wifi.pending?0:p->wifi.network_count;
@@ -56,6 +58,8 @@ static int32_t value(void *ctx,uint8_t action) {
     case AFR2_A_RADAR_TRACE:return c->radar_trace;
     case AFR2_A_RADAR_DIRTY:return c->radar_range!=a->saved_config.radar_range || c->radar_trace!=a->saved_config.radar_trace;
     case AFR2_A_RADAR_TOGGLE:return h->running;
+    case AFR2_A_US_TOGGLE:return h->sampling;
+    case AFR2_A_IR_TOGGLE:return h->ir_enabled;
     case AFR2_A_SERVO_TOGGLE:return h->enabled;
     case AFR2_A_MOTOR_TOGGLE:return c->motor_ready;
     case AFR2_A_LINE_TOGGLE:return p->mode==AFR2_LINE && !p->stopped;
@@ -77,7 +81,7 @@ static int32_t value(void *ctx,uint8_t action) {
     case AFR2_A_RADIUS_MM:return c->radius_sum_mm;case AFR2_A_HALL_WIRED:return c->hall_wired;
     case AFR2_A_GEOM_READY:return c->geometry_ready;case AFR2_A_ENC_STEPS:return c->encoder_steps;
     case AFR2_A_ENC_INVERT:return c->encoder_invert;case AFR2_A_CONTRAST:return c->contrast;
-    case AFR2_A_ROTATION:return c->rotation;case AFR2_A_WIFI_MODE:return p->wifi.mode?p->wifi.mode:1;
+    case AFR2_A_ROTATION:return c->rotation;case AFR2_A_WIFI_MODE:return p->wifi.mode;
     default:return 0;
     }
 }
@@ -108,7 +112,7 @@ static uint8_t numeric_range(uint8_t action,int32_t v) {
 }
 uint8_t Afr2App_RemoteUiAllowed(uint8_t action) {
     switch(action) {
-    case AFR2_A_WIFI_DISCONNECT:case AFR2_A_WIFI_CHANGE_MODE:case AFR2_A_WIFI_SET_MODE:case AFR2_A_ESP_TEST:case AFR2_A_WHEEL_TOGGLE:case AFR2_A_GOTO_TOGGLE:case AFR2_A_ODOM_TOGGLE:case AFR2_A_ODOM_PROPOSE:case AFR2_A_ODOM_ANSWER:case AFR2_A_POWER:case AFR2_A_QUICK_MODE:case AFR2_A_RADAR_TOGGLE:case AFR2_A_SERVO_TOGGLE:case AFR2_A_MOTOR_TOGGLE:case AFR2_A_LINE_TOGGLE:
+    case AFR2_A_WIFI_FALLBACK:case AFR2_A_WIFI_AP_TOGGLE:case AFR2_A_WIFI_DISCONNECT:case AFR2_A_WIFI_CHANGE_MODE:case AFR2_A_WIFI_SET_MODE:case AFR2_A_ESP_TEST:case AFR2_A_WHEEL_TOGGLE:case AFR2_A_GOTO_TOGGLE:case AFR2_A_ODOM_TOGGLE:case AFR2_A_ODOM_PROPOSE:case AFR2_A_ODOM_ANSWER:case AFR2_A_POWER:case AFR2_A_QUICK_MODE:case AFR2_A_RADAR_TOGGLE:case AFR2_A_US_TOGGLE:case AFR2_A_IR_TOGGLE:case AFR2_A_SERVO_TOGGLE:case AFR2_A_MOTOR_TOGGLE:case AFR2_A_LINE_TOGGLE:
     case AFR2_A_SERVO_EDIT_BEGIN:case AFR2_A_SERVO_EDIT_END:case AFR2_A_RADAR_DISCARD:
     case AFR2_A_MOVE:case AFR2_A_LINE_START:
     case AFR2_A_GOTO_START:case AFR2_A_WHEEL_START:case AFR2_A_SERVO_APPLY:case AFR2_A_SERVO_OFF:
@@ -152,7 +156,9 @@ static uint8_t invoke(void *ctx,uint8_t action,int32_t v,const void *data) {
     case AFR2_A_WIFI_RETRY_S:if(v<10 || v>300 || v%10)return AFR2_BAD;c->wifi_retry_s=v;break; /* AFR2-20261108-06 */
     case AFR2_A_WIFI_ASK: /* AFR2-20261108-06: 1 Iniciar AP, 2 Seguir esperando (el ESP recibe los segundos de la preferencia) */
         if(v!=1 && v!=2)return AFR2_BAD;
-        return wifi_request(p,v==1?AFR2_WIFI_AP_START:AFR2_WIFI_WAIT);
+        {uint8_t r=wifi_request(p,v==1?AFR2_WIFI_AP_START:AFR2_WIFI_WAIT);
+         if(!r && v==1)Afr2Ui_NotifyFlash(a->ui,0,PSTR("Wi-Fi"),PSTR("Iniciando AP"),2500); /* AFR2-20261109-01 */
+         return r;}
     case AFR2_A_POWER:if(v<0 || v>100)return AFR2_BAD;if(!p->stopped)return AFR2_BUSY;a->local_power_percent=v;a->ui->power_percent=v;a->ui->power_known=1;a->ui->power_changed_ms=p->now;return AFR2_OK;
     case AFR2_A_ESP_TIMEOUT:if(v<1000 || v>5000 || v%250)return AFR2_BAD;if(a->diag_state==1)return AFR2_BUSY;a->diag_timeout=v;return AFR2_OK;
     case AFR2_A_ESP_TEST:
@@ -193,6 +199,10 @@ static uint8_t invoke(void *ctx,uint8_t action,int32_t v,const void *data) {
     case AFR2_A_RADAR_DISCARD:
         if(p->prefs_state==1)return AFR2_BUSY;
         c->radar_range=a->saved_config.radar_range;c->radar_trace=a->saved_config.radar_trace;return AFR2_OK;
+    case AFR2_A_US_TOGGLE:Afr2Head_SetSampling(!h->sampling);return AFR2_OK; /* AFR2-20261108-10; off also stops the radar (-13) */
+    case AFR2_A_IR_TOGGLE: /* AFR2-20261108-13: no motors needed; off stops a running line follow */
+        if(h->ir_enabled && p->mode==AFR2_LINE && !p->stopped)Afr2Product_HaltMotion(p);
+        Afr2Head_SetIr(!h->ir_enabled);return AFR2_OK;
     case AFR2_A_RADAR_TOGGLE:
         if(h->running){Afr2Head_Stop();return AFR2_OK;}
         if(!p->stopped || p->fault || p->hall_measuring || (p->sequence.state>=1 && p->sequence.state<=3))return AFR2_BUSY;
@@ -227,6 +237,7 @@ static uint8_t invoke(void *ctx,uint8_t action,int32_t v,const void *data) {
     case AFR2_A_BATTERY_MEASURE:Afr2Battery_Measure(&p->sensors);return AFR2_OK;
     case AFR2_A_SPEED:c->speed_limit=v;if(c->line_speed>v)c->line_speed=v;break;
     case AFR2_A_MOVE: {
+        uint8_t permission=Afr2Product_PwmStatus(p);if(permission)return permission;
         uint8_t granted=local_command(p);if(granted)return granted;
         int16_t s=a->local_power_percent,vx=0,vy=0,wz=0;
         switch(v){case 0:vx=s;break;case 1:vx=-s;break;case 2:vy=s;break;case 3:vy=-s;break;
@@ -312,16 +323,30 @@ static uint8_t invoke(void *ctx,uint8_t action,int32_t v,const void *data) {
     case AFR2_A_WIFI_READ_CREDENTIALS:
         p->wifi.credentials_visible=0;p->wifi.credential_length=0;wipe(p->wifi.password,sizeof(p->wifi.password));return wifi_request(p,AFR2_WIFI_READ_CREDENTIALS);
     case AFR2_A_WIFI_STATUS:return wifi_request(p,AFR2_WIFI_STATUS);
-    case AFR2_A_WIFI_SCAN:if(!p->wifi.mode_draft){p->wifi.requested_mode=p->wifi.mode?p->wifi.mode:1;p->wifi.mode_draft=1;}p->wifi.scan_page=0;p->wifi.scan_total=0;p->wifi.scan_received=0;p->wifi.scan_id=0;return wifi_request(p,AFR2_WIFI_SCAN);
+    case AFR2_A_WIFI_FALLBACK:
+        if(!p->wifi.policy_valid || p->wifi.pending)return AFR2_UNAVAILABLE;
+        p->wifi.policy_requested=!p->wifi.ask_fallback;return wifi_request(p,AFR2_WIFI_ASK_FALLBACK);
+    case AFR2_A_WIFI_AP_TOGGLE:return wifi_request(p,p->wifi.ap_active?AFR2_WIFI_AP_STOP:AFR2_WIFI_AP_START);
+    case AFR2_A_WIFI_SCAN:if(!(p->wifi.mode&1u))return AFR2_UNAVAILABLE;if(!p->wifi.mode_draft){p->wifi.requested_mode=p->wifi.mode?p->wifi.mode:1;p->wifi.mode_draft=1;}p->wifi.scan_page=0;p->wifi.scan_total=0;p->wifi.scan_received=0;p->wifi.scan_id=0;return wifi_request(p,AFR2_WIFI_SCAN);
     case AFR2_A_WIFI_PAGE:
         if(v<0 || v>1 || !p->wifi.scan_id || p->wifi.pending)return AFR2_UNAVAILABLE;
         p->wifi.scan_page=v;p->wifi.network_count=0;p->wifi.scan_received=0;return wifi_request(p,AFR2_WIFI_PAGE);
     case AFR2_A_WIFI_WEB:return wifi_request(p,AFR2_WIFI_WEB_DRAFT);
     case AFR2_A_WIFI_RETRY:if(!p->stopped || p->wifi.sta_connected)return AFR2_BUSY;return wifi_request(p,AFR2_WIFI_RETRY);
-    case AFR2_A_WIFI_DISCONNECT:if(!p->stopped)return AFR2_BUSY;return wifi_request(p,AFR2_WIFI_DISCONNECT);
+    /* AFR2-20261108-14: choosing a mode (or Desconectar) on the OLED is the user's decision: stop motion and
+     * replace any pending Wi-Fi job instead of refusing with "Detener / ver red". The ESP's late update
+     * for the replaced job carries the old id and is refused (UNAVAILABLE); it then polls the new job. */
+    case AFR2_A_WIFI_DISCONNECT:
+        if(!p->stopped)Afr2Product_Stop(p);
+        p->wifi.pending=0;return wifi_request(p,AFR2_WIFI_DISCONNECT);
     case AFR2_A_WIFI_CHANGE_MODE:case AFR2_A_WIFI_SET_MODE:
-        if(v<1 || v>3 || p->wifi.pending || !p->stopped)return AFR2_BAD;
-        p->wifi.requested_mode=v;p->wifi.mode_draft=1;p->wifi.draft_ready=0;return wifi_request(p,AFR2_WIFI_CHANGE_MODE);
+        if(v<1 || v>3)return AFR2_BAD;
+        if(!p->stopped)Afr2Product_Stop(p);
+        p->wifi.pending=0;
+        p->wifi.requested_mode=v;p->wifi.mode_draft=1;p->wifi.draft_ready=0;
+        {uint8_t r=wifi_request(p,AFR2_WIFI_CHANGE_MODE);
+         if(!r)Afr2Ui_NotifyFlash(a->ui,0,PSTR("Cambiando Wi-Fi"),v==1?PSTR("a STA, reinicia"):v==2?PSTR("a AP, reinicia"):PSTR("a AP+STA reinicia"),2500); /* AFR2-20261109-01 */
+         return r;}
     case AFR2_A_WIFI_NETWORK:
         if(v<0 || v>=p->wifi.network_count)return AFR2_UNAVAILABLE;
         p->wifi.requested_mode=p->wifi.requested_mode==3?3:1;p->wifi.mode_draft=1;
@@ -363,6 +388,9 @@ static void keyboard_seed(void *ctx,Afr2UiCredentials *out) {
 }
 static uint8_t available(void *ctx,uint8_t action,int32_t arg) {
     Afr2App *a=ctx;Afr2Product *p=a->product;
+    if(action==AFR2_A_MOVE){uint8_t permission=Afr2Product_PwmStatus(p);if(permission)return permission;}
+    if(action==AFR2_A_WIFI_SCAN && !(p->wifi.mode&1u))return AFR2_UNAVAILABLE;
+    if(action==AFR2_A_WIFI_FALLBACK && (!p->wifi.policy_valid || p->wifi.pending))return AFR2_UNAVAILABLE;
     if(action==AFR2_A_WIFI_CONNECT && p->wifi.sta_connected)return AFR2_UNAVAILABLE;
     if(action==AFR2_A_WIFI_RETRY && p->wifi.mode==2)return AFR2_UNAVAILABLE;
     if(action==AFR2_A_WIFI_RETRY && p->wifi.sta_connected)return AFR2_UNAVAILABLE;
@@ -376,12 +404,12 @@ static uint8_t available(void *ctx,uint8_t action,int32_t arg) {
     if(action==AFR2_A_MOVE || action==AFR2_A_WHEEL_START || action==AFR2_A_LINE_START || action==AFR2_A_GOTO_START) {
         if(!p->config.motor_ready)return AFR2_UNAVAILABLE;
         if(action!=AFR2_A_WHEEL_START && action!=AFR2_A_MOVE && !p->pose_valid)return AFR2_UNAVAILABLE;
-        if(action==AFR2_A_LINE_START && !p->sensors.line_valid)return AFR2_UNAVAILABLE;
+        if(action==AFR2_A_LINE_START && !p->sensors.line_valid_raw)return AFR2_UNAVAILABLE;
     }
     if((action==AFR2_A_WHEEL_TOGGLE && p->mode!=AFR2_WHEEL_TEST) || ((action==AFR2_A_GOTO_TOGGLE || action==AFR2_A_ODOM_TOGGLE) && p->mode!=AFR2_GOTO) || (action==AFR2_A_LINE_TOGGLE && p->mode!=AFR2_LINE)){
         if(!p->config.motor_ready || p->fault)return AFR2_UNAVAILABLE;
         if((action==AFR2_A_GOTO_TOGGLE || action==AFR2_A_ODOM_TOGGLE) && !p->pose_valid)return AFR2_UNAVAILABLE;
-        if(action==AFR2_A_LINE_TOGGLE && !p->sensors.line_valid)return AFR2_UNAVAILABLE;
+        if(action==AFR2_A_LINE_TOGGLE && !p->sensors.line_valid_raw)return AFR2_UNAVAILABLE;
     }
     if(action==AFR2_A_HALL_BEGIN && !p->sensors.hall_available)return AFR2_UNAVAILABLE;
     if(action==AFR2_A_HALL_END && !p->hall_measuring)return AFR2_UNAVAILABLE;
@@ -395,6 +423,8 @@ static uint8_t available(void *ctx,uint8_t action,int32_t arg) {
 }
 static const char *reason(void *ctx,uint8_t action) {
     Afr2App *a=ctx;Afr2Product *p=a->product;
+    if(action==AFR2_A_WIFI_FALLBACK)return !p->wifi.policy_valid?PSTR("ESP sin politica"):PSTR("Wi-Fi ocupado");
+    if(action==AFR2_A_WIFI_SCAN && !(p->wifi.mode&1u))return PSTR("Cambiar modo STA");
     if(action==AFR2_A_WIFI_RETRY && p->wifi.mode==2)return PSTR("Cambiar modo STA");
     if(action==AFR2_A_WIFI_ASK)return !p->extension_ready?PSTR("ESP sin extension"):!p->wifi.available?PSTR("ESP sin estado"):p->wifi.pending?PSTR("Wi-Fi ocupado"):PSTR("Ver estado Wi-Fi"); /* AFR2-20261108-06 */
     if(action==AFR2_A_WIFI_DISCONNECT || action==AFR2_A_WIFI_CHANGE_MODE || action==AFR2_A_WIFI_SET_MODE)return PSTR("Detener / ver red");
@@ -426,7 +456,7 @@ static const char *reason(void *ctx,uint8_t action) {
         for(uint8_t i=0;i<4;i++)if(!p->config.counts_per_rev[i])return PSTR("Calibrar vuelta");
         if(!p->config.geometry_ready)return PSTR("Config. geometria");
         if(!p->config.motor_ready)return PSTR("Habilitar motores");
-        if((action==AFR2_A_LINE_START || action==AFR2_A_LINE_TOGGLE) && !p->sensors.line_valid)return PSTR("Calibrar linea");
+        if((action==AFR2_A_LINE_START || action==AFR2_A_LINE_TOGGLE) && !p->sensors.line_valid_raw)return PSTR("Calibrar linea");
     }
     return PSTR("Ver requisitos");
 }
@@ -435,6 +465,7 @@ void Afr2App_Init(Afr2App *a,Afr2Product *p,Afr2Ui *u,Afr2Oled *o,Afr2Link *l) {
     a->diag_timeout=2000;a->local_power_percent=100;
     const Afr2SensorHead *head=Afr2Head_State();
     (void)Afr2Head_Configure(head->min_angle,head->max_angle,head->speed,head->settle_ms,head->interval_ms,p->config.servo_inverted);
+    (void)Afr2Head_Servo(2,90);   /* AFR2-20261109-01: servo always starts centred, a known reference */
     a->test_pwm=40;a->servo_us=1500;a->odom_dir=0;a->odom_cm=50; /* AFR2-20261108-02 */
     p->wifi.requested_mode=1;
     Afr2UiOps ops={a,invoke,value,keyboard_seed,available,reason};Afr2Ui_Attach(u,&ops);
@@ -455,6 +486,11 @@ void Afr2App_Revoke(void *ctx) {
 }
 void Afr2App_Task(Afr2App *a,uint32_t now) {
     Afr2Product *p=a->product;if(a->reboot_pending){p->now=now;Afr2Product_Stop(p);return;}
+    /* AFR2-20261108-10: the distance screen measures while it is open, even with the quick toggle off. */
+    /* AFR2-20261109-01: radar and servo-angle screens plot live echoes too (they stopped updating in 1.5.0). */
+    Afr2Head_SetView(a->ui->node==AFR2_N_US_VIEW || a->ui->node==AFR2_N_RADAR_VIEW || a->ui->node==AFR2_N_SERVO_ANGLE);
+    /* AFR2-20261108-13: line screens and calibration read the IR while open. */
+    Afr2Head_SetIrView(a->ui->node==AFR2_N_LINE_VIEW || a->ui->node==AFR2_N_IR_VALUES || a->ui->node==AFR2_N_LINE_CALIB);
     if(a->diag_state==1 && (!p->extension_ready || (uint32_t)(now-a->diag_started)>=a->diag_timeout)){
         a->diag_state=p->extension_ready?4:5;Afr2Ui_NotifyFlash(a->ui,1,PSTR("Prueba ESP"),p->extension_ready?PSTR("Tiempo agotado"):PSTR("Enlace perdido"),2500);
     }
@@ -506,7 +542,7 @@ void Afr2App_Task(Afr2App *a,uint32_t now) {
      * dialogo obligatorio, edicion, teclado, prueba en marcha o tactil. Se cierra solo si la STA conecta o hay AP. */
     if(a->wifi_ask){
         Afr2Ui *u=a->ui;uint8_t node=u->node;
-        if(p->wifi.sta_connected || p->wifi.ap_active){a->wifi_ask=0;if(node==AFR2_N_WIFI_ASK)Afr2Ui_Leave(u,AFR2_N_WIFI);}
+        if(p->wifi.sta_connected || p->wifi.ap_active || p->wifi.mode==2 || (p->wifi.policy_valid && !p->wifi.ask_fallback)){a->wifi_ask=0;if(node==AFR2_N_WIFI_ASK)Afr2Ui_Leave(u,AFR2_N_WIFI);}
         else if(a->wifi_ask==1){
             if(!u->notices && !u->touch_active && !u->keyboard && !u->edit && node!=AFR2_N_SAVE_CONFIRM && node!=AFR2_N_HALL_PICK &&
                node!=AFR2_N_HALL_COUNT && node!=AFR2_N_ENCODER_TEST && node!=AFR2_N_ODOM_RUN && node!=AFR2_N_ODOM_ASK && node!=AFR2_N_SEQUENCE){
@@ -559,7 +595,8 @@ void Afr2App_UiSnapshot(Afr2App *a,Afr2UiSnapshot *s) {
     s->radar_range=p->config.radar_range;s->radar_trace=p->config.radar_trace;
     s->dashboard_valid=1;s->dashboard_mode=p->mode;s->dashboard_moving=!p->stopped;
     s->dashboard_fault=p->fault || p->mode==AFR2_FAULT;
-    s->quick_flags=(s->head->running?1u:0u)|(s->head->enabled?2u:0u)|(p->config.motor_ready?4u:0u)|((p->mode==AFR2_LINE && !p->stopped)?8u:0u)|(p->config.radar_trace?16u:0u);
+    /* AFR2-20261108-12: bit = pagina de Controles rapidos: 1 motores, 2 ultrasonido, 3 radar, 4 servo, 5 linea, 6 rastro. */
+    s->quick_flags=(p->config.motor_ready?2u:0u)|(s->head->sampling?4u:0u)|(s->head->running?8u:0u)|(s->head->enabled?16u:0u)|(s->head->ir_enabled?32u:0u)|(p->config.radar_trace?64u:0u);
     s->line_valid=p->sensors.line_valid;s->line_bits=p->sensors.line_bits;
     s->ultrasonic_valid=p->sensors.ultrasonic_valid;s->ultrasonic_mm=p->sensors.distance_mm;
     s->oled_ready=a->oled->initialized;s->oled_errors=a->oled->errors;
@@ -567,6 +604,7 @@ void Afr2App_UiSnapshot(Afr2App *a,Afr2UiSnapshot *s) {
     for(uint8_t i=0;i<4;i++)s->hall_cpr[i]=(a->hall_draft_mask&(1u<<i))?a->hall_draft[i]:p->config.counts_per_rev[i];
     s->battery_valid=Afr2Battery_Status(&p->sensors,p->now)==AFR2_BATTERY_VALID;
     s->battery_mv=s->battery_valid?Afr2Battery_Millivolts(&p->sensors):0;
+    s->network_ask_fallback=p->wifi.ask_fallback;s->network_policy_valid=p->wifi.policy_valid;
     s->network_mode=p->wifi.mode;s->network_busy=p->wifi.pending;s->network_page=p->wifi.scan_page;s->network_total=p->wifi.scan_total;s->network_truncated=p->wifi.scan_truncated;s->network_scan_state=(uint8_t)value(a,AFR2_A_WIFI_SCAN_STATE);
     s->network_valid=p->wifi.available && p->wifi.display_ready;
     s->network_boot=p->wifi.display_boot;s->network_revision=p->wifi.display_revision;

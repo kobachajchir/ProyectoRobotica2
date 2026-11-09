@@ -194,7 +194,8 @@ namespace AFR2Loader
             }, token);
         }
 
-        List<string> EspArgs(Profile p, string port, bool noStub)
+        // AFR2-20261108-08: oledTitle/oledImages solo llegan a la OLED del flasher (puente Mega); no cambian esptool.
+        List<string> EspArgs(Profile p, string port, bool noStub, string oledTitle = null, IEnumerable<Tuple<string, string>> oledImages = null)
         {
             PortValid(port); NeedFile(p.Resolve("Esptool"));
             Choice(p.Get("EsptoolMajor"), "4", "5");
@@ -206,6 +207,8 @@ namespace AFR2Loader
                 Steps.Add(new { bridgeLauncher = BridgeToolPath, sha256 = Hash(BridgeToolPath), startupSeconds = p.Get("BridgeStartupSeconds") });
                 a.AddRange(new[] { BridgeToolPath, "--esptool", p.Resolve("Esptool"), "--bridge-baud", p.Get("BridgeBaud"), "--startup-seconds", p.Get("BridgeStartupSeconds") });
                 if (AutoKeyRst(p)) { KeyRstAutomatic = true; a.Add("--auto-key-rst"); Steps.Add(new { keyRst = "auto", pins = "D32=KEY, D33=RST", note = "transistores; sin orden previa de pines si el flasher AFR2 no responde" }); }
+                if (!String.IsNullOrEmpty(oledTitle)) a.AddRange(new[] { "--oled-title", oledTitle });
+                if (oledImages != null) foreach (var image in oledImages) a.AddRange(new[] { "--oled-image", image.Item1 + "=" + image.Item2 });
                 a.Add("--");
             }
             else a.Add(p.Resolve("Esptool"));
@@ -219,7 +222,7 @@ namespace AFR2Loader
         {
             EspSessionStarted = true;
             Stage("syncing", AutoKeyRst(p) ? "Consultando ROM y tamaño real de flash; sin escritura. KEY/RST automáticos..." : "Consultando ROM y tamaño real de flash; sin escritura. Mantené KEY apretado...");
-            var args = EspArgs(p, port, true); args.Add(Spell(p, "flash_id"));
+            var args = EspArgs(p, port, true, "Detectar ESP"); args.Add(Spell(p, "flash_id"));
             Steps.Add(new { espTransport = p.Get("EspTransport"), baud = p.Get("EspBaud"), bridgeWait = UsesMegaBridge(p) ? p.Get("BridgeStartupSeconds") : null });
             var result = await Command(p, "Python", args, Path.GetDirectoryName(p.Resolve("Esptool")), token, UsesMegaBridge(p) ? 120 : 50);
             Match match = Regex.Match(result.Output, @"Detected flash size:\s*(\d+)\s*(KB|MB)\b", RegexOptions.IgnoreCase);
@@ -333,7 +336,10 @@ namespace AFR2Loader
                 throw new OperationCanceledException("Carga no confirmada.");
             token.ThrowIfCancellationRequested();
             for (int i = 0; i < files.Count; i++) EnsureUnchanged(files[i].Item2, hashes[i]);
-            var write = EspArgs(p, port, false); write.Add(Spell(p, "write_flash")); AddFlashOptions(p, write);
+            var oledImages = new List<Tuple<string, string>>();
+            if (firmware) oledImages.Add(Tuple.Create(p.Get("FirmwareOffset"), "Firmware ESP"));
+            if (filesystem) oledImages.Add(Tuple.Create(p.Get("FsOffset"), "Web LittleFS"));
+            var write = EspArgs(p, port, false, "Cargando ESP", oledImages); write.Add(Spell(p, "write_flash")); AddFlashOptions(p, write);
             foreach (var file in files) write.AddRange(new[] { file.Item1, file.Item2 });
             Stage("writing", AutoKeyRst(p) ? "Escribiendo ESP por flasher ATmega con entrada automática; RESET Mega LIBRE." : UsesMegaBridge(p) ? "Escribiendo ESP por flasher ATmega. KEY mantenido; RESET Mega LIBRE." : p.Get("EspTransport") == "usb-ttl" ? "Escribiendo ESP por USB–TTL. Mantené KEY y no desconectes." : "Escribiendo ESP. KEY mantenido.");
             MarkWriting(); // Once launched, a failed write may already have modified flash.

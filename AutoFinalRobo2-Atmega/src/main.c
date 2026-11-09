@@ -72,6 +72,8 @@ int main(void) {
             uint8_t frame_before=link.parser.state;
             Afr2Link_Push(&link,b,now);
             Afr2Debug_PeerByte(b,frame_before>=6u || link.parser.state>=6u);
+            /* AFR2-20261108-09: TAP mode 4 (raw). State 11 = payload byte of link.parser.command. */
+            Afr2Debug_PeerRaw(b,frame_before==11u,link.parser.command);
         }
         Afr2Debug_Task(now,&link);
         /* AFR2-20261024-11. Bound UI work; Hall counters are captured by IRQ

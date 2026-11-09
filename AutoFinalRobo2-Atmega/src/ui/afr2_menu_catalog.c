@@ -243,6 +243,10 @@ static const Afr2MenuItem extra[] PROGMEM={
  { "Volver", AFR2_N_QUICK, 0, 0,0,0,0 },
  /* AFR2-20261108-06: extra[47], Preferencias fila 2. */
  { "Reintento Wi-Fi s", 255, AFR2_A_WIFI_RETRY_S, 0, 10, 300, 10 },
+ /* AFR2-20261108-10: extra[48], Controles rapidos pagina 6 (indice 5). */
+ { "Ultrasonido", 255, AFR2_A_US_TOGGLE, 0, 0,0,0 },
+ /* AFR2-20261108-13: extra[49], Controles rapidos Linea = sensores IR. */
+ { "Sensores de linea", 255, AFR2_A_IR_TOGGLE, 0, 0,0,0 },
 };
 /* AFR2-20261030-07: explicit reorganized menus; old resource offsets retained. */
 static const Afr2MenuItem reform[] PROGMEM={
@@ -337,8 +341,8 @@ static const Afr2MenuItem wifiReform[] PROGMEM={
  { "Modificar credenciales", 34, 0, 0, 0, 0, 0 },
  { "Conectar", 255, 47, 0, 0, 0, 0 },
  { "Volver", 32, 0, 0, 0, 0, 0 },
- { "Modo AP", 255, 52, 2, 0, 0, 0 },
- { "Modo AP-STA", 255, 52, 3, 0, 0, 0 },
+ { "Iniciar AP", 255, AFR2_A_WIFI_AP_TOGGLE, 0, 0, 0, 0 },
+ { "Preguntar AP: NO", 255, AFR2_A_WIFI_FALLBACK, 0, 0, 0, 0 },
  { "Volver", 31, 0, 0, 0, 0, 0 },
  { "Redes encontradas", 33, 0, 0, 0, 0, 0 },
  { "Refrescar", 255, 45, 0, 0, 0, 0 },
@@ -411,7 +415,7 @@ static const Afr2MenuNode nodes[] PROGMEM={
  { "Guardar cambios", AFR2_N_HALL_TEST, 1, 1, 85, 0x30038UL },
  { "Bateria", AFR2_N_SYSTEM, 0, 3, 0x801bu, 0x30039UL },
  { "Medicion bateria", AFR2_N_BATTERY, 1, 1, 0x801eu, 0x3003aUL },
- { "Controles rapidos", AFR2_N_HOME, 1, 7, 0x801fu, 0x10003UL },
+ { "Controles rapidos", AFR2_N_HOME, 1, 8, 0x801fu, 0x10003UL },
  { "Opciones radar", AFR2_N_RADAR_VIEW, 0, 2, 0x402au, 0x3003bUL },
  { "Alcance grafico", AFR2_N_RADAR_OPTIONS, 0, 4, 0x8027u, 0x3003cUL },
  { "Elegir modo", AFR2_N_QUICK, 0, 3, 0x802cu, 0x3003dUL },
@@ -454,7 +458,9 @@ void Afr2Menu_Item(uint8_t node,uint8_t index,Afr2MenuItem *out) {
     if(node==AFR2_N_TESTS && index==1){memset(out,0,sizeof(*out));strcpy_P(out->label,PSTR("Prueba Hall"));out->target=AFR2_N_HALL_LIVE;return;}
     if(n.first&0x2000u){memcpy_P(out,&wifiReform[(n.first&0x1fffu)+index],sizeof(*out));return;}
     if(n.first&0x4000u){memcpy_P(out,&reform[(n.first&0x3fffu)+index],sizeof(*out));return;}
-    if(node==AFR2_N_QUICK && index==6){memcpy_P(out,&extra[43],sizeof(*out));return;}
+    /* AFR2-20261108-12: orden Modo, Motores, Ultrasonido, Radar, Servo, Linea, Rastro, Ajustes. */
+    if(node==AFR2_N_QUICK){static const uint8_t map[8] PROGMEM={43,33,48,31,32,49,35,36};
+        memcpy_P(out,&extra[pgm_read_byte(&map[index])],sizeof(*out));return;}
     if(node==AFR2_N_MENU) {
         static const uint8_t map[] PROGMEM={1,7,5,4,6,9,10};
         memcpy_P(out,&items[pgm_read_byte(&map[index])],sizeof(*out));return;

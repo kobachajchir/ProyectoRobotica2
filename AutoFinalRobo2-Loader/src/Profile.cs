@@ -79,7 +79,9 @@ namespace AFR2Loader
             new Field("Programmer", "Protocolo bootloader AVR", "wiring para Mega2560", "text"),
             new Field("Signature", "Firma AVR esperada", "0x1e9801; se exige en la salida antes de declarar éxito", "text"),
             new Field("TimeoutSeconds", "Tiempo máximo por comando", "Incluye build y verificación; mínimo 60, recomendado 900", "text"),
-            new Field("BootWaitSeconds", "Espera KEY/RST", "Segundos de escucha a 74880; recomendado 90", "text")
+            new Field("BootWaitSeconds", "Espera KEY/RST", "Segundos de escucha a 74880; recomendado 90", "text"),
+            // AFR2-20261108-09: catálogo de comandos para el intérprete del Monitor serie.
+            new Field("WireCatalog", "Catálogo de tramas UART", "wire_catalog.json de Contracts (afr2-wire-catalog-1). Lo usa el intérprete del Monitor serie; solo se lee, no abre puertos.", "file")
         };
 
         public Profile() { Schema = 1; Values = new Dictionary<string, string>(); }
@@ -199,6 +201,7 @@ namespace AFR2Loader
             v["MegaBaud"] = "115200"; v["EspBaud"] = "115200";
             v["Mcu"] = "atmega2560"; v["Programmer"] = "wiring"; v["Signature"] = "0x1e9801";
             v["TimeoutSeconds"] = "900"; v["BootWaitSeconds"] = "90";
+            v["WireCatalog"] = "{Repo}\\AutoFinalRobo2-Contracts\\contracts\\wire_catalog.json";
             p.Discover(); return p;
         }
         static string FirstFile(IEnumerable<string> paths) { return paths.FirstOrDefault(File.Exists) ?? ""; }

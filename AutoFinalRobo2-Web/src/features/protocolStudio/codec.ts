@@ -193,7 +193,7 @@ function describePayload(command: number, route: number, payload: number[]): Pic
     if (command === 0x10 && body.length === 10) {
       add('Extensión', String.fromCharCode(...body.slice(0, 4))); add('Versión EX01', u16(body, 4)); add('Features', `0x${u32(body, 6).toString(16).toUpperCase()}`);
       if (hexBytes(body.slice(0, 4)) !== '45 58 30 31') issues.push('Identidad de extensión distinta de EX01.');
-      if (u16(body, 4) !== 8) issues.push('Versión EX01 distinta de 8; interpretar con el contrato de esa versión.');
+      if (u16(body, 4) !== 13) issues.push('Versión EX01 distinta de 13; interpretar con el contrato de esa versión.');
     }
     if (command === 0x02 && body.length === 4) add('Uptime', `${u32(body, 0)} ms`);
     if (command === 0x03 && body.length === 7) {
@@ -209,10 +209,11 @@ function describePayload(command: number, route: number, payload: number[]): Pic
       add('Edad', age(u32(body, 18)));
     }
     if (command === 0x06 && body.length === 2) { add('Parada declarada', body[0]); add('Modo', body[1]); }
-    if (command === 0x11 && body.length === 16) {
+    // AFR2-20261108-09: EXT_STATE answers 19 bytes (byte 4 motores listos, 16 cambios pendientes, 17 pulsación larga).
+    if (command === 0x11 && body.length === 19) {
       add('Modo', body[0]); add('Origen', ['Ninguno', 'Local', 'Web'][body[1]] ?? String(body[1])); add('Parada declarada', body[2]); add('Fallo', body[3]);
-      add('Pose válida declarada', body[5]); add('Estado GOTO / EEPROM', `${body[6]} / ${body[7]}`); add('Features', `0x${u32(body, 8).toString(16).toUpperCase()}`); add('Uptime', `${u32(body, 12)} ms`);
-      if (body[4] !== 0) issues.push('El byte reservado de EXT_STATE debe ser cero en EX01v7+.');
+      add('Motores listos', body[4]); add('Pose válida declarada', body[5]); add('Estado GOTO / EEPROM', `${body[6]} / ${body[7]}`); add('Features', `0x${u32(body, 8).toString(16).toUpperCase()}`); add('Uptime', `${u32(body, 12)} ms`);
+      add('Cambios pendientes', body[16]); add('Pulsación larga', `${u16(body, 17)} ms`);
     }
     if ([0x12, 0x61].includes(command) && body.length === 2) add(command === 0x12 ? 'Presencia Web' : 'Intervalo ultrasónico', `${u16(body, 0)} ms`);
     if (command === 0x60 && body.length === 35) {

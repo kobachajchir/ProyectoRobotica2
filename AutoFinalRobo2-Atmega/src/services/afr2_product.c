@@ -98,13 +98,19 @@ uint8_t Afr2Product_Drive(Afr2Product *p,int16_t vx,int16_t vy,int16_t wz,uint16
     if(p->mode==AFR2_GOTO && p->goto_state==1)p->goto_state=3;
     p->mode=AFR2_MANUAL;p->command_ms=p->now;p->local_started_ms=p->now;p->test_started_ms=ttl;p->stopped=0;return AFR2_OK;
 }
+/* AFR2-20261109-03: explicit motor permission and interlocks; no automatic fault clear,
+ * task cancellation or configuration changes on a PWM request. Hall/HC calibration is not required. */
+uint8_t Afr2Product_PwmStatus(const Afr2Product *p) {
+    if(p->fault || p->hall_measuring)return AFR2_DENIED;
+    if(!p->config.motor_ready)return AFR2_UNAVAILABLE;
+    if(p->prefs_state==1 || Afr2Head_State()->running ||
+       (p->sequence.state>=1 && p->sequence.state<=3))return AFR2_BUSY;
+    return AFR2_OK;
+}
 /* AFR2-20261029-27: explicit open-loop percentages, independent of odometry/HC. */
 uint8_t Afr2Product_DrivePwm(Afr2Product *p,int16_t forward,int16_t strafe,int16_t turn,uint16_t ttl) {
     if(ttl<200 || ttl>1000 || abs32(forward)>100 || abs32(strafe)>100 || abs32(turn)>100)return AFR2_BAD;
-    /* AFR2-20261106: Conducir manual omite permisos (cabeza, secuencia, Hall, fallo, motores, prefs):
-     * se anula lo que estorbe, se habilitan motores y se limpia el fallo. STOP y TTL siguen vigentes. */
-    if(Afr2Head_State()->running || p->fault || p->hall_measuring || (p->sequence.state>=1 && p->sequence.state<=3))Afr2Product_Stop(p);
-    p->fault=0;p->config.motor_ready=1;
+    uint8_t permission=Afr2Product_PwmStatus(p);if(permission)return permission;
     /* Same reference as closed-loop drive; never invert again in Web/ESP. */
     forward*=AFR2_FORWARD_WHEEL_SIGN;strafe*=AFR2_LATERAL_WHEEL_SIGN;turn*=AFR2_YAW_WHEEL_SIGN;
     int16_t v[4]={forward-strafe-turn,forward+strafe+turn,forward+strafe-turn,forward-strafe+turn},peak=100;
@@ -131,8 +137,9 @@ uint8_t Afr2Product_Wheel(Afr2Product *p,uint8_t wheel,int16_t pwm,uint16_t dura
 uint8_t Afr2Product_StartLine(Afr2Product *p) {
     if(Afr2Head_State()->running)return AFR2_BUSY;
     if(p->fault || p->hall_measuring)return AFR2_DENIED;
-    if(!p->config.motor_ready || !p->sensors.line_valid || !calibrated(p))return AFR2_UNAVAILABLE;
+    if(!p->config.motor_ready || !p->sensors.line_valid_raw || !calibrated(p))return AFR2_UNAVAILABLE;
     if(p->goto_state==1)p->goto_state=3;
+    Afr2Head_SetIr(1);p->sensors.line_valid=1;   /* AFR2-20261108-13: following a line turns its sensors on */
     p->mode=AFR2_LINE;p->stopped=0;p->command_ms=p->now;return AFR2_OK;
 }
 uint8_t Afr2Product_StartGoto(Afr2Product *p,int32_t x,int32_t y) {
@@ -257,7 +264,7 @@ void Afr2Product_Task(Afr2Product *p,uint32_t now) {
     if(p->origin==AFR2_SOURCE_WEB && !p->stopped && (!p->web_seen || (uint32_t)(now-p->web_ms)>=1500u))Afr2Product_Stop(p);
     if((p->mode==AFR2_MANUAL || p->mode==AFR2_PWM_MANUAL || p->mode==AFR2_WHEEL_TEST) &&
        (uint32_t)(now-p->command_ms)>=p->test_started_ms)Afr2Product_Stop(p);
-    if(!p->stopped && !p->config.motor_ready && p->mode!=AFR2_PWM_MANUAL)Afr2Product_HaltMotion(p);
+    if(!p->stopped && !p->config.motor_ready)Afr2Product_HaltMotion(p);
     if(p->fault){Afr2Product_Stop(p);return;}
     Afr2Sequence_Tick(p);
     uint32_t dt=now-p->control_ms;if(dt<10u)return;

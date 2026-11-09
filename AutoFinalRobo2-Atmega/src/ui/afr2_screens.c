@@ -19,6 +19,8 @@ static uint8_t clean(Afr2Ui *u){return u->ops.value && !u->ops.value(u->ops.ctx,
 void Afr2Ui_MenuNode(Afr2Ui *u,Afr2MenuNode *n){
     Afr2Menu_Node(u->node,n);
     if(u->node==AFR2_N_WIFI_SEARCH && u->ops.value)n->count=u->ops.value(u->ops.ctx,AFR2_A_WIFI_SCAN_STATE)==1?1:u->ops.value(u->ops.ctx,AFR2_A_WIFI_TOTAL)?3:2;
+    if(u->node==AFR2_N_WIFI && u->ops.value && !(u->ops.value(u->ops.ctx,AFR2_A_WIFI_MODE)&1u))--n->count;
+    if(u->node==AFR2_N_WIFI_AP)n->count=3;
     if(u->node==AFR2_N_HALL_PICK)n->count=4;
     if(u->node==AFR2_N_HALL_TEST)n->count=3;
     /* AFR2-20261108-02: el dialogo Si/No tiene 2 filas; su nodo de catalogo cuenta 1 y render_screen
@@ -31,6 +33,13 @@ void Afr2Ui_MenuNode(Afr2Ui *u,Afr2MenuNode *n){
     if(clean(u) && (u->node==AFR2_N_PREFS || u->node==AFR2_N_CALIB))--n->count;
 }
 void Afr2Ui_MenuItem(Afr2Ui *u,uint8_t index,Afr2MenuItem *item){
+    if(u->node==AFR2_N_WIFI && u->ops.value && !(u->ops.value(u->ops.ctx,AFR2_A_WIFI_MODE)&1u) && index>=2)++index;
+    if(u->node==AFR2_N_WIFI_AP){
+        memset(item,0,sizeof(*item));item->target=255;
+        if(!index){uint8_t on=u->ops.value && u->ops.value(u->ops.ctx,AFR2_A_WIFI_AP_TOGGLE);strcpy_P(item->label,on?PSTR("Detener AP"):PSTR("Iniciar AP"));item->action=AFR2_A_WIFI_AP_TOGGLE;}
+        else if(index==1){uint8_t ask=u->ops.value?(uint8_t)u->ops.value(u->ops.ctx,AFR2_A_WIFI_FALLBACK):2;strcpy_P(item->label,ask==2?PSTR("Preguntar AP: --"):ask?PSTR("Preguntar AP: SI"):PSTR("Preguntar AP: NO"));item->action=AFR2_A_WIFI_FALLBACK;}
+        else {strcpy_P(item->label,PSTR("Volver"));item->target=AFR2_N_WIFI;}return;
+    }
     if(u->node==AFR2_N_WIFI_SEARCH && u->ops.value){
         memset(item,0,sizeof(*item));item->target=255;
         if(u->ops.value(u->ops.ctx,AFR2_A_WIFI_SCAN_STATE)==1){strcpy_P(item->label,PSTR("Buscando redes"));return;}
@@ -106,7 +115,7 @@ void Afr2Ui_Open(Afr2Ui *u,uint8_t node) {
     else if(u->depth<8)u->history[u->depth++]=(Afr2UiPosition){u->node,u->selection,u->firstVisible};
     u->node=node;u->selection=node==AFR2_N_QUICK?u->quick_selection:0;u->firstVisible=0;u->edit=0;
     if(node==AFR2_N_RADAR_CONFIG){u->selection=u->radar_selection;u->firstVisible=u->radar_first;}
-    if(node==AFR2_N_WIFI_MODE_SELECT)u->selection=u->ops.value?(uint8_t)u->ops.value(u->ops.ctx,AFR2_A_WIFI_MODE)-1u:0;
+    if(node==AFR2_N_WIFI_MODE_SELECT){uint8_t mode=u->ops.value?(uint8_t)u->ops.value(u->ops.ctx,AFR2_A_WIFI_MODE):0;u->selection=mode>=1 && mode<=3?mode-1u:0;}
     if(node==AFR2_N_ENCODER_TEST){u->test_long=0;u->test_clicks=0;u->test_turns=0;}
     if(node==AFR2_N_WIFI_ASK){u->wifi_ask_timer=1;u->wifi_ask_answered=0;u->wifi_ask_ms=u->clock_ms;} /* AFR2-20261108-06: Iniciar AP preseleccionado */
     if(node==AFR2_N_QR_AP || node==AFR2_N_QR_WEB)Afr2Qr_Invalidate();
@@ -324,8 +333,9 @@ void Afr2Ui_Tick(Afr2Ui *u,uint32_t now) {
         if(signature!=u->menu_signature){u->menu_signature=signature;sync_code(u);}
     }
     if(u->node==AFR2_N_QUICK && u->ops.value){
-        uint8_t flags=0;static const uint8_t actions[5] PROGMEM={AFR2_A_RADAR_TOGGLE,AFR2_A_SERVO_TOGGLE,AFR2_A_MOTOR_TOGGLE,AFR2_A_LINE_TOGGLE,AFR2_A_RADAR_TRACE};
-        for(uint8_t i=0;i<5;i++)if(u->ops.value(u->ops.ctx,pgm_read_byte(actions+i)))flags|=(1u<<i);
+        /* AFR2-20261108-12: bit = pagina del carrusel (1 Motores .. 6 Rastro). */
+        uint8_t flags=0;static const uint8_t actions[6] PROGMEM={AFR2_A_MOTOR_TOGGLE,AFR2_A_US_TOGGLE,AFR2_A_RADAR_TOGGLE,AFR2_A_SERVO_TOGGLE,AFR2_A_IR_TOGGLE,AFR2_A_RADAR_TRACE};
+        for(uint8_t i=0;i<6;i++)if(u->ops.value(u->ops.ctx,pgm_read_byte(actions+i)))flags|=(2u<<i);
         if(flags!=u->quick_signature){u->quick_signature=flags;u->redraw=true;}
     }
     if(u->quick_pending){
@@ -526,10 +536,11 @@ void Afr2Ui_Apply(Afr2Ui *u,Afr2UiInput in) {
     }
     if(u->node==AFR2_N_QUICK){
         if(u->quick_pending)return;
-        if(in.rotation){int16_t index=(int16_t)u->selection+in.rotation;if(index<0)index=0;if(index>6)index=6;u->selection=(uint8_t)index;u->quick_selection=u->selection;u->scroll_started_ms=u->clock_ms;u->redraw=true;}
+        /* AFR2-20261108-12: 0 Modo, 1 Motores, 2 Ultrasonido, 3 Radar, 4 Servo, 5 Linea, 6 Rastro, 7 Ajustes. */
+        if(in.rotation){int16_t index=(int16_t)u->selection+in.rotation;if(index<0)index=0;if(index>7)index=7;u->selection=(uint8_t)index;u->quick_selection=u->selection;u->scroll_started_ms=u->clock_ms;u->redraw=true;}
         if(in.click){
-            if(u->selection==5){Afr2Ui_Open(u,AFR2_N_MENU);return;}
-            if(u->selection==6){Afr2Ui_Open(u,AFR2_N_QUICK_MODES);return;}
+            if(u->selection==0){Afr2Ui_Open(u,AFR2_N_QUICK_MODES);return;}
+            if(u->selection==7){Afr2Ui_Open(u,AFR2_N_MENU);return;}
             Afr2MenuItem item;Afr2Ui_MenuItem(u,u->selection,&item);
             uint8_t expected=!(u->ops.value && u->ops.value(u->ops.ctx,item.action));
             uint8_t r=invoke(u,item.action,expected,0);
@@ -680,14 +691,15 @@ static void centered(Afr2Oled *o,uint8_t y,const char *text){
 }
 static void render_quick(Afr2Ui *u,Afr2Oled *o,const Afr2UiSnapshot *s){
     Afr2MenuItem item;Afr2Menu_Item(AFR2_N_QUICK,u->selection,&item);Afr2Oled_Clear(o);
-    char title[12];static const char titles[7][12] PROGMEM={"Radar","Servo","Motores","Linea","Rastro","Ajustes","Modo"};strcpy_P(title,titles[u->selection]);
-    Afr2Component_Header(o,Afr2Menu_Icon(AFR2_N_QUICK,item.target,item.action,item.label),title,u->selection+1,7);Afr2Component_Panel(o,0,16,128,34);
+    char title[12];static const char titles[8][12] PROGMEM={"Modo","Motores","Ultrasonido","Radar","Servo","Linea","Rastro","Ajustes"};strcpy_P(title,titles[u->selection]);
+    Afr2Component_Header(o,Afr2Menu_Icon(AFR2_N_QUICK,item.target,item.action,item.label),title,u->selection+1,8);Afr2Component_Panel(o,0,16,128,34);
     uint8_t on=!!(s->quick_flags&(1u<<u->selection));
-    if(u->selection==5 || u->selection==6){centered(o,20,u->selection==5?PSTR("AJUSTES Y PRUEBAS"):PSTR("MODO DEL ROBOT"));Afr2Ui_GestureHint(o,28,36,0,PSTR("Entrar"));}
+    if(u->selection==0 || u->selection==7){centered(o,20,u->selection==7?PSTR("AJUSTES Y PRUEBAS"):PSTR("MODO DEL ROBOT"));Afr2Ui_GestureHint(o,28,36,0,PSTR("Entrar"));}
     else {
-        const char *state=u->selection==0?(on?PSTR("ACTIVO"):PSTR("DETENIDO")):u->selection==2?(on?PSTR("HABILITADOS"):PSTR("BLOQUEADOS")):u->selection==3?(on?PSTR("EN MARCHA"):PSTR("DETENIDO")):u->selection==4?(on?PSTR("VISIBLE"):PSTR("OCULTO")):(on?PSTR("ACTIVADO"):PSTR("DESACTIVADO"));
+        /* AFR2-20261108-12: 1 Motores, 2 Ultrasonido, 3 Radar, 4 Servo, 5 Linea, 6 Rastro. */
+        const char *state=u->selection==1?(on?PSTR("HABILITADOS"):PSTR("BLOQUEADOS")):u->selection==2?(on?PSTR("MIDIENDO"):PSTR("APAGADO")):u->selection==3?(on?PSTR("ACTIVO"):PSTR("DETENIDO")):u->selection==5?(on?PSTR("LEYENDO"):PSTR("APAGADO")):u->selection==6?(on?PSTR("VISIBLE"):PSTR("OCULTO")):(on?PSTR("ACTIVADO"):PSTR("DESACTIVADO"));
         centered(o,20,state);
-        if(u->quick_pending)centered(o,36,u->quick_expected?PSTR("Activando..."):PSTR("Desactivando..."));else Afr2Ui_GestureHint(o,28,36,0,u->selection==2?(on?PSTR("Bloquear"):PSTR("Habilitar")):u->selection==4?(on?PSTR("Ocultar"):PSTR("Mostrar")):(on?PSTR("Detener"):PSTR("Activar")));
+        if(u->quick_pending)centered(o,36,u->quick_expected?PSTR("Activando..."):PSTR("Desactivando..."));else Afr2Ui_GestureHint(o,28,36,0,u->selection==1?(on?PSTR("Bloquear"):PSTR("Habilitar")):u->selection==6?(on?PSTR("Ocultar"):PSTR("Mostrar")):(on?PSTR("Detener"):PSTR("Activar")));
     }
     Afr2Oled_FillRect(o,3,33,122,15,AFR2_INVERT);
     Afr2Icon_Draw(o,AFR2_ICON_ENCODER_TURN,2,50,13);Afr2Ui_GestureHint(o,94,52,1,PSTR("Volver"));

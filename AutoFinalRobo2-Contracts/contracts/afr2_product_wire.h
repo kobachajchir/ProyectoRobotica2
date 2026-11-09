@@ -22,6 +22,8 @@
 #define AFR2_EXT_LINE_CAL 0x1cu
 #define AFR2_EXT_LIMITS 0x1du
 /* AFR2-20261029-27: signed percentages forward/strafe/turn, explicit units. */
+/* AFR2-20261109-03: explicit motor enable, no fault/Hall capture/prefs write/radar/sequence;
+ * remote PWM must not replace active local motion. Layout unchanged. */
 #define AFR2_EXT_DRIVE_PWM 0x1eu
 #define AFR2_EXT_F_MANUAL_PWM 0x80000UL
 #define AFR2_EXT_UI_META 0x20u
@@ -33,6 +35,10 @@
 #define AFR2_EXT_F_TOUCH_UI 0x20000UL
 #define AFR2_EXT_WIFI_POLL 0x30u
 #define AFR2_EXT_WIFI_UPDATE 0x31u
+/* AFR2-20261109-02: WIFI_POLL op15 carries ask:u8, op16 stops AP; UPDATE details accepts optional ask:u8 at byte18. */
+#define AFR2_WIFI_OP_ASK_FALLBACK 15u
+#define AFR2_WIFI_OP_AP_STOP 16u
+#define AFR2_WIFI_OP_MAX 16u
 #define AFR2_EXT_DIAG_POLL 0x32u
 #define AFR2_EXT_DIAG_RESULT 0x33u
 /* AFR2-20261024-01: sequence range does not replace EX01 product IDs. */

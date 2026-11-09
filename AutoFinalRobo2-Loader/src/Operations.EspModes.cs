@@ -66,7 +66,7 @@ namespace AFR2Loader
             EnsureUnchanged(manifest, manifestHash); token.ThrowIfCancellationRequested();
             for (int i = 0; i < files.Length; i++) EnsureUnchanged(files[i], hashes[i]);
             Profile transfer = p.Copy(); transfer.Values["FlashMode"] = package.FlashMode; transfer.Values["FlashFreq"] = package.FlashFreq;
-            var write = EspArgs(transfer, port, false); write.Add(Spell(transfer, "write_flash")); AddFlashOptions(transfer, write);
+            var write = EspArgs(transfer, port, false, "Paquete AT", regions.Select(r => Tuple.Create(r.Offset, r.Name))); write.Add(Spell(transfer, "write_flash")); AddFlashOptions(transfer, write);
             for (int i = 0; i < regions.Length; i++) write.AddRange(new[] { regions[i].Offset, files[i] });
             Stage("writing", AutoKeyRst(p) ? "Escribiendo paquete AT con entrada KEY/RST automática; sin intervención manual." : "Escribiendo paquete AT según su mapa de regiones. Mantené KEY apretado..."); MarkWriting();
             var written = await Command(transfer, "Python", write, Path.GetDirectoryName(transfer.Resolve("Esptool")), token);

@@ -99,7 +99,7 @@ static bool productReply(uint8_t cmd,const uint8_t *p,uint8_t n,const uint8_t *q
     case AFR2_EXT_LINE_CAL:return n==10 && p[9]<=1;
     case AFR2_EXT_HALL_CAL:return n==15 && p[9]<=1 && p[10]<=1;
     case AFR2_EXT_WIFI_UPDATE:return n==9;
-    case AFR2_EXT_WIFI_POLL:return qn==1 && n>=23 && p[9]<=1 && p[14]<=12 && p[15]<=96 && p[16]==q[0] && p[17]<=40 && n==23+p[17] && (uint16_t)p[16]+p[17]<=p[15] && p[18]>=1 && p[18]<=3;
+    case AFR2_EXT_WIFI_POLL:return qn==1 && n>=23 && p[9]<=1 && p[14]<=AFR2_WIFI_OP_MAX && p[15]<=96 && p[16]==q[0] && p[17]<=40 && n==23+p[17] && (uint16_t)p[16]+p[17]<=p[15] && p[18]>=1 && p[18]<=3;
     case AFR2_EXT_WEB_PULSE:return qn==2 && n==11 && afr2_get_u16(p+9)==afr2_get_u16(q);
     case AFR2_EXT_DRIVE_PWM:case AFR2_EXT_DRIVE:case AFR2_EXT_WHEEL:case AFR2_EXT_MODE:case AFR2_EXT_GOTO:return n==9;
     case AFR2_EXT_CANCEL:return n==10 && p[9]<=4;

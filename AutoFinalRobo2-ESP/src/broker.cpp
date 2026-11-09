@@ -110,6 +110,10 @@ void Broker::ingest(Session &s) {
         if(payload["interactive"].as<bool>())s.inputSeen=millis();
     }
     if(!strcmp(command,"system.hello"))strlcpy((char *)req.body,payload["clientVersion"].as<const char *>(),16);
+    if(!strcmp(command,"wifi.ap.fallback")){
+        if(!payload["ask"].is<bool>()){error(req,"BAD_REQUEST","Falta ask booleano.");return;}
+        req.body[0]=payload["ask"].as<bool>();req.bodyLength=1;
+    }
     if(!strcmp(command,"wifi.mode")){
         if(!payload["mode"].is<const char *>() || payload["mode"].as<JsonString>().size()!=strlen(payload["mode"].as<const char *>())){error(req,"BAD_REQUEST","Modo Wi-Fi invalido.");return;}
         const char *mode=payload["mode"]|"";req.body[0]=!strcmp(mode,"STA")?1:!strcmp(mode,"AP")?2:!strcmp(mode,"AP_STA")?3:0;
@@ -142,8 +146,8 @@ void Broker::ingest(Session &s) {
         s.lastSeen=now;strlcpy(s.recent[s.nextRecent],req.id,65);s.nextRecent=(s.nextRecent+1)%4;return;
     }
     if(req.wireCommand==AFR2_EXT_DRIVE_PWM){
-        if(!mega_.ready() || !productReady_ || !(productFeatures_&AFR2_EXT_F_MANUAL_PWM)){
-            error(req,"MEGA_LINK_DOWN","PWM no disponible.",true);return;
+        if(!mega_.ready() || !productReady_ || !productStateAt_ || (uint32_t)(now-productStateAt_)>=2000u || !(productFeatures_&AFR2_EXT_F_MANUAL_PWM)){
+            error(req,"CAPABILITY_UNAVAILABLE","Habilitar motores; revisar fallo, calibracion o tarea local.",true);return;
         }
         memcpy(pwmStream_,req.body,12);pwmStreamPending_=true;pwmStreamAt_=now;
         pwmStreamClient_=s.id;pwmStreamGeneration_=generation_;
@@ -236,9 +240,9 @@ void Broker::status(JsonObject out,uint32_t now,uint32_t client) {
     if (mega_.hasReply()) out["megaAgeMs"]=mega_.age(now); else out["megaAgeMs"]=nullptr;
     capabilities(out["capabilities"].to<JsonObject>());
     JsonObject pwm=out["capabilities"]["manual_pwm"].to<JsonObject>();
-    bool manual=productReady_ && mega_.ready() && (uint32_t)(now-productAt_)<2000u && (productFeatures_&AFR2_EXT_F_MANUAL_PWM);
+    bool manual=productReady_ && mega_.ready() && productStateAt_ && (uint32_t)(now-productStateAt_)<2000u && (productFeatures_&AFR2_EXT_F_MANUAL_PWM);
     pwm["present"]=true;pwm["implemented"]=manual;pwm["valid"]=manual;pwm["calibrated"]=false;pwm["freshness"]=manual?"fresh":"unknown";
-    pwm["reason"]=manual?"PWM manual habilitado; sin odometria ni HC.":"Habilitar motores; revisar fallo, medicion Hall o enlace.";
+    pwm["reason"]=manual?"PWM manual habilitado; sin odometria ni HC.":"Habilitar motores; revisar fallo, radar, calibracion, secuencia, tarea local o enlace.";
     pwm["limits"]["maxInputPct"]=100;pwm["limits"]["maxPwmPct"]=(uint16_t)pwmLimit_*100/255;
 
     const char *headNames[]={"sensor_head","radar_scanner"};
@@ -284,6 +288,11 @@ void Broker::dispatch(const BrokerRequest &req,uint32_t now) {
         if(mega_.ready() && (!productReady_ || !productStopped_ || (uint32_t)(now-productStateAt_)>1500u)){error(req,"BUSY_IN_FLIGHT","Detener el auto antes de cambiar modo.",true);return;}
         uint8_t mode=req.body[0];if(!wifi_.changeMode(mode)){error(req,"BAD_REQUEST","Configurar primero las credenciales del modo elegido.");return;}
         wifi_.status(payload);payload["confirmed"]=false;payload["restartScheduled"]=true;payload["persisted"]=true;frame["status"]="accepted";answer(req,frame);return;
+    }
+    if(!strcmp(req.command,"wifi.ap.fallback") || !strcmp(req.command,"wifi.ap.stop")){
+        bool ok=!strcmp(req.command,"wifi.ap.stop")?wifi_.stopAp():wifi_.setAskFallback(req.body[0]!=0);
+        if(!ok){error(req,"BUSY_IN_FLIGHT","No se pudo aplicar el cambio de AP.",true);return;}
+        wifi_.status(payload);payload["confirmed"]=true;answer(req,frame);publishStatus();return;
     }
     if (!strcmp(req.command,"wifi.status")) { wifi_.status(payload); answer(req,frame); return; }
     if(dispatchWifiDraft(req,now))return;
@@ -457,7 +466,7 @@ void Broker::tick(uint32_t now) {
     if(pwmStreamPending_){
         auto *owner=session(pwmStreamClient_);
         if(!owner || !owner->ready || pwmStreamGeneration_!=generation_ || safetyRequested_ || stopQueued_ ||
-           !mega_.ready() || (uint32_t)(now-pwmStreamAt_)>=200u)pwmStreamPending_=false;
+           !mega_.ready() || !productReady_ || !(productFeatures_&AFR2_EXT_F_MANUAL_PWM) || !productStateAt_ || (uint32_t)(now-productStateAt_)>=2000u || (uint32_t)(now-pwmStreamAt_)>=200u)pwmStreamPending_=false;
         else if(!waiting_ && (uint32_t)(now-webPulseAt_)<500u && mega_.streamPwm(pwmStream_,now))pwmStreamPending_=false;
     }
     bool localFront=count_ && (!strncmp(queue_[tail_].command,"wifi.",5) || !strncmp(queue_[tail_].command,"system.",7));

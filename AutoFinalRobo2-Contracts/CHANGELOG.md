@@ -1,3 +1,63 @@
+## AFR2-20261109-03 — 09/11/2026
+
+Fuentes coordinadas y recursos OLED/3D regenerados. PWM exige habilitación explícita y respeta fallos/tareas; slot ESP fluido conservado. OFF/estado desconocido Wi-Fi y simulador corregidos.
+Versión: 1.9.1 (subversión mínima).
+Estado: atmega/esp/web=fuentes editadas y recursos regenerados; sin compilación, tests, validadores independientes ni carga. Usuario compila y sube. [Ficha](changes/2026-11-09-03-source-completion.md).
+
+## AFR2-20261109-02 — 09/11/2026
+
+AP manual/guardado sin STA ni búsquedas. Preguntar por AP es una política persistente independiente del modo; desmarcada inicia AP automáticamente al fallar STA. AP activo ofrece Detener AP. OLED/Web y bitmaps exactos vinculados; contrato WIFI_AP_POLICY_20261109.md.
+Versión: 1.9.0 (subversión).
+Estado: atmega/esp/web=fuente editada, sin compilar ni cargar; sin tests, validadores, generadores ni pruebas físicas.
+
+## AFR2-20261109-01 - 09/11/2026
+
+Radar y Ángulo del servo piden ecos mientras están abiertos (dejaron de actualizar en 1.5.0); valor `--` si el eco tiene más de 1 s; Distancia muestra hacia dónde apunta el servo; el servo arranca centrado en 90°, así el cono se ve desde el inicio. Wi-Fi: el ESP cambia de modo aunque haya una búsqueda sin leer o no haya red guardada para ese modo (usa el AP abierto o la red por defecto); si nadie responde «Sin red Wi-Fi» en 20 s levanta el AP; el OLED avisa «Cambiando Wi-Fi», «Iniciando AP» y «Reconectando a <red>». Ficha changes/2026-11-09-01-radar-servo-wifi-modos.md.
+Versión: 1.8.0 (subversión).
+Estado: atmega=compilado (flash 57,5 %, SRAM 85,7 %), sin cargar; esp=compilado (RAM 62,1 %, flash 43,7 %), sin flashear; web=fuente editada, sin build; loader=sin cambios.
+
+## AFR2-20261108-14 - 08/11/2026
+
+Elegir STA, AP o AP+STA (o Desconectar) en el OLED ya no responde «Detener / ver red»: detiene el movimiento si hace falta y reemplaza el trabajo Wi-Fi pendiente por el cambio de modo. El ESP descarta solo la respuesta del trabajo viejo y toma el nuevo en el siguiente WIFI_POLL. Ficha changes/2026-11-08-14-wifi-modo-sin-bloqueo.md.
+Versión: 1.7.1 (subversión mínima).
+Estado: atmega=fuente editada, chequeo de sintaxis sin errores, sin HEX ni carga; esp=solo versión; web=solo versión.
+
+## AFR2-20261108-13 - 08/11/2026
+
+Loader 2.4.0: botón «Reinicios (n)» en el Monitor serie con vista propia: razón del reset, sesión nueva (HELLO, ms desde el arranque), enlace perdido antes, excepción, epc1 y línea de tiempo por reinicio. ATmega/Web: la página Línea de Controles rápidos enciende la lectura IR sin motores (acción 108; IR apagado por defecto, pantallas de línea lo leen mientras están abiertas, seguir línea lo enciende); el radar enciende servo y HC-SR04, y apagar cualquiera de los dos lo detiene (restaura el HC-SR04 al parar). Ficha changes/2026-11-08-13-reinicios-ir-radar.md.
+Versión: 1.7.0 (subversión). Loader 2.4.0.
+Estado: atmega=compilado sin errores (flash 57,2 %, SRAM 7016 B / 85,6 %), sin cargar; web=fuente editada, sin build; esp=solo versión; loader=2.4.0 compilado e iniciado, sin abrir puertos.
+
+## AFR2-20261108-12 - 08/11/2026
+
+Controles rápidos en el orden Modo, Motores, Ultrasonido, Radar, Servo, Línea, Rastro, Ajustes (abre en Modo; `quick_flags` con bit = página). La tarjeta del dashboard recorre siempre los seis sistemas con ícono y estado (Motores OFF/ON/RUN, US, Radar, Servo, IR, RS), una página cada 4 s tras 3 s sin tocar, salta al que cambia y FALLO tiene prioridad. ATmega y Web iguales. Ficha changes/2026-11-08-12-rapidas-orden-tarjeta-estados.md.
+Versión: 1.6.0 (subversión).
+Estado: atmega=fuente editada, sin compilar ni cargar; web=fuente editada, sin build; esp=solo versión; loader=sin cambios.
+
+## AFR2-20261108-11 - 08/11/2026
+
+Loader 2.3.0: la pestaña Resets ESP pasa a «Arranques ESP / ATmega», siempre activa con el puerto abierto: una fila por arranque de cada chip (AVR BOOT con bits MCUSR, ESP BOOT, volcado de excepción, ESP ROM probable, trama BOOT), graves en rojo, detalle con las 30 líneas previas y hasta 20 posteriores, Copiar detalle, y aviso en Eventos (salvo el auto-reset del Mega al abrir el puerto). La ficha explica por qué el ESP manda cada comando (EXT_STATE 500 ms, DIAG_POLL y WIFI_POLL 400 ms, WIFI_UPDATE 2 s, NETWORK_STATE 5 páginas, LIMITS 3 s, US_GET propio 1 s + Web). Ficha changes/2026-11-08-11-loader-arranques.md.
+Versión: sin cambio de producto. Loader 2.3.0.
+Estado: loader=compilado en carpeta temporal, sin abrir puertos; atmega/esp/web=sin cambios.
+
+## AFR2-20261108-10 - 08/11/2026
+
+El HC-SR04 deja de medir por defecto: solo con el nuevo interruptor «Ultrasonido» de Controles rápidos (8 páginas; MIDIENDO/APAGADO, acción 107, apagado tras reset), con el radar en marcha o con la pantalla Distancia numérica abierta. Vuelve el ícono de pulsación larga junto a «Rapidas» en el dashboard (11 px, sin tocar la esquina del anillo). TAP: log y modos de un sentido a 115200; enlace completo pasa a 250000 tras confirmar (500 ms de silencio) y vuelve al salir; el Loader 2.2.1 cambia la velocidad del mismo COM sin reabrirlo y, si a 250000 no recibe nada válido en 7 s, vuelve a 115200. DIAG_POLL y WIFI_POLL: cada 400 ms (sin cambios). Ficha changes/2026-11-08-10-ultrasonido-rapidas-tap-baudios.md.
+Versión: 1.5.0 (subversión). Loader 2.2.1.
+Estado: atmega=compilado sin errores (flash 57,2 %, SRAM 85,6 %), sin cargar; web=fuente editada, sin build; esp=solo versión; loader=2.2.1 compilado e iniciado, sin abrir puertos.
+
+## AFR2-20261108-09 - 08/11/2026
+
+Loader como depurador USB con el firmware del auto. Catálogo `contracts/wire_catalog.json` (53 comandos, campos y largos cotejados con el ATmega) y skill `afr2-wire-commands`: todo ABM de un CMD lo actualiza. El ATmega (`AFR2_DEBUG_TAP=1`, log a 250000) elige por una línea `#AFR2 TAP n` desde el USB qué copiar: log, tramas ESP→ATmega, ATmega→ESP, ambas o bytes crudos, como registros TAP1 con ms y redacción de Wi-Fi/clave del AP; avisa `ESP ROM probable` y cuenta los reinicios del ESP. Loader 2.2.0: Ver intérprete ↔ Enviar, intérprete desactivado por defecto y habilitado con catálogo, selector Fuente USB (limpia log, conserva catálogo), tramas decodificadas con hora y origen, contadores por comando y pestaña Resets ESP. Protocol Studio sincronizado (EXT_STATE 19 B y 5 comandos que faltaban). BT02 (EX01 v14) queda pendiente de decisión. Plan docs/PLAN_LOADER_INTERPRETE_Y_TAP.md, ficha changes/2026-11-08-09-loader-interprete-tap.md.
+Versión: 1.4.0 (subversión). Loader 2.2.0.
+Estado: atmega=fuente editada, sin compilar ni cargar; esp=solo versión, sin compilar; web=fuente editada, sin build ni navegador; loader=fuente sin compilar.
+
+## AFR2-20261108-08 - 08/11/2026
+
+El flasher del ATmega usa la OLED por I2C: en reposo muestra «AFR2» / «Loader firmware» / la versión, y al cargar el ESP el título de la operación, qué imagen se sube (Firmware ESP, Web LittleFS o la región AT), la fase, una barra de progreso y bloques/KB, y al final si esptool terminó con o sin error. El progreso sale de observar el protocolo de esptool sin tocar bytes; las dos UART pasan a interrupciones para que dibujar no frene la carga. El Loader (2.1.0) manda los nombres y el resultado solo si el flasher lo anuncia. Ficha changes/2026-11-08-08-flasher-oled.md.
+Versión: 1.3.0 (subversión). Loader 2.1.0.
+Estado: atmega=flasher reescrito, sin compilar ni cargar; loader=fuente editada, sin compilar; esp=sin cambios; web=solo versión.
+
 ## AFR2-20261108-07 - 08/11/2026
 
 Pantalla de inicio de 3 s (0x010004): barra superior de tiempo como la de los avisos, «AFR2» grande que aparece letra por letra, «ATmega» y «Firmware 1.2.0» debajo; corto o largo la saltean. Política de versiones en docs/VERSIONADO.md: una versión de producto única para ATmega, ESP y Web; versión (MAYOR) si rompe compatibilidad, subversión (MENOR) por función nueva, subversión mínima (PARCHE) por corrección; documentación, CAD y Loader no la suben. Ficha changes/2026-11-08-07-pantalla-inicio-versionado.md.
@@ -9,11 +69,6 @@ Estado: atmega=fuente editada, sin compilar ni cargar; esp=solo versión, sin co
 Si la red Wi-Fi elegida no conecta, el ESP ya no levanta el AP solo: el auto muestra «Wi-Fi no encontrado» (aviso 0x04000C, con el motivo) y luego «Sin red Wi-Fi» (0x03004B, en Wi-Fi > AP / fallback) con «Iniciar AP» (defecto, a los 5 s sin tocar) y «Seguir esperando». Girar o apretar detiene la cuenta y quita la barra; el largo responde Seguir esperando. Iniciar AP muestra el aviso «Red AP creada» de siempre; Seguir esperando vuelve a preguntar tras Preferencias > «Reintento Wi-Fi s» (10–300 s, defecto 30, EEPROM v11). Sin OLED o con un ATmega anterior, AP automático como antes. Ficha changes/2026-11-08-06-wifi-sin-red-selector.md.
 Versión: 1.1.0 (subversión).
 Estado: atmega=fuente editada, sin compilar ni cargar; esp=fuente editada, sin compilar ni flashear; web=fuente editada, sin build ni biblioteca regenerada.
-
-## AFR2-20261108-08 - 08/11/2026
-
-Plan (sin implementar) del Loader como depurador USB: catálogo JSON de comandos ROBO2 (`contracts/wire_catalog.json`), intérprete de tramas con listado y comparación, selector de fuente por software dentro del ATmega (log / RX ATmega / RX ESP / enlace / crudo, con registros TAP1 y redacción de datos sensibles) y detección de resets del ESP con su causa (BT02 propuesta con exccause/epc1/uptime/heap/etapa). Regla de skill para toda alta/baja/modificación de un CMD. Documento docs/PLAN_LOADER_INTERPRETE_Y_TAP.md.
-Estado: atmega=sin cambios; esp=sin cambios; web=sin cambios; loader=sin cambios.
 
 ## AFR2-20261108-04 - 08/11/2026
 

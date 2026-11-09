@@ -146,7 +146,7 @@ bool Broker::dispatchProduct(BrokerRequest q,uint32_t now) {
     if(q.wireCommand==AFR2_EXT_BATTERY && !(productFeatures_&AFR2_EXT_F_BATTERY)){
         error(q,"CAPABILITY_UNAVAILABLE","Medicion de bateria no disponible en el controlador.");return true;
     }
-    if(q.wireCommand==AFR2_EXT_DRIVE_PWM && !(productFeatures_&AFR2_EXT_F_MANUAL_PWM)){
+    if(q.wireCommand==AFR2_EXT_DRIVE_PWM && (!productStateAt_ || (uint32_t)(now-productStateAt_)>=2000u || !(productFeatures_&AFR2_EXT_F_MANUAL_PWM))){
         error(q,"CAPABILITY_UNAVAILABLE","Habilitar motores; revisar fallo o calibracion Hall en curso.");return true;
     }
     if(q.wireCommand==AFR2_EXT_UI_META || q.wireCommand==AFR2_EXT_UI_ACTION) {
@@ -218,7 +218,7 @@ bool Broker::finishProduct(const BrokerRequest &q,const MegaResult &r) {
         if(auto *s=session(q.client)){if(!s->screenSubscribed || (uint32_t)(millis()-s->screenSubscriptionAt)>3500u){error(q,"SUPERSEDED","Visor cerrado.");return true;}s->oledRevision=oledRevision_;s->oledCaptured=true;}
     } else if(q.wireCommand==AFR2_EXT_STATE) {
         if(r.command==AFR2_EXT_STATE) {
-            memcpy(stateData_,p,28);productMode_=p[9];productOrigin_=p[10];productFeatures_=afr2_get_u32(p+17);productAt_=millis();
+            memcpy(stateData_,p,28);productMode_=p[9];productOrigin_=p[10];productFeatures_=afr2_get_u32(p+17);productAt_=millis();productStateAt_=productAt_;productStopped_=p[11]!=0;
             if((productFeatures_&AFR2_EXT_F_POSE) && productRequest(AFR2_EXT_POSE,nullptr,0)){pending_=q;waiting_=true;return true;}
         }
         const char *modes[]={"idle","manual","line-follow","wheel-test","goto","fault","sequence","manual-pwm"};

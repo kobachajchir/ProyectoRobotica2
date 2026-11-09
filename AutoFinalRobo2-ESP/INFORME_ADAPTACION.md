@@ -117,3 +117,11 @@ Fuente adaptada con Web/ATmega/ESP: overlay scrim+blur en modales, Volver por í
 ## AFR2-20261106-12 — Hall y PWM manual
 
 Adaptación de fuente coordinada; véase Contracts/contracts/HALL_MANUAL_STREAM_20261106.md y Contracts/provenance/hall-motion-20261106-12.json. EEPROM AVR v10; Hall por motor y raster Web vinculados; ESP PWM reciente sin esperar ACK AVR por consigna. Sin tests, compilaciones, validadores, generadores, promoción ni carga. Fluidez, SRAM/pila y funcionamiento físico pendientes. Bypass manual conservado; restitución de permisos pendiente.
+
+## AFR2-20261109-02 / 1.9.0
+
+Modo AP manual independiente de la política de fallback; búsqueda solo con STA, Detener AP y bitmaps suministrados vinculados. Cambios por archivo en Contracts/provenance/wifi-ap-policy-20261109-02.json. Solo fuente; sin compilación, tests, validadores, generación, carga ni prueba física.
+
+## AFR2-20261109-03 / 1.9.1
+
+Cierre coordinado de fuentes: permiso PWM explícito y condiciones vigentes, Wi-Fi OFF/política desconocida y réplicas Web. Recursos OLED (75 nodos/26iconos) y catálogo3D regenerados. No se compiló, probó ni cargó; esa etapa la realizará el usuario. Registro por archivo en Contracts/provenance/source-completion-20261109-03.json.

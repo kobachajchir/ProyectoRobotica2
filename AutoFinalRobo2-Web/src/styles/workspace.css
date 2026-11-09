@@ -606,6 +606,13 @@ html[data-input="keyboard"] .afr2-route-link, html[data-input="keyboard"] .afr2-
 .afr2-loader-shot { margin: 8px 0 12px; padding: 0; overflow: hidden; border-radius: var(--radius-lg); border: 1px solid var(--infra-hero-border);
   background: var(--infra-hero-panel); box-shadow: 0 18px 48px rgba(0, 0, 0, .35); }
 .afr2-loader-shot img { display: block; width: 100%; height: auto; }
+/* Pantalla grande: captura a la izquierda; eyebrow, título, descripción y píldoras a la derecha.
+   En pantallas chicas queda en columna (captura arriba, texto debajo). */
+@media (min-width: 900px) {
+  .afr2-loader .afr2-infra-hero__copy { max-width: none; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); column-gap: clamp(28px, 4vw, 56px); align-content: center; align-items: start; }
+  .afr2-loader .afr2-infra-hero__copy > * { grid-column: 2; }
+  .afr2-loader .afr2-infra-hero__copy > .afr2-loader-shot { grid-column: 1; grid-row: 1 / span 4; margin: 0; align-self: center; }
+}
 .afr2-loader-source { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin: 0; }
 .afr2-loader-source code { font-size: inherit; overflow-wrap: anywhere; }
 

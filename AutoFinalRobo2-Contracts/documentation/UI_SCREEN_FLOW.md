@@ -293,3 +293,11 @@ Ayuda → OLED abre ahora la simulación interactiva con el reductor existente y
 ## AFR2-20261102-14 — Tarjeta de estados en Inicio
 
 010001 agrega modo compacto y tarjeta informativa redondeada. Tras3s sin encoder alterna estados aplicables cada4s; mantener SW pausa y un fallo permanece fijo. Un estado retirado se actualiza inmediatamente. No es una opción de navegación: corto sigue abriendo010002 y largo al soltar010003. Snapshot local real y réplica Web con fixtures. Las guardas Sí/No no cambian. Detalles en ../contracts/OLED_DASHBOARD_STATUS_20261102.md. Sin ejecución de pruebas, build, validadores ni hardware.
+
+## AFR2-20261109-02 — Wi-Fi/AP
+
+03001f omite Buscar redes en AP/OFF. 030024: Iniciar/Detener AP, Preguntar AP SI/NO/--, Volver. 03004b solo tras falla STA y política seleccionada; nunca en AP manual. Retorno contextual vigente. Biblioteca Web vinculada; fuente sin ejecutar. Ver contracts/WIFI_AP_POLICY_20261109.md.
+
+## AFR2-20261109-03 — Fuentes y recursos
+
+Biblioteca OLED regenerada (75 nodos/26iconos); Wi-Fi OFF/desconocido oculta búsqueda, selector abre en STA si no hay modo activo y política desconocida muestra --. AVR y TS vinculados. PWM local/remoto respeta habilitación/fallo/captura Hall/EEPROM/radar/secuencia. Sin compilación ni aceptación física.

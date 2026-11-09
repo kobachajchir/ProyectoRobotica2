@@ -74,7 +74,7 @@ namespace AFR2Loader
                 serialSending = true; serialTxCancellation = new CancellationTokenSource(); UpdateSerialSendControls();
                 for (int index = 0; index < repeat; index++)
                 {
-                    serialTxCancellation.Token.ThrowIfCancellationRequested(); await capture.SendAsync(payload, serialTxCancellation.Token); completed++;
+                    serialTxCancellation.Token.ThrowIfCancellationRequested(); await capture.SendAsync(payload, serialTxCancellation.Token); completed++; NoteLoaderTx(payload, "Envío manual");
                     serialSendState.Text = "TX " + completed + "/" + repeat + " · " + payload.Length + " bytes por envío · " + capture.Port;
                     if (index + 1 < repeat) await Task.Delay(interval, serialTxCancellation.Token);
                 }

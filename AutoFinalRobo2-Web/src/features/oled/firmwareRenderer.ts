@@ -55,7 +55,7 @@ export interface FirmwareSnapshot {
   batteryValid?:boolean; batteryMv?:number;
   dashboardValid?:boolean;dashboardMode?:number;dashboardMoving?:boolean;dashboardFault?:boolean;
   networkServer?:boolean;qrAllowed?:boolean;
-  networkPage?:number;networkTotal?:number;networkBusy?:boolean;networkMode?:number;networkTruncated?:boolean;networkScanState?:number;wifiDraftReady?:boolean;
+  networkAskFallback?:boolean;networkPolicyValid?:boolean;networkPage?:number;networkTotal?:number;networkBusy?:boolean;networkMode?:number;networkTruncated?:boolean;networkScanState?:number;wifiDraftReady?:boolean;
   networkCount?:number; wifiConnected?:boolean|null; rowSecurity?:readonly number[];
   networkRssi?:number; networkRssiValid?:boolean;
   configDirty?:boolean; actionStates?:Record<number,boolean>; powerPercent?:number; powerChangedMs?:number; powerKnown?:boolean;
@@ -89,17 +89,21 @@ export function firmwareNodeCount(node:number,dirty=false,snapshot?:FirmwareSnap
   if(node===S.AFR2_N_SAVE_CONFIRM)return 2; // Si/No
   if(node===S.AFR2_N_ODOM_MENU)return 5; // AFR2-20261108-02
   if(node===S.AFR2_N_PREFS)return 7-(dirty?0:1); // AFR2-20261108-06: +Reintento Wi-Fi s
+  if(node===31)return 6+Number(!!((snapshot?.networkMode??0)&1));
+  if(node===36)return 3;
   if(node===66)return snapshot?.networkScanState===1?1:snapshot?.networkTotal?3:2;
   if(node===34)return 4;
   if(node===33)return (snapshot?.networkCount??0)+2+Number((snapshot?.networkPage??0)>0)+Number((snapshot?.networkTotal??0)>((snapshot?.networkPage??0)+1)*8);
   if(node===32)return snapshot?.wifiConnected===false?6:snapshot?.wifiConnected===true?5:4;
   if(node===35 && typeof snapshot?.wifiConnected!=="boolean")return 2;
-  const count=node===S.AFR2_N_MENU?7:node===S.AFR2_N_DIAG?3:node===S.AFR2_N_QUICK?7:Number(firmwareNode(node)[3]);
+  const count=node===S.AFR2_N_MENU?7:node===S.AFR2_N_DIAG?3:node===S.AFR2_N_QUICK?8:Number(firmwareNode(node)[3]);
   return count-(!dirty && (node===S.AFR2_N_PREFS || node===S.AFR2_N_CALIB)?1:0);
 }
 export function firmwareMenuItem(node: number, index: number,snapshot?:FirmwareSnapshot): FirmwareMenuItem {
   const n = firmwareNode(node);
   index = Math.min(index, firmwareNodeCount(node,snapshot?.configDirty,snapshot) - 1);
+  if(node===31 && !((snapshot?.networkMode??0)&1) && index>=2)index++;
+  if(node===36)return {label:index===0?(snapshot?.networkAp?'Detener AP':'Iniciar AP'):index===1?`Preguntar AP: ${!snapshot?.networkPolicyValid?'--':snapshot.networkAskFallback?'SI':'NO'}`:'Volver',target:index===2?31:255,action:index===0?110:index===1?109:0,arg:0,min:0,max:0,step:0};
   if(node===66){
     const row=(label:string,action=0,target=255):FirmwareMenuItem=>({label,action,target,arg:0,min:0,max:0,step:0});
     if(snapshot?.networkScanState===1)return row('Buscando redes');
@@ -149,7 +153,14 @@ export function firmwareMenuItem(node: number, index: number,snapshot?:FirmwareS
     const action=Number(row[2]);const toggle=[74,77,86,87].includes(action);
     return {label:toggle?(snapshot?.actionStates?.[action]?'Detener':'Iniciar'):String(row[0]),target:Number(row[1]),action,arg:Number(row[3]),min:Number(row[4]),max:Number(row[5]),step:Number(row[6])};
   }
-  if(node===S.AFR2_N_QUICK && index===6)return {label:'Seleccion de modo',target:QUICK_MODES_NODE,action:0,arg:0,min:0,max:0,step:0};
+  // AFR2-20261108-10: 5 Ultrasonido (extra[48]), 6 Ajustes (extra[36]), 7 Modo.
+  // AFR2-20261108-12: Modo, Motores, Ultrasonido, Radar, Servo, Linea, Rastro, Ajustes (extra[] map of afr2_menu_catalog.c).
+  if(node===S.AFR2_N_QUICK){
+    if(index===0)return {label:'Seleccion de modo',target:QUICK_MODES_NODE,action:0,arg:0,min:0,max:0,step:0};
+    if(index===7)return {label:'Menu principal',target:S.AFR2_N_MENU,action:0,arg:0,min:0,max:0,step:0};
+    const row=L.extra[[43,33,48,31,32,49,35,36][index]]; // AFR2-20261108-13: Linea = IR sensors (extra[49])
+    return {label:String(row[0]),target:Number(row[1]),action:Number(row[2]),arg:Number(row[3]),min:Number(row[4]),max:Number(row[5]),step:Number(row[6])};
+  }
   if(node===QUICK_MODES_NODE)return index===2 ? {label:'Volver',target:S.AFR2_N_QUICK,action:0,arg:0,min:0,max:0,step:0} : {label:index?'Manual':'Reposo',target:255,action:80,arg:index,min:0,max:0,step:0};
   const mapped = node===S.AFR2_N_MENU ? L.items[[1,7,5,4,6,9,10][index]]
     : node===S.AFR2_N_STATE && index>=3 ? L.items[[2,3,19][index-3]]
@@ -199,7 +210,7 @@ function menuIcon(node: number, target: number, action: number, label: string): 
   if(target===S.AFR2_N_BATTERY || target===S.AFR2_N_BATTERY_VIEW || action===S.AFR2_A_BATTERY_MEASURE)return S.AFR2_ICON_BATTERY_UNKNOWN;
   if(target===S.AFR2_N_MENU)return S.AFR2_ICON_CONFIG;
   if(target===S.AFR2_N_ENCODER_TEST)return S.AFR2_ICON_ENCODER;
-  if(target===S.AFR2_N_IR_VALUES || action===S.AFR2_A_LINE_TOGGLE)return S.AFR2_ICON_SENSORS;
+  if(target===S.AFR2_N_IR_VALUES || action===S.AFR2_A_LINE_TOGGLE || action===S.AFR2_A_US_TOGGLE || action===S.AFR2_A_IR_TOGGLE)return S.AFR2_ICON_SENSORS;
   if(([S.AFR2_N_WIFI_VIEW,S.AFR2_N_WIFI_NETWORKS,S.AFR2_N_WIFI_SETUP,S.AFR2_N_WIFI_REVIEW,S.AFR2_N_WIFI_SEARCH,S.AFR2_N_WIFI_MODE_SELECT,S.AFR2_N_WIFI_DATA] as number[]).includes(target))return S.AFR2_ICON_WIFI;
   if(target===S.AFR2_N_RADAR_OPTIONS || target===S.AFR2_N_RADAR_RANGE || action===S.AFR2_A_RADAR_TOGGLE || action===S.AFR2_A_RADAR_TRACE || action===S.AFR2_A_RADAR_RANGE)return S.AFR2_ICON_RADAR;
   if(([S.AFR2_A_SERVO_TOGGLE,S.AFR2_A_SERVO_ANGLE,S.AFR2_A_SERVO_US,S.AFR2_A_SERVO_APPLY,S.AFR2_A_SERVO_EDIT_BEGIN,S.AFR2_A_SERVO_EDIT_END] as number[]).includes(action))return S.AFR2_ICON_SERVO;
@@ -345,14 +356,14 @@ export function renderTouchScreen(o: Afr2OledBuffer, direction: number, heading:
 }
 function quick(o:Afr2OledBuffer,u:FirmwareUiState,s:FirmwareSnapshot){
   o.clear();const item=firmwareMenuItem(S.AFR2_N_QUICK,u.selection);
-  componentHeader(o,menuIcon(S.AFR2_N_QUICK,item.target,item.action,item.label),['Radar','Servo','Motores','Linea','Rastro','Ajustes','Modo'][u.selection],u.selection+1,7);componentPanel(o,0,16,128,34);
+  componentHeader(o,menuIcon(S.AFR2_N_QUICK,item.target,item.action,item.label),['Modo','Motores','Ultrasonido','Radar','Servo','Linea','Rastro','Ajustes'][u.selection],u.selection+1,8);componentPanel(o,0,16,128,34);
   const center=(y:number,text:string)=>o.drawText(text.length*7<128?trunc((128-text.length*7)/2):0,y,text);
   const on=!!((s.quickFlags??0)&(1<<u.selection));
-  if(u.selection===5 || u.selection===6){center(20,u.selection===5?'AJUSTES Y PRUEBAS':'MODO DEL ROBOT');gestureHint(o,28,36,false,'Entrar');}
+  if(u.selection===0 || u.selection===7){center(20,u.selection===7?'AJUSTES Y PRUEBAS':'MODO DEL ROBOT');gestureHint(o,28,36,false,'Entrar');}
   else if(s.quickFlags===undefined){center(20,'SIN ESTADO');center(36,'Requiere equipo');}
   else {
-    center(20,u.selection===0?(on?'ACTIVO':'DETENIDO'):u.selection===2?(on?'HABILITADOS':'BLOQUEADOS'):u.selection===3?(on?'EN MARCHA':'DETENIDO'):u.selection===4?(on?'VISIBLE':'OCULTO'):(on?'ACTIVADO':'DESACTIVADO'));
-    if(u.quickPending)center(36,u.quickExpected?'Activando...':'Desactivando...');else gestureHint(o,28,36,false,u.selection===2?(on?'Bloquear':'Habilitar'):u.selection===4?(on?'Ocultar':'Mostrar'):(on?'Detener':'Activar'));
+    center(20,u.selection===1?(on?'HABILITADOS':'BLOQUEADOS'):u.selection===2?(on?'MIDIENDO':'APAGADO'):u.selection===3?(on?'ACTIVO':'DETENIDO'):u.selection===5?(on?'LEYENDO':'APAGADO'):u.selection===6?(on?'VISIBLE':'OCULTO'):(on?'ACTIVADO':'DESACTIVADO'));
+    if(u.quickPending)center(36,u.quickExpected?'Activando...':'Desactivando...');else gestureHint(o,28,36,false,u.selection===1?(on?'Bloquear':'Habilitar'):u.selection===6?(on?'Ocultar':'Mostrar'):(on?'Detener':'Activar'));
   }
   o.fillRect(3,33,122,15,'invert');icon(o,24,2,50,13);gestureHint(o,94,52,true,'Volver');
 }

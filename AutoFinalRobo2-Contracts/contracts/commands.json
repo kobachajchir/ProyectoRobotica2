@@ -1,7 +1,7 @@
 {
   "schema": "afr2-command-3",
   "envelope_schema": "afr2-ws-1",
-  "updated_by": "AFR2-20261030-09",
+  "updated_by": "AFR2-20261109-03",
   "commands": [
     {
       "name": "system.hello",
@@ -1627,7 +1627,9 @@
           "accepted": "boolean"
         }
       },
-      "notes": "EX01v9 feature0x80000. Signed percentages of the configured PWM limit, central AVR mecanum mix, ramps and watchdog/STOP. No HC/odometry requirement. Explicit motor enable required. No automatic restart after reconnect."
+      "notes": "PWM abierto sin Hall/odometria/HC obligatorios. Habilitacion de motores explicita, sin fallo/captura Hall/escritura EEPROM/radar/secuencia. No reemplaza movimiento local ni edicion/confirmacion local. No modifica configuracion ni borra fallos. ESP conserva ultimo slot sin esperar ACK por consigna; accepted queued no confirma movimiento. Autorizacion AVR y observacion de estado ESP vigentes.",
+      "current_source_change": "AFR2-20261109-03",
+      "contract": "SOURCE_COMPLETION_20261109.md"
     },
     {
       "name": "wifi.disconnect",
@@ -1690,6 +1692,48 @@
       "notes": "Session-only radio mode; does not replace credentials. completed confirmed=true only after actual SDK mode/AP start observed.",
       "current_source_change": "AFR2-20261030-09",
       "contract": "WIFI_UI_11.md"
+    },
+    {
+      "name": "wifi.ap.fallback",
+      "owner": "esp",
+      "wire_id": null,
+      "status": "source-integrated-uncompiled-runtime-unverified",
+      "module_status": {
+        "atmega": "OLED equivalent via WIFI_POLL operations 15/16",
+        "esp": "source-uncompiled-unverified",
+        "web": "source-uncompiled-unverified"
+      },
+      "timeout_ms": 4000,
+      "idempotent": true,
+      "payload_schema": {
+        "req": {
+          "ask": "boolean"
+        },
+        "res": "wifi.status plus confirmed:boolean"
+      },
+      "notes": "Guarda askFallback en wifi.json; true pregunta al OLED al fallar STA; false inicia AP automatico. No cambia modo ni credenciales.",
+      "current_source_change": "AFR2-20261109-02",
+      "contract": "WIFI_AP_POLICY_20261109.md"
+    },
+    {
+      "name": "wifi.ap.stop",
+      "owner": "esp",
+      "wire_id": null,
+      "status": "source-integrated-uncompiled-runtime-unverified",
+      "module_status": {
+        "atmega": "OLED equivalent via WIFI_POLL operations 15/16",
+        "esp": "source-uncompiled-unverified",
+        "web": "source-uncompiled-unverified"
+      },
+      "timeout_ms": 4000,
+      "idempotent": false,
+      "payload_schema": {
+        "req": {},
+        "res": "wifi.status plus confirmed:boolean"
+      },
+      "notes": "Detiene solo AP; STA continua si ya estaba habilitada. Suprime fallback durante esta sesion hasta reiniciar/aplicar modo o iniciar AP explicitamente.",
+      "current_source_change": "AFR2-20261109-02",
+      "contract": "WIFI_AP_POLICY_20261109.md"
     }
   ],
   "uart_profile": "UART_PROFILE_2.md",

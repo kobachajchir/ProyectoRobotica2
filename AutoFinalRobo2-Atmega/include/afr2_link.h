@@ -18,7 +18,10 @@ enum {
     AFR2_LINK_EVT_SESSION,       /* HELLO opened a new session; value = session id */
     AFR2_LINK_EVT_SUPERVISION,   /* negotiated session expired; value = ms without request */
     AFR2_LINK_EVT_RX_FAULT,      /* UART framing/overrun/ring fault reported by transport */
-    AFR2_LINK_EVT_REJECT         /* reply with result != OK; command, result */
+    AFR2_LINK_EVT_REJECT,        /* reply with result != OK; command, result */
+    /* AFR2-20261108-09: debug TAP. result = route, data/length = payload (no header/xor). */
+    AFR2_LINK_EVT_FRAME_RX,      /* complete valid frame parsed from the ESP, before handling */
+    AFR2_LINK_EVT_FRAME_TX       /* reply frame just built for the ESP */
 };
 typedef struct {
     uint8_t kind, command, result, length;

@@ -19,6 +19,11 @@ CTL_MAGIC = b"\xa5AFR2CTL"
 RSP_MAGIC = b"\xa5AFR2RSP"
 CMD_QUERY, CMD_ENTER_BOOT, CMD_RUN = 0x01, 0x10, 0x11
 CMD_AUTO_OFF, CMD_AUTO_ON = 0x20, 0x21
+# AFR2-20261108-08. OLED feedback of the flasher: operation title, image names by offset and how
+# esptool ended. Sent only when the flasher announces support (reply flags bit4); display only,
+# never touches KEY/RST nor the ESP stream.
+CMD_LABEL, CMD_RESULT_OK, CMD_RESULT_FAIL = 0x30, 0x31, 0x32
+TITLE_OFFSET = 0xFFFFFFFF
 
 
 def describe(reply):
@@ -40,13 +45,14 @@ def configure(port, enable):
     return reply
 
 
-def control(port, cmd, timeout):
-    """Send one control frame; return (status, key_held, rst_held, auto_enabled, boot_test_supported) or None."""
+def control(port, cmd, timeout, payload=b""):
+    """Send one control frame; return (status, key_held, rst_held, auto_enabled, boot_test_supported,
+    oled_feedback) or None. A payload (CMD_LABEL) goes after ~cmd with its length byte."""
     previous = port.timeout
     port.timeout = 0.1  # esptool opens with no timeout; never block waiting for a reply
     try:
         port.reset_input_buffer()
-        port.write(CTL_MAGIC + bytes([cmd, cmd ^ 0xFF]))
+        port.write(CTL_MAGIC + bytes([cmd, cmd ^ 0xFF]) + (bytes([len(payload)]) + payload if payload else b""))
         port.flush()
         deadline = time.monotonic() + timeout
         buffer = b""
@@ -56,11 +62,40 @@ def control(port, cmd, timeout):
             if at >= 0 and len(buffer) >= at + 11:
                 reply = buffer[at + 8:at + 11]
                 if reply[0] == cmd:
-                    return reply[1], bool(reply[2] & 1), bool(reply[2] & 2), bool(reply[2] & 4), bool(reply[2] & 8)
+                    return (reply[1], bool(reply[2] & 1), bool(reply[2] & 2), bool(reply[2] & 4), bool(reply[2] & 8),
+                            bool(reply[2] & 16))
                 buffer = buffer[at + 1:]
         return None
     finally:
         port.timeout = previous
+
+
+def oled_text(text):
+    """Printable ASCII only, at most 18 characters (the OLED line)."""
+    return "".join(c if 32 <= ord(c) <= 126 else "?" for c in text)[:18].encode("ascii")
+
+
+def send_labels(port, options):
+    """AFR2-20261108-08: title and image names for the flasher OLED. Failures only lose the display."""
+    items = []
+    if options.oled_title:
+        items.append((TITLE_OFFSET, options.oled_title))
+    for entry in options.oled_image or []:
+        offset, _, name = entry.partition("=")
+        try:
+            items.append((int(offset, 0), name or offset))
+        except ValueError:
+            print("AFR2-OLED: imagen ignorada (%s)." % entry, file=sys.stderr, flush=True)
+    for offset, name in items:
+        text = oled_text(name)
+        if not text:
+            continue
+        reply = control(port, CMD_LABEL, 1.0, offset.to_bytes(4, "little") + text)
+        if reply is None or reply[0] != 0:
+            print("AFR2-OLED: el flasher no confirmó el texto de pantalla; sigue la operación.", file=sys.stderr, flush=True)
+            return
+    if items:
+        print("AFR2-OLED: pantalla del flasher actualizada (%d textos)." % len(items), file=sys.stderr, flush=True)
 
 
 def flasher_keyrst(options, parser):
@@ -210,6 +245,8 @@ def main():
     parser.add_argument("--flasher-keyrst", choices=("query", "on", "off"),
                         help="Solo consulta/configura el flasher y termina; no ejecuta esptool.")
     parser.add_argument("--port")
+    parser.add_argument("--oled-title", help="AFR2-20261108-08: título de la operación en la OLED del flasher.")
+    parser.add_argument("--oled-image", action="append", help="OFFSET=NOMBRE de una imagen para la OLED del flasher.")
     parser.add_argument("--bridge-baud", required=True, type=int, choices=(9600, 38400, 57600, 115200))
     parser.add_argument("--startup-seconds", required=True, type=int, choices=range(1, 16))
     parser.add_argument("command", nargs=argparse.REMAINDER)
@@ -245,7 +282,7 @@ def main():
         original_open = port.open
 
         original_close = port.close
-        state = {"entered": False, "configured": False}
+        state = {"entered": False, "configured": False, "display": False}
 
         def delayed_open():
             try:
@@ -254,6 +291,12 @@ def main():
                       (options.bridge_baud, options.startup_seconds), file=sys.stderr, flush=True)
                 time.sleep(options.startup_seconds)
                 port.reset_input_buffer()
+                if not options.auto_key_rst and (options.oled_title or options.oled_image):
+                    # AFR2-20261108-08: QUERY touches no pin; an older flasher without OLED is just skipped.
+                    found = control(port, CMD_QUERY, 1.5)
+                    if found is not None and found[0] == 0 and found[5]:
+                        state["display"] = True
+                        send_labels(port, options)
                 if options.auto_key_rst:
                     # Identify the AFR2 service image before any control byte matters.
                     found = control(port, CMD_QUERY, 1.5)
@@ -263,6 +306,9 @@ def main():
                     print("AFR2-KEYRST: flasher AFR2 identificado; %s" % describe(found), file=sys.stderr, flush=True)
                     if found[0] != 0:
                         raise RuntimeError("AFR2: el flasher rechazó la identificación; no se acciona KEY/RST.")
+                    if found[5]:
+                        state["display"] = True
+                        send_labels(port, options)
                     state["configured"] = True
                     configure(port, True)
                     state["entered"] = True  # cleanup even if entry reply is lost
@@ -281,8 +327,22 @@ def main():
                 close_bridge()
                 raise
 
+        def report_result():
+            # AFR2-20261108-08: esptool closes the port in its finally clause, so a propagating error is
+            # visible here. Only shown on the OLED; the Loader keeps its own verification of the output.
+            if not (port.is_open and state["display"]):
+                return
+            state["display"] = False
+            error = sys.exc_info()[1]
+            ok = error is None or (isinstance(error, SystemExit) and error.code in (0, None))
+            try:
+                control(port, CMD_RESULT_OK if ok else CMD_RESULT_FAIL, 1.0)
+            except Exception:
+                pass
+
         def close_bridge():
             # AFR2-20261106-18. One owner/COM; cleanup is confirmed, never inferred.
+            report_result()
             if port.is_open and options.auto_key_rst and state["configured"]:
                 configured, entered = state["configured"], state["entered"]
                 state["configured"] = state["entered"] = False

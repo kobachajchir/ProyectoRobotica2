@@ -37,7 +37,7 @@ export function FirmwareLibraryPreview({ screen, onNavigate, active = true }: { 
   const hallStatus=node===library.symbols.AFR2_N_HALL_VIEW;
   const caps=node===library.symbols.AFR2_N_CAPS;
   const batteryView=screen.code==='0x03003a';
-  const count = home?0:node===45?2:node===67?3:caps?6:motorPick || hallPick?4:saveChoice || wifiAsk?2:current && !dynamic ? firmwareNodeCount(node) : 0;
+  const count = home?0:node===45?2:node===67?3:caps?6:motorPick || hallPick?4:saveChoice || wifiAsk?2:current && !dynamic ? firmwareNodeCount(node,false,layout) : 0;
   const visible = saveChoice || wifiAsk?2:current?.[2] && node!==library.symbols.AFR2_N_DIAG ? 1 : 3;
   const siblingViews=[library.symbols.AFR2_N_RADAR_VIEW,library.symbols.AFR2_N_US_VIEW,library.symbols.AFR2_N_LINE_VIEW,library.symbols.AFR2_N_IR_VALUES] as number[];
   const sensorView=siblingViews.includes(node) || node===library.symbols.AFR2_N_SERVO_ANGLE;
@@ -46,7 +46,7 @@ export function FirmwareLibraryPreview({ screen, onNavigate, active = true }: { 
     if (position.node !== node) { history.current = []; setPosition({ node, selection: 0, firstVisible: 0 }); }
     scrollStarted.current = clock(); setClockMs(clock()); setFeedback(null);
   }, [node, position.node]);
-  const longText = drawable && count>0 && !motorPick && !hallPick && !hallCount && !saveChoice && firmwareMenuItem(node, state.selection).label.length * 7 > 93;
+  const longText = drawable && count>0 && !motorPick && !hallPick && !hallCount && !saveChoice && firmwareMenuItem(node, state.selection,layout).label.length * 7 > 93;
   useEffect(() => {
     if ((!longText && !splash) || !active) return;
     const timer = window.setInterval(() => { if (document.visibilityState === 'visible') setClockMs(clock()); }, 40);
@@ -116,7 +116,7 @@ export function FirmwareLibraryPreview({ screen, onNavigate, active = true }: { 
       return;
     }
     if (!count) { setFeedback('Esta pantalla necesita datos preparados por el controlador.'); return; }
-    const item = firmwareMenuItem(node, state.selection);
+    const item = firmwareMenuItem(node, state.selection,layout);
     if(item.action===library.symbols.AFR2_A_WHEEL){history.current.push({...state});navigate({node:MOTOR_SELECTOR_NODE,selection:0,firstVisible:0});return;}
     if(item.action===library.symbols.AFR2_A_HALL_BEGIN){
       const target=library.nodes.findIndex(n=>Number(n[5])===0x030036);

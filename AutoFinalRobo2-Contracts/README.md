@@ -1,3 +1,7 @@
+> **AFR2-20261109-03 / 1.9.1:** cierre de fuentes, permisos PWM restituidos y recursos OLED/3D regenerados. Sin compilar ni cargar; etapa a cargo del usuario. [Ficha](changes/2026-11-09-03-source-completion.md).
+
+> **AFR2-20261109-02 / 1.9.0:** AP manual sin STA/búsquedas, política de pregunta independiente y Detener AP; OLED/Web vinculados. Solo fuente, sin compilar, probar ni cargar. [Ficha](changes/2026-11-09-02-wifi-ap-policy.md).
+
 > **AFR2-20261107-53:** El ESP se reiniciaba al bajar el modelo 3D: el loop abría LittleFS sin parar cuando usaba la red por defecto y chocaba con el servidor HTTP. Corregido; ESP sin compilar. [Ficha](changes/2026-11-07-53-esp-littlefs-loop-reset.md).
 
 > **AFR2-20261107-52:** Hall tolerante a la holgura (unos 370 pulsos por vuelta ya se aceptan), nueva prueba de encoder, ícono de largo centrado, árbol de pantallas con zoom, ajustes de márgenes y captura del Loader en la Web. ATmega sin compilar; Web sin build. [Ficha](changes/2026-11-07-52-hall-tolerance-ui-polish.md).
@@ -385,6 +389,7 @@ Central independiente. Empezar por [maestro](docs/INFORME_MAESTRO.md), [decision
 - [Pinout/PCB](hardware/PINOUT.md), [recursos](hardware/RECURSOS_Y_TIEMPOS.md), [carga](hardware/FLASHING.md).
 - [Script de diagnóstico ESP](hardware/ESP_DIAGNOSTICO.md): conexión primero, ID/tamaño de flash y cabecera después; guarda informes para retomar. Preparado, todavía sin ejecutar.
 - [Protocolo](contracts/PROTOCOL.md), [capabilities](contracts/capabilities.json), [catálogo propuesto](contracts/commands.json).
+- [Catálogo de tramas UART](contracts/wire_catalog.json) para el intérprete del Loader y [skill de comandos](.agents/skills/afr2-wire-commands/SKILL.md): todo ABM de un CMD lo actualiza (AFR2-20261108-09).
 - [Pantallas](documentation/SCREEN_SYSTEM.md), [navegación](documentation/NAVIGATION.md), [skill local](.agents/skills/afr2-screen-authoring/SKILL.md).
 - [Hallazgos](documentation/review/FINDINGS.md), [registro](CHANGELOG.md), [plantilla](templates/change.md).
 - [Procedencia](provenance/README.md), [manifest](provenance/files.json), [orígenes](provenance/origins.json).

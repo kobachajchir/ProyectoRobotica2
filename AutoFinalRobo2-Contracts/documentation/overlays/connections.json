@@ -523,6 +523,20 @@
       "state": "source-integrated-uncompiled-runtime-unverified",
       "changeId": "AFR2-20261106-12",
       "note": "PWM WS accepted/queued is not AVR confirmation; ALIVE/STOP retained. Hall confirm/discard per motor, exterior CW positive. No tests/build/generator/deploy."
+    },
+    {
+      "id": "shared:flow/wifi-ap-policy",
+      "path": [
+        "web:wifi.ap.fallback/stop",
+        "esp:WifiService",
+        "atmega:WIFI_POLL/op15-op16",
+        "atmega:WIFI_UPDATE/details19",
+        "atmega:screen/030024",
+        "web:linked-firmware-renderer"
+      ],
+      "changeId": "AFR2-20261109-03",
+      "state": "source-integrated-resources-regenerated-uncompiled-runtime-unverified",
+      "note": "Policy/mode/stop and paired source completed; OLED generator and model metadata generator executed. No build/test/COM/hardware."
     }
   ],
   "updated_by": "AFR2-20261030-19",

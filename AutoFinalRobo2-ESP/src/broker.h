@@ -125,7 +125,7 @@ private:
     uint8_t wifiNetworkCount_=0,wifiNetworkIndex_=0;
     char webVersion_[16]={};
     uint8_t wifiVersions_=0;
-    uint8_t wifiSecurity_[16]={},wifiDetails_[18]={};
+    uint8_t wifiSecurity_[16]={},wifiDetails_[19]={};
     bool wifiDetailsPending_=false;
     uint8_t readyWifiClients();
     uint32_t diagPollAt_=0,diagJob_=0,diagPattern_=0;

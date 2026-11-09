@@ -89,10 +89,11 @@ que el auto giró por ver variar el dibujo del OLED.
 
 ## Restricciones y trabajo pendiente
 
-- PWM manual conserva el bypass existente solicitado: habilita motor_ready,
-  limpia el fallo y cancela cabeza/calibración/secuencia que interfieran.
-  **Pendiente restituir esos permisos/interlocks**, sin reintroducir esperas
-  por ACK de cada PWM. No se toma esta excepción como aprobación del resto.
+- **AFR2-20261109-03 / 1.9.1:** permisos de PWM restituidos en fuente:
+  habilitación explícita de motores, sin fallo, captura Hall, escritura EEPROM,
+  radar ni secuencia; Web no reemplaza movimiento o edición local. No borra
+  fallos ni modifica configuración. Slot ESP sin espera de ACK conservado.
+  Recursos OLED y catálogo 3D regenerados; compilación/carga a cargo del usuario.
 - Prueba individual: motor habilitado, sin fallo/calibración/cabeza ocupada,
   PWM dentro del límite y duración100..2000ms. No necesita odometría.
 - Control de velocidad, GOTO y seguimiento: cuatro CPR válidos, Hall

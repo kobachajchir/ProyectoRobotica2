@@ -120,7 +120,12 @@ enum {
  AFR2_A_ODOM_PROPOSE = 102, AFR2_A_ODOM_STATE = 103, AFR2_A_ODOM_ANSWER = 104,
  /* AFR2-20261108-06: respuesta del selector sin Wi-Fi (1 Iniciar AP, 2 Seguir esperando) y
   * preferencia de espera antes de volver a preguntar (s, EEPROM v11). */
- AFR2_A_WIFI_ASK = 105, AFR2_A_WIFI_RETRY_S = 106 };
+ AFR2_A_WIFI_ASK = 105, AFR2_A_WIFI_RETRY_S = 106,
+ /* AFR2-20261108-10: HC-SR04 sampling on/off from Controles rapidos (off by default). */
+ AFR2_A_US_TOGGLE = 107,
+ /* AFR2-20261108-13: IR line sensors on/off from Controles rapidos, without motors. */
+ AFR2_A_IR_TOGGLE = 108,
+ AFR2_A_WIFI_FALLBACK = 109, AFR2_A_WIFI_AP_TOGGLE = 110 };
 typedef struct { char label[33]; uint8_t target,action; int16_t arg,min,max,step; } Afr2MenuItem;
 typedef struct { char title[18]; uint8_t parent,view,count; uint16_t first; uint32_t code; } Afr2MenuNode;
 void Afr2Menu_Node(uint8_t index,Afr2MenuNode *out);

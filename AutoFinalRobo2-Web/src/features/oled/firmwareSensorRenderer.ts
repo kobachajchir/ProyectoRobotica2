@@ -67,12 +67,14 @@ export function renderSensorScreen(o:Afr2OledBuffer,node:number,h:FirmwareSensor
     if(compact){
       o.drawRect(3,44,122,6);
       if(h){o.fillRect(4+T(h.angle*118/180),42,2,10);txt(0,53,`${String(h.angle).padStart(3,'0')} ${h.pulseUs}/${h.targetUs}us`);}else txt(0,53,'Sin datos PWM');
-    }else if(h)txt(0,53,h.latest.id && h.latest.error===0?`${String(h.angle).padStart(3,'0')} ${String(h.latest.distanceMm).padStart(4,' ')}mm${h.latest.distanceMm>range?' >esc':''}`:`${String(h.angle).padStart(3,'0')} -- mm`);
+    // AFR2-20261109-01: value shows -- when the last echo is older than 1 s (same as afr2_sensor_screens.c).
+    }else if(h)txt(0,53,h.latest.id && h.latest.error===0 && ((h.nowMs-h.latest.ms)>>>0)<=1000?`${String(h.angle).padStart(3,'0')} ${String(h.latest.distanceMm).padStart(4,' ')}mm${h.latest.distanceMm>range?' >esc':''}`:`${String(h.angle).padStart(3,'0')} -- mm`);
     else txt(0,53,'Sin datos');return;
   }
   if(node===S.AFR2_N_US_VIEW){
     componentHeader(o,S.AFR2_ICON_RADAR,'Distancia',2,2);txt(0,16,h?.latest.id && ((h.nowMs-h.latest.ms)>>>0)<=500 && !h.latest.error?`${h.latest.distanceMm} mm`:'Distancia: --');
-    if(h){txt(0,28,['Eco valido','Sin eco (timeout)','ECHO no termina','ECHO ocupado','Fuera de rango','Servo moviendose','Lectura vencida','Sin medicion'][!h.latest.id?7:((h.nowMs-h.latest.ms)>>>0)>500?6:h.latest.error<8?h.latest.error:7]);txt(0,40,h.latest.id?`E${h.latest.error} Edad ${(h.nowMs-h.latest.ms)>>>0}ms`:'Edad: --');}gestureHint(o,0,53,false,'Opciones');return;
+    if(h){txt(0,28,['Eco valido','Sin eco (timeout)','ECHO no termina','ECHO ocupado','Fuera de rango','Servo moviendose','Lectura vencida','Sin medicion'][!h.latest.id?7:((h.nowMs-h.latest.ms)>>>0)>500?6:h.latest.error<8?h.latest.error:7]);const servo=h.enabled && h.pulseUs>=1000 && h.pulseUs<=2000,age=(h.nowMs-h.latest.ms)>>>0,angle=String(h.angle).padStart(3,'0');
+      txt(0,40,servo?(h.latest.id?`Servo ${angle} ${age}ms`:`Servo ${angle}`):(h.latest.id?`Servo OFF ${age}ms`:'Servo OFF'));}gestureHint(o,0,53,false,'Opciones');return;
   }
   componentHeader(o,S.AFR2_ICON_SENSORS,'Sensores IR',node===S.AFR2_N_LINE_VIEW?1:2,2);
   if(!ir.valid){txt(0,25,ir.kind?'Esperando IR':'IR deshabilitado');backHint(o);return;}

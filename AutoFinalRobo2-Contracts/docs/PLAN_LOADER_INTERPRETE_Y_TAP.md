@@ -1,8 +1,15 @@
 # Plan: intérprete de tramas en el Loader, selector de fuente USB y resets del ESP
 
-Creado el 08/11/2026 (AFR2-20261108-08). Es un plan de trabajo: **nada de esto está implementado**.
-No se compiló, cargó ni probó nada. Las fases que tocan firmware requieren compilar y flashear, y eso
-se hace solo con pedido expreso.
+Creado el 08/11/2026 (AFR2-20261108-09).
+
+**Estado (08/11/2026):** fases 1 a 4 y 7 escritas en fuente (catálogo, skill, intérprete y selector del
+Loader 2.2.0, TAP del ATmega 1.4.0, catálogo de la Web), **sin compilar, cargar ni probar**. Del punto 3
+se hizo la parte del ATmega que no cambia el protocolo (aviso `ESP ROM probable`, contador `espRst`,
+`n=` en `ESP BOOT`). Pendientes: fase 5 (BT02, cambia EX01 a v14: decidir), fase 6 (opcional, hardware)
+y el botón "Traducir epc1" del Loader. Detalle en `changes/2026-11-08-09-loader-interprete-tap.md`.
+
+**AFR2-20261108-10:** reemplaza el punto 2.5: el log y los modos 0, 1, 2 y 4 van a 115200; solo el
+modo 3 pasa a 250000 tras confirmar, y el Loader cambia la velocidad del COM abierto sin reabrirlo.
 
 Alcance: **monitor de depuración con el firmware del producto cargado y el auto funcionando.** El modo
 flasher puente queda fuera: ahí el ATmega no corre la aplicación y no hay enlace real que observar.

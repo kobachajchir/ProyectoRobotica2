@@ -100,7 +100,9 @@ void Afr2SensorScreen_Render(Afr2Oled *o,uint8_t node,const Afr2UiSnapshot *s){
             if(h){Afr2Oled_FillRect(o,4+(uint32_t)h->angle*118u/180u,42,2,10,AFR2_WHITE);snprintf_P(text,sizeof(text),PSTR("%03u %u/%uus"),h->angle,h->pulse_us,h->target_us);txt(o,0,53,text);}
             else {TXT(0,53,"Sin datos PWM");}
         }else if(h){
-            if(h->latest.id && h->latest.error==AFR2_ECHO_OK)snprintf_P(text,sizeof(text),PSTR("%03u %4umm%s"),h->angle,h->latest.distance_mm,h->latest.distance_mm>range_mm(s)?" >esc":"");
+            /* AFR2-20261109-01: value refreshes with each echo and shows -- when older than 1 s. */
+            uint8_t fresh=h->latest.id && h->latest.error==AFR2_ECHO_OK && (uint32_t)(s->sensor_now_ms-h->latest.ms)<=1000u;
+            if(fresh)snprintf_P(text,sizeof(text),PSTR("%03u %4umm%s"),h->angle,h->latest.distance_mm,h->latest.distance_mm>range_mm(s)?" >esc":"");
             else snprintf_P(text,sizeof(text),PSTR("%03u -- mm"),h->angle);
             txt(o,0,53,text);
         }else {TXT(0,53,"Sin datos");}return;
@@ -108,7 +110,14 @@ void Afr2SensorScreen_Render(Afr2Oled *o,uint8_t node,const Afr2UiSnapshot *s){
     if(node==AFR2_N_US_VIEW){
         Afr2Component_HeaderFlash(o,AFR2_ICON_RADAR,PSTR("Distancia"),2,2);
         if(h && h->latest.id && (uint32_t)(s->sensor_now_ms-h->latest.ms)<=500u && h->latest.error==AFR2_ECHO_OK)snprintf_P(text,sizeof(text),PSTR("%u mm"),h->latest.distance_mm);else snprintf_P(text,sizeof(text),PSTR("Distancia: --"));txt(o,0,16,text);
-        if(h){static const char errors[8][18] PROGMEM={"Eco valido","Sin eco (timeout)","ECHO no termina","ECHO ocupado","Fuera de rango","Servo moviendose","Lectura vencida","Sin medicion"};snprintf_P(text,sizeof(text),errors[!h->latest.id?7:(uint32_t)(s->sensor_now_ms-h->latest.ms)>500u?6:h->latest.error<8?h->latest.error:7]);txt(o,0,28,text);if(h->latest.id)snprintf_P(text,sizeof(text),PSTR("E%u Edad %lums"),h->latest.error,(unsigned long)(s->sensor_now_ms-h->latest.ms));else snprintf_P(text,sizeof(text),PSTR("Edad: --"));txt(o,0,40,text);}
+        if(h){static const char errors[8][18] PROGMEM={"Eco valido","Sin eco (timeout)","ECHO no termina","ECHO ocupado","Fuera de rango","Servo moviendose","Lectura vencida","Sin medicion"};snprintf_P(text,sizeof(text),errors[!h->latest.id?7:(uint32_t)(s->sensor_now_ms-h->latest.ms)>500u?6:h->latest.error<8?h->latest.error:7]);txt(o,0,28,text);
+            /* AFR2-20261109-01: where the servo points (it starts centred at 90) and the echo age. */
+            uint8_t servo=h->enabled && h->pulse_us>=1000 && h->pulse_us<=2000;
+            if(servo && h->latest.id)snprintf_P(text,sizeof(text),PSTR("Servo %03u %lums"),h->angle,(unsigned long)(s->sensor_now_ms-h->latest.ms));
+            else if(servo)snprintf_P(text,sizeof(text),PSTR("Servo %03u"),h->angle);
+            else if(h->latest.id)snprintf_P(text,sizeof(text),PSTR("Servo OFF %lums"),(unsigned long)(s->sensor_now_ms-h->latest.ms));
+            else snprintf_P(text,sizeof(text),PSTR("Servo OFF"));
+            txt(o,0,40,text);}
         Afr2Ui_GestureHint(o,0,53,0,PSTR("Opciones"));return;
     }
     Afr2Component_HeaderFlash(o,AFR2_ICON_SENSORS,PSTR("Sensores IR"),node==AFR2_N_LINE_VIEW?1:2,2);

@@ -21,9 +21,9 @@ static uint8_t web_command(Afr2Product *p,const uint8_t *d) {
 static uint32_t features(const Afr2Product *p) {
     uint32_t f=AFR2_EXT_F_TOUCH_UI|AFR2_EXT_F_UI|AFR2_EXT_F_STOP|AFR2_EXT_F_WIFI|AFR2_EXT_F_PREFS|AFR2_EXT_F_CONFIG|AFR2_EXT_F_SYSTEM|AFR2_EXT_F_NETWORK_UI|AFR2_EXT_F_SENSOR_HEAD|AFR2_EXT_F_RADAR;
     f|=AFR2_EXT_F_BATTERY;
-    f|=AFR2_EXT_F_MANUAL_PWM; /* AFR2-20261106: Conducir manual siempre disponible. */
+    if(Afr2Product_PwmStatus(p)==AFR2_OK && (p->stopped || p->origin!=AFR2_SOURCE_LOCAL))f|=AFR2_EXT_F_MANUAL_PWM;
     if(p->config.motor_ready && !p->fault && !p->hall_measuring)f|=AFR2_EXT_F_WHEEL;
-    if(p->sensors.line_valid)f|=AFR2_EXT_F_LINE;
+    if(p->sensors.line_valid_raw)f|=AFR2_EXT_F_LINE;   /* AFR2-20261108-13: capability, not the toggle */
     if(p->sensors.hall_available)f|=AFR2_EXT_F_HALL;
     if(p->config.motor_ready && p->pose_valid && !p->fault)f|=AFR2_EXT_F_MOTION|AFR2_EXT_F_GOTO;
     if(p->pose_valid)f|=AFR2_EXT_F_POSE;
@@ -59,9 +59,9 @@ uint8_t Afr2App_Command(void *ctx,uint8_t cmd,const uint8_t *d,uint8_t n,uint8_t
         return Afr2Sequence_Command(p,cmd,d,n,out,length);
     }
     if(p->sequence.state>=1 && p->sequence.state<=3 &&
-       (cmd==AFR2_EXT_DRIVE || cmd==AFR2_EXT_WHEEL || cmd==AFR2_EXT_MODE || cmd==AFR2_EXT_GOTO ||
+       (cmd==AFR2_EXT_DRIVE_PWM || cmd==AFR2_EXT_DRIVE || cmd==AFR2_EXT_WHEEL || cmd==AFR2_EXT_MODE || cmd==AFR2_EXT_GOTO ||
         cmd==AFR2_EXT_CONFIG || cmd==AFR2_EXT_PREFS || cmd==AFR2_EXT_HALL_CAL || cmd==AFR2_EXT_LINE_CAL))return AFR2_RESULT_UNAVAILABLE;
-    if(a->ui->node==AFR2_N_SERVO_ANGLE && (cmd==AFR2_EXT_DRIVE || cmd==AFR2_EXT_WHEEL || cmd==AFR2_EXT_MODE || cmd==AFR2_EXT_GOTO))return AFR2_RESULT_UNAVAILABLE;
+    if(a->ui->node==AFR2_N_SERVO_ANGLE && (cmd==AFR2_EXT_DRIVE_PWM || cmd==AFR2_EXT_DRIVE || cmd==AFR2_EXT_WHEEL || cmd==AFR2_EXT_MODE || cmd==AFR2_EXT_GOTO))return AFR2_RESULT_UNAVAILABLE;
     /* AFR2-20261106-08: touch view may request a GOTO in-place turn (Hall-closed angle). */
     if(a->ui->touch_active && (cmd==AFR2_EXT_WHEEL || cmd==AFR2_EXT_MODE))return AFR2_RESULT_UNAVAILABLE;
     switch(cmd) {
@@ -97,7 +97,9 @@ uint8_t Afr2App_Command(void *ctx,uint8_t cmd,const uint8_t *d,uint8_t n,uint8_t
         Afr2Product_WebPulse(p,afr2_get_u16(d));afr2_put_u16(out,afr2_get_u16(d));*length=2;break;
     case AFR2_EXT_DRIVE_PWM:
         if(n!=12 || afr2_get_u32(d)!=0)return AFR2_RESULT_BAD_REQUEST;
-        /* AFR2-20261106: sin web_command; el mando Web puede tomar el control aunque el origen sea local. */
+        if(a->ui->keyboard || a->ui->node==AFR2_N_SAVE_CONFIRM ||
+           (!p->stopped && p->origin==AFR2_SOURCE_LOCAL))return AFR2_RESULT_UNAVAILABLE;
+        /* Authority is acquired only after the service accepts the command. */
         {uint8_t r=Afr2Product_DrivePwm(p,(int16_t)afr2_get_u16(d+4),(int16_t)afr2_get_u16(d+6),
             (int16_t)afr2_get_u16(d+8),afr2_get_u16(d+10));
          if(r==AFR2_OK){Afr2Product_WebPulse(p,0);p->origin=AFR2_SOURCE_WEB;}
@@ -245,6 +247,7 @@ uint8_t Afr2App_Command(void *ctx,uint8_t cmd,const uint8_t *d,uint8_t n,uint8_t
         else if(w->pending && w->op==AFR2_WIFI_LOCAL_DRAFT)total=w->credential_length;
         else if(w->pending && w->op==AFR2_WIFI_WEB_DRAFT)total=(uint8_t)strlen(w->draft_ssid);
         else if(w->pending && w->op==AFR2_WIFI_WAIT)total=2; /* AFR2-20261108-06: segundos u16LE */
+        if(w->pending && w->op==AFR2_WIFI_ASK_FALLBACK)total=1;
         if(offset>total)return AFR2_RESULT_BAD_REQUEST;
         out[0]=w->pending;afr2_put_u32(out+1,w->id);out[5]=w->op;out[6]=total;out[7]=offset;
         uint8_t count=total-offset;if(count>40)count=40;out[8]=count;out[9]=w->requested_mode;
@@ -255,6 +258,7 @@ uint8_t Afr2App_Command(void *ctx,uint8_t cmd,const uint8_t *d,uint8_t n,uint8_t
         }
         if(w->op==AFR2_WIFI_PAGE && count){uint8_t page[5];afr2_put_u32(page,w->scan_id);page[4]=w->scan_page;memcpy(out+14,page+offset,count);}
         if(w->op==AFR2_WIFI_WAIT && count){uint8_t wait[2];afr2_put_u16(wait,p->config.wifi_retry_s);memcpy(out+14,wait+offset,count);}
+        if(w->op==AFR2_WIFI_ASK_FALLBACK && count)out[14]=w->policy_requested;
         w->claimed=w->pending;*length=14+count;break;
     }
     case AFR2_EXT_WIFI_UPDATE: {
@@ -305,11 +309,11 @@ uint8_t Afr2App_Command(void *ctx,uint8_t cmd,const uint8_t *d,uint8_t n,uint8_t
                 if((w->op==AFR2_WIFI_SCAN || w->op==AFR2_WIFI_PAGE) && w->state>=4)w->network_count=0;
                 /* AFR2-20261108-06: la respuesta al selector sin Wi-Fi no agrega aviso propio si salio bien: Iniciar AP
                  * muestra el aviso "Red AP creada" del ESP y Seguir esperando ya aviso al elegir. */
-                if((w->op==AFR2_WIFI_AP_START || w->op==AFR2_WIFI_WAIT) && w->state==3){}
+                if((w->op==AFR2_WIFI_AP_START || w->op==AFR2_WIFI_WAIT || w->op==AFR2_WIFI_AP_STOP) && w->state==3){}
                 else if(w->state==6){
                     Afr2Ui_NotifyFlash(a->ui,1,PSTR("No hay clientes"),PSTR("Conectados"),3000);Afr2Ui_AfterNotice(a->ui,AFR2_N_WIFI_NETWORKS);
                 }else {
-                    const char *message=w->state==1?PSTR("Datos listos"):w->state==3?(w->op==AFR2_WIFI_STATUS?PSTR("Estado recibido"):(w->op==AFR2_WIFI_SCAN || w->op==AFR2_WIFI_PAGE)?(w->scan_total?PSTR("Redes listas"):PSTR("Sin redes")):w->op==AFR2_WIFI_DISCONNECT?PSTR("Red desconectada"):w->op==AFR2_WIFI_CHANGE_MODE?PSTR("Modo actualizado"):PSTR("Conectado")):w->state==4?PSTR("Operacion fallida"):PSTR("Cancelado");
+                    const char *message=w->state==1?PSTR("Datos listos"):w->state==3?(w->op==AFR2_WIFI_STATUS?PSTR("Estado recibido"):w->op==AFR2_WIFI_ASK_FALLBACK?PSTR("Opcion guardada"):(w->op==AFR2_WIFI_SCAN || w->op==AFR2_WIFI_PAGE)?(w->scan_total?PSTR("Redes listas"):PSTR("Sin redes")):w->op==AFR2_WIFI_DISCONNECT?PSTR("Red desconectada"):w->op==AFR2_WIFI_CHANGE_MODE?PSTR("Modo actualizado"):PSTR("Conectado")):w->state==4?PSTR("Operacion fallida"):PSTR("Cancelado");
                     Afr2Ui_NotifyFlash(a->ui,w->state>=4?1:0,w->state==3?PSTR("Operacion exitosa"):PSTR("Wi-Fi"),message,2500);
                     if(w->state==3 && (w->op==AFR2_WIFI_SCAN || w->op==AFR2_WIFI_PAGE) && w->scan_truncated)Afr2Ui_NotifyFlash(a->ui,1,PSTR("Lista limitada"),PSTR("16 redes maximo"),2500);
                     if(w->state==3 && (w->op==AFR2_WIFI_SCAN || w->op==AFR2_WIFI_PAGE))Afr2Ui_AfterNotice(a->ui,AFR2_N_WIFI_NETWORKS);
@@ -323,9 +327,10 @@ uint8_t Afr2App_Command(void *ctx,uint8_t cmd,const uint8_t *d,uint8_t n,uint8_t
             }
             if(w->credential_length==d[6]){w->draft_ssid[32]=0;w->password[d[6]-33]=0;w->pending=0;w->credentials_visible=1;w->draft_ms=p->now;Afr2Ui_Open(a->ui,AFR2_N_WIFI_DATA);}
         } else if(d[0]==4) {
-            if(n!=18 || d[1]>3 || d[2]>1 || d[3]>6 || d[4]>6)return AFR2_RESULT_BAD_REQUEST;
+            if((n!=18 && n!=19) || (n==19 && d[18]>1) || d[1]>3 || d[2]>1 || d[3]>6 || d[4]>6)return AFR2_RESULT_BAD_REQUEST;
             char ip[16];snprintf_P(ip,sizeof(ip),PSTR("%u.%u.%u.%u"),d[6],d[7],d[8],d[9]);
             if(w->mode!=d[1] || w->sta_connected!=d[2] || (d[2] && strcmp(ip,w->ip)))return AFR2_RESULT_UNAVAILABLE;
+            w->policy_valid=n==19;if(n==19)w->ask_fallback=d[18];
             w->security=d[3];w->ap_security=d[4];w->ws_clients=d[5];memcpy(w->mask,d+10,4);memcpy(w->gateway,d+14,4);w->details_valid=1;w->details_ms=p->now;
         } else if(d[0]==3) {
             if(n<3 || d[1]>1 || d[2]>15 || n!=3+d[2] || memchr(d+3,0,d[2]))return AFR2_RESULT_BAD_REQUEST;

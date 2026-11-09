@@ -62,7 +62,7 @@ namespace AFR2Loader
             var readMega = new ActionButton { Text = "Leer ATmega", Width = 175 }; readMega.Click += (s, e) => OpenManualSection("leer-atmega"); controls.Controls.Add(readMega);
             var readEsp = new ActionButton { Text = "Leer ESP", Width = 175 }; readEsp.Click += (s, e) => OpenManualSection("leer-esp"); controls.Controls.Add(readEsp);
             layout.Controls.Add(controls, 0, 0);
-            var codecs = UiRow(); serialBaud.Width = 110; serialBaud.Items.AddRange(new object[] { "9600", "19200", "38400", "57600", "74880", "115200", "230400", "460800", "921600" }); serialBaud.Text = "74880";
+            var codecs = UiRow(); serialBaud.Width = 110; serialBaud.Items.AddRange(new object[] { "9600", "19200", "38400", "57600", "74880", "115200", "230400", "250000", "460800", "500000", "921600" }); serialBaud.Text = "74880";
             codecs.Controls.Add(UiField("Baudios", serialBaud)); serialApply = new ActionButton { Text = "Aplicar baudios", Width = 175 }; serialApply.Click += async (s, e) => await ApplySerialBaud(); codecs.Controls.Add(serialApply);
             serialCodec.Width = 105; serialCodec.DropDownStyle = ComboBoxStyle.DropDownList; serialCodec.Items.AddRange(new object[] { "UTF-8", "ASCII", "Latin-1" }); serialCodec.SelectedIndex = 0; codecs.Controls.Add(UiField("Codificación", serialCodec)); layout.Controls.Add(codecs, 0, 1);
             var statePanel = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 2 };
@@ -95,7 +95,7 @@ namespace AFR2Loader
             var failure = new ActionButton { Text = "Ver último error", Width = 175 }; failure.Click += (s, e) => ShowLastFailure(); buttons.Controls.Add(failure);
             serialConvert = new ActionButton { Text = "Mostrar en conversor HEX", Width = 260, Visible = false, Anchor = AnchorStyles.Right };
             serialConvert.Click += (s, e) => ShowSerialInConverter(tabs);
-            footer.Controls.Add(buttons, 0, 0); footer.Controls.Add(serialConvert, 1, 0); layout.Controls.Add(footer, 0, 6); layout.Controls.Add(CreateSerialSendPanel(), 0, 7);
+            footer.Controls.Add(buttons, 0, 0); footer.Controls.Add(serialConvert, 1, 0); layout.Controls.Add(footer, 0, 6); layout.Controls.Add(CreateSerialToolsPanel(layout), 0, 7);
             Action resizeTools = () => {
                 int width = Math.Max(1, buttons.ClientSize.Width), used = 0, lines = 1;
                 foreach (Control tool in buttons.Controls) { int item = tool.Width + tool.Margin.Horizontal; if (used > 0 && used + item > width) { lines++; used = 0; } used += item; }
@@ -174,6 +174,7 @@ namespace AFR2Loader
             {
                 serialPause.Checked = false; DrainSerial(); shownSkipped = 0;
                 serialCapture = new SerialCapture(port, baud, codec, QueueNotice);
+                PrepareInterpreterCapture(serialCapture);
                 var header = new SerialDisplayChunk { Header = true, Text = "\r\n--- " + DateTime.Now.ToString("HH:mm:ss") + " | " + port + " | " + baud + " | " + codec + " ---\r\n" };
                 RememberSerialChunk(header); serialText.AppendBatch(FormatSerialChunk(header));
                 await serialCapture.OpenAsync();

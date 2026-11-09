@@ -40,3 +40,13 @@ Reglas:
 | 1.0.0 | versión | AFR2-20261108-02: primera versión 1 en ATmega, ESP y Web (incluye -03, -04 y -05). |
 | 1.1.0 | subversión | AFR2-20261108-06: selector «Sin red Wi-Fi» (Iniciar AP / Seguir esperando) y preferencia Reintento Wi-Fi. |
 | 1.2.0 | subversión | AFR2-20261108-07: pantalla de inicio de 3 s con la versión y esta política de versiones. |
+| 1.3.0 | subversión | AFR2-20261108-08: el flasher ATmega muestra estado, imagen y progreso de carga del ESP en la OLED (Loader 2.1.0). |
+| 1.4.0 | subversión | AFR2-20261108-09: el log de depuración del ATmega elige desde el Loader qué copiar al USB (log, tramas de cada sentido del enlace o bytes crudos del ESP), detecta el ruido de la ROM del ESP y cuenta sus reinicios (Loader 2.2.0). |
+| 1.5.0 | subversión | AFR2-20261108-10: interruptor «Ultrasonido» en Controles rápidos (el HC-SR04 ya no mide por defecto), ícono de largo en el dashboard y TAP a 115200 salvo enlace completo a 250000 (Loader 2.2.1). |
+| 1.6.0 | subversión | AFR2-20261108-12: Controles rápidos en orden Modo, Motores, Ultrasonido, Radar, Servo, Línea, Rastro, Ajustes; la tarjeta del dashboard recorre todos esos estados con ícono. |
+| 1.7.0 | subversión | AFR2-20261108-13: Línea de Controles rápidos enciende los sensores IR sin motores; el radar enciende servo y HC-SR04 y se detiene si se apaga alguno (Loader 2.4.0: vista Reinicios). |
+| 1.7.1 | subversión mínima | AFR2-20261108-14: elegir STA, AP o AP+STA (o Desconectar) en el OLED detiene el movimiento y reemplaza el trabajo Wi-Fi pendiente en vez de pedir «Detener / ver red». |
+| 1.8.0 | subversión | AFR2-20261109-01: radar y ángulo del servo con ecos en vivo, servo centrado al arrancar, avisos «Reconectando a» / «Iniciando AP» / «Cambiando Wi-Fi», el ESP cambia de modo sin configuración guardada y levanta el AP si nadie responde «Sin red Wi-Fi» en 20 s. |
+
+| 1.9.0 | subversión | AFR2-20261109-02: política AP persistente, detención AP y AP puro sin búsqueda STA. Solo fuente. |
+| 1.9.1 | subversión mínima | AFR2-20261109-03: permisos PWM restituidos, OFF/política desconocida Wi-Fi y recursos regenerados; sin compilar/cargar. |

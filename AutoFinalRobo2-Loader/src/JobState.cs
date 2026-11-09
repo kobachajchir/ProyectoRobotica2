@@ -59,7 +59,7 @@ namespace AFR2Loader
     }
     public static class LoaderVersion
     {
-        public const string Value = "2.0.0";
+        public const string Value = "2.4.0"; // -13: vista Reinicios (2.4.0); AFR2-20261108-08: OLED del flasher (2.1.0); -09: intérprete y fuente TAP (2.2.0); -10: baudios por fuente (2.2.1); -11: arranques ESP/ATmega (2.3.0)
     }
 }
 

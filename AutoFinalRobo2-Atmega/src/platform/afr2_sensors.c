@@ -38,6 +38,11 @@ static uint8_t echo_angle;
 static uint16_t echo_pulse;
 const Afr2SensorHead *Afr2Head_State(void){return &head;}
 static uint16_t pulse_for(uint8_t angle){if(head.inverted)angle=180u-angle;return 1000u+((uint32_t)angle*1000u+90u)/180u;}
+/* AFR2-20261108-13: turning the HC-SR04 off stops the radar that needs it. */
+void Afr2Head_SetSampling(uint8_t on){if(!on && head.running)Afr2Head_Stop();head.sampling=!!on;}
+void Afr2Head_SetIr(uint8_t on){head.ir_enabled=!!on;}
+void Afr2Head_SetIrView(uint8_t on){head.ir_view=!!on;}
+void Afr2Head_SetView(uint8_t on){head.view=!!on;}
 uint8_t Afr2Head_Interval(uint16_t ms){if(ms<70 || ms>1000)return AFR2_BAD;if(head.running)return AFR2_BUSY;head.interval_ms=ms;return AFR2_OK;}
 uint8_t Afr2Head_Configure(uint8_t min,uint8_t max,uint8_t speed,uint16_t settle,uint16_t interval,uint8_t inverted){
     if(min>=max || max>180 || min%5 || max%5 || speed<1 || speed>30 || settle<50 || settle>500 || interval<70 || interval>1000 || inverted>1)return AFR2_BAD;
@@ -55,6 +60,7 @@ uint8_t Afr2Head_Start(void){
     ATOMIC_BLOCK(ATOMIC_RESTORESTATE){TIMSK3=0;echo_state=0;echo_done=0;PORTC&=(uint8_t)~_BV(PC7);}
     memset(head.bins,0,sizeof(head.bins));for(uint8_t i=0;i<AFR2_RADAR_BINS;i++)head.bins[i].error=AFR2_ECHO_UNKNOWN;
     if(!++head.scan_revision)++head.scan_revision;
+    head.sampling_saved=head.sampling;head.sampling=1;   /* AFR2-20261108-13: radar uses the HC-SR04 */
     head.head=head.count=0;head.running=1;head.phase=1;head.direction=1;head.index=head.min_angle/5;
     head.step_ms=Afr2Board_Millis();first_settle=300;Afr2Servo_Set(pulse_for(head.min_angle));return AFR2_OK;
 }
@@ -69,7 +75,7 @@ void Afr2Head_Resume(void){
     if(head.index>head.max_angle/5u)head.index=head.max_angle/5u;
     head.step_ms=Afr2Board_Millis();Afr2Servo_Set(pulse_for(head.index*5u));
 }
-void Afr2Head_Stop(void){head.paused=0;head.running=0;head.phase=0;Afr2Servo_Set(0);}
+void Afr2Head_Stop(void){if(head.running || head.paused)head.sampling=head.sampling_saved;head.paused=0;head.running=0;head.phase=0;Afr2Servo_Set(0);}
 void Afr2Head_Record(uint8_t *out,const Afr2RangeSample *s){
     afr2_put_u32(out,s->id);afr2_put_u32(out+4,s->ms);afr2_put_u16(out+8,s->distance_mm);
     afr2_put_u16(out+10,s->ticks);afr2_put_u16(out+12,s->pulse_us);out[14]=s->angle;out[15]=s->error;
@@ -206,8 +212,9 @@ void Afr2Sensors_Task(Afr2Sensors *s,const Afr2Config *c,uint32_t now) {
     }
     /* AFR2-20261107-43: OSOYOO 5 canales es digital con polaridad fija (LOW = negro, hoja del
      * fabricante); line_invert=31 por defecto ya la aplica. La calibracion es opcional y no bloquea. */
-    s->line_valid=c->line_kind && scans>=3 && (uint32_t)(now-s->line_ms)<=100u;
-    head.ir_valid=c->line_kind && scans && (uint32_t)(now-s->line_ms)<=100u;
+    s->line_valid_raw=c->line_kind && scans>=3 && (uint32_t)(now-s->line_ms)<=100u;
+    s->line_valid=s->line_valid_raw && (head.ir_enabled || head.ir_view);
+    head.ir_valid=c->line_kind && scans && (uint32_t)(now-s->line_ms)<=100u && (head.ir_enabled || head.ir_view);
     if(echo_done) {
         uint16_t width; uint8_t err;
         ATOMIC_BLOCK(ATOMIC_RESTORESTATE) { width=echo_width; err=echo_error; echo_done=0; }
@@ -219,7 +226,9 @@ void Afr2Sensors_Task(Afr2Sensors *s,const Afr2Config *c,uint32_t now) {
         head.index=next;head.step_ms=now;head.phase=1;first_settle=head.settle_ms;Afr2Servo_Set(pulse_for(head.index*5u));
     }
     uint8_t settled=head.target_us==head.pulse_us && (!head.enabled || (uint32_t)(now-head.servo_ms)>=(head.running?first_settle:300u));
-    if((uint32_t)(now-echo_ms)>=head.interval_ms && !echo_state && settled && (!head.running || head.phase==1)) {
+    /* AFR2-20261108-10: no ping unless someone asked for distance (quick toggle, radar or distance screen). */
+    uint8_t wanted=head.sampling || head.running || head.view;
+    if(wanted && (uint32_t)(now-echo_ms)>=head.interval_ms && !echo_state && settled && (!head.running || head.phase==1)) {
         echo_ms=now;
         echo_angle=head.angle;echo_pulse=head.pulse_us;echo_servo_revision=head.servo_sequence;
         if(head.running)head.phase=2;

@@ -1,3 +1,5 @@
+> **AFR2-20261109-03 / 1.9.1:** fuente actual de Wi-Fi/AP y PWM coordinada ATmega/ESP/Web; recursos OLED y metadatos 3D regenerados. Sin compilación, tests ni carga en esta entrega. Las referencias inferiores conservan evidencia histórica. [Cierre y límites](../changes/2026-11-09-03-source-completion.md).
+
 > **AFR2-20261106-13:** retirado HC-SR04 como requisito y causa de parada de movimiento en todos los modos físicos vigentes. Sensores/radar y simulación conservados; aproximación física al brazo pendiente. ATmega y simulador UI Web solo fuente, ESP sin cambios; sin tests, compilaciones, validadores ni cargas.
 
 > **AFR2-20261106-12:** Hall por motor con Confirmar/Descartar y EEPROMv10; CW exterior positivo. PWM manual con slot reciente ESP sin esperar ACK AVR por consigna; ALIVE/STOP conservados. Solo fuente, sin compilación, tests, validadores, generadores, carga ni prueba física. Restituir permisos del bypass manual queda pendiente. Ver [contrato](../contracts/HALL_MANUAL_STREAM_20261106.md).

@@ -23,6 +23,9 @@ public:
     bool scan();
     bool retry();
     bool disconnectStation();
+    bool stopAp();
+    bool startAp();
+    bool setAskFallback(bool ask);
     bool changeMode(uint8_t mode);
     bool savedConfig(uint8_t mode, WifiConfig &out);
     bool restartDue(uint32_t now) const { return applyPending_ && (uint32_t)(now-stagedAt_)>=1000u; }
@@ -31,7 +34,7 @@ public:
     void status(JsonObject out) const;
     void displayInfo(WifiDisplayInfo &out) const;
     static bool valid(const WifiConfig &config);
-    /* AFR2-20261108-06: con un OLED que puede responder, la STA que no conecta ya no levanta el AP sola:
+    /* AFR2-20261109-02: solo si askFallback esta guardado y hay OLED capaz se pregunta al fallar STA:
      * se avisa (AFR2_NET_STA_NOT_FOUND) y se espera Iniciar AP / Seguir esperando. Sin OLED durante 10 s,
      * o con un ATmega que rechaza el evento, vuelve el AP automatico de siempre. */
     void setAskMode(bool on,uint32_t now){askMode_=on && !askUnsupported_;if(askMode_)askLinkAt_=now;}
@@ -46,10 +49,11 @@ private:
     uint32_t stagedAt_=0, staStarted_=0, lastRetry_=0, scanStarted_=0;
     bool applyPending_=false, scanPending_=false, scanReady_=false, scanTimedOut_=false, staWanted_=false, apOn_=false;
     bool fallbackActive_=false,scanRestoreAp_=false;
+    bool askFallback_=false,apStopped_=false; // AFR2-20261109-02: persisted decision policy / explicit stop
     bool disconnectedByUser_=false;
     bool askMode_=false,askUnsupported_=false,askEvent_=false;
     uint8_t askState_=0,askReason_=0; // 0 sin pregunta, 1 esperando decision del OLED, 2 "Seguir esperando" hasta askUntil_
-    uint32_t askLinkAt_=0,askUntil_=0;
+    uint32_t askLinkAt_=0,askUntil_=0,askAt_=0; // askAt_: AFR2-20261109-01, unanswered question times out
     /* AFR2-20261106-37: ultima red STA que conecto antes de la actual ("staPrevious" en wifi.json).
      * Si la configurada no conecta en 15 s se prueba la anterior; los reintentos alternan entre ambas. */
     bool usingPrevious_=false, currentGood_=false, hasPrevious_=false;

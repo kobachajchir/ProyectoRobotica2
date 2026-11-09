@@ -1,15 +1,30 @@
-/* AFR2-20261028-02. Temporary, standalone USART0 <-> USART1 service image.
+/* AFR2-20261028-02. Temporary, standalone USART0 <-> USART1 service image ("flasher").
  * Original AFR2 source, avr-libc only. Not linked into the vehicle firmware.
  * Source candidate: NOT compiled, flashed or exercised on hardware.
  * Fixed baud on BOTH UARTs. Binary transparent: no banners/line edits. The only
- * in-band element is the optional KEY/RST control frame described below.
+ * in-band elements are the optional control frames described below.
  * RESET must remain FREE. Disconnect actuator power before installing.
+ *
+ * AFR2-20261108-08: OLED feedback over I2C (same Manager/TWI/OLED stack as the product and the
+ * I2C diagnostic). Idle: "AFR2" / "Loader firmware" / version. While esptool talks to the ESP the
+ * PC->ESP SLIP stream is only OBSERVED (never changed) to show the phase, the image being written,
+ * a progress bar and the block count. Both UARTs now move bytes in interrupts so drawing and I2C
+ * never delay the byte stream; rendering runs in the main loop.
  */
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <avr/wdt.h>
+#include <avr/eeprom.h>
+#include <avr/pgmspace.h>
 #include <util/delay.h>
 #include <stdint.h>
+#include <stdio.h>
+#include <string.h>
+#include "afr2_board.h"
+#include "afr2_twi.h"
+#include "afr2_i2c_manager.h"
+#include "afr2_oled.h"
+#include "afr2_build_info.h"
 
 #if !defined(__AVR_ATmega2560__) || F_CPU != 16000000UL
 #error "Service bridge requires ATmega2560 at 16 MHz"
@@ -46,6 +61,10 @@
  * mode enabled. The PC configures the mode: AUTO_ON / AUTO_OFF. The flag lives in
  * RAM and is OFF after every Mega reset, so a freshly opened COM never drives a pin
  * until the PC sets it; while OFF, ENTER_BOOT/RUN/RST_PULSE are refused.
+ * AFR2-20261108-08: flags bit4 = OLED feedback. CMD_LABEL carries a payload after ~cmd:
+ * length N (5..22), offset u32LE, text N-4 bytes (printable ASCII, 1..18). Offset 0xFFFFFFFF is the
+ * operation title and starts a new session; any other offset names the image written there.
+ * RESULT_OK / RESULT_FAIL report how esptool ended. None of them touches KEY/RST or the ESP.
  */
 #define KEY_MASK _BV(PC5)
 #define RST_MASK _BV(PC4)
@@ -57,20 +76,38 @@
 #define CMD_BOOT_TEST 0x14u   /* AFR2-20261106-17: capture ROM boot at 74880 */
 #define CMD_AUTO_OFF 0x20u   /* PC config: release pins, refuse pin commands */
 #define CMD_AUTO_ON 0x21u    /* PC config: allow ENTER_BOOT/RUN/RST_PULSE */
+#define CMD_LABEL 0x30u       /* AFR2-20261108-08: title or image name for the OLED */
+#define CMD_RESULT_OK 0x31u   /* AFR2-20261108-08: esptool ended without error */
+#define CMD_RESULT_FAIL 0x32u /* AFR2-20261108-08: esptool ended with an error */
+#define FLAG_DISPLAY 0x10u
 #define KEY_MAX_HOLD_OVERFLOWS 143u /* Timer1 clk/1024 overflow 4.19 s: ~600 s */
 static const uint8_t ctl_magic[8] = { 0xA5, 'A', 'F', 'R', '2', 'C', 'T', 'L' };
 static const uint8_t rsp_magic[8] = { 0xA5, 'A', 'F', 'R', '2', 'R', 'S', 'P' };
-static uint8_t ctl_pos, ctl_stage, ctl_cmd, key_held, rst_held, hold_overflows, auto_enabled;
+static uint8_t key_held, rst_held, hold_overflows, auto_enabled;
+/* Frame parser state, owned by the USART0 RX interrupt. */
+static uint8_t ctl_pos, ctl_stage, ctl_cmd, ctl_need, ctl_len, ctl_buf[22];
+/* Complete frame handed to the main loop (written in the ISR only while ctl_ready == 0). */
+static volatile uint8_t ctl_ready;
+static uint8_t ready_cmd, ready_len, ready_buf[22];
 
 #define RING_SIZE 512u
 #define RING_MASK (RING_SIZE - 1u)
-typedef struct { uint8_t data[RING_SIZE]; uint16_t head, tail; } Ring;
+typedef struct { uint8_t data[RING_SIZE]; volatile uint16_t head, tail; } Ring;
 static Ring to_esp, to_pc;
+static volatile uint8_t esp_hold; /* capture/control in progress: keep PC bytes queued */
 /* Debugger-only evidence, never injected into the programming UART stream.
  * Boot text at 74880 may legitimately produce framing errors at another baud.
  */
 volatile uint16_t afr2_bridge_rx0_errors, afr2_bridge_rx1_errors;
 volatile uint8_t afr2_bridge_overflow;
+
+/* AFR2-20261108-08: what esptool is doing, observed on the PC->ESP SLIP stream. */
+enum { PH_IDLE, PH_CONNECT, PH_STUB, PH_ERASE, PH_WRITE, PH_WRITTEN, PH_VERIFY, PH_READ, PH_DONE_OK, PH_DONE_FAIL };
+typedef struct { uint8_t phase, images, esp_reset; uint32_t offset, size, total, written; } Progress;
+static volatile Progress prog;
+static volatile uint8_t prog_seq;
+static uint8_t slip_esc, slip_buf[24];
+static uint16_t slip_count;
 
 void Afr2Bridge_Early(void) __attribute__((naked,section(".init3"),used));
 void Afr2Bridge_Early(void) { MCUSR = 0; wdt_disable(); }
@@ -82,7 +119,7 @@ static void quiesce(void)
     TCCR0A = TCCR0B = TCCR1A = TCCR1B = TCCR2A = TCCR2B = 0;
     TCCR3A = TCCR3B = TCCR4A = TCCR4B = TCCR5A = TCCR5B = 0;
     UCSR0B = UCSR1B = UCSR2B = UCSR3B = 0;
-    TWCR = 0; ADCSRA = 0;
+    TWCR = 0; ADCSRA = 0; EIMSK = 0; PCICR = 0;
     /* Documented motor PWM D9,D10,D11,D12 and direction D5..D8/D22..D28.
      * Electrical low requests inactive outputs; does not prove power is absent.
      */
@@ -99,6 +136,7 @@ static void quiesce(void)
     /* D32/D33 KEY/RST: input without pull-up (button released) until a frame arrives. */
     PORTC &= (uint8_t)~(KEY_MASK|RST_MASK); DDRC &= (uint8_t)~(KEY_MASK|RST_MASK);
 }
+#define UART1_RUN (_BV(RXEN1)|_BV(TXEN1)|_BV(RXCIE1))
 static void serial_init(void)
 {
     UBRR0H = UBRR1H = (uint8_t)(BRIDGE_UBRR >> 8);
@@ -107,22 +145,121 @@ static void serial_init(void)
     UCSR1A = BRIDGE_DOUBLE ? _BV(U2X1) : 0;
     UCSR0C = _BV(UCSZ01)|_BV(UCSZ00);
     UCSR1C = _BV(UCSZ11)|_BV(UCSZ10);
-    UCSR0B = _BV(RXEN0)|_BV(TXEN0);
-    UCSR1B = _BV(RXEN1)|_BV(TXEN1);
+    UCSR0B = _BV(RXEN0)|_BV(TXEN0)|_BV(RXCIE0);
+    UCSR1B = UART1_RUN;
 }
-static void overflow_stop(void) __attribute__((noreturn));
+/* An incomplete stream must fail esptool, never claim success: both UARTs stop until reset.
+ * The OLED keeps running and shows the error. */
 static void overflow_stop(void)
 {
     afr2_bridge_overflow = 1;
     UCSR0B = UCSR1B = 0;
-    for (;;) { /* An incomplete stream must fail esptool, never claim success. */ }
 }
-static void push(Ring *ring, uint8_t value)
+/* Callers run in an ISR or with interrupts disabled. */
+static uint8_t push(Ring *ring, uint8_t value)
 {
     uint16_t next = (ring->head + 1u) & RING_MASK;
-    if (next == ring->tail) overflow_stop();
+    if (afr2_bridge_overflow) return 0;
+    if (next == ring->tail) { overflow_stop(); return 0; }
     ring->data[ring->head] = value; ring->head = next;
+    return 1;
 }
+static uint32_t slip_u32(uint8_t at)
+{
+    return (uint32_t)slip_buf[at] | ((uint32_t)slip_buf[at + 1u] << 8) | ((uint32_t)slip_buf[at + 2u] << 16) | ((uint32_t)slip_buf[at + 3u] << 24);
+}
+/* esptool request: 00 cmd sizeLE(2) checksum(4) data. Only the first 24 bytes are kept. */
+static void slip_frame(void)
+{
+    uint8_t cmd = slip_buf[1];
+    switch (cmd) {
+    case 0x08: /* SYNC */
+        if (prog.phase == PH_IDLE || prog.phase >= PH_DONE_OK) { prog.images = 0; prog.total = prog.written = 0; prog.esp_reset = 0; }
+        if (prog.phase == PH_IDLE || prog.phase >= PH_DONE_OK) prog.phase = PH_CONNECT;
+        break;
+    case 0x05: prog.phase = PH_STUB; break; /* MEM_BEGIN: stub upload */
+    case 0x02: case 0x10: /* FLASH_BEGIN / FLASH_DEFL_BEGIN: size, packets, packet size, offset */
+        if (slip_count < 24u) return;
+        prog.size = slip_u32(8); prog.total = slip_u32(12); prog.offset = slip_u32(20);
+        prog.written = 0; ++prog.images; prog.phase = PH_WRITE; break;
+    case 0x03: case 0x11: /* FLASH_DATA / FLASH_DEFL_DATA: size, sequence, 0, 0, data */
+        if (slip_count < 16u) return;
+        prog.written = slip_u32(12) + 1u;
+        prog.phase = prog.total && prog.written >= prog.total ? PH_WRITTEN : PH_WRITE; break;
+    case 0x13: prog.phase = PH_VERIFY; break;            /* SPI_FLASH_MD5 */
+    case 0xD0: case 0xD1: prog.phase = PH_ERASE; break;  /* stub ERASE_FLASH / ERASE_REGION */
+    case 0xD2: case 0x0E: prog.phase = PH_READ; break;   /* READ_FLASH */
+    default: return;
+    }
+    ++prog_seq;
+}
+static void slip_byte(uint8_t value)
+{
+    if (value == 0xC0u) {
+        if (slip_count >= 8u && slip_buf[0] == 0x00u) slip_frame();
+        slip_count = 0; slip_esc = 0; return;
+    }
+    if (value == 0xDBu) { slip_esc = 1; return; }
+    if (slip_esc) { slip_esc = 0; value = value == 0xDCu ? 0xC0u : value == 0xDDu ? 0xDBu : value; }
+    if (slip_count < sizeof(slip_buf)) slip_buf[slip_count] = value;
+    if (slip_count < 0xFFFFu) ++slip_count;
+}
+static void forward(uint8_t value)
+{
+    if (push(&to_esp, value) && !esp_hold) UCSR1B |= _BV(UDRIE1);
+    slip_byte(value);
+}
+static void frame_complete(void)
+{
+    ctl_stage = 0; ctl_pos = 0;
+    if (ctl_ready) return; /* previous frame not executed yet: dropped, the PC times out */
+    ready_cmd = ctl_cmd; ready_len = ctl_len; memcpy(ready_buf, ctl_buf, ctl_len);
+    ctl_ready = 1;
+}
+/* PC->ESP byte path (USART0 RX interrupt): forwards everything except a complete control frame. */
+static void from_pc(uint8_t value)
+{
+    uint8_t i;
+    if (ctl_stage == 1u) { ctl_cmd = value; ctl_stage = 2u; return; }
+    if (ctl_stage == 2u) {
+        if ((uint8_t)~ctl_cmd != value) { ctl_stage = 0; ctl_pos = 0; return; } /* bad complement: dropped */
+        ctl_len = 0;
+        if (ctl_cmd == CMD_LABEL) { ctl_stage = 3u; return; }
+        frame_complete(); return;
+    }
+    if (ctl_stage == 3u) {
+        if (value < 5u || value > sizeof(ctl_buf)) { ctl_stage = 0; ctl_pos = 0; return; }
+        ctl_need = value; ctl_stage = 4u; return;
+    }
+    if (ctl_stage == 4u) { ctl_buf[ctl_len++] = value; if (ctl_len == ctl_need) frame_complete(); return; }
+    if (value == ctl_magic[ctl_pos]) { if (++ctl_pos == 8u) ctl_stage = 1u; return; }
+    for (i = 0; i < ctl_pos; ++i) forward(ctl_magic[i]); /* not a frame: release held prefix */
+    ctl_pos = 0;
+    if (value == ctl_magic[0]) ctl_pos = 1u; else forward(value);
+}
+ISR(USART0_RX_vect)
+{
+    uint8_t flags = UCSR0A, value = UDR0;
+    if (flags & (_BV(FE0)|_BV(DOR0)|_BV(UPE0))) ++afr2_bridge_rx0_errors;
+    else from_pc(value);
+}
+ISR(USART1_RX_vect)
+{
+    uint8_t flags = UCSR1A, value = UDR1;
+    if (flags & (_BV(FE1)|_BV(DOR1)|_BV(UPE1))) ++afr2_bridge_rx1_errors;
+    else if (push(&to_pc, value)) UCSR0B |= _BV(UDRIE0);
+}
+ISR(USART0_UDRE_vect)
+{
+    if (to_pc.head == to_pc.tail) { UCSR0B &= (uint8_t)~_BV(UDRIE0); return; }
+    UDR0 = to_pc.data[to_pc.tail]; to_pc.tail = (to_pc.tail + 1u) & RING_MASK;
+}
+ISR(USART1_UDRE_vect)
+{
+    if (esp_hold || to_esp.head == to_esp.tail) { UCSR1B &= (uint8_t)~_BV(UDRIE1); return; }
+    UDR1 = to_esp.data[to_esp.tail]; to_esp.tail = (to_esp.tail + 1u) & RING_MASK;
+}
+
 /* Drive HIGH = transistor on = button pressed. Release: drive low, then input. */
 static void line_press(uint8_t mask) { PORTC |= mask; DDRC |= mask; }
 static void line_release(uint8_t mask) { PORTC &= (uint8_t)~mask; DDRC &= (uint8_t)~mask; }
@@ -139,26 +276,33 @@ static void rst_pulse(void)
 }
 static void send_pc(uint8_t value)
 {
-    while (!(UCSR0A & _BV(UDRE0))) { }
-    UDR0 = value;
+    cli();
+    if (push(&to_pc, value)) UCSR0B |= _BV(UDRIE0);
+    sei();
 }
 static void reply(uint8_t cmd, uint8_t status)
 {
     uint8_t i;
     for (i = 0; i < 8u; ++i) send_pc(rsp_magic[i]);
     send_pc(cmd); send_pc(status);
-    send_pc((uint8_t)((key_held ? 1u : 0u) | (rst_held ? 2u : 0u) | (auto_enabled ? 4u : 0u) | 8u)); /* bit3: framed boot-test support */
+    /* bit3: framed boot-test support; bit4: OLED feedback (AFR2-20261108-08) */
+    send_pc((uint8_t)((key_held ? 1u : 0u) | (rst_held ? 2u : 0u) | (auto_enabled ? 4u : 0u) | 8u | FLAG_DISPLAY));
 }
 static void flush_after_control(void)
 {
     /* The ESP boot text at 74880 (or an unrelated byte) must not reach esptool. */
+    cli();
     while (UCSR1A & _BV(RXC1)) { (void)UDR1; }
     to_esp.head = to_esp.tail = 0; to_pc.head = to_pc.tail = 0;
+    UCSR0B &= (uint8_t)~_BV(UDRIE0); UCSR1B &= (uint8_t)~_BV(UDRIE1);
+    sei();
 }
 /* AFR2-20261106-17. Bounded diagnostic, USB baud unchanged; no flash writes.
  * UART1 alone reads ROM boot at nominal 74880 (U2X, UBRR=26 at 16 MHz).
  * Payload: A5 AFR2BOOT, uint16 little-endian byte count, exact captured bytes.
  * Pins are released before any reply, even if the PC vanished during capture.
+ * AFR2-20261108-08: UART1 interrupts are off during the capture (polled as before);
+ * PC bytes that arrive meanwhile stay queued and are flushed afterwards.
  */
 static void capture_boot(void)
 {
@@ -166,7 +310,7 @@ static void capture_boot(void)
     uint8_t saved_h = UBRR1H, saved_l = UBRR1L, errors = 0;
     uint16_t count = 0, tick;
     static const uint8_t magic[] = {0xA5,'A','F','R','2','B','O','O','T'};
-    release_all(); UCSR1B = 0;
+    release_all(); esp_hold = 1; UCSR1B = 0;
     UBRR1H = 0; UBRR1L = 26; UCSR1A = _BV(U2X1);
     UCSR1B = _BV(RXEN1)|_BV(TXEN1);
     while (UCSR1A & _BV(RXC1)) { (void)UDR1; }
@@ -181,14 +325,38 @@ static void capture_boot(void)
     }
     release_all(); UCSR1B = 0;
     UBRR1H = saved_h; UBRR1L = saved_l; UCSR1A = saved_a;
-    UCSR1B = _BV(RXEN1)|_BV(TXEN1);
-    flush_after_control(); reply(CMD_BOOT_TEST, errors ? 3u : 0u);
+    UCSR1B = UART1_RUN;
+    flush_after_control(); esp_hold = 0; reply(CMD_BOOT_TEST, errors ? 3u : 0u);
     for (tick = 0; tick < sizeof(magic); ++tick) send_pc(magic[tick]);
     send_pc((uint8_t)count); send_pc((uint8_t)(count >> 8));
     for (tick = 0; tick < count; ++tick) send_pc(bytes[tick]);
 }
 
-static void run_command(uint8_t cmd)
+/* AFR2-20261108-08: labels sent by the Loader for the OLED. */
+#define LABEL_TEXT 19u
+static char title[LABEL_TEXT], image_name[3][LABEL_TEXT];
+static uint32_t image_offset[3];
+static uint8_t image_count, ui_dirty = 1;
+static void reset_progress(void)
+{
+    cli(); prog.phase = PH_IDLE; prog.images = 0; prog.total = prog.written = prog.size = prog.offset = 0; prog.esp_reset = 0; ++prog_seq; sei();
+}
+static void apply_label(const uint8_t *d, uint8_t n)
+{
+    uint32_t offset = (uint32_t)d[0] | ((uint32_t)d[1] << 8) | ((uint32_t)d[2] << 16) | ((uint32_t)d[3] << 24);
+    char text[LABEL_TEXT];uint8_t i, size = (uint8_t)(n - 4u);
+    if (size >= LABEL_TEXT) size = LABEL_TEXT - 1u;
+    for (i = 0; i < size; ++i) { uint8_t c = d[4u + i]; text[i] = (c >= 32u && c <= 126u) ? (char)c : '?'; }
+    text[size] = 0;
+    if (offset == 0xFFFFFFFFUL) { strcpy(title, text); image_count = 0; reset_progress(); cli(); prog.phase = PH_CONNECT; sei(); }
+    else {
+        for (i = 0; i < image_count && image_offset[i] != offset; ++i) { }
+        if (i == image_count) { if (image_count == 3u) return; ++image_count; }
+        image_offset[i] = offset; strcpy(image_name[i], text);
+    }
+    ui_dirty = 1;
+}
+static void run_command(uint8_t cmd, const uint8_t *data, uint8_t n)
 {
     uint8_t status = 0;
     switch (cmd) {
@@ -208,53 +376,144 @@ static void run_command(uint8_t cmd)
     case CMD_RUN:
         if (!auto_enabled) { status = 1; break; }
         line_release(KEY_MASK); hold_stop(); _delay_ms(20); rst_pulse(); _delay_ms(50);
+        cli(); prog.esp_reset = 1; ++prog_seq; sei();
         break;
     case CMD_RELEASE: release_all(); break;
     case CMD_RST_PULSE:
         if (!auto_enabled) { status = 1; break; }
         rst_pulse(); break;
+    /* AFR2-20261108-08: display only; no flush, the ESP stream is not touched. */
+    case CMD_LABEL: apply_label(data, n); reply(cmd, 0); return;
+    case CMD_RESULT_OK: case CMD_RESULT_FAIL:
+        cli(); prog.phase = cmd == CMD_RESULT_OK ? PH_DONE_OK : PH_DONE_FAIL; ++prog_seq; sei(); reply(cmd, 0); return;
     default: return; /* unknown command: ignored, nothing is driven */
     }
     flush_after_control(); reply(cmd, status);
 }
-/* PC->ESP byte path: forwards everything except a complete control frame. */
-static void from_pc(uint8_t value)
+
+/* AFR2-20261108-08: OLED. Rotation/contrast are read (never written) from the product EEPROM. */
+static Afr2I2cManager manager;
+static Afr2Oled oled;
+static void display_settings(uint8_t *contrast, uint8_t *rotation)
 {
-    uint8_t i;
-    if (ctl_stage == 1u) { ctl_cmd = value; ctl_stage = 2u; return; }
-    if (ctl_stage == 2u) {
-        ctl_stage = 0; ctl_pos = 0;
-        if ((uint8_t)~ctl_cmd == value) run_command(ctl_cmd); /* bad complement: dropped */
-        return;
+    uint8_t slot, head[16], found = 0;
+    uint32_t best = 0;
+    *contrast = 0xcf; *rotation = 1;
+    for (slot = 0; slot < 2u; ++slot) {
+        uint16_t base = (uint16_t)slot * 128u;
+        eeprom_read_block(head, (const void *)(uintptr_t)base, sizeof(head));
+        if (memcmp(head, "AFR2", 4) || head[4] < 1u || head[4] > 32u || eeprom_read_byte((const uint8_t *)(uintptr_t)(base + 127u)) != 0xa5u) continue;
+        uint32_t seq = (uint32_t)head[8] | ((uint32_t)head[9] << 8) | ((uint32_t)head[10] << 16) | ((uint32_t)head[11] << 24);
+        if (found && (int32_t)(seq - best) <= 0) continue;
+        uint8_t c = eeprom_read_byte((const uint8_t *)(uintptr_t)(base + 26u)), r = eeprom_read_byte((const uint8_t *)(uintptr_t)(base + 27u));
+        if (r > 1u) continue;
+        found = 1; best = seq; *contrast = c; *rotation = r;
     }
-    if (value == ctl_magic[ctl_pos]) { if (++ctl_pos == 8u) ctl_stage = 1u; return; }
-    for (i = 0; i < ctl_pos; ++i) push(&to_esp, ctl_magic[i]); /* not a frame: release held prefix */
-    ctl_pos = 0;
-    if (value == ctl_magic[0]) ctl_pos = 1u; else push(&to_esp, value);
 }
+static void centered_flash(uint8_t y, const char *text)
+{
+    uint16_t width = (uint16_t)strlen_P(text) * 7u;
+    Afr2Oled_TextFlash(&oled, width < 128u ? (int16_t)((128u - width) / 2u) : 0, y, text, AFR2_WHITE);
+}
+static void centered(uint8_t y, const char *text)
+{
+    uint16_t width = (uint16_t)strlen(text) * 7u;
+    Afr2Oled_Text(&oled, width < 128u ? (int16_t)((128u - width) / 2u) : 0, y, text, AFR2_WHITE);
+}
+static void big_text_flash(int16_t x, int16_t y, const char *text)
+{
+    uint8_t i, row, col;
+    for (i = 0; pgm_read_byte(text + i); ++i)
+        for (row = 0; row < 10u; ++row) {
+            uint8_t bits = Afr2Font7x10_Row(pgm_read_byte(text + i), row);
+            for (col = 0; col < 7u; ++col) if (bits & (0x80u >> col)) Afr2Oled_FillRect(&oled, x + i * 14 + col * 2, y + row * 2, 2, 2, AFR2_WHITE);
+        }
+}
+static void render_idle(void)
+{
+    char line[19];
+    big_text_flash(36, 2, PSTR("AFR2"));
+    centered_flash(25, PSTR("Loader firmware"));
+    centered_flash(37, PSTR("Version " AFR2_FIRMWARE_VERSION));
+    if (afr2_bridge_overflow) centered_flash(52, PSTR("Error: desborde"));
+    else { snprintf_P(line, sizeof(line), PSTR("USB-ESP %lu"), (unsigned long)AFR2_BRIDGE_BAUD); centered(52, line); }
+}
+static void render_active(const Progress *p)
+{
+    char line[19];
+    uint8_t i, percent = p->total ? (uint8_t)(((uint32_t)(p->written > p->total ? p->total : p->written) * 100u) / p->total) : 0;
+    Afr2Oled_FillRect(&oled, 0, 0, 128, 12, AFR2_WHITE);
+    if (title[0]) Afr2Oled_Text(&oled, 2, 1, title, AFR2_BLACK); else Afr2Oled_TextFlash(&oled, 2, 1, PSTR("ESP8266"), AFR2_BLACK);
+    /* Image being written: the Loader's name for this offset, else the offset itself. */
+    line[0] = 0;
+    if (p->images) {
+        for (i = 0; i < image_count; ++i) if (image_offset[i] == p->offset) { strcpy(line, image_name[i]); break; }
+        if (!line[0]) snprintf_P(line, sizeof(line), p->offset ? PSTR("Datos 0x%06lX") : PSTR("Firmware 0x0"), (unsigned long)p->offset);
+        Afr2Oled_Text(&oled, 0, 15, line, AFR2_WHITE);
+    } else Afr2Oled_TextFlash(&oled, 0, 15, image_count ? PSTR("Esperando ROM") : PSTR("Sin escritura"), AFR2_WHITE);
+    switch (afr2_bridge_overflow ? 0xffu : p->phase) {
+    case PH_CONNECT: strcpy_P(line, PSTR("Conectando...")); break;
+    case PH_STUB: strcpy_P(line, PSTR("Preparando...")); break;
+    case PH_ERASE: strcpy_P(line, PSTR("Borrando...")); break;
+    case PH_WRITE: snprintf_P(line, sizeof(line), PSTR("Escribiendo %u%%"), percent); break;
+    case PH_WRITTEN: strcpy_P(line, PSTR("Escrito 100%")); break;
+    case PH_VERIFY: strcpy_P(line, PSTR("Verificando...")); break;
+    case PH_READ: strcpy_P(line, PSTR("Leyendo...")); break;
+    case PH_DONE_OK: strcpy_P(line, PSTR("Listo sin error")); break;
+    case PH_DONE_FAIL: strcpy_P(line, PSTR("Error: ver Loader")); break;
+    case 0xffu: strcpy_P(line, PSTR("Error: desborde")); break;
+    default: line[0] = 0; break;
+    }
+    line[18] = 0; Afr2Oled_Text(&oled, 0, 27, line, AFR2_WHITE);
+    Afr2Oled_Rect(&oled, 0, 39, 128, 9, AFR2_WHITE);
+    if (p->total) Afr2Oled_FillRect(&oled, 2, 41, (uint8_t)(((uint32_t)percent * 124u) / 100u), 5, AFR2_WHITE);
+    if (p->esp_reset) strcpy_P(line, PSTR("ESP reiniciado"));
+    else if (p->total && image_count > 1u) snprintf_P(line, sizeof(line), PSTR("Img %u/%u %lu KB"), p->images, image_count, (unsigned long)((p->size + 1023u) / 1024u));
+    else if (p->total) snprintf_P(line, sizeof(line), PSTR("%lu/%lu - %lu KB"), (unsigned long)p->written, (unsigned long)p->total, (unsigned long)((p->size + 1023u) / 1024u));
+    else line[0] = 0;
+    line[18] = 0; Afr2Oled_Text(&oled, 0, 52, line, AFR2_WHITE);
+}
+static void ui_task(uint32_t now)
+{
+    static uint8_t seen_seq = 0xffu, seen_overflow;
+    static uint32_t render_ms, activity_ms;
+    Progress p;
+    uint8_t seq;
+    cli(); seq = prog_seq; memcpy(&p, (const void *)&prog, sizeof(p)); sei();
+    if (seq != seen_seq) { seen_seq = seq; activity_ms = now; ui_dirty = 1; }
+    if (afr2_bridge_overflow != seen_overflow) { seen_overflow = afr2_bridge_overflow; ui_dirty = 1; }
+    /* A finished session returns to the identity screen after 60 s without esptool traffic. */
+    if (p.phase >= PH_DONE_OK && (uint32_t)(now - activity_ms) >= 60000u) { title[0] = 0; image_count = 0; reset_progress(); return; }
+    if (!ui_dirty || (uint32_t)(now - render_ms) < 100u) return;
+    ui_dirty = 0; render_ms = now;
+    Afr2Oled_Clear(&oled);
+    if (p.phase == PH_IDLE && !title[0]) render_idle(); else render_active(&p);
+}
+
 int main(void)
 {
-    quiesce(); serial_init();
+    Afr2I2cHardware hardware;
+    uint8_t display, contrast, rotation;
+    quiesce();
+    Afr2Board_Init(); /* Timer0 millisecond tick + motor latches inactive; no other output */
+    serial_init();
+    Afr2Twi_Init(&hardware); display = Afr2I2c_Init(&manager, &hardware);
+    Afr2Oled_Init(&oled, &manager, 0x3c, 0);
+    display_settings(&contrast, &rotation); Afr2Oled_Settings(&oled, contrast, rotation);
+    sei();
     for (;;) {
+        uint32_t now = Afr2Board_Millis();
         if (key_held && (TIFR1 & _BV(TOV1))) {
             TIFR1 = _BV(TOV1);
             if (++hold_overflows >= KEY_MAX_HOLD_OVERFLOWS) release_all(); /* safety timeout */
         }
-        if (UCSR0A & _BV(RXC0)) {
-            uint8_t flags = UCSR0A, value = UDR0;
-            if (flags & (_BV(FE0)|_BV(DOR0)|_BV(UPE0))) ++afr2_bridge_rx0_errors;
-            else from_pc(value);
+        if (ctl_ready) {
+            uint8_t cmd = ready_cmd, n = ready_len, data[sizeof(ready_buf)];
+            memcpy(data, ready_buf, n); ctl_ready = 0;
+            run_command(cmd, data, n);
         }
-        if (UCSR1A & _BV(RXC1)) {
-            uint8_t flags = UCSR1A, value = UDR1;
-            if (flags & (_BV(FE1)|_BV(DOR1)|_BV(UPE1))) ++afr2_bridge_rx1_errors;
-            else push(&to_pc, value);
-        }
-        if (to_esp.head != to_esp.tail && (UCSR1A & _BV(UDRE1))) {
-            UDR1 = to_esp.data[to_esp.tail]; to_esp.tail = (to_esp.tail + 1u) & RING_MASK;
-        }
-        if (to_pc.head != to_pc.tail && (UCSR0A & _BV(UDRE0))) {
-            UDR0 = to_pc.data[to_pc.tail]; to_pc.tail = (to_pc.tail + 1u) & RING_MASK;
-        }
+        ui_task(now);
+        Afr2Twi_Task(now); Afr2I2c_Tick(&manager, now);
+        if (display && !manager.busy) Afr2Oled_Task(&oled, Afr2Board_Millis());
     }
 }

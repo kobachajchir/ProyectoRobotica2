@@ -49,7 +49,7 @@ void WifiService::begin() {
     WifiConfig config;
     JsonDocument doc;
     if(storage_.loadWifi(doc)){
-        migrateWifi(doc);const char *mode=doc["mode"]|"";
+        migrateWifi(doc);askFallback_=doc["askFallback"]|false;const char *mode=doc["mode"]|"";
         strlcpy(config.mode,mode,sizeof(config.mode));
         WifiConfig ap;if(readPart(doc,"ap",ap)){apSsid_=ap.ssid;strlcpy(apPassword_,ap.password,sizeof(apPassword_));}
         WifiConfig previous;strlcpy(previous.mode,"STA",sizeof(previous.mode));
@@ -57,6 +57,7 @@ void WifiService::begin() {
         WifiConfig fallback;if(!hasPrevious_ && strcmp(mode,"AP") && defaultStation(fallback) && strcmp(fallback.ssid,doc["sta"]["ssid"]|""))hasPrevious_=true; // la red por defecto actúa de respaldo
         currentGood_=doc["staGood"]|false;
         if(readPart(doc,!strcmp(mode,"AP")?"ap":"sta",config) && valid(config)){persisted_=1;apply(config);return;}
+        if(!strcmp(mode,"AP")){strlcpy(config.ssid,apSsid_.c_str(),sizeof(config.ssid));persisted_=1;apply(config);return;}
     }
     // Sin configuración guardada: usar la red por defecto (en RAM) y, si no conecta, el AP de provisión.
     WifiConfig fallback;if(defaultStation(fallback)){persisted_=0;hasPrevious_=false;apply(fallback);return;}
@@ -65,7 +66,7 @@ void WifiService::begin() {
 void WifiService::startFallback() {
     memset(apPassword_,0,sizeof(apPassword_));
     apSsid_="AutoFinalRobo2-"+String(ESP.getChipId(),HEX);
-    fallbackActive_=true;askState_=0;askEvent_=false;
+    fallbackActive_=true;apStopped_=false;askState_=0;askEvent_=false;
     bool modeOk=WiFi.mode(staWanted_?WIFI_AP_STA:WIFI_AP);
     apOn_=modeOk && WiFi.softAP(apSsid_.c_str());
     if (!apOn_) configError_="AP_START_FAILED"; // Explicit open provisioning AP, no embedded credential.
@@ -75,7 +76,7 @@ void WifiService::apply(const WifiConfig &c) {
     WiFi.scanDelete(); scanReady_=false;
     staWanted_=strcmp(c.mode,"AP")!=0;
     bool wantAp=strcmp(c.mode,"STA")!=0;
-    fallbackActive_=false; configError_=nullptr;
+    fallbackActive_=false;apStopped_=false; configError_=nullptr;
     apOn_=false;askState_=0;askEvent_=false;
     if (!WiFi.mode(staWanted_?(wantAp?WIFI_AP_STA:WIFI_STA):WIFI_AP)) {
         configError_="MODE_FAILED"; startFallback(); return;
@@ -113,20 +114,21 @@ bool WifiService::stage(const WifiConfig &c, uint32_t now) {
 }
 void WifiService::tick(uint32_t now) {
     // Broker waits for acknowledgement/drain, then restarts; never apply in place.
-    if (staWanted_ && !disconnectedByUser_ && WiFi.status()!=WL_CONNECTED) {
+    if (!applyPending_ && staWanted_ && !disconnectedByUser_ && WiFi.status()!=WL_CONNECTED) {
         if ((uint32_t)(now-staStarted_)>=15000u && hasPrevious_ && !usingPrevious_ && !scanPending_ && !applyPending_ && (uint32_t)(now-lastRetry_)>=15000u) {
             // AFR2-20261106-37: la red configurada no aparece o no conecta; probar la ultima que funciono.
             if(beginStation(true)){lastRetry_=now;staStarted_=now;} // nueva gracia de 15 s para la anterior
         }
-        if (!apOn_ && (uint32_t)(now-staStarted_)>=15000u) {
+        if (!apOn_ && !apStopped_ && (uint32_t)(now-staStarted_)>=15000u) {
             // AFR2-20261108-06: preguntar al OLED en vez de levantar el AP; "Seguir esperando" vuelve a
             // preguntar al vencer askUntil_. Sin OLED (nunca enlazado o 10 s sin enlace): AP automatico.
-            if(askMode_){
+            if(askFallback_ && askMode_){
                 if(askState_==0 || (askState_==2 && (int32_t)(now-askUntil_)>=0)){
                     const auto sta=WiFi.status();
-                    askReason_=sta==WL_NO_SSID_AVAIL?1:sta==WL_WRONG_PASSWORD?2:3;askState_=1;askEvent_=true;
+                    askReason_=sta==WL_NO_SSID_AVAIL?1:sta==WL_WRONG_PASSWORD?2:3;askState_=1;askEvent_=true;askAt_=now;
                 }
-            } else if(!askLinkAt_ || (uint32_t)(now-askLinkAt_)>=10000u) startFallback();
+                // The OLED owns the countdown and cancels it on interaction. Wait while linked.
+            } else if(!askFallback_ || !askLinkAt_ || (uint32_t)(now-askLinkAt_)>=10000u) startFallback();
         }
         if ((uint32_t)(now-lastRetry_)>=30000u && !scanPending_ && !applyPending_) {
             lastRetry_=now;
@@ -167,10 +169,9 @@ bool WifiService::beginStation(bool previous){
     usingPrevious_=previous;return true;
 }
 bool WifiService::scan() {
-    if (busy() || scanReady_) return false;
-    // AP-only mode needs the station interface for asynchronous scanning.
-    scanRestoreAp_=WiFi.getMode()==WIFI_AP;
-    if(scanRestoreAp_ && !WiFi.mode(WIFI_AP_STA)){scanRestoreAp_=false;return false;}
+    if (busy() || scanReady_ || !staWanted_ || !(WiFi.getMode()&WIFI_STA)) return false;
+    // Scans are only available with an already enabled station interface.
+    scanRestoreAp_=false;
     scanStarted_=millis(); scanTimedOut_=false;
     int result=WiFi.scanNetworks(true,true);
     scanPending_=result==WIFI_SCAN_RUNNING;
@@ -179,10 +180,11 @@ bool WifiService::scan() {
 }
 void WifiService::askUnsupported(){
     askUnsupported_=true;askMode_=false;askEvent_=false;
-    if(askState_ && !apOn_)startFallback();
+    if(staWanted_ && !apStopped_ && askState_ && !apOn_)startFallback();
     askState_=0;
 }
 bool WifiService::answerAsk(bool startAp,uint16_t seconds,uint32_t now){
+    if(!staWanted_ || apStopped_)return false;
     askEvent_=false;
     if(startAp){askState_=0;if(!apOn_)startFallback();return apOn_;}
     if(seconds<10 || seconds>300)return false;
@@ -207,9 +209,40 @@ bool WifiService::disconnectStation(){
     if(!WiFi.disconnect(false,false)){disconnectedByUser_=false;return false;}
     return true; // accepted; caller must observe status before announcing success
 }
+// AFR2-20261109-02: AP stop is explicit and suppresses fallback until next apply/restart.
+bool WifiService::startAp(){
+    if(applyPending_ || scanPending_)return false;
+    if(apOn_)return true;
+    if(!WiFi.mode(staWanted_?WIFI_AP_STA:WIFI_AP))return false;
+    apOn_=WiFi.softAP(apSsid_.c_str(),apPassword_[0]?apPassword_:nullptr);
+    if(apOn_){apStopped_=false;askState_=0;askEvent_=false;}
+    return apOn_;
+}
+bool WifiService::stopAp(){
+    if(applyPending_ || scanPending_ || !apOn_)return false;
+    if(!WiFi.softAPdisconnect(true))return false;
+    apOn_=false;fallbackActive_=false;apStopped_=true;askState_=0;askEvent_=false;
+    return WiFi.mode(staWanted_?WIFI_STA:WIFI_OFF);
+}
+bool WifiService::setAskFallback(bool ask){
+    if(applyPending_)return false;
+    JsonDocument doc;storage_.loadWifi(doc);migrateWifi(doc);doc["askFallback"]=ask;
+    if(!storage_.saveWifi(doc))return false;
+    askFallback_=ask;askState_=0;askEvent_=false;return true;
+}
 bool WifiService::changeMode(uint8_t mode){
-    if(busy() || mode<1 || mode>3)return false;
-    WifiConfig c;if(!savedConfig(mode,c))return false;
+    if(mode<1 || mode>3)return false;
+    // AFR2-20261109-01: the user chose a mode on the OLED. A finished scan nobody read no longer blocks it
+    // (only a running SDK scan or an apply already scheduled do), and a mode without a saved network
+    // uses the defaults: the open provisioning AP for AP, the default station for STA / AP+STA.
+    if(scanReady_ && !scanPending_){WiFi.scanDelete();scanReady_=false;if(scanRestoreAp_ && !staWanted_){WiFi.mode(WIFI_AP);scanRestoreAp_=false;}}
+    if(busy())return false;
+    WifiConfig c;
+    if(!savedConfig(mode,c)){
+        if(mode==2){c=WifiConfig();strlcpy(c.mode,"AP",sizeof(c.mode));strlcpy(c.ssid,apSsid_.c_str(),sizeof(c.ssid));}
+        else if(defaultStation(c))strlcpy(c.mode,mode==3?"AP_STA":"STA",sizeof(c.mode));
+        else return false;
+    }
     return stage(c,millis());
 }
 bool WifiService::takeScan(JsonObject out) {
@@ -265,6 +298,7 @@ void WifiService::status(JsonObject out) const {
     out["ageMs"]=0; out["applying"]=applyPending_;out["restartScheduled"]=applyPending_;
     out["configuredMode"]=applyPending_?pending_.mode:"";
     out["fallbackActive"]=fallbackActive_ && apOn_;
+    out["askFallback"]=askFallback_;out["apReady"]=apOn_;
     out["apDecision"]=askState_==1?"asking":askState_==2?"waiting":"none"; // AFR2-20261108-06
     if(askState_==2)out["apDecisionInMs"]=(int32_t)(askUntil_-millis())>0?(uint32_t)(askUntil_-millis()):0u;
     out["scanRunning"]=scanPending_;

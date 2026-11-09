@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "afr2_link.h"
+#include "afr2_product_wire.h"
 #include "afr2_sequence.h"
 #include "afr2_sensor_head.h"
 #include "afr2_battery_wire.h"
@@ -20,7 +21,8 @@ enum { AFR2_OK, AFR2_BAD, AFR2_UNAVAILABLE, AFR2_DENIED, AFR2_BUSY, AFR2_FAILED 
 enum { AFR2_WIFI_STATUS=1, AFR2_WIFI_SCAN, AFR2_WIFI_WEB_DRAFT,
        AFR2_WIFI_LOCAL_DRAFT, AFR2_WIFI_CONNECT, AFR2_WIFI_CANCEL, AFR2_WIFI_RETRY, AFR2_WIFI_REBOOT_ESP, AFR2_WIFI_DISCONNECT, AFR2_WIFI_CHANGE_MODE, AFR2_WIFI_READ_CREDENTIALS, AFR2_WIFI_PAGE,
        /* AFR2-20261108-06: respuesta al selector sin Wi-Fi. WAIT lleva 2 bytes: segundos u16LE. */
-       AFR2_WIFI_AP_START, AFR2_WIFI_WAIT };
+       AFR2_WIFI_AP_START, AFR2_WIFI_WAIT,
+       AFR2_WIFI_ASK_FALLBACK=AFR2_WIFI_OP_ASK_FALLBACK, AFR2_WIFI_AP_STOP=AFR2_WIFI_OP_AP_STOP };
 typedef struct {
     uint8_t line_kind, line_invert, line_calibrated, motor_signs, motor_ready;
     uint8_t hall_wired, hall_signs, geometry_ready, encoder_steps, encoder_invert, contrast, rotation;
@@ -38,6 +40,7 @@ typedef struct {
 typedef struct {
     uint16_t line_raw[5], distance_mm;
     uint8_t line_bits, line_valid, ultrasonic_valid, echo_error, hall_available;
+    uint8_t line_valid_raw; /* AFR2-20261108-13: IR readable, even with the IR toggle off */
     uint32_t line_ms, ultrasonic_ms, hall_ms;
     /* Battery is opt-in through Measure; no inferred wiring or charge %. */
     uint32_t battery_ms,battery_sequence;
@@ -62,6 +65,8 @@ typedef struct {
     uint32_t display_boot,display_event,display_ms;
     uint16_t display_revision;
     uint8_t display_page,display_ready,ap_active,ap_clients,web_ready;
+    uint8_t ask_fallback,policy_valid,policy_requested;
+    uint8_t link_phase; /* AFR2-20261109-01: 0 idle/connected, 1 STA connecting, 2 AP starting (notices) */
     char ap_ssid[33],ap_password[64];
 } Afr2Wifi;
 typedef struct Afr2Product {
@@ -101,6 +106,7 @@ uint8_t Afr2Product_HaltMotion(void *ctx); /* transport supervision preserves au
 void Afr2Product_Snapshot(void *ctx,uint32_t now,Afr2LinkSnapshot *out);
 void Afr2Product_WebPulse(Afr2Product *p,uint16_t age);
 uint8_t Afr2Product_Drive(Afr2Product *p,int16_t vx,int16_t vy,int16_t wz,uint16_t ttl);
+uint8_t Afr2Product_PwmStatus(const Afr2Product *p);
 uint8_t Afr2Product_DrivePwm(Afr2Product *p,int16_t forward,int16_t strafe,int16_t turn,uint16_t ttl);
 uint8_t Afr2Product_Wheel(Afr2Product *p,uint8_t wheel,int16_t pwm,uint16_t duration);
 uint8_t Afr2Product_StartLine(Afr2Product *p);

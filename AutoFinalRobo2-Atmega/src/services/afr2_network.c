@@ -28,7 +28,7 @@ uint8_t Afr2App_NetworkCommand(Afr2App *a,uint8_t cmd,const uint8_t *d,uint8_t n
             if(boot!=w->display_boot || revision!=w->display_revision) {
                 w->display_ready=0;clear_ap(w);
                 a->snapshot_active=0;a->ui->redraw=true;
-                if(boot!=w->display_boot){if(w->display_boot){w->pending=w->draft_ready=w->network_count=w->scan_total=w->mode_draft=0;w->scan_id=0;memset(w->password,0,sizeof(w->password));w->credentials_visible=0;Afr2Ui_NetworkRestart(a->ui);}w->display_event=0;}
+                if(boot!=w->display_boot){if(w->display_boot){w->pending=w->draft_ready=w->network_count=w->scan_total=w->mode_draft=0;w->policy_valid=0;w->scan_id=0;memset(w->password,0,sizeof(w->password));w->credentials_visible=0;Afr2Ui_NetworkRestart(a->ui);}w->display_event=0;}
             }
             w->display_boot=boot;w->display_revision=revision;w->display_page=0;
             w->mode=text[0];w->sta_connected=text[1];w->ap_active=text[2];w->ap_clients=text[3];w->web_ready=text[4];
@@ -55,6 +55,13 @@ uint8_t Afr2App_NetworkCommand(Afr2App *a,uint8_t cmd,const uint8_t *d,uint8_t n
             }
             if(!w->ap_active)clear_ap(w);
             w->display_ready=1;w->available=1;w->status_ms=a->product->now;
+            /* AFR2-20261109-01: say what the ESP is doing while it is not connected yet. */
+            uint8_t phase=(w->mode&1u) && !w->sta_connected && w->ssid[0]?1u:(w->mode&2u) && !w->ap_active?2u:0u;
+            if(phase!=w->link_phase){
+                if(phase==1)Afr2Ui_NotifyFlashTitle(a->ui,0,PSTR("Reconectando a"),w->ssid,4000);
+                else if(phase==2)Afr2Ui_NotifyFlash(a->ui,0,PSTR("Wi-Fi"),PSTR("Iniciando AP"),3000);
+                w->link_phase=phase;
+            }
             w->display_ms=a->product->now;a->snapshot_active=0;a->ui->redraw=true;
         }
         memcpy(out,d,7);*length=7;return AFR2_RESULT_OK;
@@ -83,9 +90,9 @@ uint8_t Afr2App_NetworkCommand(Afr2App *a,uint8_t cmd,const uint8_t *d,uint8_t n
             a->snapshot_active=0;
         }
         /* AFR2-20261108-06: despues del aviso "Wi-Fi no encontrado" la app abre el selector Iniciar AP / Seguir esperando. */
-        if(kind==AFR2_NET_STA_NOT_FOUND && !w->sta_connected && !w->ap_active && !a->wifi_ask)a->wifi_ask=1;
+        if(kind==AFR2_NET_STA_NOT_FOUND && w->mode!=2 && (!w->policy_valid || w->ask_fallback) && !w->sta_connected && !w->ap_active && !a->wifi_ask)a->wifi_ask=1;
         if(kind==AFR2_NET_BOOT){
-            if(!duplicate_boot){w->pending=w->draft_ready=w->network_count=w->scan_total=w->mode_draft=0;w->scan_id=0;memset(w->password,0,sizeof(w->password));w->credentials_visible=0;Afr2Ui_NetworkRestart(a->ui);}
+            if(!duplicate_boot){w->pending=w->draft_ready=w->network_count=w->scan_total=w->mode_draft=0;w->policy_valid=0;w->scan_id=0;memset(w->password,0,sizeof(w->password));w->credentials_visible=0;Afr2Ui_NetworkRestart(a->ui);}
             a->esp_boot_notified=w->display_boot;
         }
         Afr2Debug_NetEvent(kind,d[9],seq); /* after the notice gate: retries are not logged twice */

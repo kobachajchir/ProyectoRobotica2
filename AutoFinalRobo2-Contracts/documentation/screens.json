@@ -1,6 +1,6 @@
 {
   "schema": "afr2-screens-2",
-  "updated_by": "AFR2-20261106-12",
+  "updated_by": "AFR2-20261109-03",
   "navigation_source_review": "UI_SCREEN_FLOW.md",
   "screens": [
     {
@@ -24,12 +24,12 @@
         "long-release-open-quick-controls"
       ],
       "parent": null,
-      "state": "source-integrated-compiled-runtime-unverified",
+      "state": "source-integrated-resources-regenerated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261106-01",
+      "change_id": "AFR2-20261109-03",
       "item_count": 1,
       "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
-      "variant": "Original white26px network header, mode at left below it, rounded64x20 status card on right, Menu/Rapidas footer.",
+      "variant": "Original white26px network header, mode at left below it, rounded64x16 status card on right, Menu / long-icon Rapidas footer. AFR2-20261108-12: the card walks Motores (OFF/ON/RUN), Ultrasonido (US), Radar, Servo, Linea (IR), Rastro (RS) with icon + state, 4 s per page after 3 s idle; a change jumps to that item; fault overrides.",
       "web_renderer": "web:src/features/oled/dashboardRenderer.ts:renderDashboard",
       "web_fidelity": "2104/2104 host C/TS full frames; same pixels after AVR storage optimization; no exhaustive physical/partial flow claim",
       "wire_status": "EX01v13 compiled, EEPROMv9; unflashed; RAM optimized, physical stack/acceptance pending",
@@ -46,8 +46,10 @@
       "dashboard_status": "3s encoder inactivity before first advance, then4s per applicable state; hold SW pauses; fault stays fixed; one/no candidate does not rotate. State removal remains immediate.",
       "dashboard_body": "MODO at(2,28), compact value at(2,40); rounded status frame at(62,29)64x20 with icon14+gap4+label7x10.",
       "partial_redraw": "Retained frame: status rotation touches card interior only; mode/SSID/IP/header update independently; cached render does not clear root frame.",
-      "implementation_review": "changes/2026-11-06-01-coordinated-corrections.md",
-      "gesture_overlay": "L glyph and sixteen-step hold progress; reserved lower-right slot; QR excluded; action only on release"
+      "implementation_review": "changes/2026-11-09-03-source-completion.md",
+      "gesture_overlay": "L glyph and sixteen-step hold progress; reserved lower-right slot; QR excluded; action only on release",
+      "ap_icon": "image_music_radio_broadcast_bits exact user bytes; long press uses image_Ok_btn_pressed_bits exact user bytes. AP-only mode always uses antenna header icon.",
+      "resource_generation": "Web/tools/sync-oled-library.mjs completed 2026-11-09; no build or raster parity test"
     },
     {
       "id": "shared:screen/010002",
@@ -1191,12 +1193,12 @@
         "select",
         "long-release-back"
       ],
-      "state": "source-integrated-compiled-runtime-unverified",
+      "state": "source-integrated-resources-regenerated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261106-01",
+      "change_id": "AFR2-20261109-03",
       "item_count": 7,
       "back_semantics": "release-long and explicit Volver restore context; notices complete deferred destination only when closed",
-      "variant": "three16px-rows; dynamic selection/count; physical actions",
+      "variant": "Buscar redes visible solo en STA/AP-STA; AP puro omite esa fila; resto conserva orden y retorno.",
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
       "web_fidelity": "2104/2104 host C/TS full frames; same pixels after AVR storage optimization; no exhaustive physical/partial flow claim",
       "wire_status": "EX01v13 compiled, EEPROMv9; unflashed; RAM optimized, physical stack/acceptance pending",
@@ -1209,8 +1211,16 @@
       "visual_profile": "Shared inverse14px header and semantic section icon; three16px rows; filled selection; BACK16px + Volver with4px gap.",
       "menu_return_visual": "AFR2-20261102-11: original BACK arrow16px + Volver text,4px gap, vertically centered; gesture hints on non-menu pages unchanged.",
       "current_visual_change": "AFR2-20261102-14",
-      "implementation_review": "changes/2026-11-06-01-coordinated-corrections.md",
-      "gesture_overlay": "L glyph and sixteen-step hold progress; reserved lower-right slot; QR excluded; action only on release"
+      "implementation_review": "changes/2026-11-09-03-source-completion.md",
+      "gesture_overlay": "L glyph and sixteen-step hold progress; reserved lower-right slot; QR excluded; action only on release",
+      "item_count_by_mode": {
+        "STA": 7,
+        "AP": 6,
+        "AP_STA": 7,
+        "OFF": 6,
+        "unknown": 6
+      },
+      "resource_generation": "Web/tools/sync-oled-library.mjs completed 2026-11-09; no build or raster parity test"
     },
     {
       "id": "shared:screen/030020",
@@ -1393,12 +1403,12 @@
         "select",
         "long-release-back"
       ],
-      "state": "source-integrated-compiled-runtime-unverified",
+      "state": "source-integrated-resources-regenerated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261106-01",
+      "change_id": "AFR2-20261109-03",
       "item_count": 3,
       "back_semantics": "release-long and explicit Volver restore context; notices complete deferred destination only when closed",
-      "variant": "three16px-rows; dynamic selection/count; physical actions",
+      "variant": "Iniciar/Detener AP segun estado real; Preguntar AP SI/NO/-- (politica persistente ESP, desconocida deshabilitada); Volver contextual. No cambia modo por seleccionar fallback.",
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
       "web_fidelity": "2104/2104 host C/TS full frames; same pixels after AVR storage optimization; no exhaustive physical/partial flow claim",
       "wire_status": "EX01v13 compiled, EEPROMv9; unflashed; RAM optimized, physical stack/acceptance pending",
@@ -1411,8 +1421,9 @@
       "visual_profile": "Shared inverse14px header and semantic section icon; three16px rows; filled selection; BACK16px + Volver with4px gap.",
       "menu_return_visual": "AFR2-20261102-11: original BACK arrow16px + Volver text,4px gap, vertically centered; gesture hints on non-menu pages unchanged.",
       "current_visual_change": "AFR2-20261102-14",
-      "implementation_review": "changes/2026-11-06-01-coordinated-corrections.md",
-      "gesture_overlay": "L glyph and sixteen-step hold progress; reserved lower-right slot; QR excluded; action only on release"
+      "implementation_review": "changes/2026-11-09-03-source-completion.md",
+      "gesture_overlay": "L glyph and sixteen-step hold progress; reserved lower-right slot; QR excluded; action only on release",
+      "resource_generation": "Web/tools/sync-oled-library.mjs completed 2026-11-09; no build or raster parity test"
     },
     {
       "id": "shared:screen/030025",
@@ -2602,8 +2613,8 @@
         "select",
         "long-release-back"
       ],
-      "variant": "Seven actual quick-action cards; title and n/7 counter in inverted header, framed status and inverted action band, turn glyph and long/back footer.",
-      "item_count": 7,
+      "variant": "Eight quick-action cards (AFR2-20261108-12 order: Modo, Motores, Ultrasonido, Radar, Servo, Linea, Rastro, Ajustes; quick_flags bit = page; AFR2-20261108-13: Linea = IR sensors on/off without motors, radar turns servo and HC-SR04 on); title and n/8 counter in inverted header, framed status and inverted action band, turn glyph and long/back footer. Ultrasonido toggles HC-SR04 sampling (MIDIENDO/APAGADO), off after reset.",
+      "item_count": 8,
       "state": "source-integrated-compiled-runtime-unverified",
       "physical_evidence": false,
       "change_id": "AFR2-20261106-01",
@@ -3127,11 +3138,13 @@
         "timeout-5s-start-ap"
       ],
       "item_count": 2,
-      "variant": "view; AVR node AFR2_N_WIFI_ASK=74 (selector de motor virtual de la Web pasa a 75); hijo de Wi-Fi > AP / fallback. La abre la app despues del aviso 0x04000C, solo si la UI esta libre (sin Si/No, edicion, teclado, tactil, Hall, prueba encoder, odometria ni secuencia). Barra de 5 s bajo 'Inicia AP en N s'; un giro o apretar el encoder la quitan y queda 'Elija una opcion' sin vencimiento. Iniciar AP: el aviso 'Red AP creada' (0x040004) de siempre. Seguir esperando: el ESP reintenta y vuelve a preguntar tras el tiempo de la preferencia. Vuelve a la pantalla anterior; se cierra sola si la STA conecta o hay AP. Un aviso encima pausa la cuenta.",
-      "state": "source-integrated-uncompiled-runtime-unverified",
+      "variant": "Solo por fallo STA con askFallback seleccionado. Conserva cuenta OLED de5s, cancelacion al interactuar, Iniciar AP/Seguir esperando y retorno contextual. AP manual no lo abre. ESP ya no impone otro timeout de20s mientras OLED enlazado.",
+      "state": "source-integrated-resources-regenerated-uncompiled-runtime-unverified",
       "physical_evidence": false,
       "build_evidence": "No build, test, validator or flash for this change",
-      "change_id": "AFR2-20261108-06"
+      "change_id": "AFR2-20261109-03",
+      "implementation_review": "changes/2026-11-09-03-source-completion.md",
+      "resource_generation": "Web/tools/sync-oled-library.mjs completed 2026-11-09; no build or raster parity test"
     },
     {
       "id": "shared:screen/010004",

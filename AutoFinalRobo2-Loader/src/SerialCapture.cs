@@ -41,15 +41,41 @@ namespace AFR2Loader
         long bytes, skippedCharacters, skippedBytes;
         int queuedDisplayUnits;
         bool released;
+        // AFR2-20261108-09: TAP1 records and complete text lines for the interpreter. Independent of the
+        // view's pause/truncation; bounded, with drop counters. The formatter writes one log line per record.
+        readonly TapDemux demux = new TapDemux();
+        readonly ConcurrentQueue<TapRecord> records = new ConcurrentQueue<TapRecord>();
+        readonly ConcurrentQueue<SerialLine> lines = new ConcurrentQueue<SerialLine>();
+        readonly StringBuilder partialLine = new StringBuilder();
+        long droppedRecords, droppedLines;
+        public Func<TapRecord, string> RecordFormatter;
+        public bool TakeRecord(out TapRecord record) { return records.TryDequeue(out record); }
+        public bool TakeLine(out SerialLine line) { return lines.TryDequeue(out line); }
+        public long DroppedRecords { get { return Interlocked.Read(ref droppedRecords); } }
+        public long DroppedLines { get { return Interlocked.Read(ref droppedLines); } }
         public readonly string Port, Codec, Id, Prefix;
-        public readonly int Baud;
+        // AFR2-20261108-10: the TAP source selector may change the speed of the open port (no reopen:
+        // reopening can auto-reset the Mega and lose the mode). Applied by the worker between reads.
+        int baud, requestedBaud;
+        TaskCompletionSource<bool> baudChanged;
+        public int Baud { get { lock (gate) return baud; } }
+        public Task ChangeBaudAsync(int newBaud)
+        {
+            if (newBaud < 300 || newBaud > 2000000) throw new ArgumentException("Baudios de lectura: entero entre 300 y 2000000.");
+            lock (gate)
+            {
+                if (released || state != "open") throw new InvalidOperationException("El puerto del monitor no está abierto.");
+                if (baudChanged != null) baudChanged.TrySetCanceled();
+                requestedBaud = newBaud; baudChanged = new TaskCompletionSource<bool>(); return baudChanged.Task;
+            }
+        }
         public readonly string Started = DateTimeOffset.Now.ToString("o");
         public SerialCapture(string port, int baud, string codec, Action<LoaderNotice> notify)
         {
             if (!Regex.IsMatch(port, @"^COM[1-9][0-9]{0,4}$", RegexOptions.IgnoreCase)) throw new ArgumentException("Elegí un puerto COM válido.");
             if (baud < 300 || baud > 2000000) throw new ArgumentException("Baudios de lectura: entero entre 300 y 2000000.");
             if (codec != "UTF-8" && codec != "ASCII" && codec != "Latin-1") throw new ArgumentException("Codificación no admitida.");
-            Port = port; Baud = baud; Codec = codec; this.notify = notify;
+            Port = port; this.baud = baud; Codec = codec; this.notify = notify;
             encoding = codec == "ASCII" ? Encoding.ASCII : codec == "Latin-1" ? Encoding.GetEncoding(28591) : new UTF8Encoding(false, false);
             journal = new JobState("serial_monitor", "serial", port, "opening"); Id = journal.Id;
             Prefix = Path.Combine(Profile.UserRoot, "logs", "serial-" + DateTime.Now.ToString("yyyyMMdd-HHmmss-fff") + "-" + Id.Substring(0, 6));
@@ -124,6 +150,53 @@ namespace AFR2Loader
                 Event(observation.Code, observation.Message, observation.Evidence, events);
             }
         }
+        // Raw bytes -> text runs (decoded as before) and TAP1 records (one summary line each), in order.
+        void ReceiveRaw(byte[] buffer, int count, Decoder decoder, char[] characters, StreamWriter transcript, StreamWriter events, BootObserver observer)
+        {
+            foreach (object part in demux.Push(buffer, count))
+            {
+                var textBytes = part as byte[];
+                if (textBytes != null)
+                {
+                    int length = decoder.GetChars(textBytes, 0, textBytes.Length, characters, 0, false);
+                    string text = new String(characters, 0, length);
+                    ReceiveText(text, textBytes, transcript, events, observer);
+                    CollectLines(text);
+                    continue;
+                }
+                var record = (TapRecord)part;
+                if (records.Count < 20000) records.Enqueue(record); else Interlocked.Increment(ref droppedRecords);
+                string summary = null;
+                Func<TapRecord, string> formatter = RecordFormatter;
+                if (formatter != null) { try { summary = formatter(record); } catch (Exception) { summary = null; } }
+                if (summary == null) summary = DefaultSummary(record);
+                ReceiveText(summary, Encoding.ASCII.GetBytes(summary), transcript, events, observer);
+            }
+        }
+        static string DefaultSummary(TapRecord record)
+        {
+            string head = record.At.ToString("HH:mm:ss.fff") + " [" + record.AvrMs + " ms] " + record.Origin;
+            if (record.Corrupt) return head + " | registro TAP corrupto\r\n";
+            if (record.Type == TapRecord.RawFromEsp) return head + " | " + record.Data.Length + " B" + (record.Redacted ? " (redactado)" : "") + "\r\n";
+            if (record.Data.Length < 2) return head + " | registro incompleto\r\n";
+            return head + " | CMD 0x" + record.Data[1].ToString("X2") + (record.Redacted ? " | redactado" : " | " + (record.Data.Length - 2) + " B") + "\r\n";
+        }
+        void CollectLines(string text)
+        {
+            foreach (char c in text)
+            {
+                if (c == '\n' || c == '\r')
+                {
+                    if (partialLine.Length > 0)
+                    {
+                        if (lines.Count < 20000) lines.Enqueue(new SerialLine { Text = partialLine.ToString() }); else Interlocked.Increment(ref droppedLines);
+                        partialLine.Length = 0;
+                    }
+                    continue;
+                }
+                if (partialLine.Length < 400) partialLine.Append(c);
+            }
+        }
         void Failure(Exception error, string context, StreamWriter events = null)
         {
             lock (gate) { state = "failed"; errorText = (errorText == null ? "" : errorText + "\r\n") + context + ": " + error; }
@@ -153,6 +226,13 @@ namespace AFR2Loader
                 var observer = new BootObserver();
                 while (!stop.IsCancellationRequested)
                 {
+                    int wantedBaud; TaskCompletionSource<bool> baudDone;
+                    lock (gate) { wantedBaud = requestedBaud; baudDone = baudChanged; requestedBaud = 0; baudChanged = null; }
+                    if (wantedBaud > 0)
+                    {
+                        try { serial.BaudRate = wantedBaud; lock (gate) baud = wantedBaud; Event("baud_changed", "Baudios del puerto: " + wantedBaud + " (fuente TAP).", "Sin cerrar ni reabrir el COM.", events); if (baudDone != null) baudDone.TrySetResult(true); }
+                        catch (Exception error) { if (baudDone != null) baudDone.TrySetException(error); }
+                    }
                     PendingWrite request;
                     while (!stop.IsCancellationRequested && writes.TryDequeue(out request))
                     {
@@ -176,9 +256,7 @@ namespace AFR2Loader
                                     int rxCount = serial.Read(buffer, 0, buffer.Length);
                                     lock (gate) bytes += rxCount;
                                     binary.Write(buffer, 0, rxCount); binary.Flush();
-                                    int rxLength = decoder.GetChars(buffer, 0, rxCount, characters, 0, false);
-                                    var rxRaw = new byte[rxCount]; Buffer.BlockCopy(buffer, 0, rxRaw, 0, rxCount);
-                                    ReceiveText(new String(characters, 0, rxLength), rxRaw, transcript, events, observer);
+                                    ReceiveRaw(buffer, rxCount, decoder, characters, transcript, events, observer);
                                 }
                             }
                             transmitText.WriteLine(DateTimeOffset.Now.ToString("o") + " [written] " + request.Bytes.Length + " bytes; no acredita recepción por el dispositivo.");
@@ -201,9 +279,7 @@ namespace AFR2Loader
                     if (count == 0) continue;
                     lock (gate) bytes += count;
                     binary.Write(buffer, 0, count); binary.Flush();
-                    int length = decoder.GetChars(buffer, 0, count, characters, 0, false);
-                    var raw = new byte[count]; Buffer.BlockCopy(buffer, 0, raw, 0, count);
-                    ReceiveText(new String(characters, 0, length), raw, transcript, events, observer);
+                    ReceiveRaw(buffer, count, decoder, characters, transcript, events, observer);
                 }
                 int remaining = decoder.GetChars(new byte[0], 0, 0, characters, 0, true);
                 ReceiveText(new String(characters, 0, remaining), new byte[0], transcript, events, observer);
@@ -222,6 +298,7 @@ namespace AFR2Loader
                     try { events.WriteLine(DateTimeOffset.Now.ToString("o") + (portClosed ? " [closed] " : " [release_unconfirmed] ") + closeReason); }
                     catch (Exception error) { Failure(error, "Falló el registro del cierre"); }
                 PendingWrite pendingWrite; while (writes.TryDequeue(out pendingWrite)) pendingWrite.Done.TrySetCanceled();
+                lock (gate) { if (baudChanged != null) baudChanged.TrySetCanceled(); baudChanged = null; requestedBaud = 0; }
                 foreach (IDisposable stream in new IDisposable[] { binary, transcript, transmitBinary, transmitText, events })
                     if (stream != null) { try { stream.Dispose(); } catch (Exception error) { Failure(error, "Falló el cierre del registro serie"); } }
                 lock (gate) { released = portClosed; if (state != "failed") state = "closed"; ended = DateTimeOffset.Now.ToString("o"); }

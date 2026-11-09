@@ -123,5 +123,11 @@ static void handle(Afr2Link *l,uint32_t now) {
 void Afr2Link_Push(Afr2Link *l,uint8_t b,uint32_t now) {
     if (l->reply_length) return;
     Afr2Link_Tick(l,now); l->last_rx_ms=now;
-    if (afr2_wire_push(&l->parser,b)) handle(l,now);
+    if (afr2_wire_push(&l->parser,b)) {
+        /* AFR2-20261108-09: diagnostics only (afr2_debug TAP); never changes handling. */
+        notify(l,AFR2_LINK_EVT_FRAME_RX,l->parser.command,l->parser.route,l->parser.payload,l->parser.length,0);
+        handle(l,now);
+        if(l->reply_length>=AFR2_WIRE_OVERHEAD)
+            notify(l,AFR2_LINK_EVT_FRAME_TX,l->reply[10],l->reply[9],l->reply+11,(uint8_t)(l->reply_length-AFR2_WIRE_OVERHEAD),0);
+    }
 }

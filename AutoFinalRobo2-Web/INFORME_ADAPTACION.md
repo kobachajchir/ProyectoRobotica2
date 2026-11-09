@@ -275,3 +275,11 @@ Adaptación de fuente coordinada; véase Contracts/contracts/HALL_MANUAL_STREAM_
 ## AFR2-20261106-13 — Movimiento sin requisito HC-SR04
 
 Se retiran los bloqueos de inicio y parada por lectura HC-SR04 inválida o distancia frontal<150mm en los modos físicos vigentes. Se conservan adquisición, telemetría, radar y simulación de aproximación. El simulador de UI refleja los requisitos del firmware. Sin tests, compilaciones, validadores, generadores ni cargas. Véase Contracts/changes/2026-11-06-13-motion-without-hcsr-gate.md.
+
+## AFR2-20261109-02 / 1.9.0
+
+Modo AP manual independiente de la política de fallback; búsqueda solo con STA, Detener AP y bitmaps suministrados vinculados. Cambios por archivo en Contracts/provenance/wifi-ap-policy-20261109-02.json. Solo fuente; sin compilación, tests, validadores, generación, carga ni prueba física.
+
+## AFR2-20261109-03 / 1.9.1
+
+Cierre coordinado de fuentes: permiso PWM explícito y condiciones vigentes, Wi-Fi OFF/política desconocida y réplicas Web. Recursos OLED (75 nodos/26iconos) y catálogo3D regenerados. No se compiló, probó ni cargó; esa etapa la realizará el usuario. Registro por archivo en Contracts/provenance/source-completion-20261109-03.json.

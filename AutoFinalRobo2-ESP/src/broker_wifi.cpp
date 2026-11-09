@@ -108,7 +108,9 @@ bool Broker::finishWifi(const BrokerRequest &req,const MegaResult &r) {
     } else if(op==6){eraseConfig(oledDraft_);wifiDraftReady_=false;wifiDraftToken_=0;wifiResult_=5;publishStatus();}
     else if(op==7){if(wifi_.retry()){wifiRequestedMode_=1;wifiResult_=2;wifiPhase_=6;}else wifiResult_=4;}
     // AFR2-20261108-06: respuesta del selector sin Wi-Fi. 13 Iniciar AP; 14 Seguir esperando (2 bytes: segundos u16LE).
-    else if(op==13){wifiResult_=wifi_.answerAsk(true,0,millis())?3:4;wifiStatusAt_=0;}
+    else if(op==13){wifiResult_=wifi_.startAp()?3:4;wifiStatusAt_=0;}
+    else if(op==AFR2_WIFI_OP_ASK_FALLBACK){wifiResult_=total==1 && (uint8_t)wifiCredentials_[0]<=1 && wifi_.setAskFallback(wifiCredentials_[0]!=0)?3:4;wifiStatusAt_=0;}
+    else if(op==AFR2_WIFI_OP_AP_STOP){wifiResult_=wifi_.stopAp()?3:4;wifiStatusAt_=0;}
     else if(op==14){wifiResult_=total==2 && wifi_.answerAsk(false,afr2_get_u16((const uint8_t *)wifiCredentials_),millis())?3:4;}
     else if(op==8) {
         uint32_t now=millis();
@@ -138,7 +140,7 @@ void Broker::tickWifi(uint32_t now) {
         if(productRequest(AFR2_EXT_WIFI_UPDATE,b,7+count)){pending_=BrokerRequest{};strlcpy(pending_.command,"_wifi_credentials",33);waiting_=true;wifiNetworkIndex_+=count;if(wifiNetworkIndex_==b[6]){wifiPhase_=0;memset(wifiCredentials_,0,sizeof(wifiCredentials_));}}return;
     }
     if(wifiDetailsPending_){
-        if(productRequest(AFR2_EXT_WIFI_UPDATE,wifiDetails_,18)){pending_=BrokerRequest{};strlcpy(pending_.command,"_wifi_details",33);waiting_=true;wifiDetailsPending_=false;}return;
+        if(productRequest(AFR2_EXT_WIFI_UPDATE,wifiDetails_,sizeof(wifiDetails_))){pending_=BrokerRequest{};strlcpy(pending_.command,"_wifi_details",33);waiting_=true;wifiDetailsPending_=false;}return;
     }
     if(!wifiStatusAt_ || (uint32_t)(now-wifiStatusAt_)>=2000u) {
         JsonDocument status;wifi_.status(status.to<JsonObject>());uint8_t b[46]={};
@@ -148,7 +150,7 @@ void Broker::tickWifi(uint32_t now) {
         IPAddress ip,ap;ip.fromString(status["staIp"]|"0.0.0.0");ap.fromString(status["apIp"]|"0.0.0.0");
         for(uint8_t i=0;i<4;i++){b[6+b[5]+i]=ip[i];b[10+b[5]+i]=ap[i];}
         memset(wifiDetails_,0,sizeof(wifiDetails_));wifiDetails_[0]=4;wifiDetails_[1]=b[1];wifiDetails_[2]=b[2];
-        wifiDetails_[3]=status["securityCode"]|0;wifiDetails_[4]=status["apSecurityCode"]|0;wifiDetails_[5]=readyWifiClients();
+        wifiDetails_[3]=status["securityCode"]|0;wifiDetails_[4]=status["apSecurityCode"]|0;wifiDetails_[5]=readyWifiClients();wifiDetails_[18]=status["askFallback"]|false;
         IPAddress mask,gateway;mask.fromString(status[b[2]?"staMask":"apMask"]|"0.0.0.0");gateway.fromString(status[b[2]?"staGateway":"apGateway"]|"0.0.0.0");
         for(uint8_t i=0;i<4;i++){wifiDetails_[6+i]=ip[i];wifiDetails_[10+i]=mask[i];wifiDetails_[14+i]=gateway[i];}
         if(productRequest(AFR2_EXT_WIFI_UPDATE,b,14+b[5])){pending_=BrokerRequest{};strlcpy(pending_.command,"_wifi_status",33);waiting_=true;wifiStatusAt_=now;}return;
