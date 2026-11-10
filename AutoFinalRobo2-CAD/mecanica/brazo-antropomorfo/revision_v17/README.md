@@ -1,5 +1,7 @@
 # Brazo v17: arquitectura V7 y codo por correa
 
+**Documentación 09/11/2026, AFR2-20261109-13:** [Libro complementario de 224 hojas y seis tomos](laminas_20261109/README.md): 66 definiciones fabricadas/adaptadas, incluidas las 30 impresas; interfaces, cortes, BOM y despieces de seis conjuntos. [Primer borrador del informe](../../../../AutoFinalRobo2-Contracts/docs/informe_20261109/README.md), separado del maestro. Documentación nominal desde la copia F3D del 02/11; ajustes y liberación de taller pendientes, sin modificar la geometría.
+
 Entrega mecanica 3D, AFR2-20261029-03. **Montajes, ensambles y limites
 completados; no aprobado para fabricar.** Se conserva el antropomorfo y la
 pinza V7; se descartan la pinza compacta v15 y el banco alternativo v16.

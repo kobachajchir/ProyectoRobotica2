@@ -1,3 +1,13 @@
+## AFR2-20261110-07 — 10/11/2026
+
+Paquete común [Revision/R01_20261110](../Revision/R01_20261110/README.md): informe D1 editable, planos completos y seis tomos, fichas, fuente CAD y pinout actualizado con antecedentes identificados. Índice, observaciones, historial y procedencia para continuar con R02/R03 hasta el informe final. Originales conservados, sin editar contenido técnico ni regenerar PDF. [Ficha](changes/2026-11-10-07-paquete-revision-informe-planos-pinout.md).
+Solo organización documental; atmega/esp/web/Loader sin cambios ni versión nueva. Sin tests, compilaciones, validaciones o flasheos.
+
+## AFR2-20261109-13 — 09/11/2026
+
+Brazo v17: 224 hojas A3 en seis tomos, con 66 definiciones fabricadas/adaptadas, 30 impresas, seis conjuntos, cortes, interfaces, BOM y despieces desde la copia CAD real. Primer borrador independiente del informe: 32 páginas, PDF/DOCX y tres partes, con cinemática de brazo y base Mecanum, modelo integrado y resultados históricos. [Ficha](changes/2026-11-09-13-planos-v17-informe-borrador.md).
+Estado: documentación nominal generada; ajustes/proceso de fabricación pendientes. ATmega/ESP/Web/Loader sin cambios ni versión nueva. Sin tests, compilaciones, validaciones, pruebas físicas o flasheos.
+
 ## AFR2-20261109-03 — 09/11/2026
 
 Fuentes coordinadas y recursos OLED/3D regenerados. PWM exige habilitación explícita y respeta fallos/tareas; slot ESP fluido conservado. OFF/estado desconocido Wi-Fi y simulador corregidos.

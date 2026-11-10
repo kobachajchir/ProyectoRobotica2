@@ -16,6 +16,8 @@
 
 # AutoFinalRobo2-CAD
 
+**AFR2-20261109-13:** [Documentación dimensional v17: 224 hojas A3 y seis tomos](mecanica/brazo-antropomorfo/revision_v17/laminas_20261109/README.md), para 66 definiciones fabricadas/adaptadas y seis conjuntos, con cortes, interfaces y despieces. [Primer borrador del informe, PDF/DOCX](../AutoFinalRobo2-Contracts/docs/informe_20261109/README.md), 32 páginas con cinemática de ambos robots. Cobertura nominal completada; ajustes/tolerancias y liberación de fabricación pendientes. Sin tests, validaciones ni modificación del maestro.
+
 **AFR2-20261028-06:** [preselección de motores por masa, centro de masa y esfuerzos](mecanica/brazo-antropomorfo/preseleccion_actuadores_v10/README.md).25 combinaciones,16.507 estados fuente y297.379 estados de J1 por alternativa. El cambio pesado de muñeca empeora J2/J3/J4; una opción ligera suma96 g incluyendo reservas. Falla×2 en50 ms y pasa solo la comparación nominal a100 ms, con recorridos, agarre, alimentación y estabilidad pendientes. Sin nuevo CAD ni FEA; v09 conservada.
 
 **AFR2-20261028-04, brazo v09:** [J1 GX3270BLS, housing bajo y PLA PrintaLot](mecanica/brazo-antropomorfo/revision_v09/README.md), con [maestro editable](mecanica/brazo-antropomorfo/AFR2_Brazo_PVC32_AGV_v09_J1_GX3270BLS.f3d) y componentes independientes. Eje/brida metálica, cartucho desmontable6000 y correcciones de interferencias;3.087 configuraciones sin penetraciones reportables y79.651 estados de cargas/secciones. Predimensionado bajo hipótesis; PLA FDM, restantes actuadores y estabilidad del auto aún condicionados. Conserva v08; sin FEA ni ensayo físico.

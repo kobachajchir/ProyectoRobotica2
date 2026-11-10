@@ -1,0 +1,345 @@
+{
+  "title": "Pinout del auto",
+  "subtitle": "AutoFinalRobo2 | OSOYOO Mecanum 4WD | Arduino Mega 2560",
+  "revision": "AFR2-20261029-26",
+  "date": "29/10/2026",
+  "author": "Hecho por Koba Chajchir",
+  "orientation": "DEL/TRAS e IZQ/DER se interpretan mirando en el sentido de avance del auto.",
+  "sections": [
+    {
+      "title": "Motores - control desde el Mega",
+      "columns": [
+        "Rueda",
+        "Model Y / salida",
+        "IN1",
+        "IN2",
+        "PWM"
+      ],
+      "rows": [
+        [
+          "DEL DER (FR)",
+          "M_B / BK1-BK2",
+          "D22",
+          "D24",
+          "D9 / ENA"
+        ],
+        [
+          "DEL IZQ (FL)",
+          "M_B / BK3-BK4",
+          "D26",
+          "D28",
+          "D10 / ENB"
+        ],
+        [
+          "TRAS DER (RR)",
+          "M_A / AK1-AK2",
+          "D5",
+          "D6",
+          "D11 / ENA"
+        ],
+        [
+          "TRAS IZQ (RL)",
+          "M_A / AK3-AK4",
+          "D7",
+          "D8",
+          "D12 / ENB"
+        ]
+      ],
+      "widths": [
+        0.23,
+        0.3,
+        0.12,
+        0.12,
+        0.23
+      ],
+      "note": "M+/M- van al puente H de su rueda; no al Mega. Polaridad de giro según montaje y calibración."
+    },
+    {
+      "title": "Hall de ruedas - dos headers de 4 señales",
+      "columns": [
+        "Rueda",
+        "A = S1 / naranja",
+        "B = S2 / verde"
+      ],
+      "rows": [
+        [
+          "DEL DER",
+          "A8 (D62)",
+          "A12 (D66)"
+        ],
+        [
+          "DEL IZQ",
+          "A9 (D63)",
+          "A13 (D67)"
+        ],
+        [
+          "TRAS DER",
+          "A10 (D64)",
+          "A14 (D68)"
+        ],
+        [
+          "TRAS IZQ",
+          "A11 (D65)",
+          "A15 (D69)"
+        ]
+      ],
+      "widths": [
+        0.3,
+        0.35,
+        0.35
+      ],
+      "note": "Header A: A8, A9, A10, A11. Header B: A12, A13, A14, A15. Ambos: DEL DER, DEL IZQ, TRAS DER, TRAS IZQ."
+    },
+    {
+      "title": "Hall de ruedas - alimentación",
+      "columns": [
+        "En cada encoder Hall",
+        "Conexión"
+      ],
+      "rows": [
+        [
+          "VCC / V (blanco en manual)",
+          "+5 V regulados"
+        ],
+        [
+          "GND / G (amarillo en manual)",
+          "GND común con el Mega"
+        ]
+      ],
+      "widths": [
+        0.53,
+        0.47
+      ],
+      "note": "Los cuatro VCC comparten +5 V y los cuatro GND comparten masa. OSOYOO advierte variantes blanco/amarillo invertidos: identificar V/G en la placa. No usar tensión de batería en VCC Hall."
+    },
+    {
+      "title": "Potencia y voltímetro del kit",
+      "columns": [
+        "Origen / conexión",
+        "Destino"
+      ],
+      "rows": [
+        [
+          "Portabaterías + / -",
+          "Model Y VIN+ / VIN-"
+        ],
+        [
+          "Model Y VOUT+ / VOUT-",
+          "Entrada POWER del shield"
+        ],
+        [
+          "Voltímetro VCC / VT / GND",
+          "Cabecera homónima del Model Y"
+        ]
+      ],
+      "widths": [
+        0.48,
+        0.52
+      ],
+      "note": "Ruta de potencia del manual; VOUT no se considera una salida regulada de 5 V. VT mide tensión; no es un GPIO del Mega. GND lógico común; no usar una salida M- del puente H como masa."
+    },
+    {
+      "title": "Sensores de línea, ultrasonido y servo",
+      "columns": [
+        "Elemento",
+        "Señal",
+        "Pin Mega / alimentación"
+      ],
+      "rows": [
+        [
+          "Línea",
+          "IR1 / IR2 / IR3 / IR4 / IR5",
+          "A4 / A3 / A2 / A1 / A0"
+        ],
+        [
+          "Línea",
+          "VCC / GND",
+          "+5 V / GND"
+        ],
+        [
+          "HC-SR04",
+          "TRIG / ECHO",
+          "D30 / D31"
+        ],
+        [
+          "HC-SR04",
+          "VCC / GND",
+          "+5 V / GND"
+        ],
+        [
+          "Servo radar",
+          "S / VCC / GND",
+          "D13 / +5 V / GND"
+        ]
+      ],
+      "widths": [
+        0.22,
+        0.39,
+        0.39
+      ],
+      "note": "S del servo es señal. Su +5 V es de alimentación, no un GPIO. A4 está ocupado por IR1; no usar A4/A5 como I2C del Mega."
+    },
+    {
+      "title": "Panel añadido - OLED y encoder de menú",
+      "columns": [
+        "Elemento",
+        "Señal",
+        "Pin Mega / alimentación"
+      ],
+      "rows": [
+        [
+          "OLED",
+          "SDA / SCL",
+          "D20 (SDA) / D21 (SCL)"
+        ],
+        [
+          "OLED",
+          "VCC / GND",
+          "+5 V / GND"
+        ],
+        [
+          "Encoder menú",
+          "CLK / DT / SW",
+          "D2 / D3 / D42"
+        ],
+        [
+          "Panel encoder",
+          "VCC / GND",
+          "+5 V / GND"
+        ],
+        [
+          "Encoder sin breakout",
+          "Comunes giro / pulsador",
+          "GND / GND"
+        ]
+      ],
+      "widths": [
+        0.27,
+        0.32,
+        0.41
+      ],
+      "note": "5 V en el montaje: confirmado por Koba. El encoder mecánico cierra contactos a GND; VCC alimenta el panel/pull-ups. OLED con pines arriba, de frente: GND, VCC, SCL, SDA. Usar serigrafía real."
+    },
+    {
+      "title": "Conectores del panel",
+      "columns": [
+        "Conector",
+        "Orden de señales"
+      ],
+      "rows": [
+        [
+          "J1 hembra 1x5 / 2,54 mm",
+          "1 CLK, 2 DT, 3 SW, 4 SDA, 5 SCL"
+        ],
+        [
+          "J2 JST 1x2 / 2,00 mm",
+          "1 VCC (+5 V montaje), 2 GND"
+        ]
+      ],
+      "widths": [
+        0.44,
+        0.56
+      ],
+      "note": "Numeración del diseño; identificar pin 1 físicamente. El CAD guardado conserva +3V3: esta hoja registra el montaje a 5 V, no una actualización del esquema/PCB."
+    },
+    {
+      "title": "Wi-Fi - UART de operación",
+      "columns": [
+        "Origen",
+        "Destino"
+      ],
+      "rows": [
+        [
+          "Mega D18 / TX1",
+          "E_RX del selector del shield"
+        ],
+        [
+          "E_TX del selector del shield",
+          "Mega D19 / RX1"
+        ],
+        [
+          "GND Mega",
+          "GND shield"
+        ]
+      ],
+      "widths": [
+        0.5,
+        0.5
+      ],
+      "note": "Usar E_RX/E_TX del selector. El puerto directo ESP UART es de 3,3 V. Aislar selección D4/D5 y D0/D1; Bluetooth desconectado de UART1. D5 ya controla un motor."
+    },
+    {
+      "title": "Bateria - medicion propuesta en fuente",
+      "columns": [
+        "Elemento",
+        "Conexion"
+      ],
+      "rows": [
+        [
+          "Toma del voltimetro + despues de llave",
+          "10 kohm superior hacia nodo de medida"
+        ],
+        [
+          "Nodo de medida",
+          "A5 / PF5 / ADC5; no BAT+ directo"
+        ],
+        [
+          "Resistencia inferior 10 kohm",
+          "Nodo de medida a GND"
+        ],
+        [
+          "Capacitor104 / 100nF",
+          "Nodo de medida a GND, en paralelo a resistencia inferior"
+        ]
+      ],
+      "widths": [
+        0.4,
+        0.6
+      ],
+      "note": "AFR2-20261029-26: sin diodo; GND comun; AVCC5V nominal. Fuente sin compilar ni montaje/calibracion probados. PDF previo sin regenerar."
+    }
+  ],
+  "status": "Build AFR2-20261027-10: captura Hall habilitada y firmware compilado. Aún sin flashear. Si la preferencia estaba en 0, activar Hall conectado=1 en Geometria y guardar EEPROM. Funcionamiento físico no probado.",
+  "references": [
+    {
+      "label": "Manual OSOYOO del kit",
+      "target": "supplied/ManualOsoyoo.pdf",
+      "detail": "Páginas PDF 5, 14-17, 26-27, 33-34 y 43."
+    },
+    {
+      "label": "Mapa de pines del firmware",
+      "target": "../../AutoFinalRobo2-Atmega/include/board_pinmap.h",
+      "detail": "Asignación activa en fuente; Hall agrupados en revisión 07."
+    },
+    {
+      "label": "Arduino Mega 2560 - pinout oficial",
+      "target": "https://docs.arduino.cc/resources/pinouts/A000067-full-pinout.pdf",
+      "detail": "Correspondencia A8-A15, D62-D69 y puerto K."
+    },
+    {
+      "label": "Microchip ATmega2560 - hoja de datos",
+      "target": "https://ww1.microchip.com/downloads/en/devicedoc/atmega640-1280-1281-2560-2561-datasheet-ds40002211a.pdf",
+      "detail": "Puerto K / PCINT16-PCINT23 y PCMSK2."
+    },
+    {
+      "label": "OSOYOO - alimentación y colores Hall",
+      "target": "https://osoyoo.com/2020/07/01/robot-tank-car-kit-v2-lesson8-use-encoder-to-synchronize-motor-speed/",
+      "detail": "Hall V a 5 V; G a GND; S1 naranja; S2 verde."
+    },
+    {
+      "label": "OSOYOO - variantes de alimentación del encoder",
+      "target": "https://osoyoo.com/2019/11/08/how-to-test-motor-encoder-with-arduino/",
+      "detail": "Advierte variantes con blanco y amarillo intercambiados."
+    },
+    {
+      "label": "LCDwiki - OLED de referencia MC096VX",
+      "target": "https://www.lcdwiki.com/0.96inch_OLED_Module_%28IIC-4P_SKU%3AMC096VX%29",
+      "detail": "Referencia 3,3/5 V; no identifica por sí sola la unidad instalada."
+    },
+    {
+      "label": "Montaje comunicado por Koba Chajchir",
+      "target": "../changes/2026-10-27-07-complete-pinout-grouped-hall.md",
+      "detail": "27/10/2026: panel a 5 V; Hall en dos grupos A y B, orden FR/FL/RR/RL."
+    }
+  ]
+}
