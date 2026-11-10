@@ -1,3 +1,8 @@
+## AFR2-20261110-08 — 10/11/2026
+
+Desarrollador: nueva tarjeta del repositorio con QR SVG local y enlace directo a GitHub, siguiendo las tarjetas, tokens y temas existentes. Disposición adaptable a móvil, foco visible y código negro/blanco sin servicios externos ni dependencias nuevas. [Ficha](changes/2026-11-10-08-developer-repository-qr.md).
+Versión: 1.16.0 (subversión). Web fuente; ATmega/ESP solo versión compartida. Sin tests, compilaciones, validaciones, navegador, escaneo ni cargas.
+
 ## AFR2-20261110-07 — 10/11/2026
 
 Paquete común [Revision/R01_20261110](../Revision/R01_20261110/README.md): informe D1 editable, planos completos y seis tomos, fichas, fuente CAD y pinout actualizado con antecedentes identificados. Índice, observaciones, historial y procedencia para continuar con R02/R03 hasta el informe final. Originales conservados, sin editar contenido técnico ni regenerar PDF. [Ficha](changes/2026-11-10-07-paquete-revision-informe-planos-pinout.md).

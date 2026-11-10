@@ -37,6 +37,7 @@ Reglas:
 
 | Versión | Tipo | Cambio |
 |---|---|---|
+| 1.16.0 | subversión | AFR2-20261110-08: tarjeta de repositorio en Desarrollador, QR local y enlace directo a GitHub. Web en fuente; ATmega/ESP solo versión compartida. Sin compilar/cargar. |
 | 1.0.0 | versión | AFR2-20261108-02: primera versión 1 en ATmega, ESP y Web (incluye -03, -04 y -05). |
 | 1.1.0 | subversión | AFR2-20261108-06: selector «Sin red Wi-Fi» (Iniciar AP / Seguir esperando) y preferencia Reintento Wi-Fi. |
 | 1.2.0 | subversión | AFR2-20261108-07: pantalla de inicio de 3 s con la versión y esta política de versiones. |

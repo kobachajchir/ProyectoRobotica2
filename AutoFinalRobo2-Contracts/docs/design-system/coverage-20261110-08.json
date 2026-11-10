@@ -1,0 +1,46 @@
+{
+  "changeId": "AFR2-20261110-08",
+  "target": "#/desarrollador",
+  "manualVersion": "0.1.11",
+  "mode": "APLICAR",
+  "authorization": "Aplicacion del borrador autorizada por VIS-062; tarjeta solicitada expresamente en este cambio",
+  "verification": "No verificada en ejecucion ni por escaneo",
+  "sources": [
+    "AutoFinalRobo2-Contracts/docs/design-system/index.md",
+    "AutoFinalRobo2-Contracts/docs/design-system/manual.md",
+    "AutoFinalRobo2-Contracts/docs/design-system/components.md",
+    "AutoFinalRobo2-Contracts/docs/design-system/tokens.json",
+    "AutoFinalRobo2-Web/src/styles/visual-language.css",
+    "AutoFinalRobo2-Web/src/styles/protocol-studio.css",
+    "AutoFinalRobo2-Web/src/styles/oled-catalogue.css",
+    "AutoFinalRobo2-Web/src/features/oled/vendor/qrcodegen.ts"
+  ],
+  "coverage": [
+    {
+      "component": "QR y acceso al repositorio",
+      "evidence": "Confirmada",
+      "scope": "URL de GitHub del proyecto, normalizada sin el punto final de puntuacion",
+      "coverage": "Fuente implementada"
+    },
+    {
+      "component": "Material de tarjeta, tipografia, color y foco",
+      "evidence": "Observada",
+      "scope": "afr2-protocol-card y capa comun visual-language.css; tokens semanticos existentes",
+      "coverage": "Reutilizados en fuente"
+    },
+    {
+      "component": "Composicion, escala y adaptacion movil",
+      "evidence": "Propuesta",
+      "scope": "Copia a la izquierda, QR de 208 px a la derecha; columna unica bajo 600 px",
+      "coverage": "Fuente implementada; aspecto no observado en ejecucion"
+    },
+    {
+      "component": "Colores de datos del QR",
+      "evidence": "Propuesta",
+      "scope": "Excepcion funcional: negro y blanco fijos en SVG, con cuatro modulos de zona libre en ambos temas",
+      "coverage": "Fuente implementada; lectura por camara pendiente"
+    }
+  ],
+  "checksRun": [],
+  "limits": "Sin tests, builds, validadores, navegador, comprobacion de escaneo, empaquetado ni carga al ESP. No cambia la interfaz OLED."
+}

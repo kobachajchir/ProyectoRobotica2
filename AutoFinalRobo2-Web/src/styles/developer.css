@@ -1,0 +1,82 @@
+/* AFR2-20261110-08: repository card uses the shared solid-card visual language. */
+.afr2-protocol-card.afr2-developer-repository {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 208px;
+  align-items: center;
+  gap: var(--space-6);
+}
+
+.afr2-developer-repository__copy {
+  display: grid;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.afr2-developer-repository__copy p {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.afr2-developer-repository__copy .afr2-kicker {
+  color: var(--action);
+}
+
+.afr2-developer-repository__url {
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: var(--type-label-size);
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.afr2-developer-back.afr2-developer-repository__link {
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--action-border);
+  border-radius: var(--radius-md);
+  background: var(--action-subtle);
+  font: var(--type-label);
+}
+
+.afr2-developer-repository__qr {
+  display: grid;
+  gap: var(--space-3);
+  width: 208px;
+  max-width: 100%;
+  margin: 0;
+  justify-self: end;
+}
+
+.afr2-developer-repository__code {
+  display: block;
+  overflow: hidden;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+}
+
+/* White and black are data-rendering colors; preserve the four-module quiet zone in both themes. */
+.afr2-developer-repository__code svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.afr2-developer-repository__qr figcaption {
+  color: var(--text-muted);
+  font: var(--type-label);
+  text-align: center;
+}
+
+.afr2-developer-repository a:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 4px;
+}
+
+@media (max-width: 599.98px) {
+  .afr2-protocol-card.afr2-developer-repository {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .afr2-developer-repository__qr {
+    justify-self: center;
+  }
+}
