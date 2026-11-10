@@ -1,3 +1,5 @@
+AFR2-20261110-10 / fuente vinculada: Menú → Estado (030004) → Fallos (030007). Girar elige en el pie Limpiar fallo / Detener / Volver; corto confirma. Limpiar requiere fallo activo y salidas detenidas y no reinicia marcha. Largo conserva retorno contextual; Sí/No obligatorio no se omite. Sin comandos remotos nuevos, generación ni verificación física. Contrato: contracts/OLED_FAULTS_RADAR_BATTERY_20261110.md.
+
 > **AFR2-20261106-12:** Hall por motor con Confirmar/Descartar y EEPROMv10; CW exterior positivo. PWM manual con slot reciente ESP sin esperar ACK AVR por consigna; ALIVE/STOP conservados. Solo fuente, sin compilación, tests, validadores, generadores, carga ni prueba física. Restituir permisos del bypass manual queda pendiente. Ver [contrato](../contracts/HALL_MANUAL_STREAM_20261106.md).
 
 > **AFR2-20261106-01:** Wi-Fi buscando/vacio/fallo y paginas de ocho, retorno al principal por nuevo boot con Si/No, Hall contextual e indicador de largo al soltar. [Contrato y cambios](../contracts/COORDINATED_CORRECTIONS_13.md). Fuentes AVR/Web vinculadas, recursos generados pendientes de autorizacion; sin paridad fisica acreditada.

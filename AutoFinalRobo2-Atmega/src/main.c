@@ -53,7 +53,9 @@ int main(void) {
     for(;;) {
         uint32_t now=Afr2Board_Millis();uint8_t b;
         const uint32_t loop_started=now;
+        Afr2LoopTiming timing={0};uint32_t stage_started=now;
         Afr2App_Task(&app,now);
+        timing.app_ms=(uint16_t)(Afr2Board_Millis()-stage_started);stage_started=Afr2Board_Millis();
         if(boot_pending && !link.reply_length) {
             uint8_t body[14]={0},frame[AFR2_WIRE_OVERHEAD+14];memcpy(body,"BT01",4);body[4]=AFR2_NODE_MEGA;
             afr2_put_u32(body+5,Afr2Boot_Id());body[9]=product.reset_cause;body[10]=AFR2_FIRMWARE_MAJOR;
@@ -76,6 +78,7 @@ int main(void) {
             Afr2Debug_PeerRaw(b,frame_before==11u,link.parser.command);
         }
         Afr2Debug_Task(now,&link);
+        timing.uart_ms=(uint16_t)(Afr2Board_Millis()-stage_started);stage_started=Afr2Board_Millis();
         /* AFR2-20261024-11. Bound UI work; Hall counters are captured by IRQ
          * first, even at an encoder IRQ entry. Actions remain exclusively here. */
         if(!encoder.raw_pressed && !encoder.stable_pressed)encoder.long_press_ms=product.config.long_press_ms;
@@ -107,14 +110,26 @@ int main(void) {
             }
             Afr2Ui_Apply(&ui,input);
         }
-        Afr2Twi_Task(now);Afr2I2c_Tick(&manager,now);
+        timing.input_ms=(uint16_t)(Afr2Board_Millis()-stage_started);
+        now=Afr2Board_Millis();
+        /* Service due control before adding a whole render to UART/input work.
+         * Same App wrapper preserves preference/UI notifications. No service from ISR/renderers. */
+        if(!product.stopped && (uint32_t)(now-product.control_ms)>=10u){
+            timing.total_ms=(uint16_t)(now-loop_started);product.loop_timing=timing;
+            stage_started=now;Afr2App_Task(&app,now);
+            timing.app_ms+=(uint16_t)(Afr2Board_Millis()-stage_started);now=Afr2Board_Millis();
+        }
+        stage_started=now;Afr2Twi_Task(now);Afr2I2c_Tick(&manager,now);
+        timing.io_ms=(uint16_t)(Afr2Board_Millis()-stage_started);
         /* AFR2-20261106-34: tope de refresco (>=40 ms entre cuadros) para que avisos del ESP o lecturas del
          * ultrasonico no fuerzan redibujos continuos; la bandera redraw se conserva hasta el siguiente cuadro. */
         static uint32_t last_render_ms;
         if((ui.redraw || ui.scroll_redraw) && !app.snapshot_active && (uint32_t)(now-last_render_ms)>=40u) {
             last_render_ms=now;
             uint32_t started=Afr2Board_Millis();Afr2UiSnapshot view;Afr2App_UiSnapshot(&app,&view);Afr2Ui_Render(&ui,&oled,&view);app.raster_ms=(uint16_t)(Afr2Board_Millis()-started);
+            timing.render_ms=app.raster_ms;
         }
+        stage_started=Afr2Board_Millis();
         Afr2Oled_Settings(&oled,product.config.contrast,product.config.rotation);
         /* AFR2-20261029-11: low-priority bounded sender runs AFTER services,
          * input and render. No periodic forced full-frame retransmission. */
@@ -127,7 +142,9 @@ int main(void) {
         Afr2Oled_Pause(&oled,!oled_slot);
         Afr2Oled_Task(&oled,now);
         if(oled_slot)oled_slot_ms=now;
-        Afr2Debug_LoopTime((uint16_t)(Afr2Board_Millis()-loop_started));
+        timing.io_ms+=(uint16_t)(Afr2Board_Millis()-stage_started);
+        timing.total_ms=(uint16_t)(Afr2Board_Millis()-loop_started);product.loop_timing=timing;
+        Afr2Debug_LoopTime(timing.total_ms);
         Afr2Watchdog_Kick();
     }
 }

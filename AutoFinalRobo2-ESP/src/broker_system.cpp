@@ -34,10 +34,10 @@ bool Broker::dispatchSystem(const BrokerRequest &req,uint32_t now) {
     }
     if(strcmp(req.command,"system.reboot") || req.wireCommand==AFR2_EXT_REBOOT)return false;
     if(mega_.ready() && (!productReady_ || !productStopped_ || (uint32_t)(now-productStateAt_)>1500u)) {
-        error(req,"BUSY_IN_FLIGHT","Detene el robot y espera confirmacion antes de reiniciar.",true);return true;
+        error(req,"BUSY_IN_FLIGHT",F("Detene el robot y espera confirmacion antes de reiniciar."),true);return true;
     }
     if(safetyRequested_ || rebootAt_) {
-        error(req,"BUSY_IN_FLIGHT","Hay control o parada pendientes; espera confirmacion.",true);return true;
+        error(req,"BUSY_IN_FLIGHT",F("Hay control o parada pendientes; espera confirmacion."),true);return true;
     }
     ++generation_;rebootAt_=now+300u;
     JsonDocument f;f["status"]="accepted";f["payload"]["target"]="esp";
@@ -59,7 +59,7 @@ bool Broker::finishSystem(const BrokerRequest &req,const MegaResult &r) {
     }
     if(req.wireCommand!=AFR2_EXT_REBOOT)return false;
     if(r.timeout || r.transportFault || r.payload[8]!=AFR2_RESULT_OK) {
-        error(req,"CAPABILITY_UNAVAILABLE","El ATmega no acepto el reinicio; verifica salidas detenidas y EEPROM inactiva.",true,"atmega");return true;
+        error(req,"CAPABILITY_UNAVAILABLE",F("El ATmega no acepto el reinicio; verifica salidas detenidas y EEPROM inactiva."),true,"atmega");return true;
     }
     ++generation_;
     JsonDocument f;f["status"]="accepted";f["payload"]["target"]="atmega";

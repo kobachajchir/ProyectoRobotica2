@@ -79,6 +79,7 @@ export function firmwareNode(node:number):readonly (string|number)[] {
   if(node===45)n=['Estado conexion',32,n[2],n[3],n[4],n[5]];
   if(REFORM_MENUS[node]){const [first,count]=REFORM_MENUS[node];n=[n[0],n[1],0,count,0x4000+first,n[5]];}
   if(node===S.AFR2_N_SERVO)n=['Servo',n[1],n[2],n[3],n[4],n[5]];
+  if(node===S.AFR2_N_ALERT_VIEW)n=['Fallos',S.AFR2_N_STATE,1,3,22,n[5]];
   if(node===S.AFR2_N_GEOMETRY)n=['Geometria nominal',S.AFR2_N_STATE,1,1,122,n[5]];
   return n;
 }
@@ -102,6 +103,7 @@ export function firmwareNodeCount(node:number,dirty=false,snapshot?:FirmwareSnap
 export function firmwareMenuItem(node: number, index: number,snapshot?:FirmwareSnapshot): FirmwareMenuItem {
   const n = firmwareNode(node);
   index = Math.min(index, firmwareNodeCount(node,snapshot?.configDirty,snapshot) - 1);
+  if(node===S.AFR2_N_ALERT_VIEW)return {label:['Limpiar fallo','Detener','Volver'][index],target:index===2?S.AFR2_N_STATE:255,action:index===0?S.AFR2_A_CLEAR_FAULT:index===1?S.AFR2_A_STOP:0,arg:0,min:0,max:0,step:0};
   if(node===31 && !((snapshot?.networkMode??0)&1) && index>=2)index++;
   if(node===36)return {label:index===0?(snapshot?.networkAp?'Detener AP':'Iniciar AP'):index===1?`Preguntar AP: ${!snapshot?.networkPolicyValid?'--':snapshot.networkAskFallback?'SI':'NO'}`:'Volver',target:index===2?31:255,action:index===0?110:index===1?109:0,arg:0,min:0,max:0,step:0};
   if(node===66){
@@ -196,10 +198,14 @@ function icon(o: Afr2OledBuffer, id: number, x: number, y: number, size: number)
   if (!image || !size) return;
   const largest = Math.max(image.width, image.height), stride = trunc((image.width + 7) / 8);
   const width = trunc(image.width * size / largest), height = trunc(image.height * size / largest);
+  if(!width || !height)return;
   x += trunc((size - width) / 2); y += trunc((size - height) / 2);
-  for (let py = 0; py < height; py++) for (let px = 0; px < width; px++) {
-    const sx = trunc(px * image.width / width), sy = trunc(py * image.height / height);
-    if (image.bytes[sy * stride + trunc(sx / 8)] & (1 << (sx & 7))) o.setPixel(x + px, y + py);
+  for (let py = 0; py < height; py++) {
+    const sy=trunc(py*image.height/height);let sx=0,remainder=0;
+    for(let px=0;px<width;px++){
+      if(image.bytes[sy*stride+trunc(sx/8)]&(1<<(sx&7)))o.setPixel(x+px,y+py);
+      remainder+=image.width;while(remainder>=width){remainder-=width;sx++;}
+    }
   }
 }
 function menuIcon(node: number, target: number, action: number, label: string): number {
@@ -342,9 +348,13 @@ export function renderTouchScreen(o: Afr2OledBuffer, direction: number, heading:
   o.fillRect(32,14,64,38,'black');
   const sn = TOUCH_SIN[heading], cs = TOUCH_SIN[(heading + 6) % 24];
   const stride = trunc((TOUCH_CAR_WIDTH + 7) / 8);
-  for (let y = -18; y < 18; y++) for (let x = -18; x < 18; x++) {
-    const sx = trunc((x * cs - y * sn) / 256) + trunc(TOUCH_CAR_WIDTH / 2), sy = trunc((x * sn + y * cs) / 256) + trunc(TOUCH_CAR_HEIGHT / 2);
+  for (let y = -18; y < 18; y++) {
+    let sxq=-18*cs-y*sn,syq=-18*sn+y*cs;
+    for(let x=-18;x<18;x++){
+    const sx = trunc(sxq / 256) + trunc(TOUCH_CAR_WIDTH / 2), sy = trunc(syq / 256) + trunc(TOUCH_CAR_HEIGHT / 2);
     if (sx >= 0 && sx < TOUCH_CAR_WIDTH && sy >= 0 && sy < TOUCH_CAR_HEIGHT && (TOUCH_CAR[sy * stride + trunc(sx / 8)] & (1 << (sx & 7)))) o.setPixel(64 + x, 32 + y);
+    sxq+=cs;syq+=sn;
+    }
   }
   if (direction < 8) {
     const d = direction * 3, dx = TOUCH_SIN[d], dy = -TOUCH_SIN[(d + 6) % 24];

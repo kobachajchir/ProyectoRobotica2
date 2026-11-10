@@ -8,10 +8,22 @@
 struct BrokerRequest {
     uint32_t client=0;
     char id[65]={}, command[33]={};
-    WifiConfig wifi;
+    struct SequenceIds { char sequenceId[65],executionId[65]; };
+    // Credentials and sequence labels never belong to the same command.
+    union { WifiConfig wifi{}; SequenceIds sequence; };
     uint8_t wireCommand=0,bodyLength=0,body[56]={};
     uint32_t generation=0;
-    char sequenceId[65]={},executionId[65]={};
+};
+struct BrokerCapabilityState {
+    uint32_t features=0;
+    uint16_t wireCaps=0,extension=0,speed=0,wheel=0,radius=0;
+    uint8_t pwm=0;
+    bool ready=false,fresh=false,manual=false;
+    bool operator==(const BrokerCapabilityState &b) const {
+        return features==b.features && wireCaps==b.wireCaps && extension==b.extension &&
+            speed==b.speed && wheel==b.wheel && radius==b.radius && pwm==b.pwm &&
+            ready==b.ready && fresh==b.fresh && manual==b.manual;
+    }
 };
 class Broker {
 public:
@@ -26,6 +38,8 @@ private:
         uint32_t id=0, lastSeen=0, window=0, inputSeen=0;
         uint16_t bytes=0, expected=0, rate=0;
         bool used=false, ready=false;
+        bool capabilitiesSent=false;
+        BrokerCapabilityState sentCapabilities;
         uint8_t controlKind=0;char controlId[65]={},controlVersion[16]={};
         uint32_t oledRevision=0;
         bool oledCaptured=false;
@@ -45,15 +59,17 @@ private:
     // AFR2-20261106-12: no FIFO or stale replay for manual PWM.
     uint8_t pwmStream_[12]={};bool pwmStreamPending_=false;
     uint32_t pwmStreamAt_=0,pwmStreamClient_=0,pwmStreamGeneration_=0;
-    String deferredReply_,scanEvent_;
+    // AFR2-20261109-08: retain the transport buffer itself, never a second JSON String.
+    AsyncWebSocketSharedBuffer deferredReply_,scanEvent_;
     bool delayedErrorPending_=false;
     uint32_t delayedErrorClient_=0;
     char delayedErrorId_[65]={},delayedErrorCommand_[33]={},delayedErrorCode_[33]={},delayedErrorMessage_[129]={},delayedErrorSource_[8]={};
     bool delayedErrorRetryable_=false;
     uint32_t scanEventClient_=0;
-    uint32_t deferredClient_=0,deferredAt_=0,wsBackpressure_=0;
+    uint32_t deferredClient_=0,deferredAt_=0,wsBackpressure_=0,wsMemoryDrops_=0;
     uint8_t helloNotices_=0;
-    bool optionalOutput(AsyncWebSocketClient *client) const { return !deferredClient_ && client->queueLen()<2; }
+    bool optionalOutput(AsyncWebSocketClient *client) const { return !deferredClient_ && client->status()==WS_CONNECTED && client->queueLen()==0; }
+    AsyncWebSocketSharedBuffer makeFrame(JsonDocument &frame);
     Session *session(uint32_t id);
     void event(AsyncWebSocketClient *client, AwsEventType type, void *arg, uint8_t *data, size_t len);
     void ingest(Session &session);
@@ -63,8 +79,11 @@ private:
     void dispatch(const BrokerRequest &request, uint32_t now);
     void answer(const BrokerRequest &request, JsonDocument &frame);
     void error(const BrokerRequest &request, const char *code, const char *message, bool retryable=false, const char *source="esp");
-    void status(JsonObject out, uint32_t now,uint32_t client=0);
-    void capabilities(JsonObject out);
+    void error(const BrokerRequest &request, const char *code, const __FlashStringHelper *message, bool retryable=false, const char *source="esp");
+    void status(JsonObject out, uint32_t now,uint32_t client=0,bool includeCapabilities=true);
+    BrokerCapabilityState capabilityState(uint32_t now) const;
+    void describeCapabilities(JsonObject out,uint32_t now);
+    void capabilities(JsonObject out,uint32_t now);
     void finish(const MegaResult &result);
     void broadcast(const char *eventName, JsonDocument &payload);
     bool encodeProduct(BrokerRequest &req,JsonObjectConst payload);
@@ -83,6 +102,7 @@ private:
     bool finishWifi(const BrokerRequest &req,const MegaResult &result);
     void tickWifi(uint32_t now);
     void scanForOled(JsonObjectConst result);
+    void clearWifiNetworks();
     void draftStatus(JsonObject out);
     void systemInfo(JsonObject out);
     void publishBoot(const char *device,uint32_t id,uint8_t cause,const char *observation);
@@ -121,6 +141,7 @@ private:
     char wifiCredentials_[97]={};
     String wifiNetworks_[16];
     uint32_t wifiScanId_=0;
+    uint32_t wifiScanAt_=0;
     uint8_t wifiScanPage_=0;bool wifiScanTruncated_=false;
     uint8_t wifiNetworkCount_=0,wifiNetworkIndex_=0;
     char webVersion_[16]={};

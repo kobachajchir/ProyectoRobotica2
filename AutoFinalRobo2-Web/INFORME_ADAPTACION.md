@@ -1,3 +1,19 @@
+> **AFR2-20261110-18 / 1.23.2, solo fuente:** [logo de bienvenida a 768 px, paquete ESP dentro del presupuesto](../AutoFinalRobo2-Contracts/changes/2026-11-10-18-esp-package-logo-768.md). Typecheck OK; sin build ni empaquetado.
+
+> **AFR2-20261110-16 / 1.23.0, solo fuente:** [envío GOTO, giros 90°, barra táctil, blur y pill de modo](../AutoFinalRobo2-Contracts/changes/2026-11-10-16-goto-envio-giros-rail-tactil.md). Sin tests, typecheck, build, navegador ni cargas.
+
+> **AFR2-20261110-14 / 1.22.0, solo fuente:** [limpieza Web y diagnóstico temporal F1](../AutoFinalRobo2-Contracts/changes/2026-11-10-14-fault-clear-loop-diagnostics.md), CMD0x56 registrado en catálogos. Umbral100ms conservado; causa física sin determinar. Sin tests, compilaciones, validaciones ni cargas.
+
+> **AFR2-20261110-13 / 1.21.0, solo fuente:** [Wi-Fi desde AP](../AutoFinalRobo2-Contracts/changes/2026-11-10-13-wifi-ap-provisioning-credentials.md): escaneo conservando AP, configuración AP/STA separada, reinicio observado y consulta explícita de credenciales. Sin tests, compilaciones, validaciones ni cargas. La funcionalidad física sigue pendiente de comprobación.
+
+> **AFR2-20261110-10/11/12 · producto 1.20.0, solo fuente:** [Fallos físicos, radar y batería](../AutoFinalRobo2-Contracts/changes/2026-11-10-10-oled-fallos-radar-bateria.md), [pistas y simulador](../AutoFinalRobo2-Contracts/changes/2026-11-10-11-secuencias-pistas-simulacion.md), [herramientas GOTO](../AutoFinalRobo2-Contracts/changes/2026-11-10-12-goto-herramientas-arcos-curvas.md). AVR/Web OLED vinculados; secuencias/GOTO en Web. Recursos generados pendientes. Sin tests, compilaciones, validaciones, navegador ni cargas; no acredita funcionamiento físico.
+
+> **AFR2-20261109-10 / 1.11.0:** nueva etapa7 en Armado, panel/voltímetro/portapilas extraídos del GLB existente en el navegador; único GLB nuevo con R1/R4/C3/J3 y cableado compacto. Acercamiento final desde mitad de etapa12. [Ficha](../AutoFinalRobo2-Contracts/changes/2026-11-09-10-assembly-additions-battery-circuit.md). Sin build, tests, validadores, navegador o carga.
+
+> **AFR2-20261109-07 / 1.10.3:** Armado en `#/armado` como banner de producto con modelo flotante, fondo de Infraestructura y fade por pieza; controles debajo. Sustituye la presentación de simulador de04. [Ficha](../AutoFinalRobo2-Contracts/changes/2026-11-09-07-cinematic-assembly-banner.md). Solo fuente; sin tests, builds, validadores, navegador ni renders.
+
+> **AFR2-20261109-05 / 1.10.1:** dashboard010001 con tarjeta72×22 en(54,27), icono18 y texto7×10 con centro compartido. Renderer AVR/TS vinculado en fuente; sin compilación, tests, generadores, navegador o carga. [Ficha](../AutoFinalRobo2-Contracts/changes/2026-11-09-05-dashboard-status-card-spacing.md).
+
 > **AFR2-20261106-04:** SRAM AVR 5614 bytes, libres antes de pila 2578; QR finish 29 bytes. Se conservan ambos buffers OLED. Builds y paridad C/Web 2104/2104 PASS; sin carga ni prueba física. [Evidencia](../AutoFinalRobo2-Contracts/documentation/builds/2026-11-06-04/README.md).
 
 > **AFR2-20261106-02:** regeneración y builds AVR/ESP/Web/Loader comprobados; paridad host OLED 1680/1680. **Carga bloqueada por presupuesto SRAM/pila AVR**; sin COM, flasheo ni prueba física. [Evidencia](../AutoFinalRobo2-Contracts/documentation/builds/2026-11-06-02/README.md).

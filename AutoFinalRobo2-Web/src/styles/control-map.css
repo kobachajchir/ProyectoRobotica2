@@ -1,6 +1,17 @@
 /* VIS-017: one calm map workspace; views change the camera, never issue movement. */
 /* AFR2-20261101-07: la paleta --map-* vive en tokens.css (mismos valores). */
 .afr2-control-map { min-width: 0; background: var(--surface-solid); border: 1px solid var(--border-default); border-radius: var(--radius-lg); overflow: hidden; }
+.afr2-map-editor-tools { padding: 0 24px 20px; }
+.afr2-sequence-palette { display: grid; gap: 20px; padding: 20px 24px; border-top: 1px solid var(--border-subtle); background: var(--surface-subtle); }
+.afr2-sequence-preview-layout__scene > .afr2-block-properties { padding: 20px 24px; border-top: 1px solid var(--border-subtle); }
+.afr2-sequence-edit-hint { margin: 0; padding: 16px 24px; color: var(--text-muted); font-size: var(--type-caption-size); }
+.afr2-sequence-sync-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; }
+.afr2-sequence-sync-tools > p { flex-basis: 100%; margin: 0; }
+.afr2-sequence-sync-tools > label { display: flex; align-items: center; gap: 8px; min-height: 44px; color: var(--text); font-size: var(--type-caption-size); }
+.afr2-sequence-sync-tools input { accent-color: var(--action); }
+.afr2-timeline-strip { position: relative; padding-top: 24px; min-height: 88px; }
+.afr2-timeline-ruler { position: absolute; top: 0; height: 22px; border-bottom: 1px solid var(--border-default); pointer-events: none; }
+.afr2-timeline-ruler > span { position: absolute; padding: 3px; color: var(--text-muted); font: 10px/1.4 var(--font-mono); border-left: 1px solid var(--border-default); }
 .afr2-control-map__heading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; padding: 24px 24px 18px; }
 .afr2-control-map__heading h2 { margin: 6px 0 0; color: var(--text-strong); font-size: 22px; line-height: 1.2; letter-spacing: -.025em; font-weight: 600; }
 .afr2-map-status { display: inline-flex; align-items: center; gap: 8px; font-size: var(--type-caption-size); color: var(--text-muted); }

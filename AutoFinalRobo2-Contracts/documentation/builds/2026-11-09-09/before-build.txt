@@ -1,0 +1,18 @@
+Compiling .pio\build\esp12s_candidate\src\broker_product.cpp.o
+Compiling .pio\build\esp12s_candidate\src\broker_sensors.cpp.o
+Compiling .pio\build\esp12s_candidate\src\broker_system.cpp.o
+Compiling .pio\build\esp12s_candidate\src\broker_wifi.cpp.o
+Compiling .pio\build\esp12s_candidate\src\main.cpp.o
+Compiling .pio\build\esp12s_candidate\src\mega_link.cpp.o
+src\broker_wifi.cpp:11:17: warning: 'uint32_t draftToken()' defined but not used [-Wunused-function]
+   11 | static uint32_t draftToken() { uint32_t v=os_random();return v?v:1; }
+      |                 ^~~~~~~~~~
+Linking .pio\build\esp12s_candidate\firmware.elf
+Retrieving maximum program size .pio\build\esp12s_candidate\firmware.elf
+Checking size .pio\build\esp12s_candidate\firmware.elf
+Advanced Memory Usage is available via "PlatformIO Home > Project Inspect"
+RAM:   [======    ]  62.5% (used 51172 bytes from 81920 bytes)
+Flash: [====      ]  44.0% (used 459699 bytes from 1044464 bytes)
+Building .pio\build\esp12s_candidate\firmware.bin
+Creating BIN file ".pio\build\esp12s_candidate\firmware.bin" using "C:\Users\kobac\.platformio\packages\framework-arduinoespressif8266\bootloaders\eboot\eboot.elf" and ".pio\build\esp12s_candidate\firmware.elf"
+========================= [SUCCESS] Took 13.28 seconds =========================

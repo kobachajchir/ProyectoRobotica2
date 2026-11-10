@@ -44,7 +44,7 @@ export function BatteryDetails() {
     finally { setBusy(false); }
   };
   return <div className="afr2-page-stack">
-    <p className="afr2-help">Inicia la medición con el divisor conectado a A5. El controlador actualiza el voltaje mientras permanece encendido.</p>
+    <p className="afr2-help">El controlador mide automáticamente desde el arranque con el divisor conectado a la entrada analógica A5. Podés solicitar una lectura nueva desde este panel.</p>
     <dl className="afr2-network-details">
       <div><dt>Voltaje de batería</dt><dd>{fresh ? batteryVoltage(battery) : '—'}</dd></div>
       <div><dt>Estado</dt><dd>{fresh ? 'Medición actual' : label}</dd></div>
@@ -52,7 +52,7 @@ export function BatteryDetails() {
       <div><dt>Lectura ADC</dt><dd>{available && age !== null && age <= 2000 ? battery?.raw ?? '—' : '—'}</dd></div>
       <div><dt>Calibración</dt><dd>Referencia nominal de 5 V · pendiente</dd></div>
     </dl>
-    <div className="afr2-action-row"><Button variant="primary" loading={busy} disabled={!available} onClick={() => void measure()}>Realizar medición de batería</Button></div>
+    <div className="afr2-action-row"><Button variant="primary" loading={busy} disabled={!available} onClick={() => void measure()}>Actualizar medición de batería</Button></div>
     {error && <p className="afr2-help" role="alert">{error}</p>}
     <p className="afr2-help">Divisor 10 kΩ + 10 kΩ, sin diodo; capacitor 104 entre A5 y GND. El voltaje no indica un porcentaje de carga.</p>
   </div>;

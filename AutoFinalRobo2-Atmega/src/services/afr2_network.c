@@ -58,8 +58,11 @@ uint8_t Afr2App_NetworkCommand(Afr2App *a,uint8_t cmd,const uint8_t *d,uint8_t n
             /* AFR2-20261109-01: say what the ESP is doing while it is not connected yet. */
             uint8_t phase=(w->mode&1u) && !w->sta_connected && w->ssid[0]?1u:(w->mode&2u) && !w->ap_active?2u:0u;
             if(phase!=w->link_phase){
-                if(phase==1)Afr2Ui_NotifyFlashTitle(a->ui,0,PSTR("Reconectando a"),w->ssid,4000);
-                else if(phase==2)Afr2Ui_NotifyFlash(a->ui,0,PSTR("Wi-Fi"),PSTR("Iniciando AP"),3000);
+                uint8_t in_wifi_flow=a->ui->keyboard || a->ui->node==AFR2_N_WIFI_SEARCH || a->ui->node==AFR2_N_WIFI_NETWORKS || a->ui->node==AFR2_N_WIFI_SETUP || a->ui->node==AFR2_N_WIFI_REVIEW || a->ui->node==AFR2_N_WIFI_MODE_SELECT;
+                if(!in_wifi_flow){
+                    if(phase==1)Afr2Ui_NotifyFlashTitle(a->ui,0,PSTR("Reconectando a"),w->ssid,4000);
+                    else if(phase==2)Afr2Ui_NotifyFlash(a->ui,0,PSTR("Wi-Fi"),PSTR("Iniciando AP"),3000);
+                }
                 w->link_phase=phase;
             }
             w->display_ms=a->product->now;a->snapshot_active=0;a->ui->redraw=true;
@@ -71,10 +74,11 @@ uint8_t Afr2App_NetworkCommand(Afr2App *a,uint8_t cmd,const uint8_t *d,uint8_t n
     uint32_t seq=afr2_get_u32(d+4);uint8_t kind=d[8];
     if(seq>w->display_event) {
         uint8_t duplicate_boot=kind==AFR2_NET_BOOT && a->esp_boot_notified==w->display_boot;
+        uint8_t in_wifi_flow=a->ui->keyboard || a->ui->node==AFR2_N_WIFI_SEARCH || a->ui->node==AFR2_N_WIFI_NETWORKS || a->ui->node==AFR2_N_WIFI_SETUP || a->ui->node==AFR2_N_WIFI_REVIEW || a->ui->node==AFR2_N_WIFI_MODE_SELECT;
         /* AFR2-20261107-48: during the quiet window after the user closed network notices,
          * chatty events are accepted (no ESP retry) but not shown. */
         uint8_t chatty=kind==AFR2_NET_WS_OPEN || kind==AFR2_NET_WS_CLOSE || kind==AFR2_NET_WEB_SERVED || kind==AFR2_NET_CLIENT_JOIN || kind==AFR2_NET_CLIENT_LEAVE;
-        uint8_t silent=duplicate_boot || (chatty && Afr2Ui_NetworkQuiet(a->ui));
+        uint8_t silent=duplicate_boot || a->ui->keyboard || (in_wifi_flow && kind==AFR2_NET_STA_NOT_FOUND) || (chatty && Afr2Ui_NetworkQuiet(a->ui));
         if(!silent) {
             if(a->ui->notices>=3)return AFR2_RESULT_UNAVAILABLE;
             char detail[18];detail[0]=0;
@@ -90,7 +94,7 @@ uint8_t Afr2App_NetworkCommand(Afr2App *a,uint8_t cmd,const uint8_t *d,uint8_t n
             a->snapshot_active=0;
         }
         /* AFR2-20261108-06: despues del aviso "Wi-Fi no encontrado" la app abre el selector Iniciar AP / Seguir esperando. */
-        if(kind==AFR2_NET_STA_NOT_FOUND && w->mode!=2 && (!w->policy_valid || w->ask_fallback) && !w->sta_connected && !w->ap_active && !a->wifi_ask)a->wifi_ask=1;
+        if(kind==AFR2_NET_STA_NOT_FOUND && w->mode==3 && !in_wifi_flow && (!w->policy_valid || w->ask_fallback) && !w->sta_connected && !w->ap_active && !a->wifi_ask)a->wifi_ask=1;
         if(kind==AFR2_NET_BOOT){
             if(!duplicate_boot){w->pending=w->draft_ready=w->network_count=w->scan_total=w->mode_draft=0;w->policy_valid=0;w->scan_id=0;memset(w->password,0,sizeof(w->password));w->credentials_visible=0;Afr2Ui_NetworkRestart(a->ui);}
             a->esp_boot_notified=w->display_boot;

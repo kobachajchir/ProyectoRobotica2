@@ -1,0 +1,61 @@
+{
+  "changeId": "AFR2-20261109-04",
+  "date": "2026-11-09",
+  "mode": "APLICAR",
+  "target": "#/armado",
+  "manualVersion": "0.1.11",
+  "manualAuthorization": "VIS-062 / AFR2-20261102-15: borrador autorizado para la Web",
+  "verification": "No verificada",
+  "coverage": [
+    {
+      "component": "Cabecera, botones, enlaces y navegación",
+      "sources": [
+        "Web/src/components/ui/PageHeader.tsx",
+        "Web/src/components/ui/Button.tsx",
+        "Web/src/app/navigation.ts",
+        "Web/src/styles/visual-language.css"
+      ],
+      "evidence": "Observada",
+      "coverage": "Cubierta",
+      "scope": "Componentes y tokens existentes; nuevo destino en Explorar"
+    },
+    {
+      "component": "Escena, paleta y modelos",
+      "sources": [
+        "Web/src/components/three/SimulationViewport.tsx",
+        "Web/src/components/three/modelAssets.ts",
+        "Web/src/features/collector/models/pvc25-v17-blanco.json"
+      ],
+      "evidence": "Observada",
+      "coverage": "Cubierta",
+      "scope": "Mismos assets, materiales, entorno y montaje V17; copias independientes"
+    },
+    {
+      "component": "Recorrido de armado por scroll",
+      "sources": [
+        "Pedido humano del chat",
+        "Web/src/features/assembly/assemblyTimeline.ts",
+        "Web/src/styles/assembly.css"
+      ],
+      "evidence": "Propuesta",
+      "approval": "Pendiente",
+      "coverage": "Parcial",
+      "scope": "Implementación autorizada; composición, encuadre e interacción sin observar en ejecución"
+    },
+    {
+      "component": "Acceso y movimiento reducido",
+      "sources": [
+        "Web/src/features/assembly/AssemblyPage.tsx",
+        "Web/src/features/assembly/useAssemblyScroll.ts",
+        "Web/src/features/assembly/AssemblyScene.tsx"
+      ],
+      "evidence": "Propuesta",
+      "coverage": "Parcial",
+      "scope": "Controles nativos, transcripción, fallback y modo estático en fuente; sin pruebas de dispositivo, teclado o lector de pantalla"
+    }
+  ],
+  "pathPrefix": "Web = AutoFinalRobo2-Web; fuentes respecto de la raíz del proyecto",
+  "checksRun": [],
+  "limits": "Sin tests, compilaciones, validadores, navegador, renders, promoción ESP ni pruebas físicas.",
+  "presentationSupersededBy": "AFR2-20261109-07"
+}

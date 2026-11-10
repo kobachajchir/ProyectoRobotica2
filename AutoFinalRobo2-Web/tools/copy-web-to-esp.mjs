@@ -3,7 +3,9 @@
 import { readFile, mkdir, copyFile, rm, realpath, rename } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { gunzipSync } from 'node:zlib';
 import { candidateLinkerScript, filesystemBudgetBytes, estimateFilesystemBytes } from './web-budget.mjs';
+import { isAssemblyNarrationAsset, requireSilentAssemblyHtml } from './assembly-audio-policy.mjs';
 const webRoot=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const projectRoot=await realpath(path.join(webRoot,'..'));
 const source=await realpath(path.join(webRoot,'artifacts','littlefs','dist'));
@@ -21,6 +23,11 @@ function managed(root,entry) {
 const manifestRaw=await readFile(path.join(source,'manifest.json'),'utf8');
 const manifest=JSON.parse(manifestRaw);
 if(manifest.schema!=='afr2-littlefs-manifest-1' || !Array.isArray(manifest.files))throw new Error('Invalid Web manifest.');
+const currentVersion=JSON.parse(await readFile(path.join(webRoot,'package.json'),'utf8')).version;
+if(manifest.webVersion!==currentVersion || manifest.files.some(entry=>isAssemblyNarrationAsset(entry.route) || isAssemblyNarrationAsset(entry.servedPath)))throw new Error('Paquete Web anterior o con narracion. Volve a generar con npm run build:esp antes de enviarlo al ESP.');
+const indexEntry=manifest.files.find(entry=>entry.route==='/index.html');
+if(!indexEntry || indexEntry.contentEncoding!=='gzip')throw new Error('Falta el indice Web comprimido.');
+requireSilentAssemblyHtml(gunzipSync(await readFile(managed(source,indexEntry))).toString('utf8'));
 const estimate=estimateFilesystemBytes(manifest.files);
 if(manifest.buildProfile!=='esp' || manifest.candidateLinkerScript!==candidateLinkerScript || manifest.estimatedFilesystemBytes!==estimate || estimate>filesystemBudgetBytes)throw new Error('Compilá primero con npm run build:esp. Solo se promueve el perfil ESP dentro de presupuesto.');
 const espConfig=await readFile(path.join(projectRoot,'AutoFinalRobo2-ESP','platformio.ini'),'utf8');

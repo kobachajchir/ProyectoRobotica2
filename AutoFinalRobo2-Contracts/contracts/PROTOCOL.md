@@ -1,3 +1,5 @@
+AFR2-20261110-14 / fuente: CMD 0x56 FAULT, request2/reply18 bytes de aplicación, lectura y limpieza con código esperado; WebSocket robot.fault.get/clear. EX01 y framing sin cambios. Contrato: FAULT_RECOVERY_TIMING_20261110.md. Sin compilación ni prueba física.
+
 > **Fuente vigente AFR2-20261106-01:** [EX01v13 y cambios de Wi-Fi/IR](COORDINATED_CORRECTIONS_13.md). EEPROMv9 y persistencia Wi-Fi v2; sin despliegue de esta revision. Los estados inferiores son historicos.
 
 # Protocolo AutoFinalRobo2 — control directo

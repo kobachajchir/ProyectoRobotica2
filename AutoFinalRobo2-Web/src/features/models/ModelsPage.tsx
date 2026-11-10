@@ -39,6 +39,7 @@ export function ModelsPage() {
       })}
     </nav>
     <div className="afr2-action-row afr2-model-actions" role="group" aria-label="Explorar más">
+      <Button variant="secondary" style={actionStyle} icon={<UiIcon name="arm" />} onClick={() => navigate('/armado')}>Armado del robot<UiIcon name="arrow" /></Button>
       <Button variant="secondary" style={actionStyle} icon={<UiIcon name="control" />} onClick={() => navigate('/simulacion/conjunta')}>Simulador<UiIcon name="arrow" /></Button>
       <Button variant="secondary" style={actionStyle} icon={<UiIcon name="board" />} onClick={() => navigate('/infraestructura')}>Explorar infraestructura<UiIcon name="arrow" /></Button>
     </div>

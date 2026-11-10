@@ -17,6 +17,8 @@ static String mimeFor(const String &p) {
     if (p.endsWith(".svg")) return "image/svg+xml";
     if (p.endsWith(".wasm")) return "application/wasm";
     if (p.endsWith(".glb")) return "model/gltf-binary";
+    if (p.endsWith(".opus")) return "audio/ogg";
+    if (p.endsWith(".m4a")) return "audio/mp4";
     if (p.endsWith(".webp")) return "image/webp";
     if (p.endsWith(".ico")) return "image/x-icon";
     if (p.endsWith(".txt")) return "text/plain; charset=utf-8";
@@ -73,19 +75,22 @@ const WebAsset *Storage::asset(const String &route) const {
     for (uint8_t i=0;i<count_;++i) if (assets_[i].route==route) return &assets_[i];
     return nullptr;
 }
+bool Storage::hasWifiConfig() const { return mounted_ && LittleFS.exists("/config/wifi.json"); }
 bool Storage::loadWifi(JsonDocument &doc) {
     if (!mounted_) return false;
     File f=LittleFS.open("/config/wifi.json","r");
-    if (!f || !f.size() || f.size()>512) return false;
+    if (!f || !f.size() || f.size()>kMaxWifiConfigBytes) return false;
     return !deserializeJson(doc,f,DeserializationOption::NestingLimit(3)) && (doc["schema"]=="afr2-wifi-1" || doc["schema"]=="afr2-wifi-2");
 }
 bool Storage::saveWifi(const JsonDocument &doc) {
+    size_t expected=measureJson(doc);
+    if(!expected || expected>kMaxWifiConfigBytes)return false;
     if (!mounted_ || !LittleFS.mkdir("/config")) {
         if (!mounted_ || !LittleFS.exists("/config")) return false;
     }
     File f=LittleFS.open("/config/wifi.tmp","w");
     if (!f) return false;
-    size_t expected=measureJson(doc), written=serializeJson(doc,f);
+    size_t written=serializeJson(doc,f);
     f.flush(); f.close();
     if (!written || written!=expected) { LittleFS.remove("/config/wifi.tmp"); return false; }
     // LittleFS rename replaces atomically; never remove the last good configuration first.

@@ -183,6 +183,10 @@ function describePayload(command: number, route: number, payload: number[]): Pic
       if (body[0] > 1 || (body[0] === 0 && u32(body, 1) > 37)) issues.push('Modo o cursor de snapshot fuera de rango.');
     }
     if (command === 0x50 && body[0] > 4) issues.push('La página INFO debe estar entre 0 y 4.');
+    if(command===0x56 && body.length===2){
+      add('Operación de fallo',body[0]===0?'Consultar':body[0]===1?'Limpiar':'Desconocida');add('Fallo esperado',body[1]);
+      if(body[0]>1 || body[0]===0 && body[1]!==0 || body[0]===1 && body[1]===0)issues.push('FAULT requiere 00 00 para leer o 01 + código de fallo esperado para limpiar.');
+    }
     if (command === 0x51 && body[0] !== 0xa5) issues.push('REBOOT requiere el byte de confirmación A5.');
   } else {
     if (command === 0x01 && body.length === 14) {
@@ -196,6 +200,10 @@ function describePayload(command: number, route: number, payload: number[]): Pic
       if (u16(body, 4) !== 13) issues.push('Versión EX01 distinta de 13; interpretar con el contrato de esa versión.');
     }
     if (command === 0x02 && body.length === 4) add('Uptime', `${u32(body, 0)} ms`);
+    if(command===0x56 && body.length===18){
+      add('Fallo vigente',body[0]);add('Salidas detenidas',body[1]);add('Registros F1',u16(body,2));add('Intervalo de control',`${u16(body,4)} ms`);
+      ['Ciclo asociado','Servicios/control','UART/debug','Encoder/entrada','Dibujo OLED','Servicio I2C/OLED'].forEach((label,i)=>add(label,`${u16(body,6+2*i)} ms`));
+    }
     if (command === 0x03 && body.length === 7) {
       add('Modo', body[0]); add('Parada declarada', body[1]); add('Edad', age(u32(body, 3)));
     }

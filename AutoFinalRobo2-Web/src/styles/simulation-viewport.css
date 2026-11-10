@@ -1,5 +1,10 @@
 /* AFR2-20261102-18. Shared presentation, independent simulation state adapters. */
-.afr2-simulation-viewport { position: relative; width: 100%; height: 100%; min-width: 0; overflow: hidden; background: var(--sim-scene-sky); touch-action: none; }
+.afr2-simulation-viewport { position: relative; width: 100%; height: 100%; min-width: 0; overflow: hidden; touch-action: none;
+  background:
+    radial-gradient(ellipse at 80% 18%, var(--infra-hero-tint-a), transparent 65%),
+    radial-gradient(ellipse at 15% 90%, var(--infra-hero-tint-b), transparent 60%),
+    var(--infra-hero-bg);
+}
 .afr2-simulation-overlays { position: absolute; z-index: 2; right: 16px; bottom: 16px; left: 16px; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 8px; pointer-events: none; }
 .afr2-simulation-info, .afr2-simulation-zoom { display: flex; align-items: center; gap: 4px; padding: 4px; border: 1px solid var(--border-default); border-radius: var(--radius-pill); background: var(--surface-solid); box-shadow: var(--visual-card-shadow); }
 .afr2-simulation-info { min-height: 52px; padding: 12px 16px; color: var(--text-muted); font: var(--type-caption); }

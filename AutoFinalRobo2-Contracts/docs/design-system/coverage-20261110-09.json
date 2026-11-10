@@ -1,0 +1,14 @@
+{
+  "changeId": "AFR2-20261110-09",
+  "manualVersion": "0.1.11",
+  "target": "Cabecera compartida y modal de fallos/avisos",
+  "verification": "No verificada en navegador",
+  "sources": ["src/components/navigation/RouteNav.tsx", "src/features/connection/NetworkConnection.tsx", "src/features/connection/BatteryStatus.tsx", "src/components/ui/FloatingModal.tsx", "src/styles/sensors.css", "src/styles/workspace.css"],
+  "coverage": [
+    {"component":"Pill, icono y contador", "evidence":"Confirmada", "scope":"Pedido humano; avisos activos, sin convertir codigo de fallo en cantidad", "coverage":"Fuente implementada"},
+    {"component":"Modal y acciones", "evidence":"Observada", "scope":"FloatingModal compartido con Wi-Fi, botones y enlaces existentes; sin nueva familia visual", "coverage":"Reutilizacion en fuente"},
+    {"component":"Lista y adaptacion movil", "evidence":"Propuesta", "scope":"Fichas solidas, acentos semanticos y cabecera con distribucion flexible", "coverage":"Fuente implementada, sin comprobacion visual"}
+  ],
+  "checksRun": [],
+  "limits": "Sin navegador ni comprobacion de contraste/teclado en ejecucion. No cambia pantallas ni gestos OLED."
+}

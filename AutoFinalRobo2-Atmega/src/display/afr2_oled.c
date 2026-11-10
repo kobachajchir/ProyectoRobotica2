@@ -238,10 +238,23 @@ void Afr2Oled_Rect(Afr2Oled *o,int16_t x,int16_t y,uint8_t w,uint8_t h,Afr2Color
     for(uint8_t i=1;i+1<h;i++){Afr2Oled_Pixel(o,x,y+i,color);if(w>1)Afr2Oled_Pixel(o,x+w-1,y+i,color);}
 }
 void Afr2Oled_FillRect(Afr2Oled *o,int16_t x,int16_t y,uint8_t w,uint8_t h,Afr2Color color) {
+    if(!o || !w || !h)return;
     int16_t left=x<0?0:x,top=y<0?0:y,right=x+w,bottom=y+h;
     if(right>128)right=128;
     if(bottom>64)bottom=64;
-    for(int16_t py=top;py<bottom;py++)for(int16_t px=left;px<right;px++)Afr2Oled_Pixel(o,px,py,color);
+    if(left>=right || top>=bottom)return;
+    /* Vertical page mask: touch each framebuffer byte once, not once per bit. */
+    for(uint8_t page=(uint16_t)top/8u;page<=(uint16_t)(bottom-1)/8u;page++){
+        uint8_t first=page==(uint16_t)top/8u?(top&7):0;
+        uint8_t last=page==(uint16_t)(bottom-1)/8u?((bottom-1)&7):7;
+        uint8_t mask=(uint8_t)((0xffu<<first)&(0xffu>>(7u-last)));
+        uint16_t base=(uint16_t)page*128u;
+        for(int16_t px=left;px<right;px++){
+            uint16_t index=base+px;uint8_t old=o->buffer[index];
+            uint8_t val=color==AFR2_WHITE?(old|mask):color==AFR2_INVERT?(old^mask):(old&(uint8_t)~mask);
+            if(val!=old){o->buffer[index]=val;o->dirty|=(uint8_t)(1u<<page);}
+        }
+    }
 }
 void Afr2Oled_Char(Afr2Oled *o,int16_t x,int16_t y,char ch,Afr2Color color) {
     for(uint8_t row=0;row<10;row++) {

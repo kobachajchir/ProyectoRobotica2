@@ -8,8 +8,11 @@
 /* AFR2-20261108-12: the card walks every system in Controles rapidos order, icon + state, one page
  * every 4 s after 3 s idle; a change jumps to that system at once; a fault overrides everything. */
 enum { DASH_NONE,DASH_MOTOR,DASH_US,DASH_RADAR,DASH_SERVO,DASH_LINE,DASH_TRACE,DASH_FAULT };
+/* AFR2-20261109-05: wider to the left, taller below, same right edge/footer.
+ * Reserve x=0..51 for the longest mode name (SECUENC). No extra framebuffer. */
+enum { DASH_CARD_X=54,DASH_CARD_Y=27,DASH_CARD_W=72,DASH_CARD_H=22,DASH_CARD_ICON=18,DASH_CARD_GAP=4,DASH_MODE_W=52 };
 static const char mode_names[8][9] PROGMEM={"REPOSO","MANUAL","LINEA","RUEDA","GOTO","FALLO","SECUENC","PWM"};
-/* [item][0 off,1 on,2 run]; max 6 characters (card text area 46 px). US/IR/RS share an icon. */
+/* [item][0 off,1 on,2 run]; max 6 characters (card text area 48 px). US/IR/RS share an icon. */
 static const char status_names[8][3][7] PROGMEM={
     {"--","--","--"},{"OFF","ON","RUN"},{"US OFF","US ON","US ON"},{"OFF","ON","ON"},
     {"OFF","ON","ON"},{"IR OFF","IR ON","IR ON"},{"RS OFF","RS ON","RS ON"},{"FALLO","FALLO","FALLO"}};
@@ -78,16 +81,24 @@ uint8_t Afr2Dashboard_Render(Afr2Ui *u,Afr2Oled *o,const Afr2UiSnapshot *s){
     uint8_t mode=s->dashboard_valid && s->dashboard_mode<8?s->dashboard_mode:255;
     if(full || d->mode!=mode){
         char name[9];if(mode<8)strcpy_P(name,mode_names[mode]);else strcpy_P(name,PSTR("--"));
-        Afr2Oled_FillRect(o,0,27,60,23,AFR2_BLACK);Afr2Oled_TextFlash(o,2,28,PSTR("MODO"),AFR2_WHITE);Afr2Oled_Text(o,2,40,name,AFR2_WHITE);changed=1;
+        Afr2Oled_FillRect(o,0,27,DASH_MODE_W,23,AFR2_BLACK);Afr2Oled_TextFlash(o,2,28,PSTR("MODO"),AFR2_WHITE);Afr2Oled_Text(o,2,40,name,AFR2_WHITE);changed=1;
     }
     uint8_t selected=status(u,s,full),shown=(uint8_t)(selected|(item_state(selected,d->mask)<<3));
-    /* AFR2-20261108-10: vuelve el icono de largo junto a "Rapidas" (11 px, como el del progreso). Texto hasta x=109:
-     * la esquina 106..127 sigue reservada al anillo de progreso, que solo se dibuja mientras se mantiene. */
-    if(full){Afr2Component_RoundedPanel(o,62,27,64,16);Afr2Ui_GestureHint(o,0,52,0,PSTR("Menu"));
+    /* Fixed footer: long-press icon plus "Rapidas", text ending at x=109.
+     * The held-encoder ring keeps overlay priority at lower right; InputHeld
+     * restores the full dashboard on release, including the enlarged border. */
+    if(full){Afr2Component_RoundedPanel(o,DASH_CARD_X,DASH_CARD_Y,DASH_CARD_W,DASH_CARD_H);Afr2Ui_GestureHint(o,0,52,0,PSTR("Menu"));
         Afr2Icon_Draw(o,AFR2_ICON_ENCODER_LONG,47,51,11);Afr2Oled_TextFlash(o,60,52,PSTR("Rapidas"),AFR2_WHITE);}
     if(full || d->drawn!=shown){
-        char name[7];strcpy_P(name,status_names[selected][item_state(selected,d->mask)]);uint8_t left=63+(62-(14+4+strlen(name)*7))/2;
-        Afr2Oled_FillRect(o,64,28,60,14,AFR2_BLACK);Afr2Oled_FillRect(o,63,29,62,12,AFR2_BLACK);Afr2Icon_Draw(o,pgm_read_byte(&status_icons[selected]),left,28,14);Afr2Oled_Text(o,left+18,30,name,AFR2_WHITE);changed=1;
+        char name[7];strcpy_P(name,status_names[selected][item_state(selected,d->mask)]);
+        uint8_t width=(uint8_t)(DASH_CARD_ICON+DASH_CARD_GAP+strlen(name)*7u);
+        uint8_t left=DASH_CARD_X+1+(DASH_CARD_W-2-width)/2;
+        uint8_t icon_y=DASH_CARD_Y+(DASH_CARD_H-DASH_CARD_ICON)/2,text_y=DASH_CARD_Y+(DASH_CARD_H-10)/2;
+        /* Two inset bands preserve every rounded-border pixel during rotation. */
+        Afr2Oled_FillRect(o,DASH_CARD_X+2,DASH_CARD_Y+1,DASH_CARD_W-4,DASH_CARD_H-2,AFR2_BLACK);
+        Afr2Oled_FillRect(o,DASH_CARD_X+1,DASH_CARD_Y+2,DASH_CARD_W-2,DASH_CARD_H-4,AFR2_BLACK);
+        Afr2Icon_Draw(o,pgm_read_byte(&status_icons[selected]),left,icon_y,DASH_CARD_ICON);
+        Afr2Oled_Text(o,left+DASH_CARD_ICON+DASH_CARD_GAP,text_y,name,AFR2_WHITE);changed=1;
     }
     d->header_flags=flags;d->network_boot=s->network_boot;d->network_revision=s->network_revision;d->battery_mv=s->battery_mv;
     d->ssid_offset=ss;d->ip_offset=is;d->mode=mode;d->drawn=shown;d->valid=1;

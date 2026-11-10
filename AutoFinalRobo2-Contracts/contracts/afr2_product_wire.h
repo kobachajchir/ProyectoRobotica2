@@ -21,6 +21,11 @@
 #define AFR2_EXT_PREFS 0x1bu
 #define AFR2_EXT_LINE_CAL 0x1cu
 #define AFR2_EXT_LIMITS 0x1du
+/* AFR2-20261110-14: read diagnostics / guarded fault clear; compatible EX01 addition.
+ * request: op u8 (0 read,1 clear), expected_fault u8 (0 for read).
+ * reply: fault u8, stopped u8, late_count u16, gap_ms u16,
+ * last late-loop total/app/uart/input/render/io (six u16 ms). */
+#define AFR2_EXT_FAULT 0x56u
 /* AFR2-20261029-27: signed percentages forward/strafe/turn, explicit units. */
 /* AFR2-20261109-03: explicit motor enable, no fault/Hall capture/prefs write/radar/sequence;
  * remote PWM must not replace active local motion. Layout unchanged. */

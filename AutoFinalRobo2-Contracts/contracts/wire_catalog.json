@@ -1,6 +1,6 @@
 {
   "schema": "afr2-wire-catalog-1",
-  "updated_by": "AFR2-20261109-03",
+  "updated_by": "AFR2-20261110-14",
   "notes": "Catalogo de comandos UART ROBO2/perfil 2 + EX01 v13 para interpretes (Loader, Protocol Studio). Autoridad de IDs: afr2_wire.h, afr2_product_wire.h, afr2_sensor_wire.h, afr2_network_wire.h, afr2_battery_wire.h. Largos cotejados con el despachador del ATmega (afr2_link.c, afr2_app_wire.c, afr2_sensor_commands.c, afr2_network.c, afr2_sequence.c) el 08/11/2026; sin prueba en placa. Toda alta/baja/modificacion de un CMD actualiza este archivo (skill afr2-wire-commands). 'bytes' cuenta el cuerpo de aplicacion, sin sesion/transaccion/resultado. 'variable' indica largo dependiente del contenido.",
   "envelope": {
     "header": "52 4F 42 4F 32",
@@ -193,6 +193,8 @@
       "does": "Lee (0) o mide (1) la bateria por ADC5.",
       "request": { "bytes": 1, "fields": [ { "name": "measure", "type": "u8" } ] },
       "reply": { "bytes": 23, "fields": [ { "name": "avr_boot_id", "type": "u32le", "format": "hex" }, { "name": "sequence", "type": "u32le" }, { "name": "age", "type": "u32le", "unit": "ms" }, { "name": "status", "type": "u8" }, { "name": "raw", "type": "u16le" }, { "name": "millivolts", "type": "u16le", "unit": "mV" }, { "name": "vref", "type": "u16le", "unit": "mV" }, { "name": "divider", "type": "bytes:4" } ] } },
+
+    {"id": "0x56", "name": "FAULT", "family": "SYSTEM", "ws": "robot.fault.get / robot.fault.clear", "sensitive": false, "does": "Lee fallo y diagnostico F1, o limpia el codigo esperado con salidas detenidas. Conserva diagnostico y no reanuda marcha. AFR2-20261110-14.", "request": {"bytes": 2, "fields": [{"name": "operation", "type": "u8"}, {"name": "expected_fault", "type": "u8"}]}, "reply": {"bytes": 18, "fields": [{"name": "fault", "type": "u8"}, {"name": "stopped", "type": "u8"}, {"name": "late_count", "type": "u16le"}, {"name": "control_gap", "type": "u16le", "unit": "ms"}, {"name": "loop_total", "type": "u16le", "unit": "ms"}, {"name": "app", "type": "u16le", "unit": "ms"}, {"name": "uart_debug", "type": "u16le", "unit": "ms"}, {"name": "input", "type": "u16le", "unit": "ms"}, {"name": "render", "type": "u16le", "unit": "ms"}, {"name": "i2c_oled", "type": "u16le", "unit": "ms"}]}},
 
     { "id": "0x60", "name": "US_GET", "family": "SENSOR", "ws": "robot.ultrasonic.get",
       "does": "Muestra ultrasonica y estado frontal.",

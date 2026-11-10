@@ -15,6 +15,7 @@ export interface StudioCommand {
 }
 
 export const COMMANDS: StudioCommand[] = [
+  { id: 0x56, name: 'FAULT', description: 'Lee diagnóstico o limpia el fallo esperado con salidas detenidas. No reanuda marcha.', requestBytes: 2, replyBytes: 18, example: '00 00' },
   { id: 0x01, name: 'HELLO', description: 'Negocia AFR2 / perfil 2.', requestBytes: 5, replyBytes: 14, example: '41 46 52 32 02' },
   { id: 0x02, name: 'ALIVE', description: 'Consulta el tiempo de actividad.', requestBytes: 0, replyBytes: 4 },
   { id: 0x03, name: 'STATE', description: 'Estado base del robot.', requestBytes: 0, replyBytes: 7 },

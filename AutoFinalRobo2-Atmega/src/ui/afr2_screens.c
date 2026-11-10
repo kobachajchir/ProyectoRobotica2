@@ -111,23 +111,48 @@ void Afr2Ui_Open(Afr2Ui *u,uint8_t node) {
     if(node>=AFR2_N_COUNT)return;
     if(u->node==AFR2_N_RADAR_CONFIG){u->radar_selection=u->selection;u->radar_first=u->firstVisible;}
     if(u->node==AFR2_N_QUICK)u->quick_selection=u->selection;
-    if(node==AFR2_N_HOME || node==AFR2_N_QUICK)u->depth=0;
-    else if(u->depth<8)u->history[u->depth++]=(Afr2UiPosition){u->node,u->selection,u->firstVisible};
+    if(node==AFR2_N_HOME || node==AFR2_N_QUICK || node==AFR2_N_MENU)u->depth=0;
+    else if(node!=u->node){
+        uint8_t found=0;
+        for(uint8_t i=0;i<u->depth;i++)if(u->history[i].node==node){u->depth=i;found=1;break;}
+        if(!found && u->depth<8)u->history[u->depth++]=(Afr2UiPosition){u->node,u->selection,u->firstVisible};
+    }
     u->node=node;u->selection=node==AFR2_N_QUICK?u->quick_selection:0;u->firstVisible=0;u->edit=0;
     if(node==AFR2_N_RADAR_CONFIG){u->selection=u->radar_selection;u->firstVisible=u->radar_first;}
     if(node==AFR2_N_WIFI_MODE_SELECT){uint8_t mode=u->ops.value?(uint8_t)u->ops.value(u->ops.ctx,AFR2_A_WIFI_MODE):0;u->selection=mode>=1 && mode<=3?mode-1u:0;}
+    if(node==AFR2_N_WIFI_SETUP)u->selection=1;
+    if(node==AFR2_N_WIFI_REVIEW && u->ops.value && u->ops.value(u->ops.ctx,AFR2_A_WIFI_CONNECT))u->selection=1;
     if(node==AFR2_N_ENCODER_TEST){u->test_long=0;u->test_clicks=0;u->test_turns=0;}
     if(node==AFR2_N_WIFI_ASK){u->wifi_ask_timer=1;u->wifi_ask_answered=0;u->wifi_ask_ms=u->clock_ms;} /* AFR2-20261108-06: Iniciar AP preseleccionado */
     if(node==AFR2_N_QR_AP || node==AFR2_N_QR_WEB)Afr2Qr_Invalidate();
     sync_code(u);
 }
+static uint8_t fixed_parent_node(uint8_t node) {
+    return (node>=AFR2_N_WIFI && node<=AFR2_N_WIFI_AP) || node==AFR2_N_NETWORK || node==AFR2_N_AP_INFO ||
+        node==AFR2_N_WIFI_DATA || node==AFR2_N_WIFI_SEARCH || node==AFR2_N_WIFI_MODE_SELECT ||
+        node==AFR2_N_QR_AP || node==AFR2_N_QR_WEB;
+}
 static void back(Afr2Ui *u,uint8_t fallback) {
     if(u->node==AFR2_N_RADAR_CONFIG){u->radar_selection=u->selection;u->radar_first=u->firstVisible;}
-    if(u->depth){Afr2UiPosition p=u->history[--u->depth];u->node=p.node;u->selection=p.selection;u->firstVisible=p.first;sync_code(u);}
-    else Afr2Ui_Open(u,fallback);
+    if(fallback>=AFR2_N_COUNT)fallback=AFR2_N_HOME;
+    for(uint8_t i=u->depth;i>0;--i){
+        if(u->history[i-1u].node==fallback){
+            Afr2UiPosition p=u->history[i-1u];
+            u->depth=i-1u;u->node=p.node;u->selection=p.selection;u->firstVisible=p.first;u->edit=0;
+            sync_code(u);return;
+        }
+    }
+    if(fallback==AFR2_N_HOME || fallback==AFR2_N_QUICK || fallback==AFR2_N_MENU)u->depth=0;
+    u->node=fallback;u->selection=fallback==AFR2_N_QUICK?u->quick_selection:0;u->firstVisible=0;u->edit=0;
+    if(fallback==AFR2_N_RADAR_CONFIG){u->selection=u->radar_selection;u->firstVisible=u->radar_first;}
+    sync_code(u);
 }
 /* AFR2-20261108-03: la app saca la pantalla de una prueba terminada, con el mismo retorno que el boton Volver. */
-void Afr2Ui_Leave(Afr2Ui *u,uint8_t fallback){u->edit=0;back(u,fallback);}
+void Afr2Ui_Leave(Afr2Ui *u,uint8_t fallback){
+    u->edit=0;
+    if((u->node==AFR2_N_WIFI_ASK || u->node==AFR2_N_ODOM_ASK) && u->depth)fallback=u->history[u->depth-1u].node;
+    back(u,fallback);
+}
 void Afr2Ui_OdomDirName(char *out,uint8_t dir){
     static const char names[8][14] PROGMEM={"Adelante","Atras","Izquierda","Derecha","Diagonal AD-I","Diagonal AD-D","Diagonal AT-I","Diagonal AT-D"};
     strcpy_P(out,names[dir&7u]);
@@ -179,7 +204,7 @@ static void go_back(Afr2Ui *u){
     if(u->edit){u->edit=0;u->redraw=true;return;}
     if(u->node==AFR2_N_HOME){Afr2Ui_Open(u,AFR2_N_QUICK);return;}
     Afr2MenuNode n;Afr2Ui_MenuNode(u,&n);
-    uint8_t target=u->depth?u->history[u->depth-1u].node:n.parent;
+    uint8_t target=(!fixed_parent_node(u->node) && u->depth)?u->history[u->depth-1u].node:n.parent;
     if((u->node==AFR2_N_HALL_TEST || (u->node==AFR2_N_HALL_VIEW && target!=AFR2_N_HALL_TEST)) && hall_dirty(u)){
         Afr2Ui_ConfirmSave(u,AFR2_A_HALL_SAVE,AFR2_A_HALL_CANCEL,target);return;
     }
@@ -235,12 +260,18 @@ static void render_touch(Afr2Ui *u,Afr2Oled *o) {
     int16_t sn=(int16_t)pgm_read_word(&afr2_touch_sin[h]);
     int16_t cs=(int16_t)pgm_read_word(&afr2_touch_sin[(h+6u)%24u]);
     /* AFR2-20261030-15: 36x36 rotation window for the supplied24x22 car. */
-    for(int16_t y=-18;y<18;y++)for(int16_t x=-18;x<18;x++) {
-        int16_t sx=((int32_t)x*cs-(int32_t)y*sn)/256+AFR2_TOUCH_CAR_WIDTH/2;
-        int16_t sy=((int32_t)x*sn+(int32_t)y*cs)/256+AFR2_TOUCH_CAR_HEIGHT/2;
+    for(int16_t y=-18;y<18;y++) {
+      /* Q8 sin/cos are within +-256; the whole 36x36 window fits int16.
+       * Advance each column by addition; retain signed truncation toward zero. */
+      int16_t sxq=-18*cs-y*sn,syq=-18*sn+y*cs;
+      for(int16_t x=-18;x<18;x++) {
+        int16_t sx=sxq/256+AFR2_TOUCH_CAR_WIDTH/2;
+        int16_t sy=syq/256+AFR2_TOUCH_CAR_HEIGHT/2;
         if(sx>=0 && sx<AFR2_TOUCH_CAR_WIDTH && sy>=0 && sy<AFR2_TOUCH_CAR_HEIGHT &&
            (pgm_read_byte(&afr2_touch_car[sy*AFR2_TOUCH_CAR_STRIDE+sx/8])&(1u<<(sx&7))))
             Afr2Oled_Pixel(o,64+x,32+y,AFR2_WHITE);
+        sxq+=cs;syq+=sn;
+      }
     }
     if(u->touch_direction<8) {
         uint8_t d=u->touch_direction*3u;
@@ -272,18 +303,10 @@ static void notify_text(Afr2Ui *u,uint8_t kind,const char *title,const char *tex
 void Afr2Ui_Notify(Afr2Ui *u,uint8_t k,const char *title,const char *text,uint16_t ms){notify_text(u,k,title,text,ms,0);}
 void Afr2Ui_NotifyFlash(Afr2Ui *u,uint8_t k,const char *title,const char *text,uint16_t ms){notify_text(u,k,title,text,ms,3);}
 void Afr2Ui_NotifyFlashTitle(Afr2Ui *u,uint8_t k,const char *title,const char *text,uint16_t ms){notify_text(u,k,title,text,ms,1);}
-void Afr2Ui_AfterNotice(Afr2Ui *u,uint8_t node){u->notice_target=node+1u;}
-static void after_notices(Afr2Ui *u){
-    if(!u->notices && u->notice_target){
-        uint8_t node=u->notice_target-1u;u->notice_target=0;
-        for(uint8_t i=u->depth;i>0;--i)if(u->history[i-1].node==node){Afr2UiPosition p=u->history[i-1];u->depth=i-1;u->node=p.node;u->selection=p.selection;u->firstVisible=p.first;sync_code(u);return;}
-        Afr2Ui_Open(u,node);
-    }
-}
+void Afr2Ui_AfterNotice(Afr2Ui *u,uint8_t node){(void)node;u->notice_target=0;}
 static void dismiss(Afr2Ui *u){
     if(!u->notices)return;
-    u->tail=(u->tail+1u)%4;--u->notices;++u->generation;u->notice_started_ms=u->clock_ms;u->redraw=true;
-    after_notices(u);
+    u->tail=(u->tail+1u)%4;--u->notices;u->notice_target=0;++u->generation;u->notice_started_ms=u->clock_ms;u->redraw=true;
 }
 /* AFR2-20261107-48: with the Web open the ESP queues network events back to back
  * (WebSocket, clients, Web served). A click closed only one and the next replaced it at
@@ -300,10 +323,9 @@ static void dismiss_input(Afr2Ui *u){
             uint8_t to=(u->tail+kept)%4u;if(to!=from)u->notification[to]=u->notification[from];++kept;
         }
     }
-    u->notices=kept;u->head=(u->tail+kept)%4u;
+    u->notices=kept;u->head=(u->tail+kept)%4u;u->notice_target=0;
     u->network_quiet_until_ms=u->clock_ms+AFR2_NETWORK_QUIET_MS;
     ++u->generation;u->notice_started_ms=u->clock_ms;u->redraw=true;
-    after_notices(u);
 }
 uint8_t Afr2Ui_NetworkQuiet(const Afr2Ui *u){return (int32_t)(u->clock_ms-u->network_quiet_until_ms)<0;}
 void Afr2Ui_Tick(Afr2Ui *u,uint32_t now) {
@@ -401,7 +423,7 @@ static void result(Afr2Ui *u,uint8_t code){
     Afr2MenuItem item;Afr2Ui_MenuItem(u,u->selection,&item);action_result(u,code,item.action);
 }
 static void keyboard(Afr2Ui *u,Afr2UiInput in) {
-    if(in.menu){wipe(&u->credentials,sizeof(u->credentials));u->keyboard=0;u->notices=0;u->head=u->tail=0;u->redraw=true;return;}
+    if(in.menu){wipe(&u->credentials,sizeof(u->credentials));u->keyboard=0;u->notices=0;u->head=u->tail=u->notice_target=0;u->redraw=true;return;}
     if(in.rotation){int16_t k=(int16_t)u->key+in.rotation;while(k<0)k+=97;u->key=k%97;u->redraw=true;}
     if(!in.click)return;
     char *b=u->keyboard_field?u->credentials.password:u->credentials.ssid;
@@ -415,9 +437,11 @@ static void keyboard(Afr2Ui *u,Afr2UiInput in) {
         } else if(u->length && u->length<8){result(u,1);return;}
         else {
             uint8_t r=invoke(u,AFR2_A_KEYBOARD,0,&u->credentials);
+            if(r){result(u,r);return;}
             wipe(&u->credentials,sizeof(u->credentials));u->keyboard=0;
-            if(!r)Afr2Ui_Open(u,AFR2_N_WIFI_REVIEW);
-            result(u,r);
+            back(u,AFR2_N_WIFI);
+            Afr2Ui_NotifyFlash(u,0,PSTR("Wi-Fi"),PSTR("Conectando..."),2500);
+            return;
         }
     }
     u->redraw=true;
@@ -526,7 +550,7 @@ void Afr2Ui_Apply(Afr2Ui *u,Afr2UiInput in) {
     }
     if(u->node==AFR2_N_WIFI_MODE_SELECT){
         if(in.rotation){int16_t mode=u->selection+in.rotation;u->selection=mode<0?0:mode>2?2:mode;u->redraw=true;}
-        if(in.click){uint8_t rc=invoke(u,AFR2_A_WIFI_CHANGE_MODE,u->selection+1u,0);if(rc)action_result(u,rc,AFR2_A_WIFI_CHANGE_MODE);else Afr2Ui_NotifyFlash(u,0,PSTR("Cambiar modo"),PSTR("Esperando ESP"),1500);}
+        if(in.click){uint8_t rc=invoke(u,AFR2_A_WIFI_CHANGE_MODE,u->selection+1u,0);if(rc)action_result(u,rc,AFR2_A_WIFI_CHANGE_MODE);else back(u,AFR2_N_WIFI);}
         return;
     }
     if(u->node==AFR2_N_CAPS){
@@ -589,7 +613,7 @@ void Afr2Ui_Apply(Afr2Ui *u,Afr2UiInput in) {
         } else if(i.action==AFR2_A_WIFI_NETWORK){
             uint8_t rc=invoke(u,i.action,i.arg,0);if(rc)action_result(u,rc,i.action);else Afr2Ui_Open(u,AFR2_N_WIFI_SETUP);
         } else if(i.action==AFR2_A_WIFI_WEB){
-            uint8_t rc=invoke(u,i.action,0,0);if(rc)action_result(u,rc,i.action);else u->redraw=true;
+            uint8_t rc=invoke(u,i.action,0,0);if(rc)action_result(u,rc,i.action);else Afr2Ui_NotifyFlash(u,0,PSTR("Ingresar en Web"),PSTR("Ver navegador"),2500);
         } else if(i.action==AFR2_A_ESP_TEST){
             uint8_t r=invoke(u,i.action,0,0);if(r)action_result(u,r,i.action);else u->redraw=true;
         } else if(i.action==AFR2_A_QUICK_MODE){
@@ -612,7 +636,10 @@ void Afr2Ui_Apply(Afr2Ui *u,Afr2UiInput in) {
         } else if(i.action==AFR2_A_KEYBOARD) {
             wipe(&u->credentials,sizeof(u->credentials));
             if(u->ops.keyboard_seed)u->ops.keyboard_seed(u->ops.ctx,&u->credentials);
-            u->keyboard=1;u->keyboard_field=0;u->length=strlen(u->credentials.ssid);u->key=0;u->redraw=true;
+            u->notices=u->head=u->tail=u->notice_target=0;
+            u->keyboard=1;u->keyboard_field=u->credentials.ssid[0]?1:0;
+            u->length=u->keyboard_field?0:(uint8_t)strlen(u->credentials.ssid);
+            u->key=0;u->redraw=true;
         } else if(i.step){u->editing=i;u->edit=1;u->draft=u->ops.value?u->ops.value(u->ops.ctx,i.action):i.min;u->redraw=true;}
         else {uint8_t r=invoke(u,i.action,i.arg,0);u->redraw=true;result(u,r);}
     }

@@ -6,7 +6,9 @@ import { stateAge, type RobotMode } from '../../protocol/robotState';
 const LABELS: Record<RobotMode, string> = { idle: 'Reposo', manual: 'Manual', 'manual-pwm':'Manual PWM', 'line-follow': 'Seguimiento de línea', 'wheel-test': 'Prueba de rueda', goto: 'GOTO', sequence: 'Secuencia', fault: 'Fallo', unknown: 'Sin datos' };
 
 /** Shares the same authoritative snapshot as Control; never issues a second poll. */
-export function useRobotMode(): string {
+export function useRobotMode(): string { return useRobotModeState().label; }
+/** AFR2-20261110-16: raw mode too, for the header pill tone. 'none' = no fresh state. */
+export function useRobotModeState(): { mode: RobotMode | 'none'; label: string } {
   const { robotState, wsState, megaLinkState } = useConnection();
   const [now, setNow] = useState(Date.now());
   useEffect(() => {
@@ -17,5 +19,6 @@ export function useRobotMode(): string {
     return () => clearTimeout(timer);
   }, [robotState]);
   const age = stateAge(robotState, Math.max(now, Date.now()));
-  return wsState === 'ready' && megaLinkState === 'ready' && robotState && age !== null && age < 6000 ? LABELS[robotState.mode] : 'Sin datos';
+  return wsState === 'ready' && megaLinkState === 'ready' && robotState && age !== null && age < 6000
+    ? { mode: robotState.mode, label: LABELS[robotState.mode] } : { mode: 'none', label: 'Sin datos' };
 }

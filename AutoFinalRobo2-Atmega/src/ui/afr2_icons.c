@@ -113,10 +113,15 @@ void Afr2Icon_Draw(Afr2Oled *o,uint8_t id,int16_t x,int16_t y,uint8_t size) {
     uint8_t stride=(icon.w+7u)/8u;
     uint8_t largest=icon.w>icon.h?icon.w:icon.h;
     uint8_t width=(uint16_t)icon.w*size/largest,height=(uint16_t)icon.h*size/largest;
+    if(!width || !height)return;
     x+=(size-width)/2;y+=(size-height)/2;
-    for(uint8_t py=0;py<height;py++)for(uint8_t px=0;px<width;px++) {
-        uint8_t sx=(uint16_t)px*icon.w/width,sy=(uint16_t)py*icon.h/height;
-        if(pgm_read_byte(icon.bits+(uint16_t)sy*stride+sx/8u)&(1u<<(sx&7u)))Afr2Oled_Pixel(o,x+px,y+py,AFR2_WHITE);
+    for(uint8_t py=0;py<height;py++) {
+        uint8_t sy=(uint16_t)py*icon.h/height,sx=0;uint16_t remainder=0;
+        const uint8_t *row=icon.bits+(uint16_t)sy*stride;
+        for(uint8_t px=0;px<width;px++) {
+            if(pgm_read_byte(row+sx/8u)&(1u<<(sx&7u)))Afr2Oled_Pixel(o,x+px,y+py,AFR2_WHITE);
+            remainder+=icon.w;while(remainder>=width){remainder-=width;++sx;}
+        }
     }
 }
 uint8_t Afr2Menu_Icon(uint8_t node,uint8_t target,uint8_t action,const char *label) {

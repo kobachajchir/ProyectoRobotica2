@@ -30,6 +30,7 @@ export const DESTINATIONS: readonly NavDestination[] = [
   { to: '/puesta-a-punto', label: 'Puesta a punto', icon: 'setup', group: 'preparar', description: 'Probá cada rueda y calibrá antes de operar.' },
   { to: '/sensores', label: 'Sensores', icon: 'sensors', group: 'preparar', description: 'Distancia, línea y ruedas, con la antigüedad de cada lectura.' },
   { to: '/modelos', label: 'Modelos y simulación', icon: 'cube', group: 'explorar', description: 'Explorá el auto y el brazo V17, y simulá sus movimientos.' },
+  { to: '/armado', label: 'Armado del robot', icon: 'arm', group: 'explorar', description: 'Seguí el ensamblaje del auto y del brazo pieza por pieza, hasta tomar una caja.' },
   { to: '/infraestructura', label: 'Infraestructura', icon: 'board', group: 'explorar', description: 'Seguí el viaje del código y los modelos 3D hasta la memoria del robot y tu navegador.' },
   { to: '/loader', label: 'Loader', icon: 'arrow-down', group: 'explorar', description: 'Cómo se compilan, cargan y verifican el ATmega, el ESP y la Web desde Windows.' },
   { to: '/conexion', label: 'Conexión', icon: 'wifi', group: 'sistema', description: 'Wi-Fi, punto de acceso y enlace entre el ESP y el ATmega.' },

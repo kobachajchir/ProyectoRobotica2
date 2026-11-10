@@ -45,12 +45,14 @@ static void radar(Afr2Oled *o,const Afr2UiSnapshot *s,uint8_t compact){
     snprintf_P(text,sizeof(text),compact?PSTR("Servo %s"):PSTR("1/2> R %s"),scale);txt(o,0,0,text);
     if(h && h->running){TXT(80,0,"AUTO");}else if(active){TXT(80,0,"FIJO");}else {TXT(80,0,"OFF");}
     if(!compact){TXT(114,0,"cm");}
-    uint16_t center=active?(uint16_t)h->angle*2u:0;
+    /* Cono nominal de 15 grados, incluso sin PWM; ultimo angulo comandado. */
+    uint8_t cone=h && h->angle<=180;
+    uint16_t center=cone?(uint16_t)h->angle*2u:180u;
     uint16_t low=center>15u?center-15u:0,high=center+15u;if(high>360u)high=360u;
     for(uint8_t ring=1;ring<=4;ring++){
         int16_t r=(uint16_t)radius*ring/4u;uint16_t step=344u/r;
         for(uint16_t angle=0;angle<=360u;angle+=step)Afr2Oled_Pixel(o,64+project(r,cs_half(angle)),cy-project(r,sn_half(angle)),AFR2_WHITE);
-        if(active)for(uint16_t angle=low;angle<high;){
+        if(cone)for(uint16_t angle=low;angle<high;){
             uint16_t end=(angle/10u+1u)*10u;if(end>high)end=high;
             line(o,64+project(r,cs_half(angle)),cy-project(r,sn_half(angle)),64+project(r,cs_half(end)),cy-project(r,sn_half(end)));angle=end;
         }
@@ -62,18 +64,18 @@ static void radar(Afr2Oled *o,const Afr2UiSnapshot *s,uint8_t compact){
         }
     }
     for(uint8_t i=0;i<=36;i+=6){
-        if(active && (uint16_t)i*10u>=low && (uint16_t)i*10u<=high)line(o,64,cy,64+project(radius,cs(i)),cy-project(radius,sn(i)));
+        if(cone && (uint16_t)i*10u>=low && (uint16_t)i*10u<=high)line(o,64,cy,64+project(radius,cs(i)),cy-project(radius,sn(i)));
         else for(uint8_t r=2;r<=radius;r+=3)Afr2Oled_Pixel(o,64+project(r,cs(i)),cy-project(r,sn(i)),AFR2_WHITE);
     }
     if(h){
-        if(active){line(o,64,cy,64+project(radius,cs_half(low)),cy-project(radius,sn_half(low)));line(o,64,cy,64+project(radius,cs_half(high)),cy-project(radius,sn_half(high)));}
+        if(cone){line(o,64,cy,64+project(radius,cs_half(low)),cy-project(radius,sn_half(low)));line(o,64,cy,64+project(radius,cs_half(high)),cy-project(radius,sn_half(high)));}
         if(s->radar_trace)for(uint8_t i=0;i<37;i++)if(h->bins[i].id && h->bins[i].error==AFR2_ECHO_OK)hit(o,i*5u,h->bins[i].distance_mm,range,radius,cy);
         /* AFR2-20261108-02: en Pruebas el servo suele estar apagado (pulse_us 0) y el HC-SR04 igual mide;
          * antes ese eco se descartaba y el radar no graficaba. Se dibuja el ultimo eco valido y reciente
-         * (<=1 s) con su angulo si el servo estaba activo, o de frente (90) si no. En modo rastro los
+         * (<=1 s) con el angulo registrado (ultimo comando si PWM OFF). En modo rastro los
          * ecos del barrido siguen acumulandose en bins[]; este punto cubre el uso sin barrido. */
         if(h->latest.id && h->latest.error==AFR2_ECHO_OK && (!s->radar_trace || !h->running) && (uint32_t)(s->sensor_now_ms-h->latest.ms)<=1000u){
-            uint8_t angle=(h->latest.pulse_us>=1000 && h->latest.pulse_us<=2000)?h->latest.angle:90u;
+            uint8_t angle=h->latest.angle<=180?h->latest.angle:(cone?h->angle:90u);
             hit(o,angle,h->latest.distance_mm,range,radius,cy);
         }
     }

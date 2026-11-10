@@ -8,6 +8,7 @@
 #include "wifi_service.h"
 #include "mega_link.h"
 #include "broker.h"
+#include "http_assets.h"
 static Storage storage;
 static WifiService wifi(storage);
 static MegaLink mega;
@@ -15,6 +16,13 @@ static AsyncWebServer server(80);
 static AsyncWebSocket ws("/ws");
 static Broker broker(ws,mega,wifi,storage);
 static uint32_t cleanupAt;
+
+// Immutable pages stay in flash; runtime diagnostics come from the small JSON endpoint.
+static const char diagnosticPage[] PROGMEM = R"HTML(<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>:root{color-scheme:light dark}body{font:16px system-ui;max-width:52rem;margin:24px auto;padding:0 16px}pre{white-space:pre-wrap;overflow-wrap:anywhere}</style><title>Diagnostico AFR2</title><h1>AutoFinalRobo2</h1><p>Servidor HTTP accesible. Estado de red y paquete:</p><pre id="status">Consultando...</pre><a href="/">Abrir interfaz</a><script>fetch('/api/health',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('HTTP '+r.status);return r.json()}).then(d=>document.getElementById('status').textContent=JSON.stringify(d,null,2)).catch(e=>document.getElementById('status').textContent='No se pudo leer el estado: '+e.message)</script><noscript>Consultar /api/health para ver el estado sin JavaScript.</noscript>)HTML";
+static const char unavailablePage[] PROGMEM = "<!doctype html><meta charset='utf-8'><title>AutoFinalRobo2</title>"
+    "<h1>AutoFinalRobo2 ESP</h1><p>Paquete Web no disponible en LittleFS.</p>"
+    "<p>Diagnostico: <a href='/diagnostico'>estado del servicio</a>.</p>";
+
 
 static bool acceptsGzip(String header) {
     // Explicit gzip exclusion overrides a wildcard.
@@ -46,10 +54,7 @@ static void staticRequest(AsyncWebServerRequest *request) {
     const WebAsset *asset=storage.asset(route);
     if (!asset) {
         if (route=="/index.html" && !storage.webReady()) {
-            request->send(503,"text/html; charset=utf-8",
-                "<!doctype html><meta charset='utf-8'><title>AutoFinalRobo2</title>"
-                "<h1>AutoFinalRobo2 ESP</h1><p>Paquete Web no disponible en LittleFS.</p>"
-                "<p>Diagnostico: <a href='/diagnostico'>estado del servicio</a>.</p>");
+            request->send(request->beginResponse_P(503,"text/html; charset=utf-8",unavailablePage));
         } else request->send(404,"text/plain","Not found");
         return;
     }
@@ -62,22 +67,13 @@ static void staticRequest(AsyncWebServerRequest *request) {
         response->addHeader("ETag",asset->etag); response->addHeader("Vary","Accept-Encoding");
         response->addHeader("Cache-Control","no-cache"); request->send(response); return;
     }
-    auto *response=request->beginResponse(LittleFS,asset->path,asset->mime);
-    if (!response) { request->send(503,"text/plain","Asset unavailable"); return; }
-    response->addHeader("Content-Encoding","gzip"); response->addHeader("Vary","Accept-Encoding");
-    response->addHeader("Cache-Control",index?"no-store":"no-cache");
-    response->addHeader("ETag",asset->etag); response->addHeader("X-Content-Type-Options","nosniff");
-    request->send(response);
+    serveAsset(request,*asset);
     if(index)broker.networkEvent(AFR2_NET_WEB_SERVED); // HTTP response queued, not a browser-render acknowledgement.
 }
 void setup() {
     mega.begin(); storage.begin(); wifi.begin(); broker.begin(); server.addHandler(&ws);
     server.on("/diagnostico",HTTP_GET,[](AsyncWebServerRequest *request){
-        JsonDocument doc;storage.health(doc["filesystem"].to<JsonObject>());wifi.status(doc["wifi"].to<JsonObject>());
-        doc["brokerVersion"]=AFR2_FIRMWARE_VERSION;doc["bootId"]=mega.ownBootId();
-        doc["resetReason"]=ESP.getResetInfoPtr()?ESP.getResetInfoPtr()->reason:255;
-        String json;serializeJson(doc,json);json.replace("&","&amp;");json.replace("<","&lt;");json.replace(">","&gt;");
-        auto *response=request->beginResponse(200,"text/html; charset=utf-8",String("<!doctype html><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><style>:root{color-scheme:light dark}body{font:16px system-ui;max-width:52rem;margin:24px auto;padding:0 16px}pre{white-space:pre-wrap;overflow-wrap:anywhere}</style><title>Diagnostico AFR2</title><h1>AutoFinalRobo2</h1><p>Servidor HTTP accesible. Estado de red y paquete:</p><pre>")+json+"</pre><a href='/'>Abrir interfaz</a>");
+        auto *response=request->beginResponse_P(200,"text/html; charset=utf-8",diagnosticPage);
         response->addHeader("Cache-Control","no-store");request->send(response);
     });
     server.on("/api/health",HTTP_GET,[](AsyncWebServerRequest *request) {
@@ -85,7 +81,9 @@ void setup() {
         doc["megaLink"]=mega.state(); doc["uptimeMs"]=millis();
         storage.health(doc["filesystem"].to<JsonObject>());wifi.status(doc["wifi"].to<JsonObject>());
         doc["bootId"]=mega.ownBootId();doc["resetReason"]=ESP.getResetInfoPtr()?ESP.getResetInfoPtr()->reason:255;
-        String body; serializeJson(doc,body);
+        doc["freeHeapBytes"]=ESP.getFreeHeap();doc["maxFreeBlockBytes"]=ESP.getMaxFreeBlockSize();
+        assetStatus(doc["httpAssets"].to<JsonObject>());
+        String body; serializeJson(doc,body);doc.clear();
         auto *response=request->beginResponse(200,"application/json; charset=utf-8",body);
         response->addHeader("Cache-Control","no-store"); request->send(response);
     });
@@ -103,7 +101,7 @@ void setup() {
 }
 void loop() {
     uint32_t now=millis();
-    mega.tick(now); broker.tick(now); wifi.tick(now);
+    mega.tick(now); broker.tick(now); wifi.tick(now);tickAssets(now);
     if ((uint32_t)(now-cleanupAt)>=1000u) { cleanupAt=now; ws.cleanupClients(); }
     yield();
 }

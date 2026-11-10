@@ -14,6 +14,7 @@ import { DocsPage } from '../features/docs/DocsPage';
 import { DeveloperPage } from '../features/developer/DeveloperPage';
 
 const ModelsPage = lazy(() => import('../features/models/ModelsPage').then(m => ({ default: m.ModelsPage })));
+const AssemblyPage = lazy(() => import('../features/assembly/AssemblyPage').then(m => ({ default: m.AssemblyPage })));
 const LoaderPage = lazy(() => import('../features/loader/LoaderPage').then(m => ({ default: m.LoaderPage })));
 const InfrastructurePage = lazy(() => import('../features/infrastructure/InfrastructurePage').then(m => ({ default: m.InfrastructurePage })));
 const Model3DPage = lazy(() => import('../features/model3d/Model3DPage').then(m => ({ default: m.Model3DPage })));
@@ -63,6 +64,7 @@ export function App() {
                 <Route path="/puesta-a-punto" element={<ControlPage area="setup" />} />
                 <Route path="/sensores" element={<SensorsPage />} />
                 <Route path="/modelos" element={<Suspense fallback={<p role="status" className="afr2-route-loading">Cargando modelos…</p>}><ModelsPage /></Suspense>} />
+                <Route path="/armado" element={<Suspense fallback={<p role="status" className="afr2-route-loading">Cargando recorrido de armado…</p>}><AssemblyPage /></Suspense>} />
                 <Route path="/infraestructura" element={<Suspense fallback={<p role="status" className="afr2-route-loading">Cargando infraestructura…</p>}><InfrastructurePage /></Suspense>} />
                 <Route path="/loader" element={<Suspense fallback={<p role="status" className="afr2-route-loading">Cargando Loader…</p>}><LoaderPage /></Suspense>} />
                 {/* AFR2-20261102-01: inspección 3D y simulador separados. */}

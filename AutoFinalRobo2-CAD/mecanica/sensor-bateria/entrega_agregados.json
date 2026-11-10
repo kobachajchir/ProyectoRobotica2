@@ -1,0 +1,68 @@
+{
+  "change_id": "AFR2-20261109-10",
+  "blend": "D:\\ProyectoRobotica2\\AutoFinalRobo2-CAD\\mecanica\\sensor-bateria\\AFR2_Sensor_Bateria_Cableado_20261109_v2.blend",
+  "web_asset": "D:\\ProyectoRobotica2\\AutoFinalRobo2-Web\\public\\models\\AFR2_Sensor_Bateria.glb",
+  "bytes": 11692,
+  "gzip_bytes": 7969,
+  "sha256": "3c73a749349909ffd8ffc843a6521995a9f687ec8fada34ff574584e7883bc7b",
+  "triangles": 1400,
+  "objects": 1,
+  "materials": 6,
+  "step_sources": {
+    "resistor": {
+      "source": "${KICAD10_3DMODEL_DIR}/Resistor_THT.3dshapes/R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal.step",
+      "resolved_path": "C:\\Program Files\\KiCad\\10.99\\share\\kicad\\3dmodels\\Resistor_THT.3dshapes\\R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal.step",
+      "sha256": "46710ac36957e4073ef7e80153823ef7db1ea12932074cb71f43bc4b476a74dc"
+    },
+    "capacitor": {
+      "source": "${KICAD10_3DMODEL_DIR}/Capacitor_THT.3dshapes/CP_Radial_Tantal_D4.5mm_P2.50mm.step",
+      "resolved_path": "C:\\Program Files\\KiCad\\10.99\\share\\kicad\\3dmodels\\Capacitor_THT.3dshapes\\CP_Radial_Tantal_D4.5mm_P2.50mm.step",
+      "sha256": "76efa56090706938786f63579ec3363ae71fe4384b6a65f69f581e11f281ea16"
+    },
+    "pin": {
+      "source": "${KICAD10_3DMODEL_DIR}/Connector_PinHeader_1.00mm.3dshapes/PinHeader_1x01_P1.00mm_Horizontal.step",
+      "resolved_path": "C:\\Program Files\\KiCad\\10.99\\share\\kicad\\3dmodels\\Connector_PinHeader_1.00mm.3dshapes\\PinHeader_1x01_P1.00mm_Horizontal.step",
+      "sha256": "cefff18da038921cb2519c595925213a30f0c0833507d0ed85f46d2a10a1aaa3"
+    }
+  },
+  "wire_colors": {
+    "BATT+": "red",
+    "GND": "black",
+    "A5": "red"
+  },
+  "adc": "8V battery ->4V A5 nominal; divider10k/10k; C3=100nF",
+  "state": "authored and exported; no rendering, electrical checks, build or flash",
+  "export_meshes": 1,
+  "export_scope": "R1,R4,C3,J3 and red/black wires ONLY; panel/voltmeter/holder reused in browser",
+  "wire_routes": "short straight parallel rails: positive left, GND right; holder center, voltmeter above, divider below",
+  "focus_bounds_three": [
+    -0.010318722575902939,
+    0.0009999945759773254,
+    0.027736149728298187,
+    0.010297480970621109,
+    0.011358015239238739,
+    0.04625000059604645
+  ],
+  "reuse_layout_three": {
+    "holder_translation": [
+      0,
+      -0.07905133813619614,
+      -0.07199974171817303
+    ],
+    "voltmeter_translation": [
+      0.05,
+      -0.07995112371444701,
+      -0.001997555620968344
+    ],
+    "compact_center": [
+      0,
+      0.01,
+      0
+    ]
+  },
+  "blend_bytes": 4485924,
+  "references": [
+    "referencias/referencia_componentes.png",
+    "referencias/esquema_divisor.png"
+  ]
+}

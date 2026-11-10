@@ -8,6 +8,7 @@
  * pines y mensajes) se muestra resaltado en celeste. Cada viñeta expresa una sola idea. */
 
 import type { UiIconName } from '../../components/ui/UiIcon';
+import { version as WEB_VERSION } from '../../../package.json';
 
 export interface HelpChapter {
   title: string;
@@ -19,6 +20,7 @@ export interface HelpChapter {
 export interface HelpGroup { title: string; chapters: HelpChapter[] }
 export interface HelpPinGroup { label: string; rows: [string, string][] }
 export interface HelpPinout { title: string; groups: HelpPinGroup[] }
+export interface HelpVisual { src: string; alt: string; width: number; height: number; kind: 'render' | 'screen' }
 export interface HelpModule {
   /** Nombre del componente y su función en el sistema (encabezan la tarjeta del módulo). */
   name: string; role: string; icon: UiIconName;
@@ -27,6 +29,8 @@ export interface HelpModule {
   specs: [string, string][];
   /** Cuarto derecho de la tarjeta: pines o puntos de acceso más consultados. */
   pinout: HelpPinout;
+  /** Imagen junto a la descripción: render del CAD en Fusion (fondo transparente) o captura de pantalla. */
+  visual?: HelpVisual;
   groups: HelpGroup[];
 }
 export type HelpModuleId = 'atmega' | 'esp' | 'web' | 'oled';
@@ -36,6 +40,7 @@ export const HELP: Record<HelpModuleId, HelpModule> = {
     name: 'ATmega2560', role: 'Controlador de tiempo real', icon: 'board',
     intro: 'Es la autoridad del auto: genera el PWM de las cuatro ruedas Mecanum, cuenta los pulsos Hall, mide distancia y línea, ejecuta secuencias, guarda la configuración en EEPROM y dibuja la OLED. Trabaja en un bucle cooperativo alimentado por interrupciones, sin RTOS ni esperas bloqueantes. Solo responde pedidos del ESP, y ninguna orden externa saltea sus guardas ni su STOP.',
     specs: [['Núcleo', 'AVR 8 bits · 16 MHz'], ['Memoria', '256 KiB flash · 8 KiB SRAM · 4 KiB EEPROM'], ['Código', 'C gnu11 + avr-libc'], ['Enlace', 'ROBO2 · USART1 115200']],
+    visual: { src: '/help/atmega2560.webp', alt: 'Render CAD de la placa Arduino Mega 2560 del auto', width: 900, height: 584, kind: 'render' },
     pinout: { title: 'Pinout', groups: [
       { label: 'Motores · IN1 / IN2 / PWM', rows: [['Del. der. (FR)', 'D22 D24 D9'], ['Del. izq. (FL)', 'D26 D28 D10'], ['Tras. der. (RR)', 'D5 D6 D11'], ['Tras. izq. (RL)', 'D7 D8 D12']] },
       { label: 'Hall de ruedas', rows: [['Canal A', 'A8–A11'], ['Canal B', 'A12–A15']] },
@@ -190,6 +195,7 @@ export const HELP: Record<HelpModuleId, HelpModule> = {
     name: 'ESP8266 · ESP-12S', role: 'Pasarela Wi-Fi y servidor', icon: 'wifi',
     intro: 'Conecta el auto con el navegador. Levanta Wi-Fi como estación, punto de acceso o ambos; sirve la Web comprimida desde LittleFS y traduce cada pedido JSON del WebSocket en una transacción ROBO2 con el ATmega, con plazos y validación en los dos sentidos. Corre firmware propio sobre Arduino, sin comandos AT, y no decide sobre el movimiento.',
     specs: [['Núcleo', 'Xtensa L106 · 80 MHz'], ['Flash', '4 MiB · LittleFS 3 MiB'], ['Código', 'C++17 · PlatformIO'], ['Servicios', 'HTTP · WebSocket `/ws`']],
+    visual: { src: '/help/esp12s-shield.webp', alt: 'Render CAD del shield Wi-Fi con el módulo ESP-12S', width: 900, height: 647, kind: 'render' },
     pinout: { title: 'Pinout', groups: [
       { label: 'UART de operación (UART0)', rows: [['TX', 'GPIO1'], ['RX', 'GPIO3'], ['Velocidad', '115200 8N1']] },
       { label: 'Hacia el Mega', rows: [['D18 (TX1)', '→ E_RX'], ['E_TX', '→ D19 (RX1)'], ['Masa', 'GND común']] },
@@ -304,7 +310,8 @@ export const HELP: Record<HelpModuleId, HelpModule> = {
   web: {
     name: 'Web AFR2', role: 'Consola en el navegador', icon: 'screen',
     intro: 'Aplicación de una sola página que el ESP entrega comprimida y el navegador ejecuta por completo: rutas, estado de conexión, simulaciones y escenas 3D corren en el dispositivo del usuario. Envía órdenes por un único WebSocket supervisado y muestra cada lectura con su antigüedad; lo simulado nunca se presenta como medición.',
-    specs: [['Versión', '0.4.0'], ['Stack', 'React 19 · TypeScript 5.9 · Vite 7'], ['3D', 'Three 0.180 · R3F 9 · Draco'], ['Transporte', '`afr2-ws-1` sobre WebSocket']],
+    specs: [['Versión', WEB_VERSION], ['Stack', 'React 19 · TypeScript 5.9 · Vite 7'], ['3D', 'Three 0.180 · R3F 9 · Draco'], ['Transporte', '`afr2-ws-1` sobre WebSocket']],
+    visual: { src: '/help/web-inicio.webp', alt: 'Captura de la pantalla Inicio de la Web AFR2', width: 960, height: 600, kind: 'screen' },
     pinout: { title: 'Puntos de acceso', groups: [
       { label: 'Página', rows: [['Inicio', '`/` → `/index.html`'], ['Estáticos', '`/dist`']] },
       { label: 'API', rows: [['Estado', '`/api/health`'], ['Paquete', '`/api/web-manifest`']] },
@@ -392,6 +399,7 @@ export const HELP: Record<HelpModuleId, HelpModule> = {
     name: 'OLED 0,96 pulgadas + encoder', role: 'Interfaz local del auto', icon: 'encoder',
     intro: 'Pantalla monocroma SSD1306 manejada por el ATmega como único dispositivo I2C, con refresco diferencial por páginas, y un encoder KY-040 como única entrada: giro, corto y largo. La Web usa el mismo renderer para simular el flujo y puede ver y operar la pantalla real en vivo.',
     specs: [['Panel', 'SSD1306 · 128×64 · I2C'], ['Bus', 'TWI 100 kHz'], ['Entrada', 'KY-040 · `INT4`/`INT5` + `D42`'], ['Gesto largo', '≥ 800 ms, al soltar']],
+    visual: { src: '/help/oled-encoder.webp', alt: 'Render CAD del panel con OLED de 0,96 pulgadas y encoder KY-040', width: 720, height: 719, kind: 'render' },
     pinout: { title: 'Pinout', groups: [
       { label: 'OLED (I2C)', rows: [['SDA', 'D20'], ['SCL', 'D21'], ['VCC / GND', '+5 V / GND']] },
       { label: 'Encoder KY-040', rows: [['CLK', 'D2 · INT4'], ['DT', 'D3 · INT5'], ['SW', 'D42'], ['Comunes', 'GND']] },

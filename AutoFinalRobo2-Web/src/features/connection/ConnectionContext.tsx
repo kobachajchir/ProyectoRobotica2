@@ -120,6 +120,28 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
   const [wifiStatus, setWifiStatus] = useState<WifiStatusSnapshot>(EMPTY_WIFI_SNAPSHOT);
   const [wifiNetworks, setWifiNetworks] = useState<WifiNetworkCandidate[]>([]);
   const [wifiDraft,setWifiDraft] = useState<ConnectionContextValue['wifiDraft']>(null);
+  const lastNotifiedDraftJob = useRef<number | null>(null);
+  const applyWifiDraft = useCallback((raw: unknown) => {
+    const draft = raw as Record<string, unknown> | undefined;
+    if (!draft || typeof draft !== 'object') return;
+    if (draft.pending === true && Number.isInteger(draft.jobId) && (draft.mode === 'STA' || draft.mode === 'AP' || draft.mode === 'AP_STA')) {
+      const jobId = draft.jobId as number;
+      const mode = draft.mode as 'STA' | 'AP' | 'AP_STA';
+      const ssid = typeof draft.ssid === 'string' ? draft.ssid : '';
+      setWifiDraft(prev => prev?.jobId === jobId && prev.ssid === ssid && prev.mode === mode ? prev : { jobId, mode, ssid });
+      if (lastNotifiedDraftJob.current !== jobId) {
+        lastNotifiedDraftJob.current = jobId;
+        notify.info({
+          id: `afr2-wifi-draft-${jobId}`,
+          title: 'Ingresar contraseña Wi-Fi',
+          description: ssid ? `El auto solicitó desde el OLED la contraseña para conectarse a «${ssid}».` : 'El auto solicitó desde el OLED ingresar las credenciales Wi-Fi.',
+        });
+      }
+    } else if (draft.pending === false) {
+      lastNotifiedDraftJob.current = null;
+      setWifiDraft(null);
+    }
+  }, [notify]);
   useEffect(() => {if(snapshot.megaLinkState !== 'ready')setSensors(EMPTY_SENSORS_SNAPSHOT);},[snapshot.megaLinkState]);
   const connectionRef = useRef(snapshot);connectionRef.current=snapshot;
   const stopNoticeCounterRef = useRef(0);
@@ -148,7 +170,7 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
       setSnapshot(next);
       if (prev === 'ready' && next.wsState !== 'ready') {
         ++requestEpoch.current; expectedScanId.current=null;
-        setWifiDraft(null);setSensors(EMPTY_SENSORS_SNAPSHOT);
+        lastNotifiedDraftJob.current=null;setWifiDraft(null);setSensors(EMPTY_SENSORS_SNAPSHOT);
         wifiScanGeneration.current++;
         wifiScanPending.current = false;
         if (wifiScanTimer.current) clearTimeout(wifiScanTimer.current);
@@ -175,16 +197,13 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
         setBootReports(prev => [{ device, bootId:id, receivedAtMs:Date.now(), observation }, ...prev.filter(report => report.device !== device)].slice(0,2));
         if (observation === 'uart-boot-event' || (previous !== undefined && previous !== id)) notify.info({ id:`afr2-boot-${device}`, title:`${device === 'esp' ? 'ESP' : 'ATmega'} inició`, description:`Arranque ${id}. El movimiento permanece detenido después del arranque.` });
         if (previous !== id) { setBootRevision(v => v + 1);setSystemInfo(null);
-          if(device === 'esp'){ setWifiDraft(null);setWifiNetworks([]);setWifiScanState('idle'); }
+          if(device === 'esp'){ lastNotifiedDraftJob.current=null;setWifiDraft(null);setWifiNetworks([]);setWifiScanState('idle'); }
         }
       }
       if(evt.event === 'system.status') {
         const h=evt.payload?.sensorHead as {known?:boolean;running?:boolean;enabled?:boolean}|undefined;
         if(h?.known){setOperationActivity('radar',h.running===true);setOperationActivity('servo',h.enabled===true);}
-        const draft = evt.payload?.wifiDraft as Record<string, unknown> | undefined;
-        if(draft?.pending === true && Number.isInteger(draft.jobId) && (draft.mode === 'STA' || draft.mode === 'AP' || draft.mode === 'AP_STA')) {
-          setWifiDraft(prev => prev?.jobId === draft.jobId ? prev : {jobId:draft.jobId as number,mode:draft.mode as 'STA'|'AP'|'AP_STA',ssid:typeof draft.ssid === 'string'?draft.ssid:''});
-        } else setWifiDraft(null);
+        applyWifiDraft(evt.payload?.wifiDraft);
       }
       if (evt.event === 'robot.sensors.snapshot' && evt.payload) {
         const p = evt.payload as Partial<SensorsSnapshot>;
@@ -217,7 +236,7 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
       if (wifiScanTimer.current) clearTimeout(wifiScanTimer.current);
       wifiScanGeneration.current++; wifiScanPending.current = false;
     };
-  }, [client,setOperationActivity]);
+  }, [client,setOperationActivity,applyWifiDraft,notify]);
 
   // Radio status is an ESP-only service: it remains available without Mega.
   useEffect(() => {
@@ -227,8 +246,11 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
       if (cancelled || pending || document.visibilityState !== 'visible') return;
       pending = true;
       try {
-        const response = await client.sendCommand<WifiStatusSnapshot>('wifi.info', {}, 2500);
-        if (!cancelled && response.status === 'completed') setWifiStatus({...response.payload,receivedAtMs:Date.now()});
+        const response = await client.sendCommand<WifiStatusSnapshot & { wifiDraft?: unknown }>('wifi.info', {}, 2500);
+        if (!cancelled && response.status === 'completed') {
+          setWifiStatus({...response.payload,receivedAtMs:Date.now()});
+          applyWifiDraft(response.payload?.wifiDraft);
+        }
       } catch { if (!cancelled) setWifiStatus(EMPTY_WIFI_SNAPSHOT); }
       finally { pending = false; }
     };
@@ -236,7 +258,7 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
     const timer = setInterval(() => void read(), 3000);
     document.addEventListener('visibilitychange', read);
     return () => { cancelled = true; clearInterval(timer); document.removeEventListener('visibilitychange', read); };
-  }, [client, snapshot.wsState, snapshot.endpointUrl]);
+  }, [client, snapshot.wsState, snapshot.endpointUrl, applyWifiDraft]);
 
   // Shared robot.state reader for mode and map. No periodic toasts, no
   // overlapping queries, and no second request stream from page components.

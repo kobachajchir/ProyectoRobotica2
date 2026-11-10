@@ -4,8 +4,9 @@ import { getModelAssetState, ROBOT_MODEL_URL, subscribeModelAssets } from '../..
 import { lazy, Suspense, useCallback, useEffect, useId, useMemo, useRef, useState, useSyncExternalStore, type CSSProperties } from 'react';
 import { FloatingModal, type ModalOrigin } from '../../../components/ui/FloatingModal';
 import { RenderBoundary } from '../../../components/ui/RenderBoundary';
+import { RangeNumberField } from '../../../components/ui/RangeNumberField';
 import { Button } from '../../../components/ui/Button';
-import { CollapsiblePanel } from '../../../components/ui/CollapsiblePanel';
+import { FloatingSheet, TurnPresetList } from '../../../components/robot/TurnPresets';
 import { ChassisSpinGraphic } from '../ChassisSpinGraphic';
 import { UiIcon } from '../../../components/ui/UiIcon';
 import { clearRobotModelCache } from '../../../components/three/RobotModel';
@@ -33,13 +34,15 @@ function Unavailable({ onFailure }: { onFailure: () => void }) {
 }
 
 /** AFR2-20261106-12. Robot mode twists drive yaw; preview remains local. */
-export function ManualDriveOverlay({ open, origin, onClose, onRelease, onDirectionChange, onTurn, onTurnTo, hallTurnAvailable = false, canDrive, blockedReason, speed, maxSpeed, onSpeedChange, stopSignal, error }: {
+export function ManualDriveOverlay({ open, origin, onClose, onRelease, onDirectionChange, onTurn, onTurnTo, hallTurnAvailable = false, hallTurnReason = null, turnPower, onTurnPowerChange, canDrive, blockedReason, speed, maxSpeed, onSpeedChange, stopSignal, error }: {
   open: boolean; origin: ModalOrigin | null; onClose: () => void; onRelease: () => void;
   onDirectionChange: (direction: ManualDirection) => void;
   /** AFR2-20261106-07: two-finger twist with the car connected turns it in place (open loop). side>0 = CCW. */
   onTurn?: (side: number) => void;
   /** AFR2-20261106-08: Hall-closed in-place turn to the twisted angle (GOTO x=y=0). */
   onTurnTo?: (thetaMrad: number) => void; hallTurnAvailable?: boolean;
+  /** AFR2-20261110-16: reason shown on the 90° presets; turn power edited from the rail. */
+  hallTurnReason?: string | null; turnPower?: number; onTurnPowerChange?: (value: number) => void;
   canDrive: boolean; blockedReason: string | null;
   speed: number; maxSpeed: number; onSpeedChange: (speed: number) => void; stopSignal: number | null; error: string | null;
 }) {
@@ -114,10 +117,14 @@ export function ManualDriveOverlay({ open, origin, onClose, onRelease, onDirecti
   const twistStart = useRef(0);
   // Per-viewer convenience only; storage may be unavailable.
   const [useHallSensors, setUseHallSensors] = useState(() => { try { return localStorage.getItem('afr2.touch.hallTurn') === '1'; } catch { return false; } });
-  // AFR2-20261107-42: «Información» y «Parámetros» empiezan cerrados en cada apertura;
-  // el visor ocupa el área y el usuario abre solo lo que necesita.
-  const [panels, setPanels] = useState<{ info: boolean; params: boolean }>({ info: false, params: false });
-  const togglePanel = (key: 'info' | 'params') => setPanels(previous => ({ ...previous, [key]: !previous[key] }));
+  // AFR2-20261110-16: side rail. Información, Parámetros and Giros open a floating sheet over a
+  // blurred scrim (inside the dialog); Hall is a toggle. All start closed on every opening.
+  const [sheet, setSheet] = useState<'info' | 'params' | 'turns' | null>(null);
+  const sheetOpen = useRef(false); sheetOpen.current = sheet !== null;
+  const [sheetAnchor, setSheetAnchor] = useState<HTMLElement | null>(null);
+  const [hallNotice, setHallNotice] = useState<{ on: boolean; key: number } | null>(null);
+  const hallNoticeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => { if (hallNoticeTimer.current) clearTimeout(hallNoticeTimer.current); }, []);
   // Joystick visual: se mueve por variables CSS, sin re-renderizar el overlay en cada pointermove.
   const puck = useRef<HTMLDivElement>(null);
   const showPuck = useCallback((drag: DragVisual | null) => {
@@ -129,7 +136,13 @@ export function ManualDriveOverlay({ open, origin, onClose, onRelease, onDirecti
     element.style.setProperty('--puck-strength', Math.min(1, length / radius).toFixed(2));
     element.dataset.visible = 'true';
   }, []);
-  const changeHallSensors = (value: boolean) => { setUseHallSensors(value); try { localStorage.setItem('afr2.touch.hallTurn', value ? '1' : '0'); } catch { /* ignore */ } };
+  const changeHallSensors = (value: boolean) => {
+    setUseHallSensors(value); try { localStorage.setItem('afr2.touch.hallTurn', value ? '1' : '0'); } catch { /* ignore */ }
+    // The page toaster lives under the modal's top layer, so this view shows its own notice.
+    setHallNotice({ on: value, key: Date.now() });
+    if (hallNoticeTimer.current) clearTimeout(hallNoticeTimer.current);
+    hallNoticeTimer.current = setTimeout(() => setHallNotice(null), 2800);
+  };
   // AFR2-20261030-19: share download state with the progress component, then
   // wait for this viewer to report readiness (including its WebGL context).
   const modelLoaded = modelReady && !modelFailed && modelAsset.phase === 'ready';
@@ -212,7 +225,7 @@ export function ManualDriveOverlay({ open, origin, onClose, onRelease, onDirecti
   useEffect(() => {
     if (!open) { wasOpen.current = false; cancel(); return; }
     if (!wasOpen.current) {
-      wasOpen.current = true; resetPointers(); resetHeading(); setPanels({ info: false, params: false });
+      wasOpen.current = true; resetPointers(); resetHeading(); setSheet(null);
       cancel();
       wasConnected.current = connected;
       modeRef.current = connected ? 'robot' : 'preview'; setMode(modeRef.current);
@@ -279,6 +292,7 @@ export function ManualDriveOverlay({ open, origin, onClose, onRelease, onDirecti
       if (event.altKey || event.ctrlKey || event.metaKey) { if (keys.current.size) cancel(); return; }
       const turnKey = event.code === 'KeyQ' || event.code === 'KeyE';
       const resetKey = event.code === 'Digit0' || event.code === 'Numpad0';
+      if (sheetOpen.current) return; // an open sheet owns the keyboard
       if (!KEYS.includes(event.key) && !turnKey && !resetKey) return;
       // The speed field keeps native arrows; other focused buttons must not
       // consume them as navigation while the driving dialog is open.
@@ -343,6 +357,9 @@ export function ManualDriveOverlay({ open, origin, onClose, onRelease, onDirecti
   } else {
     directionLabel = !connected ? 'Simulación detenida' : mode === 'preview' ? 'Vista local detenida' : 'Deslizá y mantené para mover';
   }
+  const helpText = `Un dedo sobre el auto desplaza (arrastrá desde el modelo) · Dos dedos sobre el auto giran el auto sobre su eje (con Hall: al soltar gira al ángulo marcado; sin Hall: gira mientras girás) · Soltá para detener. Flechas: mover · Q/E: girar 15° · 0: centrar rumbo. ${modelBlockedReason ? modelBlockedReason : !connected ? 'Auto desconectado. Simulación local sin movimientos físicos.' : !canDrive ? `Control bloqueado: ${blockedReason || 'PWM manual no disponible.'}` : error ? `Última orden sin confirmar: ${error}. Soltá y volvé a deslizar para reintentar.` : mode === 'preview' ? 'Vista local sin movimientos. Cerrá y volvé a abrir para controlar el auto.' : 'Vista superior · Dirección y ruedas solicitadas, sin feedback físico.'}`;
+  // Opening a sheet ends any held gesture so the car never keeps moving under it.
+  const openSheet = (next: 'info' | 'params' | 'turns', anchor: HTMLElement) => { cancel(); setSheetAnchor(anchor); setSheet(previous => previous === next ? null : next); };
   return <FloatingModal open={open} origin={origin} size="fullscreen" title="Conducción manual" kicker="Control táctil"
     headerStatus={<span className="afr2-manual-connection" data-connected={connected} role="status" aria-live="polite">
       <span className="afr2-manual-connection-dot" aria-hidden="true" />{connected ? 'Conectado' : 'Desconectado'}
@@ -393,7 +410,7 @@ export function ManualDriveOverlay({ open, origin, onClose, onRelease, onDirecti
             </g>
           </svg>
         </span>)}</div>
-        <div ref={input} className="afr2-manual-input" role="group" tabIndex={0} aria-label="Un dedo desplaza; girá dos dedos para rotar la vista local"
+        <div ref={input} className="afr2-manual-input" role="group" tabIndex={0} aria-label="Arrastrá sobre el auto para desplazarlo; girá dos dedos sobre el auto para rotarlo"
           aria-describedby={`${uid}-help ${uid}-heading`} aria-keyshortcuts="ArrowUp ArrowDown ArrowLeft ArrowRight Q E 0" aria-disabled={!enabled} onPointerDown={down} onPointerMove={move}
           onPointerUp={end} onPointerCancel={cancelPointer} onLostPointerCapture={lost}
           onBlur={cancel} onContextMenu={event => { event.preventDefault(); cancel(); }} />
@@ -406,23 +423,42 @@ export function ManualDriveOverlay({ open, origin, onClose, onRelease, onDirecti
         {mode==='robot' && powerNotice!==null && <div role="status" className="afr2-power-notice"><strong>Velocidad modificada: {Math.round(powerNotice*255/100)} /255</strong><progress max={100} value={powerNotice} aria-label="Potencia representada"/><output>{powerNotice}%</output></div>}
         {oledError && <p className="afr2-help" role="status">OLED: {oledError}</p>}
         {modelUnavailable && <Button onClick={() => { ready(false); clearRobotModelCache(); setModelFailed(false); setViewerKey(value => value + 1); }}>Reintentar modelo 3D</Button>}
-        <div className="afr2-manual-panels">
-        <CollapsiblePanel title="Información" subtitle="Gestos y estado" expanded={panels.info} onToggle={() => togglePanel('info')} className="afr2-manual-panel">
-        <p id={`${uid}-help`} className="afr2-help">Un dedo desplaza en pantalla · Dos dedos giran el auto sobre su eje (con Hall: al soltar gira al ángulo marcado; sin Hall: gira mientras girás) · Soltá para detener.
-          <span className="afr2-manual-keyboard-help">Flechas: mover · Q/E: girar 15° · 0: centrar rumbo.</span>
-          <span>{modelBlockedReason ? modelBlockedReason : !connected ? 'Auto desconectado. Simulación local sin movimientos físicos.' : !canDrive ? `Control bloqueado: ${blockedReason || 'PWM manual no disponible.'}` : error ? `Última orden sin confirmar: ${error}. Soltá y volvé a deslizar para reintentar.` : mode === 'preview' ? 'Vista local sin movimientos. Cerrá y volvé a abrir para controlar el auto.' : 'Vista superior · Dirección y ruedas solicitadas, sin feedback físico.'}</span></p>
-        </CollapsiblePanel>
-        <CollapsiblePanel title="Parámetros" subtitle="Hall y velocidad" expanded={panels.params} onToggle={() => togglePanel('params')} className="afr2-manual-panel">
-        {onTurnTo && <label className="afr2-manual-hall-toggle">
-          <input type="checkbox" checked={useHallSensors} onChange={event => changeHallSensors(event.target.checked)} />
-          <span>Giro por ángulo con sensores Hall{useHallSensors && !hallTurnAvailable ? ' · sin odometría calibrada: gira en lazo abierto' : useHallSensors ? ' · soltá para girar al ángulo' : ' · desactivado: gira mientras girás'}</span>
-        </label>}
-        <div className="afr2-manual-speed"><label htmlFor={`${uid}-speed`}>{mode === 'preview' ? connected ? 'Velocidad de la vista local' : 'Velocidad simulada' : 'Potencia de movimiento'}</label><output htmlFor={`${uid}-speed`}>{displayedSpeed} <span>{mode==='preview'?'mm/s':'% del límite PWM'}</span></output>
-          <input id={`${uid}-speed`} type="range" min={mode==='preview'?10:0} max={displayedMaxSpeed} step={10} value={displayedSpeed}
-            onChange={event => { const value = Math.min(displayedMaxSpeed, Number(event.target.value)); if (modeRef.current === 'preview') setPreviewSpeed(value); else onSpeedChange(value); }} /></div>
-        </CollapsiblePanel>
-        </div>
+        <p id={`${uid}-help`} className="sr-only">{helpText}</p>
       </footer>
+      <nav className="afr2-manual-rail" aria-label="Opciones del control táctil">
+        <button type="button" className="afr2-manual-rail__item" aria-haspopup="dialog" aria-pressed={sheet === 'info'} onClick={event => openSheet('info', event.currentTarget)}>
+          <span className="afr2-manual-rail__icon"><UiIcon name="info" /></span><span className="afr2-manual-rail__label">Información</span></button>
+        <button type="button" className="afr2-manual-rail__item" aria-haspopup="dialog" aria-pressed={sheet === 'params'} onClick={event => openSheet('params', event.currentTarget)}>
+          <span className="afr2-manual-rail__icon"><UiIcon name="settings" /></span><span className="afr2-manual-rail__label">Parámetros</span></button>
+        {onTurnTo && <button type="button" className="afr2-manual-rail__item" aria-haspopup="dialog" aria-pressed={sheet === 'turns'} onClick={event => openSheet('turns', event.currentTarget)}>
+          <span className="afr2-manual-rail__icon"><UiIcon name="rotate-cw" /></span><span className="afr2-manual-rail__label">Giros</span></button>}
+        {onTurnTo && <button type="button" className="afr2-manual-rail__item afr2-manual-rail__toggle" aria-pressed={useHallSensors}
+          title={useHallSensors ? 'Giro por ángulo con Hall activado' : 'Giro por ángulo con Hall desactivado'} onClick={() => changeHallSensors(!useHallSensors)}>
+          <span className="afr2-manual-rail__icon"><UiIcon name="sensors" /></span><span className="afr2-manual-rail__label">Hall</span></button>}
+      </nav>
+      <FloatingSheet mode="contained" placement="side" anchor={sheetAnchor} open={sheet === 'info'} onClose={() => setSheet(null)} title="Información">
+        <p className="afr2-help">{helpText}</p>
+      </FloatingSheet>
+      <FloatingSheet mode="contained" placement="side" anchor={sheetAnchor} open={sheet === 'params'} onClose={() => setSheet(null)} title="Parámetros">
+        {/* AFR2-20261110-16: same synchronized number/range field as Conducir. */}
+        <RangeNumberField label={mode === 'preview' ? connected ? 'Velocidad de la vista local' : 'Velocidad simulada' : 'Potencia de traslación'}
+          value={displayedSpeed} min={mode === 'preview' ? 10 : 0} max={displayedMaxSpeed} step={mode === 'preview' ? 10 : 5}
+          unit={mode === 'preview' ? 'mm/s' : '% del límite PWM'}
+          onChange={value => { const next = Math.min(displayedMaxSpeed, value); if (modeRef.current === 'preview') setPreviewSpeed(next); else onSpeedChange(next); }} />
+        {turnPower !== undefined && onTurnPowerChange && <RangeNumberField label="Potencia de giro" value={turnPower} min={10} max={100} step={5}
+          unit="% del límite PWM" onChange={onTurnPowerChange} />}
+        {onTurnTo && <p className="afr2-help">{useHallSensors ? hallTurnAvailable ? 'Hall activo: al soltar los dos dedos gira al ángulo marcado.' : 'Hall activo, pero sin odometría calibrada: gira en lazo abierto.' : 'Hall desactivado: gira mientras girás los dedos.'}</p>}
+      </FloatingSheet>
+      {onTurnTo && <FloatingSheet mode="contained" placement="side" anchor={sheetAnchor} open={sheet === 'turns'} onClose={() => setSheet(null)} title="Giros de 90°">
+        <TurnPresetList available={hallTurnAvailable && mode === 'robot' && physicalReady}
+          reason={!connected ? 'auto desconectado.' : mode !== 'robot' ? 'vista local; cerrá y volvé a abrir para controlar el auto.' : !physicalReady ? blockedReason || 'control no disponible.' : hallTurnReason}
+          onTurnTo={thetaMrad => callbacks.current.onTurnTo?.(thetaMrad)} onDone={() => setSheet(null)} />
+      </FloatingSheet>}
+      {hallNotice && <div key={hallNotice.key} className="afr2-manual-toast" role="status" data-on={hallNotice.on}>
+        <span className="afr2-manual-rail__icon"><UiIcon name="sensors" /></span>
+        <span><strong>{hallNotice.on ? 'Sensores Hall activados' : 'Sensores Hall desactivados'}</strong>
+          <small>{hallNotice.on ? hallTurnAvailable ? 'Los giros con dos dedos van al ángulo marcado.' : 'Sin odometría calibrada: el giro sigue en lazo abierto.' : 'Los giros siguen a los dedos mientras girás.'}</small></span>
+      </div>}
     </div>
   </FloatingModal>;
 }

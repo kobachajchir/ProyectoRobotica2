@@ -1,7 +1,7 @@
 {
   "schema": "afr2-command-3",
   "envelope_schema": "afr2-ws-1",
-  "updated_by": "AFR2-20261109-03",
+  "updated_by": "AFR2-20261110-14",
   "commands": [
     {
       "name": "system.hello",
@@ -860,7 +860,7 @@
       "wire_id": null,
       "status": "source-integrated-uncompiled-runtime-unverified",
       "module_status": {
-        "atmega": "not-applicable-to-native-WS-command",
+        "atmega": "no-wire-change-version-only",
         "esp": "source-uncompiled-unverified",
         "web": "source-uncompiled-unverified"
       },
@@ -888,7 +888,7 @@
           "disconnectedByUser": "boolean"
         }
       },
-      "notes": "Local ESP status independent of Mega. Credentials are never included in this report.",
+      "notes": "Public status has espBootId and scanTemporaryStation; never includes passwords. Temporary AP scan does not change logical AP mode.",
       "previous_delivery_status": {
         "status": "implemented-compiled-runtime-unverified",
         "module_status": {
@@ -897,9 +897,9 @@
           "web": "compiled-not-browser-tested"
         }
       },
-      "current_source_change": "AFR2-20261030-09",
+      "current_source_change": "AFR2-20261110-13",
       "build_evidence": "../documentation/builds/2026-10-25-14/README.md",
-      "contract": "WIFI_UI_11.md",
+      "contract": "WIFI_AP_PROVISIONING_20261110.md",
       "build_evidence_applies_to": "previous delivery only"
     },
     {
@@ -908,7 +908,7 @@
       "wire_id": null,
       "status": "source-integrated-uncompiled-runtime-unverified",
       "module_status": {
-        "atmega": "not-applicable-to-native-WS-command",
+        "atmega": "no-wire-change-version-only",
         "esp": "source-uncompiled-unverified",
         "web": "source-uncompiled-unverified"
       },
@@ -921,7 +921,7 @@
           "networks": "Array<{ssid:string,rssiDbm:number,channel:number,secure:boolean,securityCode:0..6,security:string}>, max16"
         }
       },
-      "notes": "Asynchronous local scan; accepted is start, terminal event distinguishes result/empty/error/timeout.",
+      "notes": "Async scan supported in AP: temporary STA enabled with AP retained, then AP-only restored after SDK completion. accepted is not a terminal result.",
       "previous_delivery_status": {
         "status": "implemented-compiled-runtime-unverified",
         "module_status": {
@@ -930,9 +930,9 @@
           "web": "compiled-not-browser-tested"
         }
       },
-      "current_source_change": "AFR2-20261030-09",
+      "current_source_change": "AFR2-20261110-13",
       "build_evidence": "../documentation/builds/2026-10-25-14/README.md",
-      "contract": "WIFI_UI_11.md",
+      "contract": "WIFI_AP_PROVISIONING_20261110.md",
       "build_evidence_applies_to": "previous delivery only"
     },
     {
@@ -941,7 +941,7 @@
       "wire_id": null,
       "status": "source-integrated-uncompiled-runtime-unverified",
       "module_status": {
-        "atmega": "not-applicable-to-native-WS-command",
+        "atmega": "no-wire-change-version-only",
         "esp": "source-uncompiled-unverified",
         "web": "source-uncompiled-unverified"
       },
@@ -968,10 +968,11 @@
           "web": "compiled-not-browser-tested"
         }
       },
-      "current_source_change": "AFR2-20261030-09",
+      "current_source_change": "AFR2-20261110-13",
       "build_evidence": "../documentation/builds/2026-10-25-14/README.md",
-      "contract": "WIFI_UI_11.md",
-      "build_evidence_applies_to": "previous delivery only"
+      "contract": "WIFI_AP_PROVISIONING_20261110.md",
+      "build_evidence_applies_to": "previous delivery only",
+      "sensitive": true
     },
     {
       "name": "robot.config.get",
@@ -1461,7 +1462,7 @@
       "wire_id": null,
       "status": "source-integrated-uncompiled-runtime-unverified",
       "module_status": {
-        "atmega": "not-applicable-to-native-WS-command",
+        "atmega": "no-wire-change-version-only",
         "esp": "source-uncompiled-unverified",
         "web": "source-uncompiled-unverified"
       },
@@ -1471,11 +1472,12 @@
         "req": {},
         "res": "wifi.status plus connectionInterface,connectionRssiDbm,apClients,channel,rssiSource,wsClients (ready WebSocket clients)"
       },
-      "contract": "WIFI_UI_11.md",
+      "contract": "WIFI_AP_PROVISIONING_20261110.md",
       "change_id": "AFR2-20261025-14",
-      "current_source_change": "AFR2-20261030-09",
+      "current_source_change": "AFR2-20261110-13",
       "build_evidence": "../documentation/builds/2026-10-25-14/README.md",
-      "build_evidence_applies_to": "previous delivery only"
+      "build_evidence_applies_to": "previous delivery only",
+      "notes": "Public status has espBootId and scanTemporaryStation; never includes passwords. Temporary AP scan does not change logical AP mode."
     },
     {
       "name": "robot.screen.subscribe",
@@ -1677,7 +1679,7 @@
       "wire_id": null,
       "status": "source-integrated-uncompiled-runtime-unverified",
       "module_status": {
-        "atmega": "not-applicable-to-native-WS-command",
+        "atmega": "no-wire-change-version-only",
         "esp": "source-uncompiled-unverified",
         "web": "source-uncompiled-unverified"
       },
@@ -1690,8 +1692,8 @@
         "res": "wifi.status plus confirmed:boolean; envelope accepted|completed"
       },
       "notes": "Session-only radio mode; does not replace credentials. completed confirmed=true only after actual SDK mode/AP start observed.",
-      "current_source_change": "AFR2-20261030-09",
-      "contract": "WIFI_UI_11.md"
+      "current_source_change": "AFR2-20261110-13",
+      "contract": "WIFI_AP_PROVISIONING_20261110.md"
     },
     {
       "name": "wifi.ap.fallback",
@@ -1734,6 +1736,95 @@
       "notes": "Detiene solo AP; STA continua si ya estaba habilitada. Suprime fallback durante esta sesion hasta reiniciar/aplicar modo o iniciar AP explicitamente.",
       "current_source_change": "AFR2-20261109-02",
       "contract": "WIFI_AP_POLICY_20261109.md"
+    },
+    {
+      "name": "wifi.credentials.get",
+      "owner": "esp",
+      "wire_id": null,
+      "sensitive": true,
+      "status": "source-integrated-uncompiled-runtime-unverified",
+      "module_status": {
+        "atmega": "not-applicable-to-native-WS-command",
+        "esp": "source-uncompiled-unverified",
+        "web": "source-uncompiled-unverified"
+      },
+      "timeout_ms": 4000,
+      "idempotent": true,
+      "payload_schema": {
+        "req": {
+          "kind": "last-sta|ap"
+        },
+        "res": {
+          "available": "boolean",
+          "kind": "last-sta|ap",
+          "ssid": "string optional, <=32 UTF-8 bytes",
+          "password": "string optional, <=63 UTF-8 bytes; private per-request response",
+          "source": "connected|last-connected|legacy-confirmed-config|legacy-confirmed-previous|saved-ap|active-ap, optional",
+          "confirmedLast": "boolean; false for legacy station records without verified ordering"
+        }
+      },
+      "notes": "User explicitly requested credential viewing. Ready requesting WS session only; not broadcast, status, UART, logs or browser storage. Web masks password initially and clears dialog on close/disconnect/30s. No UART command allocated.",
+      "current_source_change": "AFR2-20261110-13",
+      "contract": "WIFI_AP_PROVISIONING_20261110.md"
+    },
+    {
+      "name": "robot.fault.get",
+      "owner": "atmega",
+      "wire_id": "0x56",
+      "sensitive": false,
+      "status": "source-integrated-uncompiled-runtime-unverified",
+      "module_status": {
+        "atmega": "source-uncompiled-unverified",
+        "esp": "source-uncompiled-unverified",
+        "web": "source-uncompiled-unverified"
+      },
+      "timeout_ms": 3000,
+      "idempotent": true,
+      "payload_schema": {
+        "req": {},
+        "res": {
+          "fault": "u8",
+          "stopped": "boolean",
+          "cleared": "boolean, true only for a confirmed clear reply",
+          "lateCount": "u16",
+          "controlGapMs": "u16, saturating",
+          "timing": "{totalMs,appMs,uartMs,inputMs,renderMs,ioMs}: six u16"
+        }
+      },
+      "notes": "Read op00 expected00; clear op01 expected nonzero and equal to current fault. Clear denied if moving, nonzero PWM, Hall capture or sequence active. Current fault and diagnostics come from AVR, no optimistic Web clear.",
+      "current_source_change": "AFR2-20261110-14",
+      "contract": "FAULT_RECOVERY_TIMING_20261110.md"
+    },
+    {
+      "name": "robot.fault.clear",
+      "owner": "atmega",
+      "wire_id": "0x56",
+      "sensitive": false,
+      "status": "source-integrated-uncompiled-runtime-unverified",
+      "module_status": {
+        "atmega": "source-uncompiled-unverified",
+        "esp": "source-uncompiled-unverified",
+        "web": "source-uncompiled-unverified"
+      },
+      "timeout_ms": 3000,
+      "idempotent": false,
+      "payload_schema": {
+        "req": {
+          "confirm": "true",
+          "expectedFault": "u8 1..255"
+        },
+        "res": {
+          "fault": "u8",
+          "stopped": "boolean",
+          "cleared": "boolean, true only for a confirmed clear reply",
+          "lateCount": "u16",
+          "controlGapMs": "u16, saturating",
+          "timing": "{totalMs,appMs,uartMs,inputMs,renderMs,ioMs}: six u16"
+        }
+      },
+      "notes": "Read op00 expected00; clear op01 expected nonzero and equal to current fault. Clear denied if moving, nonzero PWM, Hall capture or sequence active. Current fault and diagnostics come from AVR, no optimistic Web clear.",
+      "current_source_change": "AFR2-20261110-14",
+      "contract": "FAULT_RECOVERY_TIMING_20261110.md"
     }
   ],
   "uart_profile": "UART_PROFILE_2.md",

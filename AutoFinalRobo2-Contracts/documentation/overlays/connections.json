@@ -537,9 +537,75 @@
       "changeId": "AFR2-20261109-03",
       "state": "source-integrated-resources-regenerated-uncompiled-runtime-unverified",
       "note": "Policy/mode/stop and paired source completed; OLED generator and model metadata generator executed. No build/test/COM/hardware."
+    },
+    {
+      "id": "shared:flow/dashboard-status-card-spacing",
+      "path": [
+        "atmega:screen/010001",
+        "atmega:src/ui/afr2_dashboard.c",
+        "web:src/features/oled/dashboardRenderer.ts"
+      ],
+      "changeId": "AFR2-20261109-05",
+      "state": "source-integrated-uncompiled-runtime-unverified",
+      "note": "Card at(54,27)72x22;18px icon and7x10 text share center y38. Same status timing, input and wire. No generator, tests, build, browser or hardware."
+    },
+    {
+      "id": "shared:flow/physical-fault-recovery",
+      "path": [
+        "atmega:product.fault",
+        "atmega:app-ui-snapshot",
+        "shared:screen/030007",
+        "atmega:local-clear-fault",
+        "web:linked-firmware-renderer"
+      ],
+      "state": "source-linked-uncompiled-runtime-unverified",
+      "changeId": "AFR2-20261110-10",
+      "note": "Estado > Fallos; local stop/clear/back. No new remote command. Radar cone also visible PWM OFF; battery acquisition auto-starts at boot."
+    },
+    {
+      "id": "shared:flow/sequence-single-document-preview",
+      "path": [
+        "web:sequence-document",
+        "web:normalized-wheel-tracks",
+        "web:deterministic-simulation",
+        "web:control-map",
+        "web:common-timeline"
+      ],
+      "state": "source-integrated-uncompiled-runtime-unverified",
+      "changeId": "AFR2-20261110-11",
+      "note": "Render prop receives active document snapshot directly. Complete planned route, linked time durations and wait padding; no physical transport change."
+    },
+    {
+      "id": "shared:flow/goto-curve-editor",
+      "path": [
+        "web:goto-tools",
+        "web:goto-command-list",
+        "web:curve-geometry",
+        "web:control-map",
+        "web:goto-playback"
+      ],
+      "state": "source-integrated-uncompiled-runtime-unverified",
+      "changeId": "AFR2-20261110-12",
+      "note": "Click tools for lines, three-point arcs, quadratic Bezier, edit and eraser; shared geometry for SVG/3D/playback. Local simulation only."
+    },
+    {
+      "id": "shared:flow/web-fault-clear-diagnostics",
+      "path": [
+        "web:robot-alerts",
+        "ws:robot.fault.get-clear",
+        "esp:broker-product",
+        "wire:0x56",
+        "atmega:product-clear-fault",
+        "shared:screen/030007",
+        "ws:robot.state",
+        "web:robot-alerts"
+      ],
+      "state": "source-linked-uncompiled-runtime-unverified",
+      "changeId": "AFR2-20261110-14",
+      "note": "Dedicated guarded clear returns actual AVR result, retains timing of F1; no automatic movement or optimistic Web suppression. Same local clear service and linked OLED simulation guards."
     }
   ],
-  "updated_by": "AFR2-20261030-19",
+  "updated_by": "AFR2-20261109-05",
   "dashboard_20261030_01": {
     "screen": "0x010001",
     "atmega": "src/ui/afr2_screens.c:render_dashboard",

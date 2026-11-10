@@ -2,15 +2,12 @@ import { MotorSelector } from '../../components/ui/MotorSelector';
 /* AFR2-20261029-27: quick controls/radar/PWM/WS integration; prior authors retained. */
 import { Chevron } from '../../components/ui/Chevron';
 import { UiIcon } from '../../components/ui/UiIcon';
-import { SegmentedControl } from '../../components/ui/SegmentedControl';
 import { PageHeader } from '../../components/ui/PageHeader';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Button } from '../../components/ui/Button';
-import { Disclosure } from '../../components/ui/Disclosure';
 import { StatusNotice } from '../../components/ui/StatusNotice';
 import { TaskSections } from '../../components/ui/TaskSections';
-import type { RobotPose } from '../../protocol/robotState';
 import { Afr2CommandError } from '../../protocol/afr2Client';
 import { useConnection } from '../connection/ConnectionContext';
 import { MecanumDrivePad } from '../../components/robot/MecanumDrivePad';
@@ -18,11 +15,7 @@ import { RangeNumberField } from '../../components/ui/RangeNumberField';
 import {
   ControlMap,
   type RequestedMotion,
-  type SimulationMapFeed,
 } from './ControlMap';
-import type { TrailPoint } from './controlMapTypes';
-import type { RobotWheelValues } from '../../components/three/robotWheelMotion';
-import type { SimulationSnapshotAtCursor } from './sequences/mecanumKinematics';
 import { SequenceEditorPanel } from './sequences/SequenceEditorPanel';
 import { CalibrationPanel } from './CalibrationPanel';
 import { OdometryTestPanel } from './OdometryTestPanel';
@@ -32,7 +25,6 @@ import { ManualDriveOverlay, type ManualDirection } from './manual/ManualDriveOv
 import type { ModalOrigin } from '../../components/ui/FloatingModal';
 
 type WheelId = 'FL' | 'FR' | 'RL' | 'RR';
-type RobotModeOption = 'idle' | 'manual' | 'line-follow';
 type ControlTaskId = 'drive' | 'sequences' | 'wheel' | 'goto' | 'calibrate' | 'preferences';
 /** AFR2-20261101-12 / VIS-053: Control se reparte en Conducir, Programas y Puesta a punto. */
 export type ControlArea = 'drive' | 'programs' | 'setup';
@@ -67,7 +59,6 @@ export function ControlPage({ area = 'drive' }: { area?: ControlArea }) {
   const [turnPowerPct,setTurnPowerPct]=useState(50);
   const [activePadId, setActivePadId] = useState<string | null>(null);
   const [requestedMotion, setRequestedMotion] = useState<RequestedMotion | null>(null);
-  const [selectedMode, setSelectedMode] = useState<RobotModeOption>('idle');
   const [driveError,setDriveError]=useState<string|null>(null);
   const [manualOverlayOpen, setManualOverlayOpen] = useState(false);
   const [manualOrigin, setManualOrigin] = useState<ModalOrigin | null>(null);
@@ -83,9 +74,6 @@ export function ControlPage({ area = 'drive' }: { area?: ControlArea }) {
   const [testPwmPct, setTestPwmPct] = useState(25);
   const [testDurationMs, setTestDurationMs] = useState(600);
 
-  const [gotoXMm, setGotoXMm] = useState(500);
-  const [gotoYMm, setGotoYMm] = useState(0);
-  const [gotoThetaMrad, setGotoThetaMrad] = useState(0);
   const [gotoCommands, setGotoCommands] = useState<GotoCommand[]>([]);
   const [gotoSimSpeedMmS, setGotoSimSpeedMmS] = useState(400);
 
@@ -94,14 +82,6 @@ export function ControlPage({ area = 'drive' }: { area?: ControlArea }) {
   useEffect(() => {setLinearSpeedMmS(v => Math.min(v,maxSpeed));setTestPwmPct(v => Math.min(v,maxPwm));}, [maxSpeed,maxPwm]);
 
   // Estado para conectar la simulación de Secuencias con el ControlMap existente
-  const [simMapPose, setSimMapPose] = useState<RobotPose | null>(null);
-  const [simMapTrail, setSimMapTrail] = useState<TrailPoint[]>([]);
-  const [simWheelAngles, setSimWheelAngles] = useState<RobotWheelValues>();
-  const [simCursorMs, setSimCursorMs] = useState(0);
-  const [simTotalDurationMs, setSimTotalDurationMs] = useState(0);
-  const [simIsPlaying, setSimIsPlaying] = useState(false);
-  const [simProfileSummary, setSimProfileSummary] = useState('L=300 mm · Vmax=800 mm/s (no calibrado)');
-
   const holdTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const holdGeneration = useRef(0);
   const holdVector = useRef<{id:string;label:string;forwardPct:number;strafePct:number;turnPct:number}|null>(null);
@@ -135,6 +115,11 @@ export function ControlPage({ area = 'drive' }: { area?: ControlArea }) {
     capabilities.wheel_odometry.implemented &&
     capabilities.wheel_odometry.calibrated &&
     capabilities.goto_relative.implemented;
+  // AFR2-20261110-16: one reason for the route sender and the 90° turn presets.
+  const gotoBlockedReason = gotoAvailable ? null
+    : !canPrepareControl ? driveBlockedReason ?? 'Falta enlace con el auto.'
+    : !capabilities.wheel_odometry.calibrated ? 'Calibrá la odometría Hall (pulsos por vuelta y geometría).'
+    : capabilities.goto_relative.reason || capabilities.wheel_odometry.reason || 'GOTO no disponible en el auto.';
 
   const stopActiveHold = useCallback(
     (emitZero = true) => {
@@ -241,19 +226,6 @@ export function ControlPage({ area = 'drive' }: { area?: ControlArea }) {
     return mounted.current && canPrepareControl && document.visibilityState === 'visible';
   };
 
-  const handleModeSubmit = async (mode: RobotModeOption) => {
-    if (!prepareAction()) return;
-    setSelectedMode(mode);
-    await executeCommandWithToast(
-      'robot.mode',
-      { mode },
-      {
-        loadingTitle: `Cambiando modo a ${mode}...`,
-        successTitle: `Modo ${mode} aplicado`,
-      }
-    );
-  };
-
   const handleWheelTestSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!prepareAction()) return;
@@ -273,25 +245,6 @@ export function ControlPage({ area = 'drive' }: { area?: ControlArea }) {
     );
   };
 
-  const handleGotoSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!prepareAction()) return;
-    await executeCommandWithToast(
-      'robot.goto.start',
-      {
-        xMm: gotoXMm,
-        yMm: gotoYMm,
-        thetaMrad: gotoThetaMrad,
-        maxSpeedMmS: Math.min(linearSpeedMmS,maxSpeed),
-      },
-      {
-        loadingTitle: 'Enviando objetivo relativo GOTO...',
-        successTitle: 'Misión GOTO completada',
-        acceptedTitle: 'Misión GOTO aceptada (en progreso)',
-      }
-    );
-  };
-
   // AFR2-20261106-08: touch twist with Hall -> in-place GOTO (x=y=0), closed by wheel odometry.
   const handleTurnTo = async (thetaMrad: number) => {
     if (!prepareAction()) return;
@@ -306,45 +259,6 @@ export function ControlPage({ area = 'drive' }: { area?: ControlArea }) {
       }
     );
   };
-
-  const handleSimulationUpdate = useCallback(
-    (snapshot: SimulationSnapshotAtCursor, isPlaying: boolean, profileSummary: string) => {
-      setSimCursorMs(snapshot.cursorMs);
-      setSimTotalDurationMs(snapshot.totalDurationMs);
-      setSimIsPlaying(isPlaying);
-      setSimProfileSummary(profileSummary);
-      setSimWheelAngles(snapshot.wheelAngles);
-      setSimMapPose({
-        schema: 'afr2-pose-1',
-        frameId: 'sim-mecanum-local',
-        sequence: Math.round(snapshot.cursorMs / 10),
-        xMm: snapshot.xMm,
-        yMm: snapshot.yMm,
-        thetaMrad: snapshot.thetaMrad,
-        ageMs: 0,
-      });
-      setSimMapTrail(
-        snapshot.trail.map((pt, idx) => ({
-          ...pt,
-          segmentStart: idx === 0,
-        }))
-      );
-    },
-    []
-  );
-
-  const simulationFeed: SimulationMapFeed | null =
-    activeTask === 'sequences'
-      ? {
-          pose: simMapPose,
-          trail: simMapTrail,
-          cursorMs: simCursorMs,
-          totalDurationMs: simTotalDurationMs,
-          isPlaying: simIsPlaying,
-          profileSummary: simProfileSummary,
-          wheelAngles: simWheelAngles,
-        }
-      : null;
 
   const controlTasks = [
           {
@@ -377,36 +291,17 @@ export function ControlPage({ area = 'drive' }: { area?: ControlArea }) {
                     <h2 className="text-base font-semibold text-[var(--text)]">Mover el robot</h2>
                     <MecanumDrivePad disabled={!canDrive} activeId={activePadId}
                       onStart={intent => { void startHoldVector(intent.id, intent.label, intent.vx * manualPowerPct, intent.vy * manualPowerPct, intent.wz * turnPowerPct); }}
-                      onStop={() => stopActiveHold(true)} />
+                      onStop={() => stopActiveHold(true)}
+                      turnMenu={{ available: gotoAvailable, reason: gotoBlockedReason, onTurnTo: thetaMrad => { void handleTurnTo(thetaMrad); } }} />
                   </div>
-                  {/* Parámetros de velocidad y modo operativo */}
+                  {/* AFR2-20261110-16: el modo operativo pasó a la pill de modo de la cabecera. */}
                   <div className="lg:col-span-5 afr2-glass-panel rounded-[var(--radius-md)] p-5 space-y-5">
                     <h2 className="text-base font-semibold text-[var(--text)]">
-                      Parámetros y modo operativo
+                      Parámetros
                     </h2>
 
                     <RangeNumberField label="Potencia de traslación" value={manualPowerPct} min={0} max={100} step={5} unit="% del límite PWM" onChange={setManualPowerPct} />
                     <RangeNumberField label="Potencia de giro" value={turnPowerPct} min={10} max={100} step={5} unit="% del límite PWM" onChange={setTurnPowerPct} />
-                    <div className="space-y-2 pt-2 border-t border-[var(--border-default)]">
-                      <span className="block text-xs font-medium text-[var(--text-muted)]">
-                        Modo operativo
-                      </span>
-                      {/* AFR2-20261101-09 / VIS-052: elegir envia la orden al robot, por eso las flechas
-                          solo mueven el foco (activation manual) y Enter/Espacio o un toque confirman. */}
-                      <SegmentedControl
-                        ariaLabel="Modo operativo del robot"
-                        activation="manual"
-                        reselect
-                        fill="always"
-                        value={selectedMode}
-                        onChange={(mode) => void handleModeSubmit(mode)}
-                        items={(['idle', 'manual', 'line-follow'] as RobotModeOption[]).map((mode) => ({
-                          value: mode,
-                          label: mode === 'idle' ? 'Reposo' : mode === 'manual' ? 'Manual' : 'Línea',
-                          disabled: !canPrepareControl || (mode === 'manual' && !capabilities.manual_pwm?.implemented) || (mode === 'line-follow' && !capabilities.line_follow.implemented),
-                        }))}
-                      />
-                    </div>
                   </div>
                 </div>
               </div>
@@ -415,10 +310,10 @@ export function ControlPage({ area = 'drive' }: { area?: ControlArea }) {
           {
             id: 'sequences',
             label: 'Secuencias',
-            content: <SequenceEditorPanel onSimulationChange={handleSimulationUpdate} preview={<ControlMap
+            content: <SequenceEditorPanel preview={feed => <ControlMap
         requestedMotion={requestedMotion}
         onViewChange={() => stopActiveHold(true)}
-        simulationFeed={simulationFeed}
+        simulationFeed={feed}
       />} />,
           },
           {
@@ -513,108 +408,8 @@ export function ControlPage({ area = 'drive' }: { area?: ControlArea }) {
             label: 'GOTO',
             content: (
               <div className="afr2-page-stack">
-              <GotoSimulatorPanel commands={gotoCommands} onCommandsChange={setGotoCommands} speedMmS={gotoSimSpeedMmS} onSpeedChange={setGotoSimSpeedMmS} />
-              <Disclosure title="Enviar un objetivo al robot" meta="Requiere odometría y calibración">
-              <div className="afr2-glass-panel rounded-[var(--radius-md)] p-5 space-y-4 max-w-2xl">
-                <div>
-                  <h2 className="text-base font-semibold text-[var(--text)]">
-                    Posicionamiento relativo (`robot.goto.start`)
-                  </h2>
-                  <p className="text-xs text-[var(--text-muted)] mt-1">
-                    Desplazamiento relativo (`xMm`, `yMm`, `thetaMrad`) sujeto a odometría de ruedas.
-                  </p>
-                </div>
-
-                {!gotoAvailable && (
-                  <StatusNotice
-                    tone="warning"
-                    title="GOTO deshabilitado"
-                    badge="Sin odometría"
-                  >
-                    {capabilities.goto_relative.reason} ({capabilities.wheel_odometry.reason})
-                  </StatusNotice>
-                )}
-
-                <form onSubmit={handleGotoSubmit} className="space-y-4">
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div>
-                      <label htmlFor="goto-x" className="block text-xs font-medium text-[var(--text-muted)] mb-1">
-                        Î”X (mm)
-                      </label>
-                      <input
-                        id="goto-x"
-                        type="number"
-                        min={-5000}
-                        max={5000}
-                        disabled={!gotoAvailable}
-                        value={gotoXMm}
-                        onChange={(e) => setGotoXMm(Number(e.target.value))}
-                        className="afr2-glass-field w-full min-h-11 rounded-[var(--radius-sm)] px-3 py-2 text-base font-mono text-[var(--text)] disabled:opacity-55"
-                      />
-                    </div>
-                    <div>
-                      <label htmlFor="goto-y" className="block text-xs font-medium text-[var(--text-muted)] mb-1">
-                        Î”Y (mm)
-                      </label>
-                      <input
-                        id="goto-y"
-                        type="number"
-                        min={-5000}
-                        max={5000}
-                        disabled={!gotoAvailable}
-                        value={gotoYMm}
-                        onChange={(e) => setGotoYMm(Number(e.target.value))}
-                        className="afr2-glass-field w-full min-h-11 rounded-[var(--radius-sm)] px-3 py-2 text-base font-mono text-[var(--text)] disabled:opacity-55"
-                      />
-                    </div>
-                    <div>
-                      <label htmlFor="goto-theta" className="block text-xs font-medium text-[var(--text-muted)] mb-1">
-                        Î”Î¸ (mrad)
-                      </label>
-                      <input
-                        id="goto-theta"
-                        type="number"
-                        min={-3140}
-                        max={3140}
-                        disabled={!gotoAvailable}
-                        value={gotoThetaMrad}
-                        onChange={(e) => setGotoThetaMrad(Number(e.target.value))}
-                        className="afr2-glass-field w-full min-h-11 rounded-[var(--radius-sm)] px-3 py-2 text-base font-mono text-[var(--text)] disabled:opacity-55"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="flex flex-wrap gap-2">
-                    <Button
-                      variant="primary"
-                      size="md"
-                      type="submit"
-                      disabled={!gotoAvailable}
-                    >
-                      Iniciar GOTO
-                    </Button>
-                    <Button
-                      variant="secondary"
-                      size="md"
-                      type="button"
-                      disabled={wsState !== 'ready'}
-                      onClick={() =>
-                        void executeCommandWithToast(
-                          'robot.goto.cancel',
-                          {},
-                          {
-                            loadingTitle: 'Cancelando misión GOTO...',
-                            successTitle: 'Misión GOTO cancelada',
-                          }
-                        )
-                      }
-                    >
-                      Cancelar GOTO
-                    </Button>
-                  </div>
-                </form>
-              </div>
-              </Disclosure>
+              <GotoSimulatorPanel commands={gotoCommands} onCommandsChange={setGotoCommands} speedMmS={gotoSimSpeedMmS} onSpeedChange={setGotoSimSpeedMmS}
+                robot={{ available: gotoAvailable, reason: gotoBlockedReason, maxSpeedMmS: maxSpeed }} />
               </div>
             ),
           },
@@ -676,7 +471,8 @@ export function ControlPage({ area = 'drive' }: { area?: ControlArea }) {
         onRelease={() => stopActiveHold(true)} canDrive={canDrive} blockedReason={driveBlockedReason} speed={manualPowerPct} maxSpeed={100}
         onSpeedChange={setManualPowerPct} stopSignal={stopRecord.lastIssuedAtMs} error={driveError}
         onDirectionChange={(direction: ManualDirection) => { const speed = Math.floor(manualPowerPct / (Math.abs(direction.vx) + Math.abs(direction.vy))); void startHoldVector(`touch-${direction.id}`, direction.label, direction.vx * speed, direction.vy * speed, 0); }}
-        hallTurnAvailable={gotoAvailable}
+        hallTurnAvailable={gotoAvailable} hallTurnReason={gotoBlockedReason}
+        turnPower={turnPowerPct} onTurnPowerChange={setTurnPowerPct}
         onTurnTo={(thetaMrad: number) => { void handleTurnTo(thetaMrad); }}
         onTurn={(side: number) => { void startHoldVector(side > 0 ? 'touch-ccw' : 'touch-cw', side > 0 ? 'girar a la izquierda' : 'girar a la derecha', 0, 0, Math.sign(side) * turnPowerPct); }} />
     </div>

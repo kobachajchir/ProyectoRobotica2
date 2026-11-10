@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import {
   DndContext,
   KeyboardSensor,
@@ -36,6 +36,9 @@ export interface TimelineRowProps {
   onSelect: (id: string | null) => void;
   onReorder?: (nextIds: string[]) => void;
   onLabelChange?: (blockId: string, newLabel: string) => void;
+  scrollLeft?: number;
+  onTimelineScroll?: (left: number) => void;
+  onSeekCursor?: (atMs: number) => void;
 }
 
 interface SortableBlockCellProps {
@@ -134,7 +137,12 @@ export function TimelineRow({
   onSelect,
   onReorder,
   onLabelChange,
+  scrollLeft = 0,
+  onTimelineScroll,
+  onSeekCursor,
 }: TimelineRowProps) {
+  const scroller = useRef<HTMLDivElement>(null);
+  useEffect(() => { if (scroller.current && Math.abs(scroller.current.scrollLeft-scrollLeft) > 1) scroller.current.scrollLeft = scrollLeft; }, [scrollLeft]);
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
@@ -165,6 +173,7 @@ export function TimelineRow({
   const safeScaleMs = Math.max(100, scaleTotalMs, trackDurationMs);
   const idleTailMs = Math.max(0, safeScaleMs - trackDurationMs);
   const cursorRatio = Math.max(0, Math.min(1, cursorMs / safeScaleMs));
+  const timelineWidth = Math.max(640, Math.min(12000, safeScaleMs*.1));
 
   const handleDragEnd = (event: DragEndEvent) => {
     if (readOnly || !onReorder) return;
@@ -215,19 +224,23 @@ export function TimelineRow({
       </div>
 
       <div
-        className="afr2-timeline-track relative min-h-16 rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--surface-subtle)] p-2 overflow-x-auto"
+        ref={scroller}
+        onScroll={event => onTimelineScroll?.(event.currentTarget.scrollLeft)}
+        className="afr2-timeline-track relative min-h-16 rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--surface-subtle)] overflow-x-auto"
         onClick={(e) => {
           if (e.target === e.currentTarget) {
             onSelect(null);
           }
         }}
       >
+        <div className="afr2-timeline-strip" style={{ width: timelineWidth+108 }}>
         {/* Cursor temporal sincronizado */}
         <div
           className="pointer-events-none absolute inset-y-0 z-20 w-0.5 bg-[var(--action)]"
-          style={{ left: `calc(${(cursorRatio * 100).toFixed(2)}% )` }}
+          style={{ left: cursorRatio*timelineWidth }}
           aria-hidden="true"
         />
+        <div className="afr2-timeline-ruler" style={{ width: timelineWidth }} aria-hidden="true">{[0,.25,.5,.75,1].map(ratio => <span key={ratio} style={{ left: `${ratio*100}%` }}>{(ratio*safeScaleMs/1000).toFixed(1)}s</span>)}</div>
 
         {blocks.length === 0 ? (
           <div className="flex h-12 items-center justify-center text-xs text-[var(--text-muted)]">
@@ -243,15 +256,12 @@ export function TimelineRow({
               items={blocks.map((b) => b.id)}
               strategy={horizontalListSortingStrategy}
             >
-              <div className="flex items-stretch gap-1.5 min-w-full">
+              <div className="flex items-stretch">
                 {timedBlocks.map(({ block, startMs, endMs, effectiveDurationMs }, idx) => {
                   const isFinish = block.kind === 'finish';
-                  const pct = isFinish
-                    ? 9
-                    : Math.max(12, Math.min(100, (effectiveDurationMs / safeScaleMs) * 100));
                   const styleWidth: React.CSSProperties = isFinish
-                    ? { width: '108px', minWidth: '96px' }
-                    : { width: `${pct}%`, minWidth: '124px' };
+                    ? { width: 108 }
+                    : { width: effectiveDurationMs / safeScaleMs * timelineWidth, minWidth: 0, overflow: 'hidden', borderRight: '1px solid var(--border-default)' };
 
                   const isActive =
                     !isFinish &&
@@ -273,7 +283,7 @@ export function TimelineRow({
                       readOnly={readOnly}
                       canMoveLeft={!isFinish && idx > 0}
                       canMoveRight={!isFinish && idx < blocks.length - 1 && blocks[idx + 1]?.kind !== 'finish'}
-                      onSelect={() => onSelect(block.id)}
+                      onSelect={() => { onSelect(block.id); onSeekCursor?.(Math.min(endMs,startMs+10)); }}
                       onMoveLeft={() => moveIndex(idx, idx - 1)}
                       onMoveRight={() => moveIndex(idx, idx + 1)}
                       onLabelChange={onLabelChange}
@@ -284,8 +294,8 @@ export function TimelineRow({
                 {idleTailMs >= 10 && (
                   <div
                     style={{
-                      width: `${Math.max(10, (idleTailMs / safeScaleMs) * 100)}%`,
-                      minWidth: '96px',
+                      width: idleTailMs / safeScaleMs * timelineWidth,
+                      minWidth: 0, overflow: 'hidden',
                     }}
                     className="flex items-center justify-center rounded-[var(--radius-sm)] border border-dashed border-[var(--border-default)] bg-[var(--surface-solid)]/55 px-2 py-2 text-[11px] font-mono text-[var(--text-muted)] shrink-0"
                     title="Esta pista finaliza antes que el resto del programa; la rueda permanece con consigna 0 mm/s."
@@ -297,6 +307,7 @@ export function TimelineRow({
             </SortableContext>
           </DndContext>
         )}
+        </div>
       </div>
       {details}
     </div>

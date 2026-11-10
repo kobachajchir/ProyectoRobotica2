@@ -37,7 +37,21 @@ Reglas:
 
 | Versión | Tipo | Cambio |
 |---|---|---|
+| 1.22.0 | subversión | AFR2-20261110-14: limpieza real de fallo Web, CMD 0x56 y tiempos de F1; control antes de render. Solo fuente. |
+| 1.23.2 | subversión mínima | AFR2-20261110-18: logo de bienvenida a 768 px para que el paquete ESP entre en el presupuesto LittleFS. Solo fuente Web. |
+| 1.23.1 | subversión mínima | AFR2-20261110-17: renders CAD de Fusion y captura de Inicio en las tarjetas de Ayuda; versión Web leída de package.json. Solo fuente Web. |
+| 1.23.0 | subversión | AFR2-20261110-16: envío GOTO completo, giros de 90°, barra lateral táctil, blur de modales, pill de modo, Armado simplificado. Solo fuente Web. |
+| 1.22.1 | parche | AFR2-20261110-15: guarda de tormentas de IRQ Hall/encoder, F1 aislado no enclavante (3 en 2 s enclavan), FAULT/NOISE visibles en TAP. Solo fuente. |
+| 1.21.0 | subversión | AFR2-20261110-13: búsqueda desde AP, configuración/reinicio AP y consulta privada de última red conectada. Solo fuente. |
+| 1.20.0 | subversión | AFR2-20261110-12: GOTO local con arcos, Bézier, edición por clics, borrador y deshacer/rehacer. Solo fuente. |
+| 1.19.0 | subversión | AFR2-20261110-11: editor y mapa con documento único, pistas proporcionales, vinculación temporal y esperas. Solo fuente. |
+| 1.18.0 | subversión | AFR2-20261110-10: Estado → Fallos local, cono radar OFF y batería automática desde arranque; AVR/Web vinculados. Solo fuente. |
+| 1.17.0 | subversión | AFR2-20261110-09: centro de alertas en la cabecera, recuperación guiada, corrección del caso de arranque/limpieza de Fallo1 y recorrido visual sin envío de narración. ATmega/Web en fuente, ESP solo versión. Sin compilar/cargar en esta etapa. |
 | 1.16.0 | subversión | AFR2-20261110-08: tarjeta de repositorio en Desarrollador, QR local y enlace directo a GitHub. Web en fuente; ATmega/ESP solo versión compartida. Sin compilar/cargar. |
+| 1.15.0 | subversión | AFR2-20261110-03: recolección virtual de cajas y entrega en drop circular con contador. Solo fuente. |
+| 1.14.1 | subversión mínima | AFR2-20261110-02: fondo de cuadrícula compartido por la navegación Web. Solo fuente. |
+| 1.14.0 | subversión | AFR2-20261110-01: botón para activar/silenciar la narración de Armado. Solo fuente. |
+| 1.13.0 | subversión | AFR2-20261109-12: pantallas OLED reales y entorno de recolección en Armado. Solo fuente, sin compilar/cargar. |
 | 1.0.0 | versión | AFR2-20261108-02: primera versión 1 en ATmega, ESP y Web (incluye -03, -04 y -05). |
 | 1.1.0 | subversión | AFR2-20261108-06: selector «Sin red Wi-Fi» (Iniciar AP / Seguir esperando) y preferencia Reintento Wi-Fi. |
 | 1.2.0 | subversión | AFR2-20261108-07: pantalla de inicio de 3 s con la versión y esta política de versiones. |
@@ -51,3 +65,12 @@ Reglas:
 
 | 1.9.0 | subversión | AFR2-20261109-02: política AP persistente, detención AP y AP puro sin búsqueda STA. Solo fuente. |
 | 1.9.1 | subversión mínima | AFR2-20261109-03: permisos PWM restituidos, OFF/política desconocida Wi-Fi y recursos regenerados; sin compilar/cargar. |
+
+| 1.10.0 | subversión | AFR2-20261109-04: Armado del robot en Explorar, ensamblaje por scroll del auto y brazo V17 con demostración de agarre. Solo fuente, sin compilar ni cargar. |
+| 1.10.1 | subversión mínima | AFR2-20261109-05: tarjeta del dashboard72×22, icono18 y texto centrados en AVR/Web. Solo fuente, sin compilar/cargar. |
+| 1.10.2 | subversión mínima | AFR2-20261109-06: navegación Wi-Fi por padre, STA sin AP fallback y credenciales directas. |
+| 1.10.3 | subversión mínima | AFR2-20261109-07: Armado como banner de producto, modelo flotante con iluminación de estudio y fade por scroll. Solo fuente, sin compilar/cargar. |
+| 1.10.4 | subversión mínima | AFR2-20261109-08: buffers WS compartidos sin String intermedio, control de memoria/fragmentación y de acumulación de estados. Solo fuente, sin compilar/cargar. |
+| 1.10.5 | subversión mínima | AFR2-20261109-09: latidos/estados livianos, cola compacta, textos en flash, liberación Wi-Fi y límite HTTP. ESP compilado: −4528 B RAM estática; sin cargar. |
+| 1.11.0 | subversión | AFR2-20261109-10: nueva etapa7 Nuestros agregados, circuito compacto y cableado desde Blender, modelos reutilizados y acercamiento final. Solo fuente y assets; sin compilar/cargar. |
+| 1.12.0 | subversión | AFR2-20261109-11: Play/Pausa20s de Armado, OLED/encoder y sensor separados, introducción centrada y subtítulo. Solo fuente. |

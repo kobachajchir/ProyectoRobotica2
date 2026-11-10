@@ -12,6 +12,9 @@ export let JOINTS = robotModel().joints;
 export let TRANSPORT = robotModel().transport;
 export let ARM_MOUNT = robotModel().mounts.mounted.position;
 export const CUBE_SIZE = CUBE_MODEL.size[0];
+// V17's downward wrist branch cannot keep the floor pickup radius at 215 mm
+// TCP height. Use a lower lift before folding into the transport posture.
+export const PICKUP_LIFT_HEIGHT = .18;
 export let GRIP_MIN_MM = robotModel().gripper.min;
 export const rad = (deg: number) => deg * Math.PI / 180;
 export const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value));
@@ -58,7 +61,9 @@ export function inverseDownward(target: Point3, mount: Point3 = ARM_MOUNT): ArmA
     const shoulder = Math.atan2(radius, z) - Math.atan2(forearm * Math.sin(elbow), upper + forearm * Math.cos(elbow));
     const q: ArmAngles = [Math.atan2(y, x) * 180 / Math.PI, shoulder * 180 / Math.PI,
       elbow * 180 / Math.PI, 0, 180 - (shoulder + elbow) * 180 / Math.PI, 0];
-    if (q.every((value, i) => value >= JOINTS[i].min && value <= JOINTS[i].max)) return q;
+    // A frontal V17 grasp lies at J1=90°. Discard only real limit violations,
+    // not the floating-point residue of the mounted quarter-turn quaternion.
+    if (q.every((value, i) => value >= JOINTS[i].min - 1e-7 && value <= JOINTS[i].max + 1e-7)) return q.map((value, i) => clamp(value, JOINTS[i].min, JOINTS[i].max));
   }
   return null;
 }
@@ -100,17 +105,25 @@ export function workspacePoints(environment: ArmEnvironment = 'mounted') {
   return { reachable: new Float32Array(reachable), excluded: new Float32Array(excluded) };
 }
 
+/** V17 cannot put the TCP at a floor box centre in front of the car: below
+ * ~40 mm the palm hits the chassis envelope. Take the box by its upper part. */
+export const GRASP_ABOVE_CENTER = .02;
+/** Wrist angles that keep the jaws square to a world-axis-aligned box. */
+function wristCandidates(q: ArmAngles, yaw: number) {
+  const base = ((q[0] + yaw * 180 / Math.PI + 45) % 90 + 90) % 90 - 45;
+  return [base, base + 90, base - 90].filter(w => w >= JOINTS[5].min && w <= JOINTS[5].max);
+}
+/** Approach (100 mm), grasp and lift postures sharing one clear wrist angle,
+ * so the jaws never rotate next to the box or the chassis. `point` is the box centre. */
 export function pickupSolutions(point: Point3, yaw = 0) {
-  const targets: Point3[] = [[point[0], point[1], .10], point, [point[0], point[1], .215]];
-  const solutions: ArmAngles[] = [];
-  for (const target of targets) {
-    const q = inverseDownward(target);
-    if (!q) return null;
-    q[5] = ((q[0] + yaw * 180 / Math.PI + 45) % 90 + 90) % 90 - 45;
-    if (!environmentClear(q)) return null;
-    solutions.push(q);
+  const targets: Point3[] = [[point[0], point[1], .10], [point[0], point[1], point[2] + GRASP_ABOVE_CENTER], [point[0], point[1], PICKUP_LIFT_HEIGHT]];
+  const raw = targets.map(target => inverseDownward(target));
+  if (raw.some(q => !q)) return null;
+  for (const wrist of wristCandidates(raw[0]!, yaw)) {
+    const solutions = raw.map(q => { const next = [...q!] as ArmAngles; next[5] = wrist; return next; });
+    if (solutions.every(q => environmentClear(q))) return solutions;
   }
-  return solutions;
+  return null;
 }
 
 export function groundWorkspacePoints() {

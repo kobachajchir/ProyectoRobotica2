@@ -4,7 +4,7 @@
 
 `Logo-neon-robot-source.png` es el PNG RGBA entregado por el usuario como nuevo
 logo oficial. Se conserva sin modificar, tambien como `assets/Logo.png` en la
-raiz del proyecto. Los derivados activos son `Logo-robot-1024.webp`,
+raiz del proyecto. Los derivados activos son `Logo-robot-768.webp` (antes 1024, reducido por el presupuesto del paquete ESP en AFR2-20261110-18),
 `Logo-robot-256.webp`, `favicon-robot.webp` y `apple-touch-icon-robot.png` bajo
 `public/brand`. La conversion mantiene proporciones y transparencia; no genera
 ni reinterpreta el dibujo. Color WebP con perdida, alpha conservado.

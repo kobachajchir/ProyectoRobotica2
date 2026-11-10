@@ -1,3 +1,44 @@
+## AFR2-20261110-18 — 10/11/2026
+
+Paquete ESP dentro del presupuesto: el logo de bienvenida pasa de 1024 a 768 px (155,9 → 97,4 KB), generado desde el maestro con los mismos parámetros. La estimación sobre el dist actual pasa de 2.891.776 a 2.826.240 bytes (presupuesto 2.867.200; margen 40.960). Versión: 1.23.2 (parche). Web fuente; ATmega/ESP solo versión. [Ficha](changes/2026-11-10-18-esp-package-logo-768.md). Falta confirmar con un build:esp nuevo.
+
+## AFR2-20261110-17 — 10/11/2026
+
+Ayuda: cada tarjeta de módulo muestra una imagen en su propia celda (al costado del texto en pantallas anchas, debajo en el resto): renders de Fusion de la Mega 2560, el shield con ESP-12S y el panel OLED + encoder, y captura de Inicio para Web. WebP de 36–46 KB, incluidos en el paquete del ESP. La tarjeta Web toma la versión de `package.json`. Versión: 1.23.1 (parche). Web fuente; ATmega/ESP solo versión. [Ficha](changes/2026-11-10-17-ayuda-renders-modulos.md). Revisado en el servidor de desarrollo a 1920/1600/1280/900/375 px; sin tests, build ni cargas.
+
+## AFR2-20261110-16 — 10/11/2026
+
+GOTO: envío del recorrido completo desde el panel lateral (tramos relativos encadenados con robot.state). Giros de 90°/180° junto a CW/CCW y en el control táctil, solo con odometría calibrada. Barra lateral táctil (Información, Parámetros, Giros, Hall) con paneles flotantes y aviso Hall. Modales con scrim con blur real, pill del modo en la cabecera y Armado sin opciones ni cierre. Versión: 1.23.0 (subversión). Web fuente; ATmega/ESP solo versión. [Ficha](changes/2026-11-10-16-goto-envio-giros-rail-tactil.md). Sin tests, typecheck, build, navegador ni cargas.
+
+## AFR2-20261110-15 — 10/11/2026
+
+F1 con PWM parcial: guarda por software de tormentas de IRQ en Hall/encoder (ruido de conmutación, sin tocar hardware), corte de 100 ms conservado pero no enclavante si es aislado (3 en 2 s enclavan) y líneas FAULT/LOOP/NOISE visibles también en modos TAP. Versión: 1.22.1 (parche). ATmega fuente; ESP/Web solo versión. [Ficha](changes/2026-11-10-15-f1-noise-guard-non-latching.md). Sin tests, compilación, validaciones ni cargas; causa física no medida.
+
+## AFR2-20261110-14 — 10/11/2026
+
+Limpiar fallo desde el panel Web por CMD 0x56 con comprobaciones en AVR, mismo servicio del encoder, acciones visibles al comienzo del modal y diagnóstico persistente de F1 por etapas. Atención adicional al control antes del dibujo; umbral de 100 ms conservado. Versión: 1.22.0 (subversión). ATmega/ESP/Web solo fuente; causa física no confirmada. [Ficha](changes/2026-11-10-14-fault-clear-loop-diagnostics.md). Sin tests, compilación, validaciones ni cargas.
+
+## AFR2-20261110-13 — 10/11/2026
+
+Buscar Wi-Fi desde AP sin apagarlo, conexión AP-STA desde la lista, configuración y reinicio AP separados, confirmación de reinicio por boot/modo/SSID y consulta explícita de credenciales de la última conexión real. Versión: 1.21.0 (subversión). ESP/Web solo fuente; ATmega solo versión. [Ficha](changes/2026-11-10-13-wifi-ap-provisioning-credentials.md). Sin tests, compilaciones, validadores ni cargas; funcionamiento físico pendiente.
+
+## AFR2-20261110-12 — 10/11/2026
+
+GOTO local con herramientas Recta/Arco/Curva/Editar/Borrador, controles por clics, coordenadas y deshacer/rehacer. Ruta prevista y reproducción con geometría común. Versión: 1.20.0 (subversión). Web solo fuente; ATmega/ESP solo versión. [Ficha y límites](changes/2026-11-10-12-goto-herramientas-arcos-curvas.md). Sin tests, builds, validaciones ni cargas.
+
+## AFR2-20261110-11 — 10/11/2026
+
+Editor y escena desde un único documento, ruta prevista en pausa, paleta junto a la escena, duraciones vinculables, esperas para igualar finales y línea de tiempo proporcional con scroll común. Versión: 1.19.0 (subversión). [Ficha](changes/2026-11-10-11-secuencias-pistas-simulacion.md). Web solo fuente; sin tests, builds, validaciones ni cargas.
+
+## AFR2-20261110-10 — 10/11/2026
+
+Estado → Fallos con intervención local, cono del radar visible con servo OFF y adquisición automática de batería A5 desde arranque. AVR/Web vinculados. Versión: 1.18.0 (subversión). [Ficha](changes/2026-11-10-10-oled-fallos-radar-bateria.md). Solo fuente, sin generadores, tests, builds, validaciones ni cargas.
+
+## AFR2-20261110-09 — 10/11/2026
+
+Pill de alertas en cabecera con contador, modal compartido con Wi-Fi, diagnóstico por fallo y recuperación guiada. Fallo1 conserva el corte por >100 ms con PWM activo y corrige el caso de arranque con salidas a cero; limpieza local restablece los acumuladores conservando el intervalo de odometría. Armado usa reloj visual sin narración; grabaciones archivadas fuera de public y empaquetado/promoción rechazan la versión antigua con audio. [Ficha](changes/2026-11-10-09-alertas-control-playback-sin-audio.md).
+Versión: 1.17.0 (subversión). ATmega/Web fuente, ESP solo versión. Sin tests, compilaciones, validaciones ni cargas en esta etapa; paquete ESP antiguo pendiente de regeneración.
+
 ## AFR2-20261110-08 — 10/11/2026
 
 Desarrollador: nueva tarjeta del repositorio con QR SVG local y enlace directo a GitHub, siguiendo las tarjetas, tokens y temas existentes. Disposición adaptable a móvil, foco visible y código negro/blanco sin servicios externos ni dependencias nuevas. [Ficha](changes/2026-11-10-08-developer-repository-qr.md).
@@ -8,10 +49,100 @@ Versión: 1.16.0 (subversión). Web fuente; ATmega/ESP solo versión compartida.
 Paquete común [Revision/R01_20261110](../Revision/R01_20261110/README.md): informe D1 editable, planos completos y seis tomos, fichas, fuente CAD y pinout actualizado con antecedentes identificados. Índice, observaciones, historial y procedencia para continuar con R02/R03 hasta el informe final. Originales conservados, sin editar contenido técnico ni regenerar PDF. [Ficha](changes/2026-11-10-07-paquete-revision-informe-planos-pinout.md).
 Solo organización documental; atmega/esp/web/Loader sin cambios ni versión nueva. Sin tests, compilaciones, validaciones o flasheos.
 
+## AFR2-20261110-06 — 10/11/2026
+
+Armado sin narración: ningún bundle (ESP ni completo) incluye el audio, y se retiran el `<audio>` y el botón de volumen (de AFR2-20261110-01). Play/Pausa recorre la animación en silencio con el mismo cronograma de 43,9 s. Resuelve el paquete ESP que se pasaba por 8 KiB del presupuesto LittleFS. [Ficha](changes/2026-11-10-06-esp-package-opus-only.md).
+Versión 1.15.0 conservada como corrección antes de cargar. Web fuente; sin volver a compilar ni empaquetar.
+
+## AFR2-20261110-05 — 10/11/2026
+
+Recolección del simulador: en cada parada barre delante y detrás (un giro de 180°) antes de avanzar; centrado lateral fino frente a la caja y punto de agarre calculado con la distancia frontal medida. Corrige «sin toma frontal válida»: toma por la parte superior de la caja, muñeca a ±90° libre del chasis, auto cuadrado frente a la caja y al drop, giros sin rozar cajas y margen de ruta de 10 mm. Ciclo continuo hasta vaciar el mapa: patrulla cíclica, acercamiento previo y nuevo barrido antes de encuadrar, salida del drop tras cada entrega, y cajas difíciles apartadas y reintentadas en lugar de detener la misión. [Ficha](changes/2026-11-10-05-collector-forward-measured-grasp.md).
+Versión 1.15.0 conservada como corrección antes de cargar. Web fuente, sin tests, compilaciones, validaciones ni cargas.
+
+## AFR2-20261110-04 — 10/11/2026
+
+Corrección de alcance: interfaz general restaurada; fondo de Armado y piso de cuadrícula 3D de 50 mm aplicados al viewport compartido de simuladores. Sustituye la cuadrícula global de -02. [Ficha](changes/2026-11-10-04-simulator-grid-background-correction.md).
+Versión 1.15.0 conservada como corrección antes de cargar. Web fuente, sin tests, compilaciones, validaciones ni cargas.
+
+## AFR2-20261110-03 — 10/11/2026
+
+Simulador conjunto: detección virtual de cajas (corregido por el usuario), alineación frontal, toma por alcance del modelo, transporte y entrega en drop circular luminoso fijo, con contador y búsqueda de la siguiente carga. Reutiliza el cubo real de 50 mm y reemplaza la canasta del auto. [Ficha](changes/2026-11-10-03-collector-battery-ground-drop.md).
+Versión: 1.15.0 (subversión). Web fuente; ATmega/ESP solo versión. Sin tests, compilaciones, validaciones ni cargas.
+
+## AFR2-20261110-02 — 10/11/2026
+
+Cuadrícula técnica en el fondo general de todas las rutas Web, inspirada en el piso final de Armado y adaptada a temas claro/oscuro mediante tokens compartidos. [Ficha](changes/2026-11-10-02-navigation-grid-background.md).
+Versión: 1.14.1 (subversión mínima). Web fuente; ATmega/ESP solo versión. Sin tests, compilaciones, validaciones ni cargas.
+
+## AFR2-20261110-01 — 10/11/2026
+
+Armado: botón de audio junto a Play con iconos activado/silenciado; conserva el avance sincronizado al silenciar. [Ficha](changes/2026-11-10-01-assembly-audio-toggle.md).
+Versión: 1.14.0 (subversión). Web fuente; ATmega/ESP solo versión. Sin tests, compilaciones, validaciones ni cargas.
+
 ## AFR2-20261109-13 — 09/11/2026
 
 Brazo v17: 224 hojas A3 en seis tomos, con 66 definiciones fabricadas/adaptadas, 30 impresas, seis conjuntos, cortes, interfaces, BOM y despieces desde la copia CAD real. Primer borrador independiente del informe: 32 páginas, PDF/DOCX y tres partes, con cinemática de brazo y base Mecanum, modelo integrado y resultados históricos. [Ficha](changes/2026-11-09-13-planos-v17-informe-borrador.md).
 Estado: documentación nominal generada; ajustes/proceso de fabricación pendientes. ATmega/ESP/Web/Loader sin cambios ni versión nueva. Sin tests, compilaciones, validaciones, pruebas físicas o flasheos.
+
+## AFR2-20261109-12 — 09/11/2026
+
+Armado: tres vistas OLED reales (dashboard, radar y redes con Koba primero) entran junto a la explicación de interfaz; órbita final con piso de cuadrícula, cinco cubos reutilizados y marca de recogida. [Ficha](changes/2026-11-09-12-assembly-interface-environment.md).
+Versión: 1.13.0 (subversión). Web solo fuente; ATmega/ESP solo versión. Sin tests, compilaciones, validaciones ni cargas.
+
+## AFR2-20261109-11 — 09/11/2026
+
+Armado: elevación final de la caja hasta el centro vertical del banner; Play/Pausa de35s ligado al mismo scroll; OLED/encoder y sensor analógico en capítulos separados; título grande centrado que se desplaza al lateral antes de bajar la base; subtítulo actualizado. [Ficha](changes/2026-11-09-11-assembly-playback-intro.md).
+Versión: 1.12.0 (subversión). Web solo fuente; ATmega/ESP solo versión. Sin tests, compilaciones, validadores ni cargas.
+
+## AFR2-20261109-10 — 09/11/2026
+
+Armado: nueva etapa7 «Nuestros agregados», separada de Sensores. OLED/encoder con soporte reutilizados del auto, toma frontal elevada y giro al montaje; sensor de batería con R1/R4=10k, C3=104 y J3=A5, portapilas y voltímetro reutilizados en el navegador. Circuito/cables exportados desde Blender en una malla de11.692 B (7.969 B gzip), sin duplicar el resto. Tendido compacto: rojo izquierdo/negro derecho, paralelo, voltímetro arriba, batería al centro y divisor debajo. Acercamiento desde mitad de la nueva etapa12 hasta el agarre. [Ficha](changes/2026-11-09-10-assembly-additions-battery-circuit.md).
+
+Versión: 1.11.0 (subversión).
+Estado: CAD=modelado/export autorizado; web=fuente y asset integrados; atmega/esp=solo versión. Sin tests, builds, validadores, renders o carga LittleFS.
+
+## AFR2-20261109-09 — 09/11/2026
+
+ESP: latidos livianos, capacidades solo al conectar/cambiar, pedidos con unión Wi-Fi/secuencia, textos/HTML en flash, liberación de SSID y una descarga grande HTTP activa con solicitudes pausadas. RAM estática: **51.172→46.644 B (−4.528 B)**; ejemplo de latido3758→195 B. [Ficha](changes/2026-11-09-09-esp-memory-optimization.md) · [Comparación](documentation/builds/2026-11-09-09/README.md).
+
+Versión: 1.10.5 (subversión mínima).
+Estado: esp=compilado antes/después; web=tipos y protocolo parcial comprobados, sin paquete nuevo; atmega=solo versión. Sin flasheos, puertos, navegador ni medición de heap en placa. Sin commit/publicación.
+
+## AFR2-20261109-08 — 09/11/2026
+
+ESP: corrección en fuente del pico de memoria al conectar WS. Serialización directa al buffer compartido de transporte, sin String ni copia posterior; respuestas diferidas conservan ese buffer, estados opcionales se construyen solo con cola vacía y se rechaza JSON incompleto o sin margen de heap/bloque contiguo. `/diagnostico` y `/api/health` muestran memoria libre y mayor bloque. El log confirma OOM; reserva exacta pendiente porque la pila está recortada. [Ficha](changes/2026-11-09-08-esp-ws-oom.md).
+
+Versión: 1.10.4 (subversión mínima).
+Estado: esp=fuente corregida; atmega/web=solo versión compartida en esta ficha. Sin tests, compilaciones, validaciones, puertos ni flasheos. Sin commit/publicación de esta tarea; cambios concurrentes conservados.
+
+## AFR2-20261109-07 — 09/11/2026
+
+Armado del robot pasa a un banner de producto: modelo flotante sobre los degradados de Infraestructura, luces y reflejos de estudio, aparición de piezas con fade reversible y textos sin tarjetas. Controles detallados debajo del banner. Se conserva la coreografía y el agarre. [Ficha](changes/2026-11-09-07-cinematic-assembly-banner.md).
+
+Versión: 1.10.3 (subversión mínima).
+Estado: web=fuente editada, sin build, tests, validadores ni navegador; atmega/esp=solo versión; CAD/Loader=sin cambios. Sin renders ni cargas.
+
+## AFR2-20261109-06 — 09/11/2026
+
+Wi-Fi y navegación OLED/ESP/Web: retorno fijo por nodo padre (`n.parent`) en todos los submenús de Wi-Fi sin loops al cerrar o vencer notificaciones (`Afr2Ui_AfterNotice`); cambiar a modo `STA` desactiva el AP fallback (`askFallback = false`, `apStopped = true`); al elegir una red escaneada y tocar «Ingresar aquí» el teclado abre directo en la contraseña (`Clave Wi-Fi`) y al confirmar `OK` conecta automáticamente sin pasos intermedios; se inhibe «Sin red Wi-Fi» y el arranque automático del AP mientras se buscan redes o se ingresan credenciales; «Ingresar en Web» con AP activo y cliente conectado notifica y abre el modal en la Web con el SSID elegido para ingresar la clave y conectar. Además se corrigen los tamaños de `UiIcon` en `AssemblyPage.tsx` para `build:esp`. [Ficha](changes/2026-11-09-06-wifi-navegacion-fija-sta-sin-fallback-y-credenciales-directas.md).
+
+Versión: 1.10.2 (subversión mínima).
+Estado: atmega/esp/web=fuentes actualizadas y sincronizadas, sin compilar ni cargar en este paso; loader=compilado en `AutoFinalRobo2-Loader` por pedido previo del usuario.
+
+## AFR2-20261109-05 — 09/11/2026
+
+Dashboard OLED/Web: tarjeta de estados ampliada de64×16 a72×22 en(54,27),8px a la izquierda y6px hacia abajo. Icono18px y texto7×10 centrados sobre y38; borrado de MODO reducido para respetar el marco. Conserva rotación y controles. [Ficha](changes/2026-11-09-05-dashboard-status-card-spacing.md).
+
+Versión: 1.10.1 (subversión mínima).
+Estado: atmega/web=fuentes vinculadas, sin compilar, generar ni probar; esp=solo versión. Sin navegador ni carga.
+
+## AFR2-20261109-04 - 09/11/2026
+
+Web: nuevo recorrido **Explorar → Armado del robot** (`#/armado`). El scroll arma el auto y el brazo V17 por etapas, incorpora fijaciones y ruedas, coordina textos/cámara y termina tomando el cubo. Incluye progreso reversible, capítulos, transcripción y movimiento reducido. Copias de los GLB actuales; sin comandos al robot. [Ficha](changes/2026-11-09-04-scroll-robot-assembly.md).
+
+Versión: 1.10.0 (subversión).
+
+Estado: web=fuente implementada, sin tests, build, validadores ni navegador; atmega/esp=solo versión compartida; CAD/Loader=sin cambios. No se promueve paquete ni se flashea.
 
 ## AFR2-20261109-03 — 09/11/2026
 
@@ -108,7 +239,9 @@ Estado: atmega=fuente editada, sin compilar ni cargar; esp/web=sin cambios.
 ## AFR2-20261107-53 - 07/11/2026
 
 ESP: se reiniciaba al descargar el modelo 3D. Con la red por defecto en RAM (sin `wifi.json`) o si fallaba la escritura, `WifiService::tick` abría LittleFS en cada vuelta del loop para marcar `staGood`. Eso chocaba con las lecturas del servidor HTTP asincrónico. Ahora se intenta una sola vez por arranque y solo con la configuración guardada. Ficha changes/2026-11-07-53-esp-littlefs-loop-reset.md.
-Estado: esp=fuente corregida, sin compilar ni cargar; atmega/web=sin cambios.
+Compilado fuera del Loader (sin carga): ESP firmware.bin SHA-256 46856acb…11a23e, LittleFS 81ecb4b7…d7fbab y ATmega afr2.hex bbea4050…d69fdd.
+
+Estado: esp=firmware y LittleFS compilados, sin cargar; atmega=compilado con 52, sin cargar; web=paquete esp generado, sin cargar.
 
 ## AFR2-20261107-52 - 07/11/2026
 

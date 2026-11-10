@@ -1,0 +1,44 @@
+{
+  "changeId": "AFR2-20261109-07",
+  "date": "2026-11-09",
+  "mode": "APLICAR",
+  "target": "#/armado",
+  "manualVersion": "0.1.11",
+  "manualAuthorization": "VIS-062 y pedido humano de banner de producto sobre el fondo de Infraestructura",
+  "verification": "No verificada",
+  "sources": [
+    "AutoFinalRobo2-Web/src/styles/infrastructure.css",
+    "AutoFinalRobo2-Web/src/styles/tokens.css",
+    "Referencia de notebook adjunta al chat: solo composición y suspensión del objeto",
+    "AutoFinalRobo2-Web/src/components/three/modelAssets.ts"
+  ],
+  "coverage": [
+    {
+      "component": "Fondo, tinta y acentos del banner",
+      "evidence": "Confirmada",
+      "scope": "Fondo de Infraestructura elegido por el usuario; tokens infra-hero reutilizados sin cambiar su definición",
+      "coverage": "Cubierta"
+    },
+    {
+      "component": "Producto flotante, cámara e iluminación de estudio",
+      "evidence": "Propuesta",
+      "approval": "Pendiente de observación visual",
+      "scope": "Canvas transparente propio, sin suelo/cuadrícula; RoomEnvironment local, PMREM y luces; copia de los GLB existentes",
+      "coverage": "Parcial"
+    },
+    {
+      "component": "Aparición de piezas y tipografía por scroll",
+      "evidence": "Confirmada",
+      "scope": "Fade de opacidad solicitado; parámetros de cámara, escala y composición Propuestos y sin observar en ejecución",
+      "coverage": "Parcial"
+    },
+    {
+      "component": "Acceso y movimiento reducido",
+      "evidence": "Propuesta",
+      "scope": "Progreso nativo en el banner, opciones debajo, transcripción y cámara fija por preferencia; sin pruebas de dispositivos o teclado",
+      "coverage": "Parcial"
+    }
+  ],
+  "checksRun": [],
+  "limits": "Sin tests, builds, validaciones, navegador, renders ni publicación."
+}

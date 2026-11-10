@@ -76,7 +76,7 @@ function DestinationPlane({ center, zoom, onSelectPoint, pickingDisabled }: MapS
     const initial = pressed.current; pressed.current = null;
     if (!initial || initial.id !== event.pointerId || pickingDisabled || Math.hypot(event.clientX - initial.x, event.clientY - initial.y) > 6) return;
     event.stopPropagation();
-    onSelectPoint?.({ xMm: -event.point.z * 1000, yMm: -event.point.x * 1000 });
+    onSelectPoint?.({ xMm: -event.point.z * 1000, yMm: -event.point.x * 1000 }, 90/zoom);
   };
   return <mesh position={world(center.xMm, center.yMm)} rotation={[-Math.PI / 2, 0, 0]}
     onPointerDown={down} onPointerUp={up} onPointerCancel={() => { pressed.current = null; }}>
@@ -85,12 +85,12 @@ function DestinationPlane({ center, zoom, onSelectPoint, pickingDisabled }: MapS
   </mesh>;
 }
 
-function Destinations({ waypoints = [], accent, muted }: Pick<MapSceneProps, 'waypoints'> & { accent: string; muted: string }) {
-  const planned = useMemo(() => [[0, .006, 0], ...waypoints.map(point => {
+function Destinations({ waypoints = [], plannedRoute, accent, muted }: Pick<MapSceneProps, 'waypoints' | 'plannedRoute'> & { accent: string; muted: string }) {
+  const planned = useMemo(() => (plannedRoute ?? [{ xMm: 0, yMm: 0 }, ...waypoints]).map(point => {
     const [x, , z] = world(point.xMm, point.yMm); return [x, .006, z];
-  })] as [number, number, number][], [waypoints]);
+  }) as [number, number, number][], [waypoints, plannedRoute]);
   return <>
-    {waypoints.length > 0 && <Polyline points={planned} color={muted} />}
+    {planned.length > 1 && <Polyline points={planned} color={muted} />}
     {waypoints.map(point => {
       const [x, , z] = world(point.xMm, point.yMm), active = point.status === 'active';
       return <group key={point.id} position={[x, .015, z]}>
@@ -117,7 +117,7 @@ export function ControlMapScene({ fallback, ...props }: MapSceneProps & { fallba
     <CameraRig {...props} />
     <SimulationOrbit enabled={!props.onSelectPoint && props.view !== 'follow'} focus={[floorCenter[0], .08, floorCenter[2]]} />
     {props.onSelectPoint && <DestinationPlane {...props} />}
-    <Destinations waypoints={props.waypoints} accent={color.accent} muted={color.muted} />
+    <Destinations waypoints={props.waypoints} plannedRoute={props.plannedRoute} accent={color.accent} muted={color.muted} />
     <Trajectory trail={props.trail} color={color.accent} />
     <group position={position} rotation={[0, props.pose ? props.pose.thetaMrad / 1000 : 0, 0]}><SimulationRobot wheelAngles={props.wheelAngles ?? { fl: 0, fr: 0, rl: 0, rr: 0 }} angle={0} /></group>
   </SimulationViewport>;

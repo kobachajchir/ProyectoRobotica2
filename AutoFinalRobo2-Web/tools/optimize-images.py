@@ -9,7 +9,8 @@ source = root / "reference/brand/Logo-neon-robot-source.png"
 image = Image.open(source).convert("RGBA")
 out = root / "public/brand"
 out.mkdir(parents=True, exist_ok=True)
-for edge, name in [(1024, "Logo-robot-1024.webp"), (256, "Logo-robot-256.webp"), (64, "favicon-robot.webp")]:
+# AFR2-20261110-18: the welcome logo is 768 px (shown at most 512 CSS px; ESP package budget).
+for edge, name in [(768, "Logo-robot-768.webp"), (256, "Logo-robot-256.webp"), (64, "favicon-robot.webp")]:
     resized = image.copy()
     resized.thumbnail((edge, edge), Image.Resampling.LANCZOS)
     if edge == 64:

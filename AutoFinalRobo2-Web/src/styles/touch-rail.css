@@ -1,0 +1,105 @@
+/* AFR2-20261110-16: touch-control side rail, floating sheets over a blurred scrim,
+ * 90° turn presets, local Hall notice and the GOTO "send to car" block. */
+
+/* ---- Floating sheet (portal on the page, contained inside a modal dialog) ---- */
+.afr2-sheet { position: fixed; inset: 0; z-index: var(--z-popover); }
+.afr2-sheet[data-mode="contained"] { position: absolute; z-index: 20; }
+/* Popover: no scrim, the page stays usable; only the panel takes clicks. */
+.afr2-sheet[data-variant="popover"] { pointer-events: none; }
+.afr2-sheet[data-variant="popover"] .afr2-sheet__panel { pointer-events: auto; width: min(280px, calc(100% - 24px)); }
+.afr2-sheet__scrim { position: absolute; inset: 0; background: var(--scrim); backdrop-filter: blur(var(--floating-backdrop-blur)) saturate(1.2); -webkit-backdrop-filter: blur(var(--floating-backdrop-blur)) saturate(1.2); opacity: 0; transition: opacity var(--duration-normal) var(--ease-out); }
+.afr2-sheet__panel { position: absolute; width: min(340px, calc(100% - 24px)); max-height: calc(100% - 24px); overflow: auto; border: 1px solid var(--glass-dialog-border); border-radius: var(--radius-lg); background: var(--glass-dialog-bg); box-shadow: var(--glass-dialog-shadow); color: var(--text); opacity: 0; transform: translateY(8px) scale(.98); transition: opacity var(--duration-normal) var(--ease-out), transform var(--duration-normal) var(--ease-out); }
+.afr2-sheet[data-shown="true"] .afr2-sheet__scrim { opacity: 1; }
+.afr2-sheet[data-shown="true"] .afr2-sheet__panel { opacity: 1; transform: none; }
+/* Side placement: next to the rail (right) on wide screens, bottom sheet on phones. */
+/* Top/right are set inline beside the pressed rail button; these are only the fallback. */
+.afr2-sheet[data-placement="side"] .afr2-sheet__panel { top: 12px; right: 100px; transform: translateX(12px) scale(.98); }
+.afr2-sheet[data-placement="side"][data-shown="true"] .afr2-sheet__panel { transform: none; }
+@media (max-width: 599.98px) {
+  .afr2-sheet[data-placement="side"] .afr2-sheet__panel { top: auto; right: 12px; left: 12px; bottom: 12px; width: auto; transform: translateY(16px); }
+  .afr2-sheet[data-placement="side"][data-shown="true"] .afr2-sheet__panel { transform: none; }
+}
+.afr2-sheet__header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 14px 6px 18px; }
+.afr2-sheet__header h3 { margin: 0; font-size: 1rem; font-weight: 600; color: var(--text-strong); }
+.afr2-sheet__body { display: grid; gap: 12px; padding: 4px 18px 18px; text-align: left; }
+.afr2-sheet__body .afr2-manual-speed { margin-top: 0; }
+
+/* ---- Turn presets ---- */
+.afr2-turn-presets { display: grid; gap: 10px; }
+.afr2-turn-presets__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.afr2-turn-preset { display: grid; justify-items: center; gap: 2px; min-height: 76px; padding: 10px 8px; border: 1px solid var(--border-default); border-radius: var(--radius-md); background: transparent; color: var(--text); cursor: pointer; transition: background var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out), transform var(--duration-fast) var(--ease-out); }
+.afr2-turn-preset strong { font-size: 1.05rem; font-variant-numeric: tabular-nums; }
+.afr2-turn-preset small { font-size: var(--type-caption-size); color: var(--text-muted); }
+.afr2-turn-preset:not(:disabled):hover { border-color: var(--action-border); background: var(--action-subtle); }
+.afr2-turn-preset:not(:disabled):active { transform: scale(.97); }
+.afr2-turn-preset:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.afr2-turn-preset:disabled { opacity: .45; cursor: not-allowed; }
+.afr2-turn-presets__note { margin: 0; }
+
+/* ---- Drive pad: CW/CCW with a preset arrow ---- */
+/* The small chevron sits inside the turn button, on its right edge. */
+.afr2-drive-pad__turn { position: relative; display: grid; min-width: 0; }
+.afr2-drive-pad__turn > .afr2-drive-pad__button { width: 100%; padding-right: 24px !important; }
+.afr2-drive-pad__turn-more { position: absolute; z-index: 1; top: 50%; right: 5px; width: 20px; height: 32px; transform: translateY(-50%); display: grid; place-items: center; padding: 0; border: 0; border-left: 1px solid var(--border-default); border-radius: 0 8px 8px 0; background: transparent; color: var(--text-muted); cursor: pointer; transition: color var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out), background var(--duration-fast) var(--ease-out); }
+.afr2-drive-pad__turn-more:hover, .afr2-drive-pad__turn-more[aria-expanded="true"] { color: var(--action); background: var(--action-subtle); }
+.afr2-drive-pad__turn-more:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.afr2-drive-pad__turn { -webkit-touch-callout: none; user-select: none; -webkit-user-select: none; }
+
+/* ---- Touch control: side rail ---- */
+/* Above the joystick input (z-index 5 in the same stacking context), or it swallows the clicks. */
+.afr2-manual-drive { position: relative; }
+.afr2-manual-rail { position: absolute; top: 50%; right: max(12px, env(safe-area-inset-right)); z-index: 12; display: grid; grid-template-columns: 76px; justify-items: center; gap: 4px; padding: 6px; transform: translateY(-50%); border: 1px solid var(--border-default); border-radius: 20px; background: color-mix(in srgb, var(--surface-solid) 55%, transparent); }
+.afr2-manual-rail__item { display: grid; justify-items: center; align-content: center; gap: 4px; width: 100%; padding: 8px 2px; border: 0; border-radius: 14px; background: transparent; color: var(--text); cursor: pointer; transition: background var(--duration-normal) var(--ease-out), color var(--duration-normal) var(--ease-out), transform var(--duration-fast) var(--ease-out); }
+.afr2-manual-rail__icon { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; border: 1px solid var(--border-default); background: var(--surface-subtle); transition: background var(--duration-normal) var(--ease-out), border-color var(--duration-normal) var(--ease-out), box-shadow var(--duration-normal) var(--ease-out), color var(--duration-normal) var(--ease-out); }
+.afr2-manual-rail__label { width: 100%; font-size: 11px; font-weight: 550; line-height: 1.1; text-align: center; white-space: nowrap; transition: color var(--duration-normal) var(--ease-out); }
+.afr2-manual-rail__item:hover .afr2-manual-rail__icon { border-color: var(--action-border); }
+.afr2-manual-rail__item:active { transform: scale(.95); }
+.afr2-manual-rail__item:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.afr2-manual-rail__item[aria-pressed="true"] { background: transparent; }
+.afr2-manual-rail__item[aria-pressed="true"] .afr2-manual-rail__label { color: var(--action); }
+.afr2-manual-rail__item[aria-pressed="true"] .afr2-manual-rail__icon { background: var(--action); border-color: var(--action); color: var(--text-on-action); box-shadow: 0 0 14px color-mix(in srgb, var(--action) 45%, transparent); }
+@media (max-width: 599.98px) {
+  .afr2-manual-rail { top: auto; bottom: calc(150px + env(safe-area-inset-bottom, 0px)); transform: none; right: 8px; }
+  .afr2-manual-rail { grid-template-columns: 60px; }
+  .afr2-manual-rail__item { padding: 6px 2px; }
+  .afr2-manual-rail__label { font-size: 10px; }
+}
+
+/* ---- Local notice (bottom right, inside the dialog) ---- */
+.afr2-manual-toast { position: absolute; right: max(16px, env(safe-area-inset-right)); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); z-index: 14; display: flex; align-items: center; gap: 12px; width: min(340px, calc(100% - 32px)); padding: 12px 14px; border: 1px solid var(--border-strong); border-radius: var(--radius-md); background: var(--glass-dialog-bg); box-shadow: var(--glass-dialog-shadow); text-align: left; animation: afr2-manual-toast-in var(--duration-normal) var(--ease-out); }
+.afr2-manual-toast[data-on="true"] .afr2-manual-rail__icon { background: var(--action); border-color: var(--action); color: var(--text-on-action); }
+.afr2-manual-toast strong { display: block; font-size: .9rem; color: var(--text-strong); }
+.afr2-manual-toast small { display: block; font-size: var(--type-caption-size); color: var(--text-muted); }
+@keyframes afr2-manual-toast-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+/* ---- GOTO: send to car ---- */
+.afr2-goto-send { display: grid; gap: 8px; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border-default); }
+.afr2-goto-send h3 { margin: 0; font-size: .95rem; font-weight: 600; color: var(--text-strong); }
+.afr2-goto-send .afr2-help { margin: 0; }
+.afr2-goto-send__status { margin: 0; font-size: var(--type-body-size); }
+.afr2-goto-send__status[data-phase="failed"], .afr2-goto-send__status[data-phase="cancelled"] { color: var(--warning); }
+.afr2-goto-send__status[data-phase="completed"] { color: var(--success, var(--text-strong)); }
+
+@media (prefers-reduced-motion: reduce) {
+  .afr2-sheet__scrim, .afr2-sheet__panel, .afr2-manual-rail__item, .afr2-manual-rail__icon, .afr2-turn-preset { transition: none; }
+  .afr2-manual-toast { animation: none; }
+}
+
+/* ---- AFR2-20261110-16: current robot mode pill in the header ---- */
+.afr2-mode-pill { display: inline-flex; align-items: center; gap: .4rem; min-height: 2.75rem; padding: .4rem .75rem; border: 1px solid var(--border-default); border-radius: 999px; background: var(--glass-field-bg); color: var(--text-muted); font-size: .8rem; font-weight: 600; white-space: nowrap; transition: color var(--duration-normal) var(--ease-out), background var(--duration-normal) var(--ease-out), border-color var(--duration-normal) var(--ease-out); }
+.afr2-mode-pill[data-tone="active"] { color: var(--action); background: var(--action-subtle); border-color: var(--action-border); }
+.afr2-mode-pill[data-tone="error"] { color: var(--error); background: var(--error-subtle); border-color: var(--error-border); }
+.afr2-mode-pill[data-tone="idle"] { color: var(--text); }
+.afr2-mode-pill__label { overflow: hidden; text-overflow: ellipsis; max-width: 9rem; }
+@media (max-width: 599.98px) { .afr2-mode-pill { padding-inline: .6rem; } .afr2-mode-pill__label { max-width: 5.5rem; } }
+
+/* AFR2-20261110-16: only the model area grabs; the rest of the stage is inert. */
+.afr2-manual-stage, .afr2-manual-drive[data-pressed="true"] .afr2-manual-stage { cursor: default; }
+.afr2-manual-input { cursor: grab; }
+.afr2-manual-drive[data-pressed="true"] .afr2-manual-input { cursor: grabbing; }
+.afr2-manual-input[aria-disabled="true"] { cursor: default; }
+/* The mode pill is a button that opens the operating-mode modal. */
+.afr2-mode-pill { cursor: pointer; font-family: inherit; }
+.afr2-mode-pill:hover { border-color: var(--action-border); }
+.afr2-mode-pill:active { transform: scale(.97); }
+.afr2-mode-pill:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }

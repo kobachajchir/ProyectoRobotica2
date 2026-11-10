@@ -41,27 +41,28 @@ export function renderSensorScreen(o:Afr2OledBuffer,node:number,h:FirmwareSensor
   if(node===S.AFR2_N_RADAR_VIEW || compact){
     const radius=compact?26:38,cy=compact?38:49;
     const active=!!h && h.enabled && h.pulseUs>=1000 && h.pulseUs<=2000 && h.angle>=0 && h.angle<=180;
-    const center=active?h!.angle*2:0,low=Math.max(0,center-15),high=Math.min(360,center+15);
+    const cone=!!h && h.angle>=0 && h.angle<=180;
+    const center=cone?h!.angle*2:180,low=Math.max(0,center-15),high=Math.min(360,center+15);
     txt(0,0,`${compact?'Servo':'1/2> R'} ${['2m','1m','50cm','25cm'][rangeIndex]}`);
     txt(80,0,h?.running?'AUTO':active?'FIJO':'OFF');if(!compact)txt(114,0,'cm');
     for(let ring=1;ring<=4;ring++){
       const r=T(radius*ring/4),step=T(344/r);
       for(let angle=0;angle<=360;angle+=step)o.setPixel(64+T(r*csHalf(angle)/1000),cy-T(r*snHalf(angle)/1000));
-      if(active)for(let angle=low;angle<high;){const end=Math.min(high,(T(angle/10)+1)*10);line(o,64+T(r*csHalf(angle)/1000),cy-T(r*snHalf(angle)/1000),64+T(r*csHalf(end)/1000),cy-T(r*snHalf(end)/1000));angle=end;}
+      if(cone)for(let angle=low;angle<high;){const end=Math.min(high,(T(angle/10)+1)*10);line(o,64+T(r*csHalf(angle)/1000),cy-T(r*snHalf(angle)/1000),64+T(r*csHalf(end)/1000),cy-T(r*snHalf(end)/1000));angle=end;}
       if(!compact){const mm=T(range*ring/4);smallText(o,115,(ring===4?10:45-ring*9),mm%10?`${T(mm/10)}.${mm%10}`:String(T(mm/10)));}
     }
     for(let i=0;i<=36;i+=6){
-      if(active && i*10>=low && i*10<=high)line(o,64,cy,64+T(radius*cs(i)/1000),cy-T(radius*sn(i)/1000));
+      if(cone && i*10>=low && i*10<=high)line(o,64,cy,64+T(radius*cs(i)/1000),cy-T(radius*sn(i)/1000));
       else for(let r=2;r<=radius;r+=3)o.setPixel(64+T(r*cs(i)/1000),cy-T(r*sn(i)/1000));
     }
     if(h){
-      if(active){line(o,64,cy,64+T(radius*csHalf(low)/1000),cy-T(radius*snHalf(low)/1000));line(o,64,cy,64+T(radius*csHalf(high)/1000),cy-T(radius*snHalf(high)/1000));}
+      if(cone){line(o,64,cy,64+T(radius*csHalf(low)/1000),cy-T(radius*snHalf(low)/1000));line(o,64,cy,64+T(radius*csHalf(high)/1000),cy-T(radius*snHalf(high)/1000));}
       if(view.trace)h.bins.forEach((b,i)=>{if(i<37 && b.id && b.error===0)hit(o,i*5,b.distanceMm,range,radius,cy);});
       const sample=h.latest;
-      // AFR2-20261108-02: port of afr2_sensor_screens.c. Servo apagado -> eco de frente (90); eco de <=1 s.
+      // Port of afr2_sensor_screens.c: recorded angle survives PWM OFF; echo age <= 1 s.
       if(sample.id && sample.error===0 && (!view.trace || !h.running) && ((h.nowMs-sample.ms)>>>0)<=1000){
-        const aimed=sample.pulseUs!==undefined && sample.pulseUs>=1000 && sample.pulseUs<=2000 && sample.angle!==undefined;
-        hit(o,aimed?sample.angle!:90,sample.distanceMm,range,radius,cy);
+        const angle=sample.angle!==undefined && sample.angle>=0 && sample.angle<=180?sample.angle:cone?h.angle:90;
+        hit(o,angle,sample.distanceMm,range,radius,cy);
       }
     }
     if(compact){

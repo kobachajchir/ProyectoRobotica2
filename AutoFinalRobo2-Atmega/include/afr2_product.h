@@ -69,7 +69,16 @@ typedef struct {
     uint8_t link_phase; /* AFR2-20261109-01: 0 idle/connected, 1 STA connecting, 2 AP starting (notices) */
     char ap_ssid[33],ap_password[64];
 } Afr2Wifi;
+typedef struct {
+    uint16_t total_ms,app_ms,uart_ms,input_ms,render_ms,io_ms;
+} Afr2LoopTiming;
 typedef struct Afr2Product {
+    Afr2LoopTiming loop_timing,fault_timing;
+    uint16_t fault_control_gap_ms,fault_late_count;
+    /* AFR2-20261110-15: an isolated late control cuts outputs without latching F1;
+     * AFR2_LATE_LATCH_COUNT cuts within AFR2_LATE_WINDOW_MS latch F1. */
+    uint8_t late_burst;
+    uint32_t late_window_ms;
     Afr2Sequence sequence;
     Afr2Config config;
     Afr2Sensors sensors;
@@ -97,11 +106,14 @@ typedef struct Afr2Product {
     uint16_t hp_signature;
 } Afr2Product;
 #define AFR2_FAULT_SIGN_MISMATCH 4u
+#define AFR2_LATE_LATCH_COUNT 3u
+#define AFR2_LATE_WINDOW_MS 2000u
 /* 0 sin datos, 1 coincide, 2 cruzado. */
 uint8_t Afr2Product_HallPwmState(const Afr2Product *p,uint8_t wheel);
 void Afr2Product_Init(Afr2Product *p,uint8_t reset_cause);
 void Afr2Product_Task(Afr2Product *p,uint32_t now);
 uint8_t Afr2Product_Stop(void *ctx);
+uint8_t Afr2Product_ClearFault(Afr2Product *p);
 uint8_t Afr2Product_HaltMotion(void *ctx); /* transport supervision preserves autonomous radar */
 void Afr2Product_Snapshot(void *ctx,uint32_t now,Afr2LinkSnapshot *out);
 void Afr2Product_WebPulse(Afr2Product *p,uint16_t age);

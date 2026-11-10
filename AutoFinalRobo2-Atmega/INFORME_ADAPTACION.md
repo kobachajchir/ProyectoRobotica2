@@ -1,3 +1,11 @@
+> **AFR2-20261110-15 / 1.22.1, solo fuente:** [guarda de ruido IRQ y F1 no enclavante](../AutoFinalRobo2-Contracts/changes/2026-11-10-15-f1-noise-guard-non-latching.md): afr2_board.c/h (presupuesto IRQ Hall/encoder por ms), afr2_product.c/h (3 cortes en 2 s enclavan F1), afr2_debug.c (FAULT/LOOP/NOISE en TAP). Sin tests, compilaciones, validaciones ni cargas.
+
+> **AFR2-20261110-14 / 1.22.0, solo fuente:** [limpieza Web y diagnóstico temporal F1](../AutoFinalRobo2-Contracts/changes/2026-11-10-14-fault-clear-loop-diagnostics.md), CMD0x56 registrado en catálogos. Umbral100ms conservado; causa física sin determinar. Sin tests, compilaciones, validaciones ni cargas.
+
+> **AFR2-20261110-10/11/12 · producto 1.20.0, solo fuente:** [Fallos físicos, radar y batería](../AutoFinalRobo2-Contracts/changes/2026-11-10-10-oled-fallos-radar-bateria.md), [pistas y simulador](../AutoFinalRobo2-Contracts/changes/2026-11-10-11-secuencias-pistas-simulacion.md), [herramientas GOTO](../AutoFinalRobo2-Contracts/changes/2026-11-10-12-goto-herramientas-arcos-curvas.md). AVR/Web OLED vinculados; secuencias/GOTO en Web. Recursos generados pendientes. Sin tests, compilaciones, validaciones, navegador ni cargas; no acredita funcionamiento físico.
+
+> **AFR2-20261109-05 / 1.10.1:** dashboard010001 con tarjeta72×22 en(54,27), icono18 y texto7×10 con centro compartido. Renderer AVR/TS vinculado en fuente; sin compilación, tests, generadores, navegador o carga. [Ficha](../AutoFinalRobo2-Contracts/changes/2026-11-09-05-dashboard-status-card-spacing.md).
+
 > **AFR2-20261106-04:** SRAM AVR 5614 bytes, libres antes de pila 2578; QR finish 29 bytes. Se conservan ambos buffers OLED. Builds y paridad C/Web 2104/2104 PASS; sin carga ni prueba física. [Evidencia](../AutoFinalRobo2-Contracts/documentation/builds/2026-11-06-04/README.md).
 
 > **AFR2-20261106-02:** regeneración y builds AVR/ESP/Web/Loader comprobados; paridad host OLED 1680/1680. **Carga bloqueada por presupuesto SRAM/pila AVR**; sin COM, flasheo ni prueba física. [Evidencia](../AutoFinalRobo2-Contracts/documentation/builds/2026-11-06-02/README.md).

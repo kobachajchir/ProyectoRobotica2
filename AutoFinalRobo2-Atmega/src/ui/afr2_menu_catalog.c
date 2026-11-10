@@ -22,7 +22,7 @@ static const Afr2MenuItem items[] PROGMEM={
  { "Volver", AFR2_N_DISPLAY_MENU, 0, 0, 0,0,0 },
  { "Resumen robot", AFR2_N_ROBOT_VIEW, 0, 0, 0,0,0 },
  { "Enlace y control", AFR2_N_LINK_VIEW, 0, 0, 0,0,0 },
- { "Alertas", AFR2_N_ALERT_VIEW, 0, 0, 0,0,0 },
+ { "Fallos", AFR2_N_ALERT_VIEW, 0, 0, 0,0,0 },
  { "Volver", AFR2_N_MENU, 0, 0, 0,0,0 },
  { "Volver", AFR2_N_STATE, 0, 0, 0,0,0 },
  { "Volver", AFR2_N_STATE, 0, 0, 0,0,0 },
@@ -252,7 +252,7 @@ static const Afr2MenuItem extra[] PROGMEM={
 static const Afr2MenuItem reform[] PROGMEM={
  { "Resumen robot", AFR2_N_ROBOT_VIEW, 0, 0, 0, 0, 0 },
  { "Enlace y control", AFR2_N_LINK_VIEW, 0, 0, 0, 0, 0 },
- { "Alertas", AFR2_N_ALERT_VIEW, 0, 0, 0, 0, 0 },
+ { "Fallos", AFR2_N_ALERT_VIEW, 0, 0, 0, 0, 0 },
  { "Estado OLED/I2C", AFR2_N_DISPLAY, 0, 0, 0, 0, 0 },
  { "Estado encoder", AFR2_N_ENCODER_VIEW, 0, 0, 0, 0, 0 },
  { "Control manual", AFR2_N_CONTROL, 0, 0, 0, 0, 0 },
@@ -364,7 +364,7 @@ static const Afr2MenuNode nodes[] PROGMEM={
  { "Estado", AFR2_N_MENU, 0, 8, 0x4000u, 0x30004UL },
  { "Resumen robot", AFR2_N_STATE, 1, 1, 20, 0x30005UL },
  { "Enlace y control", AFR2_N_STATE, 1, 1, 21, 0x30006UL },
- { "Alertas", AFR2_N_STATE, 1, 1, 22, 0x30007UL },
+ { "Fallos", AFR2_N_STATE, 1, 3, 22, 0x30007UL },
  { "Control manual", AFR2_N_MENU, 0, 5, 0x4042u, 0x30008UL },
  { "Mecanum", AFR2_N_CONTROL, 0, 12, 27, 0x30009UL },
  { "Modos/misiones", AFR2_N_MENU, 0, 4, 39, 0x3000aUL },
@@ -444,6 +444,14 @@ void Afr2Menu_Node(uint8_t index,Afr2MenuNode *out) {
     if(index==AFR2_N_WIFI_SETUP)++out->count;
 }
 void Afr2Menu_Item(uint8_t node,uint8_t index,Afr2MenuItem *out) {
+    if(node==AFR2_N_ALERT_VIEW){
+        static const Afr2MenuItem actions[] PROGMEM={
+            { "Limpiar fallo",255,AFR2_A_CLEAR_FAULT,0,0,0,0 },
+            { "Detener",255,AFR2_A_STOP,0,0,0,0 },
+            { "Volver",AFR2_N_STATE,0,0,0,0,0 }
+        };
+        memcpy_P(out,&actions[index<3?index:2],sizeof(*out));return;
+    }
     Afr2MenuNode n;Afr2Menu_Node(node,&n);
     if(index>=n.count)index=n.count-1;
     if(node==AFR2_N_WIFI_SETUP){if(!index){memset(out,0,sizeof(*out));strcpy(out->label,"Traer credenciales ESP");out->target=255;out->action=AFR2_A_WIFI_READ_CREDENTIALS;return;}--index;}

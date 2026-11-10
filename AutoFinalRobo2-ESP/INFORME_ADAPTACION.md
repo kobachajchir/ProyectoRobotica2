@@ -1,3 +1,9 @@
+> **AFR2-20261110-14 / 1.22.0, solo fuente:** [limpieza Web y diagnóstico temporal F1](../AutoFinalRobo2-Contracts/changes/2026-11-10-14-fault-clear-loop-diagnostics.md), CMD0x56 registrado en catálogos. Umbral100ms conservado; causa física sin determinar. Sin tests, compilaciones, validaciones ni cargas.
+
+> **AFR2-20261110-13 / 1.21.0, solo fuente:** [Wi-Fi desde AP](../AutoFinalRobo2-Contracts/changes/2026-11-10-13-wifi-ap-provisioning-credentials.md): escaneo conservando AP, configuración AP/STA separada, reinicio observado y consulta explícita de credenciales. Sin tests, compilaciones, validaciones ni cargas. La funcionalidad física sigue pendiente de comprobación.
+
+> **AFR2-20261109-09 / 1.10.5:** [Cinco optimizaciones de memoria](../AutoFinalRobo2-Contracts/changes/2026-11-09-09-esp-memory-optimization.md) en broker.h/cpp, broker_product/system/wifi.cpp, main.cpp y http_assets.h/cpp. ESP compilado antes/después: **51172→46644 B RAM estática**. Sin carga ni medición dinámica de placa; [evidencia y límites](../AutoFinalRobo2-Contracts/documentation/builds/2026-11-09-09/README.md).
+
 > **AFR2-20261106-02:** regeneración y builds AVR/ESP/Web/Loader comprobados; paridad host OLED 1680/1680. **Carga bloqueada por presupuesto SRAM/pila AVR**; sin COM, flasheo ni prueba física. [Evidencia](../AutoFinalRobo2-Contracts/documentation/builds/2026-11-06-02/README.md).
 
 > **AFR2-20261106-01 / fuente:** correcciones coordinadas EX01v13, IR digital/EEPROMv9 y Wi-Fi persistente/paginado. [Ficha y estado por modulo](../AutoFinalRobo2-Contracts/changes/2026-11-06-01-coordinated-corrections.md). Sin nuevas compilaciones, generadores, pruebas ni cargas; no acredita el firmware instalado.
@@ -125,3 +131,14 @@ Modo AP manual independiente de la política de fallback; búsqueda solo con STA
 ## AFR2-20261109-03 / 1.9.1
 
 Cierre coordinado de fuentes: permiso PWM explícito y condiciones vigentes, Wi-Fi OFF/política desconocida y réplicas Web. Recursos OLED (75 nodos/26iconos) y catálogo3D regenerados. No se compiló, probó ni cargó; esa etapa la realizará el usuario. Registro por archivo en Contracts/provenance/source-completion-20261109-03.json.
+# AFR2-20261109-08 — WS y memoria (1.10.4)
+
+Log del usuario: OOM antes de `rst=4` al conectar WS con 1.10.2. Fuente del broker
+adaptada para serializar directamente al buffer compartido de ESPAsyncWebServer,
+liberar el JSON antes del envío y diferir respuestas sin copiar. Estados opcionales
+solo con cola vacía; documentos incompletos/memoria insuficiente se rechazan.
+`/diagnostico` y `/api/health` informan heap libre y bloque contiguo máximo.
+[Ficha y procedencia por archivo](../AutoFinalRobo2-Contracts/changes/2026-11-09-08-esp-ws-oom.md).
+Sin tests, compilaciones, validadores, puertos ni flasheos. La reserva exacta del
+OOM no se identificó: la pila aportada está recortada. Cambios ajenos conservados.
+

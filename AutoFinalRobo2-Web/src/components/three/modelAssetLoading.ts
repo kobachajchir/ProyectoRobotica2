@@ -12,12 +12,13 @@ export interface ModelAssetState {
   error: string | null;
 }
 const states = new Map<string, ModelAssetState>();
+const assetBytes = (url: string) => (sizes as Record<string, number>)[url.split('?')[0]] ?? null;
 const listeners = new Set<() => void>();
 let notificationPending = false;
 export function getModelAssetState(url: string): ModelAssetState {
   let state = states.get(url);
   if (!state) {
-    state = { url, phase: 'idle', loadedBytes: 0, totalBytes: (sizes as Record<string, number>)[url] ?? null, remainingSeconds: null, error: null };
+    state = { url, phase: 'idle', loadedBytes: 0, totalBytes: assetBytes(url), remainingSeconds: null, error: null };
     states.set(url, state);
   }
   return state;
@@ -49,7 +50,7 @@ export class ProgressGLTFLoader extends GLTFLoader {
     }, event => {
       // Three counts decoded response bytes. Bundled asset sizes use the same unit,
       // unlike Content-Length when the ESP serves gzip. This is asset progress, not wire traffic.
-      const total = (sizes as Record<string, number>)[url] ?? null;
+      const total = assetBytes(url);
       const elapsed = (performance.now() - started) / 1000;
       const preparing = total !== null && event.loaded >= total;
       update(url, { phase: preparing ? 'preparing' : 'downloading', loadedBytes: event.loaded,

@@ -12,7 +12,7 @@ static bool number(JsonVariantConst v,int32_t lo,int32_t hi) { return v.is<int32
 static bool textId(JsonVariantConst v) { return v.is<const char *>() && strlen(v.as<const char *>())>0 && strlen(v.as<const char *>())<=64 && v.as<JsonString>().size()==strlen(v.as<const char *>()); }
 bool Broker::encodeProduct(BrokerRequest &q,JsonObjectConst p) {
     const char *c=q.command;
-    auto fail=[&](){error(q,"BAD_REQUEST","Argumentos fuera del contrato EX01.");return false;};
+    auto fail=[&](){error(q,"BAD_REQUEST",F("Argumentos fuera del contrato EX01."));return false;};
     if(!strncmp(c,"robot.ultrasonic.",17) || !strcmp(c,"robot.ir.get") || !strncmp(c,"robot.servo.",12) || !strncmp(c,"robot.radar.",12) || !strcmp(c,"robot.screen.status"))return encodeSensors(q,p);
     if(!strcmp(c,"system.battery.get") || !strcmp(c,"system.battery.measure")) {
         q.wireCommand=AFR2_EXT_BATTERY;q.bodyLength=1;q.body[0]=!strcmp(c,"system.battery.measure");
@@ -30,6 +30,10 @@ bool Broker::encodeProduct(BrokerRequest &q,JsonObjectConst p) {
     } else if(!strcmp(c,"wifi.draft.submit") || !strcmp(c,"wifi.draft.cancel")) {
         if(!p["jobId"].is<uint32_t>() || !p["jobId"].as<uint32_t>())return fail();
         afr2_put_u32(q.body,p["jobId"].as<uint32_t>());
+    } else if(!strcmp(c,"robot.fault.get") || !strcmp(c,"robot.fault.clear")) {
+        bool clear=!strcmp(c,"robot.fault.clear");
+        if(clear && (!p["confirm"].is<bool>() || !p["confirm"].as<bool>() || !number(p["expectedFault"],1,255)))return fail();
+        q.wireCommand=AFR2_EXT_FAULT;q.bodyLength=2;q.body[0]=clear;q.body[1]=clear?p["expectedFault"].as<uint8_t>():0;
     } else if(!strcmp(c,"robot.drive.pwm")) {
         if(!number(p["forwardPct"],-100,100) || !number(p["strafePct"],-100,100) || !number(p["turnPct"],-100,100) || !number(p["ttlMs"],200,1000))return fail();
         q.wireCommand=AFR2_EXT_DRIVE_PWM;q.bodyLength=12;
@@ -81,7 +85,8 @@ bool Broker::encodeProduct(BrokerRequest &q,JsonObjectConst p) {
         q.wireCommand=AFR2_EXT_UI_ACTION;q.bodyLength=6;afr2_put_u32(q.body,p["revision"].as<uint32_t>());q.body[4]=action;q.body[5]=(int8_t)p["delta"].as<int>();
     } else if(!strncmp(c,"robot.sequence.",15)) {
         if(!textId(p["sequenceId"]))return fail();
-        strlcpy(q.sequenceId,p["sequenceId"].as<const char *>(),sizeof(q.sequenceId));
+        q.sequence=BrokerRequest::SequenceIds{};
+        strlcpy(q.sequence.sequenceId,p["sequenceId"].as<const char *>(),sizeof(q.sequence.sequenceId));
         if(!strcmp(c,"robot.sequence.begin") || !strcmp(c,"robot.sequence.commit")) {
             if(!number(p["segmentCount"],1,32) || !number(p["totalDurationMs"],10,120000) || p["totalDurationMs"].as<uint32_t>()%10)return fail();
             q.wireCommand=!strcmp(c,"robot.sequence.begin")?AFR2_EXT_SEQ_BEGIN:AFR2_EXT_SEQ_COMMIT;q.bodyLength=13;
@@ -113,7 +118,7 @@ bool Broker::encodeProduct(BrokerRequest &q,JsonObjectConst p) {
             }
         } else {
             if(!textId(p["executionId"]))return fail();
-            strlcpy(q.executionId,p["executionId"].as<const char *>(),sizeof(q.executionId));
+            strlcpy(q.sequence.executionId,p["executionId"].as<const char *>(),sizeof(q.sequence.executionId));
             q.wireCommand=!strcmp(c,"robot.sequence.start")?AFR2_EXT_SEQ_START:!strcmp(c,"robot.sequence.cancel")?AFR2_EXT_SEQ_CANCEL:!strcmp(c,"robot.sequence.status")?AFR2_EXT_SEQ_STATUS:0;
             if(!q.wireCommand)return fail();
             q.bodyLength=q.wireCommand==AFR2_EXT_SEQ_STATUS?8:q.wireCommand==AFR2_EXT_SEQ_CANCEL?13:12;
@@ -124,8 +129,14 @@ bool Broker::encodeProduct(BrokerRequest &q,JsonObjectConst p) {
 bool Broker::productRequest(uint8_t cmd,const uint8_t *body,uint8_t size) {return mega_.requestProduct(cmd,body,size,millis());}
 void Broker::stopWebOperations() {++generation_;safetyRequested_=true;sequenceClient_=sequenceToken_=executionToken_=0;sequenceId_[0]=executionId_[0]=0;}
 void Broker::publishStatus() {
-    for(auto &s:sessions_)if(s.used && s.ready){JsonDocument f;f["schema"]="afr2-ws-1";f["type"]="evt";f["event"]="system.status";f["ts"]=millis();status(f["payload"].to<JsonObject>(),millis(),s.id);
-        if(auto *client=ws_.client(s.id)){String data;serializeJson(f,data);if(optionalOutput(client))client->text(data);}}
+    for(auto &s:sessions_)if(s.used && s.ready)if(auto *client=ws_.client(s.id))if(optionalOutput(client)){
+        JsonDocument f;f["schema"]="afr2-ws-1";f["type"]="evt";f["event"]="system.status";f["ts"]=millis();
+        const uint32_t now=millis();const auto state=capabilityState(now);
+        const bool changed=!s.capabilitiesSent || !(s.sentCapabilities==state);
+        status(f["payload"].to<JsonObject>(),now,s.id,changed);
+        auto buffer=makeFrame(f);
+        if(buffer && client->text(std::move(buffer)) && changed){s.sentCapabilities=state;s.capabilitiesSent=true;}
+    }
 }
 bool Broker::dispatchProduct(BrokerRequest q,uint32_t now) {
     if(!strcmp(q.command,"robot.screen.subscribe")) {
@@ -137,37 +148,37 @@ bool Broker::dispatchProduct(BrokerRequest q,uint32_t now) {
     if(!q.wireCommand)return false;
     if(q.wireCommand==AFR2_EXT_UI_META || q.wireCommand==AFR2_EXT_UI_STATUS || q.wireCommand==AFR2_EXT_UI_ACTION) {
         auto *s=session(q.client);
-        if(!s || !s->screenSubscribed || (uint32_t)(now-s->screenSubscriptionAt)>3500u){error(q,"CAPABILITY_UNAVAILABLE","Visor de pantalla cerrado o suscripcion vencida.");return true;}
+        if(!s || !s->screenSubscribed || (uint32_t)(now-s->screenSubscriptionAt)>3500u){error(q,"CAPABILITY_UNAVAILABLE",F("Visor de pantalla cerrado o suscripcion vencida."));return true;}
     }
     if((q.wireCommand==AFR2_EXT_TOUCH_UI || (q.wireCommand==AFR2_EXT_UI_ACTION && q.body[4]==3)) && !(productFeatures_&AFR2_EXT_F_TOUCH_UI)) {
-        error(q,"CAPABILITY_UNAVAILABLE","Firmware sin control tactil OLED/Volver directo.");return true;
+        error(q,"CAPABILITY_UNAVAILABLE",F("Firmware sin control tactil OLED/Volver directo."));return true;
     }
     if(!mega_.ready() || !productReady_ || extensionVersion_!=AFR2_EXT_VERSION){error(q,"CAPABILITY_UNAVAILABLE","ATmega aun no negocio EX01.");return true;}
     if(q.wireCommand==AFR2_EXT_BATTERY && !(productFeatures_&AFR2_EXT_F_BATTERY)){
-        error(q,"CAPABILITY_UNAVAILABLE","Medicion de bateria no disponible en el controlador.");return true;
+        error(q,"CAPABILITY_UNAVAILABLE",F("Medicion de bateria no disponible en el controlador."));return true;
     }
     if(q.wireCommand==AFR2_EXT_DRIVE_PWM && (!productStateAt_ || (uint32_t)(now-productStateAt_)>=2000u || !(productFeatures_&AFR2_EXT_F_MANUAL_PWM))){
-        error(q,"CAPABILITY_UNAVAILABLE","Habilitar motores; revisar fallo o calibracion Hall en curso.");return true;
+        error(q,"CAPABILITY_UNAVAILABLE",F("Habilitar motores; revisar fallo o calibracion Hall en curso."));return true;
     }
     if(q.wireCommand==AFR2_EXT_UI_META || q.wireCommand==AFR2_EXT_UI_ACTION) {
-        if(!(productFeatures_&AFR2_EXT_F_UI)){error(q,"CAPABILITY_UNAVAILABLE","Servicio UI remoto no disponible.");return true;}
-        if(q.wireCommand==AFR2_EXT_UI_ACTION && (!session(q.client)->oledCaptured || afr2_get_u32(q.body)!=session(q.client)->oledRevision)){error(q,"BAD_REQUEST","La captura ya no corresponde a esta sesion.");return true;}
+        if(!(productFeatures_&AFR2_EXT_F_UI)){error(q,"CAPABILITY_UNAVAILABLE",F("Servicio UI remoto no disponible."));return true;}
+        if(q.wireCommand==AFR2_EXT_UI_ACTION && (!session(q.client)->oledCaptured || afr2_get_u32(q.body)!=session(q.client)->oledRevision)){error(q,"BAD_REQUEST",F("La captura ya no corresponde a esta sesion."));return true;}
     }
-    if(q.wireCommand>=AFR2_EXT_SEQ_BEGIN && q.wireCommand<=AFR2_EXT_SEQ_STATUS && extensionVersion_<4){error(q,"CAPABILITY_UNAVAILABLE","Secuencias con pantalla requieren EX01 v4.");return true;}
-    if(((q.wireCommand==AFR2_EXT_SEQ_BEGIN && q.bodyLength==14) || (q.wireCommand==AFR2_EXT_SEQ_APPEND && q.bodyLength==28)) && (extensionVersion_<6 || !(productFeatures_&AFR2_EXT_F_DISTANCE))){error(q,"CAPABILITY_UNAVAILABLE","Finalizacion por pulsos requiere EX01 v6 y Hall/calibracion/memoria aprobados.");return true;}
+    if(q.wireCommand>=AFR2_EXT_SEQ_BEGIN && q.wireCommand<=AFR2_EXT_SEQ_STATUS && extensionVersion_<4){error(q,"CAPABILITY_UNAVAILABLE",F("Secuencias con pantalla requieren EX01 v4."));return true;}
+    if(((q.wireCommand==AFR2_EXT_SEQ_BEGIN && q.bodyLength==14) || (q.wireCommand==AFR2_EXT_SEQ_APPEND && q.bodyLength==28)) && (extensionVersion_<6 || !(productFeatures_&AFR2_EXT_F_DISTANCE))){error(q,"CAPABILITY_UNAVAILABLE",F("Finalizacion por pulsos requiere EX01 v6 y Hall/calibracion/memoria aprobados."));return true;}
     if(q.wireCommand==AFR2_EXT_REBOOT && extensionVersion_<4){error(q,"CAPABILITY_UNAVAILABLE","Reinicio requiere EX01 v4.");return true;}
-    if(q.wireCommand==AFR2_EXT_GOTO && (extensionVersion_<3 || !(productFeatures_&AFR2_EXT_F_GOTO))){error(q,"CAPABILITY_UNAVAILABLE","GOTO completo requiere EX01 v3 y odometria valida.");return true;}
+    if(q.wireCommand==AFR2_EXT_GOTO && (extensionVersion_<3 || !(productFeatures_&AFR2_EXT_F_GOTO))){error(q,"CAPABILITY_UNAVAILABLE",F("GOTO completo requiere EX01 v3 y odometria valida."));return true;}
     if(q.wireCommand>=AFR2_EXT_SEQ_BEGIN && q.wireCommand<=AFR2_EXT_SEQ_STATUS) {
-        if(extensionVersion_<2){error(q,"CAPABILITY_UNAVAILABLE","Secuencias requieren EX01 v2.");return true;}
-        if(q.wireCommand==AFR2_EXT_SEQ_BEGIN){sequenceClient_=q.client;sequenceToken_=token();executionToken_=0;strlcpy(sequenceId_,q.sequenceId,65);executionId_[0]=0;afr2_put_u32(q.body+4,sequenceToken_);}
+        if(extensionVersion_<2){error(q,"CAPABILITY_UNAVAILABLE",F("Secuencias requieren EX01 v2."));return true;}
+        if(q.wireCommand==AFR2_EXT_SEQ_BEGIN){sequenceClient_=q.client;sequenceToken_=token();executionToken_=0;strlcpy(sequenceId_,q.sequence.sequenceId,65);executionId_[0]=0;afr2_put_u32(q.body+4,sequenceToken_);}
         else {
-            if(sequenceClient_!=q.client || strcmp(q.sequenceId,sequenceId_) ||
-               (q.executionId[0] && q.wireCommand!=AFR2_EXT_SEQ_START && executionToken_ && strcmp(q.executionId,executionId_))) {
-                error(q,"BAD_REQUEST","Identidad de programa/ejecucion distinta.");return true;
+            if(sequenceClient_!=q.client || strcmp(q.sequence.sequenceId,sequenceId_) ||
+               (q.sequence.executionId[0] && q.wireCommand!=AFR2_EXT_SEQ_START && executionToken_ && strcmp(q.sequence.executionId,executionId_))) {
+                error(q,"BAD_REQUEST",F("Identidad de programa/ejecucion distinta."));return true;
             }
             if(q.wireCommand==AFR2_EXT_SEQ_STATUS){afr2_put_u32(q.body,sequenceToken_);afr2_put_u32(q.body+4,executionToken_);}
             else {afr2_put_u32(q.body+4,sequenceToken_);
-                if(q.wireCommand==AFR2_EXT_SEQ_START){executionToken_=token();strlcpy(executionId_,q.executionId,65);afr2_put_u32(q.body+8,executionToken_);}
+                if(q.wireCommand==AFR2_EXT_SEQ_START){executionToken_=token();strlcpy(executionId_,q.sequence.executionId,65);afr2_put_u32(q.body+8,executionToken_);}
                 if(q.wireCommand==AFR2_EXT_SEQ_CANCEL)afr2_put_u32(q.body+8,executionToken_);}
         }
     }
@@ -182,7 +193,7 @@ bool Broker::finishProduct(const BrokerRequest &q,const MegaResult &r) {
     if(!q.wireCommand)return false;
     if(q.wireCommand==AFR2_EXT_UI_META || q.wireCommand==AFR2_EXT_UI_STATUS || q.wireCommand==AFR2_EXT_UI_ACTION) {
         auto *s=session(q.client);
-        if(!s || !s->screenSubscribed || (uint32_t)(millis()-s->screenSubscriptionAt)>3500u){error(q,"SUPERSEDED","Visor cerrado o suscripcion vencida.");return true;}
+        if(!s || !s->screenSubscribed || (uint32_t)(millis()-s->screenSubscriptionAt)>3500u){error(q,"SUPERSEDED",F("Visor cerrado o suscripcion vencida."));return true;}
     }
     if(finishSensors(q,r))return true;
     const uint8_t *p=r.payload;JsonDocument f;JsonObject out=f["payload"].to<JsonObject>();
@@ -198,7 +209,7 @@ bool Broker::finishProduct(const BrokerRequest &q,const MegaResult &r) {
         out["calibrated"]=false;out["analogPin"]="A5";answer(q,f);return true;
     }
     if(r.command==AFR2_EXT_UI_PAGE) {
-        if((uint32_t)(millis()-oledAt_)>1800 || afr2_get_u32(p+9)!=oledRevision_ || afr2_get_u16(p+13)!=oledOffset_){error(q,"TIMEOUT","Captura OLED incoherente o vencida.");return true;}
+        if((uint32_t)(millis()-oledAt_)>1800 || afr2_get_u32(p+9)!=oledRevision_ || afr2_get_u16(p+13)!=oledOffset_){error(q,"TIMEOUT",F("Captura OLED incoherente o vencida."));return true;}
         memcpy(oledData_+oledOffset_,p+16,p[15]);oledOffset_+=p[15];
         uint8_t b[7];afr2_put_u32(b,oledRevision_);
         uint8_t next=oledOffset_<1024?AFR2_EXT_UI_PAGE:AFR2_EXT_UI_RELEASE;
@@ -216,6 +227,13 @@ bool Broker::finishProduct(const BrokerRequest &q,const MegaResult &r) {
         out["screenCode"]=code;out["selection"]=oledSelection_;out["firstVisible"]=oledFirst_;out["itemCount"]=oledCount_;
         out["revision"]=oledRevision_;out["framebufferBase64"]=encoded;
         if(auto *s=session(q.client)){if(!s->screenSubscribed || (uint32_t)(millis()-s->screenSubscriptionAt)>3500u){error(q,"SUPERSEDED","Visor cerrado.");return true;}s->oledRevision=oledRevision_;s->oledCaptured=true;}
+    } else if(q.wireCommand==AFR2_EXT_FAULT) {
+        if(r.length!=27){error(q,"INTERNAL_ERROR",F("Diagnostico de fallo incompleto."));return true;}
+        out["fault"]=p[9];out["stopped"]=p[10]!=0;out["lateCount"]=afr2_get_u16(p+11);out["controlGapMs"]=afr2_get_u16(p+13);
+        JsonObject timing=out["timing"].to<JsonObject>();
+        const char *keys[]={"totalMs","appMs","uartMs","inputMs","renderMs","ioMs"};
+        for(uint8_t i=0;i<6;i++)timing[keys[i]]=afr2_get_u16(p+15+i*2);
+        out["cleared"]=q.body[0]==1 && !p[9] && p[10];
     } else if(q.wireCommand==AFR2_EXT_STATE) {
         if(r.command==AFR2_EXT_STATE) {
             memcpy(stateData_,p,28);productMode_=p[9];productOrigin_=p[10];productFeatures_=afr2_get_u32(p+17);productAt_=millis();productStateAt_=productAt_;productStopped_=p[11]!=0;
@@ -237,12 +255,12 @@ bool Broker::finishProduct(const BrokerRequest &q,const MegaResult &r) {
     } else if(q.wireCommand==AFR2_EXT_UI_META) {
         oledRevision_=afr2_get_u32(p+9);oledScreen_=afr2_get_u32(p+13);oledSelection_=p[17];oledFirst_=p[18];oledCount_=p[22];oledOffset_=0;
         uint8_t body[7];afr2_put_u32(body,oledRevision_);afr2_put_u16(body+4,0);body[6]=40;
-        if(!productRequest(AFR2_EXT_UI_PAGE,body,7)){error(q,"BUSY_IN_FLIGHT","No se pudo leer framebuffer.");return true;}
+        if(!productRequest(AFR2_EXT_UI_PAGE,body,7)){error(q,"BUSY_IN_FLIGHT",F("No se pudo leer framebuffer."));return true;}
         pending_=q;waiting_=true;return true;
     } else if(q.wireCommand==AFR2_EXT_UI_ACTION){out["screenCode"]=afr2_get_u32(p+9);out["confirmed"]=true;
     } else if(q.wireCommand>=AFR2_EXT_SEQ_BEGIN && q.wireCommand<=AFR2_EXT_SEQ_STATUS) {
-        if(q.wireCommand==AFR2_EXT_SEQ_BEGIN){sequenceClient_=q.client;sequenceToken_=afr2_get_u32(p+9);executionToken_=0;strlcpy(sequenceId_,q.sequenceId,65);executionId_[0]=0;}
-        if(q.wireCommand==AFR2_EXT_SEQ_START){executionToken_=afr2_get_u32(p+13);strlcpy(executionId_,q.executionId,65);}
+        if(q.wireCommand==AFR2_EXT_SEQ_BEGIN){sequenceClient_=q.client;sequenceToken_=afr2_get_u32(p+9);executionToken_=0;strlcpy(sequenceId_,q.sequence.sequenceId,65);executionId_[0]=0;}
+        if(q.wireCommand==AFR2_EXT_SEQ_START){executionToken_=afr2_get_u32(p+13);strlcpy(executionId_,q.sequence.executionId,65);}
         static const char *states[]={"idle","preparing","ready","running","completed","cancelled","failed"};
         uint8_t state=q.wireCommand==AFR2_EXT_SEQ_STATUS?p[17]:q.wireCommand==AFR2_EXT_SEQ_START?3:q.wireCommand==AFR2_EXT_SEQ_COMMIT?2:q.wireCommand==AFR2_EXT_SEQ_CANCEL?p[17]:1;
         out["sequenceId"]=sequenceId_;out["executionId"]=executionId_;out["state"]=states[state];out["reason"]=nullptr;

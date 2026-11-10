@@ -20,18 +20,27 @@ void Broker::draftStatus(JsonObject out) {
 bool Broker::dispatchWifiDraft(const BrokerRequest &q,uint32_t now) {
     bool submit=!strcmp(q.command,"wifi.draft.submit"),cancel=!strcmp(q.command,"wifi.draft.cancel");
     if(!submit && !cancel)return false;
-    if(!productReady_ || !wifiAwaitWeb_ || afr2_get_u32(q.body)!=wifiJob_ || (uint32_t)(now-wifiJobAt_)>=115000u){error(q,"BAD_REQUEST","El pedido OLED vencio o fue cancelado.");return true;}
-    if(cancel){wifiAwaitWeb_=false;eraseConfig(oledDraft_);wifiDraftReady_=false;wifiResult_=5;}
+    if(!productReady_ || !wifiAwaitWeb_ || afr2_get_u32(q.body)!=wifiJob_ || (uint32_t)(now-wifiJobAt_)>=115000u){error(q,"BAD_REQUEST",F("El pedido OLED vencio o fue cancelado."));return true;}
+    if(cancel){wifiAwaitWeb_=false;eraseConfig(oledDraft_);wifiDraftReady_=false;wifiPhase_=0;wifiResult_=5;}
     else {
-        if(strcmp(q.wifi.mode,modeName(wifiRequestedMode_)) || !WifiService::valid(q.wifi)){error(q,"BAD_REQUEST","Modo o credenciales fuera del pedido OLED.");return true;}
-        eraseConfig(oledDraft_);oledDraft_=q.wifi;wifiDraftToken_=draftToken();wifiDraftReady_=true;wifiAwaitWeb_=false;wifiResult_=1;wifiJobAt_=now;
+        if((strcmp(q.wifi.mode,modeName(wifiRequestedMode_)) && strcmp(q.wifi.mode,"STA") && strcmp(q.wifi.mode,"AP_STA")) || !WifiService::valid(q.wifi)){error(q,"BAD_REQUEST",F("Modo o credenciales fuera del pedido OLED."));return true;}
+        if(!wifi_.stage(q.wifi,now)){error(q,"INTERNAL_ERROR",F("No se pudo guardar o aplicar la configuracion Wi-Fi."));return true;}
+        eraseConfig(oledDraft_);wifiDraftReady_=false;wifiAwaitWeb_=false;wifiPhase_=0;wifiResult_=2;wifiJobAt_=now;
     }
-    JsonDocument f;f["payload"]["draftReady"]=submit;f["payload"]["applied"]=false;answer(q,f);publishStatus();return true;
+    JsonDocument f;f["payload"]["draftReady"]=submit;f["payload"]["applied"]=submit;f["payload"]["restartScheduled"]=submit;answer(q,f);publishStatus();return true;
+}
+void Broker::clearWifiNetworks() {
+    for(auto &name:wifiNetworks_)name=String();
+    wifiNetworkCount_=0;wifiScanAt_=0;
 }
 void Broker::scanForOled(JsonObjectConst result) {
+    clearWifiNetworks();
     bool forOled=wifiScanOled_;wifiScanOled_=false;wifiNetworkCount_=wifiNetworkIndex_=0;
     ++wifiScanId_;if(!wifiScanId_)++wifiScanId_;wifiScanPage_=0;wifiScanTruncated_=result["truncated"]|false;
     if(result["status"]!="completed"){if(forOled)wifiResult_=4;return;}
+    // Web-only scans already own their JSON result; do not retain another SSID list.
+    if(!forOled)return;
+    wifiScanAt_=millis();
     for(JsonObjectConst entry:result["networks"].as<JsonArrayConst>()) {
         JsonString name=entry["ssid"].as<JsonString>();const char *s=name.c_str();
         if(s && name.size()<=32 && name.size()==strlen(s) && wifiNetworkCount_<16){wifiSecurity_[wifiNetworkCount_]=entry["securityCode"]|0;wifiNetworks_[wifiNetworkCount_++]=s;}
@@ -43,7 +52,7 @@ bool Broker::finishWifi(const BrokerRequest &req,const MegaResult &r) {
     if(r.timeout || r.transportFault || r.length<9 || r.payload[8]!=AFR2_RESULT_OK) {
         if(!strcmp(req.command,"_wifi_status") || !strcmp(req.command,"_wifi_details")){wifiDetailsPending_=false;return true;}
         if(!strcmp(req.command,"_wifi_credentials")){memset(wifiCredentials_,0,sizeof(wifiCredentials_));wifiPhase_=0;wifiResult_=4;return true;}
-        if(!strcmp(req.command,"_wifi_network")){wifiResult_=4;wifiPhase_=0;return true;}
+        if(!strcmp(req.command,"_wifi_network")){wifiResult_=4;wifiPhase_=0;clearWifiNetworks();return true;}
         if(!strcmp(req.command,"_wifi_result") && wifiResetPending_)wifiResetPending_=false;
         if(r.command==AFR2_EXT_WIFI_POLL){wifiOffset_=0;return true;}
         wifiJob_=0;wifiResult_=0;wifiPhase_=0;wifiAwaitWeb_=false;wifiDraftReady_=false;eraseConfig(oledDraft_);return true;
@@ -61,6 +70,7 @@ bool Broker::finishWifi(const BrokerRequest &req,const MegaResult &r) {
     if(!p[9])return true;
     uint32_t job=afr2_get_u32(p+10);uint8_t op=p[14],total=p[15],offset=p[16],count=p[17];
     if(job!=wifiJob_) {
+        if(op!=12)clearWifiNetworks();
         wifiJob_=job;wifiOp_=op;wifiJobAt_=millis();wifiOffset_=0;wifiTotal_=total;
         wifiRequestedMode_=p[18];wifiAwaitWeb_=false;wifiResult_=0;wifiPhase_=1;
         memset(wifiCredentials_,0,sizeof(wifiCredentials_));
@@ -72,8 +82,9 @@ bool Broker::finishWifi(const BrokerRequest &req,const MegaResult &r) {
     wifiOffset_+=count;if(wifiOffset_<total)return true;
     wifiOffset_=0;wifiPhase_=0;
     if(op==12){
-        if(total!=5 || afr2_get_u32((uint8_t *)wifiCredentials_)!=wifiScanId_ || (uint8_t)wifiCredentials_[4]>1){wifiResult_=4;return true;}
-        wifiScanPage_=(uint8_t)wifiCredentials_[4];wifiNetworkIndex_=wifiScanPage_*8u;wifiPhase_=9;wifiResult_=3;
+        if(!wifiScanAt_ || total!=5 || afr2_get_u32((uint8_t *)wifiCredentials_)!=wifiScanId_ || (uint8_t)wifiCredentials_[4]>1){wifiResult_=4;return true;}
+        wifiScanAt_=millis();
+        wifi_.holdFallback(millis());wifiScanPage_=(uint8_t)wifiCredentials_[4];wifiNetworkIndex_=wifiScanPage_*8u;wifiPhase_=9;wifiResult_=3;
     } else if(op==11){
         WifiConfig saved;
         if(!wifi_.savedConfig(wifiRequestedMode_,saved)){wifiResult_=4;return true;}
@@ -81,13 +92,13 @@ bool Broker::finishWifi(const BrokerRequest &req,const MegaResult &r) {
         strlcpy(wifiCredentials_,saved.ssid,33);strlcpy(wifiCredentials_+33,saved.password,64);eraseConfig(saved);
         wifiNetworkIndex_=0;wifiPhase_=8;
     } else if(op==1){wifiStatusAt_=0;wifiResult_=3;}
-    else if(op==2){if(wifi_.scan()){wifiScanOled_=true;wifiPhase_=4;}else wifiResult_=4;}
+    else if(op==2){wifi_.holdFallback(millis());if(wifi_.scan()){wifiScanOled_=true;wifiPhase_=4;}else wifiResult_=4;}
     else if(op==3) {
-        bool browser=readyWifiClients()>0;
-        if(!browser){wifiResult_=6;return true;}
+        bool hasClient=readyWifiClients()>0 || ((WiFi.getMode()&WIFI_AP) && WiFi.softAPgetStationNum()>0);
+        if(!hasClient){wifiResult_=6;return true;}
         if(total>32 || memchr(wifiCredentials_,0,total)){wifiResult_=4;return true;}
         strlcpy(oledDraft_.mode,modeName(wifiRequestedMode_),sizeof(oledDraft_.mode));
-        memcpy(oledDraft_.ssid,wifiCredentials_,total);oledDraft_.ssid[total]=0;wifiAwaitWeb_=true;wifiPhase_=2;publishStatus();
+        memcpy(oledDraft_.ssid,wifiCredentials_,total);oledDraft_.ssid[total]=0;wifiAwaitWeb_=true;wifiPhase_=2;wifi_.holdFallback(millis());publishStatus();
     } else if(op==4) {
         char *end=(char *)memchr(wifiCredentials_,0,total);
         if(!end || end-wifiCredentials_>32 || total-(end-wifiCredentials_)-1>63){wifiResult_=4;return true;}
@@ -95,9 +106,9 @@ bool Broker::finishWifi(const BrokerRequest &req,const MegaResult &r) {
         strlcpy(oledDraft_.ssid,wifiCredentials_,sizeof(oledDraft_.ssid));
         memcpy(oledDraft_.password,end+1,total-(end-wifiCredentials_)-1);
         oledDraft_.password[total-(end-wifiCredentials_)-1]=0;
-        if(!WifiService::valid(oledDraft_))wifiResult_=4;
-        else{wifiDraftToken_=draftToken();wifiDraftReady_=true;wifiResult_=1;}
         volatile char *wipe=wifiCredentials_;for(size_t i=0;i<sizeof(wifiCredentials_);i++)wipe[i]=0;
+        if(!WifiService::valid(oledDraft_) || !wifi_.stage(oledDraft_,millis())){eraseConfig(oledDraft_);wifiResult_=4;}
+        else{wifiResult_=2;wifiPhase_=0;wifiDraftReady_=false;eraseConfig(oledDraft_);publishStatus();}
     } else if(op==5) {
         if(!wifiDraftReady_ || afr2_get_u32(p+19)!=wifiDraftToken_ || !wifi_.stage(oledDraft_,millis()))wifiResult_=4;
         else{wifiResult_=2;wifiPhase_=0;wifiDraftReady_=false;eraseConfig(oledDraft_);}
@@ -124,9 +135,11 @@ bool Broker::finishWifi(const BrokerRequest &req,const MegaResult &r) {
 void Broker::tickWifi(uint32_t now) {
     if(wifiResetPending_ && (uint32_t)(now-wifiResetAt_)>=3000u){wifiResetPending_=false;wifiResult_=4;}
     if(!productReady_ || !(productFeatures_&AFR2_EXT_F_WIFI)) {
-        wifiAwaitWeb_=wifiDraftReady_=false;wifiJob_=0;wifiOffset_=0;eraseConfig(oledDraft_);return;
+        wifiAwaitWeb_=wifiDraftReady_=false;wifiJob_=0;wifiOffset_=0;eraseConfig(oledDraft_);clearWifiNetworks();return;
     }
-    if(wifiAwaitWeb_ && !readyWifiClients()){wifiAwaitWeb_=false;wifiDraftReady_=false;eraseConfig(oledDraft_);wifiPhase_=0;wifiResult_=6;}
+    if(wifiPhase_!=0 || wifiAwaitWeb_ || wifiDraftReady_ || wifi_.busy() || (wifiScanId_ && (uint32_t)(now-wifiJobAt_)<60000u))wifi_.holdFallback(now);
+    bool hasClient=readyWifiClients()>0 || ((WiFi.getMode()&WIFI_AP) && WiFi.softAPgetStationNum()>0);
+    if(wifiAwaitWeb_ && !hasClient){wifiAwaitWeb_=false;wifiDraftReady_=false;eraseConfig(oledDraft_);wifiPhase_=0;wifiResult_=6;}
     if(wifiAwaitWeb_ && (uint32_t)(now-wifiJobAt_)>=115000u){wifiAwaitWeb_=false;wifiDraftReady_=false;eraseConfig(oledDraft_);wifiResult_=5;publishStatus();}
     if(wifiDraftReady_ && (uint32_t)(now-wifiJobAt_)>=115000u){wifiDraftReady_=false;wifiDraftToken_=0;eraseConfig(oledDraft_);}
     // A job can be cancelled locally at any phase. Poll before emitting its result.

@@ -1,5 +1,7 @@
 import { NetworkPill,NetworkDetails } from '../../features/connection/NetworkConnection';
 import { BatteryPill, BatteryDetails } from '../../features/connection/BatteryStatus';
+import { RobotAlerts } from '../../features/connection/RobotAlerts';
+import { RobotModePill } from '../../features/connection/RobotModePill';
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { BrandMark } from '../ui/BrandMark';
@@ -11,7 +13,6 @@ import { FloatingModal, type ModalOrigin } from '../ui/FloatingModal';
 import { useTheme, type ThemePreference } from '../../app/providers/ThemeProvider';
 import { OverlayContext } from '../../app/providers/OverlayContext';
 import { useConnection } from '../../features/connection/ConnectionContext';
-import { useRobotMode } from '../../features/connection/useRobotMode';
 import { LiveOledViewer } from '../../features/oled/LiveOledViewer';
 import { SystemPanel } from '../../features/connection/SystemPanel';
 import { OperationalStatusBar } from '../../features/control/OperationalStatusBar';
@@ -45,11 +46,10 @@ export function AppShell({ children }: { children: ReactNode }) {
       return true;
     }
   });
-  const [modal, setModal] = useState<'oled' | 'settings' | 'network' | 'battery' | 'more' | null>(null);
+  const [modal, setModal] = useState<'oled' | 'settings' | 'network' | 'battery' | 'faults' | 'mode' | 'more' | null>(null);
   const [origin, setOrigin] = useState<ModalOrigin | null>(null);
   const sidebar = useRef<HTMLElement>(null);
   const location = useLocation();
-  const mode = useRobotMode();
   const title = titleForPath(location.pathname);
   const operational = OPERATIONAL_ROUTES.includes(location.pathname);
   const moreActive = MORE_DESTINATIONS.some(item => belongsTo(item.to, location.pathname));
@@ -174,11 +174,17 @@ export function AppShell({ children }: { children: ReactNode }) {
           <header className="afr2-topbar">
             <div className="afr2-topbar-context">
               <span className="afr2-location">{title}</span>
-              <span className="afr2-mode-label">Modo · {mode}</span>
             </div>
-            <div className="afr2-action-row">
+            <div className="afr2-action-row afr2-topbar-actions">
+              <RobotModePill open={modal === 'mode'} origin={origin}
+                onOpen={source => { setOrigin(source); setModal('mode'); }}
+                onClose={() => setModal(value => value === 'mode' ? null : value)} />
               <NetworkPill onOpen={source=>{setOrigin(source);setModal('network');}} />
               <BatteryPill onOpen={source => { setOrigin(source); setModal('battery'); }} />
+              <RobotAlerts open={modal === 'faults'} origin={origin}
+                onOpen={source => { setOrigin(source); setModal('faults'); }}
+                onClose={() => setModal(value => value === 'faults' ? null : value)}
+                onOpenOled={() => setModal('oled')} />
               {stopAvailable && <Button variant="emergency" icon={<UiIcon name="stop" />} onClick={() => void triggerEmergencyStop('user-stop')}>
                 STOP
               </Button>}

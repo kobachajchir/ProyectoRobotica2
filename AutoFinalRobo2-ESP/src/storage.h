@@ -14,12 +14,14 @@ public:
     const char *fault() const { return fault_; }
     const WebAsset *asset(const String &route) const;
     bool loadWifi(JsonDocument &doc);
+    bool hasWifiConfig() const;
     bool saveWifi(const JsonDocument &doc);
     void health(JsonObject out) const;
 private:
     bool mounted_=false, webReady_=false;
     const char *fault_="not-initialized";
     static constexpr uint8_t kMaxAssets=24;
+    static constexpr size_t kMaxWifiConfigBytes=1024;
     WebAsset assets_[kMaxAssets];
     uint8_t count_=0;
     // Manifest identity only; this is not a runtime checksum of the asset bytes.

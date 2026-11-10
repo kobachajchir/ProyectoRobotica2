@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
-export const AFR2_BRAND_LOGO = '/brand/Logo-robot-1024.webp';
+/* AFR2-20261110-18: 768 px (shown at most 512 CSS px) keeps the ESP package within its budget. */
+export const AFR2_BRAND_LOGO = '/brand/Logo-robot-768.webp';
 const SMALL_LOGO = '/brand/Logo-robot-256.webp';
 export interface BrandMarkProps { size?: 'header' | 'hero'; className?: string }
 

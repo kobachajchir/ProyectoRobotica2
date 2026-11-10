@@ -11,13 +11,14 @@ import { Button } from '../../components/ui/Button';
 import { useTheme } from '../../app/providers/ThemeProvider';
 import { getComponentAnchors } from '../model3d/modelComponents';
 import { ARM_MOUNT, STANDALONE_MOUNT, CAD_TO_THREE, forwardArm, groundWorkspacePoints, localToWorld, rad, toThree, workspacePoints, type Point3 } from './armKinematics';
-import { BIN, cubeReach, halt, moveBase, positionCube, setJoint } from './collectorSimulation';
+import { cubeReach, halt, moveBase, positionCube, setJoint } from './collectorSimulation';
 import { useCollector } from './CollectorContext';
 import { useArmPoints } from './ArmPointsContext';
 import { robotModel, modelProblems } from './robotModel';
 import { rigid, forwardModel } from './modelKinematics';
 import { ArmLink, ArticulatedArmAsset, ProceduralGripper } from './ArmVisualAdapter';
 import { frameSignature } from './armPointStorage';
+import { CollectionDropZone } from './CollectionDropZone';
 import { AuxiliaryModelAsset } from './AuxiliaryModelAsset';
 import { CUBE_MODEL } from './auxiliaryModels';
 
@@ -54,17 +55,26 @@ function Stroke({ points, color }: { points: Point3[]; color: string }) {
   useEffect(() => () => geometry.dispose(), [geometry]);
   return <lineSegments geometry={geometry}><lineBasicMaterial color={color} transparent opacity={.7} /></lineSegments>;
 }
-function Camera({view,modelRoot,onFrame,zoom}:{view:SceneView;modelRoot:RefObject<Group|null>;onFrame:(center:Point3)=>void;zoom:RefObject<ZoomLink>}) {
+function Camera({view,modelRoot,onFrame,zoom,collection}:{view:SceneView;modelRoot:RefObject<Group|null>;onFrame:(center:Point3)=>void;zoom:RefObject<ZoomLink>;collection:boolean}) {
+  const { state } = useCollector();
   const {camera,size,invalidate}=useThree();
   const model=robotModel(),modelKey=`${model.id}:${model.revision}`;
   useEffect(()=>{
     if(!modelRoot.current)return;
     modelRoot.current.updateWorldMatrix(true,true);
-    const center=frameModel(camera,new Box3().setFromObject(modelRoot.current,true),size,view,BANNER_VIEW_DIRECTION);
+    const bounds = new Box3().setFromObject(modelRoot.current,true);
+    if (collection) {
+      for (const cube of state.cubes) bounds.expandByPoint(new Vector3(...toThree(cube.point)));
+      const [x, y] = state.drop.center, radius = state.drop.radius;
+      bounds.expandByPoint(new Vector3(...toThree([x - radius, y - radius, 0])));
+      bounds.expandByPoint(new Vector3(...toThree([x + radius, y + radius, .22])));
+      bounds.expandByScalar(.12);
+    }
+    const center=frameModel(camera,bounds,size,view,BANNER_VIEW_DIRECTION);
     if(center)onFrame(center.toArray() as Point3);
     if(zoom.current&&camera instanceof OrthographicCamera){zoom.current.base=camera.zoom;zoom.current.target=null;}
     invalidate();
-  },[camera,size.width,size.height,view,modelRoot,onFrame,invalidate,modelKey,zoom]);
+  },[camera,size.width,size.height,view,modelRoot,onFrame,invalidate,modelKey,zoom,collection,state.seed,state.cubes.length]);
   return null;
 }
 /** Lleva el zoom pedido por los botones con una transición corta y avisa el porcentaje (incluida la rueda del mouse). */
@@ -201,20 +211,6 @@ function RobotReferences({ accent, text }: { accent: string; text: string }) {
     <Label text={String(i + 1).padStart(2, '0')} position={[.02, .025, 0]} color={text} />
   </group>)}</>;
 }
-function Basket({ accent, surface }: { accent: string; surface: string }) {
-  return <><mesh position={toThree([.085, -.10, .105])}>
-    <boxGeometry args={[.055, .012, .23]} /><meshStandardMaterial color={surface} roughness={.8} />
-  </mesh><group position={toThree(BIN.center)}>
-    <mesh><boxGeometry args={[BIN.width, .006, BIN.length]} /><meshStandardMaterial color={surface} roughness={.8} /></mesh>
-    {[-1, 1].map(side => <group key={side}>
-      <mesh position={[side * BIN.width / 2, .03, 0]}><boxGeometry args={[.004, .06, BIN.length]} /><meshStandardMaterial color={accent} transparent opacity={.3} /></mesh>
-      <mesh position={[0, .03, side * BIN.length / 2]}><boxGeometry args={[BIN.width, .06, .004]} /><meshStandardMaterial color={accent} transparent opacity={.3} /></mesh>
-    </group>)}
-    <mesh position={[0, .015, 0]}><boxGeometry args={[.002, .03, BIN.length]} /><meshStandardMaterial color={accent} /></mesh>
-    <mesh position={[0, .015, 0]}><boxGeometry args={[BIN.width, .03, .002]} /><meshStandardMaterial color={accent} /></mesh>
-  </group></>;
-}
-
 function SceneContents({ view, tool, focus, armPanel, carOnly = false, zoom, onZoom }: SceneProps & { zoom: RefObject<ZoomLink>; onZoom: (percent: number) => void }) {
   const { state, update } = useCollector();
   const modelRoot = useRef<Group>(null);
@@ -248,7 +244,7 @@ function SceneContents({ view, tool, focus, armPanel, carOnly = false, zoom, onZ
       event.stopPropagation();
       update(s => positionCube(s, Math.max(0, ...s.cubes.map(c => c.id)) + 1, [-p.z, -p.x, .025]));
     }}><planeGeometry args={[4, 4]} /><meshBasicMaterial transparent opacity={0} depthWrite={false} /></mesh>}
-    <Camera view={view} modelRoot={modelRoot} onFrame={setFramedFocus} zoom={zoom} />
+    <Camera collection={!armPanel && !carOnly} view={view} modelRoot={modelRoot} onFrame={setFramedFocus} zoom={zoom} />
     <ZoomBridge zoom={zoom} onZoom={onZoom} />
     <SimulationOrbit enabled={!dragging && !jointDragging && tool === 'orbit'} focus={framedFocus} />
     <group position={armPanel ? [0, 0, 0] : toThree([state.pose.x, state.pose.y, 0])} rotation={[0, armPanel ? 0 : state.pose.yaw, 0]}>
@@ -274,7 +270,6 @@ function SceneContents({ view, tool, focus, armPanel, carOnly = false, zoom, onZ
         <SimulationRobot wheelAngles={state.wheelAngles} angle={state.sensorAngle} />
       </group>}
       {!carOnly && <ArmRig accent={palette.accent} metal={palette.metal} text={palette.text} standalone={armPanel} onInteracting={setJointDragging} />}
-      {!armPanel && !carOnly && <group onClick={event => { event.stopPropagation(); update(s => ({ ...s, selected: 'bin' })); }}><Basket accent={palette.accent} surface={palette.surface} /></group>}
       </group>
       {!armPanel && state.selected === 'robot' && <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, .003, 0]}>
         <ringGeometry args={[.18, .184, 64]} /><meshBasicMaterial color={palette.accent} />
@@ -283,16 +278,19 @@ function SceneContents({ view, tool, focus, armPanel, carOnly = false, zoom, onZ
       {!carOnly && <SavedPointsOverlay accent={palette.accent} text={palette.text} standalone={armPanel} />}
       {!armPanel && state.references && <>
         <RobotReferences accent={palette.accent} text={palette.text} />
-        <Label text="Deposito · 4 celdas" position={toThree([BIN.center[0], BIN.center[1], .225])} color={palette.text} />
       </>}
     </group>
-    {!armPanel && !carOnly && state.cubes.map(cube => {
+    {!armPanel && !carOnly && <>
+      <CollectionDropZone state={state} color={palette.success} />
+      {state.drop.visible && <Label text={`DROP · ${state.stored} cajas`} position={toThree([state.drop.center[0], state.drop.center[1], .22])} color={palette.success} />}
+    </>}
+    {!armPanel && !carOnly && state.cubes.filter(cube => cube.location !== 'bin' || state.clock - (cube.deliveredAt ?? 0) < .6).map(cube => {
       const reachable = cubeReach(state, cube).reachable, selected = state.selected === `cube:${cube.id}`;
       return <group key={cube.id} position={toThree(cube.point)} quaternion={cube.location === 'gripper' ? heldOrientation
-        : new Quaternion().setFromAxisAngle(new Vector3(0, 1, 0), cube.location === 'bin' ? state.pose.yaw : 0)}
+        : new Quaternion().setFromAxisAngle(new Vector3(0, 1, 0), 0)}
         onClick={event => { event.stopPropagation(); update(s => ({ ...s, selected: `cube:${cube.id}` })); }}>
         <AuxiliaryModelAsset model={CUBE_MODEL} />
-        {selected && <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -.021, 0]}>
+        {(selected || (cube.location === 'floor' && state.target && Math.hypot(cube.point[0] - state.target[0], cube.point[1] - state.target[1]) < .04)) && <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -.021, 0]}>
           <ringGeometry args={[.04, .044, 40]} /><meshBasicMaterial color={palette.accent} />
         </mesh>}
         {state.references && <Label text={`C${cube.id}${reachable ? ' · Tomable' : ''}`} position={[0, .055, 0]} color={palette.text} />}

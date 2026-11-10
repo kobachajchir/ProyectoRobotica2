@@ -26,8 +26,18 @@ export class Afr2OledBuffer {
     for (let i = 1; i + 1 < h; i++) { this.setPixel(x, y + i, color); if (w > 1) this.setPixel(x + w - 1, y + i, color); }
   }
   public fillRect(x: number, y: number, w: number, h: number, color: Afr2Color = 'white'): void {
-    for (let py = Math.max(0, y); py < Math.min(64, y + h); py++)
-      for (let px = Math.max(0, x); px < Math.min(128, x + w); px++) this.setPixel(px, py, color);
+    x=Math.trunc(x);y=Math.trunc(y);w=Math.trunc(w);h=Math.trunc(h);
+    const left=Math.max(0,x),top=Math.max(0,y),right=Math.min(128,x+w),bottom=Math.min(64,y+h);
+    if(w<=0 || h<=0 || left>=right || top>=bottom)return;
+    const firstPage=Math.trunc(top/8),lastPage=Math.trunc((bottom-1)/8);
+    for(let page=firstPage;page<=lastPage;page++){
+      const first=page===firstPage?top&7:0,last=page===lastPage?(bottom-1)&7:7;
+      const mask=((0xff<<first)&(0xff>>>(7-last)))&0xff;
+      for(let px=left;px<right;px++){
+        const index=page*128+px,old=this.buffer[index];
+        this.buffer[index]=color==='white'?old|mask:color==='invert'?old^mask:old&~mask;
+      }
+    }
   }
   public drawChar(x: number, y: number, ch: string, color: Afr2Color = 'white'): void {
     for (let row = 0; row < 10; row++) {

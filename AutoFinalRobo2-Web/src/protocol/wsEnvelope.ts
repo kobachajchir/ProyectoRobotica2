@@ -72,6 +72,9 @@ export type Afr2CommandName =
   | 'wifi.status'
   | 'wifi.scan'
   | 'wifi.configure'
+  | 'wifi.credentials.get'
+  | 'robot.fault.get'
+  | 'robot.fault.clear'
   | 'wifi.draft.submit'
   | 'wifi.draft.cancel';
 
@@ -337,6 +340,8 @@ export const EMPTY_SENSORS_SNAPSHOT: SensorsSnapshot = {
 };
 
 export interface WifiStatusSnapshot {
+  espBootId?: number;
+  scanTemporaryStation?: boolean;
   receivedAtMs?: number;
   connectionInterface?: 'AP'|'STA';
   connectionRssiDbm?: number|null;

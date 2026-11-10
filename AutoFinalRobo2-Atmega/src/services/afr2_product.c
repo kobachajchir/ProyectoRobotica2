@@ -4,6 +4,7 @@
  */
 #include "afr2_product.h"
 #include "afr2_motion_reference.h"
+#include "afr2_debug.h"
 #include <string.h>
 #include <math.h>
 static int32_t abs32(int32_t x){return x==INT32_MIN?INT32_MAX:x<0?-x:x;}
@@ -50,9 +51,24 @@ uint8_t Afr2Product_ConfigValid(const Afr2Config *c) {
 void Afr2Product_Init(Afr2Product *p,uint8_t reset) {
     memset(p,0,sizeof(*p));p->reset_cause=reset;p->stopped=1;
     Afr2Prefs_Load(&p->config,&p->prefs_loaded);Afr2Motor_Init();Afr2Sensors_Init();
+    /* A5 analogica, divisor 10k/10k: 9 V de bateria = 4.5 V en ADC5.
+     * Iniciar adquisicion real sin exigir una medicion manual desde Sistema. */
+    Afr2Battery_Measure(&p->sensors);
 }
 uint8_t Afr2Product_Stop(void *ctx) {
     Afr2Head_Stop();return Afr2Product_HaltMotion(ctx);
+}
+uint8_t Afr2Product_ClearFault(Afr2Product *p) {
+    if(!p->stopped)return AFR2_DENIED;
+    for(uint8_t i=0;i<4;i++)if(p->pwm[i])return AFR2_DENIED;
+    if(p->hall_measuring || (p->sequence.state>=1 && p->sequence.state<=3))return AFR2_BUSY;
+    /* Keep the odometry interval paired with previous_counts, including the
+     * time stopped in fault. No applied PWM can produce a late-motion fault
+     * on recovery; the next task consumes those counts with the real dt. */
+    p->fault=0;p->mode=AFR2_IDLE;p->late_burst=0;
+    memset(p->hp_score,0,sizeof(p->hp_score));
+    memset(p->integral,0,sizeof(p->integral));memset(p->last_error,0,sizeof(p->last_error));
+    return AFR2_OK;
 }
 uint8_t Afr2Product_HaltMotion(void *ctx) {
     Afr2Product *p=ctx;uint8_t was_stopped=p->stopped;Afr2Head_CancelResume();Afr2Motor_Stop();
@@ -268,7 +284,26 @@ void Afr2Product_Task(Afr2Product *p,uint32_t now) {
     if(p->fault){Afr2Product_Stop(p);return;}
     Afr2Sequence_Tick(p);
     uint32_t dt=now-p->control_ms;if(dt<10u)return;
-    p->control_ms=now;if(dt>100u && !p->stopped){p->fault=1;Afr2Product_Stop(p);return;}
+    p->control_ms=now;
+    /* A newly accepted command may follow a long stopped/fault interval, but
+     * has not energized a wheel yet. Only an overdue update with applied PWM
+     * is a motion deadline fault; keep the 100 ms stop while outputs are active. */
+    if(dt>100u && !p->stopped && (p->pwm[0] || p->pwm[1] || p->pwm[2] || p->pwm[3])) {
+        p->fault_control_gap_ms=dt>UINT16_MAX?UINT16_MAX:(uint16_t)dt;
+        p->fault_timing=p->loop_timing;
+        if(p->fault_late_count<UINT16_MAX)++p->fault_late_count;
+        /* AFR2-20261110-15: the outputs are always cut (100 ms deadline kept). An isolated miss
+         * does not latch F1: the next accepted command ramps up again from zero. Repeated misses
+         * (3 within 2 s) latch F1 and require the explicit clear, as before. */
+        if(!p->late_burst || (uint32_t)(now-p->late_window_ms)>AFR2_LATE_WINDOW_MS){p->late_burst=0;p->late_window_ms=now;}
+        if(p->late_burst<UINT8_MAX)++p->late_burst;
+        uint8_t latch=p->late_burst>=AFR2_LATE_LATCH_COUNT;
+        if(latch)p->fault=1;
+        Afr2Product_Stop(p); /* Cut outputs before formatting diagnostic lines. */
+        AFR2_DBG("FAULT F1%S gap=%u loop=%u render=%u n=%u",latch?PSTR(" latched"):PSTR(" cut"),p->fault_control_gap_ms,p->fault_timing.total_ms,p->fault_timing.render_ms,p->late_burst);
+        AFR2_DBG("FAULT stages app=%u uart=%u input=%u io=%u",p->fault_timing.app_ms,p->fault_timing.uart_ms,p->fault_timing.input_ms,p->fault_timing.io_ms);
+        return;
+    }
     odometry(p,dt);
     if(p->fault){Afr2Product_Stop(p);return;}
     if(!p->stopped && p->mode!=AFR2_WHEEL_TEST && p->mode!=AFR2_PWM_MANUAL && !calibrated(p)){p->fault=2;Afr2Product_Stop(p);return;}

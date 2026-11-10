@@ -1,0 +1,33 @@
+{
+  "changeId": "AFR2-20261109-10",
+  "target": "#/armado",
+  "manualVersion": "0.1.11",
+  "verification": "No verificada en navegador",
+  "coverage": [
+    {
+      "component": "Capítulo7 y reutilización de CAD",
+      "evidence": "Confirmada",
+      "scope": "Pedido humano; panel, voltímetro y portapilas del GLB existente; cuatro componentes y cables desde Blender",
+      "coverage": "Fuente implementada"
+    },
+    {
+      "component": "Circuito compacto",
+      "evidence": "Confirmada",
+      "scope": "Rojo izquierdo y negro derecho, tramos rectos paralelos; voltímetro arriba, batería al centro y divisor debajo; proporciones de biblioteca STEP",
+      "coverage": "Asset producido y exportado; sin aprobación eléctrica/mecánica"
+    },
+    {
+      "component": "Cámara de producto y acercamiento",
+      "evidence": "Propuesta",
+      "scope": "Orientación frontal elevada, detalle del divisor y retorno al montaje; encuadre cercano desde mitad de etapa12",
+      "coverage": "Fuente implementada; no observada en ejecución"
+    }
+  ],
+  "checksRun": [],
+  "productionRun": [
+    "Teselación STEP con FreeCAD",
+    "Modelado/simplificación Blender",
+    "Exportación Draco sin render"
+  ],
+  "limits": "Sin tests, builds, validadores, navegador, renders, publicación o carga al ESP."
+}

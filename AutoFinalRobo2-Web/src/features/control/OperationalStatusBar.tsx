@@ -1,9 +1,5 @@
 import { useConnection } from '../connection/ConnectionContext';
-/* Códigos de fallo del ATmega (afr2_product.c). AFR2-20261107-39 agrega el 4. */
-const FAULT_TEXT: Record<number, string> = {
-  1: 'lazo de control demorado', 2: 'Hall/odometría no disponible o salto de cuentas',
-  3: 'rueda sin pulsos Hall', 4: 'sentido PWM/Hall cruzado en una rueda',
-};
+import { ROBOT_FAULT_TEXT as FAULT_TEXT } from '../../protocol/robotFaults';
 
 /**
  * AFR2-20261101-12 / VIS-053. Barra de estado operativo bajo la barra superior, solo en Conducir y

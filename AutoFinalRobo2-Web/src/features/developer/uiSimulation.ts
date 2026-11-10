@@ -74,18 +74,31 @@ export function createUiSimulation(scenario: SimulationScenario = 'ready'): UiSi
     lineCalibrated:ready, savedLineCalibrated:ready, prefsLoaded:false, turns:0, clicks:0, holds:0,
     servoEnabled:true, radar:false, resumeRadar:false, quickSelection:0,
     radarPosition:{node:S.AFR2_N_RADAR_CONFIG, selection:0, firstVisible:0}, confirmSave:23, confirmDiscard:24, confirmTarget:0,
-    pending:null, noticeTarget:null, quickUntil:0, credentialsUntil:0, batteryMeasured:false, diagState:0, webClient:ready,
+    pending:null, noticeTarget:null, quickUntil:0, credentialsUntil:0, batteryMeasured:ready, diagState:0, webClient:ready,
     feedback:'Inicio: corto abre Menu principal; largo abre Controles rapidos al soltar.',
   };
 }
 function sync(u: UiSimulation) { u.scrollStartedMs=u.clockMs; u.redraw=true; u.scrollRedraw=false; }
+function fixedParentNode(node: number): boolean {
+  return [
+    S.AFR2_N_MENU, S.AFR2_N_WIFI, S.AFR2_N_WIFI_VIEW, S.AFR2_N_WIFI_NETWORKS,
+    S.AFR2_N_WIFI_SETUP, S.AFR2_N_WIFI_REVIEW, S.AFR2_N_WIFI_AP, S.AFR2_N_WIFI_SEARCH,
+    S.AFR2_N_WIFI_MODE_SELECT, S.AFR2_N_WIFI_DATA, S.AFR2_N_NETWORK, S.AFR2_N_AP_INFO,
+    S.AFR2_N_QR_AP, S.AFR2_N_QR_WEB, S.AFR2_N_WIFI_ASK,
+  ].includes(node);
+}
 function open(u: UiSimulation, node: number) {
   if (node < 0 || node >= L.nodes.length) return;
   if (u.node===S.AFR2_N_RADAR_CONFIG) u.radarPosition={node:u.node,selection:u.selection,firstVisible:u.firstVisible};
   if (u.node===S.AFR2_N_QUICK) u.quickSelection=u.selection;
-  if (node===S.AFR2_N_HOME || node===S.AFR2_N_QUICK) u.history=[];
-  else if (u.history.length<8) u.history.push({node:u.node,selection:u.selection,firstVisible:u.firstVisible});
-  u.node=node; u.selection=node===S.AFR2_N_QUICK?u.quickSelection:0; u.firstVisible=0; u.edit=false; u.editing=null;
+  if (node===S.AFR2_N_HOME || node===S.AFR2_N_QUICK || node===S.AFR2_N_MENU) u.history=[];
+  else if (node===u.node) { sync(u); return; }
+  else {
+    const existing = u.history.findIndex(h => h.node === node);
+    if (existing >= 0) u.history = u.history.slice(0, existing);
+    else if (u.history.length<8) u.history.push({node:u.node,selection:u.selection,firstVisible:u.firstVisible});
+  }
+  u.node=node; u.selection=node===S.AFR2_N_QUICK?u.quickSelection:(node===S.AFR2_N_WIFI_SETUP || node===S.AFR2_N_WIFI_REVIEW)?1:0; u.firstVisible=0; u.edit=false; u.editing=null;
   if (node===S.AFR2_N_RADAR_CONFIG) Object.assign(u,u.radarPosition);
   if (node===S.AFR2_N_WIFI_MODE_SELECT) u.selection=u.values[44]>=1 && u.values[44]<=3?u.values[44]-1:0;
   if (node===S.AFR2_N_ENCODER_TEST) {u.testLong=false;u.testClicks=0;u.testTurns=0;}
@@ -94,21 +107,34 @@ function open(u: UiSimulation, node: number) {
 }
 function back(u: UiSimulation, fallback: number) {
   if(u.node===S.AFR2_N_RADAR_CONFIG) u.radarPosition={node:u.node,selection:u.selection,firstVisible:u.firstVisible};
-  const previous=u.history.pop();
-  if(previous){Object.assign(u,previous);sync(u);}else open(u,fallback);
+  const parent = Number(firmwareNode(u.node)[1]);
+  const target = fixedParentNode(u.node) ? parent : fallback;
+  if (target === S.AFR2_N_HOME || target === S.AFR2_N_QUICK || target === S.AFR2_N_MENU) { open(u, target); return; }
+  const idx = u.history.map(h => h.node).lastIndexOf(target);
+  if (idx >= 0) {
+    Object.assign(u, u.history[idx]);
+    u.history = u.history.slice(0, idx);
+    sync(u);
+    return;
+  }
+  if (!fixedParentNode(u.node) && u.history.length > 0) {
+    const previous = u.history.pop()!;
+    Object.assign(u, previous);
+    sync(u);
+    return;
+  }
+  u.node = target; u.selection = 0; u.firstVisible = 0; u.edit = false; u.editing = null;
+  if (target === S.AFR2_N_RADAR_CONFIG) Object.assign(u, u.radarPosition);
+  sync(u);
 }
 function notify(u: UiSimulation, text='Aceptada', error=false, title=error?'No disponible':'Operacion', ms=3000) {
   u.notice={title,text:text.slice(0,17),kind:error?1:0,ms};u.noticeStartedMs=u.clockMs;
 }
 function dismiss(u: UiSimulation) {
   u.notice=null;
-  if(u.noticeTarget!==null){
-    const target=u.noticeTarget;u.noticeTarget=null;
-    const index=u.history.map(row=>row.node).lastIndexOf(target);
-    if(index>=0){Object.assign(u,u.history[index]);u.history=u.history.slice(0,index);sync(u);}else open(u,target);
-  }
+  u.noticeTarget=null;
 }
-function stop(u:UiSimulation) { u.stopped=true;u.mode=0;u.motionUntil=0; }
+function stop(u:UiSimulation) { u.stopped=true;if(u.mode!==MODE.fault)u.mode=MODE.idle;u.motionUntil=0; }
 function confirm(u:UiSimulation,save:number,discard:number,target:number){
   if(u.node===S.AFR2_N_RADAR_CONFIG)u.radarPosition={node:u.node,selection:u.selection,firstVisible:u.firstVisible};
   u.confirmSave=save;u.confirmDiscard=discard;u.confirmTarget=target;u.confirmWait=false;
@@ -122,7 +148,8 @@ function goBack(u:UiSimulation){
   if(u.notice){dismiss(u);return;}
   if(u.edit){u.edit=false;u.editing=null;return;}
   if(u.node===S.AFR2_N_HOME){open(u,S.AFR2_N_QUICK);return;}
-  const target=u.history.at(-1)?.node??Number(firmwareNode(u.node)[1]);
+  const parent=Number(firmwareNode(u.node)[1]);
+  const target=fixedParentNode(u.node)?parent:(u.history.at(-1)?.node??parent);
   if((u.node===S.AFR2_N_HALL_TEST || (u.node===S.AFR2_N_HALL_VIEW && target!==S.AFR2_N_HALL_TEST)) && u.hallPending){confirm(u,18,19,target);return;}
   if([S.AFR2_N_QUICK,S.AFR2_N_RADAR_VIEW,S.AFR2_N_US_VIEW].includes(u.node) && radarDirty(u)){
     if(u.node===S.AFR2_N_QUICK)u.quickSelection=u.selection;
@@ -136,6 +163,7 @@ function goBack(u:UiSimulation){
 export function simulationUnavailable(u:UiSimulation,item:FirmwareMenuItem):string|null{
   const a=item.action;
   if(!a)return null;
+  if(a===55)return !u.stopped?'Detener salidas':u.hallMeasuring?'Finalizar Hall':u.mode===MODE.sequence?'Salir secuencia':u.mode!==MODE.fault?'Sin fallos activos':null;
   if(u.pending?.kind==='save')return 'Guardando EEPROM';
   if([74,75,77,86,87].includes(a) && actionState(u,a))return null;
   if(a===5 && u.mode===MODE.sequence)return 'Secuencia ocupada';
@@ -182,6 +210,7 @@ function invoke(u:UiSimulation,item:FirmwareMenuItem,value:number):boolean{
   if(item.step)u.values[a]=value;
   switch(a){
     case 1:stop(u);break;
+    case 55:u.mode=MODE.idle;notify(u,'Fallo limpiado',false,'Fallos');break;
     case 5:case 8:case 11:case 15:case 77:case 86:case 87:
       if([77,86,87].includes(a) && actionState(u,a)){stop(u);break;}
       u.stopped=false;u.mode=[8,77].includes(a)?MODE.line:[11,87].includes(a)?MODE.goto:[15,86].includes(a)?MODE.wheel:MODE.pwm;
@@ -201,7 +230,7 @@ function invoke(u:UiSimulation,item:FirmwareMenuItem,value:number):boolean{
     case 45:if(!(u.values[44]&1))return false;u.wifiPage=0;u.scanFailed=false;schedule(u,'scan');break;
     case 94:u.wifiPage=value;schedule(u,'scan');break;
     case 49:u.wifiRequestedMode=u.values[44]===3?3:1;u.draftSsid=sampleNetworks[u.wifiPage*8+value];u.wifiDraftReady=false;break;
-    case 51:if(!u.webClient){notify(u,'Conectados',true,'No hay clientes');u.noticeTarget=S.AFR2_N_WIFI_NETWORKS;}else schedule(u,'web');break;
+    case 51:if(!u.webClient){notify(u,'Conectados',true,'No hay clientes');}else{schedule(u,'web');notify(u,'Ver navegador',false,'Ingresar en Web',2500);}break;
     case 47:schedule(u,'mode',u.wifiRequestedMode);break;
     case 46:schedule(u,'wifi',1);break;
     case 91:schedule(u,'wifi',0);break;
@@ -247,10 +276,10 @@ function tick(u:UiSimulation,ms:number){
         if(pending.value===18){for(let i=0;i<4;i++)if(u.hallPending&(1<<i))u.hallCpr[i]=u.hallDraft[i];u.cpr=u.hallCpr[u.values[12]];u.hallPending=0;u.hallCount=0;}
         u.saved={...u.values};u.savedLineCalibrated=u.lineCalibrated;u.prefsLoaded=true;
         if(u.confirmWait)leaveConfirm(u);notify(u,'Guardados',false,'Cambios',2500);break;
-      case 'scan':u.scanFailed=u.scanFixture==='failed';u.scanned=!u.scanFailed;notify(u,u.scanFailed?'Operacion fallida':u.scanFixture==='empty'?'Sin redes':'Redes listas',u.scanFailed,'Wi-Fi',2500);if(!u.scanFailed)u.noticeTarget=S.AFR2_N_WIFI_NETWORKS;break;
-      case 'web':u.draftSsid='Red demo Web';u.wifiDraftReady=true;open(u,S.AFR2_N_WIFI_REVIEW);notify(u,'Datos listos',false,'Wi-Fi',2500);break;
+      case 'scan':u.scanFailed=u.scanFixture==='failed';u.scanned=!u.scanFailed;if(!u.scanFailed && u.scanFixture!=='empty' && u.node===S.AFR2_N_WIFI_SEARCH)open(u,S.AFR2_N_WIFI_NETWORKS);notify(u,u.scanFailed?'Operacion fallida':u.scanFixture==='empty'?'Sin redes':'Redes listas',u.scanFailed,'Wi-Fi',2500);break;
+      case 'web':if(!u.draftSsid)u.draftSsid='Red demo Web';u.wifiDraftReady=false;schedule(u,'wifi',1);if(u.node===S.AFR2_N_WIFI_SETUP || u.node===S.AFR2_N_WIFI_REVIEW)back(u,S.AFR2_N_WIFI);notify(u,'Conectando...',false,'Wi-Fi',2500);break;
       case 'wifi':u.connected=!!pending.value;u.wifiDraftReady=false;notify(u,u.connected?'Conectado':'Red desconectada',false,'Operacion exitosa',2500);break;
-      case 'mode':u.saved[44]=pending.value;u.saved[110]=Number(pending.value!==1);u.values[110]=u.saved[110];u.values[44]=pending.value;u.wifiRequestedMode=pending.value;u.connected=false;u.scanned=false;u.wifiDraftReady=false;u.password='';if(dirty(u))confirm(u,23,24,S.AFR2_N_MENU);else open(u,S.AFR2_N_MENU);notify(u,'ESP reiniciado',false,'Wi-Fi',2500);break;
+      case 'mode':u.saved[44]=pending.value;u.saved[110]=Number(pending.value!==1);u.values[110]=u.saved[110];if(pending.value===1){u.saved[109]=0;u.values[109]=0;}u.values[44]=pending.value;u.wifiRequestedMode=pending.value;u.connected=false;u.scanned=false;u.wifiDraftReady=false;u.password='';if(u.node===S.AFR2_N_WIFI_MODE_SELECT || u.node===S.AFR2_N_WIFI_REVIEW)back(u,S.AFR2_N_WIFI);notify(u,'Cambiando Wi-Fi',false,'Operacion exitosa',2500);break;
       case 'credentials':u.draftSsid='Red demo guardada';u.password='demo1234';u.credentialsUntil=u.clockMs+30000;open(u,S.AFR2_N_WIFI_DATA);break;
       case 'esp':u.diagState=2;notify(u,'Respuesta recibida',false,'Prueba ESP',2500);break;
     }
@@ -309,7 +338,7 @@ export function reduceUiSimulation(previous:UiSimulation,event:SimulationEvent):
       else if(u.key===96){
         if(!u.keyboardField){if(!text.length){notify(u,'Dato incorrecto',true);return u;}u.keyboardField=true;u.length=0;u.key=0;return u;}
         if(text.length && text.length<8){notify(u,'Dato incorrecto',true);return u;}
-        u.draftSsid=u.ssid;u.wifiDraftReady=true;u.keyboard=false;u.ssid='';u.password='';open(u,S.AFR2_N_WIFI_REVIEW);notify(u);return u;}
+        u.draftSsid=u.ssid;u.wifiDraftReady=false;u.keyboard=false;u.ssid='';u.password='';u.length=0;schedule(u,'wifi',1);back(u,S.AFR2_N_WIFI);notify(u,'Conectando...',false,'Wi-Fi',2500);return u;}
       if(u.keyboardField)u.password=text;else u.ssid=text;u.length=text.length;}
     return u;
   }
@@ -321,7 +350,7 @@ export function reduceUiSimulation(previous:UiSimulation,event:SimulationEvent):
   if(u.node===S.AFR2_N_WIFI_DATA || u.node===S.AFR2_N_QR_AP || u.node===S.AFR2_N_QR_WEB){if(click)goBack(u);return u;}
   if([S.AFR2_N_NETWORK,S.AFR2_N_CAPS,S.AFR2_N_WIFI_MODE_SELECT].includes(u.node)){
     if(rotation)u.selection=limit(u.selection+rotation,0,u.node===S.AFR2_N_NETWORK?1:u.node===S.AFR2_N_CAPS?5:2);
-    if(click){if(u.node===S.AFR2_N_WIFI_MODE_SELECT){if(invoke(u,actionItem(92),u.selection+1))notify(u,'Esperando ESP',false,'Cambiar modo',1500);}else goBack(u);}return u;
+    if(click){if(u.node===S.AFR2_N_WIFI_MODE_SELECT){if(invoke(u,actionItem(92),u.selection+1)){back(u,S.AFR2_N_WIFI);notify(u,['a STA, reinicia','a AP, reinicia','a AP+STA reinicia'][u.selection]??'a STA, reinicia',false,'Cambiando Wi-Fi',2500);}}else goBack(u);}return u;
   }
   if(u.node===S.AFR2_N_QUICK){
     if(u.quickPending)return u;
@@ -353,7 +382,7 @@ export function reduceUiSimulation(previous:UiSimulation,event:SimulationEvent):
       if(item.target===S.AFR2_N_SERVO_ANGLE && !invoke(u,actionItem(78),0))return u;
       open(u,item.target);if(item.target===S.AFR2_N_RADAR_RANGE){u.selection=u.values[70];u.firstVisible=Math.max(0,u.selection-2);}}}
     else if(item.action===16){open(u,S.AFR2_N_HALL_PICK);u.selection=u.values[12];}
-    else if(item.action===50){u.keyboard=true;u.keyboardField=false;u.ssid=u.draftSsid;u.password='';u.length=u.ssid.length;u.key=0;}
+    else if(item.action===50){u.notice=null;u.noticeTarget=null;u.keyboard=true;u.ssid=u.draftSsid;u.password='';u.keyboardField=u.ssid.length>0;u.length=u.keyboardField?0:u.ssid.length;u.key=0;}
     else if(item.step){u.edit=true;u.editing=item;u.editingAction=item.action;u.editingLabel=item.label;u.draft=u.values[item.action]??item.min;}
     else if(invoke(u,item,item.arg)){
       if(item.action===49)open(u,S.AFR2_N_WIFI_SETUP);
@@ -377,7 +406,7 @@ export function simulationSnapshot(u: UiSimulation): FirmwareSnapshot {
     [S.AFR2_N_HOME]: [["Reposo","MANUAL","SEGUIR LINEA","PRUEBA DE RUEDA","GOTO","FALLO","SECUENCIA","PWM MANUAL"][u.mode] ?? "Modo: --", "", ""],
     [S.AFR2_N_ROBOT_VIEW]: [`Modo:${u.mode} Ctrl:0`, `Salidas OFF:${Number(u.stopped)}`, 'Estado de salidas'],
     [S.AFR2_N_LINK_VIEW]: ['UART:1 Ext:1', 'Origen:0 Web:0', 'XOR mal:0'],
-    [S.AFR2_N_ALERT_VIEW]: ['Fallo:0 Reset:0', 'OLED err:0', 'RX gaps:0'],
+    [S.AFR2_N_ALERT_VIEW]: [u.mode===MODE.fault?'F1 Lazo demorado':'Sin fallos activos',u.stopped?'Salidas: OFF':'Salidas: activas',u.mode===MODE.fault?'Revisar log USB':'Listo para operar'],
     [S.AFR2_N_DIAG]: ['Fallo:0 Reset:0', 'OLED err:0', 'RX gaps:0'],
     [S.AFR2_N_DISPLAY]: ['OLED listo:1', 'Errores:0', 'TWI IRQ 100kHz'],
     [S.AFR2_N_ENCODER_VIEW]: [`Giros:${u.turns}`, `Clics:${u.clicks}`, `Largos:${u.holds}`],

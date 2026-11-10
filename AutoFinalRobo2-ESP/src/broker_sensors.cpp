@@ -3,7 +3,7 @@
 #include <string.h>
 static bool integer(JsonVariantConst v,int32_t lo,int32_t hi){return v.is<int32_t>() && v.as<int32_t>()>=lo && v.as<int32_t>()<=hi;}
 bool Broker::encodeSensors(BrokerRequest &q,JsonObjectConst p){
-    const char *c=q.command;auto bad=[&](){error(q,"BAD_REQUEST","Parametros de sensores fuera de rango.");return false;};
+    const char *c=q.command;auto bad=[&](){error(q,"BAD_REQUEST",F("Parametros de sensores fuera de rango."));return false;};
     if(!strcmp(c,"robot.ultrasonic.get"))q.wireCommand=AFR2_EXT_US_GET;
     else if(!strcmp(c,"robot.ultrasonic.configure")){if(!integer(p["intervalMs"],70,1000))return bad();q.wireCommand=AFR2_EXT_US_CONFIG;q.bodyLength=2;afr2_put_u16(q.body,p["intervalMs"].as<uint16_t>());}
     else if(!strcmp(c,"robot.ir.get"))q.wireCommand=AFR2_EXT_IR_GET;
@@ -65,7 +65,12 @@ bool Broker::finishSensors(const BrokerRequest &q,const MegaResult &r){
     case AFR2_EXT_UI_STATUS:
         o["screenCode"]=afr2_get_u32(p);o["navigationRevision"]=afr2_get_u32(p+4);o["selection"]=p[8];o["firstVisible"]=p[9];o["private"]=p[10]!=0;
         if(screenRevision_!=afr2_get_u32(p+4) || screenCode_!=afr2_get_u32(p)){
-            screenRevision_=afr2_get_u32(p+4);screenCode_=afr2_get_u32(p);JsonDocument change;change.set(o);for(const auto &s:sessions_)if(s.used && s.ready && s.screenSubscribed && (uint32_t)(millis()-s.screenSubscriptionAt)<=3500u){JsonDocument f;f["schema"]="afr2-ws-1";f["type"]="evt";f["event"]="robot.screen.changed";f["ts"]=millis();f["payload"].set(change);if(auto *client=ws_.client(s.id)){String data;serializeJson(f,data);if(!client->queueIsFull())client->text(data);}}
+            screenRevision_=afr2_get_u32(p+4);screenCode_=afr2_get_u32(p);
+            for(const auto &s:sessions_)if(s.used && s.ready && s.screenSubscribed && (uint32_t)(millis()-s.screenSubscriptionAt)<=3500u)
+                if(auto *client=ws_.client(s.id))if(optionalOutput(client)){
+                    JsonDocument f;f["schema"]="afr2-ws-1";f["type"]="evt";f["event"]="robot.screen.changed";f["ts"]=millis();f["payload"].set(o);
+                    auto buffer=makeFrame(f);if(buffer)client->text(std::move(buffer));
+                }
         }break;
     case AFR2_EXT_MOTION_HALT:o["stopped"]=true;break;
     }

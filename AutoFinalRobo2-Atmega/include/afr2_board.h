@@ -17,4 +17,7 @@ uint8_t Afr2Board_EncoderRead(uint8_t *ab);
 /* Init before sei(); x1 Hall capture is owned by the board interrupt layer. */
 void Afr2Board_HallInit(void);
 void Afr2Board_HallSnapshot(int32_t counts[4]);
+/* AFR2-20261110-15: 1 ms windows in which the Hall or encoder IRQ budget ran out and the
+ * source was masked until the next tick (electrical noise). Saturating counters since boot. */
+void Afr2Board_NoiseCounts(uint16_t *hall,uint16_t *encoder);
 #endif

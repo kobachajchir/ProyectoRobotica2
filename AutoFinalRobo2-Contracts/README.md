@@ -1,3 +1,17 @@
+> **AFR2-20261109-11 / 1.12.0:** [Play/Pausa e introducción de Armado](changes/2026-11-09-11-assembly-playback-intro.md). Recorrido20s, capítulos separados y título centrado que se desplaza al lateral. Solo fuente; sin tests, compilaciones ni validaciones.
+
+> **AFR2-20261109-10 / 1.11.0:** [Etapa7: Nuestros agregados](changes/2026-11-09-10-assembly-additions-battery-circuit.md), panel OLED/encoder reutilizado y circuito de batería de cuatro componentes con cableado recto compacto. GLB11.692 B (7.969 B gzip). Acercamiento final desde mitad de etapa12. Fuente Web y asset producidos; sin tests, build, validadores o carga al ESP.
+
+> **AFR2-20261109-09 / 1.10.5:** [Menos RAM y tráfico en ESP](changes/2026-11-09-09-esp-memory-optimization.md), [comparación](documentation/builds/2026-11-09-09/README.md). Compilado: RAM estática −4528 B; latidos, capacidades, cola, flash, Wi-Fi y HTTP optimizados. Web tipos/protocolo comprobados; sin puertos, carga ni medición de heap en placa.
+
+> **AFR2-20261109-07 / 1.10.3:** [Armado como banner cinematográfico](changes/2026-11-09-07-cinematic-assembly-banner.md): modelo flotante, fondo de Infraestructura, reflejos de estudio y fade de piezas. Fuente Web; ATmega/ESP solo versión. Sin tests, builds, validadores, navegador ni renders.
+
+> **AFR2-20261109-06 / 1.10.2:** [Navegación fija en submenús Wi-Fi, modo STA sin AP fallback, clave directa con autoconexión e ingreso en Web](changes/2026-11-09-06-wifi-navegacion-fija-sta-sin-fallback-y-credenciales-directas.md). Fuentes ATmega/ESP/Web sincronizadas; sin compilar ni flashear en este paso.
+
+> **AFR2-20261109-05 / 1.10.1:** [Tarjeta del dashboard más amplia y centrada](changes/2026-11-09-05-dashboard-status-card-spacing.md):72×22px, icono18px, mismo centrado AVR/Web. Solo fuente, sin tests, builds, generadores, navegador ni carga; ESP solo versión.
+
+> **AFR2-20261109-04 / 1.10.0:** [Armado del robot en Explorar](changes/2026-11-09-04-scroll-robot-assembly.md), `#/armado`: ensamblaje por scroll del auto y brazo V17, textos, cámara y agarre ilustrativo. Solo fuente Web/documentación; sin tests, builds, validadores, navegador ni promoción ESP. atmega/esp solo versión; CAD/Loader sin cambios.
+
 > **AFR2-20261109-03 / 1.9.1:** cierre de fuentes, permisos PWM restituidos y recursos OLED/3D regenerados. Sin compilar ni cargar; etapa a cargo del usuario. [Ficha](changes/2026-11-09-03-source-completion.md).
 
 > **AFR2-20261109-02 / 1.9.0:** AP manual sin STA/búsquedas, política de pregunta independiente y Detener AP; OLED/Web vinculados. Solo fuente, sin compilar, probar ni cargar. [Ficha](changes/2026-11-09-02-wifi-ap-policy.md).
@@ -342,6 +356,8 @@
 
 # AutoFinalRobo2-Contracts
 
+> **AFR2-20261109-08 / 1.10.4:** [OOM al conectar WebSocket](changes/2026-11-09-08-esp-ws-oom.md). Fuente ESP con buffers compartidos, control de memoria y estados sin acumulación; diagnóstico HTTP con heap/bloque libre. ATmega/Web solo versión en esta ficha. Sin tests, builds, validadores, puertos ni cargas; corrección sin comprobar físicamente.
+
 > **Diagnóstico ESP AFR2-20261027-25:** [consultas USB–TTL COM5 aportadas por el usuario](hardware/diagnostics/20261027-com5-usbttl-user-report/report.md), ESP8266EX y flash **4 MiB**, IDs `5e / 4016`. Comunicación bidireccional observada; sin carga ni verificación de contenido. Layout/SPI y causa del fallo COM8 por Mega/selector pendientes. [Ficha](changes/2026-10-27-25-esp-usbttl-identification.md). Firmware/Web/Loader sin cambios de esta ficha.
 
 > **Brazo AFR2-20261028-01:** [comprobaciones de J1 y uniones](../AutoFinalRobo2-CAD/mecanica/brazo-antropomorfo/analisis_J1_uniones/README.md), [ficha](changes/2026-10-28-01-j1-joint-strength-study.md). Secciones/barras/fijaciones y estudio temporal de espacio, sin modificar v08. Acople D, postes/nervios y contacto al chasis requieren rediseño; material/perfil aún indefinidos. Sin FEA de sólidos/contactos ni capacidad física aprobada; demás módulos sin cambios.
@@ -474,3 +490,4 @@ Fuente adaptada con Web/ATmega/ESP: overlay scrim+blur en modales, Volver por í
 ## Aplicación visual global — AFR2-20261102-15
 
 Manual 0.1.11 autorizado para presentación de toda la Web. Cabeceras, tarjetas, controles, campos, navegación y paneles con lenguaje de Infraestructura; comportamiento conservado. Solo fuente, ejecución No verificada; sin tests/build/validadores/navegador ni promoción. [Ficha](changes/2026-11-02-15-web-infrastructure-visual-language.md).
+

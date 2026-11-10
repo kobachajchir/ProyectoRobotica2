@@ -7,6 +7,7 @@ const HEADER_ICONS: Record<string, UiIconName> = {
   'Puesta a punto': 'settings', 'Sensores': 'sensors', 'Conexión': 'wifi',
   'Conexion': 'wifi', 'Ayuda': 'book', 'Desarrollador': 'settings',
   'Protocol Studio': 'programs', 'Simulador': 'cube', 'Modelos y simulación': 'cube',
+  'Armado del robot': 'arm',
 };
 
 export interface PageHeaderProps {

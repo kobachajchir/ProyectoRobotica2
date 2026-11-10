@@ -4,9 +4,10 @@ import { UiIcon } from '../../../components/ui/UiIcon';
 import { GOTO_MAX_COMMANDS, gotoCommandLabel, type GotoCommand } from './gotoSimulation';
 import { useActiveCommandScroll } from './useActiveCommandScroll';
 
-export const GotoCommandList = memo(function GotoCommandList({ commands, activeIndex, completed, playing, follow, onFollow, onReorder, onRemove }: {
+export const GotoCommandList = memo(function GotoCommandList({ commands, activeIndex, completed, playing, follow, onFollow, onReorder, onRemove, onSelect, selectedId }: {
   commands: readonly GotoCommand[]; activeIndex: number | null; completed: number; playing: boolean;
   follow: boolean; onFollow: (value: boolean) => void; onReorder: (index: number, delta: number) => void; onRemove: (id: string) => void;
+  onSelect?: (id: string) => void; selectedId?: string;
 }) {
   const [expanded, setExpanded] = useState(false);
   const uid = useId();
@@ -30,6 +31,7 @@ export const GotoCommandList = memo(function GotoCommandList({ commands, activeI
               <span className="afr2-goto-row-state">{index < completed ? 'Completado' : active ? playing ? 'En curso' : 'En pausa' : 'Pendiente'}</span>
             </div>
             {expanded && <div className="afr2-goto-row-actions">
+              {onSelect && <button type="button" disabled={playing} aria-pressed={selectedId === command.id} aria-label={`Editar comando ${index + 1}`} onClick={() => onSelect(command.id)}>Editar</button>}
               <button type="button" disabled={playing || index === 0} aria-label={`Subir comando ${index + 1}`} onClick={() => onReorder(index, -1)}><UiIcon name="arrow-up" /></button>
               <button type="button" disabled={playing || index === commands.length - 1} aria-label={`Bajar comando ${index + 1}`} onClick={() => onReorder(index, 1)}><UiIcon name="arrow-down" /></button>
               <button type="button" disabled={playing} aria-label={`Quitar comando ${index + 1}: ${label}`} onClick={() => onRemove(command.id)}><UiIcon name="close" /></button>

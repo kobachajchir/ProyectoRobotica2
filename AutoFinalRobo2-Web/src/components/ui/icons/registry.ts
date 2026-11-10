@@ -16,6 +16,8 @@
 
 /** Nombre semantico AFR2 -> icono Lucide de origen (documentacion; no se usa en runtime). */
 export const ICON_SOURCES = {
+  'audio-on': 'afr2:audio-on',
+  'audio-off': 'afr2:audio-off',
   'arrow': 'lucide:arrow-right',
   'arrow-down': 'lucide:arrow-down',
   'arrow-down-left': 'lucide:arrow-down-left',
@@ -85,6 +87,9 @@ export const ICON_SOURCES = {
 } as const;
 
 export const ICON_PATHS = {
+  // Own speaker glyphs on the shared 24 px grid.
+  'audio-on': ['M4 9h4l5-4v14l-5-4H4Z', 'M16 9a5 5 0 0 1 0 6', 'M19 6a9 9 0 0 1 0 12'],
+  'audio-off': ['M4 9h4l5-4v14l-5-4H4Z', 'm17 9 5 6', 'm22 9-5 6'],
   'antenna': ['M12 10v11', 'M8 21h8', 'M8.5 6.5a5 5 0 0 0 0 7', 'M15.5 6.5a5 5 0 0 1 0 7', 'M5.6 3.6a9 9 0 0 0 0 12.8', 'M18.4 3.6a9 9 0 0 1 0 12.8', 'M12 10h.01'],
   'arm': ['M4 21h12', 'M10 21v-3', 'M8 16a2 2 0 1 0 4 0a2 2 0 1 0 -4 0', 'M11.4 14.6 15.6 9.4', 'M15 8a2 2 0 1 0 4 0a2 2 0 1 0 -4 0', 'M18.4 6.6 21 4', 'M19 9.2l3 1.3'],
   'arrow': ['M5 12h14', 'm12 5 7 7-7 7'],

@@ -1,3 +1,5 @@
+> Extensión vigente AFR2-20261110-13: [búsqueda desde AP y consulta privada de credenciales](WIFI_AP_PROVISIONING_20261110.md). La prohibición histórica de exponer claves en reportes/capturas se mantiene; por pedido explícito del usuario se agrega una respuesta WebSocket privada solicitada por acción del usuario. Sin cambios de UART ni nuevas pantallas OLED, solo fuente ESP/Web. Esta revisión no comparte la evidencia de builds anteriores.
+
 # AFR2-20261030-09 — Wi-Fi OLED/Web, EX01v11
 
 Estado: fuentes coordinadas ATmega/ESP/Web, sin generación, compilación, pruebas, validadores, navegador, promoción ni carga. EEPROMv8 no cambia. La evidencia de compilaciones anteriores no corresponde a estas fuentes.

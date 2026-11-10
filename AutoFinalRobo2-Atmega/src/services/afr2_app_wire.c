@@ -65,6 +65,21 @@ uint8_t Afr2App_Command(void *ctx,uint8_t cmd,const uint8_t *d,uint8_t n,uint8_t
     /* AFR2-20261106-08: touch view may request a GOTO in-place turn (Hall-closed angle). */
     if(a->ui->touch_active && (cmd==AFR2_EXT_WHEEL || cmd==AFR2_EXT_MODE))return AFR2_RESULT_UNAVAILABLE;
     switch(cmd) {
+    case AFR2_EXT_FAULT:{
+        if(n!=2 || d[0]>1 || (!d[0] && d[1]) || (d[0] && !d[1]))return AFR2_RESULT_BAD_REQUEST;
+        if(d[0]){
+            if(p->fault!=d[1])return AFR2_RESULT_UNAVAILABLE;
+            uint8_t result=Afr2Product_ClearFault(p);if(result)return wire_result(result);
+            a->snapshot_active=0;a->ui->redraw=true;
+            Afr2Ui_NotifyFlash(a->ui,0,PSTR("Fallos"),PSTR("Fallo limpiado"),2000);
+        }
+        out[0]=p->fault;out[1]=p->stopped;
+        afr2_put_u16(out+2,p->fault_late_count);afr2_put_u16(out+4,p->fault_control_gap_ms);
+        const Afr2LoopTiming *t=&p->fault_timing;
+        afr2_put_u16(out+6,t->total_ms);afr2_put_u16(out+8,t->app_ms);afr2_put_u16(out+10,t->uart_ms);
+        afr2_put_u16(out+12,t->input_ms);afr2_put_u16(out+14,t->render_ms);afr2_put_u16(out+16,t->io_ms);
+        *length=18;break;
+    }
     case AFR2_EXT_BATTERY:{
         if(n!=1 || d[0]>1)return AFR2_RESULT_BAD_REQUEST;
         if(d[0])Afr2Battery_Measure(&p->sensors);
@@ -289,7 +304,7 @@ uint8_t Afr2App_Command(void *ctx,uint8_t cmd,const uint8_t *d,uint8_t n,uint8_t
             if(!w->pending || afr2_get_u32(d+1)!=w->id || !w->claimed)return AFR2_RESULT_UNAVAILABLE;
             if(d[5]==1 && ((w->op!=AFR2_WIFI_WEB_DRAFT && w->op!=AFR2_WIFI_LOCAL_DRAFT) ||
                !afr2_get_u32(d+6) || !d[10]))return AFR2_RESULT_BAD_REQUEST;
-            if(d[5]==2 && w->op!=AFR2_WIFI_CONNECT && w->op!=AFR2_WIFI_RETRY && w->op!=AFR2_WIFI_REBOOT_ESP && w->op!=AFR2_WIFI_CHANGE_MODE && w->op!=AFR2_WIFI_DISCONNECT)return AFR2_RESULT_BAD_REQUEST;
+            if(d[5]==2 && w->op!=AFR2_WIFI_CONNECT && w->op!=AFR2_WIFI_LOCAL_DRAFT && w->op!=AFR2_WIFI_WEB_DRAFT && w->op!=AFR2_WIFI_RETRY && w->op!=AFR2_WIFI_REBOOT_ESP && w->op!=AFR2_WIFI_CHANGE_MODE && w->op!=AFR2_WIFI_DISCONNECT)return AFR2_RESULT_BAD_REQUEST;
             if(d[5]==3 && (w->op==AFR2_WIFI_WEB_DRAFT || w->op==AFR2_WIFI_LOCAL_DRAFT || w->op==AFR2_WIFI_CANCEL))return AFR2_RESULT_BAD_REQUEST;
             if(d[5]==6 && w->op!=AFR2_WIFI_WEB_DRAFT)return AFR2_RESULT_BAD_REQUEST;
             if(d[5]==3 && (w->op==AFR2_WIFI_SCAN || w->op==AFR2_WIFI_PAGE) && (!w->scan_id || w->scan_received!=(uint8_t)((1u<<w->scan_expected)-1u)))return AFR2_RESULT_UNAVAILABLE;
@@ -299,7 +314,14 @@ uint8_t Afr2App_Command(void *ctx,uint8_t cmd,const uint8_t *d,uint8_t n,uint8_t
                 if(a->ui->node!=AFR2_N_WIFI_REVIEW)Afr2Ui_Open(a->ui,AFR2_N_WIFI_REVIEW);}
             if(w->state==2) {
                 if(w->op==AFR2_WIFI_REBOOT_ESP){w->pending=0;Afr2Ui_NotifyFlash(a->ui,0,PSTR("Reinicio ESP"),PSTR("Solicitado"),2000);}
-                else Afr2Ui_NotifyFlash(a->ui,0,PSTR("Wi-Fi"),w->op==AFR2_WIFI_DISCONNECT?PSTR("Desconectando..."):(w->op==AFR2_WIFI_CONNECT || w->op==AFR2_WIFI_CHANGE_MODE)?PSTR("Reiniciando ESP"):PSTR("Conectando..."),2000);
+                else {
+                    if(w->op==AFR2_WIFI_LOCAL_DRAFT || w->op==AFR2_WIFI_WEB_DRAFT || w->op==AFR2_WIFI_CONNECT || w->op==AFR2_WIFI_CHANGE_MODE){
+                        w->pending=0;w->draft_ready=0;
+                        volatile char *s=w->password;for(uint8_t i=0;i<64;i++)s[i]=0;w->credential_length=0;
+                        if(a->ui->node==AFR2_N_WIFI_SETUP || a->ui->node==AFR2_N_WIFI_REVIEW)Afr2Ui_Leave(a->ui,AFR2_N_WIFI);
+                    }
+                    Afr2Ui_NotifyFlash(a->ui,0,PSTR("Wi-Fi"),w->op==AFR2_WIFI_DISCONNECT?PSTR("Desconectando..."):w->op==AFR2_WIFI_CHANGE_MODE?PSTR("Reiniciando ESP"):PSTR("Conectando..."),2000);
+                }
             }
             if(w->state==4 && w->op==AFR2_WIFI_CHANGE_MODE)Afr2Ui_Open(a->ui,AFR2_N_WIFI_SETUP);
             if(w->state>=1 && w->state!=2) {
@@ -311,12 +333,12 @@ uint8_t Afr2App_Command(void *ctx,uint8_t cmd,const uint8_t *d,uint8_t n,uint8_t
                  * muestra el aviso "Red AP creada" del ESP y Seguir esperando ya aviso al elegir. */
                 if((w->op==AFR2_WIFI_AP_START || w->op==AFR2_WIFI_WAIT || w->op==AFR2_WIFI_AP_STOP) && w->state==3){}
                 else if(w->state==6){
-                    Afr2Ui_NotifyFlash(a->ui,1,PSTR("No hay clientes"),PSTR("Conectados"),3000);Afr2Ui_AfterNotice(a->ui,AFR2_N_WIFI_NETWORKS);
+                    Afr2Ui_NotifyFlash(a->ui,1,PSTR("No hay clientes"),PSTR("Conectados"),3000);
                 }else {
+                    if(w->state==3 && (w->op==AFR2_WIFI_SCAN || w->op==AFR2_WIFI_PAGE) && w->scan_total && a->ui->node==AFR2_N_WIFI_SEARCH)Afr2Ui_Open(a->ui,AFR2_N_WIFI_NETWORKS);
                     const char *message=w->state==1?PSTR("Datos listos"):w->state==3?(w->op==AFR2_WIFI_STATUS?PSTR("Estado recibido"):w->op==AFR2_WIFI_ASK_FALLBACK?PSTR("Opcion guardada"):(w->op==AFR2_WIFI_SCAN || w->op==AFR2_WIFI_PAGE)?(w->scan_total?PSTR("Redes listas"):PSTR("Sin redes")):w->op==AFR2_WIFI_DISCONNECT?PSTR("Red desconectada"):w->op==AFR2_WIFI_CHANGE_MODE?PSTR("Modo actualizado"):PSTR("Conectado")):w->state==4?PSTR("Operacion fallida"):PSTR("Cancelado");
                     Afr2Ui_NotifyFlash(a->ui,w->state>=4?1:0,w->state==3?PSTR("Operacion exitosa"):PSTR("Wi-Fi"),message,2500);
                     if(w->state==3 && (w->op==AFR2_WIFI_SCAN || w->op==AFR2_WIFI_PAGE) && w->scan_truncated)Afr2Ui_NotifyFlash(a->ui,1,PSTR("Lista limitada"),PSTR("16 redes maximo"),2500);
-                    if(w->state==3 && (w->op==AFR2_WIFI_SCAN || w->op==AFR2_WIFI_PAGE))Afr2Ui_AfterNotice(a->ui,AFR2_N_WIFI_NETWORKS);
                 }
             }
         } else if(d[0]==5) { /* Explicit local request only: idLE, offset, total, bytes. */

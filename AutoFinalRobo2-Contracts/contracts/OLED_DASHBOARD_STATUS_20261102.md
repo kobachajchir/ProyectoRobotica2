@@ -1,3 +1,5 @@
+> **AFR2-20261109-05 / 1.10.1:** ampliación de tarjeta y centrado en fuentes AVR/Web. Rota los seis sistemas según AFR2-20261108-12. Solo fuente; sin tests, builds, generadores, comparación de frames ni carga. La descripción de estados aplicables de la entrega inicial que sigue es histórica.
+
 # Dashboard OLED y familia de pantallas
 
 AFR2-20261102-14 · 02/11/2026. Fuentes ATmega y réplica Web; no compiladas,
@@ -14,8 +16,10 @@ Debajo, MODO en(2,28) y su valor en(2,40). Nombres compactos estables:
 REPOSO, MANUAL, LINEA, RUEDA, GOTO, FALLO, SECUENC y PWM. Se usan los modos
 reales del controlador, no el análisis de una cadena de texto.
 
-Tarjeta informativa a derecha: contorno redondeado1px en(62,29), tamaño64×20.
-Icono14px y etiqueta7×10 con4px de separación y centro vertical común.
+Tarjeta informativa a derecha, AFR2-20261109-05: contorno redondeado1px en(54,27), tamaño72×22.
+Icono18px en y29 y etiqueta7×10 en y33, con4px de separación y centro vertical común en y38.
+El grupo completo se centra horizontalmente por el ancho de cada etiqueta.
+El borrado de MODO se limita a x0..51; la tarjeta termina en y48 y mantiene el pie.
 No es un botón ni cambia las acciones del dashboard. El pie conserva corto
 Menú010002 y largo al soltar Rápidas010003, con el símbolo L interno existente.
 

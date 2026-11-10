@@ -359,7 +359,9 @@ export class Afr2Client {
     }
   }
 
-  /** AFR2-20261023-11: runtime capabilities may change after the Web handshake. */
+  /** AFR2-20261109-09: status updates are partial. A 500 ms heartbeat and unchanged
+   * status omit capabilities; retain the last complete map until the ESP sends a
+   * changed one. Reconnect still clears it and requires a new complete hello. */
   private applyBrokerStatus(payload: Record<string, unknown>): void {
     const remoteCaps = payload.capabilities;
     this.updateState({

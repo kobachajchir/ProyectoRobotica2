@@ -750,3 +750,15 @@ una tarea visible; estado y etiquetas accesibles; bytes y procedencia reales.
 Matriz funcional en docs/PROTOCOL_STUDIO_AUTOMICRO.md desde Contracts;
 cobertura coverage-20261028-10.json. Fuente revisada manualmente; interacción,
 contraste, temas y móvil No verificados. Sin tests/build/validadores/navegador.
+
+
+## AFR2-20261110-02 — Canvas de navegación con cuadrícula
+
+Dirección Confirmada por pedido explícito: usar el piso final de Armado como referencia del fondo general de navegación. Fuente directa: Web/src/features/assembly/AssemblyCollectionEnvironment.tsx. Objetivo: html/body de styles/index.css; soporte: tokens.css, canvas y text-muted de los temas existentes. Aplicación autorizada de este ajuste visual; no sustituye las reglas de superficies del manual.
+
+Adaptación Propuesta implementada: cuatro gradientes CSS, pasos --canvas-grid-step=48px y --canvas-grid-major-step=240px, tintas --canvas-grid-line/--canvas-grid-major-line derivadas de text-muted al 12/20 %. Apariencia estática, sin eventos ni medios adicionales; las superficies operativas conservan su material. Cobertura de fuente global; ambos temas y tamaños sin revisión visual. El piso 3D permanece propio de las escenas. Ficha: changes/2026-11-10-02-navigation-grid-background.md desde Contracts.
+
+
+## AFR2-20261110-04 — Corrección de la superficie canónica
+
+Confirmada por aclaración del usuario: el fondo solicitado era para los simuladores 3D. La decisión de -02 sobre canvas de navegación queda Sustituida; se retira su implementación y los tokens canvas-grid. Objetivo corregido: components/three/SimulationViewport.tsx y styles/simulation-viewport.css, con tokens sim-scene. Referencia: piso y fondo de la presentación Armado. Líneas y plano con las mismas opacidades, cuadrícula física de 0,05 m y fondo de gradientes; las páginas generales recuperan canvas-gradient. Fuente implementada; ejecución visual No verificada. Ficha changes/2026-11-10-04-simulator-grid-background-correction.md.

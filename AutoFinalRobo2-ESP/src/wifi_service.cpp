@@ -34,6 +34,34 @@ bool WifiService::savedConfig(uint8_t mode,WifiConfig &c){
     strlcpy(c.mode,mode==2?"AP":mode==3?"AP_STA":"STA",sizeof(c.mode));
     return readPart(doc,mode==2?"ap":"sta",c) && valid(c);
 }
+bool WifiService::credentials(uint8_t kind,JsonObject out){
+    WifiConfig c;const char *source=nullptr;bool confirmed=true;
+    if(kind==2){
+        strlcpy(c.mode,"AP",sizeof(c.mode));
+        if(savedConfig(2,c))source="saved-ap";
+        else {strlcpy(c.ssid,apSsid_.c_str(),sizeof(c.ssid));strlcpy(c.password,apPassword_,sizeof(c.password));source="active-ap";}
+    }else if(kind==1){
+        strlcpy(c.mode,"STA",sizeof(c.mode));
+        if(staWanted_ && WiFi.status()==WL_CONNECTED && (uint32_t)WiFi.localIP()!=0){
+            strlcpy(c.ssid,WiFi.SSID().c_str(),sizeof(c.ssid));strlcpy(c.password,WiFi.psk().c_str(),sizeof(c.password));source="connected";
+        }else{
+            JsonDocument doc;
+            if(storage_.loadWifi(doc)){
+                migrateWifi(doc);
+                if(readPart(doc,"staLast",c))source="last-connected";
+                else if((doc["staGood"]|false) && readPart(doc,"sta",c)){source="legacy-confirmed-config";confirmed=false;}
+                else if(readPart(doc,"staPrevious",c)){source="legacy-confirmed-previous";confirmed=false;}
+            }
+        }
+    }else return false;
+    out["available"]=source && valid(c);out["confirmedLast"]=confirmed;out["kind"]=kind==2?"ap":"last-sta";
+    if(source && valid(c)){
+        // Owned JSON strings must outlive c and the explicit wipe below.
+        out["ssid"]=String(c.ssid);out["password"]=String(c.password);out["source"]=source;
+    }
+    volatile char *wipe=c.password;for(size_t i=0;i<sizeof(c.password);i++)wipe[i]=0;
+    return true;
+}
 bool WifiService::valid(const WifiConfig &c) {
     if (strcmp(c.mode,"STA") && strcmp(c.mode,"AP") && strcmp(c.mode,"AP_STA")) return false;
     size_t ssid=strlen(c.ssid), password=strlen(c.password);
@@ -76,7 +104,7 @@ void WifiService::apply(const WifiConfig &c) {
     WiFi.scanDelete(); scanReady_=false;
     staWanted_=strcmp(c.mode,"AP")!=0;
     bool wantAp=strcmp(c.mode,"STA")!=0;
-    fallbackActive_=false;apStopped_=false; configError_=nullptr;
+    fallbackActive_=false;apStopped_=!wantAp && persisted_==1; configError_=nullptr;
     apOn_=false;askState_=0;askEvent_=false;
     if (!WiFi.mode(staWanted_?(wantAp?WIFI_AP_STA:WIFI_STA):WIFI_AP)) {
         configError_="MODE_FAILED"; startFallback(); return;
@@ -94,10 +122,12 @@ void WifiService::apply(const WifiConfig &c) {
     usingPrevious_=false;staStarted_=lastRetry_=millis();
 }
 bool WifiService::stage(const WifiConfig &c, uint32_t now) {
+    if(scanReady_ && !scanPending_){WiFi.scanDelete();scanReady_=false;if(scanRestoreAp_ && !staWanted_){WiFi.mode(WIFI_AP);scanRestoreAp_=false;}}
     if (busy() || !valid(c)) return false;
     if(!c.persist)return false;
     JsonDocument doc;storage_.loadWifi(doc);migrateWifi(doc);
     doc["schema"]="afr2-wifi-2";doc["mode"]=c.mode;
+    if(!strcmp(c.mode,"STA")){doc["askFallback"]=false;askFallback_=false;apStopped_=true;}
     if(strcmp(c.mode,"AP")){
         // AFR2-20261106-37: al cambiar de red STA, la anterior pasa a respaldo solo si alguna vez conecto.
         const char *oldSsid=doc["sta"]["ssid"]|"";
@@ -114,12 +144,31 @@ bool WifiService::stage(const WifiConfig &c, uint32_t now) {
 }
 void WifiService::tick(uint32_t now) {
     // Broker waits for acknowledgement/drain, then restarts; never apply in place.
+    if (scanPending_ || scanReady_) staStarted_=now;
+    if(!applyPending_ && staWanted_ && WiFi.status()==WL_CONNECTED && (uint32_t)WiFi.localIP()!=0 && (uint32_t)(now-lastStationObserveAt_)>=1000u){
+        lastStationObserveAt_=now;
+        String ssid=WiFi.SSID();
+        if(strcmp(lastObservedSsid_,ssid.c_str())){
+            // Once per observed SSID transition, never on every loop; record only a real association.
+            strlcpy(lastObservedSsid_,ssid.c_str(),sizeof(lastObservedSsid_));
+            JsonDocument doc;bool loaded=storage_.loadWifi(doc);
+            bool newDocument=!loaded && !storage_.hasWifiConfig();migrateWifi(doc);
+            String password=WiFi.psk();
+            const char *oldSsid=doc["staLast"]["ssid"]|"",*oldPassword=doc["staLast"]["password"]|"";
+            bool markGood=!usingPrevious_ && !currentGood_;if(!usingPrevious_)currentGood_=true;
+            if((loaded || newDocument) && (ssid!=oldSsid || password!=oldPassword || markGood)){
+                JsonObject last=doc["staLast"].to<JsonObject>();last["ssid"]=ssid;last["password"]=password;
+                if(loaded && markGood)doc["staGood"]=true;
+                if(!storage_.saveWifi(doc))configError_="LAST_STA_SAVE_FAILED";
+            }else if(!loaded && !newDocument)configError_="LAST_STA_SAVE_FAILED";
+        }
+    }
     if (!applyPending_ && staWanted_ && !disconnectedByUser_ && WiFi.status()!=WL_CONNECTED) {
-        if ((uint32_t)(now-staStarted_)>=15000u && hasPrevious_ && !usingPrevious_ && !scanPending_ && !applyPending_ && (uint32_t)(now-lastRetry_)>=15000u) {
+        if ((uint32_t)(now-staStarted_)>=15000u && hasPrevious_ && !usingPrevious_ && !scanPending_ && !scanReady_ && !applyPending_ && (uint32_t)(now-lastRetry_)>=15000u) {
             // AFR2-20261106-37: la red configurada no aparece o no conecta; probar la ultima que funciono.
             if(beginStation(true)){lastRetry_=now;staStarted_=now;} // nueva gracia de 15 s para la anterior
         }
-        if (!apOn_ && !apStopped_ && (uint32_t)(now-staStarted_)>=15000u) {
+        if (!apOn_ && !apStopped_ && !scanPending_ && !scanReady_ && (uint32_t)(now-staStarted_)>=15000u) {
             // AFR2-20261108-06: preguntar al OLED en vez de levantar el AP; "Seguir esperando" vuelve a
             // preguntar al vencer askUntil_. Sin OLED (nunca enlazado o 10 s sin enlace): AP automatico.
             if(askFallback_ && askMode_){
@@ -130,7 +179,7 @@ void WifiService::tick(uint32_t now) {
                 // The OLED owns the countdown and cancels it on interaction. Wait while linked.
             } else if(!askFallback_ || !askLinkAt_ || (uint32_t)(now-askLinkAt_)>=10000u) startFallback();
         }
-        if ((uint32_t)(now-lastRetry_)>=30000u && !scanPending_ && !applyPending_) {
+        if ((uint32_t)(now-lastRetry_)>=30000u && !scanPending_ && !scanReady_ && !applyPending_) {
             lastRetry_=now;
             if(hasPrevious_)(void)beginStation(!usingPrevious_); // alternar configurada / anterior
             else WiFi.reconnect();
@@ -138,14 +187,6 @@ void WifiService::tick(uint32_t now) {
     } else if (staWanted_) {
         staStarted_=now; // grace period starts again on a later disconnection
         if(WiFi.status()==WL_CONNECTED){askState_=0;askEvent_=false;} // AFR2-20261108-06
-        if(!usingPrevious_ && !currentGood_ && WiFi.status()==WL_CONNECTED){
-            // Primera conexion exitosa de la red configurada: queda apta para ser «anterior» en el futuro.
-            // AFR2-20261107-53: un solo intento por arranque y solo con wifi.json guardado. Antes, sin archivo
-            // (red por defecto en RAM) o si fallaba la escritura, abria LittleFS en cada vuelta del loop y
-            // chocaba con las lecturas del servidor HTTP asincronico (descarga del .glb) y reiniciaba el ESP.
-            currentGood_=true;
-            if(persisted_==1){JsonDocument doc;if(storage_.loadWifi(doc)){migrateWifi(doc);doc["staGood"]=true;(void)storage_.saveWifi(doc);}}
-        }
     }
     if (scanPending_) {
         int n=WiFi.scanComplete();
@@ -169,9 +210,14 @@ bool WifiService::beginStation(bool previous){
     usingPrevious_=previous;return true;
 }
 bool WifiService::scan() {
-    if (busy() || scanReady_ || !staWanted_ || !(WiFi.getMode()&WIFI_STA)) return false;
-    // Scans are only available with an already enabled station interface.
+    if (busy()) return false;
     scanRestoreAp_=false;
+    if(!staWanted_){
+        if(!apOn_ || WiFi.getMode()!=WIFI_AP || !WiFi.mode(WIFI_AP_STA))return false;
+        scanRestoreAp_=true;WiFi.setAutoReconnect(false);WiFi.disconnect(false,false);
+    }else if(!(WiFi.getMode()&WIFI_STA))return false;
+    // Scan uses STA temporarily while keeping the AP interface/configuration alive.
+    // Existing completion/timeout paths restore AP-only after the SDK scan actually ends.
     scanStarted_=millis(); scanTimedOut_=false;
     int result=WiFi.scanNetworks(true,true);
     scanPending_=result==WIFI_SCAN_RUNNING;
@@ -237,11 +283,12 @@ bool WifiService::changeMode(uint8_t mode){
     // uses the defaults: the open provisioning AP for AP, the default station for STA / AP+STA.
     if(scanReady_ && !scanPending_){WiFi.scanDelete();scanReady_=false;if(scanRestoreAp_ && !staWanted_){WiFi.mode(WIFI_AP);scanRestoreAp_=false;}}
     if(busy())return false;
+    if(mode==1){askFallback_=false;apStopped_=true;askState_=0;askEvent_=false;}
     WifiConfig c;
     if(!savedConfig(mode,c)){
         if(mode==2){c=WifiConfig();strlcpy(c.mode,"AP",sizeof(c.mode));strlcpy(c.ssid,apSsid_.c_str(),sizeof(c.ssid));}
         else if(defaultStation(c))strlcpy(c.mode,mode==3?"AP_STA":"STA",sizeof(c.mode));
-        else return false;
+        else return false; // Do not claim a persisted restart when no station can be configured.
     }
     return stage(c,millis());
 }
@@ -266,7 +313,7 @@ bool WifiService::takeScan(JsonObject out) {
 }
 void WifiService::displayInfo(WifiDisplayInfo &out) const {
     memset(&out,0,sizeof(out));out.rssi=-127;
-    auto mode=WiFi.getMode();out.mode=mode==WIFI_STA?1:mode==WIFI_AP?2:mode==WIFI_AP_STA?3:0;
+    auto mode=scanRestoreAp_ && !staWanted_?WIFI_AP:WiFi.getMode();out.mode=mode==WIFI_STA?1:mode==WIFI_AP?2:mode==WIFI_AP_STA?3:0;
     IPAddress ip=WiFi.localIP(),ap=WiFi.softAPIP();
     out.staConnected=(out.mode&1u) && WiFi.status()==WL_CONNECTED && (uint32_t)ip!=0;
     out.apReady=(out.mode&2u) && apOn_ && (uint32_t)ap!=0;
@@ -275,7 +322,7 @@ void WifiService::displayInfo(WifiDisplayInfo &out) const {
         out.clients=WiFi.softAPgetStationNum();for(uint8_t i=0;i<4;i++)out.apIp[i]=ap[i];}
 }
 void WifiService::status(JsonObject out) const {
-    WiFiMode_t mode=WiFi.getMode();
+    WiFiMode_t mode=scanRestoreAp_ && !staWanted_?WIFI_AP:WiFi.getMode();
     out["mode"]=mode==WIFI_AP?"AP":mode==WIFI_STA?"STA":mode==WIFI_AP_STA?"AP_STA":"OFF";
     bool connected=(mode&WIFI_STA) && WiFi.status()==WL_CONNECTED && (uint32_t)WiFi.localIP()!=0;
     out["staConnected"]=connected;
@@ -302,6 +349,7 @@ void WifiService::status(JsonObject out) const {
     out["apDecision"]=askState_==1?"asking":askState_==2?"waiting":"none"; // AFR2-20261108-06
     if(askState_==2)out["apDecisionInMs"]=(int32_t)(askUntil_-millis())>0?(uint32_t)(askUntil_-millis()):0u;
     out["scanRunning"]=scanPending_;
+    out["scanTemporaryStation"]=scanRestoreAp_;
     if (persisted_<0) out["configPersisted"]=nullptr; else out["configPersisted"]=persisted_==1;
     out["configError"]=configError_;
     const auto sta=WiFi.status();

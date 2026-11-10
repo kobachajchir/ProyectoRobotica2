@@ -11,6 +11,7 @@ import { gzipSync } from 'node:zlib';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { candidateLinkerScript, filesystemBudgetBytes, estimateFilesystemBytes } from './web-budget.mjs';
+import { isAssemblyNarrationAsset, requireSilentAssemblyHtml } from './assembly-audio-policy.mjs';
 
 const MIME_BY_EXT = {
   '.html': 'text/html; charset=utf-8',
@@ -36,7 +37,10 @@ if (source !== expectedDist) {
 }
 
 // AFR2-20261024-03: use the actual Vite profile, not a label supplied after build.
-const { profile: buildProfile } = JSON.parse(await readFile(path.join(source, '.afr2-build.json'), 'utf8'));
+const { profile: buildProfile, webVersion } = JSON.parse(await readFile(path.join(source, '.afr2-build.json'), 'utf8'));
+const currentVersion = JSON.parse(await readFile(path.join(root, 'package.json'), 'utf8')).version;
+if (webVersion !== currentVersion) throw new Error('dist pertenece a otra version o no identifica su compilacion. Volve a compilar antes de empaquetar.');
+requireSilentAssemblyHtml(await readFile(path.join(source, 'index.html'), 'utf8'));
 const profileIndex = process.argv.indexOf('--profile');
 if (!['esp', 'full'].includes(buildProfile) || (profileIndex >= 0 && process.argv[profileIndex + 1] !== buildProfile)) {
   throw new Error('El perfil solicitado no coincide con dist. Volvé a compilar con build o build:esp.');
@@ -84,6 +88,7 @@ async function visit(dir, rel = '') {
     }
     const relPath = path.join(rel, item.name);
     const fullPath = path.join(dir, item.name);
+    if (isAssemblyNarrationAsset(relPath)) continue;
 
     if (relPath === '.afr2-build.json') continue; // Build metadata, not an HTTP asset.
 
@@ -99,6 +104,9 @@ async function visit(dir, rel = '') {
 
     const normalizedRel = relPath.replaceAll('\\', '/');
     const servedRel = `${normalizedRel}.gz`;
+    if (servedRel.split('/').some(component => Buffer.byteLength(component, 'utf8') >= 32)) {
+      throw new Error(`Nombre incompatible con LittleFS ESP8266 (máximo 31 bytes por componente): ${servedRel}`);
+    }
     const outFile = path.join(stagingDir, `${relPath}.gz`);
 
     await mkdir(path.dirname(outFile), { recursive: true });

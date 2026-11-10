@@ -40,11 +40,16 @@ function runtimeAssets(embedded: boolean): Plugin {
   });
   // AFR2-20261102-01: banner de Inicio y banners de Modelos (renders CAD en WebP).
   const banners = ['brand/home-hero-1600.webp', 'brand/home-hero-mobile-720.webp',
-    ...['auto', 'brazo', 'conjunto'].flatMap(id => [`brand/models/model-${id}-1200.webp`, `brand/models/model-${id}-640.webp`])];
-  const files = [...new Set([...banners, 'brand/Logo-robot-1024.webp', 'brand/Logo-robot-256.webp', 'brand/favicon-robot.webp', 'brand/apple-touch-icon-robot.png',
-    'models/AutoFinalRobo2.glb', 'draco/draco_decoder.wasm', 'draco/draco_wasm_wrapper.js', ...modelAssets])];
+    ...['auto', 'brazo', 'conjunto'].flatMap(id => [`brand/models/model-${id}-1200.webp`, `brand/models/model-${id}-640.webp`]),
+    // Ayuda: renders CAD de Fusion y captura de Inicio en el encabezado de cada módulo.
+    ...['atmega2560', 'esp12s-shield', 'web-inicio', 'oled-encoder'].map(id => `help/${id}.webp`)];
+  const files = [...new Set([...banners, 'brand/Logo-robot-768.webp', 'brand/Logo-robot-256.webp', 'brand/favicon-robot.webp', 'brand/apple-touch-icon-robot.png',
+    'models/AutoFinalRobo2.glb', 'models/AFR2_Cubo_50mm.glb', 'models/AFR2_Sensor_Bateria.glb',
+    // The assembly player is visual only; narration sources are archived outside public/.
+    'draco/draco_decoder.wasm', 'draco/draco_wasm_wrapper.js', ...modelAssets])];
   return { name: 'afr2-runtime-assets', async generateBundle() {
-    this.emitFile({ type: 'asset', fileName: '.afr2-build.json', source: JSON.stringify({ profile: embedded ? 'esp' : 'full' }) });
+    const { version: webVersion } = JSON.parse(await readFile(new URL('./package.json', import.meta.url), 'utf8'));
+    this.emitFile({ type: 'asset', fileName: '.afr2-build.json', source: JSON.stringify({ profile: embedded ? 'esp' : 'full', webVersion }) });
     for (const fileName of files) {
       this.emitFile({ type: 'asset', fileName, source: await readFile(new URL(`./public/${fileName}`, import.meta.url)) });
     }

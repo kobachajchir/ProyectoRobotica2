@@ -327,11 +327,11 @@ static uint8_t invoke(void *ctx,uint8_t action,int32_t v,const void *data) {
         if(!p->wifi.policy_valid || p->wifi.pending)return AFR2_UNAVAILABLE;
         p->wifi.policy_requested=!p->wifi.ask_fallback;return wifi_request(p,AFR2_WIFI_ASK_FALLBACK);
     case AFR2_A_WIFI_AP_TOGGLE:return wifi_request(p,p->wifi.ap_active?AFR2_WIFI_AP_STOP:AFR2_WIFI_AP_START);
-    case AFR2_A_WIFI_SCAN:if(!(p->wifi.mode&1u))return AFR2_UNAVAILABLE;if(!p->wifi.mode_draft){p->wifi.requested_mode=p->wifi.mode?p->wifi.mode:1;p->wifi.mode_draft=1;}p->wifi.scan_page=0;p->wifi.scan_total=0;p->wifi.scan_received=0;p->wifi.scan_id=0;return wifi_request(p,AFR2_WIFI_SCAN);
+    case AFR2_A_WIFI_SCAN:if(!(p->wifi.mode&1u))return AFR2_UNAVAILABLE;if(!p->wifi.mode_draft){p->wifi.requested_mode=p->wifi.mode?p->wifi.mode:1;p->wifi.mode_draft=1;}p->wifi.scan_page=0;p->wifi.scan_total=0;p->wifi.scan_received=0;p->wifi.scan_id=0;p->wifi.pending=0;return wifi_request(p,AFR2_WIFI_SCAN);
     case AFR2_A_WIFI_PAGE:
         if(v<0 || v>1 || !p->wifi.scan_id || p->wifi.pending)return AFR2_UNAVAILABLE;
         p->wifi.scan_page=v;p->wifi.network_count=0;p->wifi.scan_received=0;return wifi_request(p,AFR2_WIFI_PAGE);
-    case AFR2_A_WIFI_WEB:return wifi_request(p,AFR2_WIFI_WEB_DRAFT);
+    case AFR2_A_WIFI_WEB:p->wifi.pending=0;return wifi_request(p,AFR2_WIFI_WEB_DRAFT);
     case AFR2_A_WIFI_RETRY:if(!p->stopped || p->wifi.sta_connected)return AFR2_BUSY;return wifi_request(p,AFR2_WIFI_RETRY);
     /* AFR2-20261108-14: choosing a mode (or Desconectar) on the OLED is the user's decision: stop motion and
      * replace any pending Wi-Fi job instead of refusing with "Detener / ver red". The ESP's late update
@@ -353,7 +353,9 @@ static uint8_t invoke(void *ctx,uint8_t action,int32_t v,const void *data) {
         p->wifi.selected_network=v;strcpy(p->wifi.draft_ssid,p->wifi.networks[v]);p->wifi.draft_ready=0;return AFR2_OK;
     case AFR2_A_KEYBOARD: {
         if(!data)return AFR2_BAD;
+        if(!p->stopped)Afr2Product_Stop(p);
         const Afr2UiCredentials *cred=data;
+        p->wifi.pending=0;
         uint8_t r=wifi_request(p,AFR2_WIFI_LOCAL_DRAFT);if(r)return r;
         strcpy(p->wifi.draft_ssid,cred->ssid);strcpy(p->wifi.password,cred->password);
         p->wifi.credential_length=(uint8_t)strlen(cred->ssid)+1u+(uint8_t)strlen(cred->password);
@@ -368,7 +370,11 @@ static uint8_t invoke(void *ctx,uint8_t action,int32_t v,const void *data) {
         /* Keep only a cancellation request, superseding a waiting modal/draft. */
         p->wifi.pending=0;return wifi_request(p,AFR2_WIFI_CANCEL);
     case AFR2_A_CONTRAST:c->contrast=v;break;case AFR2_A_ROTATION:c->rotation=v;break;
-    case AFR2_A_CLEAR_FAULT:if(!p->stopped)return AFR2_DENIED;p->fault=0;memset(p->hp_score,0,sizeof(p->hp_score));p->mode=AFR2_IDLE;return AFR2_OK;
+    case AFR2_A_CLEAR_FAULT:{
+        uint8_t result=Afr2Product_ClearFault(p);
+        if(!result)Afr2Ui_NotifyFlash(a->ui,0,PSTR("Fallos"),PSTR("Fallo limpiado"),2000);
+        return result;
+    }
     case AFR2_A_REBOOT_MEGA:
         if(!p->stopped || p->prefs_state==1 || a->reboot_pending)return AFR2_BUSY;
         Afr2Product_Stop(p);a->reboot_pending=1;a->reboot_ms=p->now;return AFR2_OK;
@@ -388,6 +394,11 @@ static void keyboard_seed(void *ctx,Afr2UiCredentials *out) {
 }
 static uint8_t available(void *ctx,uint8_t action,int32_t arg) {
     Afr2App *a=ctx;Afr2Product *p=a->product;
+    if(action==AFR2_A_CLEAR_FAULT){
+        if(!p->stopped || p->hall_measuring || (p->sequence.state>=1 && p->sequence.state<=3))return AFR2_BUSY;
+        for(uint8_t i=0;i<4;i++)if(p->pwm[i])return AFR2_BUSY;
+        return !p->fault?AFR2_UNAVAILABLE:AFR2_OK;
+    }
     if(action==AFR2_A_MOVE){uint8_t permission=Afr2Product_PwmStatus(p);if(permission)return permission;}
     if(action==AFR2_A_WIFI_SCAN && !(p->wifi.mode&1u))return AFR2_UNAVAILABLE;
     if(action==AFR2_A_WIFI_FALLBACK && (!p->wifi.policy_valid || p->wifi.pending))return AFR2_UNAVAILABLE;
@@ -423,6 +434,13 @@ static uint8_t available(void *ctx,uint8_t action,int32_t arg) {
 }
 static const char *reason(void *ctx,uint8_t action) {
     Afr2App *a=ctx;Afr2Product *p=a->product;
+    if(action==AFR2_A_CLEAR_FAULT){
+        if(!p->stopped)return PSTR("Detener salidas");
+        if(p->hall_measuring)return PSTR("Finalizar Hall");
+        if(p->sequence.state>=1 && p->sequence.state<=3)return PSTR("Salir secuencia");
+        for(uint8_t i=0;i<4;i++)if(p->pwm[i])return PSTR("Detener salidas");
+        return PSTR("Sin fallos activos");
+    }
     if(action==AFR2_A_WIFI_FALLBACK)return !p->wifi.policy_valid?PSTR("ESP sin politica"):PSTR("Wi-Fi ocupado");
     if(action==AFR2_A_WIFI_SCAN && !(p->wifi.mode&1u))return PSTR("Cambiar modo STA");
     if(action==AFR2_A_WIFI_RETRY && p->wifi.mode==2)return PSTR("Cambiar modo STA");
@@ -542,7 +560,15 @@ void Afr2App_Task(Afr2App *a,uint32_t now) {
      * dialogo obligatorio, edicion, teclado, prueba en marcha o tactil. Se cierra solo si la STA conecta o hay AP. */
     if(a->wifi_ask){
         Afr2Ui *u=a->ui;uint8_t node=u->node;
-        if(p->wifi.sta_connected || p->wifi.ap_active || p->wifi.mode==2 || (p->wifi.policy_valid && !p->wifi.ask_fallback)){a->wifi_ask=0;if(node==AFR2_N_WIFI_ASK)Afr2Ui_Leave(u,AFR2_N_WIFI);}
+        uint8_t wifi_flow=u->keyboard || node==AFR2_N_WIFI || node==AFR2_N_WIFI_VIEW || node==AFR2_N_WIFI_SEARCH ||
+            node==AFR2_N_WIFI_NETWORKS || node==AFR2_N_WIFI_SETUP || node==AFR2_N_WIFI_REVIEW ||
+            node==AFR2_N_WIFI_MODE_SELECT || node==AFR2_N_WIFI_AP ||
+            (p->wifi.pending && (p->wifi.op==AFR2_WIFI_SCAN || p->wifi.op==AFR2_WIFI_PAGE || p->wifi.op==AFR2_WIFI_WEB_DRAFT || p->wifi.op==AFR2_WIFI_LOCAL_DRAFT));
+        if(p->wifi.sta_connected || p->wifi.ap_active || p->wifi.mode==1 || p->wifi.mode==2 || (p->wifi.policy_valid && !p->wifi.ask_fallback)){a->wifi_ask=0;if(node==AFR2_N_WIFI_ASK)Afr2Ui_Leave(u,AFR2_N_WIFI);}
+        else if(wifi_flow){
+            if(!p->wifi.pending)(void)wifi_request(p,AFR2_WIFI_WAIT);
+            a->wifi_ask=0;
+        }
         else if(a->wifi_ask==1){
             if(!u->notices && !u->touch_active && !u->keyboard && !u->edit && node!=AFR2_N_SAVE_CONFIRM && node!=AFR2_N_HALL_PICK &&
                node!=AFR2_N_HALL_COUNT && node!=AFR2_N_ENCODER_TEST && node!=AFR2_N_ODOM_RUN && node!=AFR2_N_ODOM_ASK && node!=AFR2_N_SEQUENCE){
@@ -668,7 +694,19 @@ void Afr2App_UiSnapshot(Afr2App *a,Afr2UiSnapshot *s) {
     case AFR2_N_LINK_VIEW:
         LINE(0,"UART:%u Ext:%u",a->link->negotiated,p->extension_ready);LINE(1,"Origen:%u Web:%u",p->origin,p->web_seen && (uint32_t)(p->now-p->web_ms)<1500u);
         LINE(2,"XOR mal:%u",a->link->parser.stats.checksum);break;
-    case AFR2_N_ALERT_VIEW:case AFR2_N_DIAG:
+    case AFR2_N_ALERT_VIEW:
+        if(!p->fault){LINE(0,"Sin fallos activos");LINE(2,"Listo para operar");}
+        else {
+            switch(p->fault){
+            case 1:LINE(0,"F1 Lazo demorado");LINE(2,"Revisar log USB");break;
+            case 2:LINE(0,"F2 Hall/odometria");LINE(2,"Revisar CPR/cuentas");break;
+            case 3:LINE(0,"F3 Rueda sin Hall");LINE(2,"Revisar rueda/Hall");break;
+            case 4:LINE(0,"F4 Signo de Hall");LINE(2,"Revisar signos");break;
+            default:LINE(0,"Fallo %u",p->fault);LINE(2,"Revisar log USB");break;
+            }
+        }
+        LINE(1,"Salidas: %s",p->stopped?"OFF":"activas");break;
+    case AFR2_N_DIAG:
         LINE(0,"Fallo:%u Reset:%u",p->fault,p->reset_cause);LINE(1,"OLED err:%lu",(unsigned long)a->oled->errors);
         LINE(2,"RX gaps:%u",a->link->parser.stats.gap);break;
     case AFR2_N_LINE_VIEW:

@@ -28,7 +28,7 @@ function ChapterBody({ chapter }: { chapter: HelpChapter }) {
 function ModuleGuide({ id, children }: { id: HelpSection; children?: ReactNode }) {
   const module = HELP[id];
   return <div className="afr2-page-stack">
-    <section className="afr2-help-hero" aria-label={`${module.name}: ${module.role}`}>
+    <section className={`afr2-help-hero${module.visual ? ' afr2-help-hero--visual' : ''}`} aria-label={`${module.name}: ${module.role}`}>
       <div className="afr2-help-hero__layout">
         <div className="afr2-help-hero__main">
           <span className="afr2-help-hero__icon" aria-hidden="true"><UiIcon name={module.icon} size={26} /></span>
@@ -37,6 +37,9 @@ function ModuleGuide({ id, children }: { id: HelpSection; children?: ReactNode }
             <h2 className="afr2-help-hero__name">{module.name}</h2>
             <p className="afr2-help-hero__intro">{module.intro}</p>
           </div>
+          {module.visual && <figure className={`afr2-help-hero__visual afr2-help-hero__visual--${module.visual.kind}`}>
+            <img src={module.visual.src} alt={module.visual.alt} width={module.visual.width} height={module.visual.height} loading="lazy" decoding="async" />
+          </figure>}
           <dl className="afr2-help-hero__specs">{module.specs.map(([term, value]) => <div key={term}><dt>{term}</dt><dd><HelpRich text={value} /></dd></div>)}</dl>
         </div>
         <aside className="afr2-help-pinout" aria-label={module.pinout.title}>

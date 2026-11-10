@@ -23,9 +23,10 @@
 
   /* 1. Lienzo y superficies base (Light) */
   /* AFR2-20261101-03: shared simulator/inspection environment, previously collector-only. */
-  --sim-scene-sky: #d6eaf5;
-  --sim-scene-ground: #eee3cc;
-  --sim-scene-grid: #c1b393;
+  --sim-scene-sky: var(--infra-hero-bg);
+  --sim-scene-ground: #526b7a;
+  --sim-scene-grid: #526b7a;
+  --sim-scene-grid-center: #7794a3;
   --sim-scene-ink: #671326;
   --canvas: #f3f6fb;
   --canvas-elevated: #e8eef7;
@@ -200,9 +201,9 @@
 .dark {
   color-scheme: dark;
 
-  --sim-scene-sky: #7896ac;
-  --sim-scene-ground: #b8a98d;
-  --sim-scene-grid: #897b60;
+  --sim-scene-sky: var(--infra-hero-bg);
+  --sim-scene-ground: #526b7a;
+  --sim-scene-grid: #526b7a;
   --canvas: #0b1220;
   --canvas-elevated: #111c30;
   --canvas-gradient: none;

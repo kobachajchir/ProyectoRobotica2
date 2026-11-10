@@ -44,7 +44,7 @@ export function StartupWelcome({ children }: PropsWithChildren) {
       onCancel={event => { event.preventDefault(); finish(); }}
       onAnimationEnd={event => { if (event.target === event.currentTarget && event.animationName === 'afr2-startup-veil-out') finish(); }}>
       {stopAvailable && <div className="afr2-startup__actions"><button type="button" className="afr2-startup__stop" onClick={() => { void triggerEmergencyStop('startup-stop'); finish(); }}><UiIcon name="stop" /> STOP</button></div>}
-      <div className="afr2-startup__logo"><img ref={logo} src={AFR2_BRAND_LOGO} alt="" width="1024" height="768" loading="eager" fetchPriority="high" decoding="async"
+      <div className="afr2-startup__logo"><img ref={logo} src={AFR2_BRAND_LOGO} alt="" width="768" height="576" loading="eager" fetchPriority="high" decoding="async"
         onLoad={event => prepareLogo(event.currentTarget)} onError={finish} />
         <h2 className="afr2-startup__title">Final Robotica 2</h2>
       </div>

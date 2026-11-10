@@ -1,3 +1,19 @@
+> **AFR2-20261109-11 / 1.12.0:** [Armado: Play/Pausa de20s, títulos y secciones](AutoFinalRobo2-Contracts/changes/2026-11-09-11-assembly-playback-intro.md). Web fuente; ATmega/ESP solo versión. Sin tests, compilación, validaciones o flasheos.
+
+> **AFR2-20261109-10 / 1.11.0:** [Nuestros agregados en Armado](AutoFinalRobo2-Contracts/changes/2026-11-09-10-assembly-additions-battery-circuit.md): nueva etapa7, modelos reutilizados del auto, divisor de batería y cables compactos desde Blender (GLB11.692 B / gzip7.969 B), zoom desde mitad de etapa12. CAD/Web en fuente; ATmega/ESP solo versión. Sin tests, compilaciones, validadores, renders ni flasheos.
+
+> **AFR2-20261109-09 / 1.10.5:** [Optimización de RAM ESP](AutoFinalRobo2-Contracts/changes/2026-11-09-09-esp-memory-optimization.md): latidos/estados livianos, cola compacta, textos en flash, liberación Wi-Fi y descargas grandes serializadas. ESP compilado: **51172→46644 B RAM estática (−4528 B)**; Web tipos/protocolo comprobados; ATmega solo versión. Sin carga ni medición dinámica en placa.
+
+> **AFR2-20261109-08 / 1.10.4:** [OOM al conectar WS](AutoFinalRobo2-Contracts/changes/2026-11-09-08-esp-ws-oom.md): ESP serializa directamente a buffers compartidos, evita acumulación de estados y protege por heap/bloque libre. Memoria visible en diagnóstico HTTP. Fuente corregida; ATmega/Web solo versión en esta ficha. Sin tests, compilaciones, validaciones ni cargas; reserva exacta del fallo sin identificar por pila recortada.
+
+> **AFR2-20261109-07 / 1.10.3:** [Banner de producto para Armado](AutoFinalRobo2-Contracts/changes/2026-11-09-07-cinematic-assembly-banner.md): escena transparente sin suelo/cuadrícula, reflejos y fade de piezas por scroll. Fuente Web; ATmega/ESP solo versión. Sin tests, compilaciones, validadores, navegador, renders ni cargas.
+
+> **AFR2-20261109-06 / 1.10.2:** [Wi-Fi: retorno fijo por padre en submenús sin loops por avisos, STA sin AP fallback, teclado directo en clave con autoconexión e ingreso en Web](AutoFinalRobo2-Contracts/changes/2026-11-09-06-wifi-navegacion-fija-sta-sin-fallback-y-credenciales-directas.md). Fuentes ATmega/ESP/Web sincronizadas; sin compilar ni cargar en este paso.
+
+> **AFR2-20261109-05 / 1.10.1:** [Tarjeta de estados del dashboard](AutoFinalRobo2-Contracts/changes/2026-11-09-05-dashboard-status-card-spacing.md) ampliada hacia la izquierda y abajo:72×22px, icono18px y texto centrados. Fuente ATmega/Web; ESP solo versión. Sin tests, compilaciones, validadores, generadores ni cargas.
+
+> **AFR2-20261109-04 / 1.10.0:** [Armado del robot en Explorar](AutoFinalRobo2-Contracts/changes/2026-11-09-04-scroll-robot-assembly.md), `#/armado`: ensamblaje reversible por scroll del auto y brazo V17, textos por etapas, cámara y agarre ilustrativo del cubo. Fuente Web implementada; sin tests, compilaciones, validadores, navegador ni promoción ESP. atmega/esp solo versión; CAD/Loader sin cambios.
+
 > **AFR2-20261108-01:** librería `afr2_usart` y log de depuración del ATmega por USART0 (USB del Mega, 115200): reinicios del ESP con causa y volcado de excepción, enlace, red, captura OLED y pila. [Ficha](AutoFinalRobo2-Contracts/changes/2026-11-08-01-usart-library-debug-log.md). Solo fuente ATmega; sin compilar, cargar ni probar.
 
 > **AFR2-20261106-04:** SRAM AVR 5614 bytes, libres antes de pila 2578; QR finish 29 bytes. Se conservan ambos buffers OLED. Builds y paridad C/Web 2104/2104 PASS; sin carga ni prueba física. [Evidencia](AutoFinalRobo2-Contracts/documentation/builds/2026-11-06-04/README.md).
@@ -136,3 +152,4 @@ planos y componentes. J1 cinco señales y J2 VCC/GND común,2,54mm, conservados.
 [evidencia15](AutoFinalRobo2-Contracts/documentation/builds/2026-10-24-15/README.md).
 Pruebas, validadores independientes, navegador, flasheo y CAD no se ejecutan
 por esta revisión. [Informe anterior conservado](AutoFinalRobo2-Contracts/docs/history/alignment15/INFORME_MAESTRO.md).
+

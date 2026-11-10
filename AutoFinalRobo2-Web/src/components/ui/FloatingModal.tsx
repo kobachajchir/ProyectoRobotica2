@@ -6,6 +6,8 @@ import { UiIcon } from './UiIcon';
 import { useConnection } from '../../features/connection/ConnectionContext';
 
 type Phase = 'closed' | 'opening' | 'open' | 'closing';
+const isBackdrop = (target: EventTarget, dialog: EventTarget) =>
+  target === dialog || (target instanceof HTMLElement && target.dataset.modalBackdrop !== undefined);
 export interface ModalOrigin {
   element: HTMLElement;
   keyboard: boolean;
@@ -166,7 +168,7 @@ export function FloatingModal({ open, title, description, kicker = 'AutoFinalRob
         if (phaseRef.current !== 'closed') finishClose();
       }}
       onPointerDown={(event) => {
-        backdropPress.current = event.target === event.currentTarget;
+        backdropPress.current = isBackdrop(event.target, event.currentTarget);
         if (phaseRef.current === 'closing' && !backdropPress.current) {
           clearTimeout(exitTimer.current);
           phaseRef.current = 'open';
@@ -179,10 +181,12 @@ export function FloatingModal({ open, title, description, kicker = 'AutoFinalRob
         }
       }}
       onPointerUp={(event) => {
-        if (backdropPress.current && event.target === event.currentTarget) close();
+        if (backdropPress.current && isBackdrop(event.target, event.currentTarget)) close();
         backdropPress.current = false;
       }}
     >
+      {/* AFR2-20261110-16: real scrim element; ::backdrop blur is not rendered by every mobile browser. */}
+      <div className="afr2-floating-modal__scrim" data-modal-backdrop aria-hidden="true" />
       <div ref={panel} className="afr2-floating-modal__surface">
         <div ref={material} className="afr2-floating-modal__material" aria-hidden="true" />
         <div className="afr2-floating-modal__content">

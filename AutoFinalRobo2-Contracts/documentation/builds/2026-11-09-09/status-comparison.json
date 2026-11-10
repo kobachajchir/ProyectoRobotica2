@@ -1,0 +1,1727 @@
+{
+  "method": "Actual status/capability methods from source, native ArduinoJson 7.4.2; deterministic fixtures, not ESP heap measurements",
+  "frames": {
+    "before/ready/alive": {
+      "bytes": 3758,
+      "frame": {
+        "payload": {
+          "outputBackpressure": 0,
+          "replyDeferred": false,
+          "connectionDiagnostics": {
+            "staConnected": true,
+            "wifiStatus": 3,
+            "outputBackpressure": 0,
+            "replyDeferred": false,
+            "wsOpened": 1,
+            "wsClosed": 0,
+            "lastServerCloseCode": 0,
+            "lastServerCloseReason": "",
+            "bootId": 3653448153,
+            "freeHeapBytes": 20000,
+            "maxFreeBlockBytes": 18000,
+            "wsMemoryDrops": 0
+          },
+          "megaLink": "ready",
+          "controlMode": "direct",
+          "extensionVersion": 13,
+          "sensorHead": {
+            "known": true,
+            "running": false,
+            "enabled": true,
+            "ageMs": 200
+          },
+          "brokerTs": 5000,
+          "megaAgeMs": 200,
+          "capabilities": {
+            "uart_bridge": {
+              "present": true,
+              "implemented": true,
+              "calibrated": true,
+              "valid": true,
+              "freshness": "fresh",
+              "reason": "Servicio negociado con ATmega; hardware sin certificar."
+            },
+            "mecanum_drive": {
+              "present": true,
+              "implemented": true,
+              "calibrated": true,
+              "valid": true,
+              "freshness": "fresh",
+              "reason": "Servicio negociado con ATmega; hardware sin certificar.",
+              "limits": {
+                "maxSpeedMmS": 500,
+                "maxPwmPct": 100,
+                "wheelDiameterMm": 80,
+                "radiusSumMm": 150
+              }
+            },
+            "wheel_odometry": {
+              "present": true,
+              "implemented": true,
+              "calibrated": true,
+              "valid": true,
+              "freshness": "fresh",
+              "reason": "Servicio negociado con ATmega; hardware sin certificar."
+            },
+            "goto_relative": {
+              "present": true,
+              "implemented": true,
+              "calibrated": true,
+              "valid": true,
+              "freshness": "fresh",
+              "reason": "Servicio negociado con ATmega; hardware sin certificar.",
+              "limits": {
+                "maxSpeedMmS": 500,
+                "maxPwmPct": 100,
+                "wheelDiameterMm": 80,
+                "radiusSumMm": 150
+              }
+            },
+            "line_array_5ch": {
+              "present": true,
+              "implemented": true,
+              "calibrated": true,
+              "valid": true,
+              "freshness": "fresh",
+              "reason": "Servicio negociado con ATmega; hardware sin certificar."
+            },
+            "ultrasonic_hcsr04": {
+              "present": true,
+              "implemented": true,
+              "calibrated": true,
+              "valid": true,
+              "freshness": "fresh",
+              "reason": "Servicio negociado con ATmega; hardware sin certificar."
+            },
+            "oled_128x64": {
+              "present": true,
+              "implemented": true,
+              "calibrated": true,
+              "valid": true,
+              "freshness": "fresh",
+              "reason": "Servicio negociado con ATmega; hardware sin certificar."
+            },
+            "ui_encoder_sw": {
+              "present": true,
+              "implemented": true,
+              "calibrated": true,
+              "valid": true,
+              "freshness": "fresh",
+              "reason": "Servicio negociado con ATmega; hardware sin certificar."
+            },
+            "sequence_runner": {
+              "present": true,
+              "implemented": true,
+              "calibrated": true,
+              "valid": true,
+              "freshness": "fresh",
+              "reason": "Servicio negociado con ATmega; hardware sin certificar.",
+              "limits": {
+                "maxSpeedMmS": 500,
+                "maxPwmPct": 100,
+                "wheelDiameterMm": 80,
+                "radiusSumMm": 150
+              }
+            },
+            "configuration": {
+              "present": true,
+              "implemented": true,
+              "calibrated": true,
+              "valid": true,
+              "freshness": "fresh",
+              "reason": "Servicio negociado con ATmega; hardware sin certificar."
+            },
+            "wheel_test": {
+              "present": true,
+              "implemented": true,
+              "calibrated": true,
+              "valid": true,
+              "freshness": "fresh",
+              "reason": "Servicio negociado con ATmega; hardware sin certificar.",
+              "limits": {
+                "maxSpeedMmS": 500,
+                "maxPwmPct": 100,
+                "wheelDiameterMm": 80,
+                "radiusSumMm": 150
+              }
+            },
+            "line_follow": {
+              "present": true,
+              "implemented": true,
+              "calibrated": true,
+              "valid": true,
+              "freshness": "fresh",
+              "reason": "Servicio negociado con ATmega; hardware sin certificar."
+            },
+            "manual_pwm": {
+              "present": true,
+              "implemented": true,
+              "valid": true,
+              "calibrated": false,
+              "freshness": "fresh",
+              "reason": "PWM manual habilitado; sin odometria ni HC.",
+              "limits": {
+                "maxInputPct": 100,
+                "maxPwmPct": 100
+              }
+            },
+            "sensor_head": {
+              "present": true,
+              "implemented": true,
+              "valid": true,
+              "calibrated": false,
+              "freshness": "fresh",
+              "reason": "EX01v9; calibracion fisica pendiente."
+            },
+            "radar_scanner": {
+              "present": true,
+              "implemented": true,
+              "valid": true,
+              "calibrated": false,
+              "freshness": "fresh",
+              "reason": "EX01v9; calibracion fisica pendiente."
+            },
+            "battery_voltage": {
+              "present": true,
+              "implemented": true,
+              "valid": true,
+              "calibrated": false,
+              "freshness": "fresh",
+              "reason": "EX01v9; A5, divisor 10k/10k, AVCC nominal; medicion explicita."
+            }
+          },
+          "wifiDraft": {
+            "pending": false,
+            "jobId": 0
+          }
+        },
+        "schema": "afr2-ws-1",
+        "ts": 5000,
+        "type": "res",
+        "ok": true,
+        "status": "completed",
+        "requestId": "12345678-1234-1234-1234-123456789abc",
+        "cmd": "system.alive"
+      }
+    },
+    "before/ready/status": {
+      "bytes": 3679,
+      "frame": {
+        "payload": {
+          "outputBackpressure": 0,
+          "replyDeferred": false,
+          "connectionDiagnostics": {
+            "staConnected": true,
+            "wifiStatus": 3,
+            "outputBackpressure": 0,
+            "replyDeferred": false,
+            "wsOpened": 1,
+            "wsClosed": 0,
+            "lastServerCloseCode": 0,
+            "lastServerCloseReason": "",
+            "bootId": 3653448153,
+            "freeHeapBytes": 20000,
+            "maxFreeBlockBytes": 18000,
+            "wsMemoryDrops": 0
+          },
+          "megaLink": "ready",
+          "controlMode": "direct",
+          "extensionVersion": 13,
+          "sensorHead": {
+            "known": true,
+            "running": false,
+            "enabled": true,
+            "ageMs": 200
+          },
+          "brokerTs": 5000,
+          "megaAgeMs": 200,
+          "capabilities": {
+            "uart_bridge": {
+              "present": true,
+              "implemented": true,
+              "calibrated": true,
+              "valid": true,
+              "freshness": "fresh",
+              "reason": "Servicio negociado con ATmega; hardware sin certificar."
+            },
+            "mecanum_drive": {
+              "present": true,
+              "implemented": true,
+              "calibrated": true,
+              "valid": true,
+              "freshness": "fresh",
+              "reason": "Servicio negociado con ATmega; hardware sin certificar.",
+              "limits": {
+                "maxSpeedMmS": 500,
+                "maxPwmPct": 100,
+                "wheelDiameterMm": 80,
+                "radiusSumMm": 150
+              }
+            },
+            "wheel_odometry": {
+              "present": true,
+              "implemented": true,
+              "calibrated": true,
+              "valid": true,
+              "freshness": "fresh",
+              "reason": "Servicio negociado con ATmega; hardware sin certificar."
+            },
+            "goto_relative": {
+              "present": true,
+              "implemented": true,
+              "calibrated": true,
+              "valid": true,
+              "freshness": "fresh",
+              "reason": "Servicio negociado con ATmega; hardware sin certificar.",
+              "limits": {
+                "maxSpeedMmS": 500,
+                "maxPwmPct": 100,
+                "wheelDiameterMm": 80,
+                "radiusSumMm": 150
+              }
+            },
+            "line_array_5ch": {
+              "present": true,
+              "implemented": true,
+              "calibrated": true,
+              "valid": true,
+              "freshness": "fresh",
+              "reason": "Servicio negociado con ATmega; hardware sin certificar."
+            },
+            "ultrasonic_hcsr04": {
+              "present": true,
+              "implemented": true,
+              "calibrated": true,
+              "valid": true,
+              "freshness": "fresh",
+              "reason": "Servicio negociado con ATmega; hardware sin certificar."
+            },
+            "oled_128x64": {
+              "present": true,
+              "implemented": true,
+              "calibrated": true,
+              "valid": true,
+              "freshness": "fresh",
+              "reason": "Servicio negociado con ATmega; hardware sin certificar."
+            },
+            "ui_encoder_sw": {
+              "present": true,
+              "implemented": true,
+              "calibrated": true,
+              "valid": true,
+              "freshness": "fresh",
+              "reason": "Servicio negociado con ATmega; hardware sin certificar."
+            },
+            "sequence_runner": {
+              "present": true,
+              "implemented": true,
+              "calibrated": true,
+              "valid": true,
+              "freshness": "fresh",
+              "reason": "Servicio negociado con ATmega; hardware sin certificar.",
+              "limits": {
+                "maxSpeedMmS": 500,
+                "maxPwmPct": 100,
+                "wheelDiameterMm": 80,
+                "radiusSumMm": 150
+              }
+            },
+            "configuration": {
+              "present": true,
+              "implemented": true,
+              "calibrated": true,
+              "valid": true,
+              "freshness": "fresh",
+              "reason": "Servicio negociado con ATmega; hardware sin certificar."
+            },
+            "wheel_test": {
+              "present": true,
+              "implemented": true,
+              "calibrated": true,
+              "valid": true,
+              "freshness": "fresh",
+              "reason": "Servicio negociado con ATmega; hardware sin certificar.",
+              "limits": {
+                "maxSpeedMmS": 500,
+                "maxPwmPct": 100,
+                "wheelDiameterMm": 80,
+                "radiusSumMm": 150
+              }
+            },
+            "line_follow": {
+              "present": true,
+              "implemented": true,
+              "calibrated": true,
+              "valid": true,
+              "freshness": "fresh",
+              "reason": "Servicio negociado con ATmega; hardware sin certificar."
+            },
+            "manual_pwm": {
+              "present": true,
+              "implemented": true,
+              "valid": true,
+              "calibrated": false,
+              "freshness": "fresh",
+              "reason": "PWM manual habilitado; sin odometria ni HC.",
+              "limits": {
+                "maxInputPct": 100,
+                "maxPwmPct": 100
+              }
+            },
+            "sensor_head": {
+              "present": true,
+              "implemented": true,
+              "valid": true,
+              "calibrated": false,
+              "freshness": "fresh",
+              "reason": "EX01v9; calibracion fisica pendiente."
+            },
+            "radar_scanner": {
+              "present": true,
+              "implemented": true,
+              "valid": true,
+              "calibrated": false,
+              "freshness": "fresh",
+              "reason": "EX01v9; calibracion fisica pendiente."
+            },
+            "battery_voltage": {
+              "present": true,
+              "implemented": true,
+              "valid": true,
+              "calibrated": false,
+              "freshness": "fresh",
+              "reason": "EX01v9; A5, divisor 10k/10k, AVCC nominal; medicion explicita."
+            }
+          },
+          "wifiDraft": {
+            "pending": false,
+            "jobId": 0
+          }
+        },
+        "schema": "afr2-ws-1",
+        "ts": 5000,
+        "type": "evt",
+        "event": "system.status"
+      }
+    },
+    "before/ready/changed": {
+      "bytes": 3679,
+      "frame": {
+        "payload": {
+          "outputBackpressure": 0,
+          "replyDeferred": false,
+          "connectionDiagnostics": {
+            "staConnected": true,
+            "wifiStatus": 3,
+            "outputBackpressure": 0,
+            "replyDeferred": false,
+            "wsOpened": 1,
+            "wsClosed": 0,
+            "lastServerCloseCode": 0,
+            "lastServerCloseReason": "",
+            "bootId": 3653448153,
+            "freeHeapBytes": 20000,
+            "maxFreeBlockBytes": 18000,
+            "wsMemoryDrops": 0
+          },
+          "megaLink": "ready",
+          "controlMode": "direct",
+          "extensionVersion": 13,
+          "sensorHead": {
+            "known": true,
+            "running": false,
+            "enabled": true,
+            "ageMs": 200
+          },
+          "brokerTs": 5000,
+          "megaAgeMs": 200,
+          "capabilities": {
+            "uart_bridge": {
+              "present": true,
+              "implemented": true,
+              "calibrated": true,
+              "valid": true,
+              "freshness": "fresh",
+              "reason": "Servicio negociado con ATmega; hardware sin certificar."
+            },
+            "mecanum_drive": {
+              "present": true,
+              "implemented": true,
+              "calibrated": true,
+              "valid": true,
+              "freshness": "fresh",
+              "reason": "Servicio negociado con ATmega; hardware sin certificar.",
+              "limits": {
+                "maxSpeedMmS": 500,
+                "maxPwmPct": 100,
+                "wheelDiameterMm": 80,
+                "radiusSumMm": 150
+              }
+            },
+            "wheel_odometry": {
+              "present": true,
+              "implemented": true,
+              "calibrated": true,
+              "valid": true,
+              "freshness": "fresh",
+              "reason": "Servicio negociado con ATmega; hardware sin certificar."
+            },
+            "goto_relative": {
+              "present": true,
+              "implemented": true,
+              "calibrated": true,
+              "valid": true,
+              "freshness": "fresh",
+              "reason": "Servicio negociado con ATmega; hardware sin certificar.",
+              "limits": {
+                "maxSpeedMmS": 500,
+                "maxPwmPct": 100,
+                "wheelDiameterMm": 80,
+                "radiusSumMm": 150
+              }
+            },
+            "line_array_5ch": {
+              "present": true,
+              "implemented": true,
+              "calibrated": true,
+              "valid": true,
+              "freshness": "fresh",
+              "reason": "Servicio negociado con ATmega; hardware sin certificar."
+            },
+            "ultrasonic_hcsr04": {
+              "present": true,
+              "implemented": true,
+              "calibrated": true,
+              "valid": true,
+              "freshness": "fresh",
+              "reason": "Servicio negociado con ATmega; hardware sin certificar."
+            },
+            "oled_128x64": {
+              "present": true,
+              "implemented": true,
+              "calibrated": true,
+              "valid": true,
+              "freshness": "fresh",
+              "reason": "Servicio negociado con ATmega; hardware sin certificar."
+            },
+            "ui_encoder_sw": {
+              "present": true,
+              "implemented": true,
+              "calibrated": true,
+              "valid": true,
+              "freshness": "fresh",
+              "reason": "Servicio negociado con ATmega; hardware sin certificar."
+            },
+            "sequence_runner": {
+              "present": true,
+              "implemented": true,
+              "calibrated": true,
+              "valid": true,
+              "freshness": "fresh",
+              "reason": "Servicio negociado con ATmega; hardware sin certificar.",
+              "limits": {
+                "maxSpeedMmS": 500,
+                "maxPwmPct": 100,
+                "wheelDiameterMm": 80,
+                "radiusSumMm": 150
+              }
+            },
+            "configuration": {
+              "present": true,
+              "implemented": true,
+              "calibrated": true,
+              "valid": true,
+              "freshness": "fresh",
+              "reason": "Servicio negociado con ATmega; hardware sin certificar."
+            },
+            "wheel_test": {
+              "present": true,
+              "implemented": true,
+              "calibrated": true,
+              "valid": true,
+              "freshness": "fresh",
+              "reason": "Servicio negociado con ATmega; hardware sin certificar.",
+              "limits": {
+                "maxSpeedMmS": 500,
+                "maxPwmPct": 100,
+                "wheelDiameterMm": 80,
+                "radiusSumMm": 150
+              }
+            },
+            "line_follow": {
+              "present": true,
+              "implemented": true,
+              "calibrated": true,
+              "valid": true,
+              "freshness": "fresh",
+              "reason": "Servicio negociado con ATmega; hardware sin certificar."
+            },
+            "manual_pwm": {
+              "present": true,
+              "implemented": true,
+              "valid": true,
+              "calibrated": false,
+              "freshness": "fresh",
+              "reason": "PWM manual habilitado; sin odometria ni HC.",
+              "limits": {
+                "maxInputPct": 100,
+                "maxPwmPct": 100
+              }
+            },
+            "sensor_head": {
+              "present": true,
+              "implemented": true,
+              "valid": true,
+              "calibrated": false,
+              "freshness": "fresh",
+              "reason": "EX01v9; calibracion fisica pendiente."
+            },
+            "radar_scanner": {
+              "present": true,
+              "implemented": true,
+              "valid": true,
+              "calibrated": false,
+              "freshness": "fresh",
+              "reason": "EX01v9; calibracion fisica pendiente."
+            },
+            "battery_voltage": {
+              "present": true,
+              "implemented": true,
+              "valid": true,
+              "calibrated": false,
+              "freshness": "fresh",
+              "reason": "EX01v9; A5, divisor 10k/10k, AVCC nominal; medicion explicita."
+            }
+          },
+          "wifiDraft": {
+            "pending": false,
+            "jobId": 0
+          }
+        },
+        "schema": "afr2-ws-1",
+        "ts": 5000,
+        "type": "evt",
+        "event": "system.status"
+      }
+    },
+    "before/link-down/alive": {
+      "bytes": 3720,
+      "frame": {
+        "payload": {
+          "outputBackpressure": 0,
+          "replyDeferred": false,
+          "connectionDiagnostics": {
+            "staConnected": true,
+            "wifiStatus": 3,
+            "outputBackpressure": 0,
+            "replyDeferred": false,
+            "wsOpened": 1,
+            "wsClosed": 0,
+            "lastServerCloseCode": 0,
+            "lastServerCloseReason": "",
+            "bootId": 3653448153,
+            "freeHeapBytes": 20000,
+            "maxFreeBlockBytes": 18000,
+            "wsMemoryDrops": 0
+          },
+          "megaLink": "disconnected",
+          "controlMode": "direct",
+          "extensionVersion": 13,
+          "sensorHead": {
+            "known": false,
+            "running": false,
+            "enabled": true,
+            "ageMs": 200
+          },
+          "brokerTs": 5000,
+          "megaAgeMs": null,
+          "capabilities": {
+            "uart_bridge": {
+              "present": true,
+              "implemented": false,
+              "calibrated": false,
+              "valid": false,
+              "freshness": "unknown",
+              "reason": "Requiere productor y calibracion vigentes."
+            },
+            "mecanum_drive": {
+              "present": true,
+              "implemented": false,
+              "calibrated": false,
+              "valid": false,
+              "freshness": "unknown",
+              "reason": "Requiere productor y calibracion vigentes.",
+              "limits": {
+                "maxSpeedMmS": 500,
+                "maxPwmPct": 100,
+                "wheelDiameterMm": 80,
+                "radiusSumMm": 150
+              }
+            },
+            "wheel_odometry": {
+              "present": false,
+              "implemented": false,
+              "calibrated": false,
+              "valid": false,
+              "freshness": "unknown",
+              "reason": "Requiere productor y calibracion vigentes."
+            },
+            "goto_relative": {
+              "present": false,
+              "implemented": false,
+              "calibrated": false,
+              "valid": false,
+              "freshness": "unknown",
+              "reason": "Requiere productor y calibracion vigentes.",
+              "limits": {
+                "maxSpeedMmS": 500,
+                "maxPwmPct": 100,
+                "wheelDiameterMm": 80,
+                "radiusSumMm": 150
+              }
+            },
+            "line_array_5ch": {
+              "present": true,
+              "implemented": false,
+              "calibrated": false,
+              "valid": false,
+              "freshness": "unknown",
+              "reason": "Requiere productor y calibracion vigentes."
+            },
+            "ultrasonic_hcsr04": {
+              "present": true,
+              "implemented": false,
+              "calibrated": false,
+              "valid": false,
+              "freshness": "unknown",
+              "reason": "Requiere productor y calibracion vigentes."
+            },
+            "oled_128x64": {
+              "present": true,
+              "implemented": false,
+              "calibrated": false,
+              "valid": false,
+              "freshness": "unknown",
+              "reason": "Esperando extension UI EX01."
+            },
+            "ui_encoder_sw": {
+              "present": true,
+              "implemented": false,
+              "calibrated": false,
+              "valid": false,
+              "freshness": "unknown",
+              "reason": "Esperando extension UI EX01."
+            },
+            "sequence_runner": {
+              "present": true,
+              "implemented": false,
+              "calibrated": false,
+              "valid": false,
+              "freshness": "unknown",
+              "reason": "Requiere EX01 v4, calibracion y presupuesto SRAM aprobado.",
+              "limits": {
+                "maxSpeedMmS": 500,
+                "maxPwmPct": 100,
+                "wheelDiameterMm": 80,
+                "radiusSumMm": 150
+              }
+            },
+            "configuration": {
+              "present": true,
+              "implemented": false,
+              "calibrated": false,
+              "valid": false,
+              "freshness": "unknown",
+              "reason": "Requiere productor y calibracion vigentes."
+            },
+            "wheel_test": {
+              "present": true,
+              "implemented": false,
+              "calibrated": false,
+              "valid": false,
+              "freshness": "unknown",
+              "reason": "Habilitar motores; revisar fallo o enlace.",
+              "limits": {
+                "maxSpeedMmS": 500,
+                "maxPwmPct": 100,
+                "wheelDiameterMm": 80,
+                "radiusSumMm": 150
+              }
+            },
+            "line_follow": {
+              "present": true,
+              "implemented": false,
+              "calibrated": false,
+              "valid": false,
+              "freshness": "unknown",
+              "reason": "Requiere productor y calibracion vigentes."
+            },
+            "manual_pwm": {
+              "present": true,
+              "implemented": false,
+              "valid": false,
+              "calibrated": false,
+              "freshness": "unknown",
+              "reason": "Habilitar motores; revisar fallo, radar, calibracion, secuencia, tarea local o enlace.",
+              "limits": {
+                "maxInputPct": 100,
+                "maxPwmPct": 100
+              }
+            },
+            "sensor_head": {
+              "present": true,
+              "implemented": false,
+              "valid": false,
+              "calibrated": false,
+              "freshness": "unknown",
+              "reason": "EX01v9; calibracion fisica pendiente."
+            },
+            "radar_scanner": {
+              "present": true,
+              "implemented": false,
+              "valid": false,
+              "calibrated": false,
+              "freshness": "unknown",
+              "reason": "EX01v9; calibracion fisica pendiente."
+            },
+            "battery_voltage": {
+              "present": true,
+              "implemented": false,
+              "valid": false,
+              "calibrated": false,
+              "freshness": "unknown",
+              "reason": "EX01v9; A5, divisor 10k/10k, AVCC nominal; medicion explicita."
+            }
+          },
+          "wifiDraft": {
+            "pending": false,
+            "jobId": 0
+          }
+        },
+        "schema": "afr2-ws-1",
+        "ts": 5000,
+        "type": "res",
+        "ok": true,
+        "status": "completed",
+        "requestId": "12345678-1234-1234-1234-123456789abc",
+        "cmd": "system.alive"
+      }
+    },
+    "before/link-down/status": {
+      "bytes": 3641,
+      "frame": {
+        "payload": {
+          "outputBackpressure": 0,
+          "replyDeferred": false,
+          "connectionDiagnostics": {
+            "staConnected": true,
+            "wifiStatus": 3,
+            "outputBackpressure": 0,
+            "replyDeferred": false,
+            "wsOpened": 1,
+            "wsClosed": 0,
+            "lastServerCloseCode": 0,
+            "lastServerCloseReason": "",
+            "bootId": 3653448153,
+            "freeHeapBytes": 20000,
+            "maxFreeBlockBytes": 18000,
+            "wsMemoryDrops": 0
+          },
+          "megaLink": "disconnected",
+          "controlMode": "direct",
+          "extensionVersion": 13,
+          "sensorHead": {
+            "known": false,
+            "running": false,
+            "enabled": true,
+            "ageMs": 200
+          },
+          "brokerTs": 5000,
+          "megaAgeMs": null,
+          "capabilities": {
+            "uart_bridge": {
+              "present": true,
+              "implemented": false,
+              "calibrated": false,
+              "valid": false,
+              "freshness": "unknown",
+              "reason": "Requiere productor y calibracion vigentes."
+            },
+            "mecanum_drive": {
+              "present": true,
+              "implemented": false,
+              "calibrated": false,
+              "valid": false,
+              "freshness": "unknown",
+              "reason": "Requiere productor y calibracion vigentes.",
+              "limits": {
+                "maxSpeedMmS": 500,
+                "maxPwmPct": 100,
+                "wheelDiameterMm": 80,
+                "radiusSumMm": 150
+              }
+            },
+            "wheel_odometry": {
+              "present": false,
+              "implemented": false,
+              "calibrated": false,
+              "valid": false,
+              "freshness": "unknown",
+              "reason": "Requiere productor y calibracion vigentes."
+            },
+            "goto_relative": {
+              "present": false,
+              "implemented": false,
+              "calibrated": false,
+              "valid": false,
+              "freshness": "unknown",
+              "reason": "Requiere productor y calibracion vigentes.",
+              "limits": {
+                "maxSpeedMmS": 500,
+                "maxPwmPct": 100,
+                "wheelDiameterMm": 80,
+                "radiusSumMm": 150
+              }
+            },
+            "line_array_5ch": {
+              "present": true,
+              "implemented": false,
+              "calibrated": false,
+              "valid": false,
+              "freshness": "unknown",
+              "reason": "Requiere productor y calibracion vigentes."
+            },
+            "ultrasonic_hcsr04": {
+              "present": true,
+              "implemented": false,
+              "calibrated": false,
+              "valid": false,
+              "freshness": "unknown",
+              "reason": "Requiere productor y calibracion vigentes."
+            },
+            "oled_128x64": {
+              "present": true,
+              "implemented": false,
+              "calibrated": false,
+              "valid": false,
+              "freshness": "unknown",
+              "reason": "Esperando extension UI EX01."
+            },
+            "ui_encoder_sw": {
+              "present": true,
+              "implemented": false,
+              "calibrated": false,
+              "valid": false,
+              "freshness": "unknown",
+              "reason": "Esperando extension UI EX01."
+            },
+            "sequence_runner": {
+              "present": true,
+              "implemented": false,
+              "calibrated": false,
+              "valid": false,
+              "freshness": "unknown",
+              "reason": "Requiere EX01 v4, calibracion y presupuesto SRAM aprobado.",
+              "limits": {
+                "maxSpeedMmS": 500,
+                "maxPwmPct": 100,
+                "wheelDiameterMm": 80,
+                "radiusSumMm": 150
+              }
+            },
+            "configuration": {
+              "present": true,
+              "implemented": false,
+              "calibrated": false,
+              "valid": false,
+              "freshness": "unknown",
+              "reason": "Requiere productor y calibracion vigentes."
+            },
+            "wheel_test": {
+              "present": true,
+              "implemented": false,
+              "calibrated": false,
+              "valid": false,
+              "freshness": "unknown",
+              "reason": "Habilitar motores; revisar fallo o enlace.",
+              "limits": {
+                "maxSpeedMmS": 500,
+                "maxPwmPct": 100,
+                "wheelDiameterMm": 80,
+                "radiusSumMm": 150
+              }
+            },
+            "line_follow": {
+              "present": true,
+              "implemented": false,
+              "calibrated": false,
+              "valid": false,
+              "freshness": "unknown",
+              "reason": "Requiere productor y calibracion vigentes."
+            },
+            "manual_pwm": {
+              "present": true,
+              "implemented": false,
+              "valid": false,
+              "calibrated": false,
+              "freshness": "unknown",
+              "reason": "Habilitar motores; revisar fallo, radar, calibracion, secuencia, tarea local o enlace.",
+              "limits": {
+                "maxInputPct": 100,
+                "maxPwmPct": 100
+              }
+            },
+            "sensor_head": {
+              "present": true,
+              "implemented": false,
+              "valid": false,
+              "calibrated": false,
+              "freshness": "unknown",
+              "reason": "EX01v9; calibracion fisica pendiente."
+            },
+            "radar_scanner": {
+              "present": true,
+              "implemented": false,
+              "valid": false,
+              "calibrated": false,
+              "freshness": "unknown",
+              "reason": "EX01v9; calibracion fisica pendiente."
+            },
+            "battery_voltage": {
+              "present": true,
+              "implemented": false,
+              "valid": false,
+              "calibrated": false,
+              "freshness": "unknown",
+              "reason": "EX01v9; A5, divisor 10k/10k, AVCC nominal; medicion explicita."
+            }
+          },
+          "wifiDraft": {
+            "pending": false,
+            "jobId": 0
+          }
+        },
+        "schema": "afr2-ws-1",
+        "ts": 5000,
+        "type": "evt",
+        "event": "system.status"
+      }
+    },
+    "before/link-down/changed": {
+      "bytes": 3641,
+      "frame": {
+        "payload": {
+          "outputBackpressure": 0,
+          "replyDeferred": false,
+          "connectionDiagnostics": {
+            "staConnected": true,
+            "wifiStatus": 3,
+            "outputBackpressure": 0,
+            "replyDeferred": false,
+            "wsOpened": 1,
+            "wsClosed": 0,
+            "lastServerCloseCode": 0,
+            "lastServerCloseReason": "",
+            "bootId": 3653448153,
+            "freeHeapBytes": 20000,
+            "maxFreeBlockBytes": 18000,
+            "wsMemoryDrops": 0
+          },
+          "megaLink": "disconnected",
+          "controlMode": "direct",
+          "extensionVersion": 13,
+          "sensorHead": {
+            "known": false,
+            "running": false,
+            "enabled": true,
+            "ageMs": 200
+          },
+          "brokerTs": 5000,
+          "megaAgeMs": null,
+          "capabilities": {
+            "uart_bridge": {
+              "present": true,
+              "implemented": false,
+              "calibrated": false,
+              "valid": false,
+              "freshness": "unknown",
+              "reason": "Requiere productor y calibracion vigentes."
+            },
+            "mecanum_drive": {
+              "present": true,
+              "implemented": false,
+              "calibrated": false,
+              "valid": false,
+              "freshness": "unknown",
+              "reason": "Requiere productor y calibracion vigentes.",
+              "limits": {
+                "maxSpeedMmS": 500,
+                "maxPwmPct": 100,
+                "wheelDiameterMm": 80,
+                "radiusSumMm": 150
+              }
+            },
+            "wheel_odometry": {
+              "present": false,
+              "implemented": false,
+              "calibrated": false,
+              "valid": false,
+              "freshness": "unknown",
+              "reason": "Requiere productor y calibracion vigentes."
+            },
+            "goto_relative": {
+              "present": false,
+              "implemented": false,
+              "calibrated": false,
+              "valid": false,
+              "freshness": "unknown",
+              "reason": "Requiere productor y calibracion vigentes.",
+              "limits": {
+                "maxSpeedMmS": 500,
+                "maxPwmPct": 100,
+                "wheelDiameterMm": 80,
+                "radiusSumMm": 150
+              }
+            },
+            "line_array_5ch": {
+              "present": true,
+              "implemented": false,
+              "calibrated": false,
+              "valid": false,
+              "freshness": "unknown",
+              "reason": "Requiere productor y calibracion vigentes."
+            },
+            "ultrasonic_hcsr04": {
+              "present": true,
+              "implemented": false,
+              "calibrated": false,
+              "valid": false,
+              "freshness": "unknown",
+              "reason": "Requiere productor y calibracion vigentes."
+            },
+            "oled_128x64": {
+              "present": true,
+              "implemented": false,
+              "calibrated": false,
+              "valid": false,
+              "freshness": "unknown",
+              "reason": "Esperando extension UI EX01."
+            },
+            "ui_encoder_sw": {
+              "present": true,
+              "implemented": false,
+              "calibrated": false,
+              "valid": false,
+              "freshness": "unknown",
+              "reason": "Esperando extension UI EX01."
+            },
+            "sequence_runner": {
+              "present": true,
+              "implemented": false,
+              "calibrated": false,
+              "valid": false,
+              "freshness": "unknown",
+              "reason": "Requiere EX01 v4, calibracion y presupuesto SRAM aprobado.",
+              "limits": {
+                "maxSpeedMmS": 500,
+                "maxPwmPct": 100,
+                "wheelDiameterMm": 80,
+                "radiusSumMm": 150
+              }
+            },
+            "configuration": {
+              "present": true,
+              "implemented": false,
+              "calibrated": false,
+              "valid": false,
+              "freshness": "unknown",
+              "reason": "Requiere productor y calibracion vigentes."
+            },
+            "wheel_test": {
+              "present": true,
+              "implemented": false,
+              "calibrated": false,
+              "valid": false,
+              "freshness": "unknown",
+              "reason": "Habilitar motores; revisar fallo o enlace.",
+              "limits": {
+                "maxSpeedMmS": 500,
+                "maxPwmPct": 100,
+                "wheelDiameterMm": 80,
+                "radiusSumMm": 150
+              }
+            },
+            "line_follow": {
+              "present": true,
+              "implemented": false,
+              "calibrated": false,
+              "valid": false,
+              "freshness": "unknown",
+              "reason": "Requiere productor y calibracion vigentes."
+            },
+            "manual_pwm": {
+              "present": true,
+              "implemented": false,
+              "valid": false,
+              "calibrated": false,
+              "freshness": "unknown",
+              "reason": "Habilitar motores; revisar fallo, radar, calibracion, secuencia, tarea local o enlace.",
+              "limits": {
+                "maxInputPct": 100,
+                "maxPwmPct": 100
+              }
+            },
+            "sensor_head": {
+              "present": true,
+              "implemented": false,
+              "valid": false,
+              "calibrated": false,
+              "freshness": "unknown",
+              "reason": "EX01v9; calibracion fisica pendiente."
+            },
+            "radar_scanner": {
+              "present": true,
+              "implemented": false,
+              "valid": false,
+              "calibrated": false,
+              "freshness": "unknown",
+              "reason": "EX01v9; calibracion fisica pendiente."
+            },
+            "battery_voltage": {
+              "present": true,
+              "implemented": false,
+              "valid": false,
+              "calibrated": false,
+              "freshness": "unknown",
+              "reason": "EX01v9; A5, divisor 10k/10k, AVCC nominal; medicion explicita."
+            }
+          },
+          "wifiDraft": {
+            "pending": false,
+            "jobId": 0
+          }
+        },
+        "schema": "afr2-ws-1",
+        "ts": 5000,
+        "type": "evt",
+        "event": "system.status"
+      }
+    },
+    "after/ready/alive": {
+      "bytes": 195,
+      "frame": {
+        "payload": {
+          "megaLink": "ready",
+          "brokerTs": 5000
+        },
+        "schema": "afr2-ws-1",
+        "ts": 5000,
+        "type": "res",
+        "ok": true,
+        "status": "completed",
+        "requestId": "12345678-1234-1234-1234-123456789abc",
+        "cmd": "system.alive"
+      }
+    },
+    "after/ready/status": {
+      "bytes": 602,
+      "frame": {
+        "payload": {
+          "outputBackpressure": 0,
+          "replyDeferred": false,
+          "connectionDiagnostics": {
+            "staConnected": true,
+            "wifiStatus": 3,
+            "outputBackpressure": 0,
+            "replyDeferred": false,
+            "wsOpened": 1,
+            "wsClosed": 0,
+            "lastServerCloseCode": 0,
+            "lastServerCloseReason": "",
+            "bootId": 3653448153,
+            "freeHeapBytes": 20000,
+            "maxFreeBlockBytes": 18000,
+            "wsMemoryDrops": 0
+          },
+          "megaLink": "ready",
+          "controlMode": "direct",
+          "extensionVersion": 13,
+          "sensorHead": {
+            "known": true,
+            "running": false,
+            "enabled": true,
+            "ageMs": 200
+          },
+          "brokerTs": 5000,
+          "megaAgeMs": 200,
+          "wifiDraft": {
+            "pending": false,
+            "jobId": 0
+          }
+        },
+        "schema": "afr2-ws-1",
+        "ts": 5000,
+        "type": "evt",
+        "event": "system.status"
+      }
+    },
+    "after/ready/changed": {
+      "bytes": 3679,
+      "frame": {
+        "payload": {
+          "outputBackpressure": 0,
+          "replyDeferred": false,
+          "connectionDiagnostics": {
+            "staConnected": true,
+            "wifiStatus": 3,
+            "outputBackpressure": 0,
+            "replyDeferred": false,
+            "wsOpened": 1,
+            "wsClosed": 0,
+            "lastServerCloseCode": 0,
+            "lastServerCloseReason": "",
+            "bootId": 3653448153,
+            "freeHeapBytes": 20000,
+            "maxFreeBlockBytes": 18000,
+            "wsMemoryDrops": 0
+          },
+          "megaLink": "ready",
+          "controlMode": "direct",
+          "extensionVersion": 13,
+          "sensorHead": {
+            "known": true,
+            "running": false,
+            "enabled": true,
+            "ageMs": 200
+          },
+          "brokerTs": 5000,
+          "megaAgeMs": 200,
+          "wifiDraft": {
+            "pending": false,
+            "jobId": 0
+          },
+          "capabilities": {
+            "uart_bridge": {
+              "present": true,
+              "implemented": true,
+              "calibrated": true,
+              "valid": true,
+              "freshness": "fresh",
+              "reason": "Servicio negociado con ATmega; hardware sin certificar."
+            },
+            "mecanum_drive": {
+              "present": true,
+              "implemented": true,
+              "calibrated": true,
+              "valid": true,
+              "freshness": "fresh",
+              "reason": "Servicio negociado con ATmega; hardware sin certificar.",
+              "limits": {
+                "maxSpeedMmS": 500,
+                "maxPwmPct": 100,
+                "wheelDiameterMm": 80,
+                "radiusSumMm": 150
+              }
+            },
+            "wheel_odometry": {
+              "present": true,
+              "implemented": true,
+              "calibrated": true,
+              "valid": true,
+              "freshness": "fresh",
+              "reason": "Servicio negociado con ATmega; hardware sin certificar."
+            },
+            "goto_relative": {
+              "present": true,
+              "implemented": true,
+              "calibrated": true,
+              "valid": true,
+              "freshness": "fresh",
+              "reason": "Servicio negociado con ATmega; hardware sin certificar.",
+              "limits": {
+                "maxSpeedMmS": 500,
+                "maxPwmPct": 100,
+                "wheelDiameterMm": 80,
+                "radiusSumMm": 150
+              }
+            },
+            "line_array_5ch": {
+              "present": true,
+              "implemented": true,
+              "calibrated": true,
+              "valid": true,
+              "freshness": "fresh",
+              "reason": "Servicio negociado con ATmega; hardware sin certificar."
+            },
+            "ultrasonic_hcsr04": {
+              "present": true,
+              "implemented": true,
+              "calibrated": true,
+              "valid": true,
+              "freshness": "fresh",
+              "reason": "Servicio negociado con ATmega; hardware sin certificar."
+            },
+            "oled_128x64": {
+              "present": true,
+              "implemented": true,
+              "calibrated": true,
+              "valid": true,
+              "freshness": "fresh",
+              "reason": "Servicio negociado con ATmega; hardware sin certificar."
+            },
+            "ui_encoder_sw": {
+              "present": true,
+              "implemented": true,
+              "calibrated": true,
+              "valid": true,
+              "freshness": "fresh",
+              "reason": "Servicio negociado con ATmega; hardware sin certificar."
+            },
+            "sequence_runner": {
+              "present": true,
+              "implemented": true,
+              "calibrated": true,
+              "valid": true,
+              "freshness": "fresh",
+              "reason": "Servicio negociado con ATmega; hardware sin certificar.",
+              "limits": {
+                "maxSpeedMmS": 500,
+                "maxPwmPct": 100,
+                "wheelDiameterMm": 80,
+                "radiusSumMm": 150
+              }
+            },
+            "configuration": {
+              "present": true,
+              "implemented": true,
+              "calibrated": true,
+              "valid": true,
+              "freshness": "fresh",
+              "reason": "Servicio negociado con ATmega; hardware sin certificar."
+            },
+            "wheel_test": {
+              "present": true,
+              "implemented": true,
+              "calibrated": true,
+              "valid": true,
+              "freshness": "fresh",
+              "reason": "Servicio negociado con ATmega; hardware sin certificar.",
+              "limits": {
+                "maxSpeedMmS": 500,
+                "maxPwmPct": 100,
+                "wheelDiameterMm": 80,
+                "radiusSumMm": 150
+              }
+            },
+            "line_follow": {
+              "present": true,
+              "implemented": true,
+              "calibrated": true,
+              "valid": true,
+              "freshness": "fresh",
+              "reason": "Servicio negociado con ATmega; hardware sin certificar."
+            },
+            "manual_pwm": {
+              "present": true,
+              "implemented": true,
+              "valid": true,
+              "calibrated": false,
+              "freshness": "fresh",
+              "reason": "PWM manual habilitado; sin odometria ni HC.",
+              "limits": {
+                "maxInputPct": 100,
+                "maxPwmPct": 100
+              }
+            },
+            "sensor_head": {
+              "present": true,
+              "implemented": true,
+              "valid": true,
+              "calibrated": false,
+              "freshness": "fresh",
+              "reason": "EX01v9; calibracion fisica pendiente."
+            },
+            "radar_scanner": {
+              "present": true,
+              "implemented": true,
+              "valid": true,
+              "calibrated": false,
+              "freshness": "fresh",
+              "reason": "EX01v9; calibracion fisica pendiente."
+            },
+            "battery_voltage": {
+              "present": true,
+              "implemented": true,
+              "valid": true,
+              "calibrated": false,
+              "freshness": "fresh",
+              "reason": "EX01v9; A5, divisor 10k/10k, AVCC nominal; medicion explicita."
+            }
+          }
+        },
+        "schema": "afr2-ws-1",
+        "ts": 5000,
+        "type": "evt",
+        "event": "system.status"
+      }
+    },
+    "after/link-down/alive": {
+      "bytes": 202,
+      "frame": {
+        "payload": {
+          "megaLink": "disconnected",
+          "brokerTs": 5000
+        },
+        "schema": "afr2-ws-1",
+        "ts": 5000,
+        "type": "res",
+        "ok": true,
+        "status": "completed",
+        "requestId": "12345678-1234-1234-1234-123456789abc",
+        "cmd": "system.alive"
+      }
+    },
+    "after/link-down/status": {
+      "bytes": 611,
+      "frame": {
+        "payload": {
+          "outputBackpressure": 0,
+          "replyDeferred": false,
+          "connectionDiagnostics": {
+            "staConnected": true,
+            "wifiStatus": 3,
+            "outputBackpressure": 0,
+            "replyDeferred": false,
+            "wsOpened": 1,
+            "wsClosed": 0,
+            "lastServerCloseCode": 0,
+            "lastServerCloseReason": "",
+            "bootId": 3653448153,
+            "freeHeapBytes": 20000,
+            "maxFreeBlockBytes": 18000,
+            "wsMemoryDrops": 0
+          },
+          "megaLink": "disconnected",
+          "controlMode": "direct",
+          "extensionVersion": 13,
+          "sensorHead": {
+            "known": false,
+            "running": false,
+            "enabled": true,
+            "ageMs": 200
+          },
+          "brokerTs": 5000,
+          "megaAgeMs": null,
+          "wifiDraft": {
+            "pending": false,
+            "jobId": 0
+          }
+        },
+        "schema": "afr2-ws-1",
+        "ts": 5000,
+        "type": "evt",
+        "event": "system.status"
+      }
+    },
+    "after/link-down/changed": {
+      "bytes": 3641,
+      "frame": {
+        "payload": {
+          "outputBackpressure": 0,
+          "replyDeferred": false,
+          "connectionDiagnostics": {
+            "staConnected": true,
+            "wifiStatus": 3,
+            "outputBackpressure": 0,
+            "replyDeferred": false,
+            "wsOpened": 1,
+            "wsClosed": 0,
+            "lastServerCloseCode": 0,
+            "lastServerCloseReason": "",
+            "bootId": 3653448153,
+            "freeHeapBytes": 20000,
+            "maxFreeBlockBytes": 18000,
+            "wsMemoryDrops": 0
+          },
+          "megaLink": "disconnected",
+          "controlMode": "direct",
+          "extensionVersion": 13,
+          "sensorHead": {
+            "known": false,
+            "running": false,
+            "enabled": true,
+            "ageMs": 200
+          },
+          "brokerTs": 5000,
+          "megaAgeMs": null,
+          "wifiDraft": {
+            "pending": false,
+            "jobId": 0
+          },
+          "capabilities": {
+            "uart_bridge": {
+              "present": true,
+              "implemented": false,
+              "calibrated": false,
+              "valid": false,
+              "freshness": "unknown",
+              "reason": "Requiere productor y calibracion vigentes."
+            },
+            "mecanum_drive": {
+              "present": true,
+              "implemented": false,
+              "calibrated": false,
+              "valid": false,
+              "freshness": "unknown",
+              "reason": "Requiere productor y calibracion vigentes.",
+              "limits": {
+                "maxSpeedMmS": 500,
+                "maxPwmPct": 100,
+                "wheelDiameterMm": 80,
+                "radiusSumMm": 150
+              }
+            },
+            "wheel_odometry": {
+              "present": false,
+              "implemented": false,
+              "calibrated": false,
+              "valid": false,
+              "freshness": "unknown",
+              "reason": "Requiere productor y calibracion vigentes."
+            },
+            "goto_relative": {
+              "present": false,
+              "implemented": false,
+              "calibrated": false,
+              "valid": false,
+              "freshness": "unknown",
+              "reason": "Requiere productor y calibracion vigentes.",
+              "limits": {
+                "maxSpeedMmS": 500,
+                "maxPwmPct": 100,
+                "wheelDiameterMm": 80,
+                "radiusSumMm": 150
+              }
+            },
+            "line_array_5ch": {
+              "present": true,
+              "implemented": false,
+              "calibrated": false,
+              "valid": false,
+              "freshness": "unknown",
+              "reason": "Requiere productor y calibracion vigentes."
+            },
+            "ultrasonic_hcsr04": {
+              "present": true,
+              "implemented": false,
+              "calibrated": false,
+              "valid": false,
+              "freshness": "unknown",
+              "reason": "Requiere productor y calibracion vigentes."
+            },
+            "oled_128x64": {
+              "present": true,
+              "implemented": false,
+              "calibrated": false,
+              "valid": false,
+              "freshness": "unknown",
+              "reason": "Esperando extension UI EX01."
+            },
+            "ui_encoder_sw": {
+              "present": true,
+              "implemented": false,
+              "calibrated": false,
+              "valid": false,
+              "freshness": "unknown",
+              "reason": "Esperando extension UI EX01."
+            },
+            "sequence_runner": {
+              "present": true,
+              "implemented": false,
+              "calibrated": false,
+              "valid": false,
+              "freshness": "unknown",
+              "reason": "Requiere EX01 v4, calibracion y presupuesto SRAM aprobado.",
+              "limits": {
+                "maxSpeedMmS": 500,
+                "maxPwmPct": 100,
+                "wheelDiameterMm": 80,
+                "radiusSumMm": 150
+              }
+            },
+            "configuration": {
+              "present": true,
+              "implemented": false,
+              "calibrated": false,
+              "valid": false,
+              "freshness": "unknown",
+              "reason": "Requiere productor y calibracion vigentes."
+            },
+            "wheel_test": {
+              "present": true,
+              "implemented": false,
+              "calibrated": false,
+              "valid": false,
+              "freshness": "unknown",
+              "reason": "Habilitar motores; revisar fallo o enlace.",
+              "limits": {
+                "maxSpeedMmS": 500,
+                "maxPwmPct": 100,
+                "wheelDiameterMm": 80,
+                "radiusSumMm": 150
+              }
+            },
+            "line_follow": {
+              "present": true,
+              "implemented": false,
+              "calibrated": false,
+              "valid": false,
+              "freshness": "unknown",
+              "reason": "Requiere productor y calibracion vigentes."
+            },
+            "manual_pwm": {
+              "present": true,
+              "implemented": false,
+              "valid": false,
+              "calibrated": false,
+              "freshness": "unknown",
+              "reason": "Habilitar motores; revisar fallo, radar, calibracion, secuencia, tarea local o enlace.",
+              "limits": {
+                "maxInputPct": 100,
+                "maxPwmPct": 100
+              }
+            },
+            "sensor_head": {
+              "present": true,
+              "implemented": false,
+              "valid": false,
+              "calibrated": false,
+              "freshness": "unknown",
+              "reason": "EX01v9; calibracion fisica pendiente."
+            },
+            "radar_scanner": {
+              "present": true,
+              "implemented": false,
+              "valid": false,
+              "calibrated": false,
+              "freshness": "unknown",
+              "reason": "EX01v9; calibracion fisica pendiente."
+            },
+            "battery_voltage": {
+              "present": true,
+              "implemented": false,
+              "valid": false,
+              "calibrated": false,
+              "freshness": "unknown",
+              "reason": "EX01v9; A5, divisor 10k/10k, AVCC nominal; medicion explicita."
+            }
+          }
+        },
+        "schema": "afr2-ws-1",
+        "ts": 5000,
+        "type": "evt",
+        "event": "system.status"
+      }
+    }
+  }
+}

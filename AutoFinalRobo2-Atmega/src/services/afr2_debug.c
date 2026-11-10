@@ -71,6 +71,8 @@ static struct {
     uint16_t esp_resets;   /* AFR2-20261108-09: ESP boot frames since this AVR boot */
     uint32_t rotation_ms, stat_ms, reject_ms, fault_ms, peer_window_ms, esp_boot, net_boot;
     uint32_t peer_ms, rom_ms;
+    uint16_t noise_hall, noise_enc;   /* AFR2-20261110-15: last reported storm counters */
+    uint32_t noise_ms;
 } d;
 
 #if AFR2_DEBUG_TAP
@@ -139,7 +141,9 @@ static uint8_t starts_P(PGM_P text, PGM_P prefix) {
 }
 static uint8_t tap_allows(PGM_P format) {
     return !t.mode || starts_P(format, PSTR("AVR")) || starts_P(format, PSTR("ESP")) ||
-        starts_P(format, PSTR("LINK lost")) || starts_P(format, PSTR("LINK hello")) || starts_P(format, PSTR("TAP"));
+        starts_P(format, PSTR("LINK lost")) || starts_P(format, PSTR("LINK hello")) || starts_P(format, PSTR("TAP")) ||
+        /* AFR2-20261110-15: F1 evidence is needed while the Loader watches frames, too. */
+        starts_P(format, PSTR("FAULT")) || starts_P(format, PSTR("LOOP slow")) || starts_P(format, PSTR("NOISE"));
 }
 #else
 #define tap_allows(format) 1
@@ -477,6 +481,14 @@ void Afr2Debug_Task(uint32_t now, const Afr2Link *link) {
     if (d.rotation && (uint32_t)(now - d.rotation_ms) >= 250u) flush_rotation();
     if (d.fault_burst && (uint32_t)(now - d.fault_ms) >= FAULT_REPEAT_MS) flush_faults(now);
     if (d.reject_repeats && (uint32_t)(now - d.reject_ms) >= REJECT_REPEAT_MS) { flush_rejects(); d.reject_ms = now; }
+    /* AFR2-20261110-15: IRQ-storm windows (source masked for the rest of a 1 ms tick), at most 2 lines/s. */
+    if ((uint32_t)(now - d.noise_ms) >= 500u) {
+        uint16_t hall, enc; Afr2Board_NoiseCounts(&hall, &enc);
+        if ((hall != d.noise_hall || enc != d.noise_enc) &&
+            log_p(PSTR("NOISE irq storm hall+%u enc+%u (total %u/%u)"), (unsigned)(uint16_t)(hall - d.noise_hall),
+                  (unsigned)(uint16_t)(enc - d.noise_enc), hall, enc)) { d.noise_hall = hall; d.noise_enc = enc; }
+        d.noise_ms = now;
+    }
     if ((uint32_t)(now - d.stat_ms) < STAT_MS || !link) return;
     d.stat_ms = now;
     uint16_t requests = (uint16_t)(link->requests - d.seen_requests);

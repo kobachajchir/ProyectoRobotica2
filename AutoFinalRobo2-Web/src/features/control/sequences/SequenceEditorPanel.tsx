@@ -23,7 +23,6 @@ import {
   evaluateSequenceSimulationAtTime,
   resolveMovementBlockEndpoints,
   validateSequenceDocument,
-  type SimulationSnapshotAtCursor,
 } from './mecanumKinematics';
 import { type TimelineVisualBlock } from './MotorBlock';
 import {
@@ -50,10 +49,10 @@ import { wheelDurationMs } from './blockCompletion';
 import { compilePhysicalProgram } from './physicalProgram';
 import { movementDurationMs } from './mecanumKinematics';
 import { FloatingModal } from '../../../components/ui/FloatingModal';
+import type { SimulationMapFeed } from '../ControlMap';
 
 export interface SequenceEditorPanelProps {
-  preview?: React.ReactNode;
-  onSimulationChange: (snapshot: SimulationSnapshotAtCursor, isPlaying: boolean, profileSummary: string) => void;
+  preview?: (feed: SimulationMapFeed) => React.ReactNode;
 }
 
 type SelectionTarget =
@@ -119,7 +118,7 @@ function formatWheelSummary(block: WheelBlock): string {
   }
 }
 
-export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEditorPanelProps) {
+export function SequenceEditorPanel({ preview }: SequenceEditorPanelProps) {
   const {
     wsState,
     megaLinkState,
@@ -147,6 +146,9 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
   const [selection, setSelection] = useState<SelectionTarget>(null);
   const [activeWheelTrackForAdd, setActiveWheelTrackForAdd] = useState<WheelTrackKey>('fl');
   const [selectedTrack, setSelectedTrack] = useState<WheelTrackKey | 'movements' | null>(null);
+  const [timelineScroll, setTimelineScroll] = useState(0);
+  const [linkDurations, setLinkDurations] = useState(true);
+  const [restoreChassis, setRestoreChassis] = useState(false);
   const [pendingTrackDelete, setPendingTrackDelete] = useState<{ program: string; track: WheelTrackKey } | null>(null);
   const deletedTrack = useRef(false);
   const trackCountRef = useRef<HTMLSelectElement>(null);
@@ -208,21 +210,18 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
 
   // Evaluación determinista en el cursor actual
   const simSnapshot = useMemo(
-    () => evaluateSequenceSimulationAtTime(activeDoc, cursorMs),
-    [activeDoc, cursorMs]
+    () => evaluateSequenceSimulationAtTime(activeDoc, Math.min(cursorMs, totalDurationMs)),
+    [activeDoc, cursorMs, totalDurationMs]
   );
-
-  const profileSummary = useMemo(
-    () =>
-      `L=${activeDoc.kinematicProfile.lxPlusLyMm} mm · Vmax=${activeDoc.kinematicProfile.maxWheelSpeedMmS} mm/s (${
-        activeDoc.kinematicProfile.calibrated ? 'calibrado' : 'no calibrado'
-      })`,
-    [activeDoc.kinematicProfile]
-  );
-
-  useEffect(() => {
-    onSimulationChange(simSnapshot, simPlaying, profileSummary);
-  }, [simSnapshot, simPlaying, profileSummary, onSimulationChange]);
+  const plannedSnapshot = useMemo(() => evaluateSequenceSimulationAtTime(activeDoc, totalDurationMs), [activeDoc, totalDurationMs]);
+  useEffect(() => { setCursorMs(value => Math.min(value, totalDurationMs)); }, [totalDurationMs]);
+  const previewFeed: SimulationMapFeed = {
+    pose: { schema: 'afr2-pose-1', frameId: 'sim-mecanum-local', sequence: Math.round(simSnapshot.cursorMs/10), xMm: simSnapshot.xMm, yMm: simSnapshot.yMm, thetaMrad: simSnapshot.thetaMrad, ageMs: 0 },
+    trail: simSnapshot.trail, plannedRoute: plannedSnapshot.trail, wheelAngles: simSnapshot.wheelAngles,
+    cursorMs: simSnapshot.cursorMs, totalDurationMs, isPlaying: simPlaying,
+    profileSummary: 'Vista previa de las pistas activas · Reloj compartido para las cuatro ruedas.',
+    onResetOrigin: () => { setSimPlaying(false); setCursorMs(0); },
+  };
 
   const isLocked =
     simPlaying ||
@@ -234,23 +233,16 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
   const commitDocUpdate = useCallback(
     (updater: (prev: Afr2SequenceDocument) => Afr2SequenceDocument, recordHistory = true) => {
       if (isLocked) return;
-      setPrograms((prevList) =>
-        prevList.map((item) => {
-          if (item.id !== activeDoc.id) return item;
-          const next = updater(item);
-          const updated: Afr2SequenceDocument = {
-            ...next,
-            updatedAt: new Date().toISOString(),
-          };
-          if (recordHistory) {
-            setUndoStack((u) => [...u.slice(-29), item]);
-            setRedoStack([]);
-          }
-          return updated;
-        })
-      );
+      const next = updater(activeDoc);
+      const updated: Afr2SequenceDocument = {
+        ...next,
+        wheelDraftReady: next.editorLevel === 'movements' && (next.movementBlocks !== activeDoc.movementBlocks || next.kinematicProfile !== activeDoc.kinematicProfile) ? false : next.wheelDraftReady,
+        updatedAt: new Date().toISOString(),
+      };
+      if (recordHistory) { setUndoStack(u => [...u.slice(-29), activeDoc]); setRedoStack([]); }
+      setPrograms(prevList => prevList.map(item => item.id === activeDoc.id ? updated : item));
     },
-    [activeDoc.id, isLocked]
+    [activeDoc, isLocked]
   );
 
   const handleUndo = () => {
@@ -659,9 +651,9 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
 
   // Resolver bloque seleccionado
   const selectedMovementBlock = useMemo(() => {
-    if (!selection || selection.scope !== 'movements') return null;
+    if (activeDoc.editorLevel !== 'movements' || !selection || selection.scope !== 'movements') return null;
     return activeDoc.movementBlocks.find((b) => b.id === selection.blockId) ?? null;
-  }, [activeDoc.movementBlocks, selection]);
+  }, [activeDoc.editorLevel, activeDoc.movementBlocks, selection]);
 
   const selectedWheelBlock = useMemo(() => {
     if (!selection || selection.scope === 'movements') return null;
@@ -671,7 +663,29 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
 
   // Acciones de edición de bloques
   const handleAddMovementBlock = (kind: MovementBlockKind) => {
-    if (isLocked || activeDoc.movementBlocks.some(block => block.kind === 'finish')) return;
+    if (isLocked) return;
+    if (activeDoc.editorLevel === 'wheels') {
+      const newMovement = createDefaultMovementBlock(kind);
+      const derived = deriveWheelTracksFromMovements([newMovement], activeDoc.kinematicProfile);
+      const nextTracks = { ...activeDoc.wheelTracks };
+      const addedIds: Partial<Record<WheelTrackKey, string>> = {};
+      for (const key of WHEEL_TRACK_KEYS) {
+        const source = enabledTracks.includes(key) ? activeDoc.wheelTracks[key] : [];
+        const list = source.filter(block => block.kind !== 'finish');
+        const elapsed = list.reduce((sum, block) => sum + wheelDurationMs(block), 0);
+        const wait = totalDurationMs > elapsed ? [{ ...createDefaultWheelBlock('wait'), label: 'Sincronizar inicio', durationMs: totalDurationMs-elapsed }] : [];
+        const terminal = source.find(block => block.kind === 'finish');
+        const addition = derived[key].map(block => ({ ...block, id: createSequenceUid(`whl-${key}`) }));
+        addedIds[key] = addition[0]?.id;
+        nextTracks[key] = [...list, ...wait, ...addition, ...(terminal && kind !== 'finish' ? [terminal] : [])];
+        if (nextTracks[key].length > EDITOR_MAX_BLOCKS_PER_TRACK) {
+          setLocalBanner({ id: `limit-${Date.now()}`, tone: 'warning', title: 'No se agregó el movimiento', message: 'Una pista no tiene espacio para el bloque y su espera de sincronización.' }); return;
+        }
+      }
+      commitDocUpdate(doc => ({ ...doc, wheelTracks: nextTracks, enabledWheelTracks: [...WHEEL_TRACK_KEYS], wheelDraftReady: true }));
+      if (addedIds[activeWheelTrackForAdd]) setSelection({ scope: activeWheelTrackForAdd, blockId: addedIds[activeWheelTrackForAdd]! });
+      setCursorMs(totalDurationMs); return;
+    }
     if (activeDoc.movementBlocks.length >= EDITOR_MAX_BLOCKS_PER_TRACK) {
       setLocalBanner({
         id: `limit-${Date.now()}`,
@@ -695,11 +709,12 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
       return { ...doc, movementBlocks: nextBlocks };
     });
     setSelection({ scope: 'movements', blockId: newBlock.id });
+    setCursorMs(totalDurationMs);
   };
 
   const handleAddWheelBlock = (kind: WheelBlockKind, track: WheelTrackKey = activeWheelTrackForAdd) => {
     if (isLocked || activeDoc.editorLevel !== 'wheels') return;
-    if (!enabledTracks.includes(track) || activeDoc.wheelTracks[track].some(block => block.kind === 'finish')) return;
+    if (!enabledTracks.includes(track) || kind === 'finish' && activeDoc.wheelTracks[track].some(block => block.kind === 'finish')) return;
     if (activeDoc.wheelTracks[track].length >= EDITOR_MAX_BLOCKS_PER_TRACK) {
       setLocalBanner({
         id: `limit-${Date.now()}`,
@@ -726,6 +741,35 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
       };
     });
     setSelection({ scope: track, blockId: newBlock.id });
+    setCursorMs(activeDoc.wheelTracks[track].reduce((sum, block) => sum + wheelDurationMs(block), 0));
+  };
+
+  const alignTrackEnds = () => {
+    if (isLocked || activeDoc.editorLevel !== 'wheels') return;
+    const next = { ...activeDoc.wheelTracks };
+    for (const key of enabledTracks) {
+      const list = next[key].filter(block => block.kind !== 'finish');
+      const duration = list.reduce((sum, block) => sum + wheelDurationMs(block), 0);
+      if (duration >= totalDurationMs) continue;
+      if (next[key].length >= EDITOR_MAX_BLOCKS_PER_TRACK) {
+        setLocalBanner({ id: `sync-${Date.now()}`, tone: 'warning', title: 'No se igualaron las pistas', message: `La pista ${key.toUpperCase()} no tiene espacio para una espera.` }); return;
+      }
+      const terminal = next[key].find(block => block.kind === 'finish');
+      next[key] = [...list, { ...createDefaultWheelBlock('wait'), label: 'Esperar al resto', durationMs: totalDurationMs-duration }, ...(terminal ? [terminal] : [])];
+    }
+    commitDocUpdate(doc => ({ ...doc, wheelTracks: next }));
+  };
+
+  const selectBlock = (scope: WheelTrackKey | 'movements', blockId: string | null) => {
+    setSelection(blockId ? { scope, blockId } : null); setSelectedTrack(scope);
+    if (scope !== 'movements') setActiveWheelTrackForAdd(scope);
+    if (!blockId || isLocked) return;
+    const blocks = scope === 'movements' ? movementVisualBlocks : wheelVisualTracks[scope];
+    let start = 0;
+    for (const block of blocks) {
+      if (block.id === blockId) { setCursorMs(Math.min(totalDurationMs, start + Math.min(10, block.durationMs))); return; }
+      start += block.durationMs;
+    }
   };
 
   const handleDuplicateSelected = () => {
@@ -1131,15 +1175,24 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
 
       const updateWheelField = (patch: Partial<WheelBlock>) => {
         if (readOnly) return;
-        commitDocUpdate((doc) => ({
-          ...doc,
-          wheelTracks: {
-            ...doc.wheelTracks,
-            [track]: doc.wheelTracks[track].map((item) =>
-              item.id === b.id ? { ...item, ...patch } : item
-            ),
-          },
-        }));
+        commitDocUpdate(doc => {
+          const tracks = { ...doc.wheelTracks, [track]: doc.wheelTracks[track].map(item => item.id === b.id ? { ...item, ...patch } : item) };
+          // Match start times, not indexes: independent tracks may have different block counts.
+          if (linkDurations && patch.durationMs !== undefined && b.completion !== 'distance') {
+            const index = doc.wheelTracks[track].findIndex(item => item.id === b.id);
+            const start = doc.wheelTracks[track].slice(0,index).reduce((sum,item) => sum + wheelDurationMs(item),0);
+            for (const key of doc.enabledWheelTracks ?? WHEEL_TRACK_KEYS) {
+              if (key === track) continue;
+              let elapsed = 0;
+              tracks[key] = doc.wheelTracks[key].map(item => {
+                const matches = elapsed === start && item.kind !== 'finish' && item.completion !== 'distance';
+                elapsed += wheelDurationMs(item);
+                return matches ? { ...item, durationMs: patch.durationMs! } : item;
+              });
+            }
+          }
+          return { ...doc, wheelTracks: tracks };
+        });
       };
 
       return (
@@ -1155,7 +1208,7 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
 
           {activeDoc.editorLevel === 'movements' && (
             <StatusNotice tone="info" title="Pista derivada de solo consulta">
-              Usá <strong>«Crear copia avanzada»</strong> para editar las cuatro ruedas de forma independiente sin modificar este programa original.
+              Usá <strong>«Editar rueda»</strong> en la cabecera de la pista para ajustar este programa, o <strong>«Crear copia avanzada»</strong> para trabajar sobre una copia.
             </StatusNotice>
           )}
 
@@ -1251,6 +1304,63 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
           {renderPropertiesContent()}
         </section> : null;
 
+  const blockPalette = <section className="afr2-sequence-palette" aria-label="Añadir movimientos y bloques">
+          {/* Paleta para agregar bloques */}
+          {(
+            <div className="space-y-2">
+              <span className="block text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+                Añadir bloque de movimiento al auto
+              </span>
+              <p className="afr2-help">{activeDoc.editorLevel === 'movements' ? 'Cada movimiento actualiza las cuatro ruedas y la ruta de la vista previa.' : 'Se agrega al final común de las cuatro ruedas, con esperas para que empiecen juntas.'}</p>
+              <div className="flex flex-wrap gap-2">
+                {MOVEMENT_PALETTE.filter(item => item.kind !== 'finish' || !(activeDoc.editorLevel === 'movements' ? activeDoc.movementBlocks : activeDoc.wheelTracks.fl).some(block => block.kind === 'finish')).map((item) => (
+                  <Button
+                    key={item.kind}
+                    variant="secondary"
+                    size="md"
+                    disabled={isLocked}
+                    onClick={() => handleAddMovementBlock(item.kind)}
+                  >
+                    + {item.label}
+                  </Button>
+                ))}
+              </div>
+            </div>
+          )}
+          {activeDoc.editorLevel === 'wheels' && (
+            <div className="space-y-2.5">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+                  Añadir bloque a pista de rueda:
+                </span>
+                <SegmentedControl
+                  ariaLabel="Pista de rueda destino"
+                  size="sm"
+                  fill="never"
+                  reselect
+                  value={activeWheelTrackForAdd}
+                  onChange={(tk) => { setActiveWheelTrackForAdd(tk); setSelectedTrack(tk); }}
+                  items={enabledTracks.map((tk) => ({ value: tk, label: tk.toUpperCase() }))}
+                />
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {enabledTracks.includes(activeWheelTrackForAdd) && WHEEL_PALETTE.filter(item => item.kind !== 'finish' || !activeDoc.wheelTracks[activeWheelTrackForAdd].some(block => block.kind === 'finish')).map((item) => (
+                  <Button
+                    key={item.kind}
+                    variant="secondary"
+                    size="md"
+                    disabled={isLocked}
+                    onClick={() => handleAddWheelBlock(item.kind, activeWheelTrackForAdd)}
+                  >
+                    + {item.label} ({activeWheelTrackForAdd.toUpperCase()})
+                  </Button>
+                ))}
+              </div>
+            </div>
+          )}
+
+  </section>;
+
   return (
     <div className="afr2-sequence-workspace">
       {localBanner && (
@@ -1264,7 +1374,7 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
       )}
 
       <div className="afr2-sequence-preview-layout">
-      <div className="afr2-sequence-preview-layout__scene">{preview}</div>
+      <div className="afr2-sequence-preview-layout__scene">{preview?.(previewFeed)}{blockPalette}{propertiesPanel ?? <p className="afr2-sequence-edit-hint">Elegí un bloque de la línea de tiempo para ajustar su movimiento.</p>}</div>
 
       {/* Barra de transporte: Simulación (principal, offline) y Ejecución física */}
       <div className="afr2-sequence-transport p-5 space-y-4">
@@ -1274,7 +1384,7 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
               Simulación y ejecución
             </span>
             <h3 className="text-base font-semibold text-[var(--text)] mt-0.5">
-              Prepará, simulá y enviá la secuencia
+              Probá los cambios de tus pistas
             </h3>
           </div>
 
@@ -1519,8 +1629,9 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
             </span>
             <span className="afr2-select-wrap"><select className="afr2-glass-field min-h-11 px-3" aria-label="Modo de edición" disabled={isLocked} value={activeDoc.editorLevel} onChange={event => {
               const editorLevel = event.target.value as 'movements' | 'wheels';
-              commitDocUpdate(doc => ({ ...doc, editorLevel, wheelDraftReady: true, wheelTracks: editorLevel === 'wheels' && !doc.wheelDraftReady && doc.editorLevel === 'movements' ? deriveWheelTracksFromMovements(doc.movementBlocks, doc.kinematicProfile) : doc.wheelTracks }));
-              setSelection(null); setSelectedTrack(null); setCursorMs(0);
+              if (editorLevel === 'movements' && activeDoc.editorLevel === 'wheels') { setRestoreChassis(true); return; }
+              commitDocUpdate(doc => ({ ...doc, editorLevel, enabledWheelTracks: [...WHEEL_TRACK_KEYS], wheelDraftReady: true, wheelTracks: deriveWheelTracksFromMovements(doc.movementBlocks, doc.kinematicProfile) }));
+              setSelection(null); setSelectedTrack(null); setCursorMs(0); setTimelineScroll(0);
             }}><option value="movements">Movimientos del chasis</option><option value="wheels">Pistas independientes</option></select><Chevron /></span>
             {activeDoc.editorLevel === 'wheels' && <label className="afr2-track-count">Pistas independientes<span className="afr2-select-wrap"><select ref={trackCountRef} className="afr2-glass-field min-h-11 px-3" disabled={isLocked} value={enabledTracks.length} onChange={event => {
               const count = Number(event.target.value);
@@ -1645,58 +1756,6 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
       {/* Cuerpo principal: Paleta + Líneas de tiempo + Panel lateral de propiedades (escritorio) */}
       <div className="afr2-sequence-editor-body">
         <div className="afr2-glass-panel rounded-[var(--radius-md)] p-5 space-y-4">
-          {/* Paleta para agregar bloques */}
-          {activeDoc.editorLevel === 'movements' ? (
-            <div className="space-y-2">
-              <span className="block text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
-                Añadir bloque de movimiento al auto
-              </span>
-              <div className="flex flex-wrap gap-2">
-                {!activeDoc.movementBlocks.some(block => block.kind === 'finish') && MOVEMENT_PALETTE.map((item) => (
-                  <Button
-                    key={item.kind}
-                    variant="secondary"
-                    size="md"
-                    disabled={isLocked}
-                    onClick={() => handleAddMovementBlock(item.kind)}
-                  >
-                    + {item.label}
-                  </Button>
-                ))}
-              </div>
-            </div>
-          ) : (
-            <div className="space-y-2.5">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
-                  Añadir bloque a pista de rueda:
-                </span>
-                <SegmentedControl
-                  ariaLabel="Pista de rueda destino"
-                  size="sm"
-                  fill="never"
-                  reselect
-                  value={activeWheelTrackForAdd}
-                  onChange={(tk) => { setActiveWheelTrackForAdd(tk); setSelectedTrack(tk); }}
-                  items={enabledTracks.map((tk) => ({ value: tk, label: tk.toUpperCase() }))}
-                />
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {enabledTracks.includes(activeWheelTrackForAdd) && !activeDoc.wheelTracks[activeWheelTrackForAdd].some(block => block.kind === 'finish') && WHEEL_PALETTE.map((item) => (
-                  <Button
-                    key={item.kind}
-                    variant="secondary"
-                    size="md"
-                    disabled={isLocked}
-                    onClick={() => handleAddWheelBlock(item.kind, activeWheelTrackForAdd)}
-                  >
-                    + {item.label} ({activeWheelTrackForAdd.toUpperCase()})
-                  </Button>
-                ))}
-              </div>
-            </div>
-          )}
-
           {/* Pista de movimientos (cuando el documento está en Nivel 1) */}
           {activeDoc.editorLevel === 'movements' && (
             <TimelineRow
@@ -1709,11 +1768,10 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
               selectedId={selection?.scope === 'movements' ? selection.blockId : null}
               trackSelected={selectedTrack === 'movements'}
               onTrackSelect={() => setSelectedTrack('movements')}
-              details={selection?.scope === 'movements' ? propertiesPanel : null}
               readOnly={isLocked}
-              onSelect={(id) => {
-                setSelection(id ? { scope: 'movements', blockId: id } : null);
-              }}
+              onSelect={id => selectBlock('movements', id)}
+              scrollLeft={timelineScroll} onTimelineScroll={setTimelineScroll}
+              onSeekCursor={isLocked ? undefined : setCursorMs}
               onReorder={(nextIds) => {
                 commitDocUpdate((doc) => {
                   const map = new Map(doc.movementBlocks.map((b) => [b.id, b]));
@@ -1738,6 +1796,14 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
 
           {/* Cuatro pistas sincronizadas FL / FR / RL / RR */}
           <div className="space-y-3 pt-2 border-t border-[var(--border-default)]">
+            <div className="afr2-sequence-sync-tools">
+              <p className="afr2-help">Tocá un bloque para editarlo y ver su instante en el mapa. El desplazamiento horizontal se comparte entre pistas.</p>
+              {activeDoc.editorLevel === 'wheels' && <>
+                <label><input type="checkbox" disabled={isLocked} checked={linkDurations} onChange={event => setLinkDurations(event.target.checked)} /> Vincular duración de bloques que empiezan juntos</label>
+                <Button size="sm" disabled={isLocked || enabledTracks.length < 2} onClick={alignTrackEnds}>Igualar finales con esperas</Button>
+                <p className="afr2-help">Las distancias Hall conservan su criterio de finalización. El tiempo del simulador es una estimación.</p>
+              </>}
+            </div>
             <div className="flex flex-wrap items-center justify-between gap-2">
               <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
                 {activeDoc.editorLevel === 'movements'
@@ -1756,17 +1822,18 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
                 }
                 trackSelected={selectedTrack === tk}
                 onTrackSelect={() => { setSelectedTrack(tk); setActiveWheelTrackForAdd(tk); }}
-                headerAction={activeDoc.editorLevel === 'wheels' && <button type="button" className="afr2-track-delete" disabled={isLocked} aria-label={`Eliminar pista ${tk.toUpperCase()}`} onClick={event => { event.stopPropagation(); deletedTrack.current = false; setPendingTrackDelete({ program: activeDoc.id, track: tk }); }}><UiIcon name="trash" /></button>}
+                headerAction={activeDoc.editorLevel === 'wheels' ? <button type="button" className="afr2-track-delete" disabled={isLocked} aria-label={`Eliminar pista ${tk.toUpperCase()}`} onClick={event => { event.stopPropagation(); deletedTrack.current = false; setPendingTrackDelete({ program: activeDoc.id, track: tk }); }}><UiIcon name="trash" /></button> : <Button size="sm" disabled={isLocked} onClick={() => {
+                  commitDocUpdate(doc => ({ ...doc, editorLevel: 'wheels', enabledWheelTracks: [...WHEEL_TRACK_KEYS], wheelDraftReady: true, wheelTracks: deriveWheelTracksFromMovements(doc.movementBlocks, doc.kinematicProfile) }));
+                  setSelection(null); setSelectedTrack(tk); setActiveWheelTrackForAdd(tk);
+                }}>Editar rueda</Button>}
                 blocks={wheelVisualTracks[tk]}
                 scaleTotalMs={totalDurationMs}
                 cursorMs={cursorMs}
                 selectedId={selection?.scope === tk ? selection.blockId : null}
-                details={selection?.scope === tk ? propertiesPanel : null}
                 readOnly={activeDoc.editorLevel !== 'wheels' || isLocked}
-                onSelect={(id) => {
-                  setActiveWheelTrackForAdd(tk);
-                  setSelection(id ? { scope: tk, blockId: id } : null);
-                }}
+                onSelect={id => selectBlock(tk, id)}
+                scrollLeft={timelineScroll} onTimelineScroll={setTimelineScroll}
+                onSeekCursor={isLocked ? undefined : setCursorMs}
                 onReorder={(nextIds) => {
                   if (activeDoc.editorLevel !== 'wheels') return;
                   commitDocUpdate((doc) => {
@@ -1801,6 +1868,13 @@ export function SequenceEditorPanel({ onSimulationChange, preview }: SequenceEdi
 
 
       </div>
+
+      <FloatingModal open={restoreChassis} title="Volver a movimientos del chasis" description="Se recuperará el borrador del chasis y dejarán de usarse los ajustes de ruedas independientes. Podés deshacer este cambio. Para seguir trabajando sobre las ruedas, elegí Conservar pistas." onClose={() => setRestoreChassis(false)}>
+        <div className="afr2-action-row"><Button onClick={() => setRestoreChassis(false)}>Conservar pistas</Button><Button variant="primary" disabled={isLocked} onClick={() => {
+          commitDocUpdate(doc => ({ ...doc, editorLevel: 'movements', wheelDraftReady: false }));
+          setSelection(null); setSelectedTrack(null); setCursorMs(0); setTimelineScroll(0); setRestoreChassis(false);
+        }}>Recuperar borrador del chasis</Button></div>
+      </FloatingModal>
 
       <FloatingModal open={pendingTrackDelete !== null} title="Eliminar pista" description={`Se eliminarán los bloques de ${pendingTrackDelete?.track.toUpperCase() ?? 'la pista'}. Podés deshacer esta acción.`} onClose={() => { setPendingTrackDelete(null); if (deletedTrack.current) { deletedTrack.current = false; trackCountRef.current?.focus(); } }}>
         <div className="afr2-action-row"><Button onClick={() => setPendingTrackDelete(null)}>Conservar pista</Button><Button variant="danger" disabled={isLocked || pendingTrackDelete?.program !== activeDoc.id} onClick={() => {

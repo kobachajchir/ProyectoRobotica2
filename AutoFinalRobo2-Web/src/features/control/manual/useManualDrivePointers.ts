@@ -21,8 +21,11 @@ export interface DragVisual { x: number; y: number; dx: number; dy: number }
  * Each contact is tracked by pointerId. Order renewal is ControlPage's 180 ms heartbeat.
  */
 const CANCEL_GRACE_MS = 250;
+/* AFR2-20261110-16: the input area now covers only the 3D model; the joystick is drawn and
+ * bounded in the coordinates of the whole stage (its positioned parent). */
+const stageRect = (element: HTMLElement) => (element.parentElement ?? element).getBoundingClientRect();
 function visual(point: Contact): DragVisual {
-  const rect = point.element.getBoundingClientRect();
+  const rect = stageRect(point.element);
   return { x: point.startX - rect.left, y: point.startY - rect.top, dx: point.x - point.startX, dy: point.y - point.startY };
 }
 export function useManualDrivePointers(options: Options) {
@@ -119,7 +122,8 @@ export function useManualDrivePointers(options: Options) {
     const point = contacts.current.get(event.pointerId);
     if (!point || !latest.current.enabled) return;
     if (point.type === 'mouse' && !(event.buttons & 1)) { stop(); return; }
-    const rect = point.element.getBoundingClientRect();
+    // A drag starts on the model but may continue over the rest of the stage.
+    const rect = stageRect(point.element);
     if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) { stop(); return; }
     point.x = event.clientX; point.y = event.clientY;
     const turn = twist.current;

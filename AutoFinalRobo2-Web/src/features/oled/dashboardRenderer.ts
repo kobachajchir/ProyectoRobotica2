@@ -5,6 +5,8 @@ import { componentIcon as icon,componentRoundedPanel } from './oledComponents';
 import { gestureHint } from './firmwareHints';
 import { FIRMWARE_LIBRARY as L } from './generated/firmwareLibrary';
 const S=L.symbols,IDLE_MS=3000,PAGE_MS=4000;
+// AFR2-20261109-05: same geometry and shared-center arithmetic as the AVR.
+const CARD_X=54,CARD_Y=27,CARD_W=72,CARD_H=22,CARD_ICON=18,CARD_GAP=4,MODE_W=52;
 const modes=['REPOSO','MANUAL','LINEA','RUEDA','GOTO','FALLO','SECUENC','PWM'];
 // AFR2-20261108-12: same items, order and texts as afr2_dashboard.c (1 Motores .. 6 Rastro, 7 fallo).
 const labels=[['--','--','--'],['OFF','ON','RUN'],['US OFF','US ON','US ON'],['OFF','ON','ON'],['OFF','ON','ON'],['IR OFF','IR ON','IR ON'],['RS OFF','RS ON','RS ON'],['FALLO','FALLO','FALLO']];
@@ -57,10 +59,17 @@ export function renderDashboard(o:Afr2OledBuffer,u:FirmwareUiState,s:FirmwareSna
   if(header || d.ssidOffset!==ss){lane(o,2,ssid,ss);changed=true;}
   if(header || d.ipOffset!==is){lane(o,14,ip,is);changed=true;}
   const mode=s.dashboardValid && s.dashboardMode!==undefined && s.dashboardMode<8?s.dashboardMode:255;
-  if(full || mode!==d.mode){o.fillRect(0,27,60,23,'black');o.drawText(2,28,'MODO');o.drawText(2,40,modes[mode]??'--');changed=true;}
+  if(full || mode!==d.mode){o.fillRect(0,27,MODE_W,23,'black');o.drawText(2,28,'MODO');o.drawText(2,40,modes[mode]??'--');changed=true;}
   const selected=status(d,u,s,full),shown=selected|(itemState(selected,d.mask)<<3);
   // AFR2-20261108-10: same long-press icon and position as afr2_dashboard.c.
-  if(full){componentRoundedPanel(o,62,27,64,16);gestureHint(o,0,52,false,'Menu');icon(o,L.symbols.AFR2_ICON_ENCODER_LONG,47,51,11);o.drawText(60,52,'Rapidas');}
-  if(full || d.drawn!==shown){const label=labels[selected][itemState(selected,d.mask)],left=63+Math.trunc((62-(14+4+label.length*7))/2);o.fillRect(64,28,60,14,'black');o.fillRect(63,29,62,12,'black');icon(o,icons[selected],left,28,14);o.drawText(left+18,30,label);changed=true;}
+  if(full){componentRoundedPanel(o,CARD_X,CARD_Y,CARD_W,CARD_H);gestureHint(o,0,52,false,'Menu');icon(o,L.symbols.AFR2_ICON_ENCODER_LONG,47,51,11);o.drawText(60,52,'Rapidas');}
+  if(full || d.drawn!==shown){
+    const label=labels[selected][itemState(selected,d.mask)],width=CARD_ICON+CARD_GAP+label.length*7;
+    const left=CARD_X+1+Math.trunc((CARD_W-2-width)/2);
+    const iconY=CARD_Y+Math.trunc((CARD_H-CARD_ICON)/2),textY=CARD_Y+Math.trunc((CARD_H-10)/2);
+    o.fillRect(CARD_X+2,CARD_Y+1,CARD_W-4,CARD_H-2,'black');
+    o.fillRect(CARD_X+1,CARD_Y+2,CARD_W-2,CARD_H-4,'black');
+    icon(o,icons[selected],left,iconY,CARD_ICON);o.drawText(left+CARD_ICON+CARD_GAP,textY,label);changed=true;
+  }
   d.header=key;d.ssidOffset=ss;d.ipOffset=is;d.mode=mode;d.drawn=shown;return changed;
 }

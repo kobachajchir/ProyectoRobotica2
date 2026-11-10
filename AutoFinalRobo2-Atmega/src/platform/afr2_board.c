@@ -19,6 +19,16 @@ static volatile uint32_t ticks_ms;
 static volatile uint8_t encoder_queue[ENCODER_QUEUE_SIZE];
 static volatile uint8_t encoder_head,encoder_tail,encoder_overflow;
 static volatile uint8_t encoder_ab;
+/* AFR2-20261110-15: interrupt-storm guard. Motor PWM switching couples onto the Hall and
+ * encoder lines (internal pull-ups only, hardware cannot change). Every edge is an IRQ with
+ * priority over Timer0/UART/TWI, so a burst can starve the main loop past the 100 ms control
+ * deadline. Each source gets a fixed IRQ budget per 1 ms tick; when it is spent the source is
+ * masked until the next tick, which re-arms it from the current pin levels. Real rates stay
+ * far below the budgets (Hall ~15 edges/ms at 4 wheels, encoder by hand <1/ms). */
+#define AFR2_HALL_IRQ_BUDGET 64u
+#define AFR2_ENCODER_IRQ_BUDGET 8u
+static volatile uint8_t hall_budget=AFR2_HALL_IRQ_BUDGET,encoder_budget=AFR2_ENCODER_IRQ_BUDGET;
+static volatile uint16_t hall_storms,encoder_storms;
 #if AFR2_HALL_CONNECTED
 static volatile int32_t hall_counts[4];
 static volatile uint8_t hall_previous, hall_enabled;
@@ -32,7 +42,10 @@ static inline void hall_capture(void) {
     if(rising&_BV(AFR2_HALL_RL_A_BIT))hall_counts[2]=(int32_t)((uint32_t)hall_counts[2]+((k&_BV(AFR2_HALL_RL_B_BIT))?UINT32_MAX:1u));
     if(rising&_BV(AFR2_HALL_RR_A_BIT))hall_counts[3]=(int32_t)((uint32_t)hall_counts[3]+((k&_BV(AFR2_HALL_RR_B_BIT))?UINT32_MAX:1u));
 }
-ISR(PCINT2_vect) { hall_capture(); }
+ISR(PCINT2_vect) {
+    hall_capture();
+    if(!--hall_budget){PCICR&=(uint8_t)~_BV(PCIE2);if(hall_storms!=UINT16_MAX)++hall_storms;}
+}
 #endif
 static uint8_t encoder_levels_ab(void) {
     uint8_t pins=PINE;
@@ -44,7 +57,7 @@ static void encoder_capture(void) {
     /* AVR vector priority is fixed: INT4/5 precede PCINT2. Service a pending
      * Hall sample FIRST here. Do not clear PCIF2: an edge arriving during this
      * capture must retain its IRQ; the later PCINT2 entry cannot double count. */
-    if(hall_enabled && (PCIFR&_BV(PCIF2)))hall_capture();
+    if(hall_enabled && (PCICR&_BV(PCIE2)) && (PCIFR&_BV(PCIF2)))hall_capture();
 #endif
     uint8_t ab=encoder_levels_ab();
     if(ab==encoder_ab)return; /* Both INT flags can refer to one port sample. */
@@ -55,9 +68,29 @@ static void encoder_capture(void) {
     encoder_queue[encoder_head]=ab;
     encoder_head=next; /* Publish only after the entry is written. */
 }
-ISR(INT4_vect) { encoder_capture(); }
-ISR(INT5_vect) { encoder_capture(); }
-ISR(TIMER0_COMPA_vect) { ++ticks_ms; }
+static void encoder_irq(void) {
+    encoder_capture();
+    if(!--encoder_budget){EIMSK&=(uint8_t)~(_BV(INT4)|_BV(INT5));if(encoder_storms!=UINT16_MAX)++encoder_storms;}
+}
+ISR(INT4_vect) { encoder_irq(); }
+ISR(INT5_vect) { encoder_irq(); }
+ISR(TIMER0_COMPA_vect) {
+    ++ticks_ms;
+#if AFR2_HALL_CONNECTED
+    /* Re-arm from current levels: edges seen while masked were mostly noise; never count
+     * a phantom edge against a stale previous sample. */
+    if(hall_enabled && !(PCICR&_BV(PCIE2))){hall_previous=AFR2_HALL_PIN;PCIFR=_BV(PCIF2);PCICR|=_BV(PCIE2);}
+#endif
+    hall_budget=AFR2_HALL_IRQ_BUDGET;
+    if(!encoder_budget){EIFR=_BV(INTF4)|_BV(INTF5);encoder_capture();EIMSK|=_BV(INT4)|_BV(INT5);}
+    encoder_budget=AFR2_ENCODER_IRQ_BUDGET;
+}
+void Afr2Board_NoiseCounts(uint16_t *hall,uint16_t *encoder) {
+    ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+        if(hall)*hall=hall_storms;
+        if(encoder)*encoder=encoder_storms;
+    }
+}
 uint32_t Afr2Board_Millis(void) {
     uint32_t n; ATOMIC_BLOCK(ATOMIC_RESTORESTATE) { n=ticks_ms; } return n;
 }

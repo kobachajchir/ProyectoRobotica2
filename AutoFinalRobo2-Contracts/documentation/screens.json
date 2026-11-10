@@ -1,6 +1,6 @@
 {
   "schema": "afr2-screens-2",
-  "updated_by": "AFR2-20261109-03",
+  "updated_by": "AFR2-20261110-14",
   "navigation_source_review": "UI_SCREEN_FLOW.md",
   "screens": [
     {
@@ -24,14 +24,14 @@
         "long-release-open-quick-controls"
       ],
       "parent": null,
-      "state": "source-integrated-resources-regenerated-uncompiled-runtime-unverified",
+      "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261109-03",
+      "change_id": "AFR2-20261109-05",
       "item_count": 1,
       "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
-      "variant": "Original white26px network header, mode at left below it, rounded64x16 status card on right, Menu / long-icon Rapidas footer. AFR2-20261108-12: the card walks Motores (OFF/ON/RUN), Ultrasonido (US), Radar, Servo, Linea (IR), Rastro (RS) with icon + state, 4 s per page after 3 s idle; a change jumps to that item; fault overrides.",
+      "variant": "Original white26px network header; mode on left; rounded72x22 status card at(54,27),18px icon and7x10 label centered with4px gap. Six systems in quick-control order,4s after3s idle; change jumps to item; fault overrides. Menu / long-icon Rapidas footer unchanged.",
       "web_renderer": "web:src/features/oled/dashboardRenderer.ts:renderDashboard",
-      "web_fidelity": "2104/2104 host C/TS full frames; same pixels after AVR storage optimization; no exhaustive physical/partial flow claim",
+      "web_fidelity": "C/TS source paired for72x22 card,18px icon and shared-center arithmetic. No generator, frame comparison, browser or physical observation for AFR2-20261109-05; previous parity evidence is historical.",
       "wire_status": "EX01v13 compiled, EEPROMv9; unflashed; RAM optimized, physical stack/acceptance pending",
       "previous_delivery_status": {
         "state": "source-integrated-compiled-runtime-unverified",
@@ -43,13 +43,14 @@
       "header_layout": "SSID at(21,2), IP at(21,14), independent70px lanes; battery16px at(110,0), voltage y15. White26px band, black glyphs.",
       "header_scroll": "SSID/IP independent70px ping-pong lanes, only for overflow;800ms dwell at both ends,1px/40ms. Partial clear/invert bands at y2 and y14 preserve margins and fixed icons.",
       "visual_profile": "OLED128-5 / AFR2 status dashboard14",
-      "dashboard_status": "3s encoder inactivity before first advance, then4s per applicable state; hold SW pauses; fault stays fixed; one/no candidate does not rotate. State removal remains immediate.",
-      "dashboard_body": "MODO at(2,28), compact value at(2,40); rounded status frame at(62,29)64x20 with icon14+gap4+label7x10.",
+      "dashboard_status": "All six systems: Motores, Ultrasonido, Radar, Servo, Linea, Rastro.3s idle before first advance, then4s per page; hold pauses; changes jump to affected item; fault has priority; missing snapshot is --.",
+      "dashboard_body": "MODO at(2,28), value at(2,40), clear width52px. Status frame(54,27)72x22, icon18 at y29, text7x10 at y33; group centered horizontally by label width. Rounded interior cleared in two inset bands.",
       "partial_redraw": "Retained frame: status rotation touches card interior only; mode/SSID/IP/header update independently; cached render does not clear root frame.",
-      "implementation_review": "changes/2026-11-09-03-source-completion.md",
-      "gesture_overlay": "L glyph and sixteen-step hold progress; reserved lower-right slot; QR excluded; action only on release",
+      "implementation_review": "changes/2026-11-09-05-dashboard-status-card-spacing.md",
+      "gesture_overlay": "Existing held-encoder ring temporarily overlays the lower-right corner; full redraw on release restores enlarged card. Navigation unchanged.",
       "ap_icon": "image_music_radio_broadcast_bits exact user bytes; long press uses image_Ok_btn_pressed_bits exact user bytes. AP-only mode always uses antenna header icon.",
-      "resource_generation": "Web/tools/sync-oled-library.mjs completed 2026-11-09; no build or raster parity test"
+      "resource_generation": "No generation in AFR2-20261109-05. Existing font/icon bytes reused; generated library left untouched by this change.",
+      "previous_web_fidelity": "2104/2104 host C/TS full frames; same pixels after AVR storage optimization; no exhaustive physical/partial flow claim"
     },
     {
       "id": "shared:screen/010002",
@@ -180,25 +181,30 @@
         "select",
         "menu"
       ],
-      "state": "source-integrated-compiled-runtime-unverified",
+      "state": "source-linked-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261106-01",
+      "change_id": "AFR2-20261110-10",
       "item_count": 8,
       "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
       "variant": "three16px-rows; flash-icons; selected-text800ms-dwell-40ms-scroll; explicit-Volver",
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
-      "web_fidelity": "2104/2104 host C/TS full frames; same pixels after AVR storage optimization; no exhaustive physical/partial flow claim",
-      "wire_status": "EX01v13 compiled, EEPROMv9; unflashed; RAM optimized, physical stack/acceptance pending",
+      "web_fidelity": "Authored C/TS counterparts; no generator, build, framebuffer comparison or hardware verification for this revision.",
+      "wire_status": "Wire unchanged; previous builds do not cover this source revision.",
       "previous_delivery_status": {
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
-      "build_evidence": "AFR2-20261106-04: builds/2026-11-06-04/README.md",
       "visual_profile": "Shared inverse14px header and semantic section icon; three16px rows; filled selection; BACK16px + Volver with4px gap.",
       "menu_return_visual": "AFR2-20261102-11: original BACK arrow16px + Volver text,4px gap, vertically centered; gesture hints on non-menu pages unchanged.",
       "current_visual_change": "AFR2-20261102-14",
       "implementation_review": "changes/2026-11-06-01-coordinated-corrections.md",
-      "gesture_overlay": "L glyph and sixteen-step hold progress; reserved lower-right slot; QR excluded; action only on release"
+      "gesture_overlay": "L glyph and sixteen-step hold progress; reserved lower-right slot; QR excluded; action only on release",
+      "previous_compilation_snapshot": {
+        "state": "source-integrated-compiled-runtime-unverified",
+        "build_evidence": "AFR2-20261106-04: builds/2026-11-06-04/README.md",
+        "web_fidelity": "2104/2104 host C/TS full frames; same pixels after AVR storage optimization; no exhaustive physical/partial flow claim",
+        "wire_status": "EX01v13 compiled, EEPROMv9; unflashed; RAM optimized, physical stack/acceptance pending"
+      }
     },
     {
       "id": "shared:screen/030005",
@@ -273,37 +279,49 @@
     {
       "id": "shared:screen/030007",
       "local_code": "0x030007",
-      "name": "Alertas",
+      "name": "Fallos",
       "role": "view",
       "renderer": "atmega:src/ui/afr2_screens.c:Afr2Ui_Render",
       "parent": "shared:screen/030004",
       "fields": [
         "selection",
         "firstVisible",
-        "revision",
-        "snapshot"
+        "snapshot.lines: fault code and meaning",
+        "snapshot.lines: stopped/active outputs",
+        "snapshot.lines: suggested physical intervention",
+        "snapshot.disabled: clear requires stopped outputs and active fault"
       ],
       "actions": [
-        "rotate",
-        "select",
-        "menu"
+        "rotate selects footer action",
+        "short invokes selected action",
+        "clear fault locally when stopped and fault active",
+        "stop",
+        "contextual back on long release",
+        "Volver explicit"
       ],
-      "state": "source-integrated-compiled-runtime-unverified",
+      "state": "source-linked-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261106-01",
-      "item_count": 1,
+      "change_id": "AFR2-20261110-14",
+      "item_count": 3,
       "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
       "variant": "view-three-data-lines-one-selectable-item",
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
-      "web_fidelity": "2104/2104 host C/TS full frames; same pixels after AVR storage optimization; no exhaustive physical/partial flow claim",
-      "wire_status": "EX01v13 compiled, EEPROMv9; unflashed; RAM optimized, physical stack/acceptance pending",
+      "web_fidelity": "Authored C/TS counterparts; no generator, build, framebuffer comparison or hardware verification for this revision.",
+      "wire_status": "Wire unchanged; previous builds do not cover this source revision.",
       "previous_delivery_status": {
         "state": "source-integrated-compiled-runtime-unverified",
         "wire_status": "ROBO2-profile2-EX01v7-compiled"
       },
-      "build_evidence": "AFR2-20261106-04: builds/2026-11-06-04/README.md",
       "implementation_review": "changes/2026-11-06-01-coordinated-corrections.md",
-      "gesture_overlay": "L glyph and sixteen-step hold progress; reserved lower-right slot; QR excluded; action only on release"
+      "gesture_overlay": "L glyph and sixteen-step hold progress; reserved lower-right slot; QR excluded; action only on release",
+      "previous_compilation_snapshot": {
+        "state": "source-integrated-compiled-runtime-unverified",
+        "build_evidence": "AFR2-20261106-04: builds/2026-11-06-04/README.md",
+        "web_fidelity": "2104/2104 host C/TS full frames; same pixels after AVR storage optimization; no exhaustive physical/partial flow claim",
+        "wire_status": "EX01v13 compiled, EEPROMv9; unflashed; RAM optimized, physical stack/acceptance pending"
+      },
+      "recovery_contract": "contracts/FAULT_RECOVERY_TIMING_20261110.md",
+      "clear_guards": "active expected fault; stopped outputs, all PWM zero, Hall capture and sequence inactive; same core service for local encoder and dedicated remote FAULT command"
     },
     {
       "id": "shared:screen/030008",
@@ -2262,25 +2280,30 @@
         "select",
         "menu"
       ],
-      "state": "source-integrated-compiled-runtime-unverified",
+      "state": "source-linked-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261106-01",
+      "change_id": "AFR2-20261110-10",
       "item_count": 1,
       "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
-      "variant": "scaled radar 2m/1m/50cm/25cm (AFR2-20261102-18); applied-PWM cone; optional historical points; shared compact editor at030033",
+      "variant": "Scaled radar 2m/1m/50cm/25cm; nominal 15 degree cone at recorded head angle even when PWM OFF; recent echo angle; optional historical trace. OFF is commanded angle, not measured orientation.",
       "presentation_change_id": "AFR2-20261029-16",
       "presentation_state": "AVR-compiled-not-flashed-per-user; Web-source-linked-not-built; runtime-unverified",
       "web_renderer": "web:src/features/oled/firmwareSensorRenderer.ts:renderSensorScreen",
-      "web_fidelity": "2104/2104 host C/TS full frames; same pixels after AVR storage optimization; no exhaustive physical/partial flow claim",
-      "wire_status": "EX01v13 compiled, EEPROMv9; unflashed; RAM optimized, physical stack/acceptance pending",
+      "web_fidelity": "Authored C/TS counterparts; no generator, build, framebuffer comparison or hardware verification for this revision.",
+      "wire_status": "Wire unchanged; previous builds do not cover this source revision.",
       "siblings": [
         "0x030031",
         "0x030017"
       ],
       "navigation_mode": "sibling-bounded",
-      "build_evidence": "AFR2-20261106-04: builds/2026-11-06-04/README.md",
       "implementation_review": "changes/2026-11-06-01-coordinated-corrections.md",
-      "gesture_overlay": "L glyph and sixteen-step hold progress; reserved lower-right slot; QR excluded; action only on release"
+      "gesture_overlay": "L glyph and sixteen-step hold progress; reserved lower-right slot; QR excluded; action only on release",
+      "previous_compilation_snapshot": {
+        "state": "source-integrated-compiled-runtime-unverified",
+        "build_evidence": "AFR2-20261106-04: builds/2026-11-06-04/README.md",
+        "web_fidelity": "2104/2104 host C/TS full frames; same pixels after AVR storage optimization; no exhaustive physical/partial flow claim",
+        "wire_status": "EX01v13 compiled, EEPROMv9; unflashed; RAM optimized, physical stack/acceptance pending"
+      }
     },
     {
       "id": "shared:screen/030032",
@@ -2349,19 +2372,24 @@
         "select",
         "menu"
       ],
-      "state": "source-integrated-compiled-runtime-unverified",
+      "state": "source-linked-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261106-01",
+      "change_id": "AFR2-20261110-10",
       "item_count": 1,
       "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
-      "variant": "scaled radar 2m/1m/50cm/25cm (AFR2-20261102-18); applied-PWM cone; optional historical points; shared compact editor at030033",
+      "variant": "Scaled radar 2m/1m/50cm/25cm; nominal 15 degree cone at recorded head angle even when PWM OFF; recent echo angle; optional historical trace. OFF is commanded angle, not measured orientation.",
       "web_renderer": "web:src/features/oled/firmwareSensorRenderer.ts:renderSensorScreen",
-      "web_fidelity": "2104/2104 host C/TS full frames; same pixels after AVR storage optimization; no exhaustive physical/partial flow claim",
-      "wire_status": "EX01v13 compiled, EEPROMv9; unflashed; RAM optimized, physical stack/acceptance pending",
+      "web_fidelity": "Authored C/TS counterparts; no generator, build, framebuffer comparison or hardware verification for this revision.",
+      "wire_status": "Wire unchanged; previous builds do not cover this source revision.",
       "navigation_mode": "live-angle-control",
-      "build_evidence": "AFR2-20261106-04: builds/2026-11-06-04/README.md",
       "implementation_review": "changes/2026-11-06-01-coordinated-corrections.md",
-      "gesture_overlay": "L glyph and sixteen-step hold progress; reserved lower-right slot; QR excluded; action only on release"
+      "gesture_overlay": "L glyph and sixteen-step hold progress; reserved lower-right slot; QR excluded; action only on release",
+      "previous_compilation_snapshot": {
+        "state": "source-integrated-compiled-runtime-unverified",
+        "build_evidence": "AFR2-20261106-04: builds/2026-11-06-04/README.md",
+        "web_fidelity": "2104/2104 host C/TS full frames; same pixels after AVR storage optimization; no exhaustive physical/partial flow claim",
+        "wire_status": "EX01v13 compiled, EEPROMv9; unflashed; RAM optimized, physical stack/acceptance pending"
+      }
     },
     {
       "id": "shared:screen/030034",
@@ -2547,19 +2575,25 @@
         "Volver explicit"
       ],
       "item_count": 3,
-      "state": "source-integrated-compiled-runtime-unverified",
+      "state": "source-linked-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261106-01",
+      "change_id": "AFR2-20261110-10",
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
-      "web_fidelity": "2104/2104 host C/TS full frames; same pixels after AVR storage optimization; no exhaustive physical/partial flow claim",
-      "wire_status": "EX01v13 compiled, EEPROMv9; unflashed; RAM optimized, physical stack/acceptance pending",
+      "web_fidelity": "Authored C/TS counterparts; no generator, build, framebuffer comparison or hardware verification for this revision.",
+      "wire_status": "Wire unchanged; previous builds do not cover this source revision.",
       "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
-      "build_evidence": "AFR2-20261106-04: builds/2026-11-06-04/README.md",
       "visual_profile": "Shared inverse14px header and semantic section icon; three16px rows; filled selection; BACK16px + Volver with4px gap.",
       "menu_return_visual": "AFR2-20261102-11: original BACK arrow16px + Volver text,4px gap, vertically centered; gesture hints on non-menu pages unchanged.",
       "current_visual_change": "AFR2-20261102-14",
       "implementation_review": "changes/2026-11-06-01-coordinated-corrections.md",
-      "gesture_overlay": "L glyph and sixteen-step hold progress; reserved lower-right slot; QR excluded; action only on release"
+      "gesture_overlay": "L glyph and sixteen-step hold progress; reserved lower-right slot; QR excluded; action only on release",
+      "previous_compilation_snapshot": {
+        "state": "source-integrated-compiled-runtime-unverified",
+        "build_evidence": "AFR2-20261106-04: builds/2026-11-06-04/README.md",
+        "web_fidelity": "2104/2104 host C/TS full frames; same pixels after AVR storage optimization; no exhaustive physical/partial flow claim",
+        "wire_status": "EX01v13 compiled, EEPROMv9; unflashed; RAM optimized, physical stack/acceptance pending"
+      },
+      "acquisition": "Automatic ADC5 acquisition started at Product_Init; pending until actual averaged samples. Nominal AVCC 5000 mV and divider 2:1; 9 V battery maps to 4.5 V A5, below saturation. Unknown/stale/out-of-range remain distinct."
     },
     {
       "id": "shared:screen/03003a",
@@ -2583,16 +2617,22 @@
         "Volver explicit"
       ],
       "item_count": 1,
-      "state": "source-integrated-compiled-runtime-unverified",
+      "state": "source-linked-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261106-01",
+      "change_id": "AFR2-20261110-10",
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
-      "web_fidelity": "2104/2104 host C/TS full frames; same pixels after AVR storage optimization; no exhaustive physical/partial flow claim",
-      "wire_status": "EX01v13 compiled, EEPROMv9; unflashed; RAM optimized, physical stack/acceptance pending",
+      "web_fidelity": "Authored C/TS counterparts; no generator, build, framebuffer comparison or hardware verification for this revision.",
+      "wire_status": "Wire unchanged; previous builds do not cover this source revision.",
       "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
       "implementation_review": "changes/2026-11-06-01-coordinated-corrections.md",
       "gesture_overlay": "L glyph and sixteen-step hold progress; reserved lower-right slot; QR excluded; action only on release",
-      "build_evidence": "AFR2-20261106-04: builds/2026-11-06-04/README.md"
+      "previous_compilation_snapshot": {
+        "state": "source-integrated-compiled-runtime-unverified",
+        "build_evidence": "AFR2-20261106-04: builds/2026-11-06-04/README.md",
+        "web_fidelity": "2104/2104 host C/TS full frames; same pixels after AVR storage optimization; no exhaustive physical/partial flow claim",
+        "wire_status": "EX01v13 compiled, EEPROMv9; unflashed; RAM optimized, physical stack/acceptance pending"
+      },
+      "acquisition": "Automatic ADC5 acquisition started at Product_Init; pending until actual averaged samples. Nominal AVCC 5000 mV and divider 2:1; 9 V battery maps to 4.5 V A5, below saturation. Unknown/stale/out-of-range remain distinct."
     },
     {
       "id": "shared:screen/010003",

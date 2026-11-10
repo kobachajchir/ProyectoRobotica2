@@ -47,5 +47,18 @@
 .afr2-map-details .afr2-control-map__footer { padding:0; }
 @media (max-width: 599.98px) { .afr2-control-map[data-compact="true"] { grid-template-columns:minmax(0,1fr); } .afr2-map-sidebar { grid-column:1; grid-row:5; border-left:0; } .afr2-map-sidebar .afr2-map-readings { grid-template-columns:repeat(2,minmax(0,1fr)); } .afr2-map-sidebar .afr2-action-row { grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); } }
 @media (prefers-reduced-motion:reduce) { .afr2-goto-list-toggle .afr2-chevron { transition:none; } }
+/* Drawing controls have their own row, above the canvas in both layouts. */
+.afr2-control-map[data-compact="true"][data-editor="true"] > .afr2-map-editor-tools { grid-column:1/-1; grid-row:3; }
+.afr2-control-map[data-compact="true"][data-editor="true"] > .afr2-control-map__viewport { grid-row:4; }
+.afr2-control-map[data-compact="true"][data-editor="true"] > .afr2-map-route { grid-row:5; }
+.afr2-control-map[data-compact="true"][data-editor="true"] > .afr2-map-sidebar { grid-row:4/span 2; }
+.afr2-control-map[data-compact="true"][data-editor="true"] > .afr2-model-asset-progress { grid-column:1/-1; grid-row:6; }
+.afr2-control-map[data-compact="true"][data-editor="true"] > .afr2-map-details { grid-row:7; }
+@media (max-width:599.98px) {
+  .afr2-control-map[data-compact="true"][data-editor="true"] > .afr2-map-sidebar { grid-column:1; grid-row:6; }
+  .afr2-control-map[data-compact="true"][data-editor="true"] > .afr2-model-asset-progress { grid-row:7; }
+  .afr2-control-map[data-compact="true"][data-editor="true"] > .afr2-map-details { grid-row:8; }
+  .afr2-control-map[data-editor="true"] .afr2-map-editor-tools { padding-inline:16px; }
+}
 @media (hover:hover) and (pointer:fine) { .afr2-track-delete:not(:disabled):hover { color:var(--error); border-color:var(--error); } }
 @media (max-width: 839.98px) { .afr2-completion-fields { grid-template-columns:minmax(0,1fr); } }

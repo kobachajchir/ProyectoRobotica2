@@ -28,6 +28,8 @@ public:
     bool setAskFallback(bool ask);
     bool changeMode(uint8_t mode);
     bool savedConfig(uint8_t mode, WifiConfig &out);
+    /* Explicit requesting Web session only; never part of status/broadcasts. */
+    bool credentials(uint8_t kind,JsonObject out);
     bool restartDue(uint32_t now) const { return applyPending_ && (uint32_t)(now-stagedAt_)>=1000u; }
     bool restartPending() const { return applyPending_; }
     bool takeScan(JsonObject out);
@@ -38,6 +40,7 @@ public:
      * se avisa (AFR2_NET_STA_NOT_FOUND) y se espera Iniciar AP / Seguir esperando. Sin OLED durante 10 s,
      * o con un ATmega que rechaza el evento, vuelve el AP automatico de siempre. */
     void setAskMode(bool on,uint32_t now){askMode_=on && !askUnsupported_;if(askMode_)askLinkAt_=now;}
+    void holdFallback(uint32_t now){staStarted_=now;if(askState_==1)askState_=0;askEvent_=false;}
     bool takeAskEvent(uint8_t &reason){if(!askEvent_)return false;askEvent_=false;reason=askReason_;return true;}
     void askUnsupported();
     bool answerAsk(bool startAp,uint16_t seconds,uint32_t now);
@@ -46,7 +49,7 @@ private:
     WifiConfig pending_;
     String apSsid_;
     char apPassword_[64]={}; // AP only; STA credentials are never assigned here.
-    uint32_t stagedAt_=0, staStarted_=0, lastRetry_=0, scanStarted_=0;
+    uint32_t stagedAt_=0, staStarted_=0, lastRetry_=0, scanStarted_=0, lastStationObserveAt_=0;
     bool applyPending_=false, scanPending_=false, scanReady_=false, scanTimedOut_=false, staWanted_=false, apOn_=false;
     bool fallbackActive_=false,scanRestoreAp_=false;
     bool askFallback_=false,apStopped_=false; // AFR2-20261109-02: persisted decision policy / explicit stop
@@ -57,6 +60,7 @@ private:
     /* AFR2-20261106-37: ultima red STA que conecto antes de la actual ("staPrevious" en wifi.json).
      * Si la configurada no conecta en 15 s se prueba la anterior; los reintentos alternan entre ambas. */
     bool usingPrevious_=false, currentGood_=false, hasPrevious_=false;
+    char lastObservedSsid_[33]={};
     bool beginStation(bool previous);
     uint8_t scanBssid_[16][6]={},scanAuth_[16]={},authCount_=0;
     uint32_t authScanAt_=0;

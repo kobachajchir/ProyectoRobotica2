@@ -1,0 +1,62 @@
+{
+  "change": "AFR2-20261109-09",
+  "baseline_version": "1.10.4",
+  "version": "1.10.5",
+  "environment": "esp12s_candidate / espressif8266 4.2.1 / same platformio.ini",
+  "hardware_measured": false,
+  "samples": {
+    "before": {
+      "sections": {
+        ".data": 1592,
+        ".noinit": 56,
+        ".text": 326,
+        ".irom0.text": 416040,
+        ".text1": 26993,
+        ".rodata": 14748,
+        ".bss": 34832
+      },
+      "ram_static_bytes": 51172,
+      "flash_reported_bytes": 459699,
+      "symbols": {
+        "_ZL4wifi": 360,
+        "_ZL7storage": 1392,
+        "_ZL6broker": 6576
+      },
+      "elf_sha256": "51a6dd355b8c0af82cfa3f8ea5b9980fc1e07d0e8e0eba0bbb61778bc297be22"
+    },
+    "after": {
+      "sections": {
+        ".data": 1592,
+        ".noinit": 56,
+        ".text": 326,
+        ".irom0.text": 422636,
+        ".text1": 26993,
+        ".rodata": 10772,
+        ".bss": 34280
+      },
+      "ram_static_bytes": 46644,
+      "flash_reported_bytes": 462319,
+      "symbols": {
+        "_ZL4wifi": 360,
+        "_ZL7storage": 1392,
+        "_ZL6broker": 5956
+      },
+      "elf_sha256": "8c0c3c7331157b4e87b9468dc221e4391a810ee63cb1f5446feedc2401836655"
+    }
+  },
+  "ram_saved_bytes": 4528,
+  "broker_request_size": {
+    "before": 404,
+    "after": 296,
+    "method": "Native sizeof of exact source declarations (fixed-width integer/char fields; no pointers); queue copy and maximal labels checked"
+  },
+  "checks": {
+    "esp_before_build": "PASS (pre-existing unused draftToken warning)",
+    "esp_after_build": "PASS",
+    "web_typecheck": "PASS",
+    "status_json_parity": "PASS (ready and link-down fixtures, full capabilities unchanged)",
+    "web_protocol": "PASS (hello, partial heartbeat/status, revoke permission, reconnect)",
+    "http_queue": "PASS (large serialization, small bypass, cancellation, timeout, low heap, overflow)",
+    "request_union": "PASS (credential copy, max labels, body/generation, reset)"
+  }
+}

@@ -1,6 +1,13 @@
 /* AFR2-20261024-10. State indication + spatial consistency, animate skill.
  * Only opacity/transform animate. Reuse motion/brand tokens; no new library. */
 .afr2-goto-workspace { display: grid; gap: 24px; min-width: 0; }
+.afr2-goto-tools { display: grid; gap: 12px; padding: 16px; border: 1px solid var(--border-default); border-radius: var(--radius-md); background: var(--surface-subtle); }
+.afr2-goto-tools > .afr2-help { margin: 0; min-height: 2.5em; }
+.afr2-goto-tools .afr2-goto-fields { max-width: 440px; }
+.afr2-goto-tools .afr2-goto-fields label { display: grid; gap: 6px; color: var(--text-muted); font-size: var(--type-caption-size); }
+.afr2-goto-tools .afr2-goto-fields input { width: 100%; min-height: 44px; padding: 8px 12px; color: var(--text); }
+.afr2-goto-tools .afr2-action-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.afr2-goto-row-actions > button[aria-pressed="true"] { color: var(--action); border-color: var(--action-border); background: var(--action-subtle); }
 .afr2-goto-layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: 24px; width: 100%; min-width: 0; }
 .afr2-goto-builder { display: grid; grid-template-columns: minmax(0, 1fr) 240px; gap: 20px 24px; padding: 24px; border: 1px solid var(--border-default); border-radius: var(--radius-lg); background: var(--surface-solid); min-width: 0; }
 .afr2-goto-builder > header, .afr2-goto-builder > .afr2-status-notice { grid-column: 1/-1; }
