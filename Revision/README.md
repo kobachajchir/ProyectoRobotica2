@@ -2,11 +2,12 @@
 
 Carpeta común para revisar juntos el informe, los planos y el pinout hasta preparar el informe final.
 
-**Revisión activa: [R01 · 10/11/2026](R01_20261110/README.md).**
+**Revisión activa: [R02 · 10/11/2026](R02_20261110/README.md)** — informe D2; planos y pinout de R01.
 
 | Revisión | Fecha | Estado | Entrega |
 |---|---|---|---|
-| R01 | 10/11/2026 | En revisión | [Informe D1, planos v17 y pinout](R01_20261110/README.md) |
+| R01 | 10/11/2026 | Conservada | [Informe D1, planos v17 y pinout](R01_20261110/README.md) |
+| R02 | 10/11/2026 | En revisión | [Informe D2; planos y pinout sin cambios (de R01)](R02_20261110/README.md) |
 
 ## Cómo continuar
 

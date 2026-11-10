@@ -1,3 +1,7 @@
+## AFR2-20261110-19 — 10/11/2026
+
+Informe D2: reescritura completa con estructura de trabajo integrador, aplicación de recolección, control real del firmware, protocolo ROBO2, verificación numérica propia de los modelos (coincidencia a precisión de máquina en 20 000 configuraciones), simulación de la ley GOTO y 116 citas enlazadas a las hojas del libro de planos. Corrige en D1 la ausencia declarada de un solucionador numérico general (existe en la Web). PDF 30 páginas y DOCX editable en Revision/R02_20261110. Documentación: sin cambio de versión (1.23.2); atmega/esp/web, CAD y Loader sin cambios. [Ficha](changes/2026-11-10-19-informe-d2.md). Sin tests, compilaciones, validaciones ni cargas.
+
 ## AFR2-20261110-18 — 10/11/2026
 
 Paquete ESP dentro del presupuesto: el logo de bienvenida pasa de 1024 a 768 px (155,9 → 97,4 KB), generado desde el maestro con los mismos parámetros. La estimación sobre el dist actual pasa de 2.891.776 a 2.826.240 bytes (presupuesto 2.867.200; margen 40.960). Versión: 1.23.2 (parche). Web fuente; ATmega/ESP solo versión. [Ficha](changes/2026-11-10-18-esp-package-logo-768.md). Falta confirmar con un build:esp nuevo.
